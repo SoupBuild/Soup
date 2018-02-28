@@ -1,0 +1,29 @@
+{
+  "profiles": {
+    "TestInstall": {
+      "commandName": "Project",
+      "commandLineArgs": "install ..\\TestProject1\\TestProject1_v1.0.2.zip",
+      "workingDirectory": "..\\..\\Samples\\TestProject2"
+    },
+    "TestBuild": {
+      "commandName": "Project",
+      "commandLineArgs": "build",
+      "workingDirectory": "..\\..\\Samples\\TestProject1"
+    },
+    "TestGenerate": {
+      "commandName": "Project",
+      "commandLineArgs": "generate",
+      "workingDirectory": "..\\..\\Samples\\TestProject1"
+    },
+    "TestPublish": {
+      "commandName": "Project",
+      "commandLineArgs": "publish",
+      "workingDirectory": "..\\..\\Samples\\TestProject1"
+    },
+    "TestPack": {
+      "commandName": "Project",
+      "commandLineArgs": "pack",
+      "workingDirectory": "..\\..\\Samples\\TestProject1"
+    }
+  }
+}

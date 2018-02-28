@@ -1,0 +1,68 @@
+﻿// <copyright company="Soup">
+//        Copyright (c) Soup.  All rights reserved.
+// </copyright>
+
+using Newtonsoft.Json;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Soup
+{
+    public static class RecipeManager
+    {
+		/// <summary>
+		/// Load the recipe from the root file
+		/// </summary>
+		public static async Task<Recipe> LoadFromFileAsync(string path)
+		{
+			Recipe result = null;
+			var recipePath = Path.Combine(path, Constants.RecipeFileName);
+			if (File.Exists(recipePath))
+			{
+				using (var file = File.OpenRead(recipePath))
+				{
+					result = await LoadFromStreamAsync(file);
+				}
+			}
+			else
+			{
+				throw new FileNotFoundException($"The Recipe file is missing: {recipePath}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Load from stream async
+		/// </summary>
+		public static async Task<Recipe> LoadFromStreamAsync(Stream stream)
+		{
+			Recipe result = null;
+			using (var reader = new StreamReader(stream, Encoding.UTF8, false, 2048, true))
+			{
+				// Read the contents of the recipe file
+				var content = await reader.ReadToEndAsync();
+				result = JsonConvert.DeserializeObject<Recipe>(content);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Save the recipe to the root file
+		/// </summary>
+		public static async Task SaveToFileAsync(Recipe recipe)
+		{
+			// Serialize the contents of the recipe
+			var content = JsonConvert.SerializeObject(recipe, Formatting.Indented);
+
+			// Replace the contents of the file
+			var recipePath = Path.Combine(Directory.GetCurrentDirectory(), Constants.RecipeFileName);
+			using (var writer = new StreamWriter(File.OpenWrite(recipePath)))
+			{
+				await writer.WriteAsync(content);
+			}
+		}
+	}
+}

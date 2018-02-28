@@ -1,0 +1,14 @@
+{
+  "name": "TestProject1",
+  "version": "1.0.30",
+  "dependencies": [
+    "TestMultiVersion@1.0.0"
+  ],
+  "public": [
+    "Source/Color.h"
+  ],
+  "source": [
+    "Source/**/*.h",
+    "Source/**/*.cpp"
+  ]
+}

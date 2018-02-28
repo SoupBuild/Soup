@@ -1,0 +1,12 @@
+{
+  "name": "TestMultiVersion",
+  "version": "1.0.0",
+  "dependencies": [],
+  "public": [
+    "Source/MultiVersion.h"
+  ],
+  "source": [
+    "Source/**/*.h",
+    "Source/**/*.cpp"
+  ]
+}
