@@ -2,10 +2,10 @@
 //        Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup
+namespace Soup.Api.Results
 {
-	public interface IBuilder
+	public class PackageSummary
 	{
-		void Build();
+		public string Name { get; set; }
 	}
 }

@@ -22,6 +22,7 @@ namespace Soup
 			new PackCommand(),
 			new PublishCommand(),
 			new VersionCommand(),
+			new ViewCommand(),
 		};
 
 		// TODO : Convert over to using async main when C# 7.1 is available

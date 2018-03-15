@@ -20,13 +20,11 @@ namespace Soup
 		public static string ProjectGenerateFolderName => ".soup";
 		public static string RecipeFileName => "recipe.json";
 #if DEBUG
-		public static string SoupSiteUrl => "http://localhost:64993";
-		// public static string SoupSiteUrl => "http://localhost.fiddler:64993";
+		public static string SoupSiteUrl => "http://localhost:3001";
 #else
 		public static string SoupSiteUrl => "https://soup.azurewebsites.net";
 #endif
-		public static string SoupRESTEndpoint => $"{SoupSiteUrl}/api/v1";
-		public static string SoupRESTPublish => $"{SoupRESTEndpoint}/packages/publish";
+		public static string SoupRESTEndpointV1 => $"{SoupSiteUrl}/v1";
 		public static string StagingFolderName => ".staging";
 		public static string VS2017ProjectName => "VS2017.vcxproj";
 	}

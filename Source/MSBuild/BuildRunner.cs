@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace Soup.VisualStudioBuild
 {
-	public class Builder : IBuilder
+	public class BuildRunner : IBuildRunner
 	{
 		private static readonly IReadOnlyList<Regex> KnownStatusText =
 			new List<Regex>()

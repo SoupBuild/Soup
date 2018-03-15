@@ -17,7 +17,7 @@ namespace Soup
 			var recipe = await RecipeManager.LoadFromFileAsync(@".\");
 			Log.Message(recipe.Name);
 
-			var builder = new VisualStudioBuild.Builder();
+			var builder = new VisualStudioBuild.BuildRunner();
 			builder.Build();
 		}
 	}

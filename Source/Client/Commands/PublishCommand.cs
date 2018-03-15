@@ -2,6 +2,7 @@
 //        Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
+using Soup.Api;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -30,18 +31,11 @@ namespace Soup
 				// Publish the package to the service
 				try
 				{
-					var result = await SoupRESTApi.PublishAsync(stream);
-					if (!result.IsSuccessStatusCode)
+					var api = new SoupApi();
+					bool created = await api.PublishPackageAsync(recipe.Name, recipe.Version, stream);
+					if (!created)
 					{
-						switch (result.StatusCode)
-						{
-							case HttpStatusCode.Conflict:
-								Log.Error("The Package version already exists.");
-								break;
-							default:
-								Log.Error("Failed");
-								break;
-						}
+						Log.Warning("The package version already existed! No change was made.");
 					}
 				}
 				catch (HttpRequestException ex)
