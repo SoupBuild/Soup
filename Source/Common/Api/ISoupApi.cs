@@ -31,7 +31,7 @@ namespace Soup.Api
 		/// <summary>
 		/// Publish a new package version as an archive 
 		/// </summary>
-		Task<bool> PublishPackageAsync(string name, SemanticVersion version, Stream value);
+		Task<bool> PublishPackageAsync(Stream value);
 
 		/// <summary>
 		/// Search for a package using the query string 

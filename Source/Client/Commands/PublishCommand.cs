@@ -32,7 +32,7 @@ namespace Soup
 				try
 				{
 					var api = new SoupApi();
-					bool created = await api.PublishPackageAsync(recipe.Name, recipe.Version, stream);
+					bool created = await api.PublishPackageAsync(stream);
 					if (!created)
 					{
 						Log.Warning("The package version already existed! No change was made.");

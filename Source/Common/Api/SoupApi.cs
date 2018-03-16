@@ -82,13 +82,13 @@ namespace Soup.Api
 		/// <summary>
 		/// Publish a new package version as an archive 
 		/// </summary>
-		public async Task<bool> PublishPackageAsync(string name, SemanticVersion version, Stream value)
+		public async Task<bool> PublishPackageAsync(Stream value)
 		{
 			using (HttpClient client = new HttpClient())
 			{
 				var content = new StreamContent(value);
 				content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
-				var url = $"{Constants.SoupRESTEndpointV1}/package/{name}/{version}";
+				var url = $"{Constants.SoupRESTEndpointV1}/package";
 				var response = await client.PutAsync(url, content);
 
 				// Check if the publish was a no-op
