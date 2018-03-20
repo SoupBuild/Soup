@@ -2,7 +2,7 @@
   "profiles": {
     "TestInstall": {
       "commandName": "Project",
-      "commandLineArgs": "install ..\\TestProject1\\TestProject1_v1.0.2.zip",
+      "commandLineArgs": "install",
       "workingDirectory": "..\\..\\Samples\\TestProject2"
     },
     "TestBuild": {

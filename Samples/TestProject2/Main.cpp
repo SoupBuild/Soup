@@ -1,11 +1,13 @@
-#include "..\TestProject1\Source\Color.h"
+#include <TestProject1.h>
+#include <TestMultiVersion.h>
 #include <iostream>
 
 int main()
 {
-	TestProject1::Color color;
+	TestProject1::Wrapper wrapper;
+	TestMultiVersion::MultiVersion multiVersion;
 
-	std::wcout << color.GetValue() << std::endl;
+	std::wcout << wrapper.GetVersion() << L" " << multiVersion.GetVersion() << std::endl;
 
 	return 0;
 }

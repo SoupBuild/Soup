@@ -37,10 +37,28 @@ namespace Soup
 			if (string.IsNullOrEmpty(package))
 			{
 				Log.Message("Install All");
+
+				foreach (var dep in recipe.Dependencies)
+				{
+					Log.Message($"{dep.Name}@{dep.Version}");
+
+					// Download the archive
+					var archiveFile = await DownloadPackageAsync(userConfig, dep.Name, dep.Version);
+
+					// Install the package
+					var packageReference = await InstallPackageAsync(userConfig, archiveFile);
+				}
 			}
 			else if (!Path.HasExtension(package))
 			{
 				Log.Message($"Install Package: {package}");
+				
+				// Check if the package is already installed
+				if (recipe.Dependencies.Any((dependency => dependency.Name == package)))
+				{
+					Log.Warning("Packge already installed.");
+					return;
+				}
 
 				// Get the latest version
 				var latestVersion = await GetLatestAsync(package);
@@ -50,10 +68,9 @@ namespace Soup
 
 				// Install the package
 				var packageReference = await InstallPackageAsync(userConfig, archiveFile);
-				if (!recipe.Dependencies.Any((dependency => dependency == packageReference)))
-				{
-					recipe.Dependencies.Add(packageReference);
-				}
+
+				// Register the package in the recipe
+				recipe.Dependencies.Add(packageReference);
 			}
 			else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
 			{
@@ -64,7 +81,10 @@ namespace Soup
 					throw new ArgumentException("The specified file does not exist.");
 				}
 
+				// Install the package
 				var packageReference = await InstallPackageAsync(userConfig, package);
+
+				// Register the package in the recipe if it does not exist
 				if (!recipe.Dependencies.Any((dependency => dependency == packageReference)))
 				{
 					recipe.Dependencies.Add(packageReference);

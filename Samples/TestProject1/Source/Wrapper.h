@@ -1,12 +1,14 @@
 #pragma once
+#include <string>
 
 namespace TestProject1
 {
-	class Color
+	class Wrapper
 	{
 		public:
-			Color();
+			Wrapper();
 			int GetValue();
+			std::wstring GetVersion();
 
 		private:
 			int _value;
