@@ -24,7 +24,7 @@ namespace Soup.Api
 		{
 			using (HttpClient client = new HttpClient())
 			{
-				var url = $"{Constants.SoupRESTEndpointV1}/package/{name}";
+				var url = $"{Constants.SoupRESTEndpointV1}/package/{name}/{version}/{name}_{version}.tgz";
 				var response = await client.GetAsync(url);
 
 				// Verify that we got a success

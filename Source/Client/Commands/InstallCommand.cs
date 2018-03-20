@@ -2,6 +2,7 @@
 //        Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
+using Soup.Api;
 using System;
 using System.IO;
 using System.Linq;
@@ -18,14 +19,13 @@ namespace Soup
 		/// </summary>
 		public async Task InvokeAsync(string[] args, LocalUserConfig userConfig)
 		{
-			if (args.Length < 2)
+			if (args.Length > 2)
 			{
 				ShowUsage();
 				return;
 			}
 
 			var workingDirectory = @".\";
-			var package = args[1];
 			var recipe = await RecipeManager.LoadFromFileAsync(workingDirectory);
 			if (recipe == null)
 			{
@@ -33,7 +33,29 @@ namespace Soup
 				return;
 			}
 
-			if (package.EndsWith(Constants.ArchiveFileExtension))
+			var package = args.Length < 2 ? null : args[1];
+			if (string.IsNullOrEmpty(package))
+			{
+				Log.Message("Install All");
+			}
+			else if (!Path.HasExtension(package))
+			{
+				Log.Message($"Install Package: {package}");
+
+				// Get the latest version
+				var latestVersion = await GetLatestAsync(package);
+
+				// Download the archive
+				var archiveFile = await DownloadPackageAsync(userConfig, package, latestVersion);
+
+				// Install the package
+				var packageReference = await InstallPackageAsync(userConfig, archiveFile);
+				if (!recipe.Dependencies.Any((dependency => dependency == packageReference)))
+				{
+					recipe.Dependencies.Add(packageReference);
+				}
+			}
+			else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
 			{
 				Log.Message($"Installing Local Package: {package}");
 
@@ -42,7 +64,7 @@ namespace Soup
 					throw new ArgumentException("The specified file does not exist.");
 				}
 
-				var packageReference = await InstallPackage(userConfig, package);
+				var packageReference = await InstallPackageAsync(userConfig, package);
 				if (!recipe.Dependencies.Any((dependency => dependency == packageReference)))
 				{
 					recipe.Dependencies.Add(packageReference);
@@ -62,7 +84,32 @@ namespace Soup
 			}
 		}
 
-		private async Task<PackageReference> InstallPackage(LocalUserConfig userConfig, string package)
+		private async Task<SemanticVersion> GetLatestAsync(string name)
+		{
+			var api = new SoupApi();
+			var package = await api.GetPackageAsync(name);
+			return SemanticVersion.Parse(package.Latest);
+		}
+
+		private async Task<string> DownloadPackageAsync(LocalUserConfig userConfig, string name, SemanticVersion version)
+		{
+			// Ensure that the staging directory exists
+			var path = PackageManager.EnsureStagingDirectoryExists(userConfig.PackageStore);
+
+			var api = new SoupApi();
+			var stream = await api.DownloadPackageAsync(name, version);
+
+			var filename = $"{name}_{version}.tgz";
+			var filepath = Path.Combine(path, filename);
+			using (var archivefile = File.Create(filepath))
+			{
+				await stream.CopyToAsync(archivefile);
+			}
+
+			return filepath;
+		}
+
+		private async Task<PackageReference> InstallPackageAsync(LocalUserConfig userConfig, string packageFile)
 		{
 			// Ensure that the staging directory exists
 			var stagingPath = Path.Combine(userConfig.PackageStore, Constants.StagingFolderName);
@@ -72,7 +119,7 @@ namespace Soup
 			// Unpack the zip file into the package directory
 			var tempPackageDirectory = Path.Combine(tempStagingPath, Constants.PackageFolderName);
 			Directory.CreateDirectory(tempPackageDirectory);
-			await PackageManager.ExtractAsync(package, tempPackageDirectory);
+			await PackageManager.ExtractAsync(packageFile, tempPackageDirectory);
 
 			// Load the packages recipe file
 			var recipe = await RecipeManager.LoadFromFileAsync(tempPackageDirectory);
