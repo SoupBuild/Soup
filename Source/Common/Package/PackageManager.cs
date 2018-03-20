@@ -16,10 +16,10 @@ namespace Soup
 	{
 		public static string BuildPackageVersionPath(string projectName, SemanticVersion version)
 		{
-			return Path.Combine(projectName, $"v{version}");
+			return Path.Combine(projectName, $"{version}");
 		}
 
-		public static void EnsureStagingDirectoryExists(string directory)
+		public static string EnsureStagingDirectoryExists(string directory)
 		{
 			var path = Path.Combine(directory, Constants.StagingFolderName);
 			if (!Directory.Exists(path))
@@ -30,6 +30,8 @@ namespace Soup
 				// Hide the folder
 				info.Attributes |= FileAttributes.Hidden;
 			}
+
+			return path;
 		}
 
 		public static void EnsureProjectGenerateFolderExists(string directory)
@@ -88,7 +90,7 @@ namespace Soup
 		/// </summary>
 		public static async Task PackAsync(Recipe recipe, string directory)
 		{
-			var zipFileName = $"{recipe.Name}_v{recipe.Version}.tar.gz";
+			var zipFileName = $"{recipe.Name}_{recipe.Version}.tgz";
 			var zipFilePath = Path.Combine(directory, zipFileName);
 			using (var zipFile = File.Create(zipFilePath))
 			{

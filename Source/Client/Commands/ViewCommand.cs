@@ -2,29 +2,40 @@
 //        Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.IO;
-using System.Linq;
+using Newtonsoft.Json;
+using Soup.Api;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Soup
 {
 	class ViewCommand : ICommand
 	{
-		public string Name => "views";
+		public string Name => "view";
 
 		/// <summary>
 		/// Invoke the view command
 		/// </summary>
 		public async Task InvokeAsync(string[] args, LocalUserConfig userConfig)
 		{
-			if (args.Length < 1)
+			if (args.Length < 2)
 			{
 				ShowUsage();
 				return;
 			}
 
-			await Task.CompletedTask;
+			var packageName = args[1];
+			var api = new SoupApi();
+			try
+			{
+				var package = await api.GetPackageAsync(packageName);
+				var output = JsonConvert.SerializeObject(package);
+				Log.Message(output);
+			}
+			catch (HttpRequestException ex)
+			{
+				Log.Error(ex.ToString());
+			}
 		}
 
 		/// <summary>
@@ -34,7 +45,7 @@ namespace Soup
 		{
 			Log.Message("");
 			Log.Message("Usage: soup view <package>");
-			Log.Message("\name: The unique package name.");
+			Log.Message("\tpackage: The unique package name.");
 		}
 	}
 }

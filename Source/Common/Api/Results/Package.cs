@@ -9,6 +9,7 @@ namespace Soup.Api.Results
 	public class Package
 	{
 		public string Name { get; set; }
+		public string Latest { get; set; }
 		public IList<Publication> Publications { get; set; }
 	}
 }
