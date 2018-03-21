@@ -106,8 +106,7 @@ namespace Soup.Client
 
 		private async Task<SemanticVersion> GetLatestAsync(string name)
 		{
-			var api = new SoupApi();
-			var package = await api.GetPackageAsync(name);
+			var package = await Singleton<ISoupApi>.Instance.GetPackageAsync(name);
 			return SemanticVersion.Parse(package.Latest);
 		}
 
@@ -115,9 +114,8 @@ namespace Soup.Client
 		{
 			// Ensure that the staging directory exists
 			var path = PackageManager.EnsureStagingDirectoryExists(userConfig.PackageStore);
-
-			var api = new SoupApi();
-			var stream = await api.DownloadPackageAsync(name, version);
+			
+			var stream = await Singleton<ISoupApi>.Instance.DownloadPackageAsync(name, version);
 
 			var filename = $"{name}_{version}.tgz";
 			var filepath = Path.Combine(path, filename);

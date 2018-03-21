@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Client\Soup.Client.csproj" />
+    <ProjectReference Include="..\TestUtils\Soup.TestUtils.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@
 //        Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
+using Soup.Api;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -39,6 +40,9 @@ namespace Soup.Client
 			// Load the user configuration settings
 			var userConfig = new LocalUserConfig();
 			var stagingDirectory = Path.Combine(userConfig.PackageStore, Constants.StagingFolderName);
+
+			// Setup the singletons
+			Singleton<ISoupApi>.Instance = new SoupApi();
 
 			// Ensure we are in a clean state
 			if (Directory.Exists(stagingDirectory))

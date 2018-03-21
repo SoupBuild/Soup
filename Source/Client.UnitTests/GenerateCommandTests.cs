@@ -10,11 +10,11 @@ using Xunit;
 
 namespace Soup.Client.UnitTests
 {
-	public class InstallCommandTests : IDisposable
+	public class GenerateCommandTests : IDisposable
 	{
 		LocalUserConfig _config;
 
-		public InstallCommandTests()
+		public GenerateCommandTests()
 		{
 			_config = new LocalUserConfig();
 			Singleton<ISoupApi>.Instance = new MockSoupApi();
@@ -28,14 +28,14 @@ namespace Soup.Client.UnitTests
 		[Fact]
 		public void NameIsCorrect()
 		{
-			var uut = new InstallCommand();
-			Assert.Equal("install", uut.Name);
+			var uut = new GenerateCommand();
+			Assert.Equal("generate", uut.Name);
 		}
 
 		[Fact]
-		public async Task CallWithZeroArgsShouldInstallAll()
+		public async Task CallWithZeroArgsShouldGenerateAll()
 		{
-			var uut = new InstallCommand();
+			var uut = new GenerateCommand();
 
 			var args = new string[] { };
 			await uut.InvokeAsync(args, _config);

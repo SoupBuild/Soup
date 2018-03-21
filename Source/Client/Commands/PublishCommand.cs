@@ -30,8 +30,7 @@ namespace Soup.Client
 				// Publish the package to the service
 				try
 				{
-					var api = new SoupApi();
-					bool created = await api.PublishPackageAsync(stream);
+					bool created = await Singleton<ISoupApi>.Instance.PublishPackageAsync(stream);
 					if (!created)
 					{
 						Log.Warning("The package version already existed! No change was made.");

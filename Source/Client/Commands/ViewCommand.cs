@@ -25,10 +25,9 @@ namespace Soup.Client
 			}
 
 			var packageName = args[1];
-			var api = new SoupApi();
 			try
 			{
-				var package = await api.GetPackageAsync(packageName);
+				var package = await Singleton<ISoupApi>.Instance.GetPackageAsync(packageName);
 				var output = JsonConvert.SerializeObject(package);
 				Log.Message(output);
 			}
