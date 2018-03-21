@@ -10,7 +10,7 @@ namespace Soup.Client
 	{
 		public string Name => "build";
 
-		public async Task InvokeAsync(string[] args, LocalUserConfig userConfig)
+		public async Task InvokeAsync(string[] args)
 		{
 			Log.Message("Build");
 

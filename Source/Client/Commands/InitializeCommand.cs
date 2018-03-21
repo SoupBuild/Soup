@@ -12,7 +12,7 @@ namespace Soup.Client
 	{
 		public string Name => "init";
 
-		public async Task InvokeAsync(string[] args, LocalUserConfig userConfig)
+		public async Task InvokeAsync(string[] args)
 		{
 			Log.Message("The initialize utility will walk through the creation of the most basic Console recipe.\n");
 

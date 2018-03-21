@@ -43,6 +43,7 @@ namespace Soup.Client
 
 			// Setup the singletons
 			Singleton<ISoupApi>.Instance = new SoupApi();
+			Singleton<LocalUserConfig>.Instance = userConfig;
 
 			// Ensure we are in a clean state
 			if (Directory.Exists(stagingDirectory))
@@ -59,7 +60,7 @@ namespace Soup.Client
 				{
 					if (command.Name == args[0])
 					{
-						await command.InvokeAsync(args, userConfig);
+						await command.InvokeAsync(args);
 						foundCommand = true;
 						break;
 					}

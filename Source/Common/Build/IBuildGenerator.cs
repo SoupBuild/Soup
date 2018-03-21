@@ -6,9 +6,10 @@ namespace Soup
 {
 	public interface IBuildGenerator
 	{
+		string Name { get; }
+
 		void GenerateBuild(Recipe recipe, string packageDirectory, string targetDirectory);
 		void GenerateDependencies(
-			LocalUserConfig config,
 			Recipe recipe,
 			string packageDirectory,
 			string targetDirectory,

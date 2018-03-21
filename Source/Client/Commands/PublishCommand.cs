@@ -13,7 +13,7 @@ namespace Soup.Client
 	{
 		public string Name => "publish";
 
-		public async Task InvokeAsync(string[] args, LocalUserConfig userConfig)
+		public async Task InvokeAsync(string[] args)
 		{
 			var projectDirectory = Directory.GetCurrentDirectory();
 			var recipe = await RecipeManager.LoadFromFileAsync(projectDirectory);

@@ -11,7 +11,7 @@ namespace Soup.Client
 	{
 		public string Name => "generate";
 
-		public async Task InvokeAsync(string[] args, LocalUserConfig userConfig)
+		public async Task InvokeAsync(string[] args)
 		{
 			Log.Message("Generate");
 			var projectDirectory = Directory.GetCurrentDirectory();
@@ -30,7 +30,7 @@ namespace Soup.Client
 
 			// Generate the project files
 			var buildGenerator = new VisualStudioBuild.BuildGenerator();
-			buildGenerator.GenerateDependencies(userConfig, recipe, projectDirectory, buildPath, @"$(PackageRoot)\out\");
+			buildGenerator.GenerateDependencies(recipe, projectDirectory, buildPath, @"$(PackageRoot)\out\");
 			buildGenerator.GenerateBuild(recipe, projectDirectory, buildPath);
 		}
 	}

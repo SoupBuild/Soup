@@ -17,7 +17,7 @@ namespace Soup.Client
 		/// <summary>
 		/// Invoke the install command
 		/// </summary>
-		public async Task InvokeAsync(string[] args, LocalUserConfig userConfig)
+		public async Task InvokeAsync(string[] args)
 		{
 			if (args.Length > 2)
 			{
@@ -43,10 +43,10 @@ namespace Soup.Client
 					Log.Message($"{dep.Name}@{dep.Version}");
 
 					// Download the archive
-					var archiveFile = await DownloadPackageAsync(userConfig, dep.Name, dep.Version);
+					var archiveFile = await DownloadPackageAsync(dep.Name, dep.Version);
 
 					// Install the package
-					var packageReference = await InstallPackageAsync(userConfig, archiveFile);
+					var packageReference = await InstallPackageAsync(archiveFile);
 				}
 			}
 			else if (!Path.HasExtension(package))
@@ -64,10 +64,10 @@ namespace Soup.Client
 				var latestVersion = await GetLatestAsync(package);
 
 				// Download the archive
-				var archiveFile = await DownloadPackageAsync(userConfig, package, latestVersion);
+				var archiveFile = await DownloadPackageAsync(package, latestVersion);
 
 				// Install the package
-				var packageReference = await InstallPackageAsync(userConfig, archiveFile);
+				var packageReference = await InstallPackageAsync(archiveFile);
 
 				// Register the package in the recipe
 				recipe.Dependencies.Add(packageReference);
@@ -82,7 +82,7 @@ namespace Soup.Client
 				}
 
 				// Install the package
-				var packageReference = await InstallPackageAsync(userConfig, package);
+				var packageReference = await InstallPackageAsync(package);
 
 				// Register the package in the recipe if it does not exist
 				if (!recipe.Dependencies.Any((dependency => dependency == packageReference)))
@@ -110,8 +110,10 @@ namespace Soup.Client
 			return SemanticVersion.Parse(package.Latest);
 		}
 
-		private async Task<string> DownloadPackageAsync(LocalUserConfig userConfig, string name, SemanticVersion version)
+		private async Task<string> DownloadPackageAsync(string name, SemanticVersion version)
 		{
+			var userConfig = Singleton<LocalUserConfig>.Instance;
+
 			// Ensure that the staging directory exists
 			var path = PackageManager.EnsureStagingDirectoryExists(userConfig.PackageStore);
 			
@@ -127,8 +129,10 @@ namespace Soup.Client
 			return filepath;
 		}
 
-		private async Task<PackageReference> InstallPackageAsync(LocalUserConfig userConfig, string packageFile)
+		private async Task<PackageReference> InstallPackageAsync(string packageFile)
 		{
+			var userConfig = Singleton<LocalUserConfig>.Instance;
+
 			// Ensure that the staging directory exists
 			var stagingPath = Path.Combine(userConfig.PackageStore, Constants.StagingFolderName);
 			PackageManager.EnsureStagingDirectoryExists(userConfig.PackageStore);
@@ -165,7 +169,7 @@ namespace Soup.Client
 			var buildDirectory = Path.Combine(projectVersionPath, Constants.BuildFolderName);
 			Directory.CreateDirectory(buildDirectory);
 			var buildGenerator = new VisualStudioBuild.BuildGenerator();
-			buildGenerator.GenerateDependencies(userConfig, recipe, packageDirectory, buildDirectory, "out\\");
+			buildGenerator.GenerateDependencies(recipe, packageDirectory, buildDirectory, "out\\");
 			buildGenerator.GenerateInclude(recipe, packageDirectory, buildDirectory);
 			buildGenerator.GenerateBuild(recipe, packageDirectory, buildDirectory);
 

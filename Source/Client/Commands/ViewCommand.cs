@@ -16,7 +16,7 @@ namespace Soup.Client
 		/// <summary>
 		/// Invoke the view command
 		/// </summary>
-		public async Task InvokeAsync(string[] args, LocalUserConfig userConfig)
+		public async Task InvokeAsync(string[] args)
 		{
 			if (args.Length < 2)
 			{

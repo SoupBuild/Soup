@@ -10,6 +10,6 @@ namespace Soup.Client
 	{
 		string Name { get; }
 
-		Task InvokeAsync(string[] args, LocalUserConfig userConfig);
+		Task InvokeAsync(string[] args);
 	}
 }

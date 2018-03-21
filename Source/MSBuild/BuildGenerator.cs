@@ -12,6 +12,8 @@ namespace Soup.VisualStudioBuild
 {
 	public class BuildGenerator : IBuildGenerator
 	{
+		public string Name => "MSBuild";
+
 		public void GenerateBuild(Recipe recipe, string packageDirectory, string targetDirectory)
 		{
 			var includeItems = new List<Item>();
@@ -46,18 +48,18 @@ namespace Soup.VisualStudioBuild
 		}
 
 		public void GenerateDependencies(
-			LocalUserConfig config,
 			Recipe recipe, 
 			string packageDirectory,
 			string targetDirectory,
 			string outDir)
 		{
+			var userConfig = Singleton<LocalUserConfig>.Instance;
 			var dependencyImports = new List<Import>();
 			var dependencyReferences = new List<Item>();
 			foreach (var dependency in recipe.Dependencies)
 			{
 				var dependencyFolder = PackageManager.BuildPackageVersionPath(dependency.Name, dependency.Version);
-				var dependencyBuildPath = Path.Combine(config.PackageStore, dependencyFolder, Constants.BuildFolderName);
+				var dependencyBuildPath = Path.Combine(userConfig.PackageStore, dependencyFolder, Constants.BuildFolderName);
 				var dependencyIncludefile = Path.Combine(dependencyBuildPath, Constants.PackageIncludeFileName);
 				var dependencyProjectfile = Path.Combine(dependencyBuildPath, Constants.VS2017ProjectName);
 

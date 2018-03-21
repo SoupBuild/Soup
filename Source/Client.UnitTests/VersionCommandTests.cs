@@ -12,17 +12,16 @@ namespace Soup.Client.UnitTests
 {
 	public class VersionCommandTests : IDisposable
 	{
-		LocalUserConfig _config;
-
 		public VersionCommandTests()
 		{
-			_config = new LocalUserConfig();
+			Singleton<LocalUserConfig>.Instance = new LocalUserConfig();
 			Singleton<ISoupApi>.Instance = new MockSoupApi();
 		}
 
 		public void Dispose()
 		{
-			_config = null;
+			Singleton<LocalUserConfig>.Instance = null;
+			Singleton<ISoupApi>.Instance = null;
 		}
 
 		[Fact]
@@ -38,7 +37,7 @@ namespace Soup.Client.UnitTests
 			var uut = new VersionCommand();
 
 			var args = new string[] { };
-			await uut.InvokeAsync(args, _config);
+			await uut.InvokeAsync(args);
 		}
 
 

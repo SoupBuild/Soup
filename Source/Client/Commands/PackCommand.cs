@@ -11,7 +11,7 @@ namespace Soup.Client
 	{
 		public string Name => "pack";
 
-		public async Task InvokeAsync(string[] args, LocalUserConfig userConfig)
+		public async Task InvokeAsync(string[] args)
 		{
 			var recipe = await RecipeManager.LoadFromFileAsync(@".\");
 			Log.Message($"Packaging Project: {recipe.Name}@{recipe.Version}");
