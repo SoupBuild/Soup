@@ -5,9 +5,9 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Soup
+namespace Soup.Client
 {
-	class PackCommand : ICommand
+	internal class PackCommand : ICommand
 	{
 		public string Name => "pack";
 

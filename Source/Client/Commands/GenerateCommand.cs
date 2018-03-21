@@ -5,9 +5,9 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Soup
+namespace Soup.Client
 {
-	class GenerateCommand : ICommand
+	internal class GenerateCommand : ICommand
 	{
 		public string Name => "generate";
 

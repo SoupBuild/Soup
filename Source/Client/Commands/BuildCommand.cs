@@ -4,9 +4,9 @@
 
 using System.Threading.Tasks;
 
-namespace Soup
+namespace Soup.Client
 {
-	class BuildCommand : ICommand
+	internal class BuildCommand : ICommand
 	{
 		public string Name => "build";
 

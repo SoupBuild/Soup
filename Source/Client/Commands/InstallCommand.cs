@@ -8,9 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Soup
+namespace Soup.Client
 {
-	class InstallCommand : ICommand
+	internal class InstallCommand : ICommand
 	{
 		public string Name => "install";
 

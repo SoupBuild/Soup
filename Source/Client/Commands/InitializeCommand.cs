@@ -6,9 +6,9 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Soup
+namespace Soup.Client
 {
-	class InitializeCommand : ICommand
+	internal class InitializeCommand : ICommand
 	{
 		public string Name => "init";
 

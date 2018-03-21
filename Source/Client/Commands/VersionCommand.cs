@@ -5,9 +5,9 @@
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Soup
+namespace Soup.Client
 {
-	class VersionCommand : ICommand
+	internal class VersionCommand : ICommand
 	{
 		public string Name => "version";
 

@@ -7,9 +7,9 @@ using Soup.Api;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Soup
+namespace Soup.Client
 {
-	class ViewCommand : ICommand
+	internal class ViewCommand : ICommand
 	{
 		public string Name => "view";
 

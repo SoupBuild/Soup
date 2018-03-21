@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 
-namespace Soup
+namespace Soup.Client
 {
 	internal interface ICommand
 	{

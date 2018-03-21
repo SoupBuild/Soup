@@ -4,13 +4,12 @@
 
 using Soup.Api;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Soup
+namespace Soup.Client
 {
-	class PublishCommand : ICommand
+	internal class PublishCommand : ICommand
 	{
 		public string Name => "publish";
 
