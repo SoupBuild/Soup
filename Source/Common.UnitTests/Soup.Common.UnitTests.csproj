@@ -13,4 +13,9 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Soup.Common.csproj" />
+    <ProjectReference Include="..\TestUtils\Soup.TestUtils.csproj" />
+  </ItemGroup>
+
 </Project>
