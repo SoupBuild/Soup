@@ -1,5 +1,5 @@
 ﻿// <copyright company="Soup">
-//        Copyright (c) Soup.  All rights reserved.
+//   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
 using System;
@@ -23,7 +23,7 @@ namespace Soup.Client
 				currentDirectory.Name,
 				new SemanticVersion(1, 0, 0));
 
-			Console.Write($"Name: ({recipe.Name}) ");
+			Log.Message($"Name: ({recipe.Name}) ");
 			var newName = Console.ReadLine();
 			if (!string.IsNullOrWhiteSpace(newName))
 			{
@@ -33,7 +33,7 @@ namespace Soup.Client
 			bool setVersion = false;
 			while (!setVersion)
 			{
-				Console.Write($"Version: ({recipe.Version}) ");
+				Log.Message($"Version: ({recipe.Version}) ");
 				var newVersion = Console.ReadLine();
 				if (string.IsNullOrEmpty(newVersion))
 				{
@@ -49,7 +49,7 @@ namespace Soup.Client
 					}
 					else
 					{
-						Log.Message($"Invalid version: \"{newVersion}\"");
+						Log.Warning($"Invalid version: \"{newVersion}\"");
 					}
 				}
 			}

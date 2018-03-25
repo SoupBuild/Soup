@@ -1,5 +1,5 @@
 ﻿// <copyright company="Soup">
-//        Copyright (c) Soup.  All rights reserved.
+//   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
 using Newtonsoft.Json;
@@ -97,23 +97,23 @@ namespace Soup.VisualStudioBuild
 		{
 			if (KnownStatusText.Any(pattern => pattern.IsMatch(line)))
 			{
-				Log.WriteLine(line, ConsoleColor.Cyan);
+				Log.Message(line, ConsoleColor.Cyan);
 			}
 			else if (KnownWarningText.Any(pattern => pattern.IsMatch(line)))
 			{
-				Log.WriteLine(line, ConsoleColor.Yellow);
+				Log.Message(line, ConsoleColor.Yellow);
 			}
 			else if (KnownErrorText.Any(pattern => pattern.IsMatch(line)))
 			{
-				Log.WriteLine(line, ConsoleColor.Red);
+				Log.Message(line, ConsoleColor.Red);
 			}
 			else if (KnownSuccessText.Any(pattern => pattern.IsMatch(line)))
 			{
-				Log.WriteLine(line, ConsoleColor.Green);
+				Log.Message(line, ConsoleColor.Green);
 			}
 			else
 			{
-				Log.WriteLine(line);
+				Log.Message(line);
 			}
 		}
 	}

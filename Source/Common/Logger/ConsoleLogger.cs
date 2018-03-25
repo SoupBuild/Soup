@@ -1,19 +1,19 @@
 ﻿// <copyright company="Soup">
-//        Copyright (c) Soup.  All rights reserved.
+//   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
 using System;
 
 namespace Soup
 {
-	public static class Log
+	public class ConsoleLogger : ILogger
 	{
-		public static void WriteLine(string message)
+		private void WriteLine(string message)
 		{
 			Console.WriteLine(message);
 		}
 
-		public static void WriteLine(string message, ConsoleColor color)
+		private void WriteLine(string message, ConsoleColor color)
 		{
 			var previousForegroundColor = Console.ForegroundColor;
 			Console.ForegroundColor = color;
@@ -21,22 +21,27 @@ namespace Soup
 			Console.ForegroundColor = previousForegroundColor;
 		}
 
-		public static void Message(string message)
+		public void Message(string message)
 		{
 			WriteLine(message);
 		}
 
-		public static void Verbose(string message)
+		public void Message(string message, ConsoleColor color)
+		{
+			WriteLine(message, color);
+		}
+
+		public void Verbose(string message)
 		{
 			WriteLine(message);
 		}
 
-		public static void Warning(string message)
+		public void Warning(string message)
 		{
 			WriteLine($"WARNING: {message}", ConsoleColor.Yellow);
 		}
 
-		public static void Error(string message)
+		public void Error(string message)
 		{
 			WriteLine($"ERROR: {message}", ConsoleColor.Red);
 		}

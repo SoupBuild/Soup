@@ -1,5 +1,5 @@
 ﻿// <copyright company="Soup">
-//        Copyright (c) Soup.  All rights reserved.
+//   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
 using Soup.Api;
@@ -42,6 +42,7 @@ namespace Soup.Client
 			var stagingDirectory = Path.Combine(userConfig.PackageStore, Constants.StagingFolderName);
 
 			// Setup the singletons
+			Singleton<ILogger>.Instance = new ConsoleLogger();
 			Singleton<ISoupApi>.Instance = new SoupApi();
 			Singleton<LocalUserConfig>.Instance = userConfig;
 

@@ -1,5 +1,5 @@
 // <copyright company="Soup">
-//        Copyright (c) Soup.  All rights reserved.
+//   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
 using Soup.Api;
@@ -14,6 +14,7 @@ namespace Soup.Client.UnitTests
 	{
 		public InitializeCommandTests()
 		{
+			Singleton<ILogger>.Instance = new MockLogger();
 			Singleton<LocalUserConfig>.Instance = new LocalUserConfig();
 			Singleton<ISoupApi>.Instance = new MockSoupApi();
 		}
@@ -30,16 +31,5 @@ namespace Soup.Client.UnitTests
 			var uut = new InitializeCommand();
 			Assert.Equal("init", uut.Name);
 		}
-
-		[Fact]
-		public async Task CallWithZeroArgsShouldInitializeAll()
-		{
-			var uut = new InitializeCommand();
-
-			var args = new string[] { };
-			await uut.InvokeAsync(args);
-		}
-
-
 	}
 }

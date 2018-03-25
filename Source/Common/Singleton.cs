@@ -1,6 +1,6 @@
 ﻿using System;
 // <copyright company="Soup">
-//        Copyright (c) Soup.  All rights reserved.
+//   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
 namespace Soup
