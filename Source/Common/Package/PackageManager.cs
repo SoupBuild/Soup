@@ -1,17 +1,20 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="PackageManager.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using ICSharpCode.SharpZipLib.Tar;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Soup
 {
+	using System.Collections.Generic;
+	using System.IO;
+	using System.IO.Compression;
+	using System.Linq;
+	using System.Text;
+	using System.Threading.Tasks;
+	using ICSharpCode.SharpZipLib.Tar;
+
+	/// <summary>
+	/// The package manager
+	/// </summary>
 	public static class PackageManager
 	{
 		public static string BuildPackageVersionPath(string projectName, SemanticVersion version)

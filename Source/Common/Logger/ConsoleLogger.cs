@@ -1,26 +1,13 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ConsoleLogger.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Soup
 {
+	using System;
+
 	public class ConsoleLogger : ILogger
 	{
-		private void WriteLine(string message)
-		{
-			Console.WriteLine(message);
-		}
-
-		private void WriteLine(string message, ConsoleColor color)
-		{
-			var previousForegroundColor = Console.ForegroundColor;
-			Console.ForegroundColor = color;
-			WriteLine(message);
-			Console.ForegroundColor = previousForegroundColor;
-		}
-
 		public void Message(string message)
 		{
 			WriteLine(message);
@@ -44,6 +31,19 @@ namespace Soup
 		public void Error(string message)
 		{
 			WriteLine($"ERROR: {message}", ConsoleColor.Red);
+		}
+
+		private void WriteLine(string message)
+		{
+			Console.WriteLine(message);
+		}
+
+		private void WriteLine(string message, ConsoleColor color)
+		{
+			var previousForegroundColor = Console.ForegroundColor;
+			Console.ForegroundColor = color;
+			WriteLine(message);
+			Console.ForegroundColor = previousForegroundColor;
 		}
 	}
 }

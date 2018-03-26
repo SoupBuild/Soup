@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ProjectConfiguration.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+	using System.Xml.Serialization;
+
+	/// <summary>
+	/// Project Configuration Element
+	/// </summary>
 	[Serializable]
 	public class ProjectConfiguration : Item
 	{
@@ -22,7 +25,11 @@ namespace Soup.VisualStudioBuild
 		}
 
 		[XmlAttribute("Include")]
-		public string Include { get { return $"{Configuration}|{Platform}"; } set { } }
+		public string Include
+		{
+			get { return $"{Configuration}|{Platform}"; }
+			set { }
+		}
 
 		[XmlElement("Configuration")]
 		public string Configuration { get; set; }

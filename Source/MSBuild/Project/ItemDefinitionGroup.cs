@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ItemDefinitionGroup.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+	using System.Xml.Serialization;
+
+	/// <summary>
+	/// Item Definition Group Element
+	/// </summary>
 	[Serializable]
 	public class ItemDefinitionGroup : ProjectElement
 	{

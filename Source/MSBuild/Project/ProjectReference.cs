@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ProjectReference.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+	using System.Xml.Serialization;
+
+	/// <summary>
+	/// Project Reference Object
+	/// </summary>
 	[Serializable]
 	public class ProjectReference : Item
 	{

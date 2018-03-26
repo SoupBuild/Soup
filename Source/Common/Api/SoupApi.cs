@@ -1,17 +1,17 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="SoupApi.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Newtonsoft.Json;
-using Soup.Api.Results;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-
 namespace Soup.Api
 {
+	using System.IO;
+	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
+	using System.Threading.Tasks;
+	using Newtonsoft.Json;
+	using Soup.Api.Results;
+
 	/// <summary>
 	/// Represents a collection of functions to interact with the API endpoints
 	/// </summary>
@@ -93,7 +93,9 @@ namespace Soup.Api
 
 				// Check if the publish was a no-op
 				if (response.StatusCode == HttpStatusCode.Conflict)
+				{
 					return false;
+				}
 
 				// Verify that we got a success
 				response.EnsureSuccessStatusCode();

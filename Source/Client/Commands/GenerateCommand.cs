@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="GenerateCommand.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System.IO;
-using System.Threading.Tasks;
-
 namespace Soup.Client
 {
+	using System.IO;
+	using System.Threading.Tasks;
+
+	/// <summary>
+	/// Generate Command
+	/// </summary>
 	internal class GenerateCommand : ICommand
 	{
 		public string Name => "generate";

@@ -1,17 +1,20 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="BuildRunner.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Text.RegularExpressions;
+	using Newtonsoft.Json;
+
+	/// <summary>
+	/// MSBuild runner
+	/// </summary>
 	public class BuildRunner : IBuildRunner
 	{
 		private static readonly IReadOnlyList<Regex> KnownStatusText =
@@ -21,18 +24,21 @@ namespace Soup.VisualStudioBuild
 				new Regex(@"^Project ", RegexOptions.Compiled),
 				new Regex(@"^Done Building Project ", RegexOptions.Compiled),
 			};
+
 		private static readonly IReadOnlyList<Regex> KnownWarningText =
 			new List<Regex>()
 			{
 				new Regex(@"^    [1-9]\d* Warning\(s\)$", RegexOptions.Compiled),
 				new Regex(@": warning", RegexOptions.Compiled),
 			};
+
 		private static readonly IReadOnlyList<Regex> KnownErrorText =
 			new List<Regex>()
 			{
 				new Regex(@"^    [1-9]\d* Error\(s\)$", RegexOptions.Compiled),
 				new Regex(@"c1xx : fatal error", RegexOptions.Compiled),
 			};
+
 		private static readonly IReadOnlyList<Regex> KnownSuccessText =
 			new List<Regex>()
 			{

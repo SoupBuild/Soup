@@ -1,15 +1,18 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="InstallCommand.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Soup.Api;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Soup.Client
 {
+	using System;
+	using System.IO;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using Soup.Api;
+
+	/// <summary>
+	/// Install Command
+	/// </summary>
 	internal class InstallCommand : ICommand
 	{
 		public string Name => "install";
@@ -54,7 +57,7 @@ namespace Soup.Client
 				Log.Message($"Install Package: {package}");
 				
 				// Check if the package is already installed
-				if (recipe.Dependencies.Any((dependency => dependency.Name == package)))
+				if (recipe.Dependencies.Any(dependency => dependency.Name == package))
 				{
 					Log.Warning("Packge already installed.");
 					return;
@@ -85,7 +88,7 @@ namespace Soup.Client
 				var packageReference = await InstallPackageAsync(package);
 
 				// Register the package in the recipe if it does not exist
-				if (!recipe.Dependencies.Any((dependency => dependency == packageReference)))
+				if (!recipe.Dependencies.Any(dependency => dependency == packageReference))
 				{
 					recipe.Dependencies.Add(packageReference);
 				}
@@ -188,7 +191,7 @@ namespace Soup.Client
 		/// <summary>
 		/// Show the usage details for this command
 		/// </summary>
-		private static void ShowUsage()
+		private void ShowUsage()
 		{
 			Log.Message("");
 			Log.Message("Usage: soup install <package_file>");

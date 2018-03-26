@@ -1,9 +1,12 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="Property.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
 namespace Soup.VisualStudioBuild
 {
+	/// <summary>
+	/// Property Element
+	/// </summary>
 	public struct Property
 	{
 		public Property(string name, string value)
@@ -13,6 +16,7 @@ namespace Soup.VisualStudioBuild
 		}
 
 		public string Name { get; set; }
+
 		public string Value { get; set; }
 	}
 }

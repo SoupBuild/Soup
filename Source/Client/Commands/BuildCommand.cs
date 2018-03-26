@@ -1,11 +1,14 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="BuildCommand.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System.Threading.Tasks;
-
 namespace Soup.Client
 {
+	using System.Threading.Tasks;
+
+	/// <summary>
+	/// Build Command
+	/// </summary>
 	internal class BuildCommand : ICommand
 	{
 		public string Name => "build";

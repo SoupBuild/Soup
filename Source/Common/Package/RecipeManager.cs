@@ -1,15 +1,18 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="RecipeManager.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Newtonsoft.Json;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Soup
 {
-    public static class RecipeManager
+	using System.IO;
+	using System.Text;
+	using System.Threading.Tasks;
+	using Newtonsoft.Json;
+
+	/// <summary>
+	/// The recipe manager
+	/// </summary>
+	public static class RecipeManager
     {
 		/// <summary>
 		/// Load the recipe from the root file

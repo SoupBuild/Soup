@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="VersionCommand.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System.Reflection;
-using System.Threading.Tasks;
-
 namespace Soup.Client
 {
+	using System.Reflection;
+	using System.Threading.Tasks;
+
+	/// <summary>
+	/// Version Command
+	/// </summary>
 	internal class VersionCommand : ICommand
 	{
 		public string Name => "version";

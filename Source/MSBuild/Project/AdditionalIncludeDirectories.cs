@@ -1,16 +1,19 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="AdditionalIncludeDirectories.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Text;
+	using System.Xml;
+	using System.Xml.Schema;
+	using System.Xml.Serialization;
+
+	/// <summary>
+	/// Additional Include Directories
+	/// </summary>
 	public class AdditionalIncludeDirectories : ClCompileItem, IXmlSerializable
 	{
 		public AdditionalIncludeDirectories()

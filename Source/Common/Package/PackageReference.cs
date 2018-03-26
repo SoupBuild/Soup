@@ -1,16 +1,36 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="PackageReference.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Newtonsoft.Json;
-using System;
-
 namespace Soup
 {
+	using System;
+	using Newtonsoft.Json;
+
+	/// <summary>
+	/// A package reference object
+	/// </summary>
 	[JsonObject]
 	[JsonConverter(typeof(PackageReferenceJsonConverter))]
 	public class PackageReference
 	{
+		public PackageReference() :
+			this(null, null)
+		{
+		}
+
+		public PackageReference(string name, SemanticVersion version)
+		{
+			Name = name;
+			Version = version;
+		}
+
+		[JsonProperty("name")]
+		public string Name { get; set; }
+
+		[JsonProperty("version")]
+		public SemanticVersion Version { get; set; }
+
 		public static bool operator ==(PackageReference lhs, PackageReference rhs)
 		{
 			return lhs.Name == rhs.Name &&
@@ -49,24 +69,7 @@ namespace Soup
 			return new PackageReference(tokens[0], SemanticVersion.Parse(tokens[1]));
 		}
 
-		public PackageReference() :
-			this(null, null)
-		{
-		}
-
-		public PackageReference(string name, SemanticVersion version)
-		{
-			Name = name;
-			Version = version;
-		}
-
-		[JsonProperty("name")]
-		public string Name { get; set; }
-
-		[JsonProperty("version")]
-		public SemanticVersion Version { get; set; }
-
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
 			var other = obj as PackageReference;
 			if (other == null)

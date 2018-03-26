@@ -1,11 +1,14 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ProjectElement.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+
+	/// <summary>
+	/// Project Element
+	/// </summary>
 	[Serializable]
 	public class ProjectElement
 	{

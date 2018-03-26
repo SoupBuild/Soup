@@ -1,11 +1,11 @@
-// <copyright company="Soup">
+// <copyright company="Soup" file="SemanticVersionTests.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Xunit;
-
 namespace Soup.Common.UnitTests
 {
+	using Xunit;
+
 	public class SemanticVersionTests
 	{
 		[Theory]

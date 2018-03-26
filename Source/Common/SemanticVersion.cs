@@ -1,13 +1,29 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="SemanticVersion.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Soup
 {
+	using System;
+
+	/// <summary>
+	/// The semantic version class
+	/// </summary>
 	public class SemanticVersion
 	{
+		public SemanticVersion(short major, short minor, short patch)
+		{
+			Major = major;
+			Minor = minor;
+			Patch = patch;
+		}
+
+		public short Major { get; set; }
+
+		public short Minor { get; set; }
+
+		public short Patch { get; set; }
+
 		public static bool operator ==(SemanticVersion lhs, SemanticVersion rhs)
 		{
 			return lhs.Major == rhs.Major &&
@@ -51,18 +67,7 @@ namespace Soup
 				short.Parse(values[2]));
 		}
 
-		public SemanticVersion(short major, short minor, short patch)
-		{
-			Major = major;
-			Minor = minor;
-			Patch = patch;
-		}
-
-		public short Major { get; set; }
-		public short Minor { get; set; }
-		public short Patch { get; set; }
-
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
 			var other = obj as SemanticVersion;
 			if (other == null)

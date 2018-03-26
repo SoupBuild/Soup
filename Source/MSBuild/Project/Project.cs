@@ -1,13 +1,13 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="Project.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Xml;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System.Collections.Generic;
+	using System.Xml;
+	using System.Xml.Serialization;
+
 	/// <summary>
 	/// Visual Compiler Project
 	/// </summary>

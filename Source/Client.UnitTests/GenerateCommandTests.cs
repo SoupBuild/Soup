@@ -1,15 +1,17 @@
-// <copyright company="Soup">
+// <copyright company="Soup" file="GenerateCommandTests.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Soup.Api;
-using Soup.TestUtils;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace Soup.Client.UnitTests
 {
+	using System;
+	using Soup.Api;
+	using Soup.TestUtils;
+	using Xunit;
+
+	/// <summary>
+	/// Generate Command Tests
+	/// </summary>
 	public class GenerateCommandTests : IDisposable
 	{
 		public GenerateCommandTests()

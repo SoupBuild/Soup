@@ -1,13 +1,13 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ISoupApi.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Soup.Api.Results;
-using System.IO;
-using System.Threading.Tasks;
-
 namespace Soup.Api
 {
+	using System.IO;
+	using System.Threading.Tasks;
+	using Soup.Api.Results;
+
 	/// <summary>
 	/// Represents a collection of functions to interact with the API endpoints
 	/// </summary>

@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="SemanticVersionJsonConverter.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Newtonsoft.Json;
-using System;
-
 namespace Soup
 {
+	using System;
+	using Newtonsoft.Json;
+
+	/// <summary>
+	/// The Json Converter for the <see cref="SemanticVersion" /> class
+	/// </summary>
 	public class SemanticVersionJsonConverter : JsonConverter
 	{
 		public SemanticVersionJsonConverter()

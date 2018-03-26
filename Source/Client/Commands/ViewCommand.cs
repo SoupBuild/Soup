@@ -1,14 +1,17 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ViewCommand.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Newtonsoft.Json;
-using Soup.Api;
-using System.Net.Http;
-using System.Threading.Tasks;
-
 namespace Soup.Client
 {
+	using System.Net.Http;
+	using System.Threading.Tasks;
+	using Newtonsoft.Json;
+	using Soup.Api;
+
+	/// <summary>
+	/// View Command
+	/// </summary>
 	internal class ViewCommand : ICommand
 	{
 		public string Name => "view";

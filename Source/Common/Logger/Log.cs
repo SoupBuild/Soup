@@ -1,17 +1,18 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="Log.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Soup
 {
+	using System;
+
 	public static class Log
 	{
 		public static void Message(string message)
 		{
 			Singleton<ILogger>.Instance.Message(message);
 		}
+
 		public static void Message(string message, ConsoleColor color)
 		{
 			Singleton<ILogger>.Instance.Message(message, color);

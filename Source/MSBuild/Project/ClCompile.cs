@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ClCompile.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+	using System.Xml.Serialization;
+
+	/// <summary>
+	/// Cl Compile element
+	/// </summary>
 	[Serializable]
 	public class ClCompile
 	{
@@ -19,10 +22,12 @@ namespace Soup.VisualStudioBuild
 
 		[XmlElement]
 		public bool? FunctionLevelLinking { get; set; }
+
 		public bool FunctionLevelLinkingSpecified => FunctionLevelLinking.HasValue;
 
 		[XmlElement]
 		public bool? IntrinsicFunctions { get; set; }
+
 		public bool IntrinsicFunctionsSpecified => IntrinsicFunctions.HasValue;
 
 		[XmlElement]
@@ -33,6 +38,7 @@ namespace Soup.VisualStudioBuild
 
 		[XmlElement]
 		public bool? SDLCheck { get; set; }
+
 		public bool SDLCheckSpecified => SDLCheck.HasValue;
 
 		[XmlElement]
@@ -40,6 +46,7 @@ namespace Soup.VisualStudioBuild
 
 		[XmlElement]
 		public bool? ConformanceMode { get; set; }
+
 		public bool ConformanceModeSpecified => ConformanceMode.HasValue;
 
 		[XmlElement]

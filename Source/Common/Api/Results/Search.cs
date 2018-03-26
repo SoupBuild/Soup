@@ -1,11 +1,14 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="Search.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace Soup.Api.Results
 {
+	using System.Collections.Generic;
+
+	/// <summary>
+	/// A container for the search result
+	/// </summary>
 	public class Search
 	{
 		public int Total { get; set; }

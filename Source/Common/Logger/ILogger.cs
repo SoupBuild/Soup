@@ -1,11 +1,11 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ILogger.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Soup
 {
+	using System;
+
 	public interface ILogger
 	{
 		void Message(string message);

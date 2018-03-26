@@ -1,20 +1,23 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="Program.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Soup.Api;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-
 namespace Soup.Client
 {
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Threading.Tasks;
+	using Soup.Api;
+
+	/// <summary>
+	/// The root of all evil
+	/// </summary>
 	public class Program
 	{
 		/// <summary>
 		/// The collection of all known commands for the command line application
 		/// </summary>
-		private static IReadOnlyList<ICommand> Commands = new List<ICommand>()
+		private static IReadOnlyList<ICommand> _commands = new List<ICommand>()
 		{
 			new BuildCommand(),
 			new GenerateCommand(),
@@ -57,7 +60,7 @@ namespace Soup.Client
 			bool foundCommand = false;
 			if (args.Length > 0)
 			{
-				foreach (var command in Commands)
+				foreach (var command in _commands)
 				{
 					if (command.Name == args[0])
 					{
@@ -85,7 +88,7 @@ namespace Soup.Client
 			Log.Message("");
 
 			Log.Message("Available Commands:");
-			foreach (var command in Commands)
+			foreach (var command in _commands)
 			{
 				Log.Message(string.Format("\t{0}", command.Name));
 			}

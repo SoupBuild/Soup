@@ -1,15 +1,18 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="BuildGenerator.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Text;
+	using System.Xml.Serialization;
+
+	/// <summary>
+	/// The MSBuild generator
+	/// </summary>
 	public class BuildGenerator : IBuildGenerator
 	{
 		public string Name => "MSBuild";

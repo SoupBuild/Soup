@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="PackageReferenceJsonConverter.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Newtonsoft.Json;
-using System;
-
 namespace Soup
 {
+	using System;
+	using Newtonsoft.Json;
+
+	/// <summary>
+	/// The Json converter for <see cref="PackageReference"/>
+	/// </summary>
 	internal class PackageReferenceJsonConverter : JsonConverter
 	{
 		public override bool CanConvert(Type objectType)
@@ -17,9 +20,11 @@ namespace Soup
 		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
 			if (reader.TokenType != JsonToken.String)
+			{
 				return null;
+			}
 
-			var result = (existingValue as PackageReference ?? new PackageReference());
+			var result = existingValue as PackageReference ?? new PackageReference();
 			var value = reader.Value as string;
 			if (PackageReference.TryParse(value, out PackageReference newValue))
 			{

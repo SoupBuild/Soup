@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ClIncludeItem.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System.Xml;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System.Xml;
+	using System.Xml.Serialization;
+
+	/// <summary>
+	/// Cl Include Item element
+	/// </summary>
 	public class ClIncludeItem : Item
 	{
 		public ClIncludeItem() :

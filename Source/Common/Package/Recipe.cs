@@ -1,15 +1,18 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="Recipe.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
-
 namespace Soup
 {
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Collections.Specialized;
+	using System.Linq;
+	using Newtonsoft.Json;
+
+	/// <summary>
+	/// The recipe container
+	/// </summary>
 	[JsonObject]
 	public class Recipe
 	{
@@ -34,7 +37,7 @@ namespace Soup
 			Source = new List<string>();
 		}
 
-		[JsonIgnore()]
+		[JsonIgnore]
 		public bool IsDirty => _isDirty;
 
 		[JsonProperty("name")]
@@ -44,6 +47,7 @@ namespace Soup
 			{
 				return _name;
 			}
+
 			set
 			{
 				if (value != _name)
@@ -62,6 +66,7 @@ namespace Soup
 			{
 				return _version;
 			}
+
 			set
 			{
 				if (value != _version)
@@ -79,6 +84,7 @@ namespace Soup
 			{
 				return _dependencies;
 			}
+
 			set
 			{
 				if (_dependencies != null)
@@ -102,6 +108,7 @@ namespace Soup
 			{
 				return _public;
 			}
+
 			set
 			{
 				if (_public != null)
@@ -125,6 +132,7 @@ namespace Soup
 			{
 				return _source;
 			}
+
 			set
 			{
 				if (_source != null)

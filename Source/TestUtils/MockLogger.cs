@@ -1,19 +1,17 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="MockLogger.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-
 namespace Soup
 {
+	using System;
+	using System.Collections.Generic;
+
+	/// <summary>
+	/// Mock Logger
+	/// </summary>
 	public class MockLogger : ILogger
 	{
-		public IList<string> MessageList { get; private set; }
-		public IList<string> VerboseList { get; private set; }
-		public IList<string> WarningList { get; private set; }
-		public IList<string> ErrorList { get; private set; }
-
 		public MockLogger()
 		{
 			MessageList = new List<string>();
@@ -21,6 +19,14 @@ namespace Soup
 			WarningList = new List<string>();
 			ErrorList = new List<string>();
 		}
+
+		public IList<string> MessageList { get; private set; }
+
+		public IList<string> VerboseList { get; private set; }
+
+		public IList<string> WarningList { get; private set; }
+
+		public IList<string> ErrorList { get; private set; }
 
 		public void Message(string message)
 		{

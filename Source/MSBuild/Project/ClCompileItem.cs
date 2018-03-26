@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ClCompileItem.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System.Xml;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System.Xml;
+	using System.Xml.Serialization;
+
+	/// <summary>
+	/// Cl Compile item element
+	/// </summary>
 	public class ClCompileItem : Item
 	{
 		public ClCompileItem() :

@@ -1,13 +1,16 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="Item.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+
+	/// <summary>
+	/// Item element
+	/// </summary>
 	[Serializable]
-    public class Item
-    {
-    }
+	public class Item
+	{
+	}
 }

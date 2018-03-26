@@ -1,13 +1,16 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="ImportGroup.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-
 namespace Soup.VisualStudioBuild
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Xml.Serialization;
+
+	/// <summary>
+	/// Import group element
+	/// </summary>
 	[Serializable]
 	public class ImportGroup : ProjectElement
 	{

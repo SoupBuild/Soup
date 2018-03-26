@@ -1,12 +1,15 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="PackCommand.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System.IO;
-using System.Threading.Tasks;
-
 namespace Soup.Client
 {
+	using System.IO;
+	using System.Threading.Tasks;
+
+	/// <summary>
+	/// Pack Command
+	/// </summary>
 	internal class PackCommand : ICommand
 	{
 		public string Name => "pack";

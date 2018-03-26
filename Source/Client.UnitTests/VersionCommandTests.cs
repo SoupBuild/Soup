@@ -1,16 +1,19 @@
-// <copyright company="Soup">
+// <copyright company="Soup" file="VersionCommandTests.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Soup.Api;
-using Soup.TestUtils;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace Soup.Client.UnitTests
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Threading.Tasks;
+	using Soup.Api;
+	using Soup.TestUtils;
+	using Xunit;
+
+	/// <summary>
+	/// Version Command Tests
+	/// </summary>
 	public class VersionCommandTests : IDisposable
 	{
 		private MockLogger _logger;

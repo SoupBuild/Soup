@@ -1,14 +1,17 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="PublishCommand.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Soup.Api;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-
 namespace Soup.Client
 {
+	using System.IO;
+	using System.Net.Http;
+	using System.Threading.Tasks;
+	using Soup.Api;
+
+	/// <summary>
+	/// Publish Command
+	/// </summary>
 	internal class PublishCommand : ICommand
 	{
 		public string Name => "publish";

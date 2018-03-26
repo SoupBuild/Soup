@@ -1,13 +1,16 @@
-﻿// <copyright company="Soup">
+﻿// <copyright company="Soup" file="InitializeCommand.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
-
 namespace Soup.Client
 {
+	using System;
+	using System.IO;
+	using System.Threading.Tasks;
+
+	/// <summary>
+	/// Initialize Command
+	/// </summary>
 	internal class InitializeCommand : ICommand
 	{
 		public string Name => "init";

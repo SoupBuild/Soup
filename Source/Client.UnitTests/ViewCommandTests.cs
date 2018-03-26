@@ -1,15 +1,14 @@
-// <copyright company="Soup">
+// <copyright company="Soup" file="ViewCommandTests.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using Soup.Api;
-using Soup.TestUtils;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace Soup.Client.UnitTests
 {
+	using System;
+	using Soup.Api;
+	using Soup.TestUtils;
+	using Xunit;
+
 	public class ViewCommandTests : IDisposable
 	{
 		public ViewCommandTests()
