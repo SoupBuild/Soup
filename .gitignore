@@ -5,3 +5,4 @@
 # Build
 obj/
 bin/
+StyleCop.Cache
