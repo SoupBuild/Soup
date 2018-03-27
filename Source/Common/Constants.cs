@@ -40,6 +40,6 @@ namespace Soup
 
 		public static string StagingFolderName => ".staging";
 
-		public static string VS2017ProjectName => "VS2017.vcxproj";
+		public static string VS2017ProjectName => "Build.vcxproj";
 	}
 }

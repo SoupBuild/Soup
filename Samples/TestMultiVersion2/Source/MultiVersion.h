@@ -5,6 +5,7 @@ namespace TestMultiVersion
 {
   class MultiVersion
   {
+  public:
     std::wstring GetVersionEx();
   };
 }

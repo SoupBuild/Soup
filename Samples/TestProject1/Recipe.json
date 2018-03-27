@@ -2,7 +2,7 @@
   "name": "TestProject1",
   "version": "1.0.31",
   "dependencies": [
-    "TestMultiVersion@1.0.0"
+    "TestMultiVersion@1.0.1"
   ],
   "public": [
     "Source/Wrapper.h"

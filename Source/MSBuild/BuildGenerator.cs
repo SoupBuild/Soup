@@ -110,8 +110,13 @@ namespace Soup.VisualStudioBuild
 			}
 		}
 
-		public void GenerateInclude(Recipe recipe, string packageDirectory, string targetDirectory)
+		public void GenerateInclude(
+			Recipe recipe,
+			string targetDirectory,
+			string includeDirectory)
 		{
+			var relativeIncludePath = Path.GetRelativePath(targetDirectory, includeDirectory);
+
 			var project = new Project()
 			{
 				Elements = new List<ProjectElement>()
@@ -125,7 +130,7 @@ namespace Soup.VisualStudioBuild
 								Includes = new List<string>()
 								{
 									"%(AdditionalIncludeDirectories)",
-									"$(MSBuildThisFileDirectory)",
+									$"$(MSBuildThisFileDirectory){relativeIncludePath}",
 								},
 							},
 						},

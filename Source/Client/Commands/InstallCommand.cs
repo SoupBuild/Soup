@@ -170,14 +170,14 @@ namespace Soup.Client
 
 			// Generate the build projects
 			var buildDirectory = Path.Combine(projectVersionPath, Constants.BuildFolderName);
+			var includeDirectory = Path.Combine(projectVersionPath, Constants.IncludeFolderName);
 			Directory.CreateDirectory(buildDirectory);
 			var buildGenerator = new VisualStudioBuild.BuildGenerator();
 			buildGenerator.GenerateDependencies(recipe, packageDirectory, buildDirectory, "out\\");
-			buildGenerator.GenerateInclude(recipe, packageDirectory, buildDirectory);
+			buildGenerator.GenerateInclude(recipe, buildDirectory, includeDirectory);
 			buildGenerator.GenerateBuild(recipe, packageDirectory, buildDirectory);
 
 			// Create the include objects
-			var includeDirectory = Path.Combine(projectVersionPath, Constants.IncludeFolderName);
 			Directory.CreateDirectory(includeDirectory);
 			await PackageManager.CreatePublicIncludeHeaderAsync(recipe, packageDirectory, includeDirectory);
 
