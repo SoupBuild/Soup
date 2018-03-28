@@ -1,6 +1,6 @@
 {
   "name": "TestProject1",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "dependencies": [
     "TestMultiVersion@1.0.1"
   ],
