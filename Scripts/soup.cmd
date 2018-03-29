@@ -1,2 +1,3 @@
-@echo off 
-dotnet %ROOT%\Source\Client\bin\Debug\netcoreapp2.0\Soup.dll %*
+@echo off
+
+dotnet %ROOT%\Source\Client\bin\%BuildConfiguration%\netcoreapp2.0\Soup.dll %*
