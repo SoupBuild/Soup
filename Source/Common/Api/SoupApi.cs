@@ -18,7 +18,7 @@ namespace Soup.Api
 	public class SoupApi : ISoupApi
 	{
 		/// <summary>
-		/// Publish a new package version as an archive 
+		/// Download a package version as an archive 
 		/// </summary>
 		public async Task<Stream> DownloadPackageAsync(string name, SemanticVersion version)
 		{

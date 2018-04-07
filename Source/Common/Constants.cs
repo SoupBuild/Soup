@@ -34,7 +34,7 @@ namespace Soup
 #if DEBUG
 		public static string SoupSiteUrl => "http://localhost:3001";
 #else
-		public static string SoupSiteUrl => "https://soup.azurewebsites.net";
+		public static string SoupSiteUrl => "https://soupapi.azurewebsites.net";
 #endif
 		public static string SoupRESTEndpointV1 => $"{SoupSiteUrl}/v1";
 
