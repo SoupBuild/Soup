@@ -13,7 +13,7 @@ namespace Soup
 	/// The recipe manager
 	/// </summary>
 	public static class RecipeManager
-    {
+	{
 		/// <summary>
 		/// Load the recipe from the root file
 		/// </summary>
@@ -58,7 +58,10 @@ namespace Soup
 		public static async Task SaveToFileAsync(Recipe recipe)
 		{
 			// Serialize the contents of the recipe
-			var content = JsonConvert.SerializeObject(recipe, Formatting.Indented);
+			var content = JsonConvert.SerializeObject(
+				recipe,
+				Formatting.Indented,
+				new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore });
 
 			// Replace the contents of the file
 			var recipePath = Path.Combine(Directory.GetCurrentDirectory(), Constants.RecipeFileName);

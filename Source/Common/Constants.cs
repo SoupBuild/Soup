@@ -30,7 +30,7 @@ namespace Soup
 
 		public static string ProjectGenerateFolderName => ".soup";
 
-		public static string RecipeFileName => "recipe.json";
+		public static string RecipeFileName => "Recipe.json";
 #if DEBUG
 		public static string SoupSiteUrl => "http://localhost:3001";
 #else

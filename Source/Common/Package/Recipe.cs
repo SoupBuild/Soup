@@ -7,8 +7,10 @@ namespace Soup
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Collections.Specialized;
+	using System.ComponentModel;
 	using System.Linq;
 	using Newtonsoft.Json;
+	using Newtonsoft.Json.Converters;
 
 	/// <summary>
 	/// The recipe container
@@ -19,6 +21,7 @@ namespace Soup
 		private bool _isDirty;
 		private string _name;
 		private SemanticVersion _version;
+		private LanguageStandard _standard;
 		private ObservableCollection<PackageReference> _dependencies;
 		private ObservableCollection<string> _public;
 		private ObservableCollection<string> _source;
@@ -31,6 +34,7 @@ namespace Soup
 			_isDirty = false;
 			_name = name;
 			_version = version;
+			_standard = LanguageStandard.Default;
 
 			Dependencies = new List<PackageReference>();
 			Public = new List<string>();
@@ -72,6 +76,26 @@ namespace Soup
 				if (value != _version)
 				{
 					_version = value;
+					_isDirty = true;
+				}
+			}
+		}
+
+		[JsonProperty("standard")]
+		[DefaultValue(LanguageStandard.Default)]
+		[JsonConverter(typeof(StringEnumConverter))]
+		public LanguageStandard Standard
+		{
+			get
+			{
+				return _standard;
+			}
+
+			set
+			{
+				if (value != _standard)
+				{
+					_standard = value;
 					_isDirty = true;
 				}
 			}
@@ -154,6 +178,7 @@ namespace Soup
 			Log.Verbose($"Recipe");
 			Log.Verbose($"\tName         : {Name}");
 			Log.Verbose($"\tVersion      : {Version}");
+			Log.Verbose($"\tStandard     : {Standard}");
 			Log.Verbose($"\tDependencies : [{string.Join(", ", Dependencies.Select((value) => JsonConvert.SerializeObject(value)))}]");
 		}
 
