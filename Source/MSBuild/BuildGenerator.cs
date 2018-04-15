@@ -58,16 +58,13 @@ namespace Soup.VisualStudioBuild
 		{
 			var userConfig = Singleton<LocalUserConfig>.Instance;
 			var dependencyImports = new List<Import>();
-			var dependencyReferences = new List<Item>();
 			foreach (var dependency in recipe.Dependencies)
 			{
 				var dependencyFolder = PackageManager.BuildPackageVersionPath(dependency.Name, dependency.Version);
 				var dependencyBuildPath = Path.Combine(userConfig.PackageStore, dependencyFolder, Constants.BuildFolderName);
 				var dependencyIncludefile = Path.Combine(dependencyBuildPath, Constants.PackageIncludeFileName);
-				var dependencyProjectfile = Path.Combine(dependencyBuildPath, Constants.VS2017ProjectName);
 
 				dependencyImports.Add(new Import(dependencyIncludefile));
-				dependencyReferences.Add(new ProjectReference(dependencyProjectfile));
 			}
 
 			var project = new Project()
@@ -89,14 +86,9 @@ namespace Soup.VisualStudioBuild
 					},
 					new ImportGroup()
 					{
-						Label = "PackageDependenciesIncludes",
+						Label = "PackageDependencies",
 						Imports = dependencyImports,
-					},
-					new ItemGroup()
-					{
-						Label = "PackageDependenciesReferences",
-						Items = dependencyReferences,
-					},
+					}
 				}
 			};
 

@@ -25,6 +25,7 @@ namespace Soup.Api
 			using (HttpClient client = new HttpClient())
 			{
 				var url = $"{Constants.SoupRESTEndpointV1}/package/{name}/{version}/{name}_{version}.tgz";
+				Log.Verbose(url);
 				var response = await client.GetAsync(url);
 
 				// Verify that we got a success
@@ -45,6 +46,7 @@ namespace Soup.Api
 			using (HttpClient client = new HttpClient())
 			{
 				var url = $"{Constants.SoupRESTEndpointV1}/package/{name}";
+				Log.Verbose(url);
 				var response = await client.GetAsync(url);
 
 				// Verify that we got a success
@@ -66,6 +68,7 @@ namespace Soup.Api
 			using (HttpClient client = new HttpClient())
 			{
 				var url = $"{Constants.SoupRESTEndpointV1}/package/{name}/{version}";
+				Log.Verbose(url);
 				var response = await client.GetAsync(url);
 
 				// Verify that we got a success
@@ -89,6 +92,7 @@ namespace Soup.Api
 				var content = new StreamContent(value);
 				content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
 				var url = $"{Constants.SoupRESTEndpointV1}/package";
+				Log.Verbose(url);
 				var response = await client.PutAsync(url, content);
 
 				// Check if the publish was a no-op
@@ -112,6 +116,7 @@ namespace Soup.Api
 			using (HttpClient client = new HttpClient())
 			{
 				var url = $"{Constants.SoupRESTEndpointV1}/packages/search?q={q}";
+				Log.Verbose(url);
 				var response = await client.GetAsync(url);
 
 				// Verify that we got a success

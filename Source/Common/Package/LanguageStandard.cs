@@ -2,10 +2,10 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-using System.Runtime.Serialization;
-
 namespace Soup
 {
+	using System.Runtime.Serialization;
+
 	public enum LanguageStandard
 	{
 		/// <summary>
