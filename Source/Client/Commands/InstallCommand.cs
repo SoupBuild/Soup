@@ -41,16 +41,7 @@ namespace Soup.Client
 			{
 				Log.Message("Install All");
 
-				foreach (var dep in recipe.Dependencies)
-				{
-					Log.Message($"{dep.Name}@{dep.Version}");
-
-					// Download the archive
-					var archiveFile = await DownloadPackageAsync(dep.Name, dep.Version);
-
-					// Install the package
-					var packageReference = await InstallPackageAsync(archiveFile);
-				}
+				await InstallRecursiveDependencies(recipe);
 			}
 			else if (!Path.HasExtension(package))
 			{
@@ -70,10 +61,11 @@ namespace Soup.Client
 				var archiveFile = await DownloadPackageAsync(package, latestVersion);
 
 				// Install the package
-				var packageReference = await InstallPackageAsync(archiveFile);
-
+				var installedRecipe = await InstallPackageAsync(archiveFile);
+				var installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
+				
 				// Register the package in the recipe
-				recipe.Dependencies.Add(packageReference);
+				recipe.Dependencies.Add(installedPackageRef);
 			}
 			else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
 			{
@@ -85,12 +77,13 @@ namespace Soup.Client
 				}
 
 				// Install the package
-				var packageReference = await InstallPackageAsync(package);
+				var installedRecipe = await InstallPackageAsync(package);
+				var installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
 
 				// Register the package in the recipe if it does not exist
-				if (!recipe.Dependencies.Any(dependency => dependency == packageReference))
+				if (!recipe.Dependencies.Any(dependency => dependency == installedPackageRef))
 				{
-					recipe.Dependencies.Add(packageReference);
+					recipe.Dependencies.Add(installedPackageRef);
 				}
 			}
 			else
@@ -132,7 +125,7 @@ namespace Soup.Client
 			return filepath;
 		}
 
-		private async Task<PackageReference> InstallPackageAsync(string packageFile)
+		private async Task<Recipe> InstallPackageAsync(string packageFile)
 		{
 			var userConfig = Singleton<LocalUserConfig>.Instance;
 
@@ -184,8 +177,30 @@ namespace Soup.Client
 			// Cleanup
 			Directory.Delete(stagingPath, true);
 
-			// Build the package reference
-			return new PackageReference(recipe.Name, recipe.Version);
+			// Return the recipe for the installed package
+			return recipe;
+		}
+
+		/// <summary>
+		/// Recusively install all dependencies and trasient dependecies
+		/// </summary>
+		/// <param name="recipe"></param>
+		/// <returns></returns>
+		private async Task InstallRecursiveDependencies(Recipe recipe)
+		{
+			foreach (var dep in recipe.Dependencies)
+			{
+				Log.Message($"{dep.Name}@{dep.Version}");
+
+				// Download the archive
+				var archiveFile = await DownloadPackageAsync(dep.Name, dep.Version);
+
+				// Install the package
+				var installedRecipe = await InstallPackageAsync(archiveFile);
+
+				// Install dependecies recursively 
+				await InstallRecursiveDependencies(installedRecipe);
+			}
 		}
 
 		/// <summary>
