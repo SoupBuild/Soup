@@ -2,7 +2,7 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup.VisualStudioBuild
+namespace Soup.MSBuild
 {
 	using System;
 	using System.Collections.Generic;
@@ -45,12 +45,11 @@ namespace Soup.VisualStudioBuild
 				new Regex(@"^Build succeeded\.$", RegexOptions.Compiled),
 			};
 
-		public void Build()
+		public bool Build(string buildPath, bool showOutput)
 		{
 			string compiler = FindCompiler();
-
-			var buildDirectory = Path.Combine(Constants.ProjectGenerateFolderName, Constants.BuildFolderName);
-			var buildProjectPath = Path.Combine(buildDirectory, Constants.VS2017ProjectName);
+			
+			var buildProjectPath = Path.Combine(buildPath, MSBuildConstants.VS2017ProjectName);
 			using (Process process = new Process())
 			{
 				process.StartInfo.UseShellExecute = false;
@@ -58,14 +57,19 @@ namespace Soup.VisualStudioBuild
 				process.StartInfo.FileName = compiler;
 				process.StartInfo.Arguments = $"{buildProjectPath} -p:Platform=x64;Configuration=Release";
 				process.Start();
-				
-				while (!process.StandardOutput.EndOfStream)
+
+				if (showOutput)
 				{
-					string line = process.StandardOutput.ReadLine();
-					WriteMSBuildLine(line);
+					while (!process.StandardOutput.EndOfStream)
+					{
+						string line = process.StandardOutput.ReadLine();
+						WriteMSBuildLine(line);
+					}
 				}
 
 				process.WaitForExit();
+
+				return process.ExitCode == 0;
 			}
 		}
 

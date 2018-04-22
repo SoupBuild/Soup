@@ -39,7 +39,5 @@ namespace Soup
 		public static string SoupRESTEndpointV1 => $"{SoupSiteUrl}/v1";
 
 		public static string StagingFolderName => ".staging";
-
-		public static string VS2017ProjectName => "Build.vcxproj";
 	}
 }

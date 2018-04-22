@@ -2,7 +2,7 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup.VisualStudioBuild
+namespace Soup.MSBuild
 {
 	using System.Collections.Generic;
 	using System.Xml;

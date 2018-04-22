@@ -2,7 +2,7 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup.VisualStudioBuild
+namespace Soup.MSBuild
 {
 	using System;
 	using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace Soup.VisualStudioBuild
 
 			var project = CreateVS15LibraryTemplate(recipe, includeItems, sourceItems);
 
-			var projectFileName = Constants.VS2017ProjectName;
+			var projectFileName = MSBuildConstants.VS2017ProjectName;
 			var projectFilePath = Path.Combine(targetDirectory, projectFileName);
 			using (var stream = new StreamWriter(File.Create(projectFilePath), Encoding.UTF8))
 			{

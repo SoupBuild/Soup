@@ -22,6 +22,15 @@ namespace Soup
 			return Path.Combine(projectName, $"{version}");
 		}
 
+		public static string BuildPackageStorePath(string projectName, SemanticVersion version)
+		{
+			var userConfig = Singleton<LocalUserConfig>.Instance;
+			var projectVersionFolder = BuildPackageVersionPath(projectName, version);
+			var projectVersionPath = Path.Combine(userConfig.PackageStore, projectVersionFolder);
+
+			return projectVersionPath;
+		}
+
 		public static string EnsureStagingDirectoryExists(string directory)
 		{
 			var path = Path.Combine(directory, Constants.StagingFolderName);

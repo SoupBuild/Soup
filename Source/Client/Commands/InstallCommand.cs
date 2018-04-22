@@ -141,8 +141,7 @@ namespace Soup.Client
 
 			// Load the packages recipe file
 			var recipe = await RecipeManager.LoadFromFileAsync(tempPackageDirectory);
-			var projectVersionFolder = PackageManager.BuildPackageVersionPath(recipe.Name, recipe.Version);
-			var projectVersionPath = Path.Combine(userConfig.PackageStore, projectVersionFolder);
+			var projectVersionPath = PackageManager.BuildPackageStorePath(recipe.Name, recipe.Version);
 			var packageDirectory = Path.Combine(projectVersionPath, Constants.PackageFolderName);
 
 			// For now delete and recreate it
@@ -165,7 +164,7 @@ namespace Soup.Client
 			var buildDirectory = Path.Combine(projectVersionPath, Constants.BuildFolderName);
 			var includeDirectory = Path.Combine(projectVersionPath, Constants.IncludeFolderName);
 			Directory.CreateDirectory(buildDirectory);
-			var buildGenerator = new VisualStudioBuild.BuildGenerator();
+			var buildGenerator = new MSBuild.BuildGenerator();
 			buildGenerator.GenerateDependencies(recipe, packageDirectory, buildDirectory, "out\\");
 			buildGenerator.GenerateInclude(recipe, buildDirectory, includeDirectory);
 			buildGenerator.GenerateBuild(recipe, packageDirectory, buildDirectory);
@@ -184,8 +183,6 @@ namespace Soup.Client
 		/// <summary>
 		/// Recusively install all dependencies and trasient dependecies
 		/// </summary>
-		/// <param name="recipe"></param>
-		/// <returns></returns>
 		private async Task InstallRecursiveDependencies(Recipe recipe)
 		{
 			foreach (var dep in recipe.Dependencies)
