@@ -9,6 +9,10 @@ namespace Soup
 	/// </summary>
 	internal static class MSBuildConstants
 	{
+		public static string PackageIncludeFileName => "Include.props";
+
+		public static string PackagePropertiesFileName => "Package.props";
+
 		public static string VS2017ProjectName => "Build.vcxproj";
 	}
 }

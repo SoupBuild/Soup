@@ -51,20 +51,26 @@ namespace Soup.MSBuild
 		}
 
 		public void GenerateDependencies(
-			Recipe recipe, 
+			Recipe recipe,
 			string packageDirectory,
 			string targetDirectory,
-			string outDir)
+			string binaryDirectory,
+			string objectDirectory)
 		{
-			var userConfig = Singleton<LocalUserConfig>.Instance;
+			var targetName = string.Format(
+				Constants.LibraryTargetNameFormat,
+				recipe.Name,
+				recipe.Version,
+				"$(Platform)",
+				"$(Configuration)");
+
 			var dependencyImports = new List<Import>();
 			foreach (var dependency in recipe.Dependencies)
 			{
-				var dependencyFolder = PackageManager.BuildPackageVersionPath(dependency.Name, dependency.Version);
-				var dependencyBuildPath = Path.Combine(userConfig.PackageStore, dependencyFolder, Constants.BuildFolderName);
-				var dependencyIncludefile = Path.Combine(dependencyBuildPath, Constants.PackageIncludeFileName);
+				var dependencyBuildPath = PackageManager.BuildKitchenBuildPath("MSBuild", dependency);
+				var dependencyIncludeFile = Path.Combine(dependencyBuildPath, MSBuildConstants.PackageIncludeFileName);
 
-				dependencyImports.Add(new Import(dependencyIncludefile));
+				dependencyImports.Add(new Import(dependencyIncludeFile));
 			}
 
 			var project = new Project()
@@ -76,11 +82,12 @@ namespace Soup.MSBuild
 						Label = "PackageBuild",
 						Properties = new List<Property>()
 						{
+							new Property("TargetName", targetName),
 							new Property("PackageRoot", packageDirectory),
-							new Property("BinDir", $"{outDir}bin\\"),
-							new Property("ObjDir", $"{outDir}obj\\"),
+							new Property("BinDir", $"{binaryDirectory}\\"),
+							new Property("ObjDir", $"{objectDirectory}\\"),
 							new Property("IntermediateOutputPath", @"$(ObjDir)$(Platform)\$(Configuration)\"),
-							new Property("OutputPath", @"$(BinDir)$(Platform)\$(Configuration)\"),
+							new Property("OutputPath", @"$(BinDir)"),
 							new Property("OutDir", @"$(OutputPath)"),
 						},
 					},
@@ -92,7 +99,7 @@ namespace Soup.MSBuild
 				}
 			};
 
-			var propertiesFilePath = Path.Combine(targetDirectory, Constants.PackagePropertiesFileName);
+			var propertiesFilePath = Path.Combine(targetDirectory, MSBuildConstants.PackagePropertiesFileName);
 			using (var stream = new StreamWriter(File.Create(propertiesFilePath), Encoding.UTF8))
 			{
 				XmlSerializer projectSerializer = new XmlSerializer(
@@ -107,7 +114,21 @@ namespace Soup.MSBuild
 			string targetDirectory,
 			string includeDirectory)
 		{
-			var relativeIncludePath = Path.GetRelativePath(targetDirectory, includeDirectory);
+			var dependencies = new List<string>()
+			{
+				"%(AdditionalIncludeDirectories)"
+			};
+
+			foreach (var dependency in recipe.Dependencies)
+			{
+				var libraryName = string.Format(
+					Constants.LibraryTargetNameFormat,
+					recipe.Name,
+					recipe.Version,
+					"$(Configuration)",
+					"$(Platform)");
+				dependencies.Add($"{libraryName}.lib");
+			}
 
 			var project = new Project()
 			{
@@ -122,8 +143,15 @@ namespace Soup.MSBuild
 								Includes = new List<string>()
 								{
 									"%(AdditionalIncludeDirectories)",
-									$"$(MSBuildThisFileDirectory){relativeIncludePath}",
+									includeDirectory,
 								},
+							},
+						},
+						Link = new Link()
+						{
+							AdditionalDependencies = new AdditionalDependencies()
+							{
+								Includes = dependencies,
 							},
 						},
 					},
@@ -132,9 +160,9 @@ namespace Soup.MSBuild
 
 			// Ensure the target directory exists
 			Directory.CreateDirectory(targetDirectory);
-			
+
 			// Create the file
-			var propertiesFilePath = Path.Combine(targetDirectory, Constants.PackageIncludeFileName);
+			var propertiesFilePath = Path.Combine(targetDirectory, MSBuildConstants.PackageIncludeFileName);
 			using (var stream = new StreamWriter(File.Create(propertiesFilePath), Encoding.UTF8))
 			{
 				XmlSerializer projectSerializer = new XmlSerializer(
@@ -147,7 +175,7 @@ namespace Soup.MSBuild
 		private Project CreateVS15LibraryTemplate(Recipe recipe, List<Item> includeItems, List<Item> sourceItems)
 		{
 			return new Project()
-			{ 
+			{
 				DefaultTargets = "Build",
 				ToolsVersion = "15.0",
 				Elements = new List<ProjectElement>()
@@ -173,7 +201,7 @@ namespace Soup.MSBuild
 							new Property("WindowsTargetPlatformVersion", "10.0.16299.0"),
 						},
 					},
-					new Import(Constants.PackagePropertiesFileName),
+					new Import(MSBuildConstants.PackagePropertiesFileName),
 					new Import(@"$(VCTargetsPath)\Microsoft.Cpp.Default.props"),
 					new PropertyGroup()
 					{

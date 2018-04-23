@@ -17,18 +17,41 @@ namespace Soup
 	/// </summary>
 	public static class PackageManager
 	{
-		public static string BuildPackageVersionPath(string projectName, SemanticVersion version)
+		public static string BuildKitchenLibraryPath()
 		{
-			return Path.Combine(projectName, $"{version}");
+			return Path.Combine(
+				Singleton<LocalUserConfig>.Instance.PackageStore,
+				Constants.StoreLibraryFolderName);
 		}
 
-		public static string BuildPackageStorePath(string projectName, SemanticVersion version)
+		public static string BuildKitchenBuildPath(string buildsystem, Recipe recipe)
 		{
-			var userConfig = Singleton<LocalUserConfig>.Instance;
-			var projectVersionFolder = BuildPackageVersionPath(projectName, version);
-			var projectVersionPath = Path.Combine(userConfig.PackageStore, projectVersionFolder);
+			return BuildKitchenBuildPath(buildsystem, recipe.Name, recipe.Version);
+		}
 
-			return projectVersionPath;
+		public static string BuildKitchenBuildPath(string buildsystem, PackageReference reference)
+		{
+			return BuildKitchenBuildPath(buildsystem, reference.Name, reference.Version);
+		}
+
+		public static string BuildKitchenPackagePath(Recipe recipe)
+		{
+			return BuildKitchenPackagePath(recipe.Name, recipe.Version);
+		}
+
+		public static string BuildKitchenPackagePath(PackageReference reference)
+		{
+			return BuildKitchenPackagePath(reference.Name, reference.Version);
+		}
+
+		public static string BuildKitchenIncludePath(Recipe recipe)
+		{
+			return BuildKitchenIncludePath(recipe.Name, recipe.Version);
+		}
+
+		public static string BuildKitchenIncludePath(PackageReference reference)
+		{
+			return BuildKitchenIncludePath(reference.Name, reference.Version);
 		}
 
 		public static string EnsureStagingDirectoryExists(string directory)
@@ -151,10 +174,9 @@ namespace Soup
 		/// <summary>
 		/// Unpack the archive
 		/// </summary>
-		public static Task ExtractAsync(string source, string targetDirectory)
+		public static Task ExtractAsync(Stream source, string targetDirectory)
 		{
-			using (var fileStream = File.OpenRead(source))
-			using (var gzipStream = new GZipStream(fileStream, CompressionMode.Decompress))
+			using (var gzipStream = new GZipStream(source, CompressionMode.Decompress))
 			using (TarArchive archive = TarArchive.CreateInputTarArchive(gzipStream))
 			{
 				archive.ExtractContents(targetDirectory);
@@ -207,6 +229,35 @@ namespace Soup
 			var includeHeaderFileName = $"{recipe.Name}.h";
 			var includeHeaderPath = Path.Combine(targetDirectory, includeHeaderFileName);
 			await File.WriteAllTextAsync(includeHeaderPath, content.ToString());
+		}
+
+		private static string BuildPackageVersionDirectory(string projectName, SemanticVersion version)
+		{
+			return Path.Combine(projectName, $"{version}");
+		}
+
+		private static string BuildKitchenPackagePath(string projectName, SemanticVersion version)
+		{
+			var kitchenPath = Singleton<LocalUserConfig>.Instance.PackageStore;
+			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
+			var path = Path.Combine(kitchenPath, Constants.StorePackageFolderName, packageVersionDirectory);
+			return path;
+		}
+
+		private static string BuildKitchenBuildPath(string buildSystem, string projectName, SemanticVersion version)
+		{
+			var kitchenPath = Singleton<LocalUserConfig>.Instance.PackageStore;
+			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
+			var path = Path.Combine(kitchenPath, Constants.StoreBuildFolderName, buildSystem, packageVersionDirectory);
+			return path;
+		}
+
+		private static string BuildKitchenIncludePath(string projectName, SemanticVersion version)
+		{
+			var kitchenPath = Singleton<LocalUserConfig>.Instance.PackageStore;
+			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
+			var path = Path.Combine(kitchenPath, Constants.StoreIncludeFolderName, packageVersionDirectory);
+			return path;
 		}
 	}
 }

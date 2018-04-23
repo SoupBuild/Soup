@@ -21,7 +21,7 @@ namespace Soup.Client
 			var buildPath = Path.Combine(
 				projectDirectory,
 				Constants.ProjectGenerateFolderName,
-				Constants.BuildFolderName);
+				Constants.StoreBuildFolderName);
 			var recipe = await RecipeManager.LoadFromFileAsync(projectDirectory);
 
 			// Ensure the project folder exists
@@ -33,7 +33,7 @@ namespace Soup.Client
 
 			// Generate the project files
 			var buildGenerator = new MSBuild.BuildGenerator();
-			buildGenerator.GenerateDependencies(recipe, projectDirectory, buildPath, @"$(PackageRoot)\out\");
+			buildGenerator.GenerateDependencies(recipe, projectDirectory, buildPath, @"$(PackageRoot)\out\bin", @"$(PackageRoot)\out\obj");
 			buildGenerator.GenerateBuild(recipe, projectDirectory, buildPath);
 		}
 	}

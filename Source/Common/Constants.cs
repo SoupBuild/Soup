@@ -18,20 +18,18 @@ namespace Soup
 
 		public static string ArchiveFileExtension => ".tar.gz";
 
-		public static string BuildFolderName => "Build";
+		public static string StoreBuildFolderName => "Build";
 
-		public static string IncludeFolderName => "Include";
+		public static string StoreIncludeFolderName => "Include";
 
-		public static string PackageFolderName => "Package";
+		public static string StorePackageFolderName => "Package";
 
-		public static string PackageIncludeFileName => "Include.props";
-
-		public static string PackagePropertiesFileName => "Package.props";
+		public static string StoreLibraryFolderName => "Library";
 
 		public static string ProjectGenerateFolderName => ".soup";
 
 		public static string RecipeFileName => "Recipe.json";
-#if DEBUG
+#if LOCAL
 		public static string SoupSiteUrl => "http://localhost:3001";
 #else
 		public static string SoupSiteUrl => "https://soupapi.azurewebsites.net";
@@ -39,5 +37,7 @@ namespace Soup
 		public static string SoupRESTEndpointV1 => $"{SoupSiteUrl}/v1";
 
 		public static string StagingFolderName => ".staging";
+
+		public static string LibraryTargetNameFormat => "{0}_{1}_{2}_{3}";
 	}
 }

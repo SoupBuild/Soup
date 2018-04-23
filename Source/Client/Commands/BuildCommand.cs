@@ -19,6 +19,13 @@ namespace Soup.Client
 			var recipe = await RecipeManager.LoadFromFileAsync(@".\");
 			var builder = new MSBuild.BuildRunner();
 
+			// Ensure the library directory exists
+			var libraryPath = PackageManager.BuildKitchenLibraryPath();
+			if (!Directory.Exists(libraryPath))
+			{
+				Directory.CreateDirectory(libraryPath);
+			}
+
 			// Ensure all of the depencies are built first
 			Log.Message("Building Dependencies...");
 			await BuildAllDependenciesRecursivelyAsync(recipe, builder);
@@ -26,18 +33,19 @@ namespace Soup.Client
 			// Now build the current project
 			Log.Message("");
 			Log.Message("Building Project");
-			var buildPath = Path.Combine(Constants.ProjectGenerateFolderName, Constants.BuildFolderName);
+			var buildPath = Path.Combine(Constants.ProjectGenerateFolderName, Constants.StoreBuildFolderName);
 			builder.Build(buildPath, true);
 		}
 
+		/// <summary>
+		/// Build the dependecies for the provided recipe recursively
+		/// </summary>
 		private async Task BuildAllDependenciesRecursivelyAsync(Recipe recipe, IBuildRunner builder)
 		{
 			foreach (var dependecy in recipe.Dependencies)
 			{
-				var packageStorePath = PackageManager.BuildPackageStorePath(dependecy.Name, dependecy.Version);
-
 				// Load this package recipe
-				var packagePath = Path.Combine(packageStorePath, Constants.PackageFolderName);
+				var packagePath = PackageManager.BuildKitchenPackagePath(dependecy);
 				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
 				// Build all recursive dependencies
@@ -45,7 +53,7 @@ namespace Soup.Client
 
 				// Build this dependecy
 				Log.Message($"Building {dependecy}");
-				var buildPath = Path.Combine(packageStorePath, Constants.BuildFolderName);
+				var buildPath = PackageManager.BuildKitchenBuildPath("MSBuild", dependecy);
 				if (!builder.Build(buildPath, false))
 				{
 					Log.Error("Build failed!");

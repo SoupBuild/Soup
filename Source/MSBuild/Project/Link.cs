@@ -34,5 +34,8 @@ namespace Soup.MSBuild
 		public bool? OptimizeReferences { get; set; }
 
 		public bool OptimizeReferencesSpecified => OptimizeReferences.HasValue;
+
+		[XmlElement]
+		public AdditionalDependencies AdditionalDependencies { get; set; }
 	}
 }

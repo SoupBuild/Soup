@@ -14,7 +14,8 @@ namespace Soup
 			Recipe recipe,
 			string packageDirectory,
 			string targetDirectory,
-			string outDir);
+			string binaryDirectory,
+			string objectDirectory);
 
 		void GenerateInclude(
 			Recipe recipe,

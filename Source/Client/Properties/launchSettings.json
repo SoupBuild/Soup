@@ -8,12 +8,12 @@
     "TestBuild": {
       "commandName": "Project",
       "commandLineArgs": "build",
-      "workingDirectory": "..\\..\\Samples\\TestProject1"
+      "workingDirectory": "..\\..\\Samples\\TestProject2"
     },
     "TestGenerate": {
       "commandName": "Project",
       "commandLineArgs": "generate",
-      "workingDirectory": "..\\..\\Samples\\TestProject1"
+      "workingDirectory": "..\\..\\Samples\\TestProject2"
     },
     "TestPublish": {
       "commandName": "Project",
