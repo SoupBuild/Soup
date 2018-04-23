@@ -4,22 +4,19 @@
 
 namespace Soup
 {
+	using System.Threading.Tasks;
+
 	public interface IBuildGenerator
 	{
 		string Name { get; }
 
 		void GenerateBuild(Recipe recipe, string packageDirectory, string targetDirectory);
 
-		void GenerateDependencies(
+		Task GenerateDependenciesAsync(
 			Recipe recipe,
 			string packageDirectory,
 			string targetDirectory,
 			string binaryDirectory,
 			string objectDirectory);
-
-		void GenerateInclude(
-			Recipe recipe,
-			string targetDirectory,
-			string includeDirectory);
 	}
 }

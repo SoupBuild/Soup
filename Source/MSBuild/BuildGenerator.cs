@@ -8,6 +8,7 @@ namespace Soup.MSBuild
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Text;
+	using System.Threading.Tasks;
 	using System.Xml.Serialization;
 
 	/// <summary>
@@ -50,7 +51,7 @@ namespace Soup.MSBuild
 			}
 		}
 
-		public void GenerateDependencies(
+		public async Task GenerateDependenciesAsync(
 			Recipe recipe,
 			string packageDirectory,
 			string targetDirectory,
@@ -64,13 +65,29 @@ namespace Soup.MSBuild
 				"$(Platform)",
 				"$(Configuration)");
 
-			var dependencyImports = new List<Import>();
-			foreach (var dependency in recipe.Dependencies)
+			// Build up the closure of dependecies for include paths and libraries
+			var dependencies = new List<string>()
 			{
-				var dependencyBuildPath = PackageManager.BuildKitchenBuildPath("MSBuild", dependency);
-				var dependencyIncludeFile = Path.Combine(dependencyBuildPath, MSBuildConstants.PackageIncludeFileName);
+				"%(AdditionalIncludeDirectories)"
+			};
+			var includes = new List<string>()
+			{
+				"%(AdditionalIncludeDirectories)"
+			};
 
-				dependencyImports.Add(new Import(dependencyIncludeFile));
+			var dependencyClosure = await PackageManager.BuildRecursiveDependeciesAsync(recipe);
+			foreach (var dependency in dependencyClosure)
+			{
+				var libraryName = string.Format(
+					Constants.LibraryTargetNameFormat,
+					dependency.Name,
+					dependency.Version,
+					"$(Platform)",
+					"$(Configuration)");
+				dependencies.Add($"{libraryName}.lib");
+
+				var includePath = PackageManager.BuildKitchenIncludePath(dependency);
+				includes.Add(includePath);
 			}
 
 			var project = new Project()
@@ -91,64 +108,25 @@ namespace Soup.MSBuild
 							new Property("OutDir", @"$(OutputPath)"),
 						},
 					},
-					new ImportGroup()
-					{
-						Label = "PackageDependencies",
-						Imports = dependencyImports,
-					}
-				}
-			};
-
-			var propertiesFilePath = Path.Combine(targetDirectory, MSBuildConstants.PackagePropertiesFileName);
-			using (var stream = new StreamWriter(File.Create(propertiesFilePath), Encoding.UTF8))
-			{
-				XmlSerializer projectSerializer = new XmlSerializer(
-					typeof(Project),
-					"http://schemas.microsoft.com/developer/msbuild/2003");
-				projectSerializer.Serialize(stream, project, project.Namespaces);
-			}
-		}
-
-		public void GenerateInclude(
-			Recipe recipe,
-			string targetDirectory,
-			string includeDirectory)
-		{
-			var dependencies = new List<string>()
-			{
-				"%(AdditionalIncludeDirectories)"
-			};
-
-			foreach (var dependency in recipe.Dependencies)
-			{
-				var libraryName = string.Format(
-					Constants.LibraryTargetNameFormat,
-					recipe.Name,
-					recipe.Version,
-					"$(Configuration)",
-					"$(Platform)");
-				dependencies.Add($"{libraryName}.lib");
-			}
-
-			var project = new Project()
-			{
-				Elements = new List<ProjectElement>()
-				{
 					new ItemDefinitionGroup()
 					{
 						ClCompile = new ClCompile()
 						{
 							AdditionalIncludeDirectories = new AdditionalIncludeDirectories()
 							{
-								Includes = new List<string>()
-								{
-									"%(AdditionalIncludeDirectories)",
-									includeDirectory,
-								},
+								Includes = includes,
 							},
 						},
 						Link = new Link()
 						{
+							AdditionalLibraryDirectories = new AdditionalLibraryDirectories()
+							{
+								Includes = new List<string>()
+								{
+									PackageManager.BuildKitchenLibraryPath(),
+									"%(AdditionalLibraryDirectories)"
+								},
+							},
 							AdditionalDependencies = new AdditionalDependencies()
 							{
 								Includes = dependencies,
@@ -158,11 +136,7 @@ namespace Soup.MSBuild
 				}
 			};
 
-			// Ensure the target directory exists
-			Directory.CreateDirectory(targetDirectory);
-
-			// Create the file
-			var propertiesFilePath = Path.Combine(targetDirectory, MSBuildConstants.PackageIncludeFileName);
+			var propertiesFilePath = Path.Combine(targetDirectory, MSBuildConstants.PackagePropertiesFileName);
 			using (var stream = new StreamWriter(File.Create(propertiesFilePath), Encoding.UTF8))
 			{
 				XmlSerializer projectSerializer = new XmlSerializer(

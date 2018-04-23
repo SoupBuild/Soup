@@ -33,7 +33,12 @@ namespace Soup.Client
 
 			// Generate the project files
 			var buildGenerator = new MSBuild.BuildGenerator();
-			buildGenerator.GenerateDependencies(recipe, projectDirectory, buildPath, @"$(PackageRoot)\out\bin", @"$(PackageRoot)\out\obj");
+			await buildGenerator.GenerateDependenciesAsync(
+				recipe, 
+				projectDirectory, 
+				buildPath,
+				@"$(PackageRoot)\out\bin",
+				@"$(PackageRoot)\out\obj");
 			buildGenerator.GenerateBuild(recipe, projectDirectory, buildPath);
 		}
 	}

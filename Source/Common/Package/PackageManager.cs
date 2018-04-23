@@ -54,6 +54,21 @@ namespace Soup
 			return BuildKitchenIncludePath(reference.Name, reference.Version);
 		}
 
+		public static async Task<List<PackageReference>> BuildRecursiveDependeciesAsync(Recipe recipe)
+		{
+			List<PackageReference> result = new List<PackageReference>();
+			foreach (var dependency in recipe.Dependencies)
+			{
+				result.Add(dependency);
+				var dependencyPackagePath = BuildKitchenPackagePath(dependency);
+				var dependencyRecipe = await RecipeManager.LoadFromFileAsync(dependencyPackagePath);
+				var transientDependencies = await BuildRecursiveDependeciesAsync(dependencyRecipe);
+				result.AddRange(transientDependencies);
+			}
+
+			return result;
+		}
+
 		public static string EnsureStagingDirectoryExists(string directory)
 		{
 			var path = Path.Combine(directory, Constants.StagingFolderName);
