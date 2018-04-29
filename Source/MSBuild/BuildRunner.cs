@@ -45,17 +45,17 @@ namespace Soup.MSBuild
 				new Regex(@"^Build succeeded\.$", RegexOptions.Compiled),
 			};
 
-		public bool Build(string buildPath, bool showOutput)
+		public bool Build(string buildPath, bool showOutput, bool debug)
 		{
 			string compiler = FindCompiler();
-			
+			string configuration = debug ? "Debug" : "Release";
 			var buildProjectPath = Path.Combine(buildPath, MSBuildConstants.VS2017ProjectName);
 			using (Process process = new Process())
 			{
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.FileName = compiler;
-				process.StartInfo.Arguments = $"{buildProjectPath} -p:Platform=x64;Configuration=Release";
+				process.StartInfo.Arguments = $"{buildProjectPath} -p:Platform=x64;Configuration={configuration}";
 				process.Start();
 
 				if (showOutput)

@@ -34,7 +34,7 @@ namespace Soup.Client
 			Log.Message("");
 			Log.Message("Building Project");
 			var buildPath = Path.Combine(Constants.ProjectGenerateFolderName, Constants.StoreBuildFolderName);
-			builder.Build(buildPath, true);
+			builder.Build(buildPath, true, true);
 		}
 
 		/// <summary>
@@ -54,7 +54,8 @@ namespace Soup.Client
 				// Build this dependecy
 				Log.Message($"Building {dependecy}");
 				var buildPath = PackageManager.BuildKitchenBuildPath("MSBuild", dependecy);
-				if (!builder.Build(buildPath, false))
+				if (!builder.Build(buildPath, false, true) ||
+					!builder.Build(buildPath, false, false))
 				{
 					Log.Error("Build failed!");
 				}

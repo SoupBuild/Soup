@@ -10,6 +10,6 @@ namespace Soup
 		/// Build the provided package path
 		/// Returns true if success, otherwise false
 		/// </summary>s
-		bool Build(string path, bool showOutput);
+		bool Build(string path, bool showOutput, bool debug);
 	}
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace TestMultiVersion
+namespace TestMultiVersion_V1_1_1
 {
   class MultiVersion
   {
