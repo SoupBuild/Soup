@@ -17,6 +17,11 @@ namespace Soup
 	/// </summary>
 	public static class PackageManager
 	{
+		public static string BuildNamespaceVersion(SemanticVersion version)
+		{
+			return $"v{version.Major}_{version.Minor}_{version.Patch}";
+		}
+
 		public static string BuildKitchenLibraryPath()
 		{
 			return Path.Combine(
@@ -233,13 +238,40 @@ namespace Soup
 			// Get the relative path back to the package directory
 			// this is used to reference source files
 			var packageRelativePath = Path.GetRelativePath(targetDirectory, packageDirectory);
+			var versionNamespace = BuildNamespaceVersion(recipe.Version);
 
 			StringBuilder content = new StringBuilder();
+
+			// Push the current state of the soup macros
+			content.AppendLine("// Save the current state");
+			content.AppendLine("#pragma push_macro(\"SOUP_PKG_VERSION\")");
+			content.AppendLine("#pragma push_macro(\"SOUP_PKG_ACTIVE\")");
+			content.AppendLine("");
+
+			// Mark all direct dependencies as active and set the versions
+			content.AppendLine("// Set the version");
+			content.AppendLine("#undef SOUP_PKG_VERSION");
+			content.AppendLine($"#define SOUP_PKG_VERSION {versionNamespace}");
+			content.AppendLine("");
+
+			content.AppendLine("// Mark all direct dependencies are active");
+			content.AppendLine("#undef SOUP_PKG_ACTIVE");
+			content.AppendLine("#define SOUP_PKG_ACTIVE inline");
+			content.AppendLine("");
+
+			// Include each of the public header files
+			content.AppendLine("// Include the public headers");
 			foreach (var file in FindPublicFiles(recipe, packageDirectory))
 			{
 				var fileRelativePath = Path.Combine(packageRelativePath, file);
-				content.Append($"#include \"{fileRelativePath}\"");
+				content.AppendLine($"#include \"{fileRelativePath}\"");
 			}
+
+			// Restore the previous state of the soup macros
+			content.AppendLine("");
+			content.AppendLine("// Restore the previous state");
+			content.AppendLine("#pragma pop_macro(\"SOUP_PKG_VERSION\")");
+			content.AppendLine("#pragma pop_macro(\"SOUP_PKG_ACTIVE\")");
 
 			var includeHeaderFileName = $"{recipe.Name}.h";
 			var includeHeaderPath = Path.Combine(targetDirectory, includeHeaderFileName);

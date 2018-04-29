@@ -1,8 +1,8 @@
 {
   "name": "TestProject1",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "dependencies": [
-    "TestMultiVersion@1.0.1"
+    "TestMultiVersion@1.0.2"
   ],
   "public": [
     "Source/Wrapper.h"

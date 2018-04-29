@@ -3,6 +3,8 @@
 
 namespace TestProject1
 {
+SOUP_PKG_ACTIVE namespace SOUP_PKG_VERSION
+{
 	class Wrapper
 	{
 		public:
@@ -13,4 +15,5 @@ namespace TestProject1
 		private:
 			int _value;
 	};
+}
 }

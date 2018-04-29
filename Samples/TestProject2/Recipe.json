@@ -1,9 +1,9 @@
 {
   "name": "TestProject2",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "dependencies": [
-    "TestMultiVersion@2.0.2",
-    "TestProject1@1.0.32"
+    "TestMultiVersion@2.0.3",
+    "TestProject1@1.0.33"
   ],
   "public": [],
   "source": [

@@ -148,6 +148,8 @@ namespace Soup.MSBuild
 
 		private Project CreateVS15LibraryTemplate(Recipe recipe, List<Item> includeItems, List<Item> sourceItems)
 		{
+			var versionNamespace = PackageManager.BuildNamespaceVersion(recipe.Version);
+
 			return new Project()
 			{
 				DefaultTargets = "Build",
@@ -258,7 +260,7 @@ namespace Soup.MSBuild
 							// PrecompiledHeader = "Use",
 							WarningLevel = "Level4",
 							SDLCheck = true,
-							PreprocessorDefinitions = "_LIB;%(PreprocessorDefinitions)",
+							PreprocessorDefinitions = $"_LIB;SOUP_PKG_VERSION={versionNamespace};SOUP_PKG_ACTIVE=inline;%(PreprocessorDefinitions)",
 							ConformanceMode = true,
 						},
 						Link = new Link()
