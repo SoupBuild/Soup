@@ -10,13 +10,15 @@ namespace Soup
 	{
 		string Name { get; }
 
-		void GenerateBuild(Recipe recipe, string packageDirectory, string targetDirectory);
+		void GenerateBuild(
+			Recipe recipe,
+			string targetDirectory,
+			string packageDirectory,
+			string binaryDirectory,
+			string objectDirectory);
 
 		Task GenerateDependenciesAsync(
 			Recipe recipe,
-			string packageDirectory,
-			string targetDirectory,
-			string binaryDirectory,
-			string objectDirectory);
+			string targetDirectory);
 	}
 }

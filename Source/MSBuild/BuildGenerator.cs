@@ -18,7 +18,12 @@ namespace Soup.MSBuild
 	{
 		public string Name => "MSBuild";
 
-		public void GenerateBuild(Recipe recipe, string packageDirectory, string targetDirectory)
+		public void GenerateBuild(
+			Recipe recipe,
+			string targetDirectory,
+			string packageDirectory,
+			string binaryDirectory,
+			string objectDirectory)
 		{
 			var includeItems = new List<Item>();
 			var sourceItems = new List<Item>();
@@ -38,7 +43,13 @@ namespace Soup.MSBuild
 				}
 			}
 
-			var project = CreateVS15LibraryTemplate(recipe, includeItems, sourceItems);
+			var project = CreateVS15LibraryTemplate(
+				recipe, 
+				includeItems, 
+				sourceItems,
+				packageDirectory,
+				binaryDirectory,
+				objectDirectory);
 
 			var projectFileName = MSBuildConstants.VS2017ProjectName;
 			var projectFilePath = Path.Combine(targetDirectory, projectFileName);
@@ -53,18 +64,8 @@ namespace Soup.MSBuild
 
 		public async Task GenerateDependenciesAsync(
 			Recipe recipe,
-			string packageDirectory,
-			string targetDirectory,
-			string binaryDirectory,
-			string objectDirectory)
+			string targetDirectory)
 		{
-			var targetName = string.Format(
-				Constants.LibraryTargetNameFormat,
-				recipe.Name,
-				recipe.Version,
-				"$(Platform)",
-				"$(Configuration)");
-
 			// Build up the closure of dependecies for include paths and libraries
 			var dependencies = new List<string>()
 			{
@@ -94,20 +95,6 @@ namespace Soup.MSBuild
 			{
 				Elements = new List<ProjectElement>()
 				{
-					new PropertyGroup()
-					{
-						Label = "PackageBuild",
-						Properties = new List<Property>()
-						{
-							new Property("TargetName", targetName),
-							new Property("PackageRoot", packageDirectory),
-							new Property("BinDir", $"{binaryDirectory}\\"),
-							new Property("ObjDir", $"{objectDirectory}\\"),
-							new Property("IntermediateOutputPath", @"$(ObjDir)$(Platform)\$(Configuration)\"),
-							new Property("OutputPath", @"$(BinDir)"),
-							new Property("OutDir", @"$(OutputPath)"),
-						},
-					},
 					new ItemDefinitionGroup()
 					{
 						ClCompile = new ClCompile()
@@ -146,9 +133,22 @@ namespace Soup.MSBuild
 			}
 		}
 
-		private Project CreateVS15LibraryTemplate(Recipe recipe, List<Item> includeItems, List<Item> sourceItems)
+		private Project CreateVS15LibraryTemplate(
+			Recipe recipe, 
+			List<Item> includeItems, 
+			List<Item> sourceItems,
+			string packageDirectory,
+			string binaryDirectory,
+			string objectDirectory)
 		{
 			var versionNamespace = PackageManager.BuildNamespaceVersion(recipe.Version);
+
+			var targetName = string.Format(
+				Constants.LibraryTargetNameFormat,
+				recipe.Name,
+				recipe.Version,
+				"$(Platform)",
+				"$(Configuration)");
 
 			return new Project()
 			{
@@ -175,6 +175,20 @@ namespace Soup.MSBuild
 							new Property("Keyword", "Win32Proj"),
 							new Property("RootNamespace", recipe.Name),
 							new Property("WindowsTargetPlatformVersion", "10.0.16299.0"),
+						},
+					},
+					new PropertyGroup()
+					{
+						Label = "PackageBuild",
+						Properties = new List<Property>()
+						{
+							new Property("TargetName", targetName),
+							new Property("PackageRoot", packageDirectory),
+							new Property("BinDir", $"{binaryDirectory}\\"),
+							new Property("ObjDir", $"{objectDirectory}\\"),
+							new Property("IntermediateOutputPath", @"$(ObjDir)$(Platform)\$(Configuration)\"),
+							new Property("OutputPath", @"$(BinDir)"),
+							new Property("OutDir", @"$(OutputPath)"),
 						},
 					},
 					new Import(MSBuildConstants.PackagePropertiesFileName),

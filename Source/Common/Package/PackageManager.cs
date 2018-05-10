@@ -303,7 +303,7 @@ namespace Soup
 		{
 			var kitchenPath = Singleton<LocalUserConfig>.Instance.PackageStore;
 			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
-			var path = Path.Combine(kitchenPath, Constants.StoreIncludeFolderName, packageVersionDirectory);
+			var path = Path.Combine(kitchenPath, Constants.StoreIncludeRootFolderName, packageVersionDirectory);
 			return path;
 		}
 	}

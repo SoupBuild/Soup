@@ -20,7 +20,10 @@ namespace Soup
 
 		public static string StoreBuildFolderName => "Build";
 
-		public static string StoreIncludeFolderName => "Include";
+		public static string StoreIncludeRootFolderName => "Include";
+
+		public static string StoreSoupIncludeFolderName => "Soup";
+
 
 		public static string StorePackageFolderName => "Package";
 

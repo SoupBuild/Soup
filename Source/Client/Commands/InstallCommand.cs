@@ -185,8 +185,8 @@ namespace Soup.Client
 			Directory.CreateDirectory(tempBuildPath);
 
 			var buildGenerator = new MSBuild.BuildGenerator();
-			await buildGenerator.GenerateDependenciesAsync(recipe, packagePath, tempBuildPath, libraryPath, "out\\");
-			buildGenerator.GenerateBuild(recipe, packagePath, tempBuildPath);
+			await buildGenerator.GenerateDependenciesAsync(recipe, tempBuildPath);
+			buildGenerator.GenerateBuild(recipe, tempBuildPath, packagePath, libraryPath, "out");
 
 			// TODO : Should not hit this when, verify the package exists before download
 			// For now delete and recreate it
@@ -211,15 +211,22 @@ namespace Soup.Client
 			var includePath = PackageManager.BuildKitchenIncludePath(recipe);
 			var packagePath = PackageManager.BuildKitchenPackagePath(recipe);
 
-			// Create the include objects
-			var tempIncludePath = Path.Combine(tempPath, Constants.StoreIncludeFolderName);
+			// Create the temporary include folders
+			var tempIncludePath = Path.Combine(tempPath, Constants.StoreIncludeRootFolderName);
 			Directory.CreateDirectory(tempIncludePath);
-			await PackageManager.CreatePublicIncludeHeaderAsync(recipe, packagePath, tempIncludePath);
+
+			// Create the soup include directory
+			var soupIncludePath = Path.Combine(tempIncludePath, Constants.StoreSoupIncludeFolderName);
+			Directory.CreateDirectory(soupIncludePath);
+
+			// Create the include objects
+			await PackageManager.CreatePublicIncludeHeaderAsync(recipe, packagePath, soupIncludePath);
 
 			// TODO : Should not hit this when, verify the package exists before download
 			// For now delete and recreate it
 			if (Directory.Exists(includePath))
 			{
+				Log.Message("Removing old version.");
 				Directory.Delete(includePath, true);
 			}
 
