@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CONFIG=Debug
+ScriptsDir="$(dirname "${BASH_SOURCE[0]}")"
+RootDir="$(dirname "$ScriptsDir")"
+
+dotnet $RootDir/Source/Client/bin/$CONFIG/netcoreapp2.0/Soup.dll "$@"
+# BUILD AND RUN dotnet run -p $RootDir/Source/Client "$@"

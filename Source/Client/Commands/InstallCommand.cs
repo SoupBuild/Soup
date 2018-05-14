@@ -28,7 +28,7 @@ namespace Soup.Client
 				return;
 			}
 
-			var workingDirectory = @".\";
+			var workingDirectory = @"./";
 			Recipe recipe = null;
 			try
 			{
