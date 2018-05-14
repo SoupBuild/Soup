@@ -32,7 +32,7 @@ namespace Soup.Client
 			}
 
 			// Generate the project files
-			var buildGenerator = new MSBuild.BuildGenerator();
+			var buildGenerator = Singleton<IBuildGenerator>.Instance;
 			await buildGenerator.GenerateDependenciesAsync(
 				recipe,
 				buildPath);

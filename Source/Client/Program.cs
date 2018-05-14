@@ -6,6 +6,7 @@ namespace Soup.Client
 {
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Runtime.InteropServices;
 	using System.Threading.Tasks;
 	using Soup.Api;
 
@@ -48,6 +49,22 @@ namespace Soup.Client
 			Singleton<ILogger>.Instance = new ConsoleLogger();
 			Singleton<ISoupApi>.Instance = new SoupApi();
 			Singleton<LocalUserConfig>.Instance = userConfig;
+
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				Singleton<IBuildGenerator>.Instance = new MSBuild.BuildGenerator();
+				Singleton<IBuildRunner>.Instance = new MSBuild.BuildRunner();
+			}
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			{
+				Singleton<IBuildGenerator>.Instance = new Make.BuildGenerator();
+				Singleton<IBuildRunner>.Instance = new Make.BuildRunner();
+			}
+			else
+			{
+				Log.Error("Unknown platform.");
+				return;
+			}
 
 			// Ensure we are in a clean state
 			if (Directory.Exists(stagingDirectory))

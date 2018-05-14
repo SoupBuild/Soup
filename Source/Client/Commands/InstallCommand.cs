@@ -184,7 +184,7 @@ namespace Soup.Client
 
 			Directory.CreateDirectory(tempBuildPath);
 
-			var buildGenerator = new MSBuild.BuildGenerator();
+			var buildGenerator = Singleton<IBuildGenerator>.Instance;
 			await buildGenerator.GenerateDependenciesAsync(recipe, tempBuildPath);
 			buildGenerator.GenerateBuild(recipe, tempBuildPath, packagePath, libraryPath, "out");
 

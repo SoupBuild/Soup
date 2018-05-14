@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Soup.Common.csproj" />
+    <ProjectReference Include="..\Make\Soup.Make.csproj" />
     <ProjectReference Include="..\MSBuild\Soup.MSBuild.csproj" />
   </ItemGroup>
 </Project>
