@@ -50,21 +50,26 @@ namespace Soup.Make
 				await writer.WriteLineAsync("SHELL = /bin/sh");
 				await writer.WriteLineAsync("");
 
+				await writer.WriteLineAsync("PACKAGE_ROOT = ../..");
+				await writer.WriteLineAsync("SRCDIR = $(PACKAGE_ROOT)/src");
+				await writer.WriteLineAsync("OBJDIR = $(PACKAGE_ROOT)/obj");
+				await writer.WriteLineAsync("BINDIR = $(PACKAGE_ROOT)/bin");
+				await writer.WriteLineAsync("");
+
 				await writer.WriteLineAsync("LINK = ar");
 				await writer.WriteLineAsync("LFLAGS = rcs");
-				await writer.WriteLineAsync("CC = gcc");
+				await writer.WriteLineAsync("CPP = gcc");
 				await writer.WriteLineAsync("CFLAGS = -g -Wall -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION=v1_0_0");
 				await writer.WriteLineAsync("INCLUDES =");
 				await writer.WriteLineAsync("SOURCE = ColorF.cpp");
-				await writer.WriteLineAsync("OBJDIR = obj");
-				await writer.WriteLineAsync("BINDIR = bin");
 				await writer.WriteLineAsync("OBJS = obj/ColorF.o");
+				await writer.WriteLineAsync("LIB = $(BINDIR)/CppColor.a");
 				await writer.WriteLineAsync("");
 
-				await writer.WriteLineAsync("All: $(BINDIR)/CppColor.a");
+				await writer.WriteLineAsync("All: $(LIB)");
 				await writer.WriteLineAsync("");
 
-				await writer.WriteLineAsync("$(BINDIR)/%.a: $(OBJDIR) $(OBJS) $(BINDIR)");
+				await writer.WriteLineAsync("$(LIB): $(OBJDIR) $(OBJS) $(BINDIR)");
 				await writer.WriteLineAsync("	$(LINK) $(LFLAGS) $@ $(OBJS)");
 				await writer.WriteLineAsync("");
 
@@ -76,7 +81,7 @@ namespace Soup.Make
 				await writer.WriteLineAsync("	mkdir $@");
 				await writer.WriteLineAsync("");
 
-				await writer.WriteLineAsync("$(OBJDIR)/%.o: %.cpp");
+				await writer.WriteLineAsync("$(OBJDIR)/%.o: $(SRCDIR)/%.cpp");
 				await writer.WriteLineAsync("	$(CC) $(CFLAGS) -c -o $@ $<");
 			}
 		}
