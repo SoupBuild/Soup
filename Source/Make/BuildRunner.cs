@@ -5,12 +5,48 @@
 namespace Soup.Make
 {
 	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Text.RegularExpressions;
+	using Newtonsoft.Json;
 
+	/// <summary>
+	/// The Make build runner
+	/// </summary>
 	public class BuildRunner : IBuildRunner
 	{
-		public bool Build(string path, bool showOutput, bool debug)
+		public bool Build(string buildPath, bool showOutput, bool debug)
 		{
-			throw new NotImplementedException();
+			string compiler = "make";
+			var makeFilePath = Path.Combine(buildPath, MSBuildConstants.MakeFileName);
+			using (Process process = new Process())
+			{
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.RedirectStandardOutput = true;
+				process.StartInfo.FileName = compiler;
+				process.StartInfo.Arguments = $"{makeFilePath}";
+				process.Start();
+
+				if (showOutput)
+				{
+					while (!process.StandardOutput.EndOfStream)
+					{
+						string line = process.StandardOutput.ReadLine();
+						WriteBuildLine(line);
+					}
+				}
+
+				process.WaitForExit();
+
+				return process.ExitCode == 0;
+			}
+		}
+
+		private void WriteBuildLine(string line)
+		{
+			Log.Message(line);
 		}
 	}
 }

@@ -5,20 +5,115 @@
 namespace Soup.Make
 {
 	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Text;
 	using System.Threading.Tasks;
+	using System.Xml.Serialization;
 
+	/// <summary>
+	/// The Make generator
+	/// </summary>
 	public class BuildGenerator : IBuildGenerator
 	{
-		public string Name => throw new NotImplementedException();
+		public string Name => "Make";
 
-		public void GenerateBuild(Recipe recipe, string targetDirectory, string packageDirectory, string binaryDirectory, string objectDirectory)
+		public async Task GenerateBuildAsync(
+			Recipe recipe,
+			string targetDirectory,
+			string packageDirectory,
+			string binaryDirectory,
+			string objectDirectory)
 		{
-			throw new NotImplementedException();
+			var includeItems = new List<string>();
+			var sourceItems = new List<string>();
+			foreach (var file in PackageManager.FindSourceFiles(recipe, packageDirectory))
+			{
+				var filePath = $"$(PackageRoot)\\{file}";
+				switch (Path.GetExtension(file))
+				{
+					case ".h":
+						includeItems.Add(filePath);
+						break;
+					case ".cpp":
+						sourceItems.Add(filePath);
+						break;
+					default:
+						throw new InvalidOperationException("A source file with unknown extension.");
+				}
+			}
+
+			var projectFileName = MSBuildConstants.MakeFileName;
+			var projectFilePath = Path.Combine(targetDirectory, projectFileName);
+			using (var writer = new StreamWriter(File.Create(projectFilePath), Encoding.UTF8))
+			{
+				await writer.WriteLineAsync("SHELL = /bin/sh");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("LINK = ar");
+				await writer.WriteLineAsync("LFLAGS = rcs");
+				await writer.WriteLineAsync("CC = gcc");
+				await writer.WriteLineAsync("CFLAGS = -g -Wall -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION=v1_0_0");
+				await writer.WriteLineAsync("INCLUDES =");
+				await writer.WriteLineAsync("SOURCE = ColorF.cpp");
+				await writer.WriteLineAsync("OBJDIR = obj");
+				await writer.WriteLineAsync("BINDIR = bin");
+				await writer.WriteLineAsync("OBJS = obj/ColorF.o");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("All: $(BINDIR)/CppColor.a");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(BINDIR)/%.a: $(OBJDIR) $(OBJS) $(BINDIR)");
+				await writer.WriteLineAsync("	$(LINK) $(LFLAGS) $@ $(OBJS)");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(OBJDIR):");
+				await writer.WriteLineAsync("	mkdir $@");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(BINDIR):");
+				await writer.WriteLineAsync("	mkdir $@");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(OBJDIR)/%.o: %.cpp");
+				await writer.WriteLineAsync("	$(CC) $(CFLAGS) -c -o $@ $<");
+			}
 		}
 
-		public Task GenerateDependenciesAsync(Recipe recipe, string targetDirectory)
+		public async Task GenerateDependenciesAsync(
+			Recipe recipe,
+			string targetDirectory)
 		{
-			throw new NotImplementedException();
+			// Build up the closure of dependecies for include paths and libraries
+			var dependencies = new List<string>()
+			{
+				"$(LIBS)"
+			};
+			var includes = new List<string>()
+			{
+				"$(INCLUDE)"
+			};
+
+			var dependencyClosure = await PackageManager.BuildRecursiveDependeciesAsync(recipe);
+			foreach (var dependency in dependencyClosure)
+			{
+				var libraryName = string.Format(
+					Constants.LibraryTargetNameFormat,
+					dependency.Name,
+					dependency.Version,
+					"$(Platform)",
+					"$(Configuration)");
+				dependencies.Add($"{libraryName}.lib");
+
+				var includePath = PackageManager.BuildKitchenIncludePath(dependency);
+				includes.Add(includePath);
+			}
+
+			var propertiesFilePath = Path.Combine(targetDirectory, MSBuildConstants.MakeIncFileName);
+			using (var writer = new StreamWriter(File.Create(propertiesFilePath), Encoding.UTF8))
+			{
+			}
 		}
 	}
 }

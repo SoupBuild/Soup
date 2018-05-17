@@ -18,7 +18,7 @@ namespace Soup.MSBuild
 	{
 		public string Name => "MSBuild";
 
-		public void GenerateBuild(
+		public Task GenerateBuildAsync(
 			Recipe recipe,
 			string targetDirectory,
 			string packageDirectory,
@@ -60,6 +60,8 @@ namespace Soup.MSBuild
 					"http://schemas.microsoft.com/developer/msbuild/2003");
 				projectSerializer.Serialize(stream, project, project.Namespaces);
 			}
+
+			return Task.CompletedTask;
 		}
 
 		public async Task GenerateDependenciesAsync(
@@ -69,7 +71,7 @@ namespace Soup.MSBuild
 			// Build up the closure of dependecies for include paths and libraries
 			var dependencies = new List<string>()
 			{
-				"%(AdditionalIncludeDirectories)"
+				"%(AdditionalDependencies)"
 			};
 			var includes = new List<string>()
 			{

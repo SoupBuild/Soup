@@ -186,7 +186,7 @@ namespace Soup.Client
 
 			var buildGenerator = Singleton<IBuildGenerator>.Instance;
 			await buildGenerator.GenerateDependenciesAsync(recipe, tempBuildPath);
-			buildGenerator.GenerateBuild(recipe, tempBuildPath, packagePath, libraryPath, "out");
+			await buildGenerator.GenerateBuildAsync(recipe, tempBuildPath, packagePath, libraryPath, "out");
 
 			// TODO : Should not hit this when, verify the package exists before download
 			// For now delete and recreate it

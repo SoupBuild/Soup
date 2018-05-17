@@ -28,10 +28,6 @@ namespace Soup
 					result = await LoadFromStreamAsync(file);
 				}
 			}
-			else
-			{
-				throw new FileNotFoundException($"The Recipe file is missing: {recipePath}");
-			}
 
 			return result;
 		}

@@ -10,7 +10,7 @@ namespace Soup
 	{
 		string Name { get; }
 
-		void GenerateBuild(
+		Task GenerateBuildAsync(
 			Recipe recipe,
 			string targetDirectory,
 			string packageDirectory,
