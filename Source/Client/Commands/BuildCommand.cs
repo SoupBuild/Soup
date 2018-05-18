@@ -16,7 +16,7 @@ namespace Soup.Client
 
 		public async Task InvokeAsync(string[] args)
 		{
-			var recipe = await RecipeManager.LoadFromFileAsync(@".\");
+			var recipe = await RecipeManager.LoadFromFileAsync(@"./");
 			var builder = Singleton<IBuildRunner>.Instance;
 
 			// Ensure the library directory exists

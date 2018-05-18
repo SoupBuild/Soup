@@ -23,6 +23,11 @@ namespace Soup.Client
 				Constants.ProjectGenerateFolderName,
 				Constants.StoreBuildFolderName);
 			var recipe = await RecipeManager.LoadFromFileAsync(projectDirectory);
+			if (recipe == null)
+			{
+				Log.Error("Could not find the recipe file.");
+				return;
+			}
 
 			// Ensure the project folder exists
 			PackageManager.EnsureProjectGenerateFolderExists(projectDirectory);
@@ -36,7 +41,7 @@ namespace Soup.Client
 			await buildGenerator.GenerateDependenciesAsync(
 				recipe,
 				buildPath);
-			buildGenerator.GenerateBuild(
+			await buildGenerator.GenerateBuildAsync(
 				recipe,
 				buildPath,
 				projectDirectory,
