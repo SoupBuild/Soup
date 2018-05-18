@@ -20,13 +20,13 @@ namespace Soup.Make
 		public bool Build(string buildPath, bool showOutput, bool debug)
 		{
 			string compiler = "make";
-			var makeFilePath = Path.Combine(buildPath, MSBuildConstants.MakeFileName);
+			var makeFilePath = buildPath;
 			using (Process process = new Process())
 			{
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.FileName = compiler;
-				process.StartInfo.Arguments = $"{makeFilePath}";
+				process.StartInfo.Arguments = $"-C {makeFilePath}";
 				process.Start();
 
 				if (showOutput)

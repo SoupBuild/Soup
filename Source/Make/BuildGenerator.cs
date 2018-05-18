@@ -62,7 +62,7 @@ namespace Soup.Make
 				await writer.WriteLineAsync("CFLAGS = -g -Wall -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION=v1_0_0");
 				await writer.WriteLineAsync("INCLUDES =");
 				await writer.WriteLineAsync("SOURCE = ColorF.cpp");
-				await writer.WriteLineAsync("OBJS = obj/ColorF.o");
+				await writer.WriteLineAsync("OBJS = $(OBJDIR)/ColorF.o");
 				await writer.WriteLineAsync("LIB = $(BINDIR)/CppColor.a");
 				await writer.WriteLineAsync("");
 

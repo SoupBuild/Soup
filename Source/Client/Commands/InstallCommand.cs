@@ -111,7 +111,10 @@ namespace Soup.Client
 			}
 
 			// Cleanup
-			Directory.Delete(tempStagingPath, true);
+			if (Directory.Exists(tempStagingPath))
+			{
+				Directory.Delete(tempStagingPath, true);
+			}
 
 			// Save the state of the recipe if it has changed
 			if (recipe.IsDirty)
