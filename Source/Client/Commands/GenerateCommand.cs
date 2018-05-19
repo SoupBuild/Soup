@@ -45,8 +45,8 @@ namespace Soup.Client
 				recipe,
 				buildPath,
 				projectDirectory,
-				@"$(PackageRoot)\out\bin",
-				@"$(PackageRoot)\out\obj");
+				@"out/bin",
+				@"out/obj");
 		}
 	}
 }

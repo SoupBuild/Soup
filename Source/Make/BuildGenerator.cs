@@ -25,11 +25,14 @@ namespace Soup.Make
 			string binaryDirectory,
 			string objectDirectory)
 		{
+			var versionNamespace = PackageManager.BuildNamespaceVersion(recipe.Version);
+			var projectName = recipe.Name;
+
 			var includeItems = new List<string>();
 			var sourceItems = new List<string>();
 			foreach (var file in PackageManager.FindSourceFiles(recipe, packageDirectory))
 			{
-				var filePath = $"$(PackageRoot)\\{file}";
+				var filePath = $"{file}";
 				switch (Path.GetExtension(file))
 				{
 					case ".h":
@@ -47,23 +50,35 @@ namespace Soup.Make
 			var projectFilePath = Path.Combine(targetDirectory, projectFileName);
 			using (var writer = new StreamWriter(File.Create(projectFilePath), Encoding.UTF8))
 			{
+				// Set the shell
 				await writer.WriteLineAsync("SHELL = /bin/sh");
 				await writer.WriteLineAsync("");
 
-				await writer.WriteLineAsync("PACKAGE_ROOT = ../..");
-				await writer.WriteLineAsync("SRCDIR = $(PACKAGE_ROOT)/src");
-				await writer.WriteLineAsync("OBJDIR = $(PACKAGE_ROOT)/obj");
-				await writer.WriteLineAsync("BINDIR = $(PACKAGE_ROOT)/bin");
-				await writer.WriteLineAsync("");
-
+				// Setup the tools used in our builds
 				await writer.WriteLineAsync("LINK = ar");
 				await writer.WriteLineAsync("LFLAGS = rcs");
 				await writer.WriteLineAsync("CPP = gcc");
-				await writer.WriteLineAsync("CFLAGS = -g -Wall -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION=v1_0_0");
+				await writer.WriteLineAsync("");
+
+				// Initialize our directory structure
+				await writer.WriteLineAsync("PACKAGE_ROOT = ../..");
+				await writer.WriteLineAsync($"OBJDIR = {objectDirectory}");
+				await writer.WriteLineAsync($"BINDIR = {binaryDirectory}");
+				await writer.WriteLineAsync("");
+
+				// Build the source list
+				await writer.WriteLineAsync("SOURCE = \\");
+				foreach (var sourceItem in sourceItems)
+				{
+					await writer.WriteLineAsync($"\t{sourceItem} \\");
+				}
+
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync($"CFLAGS = -g -Wall -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION={versionNamespace}");
 				await writer.WriteLineAsync("INCLUDES =");
-				await writer.WriteLineAsync("SOURCE = ColorF.cpp");
 				await writer.WriteLineAsync("OBJS = $(OBJDIR)/ColorF.o");
-				await writer.WriteLineAsync("LIB = $(BINDIR)/CppColor.a");
+				await writer.WriteLineAsync($"LIB = $(BINDIR)/{projectName}.a");
 				await writer.WriteLineAsync("");
 
 				await writer.WriteLineAsync("All: $(LIB)");
@@ -74,15 +89,15 @@ namespace Soup.Make
 				await writer.WriteLineAsync("");
 
 				await writer.WriteLineAsync("$(OBJDIR):");
-				await writer.WriteLineAsync("	mkdir $@");
+				await writer.WriteLineAsync("	mkdir -p $@");
 				await writer.WriteLineAsync("");
 
 				await writer.WriteLineAsync("$(BINDIR):");
-				await writer.WriteLineAsync("	mkdir $@");
+				await writer.WriteLineAsync("	mkdir -p $@");
 				await writer.WriteLineAsync("");
 
-				await writer.WriteLineAsync("$(OBJDIR)/%.o: $(SRCDIR)/%.cpp");
-				await writer.WriteLineAsync("	$(CC) $(CFLAGS) -c -o $@ $<");
+				await writer.WriteLineAsync("$(OBJDIR)/%.o: $(PACKAGE_ROOT)/src/%.cpp");
+				await writer.WriteLineAsync("	$(CPP) $(CFLAGS) -c -o $@ $<");
 			}
 		}
 
