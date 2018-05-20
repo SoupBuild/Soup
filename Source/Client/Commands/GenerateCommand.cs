@@ -17,11 +17,11 @@ namespace Soup.Client
 		public async Task InvokeAsync(string[] args)
 		{
 			Log.Message("Generate");
-			var projectDirectory = Directory.GetCurrentDirectory();
+			var projectDirectory = Directory.GetCurrentDirectory().EnsureTrailingSlash();
 			var buildPath = Path.Combine(
 				projectDirectory,
 				Constants.ProjectGenerateFolderName,
-				Constants.StoreBuildFolderName);
+				Constants.StoreBuildFolderName).EnsureTrailingSlash();
 			var recipe = await RecipeManager.LoadFromFileAsync(projectDirectory);
 			if (recipe == null)
 			{

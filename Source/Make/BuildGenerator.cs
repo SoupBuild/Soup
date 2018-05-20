@@ -27,7 +27,8 @@ namespace Soup.Make
 		{
 			var versionNamespace = PackageManager.BuildNamespaceVersion(recipe.Version);
 			var projectName = recipe.Name;
-
+			var relativePackageRoot = Path.GetRelativePath(targetDirectory, packageDirectory);
+					
 			var includeItems = new List<string>();
 			var sourceItems = new List<string>();
 			foreach (var file in PackageManager.FindSourceFiles(recipe, packageDirectory))
@@ -61,7 +62,7 @@ namespace Soup.Make
 				await writer.WriteLineAsync("");
 
 				// Initialize our directory structure
-				await writer.WriteLineAsync("PACKAGE_ROOT = ../..");
+				await writer.WriteLineAsync($"PACKAGE_ROOT = {relativePackageRoot.RemoveTrailingSlash()}");
 				await writer.WriteLineAsync($"OBJDIR = {objectDirectory}");
 				await writer.WriteLineAsync($"BINDIR = {binaryDirectory}");
 				await writer.WriteLineAsync("");
@@ -131,6 +132,7 @@ namespace Soup.Make
 			}
 
 			var propertiesFilePath = Path.Combine(targetDirectory, MSBuildConstants.MakeIncFileName);
+			Log.Message(targetDirectory);
 			using (var writer = new StreamWriter(File.Create(propertiesFilePath), Encoding.UTF8))
 			{
 			}
