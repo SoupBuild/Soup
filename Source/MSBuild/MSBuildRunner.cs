@@ -1,4 +1,4 @@
-﻿// <copyright company="Soup" file="BuildRunner.cs">
+﻿// <copyright company="Soup" file="MSBuildRunner.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace Soup.MSBuild
 	/// <summary>
 	/// MSBuild runner
 	/// </summary>
-	public class BuildRunner : IBuildRunner
+	internal static class MSBuildRunner
 	{
 		private static readonly IReadOnlyList<Regex> KnownStatusText =
 			new List<Regex>()
@@ -45,7 +45,7 @@ namespace Soup.MSBuild
 				new Regex(@"^Build succeeded\.$", RegexOptions.Compiled),
 			};
 
-		public bool Build(string buildPath, bool showOutput, bool debug)
+		public static bool Build(string buildPath, bool showOutput, bool debug)
 		{
 			string compiler = FindCompiler();
 			string configuration = debug ? "Debug" : "Release";
@@ -73,7 +73,7 @@ namespace Soup.MSBuild
 			}
 		}
 
-		private string FindCompiler()
+		private static string FindCompiler()
 		{
 			var result = string.Empty;
 			var programFilesDir = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
@@ -103,7 +103,7 @@ namespace Soup.MSBuild
 			return result;
 		}
 
-		private void WriteMSBuildLine(string line)
+		private static void WriteMSBuildLine(string line)
 		{
 			if (KnownStatusText.Any(pattern => pattern.IsMatch(line)))
 			{

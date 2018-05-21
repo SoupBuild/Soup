@@ -52,13 +52,11 @@ namespace Soup.Client
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				Singleton<IBuildGenerator>.Instance = new MSBuild.BuildGenerator();
-				Singleton<IBuildRunner>.Instance = new MSBuild.BuildRunner();
+				Singleton<IBuildEngine>.Instance = new MSBuild.BuildEngine();
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
-				Singleton<IBuildGenerator>.Instance = new Make.BuildGenerator();
-				Singleton<IBuildRunner>.Instance = new Make.BuildRunner();
+				Singleton<IBuildEngine>.Instance = new Make.BuildEngine();
 			}
 			else
 			{

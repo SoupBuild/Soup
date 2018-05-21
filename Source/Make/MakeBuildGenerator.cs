@@ -1,4 +1,4 @@
-﻿// <copyright company="Soup" file="BuildGenerator.cs">
+﻿// <copyright company="Soup" file="MakeBuildGenerator.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
@@ -14,11 +14,9 @@ namespace Soup.Make
 	/// <summary>
 	/// The Make generator
 	/// </summary>
-	public class BuildGenerator : IBuildGenerator
+	internal static class MakeBuildGenerator
 	{
-		public string Name => "Make";
-
-		public async Task GenerateBuildAsync(
+		public static async Task GenerateBuildAsync(
 			Recipe recipe,
 			string targetDirectory,
 			string packageDirectory,
@@ -102,7 +100,7 @@ namespace Soup.Make
 			}
 		}
 
-		public async Task GenerateDependenciesAsync(
+		public static async Task GenerateDependenciesAsync(
 			Recipe recipe,
 			string targetDirectory)
 		{
