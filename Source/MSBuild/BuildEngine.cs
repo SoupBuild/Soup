@@ -1,4 +1,4 @@
-﻿// <copyright company="Soup" file="MSBuildEngine.cs">
+﻿// <copyright company="Soup" file="BuildEngine.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 

@@ -20,6 +20,7 @@ namespace Soup
 	{
 		private bool _isDirty;
 		private string _name;
+		private RecipeType _type;
 		private SemanticVersion _version;
 		private LanguageStandard _standard;
 		private ObservableCollection<PackageReference> _dependencies;
@@ -57,6 +58,23 @@ namespace Soup
 				if (value != _name)
 				{
 					_name = value;
+					_isDirty = true;
+				}
+			}
+		}
+		[JsonProperty("type")]
+		public RecipeType Type
+		{
+			get
+			{
+				return _type;
+			}
+
+			set
+			{
+				if (value != _type)
+				{
+					_type = value;
 					_isDirty = true;
 				}
 			}
