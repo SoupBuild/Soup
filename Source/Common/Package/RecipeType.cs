@@ -6,8 +6,8 @@ namespace Soup
 {
     public enum RecipeType
     {
-        Library,
-        Export,
-        Executable
+        Executable,
+        Import,
+        Library
     }
 }

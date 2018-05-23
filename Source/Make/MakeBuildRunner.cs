@@ -29,7 +29,7 @@ namespace Soup.Make
 				process.StartInfo.Arguments = $"-C {makeFilePath}";
 				process.Start();
 
-				if (showOutput)
+				// if (showOutput)
 				{
 					while (!process.StandardOutput.EndOfStream)
 					{

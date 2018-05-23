@@ -23,8 +23,10 @@ namespace Soup.Client
 			var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
 
 			var recipe = new Recipe(
-				currentDirectory.Name,
-				new SemanticVersion(1, 0, 0));
+				currentDirectory.Name)
+			{
+				Version = new SemanticVersion(1, 0, 0)
+			};
 
 			Log.Message($"Name: ({recipe.Name}) ");
 			var newName = Console.ReadLine();

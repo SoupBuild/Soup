@@ -13,6 +13,7 @@ namespace Soup
 		Task GenerateBuildAsync(
 			Recipe recipe,
 			string targetDirectory,
+			string buildDirectory,
 			string packageDirectory,
 			string binaryDirectory,
 			string objectDirectory);

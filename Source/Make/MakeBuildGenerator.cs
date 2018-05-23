@@ -16,87 +16,34 @@ namespace Soup.Make
 	/// </summary>
 	internal static class MakeBuildGenerator
 	{
-		public static async Task GenerateBuildAsync(
+		public static Task GenerateBuildAsync(
 			Recipe recipe,
 			string targetDirectory,
+			string buildDirectory,
 			string packageDirectory,
 			string binaryDirectory,
 			string objectDirectory)
 		{
-			var versionNamespace = PackageManager.BuildNamespaceVersion(recipe.Version);
-			var projectName = recipe.Name;
-			var relativePackageRoot = Path.GetRelativePath(targetDirectory, packageDirectory);
-					
-			var includeItems = new List<string>();
-			var sourceItems = new List<string>();
-			foreach (var file in PackageManager.FindSourceFiles(recipe, packageDirectory))
+			switch (recipe.Type)
 			{
-				var filePath = $"{file}";
-				switch (Path.GetExtension(file))
-				{
-					case ".h":
-						includeItems.Add(filePath);
-						break;
-					case ".cpp":
-						sourceItems.Add(filePath);
-						break;
-					default:
-						throw new InvalidOperationException("A source file with unknown extension.");
-				}
-			}
-
-			var projectFileName = MSBuildConstants.MakeFileName;
-			var projectFilePath = Path.Combine(targetDirectory, projectFileName);
-			using (var writer = new StreamWriter(File.Create(projectFilePath), Encoding.UTF8))
-			{
-				// Set the shell
-				await writer.WriteLineAsync("SHELL = /bin/sh");
-				await writer.WriteLineAsync("");
-
-				// Setup the tools used in our builds
-				await writer.WriteLineAsync("LINK = ar");
-				await writer.WriteLineAsync("LFLAGS = rcs");
-				await writer.WriteLineAsync("CPP = gcc");
-				await writer.WriteLineAsync("");
-
-				// Initialize our directory structure
-				await writer.WriteLineAsync($"PACKAGE_ROOT = {relativePackageRoot.RemoveTrailingSlash()}");
-				await writer.WriteLineAsync($"OBJDIR = {objectDirectory}");
-				await writer.WriteLineAsync($"BINDIR = {binaryDirectory}");
-				await writer.WriteLineAsync("");
-
-				// Build the source list
-				await writer.WriteLineAsync("SOURCE = \\");
-				foreach (var sourceItem in sourceItems)
-				{
-					await writer.WriteLineAsync($"\t{sourceItem} \\");
-				}
-
-				await writer.WriteLineAsync("");
-
-				await writer.WriteLineAsync($"CFLAGS = -g -Wall -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION={versionNamespace}");
-				await writer.WriteLineAsync("INCLUDES =");
-				await writer.WriteLineAsync("OBJS = $(OBJDIR)/ColorF.o");
-				await writer.WriteLineAsync($"LIB = $(BINDIR)/{projectName}.a");
-				await writer.WriteLineAsync("");
-
-				await writer.WriteLineAsync("All: $(LIB)");
-				await writer.WriteLineAsync("");
-
-				await writer.WriteLineAsync("$(LIB): $(OBJDIR) $(OBJS) $(BINDIR)");
-				await writer.WriteLineAsync("	$(LINK) $(LFLAGS) $@ $(OBJS)");
-				await writer.WriteLineAsync("");
-
-				await writer.WriteLineAsync("$(OBJDIR):");
-				await writer.WriteLineAsync("	mkdir -p $@");
-				await writer.WriteLineAsync("");
-
-				await writer.WriteLineAsync("$(BINDIR):");
-				await writer.WriteLineAsync("	mkdir -p $@");
-				await writer.WriteLineAsync("");
-
-				await writer.WriteLineAsync("$(OBJDIR)/%.o: $(PACKAGE_ROOT)/src/%.cpp");
-				await writer.WriteLineAsync("	$(CPP) $(CFLAGS) -c -o $@ $<");
+				case RecipeType.Executable:
+					return GenerateExecutableBuildAsync(
+						recipe, 
+						targetDirectory,
+						buildDirectory,
+						packageDirectory,
+						binaryDirectory,
+						objectDirectory);
+				case RecipeType.Library:
+					return GenerateLibraryBuildAsync(
+						recipe, 
+						targetDirectory,
+						buildDirectory,
+						packageDirectory,
+						binaryDirectory,
+						objectDirectory);
+				default:
+					throw new NotSupportedException($"Unknown recipe type {recipe.Type}");
 			}
 		}
 
@@ -133,6 +80,212 @@ namespace Soup.Make
 			Log.Message(targetDirectory);
 			using (var writer = new StreamWriter(File.Create(propertiesFilePath), Encoding.UTF8))
 			{
+			}
+		}
+
+		private static async Task GenerateExecutableBuildAsync(
+			Recipe recipe,
+			string targetDirectory,
+			string buildDirectory,
+			string packageDirectory,
+			string binaryDirectory,
+			string objectDirectory)
+		{
+			var versionNamespace = PackageManager.BuildNamespaceVersion(recipe.Version);
+			var projectName = recipe.Name;
+			var relativePackageRoot = Path.GetRelativePath(
+				buildDirectory.EnsureTrailingSlash(),
+				packageDirectory.EnsureTrailingSlash()).RemoveTrailingSlash();
+			var relativeBinaryRoot = Path.GetRelativePath(
+				buildDirectory.EnsureTrailingSlash(),
+				binaryDirectory.EnsureTrailingSlash()).RemoveTrailingSlash();
+			var relativeObjectRoot = Path.GetRelativePath(
+				buildDirectory.EnsureTrailingSlash(),
+				objectDirectory.EnsureTrailingSlash()).RemoveTrailingSlash();
+
+			var includeItems = new List<string>();
+			var sourceItems = new List<string>();
+			var sourceFolderSet = new HashSet<string>();
+			foreach (var file in PackageManager.FindSourceFiles(recipe, packageDirectory))
+			{
+				var filePath = $"{file}";
+				switch (Path.GetExtension(file))
+				{
+					case ".h":
+						includeItems.Add(filePath);
+						break;
+					case ".cpp":
+						sourceItems.Add(filePath);
+						sourceFolderSet.Add(Path.GetDirectoryName(filePath));
+						break;
+					default:
+						throw new InvalidOperationException("A source file with unknown extension.");
+				}
+			}
+
+			var projectFileName = MSBuildConstants.MakeFileName;
+			var projectFilePath = Path.Combine(targetDirectory, projectFileName);
+			using (var writer = new StreamWriter(File.Create(projectFilePath), Encoding.UTF8))
+			{
+				// Set the shell
+				await writer.WriteLineAsync("SHELL = /bin/sh");
+				await writer.WriteLineAsync("");
+
+				// Setup the tools used in our builds
+				await writer.WriteLineAsync("CXX = gcc");
+				await writer.WriteLineAsync("");
+
+				// Initialize our directory structure
+				await writer.WriteLineAsync($"PACKAGE_ROOT = {relativePackageRoot}");
+				await writer.WriteLineAsync($"OBJDIR = {relativeObjectRoot}");
+				await writer.WriteLineAsync($"BINDIR = {relativeBinaryRoot}");
+				await writer.WriteLineAsync("DIRS = \\");
+				await writer.WriteLineAsync("	$(OBJDIR) \\");
+				foreach (var sourceFolder in sourceFolderSet)
+				{
+					await writer.WriteLineAsync($"	$(OBJDIR)/{sourceFolder} \\");
+				}
+
+				await writer.WriteLineAsync("	$(BINDIR) \\");
+				await writer.WriteLineAsync("");
+
+				// Build the source list
+				await writer.WriteLineAsync($"EXE = $(BINDIR)/{projectName}");
+				await writer.WriteLineAsync("SOURCE = \\");
+				foreach (var sourceItem in sourceItems)
+				{
+					await writer.WriteLineAsync($"\t{sourceItem} \\");
+				}
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("OBJS = $(addprefix $(OBJDIR)/, $(addsuffix .o, $(basename $(SOURCE))))");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync($"CPPFLAGS = -g -Wall -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION={versionNamespace}");
+				await writer.WriteLineAsync("INCLUDES =");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("All: $(DIRS) $(EXE)");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(EXE): $(OBJS)");
+				await writer.WriteLineAsync("	$(CXX) $(CPPFLAGS) $@ $(OBJS)");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(DIRS):");
+				await writer.WriteLineAsync("	mkdir -p $@");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(OBJDIR)/%.o: $(PACKAGE_ROOT)/%.cpp");
+				foreach (var sourceFolder in sourceFolderSet)
+				{
+					await writer.WriteLineAsync($"$(OBJDIR)/{sourceFolder}/%.o: $(PACKAGE_ROOT)/{sourceFolder}/%.cpp");
+				}
+				await writer.WriteLineAsync("	$(CXX) -c $(CPPFLAGS) $< -o $@");
+			}
+		}
+
+		private static async Task GenerateLibraryBuildAsync(
+			Recipe recipe,
+			string targetDirectory,
+			string buildDirectory,
+			string packageDirectory,
+			string binaryDirectory,
+			string objectDirectory)
+		{
+			var versionNamespace = PackageManager.BuildNamespaceVersion(recipe.Version);
+			var projectName = recipe.Name;
+			var relativePackageRoot = Path.GetRelativePath(
+				buildDirectory.EnsureTrailingSlash(),
+				packageDirectory.EnsureTrailingSlash()).RemoveTrailingSlash();
+			var relativeBinaryRoot = Path.GetRelativePath(
+				buildDirectory.EnsureTrailingSlash(),
+				binaryDirectory.EnsureTrailingSlash()).RemoveTrailingSlash();
+			var relativeObjectRoot = Path.GetRelativePath(
+				buildDirectory.EnsureTrailingSlash(),
+				objectDirectory.EnsureTrailingSlash()).RemoveTrailingSlash();
+					
+			var includeItems = new List<string>();
+			var sourceItems = new List<string>();
+			var sourceFolderSet = new HashSet<string>();
+			foreach (var file in PackageManager.FindSourceFiles(recipe, packageDirectory))
+			{
+				var filePath = $"{file}";
+				switch (Path.GetExtension(file))
+				{
+					case ".h":
+						includeItems.Add(filePath);
+						break;
+					case ".cpp":
+						sourceItems.Add(filePath);
+						sourceFolderSet.Add(Path.GetDirectoryName(filePath));
+						break;
+					default:
+						throw new InvalidOperationException("A source file with unknown extension.");
+				}
+			}
+
+			var projectFileName = MSBuildConstants.MakeFileName;
+			var projectFilePath = Path.Combine(targetDirectory, projectFileName);
+			using (var writer = new StreamWriter(File.Create(projectFilePath), Encoding.UTF8))
+			{
+				// Set the shell
+				await writer.WriteLineAsync("SHELL = /bin/sh");
+				await writer.WriteLineAsync("");
+
+				// Setup the tools used in our builds
+				await writer.WriteLineAsync("AR = ar");
+				await writer.WriteLineAsync("LFLAGS = rcs");
+				await writer.WriteLineAsync("CXX = gcc");
+				await writer.WriteLineAsync("");
+
+				// Initialize our directory structure
+				await writer.WriteLineAsync($"PACKAGE_ROOT = {relativePackageRoot}");
+				await writer.WriteLineAsync($"OBJDIR = {relativeObjectRoot}");
+				await writer.WriteLineAsync($"BINDIR = {relativeBinaryRoot}");
+				await writer.WriteLineAsync("DIRS = \\");
+				await writer.WriteLineAsync("	$(OBJDIR) \\");
+				foreach (var sourceFolder in sourceFolderSet)
+				{
+					await writer.WriteLineAsync($"	$(OBJDIR)/{sourceFolder} \\");
+				}
+
+				await writer.WriteLineAsync("	$(BINDIR) \\");
+				await writer.WriteLineAsync("");
+
+				// Build the source list
+				await writer.WriteLineAsync($"LIB = $(BINDIR)/{projectName}.a");
+				await writer.WriteLineAsync("SOURCE = \\");
+				foreach (var sourceItem in sourceItems)
+				{
+					await writer.WriteLineAsync($"\t{sourceItem} \\");
+				}
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("OBJS = $(addprefix $(OBJDIR)/, $(addsuffix .o, $(basename $(SOURCE))))");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync($"CPPFLAGS = -g -Wall -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION={versionNamespace}");
+				await writer.WriteLineAsync("INCLUDES =");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("All: $(DIRS) $(LIB)");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(LIB): $(OBJS)");
+				await writer.WriteLineAsync("	$(AR) $(LFLAGS) $@ $(OBJS)");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(DIRS):");
+				await writer.WriteLineAsync("	mkdir -p $@");
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("$(OBJDIR)/%.o: $(PACKAGE_ROOT)/%.cpp");
+				foreach (var sourceFolder in sourceFolderSet)
+				{
+					await writer.WriteLineAsync($"$(OBJDIR)/{sourceFolder}/%.o: $(PACKAGE_ROOT)/{sourceFolder}/%.cpp");
+				}
+				await writer.WriteLineAsync("	$(CXX) -c $(CPPFLAGS) $< -o $@");
 			}
 		}
 	}

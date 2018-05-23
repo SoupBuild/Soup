@@ -16,18 +16,19 @@ namespace Soup.Client
 
 		public async Task InvokeAsync(string[] args)
 		{
-			Log.Message("Generate");
-			var projectDirectory = Directory.GetCurrentDirectory().EnsureTrailingSlash();
+			var projectDirectory = Directory.GetCurrentDirectory();
 			var buildPath = Path.Combine(
 				projectDirectory,
 				Constants.ProjectGenerateFolderName,
-				Constants.StoreBuildFolderName).EnsureTrailingSlash();
+				Constants.StoreBuildFolderName);
 			var recipe = await RecipeManager.LoadFromFileAsync(projectDirectory);
 			if (recipe == null)
 			{
 				Log.Error("Could not find the recipe file.");
 				return;
 			}
+
+			Log.Message($"Generate {recipe.Type}");
 
 			// Ensure the project folder exists
 			PackageManager.EnsureProjectGenerateFolderExists(projectDirectory);
@@ -37,6 +38,8 @@ namespace Soup.Client
 			}
 
 			// Generate the project files
+			var objectDirectory = Path.Combine(buildPath, "out", "obj");
+			var binaryDirectory = Path.Combine(buildPath, "out", "bin");
 			var buildEngine = Singleton<IBuildEngine>.Instance;
 			await buildEngine.GenerateDependenciesAsync(
 				recipe,
@@ -44,9 +47,10 @@ namespace Soup.Client
 			await buildEngine.GenerateBuildAsync(
 				recipe,
 				buildPath,
+				buildPath,
 				projectDirectory,
-				@"out/bin",
-				@"out/obj");
+				binaryDirectory,
+				objectDirectory);
 		}
 	}
 }

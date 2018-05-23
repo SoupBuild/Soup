@@ -181,16 +181,23 @@ namespace Soup.Client
 			var buildEngine = Singleton<IBuildEngine>.Instance;
 
 			// Generate the build projects
-			var tempBuildPath = Path.Combine(tempPath, Constants.StoreBuildFolderName).EnsureTrailingSlash();
+			var tempBuildPath = Path.Combine(tempPath, Constants.StoreBuildFolderName);
 			var buildPath = PackageManager.BuildKitchenBuildPath(buildEngine.Name, recipe);
 			var includePath = PackageManager.BuildKitchenIncludePath(recipe);
 			var packagePath = PackageManager.BuildKitchenPackagePath(recipe);
 			var libraryPath = PackageManager.BuildKitchenLibraryPath();
+			var objectPath = Path.Combine(buildPath, "out");
 
 			Directory.CreateDirectory(tempBuildPath);
 
 			await buildEngine.GenerateDependenciesAsync(recipe, tempBuildPath);
-			await buildEngine.GenerateBuildAsync(recipe, tempBuildPath, packagePath, libraryPath, "out");
+			await buildEngine.GenerateBuildAsync(
+				recipe,
+				tempBuildPath,
+				buildPath,
+				packagePath,
+				libraryPath,
+				objectPath);
 
 			// TODO : Should not hit this when, verify the package exists before download
 			// For now delete and recreate it

@@ -21,6 +21,7 @@ namespace Soup.Make
 		public Task GenerateBuildAsync(
 			Recipe recipe,
 			string targetDirectory,
+			string buildDirectory,
 			string packageDirectory,
 			string binaryDirectory,
 			string objectDirectory)
@@ -28,6 +29,7 @@ namespace Soup.Make
 			return MakeBuildGenerator.GenerateBuildAsync(
 				recipe,
 				targetDirectory,
+				buildDirectory,
 				packageDirectory,
 				binaryDirectory,
 				objectDirectory);

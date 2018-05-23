@@ -18,9 +18,11 @@ namespace Soup
 	[JsonObject]
 	public class Recipe
 	{
+		private static RecipeType DefaultRecipeType = RecipeType.Library;
+
 		private bool _isDirty;
 		private string _name;
-		private RecipeType _type;
+		private RecipeType? _type;
 		private SemanticVersion _version;
 		private LanguageStandard _standard;
 		private ObservableCollection<PackageReference> _dependencies;
@@ -29,12 +31,12 @@ namespace Soup
 
 		[JsonConstructor]
 		public Recipe(
-			string name,
-			SemanticVersion version)
+			string name)
 		{
 			_isDirty = false;
 			_name = name;
-			_version = version;
+			_type = null;
+			_version = null;
 			_standard = LanguageStandard.Default;
 
 			Dependencies = new List<PackageReference>();
@@ -62,12 +64,22 @@ namespace Soup
 				}
 			}
 		}
+
 		[JsonProperty("type")]
+		[DefaultValue(RecipeType.Library)]
+		[JsonConverter(typeof(StringEnumConverter))]
 		public RecipeType Type
 		{
 			get
 			{
-				return _type;
+				if (_type != null)
+				{
+					return (RecipeType)_type;
+				}
+				else
+				{
+					return DefaultRecipeType;
+				}
 			}
 
 			set
@@ -195,6 +207,7 @@ namespace Soup
 		{
 			Log.Verbose($"Recipe");
 			Log.Verbose($"\tName         : {Name}");
+			Log.Verbose($"\tType         : {Type}");
 			Log.Verbose($"\tVersion      : {Version}");
 			Log.Verbose($"\tStandard     : {Standard}");
 			Log.Verbose($"\tDependencies : [{string.Join(", ", Dependencies.Select((value) => JsonConvert.SerializeObject(value)))}]");
