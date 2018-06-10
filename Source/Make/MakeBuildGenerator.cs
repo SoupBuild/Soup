@@ -52,14 +52,8 @@ namespace Soup.Make
 			string targetDirectory)
 		{
 			// Build up the closure of dependecies for include paths and libraries
-			var dependencies = new List<string>()
-			{
-				"$(LIBS)"
-			};
-			var includes = new List<string>()
-			{
-				"$(INCLUDE)"
-			};
+			var dependencies = new List<string>();
+			var includes = new List<string>();
 
 			var dependencyClosure = await PackageManager.BuildRecursiveDependeciesAsync(recipe);
 			foreach (var dependency in dependencyClosure)
@@ -80,6 +74,20 @@ namespace Soup.Make
 			Log.Message(targetDirectory);
 			using (var writer = new StreamWriter(File.Create(propertiesFilePath), Encoding.UTF8))
 			{
+				await writer.WriteLineAsync("");
+				await writer.WriteLineAsync("INCLUDES = \\");
+				foreach (var include in includes)
+				{
+					await writer.WriteLineAsync($"\t{include} \\");
+				}
+				await writer.WriteLineAsync("");
+
+				await writer.WriteLineAsync("LIBS = \\");
+				foreach (var library in dependencies)
+				{
+					await writer.WriteLineAsync($"\t{library} \\");
+				}
+				await writer.WriteLineAsync("");
 			}
 		}
 
@@ -127,12 +135,16 @@ namespace Soup.Make
 			var projectFilePath = Path.Combine(targetDirectory, projectFileName);
 			using (var writer = new StreamWriter(File.Create(projectFilePath), Encoding.UTF8))
 			{
+				// Include the shared make include
+				await writer.WriteLineAsync("include Make.inc");
+				await writer.WriteLineAsync("");
+
 				// Set the shell
 				await writer.WriteLineAsync("SHELL = /bin/sh");
 				await writer.WriteLineAsync("");
 
 				// Setup the tools used in our builds
-				await writer.WriteLineAsync("CXX = gcc");
+				await writer.WriteLineAsync("CXX = g++");
 				await writer.WriteLineAsync("");
 
 				// Initialize our directory structure
@@ -161,15 +173,15 @@ namespace Soup.Make
 				await writer.WriteLineAsync("OBJS = $(addprefix $(OBJDIR)/, $(addsuffix .o, $(basename $(SOURCE))))");
 				await writer.WriteLineAsync("");
 
-				await writer.WriteLineAsync($"CPPFLAGS = -g -Wall -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION={versionNamespace}");
-				await writer.WriteLineAsync("INCLUDES =");
+				await writer.WriteLineAsync($"SOUPDEFINES = -D SOUP_PKG_ACTIVE=inline -D SOUP_PKG_VERSION={versionNamespace}");
+				await writer.WriteLineAsync($"CPPFLAGS = -g -Wall $(addprefix -I, $(INCLUDES)) $(SOUPDEFINES)");
 				await writer.WriteLineAsync("");
 
 				await writer.WriteLineAsync("All: $(DIRS) $(EXE)");
 				await writer.WriteLineAsync("");
 
 				await writer.WriteLineAsync("$(EXE): $(OBJS)");
-				await writer.WriteLineAsync("	$(CXX) $(CPPFLAGS) $@ $(OBJS)");
+				await writer.WriteLineAsync("	$(CXX) $(CPPFLAGS) $< -o $@");
 				await writer.WriteLineAsync("");
 
 				await writer.WriteLineAsync("$(DIRS):");

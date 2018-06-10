@@ -144,6 +144,14 @@ namespace Soup.MSBuild
 		{
 			switch (recipe.Type)
 			{
+				case RecipeType.Executable:
+					return CreateVS15LibraryTemplate(
+						recipe, 
+						includeItems, 
+						sourceItems,
+						packageDirectory,
+						binaryDirectory,
+						objectDirectory);
 				case RecipeType.Library:
 					return CreateVS15LibraryTemplate(
 						recipe, 
