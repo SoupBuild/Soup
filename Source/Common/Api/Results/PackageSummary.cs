@@ -10,5 +10,7 @@ namespace Soup.Api.Results
 	public class PackageSummary
 	{
 		public string Name { get; set; }
+
+		public string Description { get; set; }
 	}
 }

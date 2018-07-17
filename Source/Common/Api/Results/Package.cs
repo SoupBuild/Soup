@@ -2,7 +2,7 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup.Api.Results
+namespace Soup
 {
 	using System.Collections.Generic;
 
@@ -12,6 +12,8 @@ namespace Soup.Api.Results
 	public class Package
 	{
 		public string Name { get; set; }
+
+		public string Description { get; set; }
 
 		public string Latest { get; set; }
 

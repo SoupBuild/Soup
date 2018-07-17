@@ -14,27 +14,27 @@ namespace Soup.Api
 	public interface ISoupApi
 	{
 		/// <summary>
-		/// Publish a new package version as an archive 
+		/// Publish a new package version as an archive
 		/// </summary>
 		Task<Stream> DownloadPackageAsync(string name, SemanticVersion version);
 
 		/// <summary>
-		/// Get the metadata for a package identified by the unique name 
+		/// Get the metadata for a package identified by the unique name
 		/// </summary>
 		Task<Package> GetPackageAsync(string name);
 
 		/// <summary>
-		/// Get a package publication metadata 
+		/// Get a package publication metadata
 		/// </summary>
 		Task<Publication> GetPublicationAsync(string name, SemanticVersion version);
 
 		/// <summary>
-		/// Publish a new package version as an archive 
+		/// Publish a new package version as an archive
 		/// </summary>
 		Task<bool> PublishPackageAsync(Stream value);
 
 		/// <summary>
-		/// Search for a package using the query string 
+		/// Search for a package using the query string
 		/// </summary>
 		Task<Search> SearchPackagesAsync(string q);
 	}
