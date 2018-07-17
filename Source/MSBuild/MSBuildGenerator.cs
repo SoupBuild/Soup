@@ -14,13 +14,12 @@ namespace Soup.MSBuild
 	/// <summary>
 	/// The MSBuild generator
 	/// </summary>
-	public class BuildGenerator : IBuildGenerator
+	internal static class MSBuildGenerator
 	{
-		public string Name => "MSBuild";
-
-		public Task GenerateBuildAsync(
+		public static Task GenerateBuildAsync(
 			Recipe recipe,
 			string targetDirectory,
+			string buildDirectory,
 			string packageDirectory,
 			string binaryDirectory,
 			string objectDirectory)
@@ -43,7 +42,7 @@ namespace Soup.MSBuild
 				}
 			}
 
-			var project = CreateVS15LibraryTemplate(
+			var project = CreateVS15ProjectTemplate(
 				recipe, 
 				includeItems, 
 				sourceItems,
@@ -64,7 +63,7 @@ namespace Soup.MSBuild
 			return Task.CompletedTask;
 		}
 
-		public async Task GenerateDependenciesAsync(
+		public static async Task GenerateDependenciesAsync(
 			Recipe recipe,
 			string targetDirectory)
 		{
@@ -135,7 +134,38 @@ namespace Soup.MSBuild
 			}
 		}
 
-		private Project CreateVS15LibraryTemplate(
+		private static Project CreateVS15ProjectTemplate(
+			Recipe recipe, 
+			List<Item> includeItems, 
+			List<Item> sourceItems,
+			string packageDirectory,
+			string binaryDirectory,
+			string objectDirectory)
+		{
+			switch (recipe.Type)
+			{
+				case RecipeType.Executable:
+					return CreateVS15LibraryTemplate(
+						recipe, 
+						includeItems, 
+						sourceItems,
+						packageDirectory,
+						binaryDirectory,
+						objectDirectory);
+				case RecipeType.Library:
+					return CreateVS15LibraryTemplate(
+						recipe, 
+						includeItems, 
+						sourceItems,
+						packageDirectory,
+						binaryDirectory,
+						objectDirectory);
+				default:
+					throw new NotSupportedException($"Unknown recipe type {recipe.Type}");
+			}
+		}
+
+		private static Project CreateVS15LibraryTemplate(
 			Recipe recipe, 
 			List<Item> includeItems, 
 			List<Item> sourceItems,

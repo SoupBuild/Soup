@@ -26,16 +26,39 @@ namespace Soup
 
 		public static bool operator ==(SemanticVersion lhs, SemanticVersion rhs)
 		{
-			return lhs.Major == rhs.Major &&
-				lhs.Minor == rhs.Minor &&
-				lhs.Patch == rhs.Patch;
+			if (object.ReferenceEquals(lhs, null))
+			{
+				return object.ReferenceEquals(rhs, null);
+			}
+			else if (object.ReferenceEquals(rhs, null))
+			{
+				return false;
+			}
+			else
+			{
+				return lhs.Major == rhs.Major &&
+					lhs.Minor == rhs.Minor &&
+					lhs.Patch == rhs.Patch;
+			}
 		}
 
 		public static bool operator !=(SemanticVersion lhs, SemanticVersion rhs)
 		{
-			return lhs.Major != rhs.Major ||
-				lhs.Minor != rhs.Minor ||
-				lhs.Patch != rhs.Patch;
+			if (object.ReferenceEquals(lhs, null))
+			{
+				return !object.ReferenceEquals(rhs, null);
+			}
+			else if (object.ReferenceEquals(rhs, null))
+			{
+				return true;
+			}
+			else
+			{
+				return 
+					lhs.Major != rhs.Major ||
+					lhs.Minor != rhs.Minor ||
+					lhs.Patch != rhs.Patch;
+			}		   
 		}
 
 		public static bool TryParse(string value, out SemanticVersion result)

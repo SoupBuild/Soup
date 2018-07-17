@@ -16,7 +16,6 @@ namespace Soup.Client
 
 		public async Task InvokeAsync(string[] args)
 		{
-			Log.Message("Generate");
 			var projectDirectory = Directory.GetCurrentDirectory();
 			var buildPath = Path.Combine(
 				projectDirectory,
@@ -29,6 +28,8 @@ namespace Soup.Client
 				return;
 			}
 
+			Log.Message($"Generate {recipe.Type}");
+
 			// Ensure the project folder exists
 			PackageManager.EnsureProjectGenerateFolderExists(projectDirectory);
 			if (!Directory.Exists(buildPath))
@@ -37,16 +38,19 @@ namespace Soup.Client
 			}
 
 			// Generate the project files
-			var buildGenerator = Singleton<IBuildGenerator>.Instance;
-			await buildGenerator.GenerateDependenciesAsync(
+			var objectDirectory = Path.Combine(buildPath, "out", "obj");
+			var binaryDirectory = Path.Combine(buildPath, "out", "bin");
+			var buildEngine = Singleton<IBuildEngine>.Instance;
+			await buildEngine.GenerateDependenciesAsync(
 				recipe,
 				buildPath);
-			await buildGenerator.GenerateBuildAsync(
+			await buildEngine.GenerateBuildAsync(
 				recipe,
 				buildPath,
+				buildPath,
 				projectDirectory,
-				@"$(PackageRoot)\out\bin",
-				@"$(PackageRoot)\out\obj");
+				binaryDirectory,
+				objectDirectory);
 		}
 	}
 }

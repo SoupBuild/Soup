@@ -1,4 +1,4 @@
-﻿// <copyright company="Soup" file="BuildRunner.cs">
+﻿// <copyright company="Soup" file="MakeBuildRunner.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
@@ -8,28 +8,28 @@ namespace Soup.Make
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.IO;
-	using System.Linq;
-	using System.Text.RegularExpressions;
-	using Newtonsoft.Json;
+	using System.Text;
+	using System.Threading.Tasks;
+	using System.Xml.Serialization;
 
 	/// <summary>
-	/// The Make build runner
+	/// The Make Build Runner
 	/// </summary>
-	public class BuildRunner : IBuildRunner
+	internal static class MakeBuildRunner
 	{
-		public bool Build(string buildPath, bool showOutput, bool debug)
+		public static bool Build(string buildPath, bool showOutput, bool debug)
 		{
 			string compiler = "make";
-			var makeFilePath = Path.Combine(buildPath, MSBuildConstants.MakeFileName);
+			var makeFilePath = buildPath;
 			using (Process process = new Process())
 			{
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.FileName = compiler;
-				process.StartInfo.Arguments = $"{makeFilePath}";
+				process.StartInfo.Arguments = $"-C {makeFilePath}";
 				process.Start();
 
-				if (showOutput)
+				// if (showOutput)
 				{
 					while (!process.StandardOutput.EndOfStream)
 					{
@@ -44,7 +44,7 @@ namespace Soup.Make
 			}
 		}
 
-		private void WriteBuildLine(string line)
+		private static void WriteBuildLine(string line)
 		{
 			Log.Message(line);
 		}
