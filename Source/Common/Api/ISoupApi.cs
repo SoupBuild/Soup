@@ -6,7 +6,6 @@ namespace Soup.Api
 {
 	using System.IO;
 	using System.Threading.Tasks;
-	using Soup.Api.Results;
 
 	/// <summary>
 	/// Represents a collection of functions to interact with the API endpoints
@@ -21,12 +20,12 @@ namespace Soup.Api
 		/// <summary>
 		/// Get the metadata for a package identified by the unique name
 		/// </summary>
-		Task<Package> GetPackageAsync(string name);
+		Task<PackageGetResult> GetPackageAsync(string name);
 
 		/// <summary>
 		/// Get a package publication metadata
 		/// </summary>
-		Task<Publication> GetPublicationAsync(string name, SemanticVersion version);
+		Task<PublicationGetResult> GetPublicationAsync(string name, SemanticVersion version);
 
 		/// <summary>
 		/// Publish a new package version as an archive

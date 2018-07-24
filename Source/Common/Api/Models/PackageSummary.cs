@@ -2,7 +2,7 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup.Api.Results
+namespace Soup.Api
 {
 	/// <summary>
 	/// A container for the package summary result

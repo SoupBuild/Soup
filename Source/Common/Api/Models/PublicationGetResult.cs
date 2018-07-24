@@ -1,14 +1,14 @@
-﻿// <copyright company="Soup" file="Publication.cs">
+﻿// <copyright company="Soup" file="PublicationGetResult.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup
+namespace Soup.Api
 {
 	using System;
 
-	public class Publication
+	public class PublicationGetResult
 	{
-		public string Version { get; set; }
+		public SemanticVersion Version { get; set; }
 
 		public DateTime DatePublished { get; set; }
 

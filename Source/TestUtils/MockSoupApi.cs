@@ -7,7 +7,6 @@ namespace Soup.TestUtils
 	using System.IO;
 	using System.Threading.Tasks;
 	using Soup.Api;
-	using Soup.Api.Results;
 
 	/// <summary>
 	/// Represents a collection of functions to interact with the API endpoints
@@ -25,17 +24,17 @@ namespace Soup.TestUtils
 		/// <summary>
 		/// Get the metadata for a package identified by the unique name 
 		/// </summary>
-		public Task<Package> GetPackageAsync(string name)
+		public Task<PackageGetResult> GetPackageAsync(string name)
 		{
-			return Task.FromResult<Package>(null);
+			return Task.FromResult<PackageGetResult>(null);
 		}
 
 		/// <summary>
 		/// Get a package publication metadata 
 		/// </summary>
-		public Task<Publication> GetPublicationAsync(string name, SemanticVersion version)
+		public Task<PublicationGetResult> GetPublicationAsync(string name, SemanticVersion version)
 		{
-			return Task.FromResult<Publication>(null);
+			return Task.FromResult<PublicationGetResult>(null);
 		}
 
 		/// <summary>

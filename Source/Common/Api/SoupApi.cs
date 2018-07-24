@@ -10,7 +10,6 @@ namespace Soup.Api
 	using System.Net.Http.Headers;
 	using System.Threading.Tasks;
 	using Newtonsoft.Json;
-	using Soup.Api.Results;
 
 	/// <summary>
 	/// Represents a collection of functions to interact with the API endpoints
@@ -41,7 +40,7 @@ namespace Soup.Api
 		/// <summary>
 		/// Get the metadata for a package identified by the unique name 
 		/// </summary>
-		public async Task<Package> GetPackageAsync(string name)
+		public async Task<PackageGetResult> GetPackageAsync(string name)
 		{
 			using (HttpClient client = new HttpClient())
 			{
@@ -54,7 +53,7 @@ namespace Soup.Api
 
 				// Parse the return result
 				var content = await response.Content.ReadAsStringAsync();
-				var result = JsonConvert.DeserializeObject<Package>(content);
+				var result = JsonConvert.DeserializeObject<PackageGetResult>(content);
 
 				return result;
 			}
@@ -63,7 +62,7 @@ namespace Soup.Api
 		/// <summary>
 		/// Get a package publication metadata 
 		/// </summary>
-		public async Task<Publication> GetPublicationAsync(string name, SemanticVersion version)
+		public async Task<PublicationGetResult> GetPublicationAsync(string name, SemanticVersion version)
 		{
 			using (HttpClient client = new HttpClient())
 			{
@@ -76,7 +75,7 @@ namespace Soup.Api
 
 				// Parse the return result
 				var content = await response.Content.ReadAsStringAsync();
-				var result = JsonConvert.DeserializeObject<Publication>(content);
+				var result = JsonConvert.DeserializeObject<PublicationGetResult>(content);
 
 				return result;
 			}
