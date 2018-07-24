@@ -1,4 +1,4 @@
-// <copyright company="Soup" file="PackageCreateTests.cs">
+// <copyright company="Soup" file="PackageSummaryModelTests.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
@@ -6,12 +6,12 @@ namespace Soup.Api.UnitTests
 {
 	using Xunit;
 
-	public class PackageCreateTests
+	public class PackageSummaryModelTests
 	{
 		[Fact]
 		public void DefaultValues()
 		{
-			var uut = new PackageCreate();
+			var uut = new PackageSummaryModel();
 
 			Assert.Null(uut.Name);
 			Assert.Null(uut.Description);
@@ -23,7 +23,7 @@ namespace Soup.Api.UnitTests
 			string name = "TestName";
 			string description = "TestDescrition";
 
-			var uut = new PackageCreate()
+			var uut = new PackageSummaryModel()
 			{
 				Name = name,
 				Description = description,

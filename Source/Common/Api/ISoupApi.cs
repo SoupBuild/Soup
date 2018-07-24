@@ -20,12 +20,12 @@ namespace Soup.Api
 		/// <summary>
 		/// Get the metadata for a package identified by the unique name
 		/// </summary>
-		Task<PackageGetResult> GetPackageAsync(string name);
+		Task<PackageResultModel> GetPackageAsync(string name);
 
 		/// <summary>
 		/// Get a package publication metadata
 		/// </summary>
-		Task<PublicationGetResult> GetPublicationAsync(string name, SemanticVersion version);
+		Task<PublicationResultModel> GetPublicationAsync(string name, SemanticVersion version);
 
 		/// <summary>
 		/// Publish a new package version as an archive
@@ -35,6 +35,6 @@ namespace Soup.Api
 		/// <summary>
 		/// Search for a package using the query string
 		/// </summary>
-		Task<Search> SearchPackagesAsync(string q);
+		Task<SearchModel> SearchPackagesAsync(string q);
 	}
 }

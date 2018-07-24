@@ -1,4 +1,4 @@
-// <copyright company="Soup" file="PublicationSummaryTests.cs">
+// <copyright company="Soup" file="PublicationSummaryModelTests.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
@@ -6,12 +6,12 @@ namespace Soup.Api.UnitTests
 {
 	using Xunit;
 
-	public class PublicationSummaryTests
+	public class PublicationSummaryModelTests
 	{
 		[Fact]
 		public void DefaultValues()
 		{
-			var uut = new PublicationSummary();
+			var uut = new PublicationSummaryModel();
 
 			Assert.Null(uut.Version);
 		}
@@ -21,7 +21,7 @@ namespace Soup.Api.UnitTests
 		{
 			SemanticVersion version = new SemanticVersion(1, 2, 3);
 
-			var uut = new PublicationSummary()
+			var uut = new PublicationSummaryModel()
 			{
 				Version = version,
 			};

@@ -1,4 +1,4 @@
-﻿// <copyright company="Soup" file="Search.cs">
+﻿// <copyright company="Soup" file="SearchModel.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
@@ -9,10 +9,10 @@ namespace Soup.Api
 	/// <summary>
 	/// A container for the search result
 	/// </summary>
-	public class Search
+	public class SearchModel
 	{
 		public int Total { get; set; }
 
-		public IList<PackageSummary> Packages { get; set; }
+		public IList<PackageSummaryModel> Packages { get; set; }
 	}
 }

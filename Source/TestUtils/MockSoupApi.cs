@@ -24,17 +24,17 @@ namespace Soup.TestUtils
 		/// <summary>
 		/// Get the metadata for a package identified by the unique name 
 		/// </summary>
-		public Task<PackageGetResult> GetPackageAsync(string name)
+		public Task<PackageResultModel> GetPackageAsync(string name)
 		{
-			return Task.FromResult<PackageGetResult>(null);
+			return Task.FromResult<PackageResultModel>(null);
 		}
 
 		/// <summary>
 		/// Get a package publication metadata 
 		/// </summary>
-		public Task<PublicationGetResult> GetPublicationAsync(string name, SemanticVersion version)
+		public Task<PublicationResultModel> GetPublicationAsync(string name, SemanticVersion version)
 		{
-			return Task.FromResult<PublicationGetResult>(null);
+			return Task.FromResult<PublicationResultModel>(null);
 		}
 
 		/// <summary>
@@ -48,9 +48,9 @@ namespace Soup.TestUtils
 		/// <summary>
 		/// Search for a package using the query string 
 		/// </summary>
-		public Task<Search> SearchPackagesAsync(string q)
+		public Task<SearchModel> SearchPackagesAsync(string q)
 		{
-			return Task.FromResult<Search>(null);
+			return Task.FromResult<SearchModel>(null);
 		}
 	}
 }

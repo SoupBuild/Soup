@@ -1,4 +1,4 @@
-// <copyright company="Soup" file="PackageGetResultTests.cs">
+// <copyright company="Soup" file="PackageResultModelTests.cs">
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
@@ -7,12 +7,12 @@ namespace Soup.Api.UnitTests
 	using System.Collections.Generic;
 	using Xunit;
 
-	public class PackageGetResultTests
+	public class PackageResultModelTests
 	{
 		[Fact]
 		public void DefaultValues()
 		{
-			var uut = new PackageGetResult();
+			var uut = new PackageResultModel();
 
 			Assert.Null(uut.Name);
 			Assert.Null(uut.Description);
@@ -26,11 +26,11 @@ namespace Soup.Api.UnitTests
 			string name = "TestName";
 			string description = "TestDescrition";
 			SemanticVersion latest = new SemanticVersion(1, 0, 0);
-			List<PublicationSummary> publications = new List<PublicationSummary>()
+			List<PublicationSummaryModel> publications = new List<PublicationSummaryModel>()
 			{
 			};
 
-			var uut = new PackageGetResult()
+			var uut = new PackageResultModel()
 			{
 				Name = name,
 				Description = description,

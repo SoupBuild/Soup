@@ -7,12 +7,12 @@ namespace Soup.Api.UnitTests
 	using System;
 	using Xunit;
 
-	public class PublicationGetResultTests
+	public class PublicationResultModelTests
 	{
 		[Fact]
 		public void DefaultValues()
 		{
-			var uut = new PublicationGetResult();
+			var uut = new PublicationResultModel();
 
 			Assert.Null(uut.Version);
 			Assert.Equal(new DateTime(), uut.DatePublished);
@@ -26,7 +26,7 @@ namespace Soup.Api.UnitTests
 			DateTime datePublished = new DateTime(1);
 			int totalDownloads = 1;
 
-			var uut = new PublicationGetResult()
+			var uut = new PublicationResultModel()
 			{
 				Version = version,
 				DatePublished = datePublished,

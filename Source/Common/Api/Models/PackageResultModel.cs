@@ -9,7 +9,7 @@ namespace Soup.Api
 	/// <summary>
 	/// A class representing the package result
 	/// </summary>
-	public class PackageGetResult
+	public class PackageResultModel
 	{
 		public string Name { get; set; }
 
@@ -17,6 +17,6 @@ namespace Soup.Api
 
 		public SemanticVersion Latest { get; set; }
 
-		public IList<PublicationSummary> Publications { get; set; }
+		public IList<PublicationSummaryModel> Publications { get; set; }
 	}
 }
