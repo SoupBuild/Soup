@@ -126,7 +126,7 @@ namespace Soup.Client
 		private async Task<SemanticVersion> GetLatestAsync(string name)
 		{
 			var package = await Singleton<ISoupApi>.Instance.GetPackageAsync(name);
-			return SemanticVersion.Parse(package.Latest);
+			return package.Latest;
 		}
 
 		private async Task<Stream> DownloadPackageAsync(string name, SemanticVersion version)
