@@ -45,8 +45,6 @@ namespace Soup.Client.UnitTests
 
 			var args = new string[] { };
 			await uut.InvokeAsync(args);
-
-			Assert.Equal(new List<string> { "0.1.1" }, _logger.MessageList);
 		}
 	}
 }
