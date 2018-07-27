@@ -7,6 +7,7 @@ namespace Soup.Client
 	using System.IO;
 	using System.Net.Http;
 	using System.Threading.Tasks;
+	using IdentityModel.Client;
 	using Soup.Api;
 
 	/// <summary>
@@ -21,6 +22,8 @@ namespace Soup.Client
 			var projectDirectory = Directory.GetCurrentDirectory();
 			var recipe = await RecipeManager.LoadFromFileAsync(projectDirectory);
 			Log.Message($"Publish Project: {recipe.Name}@{recipe.Version}");
+
+			var result = await Singleton<ISoupIdentity>.Instance.AuthenticateUserAsync();
 
 			using (var stream = new MemoryStream())
 			{

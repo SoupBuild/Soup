@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Common.UnitTests", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Make", "Make\Soup.Make.csproj", "{9A30472A-B40C-4CF0-A166-DBF0987D7EF2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Make.UnitTests", "Make.UnitTests\Soup.Make.UnitTests.csproj", "{ABDB75A3-0351-4237-A12F-F49379E40402}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{9A30472A-B40C-4CF0-A166-DBF0987D7EF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A30472A-B40C-4CF0-A166-DBF0987D7EF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A30472A-B40C-4CF0-A166-DBF0987D7EF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABDB75A3-0351-4237-A12F-F49379E40402}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABDB75A3-0351-4237-A12F-F49379E40402}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABDB75A3-0351-4237-A12F-F49379E40402}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABDB75A3-0351-4237-A12F-F49379E40402}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

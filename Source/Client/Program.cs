@@ -47,6 +47,7 @@ namespace Soup.Client
 
 			// Setup the singletons
 			Singleton<ILogger>.Instance = new ConsoleLogger();
+			Singleton<ISoupIdentity>.Instance = new SoupIdentity();
 			Singleton<ISoupApi>.Instance = new SoupApi();
 			Singleton<LocalUserConfig>.Instance = userConfig;
 

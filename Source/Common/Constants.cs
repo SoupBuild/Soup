@@ -2,6 +2,8 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
+#define LOCAL
+
 namespace Soup
 {
 	using System;
@@ -33,11 +35,16 @@ namespace Soup
 
 		public static string RecipeFileName => "Recipe.json";
 #if LOCAL
-		public static string SoupSiteUrl => "http://localhost:3001";
+		public static string SoupIdentityUrl => "http://localhost:3002";
 #else
-		public static string SoupSiteUrl => "https://soupapi.azurewebsites.net";
+		public static string SoupIdentityUrl => "https://soupid.azurewebsites.net";
 #endif
-		public static string SoupRESTEndpointV1 => $"{SoupSiteUrl}/v1";
+#if LOCAL
+		public static string SoupApiUrl => "http://localhost:3001";
+#else
+		public static string SoupApiUrl => "https://soupapi.azurewebsites.net";
+#endif
+		public static string SoupRESTEndpointV1 => $"{SoupApiUrl}/v1";
 
 		public static string StagingFolderName => ".staging";
 
