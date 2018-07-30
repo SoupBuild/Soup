@@ -4,13 +4,17 @@
 
 namespace Soup.Api
 {
+	using Newtonsoft.Json;
+
 	/// <summary>
 	/// A container for the package summary result
 	/// </summary>
 	public class PackageSummaryModel
 	{
+		[JsonProperty("name")]
 		public string Name { get; set; }
 
+		[JsonProperty("description")]
 		public string Description { get; set; }
 	}
 }
