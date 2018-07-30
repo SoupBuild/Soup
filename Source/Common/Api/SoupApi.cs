@@ -23,7 +23,7 @@ namespace Soup.Api
 		{
 			using (HttpClient client = new HttpClient())
 			{
-				var url = $"{Constants.SoupRESTEndpointV1}/package/{name}/{version}/{name}_{version}.tgz";
+				var url = $"{Constants.SoupRESTEndpointV1}/packages/{name}/{version}/{name}_{version}.tgz";
 				Log.Verbose(url);
 				var response = await client.GetAsync(url);
 
@@ -44,12 +44,15 @@ namespace Soup.Api
 		{
 			using (HttpClient client = new HttpClient())
 			{
-				var url = $"{Constants.SoupRESTEndpointV1}/package/{name}";
+				var url = $"{Constants.SoupRESTEndpointV1}/packages/{name}";
 				Log.Verbose(url);
 				var response = await client.GetAsync(url);
 
 				// Verify that we got a success
-				response.EnsureSuccessStatusCode();
+				if (!response.IsSuccessStatusCode)
+				{
+					throw new ApiException(response.StatusCode);
+				}
 
 				// Parse the return result
 				var content = await response.Content.ReadAsStringAsync();
@@ -66,7 +69,7 @@ namespace Soup.Api
 		{
 			using (HttpClient client = new HttpClient())
 			{
-				var url = $"{Constants.SoupRESTEndpointV1}/package/{name}/{version}";
+				var url = $"{Constants.SoupRESTEndpointV1}/packages/{name}/{version}";
 				Log.Verbose(url);
 				var response = await client.GetAsync(url);
 
@@ -84,13 +87,13 @@ namespace Soup.Api
 		/// <summary>
 		/// Publish a new package version as an archive 
 		/// </summary>
-		public async Task<bool> PublishPackageAsync(Stream value)
+		public async Task<bool> PublishPackageAsync(string name, Stream value)
 		{
 			using (HttpClient client = new HttpClient())
 			{
 				var content = new StreamContent(value);
 				content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
-				var url = $"{Constants.SoupRESTEndpointV1}/package";
+				var url = $"{Constants.SoupRESTEndpointV1}/packages/{name}";
 				Log.Verbose(url);
 				var response = await client.PutAsync(url, content);
 
@@ -114,7 +117,7 @@ namespace Soup.Api
 		{
 			using (HttpClient client = new HttpClient())
 			{
-				var url = $"{Constants.SoupRESTEndpointV1}/packages/search?q={q}";
+				var url = $"{Constants.SoupRESTEndpointV1}/packages?q={q}";
 				Log.Verbose(url);
 				var response = await client.GetAsync(url);
 

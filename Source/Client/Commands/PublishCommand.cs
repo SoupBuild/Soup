@@ -36,7 +36,7 @@ namespace Soup.Client
 				// Publish the package to the service
 				try
 				{
-					bool created = await Singleton<ISoupApi>.Instance.PublishPackageAsync(stream);
+					bool created = await Singleton<ISoupApi>.Instance.PublishPackageAsync(recipe.Name, stream);
 					if (!created)
 					{
 						Log.Warning("The package version already existed! No change was made.");

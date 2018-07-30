@@ -5,8 +5,8 @@
 namespace Soup.Client.UnitTests
 {
 	using System;
+	using Moq;
 	using Soup.Api;
-	using Soup.TestUtils;
 	using Xunit;
 
 	/// <summary>
@@ -18,7 +18,7 @@ namespace Soup.Client.UnitTests
 		{
 			Singleton<ILogger>.Instance = new MockLogger();
 			Singleton<LocalUserConfig>.Instance = new LocalUserConfig();
-			Singleton<ISoupApi>.Instance = new MockSoupApi();
+			Singleton<ISoupApi>.Instance = Mock.Of<ISoupApi>();
 		}
 
 		public void Dispose()

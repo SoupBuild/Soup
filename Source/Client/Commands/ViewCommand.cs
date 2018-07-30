@@ -4,6 +4,7 @@
 
 namespace Soup.Client
 {
+	using System.Net;
 	using System.Net.Http;
 	using System.Threading.Tasks;
 	using Newtonsoft.Json;
@@ -34,9 +35,16 @@ namespace Soup.Client
 				var output = JsonConvert.SerializeObject(package);
 				Log.Message(output);
 			}
-			catch (HttpRequestException ex)
+			catch (ApiException ex)
 			{
-				Log.Error(ex.ToString());
+				if (ex.StatusCode == HttpStatusCode.NotFound)
+				{
+					Log.Warning("The requested package does not exist.");
+				}
+				else
+				{
+					Log.Error(ex.ToString());
+				}
 			}
 		}
 
