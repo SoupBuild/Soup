@@ -2,7 +2,7 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup.Common.UnitTests
+namespace Soup.UnitTests
 {
 	using Xunit;
 
