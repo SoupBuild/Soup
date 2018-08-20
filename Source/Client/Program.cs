@@ -8,6 +8,7 @@ namespace Soup.Client
 	using System.IO;
 	using System.Runtime.InteropServices;
 	using System.Threading.Tasks;
+	using Compiler;
 	using Soup.Api;
 
 	/// <summary>
@@ -21,7 +22,6 @@ namespace Soup.Client
 		private static IReadOnlyList<ICommand> _commands = new List<ICommand>()
 		{
 			new BuildCommand(),
-			new GenerateCommand(),
 			new InitializeCommand(),
 			new InstallCommand(),
 			new PackCommand(),
@@ -53,11 +53,11 @@ namespace Soup.Client
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				Singleton<IBuildEngine>.Instance = new MSBuild.BuildEngine();
+				Singleton<ICompiler>.Instance = new Compiler.VC.Compiler();
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
-				Singleton<IBuildEngine>.Instance = new Make.BuildEngine();
+				Singleton<ICompiler>.Instance = new Compiler.GCC.Compiler();
 			}
 			else
 			{

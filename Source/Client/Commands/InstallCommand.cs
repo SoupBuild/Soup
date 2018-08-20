@@ -72,7 +72,6 @@ namespace Soup.Client
 				{
 					// Install the package
 					var installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
-					await GenerateBuildAsync(tempStagingPath, installedRecipe);
 					var installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
 
 					// Register the package in the recipe
@@ -92,7 +91,6 @@ namespace Soup.Client
 				using (var archiveStream = File.OpenRead(package))
 				{
 					var installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
-					await GenerateBuildAsync(tempStagingPath, installedRecipe);
 					var installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
 
 					// Register the package in the recipe if it does not exist
@@ -110,7 +108,7 @@ namespace Soup.Client
 				return;
 			}
 
-			// Cleanup
+			// Cleanup the working directory
 			if (Directory.Exists(tempStagingPath))
 			{
 				Directory.Delete(tempStagingPath, true);
@@ -176,47 +174,6 @@ namespace Soup.Client
 			return recipe;
 		}
 
-		private async Task GenerateBuildAsync(string tempPath, Recipe recipe)
-		{
-			var buildEngine = Singleton<IBuildEngine>.Instance;
-
-			// Generate the build projects
-			var tempBuildPath = Path.Combine(tempPath, Constants.StoreBuildFolderName);
-			var buildPath = PackageManager.BuildKitchenBuildPath(buildEngine.Name, recipe);
-			var includePath = PackageManager.BuildKitchenIncludePath(recipe);
-			var packagePath = PackageManager.BuildKitchenPackagePath(recipe);
-			var libraryPath = PackageManager.BuildKitchenLibraryPath();
-			var objectPath = Path.Combine(buildPath, "out");
-
-			Directory.CreateDirectory(tempBuildPath);
-
-			await buildEngine.GenerateDependenciesAsync(recipe, tempBuildPath);
-			await buildEngine.GenerateBuildAsync(
-				recipe,
-				tempBuildPath,
-				buildPath,
-				packagePath,
-				libraryPath,
-				objectPath);
-
-			// TODO : Should not hit this when, verify the package exists before download
-			// For now delete and recreate it
-			if (Directory.Exists(buildPath))
-			{
-				Directory.Delete(buildPath, true);
-			}
-
-			// Ensure the parent directory exists
-			var buildParentDirectory = Directory.GetParent(buildPath);
-			if (!buildParentDirectory.Exists)
-			{
-				buildParentDirectory.Create();
-			}
-
-			// Move the results out of the staging directory
-			Directory.Move(tempBuildPath, buildPath);
-		}
-
 		private async Task GenerateIncludeAsync(string tempPath, Recipe recipe)
 		{
 			var includePath = PackageManager.BuildKitchenIncludePath(recipe);
@@ -269,9 +226,6 @@ namespace Soup.Client
 
 					// Install dependecies recursively 
 					await InstallRecursiveDependencies(tempPath, installedRecipe);
-
-					// Now generate the build files
-					await GenerateBuildAsync(tempPath, installedRecipe);
 				}
 			}
 		}

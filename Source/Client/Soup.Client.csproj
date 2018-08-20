@@ -12,8 +12,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Soup.Common.csproj" />
-    <ProjectReference Include="..\Make\Soup.Make.csproj" />
-    <ProjectReference Include="..\MSBuild\Soup.MSBuild.csproj" />
+    <ProjectReference Include="..\Core\Soup.Core.csproj" />
+    <ProjectReference Include="..\Compiler\GCC\Compiler.GCC.csproj" />
+    <ProjectReference Include="..\Compiler\VC\Compiler.VC.csproj" />
   </ItemGroup>
 </Project>

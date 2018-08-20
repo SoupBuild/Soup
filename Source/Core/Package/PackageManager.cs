@@ -29,14 +29,14 @@ namespace Soup
 				Constants.StoreLibraryFolderName);
 		}
 
-		public static string BuildKitchenBuildPath(string buildsystem, Recipe recipe)
+		public static string BuildKitchenBuildPath(Recipe recipe)
 		{
-			return BuildKitchenBuildPath(buildsystem, recipe.Name, recipe.Version);
+			return BuildKitchenBuildPath(recipe.Name, recipe.Version);
 		}
 
-		public static string BuildKitchenBuildPath(string buildsystem, PackageReference reference)
+		public static string BuildKitchenBuildPath(PackageReference reference)
 		{
-			return BuildKitchenBuildPath(buildsystem, reference.Name, reference.Version);
+			return BuildKitchenBuildPath(reference.Name, reference.Version);
 		}
 
 		public static string BuildKitchenPackagePath(Recipe recipe)
@@ -291,11 +291,11 @@ namespace Soup
 			return path;
 		}
 
-		private static string BuildKitchenBuildPath(string buildSystem, string projectName, SemanticVersion version)
+		private static string BuildKitchenBuildPath(string projectName, SemanticVersion version)
 		{
 			var kitchenPath = Singleton<LocalUserConfig>.Instance.PackageStore;
 			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
-			var path = Path.Combine(kitchenPath, Constants.StoreBuildFolderName, buildSystem, packageVersionDirectory);
+			var path = Path.Combine(kitchenPath, Constants.StoreBuildFolderName, packageVersionDirectory);
 			return path;
 		}
 
