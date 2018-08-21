@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Version>0.1.3</Version>
+    <Version>0.1.4</Version>
     <AssemblyName>Soup</AssemblyName>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
@@ -12,8 +12,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Compiler\MSVC\Compiler.MSVC.csproj" />
     <ProjectReference Include="..\Core\Soup.Core.csproj" />
     <ProjectReference Include="..\Compiler\GCC\Compiler.GCC.csproj" />
-    <ProjectReference Include="..\Compiler\VC\Compiler.VC.csproj" />
   </ItemGroup>
 </Project>

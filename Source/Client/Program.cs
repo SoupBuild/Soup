@@ -53,7 +53,7 @@ namespace Soup.Client
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				Singleton<ICompiler>.Instance = new Compiler.VC.Compiler();
+				Singleton<ICompiler>.Instance = new Compiler.MSVC.Compiler();
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
