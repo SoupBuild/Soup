@@ -15,11 +15,14 @@ namespace Soup.Compiler.MSVC
 			string compiler = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\cl.exe";
 			using (Process process = new Process())
 			{
+				var commandArgs = BuildCompilerArguments(args);
+				Log.Message(commandArgs);
+
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.FileName = compiler;
 				process.StartInfo.WorkingDirectory = args.WorkingDirectory;
-				process.StartInfo.Arguments = $"{args.FileName}";
+				process.StartInfo.Arguments = commandArgs;
 				process.Start();
 
 				while (!process.StandardOutput.EndOfStream)
@@ -37,6 +40,11 @@ namespace Soup.Compiler.MSVC
 
 				return Task.CompletedTask;
 			}
+		}
+
+		private static string BuildCompilerArguments(CompilerArguments args)
+		{
+			return $"/nologo /c {args.FileName}";
 		}
 
 		private static void ProcessLine(string line)
