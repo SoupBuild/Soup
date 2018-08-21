@@ -8,9 +8,22 @@ namespace Soup
 
 	public class BuildEngine
 	{
-		public Task ExecuteAsync(Recipe recipe)
+		private ICompiler _compiler;
+
+		public BuildEngine(ICompiler compiler)
 		{
-			return Task.CompletedTask;
+			_compiler = compiler;
+		}
+
+		public async Task ExecuteAsync(Recipe recipe)
+		{
+			var args = new CompilerArguments()
+			{
+				WorkingDirectory = ".",
+				FileName = "Main.cpp"
+			};
+
+			await _compiler.ExecuteAsync(args);
 		}
 
 		/// <summary>

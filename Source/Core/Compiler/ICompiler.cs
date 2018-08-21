@@ -8,6 +8,6 @@ namespace Soup
 
 	public interface ICompiler
 	{
-		Task ExecuteAsync();
+		Task ExecuteAsync(CompilerArguments args);
 	}
 }

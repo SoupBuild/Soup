@@ -23,7 +23,7 @@ namespace Soup.Client
 				return;
 			}
 
-			var compiler = Singleton<ICommand>.Instance;
+			var compiler = Singleton<ICompiler>.Instance;
 
 			// Ensure the library directory exists
 			var libraryPath = PackageManager.BuildKitchenLibraryPath();
@@ -36,7 +36,7 @@ namespace Soup.Client
 			Log.Message("");
 			Log.Message("Building Project");
 			var buildPath = Path.Combine(Constants.ProjectGenerateFolderName, Constants.StoreBuildFolderName);
-			var buildEngine = new BuildEngine();
+			var buildEngine = new BuildEngine(compiler);
 			await buildEngine.ExecuteAsync(recipe);
 		}
 	}

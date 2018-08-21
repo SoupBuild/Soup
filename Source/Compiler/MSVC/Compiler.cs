@@ -10,15 +10,16 @@ namespace Soup.Compiler.MSVC
 
 	public class Compiler : ICompiler
 	{
-		public Task ExecuteAsync()
+		public Task ExecuteAsync(CompilerArguments args)
 		{
-			string compiler = "cl.exe";
+			string compiler = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\cl.exe";
 			using (Process process = new Process())
 			{
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.FileName = compiler;
-				process.StartInfo.Arguments = $"-C";
+				process.StartInfo.WorkingDirectory = args.WorkingDirectory;
+				process.StartInfo.Arguments = $"{args.FileName}";
 				process.Start();
 
 				while (!process.StandardOutput.EndOfStream)

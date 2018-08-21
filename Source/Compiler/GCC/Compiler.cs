@@ -10,7 +10,7 @@ namespace Soup.Compiler.GCC
 
 	public class Compiler : ICompiler
 	{
-		public Task ExecuteAsync()
+		public Task ExecuteAsync(CompilerArguments args)
 		{
 			string compiler = "gcc";
 			using (Process process = new Process())
@@ -18,6 +18,7 @@ namespace Soup.Compiler.GCC
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.FileName = compiler;
+				process.StartInfo.WorkingDirectory = args.WorkingDirectory;
 				process.StartInfo.Arguments = $"-C";
 				process.Start();
 
