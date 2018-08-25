@@ -1,8 +1,11 @@
+
+export module MultiVersion;
+
 #include "MultiVersion.h"
 
 using namespace TestMultiVersion;
 
-std::wstring MultiVersion::GetVersion()
+int MultiVersion::GetVersion()
 {
-  return L"Version1";
+  return 1;
 }

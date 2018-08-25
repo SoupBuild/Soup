@@ -4,9 +4,12 @@
 
 namespace Soup
 {
+	using System.Collections.Generic;
+
 	public class CompilerArguments
 	{
-		public string WorkingDirectory { get; set; }
-		public string FileName { get; set; }
+		public string RootDirectory { get; set; }
+		public string ObjectDirectory { get; set; }
+		public IList<string> SourceFiles { get; set; }
 	}
 }

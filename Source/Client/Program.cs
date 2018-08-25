@@ -57,7 +57,7 @@ namespace Soup.Client
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
-				Singleton<ICompiler>.Instance = new Compiler.GCC.Compiler();
+				Singleton<ICompiler>.Instance = new Compiler.Clang.Compiler();
 			}
 			else
 			{

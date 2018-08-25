@@ -4,6 +4,7 @@
 
 namespace Soup
 {
+	using System.IO;
 	using System.Threading.Tasks;
 
 	public class BuildEngine
@@ -19,9 +20,17 @@ namespace Soup
 		{
 			var args = new CompilerArguments()
 			{
-				WorkingDirectory = ".",
-				FileName = "Main.cpp"
+				RootDirectory = "./",
+				ObjectDirectory = "obj",
+				SourceFiles = recipe.Source
 			};
+
+			// Ensure the object directory exists
+			var objectDirectry = Path.Combine(args.RootDirectory, args.ObjectDirectory);
+			if (!Directory.Exists(objectDirectry))
+			{
+				Directory.CreateDirectory(objectDirectry);
+			}
 
 			await _compiler.ExecuteAsync(args);
 		}

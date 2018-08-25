@@ -21,7 +21,7 @@ namespace Soup.Compiler.MSVC
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.FileName = compiler;
-				process.StartInfo.WorkingDirectory = args.WorkingDirectory;
+				process.StartInfo.WorkingDirectory = args.RootDirectory;
 				process.StartInfo.Arguments = commandArgs;
 				process.Start();
 
@@ -33,7 +33,7 @@ namespace Soup.Compiler.MSVC
 
 				process.WaitForExit();
 
-				if (process.ExitCode == 0)
+				if (process.ExitCode != 0)
 				{
 					throw new InvalidOperationException();
 				}
@@ -44,7 +44,13 @@ namespace Soup.Compiler.MSVC
 
 		private static string BuildCompilerArguments(CompilerArguments args)
 		{
-			return $"/nologo /c {args.FileName}";
+			// Start by disabling the logo output and enable two stage compile/link
+			var commandArgs = "/nologo /c";
+			
+			// Lastly add the files
+			commandArgs += string.Join(" ", args.SourceFiles);;
+
+			return commandArgs;
 		}
 
 		private static void ProcessLine(string line)

@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Client/Soup.Client.csproj"
+                "${workspaceFolder}/Soup.sln"
             ],
             "problemMatcher": "$msCompile"
         }

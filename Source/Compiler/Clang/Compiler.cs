@@ -2,25 +2,33 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup.Compiler.GCC
+namespace Soup.Compiler.Clang
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
 	using System.Threading.Tasks;
 
 	public class Compiler : ICompiler
 	{
 		public Task ExecuteAsync(CompilerArguments args)
 		{
-			string compiler = "gcc";
+			// Set the working directory to the output directory
+			var workingDirectory = Path.Combine(args.RootDirectory, args.ObjectDirectory);
+
+			string compiler = "/usr/bin/clang++";
+			var commandArgs = BuildCompilerArguments(workingDirectory, args);
+
+			Log.Message($"{compiler} {commandArgs}");
 			using (Process process = new Process())
 			{
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.FileName = compiler;
-				process.StartInfo.WorkingDirectory = args.RootDirectory;
-				process.StartInfo.Arguments = BuildCompilerArguments(args);
+				process.StartInfo.WorkingDirectory = workingDirectory;
+				process.StartInfo.Arguments = commandArgs;
 				process.Start();
 
 				while (!process.StandardOutput.EndOfStream)
@@ -40,10 +48,13 @@ namespace Soup.Compiler.GCC
 			}
 		}
 
-		private static string BuildCompilerArguments(CompilerArguments args)
+		private static string BuildCompilerArguments(string workingDirectory, CompilerArguments args)
 		{
 			var commandArgs = new List<string>();
 			
+			// Only run preprocess, compile, and assemble steps
+			commandArgs.Add("-c"); // --compile
+
 			// Set the Standard Library implementation
 			commandArgs.Add("-stdlib=libc++");
 			
@@ -53,8 +64,13 @@ namespace Soup.Compiler.GCC
 			// Enable experimental modules
 			commandArgs.Add("-fmodules-ts");
 
+			// Precompile only
+			commandArgs.Add("-o");
+			commandArgs.Add("MultiVersion.ifc");
+
 			// Lastly add the files
-			commandArgs.AddRange(args.SourceFiles);
+			var relativePath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
+			commandArgs.AddRange(args.SourceFiles.Select(value => relativePath + value));
 
 			return string.Join(" ", commandArgs);
 		}
