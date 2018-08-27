@@ -1,13 +1,13 @@
-#include "MultiVersion.h"
+import TestMultiVersion;
 
 using namespace TestMultiVersion;
 
-std::wstring MultiVersion::GetVersion()
+int MultiVersion::GetVersion()
 {
-  return L"Version1.2";
+  return 2;
 }
 
-std::wstring MultiVersion::GetVersionEx()
+float MultiVersion::GetVersionEx()
 {
-  return L"Version2";
+  return 1.2f;
 }

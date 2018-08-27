@@ -2,7 +2,7 @@
   "name": "TestProject1",
   "version": "1.0.33",
   "dependencies": [
-    "TestMultiVersion@1.0.2"
+    "../TestMultiVersion1/Recipe.json"
   ],
   "public": [
     "Source/Wrapper.h"
