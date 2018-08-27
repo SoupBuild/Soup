@@ -14,8 +14,8 @@ Copyright (C) mwasplund. All rights reserved.
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <BuildDir>$(MSBuildThisFileDirectory)</BuildDir>
-    <RootDir>$(BuildDir)..\</RootDir>
-    <SourceDir>$(RootDir)Source\</SourceDir>
+    <SourceDir>$(BuildDir)..\</SourceDir>
+    <RootDir>$(SourceDir)..\</RootDir>
     <BinDir>$(RootDir)bin\</BinDir>
     <ObjDir>$(RootDir)obj\</ObjDir>
     <TempDir>$(RootDir)temp\</TempDir>

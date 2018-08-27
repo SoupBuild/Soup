@@ -5,7 +5,6 @@
     "TestMultiVersion@2.0.3",
     "TestProject1@1.0.33"
   ],
-  "public": [],
   "source": [
     "Main.cpp"
   ]

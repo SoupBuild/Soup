@@ -11,13 +11,6 @@ namespace Soup.Client.UnitTests
 	/// </summary>
 	public class VersionCommandTests
 	{
-		private MockLogger _logger;
-
-		public VersionCommandTests()
-		{
-			_logger = new MockLogger();
-		}
-
 		[Fact]
 		public void Initialize()
 		{

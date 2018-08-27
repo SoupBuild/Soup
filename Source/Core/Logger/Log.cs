@@ -14,10 +14,16 @@ namespace Soup
 		static Log()
 		{
 			// Setup the source
-			_source = new TraceSource("Log");
+			_source = new TraceSource("Log", SourceLevels.All);
 
 			// Register the default console listener
-			_source.Listeners.Add(new TextWriterTraceListener(Console.Out));
+			_source.Listeners.Add(
+				new TextWriterExtendedTraceListener(Console.Out)
+				{
+					ShowSourceName = false,
+					ShowEventId = false,
+					ShowEventType = false,
+				});
 		}
 
 		public static void Info(string message)
