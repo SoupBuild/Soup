@@ -1,6 +1,6 @@
 <!--
 ***********************************************************************************************
-CSharp.Common.props
+Common.props
 
 WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
           created a backup copy.  Incorrect changes to this file will make it
@@ -10,8 +10,18 @@ Copyright (C) mwasplund. All rights reserved.
 ***********************************************************************************************
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="Common.props" />
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
+    <BuildDir>$(MSBuildThisFileDirectory)</BuildDir>
+    <RootDir>$(BuildDir)..\</RootDir>
+    <SourceDir>$(RootDir)Source\</SourceDir>
+    <BinDir>$(RootDir)bin\</BinDir>
+    <ObjDir>$(RootDir)obj\</ObjDir>
+    <TempDir>$(RootDir)temp\</TempDir>
+  </PropertyGroup>
+
+  <!-- Bring in language specific overrides -->
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDir)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDir)</BaseOutputPath>
