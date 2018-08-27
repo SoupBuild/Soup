@@ -10,11 +10,9 @@ namespace Soup.Client
 	/// <summary>
 	/// Build Command
 	/// </summary>
-	internal class BuildCommand : ICommand
+	internal class BuildCommand
 	{
-		public string Name => "build";
-
-		public async Task InvokeAsync(string[] args)
+		public async Task InvokeAsync(BuildOptions Options)
 		{
 			var recipe = await RecipeManager.LoadFromFileAsync(@"./");
 			if (recipe == null)

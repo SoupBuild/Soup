@@ -13,21 +13,13 @@ namespace Soup.Client
 	/// <summary>
 	/// Install Command
 	/// </summary>
-	internal class InstallCommand : ICommand
+	internal class InstallCommand
 	{
-		public string Name => "install";
-
 		/// <summary>
 		/// Invoke the install command
 		/// </summary>
-		public async Task InvokeAsync(string[] args)
+		public async Task InvokeAsync(InstallOptions options)
 		{
-			if (args.Length > 2)
-			{
-				ShowUsage();
-				return;
-			}
-
 			var workingDirectory = @"./";
 			Recipe recipe = null;
 			try
@@ -191,16 +183,6 @@ namespace Soup.Client
 					await InstallRecursiveDependencies(tempPath, installedRecipe);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Show the usage details for this command
-		/// </summary>
-		private void ShowUsage()
-		{
-			Log.Message("");
-			Log.Message("Usage: soup install <package_file>");
-			Log.Message("\tpackage_file: Must be a zip file.");
 		}
 	}
 }

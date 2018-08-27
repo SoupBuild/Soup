@@ -22,52 +22,52 @@ namespace Soup
 			return $"v{version.Major}_{version.Minor}_{version.Patch}";
 		}
 
-		public static string BuildKitchenLibraryPath()
+		public static string BuildKitchenLibraryPath(LocalUserConfig config)
 		{
 			return Path.Combine(
-				Singleton<LocalUserConfig>.Instance.PackageStore,
+				config.PackageStore,
 				Constants.StoreLibraryFolderName);
 		}
 
-		public static string BuildKitchenBuildPath(Recipe recipe)
+		public static string BuildKitchenBuildPath(LocalUserConfig config, Recipe recipe)
 		{
-			return BuildKitchenBuildPath(recipe.Name, recipe.Version);
+			return BuildKitchenBuildPath(config, recipe.Name, recipe.Version);
 		}
 
-		public static string BuildKitchenBuildPath(PackageReference reference)
+		public static string BuildKitchenBuildPath(LocalUserConfig config, PackageReference reference)
 		{
-			return BuildKitchenBuildPath(reference.Name, reference.Version);
+			return BuildKitchenBuildPath(config, reference.Name, reference.Version);
 		}
 
-		public static string BuildKitchenPackagePath(Recipe recipe)
+		public static string BuildKitchenPackagePath(LocalUserConfig config, Recipe recipe)
 		{
-			return BuildKitchenPackagePath(recipe.Name, recipe.Version);
+			return BuildKitchenPackagePath(config, recipe.Name, recipe.Version);
 		}
 
-		public static string BuildKitchenPackagePath(PackageReference reference)
+		public static string BuildKitchenPackagePath(LocalUserConfig config, PackageReference reference)
 		{
-			return BuildKitchenPackagePath(reference.Name, reference.Version);
+			return BuildKitchenPackagePath(config, reference.Name, reference.Version);
 		}
 
-		public static string BuildKitchenIncludePath(Recipe recipe)
+		public static string BuildKitchenIncludePath(LocalUserConfig config, Recipe recipe)
 		{
-			return BuildKitchenIncludePath(recipe.Name, recipe.Version);
+			return BuildKitchenIncludePath(config, recipe.Name, recipe.Version);
 		}
 
-		public static string BuildKitchenIncludePath(PackageReference reference)
+		public static string BuildKitchenIncludePath(LocalUserConfig config, PackageReference reference)
 		{
-			return BuildKitchenIncludePath(reference.Name, reference.Version);
+			return BuildKitchenIncludePath(config, reference.Name, reference.Version);
 		}
 
-		public static async Task<List<PackageReference>> BuildRecursiveDependeciesAsync(Recipe recipe)
+		public static async Task<List<PackageReference>> BuildRecursiveDependeciesAsync(LocalUserConfig config, Recipe recipe)
 		{
 			List<PackageReference> result = new List<PackageReference>();
 			foreach (var dependency in recipe.Dependencies)
 			{
 				result.Add(dependency);
-				var dependencyPackagePath = BuildKitchenPackagePath(dependency);
+				var dependencyPackagePath = BuildKitchenPackagePath(config, dependency);
 				var dependencyRecipe = await RecipeManager.LoadFromFileAsync(dependencyPackagePath);
-				var transientDependencies = await BuildRecursiveDependeciesAsync(dependencyRecipe);
+				var transientDependencies = await BuildRecursiveDependeciesAsync(config, dependencyRecipe);
 				result.AddRange(transientDependencies);
 			}
 
@@ -229,25 +229,25 @@ namespace Soup
 			return Path.Combine(projectName, $"{version}");
 		}
 
-		private static string BuildKitchenPackagePath(string projectName, SemanticVersion version)
+		private static string BuildKitchenPackagePath(LocalUserConfig config, string projectName, SemanticVersion version)
 		{
-			var kitchenPath = Singleton<LocalUserConfig>.Instance.PackageStore;
+			var kitchenPath = config.PackageStore;
 			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
 			var path = Path.Combine(kitchenPath, Constants.StorePackageFolderName, packageVersionDirectory);
 			return path;
 		}
 
-		private static string BuildKitchenBuildPath(string projectName, SemanticVersion version)
+		private static string BuildKitchenBuildPath(LocalUserConfig config, string projectName, SemanticVersion version)
 		{
-			var kitchenPath = Singleton<LocalUserConfig>.Instance.PackageStore;
+			var kitchenPath = config.PackageStore;
 			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
 			var path = Path.Combine(kitchenPath, Constants.StoreBuildFolderName, packageVersionDirectory);
 			return path;
 		}
 
-		private static string BuildKitchenIncludePath(string projectName, SemanticVersion version)
+		private static string BuildKitchenIncludePath(LocalUserConfig config, string projectName, SemanticVersion version)
 		{
-			var kitchenPath = Singleton<LocalUserConfig>.Instance.PackageStore;
+			var kitchenPath = config.PackageStore;
 			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
 			var path = Path.Combine(kitchenPath, Constants.StoreIncludeRootFolderName, packageVersionDirectory);
 			return path;

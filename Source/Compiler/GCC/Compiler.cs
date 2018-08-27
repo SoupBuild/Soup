@@ -66,7 +66,7 @@ namespace Soup.Compiler.GCC
 
 		private static void ProcessLine(string line)
 		{
-			Log.Message(line);
+			Log.Info(line);
 		}
 	}
 }

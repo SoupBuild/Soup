@@ -4,10 +4,12 @@
 
 namespace Soup.Client
 {
+	using System;
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Runtime.InteropServices;
 	using System.Threading.Tasks;
+	using CommandLine;
 	using Compiler;
 	using Soup.Api;
 
@@ -21,49 +23,35 @@ namespace Soup.Client
 		/// </summary>
 		private static IReadOnlyList<ICommand> _commands = new List<ICommand>()
 		{
-			new BuildCommand(),
-			new InitializeCommand(),
-			new InstallCommand(),
-			new PackCommand(),
-			new PublishCommand(),
-			new VersionCommand(),
-			new ViewCommand(),
-		};
 
-		// TODO : Convert over to using async main when C# 7.1 is available
-		public static void Main(string[] args)
-		{
-			MainAsync(args).Wait();
-		}
+		};
 
 		/// <summary>
 		/// The root of all evil - async style
 		/// </summary>
-		private static async Task MainAsync(string[] args)
+		private static async Task Main(string[] args)
 		{
+			Parser.Default.ParseArguments<
+				BuildOptions,
+				InitializeOptions,
+				InstallOptions,
+				PackOptions,
+				PublishOptions,
+				VersionOptions,
+				ViewOptions>(args)
+				.MapResult(
+					(BuildOptions options) => new BuildCommand().InvokeAsync(options),
+					(InitializeOptions options) => new InitializeCommand().InvokeAsync(options),
+					(InstallOptions options) => new InstallCommand().InvokeAsync(options),
+					(PackOptions options) => new PackCommand().InvokeAsync(options),
+					(PublishOptions options) => new PublishCommand().InvokeAsync(options),
+					(VersionOptions options) => new VersionCommand().InvokeAsync(options),
+					(ViewOptions options) => new ViewCommand().InvokeAsync(options),
+					errors => Task.CompletedTask).Wait();
+
 			// Load the user configuration settings
 			var userConfig = new LocalUserConfig();
 			var stagingDirectory = Path.Combine(userConfig.PackageStore, Constants.StagingFolderName);
-
-			// Setup the singletons
-			Singleton<ILogger>.Instance = new ConsoleLogger();
-			Singleton<ISoupIdentity>.Instance = new SoupIdentity();
-			Singleton<ISoupApi>.Instance = new SoupApi();
-			Singleton<LocalUserConfig>.Instance = userConfig;
-
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				Singleton<ICompiler>.Instance = new Compiler.MSVC.Compiler();
-			}
-			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-			{
-				Singleton<ICompiler>.Instance = new Compiler.Clang.Compiler();
-			}
-			else
-			{
-				Log.Error("Unknown platform.");
-				return;
-			}
 
 			// Ensure we are in a clean state
 			if (Directory.Exists(stagingDirectory))
@@ -71,42 +59,24 @@ namespace Soup.Client
 				Log.Warning("The staging directory was not cleaned up!");
 				Directory.Delete(stagingDirectory, true);
 			}
-
-			// Find the correct cammand to invoke
-			bool foundCommand = false;
-			if (args.Length > 0)
-			{
-				foreach (var command in _commands)
-				{
-					if (command.Name == args[0])
-					{
-						await command.InvokeAsync(args);
-						foundCommand = true;
-						break;
-					}
-				}
-			}
-
-			if (!foundCommand)
-			{
-				ShowUsage();
-				return;
-			}
 		}
 
 		/// <summary>
-		/// Show the usage details for the general case
+		/// Setup the required Compiler
 		/// </summary>
-		private static void ShowUsage()
+		private static ICompiler GetCompiler()
 		{
-			Log.Message("");
-			Log.Message("Usage: soup <command>");
-			Log.Message("");
-
-			Log.Message("Available Commands:");
-			foreach (var command in _commands)
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				Log.Message(string.Format("\t{0}", command.Name));
+				return new Compiler.MSVC.Compiler();
+			}
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			{
+				return new Compiler.Clang.Compiler();
+			}
+			else
+			{
+				throw new NotSupportedException("Unknown platform.");
 			}
 		}
 	}

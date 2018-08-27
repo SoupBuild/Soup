@@ -21,7 +21,7 @@ namespace Soup.Compiler.Clang
 			string compiler = "/usr/bin/clang++";
 			var commandArgs = BuildCompilerArguments(workingDirectory, args);
 
-			Log.Message($"{compiler} {commandArgs}");
+			Log.Info($"{compiler} {commandArgs}");
 			using (Process process = new Process())
 			{
 				process.StartInfo.UseShellExecute = false;

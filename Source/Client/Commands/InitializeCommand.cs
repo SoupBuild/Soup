@@ -11,11 +11,9 @@ namespace Soup.Client
 	/// <summary>
 	/// Initialize Command
 	/// </summary>
-	internal class InitializeCommand : ICommand
+	internal class InitializeCommand
 	{
-		public string Name => "init";
-
-		public async Task InvokeAsync(string[] args)
+		public async Task InvokeAsync(InitializeOptions options)
 		{
 			Log.Message("The initialize utility will walk through the creation of the most basic Console recipe.\n");
 

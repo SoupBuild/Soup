@@ -26,12 +26,5 @@ namespace Soup.Client.UnitTests
 			Singleton<LocalUserConfig>.Instance = null;
 			Singleton<ISoupApi>.Instance = null;
 		}
-
-		[Fact]
-		public void NameIsCorrect()
-		{
-			var uut = new InstallCommand();
-			Assert.Equal("install", uut.Name);
-		}
 	}
 }

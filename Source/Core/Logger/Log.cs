@@ -5,32 +5,39 @@
 namespace Soup
 {
 	using System;
+	using System.Diagnostics;
 
 	public static class Log
 	{
-		public static void Message(string message)
+		private static TraceSource _source;
+
+		static Log()
 		{
-			Singleton<ILogger>.Instance.Message(message);
+			// Setup the source
+			_source = new TraceSource("Log");
+
+			// Register the default console listener
+			_source.Listeners.Add(new TextWriterTraceListener(Console.Out));
 		}
 
-		public static void Message(string message, ConsoleColor color)
+		public static void Info(string message)
 		{
-			Singleton<ILogger>.Instance.Message(message, color);
+			_source.TraceEvent(TraceEventType.Information, 0, message);
 		}
 
 		public static void Verbose(string message)
 		{
-			Singleton<ILogger>.Instance.Verbose(message);
+			_source.TraceEvent(TraceEventType.Verbose, 0, message);
 		}
 
 		public static void Warning(string message)
 		{
-			Singleton<ILogger>.Instance.Warning(message);
+			_source.TraceEvent(TraceEventType.Warning, 0, message);
 		}
 
 		public static void Error(string message)
 		{
-			Singleton<ILogger>.Instance.Error(message);
+			_source.TraceEvent(TraceEventType.Error, 0, message);
 		}
 	}
 }

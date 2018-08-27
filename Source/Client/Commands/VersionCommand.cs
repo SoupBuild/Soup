@@ -10,11 +10,9 @@ namespace Soup.Client
 	/// <summary>
 	/// Version Command
 	/// </summary>
-	internal class VersionCommand : ICommand
+	internal class VersionCommand
 	{
-		public string Name => "version";
-
-		public Task InvokeAsync(string[] args)
+		public Task InvokeAsync(VersionOptions options)
 		{
 			var version = Assembly.GetExecutingAssembly().GetName().Version;
 			Log.Message($"{version.Major}.{version.Minor}.{version.Build}");

@@ -7,17 +7,14 @@ namespace Soup.Client
 	using System.IO;
 	using System.Net.Http;
 	using System.Threading.Tasks;
-	using IdentityModel.Client;
 	using Soup.Api;
 
 	/// <summary>
 	/// Publish Command
 	/// </summary>
-	internal class PublishCommand : ICommand
+	internal class PublishCommand
 	{
-		public string Name => "publish";
-
-		public async Task InvokeAsync(string[] args)
+		public async Task InvokeAsync(PublishOptions options)
 		{
 			var projectDirectory = Directory.GetCurrentDirectory();
 			var recipe = await RecipeManager.LoadFromFileAsync(projectDirectory);

@@ -107,27 +107,21 @@ namespace Soup
 		/// <summary>
 		/// Build the dependecies for the provided recipe recursively
 		/// </summary>
-		private async Task BuildAllDependenciesRecursivelyAsync(Recipe recipe)
+		private async Task BuildAllDependenciesRecursivelyAsync(LocalUserConfig config, Recipe recipe)
 		{
 			foreach (var dependecy in recipe.Dependencies)
 			{
 				// Load this package recipe
-				var packagePath = PackageManager.BuildKitchenPackagePath(dependecy);
+				var packagePath = PackageManager.BuildKitchenPackagePath(config, dependecy);
 				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
 				// Build all recursive dependencies
-				await BuildAllDependenciesRecursivelyAsync(dependecyRecipe);
+				await BuildAllDependenciesRecursivelyAsync(config, dependecyRecipe);
 
 				// Build this dependecy
-				Log.Message($"Building {dependecy}");
-				var buildPath = PackageManager.BuildKitchenBuildPath(dependecy);
-				Build();
+				Log.Info($"Building {dependecy}");
+				var buildPath = PackageManager.BuildKitchenBuildPath(config, dependecy);
 			}
-		}
-
-		private void Build()
-		{
-
 		}
 	}
 }
