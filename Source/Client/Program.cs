@@ -5,7 +5,6 @@
 namespace Soup.Client
 {
 	using System;
-	using System.Collections.Generic;
 	using System.IO;
 	using System.Runtime.InteropServices;
 	using System.Threading.Tasks;
@@ -19,19 +18,11 @@ namespace Soup.Client
 	public class Program
 	{
 		/// <summary>
-		/// The collection of all known commands for the command line application
-		/// </summary>
-		private static IReadOnlyList<ICommand> _commands = new List<ICommand>()
-		{
-
-		};
-
-		/// <summary>
 		/// The root of all evil - async style
 		/// </summary>
 		private static async Task Main(string[] args)
 		{
-			Parser.Default.ParseArguments<
+			await Parser.Default.ParseArguments<
 				BuildOptions,
 				InitializeOptions,
 				InstallOptions,
@@ -40,25 +31,38 @@ namespace Soup.Client
 				VersionOptions,
 				ViewOptions>(args)
 				.MapResult(
-					(BuildOptions options) => new BuildCommand().InvokeAsync(options),
+					(BuildOptions options) => new BuildCommand(GetUserConfig(), GetCompiler()).InvokeAsync(options),
 					(InitializeOptions options) => new InitializeCommand().InvokeAsync(options),
-					(InstallOptions options) => new InstallCommand().InvokeAsync(options),
+					(InstallOptions options) => new InstallCommand(GetUserConfig(), GetSoupApi()).InvokeAsync(options),
 					(PackOptions options) => new PackCommand().InvokeAsync(options),
-					(PublishOptions options) => new PublishCommand().InvokeAsync(options),
+					(PublishOptions options) => new PublishCommand(GetSoupIdentity(), GetSoupApi()).InvokeAsync(options),
 					(VersionOptions options) => new VersionCommand().InvokeAsync(options),
-					(ViewOptions options) => new ViewCommand().InvokeAsync(options),
-					errors => Task.CompletedTask).Wait();
+					(ViewOptions options) => new ViewCommand(GetSoupApi()).InvokeAsync(options),
+					errors => Task.CompletedTask);
+		}
 
-			// Load the user configuration settings
-			var userConfig = new LocalUserConfig();
-			var stagingDirectory = Path.Combine(userConfig.PackageStore, Constants.StagingFolderName);
+		/// <summary>
+		/// Load the local user config
+		/// </summary>
+		private static LocalUserConfig GetUserConfig()
+		{
+			return new LocalUserConfig();
+		}
 
-			// Ensure we are in a clean state
-			if (Directory.Exists(stagingDirectory))
-			{
-				Log.Warning("The staging directory was not cleaned up!");
-				Directory.Delete(stagingDirectory, true);
-			}
+		/// <summary>
+		/// Create the soup api helper
+		/// </summary>
+		private static ISoupIdentity GetSoupIdentity()
+		{
+			return new SoupIdentity();
+		}
+
+		/// <summary>
+		/// Create the soup api helper
+		/// </summary>
+		private static ISoupApi GetSoupApi()
+		{
+			return new SoupApi();
 		}
 
 		/// <summary>

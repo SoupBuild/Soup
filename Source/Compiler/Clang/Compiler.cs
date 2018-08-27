@@ -81,7 +81,7 @@ namespace Soup.Compiler.Clang
 
 		private static void ProcessLine(string line)
 		{
-			Log.Message(line);
+			Log.Info(line);
 		}
 	}
 }

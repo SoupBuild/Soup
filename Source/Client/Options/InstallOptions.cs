@@ -12,14 +12,16 @@ namespace Soup.Client
 	[Verb("install")]
 	internal class InstallOptions
 	{
+		public string Package { get; set; }
+
 		/// <summary>
 		/// Show the usage details for this command
 		/// </summary>
 		private void ShowUsage()
 		{
-			Log.Message("");
-			Log.Message("Usage: soup install <package_file>");
-			Log.Message("\tpackage_file: Must be a zip file.");
+			Log.Info("");
+			Log.Info("Usage: soup install <package_file>");
+			Log.Info("\tpackage_file: Must be a zip file.");
 		}
 	}
 }

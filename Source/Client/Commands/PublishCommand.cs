@@ -14,13 +14,24 @@ namespace Soup.Client
 	/// </summary>
 	internal class PublishCommand
 	{
+		private ISoupIdentity _soupIdentity;
+		private ISoupApi _soupApi;
+
+		public PublishCommand(
+			ISoupIdentity soupIdentity,
+			ISoupApi soupApi)
+		{
+			_soupIdentity = soupIdentity;
+			_soupApi = soupApi;
+		}
+
 		public async Task InvokeAsync(PublishOptions options)
 		{
 			var projectDirectory = Directory.GetCurrentDirectory();
 			var recipe = await RecipeManager.LoadFromFileAsync(projectDirectory);
-			Log.Message($"Publish Project: {recipe.Name}@{recipe.Version}");
+			Log.Info($"Publish Project: {recipe.Name}@{recipe.Version}");
 
-			var result = await Singleton<ISoupIdentity>.Instance.AuthenticateUserAsync();
+			var result = await _soupIdentity.AuthenticateUserAsync();
 
 			using (var stream = new MemoryStream())
 			{
@@ -33,7 +44,7 @@ namespace Soup.Client
 				// Publish the package to the service
 				try
 				{
-					bool created = await Singleton<ISoupApi>.Instance.PublishPackageAsync(recipe.Name, stream);
+					bool created = await _soupApi.PublishPackageAsync(recipe.Name, stream);
 					if (!created)
 					{
 						Log.Warning("The package version already existed! No change was made.");

@@ -14,23 +14,25 @@ namespace Soup.Client
 	/// </summary>
 	internal class ViewCommand
 	{
+		private ISoupApi _soupApi;
+
+		public ViewCommand(
+			ISoupApi soupApi)
+		{
+			_soupApi = soupApi;
+		}
+
 		/// <summary>
 		/// Invoke the view command
 		/// </summary>
 		public async Task InvokeAsync(ViewOptions options)
 		{
-			if (args.Length < 2)
-			{
-				ShowUsage();
-				return;
-			}
-
-			var packageName = args[1];
+			var packageName = options.Package;
 			try
 			{
-				var package = await Singleton<ISoupApi>.Instance.GetPackageAsync(packageName);
+				var package = await _soupApi.GetPackageAsync(packageName);
 				var output = JsonConvert.SerializeObject(package);
-				Log.Message(output);
+				Log.Info(output);
 			}
 			catch (ApiException ex)
 			{

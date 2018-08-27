@@ -15,7 +15,7 @@ namespace Soup.Client
 	{
 		public async Task InvokeAsync(InitializeOptions options)
 		{
-			Log.Message("The initialize utility will walk through the creation of the most basic Console recipe.\n");
+			Log.Info("The initialize utility will walk through the creation of the most basic Console recipe.\n");
 
 			// Use the current directory as the default names
 			var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
@@ -26,7 +26,7 @@ namespace Soup.Client
 				Version = new SemanticVersion(1, 0, 0)
 			};
 
-			Log.Message($"Name: ({recipe.Name}) ");
+			Log.Info($"Name: ({recipe.Name}) ");
 			var newName = Console.ReadLine();
 			if (!string.IsNullOrWhiteSpace(newName))
 			{
@@ -36,7 +36,7 @@ namespace Soup.Client
 			bool setVersion = false;
 			while (!setVersion)
 			{
-				Log.Message($"Version: ({recipe.Version}) ");
+				Log.Info($"Version: ({recipe.Version}) ");
 				var newVersion = Console.ReadLine();
 				if (string.IsNullOrEmpty(newVersion))
 				{

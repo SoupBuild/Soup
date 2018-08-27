@@ -12,6 +12,15 @@ namespace Soup.Client
 	/// </summary>
 	internal class BuildCommand
 	{
+		private LocalUserConfig _config;
+		private Compiler.ICompiler _compiler;
+
+		public BuildCommand(LocalUserConfig config, Compiler.ICompiler compiler)
+		{
+			_config = config;
+			_compiler = compiler;
+		}
+
 		public async Task InvokeAsync(BuildOptions Options)
 		{
 			var recipe = await RecipeManager.LoadFromFileAsync(@"./");
@@ -21,20 +30,18 @@ namespace Soup.Client
 				return;
 			}
 
-			var compiler = Singleton<Compiler.ICompiler>.Instance;
-
 			// Ensure the library directory exists
-			var libraryPath = PackageManager.BuildKitchenLibraryPath();
+			var libraryPath = PackageManager.BuildKitchenLibraryPath(_config);
 			if (!Directory.Exists(libraryPath))
 			{
 				Directory.CreateDirectory(libraryPath);
 			}
 
 			// Now build the current project
-			Log.Message("");
-			Log.Message("Building Project");
+			Log.Info("");
+			Log.Info("Building Project");
 			var buildPath = Path.Combine(Constants.ProjectGenerateFolderName, Constants.StoreBuildFolderName);
-			var buildEngine = new BuildEngine(compiler);
+			var buildEngine = new BuildEngine(_compiler);
 			await buildEngine.ExecuteAsync(recipe);
 		}
 	}

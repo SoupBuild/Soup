@@ -23,8 +23,8 @@ Copyright (C) mwasplund. All rights reserved.
 
   <!-- Bring in language specific overrides -->
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDir)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDir)</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ObjDir)\$(MSBuildProjectName)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinDir)\$(MSBuildProjectName)</BaseOutputPath>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 </Project>

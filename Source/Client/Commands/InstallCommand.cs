@@ -15,6 +15,17 @@ namespace Soup.Client
 	/// </summary>
 	internal class InstallCommand
 	{
+		private LocalUserConfig _config;
+		private ISoupApi _soupApi;
+
+		public InstallCommand(
+			LocalUserConfig config,
+			ISoupApi soupApi)
+		{
+			_config = config;
+			_soupApi = soupApi;
+		}
+
 		/// <summary>
 		/// Invoke the install command
 		/// </summary>
@@ -31,23 +42,22 @@ namespace Soup.Client
 				Log.Error("The recipe file is required to install.");
 				return;
 			}
-
-			var userConfig = Singleton<LocalUserConfig>.Instance;
-			var stagingPath = PackageManager.EnsureStagingDirectoryExists(userConfig.PackageStore);
+			
+			var stagingPath = PackageManager.EnsureStagingDirectoryExists(_config.PackageStore);
 
 			// Ensure that the staging directory exists
 			var tempStagingPath = Path.Combine(stagingPath, "temp");
 
-			var package = args.Length < 2 ? null : args[1];
+			var package = options.Package;
 			if (string.IsNullOrEmpty(package))
 			{
-				Log.Message("Install All");
+				Log.Info("Install All");
 
 				await InstallRecursiveDependencies(tempStagingPath, recipe);
 			}
 			else if (!Path.HasExtension(package))
 			{
-				Log.Message($"Install Package: {package}");
+				Log.Info($"Install Package: {package}");
 
 				// Check if the package is already installed
 				if (recipe.Dependencies.Any(dependency => dependency.Name == package))
@@ -72,7 +82,7 @@ namespace Soup.Client
 			}
 			else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
 			{
-				Log.Message($"Installing Local Package: {package}");
+				Log.Info($"Installing Local Package: {package}");
 
 				if (!File.Exists(package))
 				{
@@ -96,7 +106,6 @@ namespace Soup.Client
 			{
 				Log.Error("Unknown install source type.");
 				Directory.Delete(tempStagingPath, true);
-				ShowUsage();
 				return;
 			}
 
@@ -115,13 +124,13 @@ namespace Soup.Client
 
 		private async Task<SemanticVersion> GetLatestAsync(string name)
 		{
-			var package = await Singleton<ISoupApi>.Instance.GetPackageAsync(name);
+			var package = await _soupApi.GetPackageAsync(name);
 			return package.Latest;
 		}
 
 		private async Task<Stream> DownloadPackageAsync(string name, SemanticVersion version)
 		{
-			var stream = await Singleton<ISoupApi>.Instance.DownloadPackageAsync(name, version);
+			var stream = await _soupApi.DownloadPackageAsync(name, version);
 			return stream;
 		}
 
@@ -140,7 +149,7 @@ namespace Soup.Client
 
 			// Load the packages recipe file
 			var recipe = await RecipeManager.LoadFromFileAsync(tempPackagePath);
-			var packagePath = PackageManager.BuildKitchenPackagePath(recipe);
+			var packagePath = PackageManager.BuildKitchenPackagePath(_config, recipe);
 
 			// TODO : Perform some verification that the package is valid
 
@@ -171,7 +180,7 @@ namespace Soup.Client
 		{
 			foreach (var dep in recipe.Dependencies)
 			{
-				Log.Message($"{dep}");
+				Log.Info($"{dep}");
 
 				// Download the archive
 				using (var archiveStream = await DownloadPackageAsync(dep.Name, dep.Version))

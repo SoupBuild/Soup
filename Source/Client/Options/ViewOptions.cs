@@ -12,14 +12,16 @@ namespace Soup.Client
 	[Verb("version")]
 	internal class ViewOptions
 	{
+		public string Package { get; set; }
+
 		/// <summary>
 		/// Show the usage details for this command
 		/// </summary>
 		private static void ShowUsage()
 		{
-			Log.Message("");
-			Log.Message("Usage: soup view <package>");
-			Log.Message("\tpackage: The unique package name.");
+			Log.Info("");
+			Log.Info("Usage: soup view <package>");
+			Log.Info("\tpackage: The unique package name.");
 		}
 	}
 }

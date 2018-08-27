@@ -20,7 +20,7 @@ namespace Soup.Compiler.MSVC
 			string compiler = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\cl.exe";
 			var commandArgs = BuildCompilerArguments(args);
 
-			Log.Message($"{compiler} {commandArgs}");
+			Log.Info($"{compiler} {commandArgs}");
 
 			using (Process process = new Process())
 			{
@@ -56,7 +56,7 @@ namespace Soup.Compiler.MSVC
 			string linker = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\lib.exe";
 			var linkerArgs = BuildLinkerArguments(args);
 
-			Log.Message($"{linker} {linkerArgs}");
+			Log.Info($"{linker} {linkerArgs}");
 
 			using (Process process = new Process())
 			{
@@ -170,7 +170,7 @@ namespace Soup.Compiler.MSVC
 
 		private static void ProcessLine(string line)
 		{
-			Log.Message(line);
+			Log.Info(line);
 		}
 	}
 }

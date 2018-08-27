@@ -15,7 +15,7 @@ namespace Soup.Client
 		public Task InvokeAsync(VersionOptions options)
 		{
 			var version = Assembly.GetExecutingAssembly().GetName().Version;
-			Log.Message($"{version.Major}.{version.Minor}.{version.Build}");
+			Log.Info($"{version.Major}.{version.Minor}.{version.Build}");
 			return Task.CompletedTask;
 		}
 	}

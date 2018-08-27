@@ -15,7 +15,7 @@ namespace Soup.Client
 		public async Task InvokeAsync(PackOptions options)
 		{
 			var recipe = await RecipeManager.LoadFromFileAsync(@"./");
-			Log.Message($"Packaging Project: {recipe.Name}@{recipe.Version}");
+			Log.Info($"Packaging Project: {recipe.Name}@{recipe.Version}");
 
 			await PackageManager.PackAsync(recipe, Directory.GetCurrentDirectory());
 		}
