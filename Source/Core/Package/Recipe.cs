@@ -19,33 +19,31 @@ namespace Soup
 	public class Recipe
 	{
 		private static RecipeType DefaultRecipeType = RecipeType.Library;
-
-		private bool _isDirty;
 		private string _name;
 		private RecipeType? _type;
 		private SemanticVersion _version;
 		private LanguageStandard _standard;
 		private ObservableCollection<PackageReference> _dependencies;
-		private ObservableCollection<string> _public;
+		private string _public;
 		private ObservableCollection<string> _source;
 
 		[JsonConstructor]
 		public Recipe(
 			string name)
 		{
-			_isDirty = false;
+			IsDirty = false;
 			_name = name;
 			_type = null;
 			_version = null;
 			_standard = LanguageStandard.Default;
 
 			Dependencies = new List<PackageReference>();
-			Public = new List<string>();
+			_public = null;
 			Source = new List<string>();
 		}
 
 		[JsonIgnore]
-		public bool IsDirty => _isDirty;
+		public bool IsDirty { get; private set; }
 
 		[JsonProperty("name")]
 		public string Name
@@ -60,7 +58,7 @@ namespace Soup
 				if (value != _name)
 				{
 					_name = value;
-					_isDirty = true;
+					IsDirty = true;
 				}
 			}
 		}
@@ -87,7 +85,7 @@ namespace Soup
 				if (value != _type)
 				{
 					_type = value;
-					_isDirty = true;
+					IsDirty = true;
 				}
 			}
 		}
@@ -106,7 +104,7 @@ namespace Soup
 				if (value != _version)
 				{
 					_version = value;
-					_isDirty = true;
+					IsDirty = true;
 				}
 			}
 		}
@@ -126,7 +124,7 @@ namespace Soup
 				if (value != _standard)
 				{
 					_standard = value;
-					_isDirty = true;
+					IsDirty = true;
 				}
 			}
 		}
@@ -156,7 +154,7 @@ namespace Soup
 		}
 
 		[JsonProperty("public")]
-		public IList<string> Public
+		public string Public
 		{
 			get
 			{
@@ -165,16 +163,10 @@ namespace Soup
 
 			set
 			{
-				if (_public != null)
+				if (value != _public)
 				{
-					_public.CollectionChanged -= OnCollectionChanged;
-					_public = null;
-				}
-
-				if (value != null)
-				{
-					_public = new ObservableCollection<string>(value);
-					_public.CollectionChanged += OnCollectionChanged;
+					_public = value;
+					IsDirty = true;
 				}
 			}
 		}
@@ -216,7 +208,7 @@ namespace Soup
 		private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			// Mark the object as dirty
-			_isDirty = true;
+			IsDirty = true;
 		}
 	}
 }

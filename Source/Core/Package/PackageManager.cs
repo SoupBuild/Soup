@@ -107,12 +107,6 @@ namespace Soup
 			return FindFiles(recipe.Source, packageDirectory);
 		}
 
-		public static List<string> FindPublicFiles(Recipe recipe, string packageDirectory)
-		{
-			// TODO : Verify they are all headers
-			return FindFiles(recipe.Public, packageDirectory);
-		}
-
 		public static List<string> FindFiles(IList<string> patterns, string directory)
 		{
 			List<string> result = new List<string>();
@@ -228,54 +222,6 @@ namespace Soup
 
 				return recipe;
 			}
-		}
-
-		/// <summary>
-		/// Create the public include header file
-		/// </summary>
-		public static async Task CreatePublicIncludeHeaderAsync(Recipe recipe, string packageDirectory, string targetDirectory)
-		{
-			// Get the relative path back to the package directory
-			// this is used to reference source files
-			var packageRelativePath = Path.GetRelativePath(targetDirectory, packageDirectory);
-			var versionNamespace = BuildNamespaceVersion(recipe.Version);
-
-			StringBuilder content = new StringBuilder();
-
-			// Push the current state of the soup macros
-			content.AppendLine("// Save the current state");
-			content.AppendLine("#pragma push_macro(\"SOUP_PKG_VERSION\")");
-			content.AppendLine("#pragma push_macro(\"SOUP_PKG_ACTIVE\")");
-			content.AppendLine("");
-
-			// Mark all direct dependencies as active and set the versions
-			content.AppendLine("// Set the version");
-			content.AppendLine("#undef SOUP_PKG_VERSION");
-			content.AppendLine($"#define SOUP_PKG_VERSION {versionNamespace}");
-			content.AppendLine("");
-
-			content.AppendLine("// Mark all direct dependencies are active");
-			content.AppendLine("#undef SOUP_PKG_ACTIVE");
-			content.AppendLine("#define SOUP_PKG_ACTIVE inline");
-			content.AppendLine("");
-
-			// Include each of the public header files
-			content.AppendLine("// Include the public headers");
-			foreach (var file in FindPublicFiles(recipe, packageDirectory))
-			{
-				var fileRelativePath = Path.Combine(packageRelativePath, file);
-				content.AppendLine($"#include \"{fileRelativePath}\"");
-			}
-
-			// Restore the previous state of the soup macros
-			content.AppendLine("");
-			content.AppendLine("// Restore the previous state");
-			content.AppendLine("#pragma pop_macro(\"SOUP_PKG_VERSION\")");
-			content.AppendLine("#pragma pop_macro(\"SOUP_PKG_ACTIVE\")");
-
-			var includeHeaderFileName = $"{recipe.Name}.h";
-			var includeHeaderPath = Path.Combine(targetDirectory, includeHeaderFileName);
-			await File.WriteAllTextAsync(includeHeaderPath, content.ToString());
 		}
 
 		private static string BuildPackageVersionDirectory(string projectName, SemanticVersion version)

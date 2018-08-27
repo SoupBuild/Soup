@@ -23,7 +23,7 @@ namespace Soup.Client
 				return;
 			}
 
-			var compiler = Singleton<ICompiler>.Instance;
+			var compiler = Singleton<Compiler.ICompiler>.Instance;
 
 			// Ensure the library directory exists
 			var libraryPath = PackageManager.BuildKitchenLibraryPath();

@@ -11,7 +11,7 @@ namespace Soup.Compiler.GCC
 
 	public class Compiler : ICompiler
 	{
-		public Task ExecuteAsync(CompilerArguments args)
+		public Task CompileAsync(CompilerArguments args)
 		{
 			string compiler = "gcc";
 			using (Process process = new Process())
@@ -40,6 +40,11 @@ namespace Soup.Compiler.GCC
 			}
 		}
 
+		public Task LinkAsync(LinkerArguments args)
+		{
+			return Task.CompletedTask;
+		}
+
 		private static string BuildCompilerArguments(CompilerArguments args)
 		{
 			var commandArgs = new List<string>();
@@ -53,7 +58,7 @@ namespace Soup.Compiler.GCC
 			// Enable experimental modules
 			commandArgs.Add("-fmodules-ts");
 
-			// Lastly add the files
+			// Lastly add the file
 			commandArgs.AddRange(args.SourceFiles);
 
 			return string.Join(" ", commandArgs);

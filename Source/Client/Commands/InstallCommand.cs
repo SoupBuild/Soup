@@ -136,8 +136,6 @@ namespace Soup.Client
 		private async Task<Recipe> InstallPackageAsync(string tempPath, Stream packageFile)
 		{
 			var recipe = await UnpackArchiveAsync(tempPath, packageFile);
-			await GenerateIncludeAsync(tempPath, recipe);
-
 			return recipe;
 		}
 
@@ -172,41 +170,6 @@ namespace Soup.Client
 			Directory.Move(tempPackagePath, packagePath);
 
 			return recipe;
-		}
-
-		private async Task GenerateIncludeAsync(string tempPath, Recipe recipe)
-		{
-			var includePath = PackageManager.BuildKitchenIncludePath(recipe);
-			var packagePath = PackageManager.BuildKitchenPackagePath(recipe);
-
-			// Create the temporary include folders
-			var tempIncludePath = Path.Combine(tempPath, Constants.StoreIncludeRootFolderName);
-			Directory.CreateDirectory(tempIncludePath);
-
-			// Create the soup include directory
-			var soupIncludePath = Path.Combine(tempIncludePath, Constants.StoreSoupIncludeFolderName);
-			Directory.CreateDirectory(soupIncludePath);
-
-			// Create the include objects
-			await PackageManager.CreatePublicIncludeHeaderAsync(recipe, packagePath, soupIncludePath);
-
-			// TODO : Should not hit this when, verify the package exists before download
-			// For now delete and recreate it
-			if (Directory.Exists(includePath))
-			{
-				Log.Message("Removing old version.");
-				Directory.Delete(includePath, true);
-			}
-
-			// Ensure the parent directory exists
-			var includeParentDirectory = Directory.GetParent(includePath);
-			if (!includeParentDirectory.Exists)
-			{
-				includeParentDirectory.Create();
-			}
-
-			// Move the results out of the staging directory
-			Directory.Move(tempIncludePath, includePath);
 		}
 
 		/// <summary>

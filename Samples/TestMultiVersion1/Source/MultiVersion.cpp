@@ -1,8 +1,4 @@
-
-export module MultiVersion;
-
-#include "MultiVersion.h"
-
+import TestMultiVersion;
 using namespace TestMultiVersion;
 
 int MultiVersion::GetVersion()

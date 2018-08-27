@@ -13,10 +13,10 @@ namespace Soup.Compiler.Clang
 
 	public class Compiler : ICompiler
 	{
-		public Task ExecuteAsync(CompilerArguments args)
+		public Task CompileAsync(CompilerArguments args)
 		{
 			// Set the working directory to the output directory
-			var workingDirectory = Path.Combine(args.RootDirectory, args.ObjectDirectory);
+			var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
 
 			string compiler = "/usr/bin/clang++";
 			var commandArgs = BuildCompilerArguments(workingDirectory, args);
@@ -48,12 +48,17 @@ namespace Soup.Compiler.Clang
 			}
 		}
 
+		public Task LinkAsync(LinkerArguments args)
+		{
+			return Task.CompletedTask;
+		}
+
 		private static string BuildCompilerArguments(string workingDirectory, CompilerArguments args)
 		{
 			var commandArgs = new List<string>();
 			
 			// Only run preprocess, compile, and assemble steps
-			commandArgs.Add("-c"); // --compile
+			commandArgs.Add("-c");
 
 			// Set the Standard Library implementation
 			commandArgs.Add("-stdlib=libc++");
@@ -64,13 +69,12 @@ namespace Soup.Compiler.Clang
 			// Enable experimental modules
 			commandArgs.Add("-fmodules-ts");
 
-			// Precompile only
+			// Output object
 			commandArgs.Add("-o");
 			commandArgs.Add("MultiVersion.ifc");
 
-			// Lastly add the files
-			var relativePath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
-			commandArgs.AddRange(args.SourceFiles.Select(value => relativePath + value));
+			// Lastly add the file
+			commandArgs.AddRange(args.SourceFiles);
 
 			return string.Join(" ", commandArgs);
 		}

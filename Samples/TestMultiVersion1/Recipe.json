@@ -2,7 +2,8 @@
   "name": "TestMultiVersion",
   "version": "1.0.2",
   "dependencies": [],
+  "public": "Source/Module.cpp",
   "source": [
-    "Source/MultiVersion.cppm"
+    "Source/MultiVersion.cpp"
   ]
 }

@@ -2,12 +2,13 @@
 //   Copyright (c) Soup.  All rights reserved.
 // </copyright>
 
-namespace Soup
+namespace Soup.Compiler
 {
 	using System.Threading.Tasks;
 
 	public interface ICompiler
 	{
-		Task ExecuteAsync(CompilerArguments args);
+		Task CompileAsync(CompilerArguments args);
+		Task LinkAsync(LinkerArguments args);
 	}
 }
