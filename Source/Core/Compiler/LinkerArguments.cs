@@ -6,16 +6,8 @@ namespace Soup.Compiler
 {
 	using System.Collections.Generic;
 
-	public enum LinkTarget
-	{
-		ConsoleApp,
-		DynamicLibrary,
-		StaticLibrary
-	};
-	
 	public class LinkerArguments
 	{
-		public LinkTarget Target { get; set; } = LinkTarget.DynamicLibrary;
 		public string RootDirectory { get; set; } = "";
 		public string OutputDirectory { get; set; } = "";
 		public string Name { get; set; } = "";

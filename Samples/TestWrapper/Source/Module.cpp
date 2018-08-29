@@ -1,3 +1,3 @@
-export module TestMultiVersion;
+export module TestWrapper;
 
-#include "MultiVersion.h"
+#include "Wrapper.h"

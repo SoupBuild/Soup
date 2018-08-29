@@ -20,6 +20,7 @@ namespace Soup.Compiler.MSVC
 			string compiler = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\cl.exe";
 			var commandArgs = BuildCompilerArguments(args);
 
+			Log.Info($"PWD={workingDirectory}");
 			Log.Info($"{compiler} {commandArgs}");
 
 			using (Process process = new Process())
@@ -48,14 +49,52 @@ namespace Soup.Compiler.MSVC
 			}
 		}
 
-		public Task LinkAsync(LinkerArguments args)
+		public Task LinkLibraryAsync(LinkerArguments args)
 		{
 			// Set the working directory to the output directory
 			var workingDirectory = args.RootDirectory;
 
 			string linker = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\lib.exe";
-			var linkerArgs = BuildLinkerArguments(args);
+			var linkerArgs = BuildLinkerLibraryArguments(args);
 
+			Log.Info($"PWD={workingDirectory}");
+			Log.Info($"{linker} {linkerArgs}");
+
+			using (Process process = new Process())
+			{
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.RedirectStandardOutput = true;
+				process.StartInfo.FileName = linker;
+				process.StartInfo.WorkingDirectory = workingDirectory;
+				process.StartInfo.Arguments = linkerArgs;
+				process.Start();
+
+				while (!process.StandardOutput.EndOfStream)
+				{
+					string line = process.StandardOutput.ReadLine();
+					ProcessLine(line);
+				}
+
+				process.WaitForExit();
+
+				if (process.ExitCode != 0)
+				{
+					throw new InvalidOperationException();
+				}
+
+				return Task.CompletedTask;
+			}
+		}
+
+		public Task LinkExecutableAsync(LinkerArguments args)
+		{
+			// Set the working directory to the output directory
+			var workingDirectory = args.RootDirectory;
+
+			string linker = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\link.exe";
+			var linkerArgs = BuildLinkerExecutableArguments(args);
+
+			Log.Info($"PWD={workingDirectory}");
 			Log.Info($"{linker} {linkerArgs}");
 
 			using (Process process = new Process())
@@ -116,6 +155,9 @@ namespace Soup.Compiler.MSVC
 			var objectPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
 			commandArgs.Add($"-Fo\"{objectPath}\"");
 
+			// Enable c++ exceptions
+			commandArgs.Add("-EHs");
+
 			// Enable experimental features
 			if (args.Standard == LanguageStandard.Latest)
 			{
@@ -151,12 +193,15 @@ namespace Soup.Compiler.MSVC
 			return string.Join(" ", commandArgs);
 		}
 
-		private static string BuildLinkerArguments(LinkerArguments args)
+		private static string BuildLinkerLibraryArguments(LinkerArguments args)
 		{
 			var commandArgs = new List<string>();
 
 			// Disable the logo text
 			commandArgs.Add("-nologo");
+
+			// Set the machine type
+			commandArgs.Add("-machine:x64");
 
 			// Add the library output file
 			var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
@@ -168,9 +213,33 @@ namespace Soup.Compiler.MSVC
 			return string.Join(" ", commandArgs);
 		}
 
+		private static string BuildLinkerExecutableArguments(LinkerArguments args)
+		{
+			var commandArgs = new List<string>();
+
+			// Disable the logo text
+			commandArgs.Add("-nologo");
+
+			// Add the library output file
+			var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
+			commandArgs.Add($"-out:\"{ouputPath}{args.Name}.exe\"");
+
+			// Lastly add the file
+			commandArgs.AddRange(args.SourceFiles);
+
+			return string.Join(" ", commandArgs);
+		}
+
 		private static void ProcessLine(string line)
 		{
-			Log.Info(line);
+			if (line.Contains("fatal error"))
+			{
+				Log.Error(line);
+			}
+			else
+			{
+				Log.Info(line);
+			}
 		}
 	}
 }

@@ -9,6 +9,7 @@ namespace Soup.Compiler
 	public interface ICompiler
 	{
 		Task CompileAsync(CompilerArguments args);
-		Task LinkAsync(LinkerArguments args);
+		Task LinkLibraryAsync(LinkerArguments args);
+		Task LinkExecutableAsync(LinkerArguments args);
 	}
 }

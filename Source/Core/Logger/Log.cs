@@ -4,7 +4,6 @@
 
 namespace Soup
 {
-	using System;
 	using System.Diagnostics;
 
 	public static class Log
@@ -18,7 +17,7 @@ namespace Soup
 
 			// Register the default console listener
 			_source.Listeners.Add(
-				new TextWriterExtendedTraceListener(Console.Out)
+				new ConsoleTraceListener()
 				{
 					ShowSourceName = false,
 					ShowEventId = false,

@@ -1,11 +1,11 @@
-#include "Wrapper.h"
-#include <TestMultiVersion.h>
+import TestWrapper;
+import TestMultiVersion;
 
-using namespace TestProject1;
+using namespace TestWrapper;
 
 Wrapper::Wrapper()
 {
-  _value = 1;
+  _value = 100;
 }
 
 int Wrapper::GetValue()
@@ -13,7 +13,7 @@ int Wrapper::GetValue()
   return _value;
 }
 
-std::wstring Wrapper::GetVersion()
+int Wrapper::GetVersion()
 {
   TestMultiVersion::MultiVersion version;
   return version.GetVersion();

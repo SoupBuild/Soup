@@ -8,21 +8,32 @@ namespace Soup
 	using Newtonsoft.Json;
 
 	/// <summary>
-	/// A package reference object
+	/// A package reference object which will consist of a name version pair that 
+	/// refers to a published package or a path to a local recipe
 	/// </summary>
 	[JsonObject]
 	[JsonConverter(typeof(PackageReferenceJsonConverter))]
 	public class PackageReference
 	{
-		public PackageReference() :
-			this(null, null)
+		public PackageReference()
 		{
+			Name = null;
+			Version = null;
+			Path = null;
 		}
 
 		public PackageReference(string name, SemanticVersion version)
 		{
 			Name = name;
 			Version = version;
+			Path = null;
+		}
+
+		public PackageReference(string path)
+		{
+			Name = null;
+			Version = null;
+			Path = path;
 		}
 
 		[JsonProperty("name")]
@@ -31,16 +42,21 @@ namespace Soup
 		[JsonProperty("version")]
 		public SemanticVersion Version { get; set; }
 
+		[JsonProperty("path")]
+		public string Path { get; set; }
+
 		public static bool operator ==(PackageReference lhs, PackageReference rhs)
 		{
 			return lhs.Name == rhs.Name &&
-				lhs.Version == rhs.Version;
+				lhs.Version == rhs.Version &&
+				lhs.Path == rhs.Path;
 		}
 
 		public static bool operator !=(PackageReference lhs, PackageReference rhs)
 		{
 			return lhs.Name != rhs.Name ||
-				lhs.Version != rhs.Version;
+				lhs.Version != rhs.Version ||
+				lhs.Path != rhs.Path;
 		}
 
 		public static bool TryParse(string value, out PackageReference result)
@@ -61,12 +77,16 @@ namespace Soup
 		public static PackageReference Parse(string value)
 		{
 			var tokens = value.Split('@');
-			if (tokens.Length != 2)
+			if (tokens.Length == 2)
 			{
-				throw new ArgumentException("The package must be split by the @ symbol");
+				// The package is a published reference
+				return new PackageReference(tokens[0], SemanticVersion.Parse(tokens[1]));
 			}
-
-			return new PackageReference(tokens[0], SemanticVersion.Parse(tokens[1]));
+			else
+			{
+				// Assum that this package is a relative reference
+				return new PackageReference(value);
+			}
 		}
 
 		public override bool Equals(object obj)
@@ -84,12 +104,19 @@ namespace Soup
 
 		public override int GetHashCode()
 		{
-			return Name.GetHashCode() ^ Version.GetHashCode();
+			return Name.GetHashCode() ^ Version.GetHashCode() ^ Path.GetHashCode();
 		}
 
 		public override string ToString()
 		{
-			return $"{Name}@{Version}";
+			if (Path != null)
+			{
+				return Path;
+			}
+			else
+			{
+				return $"{Name}@{Version}";
+			}
 		}
 	}
 }

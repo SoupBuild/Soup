@@ -1,14 +1,11 @@
 {
-  "name": "TestProject1",
+  "name": "TestWrapper",
   "version": "1.0.33",
   "dependencies": [
-    "../TestMultiVersion1/Recipe.json"
+    "../TestMultiVersion1/"
   ],
-  "public": [
-    "Source/Wrapper.h"
-  ],
+  "public": "Source/Module.cpp",
   "source": [
-    "Source/**/*.h",
-    "Source/**/*.cpp"
+    "Source/Wrapper.cpp"
   ]
 }

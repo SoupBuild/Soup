@@ -26,59 +26,80 @@ namespace Soup
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		public async Task ExecuteAsync(LocalUserConfig config, Recipe recipe)
+		public async Task ExecuteAsync(LocalUserConfig config, string path, Recipe recipe)
 		{
 			Log.Info("Build Recursive Dependencies.");
-			await BuildAllDependenciesRecursivelyAsync(config, recipe);
+			await BuildAllDependenciesRecursivelyAsync(config, path, recipe);
 
 			Log.Info("Build Toplevel Recipe.");
-			await CoreBuildAsync(recipe);
+			await CoreBuildAsync(config, path, recipe);
 		}
 
 		/// <summary>
 		/// Build the dependecies for the provided recipe recursively
 		/// </summary>
-		private async Task BuildAllDependenciesRecursivelyAsync(LocalUserConfig config, Recipe recipe)
+		private async Task BuildAllDependenciesRecursivelyAsync(
+			LocalUserConfig config,
+			string path,
+			Recipe recipe)
 		{
 			Log.Info($"Seaching Dependencies: {recipe.Name}.");
 			foreach (var dependecy in recipe.Dependencies)
 			{
 				// Load this package recipe
-				var packagePath = PackageManager.BuildKitchenPackagePath(config, dependecy);
+				string packagePath;
+				if (dependecy.Path != null)
+				{
+					packagePath = dependecy.Path;
+				}
+				else
+				{
+					packagePath = PackageManager.BuildKitchenPackagePath(config, dependecy);
+				}
+
 				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
 				// Build all recursive dependencies
-				await BuildAllDependenciesRecursivelyAsync(config, dependecyRecipe);
+				await BuildAllDependenciesRecursivelyAsync(config, packagePath, dependecyRecipe);
 
 				// Build this dependecy
-				await CoreBuildAsync(dependecyRecipe);
+				await CoreBuildAsync(config, packagePath, dependecyRecipe);
 			}
 		}
 
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		public async Task CoreBuildAsync(Recipe recipe)
+		public async Task CoreBuildAsync(LocalUserConfig config, string path, Recipe recipe)
 		{
 			var objectDirectory = "obj";
 			var binaryDirectory = "bin";
 
 			Log.Info($"Building {recipe.Name}.");
-			await CompileModuleAsync(recipe, objectDirectory);
-			await CompileSourceAsync(recipe, objectDirectory);
-			await LinkAsync(recipe, objectDirectory, binaryDirectory);
-			CloneModuleInterface(recipe, objectDirectory, binaryDirectory);
+			if (recipe.Type == RecipeType.Library)
+			{
+				await CompileModuleAsync(path, recipe, objectDirectory);
+			}
+
+			await CompileSourceAsync(config, path, recipe, objectDirectory);
+			await LinkAsync(path, recipe, objectDirectory, binaryDirectory);
+
+			if (recipe.Type == RecipeType.Library)
+			{
+				CloneModuleInterface(path, recipe, objectDirectory, binaryDirectory);
+			}
 		}
 
 		/// <summary>
 		/// Compile the module file
 		/// </summary>
-		private async Task CompileModuleAsync(Recipe recipe, string objectDirectory)
+		private async Task CompileModuleAsync(string path, Recipe recipe, string objectDirectory)
 		{
+			Log.Info("Compile Module");
 			var args = new CompilerArguments()
 			{
 				Standard = Compiler.LanguageStandard.Latest,
-				RootDirectory = "./",
+				RootDirectory = path,
 				OutputDirectory = objectDirectory,
 				SourceFiles = new List<string>() { recipe.Public },
 				ExportModule = true,
@@ -98,17 +119,41 @@ namespace Soup
 		/// <summary>
 		/// Compile the supporting source files
 		/// </summary>
-		private async Task CompileSourceAsync(Recipe recipe, string objectDirectory)
+		private async Task CompileSourceAsync(LocalUserConfig config, string path, Recipe recipe, string objectDirectory)
 		{
+			Log.Info("Compile Source");
 			var modules = new List<string>();
 
-			// Add a reference to our own modules interface definition
-			modules.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
+			if (recipe.Type == RecipeType.Library)
+			{
+				// Add a reference to our own modules interface definition
+				modules.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
+			}
+
+			// Add all of the dependencies as module references
+			foreach (var dependecy in recipe.Dependencies)
+			{
+				// Load this package recipe
+				string packagePath;
+				if (dependecy.Path != null)
+				{
+					packagePath = dependecy.Path;
+				}
+				else
+				{
+					packagePath = PackageManager.BuildKitchenPackagePath(config, dependecy);
+				}
+
+				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
+
+				var module = $"{packagePath}/bin/{dependecyRecipe.Name}.ifc";
+				modules.Add(module);
+			}
 
 			var args = new CompilerArguments()
 			{
 				Standard = Compiler.LanguageStandard.Latest,
-				RootDirectory = "./",
+				RootDirectory = path,
 				OutputDirectory = objectDirectory,
 				SourceFiles = recipe.Source,
 				Modules = modules,
@@ -128,17 +173,21 @@ namespace Soup
 		/// <summary>
 		/// Link the resulting object files
 		/// </summary>
-		private async Task LinkAsync(Recipe recipe, string objectDirectory, string binaryDirectory)
+		private async Task LinkAsync(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
 		{
+			Log.Info("Link");
 			var allFiles = new List<string>(recipe.Source);
-			allFiles.Add(recipe.Public);
+			if (recipe.Type == RecipeType.Library)
+			{
+				allFiles.Add(recipe.Public);
+			}
+
 			var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.obj").ToList();
 
 			var args = new LinkerArguments()
 			{
 				Name = recipe.Name,
-				Target = LinkTarget.StaticLibrary,
-				RootDirectory = "./",
+				RootDirectory = path,
 				OutputDirectory = binaryDirectory,
 				SourceFiles = objectFiles,
 			};
@@ -150,17 +199,28 @@ namespace Soup
 				Directory.CreateDirectory(objectDirectry);
 			}
 
-			// Link the final library
-			await _compiler.LinkAsync(args);
+			// Link
+			switch (recipe.Type)
+			{
+				case RecipeType.Library:
+					await _compiler.LinkLibraryAsync(args);
+					break;
+				case RecipeType.Executable:
+					await _compiler.LinkExecutableAsync(args);
+					break;
+				default:
+					throw new NotSupportedException("Unknown recipe type.");
+			}
 		}
 
 		/// <summary>
 		/// Clone the module interface definition from the object directoy to the binary directory
 		/// </summary>
-		private void CloneModuleInterface(Recipe recipe, string objectDirectory, string binaryDirectory)
+		private void CloneModuleInterface(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
 		{
-			var sourceModuleFile = $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc";
-			var targetModuleFile = $"{binaryDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Name)}.ifc";
+			Log.Info("Clone Module Interface");
+			var sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
+			var targetModuleFile = Path.Combine(path, binaryDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Name)}.ifc");
 
 			// Ensure the object directory exists
 			if (!File.Exists(sourceModuleFile))

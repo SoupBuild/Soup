@@ -19,25 +19,35 @@ namespace Soup.Client
 		/// <summary>
 		/// The root of all evil - async style
 		/// </summary>
-		private static async Task Main(string[] args)
+		private static async Task<int> Main(string[] args)
 		{
-			await Parser.Default.ParseArguments<
-				BuildOptions,
-				InitializeOptions,
-				InstallOptions,
-				PackOptions,
-				PublishOptions,
-				VersionOptions,
-				ViewOptions>(args)
-				.MapResult(
-					(BuildOptions options) => new BuildCommand(GetUserConfig(), GetCompiler()).InvokeAsync(options),
-					(InitializeOptions options) => new InitializeCommand().InvokeAsync(options),
-					(InstallOptions options) => new InstallCommand(GetUserConfig(), GetSoupApi()).InvokeAsync(options),
-					(PackOptions options) => new PackCommand().InvokeAsync(options),
-					(PublishOptions options) => new PublishCommand(GetSoupIdentity(), GetSoupApi()).InvokeAsync(options),
-					(VersionOptions options) => new VersionCommand().InvokeAsync(options),
-					(ViewOptions options) => new ViewCommand(GetSoupApi()).InvokeAsync(options),
-					errors => Task.CompletedTask);
+			try
+			{
+				await Parser.Default.ParseArguments<
+					BuildOptions,
+					InitializeOptions,
+					InstallOptions,
+					PackOptions,
+					PublishOptions,
+					VersionOptions,
+					ViewOptions>(args)
+					.MapResult(
+						(BuildOptions options) => new BuildCommand(GetUserConfig(), GetCompiler()).InvokeAsync(options),
+						(InitializeOptions options) => new InitializeCommand().InvokeAsync(options),
+						(InstallOptions options) => new InstallCommand(GetUserConfig(), GetSoupApi()).InvokeAsync(options),
+						(PackOptions options) => new PackCommand().InvokeAsync(options),
+						(PublishOptions options) => new PublishCommand(GetSoupIdentity(), GetSoupApi()).InvokeAsync(options),
+						(VersionOptions options) => new VersionCommand().InvokeAsync(options),
+						(ViewOptions options) => new ViewCommand(GetSoupApi()).InvokeAsync(options),
+						errors => Task.CompletedTask);
+
+				return 0;
+			}
+			catch(Exception ex)
+			{
+				Log.Error(ex.ToString());
+				return -1;
+			}
 		}
 
 		/// <summary>

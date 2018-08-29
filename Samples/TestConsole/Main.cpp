@@ -1,10 +1,10 @@
-#include <TestProject1.h>
-#include <TestMultiVersion.h>
+import TestWrapper;
+import TestMultiVersion;
 #include <iostream>
 
 int main()
 {
-	TestProject1::Wrapper wrapper;
+	TestWrapper::Wrapper wrapper;
 	TestMultiVersion::MultiVersion multiVersion;
 
 	std::wcout 

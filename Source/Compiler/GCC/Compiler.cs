@@ -40,7 +40,12 @@ namespace Soup.Compiler.GCC
 			}
 		}
 
-		public Task LinkAsync(LinkerArguments args)
+		public Task LinkLibraryAsync(LinkerArguments args)
+		{
+			return Task.CompletedTask;
+		}
+
+		public Task LinkExecutableAsync(LinkerArguments args)
 		{
 			return Task.CompletedTask;
 		}

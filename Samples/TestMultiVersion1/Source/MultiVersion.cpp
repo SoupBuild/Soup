@@ -1,4 +1,5 @@
 import TestMultiVersion;
+
 using namespace TestMultiVersion;
 
 int MultiVersion::GetVersion()

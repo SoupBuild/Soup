@@ -23,7 +23,8 @@ namespace Soup.Client
 
 		public async Task InvokeAsync(BuildOptions Options)
 		{
-			var recipe = await RecipeManager.LoadFromFileAsync(@"./");
+			var recipePath = "./";
+			var recipe = await RecipeManager.LoadFromFileAsync(recipePath);
 			if (recipe == null)
 			{
 				Log.Error("Could not find the recipe file.");
@@ -42,7 +43,7 @@ namespace Soup.Client
 			Log.Info("Building Project");
 			var buildPath = Path.Combine(Constants.ProjectGenerateFolderName, Constants.StoreBuildFolderName);
 			var buildEngine = new BuildEngine(_compiler);
-			await buildEngine.ExecuteAsync(_config, recipe);
+			await buildEngine.ExecuteAsync(_config, recipePath, recipe);
 		}
 	}
 }
