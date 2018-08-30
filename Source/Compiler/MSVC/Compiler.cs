@@ -153,6 +153,12 @@ namespace Soup.Compiler.MSVC
 			// Only run preprocess, compile, and assemble steps
 			commandArgs.Add("-c");
 
+			// Set the preprocessor definitions
+			foreach (var definition in args.PreprocessorDefinitions)
+			{
+				commandArgs.Add($"-D{definition}");
+			}
+
 			// Ignore Standard Include Paths to prevent pulling in accidental headers
 			commandArgs.Add("-X");
 

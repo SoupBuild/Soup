@@ -107,11 +107,19 @@ namespace Soup
 		private async Task CompileModuleAsync(string path, Recipe recipe, string objectDirectory)
 		{
 			Log.Info("Compile Module");
+
+			var defines = new List<string>()
+			{
+				// Set the Soup Version
+				$"SoupLatest={GetNamespace(recipe.Version)}",
+			};
+
 			var args = new CompilerArguments()
 			{
 				Standard = Compiler.LanguageStandard.Latest,
 				RootDirectory = path,
 				OutputDirectory = objectDirectory,
+				PreprocessorDefinitions = defines,
 				SourceFiles = new List<string>() { recipe.Public },
 				ExportModule = true,
 			};
@@ -161,11 +169,18 @@ namespace Soup
 				modules.Add(module);
 			}
 
+			var defines = new List<string>()
+			{
+				// Set the Soup Version
+				$"SoupLatest={GetNamespace(recipe.Version)}",
+			};
+
 			var args = new CompilerArguments()
 			{
 				Standard = Compiler.LanguageStandard.Latest,
 				RootDirectory = path,
 				OutputDirectory = objectDirectory,
+				PreprocessorDefinitions = defines,
 				SourceFiles = recipe.Source,
 				Modules = modules,
 			};
@@ -292,6 +307,11 @@ namespace Soup
 
 				set.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.lib").ToLower());
 			}
+		}
+
+		private string GetNamespace(SemanticVersion version)
+		{
+			return $"v{version.Major}_{version.Minor}_{version.Patch}";
 		}
 	}
 }

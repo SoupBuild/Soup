@@ -58,7 +58,7 @@ namespace Soup
 					lhs.Major != rhs.Major ||
 					lhs.Minor != rhs.Minor ||
 					lhs.Patch != rhs.Patch;
-			}		   
+			}
 		}
 
 		public static bool TryParse(string value, out SemanticVersion result)

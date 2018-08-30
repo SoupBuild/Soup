@@ -1,7 +1,7 @@
 import TestWrapper;
 import TestMultiVersion;
 
-using namespace TestWrapper;
+using namespace TestWrapper::SoupLatest;
 
 Wrapper::Wrapper()
 {
@@ -15,6 +15,6 @@ int Wrapper::GetValue()
 
 int Wrapper::GetVersion()
 {
-  TestMultiVersion::MultiVersion version;
+  TestMultiVersion::v1_0_2::MultiVersion version;
   return version.GetVersion();
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace TestMultiVersion
+namespace TestMultiVersion::SoupLatest
 {
   export class MultiVersion
   {

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace TestWrapper
+namespace TestWrapper::SoupLatest
 {
 	class Wrapper
 	{
