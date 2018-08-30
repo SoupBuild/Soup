@@ -42,8 +42,8 @@ namespace Soup.Client
 			Log.Info("");
 			Log.Info("Building Project");
 			var buildPath = Path.Combine(Constants.ProjectGenerateFolderName, Constants.StoreBuildFolderName);
-			var buildEngine = new BuildEngine(_compiler);
-			await buildEngine.ExecuteAsync(_config, recipePath, recipe);
+			var buildEngine = new BuildEngine(_config, _compiler);
+			await buildEngine.ExecuteAsync(recipePath, recipe);
 		}
 	}
 }

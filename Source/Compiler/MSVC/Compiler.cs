@@ -12,12 +12,15 @@ namespace Soup.Compiler.MSVC
 
 	public class Compiler : ICompiler
 	{
+		private static string ToolsPath => @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726";
+		private static string WindowsKitsPath => @"C:\Program Files (x86)\Windows Kits";
+
 		public Task CompileAsync(CompilerArguments args)
 		{
 			// Set the working directory to the output directory
 			var workingDirectory = args.RootDirectory;
 
-			string compiler = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\cl.exe";
+			string compiler = Path.Combine(ToolsPath, @"bin\Hostx64\x64\cl.exe");
 			var commandArgs = BuildCompilerArguments(args);
 
 			Log.Info($"PWD={workingDirectory}");
@@ -54,7 +57,7 @@ namespace Soup.Compiler.MSVC
 			// Set the working directory to the output directory
 			var workingDirectory = args.RootDirectory;
 
-			string linker = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\lib.exe";
+			string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\lib.exe");
 			var linkerArgs = BuildLinkerLibraryArguments(args);
 
 			Log.Info($"PWD={workingDirectory}");
@@ -90,8 +93,7 @@ namespace Soup.Compiler.MSVC
 		{
 			// Set the working directory to the output directory
 			var workingDirectory = args.RootDirectory;
-
-			string linker = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64\link.exe";
+			string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\link.exe");
 			var linkerArgs = BuildLinkerExecutableArguments(args);
 
 			Log.Info($"PWD={workingDirectory}");
@@ -150,6 +152,28 @@ namespace Soup.Compiler.MSVC
 			
 			// Only run preprocess, compile, and assemble steps
 			commandArgs.Add("-c");
+
+			// Ignore Standard Include Paths to prevent pulling in accidental headers
+			commandArgs.Add("-X");
+
+			// Add in the std include paths
+			// TODO : May want to place behind flag
+			// TODO : Investigate placing these as environment variables before calling exe
+			//C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\ATLMFC\include
+			//C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\include
+			//C:\Program Files(x86)\Windows Kits\NETFXSDK\4.6.1\include\um;
+			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\ucrt
+			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared
+			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um
+			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt
+			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\cppwinrt
+			commandArgs.Add($"-I\"{Path.Combine(ToolsPath, @"ATLMFC\include")}\"");
+			commandArgs.Add($"-I\"{Path.Combine(ToolsPath, @"include")}\"");
+			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\ucrt")}\"");
+			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\shared")}\"");
+			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\um")}\"");
+			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10.0.17134.0\winrt")}\"");
+			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\cppwinrt")}\"");
 
 			// Add the object output file
 			var objectPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
@@ -220,9 +244,28 @@ namespace Soup.Compiler.MSVC
 			// Disable the logo text
 			commandArgs.Add("-nologo");
 
+			// Set the machine configuration
+			commandArgs.Add("-machine:x64");
+
 			// Add the library output file
 			var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
 			commandArgs.Add($"-out:\"{ouputPath}{args.Name}.exe\"");
+
+			// Add in the std lib paths
+			// TODO : May want to place behind flag
+			// TODO : Investigate placing these as environment variables before calling exe
+			//C:\Program Files(x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\ATLMFC\lib\x64;
+			//C:\Program Files(x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\lib\x64;
+			//C:\Program Files(x86)\Windows Kits\NETFXSDK\4.6.1\lib\um\x64;
+			//C:\Program Files(x86)\Windows Kits\10\lib\10.0.17134.0\ucrt\x64;
+			//C:\Program Files(x86)\Windows Kits\10\lib\10.0.17134.0\um\x64
+			commandArgs.Add($"-libpath:\"{Path.Combine(ToolsPath, @"ATLMFC\lib\x64")}\"");
+			commandArgs.Add($"-libpath:\"{Path.Combine(ToolsPath, @"lib\x64")}\"");
+			commandArgs.Add($"-libpath:\"{Path.Combine(WindowsKitsPath, @"10\lib\10.0.17134.0\ucrt\x64")}\"");
+			commandArgs.Add($"-libpath:\"{Path.Combine(WindowsKitsPath, @"10\lib\10.0.17134.0\um\x64")}\"");
+
+			// Add the library files
+			commandArgs.AddRange(args.LibraryFiles);
 
 			// Lastly add the file
 			commandArgs.AddRange(args.SourceFiles);
@@ -232,9 +275,13 @@ namespace Soup.Compiler.MSVC
 
 		private static void ProcessLine(string line)
 		{
-			if (line.Contains("fatal error"))
+			if (line.Contains("error"))
 			{
 				Log.Error(line);
+			}
+			else if (line.Contains("warning"))
+			{
+				Log.Warning(line);
 			}
 			else
 			{

@@ -12,5 +12,6 @@ namespace Soup.Compiler
 		public string OutputDirectory { get; set; } = "";
 		public string Name { get; set; } = "";
 		public IList<string> SourceFiles { get; set; } = new List<string>();
+		public IList<string> LibraryFiles { get; set; } = new List<string>();
 	}
 }
