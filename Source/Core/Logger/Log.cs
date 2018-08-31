@@ -19,6 +19,7 @@ namespace Soup
 			_source.Listeners.Add(
 				new ConsoleTraceListener()
 				{
+					Filter = new EventTypeFilter(SourceLevels.Information | SourceLevels.Error | SourceLevels.Warning),
 					ShowSourceName = false,
 					ShowEventId = false,
 					ShowEventType = false,

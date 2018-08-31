@@ -23,8 +23,8 @@ namespace Soup.Compiler.MSVC
 			string compiler = Path.Combine(ToolsPath, @"bin\Hostx64\x64\cl.exe");
 			var commandArgs = BuildCompilerArguments(args);
 
-			Log.Info($"PWD={workingDirectory}");
-			Log.Info($"{compiler} {commandArgs}");
+			Log.Verbose($"PWD={workingDirectory}");
+			Log.Verbose($"{compiler} {commandArgs}");
 
 			using (Process process = new Process())
 			{
@@ -60,8 +60,8 @@ namespace Soup.Compiler.MSVC
 			string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\lib.exe");
 			var linkerArgs = BuildLinkerLibraryArguments(args);
 
-			Log.Info($"PWD={workingDirectory}");
-			Log.Info($"{linker} {linkerArgs}");
+			Log.Verbose($"PWD={workingDirectory}");
+			Log.Verbose($"{linker} {linkerArgs}");
 
 			using (Process process = new Process())
 			{
@@ -96,8 +96,8 @@ namespace Soup.Compiler.MSVC
 			string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\link.exe");
 			var linkerArgs = BuildLinkerExecutableArguments(args);
 
-			Log.Info($"PWD={workingDirectory}");
-			Log.Info($"{linker} {linkerArgs}");
+			Log.Verbose($"PWD={workingDirectory}");
+			Log.Verbose($"{linker} {linkerArgs}");
 
 			using (Process process = new Process())
 			{
