@@ -10,14 +10,12 @@ namespace Soup.Client
 	/// <summary>
 	/// Pack Command
 	/// </summary>
-	internal class PackCommand : ICommand
+	internal class PackCommand
 	{
-		public string Name => "pack";
-
-		public async Task InvokeAsync(string[] args)
+		public async Task InvokeAsync(PackOptions options)
 		{
 			var recipe = await RecipeManager.LoadFromFileAsync(@"./");
-			Log.Message($"Packaging Project: {recipe.Name}@{recipe.Version}");
+			Log.Info($"Packaging Project: {recipe.Name}@{recipe.Version}");
 
 			await PackageManager.PackAsync(recipe, Directory.GetCurrentDirectory());
 		}

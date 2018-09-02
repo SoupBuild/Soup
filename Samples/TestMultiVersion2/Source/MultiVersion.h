@@ -1,15 +1,11 @@
 #pragma once
-#include <string>
 
-namespace TestMultiVersion
+namespace TestMultiVersion_VersionNamespace
 {
-SOUP_PKG_ACTIVE namespace SOUP_PKG_VERSION
-{
-  class MultiVersion
+  export class MultiVersion
   {
   public:
-    std::wstring GetVersion();
-    std::wstring GetVersionEx();
+    int GetVersion();
+    float GetVersionEx();
   };
-}
 }

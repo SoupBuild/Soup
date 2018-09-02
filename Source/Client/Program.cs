@@ -4,10 +4,11 @@
 
 namespace Soup.Client
 {
-	using System.Collections.Generic;
-	using System.IO;
+	using System;
 	using System.Runtime.InteropServices;
 	using System.Threading.Tasks;
+	using CommandLine;
+	using Compiler;
 	using Soup.Api;
 
 	/// <summary>
@@ -16,97 +17,79 @@ namespace Soup.Client
 	public class Program
 	{
 		/// <summary>
-		/// The collection of all known commands for the command line application
+		/// The root of all evil - async style
 		/// </summary>
-		private static IReadOnlyList<ICommand> _commands = new List<ICommand>()
+		private static async Task<int> Main(string[] args)
 		{
-			new BuildCommand(),
-			new GenerateCommand(),
-			new InitializeCommand(),
-			new InstallCommand(),
-			new PackCommand(),
-			new PublishCommand(),
-			new VersionCommand(),
-			new ViewCommand(),
-		};
+			try
+			{
+				await Parser.Default.ParseArguments<
+					BuildOptions,
+					InitializeOptions,
+					InstallOptions,
+					PackOptions,
+					PublishOptions,
+					VersionOptions,
+					ViewOptions>(args)
+					.MapResult(
+						(BuildOptions options) => new BuildCommand(GetUserConfig(), GetCompiler()).InvokeAsync(options),
+						(InitializeOptions options) => new InitializeCommand().InvokeAsync(options),
+						(InstallOptions options) => new InstallCommand(GetUserConfig(), GetSoupApi()).InvokeAsync(options),
+						(PackOptions options) => new PackCommand().InvokeAsync(options),
+						(PublishOptions options) => new PublishCommand(GetSoupIdentity(), GetSoupApi()).InvokeAsync(options),
+						(VersionOptions options) => new VersionCommand().InvokeAsync(options),
+						(ViewOptions options) => new ViewCommand(GetSoupApi()).InvokeAsync(options),
+						errors => Task.CompletedTask);
 
-		// TODO : Convert over to using async main when C# 7.1 is available
-		public static void Main(string[] args)
-		{
-			MainAsync(args).Wait();
+				return 0;
+			}
+			catch(Exception ex)
+			{
+				Log.Error(ex.ToString());
+				return -1;
+			}
 		}
 
 		/// <summary>
-		/// The root of all evil - async style
+		/// Load the local user config
 		/// </summary>
-		private static async Task MainAsync(string[] args)
+		private static LocalUserConfig GetUserConfig()
 		{
-			// Load the user configuration settings
-			var userConfig = new LocalUserConfig();
-			var stagingDirectory = Path.Combine(userConfig.PackageStore, Constants.StagingFolderName);
+			return new LocalUserConfig();
+		}
 
-			// Setup the singletons
-			Singleton<ILogger>.Instance = new ConsoleLogger();
-			Singleton<ISoupIdentity>.Instance = new SoupIdentity();
-			Singleton<ISoupApi>.Instance = new SoupApi();
-			Singleton<LocalUserConfig>.Instance = userConfig;
+		/// <summary>
+		/// Create the soup api helper
+		/// </summary>
+		private static ISoupIdentity GetSoupIdentity()
+		{
+			return new SoupIdentity();
+		}
 
+		/// <summary>
+		/// Create the soup api helper
+		/// </summary>
+		private static ISoupApi GetSoupApi()
+		{
+			return new SoupApi();
+		}
+
+		/// <summary>
+		/// Setup the required Compiler
+		/// </summary>
+		private static ICompiler GetCompiler()
+		{
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				Singleton<IBuildEngine>.Instance = new MSBuild.BuildEngine();
+				return new Compiler.MSVC.Compiler();
 			}
 			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
-				Singleton<IBuildEngine>.Instance = new Make.BuildEngine();
+				return new Compiler.Clang.Compiler();
 			}
 			else
 			{
-				Log.Error("Unknown platform.");
-				return;
-			}
-
-			// Ensure we are in a clean state
-			if (Directory.Exists(stagingDirectory))
-			{
-				Log.Warning("The staging directory was not cleaned up!");
-				Directory.Delete(stagingDirectory, true);
-			}
-
-			// Find the correct cammand to invoke
-			bool foundCommand = false;
-			if (args.Length > 0)
-			{
-				foreach (var command in _commands)
-				{
-					if (command.Name == args[0])
-					{
-						await command.InvokeAsync(args);
-						foundCommand = true;
-						break;
-					}
-				}
-			}
-
-			if (!foundCommand)
-			{
-				ShowUsage();
-				return;
-			}
-		}
-
-		/// <summary>
-		/// Show the usage details for the general case
-		/// </summary>
-		private static void ShowUsage()
-		{
-			Log.Message("");
-			Log.Message("Usage: soup <command>");
-			Log.Message("");
-
-			Log.Message("Available Commands:");
-			foreach (var command in _commands)
-			{
-				Log.Message(string.Format("\t{0}", command.Name));
+				throw new NotSupportedException("Unknown platform.");
 			}
 		}
 	}

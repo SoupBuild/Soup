@@ -2,11 +2,8 @@
   "name": "TestMultiVersion",
   "version": "1.0.2",
   "dependencies": [],
-  "public": [
-    "Source/MultiVersion.h"
-  ],
+  "public": "Source/Module.cpp",
   "source": [
-    "Source/**/*.h",
-    "Source/**/*.cpp"
+    "Source/MultiVersion.cpp"
   ]
 }

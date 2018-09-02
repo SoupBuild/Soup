@@ -4,5 +4,5 @@ CONFIG=Debug
 ScriptsDir="$(dirname "${BASH_SOURCE[0]}")"
 RootDir="$(dirname "$ScriptsDir")"
 
-#dotnet $RootDir/Source/Client/bin/$CONFIG/netcoreapp2.0/Soup.dll "$@"
-dotnet run -p $RootDir/Source/Client "$@"
+dotnet $RootDir/bin/Soup.Client/$CONFIG/netcoreapp2.1/Soup.dll "$@"
+#dotnet run -no-build -p $RootDir/Source/Client "$@"

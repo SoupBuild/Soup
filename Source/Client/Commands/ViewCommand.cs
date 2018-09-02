@@ -5,7 +5,6 @@
 namespace Soup.Client
 {
 	using System.Net;
-	using System.Net.Http;
 	using System.Threading.Tasks;
 	using Newtonsoft.Json;
 	using Soup.Api;
@@ -13,27 +12,27 @@ namespace Soup.Client
 	/// <summary>
 	/// View Command
 	/// </summary>
-	internal class ViewCommand : ICommand
+	internal class ViewCommand
 	{
-		public string Name => "view";
+		private ISoupApi _soupApi;
+
+		public ViewCommand(
+			ISoupApi soupApi)
+		{
+			_soupApi = soupApi;
+		}
 
 		/// <summary>
 		/// Invoke the view command
 		/// </summary>
-		public async Task InvokeAsync(string[] args)
+		public async Task InvokeAsync(ViewOptions options)
 		{
-			if (args.Length < 2)
-			{
-				ShowUsage();
-				return;
-			}
-
-			var packageName = args[1];
+			var packageName = options.Package;
 			try
 			{
-				var package = await Singleton<ISoupApi>.Instance.GetPackageAsync(packageName);
+				var package = await _soupApi.GetPackageAsync(packageName);
 				var output = JsonConvert.SerializeObject(package);
-				Log.Message(output);
+				Log.Info(output);
 			}
 			catch (ApiException ex)
 			{
@@ -46,16 +45,6 @@ namespace Soup.Client
 					Log.Error(ex.ToString());
 				}
 			}
-		}
-
-		/// <summary>
-		/// Show the usage details for this command
-		/// </summary>
-		private static void ShowUsage()
-		{
-			Log.Message("");
-			Log.Message("Usage: soup view <package>");
-			Log.Message("\tpackage: The unique package name.");
 		}
 	}
 }

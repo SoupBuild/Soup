@@ -13,21 +13,24 @@ namespace Soup.Client
 	/// <summary>
 	/// Install Command
 	/// </summary>
-	internal class InstallCommand : ICommand
+	internal class InstallCommand
 	{
-		public string Name => "install";
+		private LocalUserConfig _config;
+		private ISoupApi _soupApi;
+
+		public InstallCommand(
+			LocalUserConfig config,
+			ISoupApi soupApi)
+		{
+			_config = config;
+			_soupApi = soupApi;
+		}
 
 		/// <summary>
 		/// Invoke the install command
 		/// </summary>
-		public async Task InvokeAsync(string[] args)
+		public async Task InvokeAsync(InstallOptions options)
 		{
-			if (args.Length > 2)
-			{
-				ShowUsage();
-				return;
-			}
-
 			var workingDirectory = @"./";
 			Recipe recipe = null;
 			try
@@ -39,23 +42,22 @@ namespace Soup.Client
 				Log.Error("The recipe file is required to install.");
 				return;
 			}
-
-			var userConfig = Singleton<LocalUserConfig>.Instance;
-			var stagingPath = PackageManager.EnsureStagingDirectoryExists(userConfig.PackageStore);
+			
+			var stagingPath = PackageManager.EnsureStagingDirectoryExists(_config.PackageStore);
 
 			// Ensure that the staging directory exists
 			var tempStagingPath = Path.Combine(stagingPath, "temp");
 
-			var package = args.Length < 2 ? null : args[1];
+			var package = options.Package;
 			if (string.IsNullOrEmpty(package))
 			{
-				Log.Message("Install All");
+				Log.Info("Install All");
 
 				await InstallRecursiveDependencies(tempStagingPath, recipe);
 			}
 			else if (!Path.HasExtension(package))
 			{
-				Log.Message($"Install Package: {package}");
+				Log.Info($"Install Package: {package}");
 
 				// Check if the package is already installed
 				if (recipe.Dependencies.Any(dependency => dependency.Name == package))
@@ -72,7 +74,6 @@ namespace Soup.Client
 				{
 					// Install the package
 					var installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
-					await GenerateBuildAsync(tempStagingPath, installedRecipe);
 					var installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
 
 					// Register the package in the recipe
@@ -81,7 +82,7 @@ namespace Soup.Client
 			}
 			else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
 			{
-				Log.Message($"Installing Local Package: {package}");
+				Log.Info($"Installing Local Package: {package}");
 
 				if (!File.Exists(package))
 				{
@@ -92,7 +93,6 @@ namespace Soup.Client
 				using (var archiveStream = File.OpenRead(package))
 				{
 					var installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
-					await GenerateBuildAsync(tempStagingPath, installedRecipe);
 					var installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
 
 					// Register the package in the recipe if it does not exist
@@ -106,11 +106,10 @@ namespace Soup.Client
 			{
 				Log.Error("Unknown install source type.");
 				Directory.Delete(tempStagingPath, true);
-				ShowUsage();
 				return;
 			}
 
-			// Cleanup
+			// Cleanup the working directory
 			if (Directory.Exists(tempStagingPath))
 			{
 				Directory.Delete(tempStagingPath, true);
@@ -125,21 +124,19 @@ namespace Soup.Client
 
 		private async Task<SemanticVersion> GetLatestAsync(string name)
 		{
-			var package = await Singleton<ISoupApi>.Instance.GetPackageAsync(name);
+			var package = await _soupApi.GetPackageAsync(name);
 			return package.Latest;
 		}
 
 		private async Task<Stream> DownloadPackageAsync(string name, SemanticVersion version)
 		{
-			var stream = await Singleton<ISoupApi>.Instance.DownloadPackageAsync(name, version);
+			var stream = await _soupApi.DownloadPackageAsync(name, version);
 			return stream;
 		}
 
 		private async Task<Recipe> InstallPackageAsync(string tempPath, Stream packageFile)
 		{
 			var recipe = await UnpackArchiveAsync(tempPath, packageFile);
-			await GenerateIncludeAsync(tempPath, recipe);
-
 			return recipe;
 		}
 
@@ -152,7 +149,7 @@ namespace Soup.Client
 
 			// Load the packages recipe file
 			var recipe = await RecipeManager.LoadFromFileAsync(tempPackagePath);
-			var packagePath = PackageManager.BuildKitchenPackagePath(recipe);
+			var packagePath = PackageManager.BuildKitchenPackagePath(_config, recipe);
 
 			// TODO : Perform some verification that the package is valid
 
@@ -176,82 +173,6 @@ namespace Soup.Client
 			return recipe;
 		}
 
-		private async Task GenerateBuildAsync(string tempPath, Recipe recipe)
-		{
-			var buildEngine = Singleton<IBuildEngine>.Instance;
-
-			// Generate the build projects
-			var tempBuildPath = Path.Combine(tempPath, Constants.StoreBuildFolderName);
-			var buildPath = PackageManager.BuildKitchenBuildPath(buildEngine.Name, recipe);
-			var includePath = PackageManager.BuildKitchenIncludePath(recipe);
-			var packagePath = PackageManager.BuildKitchenPackagePath(recipe);
-			var libraryPath = PackageManager.BuildKitchenLibraryPath();
-			var objectPath = Path.Combine(buildPath, "out");
-
-			Directory.CreateDirectory(tempBuildPath);
-
-			await buildEngine.GenerateDependenciesAsync(recipe, tempBuildPath);
-			await buildEngine.GenerateBuildAsync(
-				recipe,
-				tempBuildPath,
-				buildPath,
-				packagePath,
-				libraryPath,
-				objectPath);
-
-			// TODO : Should not hit this when, verify the package exists before download
-			// For now delete and recreate it
-			if (Directory.Exists(buildPath))
-			{
-				Directory.Delete(buildPath, true);
-			}
-
-			// Ensure the parent directory exists
-			var buildParentDirectory = Directory.GetParent(buildPath);
-			if (!buildParentDirectory.Exists)
-			{
-				buildParentDirectory.Create();
-			}
-
-			// Move the results out of the staging directory
-			Directory.Move(tempBuildPath, buildPath);
-		}
-
-		private async Task GenerateIncludeAsync(string tempPath, Recipe recipe)
-		{
-			var includePath = PackageManager.BuildKitchenIncludePath(recipe);
-			var packagePath = PackageManager.BuildKitchenPackagePath(recipe);
-
-			// Create the temporary include folders
-			var tempIncludePath = Path.Combine(tempPath, Constants.StoreIncludeRootFolderName);
-			Directory.CreateDirectory(tempIncludePath);
-
-			// Create the soup include directory
-			var soupIncludePath = Path.Combine(tempIncludePath, Constants.StoreSoupIncludeFolderName);
-			Directory.CreateDirectory(soupIncludePath);
-
-			// Create the include objects
-			await PackageManager.CreatePublicIncludeHeaderAsync(recipe, packagePath, soupIncludePath);
-
-			// TODO : Should not hit this when, verify the package exists before download
-			// For now delete and recreate it
-			if (Directory.Exists(includePath))
-			{
-				Log.Message("Removing old version.");
-				Directory.Delete(includePath, true);
-			}
-
-			// Ensure the parent directory exists
-			var includeParentDirectory = Directory.GetParent(includePath);
-			if (!includeParentDirectory.Exists)
-			{
-				includeParentDirectory.Create();
-			}
-
-			// Move the results out of the staging directory
-			Directory.Move(tempIncludePath, includePath);
-		}
-
 		/// <summary>
 		/// Recusively install all dependencies and trasient dependecies
 		/// </summary>
@@ -259,7 +180,7 @@ namespace Soup.Client
 		{
 			foreach (var dep in recipe.Dependencies)
 			{
-				Log.Message($"{dep}");
+				Log.Info($"{dep}");
 
 				// Download the archive
 				using (var archiveStream = await DownloadPackageAsync(dep.Name, dep.Version))
@@ -269,21 +190,8 @@ namespace Soup.Client
 
 					// Install dependecies recursively 
 					await InstallRecursiveDependencies(tempPath, installedRecipe);
-
-					// Now generate the build files
-					await GenerateBuildAsync(tempPath, installedRecipe);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Show the usage details for this command
-		/// </summary>
-		private void ShowUsage()
-		{
-			Log.Message("");
-			Log.Message("Usage: soup install <package_file>");
-			Log.Message("\tpackage_file: Must be a zip file.");
 		}
 	}
 }

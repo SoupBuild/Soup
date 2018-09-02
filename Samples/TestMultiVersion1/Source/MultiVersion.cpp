@@ -1,8 +1,8 @@
-#include "MultiVersion.h"
+import TestMultiVersion;
 
-using namespace TestMultiVersion;
+using namespace TestMultiVersion_VersionNamespace;
 
-std::wstring MultiVersion::GetVersion()
+int MultiVersion::GetVersion()
 {
-  return L"Version1";
+  return 1;
 }

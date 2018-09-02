@@ -3,27 +3,22 @@
     "TestInstall": {
       "commandName": "Project",
       "commandLineArgs": "install",
-      "workingDirectory": "..\\..\\Samples\\TestProject2"
+      "workingDirectory": "..\\..\\Samples\\TestConsole"
     },
     "TestBuild": {
       "commandName": "Project",
       "commandLineArgs": "build",
-      "workingDirectory": "..\\..\\Samples\\TestProject2"
-    },
-    "TestGenerate": {
-      "commandName": "Project",
-      "commandLineArgs": "generate",
-      "workingDirectory": "..\\..\\Samples\\TestProject2"
+      "workingDirectory": "..\\..\\Samples\\TestConsole"
     },
     "TestPublish": {
       "commandName": "Project",
       "commandLineArgs": "publish",
-      "workingDirectory": "..\\..\\Samples\\TestProject1"
+      "workingDirectory": "..\\..\\Samples\\TestWrapper"
     },
     "TestPack": {
       "commandName": "Project",
       "commandLineArgs": "pack",
-      "workingDirectory": "..\\..\\Samples\\TestProject1"
+      "workingDirectory": "..\\..\\Samples\\TestWrapper"
     }
   }
 }

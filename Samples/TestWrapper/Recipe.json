@@ -1,0 +1,11 @@
+{
+  "name": "TestWrapper",
+  "version": "1.0.33",
+  "dependencies": [
+    "../TestMultiVersion1/"
+  ],
+  "public": "Source/Module.cpp",
+  "source": [
+    "Source/Wrapper.cpp"
+  ]
+}

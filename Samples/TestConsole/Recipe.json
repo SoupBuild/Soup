@@ -1,0 +1,12 @@
+{
+  "name": "TestConsole",
+  "type": "Executable",
+  "version": "0.1.5",
+  "dependencies": [
+    "../TestMultiVersion2/",
+    "../TestWrapper/"
+  ],
+  "source": [
+    "Main.cpp"
+  ]
+}
