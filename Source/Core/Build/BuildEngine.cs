@@ -108,11 +108,29 @@ namespace Soup
 		{
 			Log.Info("Compile Module");
 
-			var defines = new List<string>()
+			var defines = new List<string>();
+
+			// Set the active version namespace
+			defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
+
+			// Add all of the direct dependencies version defintions
+			foreach (var dependecy in recipe.Dependencies)
 			{
-				// Set the Soup Version
-				$"SoupLatest={GetNamespace(recipe.Version)}",
-			};
+				// Load this package recipe
+				string packagePath;
+				if (dependecy.Path != null)
+				{
+					packagePath = dependecy.Path;
+				}
+				else
+				{
+					packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
+				}
+
+				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
+				
+				defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
+			}
 
 			var args = new CompilerArguments()
 			{
@@ -142,14 +160,17 @@ namespace Soup
 		{
 			Log.Info("Compile Source");
 			var modules = new List<string>();
+			var defines = new List<string>();
 
 			if (recipe.Type == RecipeType.Library)
 			{
 				// Add a reference to our own modules interface definition
 				modules.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
+				defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
 			}
 
-			// Add all of the dependencies as module references
+			// Add all of the direct dependencies as module references
+			// and set their version defintions
 			foreach (var dependecy in recipe.Dependencies)
 			{
 				// Load this package recipe
@@ -164,16 +185,10 @@ namespace Soup
 				}
 
 				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
-
-				var module = $"{packagePath}/bin/{dependecyRecipe.Name}.ifc";
-				modules.Add(module);
+				
+				modules.Add($"{packagePath}/bin/{dependecyRecipe.Name}.ifc");
+				defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
 			}
-
-			var defines = new List<string>()
-			{
-				// Set the Soup Version
-				$"SoupLatest={GetNamespace(recipe.Version)}",
-			};
 
 			var args = new CompilerArguments()
 			{

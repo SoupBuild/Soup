@@ -1,6 +1,6 @@
 import TestMultiVersion;
 
-using namespace TestMultiVersion::SoupLatest;
+using namespace TestMultiVersion_VersionNamespace;
 
 int MultiVersion::GetVersion()
 {

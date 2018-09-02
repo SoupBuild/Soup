@@ -4,12 +4,13 @@ import TestMultiVersion;
 
 int main()
 {
-	TestWrapper::v1_0_33::Wrapper wrapper;
-	TestMultiVersion::v2_0_3::MultiVersion multiVersion;
+	TestWrapper_VersionNamespace::Wrapper wrapper;
+	TestMultiVersion_VersionNamespace::MultiVersion multiVersion;
 
-	std::wcout 
-		<< wrapper.GetValue() << L" " 
-		<< wrapper.GetVersion() << L" " 
+	std::wcout
+		<< TestWrapper_VersionNamespace << L" "
+		<< wrapper.GetValue() << L" "
+		<< wrapper.GetVersion() << L" "
 		<< multiVersion.GetVersion() << L" "
 		<< multiVersion.GetVersionEx() << std::endl;
 
