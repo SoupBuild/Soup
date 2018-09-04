@@ -1,16 +1,16 @@
-﻿// <copyright company="Soup" file="PublishOptions.cs">
-//   Copyright (c) Soup.  All rights reserved.
+﻿// <copyright file="PublishOptions.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup.Client
 {
-	using CommandLine;
+    using CommandLine;
 
-	/// <summary>
-	/// Publish Command Options
-	/// </summary>
-	[Verb("publish")]
-	internal class PublishOptions
-	{
-	}
+    /// <summary>
+    /// Publish Command Options
+    /// </summary>
+    [Verb("publish")]
+    internal class PublishOptions
+    {
+    }
 }

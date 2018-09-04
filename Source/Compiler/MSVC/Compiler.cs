@@ -1,298 +1,311 @@
-﻿// <copyright company="Soup" file="Compiler.cs">
-//   Copyright (c) Soup.  All rights reserved.
+﻿// <copyright file="Compiler.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup.Compiler.MSVC
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.IO;
-	using System.Threading.Tasks;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Threading.Tasks;
 
-	public class Compiler : ICompiler
-	{
-		private static string ToolsPath => @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726";
-		private static string WindowsKitsPath => @"C:\Program Files (x86)\Windows Kits";
+    /// <summary>
+    /// The MSVC compiler implementation
+    /// </summary>
+    public class Compiler : ICompiler
+    {
+        private static string ToolsPath => @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726";
 
-		public Task CompileAsync(CompilerArguments args)
-		{
-			// Set the working directory to the output directory
-			var workingDirectory = args.RootDirectory;
+        private static string WindowsKitsPath => @"C:\Program Files (x86)\Windows Kits";
 
-			string compiler = Path.Combine(ToolsPath, @"bin\Hostx64\x64\cl.exe");
-			var commandArgs = BuildCompilerArguments(args);
+        /// <summary>
+        /// Compile
+        /// </summary>
+        public Task CompileAsync(CompilerArguments args)
+        {
+            // Set the working directory to the output directory
+            var workingDirectory = args.RootDirectory;
 
-			Log.Verbose($"PWD={workingDirectory}");
-			Log.Verbose($"{compiler} {commandArgs}");
+            string compiler = Path.Combine(ToolsPath, @"bin\Hostx64\x64\cl.exe");
+            var commandArgs = BuildCompilerArguments(args);
 
-			using (Process process = new Process())
-			{
-				process.StartInfo.UseShellExecute = false;
-				process.StartInfo.RedirectStandardOutput = true;
-				process.StartInfo.FileName = compiler;
-				process.StartInfo.WorkingDirectory = workingDirectory;
-				process.StartInfo.Arguments = commandArgs;
-				process.Start();
+            Log.Verbose($"PWD={workingDirectory}");
+            Log.Verbose($"{compiler} {commandArgs}");
 
-				while (!process.StandardOutput.EndOfStream)
-				{
-					string line = process.StandardOutput.ReadLine();
-					ProcessLine(line);
-				}
+            using (Process process = new Process())
+            {
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.FileName = compiler;
+                process.StartInfo.WorkingDirectory = workingDirectory;
+                process.StartInfo.Arguments = commandArgs;
+                process.Start();
 
-				process.WaitForExit();
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    string line = process.StandardOutput.ReadLine();
+                    ProcessLine(line);
+                }
 
-				if (process.ExitCode != 0)
-				{
-					throw new InvalidOperationException();
-				}
+                process.WaitForExit();
 
-				return Task.CompletedTask;
-			}
-		}
+                if (process.ExitCode != 0)
+                {
+                    throw new InvalidOperationException();
+                }
 
-		public Task LinkLibraryAsync(LinkerArguments args)
-		{
-			// Set the working directory to the output directory
-			var workingDirectory = args.RootDirectory;
+                return Task.CompletedTask;
+            }
+        }
 
-			string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\lib.exe");
-			var linkerArgs = BuildLinkerLibraryArguments(args);
+        /// <summary>
+        /// Link library
+        /// </summary>
+        public Task LinkLibraryAsync(LinkerArguments args)
+        {
+            // Set the working directory to the output directory
+            var workingDirectory = args.RootDirectory;
 
-			Log.Verbose($"PWD={workingDirectory}");
-			Log.Verbose($"{linker} {linkerArgs}");
+            string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\lib.exe");
+            var linkerArgs = BuildLinkerLibraryArguments(args);
 
-			using (Process process = new Process())
-			{
-				process.StartInfo.UseShellExecute = false;
-				process.StartInfo.RedirectStandardOutput = true;
-				process.StartInfo.FileName = linker;
-				process.StartInfo.WorkingDirectory = workingDirectory;
-				process.StartInfo.Arguments = linkerArgs;
-				process.Start();
+            Log.Verbose($"PWD={workingDirectory}");
+            Log.Verbose($"{linker} {linkerArgs}");
 
-				while (!process.StandardOutput.EndOfStream)
-				{
-					string line = process.StandardOutput.ReadLine();
-					ProcessLine(line);
-				}
+            using (Process process = new Process())
+            {
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.FileName = linker;
+                process.StartInfo.WorkingDirectory = workingDirectory;
+                process.StartInfo.Arguments = linkerArgs;
+                process.Start();
 
-				process.WaitForExit();
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    string line = process.StandardOutput.ReadLine();
+                    ProcessLine(line);
+                }
 
-				if (process.ExitCode != 0)
-				{
-					throw new InvalidOperationException();
-				}
+                process.WaitForExit();
 
-				return Task.CompletedTask;
-			}
-		}
+                if (process.ExitCode != 0)
+                {
+                    throw new InvalidOperationException();
+                }
 
-		public Task LinkExecutableAsync(LinkerArguments args)
-		{
-			// Set the working directory to the output directory
-			var workingDirectory = args.RootDirectory;
-			string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\link.exe");
-			var linkerArgs = BuildLinkerExecutableArguments(args);
+                return Task.CompletedTask;
+            }
+        }
 
-			Log.Verbose($"PWD={workingDirectory}");
-			Log.Verbose($"{linker} {linkerArgs}");
+        /// <summary>
+        /// Link Executable
+        /// </summary>
+        public Task LinkExecutableAsync(LinkerArguments args)
+        {
+            // Set the working directory to the output directory
+            var workingDirectory = args.RootDirectory;
+            string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\link.exe");
+            var linkerArgs = BuildLinkerExecutableArguments(args);
 
-			using (Process process = new Process())
-			{
-				process.StartInfo.UseShellExecute = false;
-				process.StartInfo.RedirectStandardOutput = true;
-				process.StartInfo.FileName = linker;
-				process.StartInfo.WorkingDirectory = workingDirectory;
-				process.StartInfo.Arguments = linkerArgs;
-				process.Start();
+            Log.Verbose($"PWD={workingDirectory}");
+            Log.Verbose($"{linker} {linkerArgs}");
 
-				while (!process.StandardOutput.EndOfStream)
-				{
-					string line = process.StandardOutput.ReadLine();
-					ProcessLine(line);
-				}
+            using (Process process = new Process())
+            {
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.FileName = linker;
+                process.StartInfo.WorkingDirectory = workingDirectory;
+                process.StartInfo.Arguments = linkerArgs;
+                process.Start();
 
-				process.WaitForExit();
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    string line = process.StandardOutput.ReadLine();
+                    ProcessLine(line);
+                }
 
-				if (process.ExitCode != 0)
-				{
-					throw new InvalidOperationException();
-				}
+                process.WaitForExit();
 
-				return Task.CompletedTask;
-			}
-		}
+                if (process.ExitCode != 0)
+                {
+                    throw new InvalidOperationException();
+                }
 
-		private static string BuildCompilerArguments(CompilerArguments args)
-		{
-			var commandArgs = new List<string>();
+                return Task.CompletedTask;
+            }
+        }
 
-			// Disable the logo text
-			commandArgs.Add("-nologo");
+        private static string BuildCompilerArguments(CompilerArguments args)
+        {
+            var commandArgs = new List<string>();
 
-			// Set the language standard
-			switch (args.Standard)
-			{
-				case LanguageStandard.CPP11:
-					throw new NotSupportedException("11 is not supported any longer. 14 is not the default.");
-				case LanguageStandard.CPP14:
-					// Default value commandArgs.Add("-std:c++14");
-					break;
-				case LanguageStandard.CPP17:
-					commandArgs.Add("-std:c++17");
-					break;
-				case LanguageStandard.Latest:
-					commandArgs.Add("-std:c++latest");
-					break;
-				default:
-					throw new NotSupportedException("Unknown language standard.");
-			}
-			
-			// Only run preprocess, compile, and assemble steps
-			commandArgs.Add("-c");
+            // Disable the logo text
+            commandArgs.Add("-nologo");
 
-			// Set the preprocessor definitions
-			foreach (var definition in args.PreprocessorDefinitions)
-			{
-				commandArgs.Add($"-D{definition}");
-			}
+            // Set the language standard
+            switch (args.Standard)
+            {
+                case LanguageStandard.CPP11:
+                    throw new NotSupportedException("11 is not supported any longer. 14 is not the default.");
+                case LanguageStandard.CPP14:
+                    // Default value commandArgs.Add("-std:c++14");
+                    break;
+                case LanguageStandard.CPP17:
+                    commandArgs.Add("-std:c++17");
+                    break;
+                case LanguageStandard.Latest:
+                    commandArgs.Add("-std:c++latest");
+                    break;
+                default:
+                    throw new NotSupportedException("Unknown language standard.");
+            }
 
-			// Ignore Standard Include Paths to prevent pulling in accidental headers
-			commandArgs.Add("-X");
+            // Only run preprocess, compile, and assemble steps
+            commandArgs.Add("-c");
 
-			// Add in the std include paths
-			// TODO : May want to place behind flag
-			// TODO : Investigate placing these as environment variables before calling exe
-			//C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\ATLMFC\include
-			//C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\include
-			//C:\Program Files(x86)\Windows Kits\NETFXSDK\4.6.1\include\um;
-			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\ucrt
-			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared
-			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um
-			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt
-			//C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\cppwinrt
-			commandArgs.Add($"-I\"{Path.Combine(ToolsPath, @"ATLMFC\include")}\"");
-			commandArgs.Add($"-I\"{Path.Combine(ToolsPath, @"include")}\"");
-			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\ucrt")}\"");
-			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\shared")}\"");
-			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\um")}\"");
-			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10.0.17134.0\winrt")}\"");
-			commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\cppwinrt")}\"");
+            // Set the preprocessor definitions
+            foreach (var definition in args.PreprocessorDefinitions)
+            {
+                commandArgs.Add($"-D{definition}");
+            }
 
-			// Add the object output file
-			var objectPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
-			commandArgs.Add($"-Fo\"{objectPath}\"");
+            // Ignore Standard Include Paths to prevent pulling in accidental headers
+            commandArgs.Add("-X");
 
-			// Enable c++ exceptions
-			commandArgs.Add("-EHs");
+            // Add in the std include paths
+            // TODO : May want to place behind flag
+            // TODO : Investigate placing these as environment variables before calling exe
+            // C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\ATLMFC\include
+            // C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\include
+            // C:\Program Files(x86)\Windows Kits\NETFXSDK\4.6.1\include\um;
+            // C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\ucrt
+            // C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared
+            // C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um
+            // C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt
+            // C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\cppwinrt
+            commandArgs.Add($"-I\"{Path.Combine(ToolsPath, @"ATLMFC\include")}\"");
+            commandArgs.Add($"-I\"{Path.Combine(ToolsPath, @"include")}\"");
+            commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\ucrt")}\"");
+            commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\shared")}\"");
+            commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\um")}\"");
+            commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10.0.17134.0\winrt")}\"");
+            commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\cppwinrt")}\"");
 
-			// Enable experimental features
-			if (args.Standard == LanguageStandard.Latest)
-			{
-				commandArgs.Add("-experimental:module");
-			}
+            // Add the object output file
+            var objectPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
+            commandArgs.Add($"-Fo\"{objectPath}\"");
 
-			// Add the module references
-			foreach (var module in args.Modules)
-			{
-				commandArgs.Add("-module:reference");
-				commandArgs.Add(module);
-			}
+            // Enable c++ exceptions
+            commandArgs.Add("-EHs");
 
-			if (args.ExportModule)
-			{
-				commandArgs.Add("-module:export");
+            // Enable experimental features
+            if (args.Standard == LanguageStandard.Latest)
+            {
+                commandArgs.Add("-experimental:module");
+            }
 
-				// There must be only one source file
-				if (args.SourceFiles.Count != 1)
-				{
-					throw new ArgumentException("Export module expects only one source file.");
-				}
+            // Add the module references
+            foreach (var module in args.Modules)
+            {
+                commandArgs.Add("-module:reference");
+                commandArgs.Add(module);
+            }
 
-				// Place the ifc in the output directory
-				var sourceFile = args.SourceFiles[0];
-				var outputFile = $"{args.OutputDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(sourceFile)}.ifc";
-				commandArgs.AddRange(new string[] { "-module:output", outputFile });
-			}
+            if (args.ExportModule)
+            {
+                commandArgs.Add("-module:export");
 
-			// Lastly add the file
-			commandArgs.AddRange(args.SourceFiles);
+                // There must be only one source file
+                if (args.SourceFiles.Count != 1)
+                {
+                    throw new ArgumentException("Export module expects only one source file.");
+                }
 
-			return string.Join(" ", commandArgs);
-		}
+                // Place the ifc in the output directory
+                var sourceFile = args.SourceFiles[0];
+                var outputFile = $"{args.OutputDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(sourceFile)}.ifc";
+                commandArgs.AddRange(new string[] { "-module:output", outputFile });
+            }
 
-		private static string BuildLinkerLibraryArguments(LinkerArguments args)
-		{
-			var commandArgs = new List<string>();
+            // Lastly add the file
+            commandArgs.AddRange(args.SourceFiles);
 
-			// Disable the logo text
-			commandArgs.Add("-nologo");
+            return string.Join(" ", commandArgs);
+        }
 
-			// Set the machine type
-			commandArgs.Add("-machine:x64");
+        private static string BuildLinkerLibraryArguments(LinkerArguments args)
+        {
+            var commandArgs = new List<string>();
 
-			// Add the library output file
-			var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
-			commandArgs.Add($"-out:\"{ouputPath}{args.Name}.lib\"");
+            // Disable the logo text
+            commandArgs.Add("-nologo");
 
-			// Lastly add the file
-			commandArgs.AddRange(args.SourceFiles);
+            // Set the machine type
+            commandArgs.Add("-machine:x64");
 
-			return string.Join(" ", commandArgs);
-		}
+            // Add the library output file
+            var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
+            commandArgs.Add($"-out:\"{ouputPath}{args.Name}.lib\"");
 
-		private static string BuildLinkerExecutableArguments(LinkerArguments args)
-		{
-			var commandArgs = new List<string>();
+            // Lastly add the file
+            commandArgs.AddRange(args.SourceFiles);
 
-			// Disable the logo text
-			commandArgs.Add("-nologo");
+            return string.Join(" ", commandArgs);
+        }
 
-			// Set the machine configuration
-			commandArgs.Add("-machine:x64");
+        private static string BuildLinkerExecutableArguments(LinkerArguments args)
+        {
+            var commandArgs = new List<string>();
 
-			// Add the library output file
-			var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
-			commandArgs.Add($"-out:\"{ouputPath}{args.Name}.exe\"");
+            // Disable the logo text
+            commandArgs.Add("-nologo");
 
-			// Add in the std lib paths
-			// TODO : May want to place behind flag
-			// TODO : Investigate placing these as environment variables before calling exe
-			//C:\Program Files(x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\ATLMFC\lib\x64;
-			//C:\Program Files(x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\lib\x64;
-			//C:\Program Files(x86)\Windows Kits\NETFXSDK\4.6.1\lib\um\x64;
-			//C:\Program Files(x86)\Windows Kits\10\lib\10.0.17134.0\ucrt\x64;
-			//C:\Program Files(x86)\Windows Kits\10\lib\10.0.17134.0\um\x64
-			commandArgs.Add($"-libpath:\"{Path.Combine(ToolsPath, @"ATLMFC\lib\x64")}\"");
-			commandArgs.Add($"-libpath:\"{Path.Combine(ToolsPath, @"lib\x64")}\"");
-			commandArgs.Add($"-libpath:\"{Path.Combine(WindowsKitsPath, @"10\lib\10.0.17134.0\ucrt\x64")}\"");
-			commandArgs.Add($"-libpath:\"{Path.Combine(WindowsKitsPath, @"10\lib\10.0.17134.0\um\x64")}\"");
+            // Set the machine configuration
+            commandArgs.Add("-machine:x64");
 
-			// Add the library files
-			commandArgs.AddRange(args.LibraryFiles);
+            // Add the library output file
+            var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
+            commandArgs.Add($"-out:\"{ouputPath}{args.Name}.exe\"");
 
-			// Lastly add the file
-			commandArgs.AddRange(args.SourceFiles);
+            // Add in the std lib paths
+            // TODO : May want to place behind flag
+            // TODO : Investigate placing these as environment variables before calling exe
+            // C:\Program Files(x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\ATLMFC\lib\x64;
+            // C:\Program Files(x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\lib\x64;
+            // C:\Program Files(x86)\Windows Kits\NETFXSDK\4.6.1\lib\um\x64;
+            // C:\Program Files(x86)\Windows Kits\10\lib\10.0.17134.0\ucrt\x64;
+            // C:\Program Files(x86)\Windows Kits\10\lib\10.0.17134.0\um\x64
+            commandArgs.Add($"-libpath:\"{Path.Combine(ToolsPath, @"ATLMFC\lib\x64")}\"");
+            commandArgs.Add($"-libpath:\"{Path.Combine(ToolsPath, @"lib\x64")}\"");
+            commandArgs.Add($"-libpath:\"{Path.Combine(WindowsKitsPath, @"10\lib\10.0.17134.0\ucrt\x64")}\"");
+            commandArgs.Add($"-libpath:\"{Path.Combine(WindowsKitsPath, @"10\lib\10.0.17134.0\um\x64")}\"");
 
-			return string.Join(" ", commandArgs);
-		}
+            // Add the library files
+            commandArgs.AddRange(args.LibraryFiles);
 
-		private static void ProcessLine(string line)
-		{
-			if (line.Contains("error"))
-			{
-				Log.Error(line);
-			}
-			else if (line.Contains("warning"))
-			{
-				Log.Warning(line);
-			}
-			else
-			{
-				Log.Info(line);
-			}
-		}
-	}
+            // Lastly add the file
+            commandArgs.AddRange(args.SourceFiles);
+
+            return string.Join(" ", commandArgs);
+        }
+
+        private static void ProcessLine(string line)
+        {
+            if (line.Contains("error"))
+            {
+                Log.Error(line);
+            }
+            else if (line.Contains("warning"))
+            {
+                Log.Warning(line);
+            }
+            else
+            {
+                Log.Info(line);
+            }
+        }
+    }
 }

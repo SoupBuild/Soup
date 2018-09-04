@@ -23,8 +23,24 @@ Copyright (C) mwasplund. All rights reserved.
 
   <!-- Bring in language specific overrides -->
   <PropertyGroup>
+    <IsTestPrject Condition="$(MSBuildProjectName.EndsWith('UnitTests'))">True</IsTestPrject>
+    <IsTestPrject Condition="'$(IsTestPrject)' == ''">False</IsTestPrject>
     <BaseIntermediateOutputPath>$(ObjDir)\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDir)\$(MSBuildProjectName)</BaseOutputPath>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
+
+  <!-- Enable documentation output -->
+  <PropertyGroup>
+    <DocumentationFile>$(BinDir)\$(MSBuildProjectName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <!-- Include the shared stylecop settings -->
+  <PropertyGroup>
+    <CodeAnalysisRuleSet Condition="$(IsTestPrject) != 'True'">$(BuildDir)stylecop.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="$(IsTestPrject) == 'True'">$(BuildDir)stylecop.internal.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="$(BuildDir)stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
 </Project>

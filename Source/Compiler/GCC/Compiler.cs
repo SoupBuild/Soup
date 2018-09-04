@@ -1,77 +1,89 @@
-﻿// <copyright company="Soup" file="Compiler.cs">
-//   Copyright (c) Soup.  All rights reserved.
+﻿// <copyright file="Compiler.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup.Compiler.GCC
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Threading.Tasks;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
 
-	public class Compiler : ICompiler
-	{
-		public Task CompileAsync(CompilerArguments args)
-		{
-			string compiler = "gcc";
-			using (Process process = new Process())
-			{
-				process.StartInfo.UseShellExecute = false;
-				process.StartInfo.RedirectStandardOutput = true;
-				process.StartInfo.FileName = compiler;
-				process.StartInfo.WorkingDirectory = args.RootDirectory;
-				process.StartInfo.Arguments = BuildCompilerArguments(args);
-				process.Start();
+    /// <summary>
+    /// The GCC compiler implementation
+    /// </summary>
+    public class Compiler : ICompiler
+    {
+        /// <summary>
+        /// Compile
+        /// </summary>
+        public Task CompileAsync(CompilerArguments args)
+        {
+            string compiler = "gcc";
+            using (Process process = new Process())
+            {
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.FileName = compiler;
+                process.StartInfo.WorkingDirectory = args.RootDirectory;
+                process.StartInfo.Arguments = BuildCompilerArguments(args);
+                process.Start();
 
-				while (!process.StandardOutput.EndOfStream)
-				{
-					string line = process.StandardOutput.ReadLine();
-					ProcessLine(line);
-				}
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    string line = process.StandardOutput.ReadLine();
+                    ProcessLine(line);
+                }
 
-				process.WaitForExit();
+                process.WaitForExit();
 
-				if (process.ExitCode != 0)
-				{
-					throw new InvalidOperationException();
-				}
+                if (process.ExitCode != 0)
+                {
+                    throw new InvalidOperationException();
+                }
 
-				return Task.CompletedTask;
-			}
-		}
+                return Task.CompletedTask;
+            }
+        }
 
-		public Task LinkLibraryAsync(LinkerArguments args)
-		{
-			return Task.CompletedTask;
-		}
+        /// <summary>
+        /// Link Library
+        /// </summary>
+        public Task LinkLibraryAsync(LinkerArguments args)
+        {
+            return Task.CompletedTask;
+        }
 
-		public Task LinkExecutableAsync(LinkerArguments args)
-		{
-			return Task.CompletedTask;
-		}
+        /// <summary>
+        /// Link Executable
+        /// </summary>
+        public Task LinkExecutableAsync(LinkerArguments args)
+        {
+            return Task.CompletedTask;
+        }
 
-		private static string BuildCompilerArguments(CompilerArguments args)
-		{
-			var commandArgs = new List<string>();
-			
-			// Set the Standard Library implementation
-			commandArgs.Add("-stdlib=libc++");
-			
-			// Set the language version
-			commandArgs.Add("-std=c++1z");
-			
-			// Enable experimental modules
-			commandArgs.Add("-fmodules-ts");
+        private static string BuildCompilerArguments(CompilerArguments args)
+        {
+            var commandArgs = new List<string>();
 
-			// Lastly add the file
-			commandArgs.AddRange(args.SourceFiles);
+            // Set the Standard Library implementation
+            commandArgs.Add("-stdlib=libc++");
 
-			return string.Join(" ", commandArgs);
-		}
+            // Set the language version
+            commandArgs.Add("-std=c++1z");
 
-		private static void ProcessLine(string line)
-		{
-			Log.Info(line);
-		}
-	}
+            // Enable experimental modules
+            commandArgs.Add("-fmodules-ts");
+
+            // Lastly add the file
+            commandArgs.AddRange(args.SourceFiles);
+
+            return string.Join(" ", commandArgs);
+        }
+
+        private static void ProcessLine(string line)
+        {
+            Log.Info(line);
+        }
+    }
 }

@@ -1,18 +1,20 @@
-// <copyright company="Soup" file="PathExtensions.cs">
-//   Copyright (c) Soup.  All rights reserved.
+// <copyright file="PathExtensions.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup
 {
-	using System;
-	using System.IO;
+    using System.IO;
 
-	/// <summary>
-	/// Path extensions
-	/// </summary>
-	public static class PathExtensions
-	{
-		public static string EnsureTrailingSlash(this string path)
+    /// <summary>
+    /// Path extensions
+    /// </summary>
+    public static class PathExtensions
+    {
+        /// <summary>
+        /// Check if there is a trailing slash and append one if not
+        /// </summary>
+        public static string EnsureTrailingSlash(this string path)
         {
             if (!path.EndsWith(Path.DirectorySeparatorChar))
             {
@@ -24,7 +26,10 @@ namespace Soup
             }
         }
 
-		public static string RemoveTrailingSlash(this string path)
+        /// <summary>
+        /// Remove trailing slash if it exists
+        /// </summary>
+        public static string RemoveTrailingSlash(this string path)
         {
             if (path.EndsWith(Path.DirectorySeparatorChar))
             {
@@ -35,5 +40,5 @@ namespace Soup
                 return path;
             }
         }
-	}
+    }
 }

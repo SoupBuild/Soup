@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Rules for Soup" Description="Code analysis rules for all Soup projects." ToolsVersion="14.0">
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <!-- Disable this prefix -->
+    <Rule Id="SA1101" Action="None" />
+    <!-- Allow underscores for member variables -->
+    <Rule Id="SA1309" Action="None" />
+    <!-- Disable requirement to document -->
+    <Rule Id="SA1602" Action="None" />
+    <Rule Id="SA1611" Action="None" />
+    <Rule Id="SA1615" Action="None" />
+  </Rules>
+</RuleSet>

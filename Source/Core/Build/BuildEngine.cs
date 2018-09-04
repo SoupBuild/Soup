@@ -1,332 +1,339 @@
-﻿// <copyright company="Soup" file="BuildEngine.cs">
-//   Copyright (c) Soup.  All rights reserved.
+﻿// <copyright file="BuildEngine.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup
 {
-	using System;
-	using System.Collections.Generic;
-	using System.IO;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using Soup.Compiler;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Soup.Compiler;
 
-	public class BuildEngine
-	{
-		private LocalUserConfig _config;
-		private ICompiler _compiler;
+    /// <summary>
+    /// The build engine
+    /// </summary>
+    public class BuildEngine
+    {
+        private LocalUserConfig _config;
+        private ICompiler _compiler;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="BuildEngine"/> class.
-		/// </summary>
-		public BuildEngine(LocalUserConfig config, ICompiler compiler)
-		{
-			_config = config;
-			_compiler = compiler;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildEngine"/> class.
+        /// </summary>
+        public BuildEngine(LocalUserConfig config, ICompiler compiler)
+        {
+            _config = config;
+            _compiler = compiler;
+        }
 
-		/// <summary>
-		/// The Core Execute task
-		/// </summary>
-		public async Task ExecuteAsync(string path, Recipe recipe)
-		{
-			Log.Info("Build Recursive Dependencies.");
-			await BuildAllDependenciesRecursivelyAsync(path, recipe);
+        /// <summary>
+        /// The Core Execute task
+        /// </summary>
+        public async Task ExecuteAsync(string path, Recipe recipe)
+        {
+            Log.Info("Build Recursive Dependencies.");
+            await BuildAllDependenciesRecursivelyAsync(path, recipe);
 
-			Log.Info("Build Toplevel Recipe.");
-			await CoreBuildAsync(path, recipe);
-		}
+            Log.Info("Build Toplevel Recipe.");
+            await CoreBuildAsync(path, recipe);
+        }
 
-		/// <summary>
-		/// Build the dependecies for the provided recipe recursively
-		/// </summary>
-		private async Task BuildAllDependenciesRecursivelyAsync(
-			string path,
-			Recipe recipe)
-		{
-			Log.Info($"Seaching Dependencies: {recipe.Name}.");
-			foreach (var dependecy in recipe.Dependencies)
-			{
-				// Load this package recipe
-				string packagePath;
-				if (dependecy.Path != null)
-				{
-					packagePath = dependecy.Path;
-				}
-				else
-				{
-					packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
-				}
+        /// <summary>
+        /// The Core Execute task
+        /// </summary>
+        public async Task CoreBuildAsync(string path, Recipe recipe)
+        {
+            var objectDirectory = "obj";
+            var binaryDirectory = "bin";
 
-				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
+            Log.Info($"Building {recipe.Name}.");
+            if (recipe.Type == RecipeType.Library)
+            {
+                await CompileModuleAsync(path, recipe, objectDirectory);
+            }
 
-				// Build all recursive dependencies
-				await BuildAllDependenciesRecursivelyAsync(packagePath, dependecyRecipe);
+            await CompileSourceAsync(path, recipe, objectDirectory);
+            switch (recipe.Type)
+            {
+                case RecipeType.Library:
+                    await LinkLibraryAsync(path, recipe, objectDirectory, binaryDirectory);
+                    break;
+                case RecipeType.Executable:
+                    await LinkExecutableAsync(path, recipe, objectDirectory, binaryDirectory);
+                    break;
+                default:
+                    throw new NotSupportedException("Unknown recipe type.");
+            }
 
-				// Build this dependecy
-				await CoreBuildAsync(packagePath, dependecyRecipe);
-			}
-		}
+            if (recipe.Type == RecipeType.Library)
+            {
+                CloneModuleInterface(path, recipe, objectDirectory, binaryDirectory);
+            }
+        }
 
-		/// <summary>
-		/// The Core Execute task
-		/// </summary>
-		public async Task CoreBuildAsync(string path, Recipe recipe)
-		{
-			var objectDirectory = "obj";
-			var binaryDirectory = "bin";
+        /// <summary>
+        /// Build the dependecies for the provided recipe recursively
+        /// </summary>
+        private async Task BuildAllDependenciesRecursivelyAsync(
+            string path,
+            Recipe recipe)
+        {
+            Log.Info($"Seaching Dependencies: {recipe.Name}.");
+            foreach (var dependecy in recipe.Dependencies)
+            {
+                // Load this package recipe
+                string packagePath;
+                if (dependecy.Path != null)
+                {
+                    packagePath = dependecy.Path;
+                }
+                else
+                {
+                    packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
+                }
 
-			Log.Info($"Building {recipe.Name}.");
-			if (recipe.Type == RecipeType.Library)
-			{
-				await CompileModuleAsync(path, recipe, objectDirectory);
-			}
+                var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
-			await CompileSourceAsync(path, recipe, objectDirectory);
-			switch (recipe.Type)
-			{
-				case RecipeType.Library:
-					await LinkLibraryAsync(path, recipe, objectDirectory, binaryDirectory);
-					break;
-				case RecipeType.Executable:
-					await LinkExecutableAsync(path, recipe, objectDirectory, binaryDirectory);
-					break;
-				default:
-					throw new NotSupportedException("Unknown recipe type.");
-			}
+                // Build all recursive dependencies
+                await BuildAllDependenciesRecursivelyAsync(packagePath, dependecyRecipe);
 
-			if (recipe.Type == RecipeType.Library)
-			{
-				CloneModuleInterface(path, recipe, objectDirectory, binaryDirectory);
-			}
-		}
+                // Build this dependecy
+                await CoreBuildAsync(packagePath, dependecyRecipe);
+            }
+        }
 
-		/// <summary>
-		/// Compile the module file
-		/// </summary>
-		private async Task CompileModuleAsync(string path, Recipe recipe, string objectDirectory)
-		{
-			Log.Info("Compile Module");
+        /// <summary>
+        /// Compile the module file
+        /// </summary>
+        private async Task CompileModuleAsync(string path, Recipe recipe, string objectDirectory)
+        {
+            Log.Info("Compile Module");
 
-			var defines = new List<string>();
+            var defines = new List<string>();
 
-			// Set the active version namespace
-			defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
+            // Set the active version namespace
+            defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
 
-			// Add all of the direct dependencies version defintions
-			foreach (var dependecy in recipe.Dependencies)
-			{
-				// Load this package recipe
-				string packagePath;
-				if (dependecy.Path != null)
-				{
-					packagePath = dependecy.Path;
-				}
-				else
-				{
-					packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
-				}
+            // Add all of the direct dependencies version defintions
+            foreach (var dependecy in recipe.Dependencies)
+            {
+                // Load this package recipe
+                string packagePath;
+                if (dependecy.Path != null)
+                {
+                    packagePath = dependecy.Path;
+                }
+                else
+                {
+                    packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
+                }
 
-				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
-				
-				defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
-			}
+                var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
-			var args = new CompilerArguments()
-			{
-				Standard = Compiler.LanguageStandard.Latest,
-				RootDirectory = path,
-				OutputDirectory = objectDirectory,
-				PreprocessorDefinitions = defines,
-				SourceFiles = new List<string>() { recipe.Public },
-				ExportModule = true,
-			};
+                defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
+            }
 
-			// Ensure the object directory exists
-			var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
-			if (!Directory.Exists(objectDirectry))
-			{
-				Directory.CreateDirectory(objectDirectry);
-			}
+            var args = new CompilerArguments()
+            {
+                Standard = Compiler.LanguageStandard.Latest,
+                RootDirectory = path,
+                OutputDirectory = objectDirectory,
+                PreprocessorDefinitions = defines,
+                SourceFiles = new List<string>() { recipe.Public },
+                ExportModule = true,
+            };
 
-			// Compile each file
-			await _compiler.CompileAsync(args);
-		}
+            // Ensure the object directory exists
+            var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
+            if (!Directory.Exists(objectDirectry))
+            {
+                Directory.CreateDirectory(objectDirectry);
+            }
 
-		/// <summary>
-		/// Compile the supporting source files
-		/// </summary>
-		private async Task CompileSourceAsync(string path, Recipe recipe, string objectDirectory)
-		{
-			Log.Info("Compile Source");
-			var modules = new List<string>();
-			var defines = new List<string>();
+            // Compile each file
+            await _compiler.CompileAsync(args);
+        }
 
-			if (recipe.Type == RecipeType.Library)
-			{
-				// Add a reference to our own modules interface definition
-				modules.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
-				defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
-			}
+        /// <summary>
+        /// Compile the supporting source files
+        /// </summary>
+        private async Task CompileSourceAsync(string path, Recipe recipe, string objectDirectory)
+        {
+            Log.Info("Compile Source");
+            var modules = new List<string>();
+            var defines = new List<string>();
 
-			// Add all of the direct dependencies as module references
-			// and set their version defintions
-			foreach (var dependecy in recipe.Dependencies)
-			{
-				// Load this package recipe
-				string packagePath;
-				if (dependecy.Path != null)
-				{
-					packagePath = dependecy.Path;
-				}
-				else
-				{
-					packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
-				}
+            if (recipe.Type == RecipeType.Library)
+            {
+                // Add a reference to our own modules interface definition
+                modules.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
+                defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
+            }
 
-				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
-				
-				modules.Add($"{packagePath}/bin/{dependecyRecipe.Name}.ifc");
-				defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
-			}
+            // Add all of the direct dependencies as module references
+            // and set their version defintions
+            foreach (var dependecy in recipe.Dependencies)
+            {
+                // Load this package recipe
+                string packagePath;
+                if (dependecy.Path != null)
+                {
+                    packagePath = dependecy.Path;
+                }
+                else
+                {
+                    packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
+                }
 
-			var args = new CompilerArguments()
-			{
-				Standard = Compiler.LanguageStandard.Latest,
-				RootDirectory = path,
-				OutputDirectory = objectDirectory,
-				PreprocessorDefinitions = defines,
-				SourceFiles = recipe.Source,
-				Modules = modules,
-			};
+                var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
-			// Ensure the object directory exists
-			var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
-			if (!Directory.Exists(objectDirectry))
-			{
-				Directory.CreateDirectory(objectDirectry);
-			}
+                modules.Add($"{packagePath}/bin/{dependecyRecipe.Name}.ifc");
+                defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
+            }
 
-			// Compile each file
-			await _compiler.CompileAsync(args);
-		}
+            var args = new CompilerArguments()
+            {
+                Standard = Compiler.LanguageStandard.Latest,
+                RootDirectory = path,
+                OutputDirectory = objectDirectory,
+                PreprocessorDefinitions = defines,
+                SourceFiles = recipe.Source,
+                Modules = modules,
+            };
 
-		/// <summary>
-		/// Link the resulting object files
-		/// </summary>
-		private async Task LinkLibraryAsync(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
-		{
-			Log.Info("Link");
-			var allFiles = new List<string>(recipe.Source);
-			if (recipe.Type == RecipeType.Library)
-			{
-				allFiles.Add(recipe.Public);
-			}
+            // Ensure the object directory exists
+            var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
+            if (!Directory.Exists(objectDirectry))
+            {
+                Directory.CreateDirectory(objectDirectry);
+            }
 
-			var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.obj").ToList();
+            // Compile each file
+            await _compiler.CompileAsync(args);
+        }
 
-			var args = new LinkerArguments()
-			{
-				Name = recipe.Name,
-				RootDirectory = path,
-				OutputDirectory = binaryDirectory,
-				SourceFiles = objectFiles,
-			};
+        /// <summary>
+        /// Link the resulting object files
+        /// </summary>
+        private async Task LinkLibraryAsync(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
+        {
+            Log.Info("Link");
+            var allFiles = new List<string>(recipe.Source);
+            if (recipe.Type == RecipeType.Library)
+            {
+                allFiles.Add(recipe.Public);
+            }
 
-			// Ensure the object directory exists
-			var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
-			if (!Directory.Exists(objectDirectry))
-			{
-				Directory.CreateDirectory(objectDirectry);
-			}
+            var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.obj").ToList();
 
-			// Link
-			await _compiler.LinkLibraryAsync(args);
-		}
+            var args = new LinkerArguments()
+            {
+                Name = recipe.Name,
+                RootDirectory = path,
+                OutputDirectory = binaryDirectory,
+                SourceFiles = objectFiles,
+            };
 
-		/// <summary>
-		/// Link the executable
-		/// </summary>
-		private async Task LinkExecutableAsync(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
-		{
-			Log.Info("Link");
-			var allFiles = new List<string>(recipe.Source);
-			if (recipe.Type == RecipeType.Library)
-			{
-				allFiles.Add(recipe.Public);
-			}
+            // Ensure the object directory exists
+            var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
+            if (!Directory.Exists(objectDirectry))
+            {
+                Directory.CreateDirectory(objectDirectry);
+            }
 
-			// Add all of the dependencies as module references
-			var librarySet = new HashSet<string>();
-			await GenerateDependencyLibrarySetAsync(recipe, librarySet);
+            // Link
+            await _compiler.LinkLibraryAsync(args);
+        }
 
-			var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.obj").ToList();
-			var libraryFiles = librarySet.ToList();
-			var args = new LinkerArguments()
-			{
-				Name = recipe.Name,
-				RootDirectory = path,
-				OutputDirectory = binaryDirectory,
-				SourceFiles = objectFiles,
-				LibraryFiles = libraryFiles,
-			};
+        /// <summary>
+        /// Link the executable
+        /// </summary>
+        private async Task LinkExecutableAsync(
+            string path,
+            Recipe recipe,
+            string objectDirectory,
+            string binaryDirectory)
+        {
+            Log.Info("Link");
+            var allFiles = new List<string>(recipe.Source);
+            if (recipe.Type == RecipeType.Library)
+            {
+                allFiles.Add(recipe.Public);
+            }
 
-			// Ensure the object directory exists
-			var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
-			if (!Directory.Exists(objectDirectry))
-			{
-				Directory.CreateDirectory(objectDirectry);
-			}
+            // Add all of the dependencies as module references
+            var librarySet = new HashSet<string>();
+            await GenerateDependencyLibrarySetAsync(recipe, librarySet);
 
-			// Link
-			await _compiler.LinkExecutableAsync(args);
-		}
+            var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.obj").ToList();
+            var libraryFiles = librarySet.ToList();
+            var args = new LinkerArguments()
+            {
+                Name = recipe.Name,
+                RootDirectory = path,
+                OutputDirectory = binaryDirectory,
+                SourceFiles = objectFiles,
+                LibraryFiles = libraryFiles,
+            };
 
-		/// <summary>
-		/// Clone the module interface definition from the object directoy to the binary directory
-		/// </summary>
-		private void CloneModuleInterface(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
-		{
-			Log.Info("Clone Module Interface");
-			var sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
-			var targetModuleFile = Path.Combine(path, binaryDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Name)}.ifc");
+            // Ensure the object directory exists
+            var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
+            if (!Directory.Exists(objectDirectry))
+            {
+                Directory.CreateDirectory(objectDirectry);
+            }
 
-			// Ensure the object directory exists
-			if (!File.Exists(sourceModuleFile))
-			{
-				throw new InvalidOperationException("The resulting module interface definition was missing.");
-			}
+            // Link
+            await _compiler.LinkExecutableAsync(args);
+        }
 
-			Log.Info($"Clone IFC: {sourceModuleFile} -> {targetModuleFile}");
-			File.Copy(sourceModuleFile, targetModuleFile, true);
-		}
+        /// <summary>
+        /// Clone the module interface definition from the object directoy to the binary directory
+        /// </summary>
+        private void CloneModuleInterface(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
+        {
+            Log.Info("Clone Module Interface");
+            var sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
+            var targetModuleFile = Path.Combine(path, binaryDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Name)}.ifc");
 
-		private async Task GenerateDependencyLibrarySetAsync(Recipe recipe, HashSet<string> set)
-		{
-			foreach (var dependecy in recipe.Dependencies)
-			{
-				// Load this package recipe
-				string packagePath;
-				if (dependecy.Path != null)
-				{
-					packagePath = dependecy.Path;
-				}
-				else
-				{
-					packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
-				}
+            // Ensure the object directory exists
+            if (!File.Exists(sourceModuleFile))
+            {
+                throw new InvalidOperationException("The resulting module interface definition was missing.");
+            }
 
-				// Get recursive dependencies
-				var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
-				await GenerateDependencyLibrarySetAsync(dependecyRecipe, set);
+            Log.Info($"Clone IFC: {sourceModuleFile} -> {targetModuleFile}");
+            File.Copy(sourceModuleFile, targetModuleFile, true);
+        }
 
-				set.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.lib").ToLower());
-			}
-		}
+        private async Task GenerateDependencyLibrarySetAsync(Recipe recipe, HashSet<string> set)
+        {
+            foreach (var dependecy in recipe.Dependencies)
+            {
+                // Load this package recipe
+                string packagePath;
+                if (dependecy.Path != null)
+                {
+                    packagePath = dependecy.Path;
+                }
+                else
+                {
+                    packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
+                }
 
-		private string GetNamespace(SemanticVersion version)
-		{
-			return $"v{version.Major}_{version.Minor}_{version.Patch}";
-		}
-	}
+                // Get recursive dependencies
+                var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
+                await GenerateDependencyLibrarySetAsync(dependecyRecipe, set);
+
+                set.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.lib").ToLower());
+            }
+        }
+
+        private string GetNamespace(SemanticVersion version)
+        {
+            return $"v{version.Major}_{version.Minor}_{version.Patch}";
+        }
+    }
 }
