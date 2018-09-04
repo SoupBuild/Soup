@@ -3,7 +3,11 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Antlr4 Remove="CppDeclarations.g4" />
+    <Antlr4 Remove="CppExpressions.g4" />
     <Antlr4 Remove="CppKeywords.g4" />
+    <Antlr4 Remove="CppOperatorsAndPunctuators.g4" />
+    <Antlr4 Remove="CppStatements.g4" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Cpp17.g4" />

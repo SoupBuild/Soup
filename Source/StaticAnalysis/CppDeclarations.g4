@@ -1,201 +1,249 @@
 
 grammar CppDeclarations;
 
-declaration-seq:
-declaration
-declaration-seq declaration
+declarationSequence:
+	declaration |
+	declarationSequence declaration;
+
 declaration:
-block-declaration
-function-definition
-template-declaration
-explicit-instantiation
-explicit-specialization
-linkage-specification
-namespace-definition
-empty-declaration
-attribute-declaration
-block-declaration:
-simple-declaration
-asm-definition
-namespace-alias-definition
-using-declaration
-using-directive
-static_assert-declaration
-alias-declaration
-opaque-enum-declaration
-alias-declaration:
-using identifier attribute-specifier-seqopt= type-id ;
-simple-declaration:
-decl-specifier-seqopt init-declarator-listopt;
-attribute-specifier-seq decl-specifier-seqopt init-declarator-list ;static_assert-declaration:
-static_assert ( constant-expression , string-literal ) ;
-empty-declaration:
-;
-attribute-declaration:
-attribute-specifier-seq ;
-decl-specifier:
-storage-class-specifier
-type-specifier
-function-specifier
-friend
-typedef
-constexpr
-decl-specifier-seq:
-decl-specifier attribute-specifier-seqopt
-decl-specifier decl-specifier-seq
-storage-class-specifier:
-register
-static
-thread_local
-extern
-mutable
-function-specifier:
-inline
-virtual
-explicit
-typedef-name:
-identifier
-type-specifier:
-trailing-type-specifier
-class-specifier
-enum-specifier
+	blockDeclaration |
+	functionDefinition |
+	templateDeclaration |
+	explicitInstantiation |
+	explicitSpecialization |
+	linkageSpecification |
+	namespaceDefinition |
+	emptyDeclaration |
+	attributeDeclaration;
 
-		 trailing-type-specifier:
-simple-type-specifier
-elaborated-type-specifier
-typename-specifier
-cv-qualifier
-type-specifier-seq:
-type-specifier attribute-specifier-seqopt
-type-specifier type-specifier-seq
-trailing-type-specifier-seq:
-trailing-type-specifier attribute-specifier-seqopt
-trailing-type-specifier trailing-type-specifier-seq
+blockDeclaration:
+	simpleDeclaration |
+	asmDefinition |
+	namespaceAliasDefinition |
+	usingDeclaration |
+	usingDirective |
+	static_assertDeclaration |
+	aliasDeclaration |
+	opaqueEnumDeclaration;
 
-simple-type-specifier:
-nested-name-specifieropt type-name
-nested-name-specifier template simple-template-id
-char
-char16_t
-char32_t
-wchar_t
-bool
-short
-int
-long
-signed
-unsigned
-float
-double
-void
-auto
-decltype-specifier
-type-name:
-class-name
-enum-name
-typedef-name
-simple-template-id
-decltype-specifier:
-decltype ( expression )
-decltype ( auto )
-elaborated-type-specifier:
-class-key attribute-specifier-seqopt nested-name-specifieropt identifier
-class-key simple-template-id
-class-key nested-name-specifier templateopt simple-template-id
-enum nested-name-specifieropt identifier
+aliasDeclaration:
+	using identifier attributeSpecifierSequence? Equals typeId SemiColon;
 
-enum-name:
-identifier
-enum-specifier:
-enum-head { enumerator-listopt}
-enum-head { enumerator-list , }
-enum-head:
-enum-key attribute-specifier-seqopt identifieropt enum-baseopt
-enum-key attribute-specifier-seqopt nested-name-specifier identifier
-enum-baseopt
-opaque-enum-declaration:
-enum-key attribute-specifier-seqopt identifier enum-baseopt;
-enum-key:
-enum
-enum class
-enum struct
-enum-base:
-: type-specifier-seq
-enumerator-list:
-enumerator-definition
-enumerator-list , enumerator-definition
-enumerator-definition:
-enumerator
-enumerator = constant-expression
+simpleDeclaration:
+	declSpecifierSequence? initDeclaratorList? SemiColon
+	attributeSpecifierSequence declSpecifierSequence? initDeclaratorList SemiColon;static_assertDeclaration:
+	StaticAssert LeftParenthasis constantExpression Comma stringLiteral RightParenthasis SemiColon;
+
+emptyDeclaration:
+	SemiColon;
+
+attributeDeclaration:
+	attributeSpecifierSequence SemiColon;
+
+declarationSpecifier:
+	storageClassSpecifier |
+	typeSpecifier |
+	functionSpecifier |
+	Friend |
+	TypeDef |
+	ConstExpr;
+
+declSpecifierSequence:
+	declSpecifier attributeSpecifierSequence? |
+	declSpecifier declSpecifierSequence;
+
+storageClassSpecifier:
+	Register |
+	Static |
+	ThreadLocal |
+	Extern |
+	Mutable;
+
+functionSpecifier:
+	Inline |
+	Virtual |
+	Explicit;
+
+typedefName:
+	identifier;
+
+typeSpecifier:
+	trailingTypeSpecifier |
+	classSpecifier |
+	enumSpecifier;
+
+trailingTypeSpecifier:
+	simpleTypeSpecifier |
+	elaboratedTypeSpecifier |
+	typenameSpecifier |
+	cvQualifier;
+
+typeSpecifierSequence:
+	typeSpecifier attributeSpecifierSequence? |
+	typeSpecifier typeSpecifierSequence;
+
+trailingTypeSpecifierSequence:
+	trailingTypeSpecifier attributeSpecifierSequence? |
+	trailingTypeSpecifier trailingTypeSpecifierSequence;
+
+simpleTypeSpecifier:
+	nestedNameSpecifier? typeName |
+	nestedNameSpecifier Template simpleTemplateId |
+	Char |
+	Char16 |
+	Char32 |
+	WChar |
+	Bool |
+	Short |
+	Int |
+	Long |
+	Signed |
+	Unsigned |
+	Float |
+	Double |
+	Void |
+	Auto |
+	decltypeSpecifier;
+
+typeName:
+	className |
+	enumName |
+	typedefName |
+	simpleTemplateId;
+
+decltypeSpecifier:
+	decltype LeftParenthasis expression RightParenthasis |
+	decltype LeftParenthasis auto RightParenthasis;
+
+elaboratedTypeSpecifier:
+	classKey attributeSpecifierSequence? nestedNameSpecifier? identifier |
+	classKey simpleTemplateId |
+	classKey nestedNameSpecifier Template? simpleTemplateId |
+	Enum nestedNameSpecifier? identifier;
+
+enumName:
+	identifier;
+
+enumSpecifier:
+	enumHead LeftBrace enumeratorList? RightBrace |
+	enumHead LeftBrace enumeratorList Comma RightBrace;
+
+enumHead:
+	enumKey attributeSpecifierSequence? identifier? enumBase? |
+	enumKey attributeSpecifierSequence? nestedNameSpecifier identifier |
+	enumBase?;
+
+opaqueEnumDeclaration:
+	enumKey attributeSpecifierSequence? identifier enumBase?SemiColon;
+
+enumKey:
+	Enum |
+	Enum Class |
+	Enum Struct;
+
+enumBase:
+	Colon typeSpecifierSequence;
+
+enumeratorList:
+	enumeratorDefinition |
+	enumeratorList Comma enumeratorDefinition;
+
+enumeratorDefinition:
+	enumerator |
+	enumerator Equals constantExpression;
 
 enumerator:
-identifier
-namespace-name:
-original-namespace-name
-namespace-alias
-original-namespace-name:
-identifier
-namespace-definition:
-named-namespace-definition
-unnamed-namespace-definition
-named-namespace-definition:
-original-namespace-definition
-extension-namespace-definition
-original-namespace-definition:
-inlineopt namespace identifier { namespace-body }
-extension-namespace-definition:
-inlineopt namespace original-namespace-name { namespace-body }
-unnamed-namespace-definition:
-inlineopt namespace { namespace-body }
-namespace-body:
-declaration-seqopt
-namespace-alias:
-identifier
-namespace-alias-definition:
-namespace identifier = qualified-namespace-specifier ;
-qualified-namespace-specifier:
-nested-name-specifieropt namespace-name
-using-declaration:
-using typenameopt nested-name-specifier unqualified-id ;
-using :: unqualified-id ;
-using-directive:
-attribute-specifier-seqoptusing namespace nested-name-specifieropt namespace-name ;
+	identifier;
 
-asm-definition:
-asm ( string-literal ) ;
-linkage-specification:
-extern string-literal { declaration-seqopt}
-extern string-literal declaration
-attribute-specifier-seq:
-attribute-specifier-seqopt attribute-specifier
-attribute-specifier:
-[ [ attribute-list ] ]
-alignment-specifier
-alignment-specifier:
-alignas ( type-id ...opt)
-alignas ( constant-expression ...opt)
-attribute-list:
-attributeopt
-attribute-list , attributeopt
-attribute ...
-attribute-list , attribute ...
+namespaceName:
+	originalNamespaceName |
+	namespaceAlias;
+
+originalNamespaceName:
+	identifier;
+
+namespaceDefinition:
+	namedNamespaceDefinition |
+	unnamedNamespaceDefinition;
+
+namedNamespaceDefinition:
+	originalNamespaceDefinition |
+	extensionNamespaceDefinition;
+
+originalNamespaceDefinition:
+	inline? namespace identifier LeftBrace namespaceBody RightBrace;
+
+extensionNamespaceDefinition:
+	inline? namespace originalNamespaceName LeftBrace namespaceBody RightBrace;
+
+unnamedNamespaceDefinition:
+	inline? namespace LeftBrace namespaceBody RightBrace;
+
+namespaceBody:
+	declarationSequence?;
+
+namespaceAlias:
+	identifier;
+
+namespaceAliasDefinition:
+	namespace identifier Equals qualifiedNamespaceSpecifier SemiColon;
+
+qualifiedNamespaceSpecifier:
+	nestedNameSpecifier? namespaceName;
+
+usingDeclaration:
+	Using typename? nestedNameSpecifier unqualifiedId SemiColon |
+	Using DoubleColon unqualifiedId SemiColon;
+
+usingDirective:
+	attributeSpecifierSequence?using namespace nestedNameSpecifier? namespaceName SemiColon;
+
+asmDefinition:
+	asm LeftParenthasis stringLiteral RightParenthasis SemiColon;
+
+linkageSpecification:
+	Extern stringLiteral LeftBrace declarationSequence? RightBrace |
+	Extern stringLiteral declaration;
+
+attributeSpecifierSequence:
+	attributeSpecifierSequence? attributeSpecifier;
+
+attributeSpecifier:
+	LeftBracket LeftBracket attributeList RightBracket RightBracket |
+	alignmentSpecifier;
+
+alignmentSpecifier:
+	alignas LeftParenthasis typeId Ellipses? RightParenthasis |
+	alignas LeftParenthasis constantExpression Ellipses? RightParenthasis;
+
+attributeList:
+	attribute? |
+	attributeList Comma attribute? |
+	attribute Ellipses |
+	attributeList Comma attribute Ellipses;
+
 attribute:
-attribute-token attribute-argument-clauseopt
+	attributeToken attributeArgumentClause?;
 
-attribute-token:
-identifier
-attribute-scoped-token
-attribute-scoped-token:
-attribute-namespace :: identifier
-attribute-namespace:
-identifier
-attribute-argument-clause:
-( balanced-token-seq )
-balanced-token-seq:
-balanced-tokenopt
-balanced-token-seq balanced-token
-balanced-token:
-( balanced-token-seq )
-[ balanced-token-seq ]
-{ balanced-token-seq }
-any token other than a parenthesis, a bracket, or a brace
+attributeToken:
+	identifier |
+	attributeScopedToken;
+
+attributeScopedToken:
+	attributeNamespace DoubleColon identifier;
+
+attributeNamespace:
+	identifier;
+
+attributeArgumentClause:
+	LeftParenthasis balancedTokenSequence RightParenthasis;
+
+balancedTokenSequence:
+	balancedToken? |
+	balancedTokenSequence balancedToken;
+
+// TODO : Add final option - any token other than a parenthesis , a bracket , or a brace
+balancedToken:
+	LeftParenthasis balancedTokenSequence RightParenthasis |
+	LeftBracket balancedTokenSequence RightBracket |
+	LeftBrace balancedTokenSequence RightBrace;

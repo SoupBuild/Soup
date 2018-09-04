@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 grammar Cpp17;
-import CppExpressions;
+import CppDeclarations;
 
 // A file consists of a single translation unit with a sequence of declarations
 translationUnit:

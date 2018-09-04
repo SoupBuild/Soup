@@ -1,51 +1,64 @@
 
 grammar CppStatements;
+
 statement:
-labeled-statement
-attribute-specifier-seqopt expression-statement
-attribute-specifier-seqopt compound-statement
-attribute-specifier-seqopt selection-statement
-attribute-specifier-seqopt iteration-statement
-attribute-specifier-seqopt jump-statement
-declaration-statement
-attribute-specifier-seqopt try-block
-labeled-statement:
-attribute-specifier-seqopt identifier : statement
-attribute-specifier-seqoptcase constant-expression : statement
-attribute-specifier-seqoptdefault : statement
-expression-statement:
-expressionopt;
-compound-statement:
-{ statement-seqopt}
-statement-seq:
-statement
-statement-seq statement
-selection-statement:
-if ( condition ) statement
-if ( condition ) statement else statement
-switch ( condition ) statement
+	labeledStatement |
+	attributeSpecifierSequence? expressionStatement |
+	attributeSpecifierSequence? compoundStatement |
+	attributeSpecifierSequence? selectionStatement |
+	attributeSpecifierSequence? iterationStatement |
+	attributeSpecifierSequence? jumpStatement |
+	declarationStatement |
+	attributeSpecifierSequence? tryBlock;
+
+labeledStatement:
+	attributeSpecifierSequence? identifier Colon statement |
+	attributeSpecifierSequence? Case constantExpression Colon statement |
+	attributeSpecifierSequence? Default Colon statement;
+
+expressionStatement:
+	expression?SemiColon;
+
+compoundStatement:
+	LeftBrace statementSequence? RightBrace;
+
+statementSequence:
+	statement |
+	statementSequence statement;
+
+selectionStatement:
+	If LeftParathensis condition RightParathensis statement |
+	If LeftParathensis condition RightParathensis statement Else statement |
+	Switch LeftParathensis condition RightParathensis statement;
+
 condition:
-expression
-attribute-specifier-seqopt decl-specifier-seq declarator = initializer-clause
-attribute-specifier-seqopt decl-specifier-seq declarator braced-init-list
-iteration-statement:
-while ( condition ) statement
-do statement while ( expression ) ;
-for ( for-init-statement conditionopt; expressionopt) statement
-for ( for-range-declaration : for-range-initializer ) statement
-for-init-statement:
-expression-statement
-simple-declaration
-for-range-declaration:
-attribute-specifier-seqopt decl-specifier-seq declarator
-for-range-initializer:
-expression
-braced-init-list
-jump-statement:
-break ;
-continue ;
-return expressionopt;
-return braced-init-list ;
-goto identifier ;
-declaration-statement:
-block-declaration
+	expression |
+	attributeSpecifierSequence? declSpecifierSequence declarator Equals initializerClause |
+	attributeSpecifierSequence? declSpecifierSequence declarator bracedInitializerList;
+
+iterationStatement:
+	While LeftParathensis condition RightParathensis statement |
+	Do statement While LeftParathensis expression RightParathensis SemiColon |
+	For LeftParathensis forInitializerStatement condition? SemiColon expression? RightParathensis statement |
+	For LeftParathensis forRangeDeclaration Colon forRangeInitializer RightParathensis statement;
+
+forInitializerStatement:
+	expressionStatement |
+	simpleDeclaration;
+
+forRangeDeclaration:
+	attributeSpecifierSequence? declSpecifierSequence declarator;
+
+forRangeInitializer:
+	expression |
+	bracedInitializerList;
+
+jumpStatement:
+	Break SemiColon |
+	Continue SemiColon |
+	Return expression? SemiColon |
+	Return bracedInitializerList SemiColon |
+	GoTo identifier SemiColon;
+
+declarationStatement:
+	blockDeclaration;
