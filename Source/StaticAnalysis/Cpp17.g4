@@ -6,20 +6,8 @@
  ******************************************************************************/
 
 grammar Cpp17;
-import CppKeywords;
+import CppExpressions;
 
-// A file consists of a single translational unit with a sequence of declarations
-translationUnit : 
-	declarationSequence EOF;
-
-// A delaration sequence is one or more declarations
-declarationSequence :
-	declaration |
-	declarationSequence declaration;
-
-// A list of all acceptable declarations
-declaration :
-	namespaceDefinition;
-
-namespaceDefinition :
-	Namespace;
+// A file consists of a single translation unit with a sequence of declarations
+translationUnit:
+	declarationSequence? EOF;
