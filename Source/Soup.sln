@@ -19,6 +19,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.MSVC", "Compiler\M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Clang", "Compiler\Clang\Compiler.Clang.csproj", "{9A1EB1BF-9951-490D-AC9B-3D14178CBFB3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.StaticAnalysis", "StaticAnalysis\Soup.StaticAnalysis.csproj", "{7B57E925-2E17-4C3F-84F9-255020DC34B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.StaticAnalysis.UnitTests", "StaticAnalysis.UnitTests\Soup.StaticAnalysis.UnitTests.csproj", "{7640A18E-C89E-4733-B3C7-A4654E996194}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{9A1EB1BF-9951-490D-AC9B-3D14178CBFB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A1EB1BF-9951-490D-AC9B-3D14178CBFB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A1EB1BF-9951-490D-AC9B-3D14178CBFB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B57E925-2E17-4C3F-84F9-255020DC34B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B57E925-2E17-4C3F-84F9-255020DC34B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B57E925-2E17-4C3F-84F9-255020DC34B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B57E925-2E17-4C3F-84F9-255020DC34B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7640A18E-C89E-4733-B3C7-A4654E996194}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7640A18E-C89E-4733-B3C7-A4654E996194}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7640A18E-C89E-4733-B3C7-A4654E996194}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7640A18E-C89E-4733-B3C7-A4654E996194}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
