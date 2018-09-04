@@ -1,3 +1,1 @@
-namespace MyNamespace
-{
-}
+namespace

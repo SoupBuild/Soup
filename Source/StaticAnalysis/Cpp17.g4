@@ -10,7 +10,7 @@ import CppKeywords;
 
 // A file consists of a single translational unit with a sequence of declarations
 translationUnit : 
-	declarationSequence? EOF;
+	declarationSequence EOF;
 
 // A delaration sequence is one or more declarations
 declarationSequence :

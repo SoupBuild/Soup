@@ -15,4 +15,9 @@
   <ItemGroup>
     <ProjectReference Include="..\StaticAnalysis\Soup.StaticAnalysis.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Examples\*.cpp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

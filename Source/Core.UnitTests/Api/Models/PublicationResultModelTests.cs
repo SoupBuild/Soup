@@ -15,7 +15,7 @@ namespace Soup.Api.UnitTests
             var uut = new PublicationResultModel();
 
             Assert.Null(uut.Version);
-            Assert.Equal(DateTime.FromOADate(0), uut.DatePublished);
+            Assert.Equal(new DateTime(1, 1, 1), uut.DatePublished);
             Assert.Equal(0, uut.TotalDownloads);
         }
 
