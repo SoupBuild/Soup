@@ -21,12 +21,17 @@ import
 fragment LowerCaseLetter: 'a'..'z';
 fragment UpperCaseLetter: 'A'..'Z';
 fragment Letter: LowerCaseLetter | UpperCaseLetter;
+fragment NonZeroDigit: '1'..'9';
 fragment Digit: '0'..'9';
+fragment OctalDigit: [0-7];
 fragment NonDigit: Letter | '_';
 
 fragment IdentifierNonDigit: NonDigit;
 fragment EncodingPrefix: 'u8'| 'u' | 'U' | 'L';
 
+/****************************************/
+/* String Literals
+/****************************************/
 fragment StringCharSequence:
 	StringChar |
 	StringChar StringCharSequence;
@@ -75,6 +80,15 @@ Identifier:
 StringLiteral:
 	EncodingPrefix? '"' StringCharSequence? '"';
 	// EncodingPrefix? 'R' RawString;
+
+/****************************************/
+/* String Literals
+/****************************************/
+DecimalLiteral: 
+	NonZeroDigit ('\''? Digit)*;
+
+OctalLiteral:
+	'0' ('\''? OctalDigit)*;
 
 Whitespace: (' ' | '\t')+;
 Newline: ('\r' '\n'? | '\n');

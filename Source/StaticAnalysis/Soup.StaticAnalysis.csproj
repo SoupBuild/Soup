@@ -3,20 +3,17 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Antlr4 Remove="CppClasses.g4" />
-    <Antlr4 Remove="CppDeclarations.g4" />
-    <Antlr4 Remove="CppDeclarators.g4" />
-    <Antlr4 Remove="CppExpressions.g4" />
-    <Antlr4 Remove="CppKeywords.g4" />
-    <Antlr4 Remove="CppOperatorsAndPunctuators.g4" />
-    <Antlr4 Remove="CppStatements.g4" />
+    <Antlr4 Remove="Grammar\CppClasses.g4" />
+    <Antlr4 Remove="Grammar\CppDeclarations.g4" />
+    <Antlr4 Remove="Grammar\CppDeclarators.g4" />
+    <Antlr4 Remove="Grammar\CppExpressions.g4" />
+    <Antlr4 Remove="Grammar\CppKeywords.g4" />
+    <Antlr4 Remove="Grammar\CppOperatorsAndPunctuators.g4" />
+    <Antlr4 Remove="Grammar\CppStatements.g4" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="CppLexer.g4" />
-    <None Remove="CppParser.g4" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Antlr4" Version="4.6.5" />
+    <None Remove="Grammar\CppLexer.g4" />
+    <None Remove="Grammar\CppParser.g4" />
   </ItemGroup>
   <ItemGroup>
     <Antlr4 Update="Grammar\CppLexer.g4">
@@ -27,5 +24,8 @@
       <DefaultCustomToolNamespace>$([MSBuild]::ValueOrDefault('$(RootNamespace).%(DefaultCustomToolNamespace)', '').TrimEnd('.'))</DefaultCustomToolNamespace>
       <CustomToolNamespace>$([MSBuild]::ValueOrDefault(%(CustomToolNamespace), %(DefaultCustomToolNamespace)))</CustomToolNamespace>
     </Antlr4>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Antlr4" Version="4.6.5" />
   </ItemGroup>
 </Project>
