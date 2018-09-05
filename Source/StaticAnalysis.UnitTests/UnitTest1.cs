@@ -8,7 +8,25 @@ namespace Soup.StaticAnalysis.UnitTests
     public class UnitTest1
     {
         [Fact]
-        public void Test1()
+        public void BlockComment()
+        {
+            RunTest(@"Examples\BlockComment.cpp");
+        }
+
+        [Fact]
+        public void HelloWorld()
+        {
+            RunTest(@"Examples\HelloWorld.cpp");
+        }
+
+        [Fact]
+        public void LineComment()
+        {
+            RunTest(@"Examples\LineComment.cpp");
+        }
+
+        [Fact]
+        public void Namespace()
         {
             RunTest(@"Examples\Namespace.cpp");
         }
@@ -25,20 +43,26 @@ namespace Soup.StaticAnalysis.UnitTests
         {
             // Parse the file
             var inputStream = new AntlrInputStream(sourceCode);
-            var lexer = new Cpp17Lexer(inputStream);
-            var tokenStream = new CommonTokenStream(lexer);
-            var parser = new Cpp17Parser(tokenStream);
+            var lexer = new CppLexer(inputStream);
 
-            // Setup error handling
-            parser.RemoveErrorListeners();
-            parser.AddErrorListener(new ExceptionErrorListener());
+            lexer.RemoveErrorListeners();
+            lexer.AddErrorListener(new LexerExceptionErrorListener());
 
-            // Parse syntax tree
-            var translationUnit = parser.translationUnit();
+            var tokens = lexer.GetAllTokens();
 
-            // Visit the top level unit
-            var visitor = new Visitor();
-            visitor.Visit(translationUnit);
+            ////var tokenStream = new CommonTokenStream(lexer);
+            ////var parser = new Cpp17Parser(tokenStream);
+
+            ////// Setup error handling
+            ////parser.RemoveErrorListeners();
+            ////parser.AddErrorListener(new ExceptionErrorListener());
+
+            ////// Parse syntax tree
+            ////var translationUnit = parser.translationUnit();
+
+            ////// Visit the top level unit
+            ////var visitor = new Visitor();
+            ////visitor.Visit(translationUnit);
         }
     }
 }

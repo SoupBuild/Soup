@@ -10,7 +10,7 @@ namespace Soup.StaticAnalysis
     /// <summary>
     /// Exception based error listener
     /// </summary>
-    public class ExceptionErrorListener : BaseErrorListener
+    public class ParserExceptionErrorListener : BaseErrorListener
     {
         /// <summary>
         /// Report ambiguity

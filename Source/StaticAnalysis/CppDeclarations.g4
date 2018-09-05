@@ -31,7 +31,9 @@ aliasDeclaration:
 
 simpleDeclaration:
 	declSpecifierSequence? initDeclaratorList? SemiColon
-	attributeSpecifierSequence declSpecifierSequence? initDeclaratorList SemiColon;static_assertDeclaration:
+	attributeSpecifierSequence declSpecifierSequence? initDeclaratorList SemiColon;
+
+static_assertDeclaration:
 	StaticAssert LeftParenthasis constantExpression Comma stringLiteral RightParenthasis SemiColon;
 
 emptyDeclaration:

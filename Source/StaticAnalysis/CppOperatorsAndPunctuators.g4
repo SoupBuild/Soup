@@ -1,5 +1,5 @@
 
-grammar CppOperatorsAndPunctuators;
+lexer grammar CppOperatorsAndPunctuators;
 
 // Define all of the C++ operator and punctuator tokens
 LeftBrace: '{';
@@ -27,7 +27,7 @@ Ampersand: '&';
 VerticalBar: '|';
 Tilde: '~';
 ExclamationMark: '!';
-Equals: '=';
+Equal: '=';
 LessThan: '<';
 GreaterThan: '>';
 PlusEquals: '+=';
