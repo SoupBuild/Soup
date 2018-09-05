@@ -19,11 +19,11 @@
     <PackageReference Include="Antlr4" Version="4.6.5" />
   </ItemGroup>
   <ItemGroup>
-    <Antlr4 Update="CppLexer.g4">
+    <Antlr4 Update="Grammar\CppLexer.g4">
       <DefaultCustomToolNamespace>$([MSBuild]::ValueOrDefault('$(RootNamespace).%(DefaultCustomToolNamespace)', '').TrimEnd('.'))</DefaultCustomToolNamespace>
       <CustomToolNamespace>$([MSBuild]::ValueOrDefault(%(CustomToolNamespace), %(DefaultCustomToolNamespace)))</CustomToolNamespace>
     </Antlr4>
-    <Antlr4 Update="CppParser.g4">
+    <Antlr4 Update="Grammar\CppParser.g4">
       <DefaultCustomToolNamespace>$([MSBuild]::ValueOrDefault('$(RootNamespace).%(DefaultCustomToolNamespace)', '').TrimEnd('.'))</DefaultCustomToolNamespace>
       <CustomToolNamespace>$([MSBuild]::ValueOrDefault(%(CustomToolNamespace), %(DefaultCustomToolNamespace)))</CustomToolNamespace>
     </Antlr4>
