@@ -8,8 +8,10 @@
     <Antlr4 Remove="Grammar\CppDeclarators.g4" />
     <Antlr4 Remove="Grammar\CppExpressions.g4" />
     <Antlr4 Remove="Grammar\CppKeywords.g4" />
+    <Antlr4 Remove="Grammar\CppNumberLiterals.g4" />
     <Antlr4 Remove="Grammar\CppOperatorsAndPunctuators.g4" />
     <Antlr4 Remove="Grammar\CppStatements.g4" />
+    <Antlr4 Remove="Grammar\CppStringLiterals.g4" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Grammar\CppLexer.g4" />
