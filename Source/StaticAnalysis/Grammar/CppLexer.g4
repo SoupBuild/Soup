@@ -7,14 +7,15 @@
 
 lexer grammar CppLexer;
 
-// Ensure all keywards and operators come before literals
+// Ensure all keywards and operators come before literals and identifiers
 import 
 	CppLexerKeywords,
 	CppLexerOperatorsAndPunctuators,
 	CppLexerIntegerLiterals,
 	CppLexerFloatingPointLiterals,
 	CppLexerCharacterLiterals,
-	CppLexerStringLiterals;
+	CppLexerStringLiterals,
+	CppLexerIdentifiers;
 
 Whitespace: (' ' | '\t')+;
 Newline: ('\r' '\n'? | '\n');

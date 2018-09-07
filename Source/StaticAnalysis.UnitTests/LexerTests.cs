@@ -227,6 +227,17 @@ namespace Soup.StaticAnalysis.UnitTests
             RunTest(value, CppLexer.LineComment);
         }
 
+        [Theory]
+        [InlineData("a")]
+        [InlineData("x")]
+        [InlineData("myVariable")]
+        [InlineData("ClassName")]
+        [InlineData("NameSpace")]
+        public void SingleToken_Identifier(string value)
+        {
+            RunTest(value, CppLexer.Identifier);
+        }
+
         private void RunTest(string sourceCode, int expectedToken)
         {
             // Parse the file
