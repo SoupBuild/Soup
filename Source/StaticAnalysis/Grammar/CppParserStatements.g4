@@ -1,5 +1,5 @@
 
-grammar CppStatements;
+grammar CppParserStatements;
 
 statement:
 	labeledStatement |

@@ -1,5 +1,5 @@
 
-lexer grammar CppFragments;
+lexer grammar CppLexerFragments;
 
 fragment Zero: '0';
 fragment BinaryDigit: '0'..'1';

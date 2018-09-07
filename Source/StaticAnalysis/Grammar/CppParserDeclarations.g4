@@ -1,5 +1,5 @@
 
-grammar CppDeclarations;
+grammar CppParserDeclarations;
 
 declarationSequence:
 	declaration |

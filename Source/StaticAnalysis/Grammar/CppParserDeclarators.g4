@@ -1,5 +1,5 @@
 
-grammar CppDeclarators;
+grammar CppParserDeclarators;
 
 init-declarator-list:
 init-declarator
@@ -35,7 +35,8 @@ const
 volatile
 ref-qualifier:
 &
-&&declarator-id:
+&&
+declarator-id:
 ...opt id-expression
 type-id:
 type-specifier-seq abstract-declaratoropt
@@ -91,4 +92,4 @@ initializer-list , initializer-clause ...opt
 
 braced-init-list:
 { initializer-list ,opt }
-{ }
+{ }

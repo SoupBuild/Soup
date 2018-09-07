@@ -1,5 +1,5 @@
 
-grammar CppClasses;
+grammar CppParserClasses;
 
 /**************************/
 /* Classes
@@ -57,7 +57,9 @@ virt-specifier:
 	final;
 
 pure-specifier:
-	= 0;/**************************/
+	= 0;
+
+/**************************/
 /* Derived Classes
 /**************************/
 base-clause:
@@ -82,7 +84,9 @@ base-type-specifier:
 access-specifier:
 	private |
 	protected |
-	public;/**************************/
+	public;
+
+/**************************/
 /* Special Member Functions
 /**************************/
 conversionFunctionId:
@@ -108,7 +112,8 @@ memInitializer:
 memInitializerId:
 	class-or-decltype
 	identifier;
-/**************************/
+
+/**************************/
 /* Overloading
 /**************************/
 operatorFunctionId:

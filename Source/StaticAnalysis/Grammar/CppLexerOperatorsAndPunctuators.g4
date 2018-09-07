@@ -1,5 +1,5 @@
 
-lexer grammar CppOperatorsAndPunctuators;
+lexer grammar CppLexerOperatorsAndPunctuators;
 
 // Define all of the C++ operator and punctuator tokens
 LeftBrace: '{';

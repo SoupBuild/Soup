@@ -1,5 +1,5 @@
 
-lexer grammar CppKeywords;
+lexer grammar CppLexerKeywords;
 
 // Define all of the C++ keyword tokens
 AlignAs: 'alignas';

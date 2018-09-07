@@ -1,15 +1,15 @@
 
-lexer grammar CppStringLiterals;
+lexer grammar CppLexerStringLiterals;
 
 import 
-	CppFragments;
-
-fragment IdentifierNonDigit: NonDigit;
-fragment EncodingPrefix: 'u8'| 'u' | 'U' | 'L';
+	CppLexerFragments;
 
 /****************************************/
 /* String Literals
 /****************************************/
+fragment IdentifierNonDigit: NonDigit;
+fragment EncodingPrefix: 'u8'| 'u' | 'U' | 'L';
+
 fragment StringCharSequence:
 	StringChar |
 	StringChar StringCharSequence;

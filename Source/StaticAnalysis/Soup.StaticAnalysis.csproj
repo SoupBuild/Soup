@@ -3,16 +3,17 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Antlr4 Remove="Grammar\CppClasses.g4" />
-    <Antlr4 Remove="Grammar\CppDeclarations.g4" />
-    <Antlr4 Remove="Grammar\CppDeclarators.g4" />
-    <Antlr4 Remove="Grammar\CppExpressions.g4" />
-    <Antlr4 Remove="Grammar\CppFragments.g4" />
-    <Antlr4 Remove="Grammar\CppKeywords.g4" />
-    <Antlr4 Remove="Grammar\CppNumberLiterals.g4" />
-    <Antlr4 Remove="Grammar\CppOperatorsAndPunctuators.g4" />
-    <Antlr4 Remove="Grammar\CppStatements.g4" />
-    <Antlr4 Remove="Grammar\CppStringLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppLexerFloatingPointLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppLexerFragments.g4" />
+    <Antlr4 Remove="Grammar\CppLexerIntegerLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppLexerKeywords.g4" />
+    <Antlr4 Remove="Grammar\CppLexerOperatorsAndPunctuators.g4" />
+    <Antlr4 Remove="Grammar\CppLexerStringLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppParserClasses.g4" />
+    <Antlr4 Remove="Grammar\CppParserDeclarations.g4" />
+    <Antlr4 Remove="Grammar\CppParserDeclarators.g4" />
+    <Antlr4 Remove="Grammar\CppParserExpressions.g4" />
+    <Antlr4 Remove="Grammar\CppParserStatements.g4" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Grammar\CppLexer.g4" />

@@ -1,5 +1,5 @@
 
-grammar CppExpressions;
+grammar CppParserExpressions;
 
 primaryExpression:
 	literal |
@@ -88,7 +88,9 @@ postfixExpression:
 	ReinterpretCast LessThan typeId GreaterThan LeftParenthesis expression RightParenthesis |
 	ConstCast LessThan typeId GreaterThan LeftParenthesis expression RightParenthesis |
 	typeid LeftParenthesis expression RightParenthesis |
-	typeid LeftParenthesis typeId RightParenthesis;expressionList:
+	typeid LeftParenthesis typeId RightParenthesis;
+
+expressionList:
 	initializerList;
 
 pseudoDestructorName:
