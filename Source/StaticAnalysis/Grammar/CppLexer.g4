@@ -20,6 +20,7 @@ import
 	CppLexerOperatorsAndPunctuators,
 	CppLexerIntegerLiterals,
 	CppLexerFloatingPointLiterals,
+	CppLexerCharacterLiterals,
 	CppLexerStringLiterals;
 
 Whitespace: (' ' | '\t')+;

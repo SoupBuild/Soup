@@ -174,6 +174,31 @@ namespace Soup.StaticAnalysis.UnitTests
             RunTest(value, CppLexer.FloatingPointLiteral);
         }
 
+        [Theory]
+        [InlineData("'1'")]
+        [InlineData("'\\0'")]
+        [InlineData("L'A'")]
+        [InlineData("u'A'")]
+        [InlineData("u8'A'")]
+        [InlineData("U'A'")]
+        public void SingleToken_CharacterLiteral(string value)
+        {
+            RunTest(value, CppLexer.CharacterLiteral);
+        }
+
+        [Theory]
+        [InlineData("\"\"")]
+        [InlineData("\" \"")]
+        [InlineData("\"Some cool text!\tYay.\"")]
+        [InlineData("U\" \"")]
+        [InlineData("u\" \"")]
+        [InlineData("u8\" \"")]
+        [InlineData("L\" \"")]
+        public void SingleToken_StringLiteral(string value)
+        {
+            RunTest(value, CppLexer.StringLiteral);
+        }
+
         private void RunTest(string sourceCode, int expectedToken)
         {
             // Parse the file

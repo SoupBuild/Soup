@@ -7,54 +7,15 @@ import
 /****************************************/
 /* String Literals
 /****************************************/
-fragment IdentifierNonDigit: NonDigit;
-fragment EncodingPrefix: 'u8'| 'u' | 'U' | 'L';
+fragment StringCharacter:
+	~['\\\r\n] |
+	EscapeSequence |
+	UniversalCharacterName;
 
-fragment StringCharSequence:
-	StringChar |
-	StringChar StringCharSequence;
-
-fragment StringChar: UnescapedCharacter;
-
-// Any valid character except the double-quote ", backslash \, or new-line character
-fragment UnescapedCharacter:
-	Letter |
-	DecimalDigit |
-	'_' |
-	'{' |
-	'}' |
-	'[' |
-	']' |
-	'#' |
-	'(' |
-	')' |
-	'<' |
-	'>' |
-	'%' |
-	':' |
-	';' |
-	'.' |
-	'?' |
-	'*' |
-	'+' |
-	'-' |
-	'/' |
-	'^' |
-	'&' |
-	'|' |
-	'~' |
-	'!' |
-	'=' |
-	',' |
-	'’' |
-	' ' |
-	'\t' |
-	'\r' |
-	'\n';
-
-Identifier:
-	IdentifierNonDigit (IdentifierNonDigit | DecimalDigit)*;
+fragment StringPrefix: ('L' | 'u8' | 'u' | 'U');
+fragment RawString: DoubleQuote .*? '(' .*? ')' .*? DoubleQuote;
 
 StringLiteral:
-	EncodingPrefix? '"' StringCharSequence? '"';
-	// EncodingPrefix? 'R' RawString;
+	'L'? DoubleQuote StringCharacter* DoubleQuote |
+	('u8' | 'u' | 'U') DoubleQuote StringCharacter* DoubleQuote | // C++ 11
+	StringPrefix? RawString; // C++ 11

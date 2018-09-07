@@ -7,13 +7,6 @@ import
 /****************************************/
 /* Integer Literal
 /****************************************/
-fragment HexadecimalPrefix: '0x' | '0X';
-fragment BinaryPrefix: '0b' | '0B';
-fragment UnsignedSuffix: 'u' | 'U';
-fragment LongSuffix: 'l' | 'L';
-fragment LongLongSuffix: 'll' | 'LL';
-fragment SingleQuote: '\'';
-
 fragment IntegerSuffix:
 	UnsignedSuffix LongSuffix? |
 	UnsignedSuffix LongLongSuffix? | // C++ 11

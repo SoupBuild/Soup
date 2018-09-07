@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Antlr4 Remove="Grammar\CppLexerCharacterLiterals.g4" />
     <Antlr4 Remove="Grammar\CppLexerFloatingPointLiterals.g4" />
     <Antlr4 Remove="Grammar\CppLexerFragments.g4" />
     <Antlr4 Remove="Grammar\CppLexerIntegerLiterals.g4" />
