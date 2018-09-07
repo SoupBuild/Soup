@@ -199,6 +199,34 @@ namespace Soup.StaticAnalysis.UnitTests
             RunTest(value, CppLexer.StringLiteral);
         }
 
+        [Theory]
+        [InlineData(" ")]
+        [InlineData("\t")]
+        [InlineData("\t ")]
+        [InlineData(" \t")]
+        public void SingleToken_Whitespace(string value)
+        {
+            RunTest(value, CppLexer.Whitespace);
+        }
+
+        [Theory]
+        [InlineData("/**/")]
+        [InlineData("/* */")]
+        [InlineData("/* Hey a comment\n On many lines\n */")]
+        public void SingleToken_BlockComment(string value)
+        {
+            RunTest(value, CppLexer.BlockComment);
+        }
+
+        [Theory]
+        [InlineData("//")]
+        [InlineData("// ")]
+        [InlineData("// A longer comment text")]
+        public void SingleToken_LineComment(string value)
+        {
+            RunTest(value, CppLexer.LineComment);
+        }
+
         private void RunTest(string sourceCode, int expectedToken)
         {
             // Parse the file
