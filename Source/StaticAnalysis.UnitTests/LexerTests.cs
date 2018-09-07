@@ -200,16 +200,6 @@ namespace Soup.StaticAnalysis.UnitTests
         }
 
         [Theory]
-        [InlineData(" ")]
-        [InlineData("\t")]
-        [InlineData("\t ")]
-        [InlineData(" \t")]
-        public void SingleToken_Whitespace(string value)
-        {
-            RunTest(value, CppLexer.Whitespace);
-        }
-
-        [Theory]
         [InlineData("/**/")]
         [InlineData("/* */")]
         [InlineData("/* Hey a comment\n On many lines\n */")]

@@ -17,7 +17,9 @@ import
 	CppLexerStringLiterals,
 	CppLexerIdentifiers;
 
-Whitespace: (' ' | '\t')+;
-Newline: ('\r' '\n'? | '\n');
+
 BlockComment: '/*' .*? '*/';
 LineComment: '//' ~[\r\n]*;
+
+Whitespace: (' ' | '\t')+ -> skip;
+Newline: ('\r' '\n'? | '\n') -> skip;
