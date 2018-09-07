@@ -140,6 +140,40 @@ namespace Soup.StaticAnalysis.UnitTests
             RunTest(value, expectedToken);
         }
 
+        [Theory]
+        [InlineData("0")]
+        [InlineData("1")]
+        [InlineData("42")]
+        [InlineData("052")]
+        [InlineData("0x2a")]
+        [InlineData("0X2A")]
+        [InlineData("0b101010")]
+        [InlineData("18446744073709550592ull")]
+        [InlineData("18'446'744'073'709'550'592llu")]
+        [InlineData("1844'6744'0737'0955'0592uLL")]
+        [InlineData("184467'440737'0'95505'92LLU")]
+        [InlineData("0xDeAdBeEfU")]
+        [InlineData("0XdeadBEEFu")]
+        public void SingleToken_IntegerLiteral(string value)
+        {
+            RunTest(value, CppLexer.IntegerLiteral);
+        }
+
+        [Theory]
+        [InlineData("0.0f")]
+        [InlineData("1.0")]
+        [InlineData("1'00.1f")]
+        [InlineData("0x1.2p3")]
+        [InlineData("58.")]
+        [InlineData("4e2")]
+        [InlineData("123.456e-67")]
+        [InlineData(".1E4f")]
+        [InlineData("0x10.1p0")]
+        public void SingleToken_FloatingPointLiteral(string value)
+        {
+            RunTest(value, CppLexer.FloatingPointLiteral);
+        }
+
         private void RunTest(string sourceCode, int expectedToken)
         {
             // Parse the file

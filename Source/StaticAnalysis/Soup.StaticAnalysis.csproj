@@ -7,6 +7,7 @@
     <Antlr4 Remove="Grammar\CppDeclarations.g4" />
     <Antlr4 Remove="Grammar\CppDeclarators.g4" />
     <Antlr4 Remove="Grammar\CppExpressions.g4" />
+    <Antlr4 Remove="Grammar\CppFragments.g4" />
     <Antlr4 Remove="Grammar\CppKeywords.g4" />
     <Antlr4 Remove="Grammar\CppNumberLiterals.g4" />
     <Antlr4 Remove="Grammar\CppOperatorsAndPunctuators.g4" />

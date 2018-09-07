@@ -1,13 +1,8 @@
 
 lexer grammar CppStringLiterals;
 
-fragment LowerCaseLetter: 'a'..'z';
-fragment UpperCaseLetter: 'A'..'Z';
-fragment Letter: LowerCaseLetter | UpperCaseLetter;
-fragment NonZeroDigit: '1'..'9';
-fragment Digit: '0'..'9';
-fragment OctalDigit: [0-7];
-fragment NonDigit: Letter | '_';
+import 
+	CppFragments;
 
 fragment IdentifierNonDigit: NonDigit;
 fragment EncodingPrefix: 'u8'| 'u' | 'U' | 'L';
@@ -24,7 +19,7 @@ fragment StringChar: UnescapedCharacter;
 // Any valid character except the double-quote ", backslash \, or new-line character
 fragment UnescapedCharacter:
 	Letter |
-	Digit |
+	DecimalDigit |
 	'_' |
 	'{' |
 	'}' |
@@ -58,7 +53,7 @@ fragment UnescapedCharacter:
 	'\n';
 
 Identifier:
-	IdentifierNonDigit (IdentifierNonDigit | Digit)*;
+	IdentifierNonDigit (IdentifierNonDigit | DecimalDigit)*;
 
 StringLiteral:
 	EncodingPrefix? '"' StringCharSequence? '"';
