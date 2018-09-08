@@ -234,9 +234,11 @@ namespace Soup.StaticAnalysis.UnitTests
             var inputStream = new AntlrInputStream(sourceCode);
             var lexer = new CppLexer(inputStream);
 
+            // Setup error handling
             lexer.RemoveErrorListeners();
             lexer.AddErrorListener(new LexerExceptionErrorListener());
 
+            // Match all tokens
             var tokens = lexer.GetAllTokens();
 
             // Verify we got the single expected token

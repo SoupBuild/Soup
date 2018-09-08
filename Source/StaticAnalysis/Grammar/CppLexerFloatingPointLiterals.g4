@@ -8,7 +8,6 @@ import
 /* Floating Point Literal
 /****************************************/
 fragment Point: '.';
-fragment ExponentSign: '+' | '-';
 fragment FloatSuffix: 'f' | 'F' | 'l' | 'L';
 
 /* C++ 14 Adds optional quote between digits
@@ -25,14 +24,17 @@ fragment DecimalDigitSequence:
 fragment HexidecimalDigitSequence:
 	HexadecimalDigit (SingleQuote? HexadecimalDigit)*; // C++ 14
 
-fragment FloatExponent:
-	('e' | 'E') ExponentSign? DecimalDigitSequence |
-	('p' | 'P') ExponentSign? DecimalDigitSequence; // C++ 17
+fragment ExponentPart:
+	('e' | 'E') Sign? DecimalDigitSequence |
+	('p' | 'P') Sign? DecimalDigitSequence; // C++ 17
+
+fragment FractionalConstant:
+	DecimalDigitSequence? Point DecimalDigitSequence |
+	DecimalDigitSequence Point;
 
 FloatingPointLiteral:
-	DecimalDigitSequence FloatExponent FloatSuffix? |
-	DecimalDigitSequence Point FloatExponent? FloatSuffix? |
-	DecimalDigitSequence? Point DecimalDigitSequence FloatExponent? FloatSuffix? |
-	HexadecimalPrefix HexidecimalDigitSequence FloatExponent FloatSuffix? | // C++ 17
-	HexadecimalPrefix HexidecimalDigitSequence Point FloatExponent FloatSuffix? | // C++ 17
-	HexadecimalPrefix HexidecimalDigitSequence? Point HexidecimalDigitSequence FloatExponent FloatSuffix?; // C++ 17
+	DecimalDigitSequence ExponentPart FloatSuffix? |
+	FractionalConstant ExponentPart? FloatSuffix? |
+	HexadecimalPrefix HexidecimalDigitSequence ExponentPart FloatSuffix? | // C++ 17
+	HexadecimalPrefix HexidecimalDigitSequence Point ExponentPart FloatSuffix? | // C++ 17
+	HexadecimalPrefix HexidecimalDigitSequence? Point HexidecimalDigitSequence ExponentPart FloatSuffix?; // C++ 17

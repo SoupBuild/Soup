@@ -12,6 +12,7 @@ fragment UpperCaseLetter: 'A'..'Z';
 fragment Letter: LowerCaseLetter | UpperCaseLetter;
 fragment NonDigit: Letter | '_';
 
+fragment Sign: '+' | '-';
 fragment HexadecimalPrefix: '0x' | '0X';
 fragment BinaryPrefix: '0b' | '0B';
 fragment UnsignedSuffix: 'u' | 'U';

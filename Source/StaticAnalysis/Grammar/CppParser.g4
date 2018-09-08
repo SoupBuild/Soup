@@ -6,16 +6,9 @@
  ******************************************************************************/
 
 parser grammar CppParser;
-
 options { tokenVocab = CppLexer; }
+import CppParserDeclarations;
 
 // A file consists of a single translation unit with a sequence of declarations
 translationUnit:
-	EOF;
-
-/****************************************/
-/* Boolean Literals
-/****************************************/
-booleanLiterals:
-	True |
-	False;
+	declarationSequence? EOF;
