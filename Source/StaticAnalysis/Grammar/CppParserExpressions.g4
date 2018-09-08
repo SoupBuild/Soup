@@ -1,8 +1,20 @@
-
 grammar CppParserExpressions;
+options { tokenVocab = CppLexer; }
+
+
+literal:
+	IntegerLiteral
+	| CharacterLiteral
+	| FloatingPointLiteral
+	| StringLiteral
+	| booleanLiteral
+	| pointerliteral
+	| userdefinedliteral
+;
+
 
 primaryExpression:
-	literal |
+	Literal |
 	This |
 	LeftBrace expression RightBrace |
 	idExpression |

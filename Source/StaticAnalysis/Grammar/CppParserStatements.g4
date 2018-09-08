@@ -1,6 +1,10 @@
 
 grammar CppParserStatements;
-
+options { tokenVocab = CppLexer; }
+	
+/****************************************/
+/* Statements
+/****************************************/
 statement:
 	labeledStatement |
 	attributeSpecifierSequence? expressionStatement |

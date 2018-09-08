@@ -5,30 +5,30 @@ using Xunit;
 
 namespace Soup.StaticAnalysis.UnitTests
 {
-    public class UnitTest1
+    public class FileTests
     {
         [Fact]
         public void BlockComment()
         {
-            RunTest(@"Examples\BlockComment.cpp");
+            RunTest(@"Examples/BlockComment.cpp");
         }
 
         [Fact]
         public void HelloWorld()
         {
-            RunTest(@"Examples\HelloWorld.cpp");
+            RunTest(@"Examples/HelloWorld.cpp");
         }
 
         [Fact]
         public void LineComment()
         {
-            RunTest(@"Examples\LineComment.cpp");
+            RunTest(@"Examples/LineComment.cpp");
         }
 
         [Fact]
         public void Namespace()
         {
-            RunTest(@"Examples\Namespace.cpp");
+            RunTest(@"Examples/Namespace.cpp");
         }
 
         private void RunTest(string filename)
