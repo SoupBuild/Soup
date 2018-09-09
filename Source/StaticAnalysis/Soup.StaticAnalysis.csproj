@@ -13,7 +13,6 @@
     <Antlr4 Remove="Grammar\CppLexerStringLiterals.g4" />
     <Antlr4 Remove="Grammar\CppLexerUserDefinedLiterals.g4" />
     <Antlr4 Remove="Grammar\CppParserAttributes.g4" />
-    <Antlr4 Remove="Grammar\CppParserClasses.g4" />
     <Antlr4 Remove="Grammar\CppParserDeclarations.g4" />
     <Antlr4 Remove="Grammar\CppParserDeclarators.g4" />
     <Antlr4 Remove="Grammar\CppParserExpressions.g4" />

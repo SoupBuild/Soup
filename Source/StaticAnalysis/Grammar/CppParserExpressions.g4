@@ -1,248 +1,88 @@
 grammar CppParserExpressions;
 options { tokenVocab = CppLexer; }
+import CppParserLiterals;
 
-literal:
-	IntegerLiteral
-	| CharacterLiteral
-	| FloatingPointLiteral
-	| StringLiteral
-	| booleanLiteral
-	| pointerliteral
-	| userdefinedliteral
-;
-
-
+/****************************************/
+/* Primary Expressions
+/* https://en.cppreference.com/w/cpp/language/expressions#Primary_expressions
+/****************************************/
 primaryExpression:
-	Literal |
-	This |
-	LeftBrace expression RightBrace |
-	idExpression |
-	lambdaExpression;
+	literal |
+	identifierExpression; // |
+	//lambdaExpression | // C++ 11
+	//foldExpression | // C++ 17
+	//requiredsExpression; // C++ 20
 
-idExpression:
-	unqualifiedId |
-	qualifiedId;
+identifierExpression:
+	unqualifiedIdentifier;// |
+	//qualifiedIdentifier;
 
-unqualifiedId:
-	identifier |
-	operatorFunctionId |
-	conversionFunctionId |
-	literalOperatorId |
+/****************************************/
+/* Unqualified Identifier
+/* https://en.cppreference.com/w/cpp/language/identifiers#Unqualified_identifiers
+/****************************************/
+unqualifiedIdentifier:
+	Identifier |
+	operatorFunctionIdentifier |
+	conversionFunctionIdentifier |
+	literalOperatorIdentifier |
 	Tilde className |
 	Tilde decltypeSpecifier |
-	templateId;
+	templateIdentifier;
 
-qualifiedId:
-	nestedNameSpecifier Template? unqualifiedId;
+operatorFunctionIdentifier: Delete;
+conversionFunctionIdentifier: Delete;
+literalOperatorIdentifier: Delete;
+className: Delete;
+decltypeSpecifier: Delete;
+templateIdentifier: Delete;
+constantExpression: Delete;
 
-nestedNameSpecifier:
-	DoubleColon |
-	typeName DoubleColon |
-	namespaceName DoubleColon |
-	decltypeSpecifier DoubleColon |
-	nestedNameSpecifier identifier DoubleColon |
-	nestedNameSpecifier Template? simpleTemplateId DoubleColon;
+/****************************************/
+/* Qualified Identifier
+/* https://en.cppreference.com/w/cpp/language/identifiers#Qualified_identifiers
+/****************************************/
+qualifiedIdentifier:;
+//	nestedNameSpecifier Template? unqualifiedIdentifier;
 
-lambdaExpression:
-	lambdaIntroducer lambdaDeclarator? compoundStatement;
+//nestedNameSpecifier:
+//	DoubleColon |
+//	typeName DoubleColon |
+//	namespaceName DoubleColon |
+//	decltypeSpecifier DoubleColon |
+//	nestedNameSpecifier identifier DoubleColon |
+//	nestedNameSpecifier Template? simpleTemplateId DoubleColon;
 
-lambdaIntroducer:
-	LeftBracket lambdaCapture? RightBracket;
+/**************************/
+/* Classes
+/**************************/
+className:
+	Identifier |
+	simpleTemplateIdentifier;
 
-lambdaCapture:
-	captureDefault |
-	captureList |
-	captureDefault Comma captureList;
+/**************************/
+/* Templates
+/**************************/
+simpleTemplateIdentifier:
+	templateName LessThan templateArgumentList? GreaterThan;
 
-captureDefault:
-	Ampersand |
-	Equals;
+templateName:
+	Identifier;
 
-captureList:
-	capture Ellipses? |
-	captureList Comma capture Ellipses?;
+templateArgumentList:
+	templateArgument Ellipsis? |
+	templateArgumentList Comma templateArgument Ellipsis?;
 
-capture:
-	simpleCapture |
-	initializerCapture;
+templateArgument:
+	typeIdentifier |
+	constantExpression |
+	identifierExpression;
 
-simpleCapture:
-	identifier |
-	Ampersand identifier |
-	This;
+/**************************/
+/* Types
+/**************************/
+typeIdentifier:
+	typeSpecifierSequence abstractDeclarator?;
 
-initializerCapture:
-	identifier initializer |
-	Ampersand identifier initializer;
-
-lambdaDeclarator:
-	LeftParenthesis parameterDeclarationClause RightParenthesis mutable? |
-	exceptionSpecification? attributeSpecifierSeq? trailingReturnType?;
-
-postfixExpression:
-	primaryExpression |
-	postfixExpression LeftBracket expression RightBracket |
-	postfixExpression LeftBracket bracedInitializerList RightBracket |
-	postfixExpression LeftParenthesis expressionList? RightParenthesis |
-	simpleTypeSpecifier LeftParenthesis expressionList? RightParenthesis |
-	typenameSpecifier LeftParenthesis expressionList? RightParenthesis |
-	simpleTypeSpecifier bracedInitializerList |
-	typenameSpecifier bracedInitializerList |
-	postfixExpression Period Template? idExpression |
-	postfixExpression Arrow Template? idExpression |
-	postfixExpression Period pseudoDestructorName |
-	postfixExpression Arrow pseudoDestructorName |
-	postfixExpression DoublePlus |
-	postfixExpression DoubleMinus |
-	DynamicCast LessThan typeId GreaterThan LeftParenthesis expression RightParenthesis |
-	StaticCast LessThan typeId GreaterThan LeftParenthesis expression RightParenthesis |
-	ReinterpretCast LessThan typeId GreaterThan LeftParenthesis expression RightParenthesis |
-	ConstCast LessThan typeId GreaterThan LeftParenthesis expression RightParenthesis |
-	typeid LeftParenthesis expression RightParenthesis |
-	typeid LeftParenthesis typeId RightParenthesis;
-
-expressionList:
-	initializerList;
-
-pseudoDestructorName:
-	nestedNameSpecifier? TypeName DoubleColon Tilde TypeName |
-	nestedNameSpecifier Template simpleTemplateId DoubleColon Tilde TypeName |
-	nestedNameSpecifier? Tilde TypeName |
-	Tilde decltypeSpecifier;
-
-unaryExpression:
-	postfixExpression |
-	DoublePlus castExpression |
-	DoubleMinus castExpression |
-	unaryOperator castExpression |
-	SizeOf unaryExpression |
-	SizeOf LeftParenthesis typeId RightParenthesis |
-	SizeOf Ellipses LeftParenthesis identifier RightParenthesis |
-	AlignOf LeftParenthesis typeId RightParenthesis |
-	noexceptExpression |
-	newExpression |
-	deleteExpression;
-
-unaryOperator:
-	Asteriks |
-	Ampersand |
-	Plus |
-	Minus |
-	ExclamationMark |
-	VerticalBar |
-	Tilde;
-
-newExpression:
-	DoubleColon? New newPlacement? newTypeId newInitializer? |
-	DoubleColon? New newPlacement? LeftParenthesis typeId RightParenthesis newInitializer?
-
-newPlacement:
-	LeftParenthesis expressionList RightParenthesis;
-
-newTypeId:
-	typeSpecifierSequence newDeclarator?;
-
-newDeclarator:
-	ptrOperator newDeclarator? |
-	noptrNewDeclarator;
-
-noptrNewDeclarator:
-	LeftBracket expression RightBracket attributeSpecifierSeq? |
-	noptrNewDeclarator LeftBracket constantExpression RightBracket attributeSpecifierSeq?;
-
-newInitializer:
-	LeftParenthesis expressionList? RightParenthesis |
-	bracedInitializerList;
-
-deleteExpression:
-	DoubleColon?delete castExpression |
-	DoubleColon?delete LeftBracket RightBracket castExpression;
-
-noexceptExpression:
-	noexcept LeftParenthesis expression RightParenthesis;
-
-castExpression:
-	unaryExpression |
-	LeftParenthesis typeId RightParenthesis castExpression;
-
-pmExpression:
-	castExpression |
-	pmExpression PeriodAsteriks castExpression |
-	pmExpression ArrowAsteriks castExpression;
-
-multiplicativeExpression:
-	pmExpression |
-	multiplicativeExpression Asteriks pmExpression |
-	multiplicativeExpression ForwardSlash pmExpression |
-	multiplicativeExpression Percent pmExpression;
-
-additiveExpression:
-	multiplicativeExpression |
-	additiveExpression Plus multiplicativeExpression |
-	additiveExpression Minus multiplicativeExpression;
-
-shiftExpression:
-	additiveExpression |
-	shiftExpression LessThanLessThan additiveExpression |
-	shiftExpression GreaterThanGreaterThan additiveExpression;
-
-relationalExpression:
-	shiftExpression |
-	relationalExpression LessThan shiftExpression |
-	relationalExpression GreaterThan shiftExpression |
-	relationalExpression LessThanEquals shiftExpression |
-	relationalExpression GreaterThanEquals shiftExpression;
-
-equalityExpression:
-	relationalExpression |
-	equalityExpression DoubleEquals relationalExpression |
-	equalityExpression ExclamationMarkEquals relationalExpression;
-
-andExpression:
-	equalityExpression |
-	andExpression Ampersand equalityExpression;
-
-exclusiveOrExpression:
-	andExpression |
-	exclusiveOrExpression Caret andExpression;
-
-inclusiveOrExpression:
-	exclusiveOrExpression |
-	inclusiveOrExpression VerticalBar exclusiveOrExpression;
-
-logicalAndExpression:
-	inclusiveOrExpression |
-	logicalAndExpression DoubleAmpersand inclusiveOrExpression;
-
-logicalOrExpression:
-	logicalAndExpression |
-	logicalOrExpression DoubleVerticalBar logicalAndExpression;
-
-conditionalExpression:
-	logicalOrExpression |
-	logicalOrExpression QuestionMark expression Colon assignmentExpression;
-
-assignmentExpression:
-	conditionalExpression |
-	logicalOrExpression assignmentOperator initializerClause |
-	throwExpression;
-
-assignmentOperator:
-	Equals |
-	AsteriksEquals |
-	ForwardSlashEquals |
-	PercentEquals |
-	PlusEquals |
-	MinusEquals |
-	GreaterThanGreaterThanEquals |
-	LessThanLessThanEquals |
-	AmpersandEquals |
-	CaretEquals |
-	VerticalBarEquals;
-
-expression:
-	assignmentExpression |
-	expression Comma assignmentExpression;
-
-constantExpression:
-	conditionalExpression;
+typeSpecifierSequence:Delete;
+abstractDeclarator:Delete;
