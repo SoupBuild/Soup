@@ -37,7 +37,7 @@ selectionStatement:
 
 condition:
 	expression |
-	attributeSpecifierSequence? declSpecifierSequence declarator Equals initializerClause |
+	attributeSpecifierSequence? declSpecifierSequence declarator Equal initializerClause |
 	attributeSpecifierSequence? declSpecifierSequence declarator bracedInitializerList;
 
 iterationStatement:

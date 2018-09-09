@@ -36,11 +36,11 @@ unqualifiedIdentifier:
 /* https://en.cppreference.com/w/cpp/language/identifiers#Unqualified_identifiers
 /****************************************/
 operatorFunctionIdentifier: 
-	Operator operator;
+	Operator anyOperator;
 
 assignmentOperator:
 	Equal |
-	AsteriksEqual |
+	AsteriskEqual |
 	ForwardSlashEqual |
 	PercentEqual |
 	PlusEqual |
@@ -53,33 +53,32 @@ assignmentOperator:
 
 unaryOperator:
 	VerticalBar |
-	Asteriks |
+	Asterisk |
 	Ampersand |
 	Plus |
 	ExclamationMark |
 	Tilde |
 	Minus;
 
+// Cannot be operator because it is a keyword in C#
 anyOperator:
 	New |
 	Delete|
-	New '[' ']'|
-	Delete '[' ']'|
-	'+'|
-	'-'
-	|
-	'*'|
-	'/'|
-	'%'|
-	'^'|
-	'&'|
-	'|'|
-	'~'|
-	'!'|
-	'<'|
-	'>'
+	New LeftBracket RightBracket |
+	Delete LeftBracket RightBracket |
+	Plus |
+	Minus |
+	Asterisk |
+	Ampersand |
+	Caret |
+	Ampersand |
+	VerticalBar |
+	Tilde |
+	ExclamationMark |
+	LessThan |
+	GreaterThan |
 	Equal |
-	AsteriksEqual |
+	AsteriskEqual |
 	ForwardSlashEqual |
 	PercentEqual |
 	PlusEqual |
@@ -89,22 +88,22 @@ anyOperator:
 	AmpersandEqual |
 	CaretEqual |
 	VerticalBarEqual |
-	| '<<'
-	| rightShift
-	| '=='
-	| '!='
-	| '<='
-	| '>='
-	| '&&'
-	| '||'
-	| '++'
-	| '--'
-	| ','
-	| '->*'
-	| '->'
-	| '(' ')'
-	| '[' ']'
-;
+	DoubleLessThan |
+	DoubleGreaterThan|
+	DoubleEqual |
+	ExclamationMarkEqual |
+	LessThanEqual |
+	GreaterThanEqual |
+	DoubleAmpersand |
+	DoubleVerticalBar |
+	DoublePlus |
+	DoubleMinus |
+	Comma |
+	ArrowAsterisk |
+	Arrow |
+	LeftParenthesis RightParenthesis |
+	LeftBracket RightBracket;
+
 conversionFunctionIdentifier: Delete;
 literalOperatorIdentifier: Delete;
 className: Delete;

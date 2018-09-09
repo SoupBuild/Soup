@@ -6,6 +6,40 @@ namespace Soup.StaticAnalysis.UnitTests
     public class ParserExpressionTests
     {
         [Theory]
+        [InlineData("=")]
+        [InlineData("+=")]
+        [InlineData("-=")]
+        [InlineData("*=")]
+        [InlineData("/=")]
+        [InlineData("%=")]
+        [InlineData("^=")]
+        [InlineData("&=")]
+        [InlineData("|=")]
+        [InlineData(">>=")]
+        [InlineData("<<=")]
+        public void SingleRule_AssignmentOperator(string sourceCode)
+        {
+            var uut = BuildParser(sourceCode);
+            var context = uut.assignmentOperator();
+            Assert.NotNull(context);
+        }
+
+        [Theory]
+        [InlineData("+")]
+        [InlineData("-")]
+        [InlineData("^")]
+        [InlineData("&")]
+        [InlineData("|")]
+        [InlineData("~")]
+        [InlineData("!")]
+        public void SingleRule_UnaryOperator(string sourceCode)
+        {
+            var uut = BuildParser(sourceCode);
+            var context = uut.unaryOperator();
+            Assert.NotNull(context);
+        }
+
+        [Theory]
         [InlineData("new")]
         [InlineData("delete")]
         [InlineData("new[]")]
@@ -52,6 +86,56 @@ namespace Soup.StaticAnalysis.UnitTests
         {
             var uut = BuildParser(sourceCode);
             var context = uut.anyOperator();
+            Assert.NotNull(context);
+        }
+
+        [Theory]
+        [InlineData("operator new")]
+        [InlineData("operator delete")]
+        [InlineData("operator new[]")]
+        [InlineData("operator delete[]")]
+        [InlineData("operator+")]
+        [InlineData("operator-")]
+        [InlineData("operator*")]
+        [InlineData("operator/")]
+        [InlineData("operator%")]
+        [InlineData("operator^")]
+        [InlineData("operator&")]
+        [InlineData("operator|")]
+        [InlineData("operator~")]
+        [InlineData("operator!")]
+        [InlineData("operator=")]
+        [InlineData("operator<")]
+        [InlineData("operator>")]
+        [InlineData("operator+=")]
+        [InlineData("operator-=")]
+        [InlineData("operator*=")]
+        [InlineData("operator/=")]
+        [InlineData("operator%=")]
+        [InlineData("operator^=")]
+        [InlineData("operator&=")]
+        [InlineData("operator |=")]
+        [InlineData("operator <<")]
+        [InlineData("operator >>")]
+        [InlineData("operator >>=")]
+        [InlineData("operator <<=")]
+        [InlineData("operator ==")]
+        [InlineData("operator !=")]
+        [InlineData("operator <=")]
+        [InlineData("operator >=")]
+        [InlineData("operator &&")]
+        [InlineData("operator||")]
+        [InlineData("operator++")]
+        [InlineData("operator--")]
+        [InlineData("operator,")]
+        [InlineData("operator->*")]
+        [InlineData("operator->")]
+        [InlineData("operator()")]
+        [InlineData("operator[]")]
+        public void SingleRule_OperatorFunctionIdentifier(string sourceCode)
+        {
+            var uut = BuildParser(sourceCode);
+            var context = uut.operatorFunctionIdentifier();
             Assert.NotNull(context);
         }
 
