@@ -1,6 +1,7 @@
 grammar CppParserExpressions;
 options { tokenVocab = CppLexer; }
-import CppParserLiterals;
+import 
+	CppParserLiterals;
 
 /****************************************/
 /* Primary Expressions
@@ -10,8 +11,7 @@ primaryExpression:
 	literal |
 	identifierExpression; // |
 	//lambdaExpression | // C++ 11
-	//foldExpression | // C++ 17
-	//requiredsExpression; // C++ 20
+	//foldExpression; // C++ 17
 
 identifierExpression:
 	unqualifiedIdentifier;// |
@@ -29,7 +29,6 @@ unqualifiedIdentifier:
 	Tilde className |
 	Tilde decltypeSpecifier |
 	templateIdentifier;
-
 
 /****************************************/
 /* Operators
@@ -104,9 +103,25 @@ anyOperator:
 	LeftParenthesis RightParenthesis |
 	LeftBracket RightBracket;
 
-conversionFunctionIdentifier: Delete;
+conversionFunctionIdentifier: 
+	Operator conversionTypeIdentifier;
+
+conversionTypeIdentifier:
+	typeSpecifierSequence conversionDeclarator?;
+
+conversionDeclarator:
+	pointerOperator conversionDeclarator?;
+
+pointerOperator:
+	Asterisk attributeSpecifierSequence? constVirtualQualifierSequence? |
+	Ampersand attributeSpecifierSequence? |
+	DoubleAmpersand attributeSpecifierSequence? |
+	nestedNameSpecifier Asterisk attributeSpecifierSequence? constVirtualQualifierSequence?;
+
+constVirtualQualifierSequence:Delete;
+nestedNameSpecifier:Delete;
+
 literalOperatorIdentifier: Delete;
-className: Delete;
 decltypeSpecifier: Delete;
 templateIdentifier: Delete;
 constantExpression: Delete;
@@ -159,3 +174,42 @@ typeIdentifier:
 
 typeSpecifierSequence:Delete;
 abstractDeclarator:Delete;
+
+
+/****************************************/
+/* Attributes C++ 11
+/****************************************/
+attributeSpecifierSequence:
+	attributeSpecifier |
+	attributeSpecifierSequence attributeSpecifier;
+
+attributeSpecifier:
+	alignmentSpecifier |
+	LeftBracket LeftBracket attributeList RightBracket RightBracket | // C++ 11
+	LeftBracket LeftBracket Using attributeNamespace Colon attributeList RightBracket RightBracket; // C++ 17
+
+alignmentSpecifier:
+	AlignAs LeftParenthesis typeId Ellipsis? RightParenthesis |
+	AlignAs LeftParenthesis constantExpression Ellipsis? RightParenthesis;
+
+typeId: Delete;
+constantExpression: Delete;
+
+// Zero or more comma seperated attributes possibly ending in an ellipsis
+attributeList:
+	attribute? |
+	attributeList Comma attribute? |
+	attribute Ellipsis |
+	attributeList Comma attribute Ellipsis;
+
+attributeNamespace:
+	Identifier;
+
+attributeArgumentClause:
+	LeftParenthesis argumentList RightParenthesis;
+
+attribute:
+	Identifier attributeArgumentClause? |
+	attributeNamespace DoubleColon Identifier attributeArgumentClause?;
+
+argumentList:; // TODO

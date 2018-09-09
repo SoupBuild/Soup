@@ -4,7 +4,7 @@
  * Based on N4659 final working paper
  * http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf
  ******************************************************************************/
-
+ 
 parser grammar CppParser;
 options { tokenVocab = CppLexer; }
 import CppParserDeclarations;
