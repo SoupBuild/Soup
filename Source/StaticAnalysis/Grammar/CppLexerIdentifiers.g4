@@ -1,8 +1,6 @@
 
 lexer grammar CppLexerIdentifiers;
-
-import 
-	CppLexerFragments;
+import CppLexerFragments;
 
 /****************************************/
 /* Identifiers

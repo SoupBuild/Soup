@@ -15,6 +15,7 @@ import
 	CppLexerFloatingPointLiterals,
 	CppLexerCharacterLiterals,
 	CppLexerStringLiterals,
+	CppLexerUserDefinedLiterals,
 	CppLexerIdentifiers;
 
 

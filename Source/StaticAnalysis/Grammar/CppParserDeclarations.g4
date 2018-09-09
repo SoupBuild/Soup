@@ -6,4 +6,5 @@ import CppParserLiterals;
 /****************************************/
 /* Declarations
 /****************************************/
-declarationSequence:;
+declarationSequence:
+	Delete; // TODO

@@ -1,8 +1,6 @@
 
 lexer grammar CppLexerIntegerLiterals;
-
-import 
-	CppLexerFragments;
+import CppLexerFragments;
 
 /****************************************/
 /* Integer Literal

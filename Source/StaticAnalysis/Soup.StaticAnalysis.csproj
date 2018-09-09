@@ -11,6 +11,7 @@
     <Antlr4 Remove="Grammar\CppLexerKeywords.g4" />
     <Antlr4 Remove="Grammar\CppLexerOperatorsAndPunctuators.g4" />
     <Antlr4 Remove="Grammar\CppLexerStringLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppLexerUserDefinedLiterals.g4" />
     <Antlr4 Remove="Grammar\CppParserAttributes.g4" />
     <Antlr4 Remove="Grammar\CppParserClasses.g4" />
     <Antlr4 Remove="Grammar\CppParserDeclarations.g4" />

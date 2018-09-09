@@ -200,6 +200,53 @@ namespace Soup.StaticAnalysis.UnitTests
         }
 
         [Theory]
+        // User Defined
+        [InlineData("12_km")]
+        [InlineData("123_mytype")]
+        [InlineData("0x123ABC_print")]
+        // Standard Library Allowed
+        [InlineData("10if")]
+        [InlineData("2h")]
+        [InlineData("33m")]
+        [InlineData("15s")]
+        [InlineData("20000ms")]
+        [InlineData("100'000us")]
+        [InlineData("1ns")]
+        [InlineData("1y")]
+        [InlineData("1d")]
+        public void SingleToken_UserDefinedIntegerLiteral(string value)
+        {
+            RunTest(value, CppLexer.UserDefinedIntegerLiteral);
+        }
+
+        [Theory]
+        // User Defined
+        [InlineData("2.2_km")]
+        [InlineData("0.5_Pa")]
+        [InlineData("90.0_deg")]
+        public void SingleToken_UserDefinedFloatingPointLiteral(string value)
+        {
+            RunTest(value, CppLexer.UserDefinedFloatingPointLiteral);
+        }
+
+        [Theory]
+        // User Defined
+        [InlineData("'c'_X")]
+        public void SingleToken_UserDefinedCharacterLiteral(string value)
+        {
+            RunTest(value, CppLexer.UserDefinedCharacterLiteral);
+        }
+
+        [Theory]
+        // User Defined
+        [InlineData("\"abc\"_L")]
+        [InlineData("\"xyz\"_M")]
+        public void SingleToken_UserDefinedStringLiteral(string value)
+        {
+            RunTest(value, CppLexer.UserDefinedStringLiteral);
+        }
+
+        [Theory]
         [InlineData("/**/")]
         [InlineData("/* */")]
         [InlineData("/* Hey a comment\n On many lines\n */")]

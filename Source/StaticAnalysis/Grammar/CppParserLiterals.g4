@@ -23,14 +23,7 @@ pointerLiteral:
 
 // C++ 11
 userDefinedLiteral:
-	DecimalLiteral userDefinedSuffix |
-	OctalLiteral userDefinedSuffix |
-	HexadecimalLiteral userDefinedSuffix |
-	BinaryLiteral userDefinedSuffix |
-	FractionalConstant ExponentPart? userDefinedSuffix |
-	DecimalSequence ExponentPart userDefinedSuffix |
-	CharacterLiteral userDefinedSuffix |
-	StringLiteral userDefinedSuffix;
-
-userDefinedSuffix:
-	Identifier;
+	UserDefinedIntegerLiteral |
+	UserDefinedFloatingPointLiteral |
+	UserDefinedCharacterLiteral |
+	UserDefinedStringLiteral;

@@ -1,8 +1,6 @@
 
 lexer grammar CppLexerFloatingPointLiterals;
-
-import 
-	CppLexerFragments;
+import CppLexerFragments;
 
 /****************************************/
 /* Floating Point Literal
