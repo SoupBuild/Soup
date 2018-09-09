@@ -1,7 +1,6 @@
 grammar CppParserExpressions;
 options { tokenVocab = CppLexer; }
 
-
 literal:
 	IntegerLiteral
 	| CharacterLiteral

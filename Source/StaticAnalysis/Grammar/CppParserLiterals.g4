@@ -6,8 +6,8 @@ options { tokenVocab = CppLexer; }
 /****************************************/
 literal:
 	IntegerLiteral |
-	CharacterLiteral |
 	FloatingPointLiteral |
+	CharacterLiteral |
 	StringLiteral |
 	booleanLiteral |
 	pointerLiteral | // C++ 11
