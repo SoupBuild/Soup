@@ -30,7 +30,81 @@ unqualifiedIdentifier:
 	Tilde decltypeSpecifier |
 	templateIdentifier;
 
-operatorFunctionIdentifier: Delete;
+
+/****************************************/
+/* Operators
+/* https://en.cppreference.com/w/cpp/language/identifiers#Unqualified_identifiers
+/****************************************/
+operatorFunctionIdentifier: 
+	Operator operator;
+
+assignmentOperator:
+	Equal |
+	AsteriksEqual |
+	ForwardSlashEqual |
+	PercentEqual |
+	PlusEqual |
+	MinusEqual |
+	DoubleGreaterThanEqual |
+	DoubleLessThanEqual |
+	AmpersandEqual |
+	CaretEqual |
+	VerticalBarEqual;
+
+unaryOperator:
+	VerticalBar |
+	Asteriks |
+	Ampersand |
+	Plus |
+	ExclamationMark |
+	Tilde |
+	Minus;
+
+anyOperator:
+	New |
+	Delete|
+	New '[' ']'|
+	Delete '[' ']'|
+	'+'|
+	'-'
+	|
+	'*'|
+	'/'|
+	'%'|
+	'^'|
+	'&'|
+	'|'|
+	'~'|
+	'!'|
+	'<'|
+	'>'
+	Equal |
+	AsteriksEqual |
+	ForwardSlashEqual |
+	PercentEqual |
+	PlusEqual |
+	MinusEqual |
+	DoubleGreaterThanEqual |
+	DoubleLessThanEqual |
+	AmpersandEqual |
+	CaretEqual |
+	VerticalBarEqual |
+	| '<<'
+	| rightShift
+	| '=='
+	| '!='
+	| '<='
+	| '>='
+	| '&&'
+	| '||'
+	| '++'
+	| '--'
+	| ','
+	| '->*'
+	| '->'
+	| '(' ')'
+	| '[' ']'
+;
 conversionFunctionIdentifier: Delete;
 literalOperatorIdentifier: Delete;
 className: Delete;
