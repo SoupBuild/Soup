@@ -18,10 +18,10 @@ namespace Soup.StaticAnalysis.UnitTests
         [InlineData("char32_t", CppLexer.Char32)]
         [InlineData("class", CppLexer.Class)]
         [InlineData("const", CppLexer.Const)]
-        [InlineData("constexpr", CppLexer.Constexpr)]
+        [InlineData("constexpr", CppLexer.ConstExpr)]
         [InlineData("const_cast", CppLexer.ConstCast)]
         [InlineData("continue", CppLexer.Continue)]
-        [InlineData("decltype", CppLexer.Decltype)]
+        [InlineData("decltype", CppLexer.DeclType)]
         [InlineData("default", CppLexer.Default)]
         [InlineData("delete", CppLexer.Delete)]
         [InlineData("do", CppLexer.Do)]
@@ -140,8 +140,16 @@ namespace Soup.StaticAnalysis.UnitTests
             RunTest(value, expectedToken);
         }
 
+        // Zero can have special meaning so it is a unique token
+        // The parser will combine it with the other integer literals
         [Theory]
         [InlineData("0")]
+        public void SingleToken_Zero(string value)
+        {
+            RunTest(value, CppLexer.Zero);
+        }
+
+        [Theory]
         [InlineData("1")]
         [InlineData("42")]
         [InlineData("052")]

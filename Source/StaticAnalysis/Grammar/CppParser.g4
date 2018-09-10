@@ -30,7 +30,7 @@ enumName:
 	Identifier;
 
 templateName:
-	identifier;
+	Identifier;
 	
 /****************************************/
 /* Basic Concepts
@@ -84,7 +84,7 @@ lambdaIntroducer:
 	LeftBracket lambdaCapture? RightBracket;
 
 lambdaDeclarator:
-	LeftParenthesis parameterDeclarationClause RightParenthesis declartionSecifierSequence? noExceptionSpecifier? attributeSpecifierSequence? trailingReturnType?;
+	LeftParenthesis parameterDeclarationClause RightParenthesis declarationSpecifierSequence? noExceptionSpecifier? attributeSpecifierSequence? trailingReturnType?;
 
 lambdaCapture:
 	captureDefault |
@@ -95,15 +95,9 @@ captureDefault:
 	Ampersand |
 	Equal;
 
-capturelist:
+captureList:
 	capture Ellipsis? |
 	captureList Comma capture Ellipsis?;
-
-capture:
-	Ampersand? Identifier Ellipsis? |
-	Ampersand? Identifier initializer | // C++ 14
-	This |
-	Asterisk This; // C++ 17
 
 capture:
 	simpleCapture
@@ -123,7 +117,7 @@ foldExpression:
 	LeftParenthesis Ellipsis foldOperator castExpression RightParenthesis |
 	LeftParenthesis castExpression foldOperator Ellipsis foldOperator castExpression RightParenthesis;
 
-fold-operator:
+foldOperator:
 	Plus |
 	Minus |
 	Asterisk |
@@ -175,17 +169,17 @@ postfixExpression:
 	StaticCast LessThan typeIdentifier GreaterThan LeftParenthesis expression RightParenthesis |
 	ReinterpretCast GreaterThan LeftParenthesis expression RightParenthesis |
 	ConstCast GreaterThan LeftParenthesis expression RightParenthesis |
-	typeid LeftParenthesis expression RightParenthesis |
-	typeid LeftParenthesis typeIdentifier RightParenthesis;
+	typeIdentifier LeftParenthesis expression RightParenthesis |
+	typeIdentifier LeftParenthesis typeIdentifier RightParenthesis;
 
 expressionList:
 	initializerList;
 
 pseudoDestructorName:
 	nestedNameSpecifier? typeName DoubleColon Tilde typeName |
-	nestedNameSpecifier template simpleTemplateIdentifier DoubleColon Tilde typeName |
+	nestedNameSpecifier Template simpleTemplateIdentifier DoubleColon Tilde typeName |
 	Tilde typeName |
-	Tilde decltypeSpecifier;
+	Tilde declarationTypeSpecifier;
 
 unaryExpression:
 	postfixExpression |
@@ -194,9 +188,9 @@ unaryExpression:
 	unaryOperator castExpression |
 	SizeOf unaryExpression |
 	SizeOf LeftParenthesis typeIdentifier RightParenthesis |
-	sizeof Ellipsis LeftParenthesis identifier RightParenthesis |
-	alignof LeftParenthesis typeIdentifier RightParenthesis |
-	noexceptExpression |
+	SizeOf Ellipsis LeftParenthesis Identifier RightParenthesis |
+	AlignOf LeftParenthesis typeIdentifier RightParenthesis |
+	noExceptionExpression |
 	newExpression |
 	deleteExpression;
 
@@ -248,7 +242,7 @@ pointerManipulationExpression:
 
 multiplicativeExpression:
 	pointerManipulationExpression |
-	multiplicativeExpression AsteriskpointerManipulationExpression |
+	multiplicativeExpression Asterisk pointerManipulationExpression |
 	multiplicativeExpression ForwardSlash pointerManipulationExpression |
 	multiplicativeExpression Percent pointerManipulationExpression;
 
@@ -329,13 +323,6 @@ constantExpression:
 /****************************************/
 /* Statements
 /****************************************/
-
-grammar CppParserStatements;
-options { tokenVocab = CppLexer; }
-	
-/****************************************/
-/* Statements
-/****************************************/
 statement:
 	labeledStatement |
 	attributeSpecifierSequence? expressionStatement |
@@ -351,17 +338,16 @@ initializerStatement:
 	simpleDeclaration;
 
 condition:
-	expression
-	attributeSpecifierSequence?
-	declarationSpecifierSequence declarator braceOrEqualInitializer;
+	expression |
+	attributeSpecifierSequence? declarationSpecifierSequence declarator braceOrEqualInitializer;
 
 labeledStatement:
-	attributeSpecifierSequence? identifier Colon statement |
+	attributeSpecifierSequence? Identifier Colon statement |
 	attributeSpecifierSequence? Case constantExpression Colon statement |
 	attributeSpecifierSequence? Default Colon statement;
 
 expressionStatement:
-	expression? SemiColon;
+	expression? Semicolon;
 
 compoundStatement:
 	LeftBrace statementSequence? RightBrace;
@@ -375,15 +361,10 @@ selectionStatement:
 	If ConstExpr? LeftParenthesis initializerStatement? condition RightParenthesis statement Else statement |
 	Switch LeftParenthesis initializerStatement? condition RightParenthesis statement;
 
-condition:
-	expression |
-	attributeSpecifierSequence? declSpecifierSequence declarator Equal initializerClause |
-	attributeSpecifierSequence? declSpecifierSequence declarator bracedInitializerList;
-
 iterationStatement:
 	While LeftParenthesis condition RightParenthesis statement |
-	Do statement While LeftParenthesis expression RightParenthesis SemiColon |
-	For LeftParenthesis initializerStatement condition? SemiColon expression? RightParenthesis statement |
+	Do statement While LeftParenthesis expression RightParenthesis Semicolon |
+	For LeftParenthesis initializerStatement condition? Semicolon expression? RightParenthesis statement |
 	For LeftParenthesis forRangeDeclaration Colon forRangeInitializer RightParenthesis statement;
 
 forInitializerStatement:
@@ -391,16 +372,16 @@ forInitializerStatement:
 	attributeSpecifierSequence? declarationSpecifierSequence referenceQualifier? LeftBracket identifierList RightBracket;
 
 forRangeDeclaration:
-	attributeSpecifierSequence? declSpecifierSequence declarator;
+	attributeSpecifierSequence? declarationSpecifierSequence declarator;
 
 forRangeInitializer:
 	expressionOrBracedInitializerList;
 
 jumpStatement:
-	Break SemiColon |
-	Continue SemiColon |
-	Return expressionOrBracedInitializerList? SemiColon |
-	GoTo identifier SemiColon;
+	Break Semicolon |
+	Continue Semicolon |
+	Return expressionOrBracedInitializerList? Semicolon |
+	GoTo Identifier Semicolon;
 
 declarationStatement:
 	blockDeclaration;
@@ -414,7 +395,7 @@ declarationSequence:
 
 declaration:
 	blockDeclaration |
-	nodeclspecFunctionDeclaration |
+	noDeclarationSpecifierFunctionDeclaration |
 	functionDefinition |
 	templateDeclaration |
 	deductionGuide |
@@ -435,26 +416,26 @@ blockDeclaration:
 	aliasDeclaration |
 	opaqueEnumDeclaration;
 
-nodeclspecFunctionDeclaration:
-	attributeSpecifierSequence? declarator SemiColon;
+noDeclarationSpecifierFunctionDeclaration:
+	attributeSpecifierSequence? declarator Semicolon;
 
 aliasDeclaration:
-	Using identifier attributeSpecifierSequence? Equal definingTypeIdentifier SemiColon;
+	Using Identifier attributeSpecifierSequence? Equal definingTypeIdentifier Semicolon;
 
 simpleDeclaration:
-	declarationSpecifierSequence initializerDeclaratorList? SemiColon |
-	attributeSpecifierSequence declarationSpecifierSequence initializerDeclaratorList SemiColon |
-	attributeSpecifierSequence? declarationSpecifierSequence referenceQualifier? LeftBracket identifierList RightBracket initializer SemiColon;
+	declarationSpecifierSequence initializerDeclaratorList? Semicolon |
+	attributeSpecifierSequence declarationSpecifierSequence initializerDeclaratorList Semicolon |
+	attributeSpecifierSequence? declarationSpecifierSequence referenceQualifier? LeftBracket identifierList RightBracket initializer Semicolon;
 
 staticAssertDeclaration:
-	StaticAssert LeftParenthesis constantExpression RightParenthesis SemiColon |
-	StaticAssert LeftParenthesis constantExpression Comma StringLiteral RightParenthesis SemiColon;
+	StaticAssert LeftParenthesis constantExpression RightParenthesis Semicolon |
+	StaticAssert LeftParenthesis constantExpression Comma StringLiteral RightParenthesis Semicolon;
 
 emptyDeclaration:
-	SemiColon;
+	Semicolon;
 
 attributeDeclaration:
-	attributeSpecifierSequence SemiColon;
+	attributeSpecifierSequence Semicolon;
 
 declarationSpecifier:
 	storageClassSpecifier |
@@ -483,7 +464,7 @@ typeSpecifier:
 	simpleTypeSpecifier |
 	elaboratedTypeSpecifier |
 	typenameSpecifier |
-	constVirtualQualifier;
+	constVolatileQualifier;
 
 typeSpecifierSequence:
 	typeSpecifier attributeSpecifierSequence? |
@@ -516,7 +497,7 @@ simpleTypeSpecifier:
 	Double |
 	Void |
 	Auto |
-	decltypeSpecifier;
+	declarationTypeSpecifier;
 
 typeName:
 	className |
@@ -524,15 +505,15 @@ typeName:
 	typedefName |
 	simpleTemplateIdentifier;
 
-decltypeSpecifier:
+declarationTypeSpecifier:
 	DeclType LeftParenthesis expression RightParenthesis |
 	DeclType LeftParenthesis Auto RightParenthesis;
 
 elaboratedTypeSpecifier:
-	classKey attributeSpecifierSequence? nestedNameSpecifier? identifier |
+	classKey attributeSpecifierSequence? nestedNameSpecifier? Identifier |
 	classKey simpleTemplateIdentifier |
 	classKey nestedNameSpecifier Template? simpleTemplateIdentifier |
-	Enum nestedNameSpecifier? identifier;
+	Enum nestedNameSpecifier? Identifier;
 
 enumSpecifier:
 	enumHead LeftBrace enumeratorList? RightBrace |
@@ -542,10 +523,10 @@ enumHead:
 	enumKey attributeSpecifierSequence? enumHeadName? enumBase?;
 
 enumHeadName:
-	nestedNameSpecifier? identifier;
+	nestedNameSpecifier? Identifier;
 
 opaqueEnumDeclaration:
-	enumKey attributeSpecifierSequence? nestedNameSpecifier? identifier enumBase? SemiColon;
+	enumKey attributeSpecifierSequence? nestedNameSpecifier? Identifier enumBase? Semicolon;
 
 enumKey:
 	Enum |
@@ -564,11 +545,7 @@ enumeratorDefinition:
 	enumerator Equal constantExpression;
 
 enumerator:
-	identifier attributeSpecifierSequence?;
-
-namespaceName:
-	identifier |
-	namespaceAlias;
+	Identifier attributeSpecifierSequence?;
 
 namespaceDefinition:
 	namedNamespaceDefinition |
@@ -576,28 +553,28 @@ namespaceDefinition:
 	nestedNamespaceDefinition;
 
 namedNamespaceDefinition:
-	Inline? Namespace attributeSpecifierSequence? identifier LeftBrace namespaceBody RightBrace;
+	Inline? Namespace attributeSpecifierSequence? Identifier LeftBrace namespaceBody RightBrace;
 
 unnamedNamespaceDefinition:
 	Inline? Namespace attributeSpecifierSequence? LeftBrace namespaceBody RightBrace;
 
 nestedNamespaceDefinition:
-	Namespace enclosingNamespaceSpecifier DoubleColon identifier LeftBrace namespaceBody RightBrace;
+	Namespace enclosingNamespaceSpecifier DoubleColon Identifier LeftBrace namespaceBody RightBrace;
 
 enclosingNamespaceSpecifier:
-	identifier enclosingNamespaceSpecifier DoubleColon identifier;
+	Identifier enclosingNamespaceSpecifier DoubleColon Identifier;
 
 namespaceBody:
 	declarationSequence?;
 
 namespaceAliasDefinition:
-	Namespace identifier Equal qualifiedNamespaceSpecifier SemiColon;
+	Namespace Identifier Equal qualifiedNamespaceSpecifier Semicolon;
 
 qualifiedNamespaceSpecifier:
 	nestedNameSpecifier? namespaceName;
 
 usingDeclaration:
-	Using usingDeclaratorList SemiColon;
+	Using usingDeclaratorList Semicolon;
 
 usingDeclaratorList:
 	usingDeclarator Ellipsis? |
@@ -607,20 +584,21 @@ usingDeclarator:
 	typeName? nestedNameSpecifier unqualifiedIdentifier;
 
 usingDirective:
-	attributeSpecifierSequence? Using Namespace nestedNameSpecifier? namespaceName SemiColon;
+	attributeSpecifierSequence? Using Namespace nestedNameSpecifier? namespaceName Semicolon;
 
 asmDefinition:
-	attributeSpecifierSequence? Asm LeftParenthesis stringLiteral RightParenthesis SemiColon;
+	attributeSpecifierSequence? Asm LeftParenthesis StringLiteral RightParenthesis Semicolon;
 
 linkageSpecification:
-	Extern stringLiteral LeftBrace declarationSequence? RightBrace |
-	Extern stringLiteral declaration;
+	Extern StringLiteral LeftBrace declarationSequence? RightBrace |
+	Extern StringLiteral declaration;
 
 attributeSpecifierSequence:
-	attributeSpecifierSequence? attributeSpecifier;
+	attributeSpecifier |
+	attributeSpecifierSequence attributeSpecifier;
 
 attributeSpecifier:
-	[ [ attribute-using-prefix? attribute-list ] ]
+	LeftBracket LeftBracket attributeUsingPrefix? attributeList RightBracket RightBracket
 	alignmentSpecifier;
 
 alignmentSpecifier:
@@ -640,14 +618,14 @@ attribute:
 	attributeToken attributeArgumentClause?;
 
 attributeToken:
-	identifier |
+	Identifier |
 	attributeScopedToken;
 
 attributeScopedToken:
-	attributeNamespace DoubleColon identifier;
+	attributeNamespace DoubleColon Identifier;
 
 attributeNamespace:
-	identifier;
+	Identifier;
 
 attributeArgumentClause:
 	LeftParenthesis balancedTokenSequence? RightParenthesis;
@@ -680,28 +658,28 @@ pointerDeclarator:
 	noPointerDeclarator |
 	pointerOperator pointerDeclarator;
 
-noPointerdeclarator:
+noPointerDeclarator:
 	declaratorIdentifier attributeSpecifierSequence? |
 	noPointerDeclarator parametersAndQualifiers |
 	noPointerDeclarator LeftBracket constantExpression? RightBracket attributeSpecifierSequence? |
 	LeftParenthesis pointerDeclarator RightParenthesis;
 
 parametersAndQualifiers:
-	LeftParenthesis parameterDeclarationClause RightParenthesis constVolitilEqualifierSequence? referenceQualifier? noexceptSpecifier? attributeSpecifierSequence?;
+	LeftParenthesis parameterDeclarationClause RightParenthesis constVolatileQualifierSequence? referenceQualifier? noExceptionSpecifier? attributeSpecifierSequence?;
 
 trailingReturnType:
 	Arrow typeIdentifier;
 
 pointerOperator:
-	Asterisk attributeSpecifierSequence? constVirtualQualifierSequence? |
+	Asterisk attributeSpecifierSequence? constVolatileQualifierSequence? |
 	Ampersand attributeSpecifierSequence? |
 	DoubleAmpersand attributeSpecifierSequence? |
-	nestedNameSpecifier Asterisk attributeSpecifierSequence? constVirtualQualifierSequence?;
+	nestedNameSpecifier Asterisk attributeSpecifierSequence? constVolatileQualifierSequence?;
 
-constVolitilQualifierSequence:
-	constVolitilQualifier constVolitilQualifierSequence?;
+constVolatileQualifierSequence:
+	constVolatileQualifier constVolatileQualifierSequence?;
 
-constVolitilQualifier:
+constVolatileQualifier:
 	Const |
 	Volatile;
 
@@ -728,9 +706,11 @@ pointerAbstractDeclarator:
 	pointerOperator pointerAbstractDeclarator?;
 
 noPointerAbstractDeclarator:
-	noptr-abstract-declarator? parametersAndQualifiers |
-	noPointerAbstractDeclarator? LeftBracket constantExpression? RightBracket attributeSpecifierSequence? |
-	LeftParenthesis pointerAbstractDeclarator RightParenthesis
+	parametersAndQualifiers |
+	noPointerAbstractDeclarator parametersAndQualifiers |
+	LeftBracket constantExpression? RightBracket attributeSpecifierSequence? |
+	noPointerAbstractDeclarator LeftBracket constantExpression? RightBracket attributeSpecifierSequence? |
+	LeftParenthesis pointerAbstractDeclarator RightParenthesis;
 
 abstractPackDeclarator:
 	noPointerAbstractPackDeclarator |
@@ -761,8 +741,8 @@ functionDefinition:
 functionBody:
 	constructorInitializer? compoundStatement |
 	functionTryBlock |
-	Equal Default SemiColon |
-	Equal Delete SemiColon;
+	Equal Default Semicolon |
+	Equal Delete Semicolon;
 
 initializer:
 	braceOrEqualInitializer |
@@ -791,10 +771,6 @@ expressionOrBracedInitializerList:
 /**************************/
 /* Classes
 /**************************/
-className:
-	Identifier |
-	simpleTemplateIdentifier;
-
 classSpecifier:
 	classHead LeftBrace memberSpecification? RightBrace;
 
@@ -803,7 +779,7 @@ classHead:
 	classKey attributeSpecifier? baseClause?;
 
 classHeadName:
-	nestedNameSpecifier? className
+	nestedNameSpecifier? className;
 
 classVirtualSpecifier:
 	Final;
@@ -818,7 +794,7 @@ memberSpecification:
 	accessSpecifier Colon memberSpecification?;
 
 memberDeclaration:
-	attributeSpecifierSequence? declarationSpecifierSpecifier? memberDeclaratorList? SemiColon |
+	attributeSpecifierSequence? declarationSpecifierSequence? memberDeclaratorList? Semicolon |
 	functionDefinition |
 	usingDeclaration |
 	staticAssertDeclaration |
@@ -829,12 +805,12 @@ memberDeclaration:
 
 memberDeclaratorList:
 	memberDeclarator |
-	memberDeclarator-list Comma memberDeclarator;
+	memberDeclaratorList Comma memberDeclarator;
 
 memberDeclarator:
 	declarator virtualSpecifierSequence? pureSpecifier? |
 	declarator braceOrEqualInitializer? |
-	identifier? attributeSpecifierSequence? Colon constantExpression;
+	Identifier? attributeSpecifierSequence? Colon constantExpression;
 
 virtualSpecifierSequence:
 	virtualSpecifier |
@@ -865,7 +841,7 @@ baseSpecifier:
 classOrDecltype:
 	nestedNameSpecifier? className |
 	nestedNameSpecifier Template simpleTemplateIdentifier |
-	decltypeSpecifier;
+	declarationTypeSpecifier;
 
 accessSpecifier:
 	Private |
@@ -897,15 +873,16 @@ memberInitializer:
 
 memberInitializerIdentifier:
 	classOrDecltype |
-	identifier;
+	Identifier;
 
 /**************************/
 /* Overloading
 /**************************/
 operatorFunctionIdentifier:
-	Operator operator;
+	Operator anyOperator;
 
-operator:
+// operator is a keyword in C#
+anyOperator:
 	New |
 	Delete |
 	New LeftBrace RightBracket |
@@ -950,8 +927,8 @@ operator:
 	LeftBracket RightBracket;
 
 literalOperatorIdentifier:
-	operator stringLiteral identifier |
-	operator userDefinedStringLiteral;
+	Operator StringLiteral Identifier |
+	Operator UserDefinedStringLiteral;
 
 /**************************/
 /* Templates
@@ -968,10 +945,10 @@ templateParameter:
 	parameterDeclaration;
 
 typeParameter:
-	typeParameterKey Ellipsis? identifier? |
-	typeParameterKey identifier? Equal typeIdentifier |
-	Template LessThan templateParameterList GreaterThan typeParameterKey Ellipsis? identifier? |
-	Template LessThan templateParameterList GreaterThan typeParameterKey identifier? Equal identifierExpression;
+	typeParameterKey Ellipsis? Identifier? |
+	typeParameterKey Identifier? Equal typeIdentifier |
+	Template LessThan templateParameterList GreaterThan typeParameterKey Ellipsis? Identifier? |
+	Template LessThan templateParameterList GreaterThan typeParameterKey Identifier? Equal identifierExpression;
 
 typeParameterKey:
 	Class |
@@ -992,10 +969,10 @@ templateArgumentList:
 templateArgument:
 	constantExpression |
 	typeIdentifier |
-	idetifierExpression;
+	identifierExpression;
 
 typenameSpecifier:
-	TypeName nestedNameSpecifier identifier |
+	TypeName nestedNameSpecifier Identifier |
 	TypeName nestedNameSpecifier Template? simpleTemplateIdentifier;
 
 explicitInstantiation:
@@ -1005,7 +982,7 @@ explicitSpecialization:
 	Template LessThan GreaterThan declaration;
 
 deductionGuide:
-	Explicit? templateName LeftParenthesis parameterDeclarationClause RightParenthesis Arrow simpleTemplateIdentifier SemiColon;
+	Explicit? templateName LeftParenthesis parameterDeclarationClause RightParenthesis Arrow simpleTemplateIdentifier Semicolon;
 
 /**************************/
 /* Exception Handling
@@ -1031,3 +1008,11 @@ noExceptionSpecifier:
 	NoExcept LeftParenthesis constantExpression RightParenthesis |
 	NoExcept |
 	Throw LeftParenthesis RightParenthesis;
+
+
+/**************************/
+/* Misc
+/**************************/
+identifierList:
+	Identifier |
+	identifierList Comma Identifier;

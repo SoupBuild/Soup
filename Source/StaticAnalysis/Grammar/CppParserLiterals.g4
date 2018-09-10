@@ -1,17 +1,21 @@
-grammar CppParserLiterals;
+parser grammar CppParserLiterals;
 options { tokenVocab = CppLexer; }
 
 /****************************************/
 /* Literals
 /****************************************/
 literal:
-	IntegerLiteral |
+	integerLiteral |
 	FloatingPointLiteral |
 	CharacterLiteral |
 	StringLiteral |
 	booleanLiteral |
 	pointerLiteral | // C++ 11
 	userDefinedLiteral; // C++ 11
+
+integerLiteral:
+	Zero | // Special case Octal Literal
+	IntegerLiteral;
 
 booleanLiteral:
 	True |

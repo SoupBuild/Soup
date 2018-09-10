@@ -15,10 +15,10 @@ Char16 : 'char16_t';
 Char32 : 'char32_t';
 Class : 'class';
 Const : 'const';
-Constexpr : 'constexpr';
+ConstExpr : 'constexpr';
 ConstCast : 'const_cast';
 Continue : 'continue';
-Decltype : 'decltype';
+DeclType : 'decltype';
 Default : 'default';
 Delete : 'delete';
 Do : 'do';
@@ -75,3 +75,7 @@ Void : 'void';
 Volatile : 'volatile';
 WChar : 'wchar_t';
 While : 'while';
+
+// Special identifiers that can be used s names or objects and functions
+Override: 'override'; // C++ 11
+Final: 'final'; // C++ 11
