@@ -9,18 +9,17 @@ import
 /****************************************/
 primaryExpression:
 	literal |
-	identifierExpression; // |
-	//lambdaExpression | // C++ 11
-	//foldExpression; // C++ 17
+	identifierExpression |
+	lambdaExpression | // C++ 11
+	foldExpression; // C++ 17
 
+/****************************************/
+/* Identifier Expression
+/****************************************/
 identifierExpression:
-	unqualifiedIdentifier;// |
-	//qualifiedIdentifier;
+	unqualifiedIdentifier |
+	qualifiedIdentifier;
 
-/****************************************/
-/* Unqualified Identifier
-/* https://en.cppreference.com/w/cpp/language/identifiers#Unqualified_identifiers
-/****************************************/
 unqualifiedIdentifier:
 	Identifier |
 	operatorFunctionIdentifier |
@@ -29,6 +28,57 @@ unqualifiedIdentifier:
 	Tilde className |
 	Tilde decltypeSpecifier |
 	templateIdentifier;
+
+qualifiedIdentifier:
+	nestedNameSpecifier Template? unqualifiedIdentifier;
+
+nestedNameSpecifier:
+	DoubleColon |
+	typeName DoubleColon |
+	namespaceName DoubleColon |
+	declarationTypeSpecifier DoubleColon |
+	nestedNameSpecifier Identifier DoubleColon |
+	nestedNameSpecifier Template? simpleTemplateIdentifier DoubleColon;
+
+/****************************************/
+/* Lambda Expression
+/* https://en.cppreference.com/w/cpp/language/lambda
+/****************************************/
+lambdaExpression:
+	lambdaIntroducer lambdaDeclarator? compoundStatement;
+
+lambdaIntroducer:
+	LeftBracket lambdaCapture? RightBracket;
+
+lambdaCapture:
+	captureDefault |
+	capturelist |
+	captureDefault Comma captureList;
+
+captureDefault:
+	Ampersand |
+	Equal;
+
+capturelist:
+	capture  |
+	captureList Comma capture Ellipsis?;
+
+capture:
+	Ampersand? Identifier Ellipsis? |
+	Ampersand? Identifier initializer | // C++ 14
+	This |
+	Asterisk This; // C++ 17
+
+// C++ 17 adds optional constexpr
+lambdaDeclarator:
+	LeftParenthesis parameterDeclarationClause RightParenthesis Mutable? ConstExpr? exceptionSpecification? |
+	attributeSpecifierSequence? trailingReturnType?;
+
+/****************************************/
+/* Fold Expression
+/****************************************/
+foldExpression:
+	Delete;
 
 /****************************************/
 /* Operators
@@ -68,6 +118,8 @@ anyOperator:
 	Plus |
 	Minus |
 	Asterisk |
+	ForwardSlash |
+	Percent |
 	Ampersand |
 	Caret |
 	Ampersand |
@@ -175,7 +227,6 @@ typeIdentifier:
 typeSpecifierSequence:Delete;
 abstractDeclarator:Delete;
 
-
 /****************************************/
 /* Attributes C++ 11
 /****************************************/
@@ -212,4 +263,36 @@ attribute:
 	Identifier attributeArgumentClause? |
 	attributeNamespace DoubleColon Identifier attributeArgumentClause?;
 
-argumentList:; // TODO
+argumentList: Delete; // TODO
+
+trailingReturnType:
+	Arrow trailingTypeSpecifierSequence abstractDeclarator?;
+
+trailingTypeSpecifierSequence:
+	trailingTypeSpecifier attributeSpecifierSequence? |
+	trailingTypeSpecifier trailingTypeSpecifierSequence;
+
+simpleTypeSpecifier:
+	nestedNameSpecifier? typeName |
+	nestedNameSpecifier Template simpleTemplateIdentifier |
+	Char |
+	Char16 |
+	Char32 |
+	WChar |
+	Bool |
+	Short |
+	Int |
+	Long |
+	Signed |
+	Unsigned |
+	Float |
+	Double |
+	Void |
+	Auto |
+	declarationTypeSpecifier;
+
+typeName:
+	className
+	| enumName
+	| typedefName
+	| simpletemplateIdentifier;

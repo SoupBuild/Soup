@@ -5,21 +5,7 @@ namespace Soup.StaticAnalysis.UnitTests
 {
     public class ParserAttributesTests
     {
-        [Theory]
-        // Standard Attributes
-        [InlineData("[[noreturn]]")]
-        [InlineData("[[carries_dependency]]")]
-        [InlineData("[[deprecated]]")]
-        [InlineData("[[deprecated(\"reason\")]]")]
-        [InlineData("[[fallthrough]]")]
-        [InlineData("[[nodiscard]]")]
-        [InlineData("[[maybe_unused]]")]
-        public void SingleRule_AttributeSpecifier(string sourceCode)
-        {
-            var uut = BuildParser(sourceCode);
-            var context = uut.attributeSpecifier();
-            Assert.NotNull(context);
-        }
+        
 
         private CppParser BuildParser(string sourceCode)
         {
