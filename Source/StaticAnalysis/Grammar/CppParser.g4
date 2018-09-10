@@ -330,179 +330,178 @@ constantExpression:
 /* Statements
 /****************************************/
 
+grammar CppParserStatements;
+options { tokenVocab = CppLexer; }
+	
 /****************************************/
-/* Operators
-/* https://en.cppreference.com/w/cpp/language/identifiers#Unqualified_identifiers
+/* Statements
 /****************************************/
-operatorFunctionIdentifier: 
-	Operator anyOperator;
+statement:
+	labeledStatement |
+	attributeSpecifierSequence? expressionStatement |
+	attributeSpecifierSequence? compoundStatement |
+	attributeSpecifierSequence? selectionStatement |
+	attributeSpecifierSequence? iterationStatement |
+	attributeSpecifierSequence? jumpStatement |
+	declarationStatement |
+	attributeSpecifierSequence? tryBlock;
 
-// Cannot be operator because it is a keyword in C#
-anyOperator:
-	New |
-	Delete|
-	New LeftBracket RightBracket |
-	Delete LeftBracket RightBracket |
-	Plus |
-	Minus |
-	Asterisk |
-	ForwardSlash |
-	Percent |
-	Ampersand |
-	Caret |
-	Ampersand |
-	VerticalBar |
-	Tilde |
-	ExclamationMark |
-	LessThan |
-	GreaterThan |
-	Equal |
-	AsteriskEqual |
-	ForwardSlashEqual |
-	PercentEqual |
-	PlusEqual |
-	MinusEqual |
-	DoubleGreaterThanEqual |
-	DoubleLessThanEqual |
-	AmpersandEqual |
-	CaretEqual |
-	VerticalBarEqual |
-	DoubleLessThan |
-	DoubleGreaterThan|
-	DoubleEqual |
-	ExclamationMarkEqual |
-	LessThanEqual |
-	GreaterThanEqual |
-	DoubleAmpersand |
-	DoubleVerticalBar |
-	DoublePlus |
-	DoubleMinus |
-	Comma |
-	ArrowAsterisk |
-	Arrow |
-	LeftParenthesis RightParenthesis |
-	LeftBracket RightBracket;
+initializerStatement:
+	expressionStatement |
+	simpleDeclaration;
 
-conversionFunctionIdentifier: 
-	Operator conversionTypeIdentifier;
+condition:
+	expression
+	attributeSpecifierSequence?
+	declarationSpecifierSequence declarator braceOrEqualInitializer;
 
-conversionTypeIdentifier:
-	typeSpecifierSequence conversionDeclarator?;
+labeledStatement:
+	attributeSpecifierSequence? identifier Colon statement |
+	attributeSpecifierSequence? Case constantExpression Colon statement |
+	attributeSpecifierSequence? Default Colon statement;
 
-conversionDeclarator:
-	pointerOperator conversionDeclarator?;
+expressionStatement:
+	expression? SemiColon;
 
-pointerOperator:
-	Asterisk attributeSpecifierSequence? constVirtualQualifierSequence? |
-	Ampersand attributeSpecifierSequence? |
-	DoubleAmpersand attributeSpecifierSequence? |
-	nestedNameSpecifier Asterisk attributeSpecifierSequence? constVirtualQualifierSequence?;
+compoundStatement:
+	LeftBrace statementSequence? RightBrace;
 
-constVirtualQualifierSequence:Delete;
-nestedNameSpecifier:Delete;
+statementSequence:
+	statement |
+	statementSequence statement;
 
-literalOperatorIdentifier: Delete;
-decltypeSpecifier: Delete;
-templateIdentifier: Delete;
-constantExpression: Delete;
+selectionStatement:
+	If ConstExpr? LeftParenthesis initializerStatement? condition RightParenthesis statement |
+	If ConstExpr? LeftParenthesis initializerStatement? condition RightParenthesis statement Else statement |
+	Switch LeftParenthesis initializerStatement? condition RightParenthesis statement;
 
-/****************************************/
-/* Qualified Identifier
-/* https://en.cppreference.com/w/cpp/language/identifiers#Qualified_identifiers
-/****************************************/
-qualifiedIdentifier:;
-//	nestedNameSpecifier Template? unqualifiedIdentifier;
+condition:
+	expression |
+	attributeSpecifierSequence? declSpecifierSequence declarator Equal initializerClause |
+	attributeSpecifierSequence? declSpecifierSequence declarator bracedInitializerList;
 
-//nestedNameSpecifier:
-//	DoubleColon |
-//	typeName DoubleColon |
-//	namespaceName DoubleColon |
-//	decltypeSpecifier DoubleColon |
-//	nestedNameSpecifier identifier DoubleColon |
-//	nestedNameSpecifier Template? simpleTemplateId DoubleColon;
+iterationStatement:
+	While LeftParenthesis condition RightParenthesis statement |
+	Do statement While LeftParenthesis expression RightParenthesis SemiColon |
+	For LeftParenthesis initializerStatement condition? SemiColon expression? RightParenthesis statement |
+	For LeftParenthesis forRangeDeclaration Colon forRangeInitializer RightParenthesis statement;
 
-/**************************/
-/* Classes
-/**************************/
-className:
-	Identifier |
-	simpleTemplateIdentifier;
+forInitializerStatement:
+	attributeSpecifierSequence? declarationSpecifierSequence declarator |
+	attributeSpecifierSequence? declarationSpecifierSequence referenceQualifier? LeftBracket identifierList RightBracket;
 
-/**************************/
-/* Templates
-/**************************/
-simpleTemplateIdentifier:
-	templateName LessThan templateArgumentList? GreaterThan;
+forRangeDeclaration:
+	attributeSpecifierSequence? declSpecifierSequence declarator;
 
-templateName:
-	Identifier;
+forRangeInitializer:
+	expressionOrBracedInitializerList;
 
-templateArgumentList:
-	templateArgument Ellipsis? |
-	templateArgumentList Comma templateArgument Ellipsis?;
+jumpStatement:
+	Break SemiColon |
+	Continue SemiColon |
+	Return expressionOrBracedInitializerList? SemiColon |
+	GoTo identifier SemiColon;
 
-templateArgument:
-	typeIdentifier |
-	constantExpression |
-	identifierExpression;
-
-/**************************/
-/* Types
-/**************************/
-typeIdentifier:
-	typeSpecifierSequence abstractDeclarator?;
-
-typeSpecifierSequence:Delete;
-abstractDeclarator:Delete;
+declarationStatement:
+	blockDeclaration;
 
 /****************************************/
-/* Attributes C++ 11
+/* Declarations
 /****************************************/
-attributeSpecifierSequence:
-	attributeSpecifier |
-	attributeSpecifierSequence attributeSpecifier;
+declarationSequence:
+	declaration
+	declarationSequence declaration;
 
-attributeSpecifier:
-	alignmentSpecifier |
-	LeftBracket LeftBracket attributeList RightBracket RightBracket | // C++ 11
-	LeftBracket LeftBracket Using attributeNamespace Colon attributeList RightBracket RightBracket; // C++ 17
+declaration:
+	blockDeclaration |
+	nodeclspecFunctionDeclaration |
+	functionDefinition |
+	templateDeclaration |
+	deductionGuide |
+	explicitInstantiation |
+	explicitSpecialization |
+	linkageSpecification |
+	namespaceDefinition |
+	emptyDeclaration |
+	attributeDeclaration;
 
-alignmentSpecifier:
-	AlignAs LeftParenthesis typeId Ellipsis? RightParenthesis |
-	AlignAs LeftParenthesis constantExpression Ellipsis? RightParenthesis;
+blockDeclaration:
+	simpleDeclaration |
+	asmDefinition |
+	namespaceAliasDefinition |
+	usingDeclaration |
+	usingDirective |
+	staticAssertDeclaration |
+	aliasDeclaration |
+	opaqueEnumDeclaration;
 
-typeId: Delete;
-constantExpression: Delete;
+nodeclspecFunctionDeclaration:
+	attributeSpecifierSequence? declarator SemiColon;
 
-// Zero or more comma seperated attributes possibly ending in an ellipsis
-attributeList:
-	attribute? |
-	attributeList Comma attribute? |
-	attribute Ellipsis |
-	attributeList Comma attribute Ellipsis;
+aliasDeclaration:
+	Using identifier attributeSpecifierSequence? Equal definingTypeIdentifier SemiColon;
 
-attributeNamespace:
-	Identifier;
+simpleDeclaration:
+	declarationSpecifierSequence initializerDeclaratorList? SemiColon |
+	attributeSpecifierSequence declarationSpecifierSequence initializerDeclaratorList SemiColon |
+	attributeSpecifierSequence? declarationSpecifierSequence referenceQualifier? LeftBracket identifierList RightBracket initializer SemiColon;
 
-attributeArgumentClause:
-	LeftParenthesis argumentList RightParenthesis;
+staticAssertDeclaration:
+	StaticAssert LeftParenthesis constantExpression RightParenthesis SemiColon |
+	StaticAssert LeftParenthesis constantExpression Comma StringLiteral RightParenthesis SemiColon;
 
-attribute:
-	Identifier attributeArgumentClause? |
-	attributeNamespace DoubleColon Identifier attributeArgumentClause?;
+emptyDeclaration:
+	SemiColon;
 
-argumentList: Delete; // TODO
+attributeDeclaration:
+	attributeSpecifierSequence SemiColon;
 
-trailingReturnType:
-	Arrow trailingTypeSpecifierSequence abstractDeclarator?;
+declarationSpecifier:
+	storageClassSpecifier |
+	definingTypeSpecifier |
+	functionSpecifier |
+	Friend |
+	TypeDef |
+	ConstExpr |
+	Inline;
 
-trailingTypeSpecifierSequence:
-	trailingTypeSpecifier attributeSpecifierSequence? |
-	trailingTypeSpecifier trailingTypeSpecifierSequence;
+declarationSpecifierSequence:
+	declarationSpecifier attributeSpecifierSequence? |
+	declarationSpecifier declarationSpecifierSequence;
+
+storageClassSpecifier:
+	Static |
+	ThreadLocal |
+	Extern |
+	Mutable;
+
+functionSpecifier:
+	Virtual |
+	Explicit;
+
+typeSpecifier:
+	simpleTypeSpecifier |
+	elaboratedTypeSpecifier |
+	typenameSpecifier |
+	constVirtualQualifier;
+
+typeSpecifierSequence:
+	typeSpecifier attributeSpecifierSequence? |
+	typeSpecifier typeSpecifierSequence;
+
+definingTypeSpecifier:
+	typeSpecifier
+	classSpecifier
+	enumSpecifier;
+
+definingTypeSpecifierSequence:
+	definingTypeSpecifier attributeSpecifierSequence? |
+	definingTypeSpecifier definingTypeSpecifierSequence;
 
 simpleTypeSpecifier:
 	nestedNameSpecifier? typeName |
 	nestedNameSpecifier Template simpleTemplateIdentifier |
+	nestedNameSpecifier? templateName |
 	Char |
 	Char16 |
 	Char32 |
@@ -517,10 +516,518 @@ simpleTypeSpecifier:
 	Double |
 	Void |
 	Auto |
-	declarationTypeSpecifier;
+	decltypeSpecifier;
 
 typeName:
-	className
-	| enumName
-	| typedefName
-	| simpletemplateIdentifier;
+	className |
+	enumName |
+	typedefName |
+	simpleTemplateIdentifier;
+
+decltypeSpecifier:
+	DeclType LeftParenthesis expression RightParenthesis |
+	DeclType LeftParenthesis Auto RightParenthesis;
+
+elaboratedTypeSpecifier:
+	classKey attributeSpecifierSequence? nestedNameSpecifier? identifier |
+	classKey simpleTemplateIdentifier |
+	classKey nestedNameSpecifier Template? simpleTemplateIdentifier |
+	Enum nestedNameSpecifier? identifier;
+
+enumSpecifier:
+	enumHead LeftBrace enumeratorList? RightBrace |
+	enumHead LeftBrace enumeratorList Comma RightBrace;
+
+enumHead:
+	enumKey attributeSpecifierSequence? enumHeadName? enumBase?;
+
+enumHeadName:
+	nestedNameSpecifier? identifier;
+
+opaqueEnumDeclaration:
+	enumKey attributeSpecifierSequence? nestedNameSpecifier? identifier enumBase? SemiColon;
+
+enumKey:
+	Enum |
+	Enum Class |
+	Enum Struct;
+
+enumBase:
+	Colon typeSpecifierSequence;
+
+enumeratorList:
+	enumeratorDefinition |
+	enumeratorList Comma enumeratorDefinition;
+
+enumeratorDefinition:
+	enumerator |
+	enumerator Equal constantExpression;
+
+enumerator:
+	identifier attributeSpecifierSequence?;
+
+namespaceName:
+	identifier |
+	namespaceAlias;
+
+namespaceDefinition:
+	namedNamespaceDefinition |
+	unnamedNamespaceDefinition |
+	nestedNamespaceDefinition;
+
+namedNamespaceDefinition:
+	Inline? Namespace attributeSpecifierSequence? identifier LeftBrace namespaceBody RightBrace;
+
+unnamedNamespaceDefinition:
+	Inline? Namespace attributeSpecifierSequence? LeftBrace namespaceBody RightBrace;
+
+nestedNamespaceDefinition:
+	Namespace enclosingNamespaceSpecifier DoubleColon identifier LeftBrace namespaceBody RightBrace;
+
+enclosingNamespaceSpecifier:
+	identifier enclosingNamespaceSpecifier DoubleColon identifier;
+
+namespaceBody:
+	declarationSequence?;
+
+namespaceAliasDefinition:
+	Namespace identifier Equal qualifiedNamespaceSpecifier SemiColon;
+
+qualifiedNamespaceSpecifier:
+	nestedNameSpecifier? namespaceName;
+
+usingDeclaration:
+	Using usingDeclaratorList SemiColon;
+
+usingDeclaratorList:
+	usingDeclarator Ellipsis? |
+	usingDeclaratorList Comma usingDeclarator Ellipsis?;
+
+usingDeclarator:
+	typeName? nestedNameSpecifier unqualifiedIdentifier;
+
+usingDirective:
+	attributeSpecifierSequence? Using Namespace nestedNameSpecifier? namespaceName SemiColon;
+
+asmDefinition:
+	attributeSpecifierSequence? Asm LeftParenthesis stringLiteral RightParenthesis SemiColon;
+
+linkageSpecification:
+	Extern stringLiteral LeftBrace declarationSequence? RightBrace |
+	Extern stringLiteral declaration;
+
+attributeSpecifierSequence:
+	attributeSpecifierSequence? attributeSpecifier;
+
+attributeSpecifier:
+	[ [ attribute-using-prefix? attribute-list ] ]
+	alignmentSpecifier;
+
+alignmentSpecifier:
+	AlignAs LeftParenthesis typeIdentifier Ellipsis? RightParenthesis |
+	AlignAs RightParenthesis constantExpression Ellipsis? RightParenthesis;
+
+attributeUsingPrefix:
+	Using attributeNamespace Colon;
+
+attributeList:
+	attribute? |
+	attributeList Comma attribute? |
+	attribute Ellipsis |
+	attributeList Comma attribute Ellipsis;
+
+attribute:
+	attributeToken attributeArgumentClause?;
+
+attributeToken:
+	identifier |
+	attributeScopedToken;
+
+attributeScopedToken:
+	attributeNamespace DoubleColon identifier;
+
+attributeNamespace:
+	identifier;
+
+attributeArgumentClause:
+	LeftParenthesis balancedTokenSequence? RightParenthesis;
+
+balancedTokenSequence:
+	balancedToken |
+	balancedTokenSequence balancedToken;
+
+balancedToken:
+	LeftParenthesis balancedTokenSequence? RightParenthesis |
+	LeftBracket balancedTokenSequence? RightBracket |
+	LeftBrace balancedTokenSequence? RightBrace;
+	/*any token other than a parenthesis, a bracket, or a brace*/
+
+/****************************************/
+/* Declarators
+/****************************************/
+initializerDeclaratorList:
+	initializerDeclarator |
+	initializerDeclaratorList Comma initializerDeclarator;
+
+initializerDeclarator:
+	declarator initializer?;
+
+declarator:
+	pointerDeclarator |
+	noPointerDeclarator parametersAndQualifiers trailingReturnType;
+
+pointerDeclarator:
+	noPointerDeclarator |
+	pointerOperator pointerDeclarator;
+
+noPointerdeclarator:
+	declaratorIdentifier attributeSpecifierSequence? |
+	noPointerDeclarator parametersAndQualifiers |
+	noPointerDeclarator LeftBracket constantExpression? RightBracket attributeSpecifierSequence? |
+	LeftParenthesis pointerDeclarator RightParenthesis;
+
+parametersAndQualifiers:
+	LeftParenthesis parameterDeclarationClause RightParenthesis constVolitilEqualifierSequence? referenceQualifier? noexceptSpecifier? attributeSpecifierSequence?;
+
+trailingReturnType:
+	Arrow typeIdentifier;
+
+pointerOperator:
+	Asterisk attributeSpecifierSequence? constVirtualQualifierSequence? |
+	Ampersand attributeSpecifierSequence? |
+	DoubleAmpersand attributeSpecifierSequence? |
+	nestedNameSpecifier Asterisk attributeSpecifierSequence? constVirtualQualifierSequence?;
+
+constVolitilQualifierSequence:
+	constVolitilQualifier constVolitilQualifierSequence?;
+
+constVolitilQualifier:
+	Const |
+	Volatile;
+
+referenceQualifier:
+	Ampersand
+	DoubleAmpersand;
+
+declaratorIdentifier:
+	Ellipsis? identifierExpression;
+
+typeIdentifier:
+	typeSpecifierSequence abstractDeclarator?;
+
+definingTypeIdentifier:
+	definingTypeSpecifierSequence abstractDeclarator?;
+
+abstractDeclarator:
+	pointerAbstractDeclarator |
+	noPointerAbstractDeclarator? parametersAndQualifiers trailingReturnType |
+	abstractPackDeclarator;
+
+pointerAbstractDeclarator:
+	noPointerAbstractDeclarator |
+	pointerOperator pointerAbstractDeclarator?;
+
+noPointerAbstractDeclarator:
+	noptr-abstract-declarator? parametersAndQualifiers |
+	noPointerAbstractDeclarator? LeftBracket constantExpression? RightBracket attributeSpecifierSequence? |
+	LeftParenthesis pointerAbstractDeclarator RightParenthesis
+
+abstractPackDeclarator:
+	noPointerAbstractPackDeclarator |
+	pointerOperator abstractPackDeclarator;
+
+noPointerAbstractPackDeclarator:
+	noPointerAbstractPackDeclarator parametersAndQualifiers |
+	noPointerAbstractPackDeclarator LeftBracket constantExpression? RightBracket attributeSpecifierSequence? |
+	Ellipsis;
+
+parameterDeclarationClause:
+	parameterDeclarationList? Ellipsis? |
+	parameterDeclarationList Comma Ellipsis;
+
+parameterDeclarationList:
+	parameterDeclaration |
+	parameterDeclarationList Comma parameterDeclaration;
+
+parameterDeclaration:
+	attributeSpecifierSequence? declarationSpecifierSequence declarator |
+	attributeSpecifierSequence? declarationSpecifierSequence declarator Equal initializerClause |
+	attributeSpecifierSequence? declarationSpecifierSequence abstractDeclarator? |
+	attributeSpecifierSequence? declarationSpecifierSequence abstractDeclarator? Equal initializerClause;
+
+functionDefinition:
+	attributeSpecifierSequence? declarationSpecifierSequence? declarator virtualSpecifierSequence functionBody;
+
+functionBody:
+	constructorInitializer? compoundStatement |
+	functionTryBlock |
+	Equal Default SemiColon |
+	Equal Delete SemiColon;
+
+initializer:
+	braceOrEqualInitializer |
+	LeftParenthesis expressionList RightParenthesis;
+
+braceOrEqualInitializer:
+	Equal initializerClause |
+	bracedInitializerList;
+
+initializerClause:
+	assignmentExpression
+	bracedInitializerList;
+
+initializerList:
+	initializerClause Ellipsis? |
+	initializerList Comma initializerClause Ellipsis?;
+
+bracedInitializerList:
+	LeftBrace initializerList Comma? RightBrace |
+	LeftBrace RightBrace;
+
+expressionOrBracedInitializerList:
+	expression |
+	bracedInitializerList;
+
+/**************************/
+/* Classes
+/**************************/
+className:
+	Identifier |
+	simpleTemplateIdentifier;
+
+classSpecifier:
+	classHead LeftBrace memberSpecification? RightBrace;
+
+classHead:
+	classKey attributeSpecifierSequence? classHeadName classVirtualSpecifier? baseClause? |
+	classKey attributeSpecifier? baseClause?;
+
+classHeadName:
+	nestedNameSpecifier? className
+
+classVirtualSpecifier:
+	Final;
+
+classKey:
+	Class |
+	Struct |
+	Union;
+
+memberSpecification:
+	memberDeclaration memberSpecification? |
+	accessSpecifier Colon memberSpecification?;
+
+memberDeclaration:
+	attributeSpecifierSequence? declarationSpecifierSpecifier? memberDeclaratorList? SemiColon |
+	functionDefinition |
+	usingDeclaration |
+	staticAssertDeclaration |
+	templateDeclaration |
+	deductionGuide |
+	aliasDeclaration |
+	emptyDeclaration;
+
+memberDeclaratorList:
+	memberDeclarator |
+	memberDeclarator-list Comma memberDeclarator;
+
+memberDeclarator:
+	declarator virtualSpecifierSequence? pureSpecifier? |
+	declarator braceOrEqualInitializer? |
+	identifier? attributeSpecifierSequence? Colon constantExpression;
+
+virtualSpecifierSequence:
+	virtualSpecifier |
+	virtualSpecifierSequence virtualSpecifier;
+
+virtualSpecifier:
+	Override |
+	Final;
+
+pureSpecifier:
+	Equal Zero;
+
+/**************************/
+/* Derived Classes
+/**************************/
+baseClause:
+	Colon baseSpecifierList;
+
+baseSpecifierList:
+	baseSpecifier Ellipsis? |
+	baseSpecifierList Comma baseSpecifier Ellipsis?;
+
+baseSpecifier:
+	attributeSpecifierSequence? classOrDecltype |
+	attributeSpecifierSequence? Virtual accessSpecifier? classOrDecltype |
+	attributeSpecifierSequence? accessSpecifier Virtual? classOrDecltype;
+
+classOrDecltype:
+	nestedNameSpecifier? className |
+	nestedNameSpecifier Template simpleTemplateIdentifier |
+	decltypeSpecifier;
+
+accessSpecifier:
+	Private |
+	Protected |
+	Public;
+
+/**************************/
+/* Special Member Functions
+/**************************/
+conversionFunctionIdentifier:
+	Operator conversionTypeIdentifier;
+	
+conversionTypeIdentifier:
+	typeSpecifierSequence conversionDeclarator?;
+
+conversionDeclarator:
+	pointerOperator conversionDeclarator?;
+
+constructorInitializer:
+	Colon memberInitializerList;
+
+memberInitializerList:
+	memberInitializer Ellipsis? |
+	memberInitializerList Comma memberInitializer Ellipsis?;
+
+memberInitializer:
+	memberInitializerIdentifier LeftParenthesis expressionList? RightParenthesis
+	memberInitializerIdentifier bracedInitializerList;
+
+memberInitializerIdentifier:
+	classOrDecltype |
+	identifier;
+
+/**************************/
+/* Overloading
+/**************************/
+operatorFunctionIdentifier:
+	Operator operator;
+
+operator:
+	New |
+	Delete |
+	New LeftBrace RightBracket |
+	Delete LeftBrace RightBracket |
+	Plus |
+	Minus |
+	Asterisk |
+	ForwardSlash |
+	Percent |
+	Caret |
+	Ampersand |
+	VerticalBar |
+	Tilde |
+	ExclamationMark |
+	Equal |
+	LessThan |
+	GreaterThan |
+	PlusEqual |
+	MinusEqual |
+	AsteriskEqual |
+	ForwardSlashEqual |
+	PercentEqual |
+	CaretEqual |
+	AmpersandEqual |
+	VerticalBarEqual |
+	DoubleLessThan |
+	DoubleGreaterThan |
+	DoubleGreaterThanEqual |
+	DoubleLessThanEqual |
+	DoubleEqual |
+	ExclamationMarkEqual |
+	LessThanEqual |
+	GreaterThanEqual |
+	DoubleAmpersand |
+	DoubleVerticalBar |
+	DoublePlus |
+	DoubleMinus |
+	Comma |
+	ArrowAsterisk |
+	Arrow |
+	LeftParenthesis RightParenthesis |
+	LeftBracket RightBracket;
+
+literalOperatorIdentifier:
+	operator stringLiteral identifier |
+	operator userDefinedStringLiteral;
+
+/**************************/
+/* Templates
+/**************************/
+templateDeclaration:
+	Template LessThan templateParameterList GreaterThan declaration;
+
+templateParameterList:
+	templateParameter |
+	templateParameterList Comma templateParameter;
+
+templateParameter:
+	typeParameter |
+	parameterDeclaration;
+
+typeParameter:
+	typeParameterKey Ellipsis? identifier? |
+	typeParameterKey identifier? Equal typeIdentifier |
+	Template LessThan templateParameterList GreaterThan typeParameterKey Ellipsis? identifier? |
+	Template LessThan templateParameterList GreaterThan typeParameterKey identifier? Equal identifierExpression;
+
+typeParameterKey:
+	Class |
+	TypeName;
+
+simpleTemplateIdentifier:
+	templateName LessThan templateArgumentList? GreaterThan;
+
+templateIdentifier:
+	simpleTemplateIdentifier |
+	operatorFunctionIdentifier LessThan templateArgumentList? GreaterThan |
+	literalOperatorIdentifier LessThan templateArgumentList? GreaterThan;
+
+templateArgumentList:
+	templateArgument Ellipsis? |
+	templateArgumentList Comma templateArgument Ellipsis?;
+
+templateArgument:
+	constantExpression |
+	typeIdentifier |
+	idetifierExpression;
+
+typenameSpecifier:
+	TypeName nestedNameSpecifier identifier |
+	TypeName nestedNameSpecifier Template? simpleTemplateIdentifier;
+
+explicitInstantiation:
+	Extern? Template declaration;
+
+explicitSpecialization:
+	Template LessThan GreaterThan declaration;
+
+deductionGuide:
+	Explicit? templateName LeftParenthesis parameterDeclarationClause RightParenthesis Arrow simpleTemplateIdentifier SemiColon;
+
+/**************************/
+/* Exception Handling
+/**************************/
+tryBlock:
+	Try compoundStatement handlerSequence;
+
+functionTryBlock:
+	Try constructorInitializer? compoundStatement handlerSequence;
+
+handlerSequence:
+	handler handlerSequence?;
+
+handler:
+	Catch LeftParenthesis exceptionDeclaration RightParenthesis compoundStatement;
+
+exceptionDeclaration:
+	attributeSpecifierSequence? typeSpecifierSequence declarator |
+	attributeSpecifierSequence? typeSpecifierSequence abstractDeclarator? |
+	Ellipsis;
+
+noExceptionSpecifier:
+	NoExcept LeftParenthesis constantExpression RightParenthesis |
+	NoExcept |
+	Throw LeftParenthesis RightParenthesis;
