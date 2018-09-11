@@ -18,7 +18,6 @@ import
 	CppLexerUserDefinedLiterals,
 	CppLexerIdentifiers;
 
-
 BlockComment: '/*' .*? '*/';
 LineComment: '//' ~[\r\n]*;
 

@@ -598,7 +598,7 @@ attributeSpecifierSequence:
 	attributeSpecifierSequence attributeSpecifier;
 
 attributeSpecifier:
-	LeftBracket LeftBracket attributeUsingPrefix? attributeList RightBracket RightBracket
+	LeftBracket LeftBracket attributeUsingPrefix? attributeList RightBracket RightBracket |
 	alignmentSpecifier;
 
 alignmentSpecifier:
@@ -637,8 +637,9 @@ balancedTokenSequence:
 balancedToken:
 	LeftParenthesis balancedTokenSequence? RightParenthesis |
 	LeftBracket balancedTokenSequence? RightBracket |
-	LeftBrace balancedTokenSequence? RightBrace;
+	LeftBrace balancedTokenSequence? RightBrace |
 	/*any token other than a parenthesis, a bracket, or a brace*/
+	~(LeftParenthesis | RightParenthesis | LeftBracket | RightBracket | LeftBrace | RightBrace);
 
 /****************************************/
 /* Declarators

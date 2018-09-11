@@ -12,32 +12,32 @@ fragment IntegerSuffix:
 	LongLongSuffix UnsignedSuffix?; // C++ 11
 
 /* C++ 14 Adds optional quote between digits
-DecimalLiteral: 
+fragment DecimalLiteral: 
 	NonZeroDecimalDigit DecimalDigit*;
 
-OctalLiteral:
+fragment OctalLiteral:
 	Zero OctalDigit*;
 
-HexadecimalLiteral:
+fragment HexadecimalLiteral:
 	HexadecimalPrefix HexadecimalDigit+;
 
-BinaryLiteral:
+fragment BinaryLiteral:
 	BinaryPrefix BinaryDigit+;
 */
 
 // Zero is a special case OctalLiteral that has special meaning
 Zero: '0';
 
-DecimalLiteral: 
+fragment DecimalLiteral: 
 	NonZeroDecimalDigit (SingleQuote? DecimalDigit)*; // C++ 14
 
-OctalLiteral:
+fragment OctalLiteral:
 	Zero (SingleQuote? OctalDigit)*; // C++ 14
 
-HexadecimalLiteral:
+fragment HexadecimalLiteral:
 	HexadecimalPrefix HexadecimalDigit (SingleQuote? HexadecimalDigit)*; // C++ 14
 
-BinaryLiteral:
+fragment BinaryLiteral:
 	BinaryPrefix BinaryDigit (SingleQuote? BinaryDigit)*; // C++ 14
 
 IntegerLiteral:

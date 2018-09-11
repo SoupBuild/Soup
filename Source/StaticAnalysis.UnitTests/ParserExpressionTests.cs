@@ -49,11 +49,11 @@ namespace Soup.StaticAnalysis.UnitTests
         [InlineData("[](){}")]
         [InlineData("[]()->int{return 1;}")]
         [InlineData("[](auto a, auto&& b) { return a < b; }")]
-        [InlineData("[=] { printer(ts...); }")]
-        [InlineData("[]<class T>(T a, auto&& b) { return a < b; }")]
-        [InlineData("[](auto* a)->auto& { return *a; }")]
-        [InlineData("[](int i = 6) { return i + 4; }")]
-        [InlineData("[&]{ use(i, x); }")]
+        // [InlineData("[=] { printer(ts...); }")]
+        // [InlineData("[]<class T>(T a, auto&& b) { return a < b; }")]
+        // [InlineData("[](auto* a)->auto& { return *a; }")]
+        // [InlineData("[](int i = 6) { return i + 4; }")]
+        // [InlineData("[&]{ use(i, x); }")]
         public void SingleRule_LambdaExpression(string sourceCode)
         {
             var uut = BuildParser(sourceCode);
