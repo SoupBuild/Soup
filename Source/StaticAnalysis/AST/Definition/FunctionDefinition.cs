@@ -11,5 +11,10 @@ namespace Soup.StaticAnalysis.AST
         /// Gets or sets the name
         /// </summary>
         public Identifier Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the body
+        /// </summary>
+        public CompoundStatement Body { get; set; }
     }
 }

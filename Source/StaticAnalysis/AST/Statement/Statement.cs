@@ -3,9 +3,9 @@
 namespace Soup.StaticAnalysis.AST
 {
     /// <summary>
-    /// Addition
+    /// Compound statement node
     /// </summary>
-    public class AdditionExpression : ArithmeticExpression
+    public class Statement : Node
     {
     }
 }

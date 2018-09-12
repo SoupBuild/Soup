@@ -3,9 +3,9 @@
 namespace Soup.StaticAnalysis.AST
 {
     /// <summary>
-    /// An identifier
+    /// An integer value
     /// </summary>
-    public class Identifier : CompoundStatement
+    public class IntegerLiteral : LiteralNode
     {
         /// <summary>
         /// Gets or sets the value

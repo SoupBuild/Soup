@@ -5,7 +5,7 @@ namespace Soup.StaticAnalysis.AST
     /// <summary>
     /// Arithmetic Expression
     /// </summary>
-    public class ArithmeticExpressionNode : ExpressionNode
+    public class ArithmeticExpression : ExpressionNode
     {
         /// <summary>
         /// The left expression
