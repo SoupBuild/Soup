@@ -1,6 +1,6 @@
 using Antlr4.Runtime;
-using System;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace Soup.StaticAnalysis.UnitTests
@@ -44,25 +44,24 @@ namespace Soup.StaticAnalysis.UnitTests
             // Parse the file
             var inputStream = new AntlrInputStream(sourceCode);
             var lexer = new CppLexer(inputStream);
+            var tokenStream = new CommonTokenStream(lexer);
+            var parser = new CppParser(tokenStream);
 
+            // var tokens = lexer.GetAllTokens().Select(token => lexer.Vocabulary.GetSymbolicName(token.Type)).ToList();
+
+            // Setup error handling
             lexer.RemoveErrorListeners();
             lexer.AddErrorListener(new LexerExceptionErrorListener());
+            parser.RemoveErrorListeners();
+            parser.AddErrorListener(new ParserExceptionErrorListener());
 
-            var tokens = lexer.GetAllTokens();
+            // Parse the concrete syntax tree
+            var translationUnit = parser.translationUnit();
 
-            ////var tokenStream = new CommonTokenStream(lexer);
-            ////var parser = new Cpp17Parser(tokenStream);
-
-            ////// Setup error handling
-            ////parser.RemoveErrorListeners();
-            ////parser.AddErrorListener(new ExceptionErrorListener());
-
-            ////// Parse syntax tree
-            ////var translationUnit = parser.translationUnit();
-
-            ////// Visit the top level unit
-            ////var visitor = new Visitor();
-            ////visitor.Visit(translationUnit);
+            // Convert the the abstract syntax tree
+            var visitor = new ASTVisitor();
+            var ast = visitor.Visit(translationUnit);
+            Assert.NotNull(ast);
         }
     }
 }

@@ -4,6 +4,7 @@ using Antlr4.Runtime.Dfa;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Sharpen;
 using System;
+using System.Diagnostics;
 
 namespace Soup.StaticAnalysis
 {
@@ -47,7 +48,8 @@ namespace Soup.StaticAnalysis
         public override void ReportContextSensitivity(
             [NotNull] Parser recognizer, [NotNull] DFA dfa, int startIndex, int stopIndex, int prediction, [NotNull] SimulatorState acceptState)
         {
-            throw new ParseCanceledException();
+            Debug.WriteLine("Hmm");
+            //throw new ParseCanceledException();
         }
 
         /// <summary>

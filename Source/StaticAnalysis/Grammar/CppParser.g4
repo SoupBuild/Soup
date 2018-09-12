@@ -195,6 +195,7 @@ unaryExpression:
 	deleteExpression;
 
 unaryOperator:
+	VerticalBar |
 	Asterisk |
 	Ampersand |
 	Plus |
@@ -390,21 +391,21 @@ declarationStatement:
 /* Declarations
 /****************************************/
 declarationSequence:
-	declaration
+	declaration |
 	declarationSequence declaration;
 
 declaration:
-	blockDeclaration |
-	noDeclarationSpecifierFunctionDeclaration |
-	functionDefinition |
-	templateDeclaration |
-	deductionGuide |
-	explicitInstantiation |
-	explicitSpecialization |
-	linkageSpecification |
-	namespaceDefinition |
-	emptyDeclaration |
-	attributeDeclaration;
+	//TODO blockDeclaration |
+	//noDeclarationSpecifierFunctionDeclaration |
+	functionDefinition;// |
+	//templateDeclaration |
+	//deductionGuide |
+	//explicitInstantiation |
+	//explicitSpecialization |
+	//linkageSpecification |
+	//namespaceDefinition |
+	//emptyDeclaration |
+	//attributeDeclaration;
 
 blockDeclaration:
 	simpleDeclaration |
@@ -471,8 +472,8 @@ typeSpecifierSequence:
 	typeSpecifier typeSpecifierSequence;
 
 definingTypeSpecifier:
-	typeSpecifier
-	classSpecifier
+	typeSpecifier |
+	classSpecifier |
 	enumSpecifier;
 
 definingTypeSpecifierSequence:
@@ -737,7 +738,7 @@ parameterDeclaration:
 	attributeSpecifierSequence? declarationSpecifierSequence abstractDeclarator? Equal initializerClause;
 
 functionDefinition:
-	attributeSpecifierSequence? declarationSpecifierSequence? declarator virtualSpecifierSequence functionBody;
+	attributeSpecifierSequence? declarationSpecifierSequence? declarator virtualSpecifierSequence? functionBody;
 
 functionBody:
 	constructorInitializer? compoundStatement |

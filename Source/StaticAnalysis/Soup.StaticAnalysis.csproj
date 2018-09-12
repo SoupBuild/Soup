@@ -18,8 +18,6 @@
     <Antlr4 Remove="Grammar\CppParserExpressions.g4" />
     <Antlr4 Remove="Grammar\CppParserFunctionDefinitions.g4" />
     <Antlr4 Remove="Grammar\CppParserLiterals.g4" />
-    <Antlr4 Remove="Grammar\CppParserStatements.g4" />
-    <Antlr4 Remove="Grammar\CppParserTryBlock.g4" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Grammar\CppLexer.g4" />
