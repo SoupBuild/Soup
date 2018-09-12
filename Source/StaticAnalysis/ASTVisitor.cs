@@ -16,6 +16,7 @@ namespace Soup.StaticAnalysis
         {
             var result = new TranslationUnit();
 
+            // Check for the optional declaration sequences
             var declarationSequence = context.declarationSequence();
             if (declarationSequence != null)
             {
