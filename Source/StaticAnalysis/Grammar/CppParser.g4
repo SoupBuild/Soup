@@ -654,20 +654,26 @@ initializerDeclarator:
 
 declarator:
 	pointerDeclarator |
-	noPointerDeclarator parametersAndQualifiers trailingReturnType;
+	noPointerDeclarator;
 
 pointerDeclarator:
-	noPointerDeclarator |
-	pointerOperator pointerDeclarator;
+	pointerOperator declarator;
 
+// Ellipsis for parameter packing C++ 11
 noPointerDeclarator:
-	declaratorIdentifier attributeSpecifierSequence? |
-	noPointerDeclarator parametersAndQualifiers |
+	Ellipsis? identifierExpression attributeSpecifierSequence?  |
 	noPointerDeclarator LeftBracket constantExpression? RightBracket attributeSpecifierSequence? |
+	noPointerDeclarator parametersAndQualifiers |
 	LeftParenthesis pointerDeclarator RightParenthesis;
 
 parametersAndQualifiers:
-	LeftParenthesis parameterDeclarationClause RightParenthesis constVolatileQualifierSequence? referenceQualifier? noExceptionSpecifier? attributeSpecifierSequence?;
+	functionParameters functionQualifiers;
+
+functionParameters:
+	LeftParenthesis parameterDeclarationClause RightParenthesis;
+
+functionQualifiers:
+	constVolatileQualifierSequence? referenceQualifier? noExceptionSpecifier? attributeSpecifierSequence?;
 
 trailingReturnType:
 	Arrow typeIdentifier;
@@ -675,7 +681,7 @@ trailingReturnType:
 pointerOperator:
 	Asterisk attributeSpecifierSequence? constVolatileQualifierSequence? |
 	Ampersand attributeSpecifierSequence? |
-	DoubleAmpersand attributeSpecifierSequence? |
+	DoubleAmpersand attributeSpecifierSequence? | // C++ 11
 	nestedNameSpecifier Asterisk attributeSpecifierSequence? constVolatileQualifierSequence?;
 
 constVolatileQualifierSequence:
@@ -688,9 +694,6 @@ constVolatileQualifier:
 referenceQualifier:
 	Ampersand
 	DoubleAmpersand;
-
-declaratorIdentifier:
-	Ellipsis? identifierExpression;
 
 typeIdentifier:
 	typeSpecifierSequence abstractDeclarator?;
@@ -738,12 +741,24 @@ parameterDeclaration:
 	attributeSpecifierSequence? declarationSpecifierSequence abstractDeclarator? Equal initializerClause;
 
 functionDefinition:
-	attributeSpecifierSequence? declarationSpecifierSequence? declarator virtualSpecifierSequence? functionBody;
+	attributeSpecifierSequence? declarationSpecifierSequence? functionDeclarator virtualSpecifierSequence? functionBody;
+
+functionDeclarator:
+	identifierExpression functionParameters functionQualifiers trailingReturnType?;
 
 functionBody:
-	constructorInitializer? compoundStatement |
+	regularFunctionBody |
 	functionTryBlock |
-	Equal Default Semicolon |
+	explicitlyDefaultedFunction |
+	deletedFunction;
+
+regularFunctionBody:
+	constructorInitializer? compoundStatement;
+
+explicitlyDefaultedFunction:
+	Equal Default Semicolon;
+
+deletedFunction:
 	Equal Delete Semicolon;
 
 initializer:

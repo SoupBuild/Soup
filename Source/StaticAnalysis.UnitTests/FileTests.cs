@@ -6,25 +6,25 @@ namespace Soup.StaticAnalysis.UnitTests
 {
     public class FileTests
     {
-        [Fact]
+        [Fact(Skip="notready")]
         public void BlockComment()
         {
             RunTest(@"Examples/BlockComment.cpp");
         }
 
-        [Fact]
+        [Fact(Skip = "notready")]
         public void HelloWorld()
         {
             RunTest(@"Examples/HelloWorld.cpp");
         }
 
-        [Fact]
+        [Fact(Skip = "notready")]
         public void LineComment()
         {
             RunTest(@"Examples/LineComment.cpp");
         }
 
-        [Fact]
+        [Fact(Skip = "notready")]
         public void Namespace()
         {
             RunTest(@"Examples/Namespace.cpp");
@@ -34,33 +34,10 @@ namespace Soup.StaticAnalysis.UnitTests
         {
             using (var file = File.OpenRead(filename))
             {
-                RunTest(file);
+                var inputSource = new AntlrInputStream(file);
+                var ast = TestUtils.GenerateAST(inputSource);
+                Assert.NotNull(ast);
             }
-        }
-
-        private void RunTest(Stream sourceCode)
-        {
-            // Parse the file
-            var inputStream = new AntlrInputStream(sourceCode);
-            var lexer = new CppLexer(inputStream);
-            var tokenStream = new CommonTokenStream(lexer);
-            var parser = new CppParser(tokenStream);
-
-            // var tokens = lexer.GetAllTokens().Select(token => lexer.Vocabulary.GetSymbolicName(token.Type)).ToList();
-
-            // Setup error handling
-            lexer.RemoveErrorListeners();
-            lexer.AddErrorListener(new LexerExceptionErrorListener());
-            parser.RemoveErrorListeners();
-            parser.AddErrorListener(new ParserExceptionErrorListener());
-
-            // Parse the concrete syntax tree
-            var translationUnit = parser.translationUnit();
-
-            // Convert the the abstract syntax tree
-            var visitor = new ASTVisitor();
-            var ast = visitor.Visit(translationUnit);
-            Assert.NotNull(ast);
         }
     }
 }

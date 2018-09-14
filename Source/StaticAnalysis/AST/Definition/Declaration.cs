@@ -5,7 +5,7 @@ namespace Soup.StaticAnalysis.AST
     /// <summary>
     /// Declaration
     /// </summary>
-    public class Declaration : Node
+    public abstract class Declaration : Node
     {
     }
 }

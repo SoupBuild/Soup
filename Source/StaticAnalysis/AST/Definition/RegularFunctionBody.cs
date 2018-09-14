@@ -1,32 +1,29 @@
 ﻿
 
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Soup.StaticAnalysis.AST
 {
     /// <summary>
-    /// Declaration sequence
+    /// The regular function body
     /// </summary>
-    public sealed class DeclarationSequence : Node
+    public sealed class RegularFunctionBody : Node
     {
         /// <summary>
-        /// Gets or sets the list of declarations
+        /// Gets or sets the statements
         /// </summary>
-        public IList<Declaration> Declarations { get; set; } = new List<Declaration>();
+        public CompoundStatement Statements { get; set; }
 
         /// <summary>
         /// Equals
         /// </summary>
         public override bool Equals(object obj)
         {
-            var other = obj as DeclarationSequence;
+            var other = obj as RegularFunctionBody;
             if (other == null)
             {
                 return false;
             }
 
-            return Declarations.SequenceEqual(other.Declarations);
+            return Statements.Equals(other.Statements);
         }
 
         /// <summary>
@@ -34,7 +31,7 @@ namespace Soup.StaticAnalysis.AST
         /// </summary>
         public override int GetHashCode()
         {
-            return Declarations.GetHashCode();
+            return Statements.GetHashCode();
         }
     }
 }

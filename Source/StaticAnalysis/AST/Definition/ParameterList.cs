@@ -6,27 +6,27 @@ using System.Linq;
 namespace Soup.StaticAnalysis.AST
 {
     /// <summary>
-    /// Declaration sequence
+    /// The function definition
     /// </summary>
-    public sealed class DeclarationSequence : Node
+    public sealed class ParameterList : Node
     {
         /// <summary>
-        /// Gets or sets the list of declarations
+        /// Gets or sets the list of parameters
         /// </summary>
-        public IList<Declaration> Declarations { get; set; } = new List<Declaration>();
+        public IList<Node> Parameters { get; set; }
 
         /// <summary>
         /// Equals
         /// </summary>
         public override bool Equals(object obj)
         {
-            var other = obj as DeclarationSequence;
+            var other = obj as ParameterList;
             if (other == null)
             {
                 return false;
             }
 
-            return Declarations.SequenceEqual(other.Declarations);
+            return Parameters.SequenceEqual(other.Parameters);
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Soup.StaticAnalysis.AST
         /// </summary>
         public override int GetHashCode()
         {
-            return Declarations.GetHashCode();
+            return Parameters.GetHashCode();
         }
     }
 }
