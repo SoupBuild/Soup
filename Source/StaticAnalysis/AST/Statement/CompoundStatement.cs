@@ -17,17 +17,39 @@ namespace Soup.StaticAnalysis.AST
         public IList<Statement> Statements { get; set; }
 
         /// <summary>
+        /// Equality operator
+        /// </summary>
+        public static bool operator ==(CompoundStatement lhs, CompoundStatement rhs)
+        {
+            if (object.ReferenceEquals(lhs, null))
+                return object.ReferenceEquals(rhs, null);
+            else
+                return lhs.Equals(rhs);
+        }
+
+        /// <summary>
+        /// Inequality operator
+        /// </summary>
+        public static bool operator !=(CompoundStatement lhs, CompoundStatement rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        /// <summary>
         /// Equals
         /// </summary>
         public override bool Equals(object obj)
         {
             var other = obj as CompoundStatement;
-            if (other == null)
+            if (object.ReferenceEquals(other, null))
             {
                 return false;
             }
 
-            return Statements.SequenceEqual(other.Statements);
+            if (Statements == null)
+                return other.Statements == null;
+            else
+                return Statements.SequenceEqual(other.Statements);
         }
 
         /// <summary>

@@ -28,20 +28,39 @@ namespace Soup.StaticAnalysis.AST
         public Node Body { get; set; }
 
         /// <summary>
+        /// Equality operator
+        /// </summary>
+        public static bool operator ==(FunctionDefinition lhs, FunctionDefinition rhs)
+        {
+            if (object.ReferenceEquals(lhs, null))
+                return object.ReferenceEquals(rhs, null);
+            else
+                return lhs.Equals(rhs);
+        }
+
+        /// <summary>
+        /// Inequality operator
+        /// </summary>
+        public static bool operator !=(FunctionDefinition lhs, FunctionDefinition rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        /// <summary>
         /// Equals
         /// </summary>
         public override bool Equals(object obj)
         {
             var other = obj as FunctionDefinition;
-            if (other == null)
+            if (object.ReferenceEquals(other, null))
             {
                 return false;
             }
 
-            return ReturnType.Equals(other.ReturnType) &&
-                Identifier.Equals(other.Identifier) &&
-                ParameterList.Equals(other.ParameterList) &&
-                Body.Equals(other.Body);
+            return ReturnType == other.ReturnType &&
+                Identifier ==  other.Identifier &&
+                ParameterList ==  other.ParameterList &&
+                Body == other.Body;
         }
 
         /// <summary>

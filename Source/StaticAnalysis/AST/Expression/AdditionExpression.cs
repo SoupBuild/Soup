@@ -7,6 +7,24 @@ namespace Soup.StaticAnalysis.AST
     /// </summary>
     public class AdditionExpression : ArithmeticExpression
     {
+        /// <summary>
+        /// Equality operator
+        /// </summary>
+        public static bool operator ==(AdditionExpression lhs, AdditionExpression rhs)
+        {
+            if (object.ReferenceEquals(lhs, null))
+                return object.ReferenceEquals(rhs, null);
+            else
+                return lhs.Equals(rhs);
+        }
+
+        /// <summary>
+        /// Inequality operator
+        /// </summary>
+        public static bool operator !=(AdditionExpression lhs, AdditionExpression rhs)
+        {
+            return !(lhs == rhs);
+        }
 
         /// <summary>
         /// Equals
@@ -14,7 +32,7 @@ namespace Soup.StaticAnalysis.AST
         public override bool Equals(object obj)
         {
             var other = obj as AdditionExpression;
-            if (other == null)
+            if (object.ReferenceEquals(other, null))
             {
                 return false;
             }

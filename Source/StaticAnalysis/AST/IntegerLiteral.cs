@@ -13,17 +13,36 @@ namespace Soup.StaticAnalysis.AST
         public string Value { get; set; }
 
         /// <summary>
+        /// Equality operator
+        /// </summary>
+        public static bool operator ==(IntegerLiteral lhs, IntegerLiteral rhs)
+        {
+            if (object.ReferenceEquals(lhs, null))
+                return object.ReferenceEquals(rhs, null);
+            else
+                return lhs.Equals(rhs);
+        }
+
+        /// <summary>
+        /// Inequality operator
+        /// </summary>
+        public static bool operator !=(IntegerLiteral lhs, IntegerLiteral rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        /// <summary>
         /// Equals
         /// </summary>
         public override bool Equals(object obj)
         {
             var other = obj as IntegerLiteral;
-            if (other == null)
+            if (object.ReferenceEquals(other, null))
             {
                 return false;
             }
 
-            return Value.Equals(other.Value);
+            return Value == other.Value;
         }
 
         /// <summary>

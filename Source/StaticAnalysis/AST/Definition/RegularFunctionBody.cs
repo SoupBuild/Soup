@@ -13,17 +13,36 @@ namespace Soup.StaticAnalysis.AST
         public CompoundStatement Statements { get; set; }
 
         /// <summary>
+        /// Equality operator
+        /// </summary>
+        public static bool operator ==(RegularFunctionBody lhs, RegularFunctionBody rhs)
+        {
+            if (object.ReferenceEquals(lhs, null))
+                return object.ReferenceEquals(rhs, null);
+            else
+                return lhs.Equals(rhs);
+        }
+
+        /// <summary>
+        /// Inequality operator
+        /// </summary>
+        public static bool operator !=(RegularFunctionBody lhs, RegularFunctionBody rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        /// <summary>
         /// Equals
         /// </summary>
         public override bool Equals(object obj)
         {
             var other = obj as RegularFunctionBody;
-            if (other == null)
+            if (object.ReferenceEquals(other, null))
             {
                 return false;
             }
 
-            return Statements.Equals(other.Statements);
+            return Statements == other.Statements;
         }
 
         /// <summary>

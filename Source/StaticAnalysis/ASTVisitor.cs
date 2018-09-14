@@ -100,19 +100,6 @@ namespace Soup.StaticAnalysis
         }
 
         /// <summary>
-        /// Visit a parse tree produced by <see cref="CppParser.identifierExpression()"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <return>The visitor result.</return>
-        public override Node VisitIdentifierExpression([NotNull] CppParser.IdentifierExpressionContext context)
-        {
-            return new Identifier()
-            {
-                Value = context.GetText(),
-            };
-        }
-
-        /// <summary>
         /// Visit a parse tree produced by <see cref="CppParser.unqualifiedIdentifier()"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>
@@ -120,15 +107,7 @@ namespace Soup.StaticAnalysis
         public override Node VisitUnqualifiedIdentifier([NotNull] CppParser.UnqualifiedIdentifierContext context)
         {
             var identifier = context.Identifier();
-            if (identifier != null)
-            {
-                return new Identifier()
-                {
-                    Value = identifier.GetText(),
-                };
-            }
-
-            return base.VisitUnqualifiedIdentifier(context);
+            return new Identifier(identifier.GetText());
         }
 
         /// <summary>
@@ -1531,7 +1510,7 @@ namespace Soup.StaticAnalysis
             // TODO Qualifiers
             // TODO Trailiing return type
 
-            var body = (CompoundStatement)Visit(context.functionBody());
+            var body = Visit(context.functionBody());
 
             return new FunctionDefinition()
             {
