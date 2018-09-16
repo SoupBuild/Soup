@@ -79,5 +79,47 @@ namespace Soup.StaticAnalysis.UnitTests
             var actual = TestUtils.GenerateAST(source);
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void GlobalTwoVariableDeclarationInitializer()
+        {
+            var source = new AntlrInputStream(
+                @"int GlobalVariable1 = 1, GlobalVariable2 = 2;");
+
+            var expected = new TranslationUnit()
+            {
+                Declarations = new DeclarationSequence()
+                {
+                    Declarations = new List<Declaration>()
+                    {
+                        new SimpleDefinition()
+                        {
+                            DeclarationSpecifierSequence = new DeclarationSpecifierSequence(
+                                new List<Node>()
+                                {
+                                    new PrimitiveDataTypeNode(PrimitiveDataType.Int),
+                                }),
+                            InitializerDeclaratorList = new InitializerDeclaratorList(
+                                new List<InitializerDeclarator>()
+                                {
+                                    new InitializerDeclarator()
+                                    {
+                                        Declarator = new Identifier("GlobalVariable1"),
+                                        Initializer = new IntegerLiteral(1),
+                                    },
+                                    new InitializerDeclarator()
+                                    {
+                                        Declarator = new Identifier("GlobalVariable2"),
+                                        Initializer = new IntegerLiteral(2),
+                                    },
+                                }),
+                        },
+                    },
+                },
+            };
+
+            var actual = TestUtils.GenerateAST(source);
+            Assert.Equal(expected, actual);
+        }
     }
 }
