@@ -80,6 +80,57 @@ namespace Soup.StaticAnalysis.UnitTests
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [InlineData("char", PrimitiveDataType.Char)]
+        [InlineData("char16_t", PrimitiveDataType.Char16)]
+        [InlineData("char32_t", PrimitiveDataType.Char32)]
+        [InlineData("wchar_t", PrimitiveDataType.WChar)]
+        [InlineData("bool", PrimitiveDataType.Bool)]
+        [InlineData("short", PrimitiveDataType.Short)]
+        [InlineData("int", PrimitiveDataType.Int)]
+        [InlineData("long", PrimitiveDataType.Long)]
+        [InlineData("signed", PrimitiveDataType.Signed)]
+        [InlineData("unsigned", PrimitiveDataType.Unsigned)]
+        [InlineData("float", PrimitiveDataType.Float)]
+        [InlineData("double", PrimitiveDataType.Double)]
+        [InlineData("void", PrimitiveDataType.Void)]
+        [InlineData("auto", PrimitiveDataType.Auto)]
+        public void GlobalPrimitiveVariable(string typeString, PrimitiveDataType type)
+        {
+            var source = new AntlrInputStream(
+                $"{typeString} GlobalVariable = 1;");
+
+            var expected = new TranslationUnit()
+            {
+                Declarations = new DeclarationSequence()
+                {
+                    Declarations = new List<Declaration>()
+                    {
+                        new SimpleDefinition()
+                        {
+                            DeclarationSpecifierSequence = new DeclarationSpecifierSequence(
+                                new List<Node>()
+                                {
+                                    new PrimitiveDataTypeNode(type),
+                                }),
+                            InitializerDeclaratorList = new InitializerDeclaratorList(
+                                new List<InitializerDeclarator>()
+                                {
+                                    new InitializerDeclarator()
+                                    {
+                                        Declarator = new Identifier("GlobalVariable"),
+                                        Initializer = new IntegerLiteral(1),
+                                    },
+                                }),
+                        },
+                    },
+                },
+            };
+
+            var actual = TestUtils.GenerateAST(source);
+            Assert.Equal(expected, actual);
+        }
+
         [Fact]
         public void GlobalTwoVariableDeclarationInitializer()
         {
