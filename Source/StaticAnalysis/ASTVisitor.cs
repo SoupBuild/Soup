@@ -732,16 +732,6 @@ namespace Soup.StaticAnalysis
         }
 
         /// <summary>
-        /// Visit a parse tree produced by <see cref="CppParser.blockDeclaration()"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <return>The visitor result.</return>
-        public override Node VisitBlockDeclaration([NotNull] CppParser.BlockDeclarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Visit a parse tree produced by <see cref="CppParser.noDeclarationSpecifierFunctionDeclaration()"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>
@@ -768,7 +758,10 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitSimpleDeclaration([NotNull] CppParser.SimpleDeclarationContext context)
         {
-            throw new NotImplementedException();
+            return new SimpleDefinition()
+            {
+                Specifiers = (DeclarationSpecifierSequence)Visit(context.declarationSpecifierSequence()),
+            };
         }
 
         /// <summary>
@@ -808,7 +801,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitDeclarationSpecifier([NotNull] CppParser.DeclarationSpecifierContext context)
         {
-            throw new NotImplementedException();
+            if (context.definingTypeSpecifier() != null)
+            {
+                return Visit(context.definingTypeSpecifier());
+            }
+            else
+            {
+                throw new InvalidOperationException("Unexpected declaration specifier");
+            }
         }
 
         /// <summary>
@@ -818,7 +818,23 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitDeclarationSpecifierSequence([NotNull] CppParser.DeclarationSpecifierSequenceContext context)
         {
-            throw new NotImplementedException();
+            // Handle the recursive rule
+            DeclarationSpecifierSequence sequence;
+            var childSequence = context.declarationSpecifierSequence();
+            if (childSequence != null)
+            {
+                sequence = (DeclarationSpecifierSequence)Visit(childSequence);
+            }
+            else
+            {
+                sequence = new DeclarationSpecifierSequence();
+            }
+
+            // Handle the new item
+            var specifier = context.declarationSpecifier();
+            sequence.Specifiers.Add(Visit(specifier));
+
+            return sequence;
         }
 
         /// <summary>
@@ -842,31 +858,11 @@ namespace Soup.StaticAnalysis
         }
 
         /// <summary>
-        /// Visit a parse tree produced by <see cref="CppParser.typeSpecifier()"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <return>The visitor result.</return>
-        public override Node VisitTypeSpecifier([NotNull] CppParser.TypeSpecifierContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Visit a parse tree produced by <see cref="CppParser.typeSpecifierSequence()"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>
         /// <return>The visitor result.</return>
         public override Node VisitTypeSpecifierSequence([NotNull] CppParser.TypeSpecifierSequenceContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Visit a parse tree produced by <see cref="CppParser.definingTypeSpecifier()"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <return>The visitor result.</return>
-        public override Node VisitDefiningTypeSpecifier([NotNull] CppParser.DefiningTypeSpecifierContext context)
         {
             throw new NotImplementedException();
         }
@@ -888,7 +884,36 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitSimpleTypeSpecifier([NotNull] CppParser.SimpleTypeSpecifierContext context)
         {
-            throw new NotImplementedException();
+            if (context.Char() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Char);
+            else if (context.Char16() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Char16);
+            else if (context.Char32() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Char32);
+            else if (context.WChar() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.WChar);
+            else if (context.Bool() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Bool);
+            else if (context.Short() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Short);
+            else if (context.Int() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Int);
+            else if (context.Long() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Long);
+            else if (context.Signed() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Signed);
+            else if (context.Unsigned() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Unsigned);
+            else if (context.Float() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Float);
+            else if (context.Double() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Double);
+            else if (context.Void() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Void);
+            else if (context.Auto() != null)
+                return new PrimitiveDataTypeNode(PrimitiveDataType.Auto);
+
+            throw new InvalidOperationException("Unexpected simple type.");
         }
 
         /// <summary>
@@ -1497,10 +1522,10 @@ namespace Soup.StaticAnalysis
         public override Node VisitFunctionDefinition([NotNull] CppParser.FunctionDefinitionContext context)
         {
             // Check for optional return type
-            Node returnType = null;
+            DeclarationSpecifierSequence returnType = null;
             if (context.declarationSpecifierSequence() != null)
             {
-                returnType = null; // TODO : Visit(context.declarationSpecifierSequence());
+                returnType = (DeclarationSpecifierSequence)Visit(context.declarationSpecifierSequence());
             }
 
             // Analyze the declarator

@@ -395,17 +395,17 @@ declarationSequence:
 	declarationSequence declaration;
 
 declaration:
-	//TODO blockDeclaration |
-	//noDeclarationSpecifierFunctionDeclaration |
-	functionDefinition;// |
-	//templateDeclaration |
-	//deductionGuide |
-	//explicitInstantiation |
-	//explicitSpecialization |
-	//linkageSpecification |
-	//namespaceDefinition |
-	//emptyDeclaration |
-	//attributeDeclaration;
+	blockDeclaration |
+	noDeclarationSpecifierFunctionDeclaration |
+	functionDefinition |
+	templateDeclaration |
+	deductionGuide |
+	explicitInstantiation |
+	explicitSpecialization |
+	linkageSpecification |
+	namespaceDefinition |
+	emptyDeclaration |
+	attributeDeclaration;
 
 blockDeclaration:
 	simpleDeclaration |

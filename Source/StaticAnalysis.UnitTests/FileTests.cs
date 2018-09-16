@@ -6,7 +6,7 @@ namespace Soup.StaticAnalysis.UnitTests
 {
     public class FileTests
     {
-        [Fact(Skip="notready")]
+        [Fact]
         public void BlockComment()
         {
             RunTest(@"Examples/BlockComment.cpp");
@@ -18,7 +18,7 @@ namespace Soup.StaticAnalysis.UnitTests
             RunTest(@"Examples/HelloWorld.cpp");
         }
 
-        [Fact(Skip = "notready")]
+        [Fact]
         public void LineComment()
         {
             RunTest(@"Examples/LineComment.cpp");

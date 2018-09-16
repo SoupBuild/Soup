@@ -10,7 +10,7 @@ namespace Soup.StaticAnalysis.AST
         /// <summary>
         /// Gets or sets the return type
         /// </summary>
-        public Node ReturnType { get; set; }
+        public DeclarationSpecifierSequence ReturnType { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier

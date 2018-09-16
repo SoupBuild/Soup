@@ -18,8 +18,8 @@ import
 	CppLexerUserDefinedLiterals,
 	CppLexerIdentifiers;
 
-BlockComment: '/*' .*? '*/';
-LineComment: '//' ~[\r\n]*;
+BlockComment: '/*' .*? '*/' -> channel(1);
+LineComment: '//' ~[\r\n]* -> channel(1);
 
-Whitespace: (' ' | '\t')+ -> skip;
-Newline: ('\r' '\n'? | '\n') -> skip;
+Whitespace: (' ' | '\t')+ -> channel(2);
+Newline: ('\r' '\n'? | '\n') -> channel(2);

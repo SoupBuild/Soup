@@ -1,25 +1,12 @@
 using Antlr4.Runtime;
 using Soup.StaticAnalysis.AST;
 using System.Collections.Generic;
-using System.IO;
 using Xunit;
 
 namespace Soup.StaticAnalysis.UnitTests
 {
     public class SyntaxTreeTests
     {
-        [Fact]
-        public void EmptyFile()
-        {
-            var source = new AntlrInputStream(
-                @"");
-
-            var expected = new TranslationUnit();
-
-            var actual = TestUtils.GenerateAST(source);
-            Assert.Equal(expected, actual);
-        }
-
         [Fact]
         public void SimpleFunctionRegular()
         {
@@ -34,7 +21,13 @@ namespace Soup.StaticAnalysis.UnitTests
                     {
                         new FunctionDefinition()
                         {
-                            ReturnType = null,
+                            ReturnType = new DeclarationSpecifierSequence()
+                            {
+                                Specifiers = new List<Node>()
+                                {
+                                    new PrimitiveDataTypeNode(PrimitiveDataType.Void),
+                                }
+                            },
                             Identifier = new Identifier("Function"),
                             ParameterList = null,
                             Body = new RegularFunctionBody()
@@ -64,7 +57,13 @@ namespace Soup.StaticAnalysis.UnitTests
                     {
                         new FunctionDefinition()
                         {
-                            ReturnType = null,
+                            ReturnType = new DeclarationSpecifierSequence()
+                            {
+                                Specifiers = new List<Node>()
+                                {
+                                    new PrimitiveDataTypeNode(PrimitiveDataType.Void),
+                                }
+                            },
                             Identifier = new Identifier("Function"),
                             ParameterList = null,
                             Body = new DefaultFunctionBody(),
@@ -91,7 +90,13 @@ namespace Soup.StaticAnalysis.UnitTests
                     {
                         new FunctionDefinition()
                         {
-                            ReturnType = null,
+                            ReturnType = new DeclarationSpecifierSequence()
+                            {
+                                Specifiers = new List<Node>()
+                                {
+                                    new PrimitiveDataTypeNode(PrimitiveDataType.Void),
+                                }
+                            },
                             Identifier = new Identifier("Function"),
                             ParameterList = null,
                             Body = new DeleteFunctionBody(),
