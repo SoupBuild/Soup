@@ -96,7 +96,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitPrimaryExpression([NotNull] CppParser.PrimaryExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.literal () != null)
+            {
+                return Visit(context.literal());
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         /// <summary>
@@ -247,7 +254,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitPostfixExpression([NotNull] CppParser.PostfixExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.primaryExpression() != null)
+            {
+                return Visit(context.primaryExpression());
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         /// <summary>
@@ -277,7 +291,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitUnaryExpression([NotNull] CppParser.UnaryExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.postfixExpression() != null)
+            {
+                return Visit(context.postfixExpression());
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         /// <summary>
@@ -377,7 +398,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitCastExpression([NotNull] CppParser.CastExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.LeftParenthesis() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.unaryExpression());
+            }
         }
 
         /// <summary>
@@ -387,7 +415,18 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitPointerManipulationExpression([NotNull] CppParser.PointerManipulationExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.PeriodAsterisk() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (context.ArrowAsterisk() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.castExpression());
+            }
         }
 
         /// <summary>
@@ -397,7 +436,22 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitMultiplicativeExpression([NotNull] CppParser.MultiplicativeExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.Asterisk() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (context.ForwardSlash() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (context.Percent() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.pointerManipulationExpression());
+            }
         }
 
         /// <summary>
@@ -407,7 +461,18 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitAdditiveExpression([NotNull] CppParser.AdditiveExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.Plus() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (context.Minus() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.multiplicativeExpression());
+            }
         }
 
         /// <summary>
@@ -417,7 +482,18 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitShiftExpression([NotNull] CppParser.ShiftExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.DoubleLessThan() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (context.DoubleGreaterThan() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.additiveExpression());
+            }
         }
 
         /// <summary>
@@ -427,7 +503,26 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitRelationalExpression([NotNull] CppParser.RelationalExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.LessThan() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (context.GreaterThan() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (context.LessThanEqual() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (context.GreaterThanEqual() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.shiftExpression());
+            }
         }
 
         /// <summary>
@@ -437,7 +532,18 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitEqualityExpression([NotNull] CppParser.EqualityExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.DoubleEqual() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (context.ExclamationMarkEqual() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.relationalExpression());
+            }
         }
 
         /// <summary>
@@ -447,7 +553,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitAndExpression([NotNull] CppParser.AndExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.Ampersand() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.equalityExpression());
+            }
         }
 
         /// <summary>
@@ -457,7 +570,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitExclusiveOrExpression([NotNull] CppParser.ExclusiveOrExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.Caret() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.andExpression());
+            }
         }
 
         /// <summary>
@@ -467,7 +587,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitInclusiveOrExpression([NotNull] CppParser.InclusiveOrExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.VerticalBar() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.exclusiveOrExpression());
+            }
         }
 
         /// <summary>
@@ -477,7 +604,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitLogicalAndExpression([NotNull] CppParser.LogicalAndExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.DoubleAmpersand() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.inclusiveOrExpression());
+            }
         }
 
         /// <summary>
@@ -487,7 +621,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitLogicalOrExpression([NotNull] CppParser.LogicalOrExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.DoubleVerticalBar() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.logicalAndExpression());
+            }
         }
 
         /// <summary>
@@ -497,7 +638,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitConditionalExpression([NotNull] CppParser.ConditionalExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.QuestionMark() != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return Visit(context.logicalOrExpression());
+            }
         }
 
         /// <summary>
@@ -517,7 +665,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitAssignmentExpression([NotNull] CppParser.AssignmentExpressionContext context)
         {
-            throw new NotImplementedException();
+            if (context.conditionalExpression() != null)
+            {
+                return Visit(context.conditionalExpression());
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         /// <summary>
@@ -760,7 +915,8 @@ namespace Soup.StaticAnalysis
         {
             return new SimpleDefinition()
             {
-                Specifiers = (DeclarationSpecifierSequence)Visit(context.declarationSpecifierSequence()),
+                DeclarationSpecifierSequence = (DeclarationSpecifierSequence)Visit(context.declarationSpecifierSequence()),
+                InitializerDeclaratorList = (InitializerDeclaratorList)Visit(context.initializerDeclaratorList()),
             };
         }
 
@@ -1303,7 +1459,23 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitInitializerDeclaratorList([NotNull] CppParser.InitializerDeclaratorListContext context)
         {
-            throw new NotImplementedException();
+            // Handle the recursive rule
+            InitializerDeclaratorList list;
+            var childList = context.initializerDeclaratorList();
+            if (childList != null)
+            {
+                list = (InitializerDeclaratorList)Visit(childList);
+            }
+            else
+            {
+                list = new InitializerDeclaratorList();
+            }
+
+            // Handle the new item
+            var item = (InitializerDeclarator)Visit(context.initializerDeclarator());
+            list.Items.Add(item);
+
+            return list;
         }
 
         /// <summary>
@@ -1313,17 +1485,18 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitInitializerDeclarator([NotNull] CppParser.InitializerDeclaratorContext context)
         {
-            throw new NotImplementedException();
-        }
+            // Check for optional initializer
+            Node initializer = null;
+            if (context.initializer() != null)
+            {
+                initializer = Visit(context.initializer());
+            }
 
-        /// <summary>
-        /// Visit a parse tree produced by <see cref="CppParser.declarator()"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <return>The visitor result.</return>
-        public override Node VisitDeclarator([NotNull] CppParser.DeclaratorContext context)
-        {
-            throw new NotImplementedException();
+            return new InitializerDeclarator()
+            {
+                Declarator = Visit(context.declarator()),
+                Initializer = initializer,
+            };
         }
 
         /// <summary>
@@ -1581,33 +1754,20 @@ namespace Soup.StaticAnalysis
         }
 
         /// <summary>
-        /// Visit a parse tree produced by <see cref="CppParser.initializer()"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <return>The visitor result.</return>
-        public override Node VisitInitializer([NotNull] CppParser.InitializerContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Visit a parse tree produced by <see cref="CppParser.braceOrEqualInitializer()"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>
         /// <return>The visitor result.</return>
         public override Node VisitBraceOrEqualInitializer([NotNull] CppParser.BraceOrEqualInitializerContext context)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Visit a parse tree produced by <see cref="CppParser.initializerClause()"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <return>The visitor result.</return>
-        public override Node VisitInitializerClause([NotNull] CppParser.InitializerClauseContext context)
-        {
-            throw new NotImplementedException();
+            if (context.Equal() != null)
+            {
+                return Visit(context.initializerClause());
+            }
+            else
+            {
+                return Visit(context.bracedInitializerList());
+            }
         }
 
         /// <summary>
@@ -2117,7 +2277,14 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitLiteral([NotNull] CppParser.LiteralContext context)
         {
-            throw new NotImplementedException();
+            if (context.FloatingPointLiteral() != null)
+                throw new NotImplementedException();
+            else if (context.CharacterLiteral() != null)
+                throw new NotImplementedException();
+            else if (context.StringLiteral() != null)
+                throw new NotImplementedException();
+            else
+                return VisitChildren(context);
         }
 
         /// <summary>
@@ -2127,11 +2294,10 @@ namespace Soup.StaticAnalysis
         /// <return>The visitor result.</return>
         public override Node VisitIntegerLiteral([NotNull] CppParser.IntegerLiteralContext context)
         {
-            // TODO : Log error when failed
-            return new IntegerLiteral()
-            {
-                Value = context.GetText(),
-            };
+            // Parse the integer value
+            int value = int.Parse(context.GetText());
+
+            return new IntegerLiteral(value);
         }
 
         /// <summary>

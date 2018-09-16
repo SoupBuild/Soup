@@ -233,8 +233,8 @@ noExceptionExpression:
 	NoExcept LeftParenthesis expression RightParenthesis;
 
 castExpression:
-unaryExpression |
-LeftParenthesis typeIdentifier RightParenthesis castExpression;
+	unaryExpression |
+	LeftParenthesis typeIdentifier RightParenthesis castExpression;
 
 pointerManipulationExpression:
 	castExpression |
@@ -762,15 +762,15 @@ deletedFunction:
 	Equal Delete Semicolon;
 
 initializer:
-	braceOrEqualInitializer |
-	LeftParenthesis expressionList RightParenthesis;
+	braceOrEqualInitializer;
+	// DISABLED FOR SIMPLE C++ LeftParenthesis expressionList RightParenthesis;
 
 braceOrEqualInitializer:
 	Equal initializerClause |
 	bracedInitializerList;
 
 initializerClause:
-	assignmentExpression
+	assignmentExpression |
 	bracedInitializerList;
 
 initializerList:

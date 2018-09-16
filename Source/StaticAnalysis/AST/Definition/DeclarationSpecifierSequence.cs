@@ -13,7 +13,23 @@ namespace Soup.StaticAnalysis.AST
         /// <summary>
         /// Gets or sets the list of declaration specifiers
         /// </summary>
-        public IList<Node> Specifiers { get; set; } = new List<Node>();
+        public IList<Node> Specifiers { get; set; }
+
+        /// <summary>
+        /// Initialize
+        /// </summary>
+        public DeclarationSpecifierSequence() :
+            this(new List<Node>())
+        {
+        }
+
+        /// <summary>
+        /// Initialize
+        /// </summary>
+        public DeclarationSpecifierSequence(IList<Node> specifiers)
+        {
+            Specifiers = specifiers;
+        }
 
         /// <summary>
         /// Equality operator

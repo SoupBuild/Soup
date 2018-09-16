@@ -1,29 +1,40 @@
 ﻿
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Soup.StaticAnalysis.AST
 {
     /// <summary>
-    /// An integer value
+    /// The initializer declarator list node
     /// </summary>
-    public sealed class IntegerLiteral : LiteralNode
+    public sealed class InitializerDeclaratorList : Node
     {
         /// <summary>
-        /// Gets or sets the value
+        /// Gets or sets the list of items
         /// </summary>
-        public int Value { get; set; }
+        public IList<InitializerDeclarator> Items { get; set; }
 
         /// <summary>
         /// Initialize
         /// </summary>
-        public IntegerLiteral(int value)
+        public InitializerDeclaratorList() :
+            this(new List<InitializerDeclarator>())
         {
-            Value = value;
+        }
+
+        /// <summary>
+        /// Initialize
+        /// </summary>
+        public InitializerDeclaratorList(IList<InitializerDeclarator> items)
+        {
+            Items = items;
         }
 
         /// <summary>
         /// Equality operator
         /// </summary>
-        public static bool operator ==(IntegerLiteral lhs, IntegerLiteral rhs)
+        public static bool operator ==(InitializerDeclaratorList lhs, InitializerDeclaratorList rhs)
         {
             if (object.ReferenceEquals(lhs, null))
                 return object.ReferenceEquals(rhs, null);
@@ -34,7 +45,7 @@ namespace Soup.StaticAnalysis.AST
         /// <summary>
         /// Inequality operator
         /// </summary>
-        public static bool operator !=(IntegerLiteral lhs, IntegerLiteral rhs)
+        public static bool operator !=(InitializerDeclaratorList lhs, InitializerDeclaratorList rhs)
         {
             return !(lhs == rhs);
         }
@@ -44,13 +55,13 @@ namespace Soup.StaticAnalysis.AST
         /// </summary>
         public override bool Equals(object obj)
         {
-            var other = obj as IntegerLiteral;
+            var other = obj as InitializerDeclaratorList;
             if (object.ReferenceEquals(other, null))
             {
                 return false;
             }
 
-            return Value == other.Value;
+            return Items.SequenceEqual(other.Items);
         }
 
         /// <summary>
@@ -58,7 +69,7 @@ namespace Soup.StaticAnalysis.AST
         /// </summary>
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return Items.GetHashCode();
         }
     }
 }

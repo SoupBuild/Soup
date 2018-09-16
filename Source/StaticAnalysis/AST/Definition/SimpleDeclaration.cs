@@ -10,7 +10,12 @@ namespace Soup.StaticAnalysis.AST
         /// <summary>
         /// Gets or sets the specifiers
         /// </summary>
-        public DeclarationSpecifierSequence Specifiers { get; set; }
+        public DeclarationSpecifierSequence DeclarationSpecifierSequence { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional initializer
+        /// </summary>
+        public InitializerDeclaratorList InitializerDeclaratorList { get; set; }
 
         /// <summary>
         /// Equality operator
@@ -42,7 +47,8 @@ namespace Soup.StaticAnalysis.AST
                 return false;
             }
 
-            return Specifiers == other.Specifiers;
+            return DeclarationSpecifierSequence == other.DeclarationSpecifierSequence &&
+                InitializerDeclaratorList == other.InitializerDeclaratorList;
         }
 
         /// <summary>
@@ -50,7 +56,8 @@ namespace Soup.StaticAnalysis.AST
         /// </summary>
         public override int GetHashCode()
         {
-            return Specifiers.GetHashCode();
+            return DeclarationSpecifierSequence.GetHashCode() ^
+                InitializerDeclaratorList.GetHashCode();
         }
     }
 }

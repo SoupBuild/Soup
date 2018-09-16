@@ -3,27 +3,24 @@
 namespace Soup.StaticAnalysis.AST
 {
     /// <summary>
-    /// An integer value
+    /// The initializer declarator node
     /// </summary>
-    public sealed class IntegerLiteral : LiteralNode
+    public sealed class InitializerDeclarator : Node
     {
         /// <summary>
-        /// Gets or sets the value
+        /// Gets or sets the declarator
         /// </summary>
-        public int Value { get; set; }
+        public Node Declarator { get; set; }
 
         /// <summary>
-        /// Initialize
+        /// Gets or sets the optional initializer
         /// </summary>
-        public IntegerLiteral(int value)
-        {
-            Value = value;
-        }
+        public Node Initializer { get; set; }
 
         /// <summary>
         /// Equality operator
         /// </summary>
-        public static bool operator ==(IntegerLiteral lhs, IntegerLiteral rhs)
+        public static bool operator ==(InitializerDeclarator lhs, InitializerDeclarator rhs)
         {
             if (object.ReferenceEquals(lhs, null))
                 return object.ReferenceEquals(rhs, null);
@@ -34,7 +31,7 @@ namespace Soup.StaticAnalysis.AST
         /// <summary>
         /// Inequality operator
         /// </summary>
-        public static bool operator !=(IntegerLiteral lhs, IntegerLiteral rhs)
+        public static bool operator !=(InitializerDeclarator lhs, InitializerDeclarator rhs)
         {
             return !(lhs == rhs);
         }
@@ -44,13 +41,14 @@ namespace Soup.StaticAnalysis.AST
         /// </summary>
         public override bool Equals(object obj)
         {
-            var other = obj as IntegerLiteral;
+            var other = obj as InitializerDeclarator;
             if (object.ReferenceEquals(other, null))
             {
                 return false;
             }
 
-            return Value == other.Value;
+            return Declarator == other.Declarator &&
+                Initializer == other.Initializer;
         }
 
         /// <summary>
@@ -58,7 +56,8 @@ namespace Soup.StaticAnalysis.AST
         /// </summary>
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return Declarator.GetHashCode() ^
+                Initializer.GetHashCode();
         }
     }
 }
