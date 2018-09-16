@@ -1534,6 +1534,27 @@ namespace Soup.StaticAnalysis
             };
         }
 
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="CppParser.explicitlyDefaultedFunction()"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        public override Node VisitExplicitlyDefaultedFunction([NotNull] CppParser.ExplicitlyDefaultedFunctionContext context)
+        {
+            return new DefaultFunctionBody();
+        }
+
+        /// <summary>
+        /// Visit a parse tree produced by <see cref="CppParser.deletedFunction()"/>.
+        /// </summary>
+        /// <param name="context">The parse tree.</param>
+        /// <return>The visitor result.</return>
+        public override Node VisitDeletedFunction([NotNull] CppParser.DeletedFunctionContext context)
+        {
+            return new DeleteFunctionBody();
+        }
+
         /// <summary>
         /// Visit a parse tree produced by <see cref="CppParser.initializer()"/>.
         /// </summary>

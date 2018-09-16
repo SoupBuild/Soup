@@ -21,7 +21,7 @@ namespace Soup.StaticAnalysis.UnitTests
         }
 
         [Fact]
-        public void SimpleFunction()
+        public void SimpleFunctionRegular()
         {
             var source = new AntlrInputStream(
                 @"void Function(){}");
@@ -41,6 +41,60 @@ namespace Soup.StaticAnalysis.UnitTests
                             {
                                 Statements = new CompoundStatement(),
                             },
+                        },
+                    },
+                },
+            };
+
+            var actual = TestUtils.GenerateAST(source);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void SimpleFunctionDefault()
+        {
+            var source = new AntlrInputStream(
+                @"void Function() = default;");
+
+            var expected = new TranslationUnit()
+            {
+                Declarations = new DeclarationSequence()
+                {
+                    Declarations = new List<Declaration>()
+                    {
+                        new FunctionDefinition()
+                        {
+                            ReturnType = null,
+                            Identifier = new Identifier("Function"),
+                            ParameterList = null,
+                            Body = new DefaultFunctionBody(),
+                        },
+                    },
+                },
+            };
+
+            var actual = TestUtils.GenerateAST(source);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void SimpleFunctionDelete()
+        {
+            var source = new AntlrInputStream(
+                @"void Function() = delete;");
+
+            var expected = new TranslationUnit()
+            {
+                Declarations = new DeclarationSequence()
+                {
+                    Declarations = new List<Declaration>()
+                    {
+                        new FunctionDefinition()
+                        {
+                            ReturnType = null,
+                            Identifier = new Identifier("Function"),
+                            ParameterList = null,
+                            Body = new DeleteFunctionBody(),
                         },
                     },
                 },
