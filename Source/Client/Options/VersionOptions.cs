@@ -10,7 +10,7 @@ namespace Soup.Client
     /// Version Command
     /// </summary>
     [Verb("version")]
-    internal class VersionOptions
+    internal class VersionOptions : SharedOptions
     {
     }
 }

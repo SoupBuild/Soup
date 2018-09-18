@@ -10,7 +10,7 @@ namespace Soup.Client
     /// Pack Command Options
     /// </summary>
     [Verb("install")]
-    internal class PackOptions
+    internal class PackOptions : SharedOptions
     {
     }
 }

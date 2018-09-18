@@ -10,7 +10,7 @@ namespace Soup.Client
     /// View Command Options
     /// </summary>
     [Verb("version")]
-    internal class ViewOptions
+    internal class ViewOptions : SharedOptions
     {
         /// <summary>
         /// Gets or sets the package name

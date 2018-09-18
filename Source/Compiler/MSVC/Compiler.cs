@@ -166,6 +166,12 @@ namespace Soup.Compiler.MSVC
             // Only run preprocess, compile, and assemble steps
             commandArgs.Add("-c");
 
+            // Set the include paths
+            foreach (var directory in args.IncludeDirectories)
+            {
+                commandArgs.Add($"-I\"{directory}\"");
+            }
+
             // Set the preprocessor definitions
             foreach (var definition in args.PreprocessorDefinitions)
             {

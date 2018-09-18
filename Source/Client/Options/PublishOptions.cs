@@ -10,7 +10,7 @@ namespace Soup.Client
     /// Publish Command Options
     /// </summary>
     [Verb("publish")]
-    internal class PublishOptions
+    internal class PublishOptions : SharedOptions
     {
     }
 }

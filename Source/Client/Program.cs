@@ -23,15 +23,26 @@ namespace Soup.Client
         {
             try
             {
-                await Parser.Default.ParseArguments<
+                var arguments = Parser.Default.ParseArguments<
                     BuildOptions,
                     InitializeOptions,
                     InstallOptions,
                     PackOptions,
                     PublishOptions,
                     VersionOptions,
-                    ViewOptions>(args)
-                    .MapResult(
+                    ViewOptions>(args);
+
+                // Check shared options
+                var initialized = arguments.MapResult(
+                        (SharedOptions options) => Setup(options),
+                        errors => false);
+                if (!initialized)
+                {
+                    return -1;
+                }
+
+                // Map the indivual commands
+                await arguments.MapResult(
                         (BuildOptions options) => new BuildCommand(GetUserConfig(), GetCompiler()).InvokeAsync(options),
                         (InitializeOptions options) => new InitializeCommand().InvokeAsync(options),
                         (InstallOptions options) => new InstallCommand(GetUserConfig(), GetSoupApi()).InvokeAsync(options),
@@ -48,6 +59,13 @@ namespace Soup.Client
                 Log.Error(ex.ToString());
                 return -1;
             }
+        }
+
+        private static bool Setup(SharedOptions options)
+        {
+            Log.EnableVerbose = options.EnableVerbose;
+
+            return true;
         }
 
         /// <summary>

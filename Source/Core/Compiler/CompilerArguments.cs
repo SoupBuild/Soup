@@ -63,6 +63,11 @@ namespace Soup.Compiler
         public IList<string> SourceFiles { get; set; } = new List<string>();
 
         /// <summary>
+        /// Gets or sets the list of include directories
+        /// </summary>
+        public IList<string> IncludeDirectories { get; set; } = new List<string>();
+
+        /// <summary>
         /// Gets or sets the list of modules
         /// </summary>
         public IList<string> Modules { get; set; } = new List<string>();

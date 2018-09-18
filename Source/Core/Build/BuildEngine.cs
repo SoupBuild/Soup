@@ -48,13 +48,26 @@ namespace Soup
             var objectDirectory = "obj";
             var binaryDirectory = "bin";
 
+            // Determine the include paths
+            var folderSet = new HashSet<string>();
+            foreach (var file in recipe.Source)
+            {
+                var fileFolder = Path.GetDirectoryName(file);
+                if (!string.IsNullOrWhiteSpace(fileFolder))
+                {
+                    folderSet.Add(fileFolder);
+                }
+            }
+
+            var uniqueFolders = folderSet.ToList();
+
             Log.Info($"Building {recipe.Name}.");
             if (recipe.Type == RecipeType.Library)
             {
-                await CompileModuleAsync(path, recipe, objectDirectory);
+                await CompileModuleAsync(path, recipe, uniqueFolders, objectDirectory);
             }
 
-            await CompileSourceAsync(path, recipe, objectDirectory);
+            await CompileSourceAsync(path, recipe, uniqueFolders, objectDirectory);
             switch (recipe.Type)
             {
                 case RecipeType.Library:
@@ -107,11 +120,12 @@ namespace Soup
         /// <summary>
         /// Compile the module file
         /// </summary>
-        private async Task CompileModuleAsync(string path, Recipe recipe, string objectDirectory)
+        private async Task CompileModuleAsync(string path, Recipe recipe, IList<string> uniqueFolders, string objectDirectory)
         {
             Log.Info("Compile Module");
 
             var defines = new List<string>();
+            defines.Add("SOUP_BUILD");
 
             // Set the active version namespace
             defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
@@ -142,6 +156,7 @@ namespace Soup
                 OutputDirectory = objectDirectory,
                 PreprocessorDefinitions = defines,
                 SourceFiles = new List<string>() { recipe.Public },
+                IncludeDirectories = uniqueFolders,
                 ExportModule = true,
             };
 
@@ -159,12 +174,13 @@ namespace Soup
         /// <summary>
         /// Compile the supporting source files
         /// </summary>
-        private async Task CompileSourceAsync(string path, Recipe recipe, string objectDirectory)
+        private async Task CompileSourceAsync(string path, Recipe recipe, IList<string> uniqueFolders, string objectDirectory)
         {
             Log.Info("Compile Source");
             var modules = new List<string>();
             var defines = new List<string>();
 
+            defines.Add("SOUP_BUILD");
             if (recipe.Type == RecipeType.Library)
             {
                 // Add a reference to our own modules interface definition
@@ -200,6 +216,7 @@ namespace Soup
                 OutputDirectory = objectDirectory,
                 PreprocessorDefinitions = defines,
                 SourceFiles = recipe.Source,
+                IncludeDirectories = uniqueFolders,
                 Modules = modules,
             };
 

@@ -12,6 +12,7 @@ namespace Soup
     public static class Log
     {
         private static TraceSource _source;
+        private static EventTypeFilter _consoleEventFilter;
 
         static Log()
         {
@@ -19,14 +20,41 @@ namespace Soup
             _source = new TraceSource("Log", SourceLevels.All);
 
             // Register the default console listener
+            _consoleEventFilter = new EventTypeFilter(SourceLevels.Information | SourceLevels.Error | SourceLevels.Warning);
             _source.Listeners.Add(
                 new ConsoleTraceListener()
                 {
-                    Filter = new EventTypeFilter(SourceLevels.Information | SourceLevels.Error | SourceLevels.Warning),
+                    Filter = _consoleEventFilter,
                     ShowSourceName = false,
                     ShowEventId = false,
                     ShowEventType = false,
                 });
+        }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether verbose logging is enabled or not
+        /// </summary>
+        public static bool EnableVerbose
+        {
+            get
+            {
+                return _consoleEventFilter.EventType.HasFlag(SourceLevels.Verbose);
+            }
+
+            set
+            {
+                if (EnableVerbose != value)
+                {
+                    if (value)
+                    {
+                        _consoleEventFilter.EventType |= SourceLevels.Verbose;
+                    }
+                    else
+                    {
+                        _consoleEventFilter.EventType &= ~SourceLevels.Verbose;
+                    }
+                }
+            }
         }
 
         /// <summary>

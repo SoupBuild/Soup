@@ -10,7 +10,7 @@ namespace Soup.Client
     /// Build Command Options
     /// </summary>
     [Verb("build")]
-    internal class BuildOptions
+    internal class BuildOptions : SharedOptions
     {
     }
 }

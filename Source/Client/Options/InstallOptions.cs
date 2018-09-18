@@ -10,7 +10,7 @@ namespace Soup.Client
     /// Install Command
     /// </summary>
     [Verb("install")]
-    internal class InstallOptions
+    internal class InstallOptions : SharedOptions
     {
         /// <summary>
         /// Gets or sets the package name

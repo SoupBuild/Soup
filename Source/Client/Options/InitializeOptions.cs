@@ -10,7 +10,7 @@ namespace Soup.Client
     /// Initialize Command Options
     /// </summary>
     [Verb("init")]
-    internal class InitializeOptions
+    internal class InitializeOptions : SharedOptions
     {
     }
 }
