@@ -8,7 +8,7 @@
     "TestBuild": {
       "commandName": "Project",
       "commandLineArgs": "build -v",
-      "workingDirectory": "..\\..\\Samples\\TestConsole"
+      "workingDirectory": "..\\..\\Samples\\TestMultiVersion1"
     },
     "TestPublish": {
       "commandName": "Project",

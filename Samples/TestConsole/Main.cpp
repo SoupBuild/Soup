@@ -1,18 +1,20 @@
 import TestWrapper;
 import TestMultiVersion;
-#include <iostream>
+
+// Clang is broken withn iostream and modules...
+#include <stdio.h>
 
 int main()
 {
 	TestWrapper_VersionNamespace::Wrapper wrapper;
 	TestMultiVersion_VersionNamespace::MultiVersion multiVersion;
 
-	std::wcout
-		<< TestWrapper_VersionNamespace << L" "
-		<< wrapper.GetValue() << L" "
-		<< wrapper.GetVersion() << L" "
-		<< multiVersion.GetVersion() << L" "
-		<< multiVersion.GetVersionEx() << std::endl;
+	wprintf_s(
+		L"%d %d %d %f",
+		wrapper.GetValue(),
+		wrapper.GetVersion(),
+		multiVersion.GetVersion(),
+		multiVersion.GetVersionEx());
 
 	return 0;
 }

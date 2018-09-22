@@ -149,7 +149,7 @@ namespace Soup.Compiler.MSVC
             switch (args.Standard)
             {
                 case LanguageStandard.CPP11:
-                    throw new NotSupportedException("11 is not supported any longer. 14 is not the default.");
+                    throw new NotSupportedException("11 is not supported any longer. 14 is now the default.");
                 case LanguageStandard.CPP14:
                     // Default value commandArgs.Add("-std:c++14");
                     break;

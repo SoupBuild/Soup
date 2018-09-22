@@ -99,7 +99,8 @@ namespace Soup.Client
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return new Compiler.MSVC.Compiler();
+                // return new Compiler.MSVC.Compiler();
+                return new Compiler.Clang.Compiler();
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {

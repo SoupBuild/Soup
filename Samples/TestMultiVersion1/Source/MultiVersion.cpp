@@ -1,4 +1,5 @@
-import TestMultiVersion;
+
+module TestMultiVersion;
 
 using namespace TestMultiVersion_VersionNamespace;
 

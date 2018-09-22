@@ -12,7 +12,7 @@ namespace Soup.StaticAnalysis.UnitTests
             RunTest(@"Examples/BlockComment.cpp");
         }
 
-        [Fact(Skip = "notready")]
+        [Fact]
         public void HelloWorld()
         {
             RunTest(@"Examples/HelloWorld.cpp");
@@ -24,7 +24,7 @@ namespace Soup.StaticAnalysis.UnitTests
             RunTest(@"Examples/LineComment.cpp");
         }
 
-        [Fact(Skip = "notready")]
+        [Fact]
         public void Namespace()
         {
             RunTest(@"Examples/Namespace.cpp");

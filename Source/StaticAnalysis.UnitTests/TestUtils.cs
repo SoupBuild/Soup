@@ -1,5 +1,6 @@
 using Antlr4.Runtime;
 using Soup.StaticAnalysis.AST;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Soup.StaticAnalysis.UnitTests
@@ -28,6 +29,18 @@ namespace Soup.StaticAnalysis.UnitTests
             var visitor = new ASTVisitor();
             var ast = (TranslationUnit)visitor.Visit(translationUnit);
             return ast;
+        }
+
+        public static TranslationUnit CreateSingleDeclaration(Declaration declaration)
+        {
+            return new TranslationUnit()
+            {
+                Declarations = new DeclarationSequence(
+                    new List<Declaration>()
+                    {
+                        declaration,
+                    }),
+            };
         }
     }
 }

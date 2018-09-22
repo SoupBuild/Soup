@@ -4,7 +4,7 @@
   "dependencies": [
     "../TestMultiVersion1/"
   ],
-  "public": "Source/Module.cpp",
+  "public": "Source/Module.cppm",
   "source": [
     "Source/Wrapper.cpp"
   ]

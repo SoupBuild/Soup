@@ -1,40 +1,33 @@
 ﻿
 
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Soup.StaticAnalysis.AST
 {
     /// <summary>
-    /// Declaration sequence
+    /// An integer value
     /// </summary>
-    public sealed class DeclarationSequence : Node
+    public sealed class QualifiedName : Node
     {
         /// <summary>
-        /// Gets or sets the list of declarations
+        /// Gets or sets the Qualifier
         /// </summary>
-        public IList<Declaration> Declarations { get; set; }
+        public LiteralNode Qualifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Qualifier
+        /// </summary>
+        public Node Name { get; set; }
 
         /// <summary>
         /// Initialize
         /// </summary>
-        public DeclarationSequence() :
-            this(new List<Declaration>())
+        public QualifiedName()
         {
-        }
-
-        /// <summary>
-        /// Initialize
-        /// </summary>
-        public DeclarationSequence(IList<Declaration> declarations)
-        {
-            Declarations = declarations;
         }
 
         /// <summary>
         /// Equality operator
         /// </summary>
-        public static bool operator ==(DeclarationSequence lhs, DeclarationSequence rhs)
+        public static bool operator ==(QualifiedName lhs, QualifiedName rhs)
         {
             if (object.ReferenceEquals(lhs, null))
                 return object.ReferenceEquals(rhs, null);
@@ -45,7 +38,7 @@ namespace Soup.StaticAnalysis.AST
         /// <summary>
         /// Inequality operator
         /// </summary>
-        public static bool operator !=(DeclarationSequence lhs, DeclarationSequence rhs)
+        public static bool operator !=(QualifiedName lhs, QualifiedName rhs)
         {
             return !(lhs == rhs);
         }
@@ -55,13 +48,14 @@ namespace Soup.StaticAnalysis.AST
         /// </summary>
         public override bool Equals(object obj)
         {
-            var other = obj as DeclarationSequence;
+            var other = obj as QualifiedName;
             if (object.ReferenceEquals(other, null))
             {
                 return false;
             }
 
-            return Declarations.SequenceEqual(other.Declarations);
+            return Qualifier == other.Qualifier &&
+                Name == other.Name;
         }
 
         /// <summary>
@@ -69,7 +63,8 @@ namespace Soup.StaticAnalysis.AST
         /// </summary>
         public override int GetHashCode()
         {
-            return Declarations.GetHashCode();
+            return Qualifier.GetHashCode() ^
+                Name.GetHashCode();
         }
     }
 }

@@ -33,17 +33,24 @@ namespace Soup
         /// </summary>
         public async Task ExecuteAsync(string path, Recipe recipe)
         {
-            Log.Info("Build Recursive Dependencies.");
-            await BuildAllDependenciesRecursivelyAsync(path, recipe);
+            try
+            {
+                Log.Info("Build Recursive Dependencies.");
+                await BuildAllDependenciesRecursivelyAsync(path, recipe);
 
-            Log.Info("Build Toplevel Recipe.");
-            await CoreBuildAsync(path, recipe);
+                Log.Info("Build Toplevel Recipe.");
+                await CoreBuildAsync(path, recipe);
+            }
+            catch (InvalidOperationException)
+            {
+                Log.Error("BUILD FAILED!");
+            }
         }
 
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        public async Task CoreBuildAsync(string path, Recipe recipe)
+        private async Task CoreBuildAsync(string path, Recipe recipe)
         {
             var objectDirectory = "obj";
             var binaryDirectory = "bin";
@@ -184,7 +191,7 @@ namespace Soup
             if (recipe.Type == RecipeType.Library)
             {
                 // Add a reference to our own modules interface definition
-                modules.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
+                modules.Add(Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc"));
                 defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
             }
 
@@ -205,8 +212,15 @@ namespace Soup
 
                 var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
-                modules.Add($"{packagePath}/bin/{dependecyRecipe.Name}.ifc");
+                modules.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.ifc"));
                 defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
+            }
+
+            var source = new List<string>(recipe.Source);
+            if (recipe.Type == RecipeType.Library)
+            {
+                // Add the precompile module to the list of source files
+                source.Add(Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.pcm"));
             }
 
             var args = new CompilerArguments()
@@ -215,7 +229,7 @@ namespace Soup
                 RootDirectory = path,
                 OutputDirectory = objectDirectory,
                 PreprocessorDefinitions = defines,
-                SourceFiles = recipe.Source,
+                SourceFiles = source,
                 IncludeDirectories = uniqueFolders,
                 Modules = modules,
             };
@@ -243,7 +257,11 @@ namespace Soup
                 allFiles.Add(recipe.Public);
             }
 
+            // Convert all source files into objects
             var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.obj").ToList();
+
+            // Add the modules object too
+            objectFiles.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.obj");
 
             var args = new LinkerArguments()
             {
@@ -311,9 +329,9 @@ namespace Soup
         /// </summary>
         private void CloneModuleInterface(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
         {
-            Log.Info("Clone Module Interface");
-            var sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc");
-            var targetModuleFile = Path.Combine(path, binaryDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Name)}.ifc");
+            Log.Verbose("Clone Module Interface");
+            var sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.pcm");
+            var targetModuleFile = Path.Combine(path, binaryDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Name)}.pcm");
 
             // Ensure the object directory exists
             if (!File.Exists(sourceModuleFile))
@@ -321,7 +339,7 @@ namespace Soup
                 throw new InvalidOperationException("The resulting module interface definition was missing.");
             }
 
-            Log.Info($"Clone IFC: {sourceModuleFile} -> {targetModuleFile}");
+            Log.Verbose($"Clone PCM: {sourceModuleFile} -> {targetModuleFile}");
             File.Copy(sourceModuleFile, targetModuleFile, true);
         }
 
@@ -344,7 +362,7 @@ namespace Soup
                 var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
                 await GenerateDependencyLibrarySetAsync(dependecyRecipe, set);
 
-                set.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.lib").ToLower());
+                set.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.a").ToLower());
             }
         }
 

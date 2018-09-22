@@ -5,13 +5,13 @@ using Xunit;
 
 namespace Soup.StaticAnalysis.UnitTests
 {
-    public class SyntaxFunctionTests
+    public class SyntaxNamespaceTests
     {
         [Fact]
-        public void SimpleFunctionRegular()
+        public void SimpleNamedNamespace()
         {
             var source = new AntlrInputStream(
-                @"void Function(){}");
+                @"namespace MyNamespace{}");
 
             var expected = TestUtils.CreateSingleDeclaration(
                 new FunctionDefinition()
@@ -36,10 +36,10 @@ namespace Soup.StaticAnalysis.UnitTests
         }
 
         [Fact]
-        public void SimpleFunctionDefault()
+        public void SimpleUnnamedNamespace()
         {
             var source = new AntlrInputStream(
-                @"void Function() = default;");
+                @"namespace{}");
 
             var expected = TestUtils.CreateSingleDeclaration(
                 new FunctionDefinition()
@@ -53,7 +53,10 @@ namespace Soup.StaticAnalysis.UnitTests
                     },
                     Identifier = new Identifier("Function"),
                     ParameterList = null,
-                    Body = new DefaultFunctionBody(),
+                    Body = new RegularFunctionBody()
+                    {
+                        Statements = new CompoundStatement(),
+                    },
                 });
 
             var actual = TestUtils.GenerateAST(source);
@@ -61,10 +64,10 @@ namespace Soup.StaticAnalysis.UnitTests
         }
 
         [Fact]
-        public void SimpleFunctionDelete()
+        public void SimpleNestedNamespace()
         {
             var source = new AntlrInputStream(
-                @"void Function() = delete;");
+                @"namespace MyNamespace::MySubNamespace{}");
 
             var expected = TestUtils.CreateSingleDeclaration(
                 new FunctionDefinition()
@@ -78,7 +81,10 @@ namespace Soup.StaticAnalysis.UnitTests
                     },
                     Identifier = new Identifier("Function"),
                     ParameterList = null,
-                    Body = new DeleteFunctionBody(),
+                    Body = new RegularFunctionBody()
+                    {
+                        Statements = new CompoundStatement(),
+                    },
                 });
 
             var actual = TestUtils.GenerateAST(source);

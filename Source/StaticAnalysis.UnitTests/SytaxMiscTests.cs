@@ -1,6 +1,5 @@
 using Antlr4.Runtime;
 using Soup.StaticAnalysis.AST;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Soup.StaticAnalysis.UnitTests

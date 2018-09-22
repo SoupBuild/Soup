@@ -1,4 +1,4 @@
-import TestWrapper;
+module TestWrapper;
 import TestMultiVersion;
 
 using namespace TestWrapper_VersionNamespace;
