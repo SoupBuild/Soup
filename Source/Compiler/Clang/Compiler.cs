@@ -140,6 +140,9 @@ namespace Soup.Compiler.Clang
 
         private static string BuildCompilerArguments(CompilerArguments args, string workingDirectory)
         {
+            // Calculate object output file
+            var rootPath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
+
             var commandArgs = new List<string>();
 
             // Set the language standard
@@ -162,7 +165,7 @@ namespace Soup.Compiler.Clang
             // Set the include paths
             foreach (var directory in args.IncludeDirectories)
             {
-                commandArgs.Add($"-I\"{directory}\"");
+                commandArgs.Add($"-I\"{Path.Combine(rootPath, directory)}\"");
             }
 
             // Set the preprocessor definitions
@@ -175,9 +178,6 @@ namespace Soup.Compiler.Clang
             // commandArgs.Add("-X");
 
             // Add in the std include paths
-
-            // Calculate object output file
-            var rootPath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
 
             // Enable c++ exceptions
             // commandArgs.Add("-EHs");
