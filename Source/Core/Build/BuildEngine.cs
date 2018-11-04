@@ -31,26 +31,19 @@ namespace Soup
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        public async Task ExecuteAsync(string path, Recipe recipe)
+        public async Task ExecuteAsync(string path, Recipe recipe, bool force)
         {
-            try
-            {
-                Log.Info("Build Recursive Dependencies.");
-                await BuildAllDependenciesRecursivelyAsync(path, recipe);
+            Log.Info("Build Recursive Dependencies.");
+            await BuildAllDependenciesRecursivelyAsync(path, recipe);
 
-                Log.Info("Build Toplevel Recipe.");
-                await CoreBuildAsync(path, recipe);
-            }
-            catch (InvalidOperationException)
-            {
-                Log.Error("BUILD FAILED!");
-            }
+            Log.Info("Build Toplevel Recipe.");
+            await CoreBuildAsync(path, recipe, force);
         }
 
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        private async Task CoreBuildAsync(string path, Recipe recipe)
+        private async Task CoreBuildAsync(string path, Recipe recipe, bool force)
         {
             var objectDirectory = "obj";
             var binaryDirectory = "bin";
@@ -71,7 +64,7 @@ namespace Soup
             Log.Info($"Building {recipe.Name}.");
             if (recipe.Type == RecipeType.Library)
             {
-                await CompileModuleAsync(path, recipe, uniqueFolders, objectDirectory);
+                await CheckCompileModuleAsync(path, recipe, uniqueFolders, objectDirectory, force);
             }
 
             await CompileSourceAsync(path, recipe, uniqueFolders, objectDirectory);
@@ -100,13 +93,20 @@ namespace Soup
             string path,
             Recipe recipe)
         {
-            Log.Info($"Seaching Dependencies: {recipe.Name}.");
+            Log.Info($"Searching Dependencies: {recipe.Name}.");
             foreach (var dependecy in recipe.Dependencies)
             {
                 // Load this package recipe
                 string packagePath;
                 if (dependecy.Path != null)
                 {
+                    // Verify the package exists
+                    if (!Directory.Exists(dependecy.Path))
+                    {
+                        Log.Error($"The local package reference folder does not exist: {dependecy.Path}");
+                        throw new InvalidOperationException();
+                    }
+
                     packagePath = dependecy.Path;
                 }
                 else
@@ -115,19 +115,69 @@ namespace Soup
                 }
 
                 var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
+                if (dependecyRecipe == null)
+                {
+                    Log.Error($"Failed to load the dependency package: {packagePath}");
+                    throw new InvalidOperationException();
+                }
 
                 // Build all recursive dependencies
                 await BuildAllDependenciesRecursivelyAsync(packagePath, dependecyRecipe);
 
                 // Build this dependecy
-                await CoreBuildAsync(packagePath, dependecyRecipe);
+                await CoreBuildAsync(packagePath, dependecyRecipe, false);
             }
         }
 
         /// <summary>
         /// Compile the module file
         /// </summary>
-        private async Task CompileModuleAsync(string path, Recipe recipe, IList<string> uniqueFolders, string objectDirectory)
+        private async Task CheckCompileModuleAsync(
+            string path,
+            Recipe recipe,
+            IList<string> uniqueFolders,
+            string objectDirectory,
+            bool force)
+        {
+            var moduleFile = Path.Combine(path, recipe.Public);
+            if (!File.Exists(moduleFile))
+            {
+                throw new InvalidOperationException($"Source public module file ({moduleFile}) does not exist.");
+            }
+
+            var outputFilename = $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}";
+            var outputFile = Path.Combine(objectDirectory, outputFilename);
+            bool requiresBuild = true;
+            if (!force && File.Exists(outputFile))
+            {
+                var publicFileLastWriteTime = File.GetLastWriteTime(recipe.Public);
+                var outputFileLastWriteTime = File.GetLastWriteTime(outputFile);
+
+                if (publicFileLastWriteTime <= outputFileLastWriteTime)
+                {
+                    Log.Info("Module file is up to date.");
+                    requiresBuild = false;
+                }
+            }
+
+            if (requiresBuild)
+            {
+                await CompileModuleAsync(
+                    path,
+                    recipe,
+                    uniqueFolders,
+                    objectDirectory);
+            }
+        }
+
+        /// <summary>
+        /// Compile the module file
+        /// </summary>
+        private async Task CompileModuleAsync(
+            string path,
+            Recipe recipe,
+            IList<string> uniqueFolders,
+            string objectDirectory)
         {
             Log.Info("Compile Module");
 
@@ -191,7 +241,7 @@ namespace Soup
             if (recipe.Type == RecipeType.Library)
             {
                 // Add a reference to our own modules interface definition
-                modules.Add(Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.ifc"));
+                modules.Add(Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}"));
                 defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
             }
 
@@ -212,7 +262,7 @@ namespace Soup
 
                 var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
-                modules.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.ifc"));
+                modules.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.{_compiler.ModuleFileExtension}"));
                 defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
             }
 
@@ -220,7 +270,7 @@ namespace Soup
             if (recipe.Type == RecipeType.Library)
             {
                 // Add the precompile module to the list of source files
-                source.Add(Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.pcm"));
+                source.Add(Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}"));
             }
 
             var args = new CompilerArguments()
@@ -258,10 +308,10 @@ namespace Soup
             }
 
             // Convert all source files into objects
-            var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.obj").ToList();
+            var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.{_compiler.ObjectFileExtension}").ToList();
 
             // Add the modules object too
-            objectFiles.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.obj");
+            objectFiles.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ObjectFileExtension}");
 
             var args = new LinkerArguments()
             {
@@ -302,7 +352,7 @@ namespace Soup
             var librarySet = new HashSet<string>();
             await GenerateDependencyLibrarySetAsync(recipe, librarySet);
 
-            var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.obj").ToList();
+            var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.{_compiler.ObjectFileExtension}").ToList();
             var libraryFiles = librarySet.ToList();
             var args = new LinkerArguments()
             {
@@ -330,8 +380,8 @@ namespace Soup
         private void CloneModuleInterface(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
         {
             Log.Verbose("Clone Module Interface");
-            var sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.pcm");
-            var targetModuleFile = Path.Combine(path, binaryDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Name)}.pcm");
+            var sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}");
+            var targetModuleFile = Path.Combine(path, binaryDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Name)}.{_compiler.ModuleFileExtension}");
 
             // Ensure the object directory exists
             if (!File.Exists(sourceModuleFile))
@@ -339,7 +389,7 @@ namespace Soup
                 throw new InvalidOperationException("The resulting module interface definition was missing.");
             }
 
-            Log.Verbose($"Clone PCM: {sourceModuleFile} -> {targetModuleFile}");
+            Log.Verbose($"Clone Module: {sourceModuleFile} -> {targetModuleFile}");
             File.Copy(sourceModuleFile, targetModuleFile, true);
         }
 

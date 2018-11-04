@@ -8,7 +8,7 @@
     "TestBuild": {
       "commandName": "Project",
       "commandLineArgs": "build -v",
-      "workingDirectory": "..\\..\\Samples\\TestMultiVersion1"
+      "workingDirectory": "D:\\Repos\\antlr4\\runtime\\Cpp\\runtime"
     },
     "TestPublish": {
       "commandName": "Project",

@@ -20,6 +20,16 @@ namespace Soup.Compiler.MSVC
         private static string WindowsKitsPath => @"C:\Program Files (x86)\Windows Kits";
 
         /// <summary>
+        /// Gets the object file extension for the compiler
+        /// </summary>
+        public string ObjectFileExtension => "obj";
+
+        /// <summary>
+        /// Gets the module file extension for the compiler
+        /// </summary>
+        public string ModuleFileExtension => "ifc";
+
+        /// <summary>
         /// Compile
         /// </summary>
         public Task CompileAsync(CompilerArguments args)

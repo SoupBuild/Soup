@@ -15,6 +15,16 @@ namespace Soup.Compiler.GCC
     public class Compiler : ICompiler
     {
         /// <summary>
+        /// Gets the object file extension for the compiler
+        /// </summary>
+        public string ObjectFileExtension => "obj";
+
+        /// <summary>
+        /// Gets the module file extension for the compiler
+        /// </summary>
+        public string ModuleFileExtension => "huh";
+
+        /// <summary>
         /// Compile
         /// </summary>
         public Task CompileAsync(CompilerArguments args)

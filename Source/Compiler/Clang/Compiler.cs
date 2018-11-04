@@ -16,7 +16,18 @@ namespace Soup.Compiler.Clang
     /// </summary>
     public class Compiler : ICompiler
     {
-        private static string ToolsPath => @"C:\Program Files\LLVM";
+        //private static string ToolsPath => @"C:\Program Files\llvm\";
+        private static string ToolsPath => @"D:\Repos\llvm\build\Release";
+
+        /// <summary>
+        /// Gets the object file extension for the compiler
+        /// </summary>
+        public string ObjectFileExtension => "obj";
+
+        /// <summary>
+        /// Gets the module file extension for the compiler
+        /// </summary>
+        public string ModuleFileExtension => "pcm";
 
         /// <summary>
         /// Compile
@@ -36,17 +47,17 @@ namespace Soup.Compiler.Clang
             {
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.FileName = compiler;
                 process.StartInfo.WorkingDirectory = workingDirectory;
                 process.StartInfo.Arguments = commandArgs;
+
+                process.OutputDataReceived += ProcessOutputDataReceived;
+                process.ErrorDataReceived += ProcessErrorDataReceived;
+
                 process.Start();
-
-                while (!process.StandardOutput.EndOfStream)
-                {
-                    string line = process.StandardOutput.ReadLine();
-                    ProcessLine(line);
-                }
-
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
                 process.WaitForExit();
 
                 if (process.ExitCode != 0)
@@ -76,17 +87,17 @@ namespace Soup.Compiler.Clang
             {
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.FileName = linker;
                 process.StartInfo.WorkingDirectory = workingDirectory;
                 process.StartInfo.Arguments = linkerArgs;
+
+                process.OutputDataReceived += ProcessOutputDataReceived;
+                process.ErrorDataReceived += ProcessErrorDataReceived;
+
                 process.Start();
-
-                while (!process.StandardOutput.EndOfStream)
-                {
-                    string line = process.StandardOutput.ReadLine();
-                    ProcessLine(line);
-                }
-
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
                 process.WaitForExit();
 
                 if (process.ExitCode != 0)
@@ -116,17 +127,17 @@ namespace Soup.Compiler.Clang
             {
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.FileName = linker;
                 process.StartInfo.WorkingDirectory = workingDirectory;
                 process.StartInfo.Arguments = linkerArgs;
+
+                process.OutputDataReceived += ProcessOutputDataReceived;
+                process.ErrorDataReceived += ProcessErrorDataReceived;
+
                 process.Start();
-
-                while (!process.StandardOutput.EndOfStream)
-                {
-                    string line = process.StandardOutput.ReadLine();
-                    ProcessLine(line);
-                }
-
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
                 process.WaitForExit();
 
                 if (process.ExitCode != 0)
@@ -138,12 +149,15 @@ namespace Soup.Compiler.Clang
             }
         }
 
-        private static string BuildCompilerArguments(CompilerArguments args, string workingDirectory)
+        private string BuildCompilerArguments(CompilerArguments args, string workingDirectory)
         {
             // Calculate object output file
             var rootPath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
 
             var commandArgs = new List<string>();
+
+            // Disable ms compatibility (workaround for bug with inplicit types in pcm)
+            // commandArgs.Add("-fno-ms-compatibility");
 
             // Set the language standard
             switch (args.Standard)
@@ -191,7 +205,7 @@ namespace Soup.Compiler.Clang
             // Add the module references
             foreach (var module in args.Modules)
             {
-                commandArgs.Add($"-fmodule-file=\"{Path.Combine(rootPath, module.Replace("ifc", "pcm"))}\"");
+                commandArgs.Add($"-fmodule-file=\"{Path.Combine(rootPath, module)}\"");
             }
 
             if (args.ExportModule)
@@ -206,7 +220,7 @@ namespace Soup.Compiler.Clang
 
                 // Place the ifc in the output directory
                 var sourceFile = args.SourceFiles[0];
-                var outputFile = $"{Path.GetFileNameWithoutExtension(sourceFile)}.pcm";
+                var outputFile = $"{Path.GetFileNameWithoutExtension(sourceFile)}.{ModuleFileExtension}";
                 commandArgs.AddRange(new string[] { "-o", outputFile });
             }
             else
@@ -257,19 +271,19 @@ namespace Soup.Compiler.Clang
             return string.Join(" ", commandArgs);
         }
 
-        private static void ProcessLine(string line)
+        private void ProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            if (line.Contains("error"))
+            if (e.Data != null)
             {
-                Log.Error(line);
+                Log.Info(e.Data);
             }
-            else if (line.Contains("warning"))
+        }
+
+        private void ProcessErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
             {
-                Log.Warning(line);
-            }
-            else
-            {
-                Log.Info(line);
+                Log.Error(e.Data);
             }
         }
     }

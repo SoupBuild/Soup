@@ -12,6 +12,16 @@ namespace Soup.Compiler
     public interface ICompiler
     {
         /// <summary>
+        /// Gets the object file extension for the compiler
+        /// </summary>
+        string ObjectFileExtension { get; }
+
+        /// <summary>
+        /// Gets the module file extension for the compiler
+        /// </summary>
+        string ModuleFileExtension { get; }
+
+        /// <summary>
         /// Compile
         /// </summary>
         Task CompileAsync(CompilerArguments args);
