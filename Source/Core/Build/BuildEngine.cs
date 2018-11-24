@@ -67,11 +67,11 @@ namespace Soup
                 await CheckCompileModuleAsync(path, recipe, uniqueFolders, objectDirectory, force);
             }
 
-            await CompileSourceAsync(path, recipe, uniqueFolders, objectDirectory);
+            await CheckCompileSourceAsync(path, recipe, uniqueFolders, objectDirectory, force);
             switch (recipe.Type)
             {
                 case RecipeType.Library:
-                    await LinkLibraryAsync(path, recipe, objectDirectory, binaryDirectory);
+                    await CheckLinkLibraryAsync(path, recipe, objectDirectory, binaryDirectory, force);
                     break;
                 case RecipeType.Executable:
                     await LinkExecutableAsync(path, recipe, objectDirectory, binaryDirectory);
@@ -139,22 +139,15 @@ namespace Soup
             string objectDirectory,
             bool force)
         {
-            var moduleFile = Path.Combine(path, recipe.Public);
-            if (!File.Exists(moduleFile))
-            {
-                throw new InvalidOperationException($"Source public module file ({moduleFile}) does not exist.");
-            }
-
+            var moduleFile = recipe.Public;
             var outputFilename = $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}";
             var outputFile = Path.Combine(objectDirectory, outputFilename);
             bool requiresBuild = true;
-            if (!force && File.Exists(outputFile))
+            if (!force)
             {
-                var publicFileLastWriteTime = File.GetLastWriteTime(recipe.Public);
-                var outputFileLastWriteTime = File.GetLastWriteTime(outputFile);
-
-                if (publicFileLastWriteTime <= outputFileLastWriteTime)
+                if (!BuildRequiredChecker.IsOutdated(path, outputFile, new List<string>() { moduleFile }))
                 {
+                    // TODO : This is a hack. We need to actually look through all of the imports for the module file
                     Log.Info("Module file is up to date.");
                     requiresBuild = false;
                 }
@@ -231,9 +224,13 @@ namespace Soup
         /// <summary>
         /// Compile the supporting source files
         /// </summary>
-        private async Task CompileSourceAsync(string path, Recipe recipe, IList<string> uniqueFolders, string objectDirectory)
+        private async Task CheckCompileSourceAsync(
+            string path,
+            Recipe recipe,
+            IList<string> uniqueFolders,
+            string objectDirectory,
+            bool force)
         {
-            Log.Info("Compile Source");
             var modules = new List<string>();
             var defines = new List<string>();
 
@@ -266,41 +263,74 @@ namespace Soup
                 defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
             }
 
-            var source = new List<string>(recipe.Source);
+            var source = new List<string>();
+
+            // Check if the precompiled module should be compiled
             if (recipe.Type == RecipeType.Library)
             {
                 // Add the precompile module to the list of source files
-                source.Add(Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}"));
+                var moduleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}");
+                var moduleOutputFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ObjectFileExtension}");
+                var dependencies = new List<string>() { moduleFile };
+                if (force || BuildRequiredChecker.IsOutdated(path, moduleOutputFile, dependencies))
+                {
+                    source.Add(moduleFile);
+                }
             }
 
-            var args = new CompilerArguments()
+            // Check if each source file is out of date and requires a rebuild
+            foreach (var sourceFile in recipe.Source)
             {
-                Standard = Compiler.LanguageStandard.Latest,
-                RootDirectory = path,
-                OutputDirectory = objectDirectory,
-                PreprocessorDefinitions = defines,
-                SourceFiles = source,
-                IncludeDirectories = uniqueFolders,
-                Modules = modules,
-            };
-
-            // Ensure the object directory exists
-            var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
-            if (!Directory.Exists(objectDirectry))
-            {
-                Directory.CreateDirectory(objectDirectry);
+                var outputFile = Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(sourceFile)}.{_compiler.ObjectFileExtension}");
+                var dependencies = new List<string>(modules);
+                dependencies.Add(sourceFile);
+                if (force || BuildRequiredChecker.IsOutdated(path, outputFile, dependencies))
+                {
+                    source.Add(sourceFile);
+                }
             }
 
-            // Compile each file
-            await _compiler.CompileAsync(args);
+            if (source.Count == 0)
+            {
+                Log.Info("All source is up to date.");
+            }
+            else
+            {
+                Log.Info("Compile Source");
+                var args = new CompilerArguments()
+                {
+                    Standard = Compiler.LanguageStandard.Latest,
+                    RootDirectory = path,
+                    OutputDirectory = objectDirectory,
+                    PreprocessorDefinitions = defines,
+                    SourceFiles = source,
+                    IncludeDirectories = uniqueFolders,
+                    Modules = modules,
+                };
+
+                // Ensure the object directory exists
+                var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
+                if (!Directory.Exists(objectDirectry))
+                {
+                    Directory.CreateDirectory(objectDirectry);
+                }
+
+
+                // Compile each file
+                await _compiler.CompileAsync(args);
+            }
         }
 
         /// <summary>
         /// Link the resulting object files
         /// </summary>
-        private async Task LinkLibraryAsync(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
+        private async Task CheckLinkLibraryAsync(
+            string path,
+            Recipe recipe,
+            string objectDirectory,
+            string binaryDirectory,
+            bool force)
         {
-            Log.Info("Link");
             var allFiles = new List<string>(recipe.Source);
             if (recipe.Type == RecipeType.Library)
             {
@@ -313,23 +343,33 @@ namespace Soup
             // Add the modules object too
             objectFiles.Add($"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ObjectFileExtension}");
 
-            var args = new LinkerArguments()
+            var targetLibraryFile = Path.Combine(binaryDirectory, $"{recipe.Name}.{_compiler.StaticLibraryFileExtension}");
+            if (force || BuildRequiredChecker.IsOutdated(path, targetLibraryFile, objectFiles))
             {
-                Name = recipe.Name,
-                RootDirectory = path,
-                OutputDirectory = binaryDirectory,
-                SourceFiles = objectFiles,
-            };
+                Log.Info("Link library");
+                var args = new LinkerArguments()
+                {
+                    Name = recipe.Name,
+                    RootDirectory = path,
+                    OutputDirectory = binaryDirectory,
+                    SourceFiles = objectFiles,
+                };
 
-            // Ensure the object directory exists
-            var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
-            if (!Directory.Exists(objectDirectry))
+                // Ensure the object directory exists
+                var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
+                if (!Directory.Exists(objectDirectry))
+                {
+                    Directory.CreateDirectory(objectDirectry);
+                }
+
+                // Link
+                await _compiler.LinkLibraryAsync(args);
+            }
+            else
             {
-                Directory.CreateDirectory(objectDirectry);
+                Log.Info("Static library up to date.");
             }
 
-            // Link
-            await _compiler.LinkLibraryAsync(args);
         }
 
         /// <summary>

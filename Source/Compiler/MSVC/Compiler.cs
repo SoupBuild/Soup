@@ -30,6 +30,12 @@ namespace Soup.Compiler.MSVC
         public string ModuleFileExtension => "ifc";
 
         /// <summary>
+        /// Gets the static library file extension for the compiler
+        /// TODO: This is platform specific
+        /// </summary>
+        public string StaticLibraryFileExtension => "lib";
+
+        /// <summary>
         /// Compile
         /// </summary>
         public Task CompileAsync(CompilerArguments args)

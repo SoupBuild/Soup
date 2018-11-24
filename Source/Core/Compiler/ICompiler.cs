@@ -22,6 +22,12 @@ namespace Soup.Compiler
         string ModuleFileExtension { get; }
 
         /// <summary>
+        /// Gets the static library file extension for the compiler
+        /// TODO: This is platform specific
+        /// </summary>
+        string StaticLibraryFileExtension { get; }
+
+        /// <summary>
         /// Compile
         /// </summary>
         Task CompileAsync(CompilerArguments args);

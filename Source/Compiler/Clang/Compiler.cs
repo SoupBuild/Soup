@@ -22,12 +22,18 @@ namespace Soup.Compiler.Clang
         /// <summary>
         /// Gets the object file extension for the compiler
         /// </summary>
-        public string ObjectFileExtension => "obj";
+        public string ObjectFileExtension => "o";
 
         /// <summary>
         /// Gets the module file extension for the compiler
         /// </summary>
         public string ModuleFileExtension => "pcm";
+
+        /// <summary>
+        /// Gets the static library file extension for the compiler
+        /// TODO: This is platform specific
+        /// </summary>
+        public string StaticLibraryFileExtension => "a";
 
         /// <summary>
         /// Compile
@@ -235,7 +241,7 @@ namespace Soup.Compiler.Clang
             return string.Join(" ", commandArgs);
         }
 
-        private static string BuildLinkerLibraryArguments(LinkerArguments args)
+        private string BuildLinkerLibraryArguments(LinkerArguments args)
         {
             var commandArgs = new List<string>();
 
@@ -246,10 +252,10 @@ namespace Soup.Compiler.Clang
 
             // Add the library output file
             var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
-            commandArgs.Add($"{ouputPath}{args.Name}.a");
+            commandArgs.Add($"{ouputPath}{args.Name}.{StaticLibraryFileExtension}");
 
             // Lastly add the file
-            commandArgs.AddRange(args.SourceFiles.Select(file => file.Replace(".obj", ".o")));
+            commandArgs.AddRange(args.SourceFiles);
 
             return string.Join(" ", commandArgs);
         }
