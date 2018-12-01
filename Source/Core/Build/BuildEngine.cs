@@ -34,7 +34,7 @@ namespace Soup
         public async Task ExecuteAsync(string path, Recipe recipe, bool force)
         {
             Log.Info("Build Recursive Dependencies.");
-            await BuildAllDependenciesRecursivelyAsync(path, recipe);
+            await BuildAllDependenciesRecursivelyAsync(path, recipe, force);
 
             Log.Info("Build Toplevel Recipe.");
             await CoreBuildAsync(path, recipe, force);
@@ -91,29 +91,14 @@ namespace Soup
         /// </summary>
         private async Task BuildAllDependenciesRecursivelyAsync(
             string path,
-            Recipe recipe)
+            Recipe recipe,
+            bool force)
         {
             Log.Info($"Searching Dependencies: {recipe.Name}.");
             foreach (var dependecy in recipe.Dependencies)
             {
                 // Load this package recipe
-                string packagePath;
-                if (dependecy.Path != null)
-                {
-                    // Verify the package exists
-                    if (!Directory.Exists(dependecy.Path))
-                    {
-                        Log.Error($"The local package reference folder does not exist: {dependecy.Path}");
-                        throw new InvalidOperationException();
-                    }
-
-                    packagePath = dependecy.Path;
-                }
-                else
-                {
-                    packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
-                }
-
+                var packagePath = VerifyDependencyPath(path, dependecy);
                 var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
                 if (dependecyRecipe == null)
                 {
@@ -122,10 +107,10 @@ namespace Soup
                 }
 
                 // Build all recursive dependencies
-                await BuildAllDependenciesRecursivelyAsync(packagePath, dependecyRecipe);
+                await BuildAllDependenciesRecursivelyAsync(packagePath, dependecyRecipe, force);
 
                 // Build this dependecy
-                await CoreBuildAsync(packagePath, dependecyRecipe, false);
+                await CoreBuildAsync(packagePath, dependecyRecipe, force);
             }
         }
 
@@ -174,30 +159,22 @@ namespace Soup
         {
             Log.Info("Compile Module");
 
+            if (string.IsNullOrEmpty(recipe.Public))
+            {
+                throw new InvalidOperationException("The public file was not set.");
+            }
+
+            var modules = new List<string>();
             var defines = new List<string>();
+
             defines.Add("SOUP_BUILD");
 
             // Set the active version namespace
-            defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
+            defines.Add(BuildRecipeNamespaceDefine(recipe));
 
-            // Add all of the direct dependencies version defintions
-            foreach (var dependecy in recipe.Dependencies)
-            {
-                // Load this package recipe
-                string packagePath;
-                if (dependecy.Path != null)
-                {
-                    packagePath = dependecy.Path;
-                }
-                else
-                {
-                    packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
-                }
-
-                var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
-
-                defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
-            }
+            // Add all of the direct dependencies as module references
+            // and set their version defintions
+            await BuildDependencyModuleReferences(path, recipe, modules, defines);
 
             var args = new CompilerArguments()
             {
@@ -207,6 +184,7 @@ namespace Soup
                 PreprocessorDefinitions = defines,
                 SourceFiles = new List<string>() { recipe.Public },
                 IncludeDirectories = uniqueFolders,
+                Modules = modules,
                 ExportModule = true,
             };
 
@@ -239,29 +217,12 @@ namespace Soup
             {
                 // Add a reference to our own modules interface definition
                 modules.Add(Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}"));
-                defines.Add($"{recipe.Name}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}");
+                defines.Add(BuildRecipeNamespaceDefine(recipe));
             }
 
             // Add all of the direct dependencies as module references
             // and set their version defintions
-            foreach (var dependecy in recipe.Dependencies)
-            {
-                // Load this package recipe
-                string packagePath;
-                if (dependecy.Path != null)
-                {
-                    packagePath = dependecy.Path;
-                }
-                else
-                {
-                    packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
-                }
-
-                var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
-
-                modules.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.{_compiler.ModuleFileExtension}"));
-                defines.Add($"{dependecyRecipe.Name}_VersionNamespace={dependecyRecipe.Name}::{GetNamespace(dependecyRecipe.Version)}");
-            }
+            await BuildDependencyModuleReferences(path, recipe, modules, defines);
 
             var source = new List<string>();
 
@@ -318,6 +279,23 @@ namespace Soup
 
                 // Compile each file
                 await _compiler.CompileAsync(args);
+            }
+        }
+
+        private async Task BuildDependencyModuleReferences(
+            string path,
+            Recipe recipe, 
+            IList<string> modules,
+            IList<string> defines)
+        {
+            foreach (var dependecy in recipe.Dependencies)
+            {
+                // Load this package recipe
+                var packagePath = VerifyDependencyPath(path, dependecy);
+                var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
+
+                modules.Add(Path.Combine(packagePath, "bin", BuildRecipeModuleFilename(dependecyRecipe)));
+                defines.Add(BuildRecipeNamespaceDefine(dependecyRecipe));
             }
         }
 
@@ -390,7 +368,7 @@ namespace Soup
 
             // Add all of the dependencies as module references
             var librarySet = new HashSet<string>();
-            await GenerateDependencyLibrarySetAsync(recipe, librarySet);
+            await GenerateDependencyLibrarySetAsync(path, recipe, librarySet);
 
             var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.{_compiler.ObjectFileExtension}").ToList();
             var libraryFiles = librarySet.ToList();
@@ -421,7 +399,7 @@ namespace Soup
         {
             Log.Verbose("Clone Module Interface");
             var sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}");
-            var targetModuleFile = Path.Combine(path, binaryDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Name)}.{_compiler.ModuleFileExtension}");
+            var targetModuleFile = Path.Combine(path, binaryDirectory, BuildRecipeModuleFilename(recipe));
 
             // Ensure the object directory exists
             if (!File.Exists(sourceModuleFile))
@@ -433,27 +411,65 @@ namespace Soup
             File.Copy(sourceModuleFile, targetModuleFile, true);
         }
 
-        private async Task GenerateDependencyLibrarySetAsync(Recipe recipe, HashSet<string> set)
+        private async Task GenerateDependencyLibrarySetAsync(
+            string path,
+            Recipe recipe,
+            HashSet<string> set)
         {
             foreach (var dependecy in recipe.Dependencies)
             {
                 // Load this package recipe
-                string packagePath;
-                if (dependecy.Path != null)
-                {
-                    packagePath = dependecy.Path;
-                }
-                else
-                {
-                    packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
-                }
+                var packagePath = VerifyDependencyPath(path, dependecy);
+                var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
                 // Get recursive dependencies
-                var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
-                await GenerateDependencyLibrarySetAsync(dependecyRecipe, set);
+                await GenerateDependencyLibrarySetAsync(path, dependecyRecipe, set);
 
                 set.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.a").ToLower());
             }
+        }
+
+        private string VerifyDependencyPath(string path, PackageReference dependecy)
+        {
+            string packagePath;
+            if (dependecy.Path != null)
+            {
+                // Build the relative path
+                Log.Verbose($"Local Dependecy: {dependecy.Path}");
+                if (!Path.IsPathRooted(dependecy.Path))
+                {
+                    packagePath = Path.Combine(path, dependecy.Path);
+                }
+                else
+                {
+                    packagePath = dependecy.Path;
+                }
+
+                Log.Verbose($"Path: {packagePath}");
+
+                // Verify the package exists
+                if (!Directory.Exists(packagePath))
+                {
+                    Log.Error($"The local package reference folder does not exist: {packagePath}");
+                    throw new InvalidOperationException();
+                }
+            }
+            else
+            {
+                packagePath = PackageManager.BuildKitchenPackagePath(_config, dependecy);
+            }
+
+            return packagePath;
+        }
+
+        private string BuildRecipeNamespaceDefine(Recipe recipe)
+        {
+            return $"{recipe.Name.Replace(".", "_")}_VersionNamespace={recipe.Name}::{GetNamespace(recipe.Version)}";
+        }
+
+        private string BuildRecipeModuleFilename(Recipe recipe)
+        {
+            return $"{recipe.Name.Replace(".", "_")}.{_compiler.ModuleFileExtension}";
         }
 
         private string GetNamespace(SemanticVersion version)
