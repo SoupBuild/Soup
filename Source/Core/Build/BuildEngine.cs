@@ -45,8 +45,8 @@ namespace Soup
         /// </summary>
         private async Task CoreBuildAsync(string path, Recipe recipe, bool force)
         {
-            var objectDirectory = "obj";
-            var binaryDirectory = "bin";
+            var objectDirectory = Path.Combine("out", "obj", _compiler.Name);
+            var binaryDirectory = Path.Combine("out", "bin", _compiler.Name);
 
             // Determine the include paths
             var folderSet = new HashSet<string>();
@@ -64,10 +64,10 @@ namespace Soup
             Log.Info($"Building {recipe.Name}.");
             if (recipe.Type == RecipeType.Library)
             {
-                await CheckCompileModuleAsync(path, recipe, uniqueFolders, objectDirectory, force);
+                await CheckCompileModuleAsync(path, recipe, uniqueFolders, objectDirectory, binaryDirectory, force);
             }
 
-            await CheckCompileSourceAsync(path, recipe, uniqueFolders, objectDirectory, force);
+            await CheckCompileSourceAsync(path, recipe, uniqueFolders, objectDirectory, binaryDirectory, force);
             switch (recipe.Type)
             {
                 case RecipeType.Library:
@@ -122,6 +122,7 @@ namespace Soup
             Recipe recipe,
             IList<string> uniqueFolders,
             string objectDirectory,
+            string binaryDirectory,
             bool force)
         {
             var moduleFile = recipe.Public;
@@ -144,7 +145,8 @@ namespace Soup
                     path,
                     recipe,
                     uniqueFolders,
-                    objectDirectory);
+                    objectDirectory,
+                    binaryDirectory);
             }
         }
 
@@ -155,7 +157,8 @@ namespace Soup
             string path,
             Recipe recipe,
             IList<string> uniqueFolders,
-            string objectDirectory)
+            string objectDirectory,
+            string binaryDirectory)
         {
             Log.Info("Compile Module");
 
@@ -174,7 +177,7 @@ namespace Soup
 
             // Add all of the direct dependencies as module references
             // and set their version defintions
-            await BuildDependencyModuleReferences(path, recipe, modules, defines);
+            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
 
             var args = new CompilerArguments()
             {
@@ -207,6 +210,7 @@ namespace Soup
             Recipe recipe,
             IList<string> uniqueFolders,
             string objectDirectory,
+            string binaryDirectory,
             bool force)
         {
             var modules = new List<string>();
@@ -222,7 +226,7 @@ namespace Soup
 
             // Add all of the direct dependencies as module references
             // and set their version defintions
-            await BuildDependencyModuleReferences(path, recipe, modules, defines);
+            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
 
             var source = new List<string>();
 
@@ -284,7 +288,8 @@ namespace Soup
 
         private async Task BuildDependencyModuleReferences(
             string path,
-            Recipe recipe, 
+            string binaryDirectory,
+            Recipe recipe,
             IList<string> modules,
             IList<string> defines)
         {
@@ -294,7 +299,7 @@ namespace Soup
                 var packagePath = VerifyDependencyPath(path, dependecy);
                 var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
-                modules.Add(Path.Combine(packagePath, "bin", BuildRecipeModuleFilename(dependecyRecipe)));
+                modules.Add(Path.Combine(packagePath, binaryDirectory, BuildRecipeModuleFilename(dependecyRecipe)));
                 defines.Add(BuildRecipeNamespaceDefine(dependecyRecipe));
             }
         }
@@ -368,7 +373,7 @@ namespace Soup
 
             // Add all of the dependencies as module references
             var librarySet = new HashSet<string>();
-            await GenerateDependencyLibrarySetAsync(path, recipe, librarySet);
+            await GenerateDependencyLibrarySetAsync(path, binaryDirectory, recipe, librarySet);
 
             var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.{_compiler.ObjectFileExtension}").ToList();
             var libraryFiles = librarySet.ToList();
@@ -413,6 +418,7 @@ namespace Soup
 
         private async Task GenerateDependencyLibrarySetAsync(
             string path,
+            string binaryDirectory,
             Recipe recipe,
             HashSet<string> set)
         {
@@ -423,9 +429,9 @@ namespace Soup
                 var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
                 // Get recursive dependencies
-                await GenerateDependencyLibrarySetAsync(path, dependecyRecipe, set);
+                await GenerateDependencyLibrarySetAsync(path, binaryDirectory, dependecyRecipe, set);
 
-                set.Add(Path.Combine(packagePath, "bin", $"{dependecyRecipe.Name}.a").ToLower());
+                set.Add(Path.Combine(packagePath, binaryDirectory, $"{dependecyRecipe.Name}.a").ToLower());
             }
         }
 

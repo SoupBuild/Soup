@@ -12,6 +12,11 @@ namespace Soup.Compiler
     public interface ICompiler
     {
         /// <summary>
+        /// Gets the unique name for the compiler
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// Gets the object file extension for the compiler
         /// </summary>
         string ObjectFileExtension { get; }

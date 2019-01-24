@@ -15,6 +15,11 @@ namespace Soup.Compiler.GCC
     public class Compiler : ICompiler
     {
         /// <summary>
+        /// Gets the unique name for the compiler
+        /// </summary>
+        public string Name => "GCC";
+
+        /// <summary>
         /// Gets the object file extension for the compiler
         /// </summary>
         public string ObjectFileExtension => "obj";

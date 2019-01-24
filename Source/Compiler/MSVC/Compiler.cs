@@ -15,9 +15,21 @@ namespace Soup.Compiler.MSVC
     /// </summary>
     public class Compiler : ICompiler
     {
-        private static string ToolsPath => @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726";
+        private static string VSToolsPath => @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726";
 
+#if NO_CLANG_CL
+        private static string CompilerPath => Path.Combine(VSToolsPath, @"bin\Hostx64\x64\cl.exe");
+#else
+        private static string ClangToolsPath => @"D:\Repos\llvm\build\Release";
+        private static string CompilerPath => Path.Combine(VSToolsPath, @"bin\clang_cl.exe");
+#endif
+        private static string LinkerPath => Path.Combine(VSToolsPath, @"bin\Hostx64\x64\lib.exe");
         private static string WindowsKitsPath => @"C:\Program Files (x86)\Windows Kits";
+
+        /// <summary>
+        /// Gets the unique name for the compiler
+        /// </summary>
+        public string Name => "MSVC";
 
         /// <summary>
         /// Gets the object file extension for the compiler
@@ -43,17 +55,16 @@ namespace Soup.Compiler.MSVC
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;
 
-            string compiler = Path.Combine(ToolsPath, @"bin\Hostx64\x64\cl.exe");
             var commandArgs = BuildCompilerArguments(args);
 
             Log.Verbose($"PWD={workingDirectory}");
-            Log.Verbose($"{compiler} {commandArgs}");
+            Log.Verbose($"{CompilerPath} {commandArgs}");
 
             using (Process process = new Process())
             {
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.FileName = compiler;
+                process.StartInfo.FileName = CompilerPath;
                 process.StartInfo.WorkingDirectory = workingDirectory;
                 process.StartInfo.Arguments = commandArgs;
                 process.Start();
@@ -82,18 +93,17 @@ namespace Soup.Compiler.MSVC
         {
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;
-
-            string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\lib.exe");
+            
             var linkerArgs = BuildLinkerLibraryArguments(args);
 
             Log.Verbose($"PWD={workingDirectory}");
-            Log.Verbose($"{linker} {linkerArgs}");
+            Log.Verbose($"{LinkerPath} {linkerArgs}");
 
             using (Process process = new Process())
             {
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.FileName = linker;
+                process.StartInfo.FileName = LinkerPath;
                 process.StartInfo.WorkingDirectory = workingDirectory;
                 process.StartInfo.Arguments = linkerArgs;
                 process.Start();
@@ -122,17 +132,16 @@ namespace Soup.Compiler.MSVC
         {
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;
-            string linker = Path.Combine(ToolsPath, @"bin\Hostx64\x64\link.exe");
             var linkerArgs = BuildLinkerExecutableArguments(args);
 
             Log.Verbose($"PWD={workingDirectory}");
-            Log.Verbose($"{linker} {linkerArgs}");
+            Log.Verbose($"{LinkerPath} {linkerArgs}");
 
             using (Process process = new Process())
             {
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.FileName = linker;
+                process.StartInfo.FileName = LinkerPath;
                 process.StartInfo.WorkingDirectory = workingDirectory;
                 process.StartInfo.Arguments = linkerArgs;
                 process.Start();
@@ -208,8 +217,8 @@ namespace Soup.Compiler.MSVC
             // C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um
             // C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt
             // C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\cppwinrt
-            commandArgs.Add($"-I\"{Path.Combine(ToolsPath, @"ATLMFC\include")}\"");
-            commandArgs.Add($"-I\"{Path.Combine(ToolsPath, @"include")}\"");
+            commandArgs.Add($"-I\"{Path.Combine(VSToolsPath, @"ATLMFC\include")}\"");
+            commandArgs.Add($"-I\"{Path.Combine(VSToolsPath, @"include")}\"");
             commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\ucrt")}\"");
             commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\shared")}\"");
             commandArgs.Add($"-I\"{Path.Combine(WindowsKitsPath, @"10\include\10.0.17134.0\um")}\"");
@@ -300,8 +309,8 @@ namespace Soup.Compiler.MSVC
             // C:\Program Files(x86)\Windows Kits\NETFXSDK\4.6.1\lib\um\x64;
             // C:\Program Files(x86)\Windows Kits\10\lib\10.0.17134.0\ucrt\x64;
             // C:\Program Files(x86)\Windows Kits\10\lib\10.0.17134.0\um\x64
-            commandArgs.Add($"-libpath:\"{Path.Combine(ToolsPath, @"ATLMFC\lib\x64")}\"");
-            commandArgs.Add($"-libpath:\"{Path.Combine(ToolsPath, @"lib\x64")}\"");
+            commandArgs.Add($"-libpath:\"{Path.Combine(VSToolsPath, @"ATLMFC\lib\x64")}\"");
+            commandArgs.Add($"-libpath:\"{Path.Combine(VSToolsPath, @"lib\x64")}\"");
             commandArgs.Add($"-libpath:\"{Path.Combine(WindowsKitsPath, @"10\lib\10.0.17134.0\ucrt\x64")}\"");
             commandArgs.Add($"-libpath:\"{Path.Combine(WindowsKitsPath, @"10\lib\10.0.17134.0\um\x64")}\"");
 

@@ -9,6 +9,7 @@ namespace Soup.Compiler.Clang
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -18,6 +19,16 @@ namespace Soup.Compiler.Clang
     {
         //private static string ToolsPath => @"C:\Program Files\llvm\";
         private static string ToolsPath => @"D:\Repos\llvm\build\Release";
+        private static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
+        private static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);
+
+        private bool _inWarningMessage = false;
+        private bool _inErrorMessage = false;
+
+        /// <summary>
+        /// Gets the unique name for the compiler
+        /// </summary>
+        public string Name => "Clang";
 
         /// <summary>
         /// Gets the object file extension for the compiler
@@ -49,6 +60,8 @@ namespace Soup.Compiler.Clang
             Log.Verbose($"PWD={workingDirectory}");
             Log.Verbose($"{compiler} {commandArgs}");
 
+            _inWarningMessage = false;
+            _inErrorMessage = false;
             using (Process process = new Process())
             {
                 process.StartInfo.UseShellExecute = false;
@@ -89,6 +102,8 @@ namespace Soup.Compiler.Clang
             Log.Verbose($"PWD={workingDirectory}");
             Log.Verbose($"{linker} {linkerArgs}");
 
+            _inWarningMessage = false;
+            _inErrorMessage = false;
             using (Process process = new Process())
             {
                 process.StartInfo.UseShellExecute = false;
@@ -129,6 +144,8 @@ namespace Soup.Compiler.Clang
             Log.Verbose($"PWD={workingDirectory}");
             Log.Verbose($"{linker} {linkerArgs}");
 
+            _inWarningMessage = false;
+            _inErrorMessage = false;
             using (Process process = new Process())
             {
                 process.StartInfo.UseShellExecute = false;
@@ -164,6 +181,9 @@ namespace Soup.Compiler.Clang
 
             // Disable ms compatibility (workaround for bug with inplicit types in pcm)
             // commandArgs.Add("-fno-ms-compatibility");
+
+            // Allow public std visible during link time
+            commandArgs.AddRange(new string[] { "-Xclang", "-flto-visibility-public-std" });
 
             // Set the language standard
             switch (args.Standard)
@@ -289,7 +309,29 @@ namespace Soup.Compiler.Clang
         {
             if (e.Data != null)
             {
-                Log.Error(e.Data);
+                if (IsWarningMessage.IsMatch(e.Data))
+                {
+                    _inWarningMessage = true;
+                    _inErrorMessage = false;
+                }
+                else if (IsErrorMessage.IsMatch(e.Data))
+                {
+                    _inWarningMessage = false;
+                    _inErrorMessage = true;
+                }
+
+                if (_inWarningMessage)
+                {
+                    Log.Warning(e.Data);
+                }
+                else if (_inErrorMessage)
+                {
+                    Log.Error(e.Data);
+                }
+                else
+                {
+                    Log.Info(e.Data);
+                }
             }
         }
     }
