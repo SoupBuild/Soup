@@ -21,7 +21,7 @@ namespace Soup.Compiler.MSVC
         private static string CompilerPath => Path.Combine(VSToolsPath, @"bin\Hostx64\x64\cl.exe");
 #else
         private static string ClangToolsPath => @"D:\Repos\llvm\build\Release";
-        private static string CompilerPath => Path.Combine(VSToolsPath, @"bin\clang_cl.exe");
+        private static string CompilerPath => Path.Combine(ClangToolsPath, @"bin\clang-cl.exe");
 #endif
         private static string LinkerPath => Path.Combine(VSToolsPath, @"bin\Hostx64\x64\lib.exe");
         private static string WindowsKitsPath => @"C:\Program Files (x86)\Windows Kits";
@@ -55,7 +55,7 @@ namespace Soup.Compiler.MSVC
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;
 
-            var commandArgs = BuildCompilerArguments(args);
+            var commandArgs = BuildCompilerArguments(args, workingDirectory);
 
             Log.Verbose($"PWD={workingDirectory}");
             Log.Verbose($"{CompilerPath} {commandArgs}");
@@ -163,7 +163,7 @@ namespace Soup.Compiler.MSVC
             }
         }
 
-        private static string BuildCompilerArguments(CompilerArguments args)
+        private static string BuildCompilerArguments(CompilerArguments args, string rootPath)
         {
             var commandArgs = new List<string>();
 
@@ -242,7 +242,7 @@ namespace Soup.Compiler.MSVC
             foreach (var module in args.Modules)
             {
                 commandArgs.Add("-module:reference");
-                commandArgs.Add(module);
+                commandArgs.Add(Path.Combine(rootPath, module));
             }
 
             if (args.ExportModule)

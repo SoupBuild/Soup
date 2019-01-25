@@ -25,6 +25,7 @@ namespace Soup.Client
             {
                 var arguments = Parser.Default.ParseArguments<
                     BuildOptions,
+                    RunOptions,
                     InitializeOptions,
                     InstallOptions,
                     PackOptions,
@@ -44,6 +45,7 @@ namespace Soup.Client
                 // Map the indivual commands
                 await arguments.MapResult(
                         (BuildOptions options) => new BuildCommand(GetUserConfig(), GetCompiler()).InvokeAsync(options),
+                        (RunOptions options) => new RunCommand(GetUserConfig(), GetCompiler()).InvokeAsync(options),
                         (InitializeOptions options) => new InitializeCommand().InvokeAsync(options),
                         (InstallOptions options) => new InstallCommand(GetUserConfig(), GetSoupApi()).InvokeAsync(options),
                         (PackOptions options) => new PackCommand().InvokeAsync(options),
@@ -99,7 +101,7 @@ namespace Soup.Client
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                //return new Compiler.MSVC.Compiler();
+                // return new Compiler.MSVC.Compiler();
                 return new Compiler.Clang.Compiler();
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
