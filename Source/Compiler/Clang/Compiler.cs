@@ -19,9 +19,11 @@ namespace Soup.Compiler.Clang
     {
         //private static string ToolsPath => @"C:\Program Files\llvm\";
         private static string ToolsPath => @"D:\Repos\llvm\build\Release";
+        private static Regex IsHeaderIncludeStart = new Regex("^[\\.]+ ", RegexOptions.Compiled);
         private static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
         private static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);
 
+        private Stack<HeaderInclude> _currentIncludes = new Stack<HeaderInclude>();
         private bool _inWarningMessage = false;
         private bool _inErrorMessage = false;
 
@@ -49,7 +51,7 @@ namespace Soup.Compiler.Clang
         /// <summary>
         /// Compile
         /// </summary>
-        public Task CompileAsync(CompilerArguments args)
+        public Task<CompileResults> CompileAsync(CompileArguments args)
         {
             // Set the working directory to the output directory
             var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
@@ -59,6 +61,16 @@ namespace Soup.Compiler.Clang
 
             Log.Verbose($"PWD={workingDirectory}");
             Log.Verbose($"{compiler} {commandArgs}");
+
+            // Add a single root element if includes requested
+            if (args.GenerateIncludeTree)
+            {
+                _currentIncludes.Push(new HeaderInclude()
+                {
+                    // TODO: HACK
+                    Filename = args.SourceFiles.First(),
+                });
+            }
 
             _inWarningMessage = false;
             _inErrorMessage = false;
@@ -84,7 +96,26 @@ namespace Soup.Compiler.Clang
                     throw new InvalidOperationException();
                 }
 
-                return Task.CompletedTask;
+                var result = new CompileResults();
+
+                // Check if requested include headers
+                if (args.GenerateIncludeTree)
+                {
+                    // Move up to the root node
+                    while (_currentIncludes.Count > 1)
+                    {
+                        _currentIncludes.Pop();
+                    }
+
+                    if (_currentIncludes.Count != 1)
+                    {
+                        throw new InvalidOperationException("Expected one root includes node.");
+                    }
+
+                    result.HeaderIncludeFiles = new List<HeaderInclude>() { _currentIncludes.Pop() };
+                }
+
+                return Task.FromResult(result);
             }
         }
 
@@ -172,12 +203,18 @@ namespace Soup.Compiler.Clang
             }
         }
 
-        private string BuildCompilerArguments(CompilerArguments args, string workingDirectory)
+        private string BuildCompilerArguments(CompileArguments args, string workingDirectory)
         {
             // Calculate object output file
             var rootPath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
 
             var commandArgs = new List<string>();
+
+            // Enable Header includes if needed
+            if (args.GenerateIncludeTree)
+            {
+                commandArgs.Add("-H");
+            }
 
             // Disable ms compatibility (workaround for bug with inplicit types in pcm)
             // commandArgs.Add("-fno-ms-compatibility");
@@ -319,6 +356,11 @@ namespace Soup.Compiler.Clang
                     _inWarningMessage = false;
                     _inErrorMessage = true;
                 }
+                else
+                {
+                    _inWarningMessage = false;
+                    _inErrorMessage = false;
+                }
 
                 if (_inWarningMessage)
                 {
@@ -328,11 +370,51 @@ namespace Soup.Compiler.Clang
                 {
                     Log.Error(e.Data);
                 }
+                else if (IsHeaderIncludeStart.IsMatch(e.Data))
+                {
+                    ProcessHeaderInclude(e.Data);
+                }
                 else
                 {
                     Log.Info(e.Data);
                 }
             }
+        }
+
+        private void ProcessHeaderInclude(string value)
+        {
+            Log.Info(value);
+
+            // Count depth
+            int depth = 0;
+            while (value[depth] == '.')
+            {
+                depth++;
+            }
+
+            var filename = value.Substring(depth + 1).Replace("\\\\", "/");
+            var include = new HeaderInclude()
+            {
+                Filename = filename,
+            };
+
+            // Move to matching depth
+            while (_currentIncludes.Count > depth)
+            {
+                _currentIncludes.Pop();
+            }
+
+            // Only add to current if not a Roots
+            if (depth == 0)
+            {
+                throw new InvalidOperationException("Missing root include node.");
+            }
+
+            // Add to current
+            _currentIncludes.Peek().Includes.Add(include);
+
+            // Set the new include as the current depth
+            _currentIncludes.Push(include);
         }
     }
 }

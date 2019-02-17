@@ -48,26 +48,24 @@ namespace Soup
             var objectDirectory = Path.Combine("out", "obj", _compiler.Name);
             var binaryDirectory = Path.Combine("out", "bin", _compiler.Name);
 
-            // Determine the include paths
-            var folderSet = new HashSet<string>();
-            foreach (var file in recipe.Source)
+            Log.Info($"Building {recipe.Name}.");
+            Log.Verbose($"Loading previous build state.");
+            var buildState = await BuildStateManager.LoadFromFileAsync(path);
+            if (buildState == null)
             {
-                var fileFolder = Path.GetDirectoryName(file);
-                if (!string.IsNullOrWhiteSpace(fileFolder))
-                {
-                    folderSet.Add(fileFolder);
-                }
+                Log.Verbose($"No previous state found.");
+                buildState = new BuildState();
             }
 
-            var uniqueFolders = folderSet.ToList();
+            // Determine the include paths
+            var uniqueFolders = Directory.GetDirectories(path, "", SearchOption.AllDirectories);
 
-            Log.Info($"Building {recipe.Name}.");
             if (recipe.Type == RecipeType.Library)
             {
-                await CheckCompileModuleAsync(path, recipe, uniqueFolders, objectDirectory, binaryDirectory, force);
+                await CheckCompileModuleAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
             }
 
-            await CheckCompileSourceAsync(path, recipe, uniqueFolders, objectDirectory, binaryDirectory, force);
+            await CheckCompileSourceAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
             switch (recipe.Type)
             {
                 case RecipeType.Library:
@@ -84,6 +82,9 @@ namespace Soup
             {
                 CloneModuleInterface(path, recipe, objectDirectory, binaryDirectory);
             }
+
+            // Save the build state
+            await BuildStateManager.SaveToFileAsync(buildState, path);
         }
 
         /// <summary>
@@ -120,6 +121,7 @@ namespace Soup
         private async Task CheckCompileModuleAsync(
             string path,
             Recipe recipe,
+            BuildState buildState,
             IList<string> uniqueFolders,
             string objectDirectory,
             string binaryDirectory,
@@ -131,7 +133,7 @@ namespace Soup
             bool requiresBuild = true;
             if (!force)
             {
-                if (!BuildRequiredChecker.IsOutdated(path, outputFile, new List<string>() { moduleFile }))
+                if (!BuildRequiredChecker.IsSourceFileOutdated(path, buildState, outputFile, new List<string>() { moduleFile }))
                 {
                     // TODO : This is a hack. We need to actually look through all of the imports for the module file
                     Log.Info("Module file is up to date.");
@@ -144,6 +146,7 @@ namespace Soup
                 await CompileModuleAsync(
                     path,
                     recipe,
+                    buildState,
                     uniqueFolders,
                     objectDirectory,
                     binaryDirectory);
@@ -156,6 +159,7 @@ namespace Soup
         private async Task CompileModuleAsync(
             string path,
             Recipe recipe,
+            BuildState buildState,
             IList<string> uniqueFolders,
             string objectDirectory,
             string binaryDirectory)
@@ -179,7 +183,7 @@ namespace Soup
             // and set their version defintions
             await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
 
-            var args = new CompilerArguments()
+            var args = new CompileArguments()
             {
                 Standard = Compiler.LanguageStandard.Latest,
                 RootDirectory = path,
@@ -189,6 +193,7 @@ namespace Soup
                 IncludeDirectories = uniqueFolders,
                 Modules = modules,
                 ExportModule = true,
+                GenerateIncludeTree = true,
             };
 
             // Ensure the object directory exists
@@ -199,7 +204,10 @@ namespace Soup
             }
 
             // Compile each file
-            await _compiler.CompileAsync(args);
+            var result = await _compiler.CompileAsync(args);
+
+            // Save the build state
+            buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
         }
 
         /// <summary>
@@ -208,6 +216,7 @@ namespace Soup
         private async Task CheckCompileSourceAsync(
             string path,
             Recipe recipe,
+            BuildState buildState,
             IList<string> uniqueFolders,
             string objectDirectory,
             string binaryDirectory,
@@ -262,7 +271,7 @@ namespace Soup
             else
             {
                 Log.Info("Compile Source");
-                var args = new CompilerArguments()
+                var args = new CompileArguments()
                 {
                     Standard = Compiler.LanguageStandard.Latest,
                     RootDirectory = path,
@@ -271,6 +280,7 @@ namespace Soup
                     SourceFiles = source,
                     IncludeDirectories = uniqueFolders,
                     Modules = modules,
+                    GenerateIncludeTree = true,
                 };
 
                 // Ensure the object directory exists
@@ -282,7 +292,7 @@ namespace Soup
 
 
                 // Compile each file
-                await _compiler.CompileAsync(args);
+                var result = await _compiler.CompileAsync(args);
             }
         }
 

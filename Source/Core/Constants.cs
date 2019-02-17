@@ -64,6 +64,11 @@ namespace Soup
         /// </summary>
         public static string RecipeFileName => "Recipe.json";
 
+        /// <summary>
+        /// Gets the settings file name for a Build State
+        /// </summary>
+        public static string BuildStateFileName => "BuildState.json";
+
 #if LOCAL
         /// <summary>
         /// Gets the local URL for the Soup identity service

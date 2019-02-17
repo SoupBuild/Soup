@@ -50,7 +50,7 @@ namespace Soup.Compiler.MSVC
         /// <summary>
         /// Compile
         /// </summary>
-        public Task CompileAsync(CompilerArguments args)
+        public Task<CompileResults> CompileAsync(CompileArguments args)
         {
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;
@@ -82,7 +82,7 @@ namespace Soup.Compiler.MSVC
                     throw new InvalidOperationException();
                 }
 
-                return Task.CompletedTask;
+                return Task.FromResult(new CompileResults());
             }
         }
 
@@ -163,7 +163,7 @@ namespace Soup.Compiler.MSVC
             }
         }
 
-        private static string BuildCompilerArguments(CompilerArguments args, string rootPath)
+        private static string BuildCompilerArguments(CompileArguments args, string rootPath)
         {
             var commandArgs = new List<string>();
 

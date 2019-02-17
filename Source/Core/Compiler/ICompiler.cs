@@ -35,7 +35,7 @@ namespace Soup.Compiler
         /// <summary>
         /// Compile
         /// </summary>
-        Task CompileAsync(CompilerArguments args);
+        Task<CompileResults> CompileAsync(CompileArguments args);
 
         /// <summary>
         /// Link Library

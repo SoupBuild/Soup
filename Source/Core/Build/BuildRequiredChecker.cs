@@ -9,13 +9,28 @@ namespace Soup
 {
     internal static class BuildRequiredChecker
     {
-        public static bool IsOutdated(string rootPath, string outputFile, IList<string> dependencies)
+        public static bool IsSourceFileOutdated(string rootPath, BuildState buildState, string targetFile, IList<string> sourceFiles)
+        {
+            var knownFiles = buildState.GetKnownFileLookup();
+            var dependencies = new List<string>(sourceFiles);
+            if (TryBuildIncludeSet(sourceFiles, knownFiles, dependencies))
+            {
+                return IsOutdated(rootPath, targetFile, sourceFiles);
+            }
+            else
+            {
+                Log.Verbose($"Unable to resolve include set from previous build.");
+                return true;
+            }
+        }
+
+        public static bool IsOutdated(string rootPath, string targetFile, IList<string> dependencies)
         {
             // Verify the output file exists
-            var relativeOutputFile = Path.Combine(rootPath, outputFile);
+            var relativeOutputFile = Path.Combine(rootPath, targetFile);
             if (!File.Exists(relativeOutputFile))
             {
-                Log.Verbose($"Output target does not exist: {outputFile}");
+                Log.Verbose($"Output target does not exist: {targetFile}");
                 return true;
             }
 
@@ -27,12 +42,36 @@ namespace Soup
                 if (dependencyLastWriteTime > outputFileLastWriteTime)
                 {
                     Log.Verbose($"Dependency altered after target, rebuild required.");
-                    Log.Verbose($"[{dependency}] -> [{outputFile}].");
+                    Log.Verbose($"[{dependency}] -> [{targetFile}].");
                     return true;
                 }
             }
 
             return false;
+        }
+
+        private static bool TryBuildIncludeSet(IList<string> sourceFiles, IDictionary<string, FileInfo> knownFiles, List<string> set)
+        {
+            foreach (var file in sourceFiles)
+            {
+                if (knownFiles.TryGetValue(file, out var info))
+                {
+                    set.AddRange(info.Includes);
+
+                    // Build up the child includes
+                    if (!TryBuildIncludeSet(info.Includes, knownFiles, set))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    Log.Verbose($"Missing file info: {file}");
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

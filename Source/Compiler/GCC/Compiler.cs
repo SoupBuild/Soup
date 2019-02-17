@@ -38,7 +38,7 @@ namespace Soup.Compiler.GCC
         /// <summary>
         /// Compile
         /// </summary>
-        public Task CompileAsync(CompilerArguments args)
+        public Task<CompileResults> CompileAsync(CompileArguments args)
         {
             string compiler = "gcc";
             using (Process process = new Process())
@@ -63,7 +63,7 @@ namespace Soup.Compiler.GCC
                     throw new InvalidOperationException();
                 }
 
-                return Task.CompletedTask;
+                return Task.FromResult(new CompileResults());
             }
         }
 
@@ -83,7 +83,7 @@ namespace Soup.Compiler.GCC
             return Task.CompletedTask;
         }
 
-        private static string BuildCompilerArguments(CompilerArguments args)
+        private static string BuildCompilerArguments(CompileArguments args)
         {
             var commandArgs = new List<string>();
 
