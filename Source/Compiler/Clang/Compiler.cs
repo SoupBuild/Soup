@@ -51,14 +51,31 @@ namespace Soup.Compiler.Clang
         /// <summary>
         /// Compile
         /// </summary>
-        public Task<CompileResults> CompileAsync(CompileArguments args)
+        public async Task<CompileResults> CompileAsync(CompileArguments args)
+        {
+            // Compile each file individually
+            var allIncludes = new List<HeaderInclude>();
+            foreach (var file in args.SourceFiles)
+            {
+                var includes = await CompileAsync(file, args);
+                allIncludes.Add(includes);
+            }
+
+            return new CompileResults()
+            {
+                HeaderIncludeFiles = allIncludes,
+            };
+        }
+
+        private Task<HeaderInclude> CompileAsync(string file, CompileArguments args)
         {
             // Set the working directory to the output directory
             var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
 
             string compiler = Path.Combine(ToolsPath, @"bin\clang++.exe");
-            var commandArgs = BuildCompilerArguments(args, workingDirectory);
+            var commandArgs = BuildCompilerArguments(file, args, workingDirectory);
 
+            Log.Info($"{file}");
             Log.Verbose($"PWD={workingDirectory}");
             Log.Verbose($"{compiler} {commandArgs}");
 
@@ -67,8 +84,7 @@ namespace Soup.Compiler.Clang
             {
                 _currentIncludes.Push(new HeaderInclude()
                 {
-                    // TODO: HACK
-                    Filename = args.SourceFiles.First(),
+                    Filename = file,
                 });
             }
 
@@ -96,7 +112,7 @@ namespace Soup.Compiler.Clang
                     throw new InvalidOperationException();
                 }
 
-                var result = new CompileResults();
+                HeaderInclude result = null;
 
                 // Check if requested include headers
                 if (args.GenerateIncludeTree)
@@ -112,7 +128,7 @@ namespace Soup.Compiler.Clang
                         throw new InvalidOperationException("Expected one root includes node.");
                     }
 
-                    result.HeaderIncludeFiles = new List<HeaderInclude>() { _currentIncludes.Pop() };
+                    result = _currentIncludes.Pop();
                 }
 
                 return Task.FromResult(result);
@@ -203,7 +219,7 @@ namespace Soup.Compiler.Clang
             }
         }
 
-        private string BuildCompilerArguments(CompileArguments args, string workingDirectory)
+        private string BuildCompilerArguments(string sourceFile, CompileArguments args, string workingDirectory)
         {
             // Calculate object output file
             var rootPath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
@@ -242,7 +258,13 @@ namespace Soup.Compiler.Clang
             // Set the include paths
             foreach (var directory in args.IncludeDirectories)
             {
-                commandArgs.Add($"-I\"{Path.Combine(rootPath, directory)}\"");
+                var include = directory;
+                if (!Path.IsPathFullyQualified(directory))
+                {
+                    include = Path.Combine(rootPath, directory);
+                }
+
+                commandArgs.Add($"-I\"{include}\"");
             }
 
             // Set the preprocessor definitions
@@ -271,6 +293,7 @@ namespace Soup.Compiler.Clang
                 commandArgs.Add($"-fmodule-file=\"{Path.Combine(rootPath, module)}\"");
             }
 
+
             if (args.ExportModule)
             {
                 commandArgs.Add("--precompile");
@@ -282,7 +305,6 @@ namespace Soup.Compiler.Clang
                 }
 
                 // Place the ifc in the output directory
-                var sourceFile = args.SourceFiles[0];
                 var outputFile = $"{Path.GetFileNameWithoutExtension(sourceFile)}.{ModuleFileExtension}";
                 commandArgs.AddRange(new string[] { "-o", outputFile });
             }
@@ -293,7 +315,7 @@ namespace Soup.Compiler.Clang
             }
 
             // Lastly add the file
-            commandArgs.AddRange(args.SourceFiles.Select(file => Path.Combine(rootPath, file)));
+            commandArgs.Add(Path.Combine(rootPath, sourceFile));
 
             return string.Join(" ", commandArgs);
         }
@@ -383,8 +405,6 @@ namespace Soup.Compiler.Clang
 
         private void ProcessHeaderInclude(string value)
         {
-            Log.Info(value);
-
             // Count depth
             int depth = 0;
             while (value[depth] == '.')
@@ -404,14 +424,19 @@ namespace Soup.Compiler.Clang
                 _currentIncludes.Pop();
             }
 
-            // Only add to current if not a Roots
+            // Ensure there is a current node
             if (depth == 0)
             {
                 throw new InvalidOperationException("Missing root include node.");
             }
 
-            // Add to current
-            _currentIncludes.Peek().Includes.Add(include);
+            // Skip precompiled module files
+            var extension = Path.GetExtension(filename);
+            if (extension != $".{ModuleFileExtension}")
+            {
+                // Add to current
+                _currentIncludes.Peek().Includes.Add(include);
+            }
 
             // Set the new include as the current depth
             _currentIncludes.Push(include);

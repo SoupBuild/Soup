@@ -33,6 +33,11 @@ namespace Soup
         /// </summary>
         public async Task ExecuteAsync(string path, Recipe recipe, bool force)
         {
+            if (!Path.IsPathFullyQualified(path))
+            {
+                throw new InvalidOperationException("Build must provide qualified path.");
+            }
+
             Log.Info("Build Recursive Dependencies.");
             await BuildAllDependenciesRecursivelyAsync(path, recipe, force);
 
@@ -58,27 +63,32 @@ namespace Soup
             }
 
             // Determine the include paths
-            var uniqueFolders = Directory.GetDirectories(path, "", SearchOption.AllDirectories);
+            var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
+            var uniqueFolders = folderWithHeadersSet.ToList();
 
+            bool moduleBuilt = false;
             if (recipe.Type == RecipeType.Library)
             {
-                await CheckCompileModuleAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
+                moduleBuilt = await CheckCompileModuleAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
             }
 
-            await CheckCompileSourceAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
-            switch (recipe.Type)
+            bool sourceBuilt = await CheckCompileSourceAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
+            if (sourceBuilt)
             {
-                case RecipeType.Library:
-                    await CheckLinkLibraryAsync(path, recipe, objectDirectory, binaryDirectory, force);
-                    break;
-                case RecipeType.Executable:
-                    await LinkExecutableAsync(path, recipe, objectDirectory, binaryDirectory);
-                    break;
-                default:
-                    throw new NotSupportedException("Unknown recipe type.");
+                switch (recipe.Type)
+                {
+                    case RecipeType.Library:
+                        await CheckLinkLibraryAsync(path, recipe, objectDirectory, binaryDirectory, force);
+                        break;
+                    case RecipeType.Executable:
+                        await LinkExecutableAsync(path, recipe, objectDirectory, binaryDirectory);
+                        break;
+                    default:
+                        throw new NotSupportedException("Unknown recipe type.");
+                }
             }
 
-            if (recipe.Type == RecipeType.Library)
+            if (moduleBuilt)
             {
                 CloneModuleInterface(path, recipe, objectDirectory, binaryDirectory);
             }
@@ -118,7 +128,7 @@ namespace Soup
         /// <summary>
         /// Compile the module file
         /// </summary>
-        private async Task CheckCompileModuleAsync(
+        private async Task<bool> CheckCompileModuleAsync(
             string path,
             Recipe recipe,
             BuildState buildState,
@@ -151,6 +161,8 @@ namespace Soup
                     objectDirectory,
                     binaryDirectory);
             }
+
+            return requiresBuild;
         }
 
         /// <summary>
@@ -207,13 +219,14 @@ namespace Soup
             var result = await _compiler.CompileAsync(args);
 
             // Save the build state
-            buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+            if (result.HeaderIncludeFiles != null)
+                buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
         }
 
         /// <summary>
         /// Compile the supporting source files
         /// </summary>
-        private async Task CheckCompileSourceAsync(
+        private async Task<bool> CheckCompileSourceAsync(
             string path,
             Recipe recipe,
             BuildState buildState,
@@ -256,9 +269,9 @@ namespace Soup
             foreach (var sourceFile in recipe.Source)
             {
                 var outputFile = Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(sourceFile)}.{_compiler.ObjectFileExtension}");
-                var dependencies = new List<string>(modules);
+                var dependencies = new List<string>();
                 dependencies.Add(sourceFile);
-                if (force || BuildRequiredChecker.IsOutdated(path, outputFile, dependencies))
+                if (force || BuildRequiredChecker.IsSourceFileOutdated(path, buildState, outputFile, dependencies))
                 {
                     source.Add(sourceFile);
                 }
@@ -267,6 +280,7 @@ namespace Soup
             if (source.Count == 0)
             {
                 Log.Info("All source is up to date.");
+                return false;
             }
             else
             {
@@ -293,6 +307,12 @@ namespace Soup
 
                 // Compile each file
                 var result = await _compiler.CompileAsync(args);
+
+                // Save the build state
+                if (result.HeaderIncludeFiles != null)
+                    buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+
+                return true;
             }
         }
 

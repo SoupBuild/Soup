@@ -7,7 +7,7 @@
     },
     "TestBuild": {
       "commandName": "Project",
-      "commandLineArgs": "build -f -v",
+      "commandLineArgs": "build -v",
       "workingDirectory": "D:\\Repos\\SoupSyntax\\Syntax"
     },
     "TestPublish": {

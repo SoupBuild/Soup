@@ -29,7 +29,7 @@ namespace Soup.Client
         /// </summary>
         public async Task InvokeAsync(BuildOptions options)
         {
-            var recipePath = "./";
+            var recipePath = Directory.GetCurrentDirectory();
             var recipe = await RecipeManager.LoadFromFileAsync(recipePath);
             if (recipe == null)
             {

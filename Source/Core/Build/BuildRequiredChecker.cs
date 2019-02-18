@@ -15,7 +15,7 @@ namespace Soup
             var dependencies = new List<string>(sourceFiles);
             if (TryBuildIncludeSet(sourceFiles, knownFiles, dependencies))
             {
-                return IsOutdated(rootPath, targetFile, sourceFiles);
+                return IsOutdated(rootPath, targetFile, dependencies);
             }
             else
             {
@@ -38,6 +38,13 @@ namespace Soup
             foreach (var dependency in dependencies)
             {
                 var relativeDependency = Path.Combine(rootPath, dependency);
+                if (!File.Exists(relativeDependency))
+                {
+                    Log.Verbose($"Dependency file missing, rebuild required.");
+                    Log.Verbose($"[{dependency}] -> [{targetFile}].");
+                    return true;
+                }
+
                 var dependencyLastWriteTime = File.GetLastWriteTime(relativeDependency);
                 if (dependencyLastWriteTime > outputFileLastWriteTime)
                 {

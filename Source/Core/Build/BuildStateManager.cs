@@ -42,7 +42,14 @@ namespace Soup
             {
                 // Read the contents of the build state file
                 var content = await reader.ReadToEndAsync();
-                result = JsonConvert.DeserializeObject<BuildState>(content);
+                try
+                {
+                    result = JsonConvert.DeserializeObject<BuildState>(content);
+                }
+                catch(JsonReaderException)
+                {
+                    Log.Verbose("Invalid build state.");
+                }
             }
 
             return result;
@@ -67,7 +74,7 @@ namespace Soup
             }
 
             var buildStatePath = Path.Combine(projectGenFolder, Constants.BuildStateFileName);
-            using (var writer = new StreamWriter(File.OpenWrite(buildStatePath)))
+            using (var writer = new StreamWriter(File.Create(buildStatePath)))
             {
                 await writer.WriteAsync(content);
             }
