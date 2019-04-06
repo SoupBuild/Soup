@@ -1,8 +1,8 @@
 # Visual Studio
 .vs/
 *.user
+.vscode/ipch/
 
 # Build
 obj/
 bin/
-StyleCop.Cache
