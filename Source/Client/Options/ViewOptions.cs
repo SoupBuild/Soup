@@ -1,27 +1,30 @@
-﻿// <copyright company="Soup" file="ViewOptions.cs">
-//   Copyright (c) Soup.  All rights reserved.
+﻿// <copyright file="ViewOptions.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup.Client
 {
-	using CommandLine;
+    using CommandLine;
 
-	/// <summary>
-	/// View Command Options
-	/// </summary>
-	[Verb("version")]
-	internal class ViewOptions
-	{
-		public string Package { get; set; }
+    /// <summary>
+    /// View Command Options
+    /// </summary>
+    [Verb("version")]
+    internal class ViewOptions : SharedOptions
+    {
+        /// <summary>
+        /// Gets or sets the package name
+        /// </summary>
+        public string Package { get; set; }
 
-		/// <summary>
-		/// Show the usage details for this command
-		/// </summary>
-		private static void ShowUsage()
-		{
-			Log.Info("");
-			Log.Info("Usage: soup view <package>");
-			Log.Info("\tpackage: The unique package name.");
-		}
-	}
+        /// <summary>
+        /// Show the usage details for this command
+        /// </summary>
+        private static void ShowUsage()
+        {
+            Log.Info(string.Empty);
+            Log.Info("Usage: soup view <package>");
+            Log.Info("\tpackage: The unique package name.");
+        }
+    }
 }

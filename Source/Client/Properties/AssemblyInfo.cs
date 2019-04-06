@@ -1,5 +1,5 @@
-﻿// <copyright company="Soup" file="AssemblyInfo.cs">
-//   Copyright (c) Soup.  All rights reserved.
+﻿// <copyright file="AssemblyInfo.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 using System.Runtime.CompilerServices;

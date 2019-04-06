@@ -1,8 +1,8 @@
 #pragma once
 
-namespace TestMultiVersion_VersionNamespace
+export namespace TestMultiVersion_VersionNamespace
 {
-  export class MultiVersion
+  class MultiVersion
   {
   public:
     int GetVersion();

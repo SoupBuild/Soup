@@ -1,63 +1,63 @@
-// <copyright company="Soup" file="PackageUpdateModelTests.cs">
-//   Copyright (c) Soup.  All rights reserved.
+// <copyright file="PackageUpdateModelTests.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup.Api.UnitTests
 {
-	using Xunit;
+    using Xunit;
 
-	public class PackageUpdateModelTests
-	{
-		[Fact]
-		public void DefaultValues()
-		{
-			var uut = new PackageUpdateModel();
-			
-			Assert.Null(uut.Description);
-		}
+    public class PackageUpdateModelTests
+    {
+        [Fact]
+        public void DefaultValues()
+        {
+            var uut = new PackageUpdateModel();
 
-		[Fact]
-		public void InitializeValues()
-		{
-			string description = "TestDescription";
+            Assert.Null(uut.Description);
+        }
 
-			var uut = new PackageUpdateModel()
-			{
-				Description = description,
-			};
-			
-			Assert.Equal(description, uut.Description);
-		}
+        [Fact]
+        public void InitializeValues()
+        {
+            string description = "TestDescription";
 
-		[Fact]
-		public void Serialize_Json()
-		{
-			string description = "Test Description";
+            var uut = new PackageUpdateModel()
+            {
+                Description = description,
+            };
 
-			var uut = new PackageUpdateModel()
-			{
-				Description = description,
-			};
+            Assert.Equal(description, uut.Description);
+        }
 
-			var json = TestUtils.JsonSerialize(uut);
+        [Fact]
+        public void Serialize_Json()
+        {
+            string description = "Test Description";
 
-			var expected = 
-				"{\"description\":\"Test Description\"}";
+            var uut = new PackageUpdateModel()
+            {
+                Description = description,
+            };
 
-			Assert.Equal(expected, json);
-		}
+            var json = TestUtils.JsonSerialize(uut);
 
-		[Fact]
-		public void Deserialize_Json()
-		{
-			string description = "Test Description";
+            var expected =
+                "{\"description\":\"Test Description\"}";
 
-			var json =
-				"{\"description\":\"Test Description\"}";
+            Assert.Equal(expected, json);
+        }
 
-			var value = TestUtils.JsonDeserialize<PackageUpdateModel>(json);
-			
-			Assert.Equal(description, value.Description);
-		}
-	}
+        [Fact]
+        public void Deserialize_Json()
+        {
+            string description = "Test Description";
+
+            var json =
+                "{\"description\":\"Test Description\"}";
+
+            var value = TestUtils.JsonDeserialize<PackageUpdateModel>(json);
+
+            Assert.Equal(description, value.Description);
+        }
+    }
 }

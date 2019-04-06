@@ -1,6 +1,6 @@
 #pragma once
 
-namespace TestWrapper_VersionNamespace
+export namespace TestWrapper_VersionNamespace
 {
 	class Wrapper
 	{
