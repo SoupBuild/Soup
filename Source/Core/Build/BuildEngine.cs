@@ -72,20 +72,25 @@ namespace Soup
                 moduleBuilt = await CheckCompileModuleAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
             }
 
-            bool sourceBuilt = await CheckCompileSourceAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
-            if (sourceBuilt)
+            bool sourceBuilt = await CheckCompileSourceAsync(
+                path,
+                recipe,
+                buildState,
+                uniqueFolders,
+                objectDirectory,
+                binaryDirectory,
+                force);
+
+            switch (recipe.Type)
             {
-                switch (recipe.Type)
-                {
-                    case RecipeType.Library:
-                        await CheckLinkLibraryAsync(path, recipe, objectDirectory, binaryDirectory, force);
-                        break;
-                    case RecipeType.Executable:
-                        await LinkExecutableAsync(path, recipe, objectDirectory, binaryDirectory);
-                        break;
-                    default:
-                        throw new NotSupportedException("Unknown recipe type.");
-                }
+                case RecipeType.Library:
+                    await CheckLinkLibraryAsync(path, recipe, objectDirectory, binaryDirectory, force);
+                    break;
+                case RecipeType.Executable:
+                    await LinkExecutableAsync(path, recipe, objectDirectory, binaryDirectory);
+                    break;
+                default:
+                    throw new NotSupportedException("Unknown recipe type.");
             }
 
             if (moduleBuilt)
@@ -137,13 +142,21 @@ namespace Soup
             string binaryDirectory,
             bool force)
         {
-            var moduleFile = recipe.Public;
             var outputFilename = $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}";
             var outputFile = Path.Combine(objectDirectory, outputFilename);
             bool requiresBuild = true;
             if (!force)
             {
-                if (!BuildRequiredChecker.IsSourceFileOutdated(path, buildState, outputFile, new List<string>() { moduleFile }))
+                // Add all of the direct dependencies as module references
+                var modules = new List<string>();
+                var defines = new List<string>();
+                await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
+
+                // The dependencies for this file are all of the direct module references
+                var dependencies = new List<string>();
+                dependencies.AddRange(modules);
+
+                if (!BuildRequiredChecker.IsSourceFileOutdated(path, buildState, outputFile, recipe.Public, dependencies))
                 {
                     // TODO : This is a hack. We need to actually look through all of the imports for the module file
                     Log.Info("Module file is up to date.");
@@ -242,7 +255,10 @@ namespace Soup
             if (recipe.Type == RecipeType.Library)
             {
                 // Add a reference to our own modules interface definition
-                modules.Add(Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}"));
+                var modulePath = Path.Combine(
+                    objectDirectory,
+                    $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}");
+                modules.Add(modulePath);
                 defines.Add(BuildRecipeNamespaceDefine(recipe));
             }
 
@@ -252,14 +268,20 @@ namespace Soup
 
             var source = new List<string>();
 
+            // All files are dependent on the parent module and all referenced modules
+            var sharedDependecies = new List<string>();
+            sharedDependecies.AddRange(modules);
+
             // Check if the precompiled module should be compiled
             if (recipe.Type == RecipeType.Library)
             {
-                // Add the precompile module to the list of source files
+                // Add the precompile module to the list of shared dependencies
+                // TODO: Could optimize this to not do file datetime checks over again
                 var moduleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}");
+                sharedDependecies.Add(moduleFile);
+
                 var moduleOutputFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ObjectFileExtension}");
-                var dependencies = new List<string>() { moduleFile };
-                if (force || BuildRequiredChecker.IsOutdated(path, moduleOutputFile, dependencies))
+                if (force || BuildRequiredChecker.IsOutdated(path, moduleOutputFile, sharedDependecies))
                 {
                     source.Add(moduleFile);
                 }
@@ -269,9 +291,7 @@ namespace Soup
             foreach (var sourceFile in recipe.Source)
             {
                 var outputFile = Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(sourceFile)}.{_compiler.ObjectFileExtension}");
-                var dependencies = new List<string>();
-                dependencies.Add(sourceFile);
-                if (force || BuildRequiredChecker.IsSourceFileOutdated(path, buildState, outputFile, dependencies))
+                if (force || BuildRequiredChecker.IsSourceFileOutdated(path, buildState, outputFile, sourceFile, sharedDependecies))
                 {
                     source.Add(sourceFile);
                 }
@@ -382,7 +402,6 @@ namespace Soup
             {
                 Log.Info("Static library up to date.");
             }
-
         }
 
         /// <summary>
@@ -394,7 +413,7 @@ namespace Soup
             string objectDirectory,
             string binaryDirectory)
         {
-            Log.Info("Link");
+            Log.Info("Link Executable");
             var allFiles = new List<string>(recipe.Source);
             if (recipe.Type == RecipeType.Library)
             {
@@ -474,7 +493,7 @@ namespace Soup
                 Log.Verbose($"Local Dependecy: {dependecy.Path}");
                 if (!Path.IsPathRooted(dependecy.Path))
                 {
-                    packagePath = Path.Combine(path, dependecy.Path);
+                    packagePath = Path.GetFullPath(Path.Combine(path, dependecy.Path));
                 }
                 else
                 {

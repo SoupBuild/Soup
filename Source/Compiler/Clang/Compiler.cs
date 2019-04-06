@@ -232,6 +232,9 @@ namespace Soup.Compiler.Clang
                 commandArgs.Add("-H");
             }
 
+            // Enable verbose output
+            // commandArgs.Add("-v");
+
             // Disable ms compatibility (workaround for bug with inplicit types in pcm)
             // commandArgs.Add("-fno-ms-compatibility");
 
@@ -343,6 +346,9 @@ namespace Soup.Compiler.Clang
         {
             var commandArgs = new List<string>();
 
+            // Enable verbose output
+            // commandArgs.Add("-v");
+
             // Add the library output file
             var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
             commandArgs.Add($"-o\"{ouputPath}{args.Name}.exe\"");
@@ -413,6 +419,9 @@ namespace Soup.Compiler.Clang
             }
 
             var filename = value.Substring(depth + 1).Replace("\\\\", "/");
+            if (!Path.IsPathRooted(filename))
+                filename = filename.Substring(9); // HACK TODO : Get correct path
+
             var include = new HeaderInclude()
             {
                 Filename = filename,

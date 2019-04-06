@@ -9,13 +9,20 @@ namespace Soup
 {
     internal static class BuildRequiredChecker
     {
-        public static bool IsSourceFileOutdated(string rootPath, BuildState buildState, string targetFile, IList<string> sourceFiles)
+        public static bool IsSourceFileOutdated(string rootPath, BuildState buildState, string targetFile, string sourceFile, IList<string> dependencies)
         {
             var knownFiles = buildState.GetKnownFileLookup();
-            var dependencies = new List<string>(sourceFiles);
-            if (TryBuildIncludeSet(sourceFiles, knownFiles, dependencies))
+            var sourceFiles = new List<string>();
+            sourceFiles.Add(sourceFile);
+
+            // Copy the dependencies and add all transient dependencies to the collection
+            var dependencyClosure = new List<string>();
+            dependencyClosure.AddRange(dependencies);
+            dependencyClosure.Add(sourceFile);
+
+            if (TryBuildIncludeSet(sourceFiles, knownFiles, dependencyClosure))
             {
-                return IsOutdated(rootPath, targetFile, dependencies);
+                return IsOutdated(rootPath, targetFile, dependencyClosure);
             }
             else
             {
