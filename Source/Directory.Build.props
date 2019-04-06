@@ -1,4 +1,0 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Entry point for all common properties -->
-  <Import Project="Build/Common.props" />
-</Project>
