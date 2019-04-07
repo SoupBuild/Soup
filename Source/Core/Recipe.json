@@ -1,0 +1,9 @@
+{
+  "name": "SoupCore",
+  "version": "1.0.0",
+  "dependencies": [
+  ],
+  "public": "Module.cppm",
+  "source": [
+  ]
+}
