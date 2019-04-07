@@ -1,231 +1,189 @@
-// <copyright file="ExtendedTraceListener.cs" company="Soup">
+// <copyright file="TraceListener.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+
 namespace Soup
 {
-    using System.Collections;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.Text;
+    enum class TraceEventFlag : uint32_t
+    {
+        // Informational message.
+        Information = 1 << 0,
+        // Debugging trace.
+        Verbose = 1 << 1,
+        // Diagnostic trace.
+        Diagnostic = 1 << 2,
+        // Noncritical problem.
+        Warning = 1 << 3,
+        // Recoverable error.
+        Error = 1 << 4,
+        // Fatal error or application crash.
+        Critical = 1 << 5,
+    };
+
+    class IEventFilter
+    {
+    public:
+        virtual bool ShouldTrace(TraceEventFlag eventType) = 0;
+    };
 
     /// <summary>
-    /// Extends the base <see cref="TraceListener"/> to add extra setting properties
+    /// Base trace listener used to determine what events and properties to include in logs
     /// </summary>
-    public abstract class ExtendedTraceListener : TraceListener
+    class TraceListener
     {
+    protected:
         /// <summary>
-        /// Initializes a new instance of the <see cref='ExtendedTraceListener'/> class.
+        /// Initializes a new instance of the <see cref='TraceListener'/> class.
         /// </summary>
-        protected ExtendedTraceListener()
-            : base()
+        TraceListener() :
+            TraceListener("", nullptr, true, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref='ExtendedTraceListener'/> class using the specified name as the
+        /// Initializes a new instance of the <see cref='TraceListener'/> class using the specified name as the
         /// listener.
         /// </summary>
-        protected ExtendedTraceListener(string name)
-            : base(name)
+        TraceListener(
+            std::string name,
+            std::shared_ptr<IEventFilter> filter,
+            bool showEventType,
+            bool showEventId) :
+            m_name(std::move(name)),
+            m_filter(std::move(filter)),
+            m_showEventType(showEventType),
+            m_showEventId(showEventId)
         {
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to show or hide the source name
+        /// Implementation dependant write methods
         /// </summary>
-        public bool ShowSourceName { get; set; } = true;
+        virtual void Write(const std::string& message) = 0;
+        virtual void WriteLine(const std::string& message) = 0;
+
+    public:
+        /// <summary>
+        /// Gets a value indicating whether there is a custom event filter
+        /// </summary>
+        bool HasFilter()
+        {
+            return m_filter != nullptr;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show or hide the event type
         /// </summary>
-        public bool ShowEventType { get; set; } = true;
+        bool GetShowEventType()
+        {
+            return m_showEventType;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show or hide the event id
         /// </summary>
-        public bool ShowEventId { get; set; } = true;
-
-        /// <summary>
-        /// Trace Data
-        /// </summary>
-        public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
+        bool GetShowEventId()
         {
-            if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, null, null, data, null))
-            {
-                return;
-            }
-
-            WriteHeader(source, eventType, id);
-            string datastring = string.Empty;
-            if (data != null)
-            {
-                datastring = data.ToString();
-            }
-
-            WriteLine(datastring);
-            WriteFooter(eventCache);
-        }
-
-        /// <summary>
-        /// Trace Data
-        /// </summary>
-        public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
-        {
-            if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, data))
-            {
-                return;
-            }
-
-            WriteHeader(source, eventType, id);
-
-            StringBuilder sb = new StringBuilder();
-            if (data != null)
-            {
-                for (int i = 0; i < data.Length; i++)
-                {
-                    if (i != 0)
-                    {
-                        sb.Append(", ");
-                    }
-
-                    if (data[i] != null)
-                    {
-                        sb.Append(data[i].ToString());
-                    }
-                }
-            }
-
-            WriteLine(sb.ToString());
-
-            WriteFooter(eventCache);
+            return m_showEventId;
         }
 
         /// <summary>
         /// All other TraceEvent methods come through this one.
         /// </summary>
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
+        void TraceEvent(
+            TraceEventFlag eventType,
+            int id,
+            const std::string& message)
         {
-            if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, message, null, null, null))
+            if (HasFilter() && !m_filter->ShouldTrace(eventType))
             {
                 return;
             }
 
-            WriteHeader(source, eventType, id);
+            WriteHeader(eventType, id);
             WriteLine(message);
-
-            WriteFooter(eventCache);
         }
 
         /// <summary>
         /// Trace Event
         /// </summary>
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
+        // void TraceEvent(
+        //     string source,
+        //     TraceEventFlag eventType,
+        //     int id,
+        //     string format,
+        //     params object[] args)
+        // {
+        //     if (Filter != null && !Filter.ShouldTrace( source, eventType, id, format, args, null, null))
+        //     {
+        //         return;
+        //     }
+
+        //     WriteHeader(source, eventType, id);
+        //     if (args != null)
+        //     {
+        //         WriteLine(string.Format(CultureInfo.InvariantCulture, format, args));
+        //     }
+        //     else
+        //     {
+        //         WriteLine(format);
+        //     }
+        // }
+
+    private:
+        /// <summary>
+        /// Write the header to the target listener
+        /// </summary>
+        void WriteHeader(
+            TraceEventFlag eventType,
+            int id)
         {
-            if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, format, args, null, null))
+            std::stringstream builder;
+
+            if (GetShowEventType())
             {
-                return;
-            }
-
-            WriteHeader(source, eventType, id);
-            if (args != null)
-            {
-                WriteLine(string.Format(CultureInfo.InvariantCulture, format, args));
-            }
-            else
-            {
-                WriteLine(format);
-            }
-
-            WriteFooter(eventCache);
-        }
-
-        private void WriteHeader(string source, TraceEventType eventType, int id)
-        {
-            StringBuilder builder = new StringBuilder();
-
-            if (ShowSourceName)
-            {
-                builder.Append(source);
-                builder.Append(" ");
-            }
-
-            if (ShowEventType)
-            {
-                builder.Append(eventType.ToString());
-                builder.Append(": ");
-            }
-
-            if (ShowEventId)
-            {
-                builder.Append(id.ToString(CultureInfo.InvariantCulture));
-                builder.Append(" : ");
-            }
-
-            Write(builder.ToString());
-        }
-
-        private void WriteFooter(TraceEventCache eventCache)
-        {
-            if (eventCache == null)
-            {
-                return;
-            }
-
-            IndentLevel++;
-            if (IsEnabled(TraceOptions.ProcessId))
-            {
-                WriteLine("ProcessId=" + eventCache.ProcessId);
-            }
-
-            if (IsEnabled(TraceOptions.LogicalOperationStack))
-            {
-                Write("LogicalOperationStack=");
-                Stack operationStack = eventCache.LogicalOperationStack;
-                bool first = true;
-                foreach (object obj in operationStack)
+                switch (eventType)
                 {
-                    if (!first)
-                    {
-                        Write(", ");
-                    }
-                    else
-                    {
-                        first = false;
-                    }
-
-                    Write(obj.ToString());
+                    case TraceEventFlag::Information:
+                        builder << "INFO";
+                        break;
+                    case TraceEventFlag::Verbose:
+                        builder << "VERB";
+                        break;
+                    case TraceEventFlag::Diagnostic:
+                        builder << "DIAG";
+                        break;
+                    case TraceEventFlag::Warning:
+                        builder << "WARN";
+                        break;
+                    case TraceEventFlag::Error:
+                        builder << "ERRO";
+                        break;
+                    case TraceEventFlag::Critical: 
+                        builder << "CRIT";
+                        break;
+                    default:
+                        builder << "UNKN";
+                        break;
                 }
 
-                WriteLine(string.Empty);
+                builder << ": ";
             }
 
-            if (IsEnabled(TraceOptions.ThreadId))
+            if (GetShowEventId())
             {
-                WriteLine("ThreadId=" + eventCache.ThreadId);
+                builder << std::to_string(id) << " : ";
             }
 
-            if (IsEnabled(TraceOptions.DateTime))
-            {
-                WriteLine("DateTime=" + eventCache.DateTime.ToString("o", CultureInfo.InvariantCulture));
-            }
-
-            if (IsEnabled(TraceOptions.Timestamp))
-            {
-                WriteLine("Timestamp=" + eventCache.Timestamp);
-            }
-
-            if (IsEnabled(TraceOptions.Callstack))
-            {
-                WriteLine("Callstack=" + eventCache.Callstack);
-            }
-
-            IndentLevel--;
+            Write(builder.str());
         }
 
-        private bool IsEnabled(TraceOptions opts)
-        {
-            return (opts & TraceOutputOptions) != 0;
-        }
-    }
+    private:
+        std::string m_name;
+        std::shared_ptr<IEventFilter> m_filter;
+        bool m_showEventType;
+        bool m_showEventId;
+    };
 }

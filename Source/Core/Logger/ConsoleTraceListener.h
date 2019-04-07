@@ -1,122 +1,87 @@
-// <copyright file="ConsoleTraceListener.cs" company="Soup">
+// <copyright file="ConsoleTraceListener.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+#include "TraceListener.h"
+
 namespace Soup
 {
-    using System;
-    using System.Diagnostics;
-
     /// <summary>
-    /// Console logger that wraps the base <see cref="ExtendedTraceListener"/>
+    /// Console logger that wraps the base <see cref="TraceListener"/>
     /// </summary>
-    public class ConsoleTraceListener : ExtendedTraceListener
+    class ConsoleTraceListener : public TraceListener
     {
-        private TraceEventType _currentEvent;
+    public:
+        /// <summary>
+        /// Initializes a new instance of the <see cref='ConsoleTraceListener'/> class.
+        /// </summary>
+        ConsoleTraceListener() :
+            TraceListener()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref='ConsoleTraceListener'/> class.
         /// </summary>
-        public ConsoleTraceListener()
-            : base()
+        ConsoleTraceListener(
+            std::string name,
+            std::shared_ptr<IEventFilter> filter,
+            bool showEventType,
+            bool showEventId) :
+            TraceListener(
+                std::move(name),
+                std::move(filter),
+                showEventType,
+                showEventId)
         {
-        }
-
-        /// <summary>
-        /// Trace Data
-        /// </summary>
-        public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
-        {
-            _currentEvent = eventType;
-            base.TraceData(eventCache, source, eventType, id, data);
-        }
-
-        /// <summary>
-        /// Trace Data
-        /// </summary>
-        public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
-        {
-            _currentEvent = eventType;
-            base.TraceData(eventCache, source, eventType, id, data);
-        }
-
-        /// <summary>
-        /// All other TraceEvent methods come through this one.
-        /// </summary>
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
-        {
-            _currentEvent = eventType;
-            base.TraceEvent(eventCache, source, eventType, id, message);
-        }
-
-        /// <summary>
-        /// Trace Event
-        /// </summary>
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
-        {
-            _currentEvent = eventType;
-            base.TraceEvent(eventCache, source, eventType, id, format, args);
         }
 
         /// <summary>
         /// Writes a message
         /// </summary>
-        public override void Write(string message)
+        virtual void Write(const std::string& message) override final
         {
-            if (NeedIndent)
-            {
-                WriteIndent();
-            }
+            // if (NeedIndent)
+            // {
+            //     WriteIndent();
+            // }
 
-            try
-            {
-                var previousColor = Console.ForegroundColor;
-                SetConsoleColor();
-                Console.Write(message);
-                Console.ForegroundColor = previousColor;
-            }
-            catch (ObjectDisposedException)
-            {
-            }
+            SetConsoleColor();
+            std::cout << message;
+            // TODO: restore color
         }
 
         /// <summary>
-        /// Writes a message
-        /// to this instance's <see cref='TextWriterExtendedTraceListener.Writer'/> followed by a line terminator. The
-        /// default line terminator is a carriage return followed by a line feed (\r\n).
+        /// Writes a message and newline terminator
         /// </summary>
-        public override void WriteLine(string message)
+        virtual void WriteLine(const std::string& message) override final
         {
-            if (NeedIndent)
-            {
-                WriteIndent();
-            }
+            // if (NeedIndent)
+            // {
+            //     WriteIndent();
+            // }
 
-            try
-            {
-                var previousColor = Console.ForegroundColor;
-                SetConsoleColor();
-                Console.WriteLine(message);
-                Console.ForegroundColor = previousColor;
+            SetConsoleColor();
+            std::cout << message << std::endl;
+            // TODO: restore color
 
-                NeedIndent = true;
-            }
-            catch (ObjectDisposedException)
-            {
-            }
+            // NeedIndent = true;
         }
 
-        private void SetConsoleColor()
+    private:
+        void SetConsoleColor()
         {
-            switch (_currentEvent)
-            {
-                case TraceEventType.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case TraceEventType.Warning:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    break;
-            }
+            // TODO
+            // switch (_currentEvent)
+            // {
+            //     case TraceEventType.Error:
+            //         Console.ForegroundColor = ConsoleColor.Red;
+            //         break;
+            //     case TraceEventType.Warning:
+            //         Console.ForegroundColor = ConsoleColor.Yellow;
+            //         break;
+            // }
         }
-    }
+    };
 }

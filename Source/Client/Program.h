@@ -28,6 +28,9 @@ namespace Soup::Client
         {
             try
             {
+                // Enable full diagnostics
+                // Log::SetDiagnosticEnabled(true);
+
                 Log::Trace("ProgramStart");
                 auto arguments = ArgumentsParser::Parse(args);
 
@@ -62,20 +65,22 @@ namespace Soup::Client
             }
             catch (const std::exception& ex)
             {
-                std::cout << "Error: " << ex.what() << std::endl;
+                Log::Error(ex.what());
                 return -1;
             }
         }
 
     private:
-        static void Setup(SharedOptions& options)
+        static void SetupShared(SharedOptions& options)
         {
-            // TODO: Log.EnableVerbose = options.EnableVerbose;
+            Log::Trace("Setup SharedOptions");
+            Log::SetVerboseEnabled(options.EnableVerbose);
         }
 
         static std::shared_ptr<ICommand> Setup(BuildOptions options)
         {
             Log::Trace("Setup BuildOptions");
+            SetupShared(options);
             return std::make_shared<BuildCommand>(
                 std::move(options));
         }
@@ -83,6 +88,7 @@ namespace Soup::Client
         static std::shared_ptr<ICommand> Setup(RunOptions options)
         {
             Log::Trace("Setup RunCommand");
+            SetupShared(options);
             return std::make_shared<RunCommand>(
                 std::move(options));
         }
@@ -90,6 +96,7 @@ namespace Soup::Client
         static std::shared_ptr<ICommand> Setup(InitializeOptions options)
         {
             Log::Trace("Setup InitializeCommand");
+            SetupShared(options);
             return std::make_shared<InitializeCommand>(
                 std::move(options));
         }
@@ -97,6 +104,7 @@ namespace Soup::Client
         static std::shared_ptr<ICommand> Setup(InstallOptions options)
         {
             Log::Trace("Setup InstallCommand");
+            SetupShared(options);
             return std::make_shared<InstallCommand>(
                 std::move(options));
         }
@@ -104,6 +112,7 @@ namespace Soup::Client
         static std::shared_ptr<ICommand> Setup(PackOptions options)
         {
             Log::Trace("Setup PackCommand");
+            SetupShared(options);
             return std::make_shared<PackCommand>(
                 std::move(options));
         }
@@ -111,6 +120,7 @@ namespace Soup::Client
         static std::shared_ptr<ICommand> Setup(PublishOptions options)
         {
             Log::Trace("Setup PublishCommand");
+            SetupShared(options);
             return std::make_shared<PublishCommand>(
                 std::move(options));
         }
@@ -118,6 +128,7 @@ namespace Soup::Client
         static std::shared_ptr<ICommand> Setup(VersionOptions options)
         {
             Log::Trace("Setup VersionCommand");
+            SetupShared(options);
             return std::make_shared<VersionCommand>(
                 std::move(options));
         }
@@ -125,6 +136,7 @@ namespace Soup::Client
         static std::shared_ptr<ICommand> Setup(ViewOptions options)
         {
             Log::Trace("Setup ViewCommand");
+            SetupShared(options);
             return std::make_shared<ViewCommand>(
                 std::move(options));
         }

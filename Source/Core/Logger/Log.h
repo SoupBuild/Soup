@@ -3,54 +3,53 @@
 // </copyright>
 
 #pragma once
+#include "ConsoleTraceListener.h"
+#include "EventTypeFilter.h"
 
 namespace Soup
 {
-    export enum class LogLevel
-    {
-        Normal,
-        Verbose,
-        Diagnostic,
-    };
-
     /// <summary>
     /// The static logger class
     /// </summary>
     export class Log
     {
     public:
-        // static Log()
-        // {
-            // // Setup the source
-            // _source = new TraceSource("Log", SourceLevels.All);
-
-            // // Register the default console listener
-            // _consoleEventFilter = new EventTypeFilter(SourceLevels.Information | SourceLevels.Error | SourceLevels.Warning);
-            // _source.Listeners.Add(
-            //     new ConsoleTraceListener()
-            //     {
-            //         Filter = _consoleEventFilter,
-            //         ShowSourceName = false,
-            //         ShowEventId = false,
-            //         ShowEventType = false,
-            //     });
-        //}
+        /// <summary>
+        /// Gets or sets the value indicating whether diagnostic logging is enabled or not
+        /// </summary>
+        static void SetDiagnosticEnabled(bool value)
+        {
+            if (value)
+            {
+                EnsureFilter()->Enable(TraceEventFlag::Diagnostic);
+            }
+            else
+            {
+                EnsureFilter()->Disable(TraceEventFlag::Diagnostic);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the value indicating whether verbose logging is enabled or not
         /// </summary>
-        static LogLevel GetLevel()
+        static void SetVerboseEnabled(bool value)
         {
-            return LogLevel::Normal;
+            if (value)
+            {
+                EnsureFilter()->Enable(TraceEventFlag::Verbose);
+            }
+            else
+            {
+                EnsureFilter()->Disable(TraceEventFlag::Verbose);
+            }
         }
 
         /// <summary>
-        /// Log a message
+        /// Log a generic infomational message
         /// </summary>
-        static void Message(const std::string& message)
+        static void Info(const std::string& message)
         {
-            // _source.TraceEvent(TraceEventType.Information, 0, message);
-            std::cout << message << std::endl;
+            EnsureListener().TraceEvent(TraceEventFlag::Information, 0, message);
         }
 
         /// <summary>
@@ -58,8 +57,7 @@ namespace Soup
         /// </summary>
         static void Verbose(const std::string& message)
         {
-            // _source.TraceEvent(TraceEventType.Verbose, 0, message);
-            std::cout << message << std::endl;
+            EnsureListener().TraceEvent(TraceEventFlag::Verbose, 0, message);
         }
 
         /// <summary>
@@ -67,8 +65,7 @@ namespace Soup
         /// </summary>
         static void Trace(const std::string& message)
         {
-            // _source.TraceEvent(TraceEventType.Error, 0, message);
-            std::cout << message << std::endl;
+            EnsureListener().TraceEvent(TraceEventFlag::Diagnostic, 0, message);
         }
 
         /// <summary>
@@ -76,8 +73,7 @@ namespace Soup
         /// </summary>
         static void Warning(const std::string& message)
         {
-            // _source.TraceEvent(TraceEventType.Warning, 0, message);
-            std::cout << message << std::endl;
+            EnsureListener().TraceEvent(TraceEventFlag::Warning, 0, message);
         }
 
         /// <summary>
@@ -85,12 +81,42 @@ namespace Soup
         /// </summary>
         static void Error(const std::string& message)
         {
-            // _source.TraceEvent(TraceEventType.Error, 0, message);
-            std::cout << message << std::endl;
+            EnsureListener().TraceEvent(TraceEventFlag::Error, 0, message);
         }
 
     private:
-        // private static TraceSource _source;
-        // private static EventTypeFilter _consoleEventFilter;
+        /// <summary>
+        /// Get access to the single event listener
+        /// </summary>
+        static TraceListener& EnsureListener()
+        {
+            // Setup the listener
+            static std::shared_ptr<TraceListener> listener =
+                std::make_shared<ConsoleTraceListener>(
+                    "Log",
+                    EnsureFilter(),
+                    false,
+                    false);
+
+            return *listener;
+        }
+
+        /// <summary>
+        /// Get access to the single event filter
+        /// </summary>
+        static const std::shared_ptr<EventTypeFilter>& EnsureFilter()
+        {
+            // Setup the filter
+            auto defaultTypes = 
+                    static_cast<uint32_t>(TraceEventFlag::Information) |
+                    static_cast<uint32_t>(TraceEventFlag::Warning) |
+                    static_cast<uint32_t>(TraceEventFlag::Error) |
+                    static_cast<uint32_t>(TraceEventFlag::Critical);
+            static std::shared_ptr<EventTypeFilter> filter = 
+                std::make_shared<EventTypeFilter>(
+                    static_cast<TraceEventFlag>(defaultTypes));
+
+            return filter;
+        }
     };
 }

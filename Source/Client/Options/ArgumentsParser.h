@@ -29,51 +29,108 @@ namespace Soup::Client
                 throw std::runtime_error("No arguments provided.");
             }
 
+            // The first argument must be the requested command
             auto& commandType = args[1];
+
+            // Copy the set of unused args to ensure we consume everythings
+            std::vector<std::string> unusedArgs;
+            std::copy(args.begin()+2, args.end(), std::back_inserter(unusedArgs));
+
+            // Handle the individual commands and their expected arguments
             std::any result = nullptr;
             if (commandType == "build")
             {
                 Log::Trace("Parse build");
-                result = BuildOptions();
+
+                auto options = BuildOptions();
+                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+
+                result = std::move(options);
             }
             else if (commandType == "init")
             {
                 Log::Trace("Parse initialize");
-                result = InitializeOptions();
+
+                auto options = InitializeOptions();
+                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+
+                result = std::move(options);
             }
             else if (commandType == "install")
             {
                 Log::Trace("Parse install");
-                result = InstallOptions();
+
+                auto options = InstallOptions();
+                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+
+                result = std::move(options);
             }
             else if (commandType == "pack")
             {
                 Log::Trace("Parse pack");
-                result = PackOptions();
+
+                auto options = PackOptions();
+                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+
+                result = std::move(options);
             }
             else if (commandType == "publish")
             {
                 Log::Trace("Parse publish");
-                result = PublishOptions();
+
+                auto options = PublishOptions();
+                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+
+                result = std::move(options);
             }
             else if (commandType == "run")
             {
                 Log::Trace("Parse run");
-                result = RunOptions();
+
+                auto options = RunOptions();
+                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+
+                result = std::move(options);
             }
             else if (commandType == "version")
             {
                 Log::Trace("Parse version");
-                result = VersionOptions();
+
+                auto options = VersionOptions();
+                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+
+                result = std::move(options);
             }
             else if (commandType == "view")
             {
                 Log::Trace("Parse view");
-                result = ViewOptions();
+
+                auto options = ViewOptions();
+                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+
+                result = std::move(options);
             }
             else
             {
+                Log::Trace("Unknown command argument.");
                 throw std::runtime_error("Unknown command argument.");
+            }
+
+            if (!unusedArgs.empty())
+            {
+                std::stringstream message;
+                message << "Unrecognized argument(s): ";
+                for (int i = 0; i < unusedArgs.size(); i++)
+                {
+                    if (i > 0)
+                    {
+                        message << ", ";
+                    }
+
+                    message << unusedArgs[i];
+                }
+
+                throw std::runtime_error(message.str());
             }
 
             return ArgumentsParser(
@@ -97,6 +154,24 @@ namespace Soup::Client
         auto ExtractsResult() -> T
         {
             return std::any_cast<T>(m_result);
+        }
+
+    private:
+        static bool IsFlagSet(const char* value, std::vector<std::string>& unusedArgs)
+        {
+            auto flagValue = std::string("-") + value;
+            Log::Trace("IsFlagSet: " + flagValue);
+            auto flagLocation = std::find(unusedArgs.begin(), unusedArgs.end(), flagValue);
+            if (flagLocation != unusedArgs.end())
+            {
+                // Consume the flag value
+                unusedArgs.erase(flagLocation);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     private:

@@ -28,9 +28,10 @@ namespace Soup::Client
         virtual void Run() override final
         {
             Log::Trace("VersionsCommand::Run");
-            // var version = Assembly.GetExecutingAssembly().GetName().Version;
-            // Log.Info($"{version.Major}.{version.Minor}.{version.Build}");
-            // return Task.CompletedTask;
+
+            // TODO var version = Assembly.GetExecutingAssembly().GetName().Version;
+            // Log::Message($"{version.Major}.{version.Minor}.{version.Build}");
+            Log::Info("0.1.0");
         }
 
     private:
