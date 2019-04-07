@@ -3,8 +3,15 @@
 // </copyright>
 
 import std.core;
+#include "Program.h"
 
-int main()
+int main(int argc, char** argv)
 {
-    std::cout << "Running..." << std::endl;
+    std::vector<std::string> args;
+    for (int i = 0; i < argc; i++)
+    {
+        args.push_back(argv[i]);
+    }
+
+    return Soup::Client::Program::Main(std::move(args));
 }

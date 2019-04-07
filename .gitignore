@@ -6,3 +6,6 @@
 # Build
 obj/
 bin/
+
+# Soup
+.soup/
