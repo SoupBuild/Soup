@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "type": "executable",
   "dependencies": [
-    "../../../SoupSyntax/Syntax/"
+    "../Core"
   ],
   "source": [
     "Main.cpp"

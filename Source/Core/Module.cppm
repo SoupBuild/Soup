@@ -1,5 +1,5 @@
 ﻿
-export module SoupSyntax;
+export module SoupCore;
 
 import std.core;
 

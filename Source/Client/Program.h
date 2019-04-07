@@ -4,7 +4,14 @@
 
 #pragma once
 #include "ArgumentsParser.h"
-#include "ICommand.h"
+#include "BuildCommand.h"
+#include "InitializeCommand.h"
+#include "InstallCommand.h"
+#include "PackCommand.h"
+#include "PublishCommand.h"
+#include "RunCommand.h"
+#include "VersionCommand.h"
+#include "ViewCommand.h"
 
 namespace Soup::Client
 {
@@ -21,6 +28,7 @@ namespace Soup::Client
         {
             try
             {
+                Log::Trace("ProgramStart");
                 auto arguments = ArgumentsParser::Parse(args);
 
                 // Map the individual commands
@@ -47,6 +55,7 @@ namespace Soup::Client
                     throw std::runtime_error("Unknown arguments.");
 
                 // Run the requested command
+                Log::Trace("Run Command");
                 command->Run();
 
                 return 0;
@@ -66,58 +75,58 @@ namespace Soup::Client
 
         static std::shared_ptr<ICommand> Setup(BuildOptions options)
         {
-            // return std::make_shared<BuildCommand>(
-            //     std::move(options));
-            return nullptr;
+            Log::Trace("Setup BuildOptions");
+            return std::make_shared<BuildCommand>(
+                std::move(options));
         }
 
         static std::shared_ptr<ICommand> Setup(RunOptions options)
         {
-            // return std::make_shared<RunCommand>(
-            //     std::move(options));
-            return nullptr;
+            Log::Trace("Setup RunCommand");
+            return std::make_shared<RunCommand>(
+                std::move(options));
         }
 
         static std::shared_ptr<ICommand> Setup(InitializeOptions options)
         {
-            // return std::make_shared<InitializeCommand>(
-            //     std::move(options));
-            return nullptr;
+            Log::Trace("Setup InitializeCommand");
+            return std::make_shared<InitializeCommand>(
+                std::move(options));
         }
 
         static std::shared_ptr<ICommand> Setup(InstallOptions options)
         {
-            // return std::make_shared<InstallCommand>(
-            //     std::move(options));
-            return nullptr;
+            Log::Trace("Setup InstallCommand");
+            return std::make_shared<InstallCommand>(
+                std::move(options));
         }
 
         static std::shared_ptr<ICommand> Setup(PackOptions options)
         {
-            // return std::make_shared<PackCommand>(
-            //     std::move(options));
-            return nullptr;
+            Log::Trace("Setup PackCommand");
+            return std::make_shared<PackCommand>(
+                std::move(options));
         }
 
         static std::shared_ptr<ICommand> Setup(PublishOptions options)
         {
-            // return std::make_shared<PublishCommand>(
-            //     std::move(options));
-            return nullptr;
+            Log::Trace("Setup PublishCommand");
+            return std::make_shared<PublishCommand>(
+                std::move(options));
         }
 
         static std::shared_ptr<ICommand> Setup(VersionOptions options)
         {
-            // return std::make_shared<VersionCommand>(
-            //     std::move(options));
-            return nullptr;
+            Log::Trace("Setup VersionCommand");
+            return std::make_shared<VersionCommand>(
+                std::move(options));
         }
 
         static std::shared_ptr<ICommand> Setup(ViewOptions options)
         {
-            // return std::make_shared<ViewCommand>(
-            //     std::move(options));
-            return nullptr;
+            Log::Trace("Setup ViewCommand");
+            return std::make_shared<ViewCommand>(
+                std::move(options));
         }
 
         // /// <summary>

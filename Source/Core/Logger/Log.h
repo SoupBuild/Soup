@@ -1,92 +1,96 @@
-﻿// <copyright file="Log.cs" company="Soup">
+﻿// <copyright file="Log.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+
 namespace Soup
 {
-    using System.Diagnostics;
+    export enum class LogLevel
+    {
+        Normal,
+        Verbose,
+        Diagnostic,
+    };
 
     /// <summary>
     /// The static logger class
     /// </summary>
-    public static class Log
+    export class Log
     {
-        private static TraceSource _source;
-        private static EventTypeFilter _consoleEventFilter;
+    public:
+        // static Log()
+        // {
+            // // Setup the source
+            // _source = new TraceSource("Log", SourceLevels.All);
 
-        static Log()
-        {
-            // Setup the source
-            _source = new TraceSource("Log", SourceLevels.All);
-
-            // Register the default console listener
-            _consoleEventFilter = new EventTypeFilter(SourceLevels.Information | SourceLevels.Error | SourceLevels.Warning);
-            _source.Listeners.Add(
-                new ConsoleTraceListener()
-                {
-                    Filter = _consoleEventFilter,
-                    ShowSourceName = false,
-                    ShowEventId = false,
-                    ShowEventType = false,
-                });
-        }
+            // // Register the default console listener
+            // _consoleEventFilter = new EventTypeFilter(SourceLevels.Information | SourceLevels.Error | SourceLevels.Warning);
+            // _source.Listeners.Add(
+            //     new ConsoleTraceListener()
+            //     {
+            //         Filter = _consoleEventFilter,
+            //         ShowSourceName = false,
+            //         ShowEventId = false,
+            //         ShowEventType = false,
+            //     });
+        //}
 
         /// <summary>
         /// Gets or sets the value indicating whether verbose logging is enabled or not
         /// </summary>
-        public static bool EnableVerbose
+        static LogLevel GetLevel()
         {
-            get
-            {
-                return _consoleEventFilter.EventType.HasFlag(SourceLevels.Verbose);
-            }
-
-            set
-            {
-                if (EnableVerbose != value)
-                {
-                    if (value)
-                    {
-                        _consoleEventFilter.EventType |= SourceLevels.Verbose;
-                    }
-                    else
-                    {
-                        _consoleEventFilter.EventType &= ~SourceLevels.Verbose;
-                    }
-                }
-            }
+            return LogLevel::Normal;
         }
 
         /// <summary>
-        /// Log an informational message
+        /// Log a message
         /// </summary>
-        public static void Info(string message)
+        static void Message(const std::string& message)
         {
-            _source.TraceEvent(TraceEventType.Information, 0, message);
+            // _source.TraceEvent(TraceEventType.Information, 0, message);
+            std::cout << message << std::endl;
         }
 
         /// <summary>
         /// Log a verbose message
         /// </summary>
-        public static void Verbose(string message)
+        static void Verbose(const std::string& message)
         {
-            _source.TraceEvent(TraceEventType.Verbose, 0, message);
+            // _source.TraceEvent(TraceEventType.Verbose, 0, message);
+            std::cout << message << std::endl;
+        }
+
+        /// <summary>
+        /// Log a trace message
+        /// </summary>
+        static void Trace(const std::string& message)
+        {
+            // _source.TraceEvent(TraceEventType.Error, 0, message);
+            std::cout << message << std::endl;
         }
 
         /// <summary>
         /// Log a warning message
         /// </summary>
-        public static void Warning(string message)
+        static void Warning(const std::string& message)
         {
-            _source.TraceEvent(TraceEventType.Warning, 0, message);
+            // _source.TraceEvent(TraceEventType.Warning, 0, message);
+            std::cout << message << std::endl;
         }
 
         /// <summary>
         /// Log an error message
         /// </summary>
-        public static void Error(string message)
+        static void Error(const std::string& message)
         {
-            _source.TraceEvent(TraceEventType.Error, 0, message);
+            // _source.TraceEvent(TraceEventType.Error, 0, message);
+            std::cout << message << std::endl;
         }
-    }
+
+    private:
+        // private static TraceSource _source;
+        // private static EventTypeFilter _consoleEventFilter;
+    };
 }

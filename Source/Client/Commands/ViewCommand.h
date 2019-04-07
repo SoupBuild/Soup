@@ -1,52 +1,56 @@
-﻿// <copyright file="ViewCommand.cs" company="Soup">
+﻿// <copyright file="ViewCommand.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Client
-{
-    using System.Net;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json;
-    using Soup.Api;
+#pragma once
+#include "ICommand.h"
+#include "ViewOptions.h"
 
+namespace Soup::Client
+{
     /// <summary>
     /// View Command
     /// </summary>
-    internal class ViewCommand
+    class ViewCommand : public ICommand
     {
-        private ISoupApi _soupApi;
-
+    public:
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewCommand"/> class.
         /// </summary>
-        public ViewCommand(ISoupApi soupApi)
+        ViewCommand(ViewOptions options) ://ISoupApi soupApi)
+            m_options(std::move(options))
         {
-            _soupApi = soupApi;
+            //_soupApi = soupApi;
         }
 
         /// <summary>
-        /// Invoke the view command
+        /// Main entry point for a unique command
         /// </summary>
-        public async Task InvokeAsync(ViewOptions options)
+        virtual void Run() override final
         {
-            var packageName = options.Package;
-            try
-            {
-                var package = await _soupApi.GetPackageAsync(packageName);
-                var output = JsonConvert.SerializeObject(package);
-                Log.Info(output);
-            }
-            catch (ApiException ex)
-            {
-                if (ex.StatusCode == HttpStatusCode.NotFound)
-                {
-                    Log.Warning("The requested package does not exist.");
-                }
-                else
-                {
-                    Log.Error(ex.ToString());
-                }
-            }
+            Log::Trace("ViewCommand::Run");
+            // var packageName = options.Package;
+            // try
+            // {
+            //     var package = await _soupApi.GetPackageAsync(packageName);
+            //     var output = JsonConvert.SerializeObject(package);
+            //     Log.Info(output);
+            // }
+            // catch (ApiException ex)
+            // {
+            //     if (ex.StatusCode == HttpStatusCode.NotFound)
+            //     {
+            //         Log.Warning("The requested package does not exist.");
+            //     }
+            //     else
+            //     {
+            //         Log.Error(ex.ToString());
+            //     }
+            // }
         }
-    }
+
+    private:
+        ViewOptions m_options;
+        // ISoupApi _soupApi;
+    };
 }

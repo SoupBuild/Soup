@@ -1,25 +1,39 @@
-﻿// <copyright file="VersionCommand.cs" company="Soup">
+﻿// <copyright file="VersionCommand.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Client
-{
-    using System.Reflection;
-    using System.Threading.Tasks;
+#pragma once
+#include "ICommand.h"
+#include "VersionOptions.h"
 
+namespace Soup::Client
+{
     /// <summary>
     /// Version Command
     /// </summary>
-    internal class VersionCommand
+    class VersionCommand : public ICommand
     {
+    public:
         /// <summary>
-        /// Invoke
+        /// Initializes a new instance of the <see cref="VersionCommand"/> class.
         /// </summary>
-        public Task InvokeAsync(VersionOptions options)
+        VersionCommand(VersionOptions options) :
+            m_options(std::move(options))
         {
-            var version = Assembly.GetExecutingAssembly().GetName().Version;
-            Log.Info($"{version.Major}.{version.Minor}.{version.Build}");
-            return Task.CompletedTask;
         }
-    }
+
+        /// <summary>
+        /// Main entry point for a unique command
+        /// </summary>
+        virtual void Run() override final
+        {
+            Log::Trace("VersionsCommand::Run");
+            // var version = Assembly.GetExecutingAssembly().GetName().Version;
+            // Log.Info($"{version.Major}.{version.Minor}.{version.Build}");
+            // return Task.CompletedTask;
+        }
+
+    private:
+        VersionOptions m_options;
+    };
 }

@@ -23,6 +23,7 @@ namespace Soup::Client
     public:
         static ArgumentsParser Parse(const std::vector<std::string>& args)
         {
+            Log::Trace("ArgumentsParser::Parse");
             if (args.size() <= 1)
             {
                 throw std::runtime_error("No arguments provided.");
@@ -32,34 +33,42 @@ namespace Soup::Client
             std::any result = nullptr;
             if (commandType == "build")
             {
+                Log::Trace("Parse build");
                 result = BuildOptions();
             }
             else if (commandType == "init")
             {
+                Log::Trace("Parse initialize");
                 result = InitializeOptions();
             }
             else if (commandType == "install")
             {
+                Log::Trace("Parse install");
                 result = InstallOptions();
             }
             else if (commandType == "pack")
             {
+                Log::Trace("Parse pack");
                 result = PackOptions();
             }
             else if (commandType == "publish")
             {
+                Log::Trace("Parse publish");
                 result = PublishOptions();
             }
             else if (commandType == "run")
             {
+                Log::Trace("Parse run");
                 result = RunOptions();
             }
             else if (commandType == "version")
             {
+                Log::Trace("Parse version");
                 result = VersionOptions();
             }
             else if (commandType == "view")
             {
+                Log::Trace("Parse view");
                 result = ViewOptions();
             }
             else
