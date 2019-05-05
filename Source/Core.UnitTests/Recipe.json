@@ -1,0 +1,11 @@
+{
+  "name": "Soup.Core.UnitTests",
+  "version": "1.0.0",
+  "type": "executable",
+  "dependencies": [
+    "../Core/"
+  ],
+  "source": [
+    "gen/Main.cpp"
+  ]
+}
