@@ -2,49 +2,48 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Compiler
+namespace Soup
 {
-    using System.Threading.Tasks;
-
     /// <summary>
     /// The compiler interface definition
     /// </summary>
-    public interface ICompiler
+    export class ICompiler
     {
+    public:
         /// <summary>
         /// Gets the unique name for the compiler
         /// </summary>
-        string Name { get; }
+        virtual const std::string& GetName() const = 0;
 
         /// <summary>
         /// Gets the object file extension for the compiler
         /// </summary>
-        string ObjectFileExtension { get; }
+        virtual const std::string& GetObjectFileExtension() const = 0;
 
         /// <summary>
         /// Gets the module file extension for the compiler
         /// </summary>
-        string ModuleFileExtension { get; }
+        virtual const std::string& GetModuleFileExtension() const = 0;
 
         /// <summary>
         /// Gets the static library file extension for the compiler
         /// TODO: This is platform specific
         /// </summary>
-        string StaticLibraryFileExtension { get; }
+        virtual const std::string& GetStaticLibraryFileExtension() const = 0;
 
         /// <summary>
         /// Compile
         /// </summary>
-        Task<CompileResults> CompileAsync(CompileArguments args);
+        virtual const CompileResults Compile(CompileArguments args) = 0;
 
         /// <summary>
         /// Link Library
         /// </summary>
-        Task LinkLibraryAsync(LinkerArguments args);
+        virtual void LinkLibrary(LinkerArguments args) = 0;
 
         /// <summary>
         /// Link Executable
         /// </summary>
-        Task LinkExecutableAsync(LinkerArguments args);
+        virtual void LinkExecutable(LinkerArguments args) = 0;
     }
 }
