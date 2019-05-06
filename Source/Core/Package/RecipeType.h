@@ -7,7 +7,7 @@ namespace Soup
     /// <summary>
     /// The enumeration of recipe types
     /// </summary>
-    public enum RecipeType
+    export enum class RecipeType
     {
         /// <summary>
         /// Executable
@@ -15,13 +15,21 @@ namespace Soup
         Executable,
 
         /// <summary>
-        /// Import
-        /// </summary>
-        Import,
-
-        /// <summary>
         /// Library
         /// </summary>
-        Library
+        Library,
+    };
+
+    export std::string ToString(RecipeType value)
+    {
+        switch (value)
+        {
+            case RecipeType::Executable:
+                return "Executable";
+            case RecipeType::Library:
+                return "Library";
+            default:
+                throw std::runtime_error("Unknown recipe type.");
+        }
     }
 }

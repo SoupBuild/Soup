@@ -1,6 +1,7 @@
 // <copyright file="SemanticVersionTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
+
 #pragma once
 
 namespace Soup::UnitTests
@@ -9,7 +10,7 @@ namespace Soup::UnitTests
     {
     public:
         [[Fact]]
-        void Defaultinitializer()
+        void DefaultInitializer()
         {
             auto uut = SemanticVersion();
             Assert::AreEqual(0, uut.GetMajor(), "Major version must match.");
@@ -113,6 +114,19 @@ namespace Soup::UnitTests
                 SemanticVersion(major, minor, patch),
                 uut,
                 "Verify matches expected values.");
+        }
+
+        [[Theory]]
+        [[InlineData(1, 2, 3, "1.2.3")]]
+        [[InlineData(0, 0, 0, "0.0.0")]]
+        void ToStringValues(int major, int minor, int patch, std::string expected)
+        {
+            auto uut = SemanticVersion(major, minor, patch);
+            auto value = uut.ToString();
+            Assert::AreEqual(
+                expected,
+                value,
+                "Verify matches expected value.");
         }
     };
 }

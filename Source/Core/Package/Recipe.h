@@ -2,33 +2,57 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+#include "PackageReference.h"
+#include "RecipeType.h"
+#include "SemanticVersion.h"
+
 namespace Soup
 {
     /// <summary>
     /// The recipe container
     /// </summary>
-    class Recipe
+    export class Recipe
     {
     public:
         /// <summary>
         /// Initializes a new instance of the <see cref="Recipe"/> class.
         /// </summary>
-        Recipe(std::string name) :
+        Recipe() :
+            m_isDirty(false),
+            m_name(),
+            m_version(),
+            m_type(std::nullopt),
+            m_dependencies(std::nullopt),
+            m_public(std::nullopt),
+            m_source(std::nullopt)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Recipe"/> class.
+        /// </summary>
+        Recipe(
+            std::string name,
+            SemanticVersion version,
+            std::optional<RecipeType> type,
+            std::optional<std::vector<PackageReference>> dependencies,
+            std::optional<std::string> publicFile,
+            std::optional<std::vector<std::string>> source) :
             m_isDirty(false),
             m_name(std::move(name)),
-            m_type(std::nullopt),
-            m_version(std::nullopt),
-            m_public(std::nullopt)
+            m_version(version),
+            m_type(std::move(type)),
+            m_dependencies(std::move(dependencies)),
+            m_public(std::move(publicFile)),
+            m_source(std::move(source))
         {
-            Dependencies = new List<PackageReference>();
-            _public = null;
-            Source = new List<string>();
         }
 
         /// <summary>
         /// Gets a value indicating whether the content has changed or not
         /// </summary>
-        bool GetIsDirty()
+        bool IsDirty() const
         {
             return m_isDirty;
         }
@@ -36,7 +60,7 @@ namespace Soup
         /// <summary>
         /// Gets or sets the package name
         /// </summary>
-        const std::string& GetName()
+        const std::string& GetName() const
         {
             return m_name;
         }
@@ -46,30 +70,6 @@ namespace Soup
             if (value != m_name)
             {
                 m_name = std::move(value);
-                m_isDirty = true;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the package type
-        /// </summary>
-        RecipeType GetType()
-        {
-            if (_type != null)
-            {
-                return (RecipeType)_type;
-            }
-            else
-            {
-                return DefaultRecipeType;
-            }
-        }
-
-        void SetType(RecipeType value)
-        {
-            if (value != m_type)
-            {
-                m_type = value;
                 m_isDirty = true;
             }
         }
@@ -92,17 +92,53 @@ namespace Soup
         }
 
         /// <summary>
+        /// Gets or sets the package type
+        /// </summary>
+        bool HasType() const
+        {
+            return m_type.has_value();
+        }
+
+        RecipeType GetType() const
+        {
+            if (HasType())
+            {
+                return m_type.value();
+            }
+            else
+            {
+                return DefaultRecipeType;
+            }
+        }
+
+        void SetType(RecipeType value)
+        {
+            if (!HasType() || m_type.value() != value)
+            {
+                m_type = value;
+                m_isDirty = true;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the list of dependency packages
         /// TODO: Observable?
         /// </summary>
-        const std::vector<PackageReference>& GetDependencies()
+        bool HasDependencies() const
         {
-            return _dependencies;
+            return m_dependencies.has_value();
+        }
+
+        const std::vector<PackageReference>& GetDependencies() const
+        {
+            if (!HasDependencies())
+                throw std::runtime_error("No dependencies.");
+            return m_dependencies.value();
         }
 
         void SetDependencies(const std::vector<PackageReference>& value)
         {
-            if (value != m_dependencies)
+            if (!HasDependencies() || m_dependencies.value() != value)
             {
                 m_dependencies = value;
                 m_isDirty = true;
@@ -112,14 +148,21 @@ namespace Soup
         /// <summary>
         /// Gets or sets the public file
         /// </summary>
+        bool HasPublic() const
+        {
+            return m_public.has_value();
+        }
+
         const std::string& GetPublic()
         {
-            return _public;
+            if (!HasPublic())
+                throw std::runtime_error("No public.");
+            return m_public.value();
         }
 
         void SetPublic(const std::string& value)
         {
-            if (value != m_public)
+            if (!HasPublic() || m_public.value() != value)
             {
                 m_public = value;
                 m_isDirty = true;
@@ -128,51 +171,58 @@ namespace Soup
 
         /// <summary>
         /// Gets or sets the source values
+        /// TODO: Observable?
         /// </summary>
-        IList<string> Source
+        bool HasSource() const
         {
-            get
-            {
-                return _source;
-            }
+            return m_source.has_value();
+        }
 
-            set
-            {
-                if (_source != null)
-                {
-                    _source.CollectionChanged -= OnCollectionChanged;
-                    _source = null;
-                }
+        const std::vector<std::string>& GetSource() const
+        {
+            if (!HasSource())
+                throw std::runtime_error("No source.");
+            return m_source.value();
+        }
 
-                if (value != null)
-                {
-                    _source = new ObservableCollection<string>(value);
-                    _source.CollectionChanged += OnCollectionChanged;
-                }
+        void SetSource(const std::vector<std::string>& value)
+        {
+            if (!HasSource() || m_source.value() != value)
+            {
+                m_source = value;
+                m_isDirty = true;
             }
         }
 
         /// <summary>
-        /// Write the contents
+        /// Equality operator
         /// </summary>
-        public void WriteContents()
+        bool operator ==(const Recipe& rhs) const
         {
-            Log.Verbose($"Recipe");
-            Log.Verbose($"\tName         : {Name}");
-            Log.Verbose($"\tType         : {Type}");
-            Log.Verbose($"\tVersion      : {Version}");
-            Log.Verbose($"\tStandard     : {Standard}");
-            Log.Verbose($"\tDependencies : [{string.Join(", ", Dependencies.Select((value) => JsonConvert.SerializeObject(value)))}]");
+            return m_name == rhs.m_name &&
+                m_version == rhs.m_version &&
+                m_type == rhs.m_type &&
+                m_dependencies == rhs.m_dependencies &&
+                m_public == rhs.m_public &&
+                m_source == rhs.m_source;
+        }
+
+        /// <summary>
+        /// Inequality operator
+        /// </summary>
+        bool operator !=(const Recipe& rhs) const
+        {
+            return !(*this == rhs);
         }
 
     private:
-        static const RecipeType DefaultRecipeType = RecipeType.Library;
+        static const RecipeType DefaultRecipeType = RecipeType::Library;
+        bool m_isDirty;
         std::string m_name;
+        SemanticVersion m_version;
         std::optional<RecipeType> m_type;
-        private SemanticVersion m_version;
-        private LanguageStandard m_standard;
-        private ObservableCollection<PackageReference> m_dependencies;
-        std::optional<stdstring> m_public;
-        private ObservableCollection<string> m_source;
-    }
+        std::optional<std::vector<PackageReference>> m_dependencies;
+        std::optional<std::string> m_public;
+        std::optional<std::vector<std::string>> m_source;
+    };
 }

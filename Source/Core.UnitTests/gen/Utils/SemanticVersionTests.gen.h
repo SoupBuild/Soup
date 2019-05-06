@@ -1,12 +1,12 @@
 #pragma once
-#include "/SemanticVersionTests.h"
+#include "/Utils/SemanticVersionTests.h"
 
 TestState RunSemanticVersionTests() 
  {
     auto className = "SemanticVersionTests";
     auto testClass = std::make_shared<Soup::UnitTests::SemanticVersionTests>();
     TestState state = { 0, 0 };
-    state += RunTest(className, "Defaultinitializer", [&testClass]() { testClass->Defaultinitializer(); });
+    state += RunTest(className, "DefaultInitializer", [&testClass]() { testClass->DefaultInitializer(); });
     state += RunTest(className, "InitializeValues(1, 2, 3)", [&testClass]() { testClass->InitializeValues(1, 2, 3); });
     state += RunTest(className, "InitializeValues(3, 2, 1)", [&testClass]() { testClass->InitializeValues(3, 2, 1); });
     state += RunTest(className, "InitializeValues(1, 1, 1)", [&testClass]() { testClass->InitializeValues(1, 1, 1); });
@@ -31,6 +31,8 @@ TestState RunSemanticVersionTests()
     state += RunTest(className, "TryParseValues(\"\", false, 0, 0, 0)", [&testClass]() { testClass->TryParseValues("", false, 0, 0, 0); });
     state += RunTest(className, "TryParseValues(\"1\", false, 0, 0, 0)", [&testClass]() { testClass->TryParseValues("1", false, 0, 0, 0); });
     state += RunTest(className, "TryParseValues(\"1.2\", false, 0, 0, 0)", [&testClass]() { testClass->TryParseValues("1.2", false, 0, 0, 0); });
+    state += RunTest(className, "ToStringValues(1, 2, 3, \"1.2.3\")", [&testClass]() { testClass->ToStringValues(1, 2, 3, "1.2.3"); });
+    state += RunTest(className, "ToStringValues(0, 0, 0, \"0.0.0\")", [&testClass]() { testClass->ToStringValues(0, 0, 0, "0.0.0"); });
 
     return state;
 }
