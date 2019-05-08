@@ -2,14 +2,12 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Compiler
+namespace Soup
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// The enumeration of language standards
     /// </summary>
-    public enum LanguageStandard
+    export enum class LanguageStandard
     {
         /// <summary>
         /// C++ 11
@@ -29,57 +27,57 @@ namespace Soup.Compiler
         /// <summary>
         /// The latest experimental features
         /// </summary>
-        Latest
-    }
+        Latest,
+    };
 
     /// <summary>
     /// The set of standard compiler arguments
     /// </summary>
-    public class CompileArguments
+    export struct CompileArguments
     {
         /// <summary>
         /// Gets or sets the language standard
         /// </summary>
-        public LanguageStandard Standard { get; set; } = LanguageStandard.CPP14;
+        LanguageStandard Standard;
 
         /// <summary>
         /// Gets or sets the root directory
         /// </summary>
-        public string RootDirectory { get; set; } = string.Empty;
+        std::string RootDirectory;
 
         /// <summary>
         /// Gets or sets the output directory
         /// </summary>
-        public string OutputDirectory { get; set; } = string.Empty;
+        std::string OutputDirectory;
 
         /// <summary>
         /// Gets or sets the list of preprocessor definitions
         /// </summary>
-        public IList<string> PreprocessorDefinitions { get; set; } = new List<string>();
+        std::vector<std::string> PreprocessorDefinitions;
 
         /// <summary>
         /// Gets or sets the list of source files
         /// </summary>
-        public IList<string> SourceFiles { get; set; } = new List<string>();
+        std::vector<std::string> SourceFiles;
 
         /// <summary>
         /// Gets or sets the list of include directories
         /// </summary>
-        public IList<string> IncludeDirectories { get; set; } = new List<string>();
+        std::vector<std::string> IncludeDirectories;
 
         /// <summary>
         /// Gets or sets the list of modules
         /// </summary>
-        public IList<string> Modules { get; set; } = new List<string>();
+        std::vector<std::string> Modules;
 
         /// <summary>
         /// Gets or sets a value indicating whether to compile as export module
         /// </summary>
-        public bool ExportModule { get; set; } = false;
+        bool ExportModule;
 
         /// <summary>
         /// Gets or sets a value indicating whether to generate the include set for each file
         /// </summary>
-        public bool GenerateIncludeTree { get; set; } = false;
-    }
+        bool GenerateIncludeTree;
+    };
 }

@@ -1,8 +1,8 @@
 {
-  "name": "Soup.Core",
+  "name": "Soup.Compiler.Clang",
   "version": "0.1.0",
   "dependencies": [
-    "D:/Repos/SoupSyntax/Syntax/"
+    "../../Core/"
   ],
   "public": "Module.cppm",
   "source": [

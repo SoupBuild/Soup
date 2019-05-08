@@ -1,25 +1,19 @@
-﻿// <copyright file="PackageManager.cs" company="Soup">
+﻿// <copyright file="PackageManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using ICSharpCode.SharpZipLib.Tar;
-
     /// <summary>
     /// The package manager
     /// </summary>
-    public static class PackageManager
+    export class PackageManager
     {
+    public:
         /// <summary>
         /// Build the namespace version
         /// </summary>
-        public static string BuildNamespaceVersion(SemanticVersion version)
+        static std::string BuildNamespaceVersion(SemanticVersion version)
         {
             return $"v{version.Major}_{version.Minor}_{version.Patch}";
         }
@@ -290,5 +284,5 @@ namespace Soup
             var path = Path.Combine(kitchenPath, Constants.StoreIncludeRootFolderName, packageVersionDirectory);
             return path;
         }
-    }
+    };
 }

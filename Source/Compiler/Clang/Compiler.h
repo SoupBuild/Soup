@@ -1,57 +1,51 @@
-﻿// <copyright file="Compiler.cs" company="Soup">
+﻿// <copyright file="Compiler.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Compiler.Clang
+namespace Soup::Compiler::Clang
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-
     /// <summary>
-    /// The MSVC compiler implementation
+    /// The Clang compiler implementation
     /// </summary>
-    public class Compiler : ICompiler
+    class Compiler : public ICompiler
     {
-        //private static string ToolsPath => @"C:\Program Files\llvm\";
-        private static string ToolsPath => @"D:\Repos\llvm\build\Release";
-        private static Regex IsHeaderIncludeStart = new Regex("^[\\.]+ ", RegexOptions.Compiled);
-        private static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
-        private static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);
+    private:
+        // static string ToolsPath => @"C:\Program Files\llvm\";
+        static const std::string ToolsPath = "D:\Repos\llvm\build\Release";
+        static Regex IsHeaderIncludeStart = new Regex("^[\\.]+ ", RegexOptions.Compiled);
+        static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
+        static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);
 
-        private Stack<HeaderInclude> _currentIncludes = new Stack<HeaderInclude>();
-        private bool _inWarningMessage = false;
-        private bool _inErrorMessage = false;
+        Stack<HeaderInclude> _currentIncludes = new Stack<HeaderInclude>();
+        bool _inWarningMessage = false;
+        bool _inErrorMessage = false;
 
+    public:
         /// <summary>
         /// Gets the unique name for the compiler
         /// </summary>
-        public string Name => "Clang";
+        string Name => "Clang";
 
         /// <summary>
         /// Gets the object file extension for the compiler
         /// </summary>
-        public string ObjectFileExtension => "o";
+        string ObjectFileExtension => "o";
 
         /// <summary>
         /// Gets the module file extension for the compiler
         /// </summary>
-        public string ModuleFileExtension => "pcm";
+        string ModuleFileExtension => "pcm";
 
         /// <summary>
         /// Gets the static library file extension for the compiler
         /// TODO: This is platform specific
         /// </summary>
-        public string StaticLibraryFileExtension => "a";
+        string StaticLibraryFileExtension => "a";
 
         /// <summary>
         /// Compile
         /// </summary>
-        public async Task<CompileResults> CompileAsync(CompileArguments args)
+        async Task<CompileResults> CompileAsync(CompileArguments args)
         {
             // Compile each file individually
             var allIncludes = new List<HeaderInclude>();
@@ -67,7 +61,7 @@ namespace Soup.Compiler.Clang
             };
         }
 
-        private Task<HeaderInclude> CompileAsync(string file, CompileArguments args)
+        Task<HeaderInclude> CompileAsync(string file, CompileArguments args)
         {
             // Set the working directory to the output directory
             var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
@@ -138,7 +132,7 @@ namespace Soup.Compiler.Clang
         /// <summary>
         /// Link library
         /// </summary>
-        public Task LinkLibraryAsync(LinkerArguments args)
+        Task LinkLibraryAsync(LinkerArguments args)
         {
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;
@@ -180,7 +174,7 @@ namespace Soup.Compiler.Clang
         /// <summary>
         /// Link Executable
         /// </summary>
-        public Task LinkExecutableAsync(LinkerArguments args)
+        Task LinkExecutableAsync(LinkerArguments args)
         {
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;
@@ -219,7 +213,8 @@ namespace Soup.Compiler.Clang
             }
         }
 
-        private string BuildCompilerArguments(string sourceFile, CompileArguments args, string workingDirectory)
+    private:
+        string BuildCompilerArguments(string sourceFile, CompileArguments args, string workingDirectory)
         {
             // Calculate object output file
             var rootPath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
