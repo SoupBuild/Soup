@@ -3,8 +3,8 @@ import Antlr4.Runtime;
 import Soup.Core;
 import Soup.Compiler.Clang;
 
-#include "SoupAssert.h"
-#include "RunTest.h"
+#include "../../../../SoupTest/Assert/SoupAssert.h"
+#include "../../../../SoupTest/Assert/RunTest.h"
 
 #include "ArgumentBuilderTests.gen.h"
 
