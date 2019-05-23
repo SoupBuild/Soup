@@ -12,12 +12,12 @@ namespace Soup::Compiler::Clang
     {
     public:
         static std::vector<std::string> BuildCompilerArguments(
-            const std::string& sourceFile,
+            const std::filesystem::path& sourceFile,
             const CompileArguments& args,
-            const std::string& workingDirectory)
+            const std::filesystem::path& workingDirectory)
         {
             // Calculate object output file
-            // auto rootPath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
+            //auto rootPath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
 
             auto commandArgs = std::vector<std::string>();
 
@@ -111,8 +111,9 @@ namespace Soup::Compiler::Clang
                 commandArgs.push_back("-c");
             }
 
-            // // Lastly add the file
-            // commandArgs.Add(Path.Combine(rootPath, sourceFile));
+            // Lastly add the file
+            //auto soucePath = rootPath / sourceFile;
+            //commandArgs.push_back(soucePath);
 
             return commandArgs;
         }

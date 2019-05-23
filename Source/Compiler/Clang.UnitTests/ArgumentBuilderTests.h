@@ -13,9 +13,9 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void NoParameters()
         {
-            std::string sourceFile = "";
+            std::filesystem::path sourceFile = "File.cpp";
             CompileArguments arguments = {};
-            std::string workingDirectory = "";
+            std::filesystem::path workingDirectory = "";
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments, workingDirectory);
 
             auto expected = std::vector<std::string>({
@@ -28,10 +28,10 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_GenerateIncludeTree()
         {
-            std::string sourceFile = "";
+            std::filesystem::path sourceFile = "File.cpp";
             CompileArguments arguments = {};
             arguments.GenerateIncludeTree = true;
-            std::string workingDirectory = "";
+            std::filesystem::path workingDirectory = "";
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments, workingDirectory);
 
             auto expected = std::vector<std::string>({
@@ -45,21 +45,19 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_ExportModule_ThrowsZeroSource()
         {
-            std::string sourceFile = "";
+            std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
             arguments.ExportModule = true;
-            std::string workingDirectory = "";
-            auto test = [&sourceFile, &arguments, &workingDirectory]() {
+            std::filesystem::path workingDirectory = "";
+            Assert::ThrowsRuntimeError([&sourceFile, &arguments, &workingDirectory]() {
                 auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments, workingDirectory);
-            };
-
-            Assert::ThrowsRuntimeError(test);
+            };);
         }
 
         [[Fact]]
         void SingleArgument_ExportModule_ThrowsMoreThanOneSource()
         {
-            std::string sourceFile = "";
+            std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
             arguments.ExportModule = true;
             arguments.SourceFiles = std::vector<std::string>({
@@ -75,7 +73,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_ExportModule_SingleSource()
         {
-            std::string sourceFile = "";
+            std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
             arguments.SourceFiles = std::vector<std::string>({
                 "module.cpp",
