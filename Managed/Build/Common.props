@@ -1,0 +1,46 @@
+<!--
+***********************************************************************************************
+Common.props
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) mwasplund. All rights reserved.
+***********************************************************************************************
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <BuildDir>$(MSBuildThisFileDirectory)</BuildDir>
+    <SourceDir>$(BuildDir)..\</SourceDir>
+    <RootDir>$(SourceDir)..\</RootDir>
+    <BinDir>$(RootDir)bin\</BinDir>
+    <ObjDir>$(RootDir)obj\</ObjDir>
+    <TempDir>$(RootDir)temp\</TempDir>
+  </PropertyGroup>
+
+  <!-- Bring in language specific overrides -->
+  <PropertyGroup>
+    <IsTestPrject Condition="$(MSBuildProjectName.EndsWith('UnitTests'))">True</IsTestPrject>
+    <IsTestPrject Condition="'$(IsTestPrject)' == ''">False</IsTestPrject>
+    <BaseIntermediateOutputPath>$(ObjDir)\$(MSBuildProjectName)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinDir)\$(MSBuildProjectName)</BaseOutputPath>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <!-- Enable documentation output -->
+  <PropertyGroup>
+    <DocumentationFile>$(BinDir)\$(MSBuildProjectName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <!-- Include the shared stylecop settings -->
+  <PropertyGroup>
+    <CodeAnalysisRuleSet Condition="$(IsTestPrject) != 'True'">$(BuildDir)stylecop.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="$(IsTestPrject) == 'True'">$(BuildDir)stylecop.internal.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="$(BuildDir)stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+</Project>

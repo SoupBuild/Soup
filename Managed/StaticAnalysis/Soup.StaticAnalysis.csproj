@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Antlr4 Remove="Grammar\CppLexerCharacterLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppLexerFloatingPointLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppLexerFragments.g4" />
+    <Antlr4 Remove="Grammar\CppLexerIdentifiers.g4" />
+    <Antlr4 Remove="Grammar\CppLexerIntegerLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppLexerKeywords.g4" />
+    <Antlr4 Remove="Grammar\CppLexerOperatorsAndPunctuators.g4" />
+    <Antlr4 Remove="Grammar\CppLexerStringLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppLexerUserDefinedLiterals.g4" />
+    <Antlr4 Remove="Grammar\CppParserAttributes.g4" />
+    <Antlr4 Remove="Grammar\CppParserDeclarations.g4" />
+    <Antlr4 Remove="Grammar\CppParserDeclarators.g4" />
+    <Antlr4 Remove="Grammar\CppParserExpressions.g4" />
+    <Antlr4 Remove="Grammar\CppParserFunctionDefinitions.g4" />
+    <Antlr4 Remove="Grammar\CppParserLiterals.g4" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Grammar\CppLexer.g4" />
+    <None Remove="Grammar\CppParser.g4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr4 Update="Grammar\CppLexer.g4">
+      <DefaultCustomToolNamespace>$([MSBuild]::ValueOrDefault('$(RootNamespace).%(DefaultCustomToolNamespace)', '').TrimEnd('.'))</DefaultCustomToolNamespace>
+      <CustomToolNamespace>$([MSBuild]::ValueOrDefault(%(CustomToolNamespace), %(DefaultCustomToolNamespace)))</CustomToolNamespace>
+    </Antlr4>
+    <Antlr4 Update="Grammar\CppParser.g4">
+      <DefaultCustomToolNamespace>$([MSBuild]::ValueOrDefault('$(RootNamespace).%(DefaultCustomToolNamespace)', '').TrimEnd('.'))</DefaultCustomToolNamespace>
+      <CustomToolNamespace>$([MSBuild]::ValueOrDefault(%(CustomToolNamespace), %(DefaultCustomToolNamespace)))</CustomToolNamespace>
+    </Antlr4>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Antlr4" Version="4.6.5" />
+  </ItemGroup>
+</Project>
