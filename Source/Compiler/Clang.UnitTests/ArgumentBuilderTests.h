@@ -13,13 +13,13 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void NoParameters()
         {
-            std::filesystem::path sourceFile = "File.cpp";
+            std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
-            std::filesystem::path workingDirectory = "";
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments, workingDirectory);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
 
             auto expected = std::vector<std::string>({
                 "-c",
+                "File.cpp",
             });
 
             Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -28,15 +28,15 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_GenerateIncludeTree()
         {
-            std::filesystem::path sourceFile = "File.cpp";
+            std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
             arguments.GenerateIncludeTree = true;
-            std::filesystem::path workingDirectory = "";
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments, workingDirectory);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
 
             auto expected = std::vector<std::string>({
                 "-H",
                 "-c",
+                "File.cpp",
             });
 
             Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -48,10 +48,9 @@ namespace Soup::Compiler::Clang::UnitTests
             std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
             arguments.ExportModule = true;
-            std::filesystem::path workingDirectory = "";
-            Assert::ThrowsRuntimeError([&sourceFile, &arguments, &workingDirectory]() {
-                auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments, workingDirectory);
-            };);
+            Assert::ThrowsRuntimeError([&sourceFile, &arguments]() {
+                auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            });
         }
 
         [[Fact]]
@@ -64,9 +63,8 @@ namespace Soup::Compiler::Clang::UnitTests
                 "module1.cpp",
                 "module2.cpp",
             });
-            std::string workingDirectory = "";
-            Assert::ThrowsRuntimeError([&sourceFile, &arguments, &workingDirectory]() {
-                auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments, workingDirectory);
+            Assert::ThrowsRuntimeError([&sourceFile, &arguments]() {
+                auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
             });
         }
 
@@ -79,11 +77,11 @@ namespace Soup::Compiler::Clang::UnitTests
                 "module.cpp",
             });
             arguments.ExportModule = true;
-            std::string workingDirectory = "";
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments, workingDirectory);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
 
             auto expected = std::vector<std::string>({
                 "--precompile",
+                "File.cpp",
             });
 
             Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");

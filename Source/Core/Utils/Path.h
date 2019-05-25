@@ -11,10 +11,6 @@ namespace Soup
     export class Path
     {
     public:
-        static constexpr char DirectorySeparatorCharacter = '/';
-        static constexpr char VolumeSeparatorCharacter = ':';
-
-    public:
         /// <summary>
         /// Initializes a new instance of the <see cref="Path"/> class.
         /// </summary>
@@ -29,14 +25,76 @@ namespace Soup
         Path(std::string value) :
             m_value(std::move(value))
         {
+            // Cleanup alternative path separators
+            // std::replace(
+            //     m_value.begin(),
+            //     m_value.end(),
+            //     AltDirectorySeparatorCharacter,
+            //     DirectorySeparatorCharacter);
         }
 
         /// <summary>
-        /// Gets or sets the version major
+        /// Gets a value indicating whether the path has a root
+        /// </summary>
+        bool HasRoot() const
+        {
+            return m_value.has_root_name();
+        }
+
+        /// <summary>
+        /// Gets the path root
+        /// </summary>
+        std::string GetRoot() const
+        {
+            return m_value.root_name().string();
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the path has a file name
+        /// </summary>
+        bool HasFileName() const
+        {
+            return m_value.has_filename();
+        }
+
+        /// <summary>
+        /// Gets the file name
         /// </summary>
         std::string GetFileName() const
         {
-            return m_value;
+            return m_value.filename().string();
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the file name has an stem
+        /// </summary>
+        bool HasFileStem() const
+        {
+            return m_value.has_stem();
+        }
+
+        /// <summary>
+        /// Gets the file name minus the extension
+        /// </summary>
+        std::string GetFileStem() const
+        {
+            return m_value.stem().string();
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the file name has an extension
+        /// </summary>
+        bool HasFileExtension() const
+        {
+            return m_value.has_extension();
+        }
+
+        /// <summary>
+        /// Gets the file extension
+        /// </summary>
+        std::string GetFileExtension() const
+        {
+            return m_value.extension().string();
         }
 
         /// <summary>
@@ -47,9 +105,6 @@ namespace Soup
             return m_value == rhs.m_value;
         }
 
-        /// <summary>
-        /// Inequality operator
-        /// </summary>
         bool operator !=(const Path& rhs) const
         {
             return m_value != rhs.m_value;
@@ -60,10 +115,10 @@ namespace Soup
         /// </summary>
         std::string ToString()
         {
-            return m_value;
+            return m_value.string();
         }
 
     private:
-        std::string m_value;
+        std::filesystem::path m_value;
     };
 }
