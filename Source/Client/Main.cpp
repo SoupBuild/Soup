@@ -3,7 +3,7 @@
 // </copyright>
 
 import std.core;
-import SoupCore;
+import Soup.Core;
 
 #include "Program.h"
 
@@ -15,5 +15,5 @@ int main(int argc, char** argv)
         args.push_back(argv[i]);
     }
 
-    return Soup::Client::Program::Main(std::move(args));
+    return Soup::Client::Program::Run(std::move(args));
 }

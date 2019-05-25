@@ -24,7 +24,7 @@ namespace Soup::Client
         /// <summary>
         /// The main entry point of the program
         /// </summary>
-        static int Main(std::vector<std::string> args)
+        static int Run(std::vector<std::string> args)
         {
             try
             {
