@@ -110,6 +110,102 @@ namespace Soup::Compiler::Clang::UnitTests
         }
 
         [[Fact]]
+        void SingleArgument_LanguageStandard_CPP20()
+        {
+            std::string sourceFile = "File.cpp";
+            CompileArguments arguments = {};
+            arguments.Standard = LanguageStandard::CPP20;
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+
+            auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
+                "-std=c++17",
+                "-fmodules-ts",
+                "-c",
+                "File.cpp",
+            });
+
+            Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+        }
+
+        [[Fact]]
+        void SingleArgument_IncludePaths()
+        {
+            std::string sourceFile = "File.cpp";
+            CompileArguments arguments = {};
+            arguments.IncludeDirectories = std::vector<std::string>({
+                "C:/Files/SDK/",
+                "my files/"
+            });
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+
+            auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
+                "-std=c++11",
+                "-I\"C:/Files/SDK/\"",
+                "-I\"my files/\"",
+                "-c",
+                "File.cpp",
+            });
+
+            Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+        }
+
+        [[Fact]]
+        void SingleArgument_PreprocessorDefinitions()
+        {
+            std::string sourceFile = "File.cpp";
+            CompileArguments arguments = {};
+            arguments.PreprocessorDefinitions = std::vector<std::string>({
+                "DEBUG",
+                "VERSION=1"
+            });
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+
+            auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
+                "-std=c++11",
+                "-DDEBUG",
+                "-DVERSION=1",
+                "-c",
+                "File.cpp",
+            });
+
+            Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+        }
+
+        [[Fact]]
+        void SingleArgument_Modules()
+        {
+            std::string sourceFile = "File.cpp";
+            CompileArguments arguments = {};
+            arguments.Modules = std::vector<std::string>({
+                "Module.pcm",
+                "Std.pcm"
+            });
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+
+            auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
+                "-std=c++11",
+                "-fmodule-file=\"Module.pcm\"",
+                "-fmodule-file=\"Std.pcm\"",
+                "-c",
+                "File.cpp",
+            });
+
+            Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+        }
+
+        [[Fact]]
         void SingleArgument_ExportModule_ThrowsZeroSource()
         {
             std::string sourceFile = "File.cpp";
@@ -154,7 +250,6 @@ namespace Soup::Compiler::Clang::UnitTests
                 "--precompile",
                 "File.cpp",
             });
-
             Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
         }
     };

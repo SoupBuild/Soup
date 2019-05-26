@@ -44,49 +44,47 @@ namespace Soup::Compiler::Clang
                     commandArgs.push_back("-std=c++14");
                     break;
                 case LanguageStandard::CPP17:
+                case LanguageStandard::CPP20:
                     commandArgs.push_back("-std=c++17");
                     break;
                 default:
                     throw std::runtime_error("Unknown language standard.");
             }
 
-            // // Set the include paths
-            // for (var directory in args.IncludeDirectories)
-            // {
-            //     var include = directory;
-            //     if (!Path.IsPathFullyQualified(directory))
-            //     {
-            //         include = Path.Combine(rootPath, directory);
-            //     }
+            // Enable experimental features for C++ 20
+            if (args.Standard == LanguageStandard::CPP20)
+            {
+                commandArgs.push_back("-fmodules-ts");
+            }
 
-            //     commandArgs.Add($"-I\"{include}\"");
-            // }
+            // Set the include paths
+            for (auto directory : args.IncludeDirectories)
+            {
+                auto argument = "-I\"" + directory + "\"";
+                commandArgs.push_back(std::move(argument));
+            }
 
-            // // Set the preprocessor definitions
-            // foreach (var definition in args.PreprocessorDefinitions)
-            // {
-            //     commandArgs.Add($"-D{definition}");
-            // }
+            // Set the preprocessor definitions
+            for (auto& definition : args.PreprocessorDefinitions)
+            {
+                auto argument = "-D" + definition;
+                commandArgs.push_back(std::move(argument));
+            }
 
-            // // Ignore Standard Include Paths to prevent pulling in accidental headers
-            // // commandArgs.Add("-X");
+            // Ignore Standard Include Paths to prevent pulling in accidental headers
+            // commandArgs.Add("-X");
 
-            // // Add in the std include paths
+            // Add in the std include paths
 
-            // // Enable c++ exceptions
-            // // commandArgs.Add("-EHs");
+            // Enable c++ exceptions
+            // commandArgs.Add("-EHs");
 
-            // // Enable experimental features
-            // if (args.Standard == LanguageStandard.Latest)
-            // {
-            //     commandArgs.Add("-fmodules-ts");
-            // }
-
-            // // Add the module references
-            // foreach (var module in args.Modules)
-            // {
-            //     commandArgs.Add($"-fmodule-file=\"{Path.Combine(rootPath, module)}\"");
-            // }
+            // Add the module references
+            for (auto& moduleFile : args.Modules)
+            {
+                auto argument = "-fmodule-file=\"" + moduleFile + "\"";
+                commandArgs.push_back(std::move(argument));
+            }
 
             if (args.ExportModule)
             {

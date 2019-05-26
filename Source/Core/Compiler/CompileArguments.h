@@ -25,9 +25,9 @@ namespace Soup
         CPP17,
 
         /// <summary>
-        /// The latest experimental features
+        /// C++ 20
         /// </summary>
-        Latest,
+        CPP20,
     };
 
     /// <summary>
