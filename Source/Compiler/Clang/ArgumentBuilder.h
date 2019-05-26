@@ -18,37 +18,37 @@ namespace Soup::Compiler::Clang
             // Calculate object output file
             auto commandArgs = std::vector<std::string>();
 
+            // Enable verbose output
+            // commandArgs.Add("-v");
+
+            // Disable ms compatibility (workaround for bug with inplicit types in pcm)
+            commandArgs.push_back("-fno-ms-compatibility");
+
+            // Allow public std visible during link time
+            commandArgs.push_back("-Xclang");
+            commandArgs.push_back("-flto-visibility-public-std");
+
             // Enable Header includes if needed
             if (args.GenerateIncludeTree)
             {
                 commandArgs.push_back("-H");
             }
 
-            // Enable verbose output
-            // commandArgs.Add("-v");
-
-            // Disable ms compatibility (workaround for bug with inplicit types in pcm)
-            // commandArgs.Add("-fno-ms-compatibility");
-
-            // Allow public std visible during link time
-            // commandArgs.AddRange(new string[] { "-Xclang", "-flto-visibility-public-std" });
-
-            // // Set the language standard
-            // switch (args.Standard)
-            // {
-            //     case LanguageStandard.CPP11:
-            //         commandArgs.Add("-std=c++11");
-            //         break;
-            //     case LanguageStandard.CPP14:
-            //         commandArgs.Add("-std=c++14");
-            //         break;
-            //     case LanguageStandard.CPP17:
-            //     case LanguageStandard.Latest:
-            //         commandArgs.Add("-std=c++17");
-            //         break;
-            //     default:
-            //         throw new NotSupportedException("Unknown language standard.");
-            // }
+            // Set the language standard
+            switch (args.Standard)
+            {
+                case LanguageStandard::CPP11:
+                    commandArgs.push_back("-std=c++11");
+                    break;
+                case LanguageStandard::CPP14:
+                    commandArgs.push_back("-std=c++14");
+                    break;
+                case LanguageStandard::CPP17:
+                    commandArgs.push_back("-std=c++17");
+                    break;
+                default:
+                    throw std::runtime_error("Unknown language standard.");
+            }
 
             // // Set the include paths
             // for (var directory in args.IncludeDirectories)

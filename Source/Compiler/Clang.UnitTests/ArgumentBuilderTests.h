@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-using namespace SoupTest;
 
 namespace Soup::Compiler::Clang::UnitTests
 {
@@ -18,6 +17,10 @@ namespace Soup::Compiler::Clang::UnitTests
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
 
             auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
+                "-std=c++11",
                 "-c",
                 "File.cpp",
             });
@@ -34,7 +37,71 @@ namespace Soup::Compiler::Clang::UnitTests
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
 
             auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
                 "-H",
+                "-std=c++11",
+                "-c",
+                "File.cpp",
+            });
+
+            Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+        }
+
+        [[Fact]]
+        void SingleArgument_LanguageStandard_CPP11()
+        {
+            std::string sourceFile = "File.cpp";
+            CompileArguments arguments = {};
+            arguments.Standard = LanguageStandard::CPP11;
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+
+            auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
+                "-std=c++11",
+                "-c",
+                "File.cpp",
+            });
+
+            Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+        }
+
+        [[Fact]]
+        void SingleArgument_LanguageStandard_CPP14()
+        {
+            std::string sourceFile = "File.cpp";
+            CompileArguments arguments = {};
+            arguments.Standard = LanguageStandard::CPP14;
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+
+            auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
+                "-std=c++14",
+                "-c",
+                "File.cpp",
+            });
+
+            Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+        }
+
+        [[Fact]]
+        void SingleArgument_LanguageStandard_CPP17()
+        {
+            std::string sourceFile = "File.cpp";
+            CompileArguments arguments = {};
+            arguments.Standard = LanguageStandard::CPP17;
+            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+
+            auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
+                "-std=c++17",
                 "-c",
                 "File.cpp",
             });
@@ -80,6 +147,10 @@ namespace Soup::Compiler::Clang::UnitTests
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
 
             auto expected = std::vector<std::string>({
+                "-fno-ms-compatibility",
+                "-Xclang",
+                "-flto-visibility-public-std",
+                "-std=c++11",
                 "--precompile",
                 "File.cpp",
             });

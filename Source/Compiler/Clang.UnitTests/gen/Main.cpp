@@ -5,6 +5,7 @@ import Soup.Compiler.Clang;
 
 #include "../../../../SoupTest/Assert/SoupAssert.h"
 #include "../../../../SoupTest/Assert/RunTest.h"
+using namespace SoupTest;
 
 #include "ArgumentBuilderTests.gen.h"
 
