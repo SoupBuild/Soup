@@ -1,28 +1,19 @@
-﻿// <copyright file="BuildEngine.cs" company="Soup">
+﻿// <copyright file="BuildEngine.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Soup.Compiler;
-
     /// <summary>
     /// The build engine
     /// </summary>
-    public class BuildEngine
+    class BuildEngine
     {
-        private LocalUserConfig _config;
-        private ICompiler _compiler;
-
+    public:
         /// <summary>
         /// Initializes a new instance of the <see cref="BuildEngine"/> class.
         /// </summary>
-        public BuildEngine(LocalUserConfig config, ICompiler compiler)
+        BuildEngine(LocalUserConfig config, ICompiler compiler)
         {
             _config = config;
             _compiler = compiler;
@@ -31,24 +22,25 @@ namespace Soup
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        public async Task ExecuteAsync(string path, Recipe recipe, bool force)
+        void Execute(string path, Recipe recipe, bool force)
         {
             if (!Path.IsPathFullyQualified(path))
             {
                 throw new InvalidOperationException("Build must provide qualified path.");
             }
 
-            Log.Info("Build Recursive Dependencies.");
-            await BuildAllDependenciesRecursivelyAsync(path, recipe, force);
+            Log::Info("Build Recursive Dependencies.");
+            BuildAllDependenciesRecursively(path, recipe, force);
 
-            Log.Info("Build Toplevel Recipe.");
-            await CoreBuildAsync(path, recipe, force);
+            Log::Info("Build Toplevel Recipe.");
+            CoreBuild(path, recipe, force);
         }
 
+    private:
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        private async Task CoreBuildAsync(string path, Recipe recipe, bool force)
+        void CoreBuild(string path, Recipe recipe, bool force)
         {
             var objectDirectory = Path.Combine("out", "obj", _compiler.Name);
             var binaryDirectory = Path.Combine("out", "bin", _compiler.Name);
@@ -531,5 +523,9 @@ namespace Soup
         {
             return $"v{version.Major}_{version.Minor}_{version.Patch}";
         }
+
+    private:
+        LocalUserConfig _config;
+        ICompiler _compiler;
     }
 }

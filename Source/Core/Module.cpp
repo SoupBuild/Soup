@@ -6,7 +6,10 @@ import json11;
 
 #include "Compiler\CompileArguments.h"
 #include "Logger\Log.h"
+#include "Logger\ConsoleTraceListener.h"
+#include "Logger\TestTraceListener.h"
 #include "Package\Recipe.h"
-#include "Package\RecipeManager.h"
+#include "Package\RecipeExtensions.h"
+#include "Package\RecipeJson.h"
 #include "Utils\Path.h"
 #include "Utils\SemanticVersion.h"

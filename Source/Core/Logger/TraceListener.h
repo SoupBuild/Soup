@@ -177,7 +177,11 @@ namespace Soup
                 builder << std::to_string(id) << " : ";
             }
 
-            Write(builder.str());
+            auto header = builder.str();
+            if (!header.empty())
+            {
+                Write(header);
+            }
         }
 
     private:

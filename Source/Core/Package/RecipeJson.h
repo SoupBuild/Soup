@@ -1,18 +1,17 @@
-﻿// <copyright file="RecipeManager.h" company="Soup">
+﻿// <copyright file="RecipeJson.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "Constants.h"
 #include "Recipe.h"
 #include "Path.h"
 
 namespace Soup
 {
     /// <summary>
-    /// The recipe manager
+    /// The recipe json serialize manager
     /// </summary>
-    export class RecipeManager
+    export class RecipeJson
     {
     private:
         static constexpr const char* Property_Name = "name";

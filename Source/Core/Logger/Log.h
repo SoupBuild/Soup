@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "ConsoleTraceListener.h"
 #include "EventTypeFilter.h"
 
 namespace Soup
@@ -14,6 +13,14 @@ namespace Soup
     export class Log
     {
     public:
+        /// <summary>
+        /// Register the single event listener
+        /// </summary>
+        static void RegisterListener(std::shared_ptr<TraceListener> listener)
+        {
+            s_listener = std::move(listener);
+        }
+
         /// <summary>
         /// Gets or sets the value indicating whether diagnostic logging is enabled or not
         /// </summary>
@@ -90,15 +97,9 @@ namespace Soup
         /// </summary>
         static TraceListener& EnsureListener()
         {
-            // Setup the listener
-            static std::shared_ptr<TraceListener> listener =
-                std::make_shared<ConsoleTraceListener>(
-                    "Log",
-                    EnsureFilter(),
-                    false,
-                    false);
-
-            return *listener;
+            if (s_listener == nullptr)
+                throw std::runtime_error("No Listener registered.");
+            return *s_listener;
         }
 
         /// <summary>
@@ -118,5 +119,10 @@ namespace Soup
 
             return filter;
         }
+    
+    private:
+        static std::shared_ptr<TraceListener> s_listener;
     };
+
+    std::shared_ptr<TraceListener> Log::s_listener = nullptr;
 }

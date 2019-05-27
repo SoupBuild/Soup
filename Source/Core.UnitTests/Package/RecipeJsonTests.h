@@ -1,4 +1,4 @@
-// <copyright file="RecipeManagerTests.h" company="Soup">
+// <copyright file="RecipeJsonTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,20 +6,20 @@
 
 namespace Soup::UnitTests
 {
-    class RecipeManagerTests
+    class RecipeJsonTests
     {
     public:
         [[Fact]]
-        void Parse_GarbageThrows()
+        void Deserialize_GarbageThrows()
         {
             auto recipe = std::stringstream("garbage");
             Assert::ThrowsRuntimeError([&recipe]() {
-                auto actual = RecipeManager::Deserialize(recipe);
+                auto actual = RecipeJson::Deserialize(recipe);
             });
         }
 
         [[Fact]]
-        void Parse_MissingNameThrows()
+        void Deserialize_MissingNameThrows()
         {
             auto recipe = std::stringstream(
                 R"({
@@ -27,12 +27,12 @@ namespace Soup::UnitTests
                 })");
 
             Assert::ThrowsRuntimeError([&recipe]() {
-                auto actual = RecipeManager::Deserialize(recipe);
+                auto actual = RecipeJson::Deserialize(recipe);
             });
         }
 
         [[Fact]]
-        void Parse_MissingVersionThrows()
+        void Deserialize_MissingVersionThrows()
         {
             auto recipe = std::stringstream(
                 R"({
@@ -40,7 +40,7 @@ namespace Soup::UnitTests
                 })");
 
             Assert::ThrowsRuntimeError([&recipe]() {
-                auto actual = RecipeManager::Deserialize(recipe);
+                auto actual = RecipeJson::Deserialize(recipe);
             });
         }
 
@@ -52,7 +52,7 @@ namespace Soup::UnitTests
                    "name": "MyPackage",
                    "version": "1.2.3"
                 })");
-            auto actual = RecipeManager::Deserialize(recipe);
+            auto actual = RecipeJson::Deserialize(recipe);
 
             auto expected = Recipe(
                 "MyPackage",
@@ -73,7 +73,7 @@ namespace Soup::UnitTests
                    "public": "Public.cpp",
                    "source": []
                 })");
-            auto actual = RecipeManager::Deserialize(recipe);
+            auto actual = RecipeJson::Deserialize(recipe);
 
             auto expected = Recipe(
                 "MyPackage",
@@ -94,7 +94,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3));
 
             std::stringstream actual;
-            RecipeManager::Serialize(recipe, actual);
+            RecipeJson::Serialize(recipe, actual);
 
             auto expected = 
                 R"({
@@ -117,7 +117,7 @@ namespace Soup::UnitTests
                 std::vector<std::string>());
 
             std::stringstream actual;
-            RecipeManager::Serialize(recipe, actual);
+            RecipeJson::Serialize(recipe, actual);
 
             auto expected = 
                 R"({

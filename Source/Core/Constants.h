@@ -60,7 +60,6 @@ namespace Soup
         /// <summary>
         /// Gets the settings file name for a Soup Recipe
         /// </summary>
-        static constexpr const char* RecipeFileName = "Recipe.json";
 
         /// <summary>
         /// Gets the settings file name for a Build State

@@ -28,6 +28,14 @@ namespace Soup::Client
         {
             try
             {
+                // Setup the console listener
+                 Log::RegisterListner(
+                    std::make_shared<ConsoleTraceListener>(
+                        "Log",
+                        EnsureFilter(),
+                        false,
+                        false));
+
                 // Enable full diagnostics
                 // Log::SetDiagnosticEnabled(true);
 
