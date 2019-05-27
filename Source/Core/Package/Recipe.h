@@ -29,6 +29,23 @@ namespace Soup
         {
         }
 
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Recipe"/> class.
+        /// </summary>
+        Recipe(
+            std::string name,
+            SemanticVersion version) :
+            m_isDirty(false),
+            m_name(std::move(name)),
+            m_version(version),
+            m_type(),
+            m_dependencies(),
+            m_public(),
+            m_source()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Recipe"/> class.
         /// </summary>

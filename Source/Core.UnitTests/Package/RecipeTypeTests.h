@@ -17,5 +17,22 @@ namespace Soup::UnitTests
             auto actual = ToString(value);
             Assert::AreEqual(expected, actual, "Verify matches expected.");
         }
+
+        [[Theory]]
+        [[InlineData("Executable", Soup::RecipeType::Executable)]]
+        [[InlineData("Library", Soup::RecipeType::Library)]]
+        void ParseValues(std::string value, RecipeType expected)
+        {
+            auto actual = Parse(value);
+            Assert::AreEqual(expected, actual, "Verify matches expected.");
+        }
+
+        [[Fact]]
+        void ParseGarbageThrows()
+        {
+            Assert::ThrowsRuntimeError([]() {
+                auto actual = Parse("garbage");
+            });
+        }
     };
 }

@@ -111,6 +111,16 @@ namespace Soup
         }
 
         /// <summary>
+        /// Concatenate paths
+        /// </summary>
+        Path operator +(const Path& rhs) const
+        {
+            auto result = Path();
+            result.m_value = m_value / rhs.m_value;
+            return result;
+        }
+
+        /// <summary>
         /// Convert to string
         /// </summary>
         std::string ToString()

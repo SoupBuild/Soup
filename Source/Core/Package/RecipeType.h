@@ -32,4 +32,14 @@ namespace Soup
                 throw std::runtime_error("Unknown recipe type.");
         }
     }
+
+    export RecipeType Parse(const std::string& value)
+    {
+        if (value == "Executable")
+            return RecipeType::Executable;
+        else if (value == "Library")
+            return RecipeType::Library;
+        else
+            throw std::runtime_error("Unknown recipe type value.");
+    }
 }

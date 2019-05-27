@@ -53,5 +53,15 @@ namespace Soup::UnitTests
             Assert::AreEqual(".txt", uut.GetFileExtension(), "Verify file extension matches.");
             Assert::AreEqual("C:/myfolder/anotherfolder/file.txt", uut.ToString(), "Verify string value matches.");
         }
+
+        [[Fact]]
+        void Concatenate_Simple()
+        {
+            auto path1 = Path("C:/MyRootFolder");
+            auto path2 = Path("MyFolder/MyFile.txt");
+            auto uut = path1 + path2;
+
+            Assert::AreEqual("C:/MyRootFolder\\MyFolder/MyFile.txt", uut.ToString(), "Verify value matches.");
+        }
     };
 }

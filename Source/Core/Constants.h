@@ -2,111 +2,109 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#define LOCAL
+// #define LOCAL
 
 namespace Soup
 {
-    using System;
-    using System.IO;
-
     /// <summary>
     /// The constants used throughout the application
     /// </summary>
-    public static class Constants
+    class Constants
     {
+    public:
         /// <summary>
         /// Gets the app folder name
         /// </summary>
-        public static string AppDataFolderName => "Soup";
+        static constexpr const char* AppDataFolderName = "Soup";
 
         /// <summary>
         /// Gets the app data folder path
         /// </summary>
-        public static string AppDataFolderPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDataFolderName);
+        // static constexpr const char* AppDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDataFolderName);
 
         /// <summary>
         /// Gets the archive file extension
         /// </summary>
-        public static string ArchiveFileExtension => ".tar.gz";
+        static constexpr const char* ArchiveFileExtension = ".tar.gz";
 
         /// <summary>
         /// Gets the store build folder name
         /// </summary>
-        public static string StoreBuildFolderName => "Build";
+        static constexpr const char* StoreBuildFolderName = "Build";
 
         /// <summary>
         /// Gets the store include root folder name
         /// </summary>
-        public static string StoreIncludeRootFolderName => "Include";
+        static constexpr const char* StoreIncludeRootFolderName = "Include";
 
         /// <summary>
         /// Gets the store include folder name
         /// </summary>
-        public static string StoreSoupIncludeFolderName => "Soup";
+        static constexpr const char* StoreSoupIncludeFolderName = "Soup";
 
         /// <summary>
         /// Gets the store package folder name
         /// </summary>
-        public static string StorePackageFolderName => "Package";
+        static constexpr const char* StorePackageFolderName = "Package";
 
         /// <summary>
         /// Gets the store library folder name
         /// </summary>
-        public static string StoreLibraryFolderName => "Library";
+        static constexpr const char* StoreLibraryFolderName = "Library";
 
         /// <summary>
         /// Gets the project generation folder name
         /// </summary>
-        public static string ProjectGenerateFolderName => ".soup";
+        static constexpr const char* ProjectGenerateFolderName = ".soup";
 
         /// <summary>
         /// Gets the settings file name for a Soup Recipe
         /// </summary>
-        public static string RecipeFileName => "Recipe.json";
+        static constexpr const char* RecipeFileName = "Recipe.json";
 
         /// <summary>
         /// Gets the settings file name for a Build State
         /// </summary>
-        public static string BuildStateFileName => "BuildState.json";
+        static constexpr const char* BuildStateFileName = "BuildState.json";
 
 #if LOCAL
         /// <summary>
         /// Gets the local URL for the Soup identity service
         /// </summary>
-        public static string SoupIdentityUrl => "http://localhost:3002";
+        static constexpr const char* SoupIdentityUrl = "http://localhost:3002";
 
 #else
         /// <summary>
         /// Gets the production URL for the Soup identity service
         /// </summary>
-        public static string SoupIdentityUrl => "https://soupid.azurewebsites.net";
+        static constexpr const char* SoupIdentityUrl = "https://soupid.azurewebsites.net";
 #endif
 #if LOCAL
         /// <summary>
         /// Gets the local version of the soup api url
         /// </summary>
-        public static string SoupApiUrl => "http://localhost:3001";
+        static constexpr const char* SoupApiUrl = "http://localhost:3001";
 
 #else
         /// <summary>
         /// Gets the production version of the soup api url
         /// </summary>
-        public static string SoupApiUrl => "https://soupapi.azurewebsites.net";
+        static constexpr const char* SoupApiUrl = "https://soupapi.azurewebsites.net";
 #endif
 
         /// <summary>
         /// Gets the REST api endpoint version 1
         /// </summary>
-        public static string SoupRESTEndpointV1 => $"{SoupApiUrl}/v1";
+        static constexpr const char* SoupRESTEndpointV1 = "{SoupApiUrl}/v1";
 
         /// <summary>
         /// Gets the staging folder name
         /// </summary>
-        public static string StagingFolderName => ".staging";
+        static constexpr const char* StagingFolderName = ".staging";
 
         /// <summary>
         /// Gets the library target name format
         /// </summary>
-        public static string LibraryTargetNameFormat => "{0}_{1}_{2}_{3}";
-    }
+        static constexpr const char* LibraryTargetNameFormat = "{0}_{1}_{2}_{3}";
+    };
 }
