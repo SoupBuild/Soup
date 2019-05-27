@@ -14,29 +14,19 @@ namespace Soup
     /// </summary>
     export class RecipeManager
     {
+    private:
+        static constexpr const char* Property_Name = "name";
+        static constexpr const char* Property_Version = "version";
+        static constexpr const char* Property_Type = "type";
+        static constexpr const char* Property_Dependencies = "dependencies";
+        static constexpr const char* Property_Public = "public";
+        static constexpr const char* Property_Source = "source";
+
     public:
-        /// <summary>
-        /// Load the recipe from the root file
-        /// </summary>
-        static bool TryLoadFromFile(const Path& path, Recipe& recipe)
-        {
-            auto recipeFile = path + Path(Constants::RecipeFileName);
-            auto recipeFilePath = recipeFile.ToString();
-            if (std::filesystem::exists(recipeFilePath))
-            {
-                auto file = std::ifstream(recipeFilePath);
-                recipe = LoadFromStream(file);
-                return true;
-            }
-
-            recipe = {};
-            return false;
-        }
-
         /// <summary>
         /// Load from stream
         /// </summary>
-        static Recipe LoadFromStream(std::istream& stream)
+        static Recipe Deserialize(std::istream& stream)
         {
             Recipe result = {};
 
@@ -62,21 +52,13 @@ namespace Soup
         /// <summary>
         /// Save the recipe to the root file
         /// </summary>
-        // static Task SaveToFile(Recipe recipe)
-        // {
-        //     // Serialize the contents of the recipe
-        //     var content = JsonConvert.SerializeObject(
-        //         recipe,
-        //         Formatting.Indented,
-        //         new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore });
+        static void Serialize(const Recipe& recipe, std::ostream& stream)
+        {
+            // Serialize the contents of the recipe
+            json11::Json json = BuildJson(recipe);
 
-        //     // Replace the contents of the file
-        //     var recipePath = Path.Combine(Directory.GetCurrentDirectory(), Constants.RecipeFileName);
-        //     using (var writer = new StreamWriter(File.OpenWrite(recipePath)))
-        //     {
-        //         await writer.WriteAsync(content);
-        //     }
-        // }
+            stream << json.dump();
+        }
 
     private:
         static Recipe LoadJsonRecipe(const json11::Json& value)
@@ -88,35 +70,35 @@ namespace Soup
             std::optional<std::string> publicFile;
             std::optional<std::vector<std::string>> source;
 
-            if (!value["name"].is_null())
+            if (!value[Property_Name].is_null())
             {
-                name = value["name"].string_value();
+                name = value[Property_Name].string_value();
             }
             else
             {
                 throw std::runtime_error("Missing Required field: name.");
             }
 
-            if (!value["version"].is_null())
+            if (!value[Property_Version].is_null())
             {
                 version = SemanticVersion::Parse(
-                    value["version"].string_value());
+                    value[Property_Version].string_value());
             }
             else
             {
                 throw std::runtime_error("Missing Required field: version.");
             }
 
-            if (!value["type"].is_null())
+            if (!value[Property_Type].is_null())
             {
                 type = Parse(
-                    value["type"].string_value());
+                    value[Property_Type].string_value());
             }
 
-            if (!value["dependencies"].is_null())
+            if (!value[Property_Dependencies].is_null())
             {
                 auto values = std::vector<PackageReference>();
-                for (auto& value : value["dependencies"].array_items())
+                for (auto& value : value[Property_Dependencies].array_items())
                 {
                     auto dependency = PackageReference::Parse(value.string_value());
                     values.push_back(std::move(dependency));
@@ -125,15 +107,15 @@ namespace Soup
                 dependencies = values;
             }
 
-            if (!value["public"].is_null())
+            if (!value[Property_Public].is_null())
             {
-                publicFile = value["public"].string_value();
+                publicFile = value[Property_Public].string_value();
             }
 
-            if (!value["source"].is_null())
+            if (!value[Property_Source].is_null())
             {
                 auto values = std::vector<std::string>();
-                for (auto& value : value["dependencies"].array_items())
+                for (auto& value : value[Property_Source].array_items())
                 {
                     values.push_back(value.string_value());
                 }
@@ -148,6 +130,49 @@ namespace Soup
                 std::move(dependencies),
                 std::move(publicFile),
                 std::move(source));
+        }
+
+        static json11::Json BuildJson(const Recipe& recipe)
+        {
+            json11::Json::object result = {};
+
+            // Add required fields
+            result[Property_Name] = recipe.GetName();
+            result[Property_Version] = recipe.GetVersion().ToString();
+
+            if (recipe.HasType())
+            {
+                result[Property_Type] = ToString(recipe.GetType());
+            }
+
+            if (recipe.HasDependencies())
+            {
+                json11::Json::array dependencies;
+                for (auto& value : recipe.GetDependencies())
+                {
+                    dependencies.push_back(value.ToString());
+                }
+
+                result[Property_Dependencies] = std::move(dependencies);
+            }
+
+            if (recipe.HasPublic())
+            {
+                result[Property_Public] = recipe.GetPublic();
+            }
+
+            if (recipe.HasSource())
+            {
+                json11::Json::array source;
+                for (auto& value : recipe.GetSource())
+                {
+                    source.push_back(value);
+                }
+
+                result[Property_Source] = std::move(source);
+            }
+
+            return result;
         }
     };
 }

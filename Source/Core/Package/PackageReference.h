@@ -134,7 +134,7 @@ namespace Soup
         /// <summary>
         /// Convert to string
         /// </summary>
-        std::string ToString()
+        std::string ToString() const
         {
             // If the reference is a path then just return that
             if (!m_path.empty())

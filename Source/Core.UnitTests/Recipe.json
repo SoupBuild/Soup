@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "executable",
   "dependencies": [
+    "D:/Repos/json11/",
     "../Core/"
   ],
   "source": [

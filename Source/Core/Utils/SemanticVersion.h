@@ -125,7 +125,7 @@ namespace Soup
         /// <summary>
         /// Convert to string
         /// </summary>
-        std::string ToString()
+        std::string ToString() const
         {
             // "{Major}.{Minor}.{Patch}"
             std::stringstream stringBuilder;

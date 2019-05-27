@@ -94,7 +94,7 @@ namespace Soup
         /// <summary>
         /// Gets or sets the package version
         /// </summary>
-        SemanticVersion GetVersion()
+        SemanticVersion GetVersion() const
         {
             return m_version;
         }
@@ -170,7 +170,7 @@ namespace Soup
             return m_public.has_value();
         }
 
-        const std::string& GetPublic()
+        const std::string& GetPublic() const
         {
             if (!HasPublic())
                 throw std::runtime_error("No public.");
