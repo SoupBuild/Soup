@@ -15,5 +15,15 @@ namespace Soup::UnitTests
             auto mockCompiler = std::make_shared<MockCompiler>();
             auto uut = BuildEngine(mockCompiler);
         }
+
+        // [[Fact]]
+        // void Compile_Executable_SingleFile()
+        // {
+        //     auto mockCompiler = std::make_shared<MockCompiler>();
+        //     auto uut = BuildEngine(mockCompiler);
+
+        //     auto arguments = BuildArguments();
+        //     argumes.Source = 
+        // }
     };
 }

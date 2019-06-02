@@ -30,8 +30,7 @@ namespace Soup
             // var objectDirectory = Path.Combine("out", "obj", _compiler.Name);
             // var binaryDirectory = Path.Combine("out", "bin", _compiler.Name);
 
-            // Log.Info($"Building {recipe.Name}.");
-            // Log.Verbose($"Loading previous build state.");
+            // Log::Verbose("Loading previous build state.");
             // var buildState = await BuildStateManager.LoadFromFileAsync(path);
             // if (buildState == null)
             // {

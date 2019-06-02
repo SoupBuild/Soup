@@ -27,8 +27,6 @@ namespace Soup
         /// </summary>
         static Recipe Deserialize(std::istream& stream)
         {
-            Recipe result = {};
-
             // Read the entire file into a string
             std::string content(
                 (std::istreambuf_iterator<char>(stream)),
@@ -103,7 +101,7 @@ namespace Soup
                     values.push_back(std::move(dependency));
                 }
 
-                dependencies = values;
+                dependencies = std::move(values);
             }
 
             if (!value[Property_Public].is_null())
@@ -119,7 +117,7 @@ namespace Soup
                     values.push_back(value.string_value());
                 }
 
-                source = values;
+                source = std::move(values);
             }
 
             return Recipe(

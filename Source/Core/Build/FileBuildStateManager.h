@@ -1,23 +1,22 @@
-﻿// <copyright file="BuildStateManager.cs" company="Soup">
+﻿// <copyright file="FileBuildStateManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+#include "IBuildStateManager.h"
+
 namespace Soup
 {
-    using System.IO;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// The build state manager
     /// </summary>
-    internal static class BuildStateManager
+    class FileBuildStateManager : public IBuildStateManager
     {
+    public:
         /// <summary>
         /// Load the build state from the root file
         /// </summary>
-        public static async Task<BuildState> LoadFromFileAsync(string path)
+        static async Task<BuildState> LoadFromFileAsync(string path)
         {
             BuildState result = null;
             var buildStatePath = Path.Combine(path, Constants.ProjectGenerateFolderName, Constants.BuildStateFileName);

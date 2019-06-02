@@ -8,6 +8,7 @@ import json11;
 using namespace SoupTest;
 
 #include "Build\BuildEngineTests.gen.h"
+#include "Build\BuildStateJsonTests.gen.h"
 
 #include "Package\PackageReferenceTests.gen.h"
 #include "Package\RecipeExtensionsTests.gen.h"
@@ -25,6 +26,7 @@ int main()
     TestState state = { 0, 0 };
 
     state += RunBuildEngineTests();
+    state += RunBuildStateJsonTests();
 
     state += RunPackageReferenceTests();
     state += RunRecipeExtensionsTests();
