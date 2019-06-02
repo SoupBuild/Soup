@@ -139,7 +139,7 @@ namespace Soup::Client
 
     private:
         ArgumentsParser(std::any result) :
-            m_result(std::move(result))
+            _result(std::move(result))
         {
         }
 
@@ -147,13 +147,13 @@ namespace Soup::Client
         template<typename T>
         bool IsA()
         {
-            return m_result.type() == typeid(T);
+            return _result.type() == typeid(T);
         }
 
         template<typename T>
         auto ExtractsResult() -> T
         {
-            return std::any_cast<T>(m_result);
+            return std::any_cast<T>( _result);
         }
 
     private:
@@ -175,6 +175,6 @@ namespace Soup::Client
         }
 
     private:
-        std::any m_result;
+        std::any _result;
     };
 }

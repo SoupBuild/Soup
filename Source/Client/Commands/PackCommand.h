@@ -18,7 +18,7 @@ namespace Soup::Client
         /// Initializes a new instance of the <see cref="PackCommand"/> class.
         /// </summary>
         PackCommand(PackOptions options) :
-            m_options(std::move(options))
+            _options(std::move(options))
         {
         }
 
@@ -35,6 +35,6 @@ namespace Soup::Client
         }
 
     private:
-        PackOptions m_options;
+        PackOptions _options;
     };
 }

@@ -21,9 +21,9 @@ namespace Soup
         /// Initializes a new instance of the <see cref="Path"/> class.
         /// </summary>
         Path() :
-            m_root(),
-            m_directories(),
-            m_filename()
+            _root(),
+            _directories(),
+            _filename()
         {
         }
 
@@ -31,9 +31,9 @@ namespace Soup
         /// Initializes a new instance of the <see cref="Path"/> class.
         /// </summary>
         Path(const std::string& value) :
-            m_root(),
-            m_directories(),
-            m_filename()
+            _root(),
+            _directories(),
+            _filename()
         {
             ParsePath(value);
             NormalizeDirectories();
@@ -44,7 +44,7 @@ namespace Soup
         /// </summary>
         bool HasRoot() const
         {
-            return !m_root.empty();
+            return ! _root.empty();
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Soup
         /// </summary>
         std::string GetRoot() const
         {
-            return m_root;
+            return _root;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Soup
         /// </summary>
         bool HasFileName() const
         {
-            return !m_filename.empty();
+            return ! _filename.empty();
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Soup
         /// </summary>
         std::string GetFileName() const
         {
-            return m_filename;
+            return _filename;
         }
 
         /// <summary>
@@ -85,15 +85,15 @@ namespace Soup
         std::string GetFileStem() const
         {
             // Everything before the last period is the stem
-            auto lastSeparator = m_filename.find_last_of(FileExtensionSeparator);
+            auto lastSeparator = _filename.find_last_of(FileExtensionSeparator);
             if (lastSeparator != std::string::npos)
             {
-                return m_filename.substr(0, lastSeparator);
+                return _filename.substr(0, lastSeparator);
             }
             else
             {
                 // Return the entire filename if no extension
-                return m_filename;
+                return _filename;
             }
         }
 
@@ -111,10 +111,10 @@ namespace Soup
         std::string GetFileExtension() const
         {
             // Everything after and including the last period is the extension
-            auto lastSeparator = m_filename.find_last_of(FileExtensionSeparator);
+            auto lastSeparator = _filename.find_last_of(FileExtensionSeparator);
             if (lastSeparator != std::string::npos)
             {
-                return m_filename.substr(lastSeparator);
+                return _filename.substr(lastSeparator);
             }
             else
             {
@@ -128,16 +128,16 @@ namespace Soup
         /// </summary>
         bool operator ==(const Path& rhs) const
         {
-            return m_root == rhs.m_root &&
-                m_directories == rhs.m_directories &&
-                m_filename == rhs.m_filename;
+            return _root == rhs. _root &&
+                _directories == rhs. _directories &&
+                _filename == rhs. _filename;
         }
 
         bool operator !=(const Path& rhs) const
         {
-            return m_root != rhs.m_root ||
-                m_directories != rhs.m_directories ||
-                m_filename != rhs.m_filename;
+            return _root != rhs. _root ||
+                _directories != rhs. _directories ||
+                _filename != rhs. _filename;
         }
 
         /// <summary>
@@ -151,29 +151,29 @@ namespace Soup
             auto result = Path();
 
             // Take the root from the left hand side
-            result.m_root = m_root;
+            result. _root = _root;
 
             // Combine the directories
-            result.m_directories.reserve(
-                m_directories.size() + rhs.m_directories.size());
-            result.m_directories.insert(
-                result.m_directories.end(),
-                m_directories.begin(),
-                m_directories.end());
+            result. _directories.reserve(
+                _directories.size() + rhs. _directories.size());
+            result. _directories.insert(
+                result. _directories.end(),
+                _directories.begin(),
+                _directories.end());
 
             // Convert the left hand side filename to a directory
             if (HasFileName())
             {
-                result.m_directories.push_back(m_filename);
+                result. _directories.push_back( _filename);
             }
 
-            result.m_directories.insert(
-                result.m_directories.end(),
-                rhs.m_directories.begin(),
-                rhs.m_directories.end());
+            result. _directories.insert(
+                result. _directories.end(),
+                rhs. _directories.begin(),
+                rhs. _directories.end());
 
             // Take the filename from the right hand side
-            result.m_filename = rhs.m_filename;
+            result. _filename = rhs. _filename;
 
             result.NormalizeDirectories();
 
@@ -189,29 +189,20 @@ namespace Soup
 
             if (HasRoot())
             {
-                stringBuilder << m_root << DirectorySeparator;
+                stringBuilder << _root << DirectorySeparator;
             }
 
-            for (size_t i = 0; i < m_directories.size(); i++)
+            for (size_t i = 0; i < _directories.size(); i++)
             {
-                stringBuilder << m_directories[i] << DirectorySeparator;
+                stringBuilder << _directories[i] << DirectorySeparator;
             }
 
             if (HasFileName())
             {
-                stringBuilder << m_filename;
+                stringBuilder << _filename;
             }
 
             return stringBuilder.str();
-        }
-
-        void Print()
-        {
-            std::cout << 'R' << m_root << std::endl;
-            for (auto& value : m_directories)
-                std::cout << 'D' << value << std::endl;
-
-            std::cout << 'F' << m_filename << std::endl;
         }
 
 private:
@@ -229,18 +220,18 @@ private:
             {
                 if (IsRoot(directory))
                 {
-                    m_root = std::move(directory);
+                    _root = std::move(directory);
                 }
                 else
                 {
-                    m_directories.push_back(std::move(directory));
+                    _directories.push_back(std::move(directory));
                 }
 
                 isFirst = false;
             }
             else
             {
-                m_directories.push_back(std::move(directory));
+                _directories.push_back(std::move(directory));
             }
 
             current = next + 1;
@@ -257,18 +248,18 @@ private:
             {
                 if (IsRoot(directory))
                 {
-                    m_root = std::move(directory);
+                    _root = std::move(directory);
                 }
                 else
                 {
-                    m_filename = std::move(directory);
+                    _filename = std::move(directory);
                 }
 
                 isFirst = false;
             }
             else
             {
-                m_filename = std::move(directory);
+                _filename = std::move(directory);
             }
         }
     }
@@ -290,19 +281,19 @@ private:
     void NormalizeDirectories()
     {
         // Remove as many up directories as we can
-        for (size_t i = 0; i < m_directories.size(); i++)
+        for (size_t i = 0; i < _directories.size(); i++)
         {
             // Skip over the first directory entry
             if (i != 0)
             {
                 // Remove a parent directory if possible
-                if (m_directories.at(i) == ParentDirectory &&
-                    m_directories.at(i - 1) != ParentDirectory)
+                if ( _directories.at(i) == ParentDirectory &&
+                    _directories.at(i - 1) != ParentDirectory)
                 {
                     // Remove the directories and move back
-                    m_directories.erase(
-                        m_directories.begin() + (i - 1),
-                        m_directories.begin() + (i + 1));
+                    _directories.erase(
+                        _directories.begin() + (i - 1),
+                        _directories.begin() + (i + 1));
                     i -= 2;
                 }
             }
@@ -310,8 +301,8 @@ private:
     }
 
     private:
-        std::string m_root;
-        std::vector<std::string> m_directories;
-        std::string m_filename;
+        std::string _root;
+        std::vector<std::string> _directories;
+        std::string _filename;
     };
 }

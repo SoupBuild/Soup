@@ -11,24 +11,24 @@ namespace Soup
     {
     public:
         EventTypeFilter(TraceEventFlag eventTypes) :
-            m_types(static_cast<uint32_t>(eventTypes))
+            _types(static_cast<uint32_t>(eventTypes))
         {
         }
 
         void Disable(TraceEventFlag eventType)
         {
-            m_types &= ~static_cast<uint32_t>(eventType);
+            _types &= ~static_cast<uint32_t>(eventType);
         }
 
         void Enable(TraceEventFlag eventType)
         {
-            m_types |= static_cast<uint32_t>(eventType);
+            _types |= static_cast<uint32_t>(eventType);
         }
 
         bool IsEnabled(TraceEventFlag eventType)
         {
             auto typeValue = static_cast<uint32_t>(eventType);
-            return (m_types & typeValue) == typeValue;
+            return ( _types & typeValue) == typeValue;
         }
 
         virtual bool ShouldTrace(TraceEventFlag eventType) override final
@@ -37,6 +37,6 @@ namespace Soup
         }
 
     private:
-        uint32_t m_types;
+        uint32_t _types;
     };
 }

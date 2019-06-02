@@ -18,7 +18,7 @@ namespace Soup::Client
         /// Initializes a new instance of the <see cref="RunCommand"/> class.
         /// </summary>
         RunCommand(RunOptions options) ://LocalUserConfig config, Compiler.ICompiler compiler)
-            m_options(std::move(options))
+            _options(std::move(options))
         {
             // _config = config;
             // _compiler = compiler;
@@ -94,7 +94,7 @@ namespace Soup::Client
         // }
 
     private:
-        RunOptions m_options;
+        RunOptions _options;
         //private LocalUserConfig _config;
         //private Compiler.ICompiler _compiler;
     };

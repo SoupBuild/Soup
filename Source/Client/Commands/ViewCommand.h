@@ -18,7 +18,7 @@ namespace Soup::Client
         /// Initializes a new instance of the <see cref="ViewCommand"/> class.
         /// </summary>
         ViewCommand(ViewOptions options) ://ISoupApi soupApi)
-            m_options(std::move(options))
+            _options(std::move(options))
         {
             //_soupApi = soupApi;
         }
@@ -50,7 +50,7 @@ namespace Soup::Client
         }
 
     private:
-        ViewOptions m_options;
+        ViewOptions _options;
         // ISoupApi _soupApi;
     };
 }

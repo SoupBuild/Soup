@@ -1,6 +1,7 @@
 ﻿// <copyright file="BuildEngine.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
+#pragma once
 
 namespace Soup
 {
@@ -13,9 +14,8 @@ namespace Soup
         /// <summary>
         /// Initializes a new instance of the <see cref="BuildEngine"/> class.
         /// </summary>
-        BuildEngine(LocalUserConfig config, ICompiler compiler)
+        BuildEngine(ICompiler compiler)
         {
-            _config = config;
             _compiler = compiler;
         }
 
@@ -24,11 +24,6 @@ namespace Soup
         /// </summary>
         void Execute(string path, Recipe recipe, bool force)
         {
-            if (!Path.IsPathFullyQualified(path))
-            {
-                throw new InvalidOperationException("Build must provide qualified path.");
-            }
-
             Log::Info("Build Recursive Dependencies.");
             BuildAllDependenciesRecursively(path, recipe, force);
 
@@ -525,7 +520,6 @@ namespace Soup
         }
 
     private:
-        LocalUserConfig _config;
-        ICompiler _compiler;
+        std::shared_ptr<ICompiler> _compiler;
     }
 }

@@ -51,10 +51,10 @@ namespace Soup
             std::shared_ptr<IEventFilter> filter,
             bool showEventType,
             bool showEventId) :
-            m_name(std::move(name)),
-            m_filter(std::move(filter)),
-            m_showEventType(showEventType),
-            m_showEventId(showEventId)
+            _name(std::move(name)),
+            _filter(std::move(filter)),
+            _showEventType(showEventType),
+            _showEventId(showEventId)
         {
         }
 
@@ -70,7 +70,7 @@ namespace Soup
         /// </summary>
         bool HasFilter()
         {
-            return m_filter != nullptr;
+            return _filter != nullptr;
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Soup
         /// </summary>
         bool GetShowEventType()
         {
-            return m_showEventType;
+            return _showEventType;
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Soup
         /// </summary>
         bool GetShowEventId()
         {
-            return m_showEventId;
+            return _showEventId;
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Soup
             int id,
             const std::string& message)
         {
-            if (HasFilter() && !m_filter->ShouldTrace(eventType))
+            if (HasFilter() && ! _filter->ShouldTrace(eventType))
             {
                 return;
             }
@@ -185,9 +185,9 @@ namespace Soup
         }
 
     private:
-        std::string m_name;
-        std::shared_ptr<IEventFilter> m_filter;
-        bool m_showEventType;
-        bool m_showEventId;
+        std::string _name;
+        std::shared_ptr<IEventFilter> _filter;
+        bool _showEventType;
+        bool _showEventId;
     };
 }

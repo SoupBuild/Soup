@@ -19,7 +19,7 @@ namespace Soup::Client
         /// </summary>
         const std::string& GetPackage()
         {
-            return m_package;
+            return _package;
         }
 
         /// <summary>
@@ -33,6 +33,6 @@ namespace Soup::Client
         }
 
     private:
-        std::string m_package;
+        std::string _package;
     };
 }

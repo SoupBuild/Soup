@@ -19,13 +19,13 @@ namespace Soup
         /// Initializes a new instance of the <see cref="Recipe"/> class.
         /// </summary>
         Recipe() :
-            m_isDirty(false),
-            m_name(),
-            m_version(),
-            m_type(std::nullopt),
-            m_dependencies(std::nullopt),
-            m_public(std::nullopt),
-            m_source(std::nullopt)
+            _isDirty(false),
+            _name(),
+            _version(),
+            _type(std::nullopt),
+            _dependencies(std::nullopt),
+            _public(std::nullopt),
+            _source(std::nullopt)
         {
         }
 
@@ -36,13 +36,13 @@ namespace Soup
         Recipe(
             std::string name,
             SemanticVersion version) :
-            m_isDirty(false),
-            m_name(std::move(name)),
-            m_version(version),
-            m_type(),
-            m_dependencies(),
-            m_public(),
-            m_source()
+            _isDirty(false),
+            _name(std::move(name)),
+            _version(version),
+            _type(),
+            _dependencies(),
+            _public(),
+            _source()
         {
         }
 
@@ -56,13 +56,13 @@ namespace Soup
             std::optional<std::vector<PackageReference>> dependencies,
             std::optional<std::string> publicFile,
             std::optional<std::vector<std::string>> source) :
-            m_isDirty(false),
-            m_name(std::move(name)),
-            m_version(version),
-            m_type(std::move(type)),
-            m_dependencies(std::move(dependencies)),
-            m_public(std::move(publicFile)),
-            m_source(std::move(source))
+            _isDirty(false),
+            _name(std::move(name)),
+            _version(version),
+            _type(std::move(type)),
+            _dependencies(std::move(dependencies)),
+            _public(std::move(publicFile)),
+            _source(std::move(source))
         {
         }
 
@@ -71,7 +71,7 @@ namespace Soup
         /// </summary>
         bool IsDirty() const
         {
-            return m_isDirty;
+            return _isDirty;
         }
 
         /// <summary>
@@ -79,15 +79,15 @@ namespace Soup
         /// </summary>
         const std::string& GetName() const
         {
-            return m_name;
+            return _name;
         }
 
         void SetName(std::string value)
         {
-            if (value != m_name)
+            if (value != _name)
             {
-                m_name = std::move(value);
-                m_isDirty = true;
+                _name = std::move(value);
+                _isDirty = true;
             }
         }
 
@@ -96,15 +96,15 @@ namespace Soup
         /// </summary>
         SemanticVersion GetVersion() const
         {
-            return m_version;
+            return _version;
         }
 
         void SetVersion(SemanticVersion value)
         {
-            if (value != m_version)
+            if (value != _version)
             {
-                m_version = value;
-                m_isDirty = true;
+                _version = value;
+                _isDirty = true;
             }
         }
 
@@ -113,14 +113,14 @@ namespace Soup
         /// </summary>
         bool HasType() const
         {
-            return m_type.has_value();
+            return _type.has_value();
         }
 
         RecipeType GetType() const
         {
             if (HasType())
             {
-                return m_type.value();
+                return _type.value();
             }
             else
             {
@@ -130,10 +130,10 @@ namespace Soup
 
         void SetType(RecipeType value)
         {
-            if (!HasType() || m_type.value() != value)
+            if (!HasType() || _type.value() != value)
             {
-                m_type = value;
-                m_isDirty = true;
+                _type = value;
+                _isDirty = true;
             }
         }
 
@@ -143,22 +143,22 @@ namespace Soup
         /// </summary>
         bool HasDependencies() const
         {
-            return m_dependencies.has_value();
+            return _dependencies.has_value();
         }
 
         const std::vector<PackageReference>& GetDependencies() const
         {
             if (!HasDependencies())
                 throw std::runtime_error("No dependencies.");
-            return m_dependencies.value();
+            return _dependencies.value();
         }
 
         void SetDependencies(const std::vector<PackageReference>& value)
         {
-            if (!HasDependencies() || m_dependencies.value() != value)
+            if (!HasDependencies() || _dependencies.value() != value)
             {
-                m_dependencies = value;
-                m_isDirty = true;
+                _dependencies = value;
+                _isDirty = true;
             }
         }
 
@@ -167,22 +167,22 @@ namespace Soup
         /// </summary>
         bool HasPublic() const
         {
-            return m_public.has_value();
+            return _public.has_value();
         }
 
         const std::string& GetPublic() const
         {
             if (!HasPublic())
                 throw std::runtime_error("No public.");
-            return m_public.value();
+            return _public.value();
         }
 
         void SetPublic(const std::string& value)
         {
-            if (!HasPublic() || m_public.value() != value)
+            if (!HasPublic() || _public.value() != value)
             {
-                m_public = value;
-                m_isDirty = true;
+                _public = value;
+                _isDirty = true;
             }
         }
 
@@ -192,22 +192,22 @@ namespace Soup
         /// </summary>
         bool HasSource() const
         {
-            return m_source.has_value();
+            return _source.has_value();
         }
 
         const std::vector<std::string>& GetSource() const
         {
             if (!HasSource())
                 throw std::runtime_error("No source.");
-            return m_source.value();
+            return _source.value();
         }
 
         void SetSource(const std::vector<std::string>& value)
         {
-            if (!HasSource() || m_source.value() != value)
+            if (!HasSource() || _source.value() != value)
             {
-                m_source = value;
-                m_isDirty = true;
+                _source = value;
+                _isDirty = true;
             }
         }
 
@@ -216,12 +216,12 @@ namespace Soup
         /// </summary>
         bool operator ==(const Recipe& rhs) const
         {
-            return m_name == rhs.m_name &&
-                m_version == rhs.m_version &&
-                m_type == rhs.m_type &&
-                m_dependencies == rhs.m_dependencies &&
-                m_public == rhs.m_public &&
-                m_source == rhs.m_source;
+            return _name == rhs. _name &&
+                _version == rhs. _version &&
+                _type == rhs. _type &&
+                _dependencies == rhs. _dependencies &&
+                _public == rhs. _public &&
+                _source == rhs. _source;
         }
 
         /// <summary>
@@ -234,12 +234,12 @@ namespace Soup
 
     private:
         static const RecipeType DefaultRecipeType = RecipeType::Library;
-        bool m_isDirty;
-        std::string m_name;
-        SemanticVersion m_version;
-        std::optional<RecipeType> m_type;
-        std::optional<std::vector<PackageReference>> m_dependencies;
-        std::optional<std::string> m_public;
-        std::optional<std::vector<std::string>> m_source;
+        bool _isDirty;
+        std::string _name;
+        SemanticVersion _version;
+        std::optional<RecipeType> _type;
+        std::optional<std::vector<PackageReference>> _dependencies;
+        std::optional<std::string> _public;
+        std::optional<std::vector<std::string>> _source;
     };
 }

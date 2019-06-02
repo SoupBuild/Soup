@@ -18,7 +18,7 @@ namespace Soup::Client
         /// Initializes a new instance of the <see cref="PublishCommand"/> class.
         /// </summary>
         PublishCommand(PublishOptions options) :
-            m_options(std::move(options))
+            _options(std::move(options))
             // ISoupIdentity soupIdentity,
             // ISoupApi soupApi)
         {
@@ -63,7 +63,7 @@ namespace Soup::Client
         }
 
     private:
-        PublishOptions m_options;
+        PublishOptions _options;
         // ISoupIdentity _soupIdentity;
         // ISoupApi _soupApi;
     };

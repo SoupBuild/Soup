@@ -18,7 +18,7 @@ namespace Soup
         /// </summary>
         TestTraceListener() :
             TraceListener("", nullptr, false, false),
-            m_messages()
+            _messages()
         {
         }
 
@@ -27,7 +27,7 @@ namespace Soup
         /// </summary>
         const std::vector<std::string>& GetMessages() const
         {
-            return m_messages;
+            return _messages;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Soup
         /// </summary>
         virtual void Write(const std::string& message) override final
         {
-            m_messages.push_back(message);
+            _messages.push_back(message);
         }
 
         /// <summary>
@@ -44,10 +44,10 @@ namespace Soup
         virtual void WriteLine(const std::string& message) override final
         {
             auto line = message + "\n";
-            m_messages.push_back(line);
+            _messages.push_back(line);
         }
 
     private:
-        std::vector<std::string> m_messages;
+        std::vector<std::string> _messages;
     };
 }

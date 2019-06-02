@@ -94,5 +94,15 @@ namespace Soup::UnitTests
 
             Assert::AreEqual("C:/NewRoot/MyFile.txt", uut.ToString(), "Verify value matches.");
         }
+
+        [[Fact]]
+        void Concatenate_UpDirectoryBeginning()
+        {
+            auto path1 = Path("../MyRootFolder");
+            auto path2 = Path("../NewRoot/MyFile.txt");
+            auto uut = path1 + path2;
+
+            Assert::AreEqual("../NewRoot/MyFile.txt", uut.ToString(), "Verify value matches.");
+        }
     };
 }

@@ -62,9 +62,9 @@ namespace Soup
         /// Initializes a new instance of the <see cref="SemanticVersion"/> class.
         /// </summary>
         SemanticVersion() :
-            m_major(0),
-            m_minor(0),
-            m_patch(0)
+            _major(0),
+            _minor(0),
+            _patch(0)
         {
         }
 
@@ -72,9 +72,9 @@ namespace Soup
         /// Initializes a new instance of the <see cref="SemanticVersion"/> class.
         /// </summary>
         SemanticVersion(short major, short minor, short patch) :
-            m_major(major),
-            m_minor(minor),
-            m_patch(patch)
+            _major(major),
+            _minor(minor),
+            _patch(patch)
         {
         }
 
@@ -83,7 +83,7 @@ namespace Soup
         /// </summary>
         int GetMajor() const
         {
-            return m_major;
+            return _major;
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Soup
         /// </summary>
         int GetMinor() const
         {
-            return m_minor;
+            return _minor;
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Soup
         /// </summary>
         int GetPatch() const
         {
-            return m_patch;
+            return _patch;
         }
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace Soup
         /// </summary>
         bool operator ==(const SemanticVersion& rhs) const
         {
-            return m_major == rhs.m_major &&
-                m_minor == rhs.m_minor &&
-                m_patch == rhs.m_patch;
+            return _major == rhs. _major &&
+                _minor == rhs. _minor &&
+                _patch == rhs. _patch;
         }
 
         /// <summary>
@@ -117,9 +117,9 @@ namespace Soup
         /// </summary>
         bool operator !=(const SemanticVersion& rhs) const
         {
-            return m_major != rhs.m_major ||
-                m_minor != rhs.m_minor ||
-                m_patch != rhs.m_patch;
+            return _major != rhs. _major ||
+                _minor != rhs. _minor ||
+                _patch != rhs. _patch;
         }
 
         /// <summary>
@@ -129,15 +129,15 @@ namespace Soup
         {
             // "{Major}.{Minor}.{Patch}"
             std::stringstream stringBuilder;
-            stringBuilder << m_major << ".";
-            stringBuilder << m_minor << ".";
-            stringBuilder << m_patch;
+            stringBuilder << _major << ".";
+            stringBuilder << _minor << ".";
+            stringBuilder << _patch;
             return stringBuilder.str();
         }
 
     private:
-        int m_major;
-        int m_minor;
-        int m_patch;
+        int _major;
+        int _minor;
+        int _patch;
     };
 }

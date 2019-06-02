@@ -18,7 +18,7 @@ namespace Soup::Client
         /// Initializes a new instance of the <see cref="VersionCommand"/> class.
         /// </summary>
         VersionCommand(VersionOptions options) :
-            m_options(std::move(options))
+            _options(std::move(options))
         {
         }
 
@@ -35,6 +35,6 @@ namespace Soup::Client
         }
 
     private:
-        VersionOptions m_options;
+        VersionOptions _options;
     };
 }

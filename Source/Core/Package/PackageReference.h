@@ -62,9 +62,9 @@ namespace Soup
         /// Initializes a new instance of the <see cref="PackageReference"/> class.
         /// </summary>
         PackageReference() :
-            m_name(""),
-            m_version(),
-            m_path("")
+            _name(""),
+            _version(),
+            _path("")
         {
         }
 
@@ -72,9 +72,9 @@ namespace Soup
         /// Initializes a new instance of the <see cref="PackageReference"/> class.
         /// </summary>
         PackageReference(std::string name, SemanticVersion version) :
-            m_name(std::move(name)),
-            m_version(version),
-            m_path()
+            _name(std::move(name)),
+            _version(version),
+            _path()
         {
         }
 
@@ -82,9 +82,9 @@ namespace Soup
         /// Initializes a new instance of the <see cref="PackageReference"/> class.
         /// </summary>
         PackageReference(Path path) :
-            m_name(""),
-            m_version(),
-            m_path(std::move(path))
+            _name(""),
+            _version(),
+            _path(std::move(path))
         {
         }
 
@@ -93,7 +93,7 @@ namespace Soup
         /// </summary>
         bool IsLocal() const
         {
-            return m_name.empty();
+            return _name.empty();
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Soup
         /// </summary>
         const std::string& GetName() const
         {
-            return m_name;
+            return _name;
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Soup
         /// </summary>
         const SemanticVersion& GetVersion() const
         {
-            return m_version;
+            return _version;
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Soup
         /// </summary>
         const Path& GetPath() const
         {
-            return m_path;
+            return _path;
         }
 
         /// <summary>
@@ -125,9 +125,9 @@ namespace Soup
         /// </summary>
         bool operator ==(const PackageReference& rhs) const
         {
-            return m_name == rhs.m_name &&
-                m_version == rhs.m_version &&
-                m_path == rhs.m_path;
+            return _name == rhs. _name &&
+                _version == rhs. _version &&
+                _path == rhs. _path;
         }
 
         /// <summary>
@@ -135,9 +135,9 @@ namespace Soup
         /// </summary>
         bool operator !=(const PackageReference& rhs) const
         {
-            return m_name != rhs.m_name ||
-                m_version != rhs.m_version ||
-                m_path != rhs.m_path;
+            return _name != rhs. _name ||
+                _version != rhs. _version ||
+                _path != rhs. _path;
         }
 
         /// <summary>
@@ -148,22 +148,22 @@ namespace Soup
             // If the reference is a path then just return that
             if (IsLocal())
             {
-                return m_path.ToString();
+                return _path.ToString();
             }
             else
             {
                 // Build up the name/version reference
                 // "{Name}@{Version}"
                 std::stringstream stringBuilder;
-                stringBuilder << m_name << '@';
-                stringBuilder << m_version.ToString();
+                stringBuilder << _name << '@';
+                stringBuilder << _version.ToString();
                 return stringBuilder.str();
             }
         }
 
     private:
-        std::string m_name;
-        SemanticVersion m_version;
-        Path m_path;
+        std::string _name;
+        SemanticVersion _version;
+        Path _path;
     };
 }

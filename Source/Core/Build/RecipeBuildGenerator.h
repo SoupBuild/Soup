@@ -1,13 +1,13 @@
-﻿// <copyright file="BuildEngine.h" company="Soup">
+﻿// <copyright file="RecipeBuildGenerator.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup
 {
     /// <summary>
-    /// The build engine
+    /// The recipe build generator
     /// </summary>
-    class BuildEngine
+    class RecipeBuildGenerator
     {
     public:
         /// <summary>

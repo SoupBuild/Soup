@@ -18,7 +18,7 @@ namespace Soup::Client
         /// Initializes a new instance of the <see cref="InstallCommand"/> class.
         /// </summary>
         InstallCommand(InstallOptions options) :
-            m_options(std::move(options))
+            _options(std::move(options))
             // LocalUserConfig config,
             // ISoupApi soupApi)
         {
@@ -197,7 +197,7 @@ namespace Soup::Client
         // }
 
     private:
-        InstallOptions m_options;
+        InstallOptions _options;
         // LocalUserConfig _config;
         // ISoupApi _soupApi;
     };
