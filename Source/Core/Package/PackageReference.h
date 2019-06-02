@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "Path.h"
 #include "SemanticVersion.h"
 
 namespace Soup
@@ -52,7 +53,7 @@ namespace Soup
             else
             {
                 // Assume that this package is a relative path reference
-                return PackageReference(value);
+                return PackageReference(Path(value));
             }
         }
 
@@ -73,18 +74,26 @@ namespace Soup
         PackageReference(std::string name, SemanticVersion version) :
             m_name(std::move(name)),
             m_version(version),
-            m_path("")
+            m_path()
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageReference"/> class.
         /// </summary>
-        PackageReference(std::string path) :
+        PackageReference(Path path) :
             m_name(""),
             m_version(),
             m_path(std::move(path))
         {
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the reference is local or not
+        /// </summary>
+        bool IsLocal() const
+        {
+            return m_name.empty();
         }
 
         /// <summary>
@@ -106,7 +115,7 @@ namespace Soup
         /// <summary>
         /// Gets or sets the Path.
         /// </summary>
-        const std::string GetPath() const
+        const Path& GetPath() const
         {
             return m_path;
         }
@@ -137,9 +146,9 @@ namespace Soup
         std::string ToString() const
         {
             // If the reference is a path then just return that
-            if (!m_path.empty())
+            if (IsLocal())
             {
-                return m_path;
+                return m_path.ToString();
             }
             else
             {
@@ -155,6 +164,6 @@ namespace Soup
     private:
         std::string m_name;
         SemanticVersion m_version;
-        std::string m_path;
+        Path m_path;
     };
 }

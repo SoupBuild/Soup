@@ -55,13 +55,44 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
+        void RemoveParentDirectoryInside()
+        {
+            auto uut = Path("C:/myfolder/../file.txt");
+            Assert::AreEqual("C:/file.txt", uut.ToString(), "Verify string value matches.");
+        }
+
+        [[Fact]]
+        void RemoveTwoParentDirectoryInside()
+        {
+            auto uut = Path("C:/myfolder/myfolder2/../../file.txt");
+            Assert::AreEqual("C:/file.txt", uut.ToString(), "Verify string value matches.");
+        }
+
+        [[Fact]]
+        void LeaveParentDirectoryAtStart()
+        {
+            auto uut = Path("../file.txt");
+            Assert::AreEqual("../file.txt", uut.ToString(), "Verify string value matches.");
+        }
+
+        [[Fact]]
         void Concatenate_Simple()
         {
             auto path1 = Path("C:/MyRootFolder");
             auto path2 = Path("MyFolder/MyFile.txt");
             auto uut = path1 + path2;
 
-            Assert::AreEqual("C:/MyRootFolder\\MyFolder/MyFile.txt", uut.ToString(), "Verify value matches.");
+            Assert::AreEqual("C:/MyRootFolder/MyFolder/MyFile.txt", uut.ToString(), "Verify value matches.");
+        }
+
+        [[Fact]]
+        void Concatenate_UpDirectory()
+        {
+            auto path1 = Path("C:/MyRootFolder");
+            auto path2 = Path("../NewRoot/MyFile.txt");
+            auto uut = path1 + path2;
+
+            Assert::AreEqual("C:/NewRoot/MyFile.txt", uut.ToString(), "Verify value matches.");
         }
     };
 }

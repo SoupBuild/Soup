@@ -32,7 +32,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -47,7 +47,7 @@ namespace Soup::UnitTests
             Assert::IsTrue(uut.HasDependencies(), "Verify has dependencies.");
             Assert::AreEqual(
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path(Path("../OtherPackage"))),
                 }),
                 uut.GetDependencies(),
                 "Verify type is correct.");
@@ -78,7 +78,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -91,7 +91,7 @@ namespace Soup::UnitTests
                     SemanticVersion(1, 2, 3),
                     RecipeType::Executable,
                     std::vector<PackageReference>({
-                        PackageReference("../OtherPackage"),
+                        PackageReference(Path("../OtherPackage")),
                     }),
                     "Main.cpp",
                     std::vector<std::string>({
@@ -109,7 +109,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -122,7 +122,7 @@ namespace Soup::UnitTests
                     SemanticVersion(1, 2, 3),
                     RecipeType::Executable,
                     std::vector<PackageReference>({
-                        PackageReference("../OtherPackage"),
+                        PackageReference(Path("../OtherPackage")),
                     }),
                     "Main.cpp",
                     std::vector<std::string>({
@@ -140,7 +140,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -153,7 +153,7 @@ namespace Soup::UnitTests
                     SemanticVersion(11, 2, 3),
                     RecipeType::Executable,
                     std::vector<PackageReference>({
-                        PackageReference("../OtherPackage"),
+                        PackageReference(Path("../OtherPackage")),
                     }),
                     "Main.cpp",
                     std::vector<std::string>({
@@ -171,7 +171,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -184,7 +184,7 @@ namespace Soup::UnitTests
                     SemanticVersion(1, 2, 3),
                     RecipeType::Library,
                     std::vector<PackageReference>({
-                        PackageReference("../OtherPackage"),
+                        PackageReference(Path("../OtherPackage")),
                     }),
                     "Main.cpp",
                     std::vector<std::string>({
@@ -202,7 +202,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -215,7 +215,7 @@ namespace Soup::UnitTests
                     SemanticVersion(1, 2, 3),
                     std::nullopt,
                     std::vector<PackageReference>({
-                        PackageReference("../OtherPackage"),
+                        PackageReference(Path("../OtherPackage")),
                     }),
                     "Main.cpp",
                     std::vector<std::string>({
@@ -233,7 +233,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -263,7 +263,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -292,7 +292,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -305,7 +305,7 @@ namespace Soup::UnitTests
                     SemanticVersion(1, 2, 3),
                     RecipeType::Executable,
                     std::vector<PackageReference>({
-                        PackageReference("../OtherPackage"),
+                        PackageReference(Path("../OtherPackage")),
                     }),
                     "Main2.cpp",
                     std::vector<std::string>({
@@ -323,7 +323,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -336,7 +336,7 @@ namespace Soup::UnitTests
                     SemanticVersion(1, 2, 3),
                     RecipeType::Executable,
                     std::vector<PackageReference>({
-                        PackageReference("../OtherPackage"),
+                        PackageReference(Path("../OtherPackage")),
                     }),
                     std::nullopt,
                     std::vector<std::string>({
@@ -354,7 +354,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -367,7 +367,7 @@ namespace Soup::UnitTests
                     SemanticVersion(1, 2, 3),
                     RecipeType::Executable,
                     std::vector<PackageReference>({
-                        PackageReference("../OtherPackage"),
+                        PackageReference(Path("../OtherPackage")),
                     }),
                     "Main.cpp",
                     std::vector<std::string>({
@@ -384,7 +384,7 @@ namespace Soup::UnitTests
                 SemanticVersion(1, 2, 3),
                 RecipeType::Executable,
                 std::vector<PackageReference>({
-                    PackageReference("../OtherPackage"),
+                    PackageReference(Path("../OtherPackage")),
                 }),
                 "Main.cpp",
                 std::vector<std::string>({
@@ -397,7 +397,7 @@ namespace Soup::UnitTests
                     SemanticVersion(1, 2, 3),
                     RecipeType::Executable,
                     std::vector<PackageReference>({
-                        PackageReference("../OtherPackage"),
+                        PackageReference(Path("../OtherPackage")),
                     }),
                     "Main.cpp",
                     std::nullopt),

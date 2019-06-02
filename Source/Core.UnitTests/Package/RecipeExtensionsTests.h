@@ -10,15 +10,15 @@ namespace Soup::UnitTests
     {
     public:
         [[Fact]]
-        void TryLoadFromDirectory_MissingFile()
+        void TryLoadFromFile_MissingFile()
         {
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
             Log::RegisterListener(testListener);
 
-            auto directory = Path("TestFiles/NoFile/");
+            auto directory = Path("TestFiles/NoFile/Recipe.json");
             Recipe actual;
-            auto result = RecipeExtensions::TryLoadFromDirectory(directory, actual);
+            auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
 
             Assert::IsFalse(result, "Verify result is false.");
 
@@ -32,15 +32,15 @@ namespace Soup::UnitTests
         }
         
         [[Fact]]
-        void TryLoadFromDirectory_GarbageFile()
+        void TryLoadFromFile_GarbageFile()
         {
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
             Log::RegisterListener(testListener);
 
-            auto directory = Path("TestFiles/GarbageRecipe/");
+            auto directory = Path("TestFiles/GarbageRecipe/Recipe.json");
             Recipe actual;
-            auto result = RecipeExtensions::TryLoadFromDirectory(directory, actual);
+            auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
 
             Assert::IsFalse(result, "Verify result is false.");
 
@@ -54,15 +54,15 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
-        void TryLoadFromDirectory_SimpleFile()
+        void TryLoadFromFile_SimpleFile()
         {
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
             Log::RegisterListener(testListener);
 
-            auto directory = Path("TestFiles/SimpleRecipe/");
+            auto directory = Path("TestFiles/SimpleRecipe/ReciPe.json");
             Recipe actual;
-            auto result = RecipeExtensions::TryLoadFromDirectory(directory, actual);
+            auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
 
             Assert::IsTrue(result, "Verify result is false.");
 

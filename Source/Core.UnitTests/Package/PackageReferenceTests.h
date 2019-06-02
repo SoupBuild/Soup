@@ -16,19 +16,21 @@ namespace Soup::UnitTests
                 "MyPackage",
                 SemanticVersion(1, 2, 3));
 
+            Assert::IsFalse(uut.IsLocal(), "Verify is not local.");
             Assert::AreEqual("MyPackage", uut.GetName(), "Verify name matches expected.");
             Assert::AreEqual(SemanticVersion(1, 2, 3), uut.GetVersion(), "Verify version matches expected.");
-            Assert::AreEqual("", uut.GetPath(), "Verify path matches expected.");
+            Assert::AreEqual(Path(), uut.GetPath(), "Verify path matches expected.");
         }
 
         [[Fact]]
         void InitialzePath()
         {
-            auto uut = PackageReference("../MyPackage");
+            auto uut = PackageReference(Path("../MyPackage"));
 
+            Assert::IsTrue(uut.IsLocal(), "Verify is local.");
             Assert::AreEqual("", uut.GetName(), "Verify name matches expected.");
             Assert::AreEqual(SemanticVersion(), uut.GetVersion(), "Verify version matches expected.");
-            Assert::AreEqual("../MyPackage", uut.GetPath(), "Verify path matches expected.");
+            Assert::AreEqual(Path("../MyPackage"), uut.GetPath(), "Verify path matches expected.");
         }
 
         [[Fact]]
@@ -49,10 +51,10 @@ namespace Soup::UnitTests
         [[Fact]]
         void OperatorEqualPath()
         {
-            auto uut = PackageReference("../MyPackage");
+            auto uut = PackageReference(Path("../MyPackage"));
 
             Assert::AreEqual(
-                PackageReference("../MyPackage"),
+                PackageReference(Path("../MyPackage")),
                 uut,
                 "Verify are equal.");
         }
@@ -90,10 +92,10 @@ namespace Soup::UnitTests
         [[Fact]]
         void OperatorNotEqualPath()
         {
-            auto uut = PackageReference("../MyPackage");
+            auto uut = PackageReference(Path("../MyPackage"));
 
             Assert::AreNotEqual(
-                PackageReference("../MyPackage2"),
+                PackageReference(Path("../MyPackage2")),
                 uut,
                 "Verify are not equal.");
         }
@@ -115,7 +117,7 @@ namespace Soup::UnitTests
         {
             auto uut = PackageReference::Parse(value);
             Assert::AreEqual(
-                PackageReference(value),
+                PackageReference(Path(value)),
                 uut,
                 "Verify matches expected values.");
         }
@@ -149,7 +151,7 @@ namespace Soup::UnitTests
         [[InlineData("../Path")]]
         void ToStringPathValues(std::string path)
         {
-            auto uut = PackageReference(path);
+            auto uut = PackageReference(Path(path));
             auto value = uut.ToString();
             Assert::AreEqual(
                 path,
