@@ -1,6 +1,11 @@
-﻿// <copyright file="ICompiler.cs" company="Soup">
+﻿// <copyright file="ICompiler.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
+
+#pragma once
+#include "CompileArguments.h"
+#include "CompileResults.h"
+#include "LinkerArguments.h"
 
 namespace Soup
 {
@@ -34,7 +39,7 @@ namespace Soup
         /// <summary>
         /// Compile
         /// </summary>
-        virtual const CompileResults Compile(CompileArguments args) = 0;
+        virtual const CompileResults Compile(const CompileArguments& args) = 0;
 
         /// <summary>
         /// Link Library
@@ -45,5 +50,5 @@ namespace Soup
         /// Link Executable
         /// </summary>
         virtual void LinkExecutable(LinkerArguments args) = 0;
-    }
+    };
 }

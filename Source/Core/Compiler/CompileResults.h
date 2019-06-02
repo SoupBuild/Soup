@@ -1,35 +1,35 @@
-﻿// <copyright file="CompilerArguments.cs" company="Soup">
+﻿// <copyright file="CompilerArguments.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Compiler
+namespace Soup
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Header includes recursive container
     /// </summary>
-    public class HeaderInclude
+    class HeaderInclude
     {
+    public:
         /// <summary>
         /// Gets or sets the filename
         /// </summary>
-        public string Filename { get; set; }
+        std::string Filename;
 
         /// <summary>
         /// Gets or sets the list of includes
         /// </summary>
-        public IList<HeaderInclude> Includes { get; set; } = new List<HeaderInclude>();
-    }
+        std::vector<HeaderInclude> Includes;
+    };
 
     /// <summary>
     /// The results of a compilation
     /// </summary>
-    public class CompileResults
+    class CompileResults
     {
+    public:
         /// <summary>
         /// Gets or sets the list of include files
         /// </summary>
-        public IList<HeaderInclude> HeaderIncludeFiles { get; set; } = null;
-    }
+        std::vector<HeaderInclude> HeaderIncludeFiles;
+    };
 }

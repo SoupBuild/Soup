@@ -7,6 +7,8 @@ import json11;
 #include "../../../SoupTest/Assert/RunTest.h"
 using namespace SoupTest;
 
+#include "Build\BuildEngineTests.gen.h"
+
 #include "Package\PackageReferenceTests.gen.h"
 #include "Package\RecipeExtensionsTests.gen.h"
 #include "Package\RecipeJsonTests.gen.h"
@@ -21,6 +23,8 @@ int main()
     std::cout << "Running Tests..." << std::endl;
 
     TestState state = { 0, 0 };
+
+    state += RunBuildEngineTests();
 
     state += RunPackageReferenceTests();
     state += RunRecipeExtensionsTests();
