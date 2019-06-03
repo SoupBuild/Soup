@@ -4,6 +4,7 @@
 
 #pragma once
 #include "BuildState.h"
+#include "Path.h"
 
 namespace Soup
 {
@@ -18,11 +19,11 @@ namespace Soup
         /// <summary>
         /// Load the build state from the provided directory
         /// </summary>
-        virtual BuildState LoadState(const Path& directory) = 0;
+        virtual bool TryLoadState(const Path& directory, BuildState& result) = 0;
 
         /// <summary>
         /// Save the build state for the provided directory
         /// </summary>
-        virtual void SaveState(const BuildState& state, const Path& directory) = 0;
+        virtual void SaveState(const Path& directory, const BuildState& state) = 0;
     };
 }

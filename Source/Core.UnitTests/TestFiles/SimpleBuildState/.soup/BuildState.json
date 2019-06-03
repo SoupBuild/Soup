@@ -1,0 +1,8 @@
+{
+  "knownFiles": [
+      {
+          "name": "File.h",
+          "includes": [ "Other.h" ]
+      }
+  ]
+}

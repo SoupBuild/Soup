@@ -11,7 +11,9 @@ TestState RunBuildStateJsonTests()
     state += SoupTest::RunTest(className, "Deserialize_MissingNameThrows", [&testClass]() { testClass->Deserialize_MissingNameThrows(); });
     state += SoupTest::RunTest(className, "Deserialize_MissingIncludesThrows", [&testClass]() { testClass->Deserialize_MissingIncludesThrows(); });
     state += SoupTest::RunTest(className, "Deserialize_Simple", [&testClass]() { testClass->Deserialize_Simple(); });
+    state += SoupTest::RunTest(className, "Deserialize_Multiple", [&testClass]() { testClass->Deserialize_Multiple(); });
     state += SoupTest::RunTest(className, "Serialize_Simple", [&testClass]() { testClass->Serialize_Simple(); });
+    state += SoupTest::RunTest(className, "Serialize_Multipl", [&testClass]() { testClass->Serialize_Multipl(); });
 
     return state;
 }

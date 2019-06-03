@@ -1,7 +1,8 @@
-﻿// <copyright file="Constants.cs" company="Soup">
+﻿// <copyright file="Constants.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
 // #define LOCAL
 
 namespace Soup

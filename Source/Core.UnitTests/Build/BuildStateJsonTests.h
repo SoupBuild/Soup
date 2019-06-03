@@ -87,6 +87,33 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
+        void Deserialize_Multiple()
+        {
+            auto content = std::stringstream(
+                R"({
+                   "knownFiles": [
+                       {
+                           "name": "File1.h",
+                           "includes": [ "Other1.h" ]
+                       },
+                       {
+                           "name": "File2.h",
+                           "includes": [ "Other2.h" ]
+                       }
+                   ]
+                })");
+            auto actual = BuildStateJson::Deserialize(content);
+
+            auto expected = BuildState(
+                {
+                    FileInfo("File1.h", { "Other1.h" }),
+                    FileInfo("File2.h", { "Other2.h" }),
+                });
+
+            Assert::AreEqual(expected, actual, "Verify matches expected.");
+        }
+
+        [[Fact]]
         void Serialize_Simple()
         {
             auto state = BuildState(
@@ -103,6 +130,35 @@ namespace Soup::UnitTests
                        {
                            "name": "File.h",
                            "includes": [ "Other.h" ]
+                       }
+                   ]
+                })";
+
+            VerifyJsonEquals(expected, actual.str(), "Verify matches expected.");
+        }
+
+        [[Fact]]
+        void Serialize_Multipl()
+        {
+            auto state = BuildState(
+                {
+                    FileInfo("File1.h", { "Other1.h" }),
+                    FileInfo("File2.h", { "Other2.h" }),
+                });
+
+            std::stringstream actual;
+            BuildStateJson::Serialize(state, actual);
+
+            auto expected = 
+                R"({
+                   "knownFiles": [
+                       {
+                           "name": "File1.h",
+                           "includes": [ "Other1.h" ]
+                       },
+                       {
+                           "name": "File2.h",
+                           "includes": [ "Other2.h" ]
                        }
                    ]
                 })";

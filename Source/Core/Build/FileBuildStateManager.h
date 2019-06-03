@@ -4,79 +4,65 @@
 
 #pragma once
 #include "IBuildStateManager.h"
+#include "Constants.h"
 
 namespace Soup
 {
     /// <summary>
     /// The build state manager
     /// </summary>
-    class FileBuildStateManager : public IBuildStateManager
+    export class FileBuildStateManager : public IBuildStateManager
     {
+    private:
+        static constexpr const char* BuildStateFileName = "BuildState.json";
+
     public:
         /// <summary>
-        /// Load the build state from the root file
+        /// Load the build state from the provided directory
         /// </summary>
-        static async Task<BuildState> LoadFromFileAsync(string path)
+        virtual bool TryLoadState(const Path& directory, BuildState& result) override final
         {
-            BuildState result = null;
-            var buildStatePath = Path.Combine(path, Constants.ProjectGenerateFolderName, Constants.BuildStateFileName);
-            if (File.Exists(buildStatePath))
+            // Verify the requested file exists
+            auto buildStateFile = directory +
+                Path(Constants::ProjectGenerateFolderName) +
+                Path(BuildStateFileName);
+            auto buildStateFilePath = buildStateFile.ToString();
+            if (!std::filesystem::exists(buildStateFilePath))
             {
-                using (var file = File.OpenRead(buildStatePath))
-                {
-                    result = await LoadFromStreamAsync(file);
-                }
+                Log::Verbose("BuildState file does not exist.");
+                return false;
             }
 
-            return result;
+            // Open the file to read from
+            auto file = std::fstream(buildStateFilePath);
+
+            // Read the contents of the build state file
+            try
+            {
+                result = BuildStateJson::Deserialize(file);
+                return true;
+            }
+            catch(...)
+            {
+                Log::Info("Failed to parse BuildState.");
+                return false;
+            }
         }
 
         /// <summary>
-        /// Load from stream async
+        /// Save the build state for the provided directory
         /// </summary>
-        public static async Task<BuildState> LoadFromStreamAsync(Stream stream)
+        virtual void SaveState(const Path& directory, const BuildState& state) override final
         {
-            BuildState result = null;
-            using (var reader = new StreamReader(stream, Encoding.UTF8, false, 2048, true))
-            {
-                // Read the contents of the build state file
-                var content = await reader.ReadToEndAsync();
-                try
-                {
-                    result = JsonConvert.DeserializeObject<BuildState>(content);
-                }
-                catch(JsonReaderException)
-                {
-                    Log.Verbose("Invalid build state.");
-                }
-            }
+            // Open the file to write to
+            auto buildStateFile = directory +
+                Path(Constants::ProjectGenerateFolderName) +
+                Path(BuildStateFileName);
+            auto buildStateFilePath = buildStateFile.ToString();
+            auto file = std::fstream(buildStateFilePath);
 
-            return result;
+            // Write the build state to the file stream
+            BuildStateJson::Serialize(state, file);
         }
-
-        /// <summary>
-        /// Save the build state to the root file
-        /// </summary>
-        public static async Task SaveToFileAsync(BuildState state, string path)
-        {
-            // Serialize the contents of the build state
-            var content = JsonConvert.SerializeObject(
-                state,
-                Formatting.Indented,
-                new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore });
-
-            // Replace the contents of the file
-            var projectGenFolder = Path.Combine(path, Constants.ProjectGenerateFolderName);
-            if (!Directory.Exists(projectGenFolder))
-            {
-                Directory.CreateDirectory(projectGenFolder);
-            }
-
-            var buildStatePath = Path.Combine(projectGenFolder, Constants.BuildStateFileName);
-            using (var writer = new StreamWriter(File.Create(buildStatePath)))
-            {
-                await writer.WriteAsync(content);
-            }
-        }
-    }
+    };
 }
