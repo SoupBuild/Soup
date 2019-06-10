@@ -81,5 +81,55 @@ namespace Soup
         /// Gets or sets a value indicating whether to generate the include set for each file
         /// </summary>
         bool GenerateIncludeTree;
+
+        /// <summary>
+        /// Equality operator
+        /// </summary>
+        bool operator ==(const CompileArguments& rhs) const
+        {
+            return Standard == rhs.Standard &&
+                RootDirectory == rhs.RootDirectory &&
+                OutputDirectory == rhs.OutputDirectory &&
+                PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
+                SourceFile  == rhs.SourceFile &&
+                IncludeDirectories == rhs.IncludeDirectories &&
+                IncludeModules == rhs.IncludeModules &&
+                ExportModule == rhs.ExportModule &&
+                GenerateIncludeTree == rhs.GenerateIncludeTree;
+        }
+
+        bool operator !=(const CompileArguments& rhs) const
+        {
+            return !(*this == rhs);
+        }
+
+        std::string ToString() const
+        {
+            auto stringBuilder = std::stringstream();
+            stringBuilder << "[" <<
+                static_cast<int>(Standard) << ", " <<
+                RootDirectory.ToString() << ", " <<
+                OutputDirectory.ToString() << ", [";
+
+            for (auto& value : PreprocessorDefinitions)
+                stringBuilder << value << ", ";
+
+            stringBuilder << "], " <<
+                SourceFile.ToString() << ", [";
+
+            for (auto& value : IncludeDirectories)
+                stringBuilder << value.ToString() << ", ";
+
+            stringBuilder << "], [";
+
+            for (auto& value : IncludeModules)
+                stringBuilder << value.ToString() << ", ";
+
+            stringBuilder << "], " <<
+                ExportModule << ", " <<
+                GenerateIncludeTree << "]";
+
+            return stringBuilder.str();
+        }
     };
 }

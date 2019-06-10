@@ -7,7 +7,7 @@ namespace Soup
     /// <summary>
     /// The shared linker arguments
     /// </summary>
-    class LinkerArguments
+    export class LinkerArguments
     {
     public:
         /// <summary>
@@ -34,5 +34,22 @@ namespace Soup
         /// Gets or sets the list of library files
         /// </summary>
         std::vector<std::string> LibraryFiles;
+
+        /// <summary>
+        /// Equality operator
+        /// </summary>
+        bool operator ==(const LinkerArguments& rhs) const
+        {
+            return RootDirectory == rhs.RootDirectory &&
+                OutputDirectory == rhs.OutputDirectory &&
+                Name == rhs.Name &&
+                SourceFiles == rhs.SourceFiles &&
+                LibraryFiles == rhs.LibraryFiles;
+        }
+
+        bool operator !=(const LinkerArguments& rhs) const
+        {
+            return !(*this == rhs);
+        }
     };
 }

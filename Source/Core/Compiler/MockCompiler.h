@@ -17,16 +17,34 @@ namespace Soup
         /// Initializes a new instance of the <see cref='MockCompiler'/> class.
         /// </summary>
         MockCompiler() :
-            _messages()
+            _compileRequests(),
+            _linkLibraryRequests(),
+            _linkExecutableRequests()
         {
         }
 
         /// <summary>
-        /// Get the messages
+        /// Get the compile requests
         /// </summary>
-        const std::vector<std::string>& GetMessages() const
+        const std::vector<CompileArguments>& GetCompileRequests() const
         {
-            return _messages;
+            return _compileRequests;
+        }
+
+        /// <summary>
+        /// Get the link library requests
+        /// </summary>
+        const std::vector<LinkerArguments>& GetLinkLibraryRequests() const
+        {
+            return _linkLibraryRequests;
+        }
+
+        /// <summary>
+        /// Get the link executable requests
+        /// </summary>
+        const std::vector<LinkerArguments>& GetLinkExecutableRequests() const
+        {
+            return _linkExecutableRequests;
         }
 
         /// <summary>
@@ -34,7 +52,8 @@ namespace Soup
         /// </summary>
         virtual const std::string& GetName() const override final
         {
-            throw std::runtime_error("MOCK NotImplemented.");
+            static const std::string value = "MockCompiler";
+            return value;
         }
 
         /// <summary>
@@ -42,7 +61,8 @@ namespace Soup
         /// </summary>
         virtual const std::string& GetObjectFileExtension() const override final
         {
-            throw std::runtime_error("MOCK NotImplemented.");
+            static const std::string value = ".mock.obj";
+            return value;
         }
 
         /// <summary>
@@ -50,7 +70,8 @@ namespace Soup
         /// </summary>
         virtual const std::string& GetModuleFileExtension() const override final
         {
-            throw std::runtime_error("MOCK NotImplemented.");
+            static const std::string value = ".mock.bmi";
+            return value;
         }
 
         /// <summary>
@@ -59,7 +80,8 @@ namespace Soup
         /// </summary>
         virtual const std::string& GetStaticLibraryFileExtension() const override final
         {
-            throw std::runtime_error("MOCK NotImplemented.");
+            static const std::string value = ".mock.lib";
+            return value;
         }
 
         /// <summary>
@@ -67,26 +89,29 @@ namespace Soup
         /// </summary>
         virtual const CompileResults Compile(const CompileArguments& args) override final
         {
-            throw std::runtime_error("MOCK NotImplemented.");
+            _compileRequests.push_back(args);
+            return CompileResults();
         }
 
         /// <summary>
         /// Link Library
         /// </summary>
-        virtual void LinkLibrary(LinkerArguments args) override final
+        virtual void LinkLibrary(const LinkerArguments& args) override final
         {
-            throw std::runtime_error("MOCK NotImplemented.");
+            _linkLibraryRequests.push_back(args);
         }
 
         /// <summary>
         /// Link Executable
         /// </summary>
-        virtual void LinkExecutable(LinkerArguments args) override final
+        virtual void LinkExecutable(const LinkerArguments& args) override final
         {
-            throw std::runtime_error("MOCK NotImplemented.");
+            _linkExecutableRequests.push_back(args);
         }
 
     private:
-        std::vector<std::string> _messages;
+        std::vector<CompileArguments> _compileRequests;
+        std::vector<LinkerArguments> _linkLibraryRequests;
+        std::vector<LinkerArguments> _linkExecutableRequests;
     };
 }

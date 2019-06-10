@@ -39,9 +39,6 @@ namespace Soup
                 Includes == rhs.Includes;
         }
 
-        /// <summary>
-        /// Inequality operator
-        /// </summary>
         bool operator !=(const FileInfo& rhs) const
         {
             return !(*this == rhs);

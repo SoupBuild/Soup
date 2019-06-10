@@ -44,11 +44,11 @@ namespace Soup
         /// <summary>
         /// Link Library
         /// </summary>
-        virtual void LinkLibrary(LinkerArguments args) = 0;
+        virtual void LinkLibrary(const LinkerArguments& args) = 0;
 
         /// <summary>
         /// Link Executable
         /// </summary>
-        virtual void LinkExecutable(LinkerArguments args) = 0;
+        virtual void LinkExecutable(const LinkerArguments& args) = 0;
     };
 }

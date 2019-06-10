@@ -42,23 +42,39 @@ namespace Soup::UnitTests
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();
-            arguments.Target = TargetType::Executable;
+            arguments.Target = BuildTargetType::Executable;
             arguments.WorkingDirectory = Path("");
             arguments.ObjectDirectory = Path("obj");
             arguments.BinaryDirectory = Path("bin");
             arguments.SourceFiles = std::vector<Path>({});
             arguments.IncludeDirectories = std::vector<Path>({});
-            arguments.ModuleFiles = std::vector<Path>({});
+            arguments.IncludeModules = std::vector<Path>({});
             arguments.IsIncremental = false;
 
             uut.Execute(arguments);
 
+            auto expectedCompileArguments = CompileArguments();
+            expectedCompileArguments.Standard = LanguageStandard::CPP20;
+            expectedCompileArguments.OutputDirectory = Path("obj");
+            expectedCompileArguments.GenerateIncludeTree = true;
+
             // Verify expected compiler calls
             Assert::AreEqual(
-                std::vector<std::string>({
+                std::vector<CompileArguments>({
+                    expectedCompileArguments,
                 }),
-                compiler->GetMessages(),
+                compiler->GetCompileRequests(),
                 "Verify compiler requests match expected.");
+            Assert::AreEqual(
+                std::vector<LinkerArguments>({
+                }),
+                compiler->GetLinkLibraryRequests(),
+                "Verify link library requests match expected.");
+            Assert::AreEqual(
+                std::vector<LinkerArguments>({
+                }),
+                compiler->GetLinkExecutableRequests(),
+                "Verify link executable requests match expected.");
 
             // Verify expected file system requests
             Assert::AreEqual(
@@ -71,6 +87,8 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
+                    "Compile Source\n",
+                    "Link Executable\n",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -91,23 +109,39 @@ namespace Soup::UnitTests
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();
-            arguments.Target = TargetType::Executable;
+            arguments.Target = BuildTargetType::Executable;
             arguments.WorkingDirectory = Path("");
             arguments.ObjectDirectory = Path("obj");
             arguments.BinaryDirectory = Path("bin");
             arguments.SourceFiles = std::vector<Path>({});
             arguments.IncludeDirectories = std::vector<Path>({});
-            arguments.ModuleFiles = std::vector<Path>({});
+            arguments.IncludeModules = std::vector<Path>({});
             arguments.IsIncremental = true;
 
             uut.Execute(arguments);
 
+            auto expectedCompileArguments = CompileArguments();
+            expectedCompileArguments.Standard = LanguageStandard::CPP20;
+            expectedCompileArguments.OutputDirectory = Path("obj");
+            expectedCompileArguments.GenerateIncludeTree = true;
+
             // Verify expected compiler calls
             Assert::AreEqual(
-                std::vector<std::string>({
+                std::vector<CompileArguments>({
+                    expectedCompileArguments,
                 }),
-                compiler->GetMessages(),
+                compiler->GetCompileRequests(),
                 "Verify compiler requests match expected.");
+            Assert::AreEqual(
+                std::vector<LinkerArguments>({
+                }),
+                compiler->GetLinkLibraryRequests(),
+                "Verify link library requests match expected.");
+            Assert::AreEqual(
+                std::vector<LinkerArguments>({
+                }),
+                compiler->GetLinkExecutableRequests(),
+                "Verify link executable requests match expected.");
 
             // Verify expected file system requests
             Assert::AreEqual(
@@ -124,6 +158,8 @@ namespace Soup::UnitTests
                     "Loading previous build state.\n",
                     "BuildState file does not exist.\n",
                     "No previous state found.\n",
+                    "Compile Source\n",
+                    "Link Executable\n",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");

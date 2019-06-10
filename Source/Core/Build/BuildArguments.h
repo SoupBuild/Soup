@@ -10,7 +10,7 @@ namespace Soup
     /// <summary>
     /// The enumeration of target types
     /// </summary>
-    export enum class TargetType
+    export enum class BuildTargetType
     {
         /// <summary>
         /// Executable
@@ -41,7 +41,7 @@ namespace Soup
         /// <summary>
         /// Gets or sets the target type
         /// </summary>
-        TargetType Target;
+        BuildTargetType Target;
 
         /// <summary>
         /// Gets or sets the working directory
@@ -71,7 +71,7 @@ namespace Soup
         /// <summary>
         /// Gets or sets the list of modules
         /// </summary>
-        std::vector<Path> ModuleFiles;
+        std::vector<Path> IncludeModules;
 
         /// <summary>
         /// Gets or sets a value indicating whether the build is incremental or not
