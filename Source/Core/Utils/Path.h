@@ -140,6 +140,12 @@ namespace Soup
                 _filename != rhs. _filename;
         }
 
+        bool operator <(const Path& rhs) const
+        {
+            // TODO: Tests and better implementation
+            return ToString() < rhs.ToString();
+        }
+
         /// <summary>
         /// Concatenate paths
         /// </summary>

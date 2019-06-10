@@ -8,7 +8,7 @@ import json11;
 
 #include "Build\BuildEngine.h"
 #include "Build\BuildStateJson.h"
-#include "Build\FileBuildStateManager.h"
+#include "Build\BuildStateManager.h"
 #include "Compiler\CompileArguments.h"
 #include "Compiler\MockCompiler.h"
 #include "Logger\ConsoleTraceListener.h"
@@ -16,5 +16,7 @@ import json11;
 #include "Package\Recipe.h"
 #include "Package\RecipeExtensions.h"
 #include "Package\RecipeJson.h"
+#include "Utils\MockFileSystem.h"
 #include "Utils\Path.h"
 #include "Utils\SemanticVersion.h"
+#include "Utils\STLFileSystem.h"

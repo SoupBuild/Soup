@@ -45,12 +45,12 @@ namespace Soup
         /// <summary>
         /// Gets or sets the root directory
         /// </summary>
-        std::string RootDirectory;
+        Path RootDirectory;
 
         /// <summary>
         /// Gets or sets the output directory
         /// </summary>
-        std::string OutputDirectory;
+        Path OutputDirectory;
 
         /// <summary>
         /// Gets or sets the list of preprocessor definitions
@@ -58,19 +58,19 @@ namespace Soup
         std::vector<std::string> PreprocessorDefinitions;
 
         /// <summary>
-        /// Gets or sets the list of source files
+        /// Gets or sets the source file
         /// </summary>
-        std::vector<std::string> SourceFiles;
+        Path SourceFile;
 
         /// <summary>
         /// Gets or sets the list of include directories
         /// </summary>
-        std::vector<std::string> IncludeDirectories;
+        std::vector<Path> IncludeDirectories;
 
         /// <summary>
         /// Gets or sets the list of modules
         /// </summary>
-        std::vector<std::string> Modules;
+        std::vector<Path> IncludeModules;
 
         /// <summary>
         /// Gets or sets a value indicating whether to compile as export module

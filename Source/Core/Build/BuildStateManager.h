@@ -1,17 +1,19 @@
-﻿// <copyright file="FileBuildStateManager.h" company="Soup">
+﻿// <copyright file="BuildStateManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "IBuildStateManager.h"
+#include "BuildState.h"
+#include "BuildStateJson.h"
 #include "Constants.h"
+#include "IFileSystem.h"
 
 namespace Soup
 {
     /// <summary>
     /// The build state manager
     /// </summary>
-    export class FileBuildStateManager : public IBuildStateManager
+    export class BuildStateManager
     {
     private:
         static constexpr const char* BuildStateFileName = "BuildState.json";
@@ -20,26 +22,25 @@ namespace Soup
         /// <summary>
         /// Load the build state from the provided directory
         /// </summary>
-        virtual bool TryLoadState(const Path& directory, BuildState& result) override final
+        static bool TryLoadState(const Path& directory, BuildState& result)
         {
             // Verify the requested file exists
             auto buildStateFile = directory +
                 Path(Constants::ProjectGenerateFolderName) +
                 Path(BuildStateFileName);
-            auto buildStateFilePath = buildStateFile.ToString();
-            if (!std::filesystem::exists(buildStateFilePath))
+            if (!IFileSystem::Current().Exists(buildStateFile))
             {
                 Log::Verbose("BuildState file does not exist.");
                 return false;
             }
 
             // Open the file to read from
-            auto file = std::fstream(buildStateFilePath);
+            auto file = IFileSystem::Current().OpenRead(buildStateFile);
 
             // Read the contents of the build state file
             try
             {
-                result = BuildStateJson::Deserialize(file);
+                result = BuildStateJson::Deserialize(*file);
                 return true;
             }
             catch(...)
@@ -52,17 +53,16 @@ namespace Soup
         /// <summary>
         /// Save the build state for the provided directory
         /// </summary>
-        virtual void SaveState(const Path& directory, const BuildState& state) override final
+        static void SaveState(const Path& directory, const BuildState& state)
         {
             // Open the file to write to
             auto buildStateFile = directory +
                 Path(Constants::ProjectGenerateFolderName) +
                 Path(BuildStateFileName);
-            auto buildStateFilePath = buildStateFile.ToString();
-            auto file = std::fstream(buildStateFilePath);
+            auto file = IFileSystem::Current().OpenWrite(buildStateFile);
 
             // Write the build state to the file stream
-            BuildStateJson::Serialize(state, file);
+            BuildStateJson::Serialize(state, *file);
         }
     };
 }

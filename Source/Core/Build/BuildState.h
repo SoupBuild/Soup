@@ -13,7 +13,7 @@ namespace Soup
         /// Initializes a new instance of the <see cref="FileInfo"/> class.
         /// </summary>
         FileInfo() :
-            Name(),
+            File(),
             Includes()
         {
         }
@@ -21,13 +21,13 @@ namespace Soup
         /// <summary>
         /// Initializes a new instance of the <see cref="FileInfo"/> class.
         /// </summary>
-        FileInfo(std::string name, std::vector<std::string> includes) :
-            Name(std::move(name)),
+        FileInfo(Path file, std::vector<std::string> includes) :
+            File(std::move(file)),
             Includes(std::move(includes))
         {
         }
 
-        std::string Name;
+        Path File;
         std::vector<std::string> Includes;
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Soup
         /// </summary>
         bool operator ==(const FileInfo& rhs) const
         {
-            return Name == rhs.Name &&
+            return File == rhs.File &&
                 Includes == rhs.Includes;
         }
 

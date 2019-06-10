@@ -31,7 +31,7 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
-        void Deserialize_MissingNameThrows()
+        void Deserialize_MissingFileThrows()
         {
             auto content = std::stringstream(
                 R"({
@@ -54,7 +54,7 @@ namespace Soup::UnitTests
                 R"({
                    "knownFiles": [
                        {
-                           "name": "File.h"
+                           "file": "File.h"
                        }
                    ]
                 })");
@@ -71,7 +71,7 @@ namespace Soup::UnitTests
                 R"({
                    "knownFiles": [
                        {
-                           "name": "File.h",
+                           "file": "File.h",
                            "includes": [ "Other.h" ]
                        }
                    ]
@@ -80,7 +80,7 @@ namespace Soup::UnitTests
 
             auto expected = BuildState(
                 {
-                    FileInfo("File.h", { "Other.h" }),
+                    FileInfo(Path("File.h"), { "Other.h" }),
                 });
 
             Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -93,11 +93,11 @@ namespace Soup::UnitTests
                 R"({
                    "knownFiles": [
                        {
-                           "name": "File1.h",
+                           "file": "File1.h",
                            "includes": [ "Other1.h" ]
                        },
                        {
-                           "name": "File2.h",
+                           "file": "File2.h",
                            "includes": [ "Other2.h" ]
                        }
                    ]
@@ -106,8 +106,8 @@ namespace Soup::UnitTests
 
             auto expected = BuildState(
                 {
-                    FileInfo("File1.h", { "Other1.h" }),
-                    FileInfo("File2.h", { "Other2.h" }),
+                    FileInfo(Path("File1.h"), { "Other1.h" }),
+                    FileInfo(Path("File2.h"), { "Other2.h" }),
                 });
 
             Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -118,7 +118,7 @@ namespace Soup::UnitTests
         {
             auto state = BuildState(
                 {
-                    FileInfo("File.h", { "Other.h" }),
+                    FileInfo(Path("File.h"), { "Other.h" }),
                 });
 
             std::stringstream actual;
@@ -128,7 +128,7 @@ namespace Soup::UnitTests
                 R"({
                    "knownFiles": [
                        {
-                           "name": "File.h",
+                           "file": "File.h",
                            "includes": [ "Other.h" ]
                        }
                    ]
@@ -142,8 +142,8 @@ namespace Soup::UnitTests
         {
             auto state = BuildState(
                 {
-                    FileInfo("File1.h", { "Other1.h" }),
-                    FileInfo("File2.h", { "Other2.h" }),
+                    FileInfo(Path("File1.h"), { "Other1.h" }),
+                    FileInfo(Path("File2.h"), { "Other2.h" }),
                 });
 
             std::stringstream actual;
@@ -153,11 +153,11 @@ namespace Soup::UnitTests
                 R"({
                    "knownFiles": [
                        {
-                           "name": "File1.h",
+                           "file": "File1.h",
                            "includes": [ "Other1.h" ]
                        },
                        {
-                           "name": "File2.h",
+                           "file": "File2.h",
                            "includes": [ "Other2.h" ]
                        }
                    ]

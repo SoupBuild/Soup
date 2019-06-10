@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "IFileSystem.h"
 #include "RecipeJson.h"
 
 namespace Soup
@@ -24,20 +25,19 @@ namespace Soup
             Recipe& result)
         {
             // Verify the requested file exists
-            auto recipeFilePath = recipeFile.ToString();
-            if (!std::filesystem::exists(recipeFilePath))
+            if (!IFileSystem::Current().Exists(recipeFile))
             {
                 Log::Info("Recipe file does not exist.");
                 return false;
             }
 
             // Open the file to read from
-            auto file = std::fstream(recipeFilePath);
+            auto file = IFileSystem::Current().OpenRead(recipeFile);
 
             // Read the contents of the recipe file
             try
             {
-                result = RecipeJson::Deserialize(file);
+                result = RecipeJson::Deserialize(*file);
                 return true;
             }
             catch(...)
@@ -73,11 +73,10 @@ namespace Soup
             Recipe& recipe)
         {
             // Open the file to write to
-            auto recipeFilePath = recipeFile.ToString();
-            auto file = std::fstream(recipeFilePath);
+            auto file = IFileSystem::Current().OpenWrite(recipeFile);
 
             // Write the recipe to the file stream
-            RecipeJson::Serialize(recipe, file);
+            RecipeJson::Serialize(recipe, *file);
         }
     };
 }

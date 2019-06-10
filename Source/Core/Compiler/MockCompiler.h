@@ -14,6 +14,22 @@ namespace Soup
     {
     public:
         /// <summary>
+        /// Initializes a new instance of the <see cref='MockCompiler'/> class.
+        /// </summary>
+        MockCompiler() :
+            _messages()
+        {
+        }
+
+        /// <summary>
+        /// Get the messages
+        /// </summary>
+        const std::vector<std::string>& GetMessages() const
+        {
+            return _messages;
+        }
+
+        /// <summary>
         /// Gets the unique name for the compiler
         /// </summary>
         virtual const std::string& GetName() const override final
@@ -69,5 +85,8 @@ namespace Soup
         {
             throw std::runtime_error("MOCK NotImplemented.");
         }
+
+    private:
+        std::vector<std::string> _messages;
     };
 }

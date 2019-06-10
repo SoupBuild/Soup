@@ -13,7 +13,7 @@ namespace Soup
     export class BuildStateJson
     {
     private:
-        static constexpr const char* Property_Name = "name";
+        static constexpr const char* Property_File = "file";
         static constexpr const char* Property_KnownFiles = "knownFiles";
         static constexpr const char* Property_Includes = "includes";
 
@@ -80,16 +80,16 @@ namespace Soup
 
         static FileInfo LoadJsonFileInfo(const json11::Json& value)
         {
-            std::string name;
+            std::string file;
             std::vector<std::string> includes;
 
-            if (!value[Property_Name].is_null())
+            if (!value[Property_File].is_null())
             {
-                name = value[Property_Name].string_value();
+                file = value[Property_File].string_value();
             }
             else
             {
-                throw std::runtime_error("Missing Required field: name.");
+                throw std::runtime_error("Missing Required field: file.");
             }
 
             if (!value[Property_Includes].is_null())
@@ -108,7 +108,7 @@ namespace Soup
             }
 
             return FileInfo(
-                std::move(name),
+                std::move(file),
                 std::move(includes));
         }
 
@@ -133,7 +133,7 @@ namespace Soup
             json11::Json::object result = {};
 
             // Add required fields
-            result[Property_Name] = info.Name;
+            result[Property_File] = info.File.ToString();
 
             json11::Json::array includes;
             for (auto& value : info.Includes)

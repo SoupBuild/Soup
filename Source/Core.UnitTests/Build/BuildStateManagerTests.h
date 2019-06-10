@@ -1,4 +1,4 @@
-// <copyright file="RecipeExtensionsTests.h" company="Soup">
+// <copyright file="BuildStateManagerTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@
 
 namespace Soup::UnitTests
 {
-    class RecipeExtensionsTests
+    class BuildStateManagerTests
     {
     public:
         [[Fact]]
@@ -20,16 +20,16 @@ namespace Soup::UnitTests
             auto fileSystem = std::make_shared<MockFileSystem>();
             IFileSystem::Register(fileSystem);
 
-            auto directory = Path("TestFiles/NoFile/Recipe.json");
-            Recipe actual;
-            auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
+            auto directory = Path("TestFiles/NoFile");
+            BuildState actual;
+            auto result = BuildStateManager::TryLoadState(directory, actual);
 
             Assert::IsFalse(result, "Verify result is false.");
 
             // Verify expected file system requests
             Assert::AreEqual(
                 std::vector<std::pair<std::string, FileSystemRequestType>>({
-                    std::make_pair("TestFiles/NoFile/Recipe.json", FileSystemRequestType::Exists),
+                    std::make_pair("TestFiles/NoFile/.soup/BuildState.json", FileSystemRequestType::Exists),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
@@ -37,12 +37,12 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "Recipe file does not exist.\n",
-                }), 
+                    "BuildState file does not exist.\n",
+                }),
                 testListener->GetMessages(),
                 "Verify messages match expected.");
         }
-        
+
         [[Fact]]
         void TryLoadFromFile_GarbageFile()
         {
@@ -54,20 +54,20 @@ namespace Soup::UnitTests
             auto fileSystem = std::make_shared<MockFileSystem>();
             IFileSystem::Register(fileSystem);
             fileSystem->CreateFile(
-                Path("TestFiles/GarbageRecipe/Recipe.json"),
+                Path("TestFiles/GarbageBuildState/.soup/BuildState.json"),
                 "garbage");
 
-            auto directory = Path("TestFiles/GarbageRecipe/Recipe.json");
-            Recipe actual;
-            auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
+            auto directory = Path("TestFiles/GarbageBuildState");
+            BuildState actual;
+            auto result = BuildStateManager::TryLoadState(directory, actual);
 
             Assert::IsFalse(result, "Verify result is false.");
 
             // Verify expected file system requests
             Assert::AreEqual(
                 std::vector<std::pair<std::string, FileSystemRequestType>>({
-                    std::make_pair("TestFiles/GarbageRecipe/Recipe.json", FileSystemRequestType::Exists),
-                    std::make_pair("TestFiles/GarbageRecipe/Recipe.json", FileSystemRequestType::OpenRead),
+                    std::make_pair("TestFiles/GarbageBuildState/.soup/BuildState.json", FileSystemRequestType::Exists),
+                    std::make_pair("TestFiles/GarbageBuildState/.soup/BuildState.json", FileSystemRequestType::OpenRead),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
@@ -75,8 +75,8 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "Failed to parse Recipe.\n",
-                }), 
+                    "Failed to parse BuildState.\n",
+                }),
                 testListener->GetMessages(),
                 "Verify messages match expected.");
         }
@@ -92,29 +92,33 @@ namespace Soup::UnitTests
             auto fileSystem = std::make_shared<MockFileSystem>();
             IFileSystem::Register(fileSystem);
             fileSystem->CreateFile(
-                Path("TestFiles/SimpleRecipe/Recipe.json"),
+                Path("TestFiles/SimpleBuildState/.soup/BuildState.json"),
                 R"({
-                   "name": "MyPackage",
-                   "version": "1.2.3"
+                    "knownFiles": [
+                        {
+                            "file": "File.h",
+                            "includes": [ "Other.h" ]
+                        }
+                    ]
                 })");
 
-            auto directory = Path("TestFiles/SimpleRecipe/Recipe.json");
-            Recipe actual;
-            auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
+            auto directory = Path("TestFiles/SimpleBuildState");
+            BuildState actual;
+            auto result = BuildStateManager::TryLoadState(directory, actual);
 
             Assert::IsTrue(result, "Verify result is false.");
 
-            auto expected = Recipe(
-                "MyPackage",
-                SemanticVersion(1, 2, 3));
+            auto expected = BuildState({
+                    FileInfo(Path("File.h"), { "Other.h" }),
+                });
 
             Assert::AreEqual(expected, actual, "Verify matches expected.");
 
             // Verify expected file system requests
             Assert::AreEqual(
                 std::vector<std::pair<std::string, FileSystemRequestType>>({
-                    std::make_pair("TestFiles/SimpleRecipe/Recipe.json", FileSystemRequestType::Exists),
-                    std::make_pair("TestFiles/SimpleRecipe/Recipe.json", FileSystemRequestType::OpenRead),
+                    std::make_pair("TestFiles/SimpleBuildState/.soup/BuildState.json", FileSystemRequestType::Exists),
+                    std::make_pair("TestFiles/SimpleBuildState/.soup/BuildState.json", FileSystemRequestType::OpenRead),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
@@ -122,7 +126,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                }), 
+                }),
                 testListener->GetMessages(),
                 "Verify messages match expected.");
         }

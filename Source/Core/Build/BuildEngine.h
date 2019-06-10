@@ -5,6 +5,7 @@
 #pragma once
 #include "IBuildEngine.h"
 #include "ICompiler.h"
+#include "BuildStateManager.h"
 
 namespace Soup
 {
@@ -20,6 +21,8 @@ namespace Soup
         BuildEngine(std::shared_ptr<ICompiler> compiler) :
             _compiler(std::move(compiler))
         {
+            if (_compiler == nullptr)
+                throw std::runtime_error("Argument Null: compiler");
         }
 
         /// <summary>
@@ -27,35 +30,19 @@ namespace Soup
         /// </summary>
         virtual void Execute(const BuildArguments& arguments) override final
         {
-            // var objectDirectory = Path.Combine("out", "obj", _compiler.Name);
-            // var binaryDirectory = Path.Combine("out", "bin", _compiler.Name);
+            // Load the previous build state if performing an incremental build
+            BuildState buildState = {};
+            if (arguments.IsIncremental)
+            {
+                Log::Verbose("Loading previous build state.");
+                if (!BuildStateManager::TryLoadState(arguments.WorkingDirectory, buildState))
+                {
+                    Log::Verbose("No previous state found.");
+                    buildState = BuildState();
+                }
+            }
 
-            // Log::Verbose("Loading previous build state.");
-            // var buildState = await BuildStateManager.LoadFromFileAsync(path);
-            // if (buildState == null)
-            // {
-            //     Log.Verbose($"No previous state found.");
-            //     buildState = new BuildState();
-            // }
-
-            // // Determine the include paths
-            // var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
-            // var uniqueFolders = folderWithHeadersSet.ToList();
-
-            // bool moduleBuilt = false;
-            // if (recipe.Type == RecipeType.Library)
-            // {
-            //     moduleBuilt = await CheckCompileModuleAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
-            // }
-
-            // bool sourceBuilt = await CheckCompileSourceAsync(
-            //     path,
-            //     recipe,
-            //     buildState,
-            //     uniqueFolders,
-            //     objectDirectory,
-            //     binaryDirectory,
-            //     force);
+            bool sourceBuilt = CompileSource(arguments);
 
             // switch (recipe.Type)
             // {
@@ -69,13 +56,8 @@ namespace Soup
             //         throw new NotSupportedException("Unknown recipe type.");
             // }
 
-            // if (moduleBuilt)
-            // {
-            //     CloneModuleInterface(path, recipe, objectDirectory, binaryDirectory);
-            // }
-
-            // // Save the build state
-            // await BuildStateManager.SaveToFileAsync(buildState, path);
+            // Save the build state
+            BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
         }
 
     private:
@@ -185,105 +167,59 @@ namespace Soup
         //         buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
         // }
 
-        // /// <summary>
-        // /// Compile the supporting source files
-        // /// </summary>
-        // bool CheckCompileSourceAsync(
-        //     string path,
-        //     Recipe recipe,
-        //     BuildState buildState,
-        //     IList<string> uniqueFolders,
-        //     string objectDirectory,
-        //     string binaryDirectory,
-        //     bool force)
-        // {
-        //     var modules = new List<string>();
-        //     var defines = new List<string>();
+        /// <summary>
+        /// Compile the supporting source files
+        /// </summary>
+        bool CompileSource(const BuildArguments& arguments)
+        {
+            // // Check if each source file is out of date and requires a rebuild
+            // for (var sourceFile in recipe.Source)
+            // {
+            //     var outputFile = Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(sourceFile)}.{_compiler.ObjectFileExtension}");
+            //     if (force || BuildRequiredChecker.IsSourceFileOutdated(path, buildState, outputFile, sourceFile, sharedDependecies))
+            //     {
+            //         source.Add(sourceFile);
+            //     }
+            // }
 
-        //     defines.Add("SOUP_BUILD");
-        //     if (recipe.Type == RecipeType.Library)
-        //     {
-        //         // Add a reference to our own modules interface definition
-        //         var modulePath = Path.Combine(
-        //             objectDirectory,
-        //             $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}");
-        //         modules.Add(modulePath);
-        //         defines.Add(BuildRecipeNamespaceDefine(recipe));
-        //     }
+            // if (source.Count == 0)
+            // {
+            //     Log.Info("All source is up to date.");
+            //     return false;
+            // }
+            // else
+            // {
+            //     Log.Info("Compile Source");
+            //     var args = new CompileArguments()
+            //     {
+            //         Standard = Compiler.LanguageStandard.Latest,
+            //         RootDirectory = path,
+            //         OutputDirectory = objectDirectory,
+            //         PreprocessorDefinitions = defines,
+            //         SourceFiles = source,
+            //         IncludeDirectories = uniqueFolders,
+            //         Modules = modules,
+            //         GenerateIncludeTree = true,
+            //     };
 
-        //     // Add all of the direct dependencies as module references
-        //     // and set their version defintions
-        //     await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
-
-        //     var source = new List<string>();
-
-        //     // All files are dependent on the parent module and all referenced modules
-        //     var sharedDependecies = new List<string>();
-        //     sharedDependecies.AddRange(modules);
-
-        //     // Check if the precompiled module should be compiled
-        //     if (recipe.Type == RecipeType.Library)
-        //     {
-        //         // Add the precompile module to the list of shared dependencies
-        //         // TODO: Could optimize this to not do file datetime checks over again
-        //         var moduleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}");
-        //         sharedDependecies.Add(moduleFile);
-
-        //         var moduleOutputFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ObjectFileExtension}");
-        //         if (force || BuildRequiredChecker.IsOutdated(path, moduleOutputFile, sharedDependecies))
-        //         {
-        //             source.Add(moduleFile);
-        //         }
-        //     }
-
-        //     // Check if each source file is out of date and requires a rebuild
-        //     foreach (var sourceFile in recipe.Source)
-        //     {
-        //         var outputFile = Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(sourceFile)}.{_compiler.ObjectFileExtension}");
-        //         if (force || BuildRequiredChecker.IsSourceFileOutdated(path, buildState, outputFile, sourceFile, sharedDependecies))
-        //         {
-        //             source.Add(sourceFile);
-        //         }
-        //     }
-
-        //     if (source.Count == 0)
-        //     {
-        //         Log.Info("All source is up to date.");
-        //         return false;
-        //     }
-        //     else
-        //     {
-        //         Log.Info("Compile Source");
-        //         var args = new CompileArguments()
-        //         {
-        //             Standard = Compiler.LanguageStandard.Latest,
-        //             RootDirectory = path,
-        //             OutputDirectory = objectDirectory,
-        //             PreprocessorDefinitions = defines,
-        //             SourceFiles = source,
-        //             IncludeDirectories = uniqueFolders,
-        //             Modules = modules,
-        //             GenerateIncludeTree = true,
-        //         };
-
-        //         // Ensure the object directory exists
-        //         var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
-        //         if (!Directory.Exists(objectDirectry))
-        //         {
-        //             Directory.CreateDirectory(objectDirectry);
-        //         }
+            //     // Ensure the object directory exists
+            //     var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
+            //     if (!Directory.Exists(objectDirectry))
+            //     {
+            //         Directory.CreateDirectory(objectDirectry);
+            //     }
 
 
-        //         // Compile each file
-        //         var result = await _compiler.CompileAsync(args);
+            //     // Compile each file
+            //     var result = await _compiler.CompileAsync(args);
 
-        //         // Save the build state
-        //         if (result.HeaderIncludeFiles != null)
-        //             buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+            //     // Save the build state
+            //     if (result.HeaderIncludeFiles != null)
+            //         buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
 
-        //         return true;
-        //     }
-        // }
+                 return true;
+            // }
+        }
 
         // private async Task BuildDependencyModuleReferences(
         //     string path,

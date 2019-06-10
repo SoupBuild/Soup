@@ -1,10 +1,10 @@
 #pragma once
-#include "/Build/FileBuildStateManagerTests.h"
+#include "/Build/BuildStateManagerTests.h"
 
-TestState RunFileBuildStateManagerTests() 
+TestState RunBuildStateManagerTests() 
  {
-    auto className = "FileBuildStateManagerTests";
-    auto testClass = std::make_shared<Soup::UnitTests::FileBuildStateManagerTests>();
+    auto className = "BuildStateManagerTests";
+    auto testClass = std::make_shared<Soup::UnitTests::BuildStateManagerTests>();
     TestState state = { 0, 0 };
     state += SoupTest::RunTest(className, "TryLoadFromFile_MissingFile", [&testClass]() { testClass->TryLoadFromFile_MissingFile(); });
     state += SoupTest::RunTest(className, "TryLoadFromFile_GarbageFile", [&testClass]() { testClass->TryLoadFromFile_GarbageFile(); });
