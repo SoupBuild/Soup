@@ -4,6 +4,7 @@
 
 import std.core;
 import Soup.Core;
+import Soup.Compiler.Clang;
 
 #include "Program.h"
 

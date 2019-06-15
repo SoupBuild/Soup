@@ -60,7 +60,7 @@ namespace Soup::Compiler::Clang
             // Set the include paths
             for (auto directory : args.IncludeDirectories)
             {
-                auto argument = "-I\"" + directory + "\"";
+                auto argument = "-I\"" + directory.ToString() + "\"";
                 commandArgs.push_back(std::move(argument));
             }
 
@@ -80,9 +80,9 @@ namespace Soup::Compiler::Clang
             // commandArgs.Add("-EHs");
 
             // Add the module references
-            for (auto& moduleFile : args.Modules)
+            for (auto& moduleFile : args.IncludeModules)
             {
-                auto argument = "-fmodule-file=\"" + moduleFile + "\"";
+                auto argument = "-fmodule-file=\"" + moduleFile.ToString() + "\"";
                 commandArgs.push_back(std::move(argument));
             }
 

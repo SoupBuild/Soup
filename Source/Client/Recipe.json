@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "type": "executable",
   "dependencies": [
-    "../Core"
+    "../Core",
+    "../Compiler/Clang"
   ],
   "source": [
     "Main.cpp"

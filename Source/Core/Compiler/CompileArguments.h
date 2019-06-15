@@ -58,9 +58,9 @@ namespace Soup
         std::vector<std::string> PreprocessorDefinitions;
 
         /// <summary>
-        /// Gets or sets the source file
+        /// Gets or sets the set of source file
         /// </summary>
-        Path SourceFile;
+        std::vector<Path> SourceFiles;
 
         /// <summary>
         /// Gets or sets the list of include directories
@@ -91,7 +91,7 @@ namespace Soup
                 RootDirectory == rhs.RootDirectory &&
                 OutputDirectory == rhs.OutputDirectory &&
                 PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
-                SourceFile  == rhs.SourceFile &&
+                SourceFiles  == rhs.SourceFiles &&
                 IncludeDirectories == rhs.IncludeDirectories &&
                 IncludeModules == rhs.IncludeModules &&
                 ExportModule == rhs.ExportModule &&
@@ -114,8 +114,12 @@ namespace Soup
             for (auto& value : PreprocessorDefinitions)
                 stringBuilder << value << ", ";
 
-            stringBuilder << "], " <<
-                SourceFile.ToString() << ", [";
+            stringBuilder << "], [";
+            
+            for (auto& value : SourceFiles)
+                stringBuilder << value.ToString() << ", ";
+
+            stringBuilder << "], [";
 
             for (auto& value : IncludeDirectories)
                 stringBuilder << value.ToString() << ", ";

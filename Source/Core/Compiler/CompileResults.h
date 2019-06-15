@@ -7,7 +7,7 @@ namespace Soup
     /// <summary>
     /// Header includes recursive container
     /// </summary>
-    class HeaderInclude
+    export class HeaderInclude
     {
     public:
         /// <summary>
@@ -24,7 +24,7 @@ namespace Soup
     /// <summary>
     /// The results of a compilation
     /// </summary>
-    class CompileResults
+    export class CompileResults
     {
     public:
         /// <summary>

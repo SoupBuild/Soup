@@ -135,9 +135,9 @@ namespace Soup::Compiler::Clang::UnitTests
         {
             std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
-            arguments.IncludeDirectories = std::vector<std::string>({
-                "C:/Files/SDK/",
-                "my files/"
+            arguments.IncludeDirectories = std::vector<Path>({
+                Path("C:/Files/SDK/"),
+                Path("my files/")
             });
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
 
@@ -185,9 +185,9 @@ namespace Soup::Compiler::Clang::UnitTests
         {
             std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
-            arguments.Modules = std::vector<std::string>({
-                "Module.pcm",
-                "Std.pcm"
+            arguments.IncludeModules = std::vector<Path>({
+                Path("Module.pcm"),
+                Path("Std.pcm")
             });
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
 
@@ -222,9 +222,9 @@ namespace Soup::Compiler::Clang::UnitTests
             std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
             arguments.ExportModule = true;
-            arguments.SourceFiles = std::vector<std::string>({
-                "module1.cpp",
-                "module2.cpp",
+            arguments.SourceFiles = std::vector<Path>({
+                Path("module1.cpp"),
+                Path("module2.cpp"),
             });
             Assert::ThrowsRuntimeError([&sourceFile, &arguments]() {
                 auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
@@ -236,8 +236,8 @@ namespace Soup::Compiler::Clang::UnitTests
         {
             std::string sourceFile = "File.cpp";
             CompileArguments arguments = {};
-            arguments.SourceFiles = std::vector<std::string>({
-                "module.cpp",
+            arguments.SourceFiles = std::vector<Path>({
+                Path("module.cpp"),
             });
             arguments.ExportModule = true;
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);

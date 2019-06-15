@@ -39,7 +39,7 @@ namespace Soup
         /// <summary>
         /// Compile
         /// </summary>
-        virtual const CompileResults Compile(const CompileArguments& args) = 0;
+        virtual CompileResults Compile(const CompileArguments& args) = 0;
 
         /// <summary>
         /// Link Library

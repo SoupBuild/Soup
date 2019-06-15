@@ -48,8 +48,21 @@ namespace Soup::Client
                 // Enable full diagnostics
                 // _filter->Enable(TraceEventFlag::Diagnostic);
 
+                // Attempt to parse the provided arguments
                 Log::Trace("ProgramStart");
-                auto arguments = ArgumentsParser::Parse(args);
+                ArgumentsParser arguments;
+
+                try
+                {
+                    arguments = ArgumentsParser::Parse(args);
+                }
+                catch(const std::runtime_error& ex)
+                {
+                    // Failed to parse the arguments
+                    Log::Error(ex.what());
+                    WriteUsage();
+                    return -1;
+                }
 
                 // Map the individual commands
                 // TODO: Clang is having troubles with functional
@@ -88,6 +101,18 @@ namespace Soup::Client
         }
 
     private:
+        static void WriteUsage()
+        {
+            Log::Info("Expected commands:");
+            Log::Info("   build - Build the provided recipe.");
+            Log::Info("   run - Run the provided recipe.");
+            Log::Info("   initialize - Initialize wizard for creating a new recipe.");
+            Log::Info("   install - Install a dependency to the target recipes.");
+            Log::Info("   pack - Pack the contents of a recipe.");
+            Log::Info("   publish - Publish the contents of a recipe to the target feed.");
+            Log::Info("   version - Display the version of the command line application.");
+        }
+
         static void SetupShared(SharedOptions& options)
         {
             Log::Trace("Setup SharedOptions");
@@ -102,7 +127,8 @@ namespace Soup::Client
             Log::Trace("Setup BuildOptions");
             SetupShared(options);
             return std::make_shared<BuildCommand>(
-                std::move(options));
+                std::move(options),
+                GetCompiler());
         }
 
         static std::shared_ptr<ICommand> Setup(RunOptions options)
@@ -185,25 +211,14 @@ namespace Soup::Client
         //     return new SoupApi();
         // }
 
-        // /// <summary>
-        // /// Setup the required Compiler
-        // /// </summary>
-        // static ICompiler GetCompiler()
-        // {
-        //     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        //     {
-        //         // return new Compiler.MSVC.Compiler();
-        //         return new Compiler.Clang.Compiler();
-        //     }
-        //     else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        //     {
-        //         return new Compiler.Clang.Compiler();
-        //     }
-        //     else
-        //     {
-        //         throw new NotSupportedException("Unknown platform.");
-        //     }
-        // }
+        /// <summary>
+        /// Setup the required Compiler
+        /// </summary>
+        static std::shared_ptr<ICompiler> GetCompiler()
+        {
+            return std::make_shared<Compiler::Clang::Compiler>();
+        }
+
     private:
         static std::shared_ptr<EventTypeFilter> _filter;
     };

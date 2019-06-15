@@ -2,448 +2,364 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+
 namespace Soup::Compiler::Clang
 {
     /// <summary>
     /// The Clang compiler implementation
     /// </summary>
-    class Compiler : public ICompiler
+    export class Compiler : public ICompiler
     {
     private:
         // static string ToolsPath => @"C:\Program Files\llvm\";
-        static const std::string ToolsPath = "D:\Repos\llvm\build\Release";
-        static Regex IsHeaderIncludeStart = new Regex("^[\\.]+ ", RegexOptions.Compiled);
-        static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
-        static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);
+        // static const std::string ToolsPath = "D:\Repos\llvm\build\Release";
+        // static Regex IsHeaderIncludeStart = new Regex("^[\\.]+ ", RegexOptions.Compiled);
+        // static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
+        // static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);
 
-        Stack<HeaderInclude> _currentIncludes = new Stack<HeaderInclude>();
-        bool _inWarningMessage = false;
-        bool _inErrorMessage = false;
+        // Stack<HeaderInclude> _currentIncludes = new Stack<HeaderInclude>();
+        // bool _inWarningMessage = false;
+        // bool _inErrorMessage = false;
 
     public:
         /// <summary>
         /// Gets the unique name for the compiler
         /// </summary>
-        string Name => "Clang";
+        virtual const std::string& GetName() const override final
+        {
+            static std::string value = "Clang";
+            return value;
+        }
 
         /// <summary>
         /// Gets the object file extension for the compiler
         /// </summary>
-        string ObjectFileExtension => "o";
+        virtual const std::string& GetObjectFileExtension() const override final
+        {
+            static std::string value = "o";
+            return value;
+        }
 
         /// <summary>
         /// Gets the module file extension for the compiler
         /// </summary>
-        string ModuleFileExtension => "pcm";
+        virtual const std::string& GetModuleFileExtension() const override final
+        {
+            static std::string value = "pcm";
+            return value;
+        }
 
         /// <summary>
         /// Gets the static library file extension for the compiler
         /// TODO: This is platform specific
         /// </summary>
-        string StaticLibraryFileExtension => "a";
+        virtual const std::string& GetStaticLibraryFileExtension() const override final
+        {
+            static std::string value = "a";
+            return value;
+        }
 
         /// <summary>
         /// Compile
         /// </summary>
-        async Task<CompileResults> CompileAsync(CompileArguments args)
+        virtual CompileResults Compile(const CompileArguments& args) override final
         {
             // Compile each file individually
-            var allIncludes = new List<HeaderInclude>();
-            foreach (var file in args.SourceFiles)
-            {
-                var includes = await CompileAsync(file, args);
-                allIncludes.Add(includes);
-            }
+            // var allIncludes = new List<HeaderInclude>();
+            // foreach (var file in args.SourceFiles)
+            // {
+            //     var includes = await CompileAsync(file, args);
+            //     allIncludes.Add(includes);
+            // }
 
-            return new CompileResults()
-            {
-                HeaderIncludeFiles = allIncludes,
-            };
-        }
+            // return new CompileResults()
+            // {
+            //     HeaderIncludeFiles = allIncludes,
+            // };
 
-        Task<HeaderInclude> CompileAsync(string file, CompileArguments args)
-        {
-            // Set the working directory to the output directory
-            var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
-
-            string compiler = Path.Combine(ToolsPath, @"bin\clang++.exe");
-            var commandArgs = BuildCompilerArguments(file, args, workingDirectory);
-
-            Log.Info($"{file}");
-            Log.Verbose($"PWD={workingDirectory}");
-            Log.Verbose($"{compiler} {commandArgs}");
-
-            // Add a single root element if includes requested
-            if (args.GenerateIncludeTree)
-            {
-                _currentIncludes.Push(new HeaderInclude()
-                {
-                    Filename = file,
-                });
-            }
-
-            _inWarningMessage = false;
-            _inErrorMessage = false;
-            using (Process process = new Process())
-            {
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.FileName = compiler;
-                process.StartInfo.WorkingDirectory = workingDirectory;
-                process.StartInfo.Arguments = commandArgs;
-
-                process.OutputDataReceived += ProcessOutputDataReceived;
-                process.ErrorDataReceived += ProcessErrorDataReceived;
-
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                process.WaitForExit();
-
-                if (process.ExitCode != 0)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                HeaderInclude result = null;
-
-                // Check if requested include headers
-                if (args.GenerateIncludeTree)
-                {
-                    // Move up to the root node
-                    while (_currentIncludes.Count > 1)
-                    {
-                        _currentIncludes.Pop();
-                    }
-
-                    if (_currentIncludes.Count != 1)
-                    {
-                        throw new InvalidOperationException("Expected one root includes node.");
-                    }
-
-                    result = _currentIncludes.Pop();
-                }
-
-                return Task.FromResult(result);
-            }
+            return CompileResults();
         }
 
         /// <summary>
         /// Link library
         /// </summary>
-        Task LinkLibraryAsync(LinkerArguments args)
+        virtual void LinkLibrary(const LinkerArguments& args) override final
         {
             // Set the working directory to the output directory
-            var workingDirectory = args.RootDirectory;
+            // var workingDirectory = args.RootDirectory;
 
-            string linker = Path.Combine(ToolsPath, @"bin\llvm-ar.exe");
-            var linkerArgs = BuildLinkerLibraryArguments(args);
+            // string linker = Path.Combine(ToolsPath, @"bin\llvm-ar.exe");
+            // var linkerArgs = BuildLinkerLibraryArguments(args);
 
-            Log.Verbose($"PWD={workingDirectory}");
-            Log.Verbose($"{linker} {linkerArgs}");
+            // Log.Verbose($"PWD={workingDirectory}");
+            // Log.Verbose($"{linker} {linkerArgs}");
 
-            _inWarningMessage = false;
-            _inErrorMessage = false;
-            using (Process process = new Process())
-            {
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.FileName = linker;
-                process.StartInfo.WorkingDirectory = workingDirectory;
-                process.StartInfo.Arguments = linkerArgs;
+            // _inWarningMessage = false;
+            // _inErrorMessage = false;
+            // using (Process process = new Process())
+            // {
+            //     process.StartInfo.UseShellExecute = false;
+            //     process.StartInfo.RedirectStandardOutput = true;
+            //     process.StartInfo.RedirectStandardError = true;
+            //     process.StartInfo.FileName = linker;
+            //     process.StartInfo.WorkingDirectory = workingDirectory;
+            //     process.StartInfo.Arguments = linkerArgs;
 
-                process.OutputDataReceived += ProcessOutputDataReceived;
-                process.ErrorDataReceived += ProcessErrorDataReceived;
+            //     process.OutputDataReceived += ProcessOutputDataReceived;
+            //     process.ErrorDataReceived += ProcessErrorDataReceived;
 
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                process.WaitForExit();
+            //     process.Start();
+            //     process.BeginOutputReadLine();
+            //     process.BeginErrorReadLine();
+            //     process.WaitForExit();
 
-                if (process.ExitCode != 0)
-                {
-                    throw new InvalidOperationException();
-                }
+            //     if (process.ExitCode != 0)
+            //     {
+            //         throw new InvalidOperationException();
+            //     }
 
-                return Task.CompletedTask;
-            }
+            //     return Task.CompletedTask;
+            // }
         }
 
         /// <summary>
         /// Link Executable
         /// </summary>
-        Task LinkExecutableAsync(LinkerArguments args)
+        virtual void LinkExecutable(const LinkerArguments& args) override final
         {
-            // Set the working directory to the output directory
-            var workingDirectory = args.RootDirectory;
+            // // Set the working directory to the output directory
+            // var workingDirectory = args.RootDirectory;
 
-            string linker = Path.Combine(ToolsPath, @"bin\clang++.exe");
-            var linkerArgs = BuildLinkerExecutableArguments(args);
+            // string linker = Path.Combine(ToolsPath, @"bin\clang++.exe");
+            // var linkerArgs = BuildLinkerExecutableArguments(args);
 
-            Log.Verbose($"PWD={workingDirectory}");
-            Log.Verbose($"{linker} {linkerArgs}");
+            // Log.Verbose($"PWD={workingDirectory}");
+            // Log.Verbose($"{linker} {linkerArgs}");
 
-            _inWarningMessage = false;
-            _inErrorMessage = false;
-            using (Process process = new Process())
-            {
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.FileName = linker;
-                process.StartInfo.WorkingDirectory = workingDirectory;
-                process.StartInfo.Arguments = linkerArgs;
+            // _inWarningMessage = false;
+            // _inErrorMessage = false;
+            // using (Process process = new Process())
+            // {
+            //     process.StartInfo.UseShellExecute = false;
+            //     process.StartInfo.RedirectStandardOutput = true;
+            //     process.StartInfo.RedirectStandardError = true;
+            //     process.StartInfo.FileName = linker;
+            //     process.StartInfo.WorkingDirectory = workingDirectory;
+            //     process.StartInfo.Arguments = linkerArgs;
 
-                process.OutputDataReceived += ProcessOutputDataReceived;
-                process.ErrorDataReceived += ProcessErrorDataReceived;
+            //     process.OutputDataReceived += ProcessOutputDataReceived;
+            //     process.ErrorDataReceived += ProcessErrorDataReceived;
 
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                process.WaitForExit();
+            //     process.Start();
+            //     process.BeginOutputReadLine();
+            //     process.BeginErrorReadLine();
+            //     process.WaitForExit();
 
-                if (process.ExitCode != 0)
-                {
-                    throw new InvalidOperationException();
-                }
+            //     if (process.ExitCode != 0)
+            //     {
+            //         throw new InvalidOperationException();
+            //     }
 
-                return Task.CompletedTask;
-            }
+            //     return Task.CompletedTask;
+            // }
         }
 
     private:
-        string BuildCompilerArguments(string sourceFile, CompileArguments args, string workingDirectory)
-        {
-            // Calculate object output file
-            var rootPath = Path.GetRelativePath(workingDirectory, args.RootDirectory);
+        // HeaderInclude CompileAsync(string file, CompileArguments args)
+        // {
+        //     // Set the working directory to the output directory
+        //     var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
 
-            var commandArgs = new List<string>();
+        //     string compiler = Path.Combine(ToolsPath, @"bin\clang++.exe");
+        //     var commandArgs = BuildCompilerArguments(file, args, workingDirectory);
 
-            // Enable Header includes if needed
-            if (args.GenerateIncludeTree)
-            {
-                commandArgs.Add("-H");
-            }
+        //     Log.Info($"{file}");
+        //     Log.Verbose($"PWD={workingDirectory}");
+        //     Log.Verbose($"{compiler} {commandArgs}");
 
-            // Enable verbose output
-            // commandArgs.Add("-v");
+        //     // Add a single root element if includes requested
+        //     if (args.GenerateIncludeTree)
+        //     {
+        //         _currentIncludes.Push(new HeaderInclude()
+        //         {
+        //             Filename = file,
+        //         });
+        //     }
 
-            // Disable ms compatibility (workaround for bug with inplicit types in pcm)
-            // commandArgs.Add("-fno-ms-compatibility");
+        //     _inWarningMessage = false;
+        //     _inErrorMessage = false;
+        //     using (Process process = new Process())
+        //     {
+        //         process.StartInfo.UseShellExecute = false;
+        //         process.StartInfo.RedirectStandardOutput = true;
+        //         process.StartInfo.RedirectStandardError = true;
+        //         process.StartInfo.FileName = compiler;
+        //         process.StartInfo.WorkingDirectory = workingDirectory;
+        //         process.StartInfo.Arguments = commandArgs;
 
-            // Allow public std visible during link time
-            commandArgs.AddRange(new string[] { "-Xclang", "-flto-visibility-public-std" });
+        //         process.OutputDataReceived += ProcessOutputDataReceived;
+        //         process.ErrorDataReceived += ProcessErrorDataReceived;
 
-            // Set the language standard
-            switch (args.Standard)
-            {
-                case LanguageStandard.CPP11:
-                    commandArgs.Add("-std=c++11");
-                    break;
-                case LanguageStandard.CPP14:
-                    commandArgs.Add("-std=c++14");
-                    break;
-                case LanguageStandard.CPP17:
-                case LanguageStandard.Latest:
-                    commandArgs.Add("-std=c++17");
-                    break;
-                default:
-                    throw new NotSupportedException("Unknown language standard.");
-            }
+        //         process.Start();
+        //         process.BeginOutputReadLine();
+        //         process.BeginErrorReadLine();
+        //         process.WaitForExit();
 
-            // Set the include paths
-            foreach (var directory in args.IncludeDirectories)
-            {
-                var include = directory;
-                if (!Path.IsPathFullyQualified(directory))
-                {
-                    include = Path.Combine(rootPath, directory);
-                }
+        //         if (process.ExitCode != 0)
+        //         {
+        //             throw new InvalidOperationException();
+        //         }
 
-                commandArgs.Add($"-I\"{include}\"");
-            }
+        //         HeaderInclude result = null;
 
-            // Set the preprocessor definitions
-            foreach (var definition in args.PreprocessorDefinitions)
-            {
-                commandArgs.Add($"-D{definition}");
-            }
+        //         // Check if requested include headers
+        //         if (args.GenerateIncludeTree)
+        //         {
+        //             // Move up to the root node
+        //             while (_currentIncludes.Count > 1)
+        //             {
+        //                 _currentIncludes.Pop();
+        //             }
 
-            // Ignore Standard Include Paths to prevent pulling in accidental headers
-            // commandArgs.Add("-X");
+        //             if (_currentIncludes.Count != 1)
+        //             {
+        //                 throw new InvalidOperationException("Expected one root includes node.");
+        //             }
 
-            // Add in the std include paths
+        //             result = _currentIncludes.Pop();
+        //         }
 
-            // Enable c++ exceptions
-            // commandArgs.Add("-EHs");
+        //         return Task.FromResult(result);
+        //     }
+        // }
 
-            // Enable experimental features
-            if (args.Standard == LanguageStandard.Latest)
-            {
-                commandArgs.Add("-fmodules-ts");
-            }
+        // private string BuildLinkerLibraryArguments(LinkerArguments args)
+        // {
+        //     var commandArgs = new List<string>();
 
-            // Add the module references
-            foreach (var module in args.Modules)
-            {
-                commandArgs.Add($"-fmodule-file=\"{Path.Combine(rootPath, module)}\"");
-            }
+        //     // Set options
+        //     // r - Replace existing
+        //     // c - Create without warning if does not exist
+        //     commandArgs.Add("rc");
 
+        //     // Add the library output file
+        //     var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
+        //     commandArgs.Add($"{ouputPath}{args.Name}.{StaticLibraryFileExtension}");
 
-            if (args.ExportModule)
-            {
-                commandArgs.Add("--precompile");
+        //     // Lastly add the file
+        //     commandArgs.AddRange(args.SourceFiles);
 
-                // There must be only one source file
-                if (args.SourceFiles.Count != 1)
-                {
-                    throw new ArgumentException("Export module expects only one source file.");
-                }
+        //     return string.Join(" ", commandArgs);
+        // }
 
-                // Place the ifc in the output directory
-                var outputFile = $"{Path.GetFileNameWithoutExtension(sourceFile)}.{ModuleFileExtension}";
-                commandArgs.AddRange(new string[] { "-o", outputFile });
-            }
-            else
-            {
-                // Only run preprocessor, compile and assemble
-                commandArgs.Add("-c");
-            }
+        // private static string BuildLinkerExecutableArguments(LinkerArguments args)
+        // {
+        //     var commandArgs = new List<string>();
 
-            // Lastly add the file
-            commandArgs.Add(Path.Combine(rootPath, sourceFile));
+        //     // Enable verbose output
+        //     // commandArgs.Add("-v");
 
-            return string.Join(" ", commandArgs);
-        }
+        //     // Add the library output file
+        //     var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
+        //     commandArgs.Add($"-o\"{ouputPath}{args.Name}.exe\"");
 
-        private string BuildLinkerLibraryArguments(LinkerArguments args)
-        {
-            var commandArgs = new List<string>();
+        //     // Add the library files
+        //     commandArgs.AddRange(args.LibraryFiles);
 
-            // Set options
-            // r - Replace existing
-            // c - Create without warning if does not exist
-            commandArgs.Add("rc");
+        //     // Lastly add the file
+        //     commandArgs.AddRange(args.SourceFiles.Select(file => file.Replace(".obj", ".o")));
 
-            // Add the library output file
-            var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
-            commandArgs.Add($"{ouputPath}{args.Name}.{StaticLibraryFileExtension}");
+        //     return string.Join(" ", commandArgs);
+        // }
 
-            // Lastly add the file
-            commandArgs.AddRange(args.SourceFiles);
+        // private void ProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
+        // {
+        //     if (e.Data != null)
+        //     {
+        //         Log.Info(e.Data);
+        //     }
+        // }
 
-            return string.Join(" ", commandArgs);
-        }
+        // private void ProcessErrorDataReceived(object sender, DataReceivedEventArgs e)
+        // {
+        //     if (e.Data != null)
+        //     {
+        //         if (IsWarningMessage.IsMatch(e.Data))
+        //         {
+        //             _inWarningMessage = true;
+        //             _inErrorMessage = false;
+        //         }
+        //         else if (IsErrorMessage.IsMatch(e.Data))
+        //         {
+        //             _inWarningMessage = false;
+        //             _inErrorMessage = true;
+        //         }
+        //         else
+        //         {
+        //             _inWarningMessage = false;
+        //             _inErrorMessage = false;
+        //         }
 
-        private static string BuildLinkerExecutableArguments(LinkerArguments args)
-        {
-            var commandArgs = new List<string>();
+        //         if (_inWarningMessage)
+        //         {
+        //             Log.Warning(e.Data);
+        //         }
+        //         else if (_inErrorMessage)
+        //         {
+        //             Log.Error(e.Data);
+        //         }
+        //         else if (IsHeaderIncludeStart.IsMatch(e.Data))
+        //         {
+        //             ProcessHeaderInclude(e.Data);
+        //         }
+        //         else
+        //         {
+        //             Log.Info(e.Data);
+        //         }
+        //     }
+        // }
 
-            // Enable verbose output
-            // commandArgs.Add("-v");
+        // private void ProcessHeaderInclude(string value)
+        // {
+        //     // Count depth
+        //     int depth = 0;
+        //     while (value[depth] == '.')
+        //     {
+        //         depth++;
+        //     }
 
-            // Add the library output file
-            var ouputPath = args.OutputDirectory.EnsureTrailingSlash().Replace(@"\", @"\\");
-            commandArgs.Add($"-o\"{ouputPath}{args.Name}.exe\"");
+        //     var filename = value.Substring(depth + 1).Replace("\\\\", "/");
+        //     if (!Path.IsPathRooted(filename))
+        //         filename = filename.Substring(9); // HACK TODO : Get correct path
 
-            // Add the library files
-            commandArgs.AddRange(args.LibraryFiles);
+        //     var include = new HeaderInclude()
+        //     {
+        //         Filename = filename,
+        //     };
 
-            // Lastly add the file
-            commandArgs.AddRange(args.SourceFiles.Select(file => file.Replace(".obj", ".o")));
+        //     // Move to matching depth
+        //     while (_currentIncludes.Count > depth)
+        //     {
+        //         _currentIncludes.Pop();
+        //     }
 
-            return string.Join(" ", commandArgs);
-        }
+        //     // Ensure there is a current node
+        //     if (depth == 0)
+        //     {
+        //         throw new InvalidOperationException("Missing root include node.");
+        //     }
 
-        private void ProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            if (e.Data != null)
-            {
-                Log.Info(e.Data);
-            }
-        }
+        //     // Skip precompiled module files
+        //     var extension = Path.GetExtension(filename);
+        //     if (extension != $".{ModuleFileExtension}")
+        //     {
+        //         // Add to current
+        //         _currentIncludes.Peek().Includes.Add(include);
+        //     }
 
-        private void ProcessErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            if (e.Data != null)
-            {
-                if (IsWarningMessage.IsMatch(e.Data))
-                {
-                    _inWarningMessage = true;
-                    _inErrorMessage = false;
-                }
-                else if (IsErrorMessage.IsMatch(e.Data))
-                {
-                    _inWarningMessage = false;
-                    _inErrorMessage = true;
-                }
-                else
-                {
-                    _inWarningMessage = false;
-                    _inErrorMessage = false;
-                }
-
-                if (_inWarningMessage)
-                {
-                    Log.Warning(e.Data);
-                }
-                else if (_inErrorMessage)
-                {
-                    Log.Error(e.Data);
-                }
-                else if (IsHeaderIncludeStart.IsMatch(e.Data))
-                {
-                    ProcessHeaderInclude(e.Data);
-                }
-                else
-                {
-                    Log.Info(e.Data);
-                }
-            }
-        }
-
-        private void ProcessHeaderInclude(string value)
-        {
-            // Count depth
-            int depth = 0;
-            while (value[depth] == '.')
-            {
-                depth++;
-            }
-
-            var filename = value.Substring(depth + 1).Replace("\\\\", "/");
-            if (!Path.IsPathRooted(filename))
-                filename = filename.Substring(9); // HACK TODO : Get correct path
-
-            var include = new HeaderInclude()
-            {
-                Filename = filename,
-            };
-
-            // Move to matching depth
-            while (_currentIncludes.Count > depth)
-            {
-                _currentIncludes.Pop();
-            }
-
-            // Ensure there is a current node
-            if (depth == 0)
-            {
-                throw new InvalidOperationException("Missing root include node.");
-            }
-
-            // Skip precompiled module files
-            var extension = Path.GetExtension(filename);
-            if (extension != $".{ModuleFileExtension}")
-            {
-                // Add to current
-                _currentIncludes.Peek().Includes.Add(include);
-            }
-
-            // Set the new include as the current depth
-            _currentIncludes.Push(include);
-        }
-    }
+        //     // Set the new include as the current depth
+        //     _currentIncludes.Push(include);
+        // }
+    };
 }

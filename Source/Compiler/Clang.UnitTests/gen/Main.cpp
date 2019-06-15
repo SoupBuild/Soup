@@ -8,6 +8,7 @@ import Soup.Compiler.Clang;
 using namespace SoupTest;
 
 #include "ArgumentBuilderTests.gen.h"
+#include "CompilerTests.gen.h"
 
 int main()
 {
@@ -16,6 +17,7 @@ int main()
     TestState state = { 0, 0 };
 
     state += RunArgumentBuilderTests();
+    state += RunCompilerTests();
 
     std::cout << state.FailCount << " FAILED." << std::endl;
     std::cout << state.PassCount << " PASSED." << std::endl;

@@ -112,8 +112,7 @@ namespace Soup::Client
             }
             else
             {
-                Log::Trace("Unknown command argument.");
-                throw std::runtime_error("Unknown command argument.");
+                throw std::runtime_error("Unknown command argument: " + commandType);
             }
 
             if (!unusedArgs.empty())
@@ -144,6 +143,11 @@ namespace Soup::Client
         }
 
     public:
+        ArgumentsParser() :
+            _result(nullptr)
+        {
+        }
+
         template<typename T>
         bool IsA()
         {

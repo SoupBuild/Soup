@@ -17,11 +17,10 @@ namespace Soup::Client
         /// <summary>
         /// Initializes a new instance of the <see cref="BuildCommand"/> class.
         /// </summary>
-        BuildCommand(BuildOptions options) ://LocalUserConfig config, Compiler.ICompiler compiler)
-            _options(std::move(options))
+        BuildCommand(BuildOptions options, std::shared_ptr<ICompiler> compiler) :
+            _options(std::move(options)),
+            _compiler(std::move(compiler))
         {
-            //_config = config;
-            //_compiler = compiler;
         }
 
         /// <summary>
@@ -55,7 +54,6 @@ namespace Soup::Client
 
     private:
         BuildOptions _options;
-        //private LocalUserConfig _config;
-        //private Compiler.ICompiler _compiler;
+        std::shared_ptr<ICompiler> _compiler;
     };
 }

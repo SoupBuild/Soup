@@ -87,7 +87,7 @@ namespace Soup
         /// <summary>
         /// Compile
         /// </summary>
-        virtual const CompileResults Compile(const CompileArguments& args) override final
+        virtual CompileResults Compile(const CompileArguments& args) override final
         {
             _compileRequests.push_back(args);
             return CompileResults();
