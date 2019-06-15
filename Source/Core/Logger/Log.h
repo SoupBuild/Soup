@@ -22,36 +22,6 @@ namespace Soup
         }
 
         /// <summary>
-        /// Gets or sets the value indicating whether diagnostic logging is enabled or not
-        /// </summary>
-        static void SetDiagnosticEnabled(bool value)
-        {
-            if (value)
-            {
-                EnsureFilter()->Enable(TraceEventFlag::Diagnostic);
-            }
-            else
-            {
-                EnsureFilter()->Disable(TraceEventFlag::Diagnostic);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the value indicating whether verbose logging is enabled or not
-        /// </summary>
-        static void SetVerboseEnabled(bool value)
-        {
-            if (value)
-            {
-                EnsureFilter()->Enable(TraceEventFlag::Verbose);
-            }
-            else
-            {
-                EnsureFilter()->Disable(TraceEventFlag::Verbose);
-            }
-        }
-
-        /// <summary>
         /// Log a generic infomational message
         /// </summary>
         static void Info(const std::string& message)
@@ -102,24 +72,6 @@ namespace Soup
             return *s_listener;
         }
 
-        /// <summary>
-        /// Get access to the single event filter
-        /// </summary>
-        static const std::shared_ptr<EventTypeFilter>& EnsureFilter()
-        {
-            // Setup the filter
-            auto defaultTypes = 
-                    static_cast<uint32_t>(TraceEventFlag::Information) |
-                    static_cast<uint32_t>(TraceEventFlag::Warning) |
-                    static_cast<uint32_t>(TraceEventFlag::Error) |
-                    static_cast<uint32_t>(TraceEventFlag::Critical);
-            static std::shared_ptr<EventTypeFilter> filter = 
-                std::make_shared<EventTypeFilter>(
-                    static_cast<TraceEventFlag>(defaultTypes));
-
-            return filter;
-        }
-    
     private:
         static std::shared_ptr<TraceListener> s_listener;
     };

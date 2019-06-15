@@ -28,16 +28,25 @@ namespace Soup::Client
         {
             try
             {
+                // Setup the filter
+                auto defaultTypes = 
+                    static_cast<uint32_t>(TraceEventFlag::Information) |
+                    static_cast<uint32_t>(TraceEventFlag::Warning) |
+                    static_cast<uint32_t>(TraceEventFlag::Error) |
+                    static_cast<uint32_t>(TraceEventFlag::Critical);
+                _filter = std::make_shared<EventTypeFilter>(
+                        static_cast<TraceEventFlag>(defaultTypes));
+
                 // Setup the console listener
-                 Log::RegisterListner(
+                Log::RegisterListener(
                     std::make_shared<ConsoleTraceListener>(
                         "Log",
-                        EnsureFilter(),
+                        _filter,
                         false,
                         false));
 
                 // Enable full diagnostics
-                // Log::SetDiagnosticEnabled(true);
+                // _filter->Enable(TraceEventFlag::Diagnostic);
 
                 Log::Trace("ProgramStart");
                 auto arguments = ArgumentsParser::Parse(args);
@@ -82,7 +91,10 @@ namespace Soup::Client
         static void SetupShared(SharedOptions& options)
         {
             Log::Trace("Setup SharedOptions");
-            Log::SetVerboseEnabled(options.EnableVerbose);
+            if (options.EnableVerbose)
+            {
+                _filter->Enable(TraceEventFlag::Verbose);
+            }
         }
 
         static std::shared_ptr<ICommand> Setup(BuildOptions options)
@@ -192,5 +204,9 @@ namespace Soup::Client
         //         throw new NotSupportedException("Unknown platform.");
         //     }
         // }
+    private:
+        static std::shared_ptr<EventTypeFilter> _filter;
     };
+
+    std::shared_ptr<EventTypeFilter> Program::_filter = nullptr;
 }

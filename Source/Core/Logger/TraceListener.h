@@ -6,7 +6,7 @@
 
 namespace Soup
 {
-    enum class TraceEventFlag : uint32_t
+    export enum class TraceEventFlag : uint32_t
     {
         // Informational message.
         Information = 1 << 0,

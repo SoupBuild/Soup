@@ -7,7 +7,7 @@
 
 namespace Soup
 {
-    class EventTypeFilter : public IEventFilter
+    export class EventTypeFilter : public IEventFilter
     {
     public:
         EventTypeFilter(TraceEventFlag eventTypes) :

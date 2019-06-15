@@ -10,7 +10,7 @@ namespace Soup
     /// <summary>
     /// Console logger that wraps the base <see cref="TraceListener"/>
     /// </summary>
-    class ConsoleTraceListener : public TraceListener
+    export class ConsoleTraceListener : public TraceListener
     {
     public:
         /// <summary>
