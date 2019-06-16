@@ -4,7 +4,7 @@
 
 #pragma once
 #include "CompileArguments.h"
-#include "CompileResults.h"
+#include "CompileResult.h"
 #include "LinkerArguments.h"
 
 namespace Soup
@@ -39,7 +39,7 @@ namespace Soup
         /// <summary>
         /// Compile
         /// </summary>
-        virtual CompileResults Compile(const CompileArguments& args) = 0;
+        virtual CompileResult Compile(const CompileArguments& args) = 0;
 
         /// <summary>
         /// Link Library

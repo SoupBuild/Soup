@@ -65,22 +65,15 @@ namespace Soup::Compiler::Clang
         /// <summary>
         /// Compile
         /// </summary>
-        virtual CompileResults Compile(const CompileArguments& args) override final
+        virtual CompileResult Compile(const CompileArguments& args) override final
         {
             // Compile each file individually
-            // var allIncludes = new List<HeaderInclude>();
             for (auto& file : args.SourceFiles)
             {
                 Compile(file, args);
-                // allIncludes.Add(includes);
             }
 
-            // return new CompileResults()
-            // {
-            //     HeaderIncludeFiles = allIncludes,
-            // };
-
-            return CompileResults();
+            return CompileResult();
         }
 
         /// <summary>
@@ -210,12 +203,12 @@ namespace Soup::Compiler::Clang
         //         process.BeginErrorReadLine();
         //         process.WaitForExit();
 
-            IProcessManager::Current().Execute(compilerPath, commandArgs);
+            auto result = IProcessManager::Current().Execute(compilerPath, commandArgs);
 
-        //         if (process.ExitCode != 0)
-        //         {
-        //             throw new InvalidOperationException();
-        //         }
+            // if (process.ExitCode != 0)
+            // {
+            //     throw new InvalidOperationException();
+            // }
 
         //         HeaderInclude result = null;
 

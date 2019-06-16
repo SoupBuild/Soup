@@ -87,10 +87,10 @@ namespace Soup
         /// <summary>
         /// Compile
         /// </summary>
-        virtual CompileResults Compile(const CompileArguments& args) override final
+        virtual CompileResult Compile(const CompileArguments& args) override final
         {
             _compileRequests.push_back(args);
-            return CompileResults();
+            return CompileResult();
         }
 
         /// <summary>

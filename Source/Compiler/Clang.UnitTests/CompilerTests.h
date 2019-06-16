@@ -43,7 +43,6 @@ namespace Soup::Compiler::Clang::UnitTests
                 }),
                 processManager->GetRequests(),
                 "Verify process manager requests match expected.");
-
         }
     };
 }
