@@ -80,12 +80,12 @@ namespace Soup
 
         static FileInfo LoadJsonFileInfo(const json11::Json& value)
         {
-            std::string file;
+            Path file;
             std::vector<std::string> includes;
 
             if (!value[Property_File].is_null())
             {
-                file = value[Property_File].string_value();
+                file = Path(value[Property_File].string_value());
             }
             else
             {

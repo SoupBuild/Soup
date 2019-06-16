@@ -16,7 +16,7 @@ namespace Soup
     export class BuildStateManager
     {
     private:
-        static constexpr const char* BuildStateFileName = "BuildState.json";
+        static constexpr std::string_view BuildStateFileName = "BuildState.json";
 
     public:
         /// <summary>

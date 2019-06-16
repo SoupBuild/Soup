@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+
 namespace Soup::Compiler::Clang
 {
     /// <summary>
@@ -12,7 +14,7 @@ namespace Soup::Compiler::Clang
     {
     public:
         static std::vector<std::string> BuildCompilerArguments(
-            const std::string& sourceFile,
+            const Path& sourceFile,
             const CompileArguments& args)
         {
             // Calculate object output file
@@ -107,7 +109,7 @@ namespace Soup::Compiler::Clang
             }
 
             // Lastly add the file
-            commandArgs.push_back(sourceFile);
+            commandArgs.push_back(sourceFile.ToString());
 
             return commandArgs;
         }

@@ -12,7 +12,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void NoParameters()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
 
@@ -31,7 +31,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_GenerateIncludeTree()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.GenerateIncludeTree = true;
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
@@ -52,7 +52,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_LanguageStandard_CPP11()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.Standard = LanguageStandard::CPP11;
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
@@ -72,7 +72,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_LanguageStandard_CPP14()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.Standard = LanguageStandard::CPP14;
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
@@ -92,7 +92,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_LanguageStandard_CPP17()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.Standard = LanguageStandard::CPP17;
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
@@ -112,7 +112,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_LanguageStandard_CPP20()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.Standard = LanguageStandard::CPP20;
             auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
@@ -133,7 +133,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_IncludePaths()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.IncludeDirectories = std::vector<Path>({
                 Path("C:/Files/SDK/"),
@@ -158,7 +158,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_PreprocessorDefinitions()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.PreprocessorDefinitions = std::vector<std::string>({
                 "DEBUG",
@@ -183,7 +183,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_Modules()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.IncludeModules = std::vector<Path>({
                 Path("Module.pcm"),
@@ -208,7 +208,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_ExportModule_ThrowsZeroSource()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.ExportModule = true;
             Assert::ThrowsRuntimeError([&sourceFile, &arguments]() {
@@ -219,7 +219,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_ExportModule_ThrowsMoreThanOneSource()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.ExportModule = true;
             arguments.SourceFiles = std::vector<Path>({
@@ -234,7 +234,7 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_ExportModule_SingleSource()
         {
-            std::string sourceFile = "File.cpp";
+            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
             arguments.SourceFiles = std::vector<Path>({
                 Path("module.cpp"),

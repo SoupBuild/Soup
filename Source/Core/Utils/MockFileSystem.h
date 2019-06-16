@@ -1,4 +1,4 @@
-﻿// <copyright file="IFileSystem.h" company="Soup">
+﻿// <copyright file="MockFileSystem.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -23,7 +23,7 @@ namespace Soup
     {
     public:
         /// <summary>
-        /// Initializes a new instance of the <see cref='MockBuildStateManager'/> class.
+        /// Initializes a new instance of the <see cref='MockFileSystem'/> class.
         /// </summary>
         MockFileSystem() :
             _requests(),

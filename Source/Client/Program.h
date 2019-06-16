@@ -45,6 +45,10 @@ namespace Soup::Client
                         false,
                         false));
 
+                // Setup the real servicess
+                IFileSystem::Register(std::make_shared<STLFileSystem>());
+                IProcess::Register(std::make_shared<STLProcess>());
+
                 // Enable full diagnostics
                 // _filter->Enable(TraceEventFlag::Diagnostic);
 

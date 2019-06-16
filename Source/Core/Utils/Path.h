@@ -14,7 +14,7 @@ namespace Soup
         static constexpr char DirectorySeparator = '/';
         static constexpr char LetterDriveSpecifier = ':';
         static constexpr char FileExtensionSeparator = '.';
-        static constexpr const char* ParentDirectory = "..";
+        static constexpr std::string_view ParentDirectory = "..";
 
     public:
         /// <summary>
@@ -30,7 +30,7 @@ namespace Soup
         /// <summary>
         /// Initializes a new instance of the <see cref="Path"/> class.
         /// </summary>
-        Path(const std::string& value) :
+        Path(std::string_view value) :
             _root(),
             _directories(),
             _filename()
@@ -212,7 +212,7 @@ namespace Soup
         }
 
 private:
-    void ParsePath(const std::string& value)
+    void ParsePath(std::string_view value)
     {
         size_t current = 0;
         size_t next = 0;
@@ -226,18 +226,18 @@ private:
             {
                 if (IsRoot(directory))
                 {
-                    _root = std::move(directory);
+                    _root = std::string(directory);
                 }
                 else
                 {
-                    _directories.push_back(std::move(directory));
+                    _directories.push_back(std::string(directory));
                 }
 
                 isFirst = false;
             }
             else
             {
-                _directories.push_back(std::move(directory));
+                _directories.push_back(std::string(directory));
             }
 
             current = next + 1;
@@ -270,7 +270,7 @@ private:
         }
     }
 
-    bool IsRoot(const std::string& value)
+    bool IsRoot(std::string_view value)
     {
         // Check for drive letter
         if (value.size() == 2)

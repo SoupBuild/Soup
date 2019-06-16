@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "ArgumentBuilder.h"
 
 namespace Soup::Compiler::Clang
 {
@@ -12,8 +13,9 @@ namespace Soup::Compiler::Clang
     export class Compiler : public ICompiler
     {
     private:
-        // static string ToolsPath => @"C:\Program Files\llvm\";
-        // static const std::string ToolsPath = "D:\Repos\llvm\build\Release";
+        // static Path ToolsPath = "C:/Program Files/llvm/";
+        static constexpr std::string_view ToolsPath = "D:/Repos/llvm/build/Release/";
+        static constexpr std::string_view CompilerExecutable = "bin/clang++.exe";
         // static Regex IsHeaderIncludeStart = new Regex("^[\\.]+ ", RegexOptions.Compiled);
         // static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
         // static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);
@@ -67,11 +69,11 @@ namespace Soup::Compiler::Clang
         {
             // Compile each file individually
             // var allIncludes = new List<HeaderInclude>();
-            // foreach (var file in args.SourceFiles)
-            // {
-            //     var includes = await CompileAsync(file, args);
-            //     allIncludes.Add(includes);
-            // }
+            for (auto& file : args.SourceFiles)
+            {
+                Compile(file, args);
+                // allIncludes.Add(includes);
+            }
 
             // return new CompileResults()
             // {
@@ -166,13 +168,15 @@ namespace Soup::Compiler::Clang
         }
 
     private:
-        // HeaderInclude CompileAsync(string file, CompileArguments args)
-        // {
+        void Compile(
+            const Path& file,
+            const CompileArguments& args)
+        {
         //     // Set the working directory to the output directory
         //     var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
 
-        //     string compiler = Path.Combine(ToolsPath, @"bin\clang++.exe");
-        //     var commandArgs = BuildCompilerArguments(file, args, workingDirectory);
+            auto compilerPath = Path(ToolsPath) + Path(CompilerExecutable);
+            auto commandArgs = ArgumentBuilder::BuildCompilerArguments(file, args);
 
         //     Log.Info($"{file}");
         //     Log.Verbose($"PWD={workingDirectory}");
@@ -206,6 +210,8 @@ namespace Soup::Compiler::Clang
         //         process.BeginErrorReadLine();
         //         process.WaitForExit();
 
+            IProcessManager::Current().Execute(compilerPath, commandArgs);
+
         //         if (process.ExitCode != 0)
         //         {
         //             throw new InvalidOperationException();
@@ -232,7 +238,7 @@ namespace Soup::Compiler::Clang
 
         //         return Task.FromResult(result);
         //     }
-        // }
+        }
 
         // private string BuildLinkerLibraryArguments(LinkerArguments args)
         // {

@@ -17,6 +17,8 @@ import json11;
 #include "Package\RecipeExtensions.h"
 #include "Package\RecipeJson.h"
 #include "Utils\MockFileSystem.h"
+#include "Utils\MockProcessManager.h"
 #include "Utils\Path.h"
 #include "Utils\SemanticVersion.h"
 #include "Utils\STLFileSystem.h"
+#include "Utils\STLProcessManager.h"
