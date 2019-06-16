@@ -37,7 +37,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "BuildState file does not exist.\n",
+                    "VERB: BuildState file does not exist.",
                 }),
                 testListener->GetMessages(),
                 "Verify messages match expected.");
@@ -75,7 +75,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "Failed to parse BuildState.\n",
+                    "INFO: Failed to parse BuildState.",
                 }),
                 testListener->GetMessages(),
                 "Verify messages match expected.");

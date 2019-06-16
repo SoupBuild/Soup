@@ -89,7 +89,7 @@ namespace Soup
                 compilerArguments.RootDirectory = arguments.WorkingDirectory;
                 compilerArguments.OutputDirectory = arguments.ObjectDirectory;
                 compilerArguments.PreprocessorDefinitions = {};
-                compilerArguments.SourceFiles = { Path("") };
+                compilerArguments.SourceFiles = { };
                 compilerArguments.IncludeDirectories = arguments.IncludeDirectories;
                 compilerArguments.IncludeModules = arguments.IncludeModules;
                 compilerArguments.GenerateIncludeTree = true;

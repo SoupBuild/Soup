@@ -29,13 +29,16 @@ namespace Soup::Client
         virtual void Run() override final
         {
             Log::Trace("BuildCommand::Run");
-            // var recipePath = Directory.GetCurrentDirectory();
-            // var recipe = await RecipeManager.LoadFromFileAsync(recipePath);
-            // if (recipe == null)
-            // {
-            //     Log.Error("Could not find the recipe file.");
-            //     return;
-            // }
+            auto workingDirectory = Path::GetCurrentDirectory();
+            auto recipePath = 
+                workingDirectory +
+                Path(Constants::RecipeFileName);
+            Recipe recipe = {};
+            if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+            {
+                Log::Error("Could not find the recipe file.");
+                return;
+            }
 
             // // Ensure the library directory exists
             // var libraryPath = PackageManager.BuildKitchenLibraryPath(_config);
@@ -44,12 +47,25 @@ namespace Soup::Client
             //     Directory.CreateDirectory(libraryPath);
             // }
 
-            // // Now build the current project
-            // Log.Info(string.Empty);
-            // Log.Info("Building Project");
-            // var buildPath = Path.Combine(Constants.ProjectGenerateFolderName, Constants.StoreBuildFolderName);
-            // var buildEngine = new BuildEngine(_config, _compiler);
-            // await buildEngine.ExecuteAsync(recipePath, recipe, options.Force);
+            // Now build the current project
+            Log::Info("");
+            Log::Info("Building Project");
+            auto buildPath =
+                Path(Constants::ProjectGenerateFolderName) +
+                Path(Constants::StoreBuildFolderName);
+            auto buildEngine = BuildEngine(_compiler);
+
+            auto buildArguments = BuildArguments();
+            buildArguments.Target = BuildTargetType::Executable;
+            buildArguments.WorkingDirectory = workingDirectory;
+            buildArguments.ObjectDirectory = Path("obj");
+            buildArguments.BinaryDirectory = Path("bin");
+            buildArguments.SourceFiles = std::vector<Path>({});
+            buildArguments.IncludeDirectories = std::vector<Path>({});
+            buildArguments.IncludeModules = std::vector<Path>({});
+            buildArguments.IsIncremental = false;
+
+            buildEngine.Execute(buildArguments);
         }
 
     private:

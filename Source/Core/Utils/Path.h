@@ -17,6 +17,13 @@ namespace Soup
         static constexpr std::string_view ParentDirectory = "..";
 
     public:
+        static Path GetCurrentDirectory()
+        {
+            auto current = std::filesystem::current_path();
+            return Path(current.string());
+        }
+
+    public:
         /// <summary>
         /// Initializes a new instance of the <see cref="Path"/> class.
         /// </summary>

@@ -10,13 +10,18 @@ namespace Soup
     /// <summary>
     /// The constants used throughout the application
     /// </summary>
-    class Constants
+    export class Constants
     {
     public:
         /// <summary>
         /// Gets the app folder name
         /// </summary>
         static constexpr std::string_view AppDataFolderName = "Soup";
+
+        /// <summary>
+        /// Gets the Recipe file name
+        /// </summary>
+        static constexpr std::string_view RecipeFileName = "Recipe.json";
 
         /// <summary>
         /// Gets the app data folder path

@@ -13,9 +13,6 @@ namespace Soup
     /// </summary>
     export class RecipeExtensions
     {
-    private:
-        static constexpr const char* RecipeFileName = "Recipe.json";
-
     public:
         /// <summary>
         /// Attempt to load from file
@@ -40,8 +37,9 @@ namespace Soup
                 result = RecipeJson::Deserialize(*file);
                 return true;
             }
-            catch(...)
+            catch (std::exception& ex)
             {
+                Log::Trace(std::string("Deserialze Threw: ") + ex.what());
                 Log::Info("Failed to parse Recipe.");
                 return false;
             }

@@ -47,7 +47,7 @@ namespace Soup::Client
 
                 // Setup the real servicess
                 IFileSystem::Register(std::make_shared<STLFileSystem>());
-                IProcess::Register(std::make_shared<STLProcess>());
+                IProcessManager::Register(std::make_shared<STLProcessManager>());
 
                 // Enable full diagnostics
                 // _filter->Enable(TraceEventFlag::Diagnostic);
@@ -123,6 +123,7 @@ namespace Soup::Client
             if (options.EnableVerbose)
             {
                 _filter->Enable(TraceEventFlag::Verbose);
+                _filter->Enable(TraceEventFlag::Diagnostic);
             }
         }
 

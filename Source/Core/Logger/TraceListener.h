@@ -61,8 +61,7 @@ namespace Soup
         /// <summary>
         /// Implementation dependant write methods
         /// </summary>
-        virtual void Write(const std::string& message) = 0;
-        virtual void WriteLine(const std::string& message) = 0;
+        virtual void WriteLine(std::string_view message) = 0;
 
     public:
         /// <summary>
@@ -95,15 +94,19 @@ namespace Soup
         void TraceEvent(
             TraceEventFlag eventType,
             int id,
-            const std::string& message)
+            std::string_view message)
         {
             if (HasFilter() && ! _filter->ShouldTrace(eventType))
             {
                 return;
             }
 
-            WriteHeader(eventType, id);
-            WriteLine(message);
+            // Build up the resulting message with required header/footer
+            std::stringstream builder;
+            WriteHeader(builder, eventType, id);
+            builder << message;
+
+            WriteLine(builder.str());
         }
 
         /// <summary>
@@ -137,50 +140,43 @@ namespace Soup
         /// Write the header to the target listener
         /// </summary>
         void WriteHeader(
+            std::ostream& stream,
             TraceEventFlag eventType,
             int id)
         {
-            std::stringstream builder;
-
             if (GetShowEventType())
             {
                 switch (eventType)
                 {
                     case TraceEventFlag::Information:
-                        builder << "INFO";
+                        stream << "INFO";
                         break;
                     case TraceEventFlag::Verbose:
-                        builder << "VERB";
+                        stream << "VERB";
                         break;
                     case TraceEventFlag::Diagnostic:
-                        builder << "DIAG";
+                        stream << "DIAG";
                         break;
                     case TraceEventFlag::Warning:
-                        builder << "WARN";
+                        stream << "WARN";
                         break;
                     case TraceEventFlag::Error:
-                        builder << "ERRO";
+                        stream << "ERRO";
                         break;
                     case TraceEventFlag::Critical: 
-                        builder << "CRIT";
+                        stream << "CRIT";
                         break;
                     default:
-                        builder << "UNKN";
+                        stream << "UNKN";
                         break;
                 }
 
-                builder << ": ";
+                stream << ": ";
             }
 
             if (GetShowEventId())
             {
-                builder << std::to_string(id) << " : ";
-            }
-
-            auto header = builder.str();
-            if (!header.empty())
-            {
-                Write(header);
+                stream << std::to_string(id) << " : ";
             }
         }
 

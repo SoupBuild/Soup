@@ -17,7 +17,7 @@ namespace Soup
         /// Initializes a new instance of the <see cref='TestTraceListener'/> class.
         /// </summary>
         TestTraceListener() :
-            TraceListener("", nullptr, false, false),
+            TraceListener("", nullptr, true, false),
             _messages()
         {
         }
@@ -31,20 +31,12 @@ namespace Soup
         }
 
         /// <summary>
-        /// Writes a message
-        /// </summary>
-        virtual void Write(const std::string& message) override final
-        {
-            _messages.push_back(message);
-        }
-
-        /// <summary>
         /// Writes a message and newline terminator
         /// </summary>
-        virtual void WriteLine(const std::string& message) override final
+        virtual void WriteLine(std::string_view message) override final
         {
-            auto line = message + "\n";
-            _messages.push_back(line);
+            auto line = std::string(message);
+            _messages.push_back(std::move(line));
         }
 
     private:

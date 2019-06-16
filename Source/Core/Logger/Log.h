@@ -24,7 +24,7 @@ namespace Soup
         /// <summary>
         /// Log a generic infomational message
         /// </summary>
-        static void Info(const std::string& message)
+        static void Info(std::string_view message)
         {
             EnsureListener().TraceEvent(TraceEventFlag::Information, 0, message);
         }
@@ -32,7 +32,7 @@ namespace Soup
         /// <summary>
         /// Log a verbose message
         /// </summary>
-        static void Verbose(const std::string& message)
+        static void Verbose(std::string_view message)
         {
             EnsureListener().TraceEvent(TraceEventFlag::Verbose, 0, message);
         }
@@ -40,7 +40,7 @@ namespace Soup
         /// <summary>
         /// Log a trace message
         /// </summary>
-        static void Trace(const std::string& message)
+        static void Trace(std::string_view message)
         {
             EnsureListener().TraceEvent(TraceEventFlag::Diagnostic, 0, message);
         }
@@ -48,7 +48,7 @@ namespace Soup
         /// <summary>
         /// Log a warning message
         /// </summary>
-        static void Warning(const std::string& message)
+        static void Warning(std::string_view message)
         {
             EnsureListener().TraceEvent(TraceEventFlag::Warning, 0, message);
         }
@@ -56,7 +56,7 @@ namespace Soup
         /// <summary>
         /// Log an error message
         /// </summary>
-        static void Error(const std::string& message)
+        static void Error(std::string_view message)
         {
             EnsureListener().TraceEvent(TraceEventFlag::Error, 0, message);
         }

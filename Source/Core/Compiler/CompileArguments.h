@@ -130,8 +130,8 @@ namespace Soup
                 stringBuilder << value.ToString() << ", ";
 
             stringBuilder << "], " <<
-                ExportModule << ", " <<
-                GenerateIncludeTree << "]";
+                std::to_string(ExportModule) << ", " <<
+                std::to_string(GenerateIncludeTree) << "]";
 
             return stringBuilder.str();
         }

@@ -37,7 +37,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "Recipe file does not exist.\n",
+                    "INFO: Recipe file does not exist.",
                 }), 
                 testListener->GetMessages(),
                 "Verify messages match expected.");
@@ -75,7 +75,8 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "Failed to parse Recipe.\n",
+                    "DIAG: Deserialze Threw: Failed to parse the recipe json: expected value, got 'g' (103)",
+                    "INFO: Failed to parse Recipe.",
                 }), 
                 testListener->GetMessages(),
                 "Verify messages match expected.");

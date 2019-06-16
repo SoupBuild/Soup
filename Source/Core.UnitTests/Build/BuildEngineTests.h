@@ -87,8 +87,8 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "Compile Source\n",
-                    "Link Executable\n",
+                    "INFO: Compile Source",
+                    "INFO: Link Executable",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -155,11 +155,11 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "Loading previous build state.\n",
-                    "BuildState file does not exist.\n",
-                    "No previous state found.\n",
-                    "Compile Source\n",
-                    "Link Executable\n",
+                    "VERB: Loading previous build state.",
+                    "VERB: BuildState file does not exist.",
+                    "VERB: No previous state found.",
+                    "INFO: Compile Source",
+                    "INFO: Link Executable",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
