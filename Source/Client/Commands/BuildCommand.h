@@ -50,22 +50,8 @@ namespace Soup::Client
             // Now build the current project
             Log::Info("");
             Log::Info("Building Project");
-            auto buildPath =
-                Path(Constants::ProjectGenerateFolderName) +
-                Path(Constants::StoreBuildFolderName);
-            auto buildEngine = BuildEngine(_compiler);
-
-            auto buildArguments = BuildArguments();
-            buildArguments.Target = BuildTargetType::Executable;
-            buildArguments.WorkingDirectory = workingDirectory;
-            buildArguments.ObjectDirectory = Path("obj");
-            buildArguments.BinaryDirectory = Path("bin");
-            buildArguments.SourceFiles = std::vector<Path>({});
-            buildArguments.IncludeDirectories = std::vector<Path>({});
-            buildArguments.IncludeModules = std::vector<Path>({});
-            buildArguments.IsIncremental = false;
-
-            buildEngine.Execute(buildArguments);
+            auto buildGenerator = RecipeBuildGenerator(_compiler);
+            buildGenerator.Execute(workingDirectory, recipe, _options.Force);
         }
 
     private:

@@ -14,6 +14,7 @@ import json11;
 #include "Logger\ConsoleTraceListener.h"
 #include "Logger\TestTraceListener.h"
 #include "Package\Recipe.h"
+#include "Package\RecipeBuildGenerator.h"
 #include "Package\RecipeExtensions.h"
 #include "Package\RecipeJson.h"
 #include "Utils\MockFileSystem.h"
