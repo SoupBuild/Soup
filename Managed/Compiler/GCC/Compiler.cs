@@ -7,6 +7,7 @@ namespace Soup.Compiler.GCC
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -27,7 +28,7 @@ namespace Soup.Compiler.GCC
         /// <summary>
         /// Gets the module file extension for the compiler
         /// </summary>
-        public string ModuleFileExtension => "huh";
+        public string ModuleFileExtension => "gcm";
 
         /// <summary>
         /// Gets the static library file extension for the compiler
@@ -40,14 +41,22 @@ namespace Soup.Compiler.GCC
         /// </summary>
         public Task<CompileResults> CompileAsync(CompileArguments args)
         {
-            string compiler = "gcc";
+            // Set the working directory to the output directory
+            var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
+
+            string compiler = "g++-m";
+            var commandArgs = BuildCompilerArguments(args);
+
+            Log.Verbose($"PWD={workingDirectory}");
+            Log.Verbose($"{compiler} {commandArgs}");
+
             using (Process process = new Process())
             {
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.FileName = compiler;
                 process.StartInfo.WorkingDirectory = args.RootDirectory;
-                process.StartInfo.Arguments = BuildCompilerArguments(args);
+                process.StartInfo.Arguments = commandArgs;
                 process.Start();
 
                 while (!process.StandardOutput.EndOfStream)
@@ -88,13 +97,16 @@ namespace Soup.Compiler.GCC
             var commandArgs = new List<string>();
 
             // Set the Standard Library implementation
-            commandArgs.Add("-stdlib=libc++");
+            // commandArgs.Add("-stdlib=libc++");
 
             // Set the language version
-            commandArgs.Add("-std=c++1z");
+            // commandArgs.Add("-std=c++1z");
 
             // Enable experimental modules
             commandArgs.Add("-fmodules-ts");
+
+            // Only compile the source
+            commandArgs.Add("-c");
 
             // Lastly add the file
             commandArgs.AddRange(args.SourceFiles);

@@ -106,7 +106,8 @@ namespace Soup.Client
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return new Compiler.Clang.Compiler();
+                // return new Compiler.Clang.Compiler();
+                return new Compiler.GCC.Compiler();
             }
             else
             {

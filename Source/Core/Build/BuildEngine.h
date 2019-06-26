@@ -42,8 +42,10 @@ namespace Soup
                 }
             }
 
+            // Perform the core compilation of the source files
             CompileSource(arguments);
 
+            // Link the final target
             switch (arguments.Target)
             {
                 case BuildTargetType::Library:

@@ -15,11 +15,11 @@ namespace Soup
     {
     public:
         /// <summary>
-        /// Initializes a new instance of the <see cref="BuildEngine"/> class.
+        /// Initializes a new instance of the <see cref="RecipeBuildGenerator"/> class.
         /// </summary>
-        RecipeBuildGenerator(std::shared_ptr<ICompiler> compiler)
+        RecipeBuildGenerator(std::shared_ptr<ICompiler> compiler) :
+            _compiler(std::move(compiler))
         {
-            _compiler = std::move(compiler);
         }
 
         /// <summary>
