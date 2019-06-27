@@ -58,9 +58,10 @@ namespace Soup
             for (auto dependecy : recipe.GetDependencies())
             {
                 // Load this package recipe
-                auto packagePath = dependecy.GetPath() + Path(Constants::RecipeFileName);
+                auto packagePath = dependecy.GetPath();
+                auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
                 Recipe dependecyRecipe = {};
-                if (!RecipeExtensions::TryLoadFromFile(packagePath, dependecyRecipe))
+                if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
                 {
                     Log::Error("Failed to load the dependency package: {packagePath}");
                     throw std::runtime_error("Failed to load dependency.");

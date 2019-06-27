@@ -23,6 +23,19 @@ namespace Soup
         Library,
     };
 
+    std::string ToString(BuildTargetType value)
+    {
+        switch (value)
+        {
+            case BuildTargetType::Executable:
+                return "Executable";
+            case BuildTargetType::Library:
+                return "Library";
+            default:
+                throw std::runtime_error("Unknown BuildTargetType");
+        }
+    }
+
     /// <summary>
     /// The source file definition
     /// </summary>

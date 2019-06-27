@@ -5,6 +5,7 @@ import std.core;
 import json11;
 
 #include "Logger\Log.h"
+#include "Utils\Helpers.h"
 
 #include "Build\BuildEngine.h"
 #include "Build\BuildStateJson.h"

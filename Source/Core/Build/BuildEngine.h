@@ -30,6 +30,17 @@ namespace Soup
         /// </summary>
         virtual void Execute(const BuildArguments& arguments) override final
         {
+            // Log the incoming request for verbose logs
+            Log::Verbose("Target = " + ToString(arguments.Target));
+            Log::Verbose("WorkingDirectory = " + arguments.WorkingDirectory.ToString());
+            Log::Verbose("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
+            Log::Verbose("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
+            Log::Verbose("ModuleSourceFile = " + arguments.ModuleSourceFile.ToString());
+            // Log::Verbose("SourceFiles = " + arguments.SourceFiles.ToString());
+            // Log::Verbose("IncludeDirectories = " + arguments.IncludeDirectories.ToString());
+            // Log::Verbose("IncludeModules = " + arguments.IncludeModules.ToString());
+            Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
+
             // Load the previous build state if performing an incremental build
             BuildState buildState = {};
             if (arguments.IsIncremental)
