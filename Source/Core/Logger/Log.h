@@ -22,47 +22,6 @@ namespace Soup
         }
 
         /// <summary>
-        /// Log a generic infomational message
-        /// </summary>
-        static void Info(std::string_view message)
-        {
-            EnsureListener().TraceEvent(TraceEventFlag::Information, 0, message);
-        }
-
-        /// <summary>
-        /// Log a verbose message
-        /// </summary>
-        static void Verbose(std::string_view message)
-        {
-            EnsureListener().TraceEvent(TraceEventFlag::Verbose, 0, message);
-        }
-
-        /// <summary>
-        /// Log a trace message
-        /// </summary>
-        static void Trace(std::string_view message)
-        {
-            EnsureListener().TraceEvent(TraceEventFlag::Diagnostic, 0, message);
-        }
-
-        /// <summary>
-        /// Log a warning message
-        /// </summary>
-        static void Warning(std::string_view message)
-        {
-            EnsureListener().TraceEvent(TraceEventFlag::Warning, 0, message);
-        }
-
-        /// <summary>
-        /// Log an error message
-        /// </summary>
-        static void Error(std::string_view message)
-        {
-            EnsureListener().TraceEvent(TraceEventFlag::Error, 0, message);
-        }
-
-    private:
-        /// <summary>
         /// Get access to the single event listener
         /// </summary>
         static TraceListener& EnsureListener()
@@ -72,9 +31,79 @@ namespace Soup
             return *s_listener;
         }
 
+        /// <summary>
+        /// Set the active ids to use for each event
+        /// </summary>
+        static void SetActiveId(int value)
+        {
+            s_activeId = value;
+        }
+
+        /// <summary>
+        /// Log a generic infomational message
+        /// </summary>
+        static void Info(std::string_view message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag::Information, id, message);
+        }
+        static void Info(std::string_view message)
+        {
+            Info(message, s_activeId);
+        }
+
+        /// <summary>
+        /// Log a verbose message
+        /// </summary>
+        static void Verbose(std::string_view message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag::Verbose, id, message);
+        }
+        static void Verbose(std::string_view message)
+        {
+            Verbose(message, s_activeId);
+        }
+
+        /// <summary>
+        /// Log a trace message
+        /// </summary>
+        static void Trace(std::string_view message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag::Diagnostic, id, message);
+        }
+        static void Trace(std::string_view message)
+        {
+            Trace(message, s_activeId);
+        }
+
+        /// <summary>
+        /// Log a warning message
+        /// </summary>
+        static void Warning(std::string_view message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag::Warning, id, message);
+        }
+        static void Warning(std::string_view message)
+        {
+            Warning(message, s_activeId);
+        }
+
+        /// <summary>
+        /// Log an error message
+        /// </summary>
+        static void Error(std::string_view message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag::Error, id, message);
+        }
+        static void Error(std::string_view message)
+        {
+            Error(message, s_activeId);
+        }
+
     private:
+        static int s_activeId;
         static std::shared_ptr<TraceListener> s_listener;
     };
 
+    int Log::s_activeId = 0;
     std::shared_ptr<TraceListener> Log::s_listener = nullptr;
 }

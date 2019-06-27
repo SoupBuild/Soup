@@ -48,8 +48,7 @@ namespace Soup::Client
             // }
 
             // Now build the current project
-            Log::Info("");
-            Log::Info("Building Project");
+            Log::Info("Begin Build:");
             auto buildGenerator = RecipeBuildGenerator(_compiler);
             buildGenerator.Execute(workingDirectory, recipe, _options.Force);
         }

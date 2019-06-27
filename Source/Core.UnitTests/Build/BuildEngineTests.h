@@ -12,7 +12,7 @@ namespace Soup::UnitTests
         [[Fact]]
         void InitialzeEngine_Success()
         {
-            auto compiler = std::make_shared<MockCompiler>();
+            auto compiler = std::make_shared<Compiler::Mock::Compiler>();
             auto uut = BuildEngine(compiler);
         }
 
@@ -38,7 +38,7 @@ namespace Soup::UnitTests
             auto fileSystem = std::make_shared<MockFileSystem>();
             IFileSystem::Register(fileSystem);
 
-            auto compiler = std::make_shared<MockCompiler>();
+            auto compiler = std::make_shared<Compiler::Mock::Compiler>();
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();
@@ -105,7 +105,7 @@ namespace Soup::UnitTests
             auto fileSystem = std::make_shared<MockFileSystem>();
             IFileSystem::Register(fileSystem);
 
-            auto compiler = std::make_shared<MockCompiler>();
+            auto compiler = std::make_shared<Compiler::Mock::Compiler>();
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();

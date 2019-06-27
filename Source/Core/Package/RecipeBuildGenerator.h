@@ -27,23 +27,34 @@ namespace Soup
         /// </summary>
         void Execute(const Path& workingDirectory, const Recipe& recipe, bool force)
         {
-            Log::Info("Build Recursive Dependencies.");
-            BuildAllDependenciesRecursively(workingDirectory, recipe, force);
+            // Enable log event ids to track individual builds
+            int projectId = 1;
+            Log::EnsureListener().SetShowEventId(true);
 
-            Log::Info("Build Toplevel Recipe.");
-            CoreBuild(workingDirectory, recipe, force);
+            // TODO: A scoped cleanup would be nice
+            try
+            {
+                projectId = BuildAllDependenciesRecursively(projectId, workingDirectory, recipe, force);
+                CoreBuild(projectId, workingDirectory, recipe, force);
+
+                Log::EnsureListener().SetShowEventId(false);
+            }
+            catch(...)
+            {
+                Log::EnsureListener().SetShowEventId(false);
+            }
         }
 
     private:
         /// <summary>
         /// Build the dependecies for the provided recipe recursively
         /// </summary>
-        void BuildAllDependenciesRecursively(
+        int BuildAllDependenciesRecursively(
+            int projectId,
             const Path& workingDirectory,
             const Recipe& recipe,
             bool force)
         {
-            Log::Info("Searching Dependencies.");
             for (auto dependecy : recipe.GetDependencies())
             {
                 // Load this package recipe
@@ -56,18 +67,28 @@ namespace Soup
                 }
 
                 // Build all recursive dependencies
-                BuildAllDependenciesRecursively(packagePath, dependecyRecipe, force);
+                projectId = BuildAllDependenciesRecursively(projectId, packagePath, dependecyRecipe, force);
 
                 // Build this dependecy
-                CoreBuild(packagePath, dependecyRecipe, force);
+                CoreBuild(projectId, packagePath, dependecyRecipe, force);
+
+                // Move to the next build project id
+                projectId++;
             }
+
+            // Return the updated project id after building all dependencies
+            return projectId;
         }
 
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        void CoreBuild(const Path& workingDirectory, const Recipe& recipe, bool force)
+        void CoreBuild(int projectId, const Path& workingDirectory, const Recipe& recipe, bool force)
         {
+            Log::SetActiveId(projectId);
+            Log::Info("Building '" + recipe.GetName() + "'");
+
+            // Initialize the required target paths
             auto compilerFolder = Path(_compiler->GetName());
             auto buildPath =
                 Path(Constants::ProjectGenerateFolderName) +
@@ -76,14 +97,25 @@ namespace Soup
             auto objectDirectory = outputDirectory + Path("obj") + compilerFolder;
             auto binaryDirectory = outputDirectory + Path("bin") + compilerFolder;
 
-            Log::Info("Building " + recipe.GetName());
-            Log::Verbose("ObjectDirectory: " + objectDirectory.ToString());
-            Log::Verbose("BinaryDirectory: " + binaryDirectory.ToString());
-
             // Determine the include paths
             // var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
             // var uniqueFolders = folderWithHeadersSet.ToList();
 
+            // Build up arguments to build this individual recipe
+            auto arguments = BuildArguments();
+            arguments.Target = BuildTargetType::Executable;
+            arguments.WorkingDirectory = workingDirectory;
+            arguments.ObjectDirectory = objectDirectory;
+            arguments.BinaryDirectory = binaryDirectory;
+            arguments.ModuleSourceFile = Path(recipe.GetPublic());
+            arguments.SourceFiles = std::vector<Path>({});
+            arguments.IncludeDirectories = std::vector<Path>({});
+            arguments.IncludeModules = std::vector<Path>({});
+            arguments.IsIncremental = true;
+
+            // Perform the build
+            auto buildEngine = BuildEngine(_compiler);
+            buildEngine.Execute(arguments);
         }
 
         // /// <summary>

@@ -67,7 +67,7 @@ namespace Soup
         /// <summary>
         /// Gets a value indicating whether there is a custom event filter
         /// </summary>
-        bool HasFilter()
+        bool HasFilter() const
         {
             return _filter != nullptr;
         }
@@ -75,7 +75,7 @@ namespace Soup
         /// <summary>
         /// Gets or sets a value indicating whether to show or hide the event type
         /// </summary>
-        bool GetShowEventType()
+        bool GetShowEventType() const
         {
             return _showEventType;
         }
@@ -83,9 +83,13 @@ namespace Soup
         /// <summary>
         /// Gets or sets a value indicating whether to show or hide the event id
         /// </summary>
-        bool GetShowEventId()
+        bool GetShowEventId() const
         {
             return _showEventId;
+        }
+        void SetShowEventId(bool value)
+        {
+            _showEventId = value;
         }
 
         /// <summary>
@@ -176,7 +180,7 @@ namespace Soup
 
             if (GetShowEventId())
             {
-                stream << std::to_string(id) << " : ";
+                stream << std::to_string(id) << ">";
             }
         }
 

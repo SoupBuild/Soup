@@ -59,6 +59,11 @@ namespace Soup
         Path BinaryDirectory;
 
         /// <summary>
+        /// Gets or sets the module source files
+        /// </summary>
+        Path ModuleSourceFile;
+
+        /// <summary>
         /// Gets or sets the list of source files
         /// </summary>
         std::vector<Path> SourceFiles;
@@ -77,5 +82,26 @@ namespace Soup
         /// Gets or sets a value indicating whether the build is incremental or not
         /// </summary>
         bool IsIncremental;
+
+        /// <summary>
+        /// Equality operator
+        /// </summary>
+        bool operator ==(const BuildArguments& rhs) const
+        {
+            return Target == rhs.Target &&
+                WorkingDirectory == rhs.WorkingDirectory &&
+                ObjectDirectory == rhs.ObjectDirectory &&
+                BinaryDirectory == rhs.BinaryDirectory &&
+                ModuleSourceFile  == rhs.ModuleSourceFile &&
+                SourceFiles == rhs.SourceFiles &&
+                IncludeDirectories == rhs.IncludeDirectories &&
+                IncludeModules == rhs.IncludeModules &&
+                IsIncremental == rhs.IsIncremental;
+        }
+
+        bool operator !=(const BuildArguments& rhs) const
+        {
+            return !(*this == rhs);
+        }
     };
 }

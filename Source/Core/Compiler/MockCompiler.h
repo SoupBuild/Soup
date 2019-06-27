@@ -4,19 +4,19 @@
 
 #pragma once
 
-namespace Soup
+namespace Soup::Compiler::Mock
 {
     /// <summary>
     /// A mock compiler interface implementation
     /// TODO: Move into test projects
     /// </summary>
-    export class MockCompiler : public ICompiler
+    export class Compiler : public ICompiler
     {
     public:
         /// <summary>
         /// Initializes a new instance of the <see cref='MockCompiler'/> class.
         /// </summary>
-        MockCompiler() :
+        Compiler() :
             _compileRequests(),
             _linkLibraryRequests(),
             _linkExecutableRequests()
