@@ -41,18 +41,6 @@ namespace Soup
             // Log::Verbose("IncludeModules = " + arguments.IncludeModules.ToString());
             Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
 
-            // Load the previous build state if performing an incremental build
-            BuildState buildState = {};
-            if (arguments.IsIncremental)
-            {
-                Log::Verbose("Loading previous build state.");
-                if (!BuildStateManager::TryLoadState(arguments.WorkingDirectory, buildState))
-                {
-                    Log::Verbose("No previous state found.");
-                    buildState = BuildState();
-                }
-            }
-
             // Perform the core compilation of the source files
             CompileSource(arguments);
 
@@ -68,9 +56,6 @@ namespace Soup
                 default:
                     throw std::runtime_error("Unknown target type.");
             }
-
-            // Save the build state
-            BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
         }
 
     private:
@@ -79,6 +64,20 @@ namespace Soup
         /// </summary>
         void CompileSource(const BuildArguments& arguments)
         {
+            Log::Info("Task: CoreCompile");
+
+            // Load the previous build state if performing an incremental build
+            BuildState buildState = {};
+            if (arguments.IsIncremental)
+            {
+                Log::Verbose("Loading previous build state.");
+                if (!BuildStateManager::TryLoadState(arguments.WorkingDirectory, buildState))
+                {
+                    Log::Verbose("No previous state found.");
+                    buildState = BuildState();
+                }
+            }
+
             // // Check if each source file is out of date and requires a rebuild
             // for (var sourceFile in recipe.Source)
             // {
@@ -96,31 +95,39 @@ namespace Soup
             // }
             // else
             // {
-                Log::Info("Compile Source");
+
+                //     // Ensure the object directory exists
+                //     var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
+                //     if (!Directory.Exists(objectDirectry))
+                //     {
+                //         Directory.CreateDirectory(objectDirectry);
+                //     }
+
+                // Setup the shared properties
                 auto compilerArguments = CompileArguments();
                 compilerArguments.Standard = LanguageStandard::CPP20;
                 compilerArguments.RootDirectory = arguments.WorkingDirectory;
                 compilerArguments.OutputDirectory = arguments.ObjectDirectory;
                 compilerArguments.PreprocessorDefinitions = {};
-                compilerArguments.SourceFiles = { };
                 compilerArguments.IncludeDirectories = arguments.IncludeDirectories;
                 compilerArguments.IncludeModules = arguments.IncludeModules;
                 compilerArguments.GenerateIncludeTree = true;
 
-            //     // Ensure the object directory exists
-            //     var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
-            //     if (!Directory.Exists(objectDirectry))
-            //     {
-            //         Directory.CreateDirectory(objectDirectry);
-            //     }
-
-                // Compile the required filess
-                auto result = _compiler->Compile(compilerArguments);
+                for (auto& file : arguments.SourceFiles)
+                {
+                    // Compile the individual translation unit
+                    Log::Info(file.ToString());
+                    compilerArguments.SourceFile = file;
+                    auto result = _compiler->Compile(compilerArguments);
+                }
 
             //     // Save the build state
             //     if (result.HeaderIncludeFiles != null)
             //         buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
             // }
+
+            // Save the build state
+            // BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
         }
 
         /// <summary>

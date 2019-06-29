@@ -29,10 +29,7 @@ namespace Soup::Compiler::Clang::UnitTests
             auto uut = Compiler();
 
             CompileArguments arguments = {};
-            arguments.SourceFiles =
-            {
-                Path("File.cpp"),
-            };
+            arguments.SourceFile = Path("File.cpp");
 
             auto result = uut.Compile(arguments);
 

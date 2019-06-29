@@ -10,9 +10,18 @@ namespace Soup::UnitTests
     {
     public:
         [[Fact]]
-        void Initialze()
+        void Initialze_Success()
         {
-            auto uut = RecipeBuildGenerator(nullptr);
+            auto compiler = std::make_shared<Compiler::Mock::Compiler>();
+            auto uut = RecipeBuildGenerator(compiler);
+        }
+
+        [[Fact]]
+        void Initialze_NullCompilerThrows()
+        {
+            Assert::ThrowsRuntimeError([]() {
+                auto uut = RecipeBuildGenerator(nullptr);
+            });
         }
 
         // TODO: Way more of this

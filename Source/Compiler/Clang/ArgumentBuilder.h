@@ -14,9 +14,14 @@ namespace Soup::Compiler::Clang
     {
     public:
         static std::vector<std::string> BuildCompilerArguments(
-            const Path& sourceFile,
             const CompileArguments& args)
         {
+            // Verify the input
+            if (args.SourceFile.GetFileName().empty())
+            {
+                throw std::runtime_error("Source file cannot be empty.");
+            }
+
             // Calculate object output file
             auto commandArgs = std::vector<std::string>();
 
@@ -92,12 +97,6 @@ namespace Soup::Compiler::Clang
             {
                 commandArgs.push_back("--precompile");
 
-                // There must be only one source file
-                if (args.SourceFiles.size() != 1)
-                {
-                    throw std::runtime_error("Export module expects only one source file.");
-                }
-
                 // Place the ifc in the output directory
                 //var outputFile = "{Path.GetFileNameWithoutExtension(sourceFile)}.{ModuleFileExtension}";
                 //commandArgs.AddRange(new string[] { "-o", outputFile });
@@ -109,7 +108,7 @@ namespace Soup::Compiler::Clang
             }
 
             // Lastly add the file
-            commandArgs.push_back(sourceFile.ToString());
+            commandArgs.push_back(args.SourceFile.ToString());
 
             return commandArgs;
         }

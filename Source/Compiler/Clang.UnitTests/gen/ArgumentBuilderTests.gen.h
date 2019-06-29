@@ -16,7 +16,6 @@ TestState RunArgumentBuilderTests()
     state += SoupTest::RunTest(className, "SingleArgument_PreprocessorDefinitions", [&testClass]() { testClass->SingleArgument_PreprocessorDefinitions(); });
     state += SoupTest::RunTest(className, "SingleArgument_Modules", [&testClass]() { testClass->SingleArgument_Modules(); });
     state += SoupTest::RunTest(className, "SingleArgument_ExportModule_ThrowsZeroSource", [&testClass]() { testClass->SingleArgument_ExportModule_ThrowsZeroSource(); });
-    state += SoupTest::RunTest(className, "SingleArgument_ExportModule_ThrowsMoreThanOneSource", [&testClass]() { testClass->SingleArgument_ExportModule_ThrowsMoreThanOneSource(); });
     state += SoupTest::RunTest(className, "SingleArgument_ExportModule_SingleSource", [&testClass]() { testClass->SingleArgument_ExportModule_SingleSource(); });
 
     return state;

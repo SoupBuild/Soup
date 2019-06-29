@@ -12,9 +12,9 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void NoParameters()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            arguments.SourceFile = Path("File.cpp");
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -31,10 +31,10 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_GenerateIncludeTree()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
+            arguments.SourceFile = Path("File.cpp");
             arguments.GenerateIncludeTree = true;
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -52,10 +52,10 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_LanguageStandard_CPP11()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
+            arguments.SourceFile = Path("File.cpp");
             arguments.Standard = LanguageStandard::CPP11;
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -72,10 +72,10 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_LanguageStandard_CPP14()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
+            arguments.SourceFile = Path("File.cpp");
             arguments.Standard = LanguageStandard::CPP14;
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -92,10 +92,10 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_LanguageStandard_CPP17()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
+            arguments.SourceFile = Path("File.cpp");
             arguments.Standard = LanguageStandard::CPP17;
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -112,10 +112,10 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_LanguageStandard_CPP20()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
+            arguments.SourceFile = Path("File.cpp");
             arguments.Standard = LanguageStandard::CPP20;
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -133,13 +133,13 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_IncludePaths()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
+            arguments.SourceFile = Path("File.cpp");
             arguments.IncludeDirectories = std::vector<Path>({
                 Path("C:/Files/SDK/"),
                 Path("my files/")
             });
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -158,13 +158,13 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_PreprocessorDefinitions()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
+            arguments.SourceFile = Path("File.cpp");
             arguments.PreprocessorDefinitions = std::vector<std::string>({
                 "DEBUG",
                 "VERSION=1"
             });
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -183,13 +183,13 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_Modules()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
+            arguments.SourceFile = Path("File.cpp");
             arguments.IncludeModules = std::vector<Path>({
                 Path("Module.pcm"),
                 Path("Std.pcm")
             });
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -208,39 +208,21 @@ namespace Soup::Compiler::Clang::UnitTests
         [[Fact]]
         void SingleArgument_ExportModule_ThrowsZeroSource()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
+            arguments.SourceFile = Path("");
             arguments.ExportModule = true;
-            Assert::ThrowsRuntimeError([&sourceFile, &arguments]() {
-                auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
-            });
-        }
-
-        [[Fact]]
-        void SingleArgument_ExportModule_ThrowsMoreThanOneSource()
-        {
-            auto sourceFile = Path("File.cpp");
-            CompileArguments arguments = {};
-            arguments.ExportModule = true;
-            arguments.SourceFiles = std::vector<Path>({
-                Path("module1.cpp"),
-                Path("module2.cpp"),
-            });
-            Assert::ThrowsRuntimeError([&sourceFile, &arguments]() {
-                auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            Assert::ThrowsRuntimeError([&arguments]() {
+                auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
             });
         }
 
         [[Fact]]
         void SingleArgument_ExportModule_SingleSource()
         {
-            auto sourceFile = Path("File.cpp");
             CompileArguments arguments = {};
-            arguments.SourceFiles = std::vector<Path>({
-                Path("module.cpp"),
-            });
+            arguments.SourceFile = Path("module.cpp");
             arguments.ExportModule = true;
-            auto actual = ArgumentBuilder::BuildCompilerArguments(sourceFile, arguments);
+            auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
             auto expected = std::vector<std::string>({
                 "-fno-ms-compatibility",
@@ -248,7 +230,7 @@ namespace Soup::Compiler::Clang::UnitTests
                 "-flto-visibility-public-std",
                 "-std=c++11",
                 "--precompile",
-                "File.cpp",
+                "module.cpp",
             });
             Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
         }

@@ -177,6 +177,14 @@ namespace Soup
             return _public.value();
         }
 
+        Path GetPublicAsPath() const
+        {
+            if (!HasPublic())
+                throw std::runtime_error("No public.");
+
+            return Path(_public.value());
+        }
+
         void SetPublic(const std::string& value)
         {
             if (!HasPublic() || _public.value() != value)
@@ -200,6 +208,19 @@ namespace Soup
             if (!HasSource())
                 throw std::runtime_error("No source.");
             return _source.value();
+        }
+
+        std::vector<Path> GetSourceAsPath() const
+        {
+            if (!HasSource())
+                throw std::runtime_error("No source.");
+
+            std::vector<Path> result;
+            result.reserve(_source.value().size());
+            for (auto& value : _source.value())
+                result.push_back(Path(value));
+
+            return result;
         }
 
         void SetSource(const std::vector<std::string>& value)

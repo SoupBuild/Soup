@@ -28,8 +28,6 @@ namespace Soup::UnitTests
         [[Fact]]
         void Build_Executable_SingleFile_NotIncremental()
         {
-            auto test = std::fstream("missingfile.txt");
-            
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
             Log::RegisterListener(testListener);
@@ -46,7 +44,9 @@ namespace Soup::UnitTests
             arguments.WorkingDirectory = Path("");
             arguments.ObjectDirectory = Path("obj");
             arguments.BinaryDirectory = Path("bin");
-            arguments.SourceFiles = std::vector<Path>({});
+            arguments.SourceFiles = std::vector<Path>({ 
+                Path("TestFile.cpp")
+            });
             arguments.IncludeDirectories = std::vector<Path>({});
             arguments.IncludeModules = std::vector<Path>({});
             arguments.IsIncremental = false;
@@ -56,6 +56,7 @@ namespace Soup::UnitTests
             auto expectedCompileArguments = CompileArguments();
             expectedCompileArguments.Standard = LanguageStandard::CPP20;
             expectedCompileArguments.OutputDirectory = Path("obj");
+            expectedCompileArguments.SourceFile = Path("TestFile.cpp");
             expectedCompileArguments.GenerateIncludeTree = true;
 
             // Verify expected compiler calls
@@ -79,7 +80,7 @@ namespace Soup::UnitTests
             // Verify expected file system requests
             Assert::AreEqual(
                 std::vector<std::pair<std::string, FileSystemRequestType>>({
-                    std::make_pair(".soup/BuildState.json", FileSystemRequestType::OpenWrite),
+                    // TODO: Save std::make_pair(".soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
@@ -87,7 +88,14 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "INFO: Compile Source",
+                    "VERB: Target = Executable",
+                    "VERB: WorkingDirectory = ",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleSourceFile = ",
+                    "VERB: IsIncremental = false",
+                    "INFO: Task: CoreCompile",
+                    "INFO: TestFile.cpp",
                     "INFO: Link Executable",
                 }),
                 testListener->GetMessages(),
@@ -113,7 +121,9 @@ namespace Soup::UnitTests
             arguments.WorkingDirectory = Path("");
             arguments.ObjectDirectory = Path("obj");
             arguments.BinaryDirectory = Path("bin");
-            arguments.SourceFiles = std::vector<Path>({});
+            arguments.SourceFiles = std::vector<Path>({ 
+                Path("TestFile.cpp")
+            });
             arguments.IncludeDirectories = std::vector<Path>({});
             arguments.IncludeModules = std::vector<Path>({});
             arguments.IsIncremental = true;
@@ -123,6 +133,7 @@ namespace Soup::UnitTests
             auto expectedCompileArguments = CompileArguments();
             expectedCompileArguments.Standard = LanguageStandard::CPP20;
             expectedCompileArguments.OutputDirectory = Path("obj");
+            expectedCompileArguments.SourceFile = Path("TestFile.cpp");
             expectedCompileArguments.GenerateIncludeTree = true;
 
             // Verify expected compiler calls
@@ -147,7 +158,7 @@ namespace Soup::UnitTests
             Assert::AreEqual(
                 std::vector<std::pair<std::string, FileSystemRequestType>>({
                     std::make_pair(".soup/BuildState.json", FileSystemRequestType::Exists),
-                    std::make_pair(".soup/BuildState.json", FileSystemRequestType::OpenWrite),
+                    // TODO: Save std::make_pair(".soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
@@ -155,10 +166,17 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
+                    "VERB: Target = Executable",
+                    "VERB: WorkingDirectory = ",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleSourceFile = ",
+                    "VERB: IsIncremental = true",
+                    "INFO: Task: CoreCompile",
                     "VERB: Loading previous build state.",
                     "VERB: BuildState file does not exist.",
                     "VERB: No previous state found.",
-                    "INFO: Compile Source",
+                    "INFO: TestFile.cpp",
                     "INFO: Link Executable",
                 }),
                 testListener->GetMessages(),

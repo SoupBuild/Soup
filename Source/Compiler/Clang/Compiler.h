@@ -67,11 +67,72 @@ namespace Soup::Compiler::Clang
         /// </summary>
         virtual CompileResult Compile(const CompileArguments& args) override final
         {
-            // Compile each file individually
-            for (auto& file : args.SourceFiles)
-            {
-                Compile(file, args);
-            }
+            //     // Set the working directory to the output directory
+            //     var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
+
+            auto compilerPath = Path(ToolsPath) + Path(CompilerExecutable);
+            auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args);
+
+            //     Log.Info($"{file}");
+            //     Log.Verbose($"PWD={workingDirectory}");
+            //     Log.Verbose($"{compiler} {commandArgs}");
+
+            //     // Add a single root element if includes requested
+            //     if (args.GenerateIncludeTree)
+            //     {
+            //         _currentIncludes.Push(new HeaderInclude()
+            //         {
+            //             Filename = file,
+            //         });
+            //     }
+
+            //     _inWarningMessage = false;
+            //     _inErrorMessage = false;
+            //     using (Process process = new Process())
+            //     {
+            //         process.StartInfo.UseShellExecute = false;
+            //         process.StartInfo.RedirectStandardOutput = true;
+            //         process.StartInfo.RedirectStandardError = true;
+            //         process.StartInfo.FileName = compiler;
+            //         process.StartInfo.WorkingDirectory = workingDirectory;
+            //         process.StartInfo.Arguments = commandArgs;
+
+            //         process.OutputDataReceived += ProcessOutputDataReceived;
+            //         process.ErrorDataReceived += ProcessErrorDataReceived;
+
+            //         process.Start();
+            //         process.BeginOutputReadLine();
+            //         process.BeginErrorReadLine();
+            //         process.WaitForExit();
+
+            auto result = IProcessManager::Current().Execute(compilerPath, commandArgs);
+
+            // if (process.ExitCode != 0)
+            // {
+            //     throw new InvalidOperationException();
+            // }
+
+            //         HeaderInclude result = null;
+
+            //         // Check if requested include headers
+            //         if (args.GenerateIncludeTree)
+            //         {
+            //             // Move up to the root node
+            //             while (_currentIncludes.Count > 1)
+            //             {
+            //                 _currentIncludes.Pop();
+            //             }
+
+            //             if (_currentIncludes.Count != 1)
+            //             {
+            //                 throw new InvalidOperationException("Expected one root includes node.");
+            //             }
+
+            //             result = _currentIncludes.Pop();
+            //         }
+
+            //         return Task.FromResult(result);
+            //     }
 
             return CompileResult();
         }
@@ -161,78 +222,6 @@ namespace Soup::Compiler::Clang
         }
 
     private:
-        void Compile(
-            const Path& file,
-            const CompileArguments& args)
-        {
-        //     // Set the working directory to the output directory
-        //     var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
-
-            auto compilerPath = Path(ToolsPath) + Path(CompilerExecutable);
-            auto commandArgs = ArgumentBuilder::BuildCompilerArguments(file, args);
-
-        //     Log.Info($"{file}");
-        //     Log.Verbose($"PWD={workingDirectory}");
-        //     Log.Verbose($"{compiler} {commandArgs}");
-
-        //     // Add a single root element if includes requested
-        //     if (args.GenerateIncludeTree)
-        //     {
-        //         _currentIncludes.Push(new HeaderInclude()
-        //         {
-        //             Filename = file,
-        //         });
-        //     }
-
-        //     _inWarningMessage = false;
-        //     _inErrorMessage = false;
-        //     using (Process process = new Process())
-        //     {
-        //         process.StartInfo.UseShellExecute = false;
-        //         process.StartInfo.RedirectStandardOutput = true;
-        //         process.StartInfo.RedirectStandardError = true;
-        //         process.StartInfo.FileName = compiler;
-        //         process.StartInfo.WorkingDirectory = workingDirectory;
-        //         process.StartInfo.Arguments = commandArgs;
-
-        //         process.OutputDataReceived += ProcessOutputDataReceived;
-        //         process.ErrorDataReceived += ProcessErrorDataReceived;
-
-        //         process.Start();
-        //         process.BeginOutputReadLine();
-        //         process.BeginErrorReadLine();
-        //         process.WaitForExit();
-
-            auto result = IProcessManager::Current().Execute(compilerPath, commandArgs);
-
-            // if (process.ExitCode != 0)
-            // {
-            //     throw new InvalidOperationException();
-            // }
-
-        //         HeaderInclude result = null;
-
-        //         // Check if requested include headers
-        //         if (args.GenerateIncludeTree)
-        //         {
-        //             // Move up to the root node
-        //             while (_currentIncludes.Count > 1)
-        //             {
-        //                 _currentIncludes.Pop();
-        //             }
-
-        //             if (_currentIncludes.Count != 1)
-        //             {
-        //                 throw new InvalidOperationException("Expected one root includes node.");
-        //             }
-
-        //             result = _currentIncludes.Pop();
-        //         }
-
-        //         return Task.FromResult(result);
-        //     }
-        }
-
         // private string BuildLinkerLibraryArguments(LinkerArguments args)
         // {
         //     var commandArgs = new List<string>();
