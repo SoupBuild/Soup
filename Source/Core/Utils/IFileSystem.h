@@ -39,9 +39,10 @@ namespace Soup
         virtual bool Exists(const Path& path) = 0;
 
         /// <summary>
-        /// Get the last edit time of the file/directory
+        /// Get the last write time of the file/directory
+        /// TODO: This should be a better representation of datetime...
         /// </summary>
-        virtual std::filesystem::file_time_type GetLastEditTime(const Path& path) = 0;
+        virtual std::time_t GetLastWriteTime(const Path& path) = 0;
 
         /// <summary>
         /// Open the requested file as a stream to read

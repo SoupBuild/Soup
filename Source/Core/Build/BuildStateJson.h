@@ -81,7 +81,7 @@ namespace Soup
         static FileInfo LoadJsonFileInfo(const json11::Json& value)
         {
             Path file;
-            std::vector<std::string> includes;
+            std::vector<Path> includes;
 
             if (!value[Property_File].is_null())
             {
@@ -94,10 +94,10 @@ namespace Soup
 
             if (!value[Property_Includes].is_null())
             {
-                auto values = std::vector<std::string>();
+                auto values = std::vector<Path>();
                 for (auto& value : value[Property_Includes].array_items())
                 {
-                    values.push_back(value.string_value());
+                    values.push_back(Path(value.string_value()));
                 }
 
                 includes = std::move(values);
@@ -138,7 +138,7 @@ namespace Soup
             json11::Json::array includes;
             for (auto& value : info.Includes)
             {
-                includes.push_back(value);
+                includes.push_back(value.ToString());
             }
 
             result[Property_Includes] = std::move(includes);

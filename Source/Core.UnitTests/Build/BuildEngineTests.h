@@ -95,8 +95,8 @@ namespace Soup::UnitTests
                     "VERB: ModuleSourceFile = ",
                     "VERB: IsIncremental = false",
                     "INFO: Task: CoreCompile",
-                    "INFO: TestFile.cpp",
-                    "INFO: Link Executable",
+                    "VERB: TestFile.cpp",
+                    "INFO: Task: LinkExecutable",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -176,8 +176,8 @@ namespace Soup::UnitTests
                     "VERB: Loading previous build state.",
                     "VERB: BuildState file does not exist.",
                     "VERB: No previous state found.",
-                    "INFO: TestFile.cpp",
-                    "INFO: Link Executable",
+                    "VERB: TestFile.cpp",
+                    "INFO: Task: LinkExecutable",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");

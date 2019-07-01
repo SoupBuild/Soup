@@ -29,11 +29,20 @@ namespace Soup
         }
 
         /// <summary>
-        /// Get the last edit time of the file/directory
+        /// Get the last write time of the file/directory
         /// </summary>
-        virtual std::filesystem::file_time_type GetLastEditTime(const Path& path) override final
+        virtual std::time_t GetLastWriteTime(const Path& path) override final
         {
-            return std::filesystem::last_write_time(path.ToString());
+            #if defined ( _WIN32 )
+                struct _stat64 fileInfo;
+                if (_stat64(path.ToString().c_str(), &fileInfo) != 0)
+                    throw std::runtime_error("Failed to get last write time.");
+                return fileInfo.st_mtime;
+            #else
+                auto fileTime = std::filesystem::last_write_time(path.ToString());
+                auto time = decltype(fileTime)::clock::to_time_t(fileTime);
+                return time;
+            #endif
         }
 
         /// <summary>

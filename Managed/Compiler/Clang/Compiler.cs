@@ -257,8 +257,11 @@ namespace Soup.Compiler.Clang
                     commandArgs.Add("-std=c++14");
                     break;
                 case LanguageStandard.CPP17:
+                    commandArgs.Add("-std=c++17");
+                    break;
                 case LanguageStandard.Latest:
                     commandArgs.Add("-std=c++17");
+                    // commandArgs.Add("-std=c++2a");
                     break;
                 default:
                     throw new NotSupportedException("Unknown language standard.");

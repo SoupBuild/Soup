@@ -80,7 +80,7 @@ namespace Soup::UnitTests
 
             auto expected = BuildState(
                 {
-                    FileInfo(Path("File.h"), { "Other.h" }),
+                    FileInfo(Path("File.h"), { Path("Other.h") }),
                 });
 
             Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -106,8 +106,8 @@ namespace Soup::UnitTests
 
             auto expected = BuildState(
                 {
-                    FileInfo(Path("File1.h"), { "Other1.h" }),
-                    FileInfo(Path("File2.h"), { "Other2.h" }),
+                    FileInfo(Path("File1.h"), { Path("Other1.h") }),
+                    FileInfo(Path("File2.h"), { Path("Other2.h") }),
                 });
 
             Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -118,7 +118,7 @@ namespace Soup::UnitTests
         {
             auto state = BuildState(
                 {
-                    FileInfo(Path("File.h"), { "Other.h" }),
+                    FileInfo(Path("File.h"), { Path("Other.h") }),
                 });
 
             std::stringstream actual;
@@ -142,8 +142,8 @@ namespace Soup::UnitTests
         {
             auto state = BuildState(
                 {
-                    FileInfo(Path("File1.h"), { "Other1.h" }),
-                    FileInfo(Path("File2.h"), { "Other2.h" }),
+                    FileInfo(Path("File1.h"), { Path("Other1.h") }),
+                    FileInfo(Path("File2.h"), { Path("Other2.h") }),
                 });
 
             std::stringstream actual;

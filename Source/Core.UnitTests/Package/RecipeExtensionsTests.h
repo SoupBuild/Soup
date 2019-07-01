@@ -55,7 +55,7 @@ namespace Soup::UnitTests
             IFileSystem::Register(fileSystem);
             fileSystem->CreateFile(
                 Path("TestFiles/GarbageRecipe/Recipe.json"),
-                "garbage");
+                MockFileState(std::stringstream("garbage")));
 
             auto directory = Path("TestFiles/GarbageRecipe/Recipe.json");
             Recipe actual;
@@ -94,10 +94,10 @@ namespace Soup::UnitTests
             IFileSystem::Register(fileSystem);
             fileSystem->CreateFile(
                 Path("TestFiles/SimpleRecipe/Recipe.json"),
-                R"({
+                MockFileState(std::stringstream(R"({
                    "name": "MyPackage",
                    "version": "1.2.3"
-                })");
+                })")));
 
             auto directory = Path("TestFiles/SimpleRecipe/Recipe.json");
             Recipe actual;

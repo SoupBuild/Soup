@@ -10,9 +10,36 @@ namespace Soup
     export enum class FileSystemRequestType
     {
         Exists,
-        GetLastEditTime,
+        GetLastWriteTime,
         OpenRead,
         OpenWrite
+    };
+
+    export struct MockFileState
+    {
+        MockFileState(std::stringstream contents, std::time_t lastWriteTime) :
+            Contents(std::make_shared<std::stringstream>(std::move(contents))),
+            LastWriteTime(lastWriteTime)
+        {
+        }
+
+        MockFileState(std::stringstream contents) :
+            MockFileState(std::move(contents), std::time_t())
+        {
+        }
+
+        MockFileState(std::time_t lastWriteTime) :
+            MockFileState(std::stringstream(""), lastWriteTime)
+        {
+        }
+
+        MockFileState() :
+            MockFileState(std::stringstream(""))
+        {
+        }
+
+        std::shared_ptr<std::stringstream> Contents;
+        std::time_t LastWriteTime;
     };
 
     /// <summary>
@@ -42,9 +69,11 @@ namespace Soup
         /// <summary>
         /// Create a test file
         /// </summary>
-        void CreateFile(Path path, std::string contents)
+        void CreateFile(Path path, MockFileState state)
         {
-            _files.emplace(path, std::make_shared<std::stringstream>(contents));
+            _files.emplace(
+                path,
+                std::move(state));
         }
 
         /// <summary>
@@ -58,13 +87,21 @@ namespace Soup
         }
 
         /// <summary>
-        /// Get the last edit time of the file/directory
+        /// Get the last write time of the file/directory
         /// </summary>
-        virtual std::filesystem::file_time_type GetLastEditTime(const Path& path) override final
+        virtual std::time_t GetLastWriteTime(const Path& path) override final
         {
-            _requests.push_back(std::make_pair(path.ToString(), FileSystemRequestType::GetLastEditTime));
-            auto message = "Cannot get last edit time: " + path.ToString();
-            throw std::runtime_error(message);
+            _requests.push_back(std::make_pair(path.ToString(), FileSystemRequestType::GetLastWriteTime));
+            auto file = _files.find(path);
+            if (file != _files.end())
+            {
+                return file->second.LastWriteTime;
+            }
+            else
+            {
+                auto message = "Cannot find file for last write time: " + path.ToString();
+                throw std::runtime_error(message);
+            }
         }
 
         /// <summary>
@@ -76,7 +113,7 @@ namespace Soup
             auto file = _files.find(path);
             if (file != _files.end())
             {
-                return file->second;
+                return file->second.Contents;
             }
             else
             {
@@ -94,18 +131,18 @@ namespace Soup
             auto file = _files.find(path);
             if (file != _files.end())
             {
-                return file->second;
+                return file->second.Contents;
             }
             else
             {
                 // Create the file if it does not exist
-                auto insert = _files.emplace(path, std::make_shared<std::stringstream>());
-                return insert.first->second;
+                auto insert = _files.emplace(path, MockFileState());
+                return insert.first->second.Contents;
             }
         }
 
     private:
         std::vector<std::pair<std::string, FileSystemRequestType>> _requests;
-        std::map<Path, std::shared_ptr<std::stringstream>> _files;
+        std::map<Path, MockFileState> _files;
     };
 }

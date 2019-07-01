@@ -43,6 +43,11 @@ namespace Soup
                 result = BuildStateJson::Deserialize(*file);
                 return true;
             }
+            catch(std::runtime_error& ex)
+            {
+                Log::Info(ex.what());
+                return false;
+            }
             catch(...)
             {
                 Log::Info("Failed to parse BuildState.");

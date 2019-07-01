@@ -8,6 +8,7 @@ import json11;
 #include "Utils\Helpers.h"
 
 #include "Build\BuildEngine.h"
+#include "Build\BuildStateChecker.h"
 #include "Build\BuildStateJson.h"
 #include "Build\BuildStateManager.h"
 #include "Compiler\CompileArguments.h"

@@ -16,14 +16,14 @@ namespace Soup
         /// Initializes a new instance of the <see cref="FileInfo"/> class.
         /// </summary>
         [JsonConstructor]
-        public FileInfo(string name)
+        public FileInfo(string file)
         {
-            Name = name;
+            File = file;
             Includes = new List<string>();
         }
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        [JsonProperty("file")]
+        public string File { get; set; }
 
         [JsonProperty("includes")]
         public IList<string> Includes;
@@ -52,7 +52,7 @@ namespace Soup
             var lookup = new Dictionary<string, FileInfo>();
             foreach (var file in KnownFiles)
             {
-                lookup.Add(file.Name, file);
+                lookup.Add(file.File, file);
             }
 
             return lookup;
@@ -72,7 +72,7 @@ namespace Soup
             // Note: this is done after parsing the new tree to allow updates to include lists
             foreach (var file in KnownFiles)
             {
-                bool ignore = knownFiles.TryAdd(file.Name, file);
+                bool ignore = knownFiles.TryAdd(file.File, file);
             }
 
             // Replace the current set of know files

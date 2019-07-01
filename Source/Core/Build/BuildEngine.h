@@ -116,7 +116,7 @@ namespace Soup
                 for (auto& file : arguments.SourceFiles)
                 {
                     // Compile the individual translation unit
-                    Log::Info(file.ToString());
+                    Log::Verbose(file.ToString());
                     compilerArguments.SourceFile = file;
                     auto result = _compiler->Compile(compilerArguments);
                 }
@@ -135,7 +135,7 @@ namespace Soup
         /// </summary>
         void LinkLibrary(const BuildArguments& arguments)
         {
-            Log::Info("Link Library");
+            Log::Info("Task: LinkStaticLibrary");
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Soup
         /// </summary>
         void LinkExecutable(const BuildArguments& arguments)
         {
-            Log::Info("Link Executable");
+            Log::Info("Task: LinkExecutable");
         //     var allFiles = new List<string>(recipe.Source);
         //     if (recipe.Type == RecipeType.Library)
         //     {

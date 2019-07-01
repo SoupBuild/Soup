@@ -55,7 +55,7 @@ namespace Soup::UnitTests
             IFileSystem::Register(fileSystem);
             fileSystem->CreateFile(
                 Path("TestFiles/GarbageBuildState/.soup/BuildState.json"),
-                "garbage");
+                MockFileState(std::stringstream("garbage")));
 
             auto directory = Path("TestFiles/GarbageBuildState");
             BuildState actual;
@@ -75,7 +75,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "INFO: Failed to parse BuildState.",
+                    "INFO: Failed to parse the build state json: expected value, got 'g' (103)",
                 }),
                 testListener->GetMessages(),
                 "Verify messages match expected.");
@@ -93,14 +93,14 @@ namespace Soup::UnitTests
             IFileSystem::Register(fileSystem);
             fileSystem->CreateFile(
                 Path("TestFiles/SimpleBuildState/.soup/BuildState.json"),
-                R"({
+                MockFileState(std::stringstream(R"({
                     "knownFiles": [
                         {
                             "file": "File.h",
                             "includes": [ "Other.h" ]
                         }
                     ]
-                })");
+                })")));
 
             auto directory = Path("TestFiles/SimpleBuildState");
             BuildState actual;
@@ -109,7 +109,7 @@ namespace Soup::UnitTests
             Assert::IsTrue(result, "Verify result is false.");
 
             auto expected = BuildState({
-                    FileInfo(Path("File.h"), { "Other.h" }),
+                    FileInfo(Path("File.h"), { Path("Other.h") }),
                 });
 
             Assert::AreEqual(expected, actual, "Verify matches expected.");
