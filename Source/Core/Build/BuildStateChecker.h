@@ -4,6 +4,7 @@
 
 #pragma once
 #include "BuildState.h"
+#include "IFileSystem.h"
 #include "Path.h"
 
 namespace Soup

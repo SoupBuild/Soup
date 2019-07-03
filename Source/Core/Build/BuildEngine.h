@@ -5,6 +5,7 @@
 #pragma once
 #include "IBuildEngine.h"
 #include "ICompiler.h"
+#include "BuildStateChecker.h"
 #include "BuildStateManager.h"
 
 namespace Soup
@@ -42,66 +43,94 @@ namespace Soup
             Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
 
             // Perform the core compilation of the source files
-            CompileSource(arguments);
+            bool sourceCompiled = CompileSource(arguments);
 
-            // Link the final target
-            switch (arguments.Target)
+            if (sourceCompiled)
             {
-                case BuildTargetType::Library:
-                    LinkLibrary(arguments);
-                    break;
-                case BuildTargetType::Executable:
-                    LinkExecutable(arguments);
-                    break;
-                default:
-                    throw std::runtime_error("Unknown target type.");
+                // Link the final target
+                switch (arguments.Target)
+                {
+                    case BuildTargetType::Library:
+                        LinkLibrary(arguments);
+                        break;
+                    case BuildTargetType::Executable:
+                        LinkExecutable(arguments);
+                        break;
+                    default:
+                        throw std::runtime_error("Unknown target type.");
+                }
             }
         }
 
     private:
         /// <summary>
         /// Compile the supporting source files
+        /// Returns true if any files were compiled
         /// </summary>
-        void CompileSource(const BuildArguments& arguments)
+        bool CompileSource(const BuildArguments& arguments)
         {
             Log::Info("Task: CoreCompile");
 
             // Load the previous build state if performing an incremental build
             BuildState buildState = {};
+            auto source = std::vector<Path>();
             if (arguments.IsIncremental)
             {
                 Log::Verbose("Loading previous build state.");
                 if (!BuildStateManager::TryLoadState(arguments.WorkingDirectory, buildState))
                 {
-                    Log::Verbose("No previous state found.");
+                    Log::Verbose("No previous state found, full rebuild required.");
                     buildState = BuildState();
+                    source = arguments.SourceFiles;
+                }
+                else
+                {
+                    // Check if each source file is out of date and requires a rebuild
+                    Log::Verbose("Check for updated source.");
+                    for (auto& sourceFile : arguments.SourceFiles)
+                    {
+                        // Try to build up the closure of include dependencies
+                        auto inputClosure = std::vector<Path>();
+                        if (buildState.TryBuildIncludeClosure(sourceFile, inputClosure))
+                        {
+                            // Build the expected object file
+                            auto outputFile = arguments.ObjectDirectory + Path(sourceFile.GetFileStem() + _compiler->GetObjectFileExtension());
+
+                            // Check if any of the input files have changed since lsat build
+                            if (BuildStateChecker::IsOutdated(
+                                outputFile,
+                                inputClosure,
+                                arguments.WorkingDirectory))
+                            {
+                                // The file or a dependecy has changed
+                                source.push_back(sourceFile);
+                            }
+                        }
+                        else
+                        {
+                            // Could not determine the set of input files, not enough info to perform incremental build
+                            source.push_back(sourceFile);
+                        }
+                    }
                 }
             }
+            else
+            {
+                // The build is forced, rebuild all input
+                source = arguments.SourceFiles;
+            }
 
-            // // Check if each source file is out of date and requires a rebuild
-            // for (var sourceFile in recipe.Source)
-            // {
-            //     var outputFile = Path.Combine(objectDirectory, $"{Path.GetFileNameWithoutExtension(sourceFile)}.{_compiler.ObjectFileExtension}");
-            //     if (force || BuildRequiredChecker.IsSourceFileOutdated(path, buildState, outputFile, sourceFile, sharedDependecies))
-            //     {
-            //         source.Add(sourceFile);
-            //     }
-            // }
+            // Check if we can skip the whole thing
+            if (!source.empty())
+            {
+                Log::Verbose("Compiling source files.");
 
-            // if (source.Count == 0)
-            // {
-            //     Log.Info("All source is up to date.");
-            //     return false;
-            // }
-            // else
-            // {
-
-                //     // Ensure the object directory exists
-                //     var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
-                //     if (!Directory.Exists(objectDirectry))
-                //     {
-                //         Directory.CreateDirectory(objectDirectry);
-                //     }
+                // // Ensure the object directory exists
+                // var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
+                // if (!Directory.Exists(objectDirectry))
+                // {
+                //     Directory.CreateDirectory(objectDirectry);
+                // }
 
                 // Setup the shared properties
                 auto compilerArguments = CompileArguments();
@@ -113,7 +142,7 @@ namespace Soup
                 compilerArguments.IncludeModules = arguments.IncludeModules;
                 compilerArguments.GenerateIncludeTree = true;
 
-                for (auto& file : arguments.SourceFiles)
+                for (auto& file : source)
                 {
                     // Compile the individual translation unit
                     Log::Verbose(file.ToString());
@@ -121,13 +150,20 @@ namespace Soup
                     auto result = _compiler->Compile(compilerArguments);
                 }
 
-            //     // Save the build state
-            //     if (result.HeaderIncludeFiles != null)
-            //         buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
-            // }
+                // // Save the build state
+                // if (result.HeaderIncludeFiles != null)
+                //     buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+            
+                // Save the build state
+                // BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
 
-            // Save the build state
-            // BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
+                return true;
+            }
+            else
+            {
+                Log::Info("All source is up to date.");
+                return false;
+            }
         }
 
         /// <summary>
