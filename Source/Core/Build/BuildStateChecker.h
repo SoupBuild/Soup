@@ -33,7 +33,8 @@ namespace Soup
                 IFileSystem::Current().GetLastWriteTime(relativeOutputFile);
             for (auto& inputFile : inputFiles)
             {
-                auto relativeInputFile = rootPath + inputFile;
+                // if the file is relative then combine it with the root path
+                Path relativeInputFile = inputFile.HasRoot() ? inputFile : rootPath + inputFile;
                 if (!IFileSystem::Current().Exists(relativeInputFile))
                 {
                     Log::Verbose("Input file missing, rebuild required.");

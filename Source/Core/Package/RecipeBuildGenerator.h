@@ -92,34 +92,44 @@ namespace Soup
             Log::SetActiveId(projectId);
             Log::Info("Building '" + recipe.GetName() + "'");
 
-            // Initialize the required target paths
-            auto compilerFolder = Path(_compiler->GetName());
-            auto buildPath =
-                Path(Constants::ProjectGenerateFolderName) +
-                Path(Constants::StoreBuildFolderName);
-            auto outputDirectory = buildPath + Path("out");
-            auto objectDirectory = outputDirectory + Path("obj") + compilerFolder;
-            auto binaryDirectory = outputDirectory + Path("bin") + compilerFolder;
+            try
+            {
+                // Initialize the required target paths
+                auto compilerFolder = Path(_compiler->GetName());
+                auto buildPath =
+                    Path(Constants::ProjectGenerateFolderName) +
+                    Path(Constants::StoreBuildFolderName);
+                auto outputDirectory = Path("out");
+                auto objectDirectory = outputDirectory + Path("obj") + compilerFolder;
+                auto binaryDirectory = outputDirectory + Path("bin") + compilerFolder;
 
-            // Determine the include paths
-            // var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
-            // var uniqueFolders = folderWithHeadersSet.ToList();
+                // Determine the include paths
+                // var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
+                // var uniqueFolders = folderWithHeadersSet.ToList();
 
-            // Build up arguments to build this individual recipe
-            auto arguments = BuildArguments();
-            arguments.Target = BuildTargetType::Executable;
-            arguments.WorkingDirectory = workingDirectory;
-            arguments.ObjectDirectory = objectDirectory;
-            arguments.BinaryDirectory = binaryDirectory;
-            arguments.ModuleSourceFile = recipe.GetPublicAsPath();
-            arguments.SourceFiles = recipe.GetSourceAsPath();
-            arguments.IncludeDirectories = std::vector<Path>({});
-            arguments.IncludeModules = std::vector<Path>({});
-            arguments.IsIncremental = true;
+                // Build up arguments to build this individual recipe
+                auto arguments = BuildArguments();
+                arguments.Target = BuildTargetType::Executable;
+                arguments.WorkingDirectory = workingDirectory;
+                arguments.ObjectDirectory = objectDirectory;
+                arguments.BinaryDirectory = binaryDirectory;
+                arguments.ModuleSourceFile = 
+                    recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
+                arguments.SourceFiles = recipe.GetSourceAsPath();
+                arguments.IncludeDirectories = std::vector<Path>({});
+                arguments.IncludeModules = std::vector<Path>({});
+                arguments.IsIncremental = true;
 
-            // Perform the build
-            auto buildEngine = BuildEngine(_compiler);
-            buildEngine.Execute(arguments);
+                // Perform the build
+                auto buildEngine = BuildEngine(_compiler);
+                buildEngine.Execute(arguments);
+            }
+            catch (std::exception& ex)
+            {
+                // Log the exception and convert to handled
+                Log::Error(std::string("Build Failed: ") + ex.what());
+                throw HandledException();
+            }
         }
 
     private:

@@ -69,7 +69,7 @@ namespace Soup
         /// </summary>
         bool CompileSource(const BuildArguments& arguments)
         {
-            Log::Info("Task: CoreCompile");
+            Log::Verbose("Task: CoreCompile");
 
             // Load the previous build state if performing an incremental build
             BuildState buildState = {};
@@ -94,7 +94,7 @@ namespace Soup
                         if (buildState.TryBuildIncludeClosure(sourceFile, inputClosure))
                         {
                             // Build the expected object file
-                            auto outputFile = arguments.ObjectDirectory + Path(sourceFile.GetFileStem() + _compiler->GetObjectFileExtension());
+                            auto outputFile = arguments.ObjectDirectory + Path(sourceFile.GetFileStem() + "." + _compiler->GetObjectFileExtension());
 
                             // Check if any of the input files have changed since lsat build
                             if (BuildStateChecker::IsOutdated(
@@ -153,15 +153,15 @@ namespace Soup
                 // // Save the build state
                 // if (result.HeaderIncludeFiles != null)
                 //     buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
-            
-                // Save the build state
-                // BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
+
+                Log::Verbose("Saving updated build state");
+                BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
 
                 return true;
             }
             else
             {
-                Log::Info("All source is up to date.");
+                Log::Info("Up to date");
                 return false;
             }
         }
@@ -171,7 +171,7 @@ namespace Soup
         /// </summary>
         void LinkLibrary(const BuildArguments& arguments)
         {
-            Log::Info("Task: LinkStaticLibrary");
+            Log::Verbose("Task: LinkStaticLibrary");
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Soup
         /// </summary>
         void LinkExecutable(const BuildArguments& arguments)
         {
-            Log::Info("Task: LinkExecutable");
+            Log::Verbose("Task: LinkExecutable");
         //     var allFiles = new List<string>(recipe.Source);
         //     if (recipe.Type == RecipeType.Library)
         //     {

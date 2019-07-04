@@ -116,10 +116,9 @@ namespace Soup::UnitTests
         [[Fact]]
         void Serialize_Simple()
         {
-            auto state = BuildState(
-                {
-                    FileInfo(Path("File.h"), { Path("Other.h") }),
-                });
+            auto state = BuildState({
+                FileInfo(Path("File.h"), { Path("Other.h") }),
+            });
 
             std::stringstream actual;
             BuildStateJson::Serialize(state, actual);
@@ -140,11 +139,10 @@ namespace Soup::UnitTests
         [[Fact]]
         void Serialize_Multipl()
         {
-            auto state = BuildState(
-                {
-                    FileInfo(Path("File1.h"), { Path("Other1.h") }),
-                    FileInfo(Path("File2.h"), { Path("Other2.h") }),
-                });
+            auto state = BuildState({
+                FileInfo(Path("File1.h"), { Path("Other1.h") }),
+                FileInfo(Path("File2.h"), { Path("Other2.h") }),
+            });
 
             std::stringstream actual;
             BuildStateJson::Serialize(state, actual);

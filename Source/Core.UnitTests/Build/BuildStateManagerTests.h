@@ -53,7 +53,7 @@ namespace Soup::UnitTests
             // Register the test file system
             auto fileSystem = std::make_shared<MockFileSystem>();
             IFileSystem::Register(fileSystem);
-            fileSystem->CreateFile(
+            fileSystem->CreateMockFile(
                 Path("TestFiles/GarbageBuildState/.soup/BuildState.json"),
                 MockFileState(std::stringstream("garbage")));
 
@@ -91,7 +91,7 @@ namespace Soup::UnitTests
             // Register the test file system
             auto fileSystem = std::make_shared<MockFileSystem>();
             IFileSystem::Register(fileSystem);
-            fileSystem->CreateFile(
+            fileSystem->CreateMockFile(
                 Path("TestFiles/SimpleBuildState/.soup/BuildState.json"),
                 MockFileState(std::stringstream(R"({
                     "knownFiles": [

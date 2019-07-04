@@ -69,7 +69,7 @@ namespace Soup
         /// <summary>
         /// Create a test file
         /// </summary>
-        void CreateFile(Path path, MockFileState state)
+        void CreateMockFile(Path path, MockFileState state)
         {
             _files.emplace(
                 path,

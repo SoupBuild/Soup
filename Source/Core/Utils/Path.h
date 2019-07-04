@@ -51,7 +51,7 @@ namespace Soup
         /// </summary>
         bool HasRoot() const
         {
-            return ! _root.empty();
+            return !_root.empty();
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Soup
         /// </summary>
         bool HasFileName() const
         {
-            return ! _filename.empty();
+            return !_filename.empty();
         }
 
         /// <summary>
@@ -135,16 +135,16 @@ namespace Soup
         /// </summary>
         bool operator ==(const Path& rhs) const
         {
-            return _root == rhs. _root &&
-                _directories == rhs. _directories &&
-                _filename == rhs. _filename;
+            return _root == rhs._root &&
+                _directories == rhs._directories &&
+                _filename == rhs._filename;
         }
 
         bool operator !=(const Path& rhs) const
         {
-            return _root != rhs. _root ||
-                _directories != rhs. _directories ||
-                _filename != rhs. _filename;
+            return _root != rhs._root ||
+                _directories != rhs._directories ||
+                _filename != rhs._filename;
         }
 
         bool operator <(const Path& rhs) const
@@ -159,34 +159,35 @@ namespace Soup
         Path operator +(const Path& rhs) const
         {
             if (rhs.HasRoot())
-                throw std::runtime_error("Cannot combine a rooted path on the right hand side.");
+                throw std::runtime_error(
+                    "Cannot combine a rooted path on the right hand side: " + rhs.ToString());
 
             auto result = Path();
 
             // Take the root from the left hand side
-            result. _root = _root;
+            result._root = _root;
 
             // Combine the directories
-            result. _directories.reserve(
-                _directories.size() + rhs. _directories.size());
-            result. _directories.insert(
-                result. _directories.end(),
+            result._directories.reserve(
+                _directories.size() + rhs._directories.size());
+            result._directories.insert(
+                result._directories.end(),
                 _directories.begin(),
                 _directories.end());
 
             // Convert the left hand side filename to a directory
             if (HasFileName())
             {
-                result. _directories.push_back( _filename);
+                result._directories.push_back(_filename);
             }
 
-            result. _directories.insert(
-                result. _directories.end(),
-                rhs. _directories.begin(),
-                rhs. _directories.end());
+            result._directories.insert(
+                result._directories.end(),
+                rhs._directories.begin(),
+                rhs._directories.end());
 
             // Take the filename from the right hand side
-            result. _filename = rhs. _filename;
+            result._filename = rhs._filename;
 
             result.NormalizeDirectories();
 

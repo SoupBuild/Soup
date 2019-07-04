@@ -6,6 +6,7 @@ import json11;
 
 #include "Logger\Log.h"
 #include "Utils\Helpers.h"
+#include "Utils\HandledException.h"
 
 #include "Build\BuildEngine.h"
 #include "Build\BuildStateChecker.h"

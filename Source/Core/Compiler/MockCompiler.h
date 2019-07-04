@@ -61,7 +61,7 @@ namespace Soup::Compiler::Mock
         /// </summary>
         virtual const std::string& GetObjectFileExtension() const override final
         {
-            static const std::string value = ".mock.obj";
+            static const std::string value = "mock.obj";
             return value;
         }
 
@@ -70,7 +70,7 @@ namespace Soup::Compiler::Mock
         /// </summary>
         virtual const std::string& GetModuleFileExtension() const override final
         {
-            static const std::string value = ".mock.bmi";
+            static const std::string value = "mock.bmi";
             return value;
         }
 
@@ -80,7 +80,7 @@ namespace Soup::Compiler::Mock
         /// </summary>
         virtual const std::string& GetStaticLibraryFileExtension() const override final
         {
-            static const std::string value = ".mock.lib";
+            static const std::string value = "mock.lib";
             return value;
         }
 
