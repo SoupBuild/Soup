@@ -131,6 +131,15 @@ namespace Soup
         }
 
         /// <summary>
+        /// Set the file extension
+        /// </summary>
+        void SetFileExtension(std::string_view value)
+        {
+            // TODO: This could be faster if alocate string size and memcopy
+            _filename = GetFileStem() + FileExtensionSeparator + std::string(value);
+        }
+
+        /// <summary>
         /// Equality operator
         /// </summary>
         bool operator ==(const Path& rhs) const

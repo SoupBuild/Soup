@@ -28,38 +28,34 @@ namespace Soup::Compiler::Clang
         /// <summary>
         /// Gets the unique name for the compiler
         /// </summary>
-        virtual const std::string& GetName() const override final
+        virtual std::string_view GetName() const override final
         {
-            static std::string value = "Clang";
-            return value;
+            return "Clang";
         }
 
         /// <summary>
         /// Gets the object file extension for the compiler
         /// </summary>
-        virtual const std::string& GetObjectFileExtension() const override final
+        virtual std::string_view GetObjectFileExtension() const override final
         {
-            static std::string value = "o";
-            return value;
+            return "o";
         }
 
         /// <summary>
         /// Gets the module file extension for the compiler
         /// </summary>
-        virtual const std::string& GetModuleFileExtension() const override final
+        virtual std::string_view GetModuleFileExtension() const override final
         {
-            static std::string value = "pcm";
-            return value;
+            return "pcm";
         }
 
         /// <summary>
         /// Gets the static library file extension for the compiler
         /// TODO: This is platform specific
         /// </summary>
-        virtual const std::string& GetStaticLibraryFileExtension() const override final
+        virtual std::string_view GetStaticLibraryFileExtension() const override final
         {
-            static std::string value = "a";
-            return value;
+            return "a";
         }
 
         /// <summary>
@@ -138,57 +134,15 @@ namespace Soup::Compiler::Clang
         }
 
         /// <summary>
-        /// Link library
+        /// Link
         /// </summary>
-        virtual void LinkLibrary(const LinkerArguments& args) override final
+        virtual void Link(const LinkArguments& args) override final
         {
             // Set the working directory to the output directory
             // var workingDirectory = args.RootDirectory;
 
             // string linker = Path.Combine(ToolsPath, @"bin\llvm-ar.exe");
             // var linkerArgs = BuildLinkerLibraryArguments(args);
-
-            // Log.Verbose($"PWD={workingDirectory}");
-            // Log.Verbose($"{linker} {linkerArgs}");
-
-            // _inWarningMessage = false;
-            // _inErrorMessage = false;
-            // using (Process process = new Process())
-            // {
-            //     process.StartInfo.UseShellExecute = false;
-            //     process.StartInfo.RedirectStandardOutput = true;
-            //     process.StartInfo.RedirectStandardError = true;
-            //     process.StartInfo.FileName = linker;
-            //     process.StartInfo.WorkingDirectory = workingDirectory;
-            //     process.StartInfo.Arguments = linkerArgs;
-
-            //     process.OutputDataReceived += ProcessOutputDataReceived;
-            //     process.ErrorDataReceived += ProcessErrorDataReceived;
-
-            //     process.Start();
-            //     process.BeginOutputReadLine();
-            //     process.BeginErrorReadLine();
-            //     process.WaitForExit();
-
-            //     if (process.ExitCode != 0)
-            //     {
-            //         throw new InvalidOperationException();
-            //     }
-
-            //     return Task.CompletedTask;
-            // }
-        }
-
-        /// <summary>
-        /// Link Executable
-        /// </summary>
-        virtual void LinkExecutable(const LinkerArguments& args) override final
-        {
-            // // Set the working directory to the output directory
-            // var workingDirectory = args.RootDirectory;
-
-            // string linker = Path.Combine(ToolsPath, @"bin\clang++.exe");
-            // var linkerArgs = BuildLinkerExecutableArguments(args);
 
             // Log.Verbose($"PWD={workingDirectory}");
             // Log.Verbose($"{linker} {linkerArgs}");

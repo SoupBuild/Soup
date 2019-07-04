@@ -138,7 +138,7 @@ namespace Soup.Compiler.Clang
         /// <summary>
         /// Link library
         /// </summary>
-        public Task LinkLibraryAsync(LinkerArguments args)
+        public Task LinkLibraryAsync(LinkArguments args)
         {
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;

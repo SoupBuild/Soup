@@ -18,8 +18,7 @@ namespace Soup::Compiler::Mock
         /// </summary>
         Compiler() :
             _compileRequests(),
-            _linkLibraryRequests(),
-            _linkExecutableRequests()
+            _linkRequests()
         {
         }
 
@@ -32,56 +31,44 @@ namespace Soup::Compiler::Mock
         }
 
         /// <summary>
-        /// Get the link library requests
+        /// Get the link requests
         /// </summary>
-        const std::vector<LinkerArguments>& GetLinkLibraryRequests() const
+        const std::vector<LinkArguments>& GetLinkRequests() const
         {
-            return _linkLibraryRequests;
-        }
-
-        /// <summary>
-        /// Get the link executable requests
-        /// </summary>
-        const std::vector<LinkerArguments>& GetLinkExecutableRequests() const
-        {
-            return _linkExecutableRequests;
+            return _linkRequests;
         }
 
         /// <summary>
         /// Gets the unique name for the compiler
         /// </summary>
-        virtual const std::string& GetName() const override final
+        virtual std::string_view GetName() const override final
         {
-            static const std::string value = "MockCompiler";
-            return value;
+            return "MockCompiler";
         }
 
         /// <summary>
         /// Gets the object file extension for the compiler
         /// </summary>
-        virtual const std::string& GetObjectFileExtension() const override final
+        virtual std::string_view GetObjectFileExtension() const override final
         {
-            static const std::string value = "mock.obj";
-            return value;
+            return "mock.obj";
         }
 
         /// <summary>
         /// Gets the module file extension for the compiler
         /// </summary>
-        virtual const std::string& GetModuleFileExtension() const override final
+        virtual std::string_view GetModuleFileExtension() const override final
         {
-            static const std::string value = "mock.bmi";
-            return value;
+            return "mock.bmi";
         }
 
         /// <summary>
         /// Gets the static library file extension for the compiler
         /// TODO: This is platform specific
         /// </summary>
-        virtual const std::string& GetStaticLibraryFileExtension() const override final
+        virtual std::string_view GetStaticLibraryFileExtension() const override final
         {
-            static const std::string value = "mock.lib";
-            return value;
+            return "mock.lib";
         }
 
         /// <summary>
@@ -94,24 +81,15 @@ namespace Soup::Compiler::Mock
         }
 
         /// <summary>
-        /// Link Library
+        /// Link
         /// </summary>
-        virtual void LinkLibrary(const LinkerArguments& args) override final
+        virtual void Link(const LinkArguments& args) override final
         {
-            _linkLibraryRequests.push_back(args);
-        }
-
-        /// <summary>
-        /// Link Executable
-        /// </summary>
-        virtual void LinkExecutable(const LinkerArguments& args) override final
-        {
-            _linkExecutableRequests.push_back(args);
+            _linkRequests.push_back(args);
         }
 
     private:
         std::vector<CompileArguments> _compileRequests;
-        std::vector<LinkerArguments> _linkLibraryRequests;
-        std::vector<LinkerArguments> _linkExecutableRequests;
+        std::vector<LinkArguments> _linkRequests;
     };
 }

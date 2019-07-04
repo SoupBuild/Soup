@@ -43,22 +43,12 @@ namespace Soup
             Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
 
             // Perform the core compilation of the source files
-            bool sourceCompiled = CompileSource(arguments);
+            bool sourceCompiled = CoreCompile(arguments);
 
+            // Link the final target only if the source was compiled
             if (sourceCompiled)
             {
-                // Link the final target
-                switch (arguments.Target)
-                {
-                    case BuildTargetType::Library:
-                        LinkLibrary(arguments);
-                        break;
-                    case BuildTargetType::Executable:
-                        LinkExecutable(arguments);
-                        break;
-                    default:
-                        throw std::runtime_error("Unknown target type.");
-                }
+                CoreLink(arguments);
             }
         }
 
@@ -67,7 +57,7 @@ namespace Soup
         /// Compile the supporting source files
         /// Returns true if any files were compiled
         /// </summary>
-        bool CompileSource(const BuildArguments& arguments)
+        bool CoreCompile(const BuildArguments& arguments)
         {
             Log::Verbose("Task: CoreCompile");
 
@@ -93,8 +83,12 @@ namespace Soup
                         auto inputClosure = std::vector<Path>();
                         if (buildState.TryBuildIncludeClosure(sourceFile, inputClosure))
                         {
+                            // Include the source file itself
+                            inputClosure.push_back(sourceFile);
+
                             // Build the expected object file
-                            auto outputFile = arguments.ObjectDirectory + Path(sourceFile.GetFileStem() + "." + _compiler->GetObjectFileExtension());
+                            auto outputFile = arguments.ObjectDirectory + Path(sourceFile.GetFileName());
+                            outputFile.SetFileExtension(_compiler->GetObjectFileExtension());
 
                             // Check if any of the input files have changed since lsat build
                             if (BuildStateChecker::IsOutdated(
@@ -120,7 +114,7 @@ namespace Soup
                 source = arguments.SourceFiles;
             }
 
-            // Check if we can skip the whole thing
+            // Check if we can skip the whole dang thing
             if (!source.empty())
             {
                 Log::Verbose("Compiling source files.");
@@ -133,21 +127,21 @@ namespace Soup
                 // }
 
                 // Setup the shared properties
-                auto compilerArguments = CompileArguments();
-                compilerArguments.Standard = LanguageStandard::CPP20;
-                compilerArguments.RootDirectory = arguments.WorkingDirectory;
-                compilerArguments.OutputDirectory = arguments.ObjectDirectory;
-                compilerArguments.PreprocessorDefinitions = {};
-                compilerArguments.IncludeDirectories = arguments.IncludeDirectories;
-                compilerArguments.IncludeModules = arguments.IncludeModules;
-                compilerArguments.GenerateIncludeTree = true;
+                auto compileArguments = CompileArguments();
+                compileArguments.Standard = LanguageStandard::CPP20;
+                compileArguments.RootDirectory = arguments.WorkingDirectory;
+                compileArguments.OutputDirectory = arguments.ObjectDirectory;
+                compileArguments.PreprocessorDefinitions = {};
+                compileArguments.IncludeDirectories = arguments.IncludeDirectories;
+                compileArguments.IncludeModules = arguments.IncludeModules;
+                compileArguments.GenerateIncludeTree = true;
 
                 for (auto& file : source)
                 {
                     // Compile the individual translation unit
                     Log::Verbose(file.ToString());
-                    compilerArguments.SourceFile = file;
-                    auto result = _compiler->Compile(compilerArguments);
+                    compileArguments.SourceFile = file;
+                    auto result = _compiler->Compile(compileArguments);
                 }
 
                 // // Save the build state
@@ -169,9 +163,27 @@ namespace Soup
         /// <summary>
         /// Link the library
         /// </summary>
-        void LinkLibrary(const BuildArguments& arguments)
+        void CoreLink(const BuildArguments& arguments)
         {
-            Log::Verbose("Task: LinkStaticLibrary");
+            Log::Verbose("Task: CoreLink");
+
+            auto linkArguments = LinkArguments();
+
+            // Translate the target type into the link target
+            switch (arguments.Target)
+            {
+                case BuildTargetType::Library:
+                    linkArguments.Target = LinkTarget::StaticLibrary;
+                    break;
+                case BuildTargetType::Executable:
+                    linkArguments.Target = LinkTarget::Executable;
+                    break;
+                default:
+                    throw std::runtime_error("Unknown build target type.");
+            }
+
+            // Perform the link
+            _compiler->Link(linkArguments);
         }
 
         /// <summary>
@@ -192,7 +204,7 @@ namespace Soup
 
         //     var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.{_compiler.ObjectFileExtension}").ToList();
         //     var libraryFiles = librarySet.ToList();
-        //     var args = new LinkerArguments()
+        //     var args = new LinkArguments()
         //     {
         //         Name = recipe.Name,
         //         RootDirectory = path,

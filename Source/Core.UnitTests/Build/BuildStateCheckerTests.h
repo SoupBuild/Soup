@@ -10,6 +10,20 @@ namespace Soup::UnitTests
     {
     public:
         [[Fact]]
+        void IsOutdated_ZeroInput_Throws()
+        {
+            // Setup the input parameters
+            auto targetFile = Path("Output.bin");
+            auto inputFiles = std::vector<Path>({});
+            auto rootPath = Path("Root");
+
+            // Perform the check
+            Assert::ThrowsRuntimeError([&targetFile, &inputFiles, &rootPath]() {
+                bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
+            });
+        }
+
+        [[Fact]]
         void IsOutdated_SingleInput_MissingTarget()
         {
             // Register the test listener
@@ -193,6 +207,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
+                    "VERB: File up to date: Input.cpp",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -246,6 +261,8 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
+                    "VERB: File up to date: Input.cpp",
+                    "VERB: File up to date: C:/Input.h",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");

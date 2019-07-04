@@ -15,6 +15,8 @@ TestState RunPathTests()
     state += SoupTest::RunTest(className, "Concatenate_Simple", [&testClass]() { testClass->Concatenate_Simple(); });
     state += SoupTest::RunTest(className, "Concatenate_UpDirectory", [&testClass]() { testClass->Concatenate_UpDirectory(); });
     state += SoupTest::RunTest(className, "Concatenate_UpDirectoryBeginning", [&testClass]() { testClass->Concatenate_UpDirectoryBeginning(); });
+    state += SoupTest::RunTest(className, "SetFileExtension_Replace", [&testClass]() { testClass->SetFileExtension_Replace(); });
+    state += SoupTest::RunTest(className, "SetFileExtension_Add", [&testClass]() { testClass->SetFileExtension_Add(); });
 
     return state;
 }

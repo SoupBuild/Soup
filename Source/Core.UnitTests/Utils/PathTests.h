@@ -104,5 +104,23 @@ namespace Soup::UnitTests
 
             Assert::AreEqual("../NewRoot/MyFile.txt", uut.ToString(), "Verify value matches.");
         }
+
+        [[Fact]]
+        void SetFileExtension_Replace()
+        {
+            auto uut = Path("../MyFile.txt");
+            uut.SetFileExtension("awe");
+
+            Assert::AreEqual("../MyFile.awe", uut.ToString(), "Verify value matches.");
+        }
+
+        [[Fact]]
+        void SetFileExtension_Add()
+        {
+            auto uut = Path("../MyFile");
+            uut.SetFileExtension("awe");
+
+            Assert::AreEqual("../MyFile.awe", uut.ToString(), "Verify value matches.");
+        }
     };
 }

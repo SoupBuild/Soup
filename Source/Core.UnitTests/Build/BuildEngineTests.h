@@ -60,6 +60,9 @@ namespace Soup::UnitTests
             expectedCompileArguments.SourceFile = Path("TestFile.cpp");
             expectedCompileArguments.GenerateIncludeTree = true;
 
+            auto expectedLinkArguments = LinkArguments();
+            expectedLinkArguments.Target = LinkTarget::Executable;
+
             // Verify expected compiler calls
             Assert::AreEqual(
                 std::vector<CompileArguments>({
@@ -68,15 +71,11 @@ namespace Soup::UnitTests
                 compiler->GetCompileRequests(),
                 "Verify compiler requests match expected.");
             Assert::AreEqual(
-                std::vector<LinkerArguments>({
+                std::vector<LinkArguments>({
+                    expectedLinkArguments,
                 }),
-                compiler->GetLinkLibraryRequests(),
-                "Verify link library requests match expected.");
-            Assert::AreEqual(
-                std::vector<LinkerArguments>({
-                }),
-                compiler->GetLinkExecutableRequests(),
-                "Verify link executable requests match expected.");
+                compiler->GetLinkRequests(),
+                "Verify link requests match expected.");
 
             // Verify expected file system requests
             Assert::AreEqual(
@@ -99,7 +98,7 @@ namespace Soup::UnitTests
                     "VERB: Compiling source files.",
                     "VERB: TestFile.cpp",
                     "VERB: Saving updated build state",
-                    "VERB: Task: LinkExecutable",
+                    "VERB: Task: CoreLink",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -140,6 +139,9 @@ namespace Soup::UnitTests
             expectedCompileArguments.SourceFile = Path("TestFile.cpp");
             expectedCompileArguments.GenerateIncludeTree = true;
 
+            auto expectedLinkArguments = LinkArguments();
+            expectedLinkArguments.Target = LinkTarget::Executable;
+
             // Verify expected compiler calls
             Assert::AreEqual(
                 std::vector<CompileArguments>({
@@ -148,15 +150,11 @@ namespace Soup::UnitTests
                 compiler->GetCompileRequests(),
                 "Verify compiler requests match expected.");
             Assert::AreEqual(
-                std::vector<LinkerArguments>({
+                std::vector<LinkArguments>({
+                    expectedLinkArguments,
                 }),
-                compiler->GetLinkLibraryRequests(),
-                "Verify link library requests match expected.");
-            Assert::AreEqual(
-                std::vector<LinkerArguments>({
-                }),
-                compiler->GetLinkExecutableRequests(),
-                "Verify link executable requests match expected.");
+                compiler->GetLinkRequests(),
+                "Verify link requests match expected.");
 
             // Verify expected file system requests
             Assert::AreEqual(
@@ -183,7 +181,7 @@ namespace Soup::UnitTests
                     "VERB: Compiling source files.",
                     "VERB: TestFile.cpp",
                     "VERB: Saving updated build state",
-                    "VERB: Task: LinkExecutable",
+                    "VERB: Task: CoreLink",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -232,6 +230,9 @@ namespace Soup::UnitTests
             expectedCompileArguments.SourceFile = Path("TestFile.cpp");
             expectedCompileArguments.GenerateIncludeTree = true;
 
+            auto expectedLinkArguments = LinkArguments();
+            expectedLinkArguments.Target = LinkTarget::Executable;
+
             // Verify expected compiler calls
             Assert::AreEqual(
                 std::vector<CompileArguments>({
@@ -240,15 +241,11 @@ namespace Soup::UnitTests
                 compiler->GetCompileRequests(),
                 "Verify compiler requests match expected.");
             Assert::AreEqual(
-                std::vector<LinkerArguments>({
+                std::vector<LinkArguments>({
+                    expectedLinkArguments,
                 }),
-                compiler->GetLinkLibraryRequests(),
-                "Verify link library requests match expected.");
-            Assert::AreEqual(
-                std::vector<LinkerArguments>({
-                }),
-                compiler->GetLinkExecutableRequests(),
-                "Verify link executable requests match expected.");
+                compiler->GetLinkRequests(),
+                "Verify link requests match expected.");
 
             // Verify expected file system requests
             Assert::AreEqual(
@@ -276,7 +273,7 @@ namespace Soup::UnitTests
                     "VERB: Compiling source files.",
                     "VERB: TestFile.cpp",
                     "VERB: Saving updated build state",
-                    "VERB: Task: LinkExecutable",
+                    "VERB: Task: CoreLink",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -332,26 +329,22 @@ namespace Soup::UnitTests
                 compiler->GetCompileRequests(),
                 "Verify compiler requests match expected.");
             Assert::AreEqual(
-                std::vector<LinkerArguments>({
-                }),
-                compiler->GetLinkLibraryRequests(),
-                "Verify link library requests match expected.");
-            Assert::AreEqual(
-                std::vector<LinkerArguments>({
-                }),
-                compiler->GetLinkExecutableRequests(),
-                "Verify link executable requests match expected.");
+                std::vector<LinkArguments>({}),
+                compiler->GetLinkRequests(),
+                "Verify link requests match expected.");
 
             // Verify expected file system requests
-            // Assert::AreEqual(
-            //     std::vector<std::pair<std::string, FileSystemRequestType>>({
-            //         std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::Exists),
-            //         std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenRead),
-            //         std::make_pair("root/TestFile.cpp", FileSystemRequestType::Exists),
-            //         std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
-            //     }),
-            //     fileSystem->GetRequests(),
-            //     "Verify file system requests match expected.");
+            Assert::AreEqual(
+                std::vector<std::pair<std::string, FileSystemRequestType>>({
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenRead),
+                    std::make_pair("root/obj/TestFile.mock.obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj/TestFile.mock.obj", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/TestFile.cpp", FileSystemRequestType::Exists),
+                    std::make_pair("root/TestFile.cpp", FileSystemRequestType::GetLastWriteTime),
+                }),
+                fileSystem->GetRequests(),
+                "Verify file system requests match expected.");
 
             // Verify expected logs
             Assert::AreEqual(
@@ -365,6 +358,7 @@ namespace Soup::UnitTests
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state.",
                     "VERB: Check for updated source.",
+                    "VERB: File up to date: TestFile.cpp",
                     "INFO: Up to date",
                 }),
                 testListener->GetMessages(),

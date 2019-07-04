@@ -21,6 +21,9 @@ namespace Soup
             const std::vector<Path>& inputFiles,
             const Path& rootPath)
         {
+            if (inputFiles.empty())
+                throw std::runtime_error("Cannot check outdated with no input files.");
+
             // Verify the output file exists
             auto relativeOutputFile = rootPath + targetFile;
             if (!IFileSystem::Current().Exists(relativeOutputFile))
@@ -50,6 +53,8 @@ namespace Soup
                     Log::Verbose("[" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "].");
                     return true;
                 }
+
+                Log::Verbose("File up to date: " + inputFile.ToString());
             }
 
             return false;

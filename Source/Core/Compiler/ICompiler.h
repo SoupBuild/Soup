@@ -5,7 +5,7 @@
 #pragma once
 #include "CompileArguments.h"
 #include "CompileResult.h"
-#include "LinkerArguments.h"
+#include "LinkArguments.h"
 
 namespace Soup
 {
@@ -18,23 +18,23 @@ namespace Soup
         /// <summary>
         /// Gets the unique name for the compiler
         /// </summary>
-        virtual const std::string& GetName() const = 0;
+        virtual std::string_view GetName() const = 0;
 
         /// <summary>
         /// Gets the object file extension for the compiler
         /// </summary>
-        virtual const std::string& GetObjectFileExtension() const = 0;
+        virtual std::string_view GetObjectFileExtension() const = 0;
 
         /// <summary>
         /// Gets the module file extension for the compiler
         /// </summary>
-        virtual const std::string& GetModuleFileExtension() const = 0;
+        virtual std::string_view GetModuleFileExtension() const = 0;
 
         /// <summary>
         /// Gets the static library file extension for the compiler
         /// TODO: This is platform specific
         /// </summary>
-        virtual const std::string& GetStaticLibraryFileExtension() const = 0;
+        virtual std::string_view GetStaticLibraryFileExtension() const = 0;
 
         /// <summary>
         /// Compile
@@ -42,13 +42,8 @@ namespace Soup
         virtual CompileResult Compile(const CompileArguments& args) = 0;
 
         /// <summary>
-        /// Link Library
+        /// Link
         /// </summary>
-        virtual void LinkLibrary(const LinkerArguments& args) = 0;
-
-        /// <summary>
-        /// Link Executable
-        /// </summary>
-        virtual void LinkExecutable(const LinkerArguments& args) = 0;
+        virtual void Link(const LinkArguments& args) = 0;
     };
 }
