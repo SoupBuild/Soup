@@ -47,7 +47,7 @@ namespace Soup::Client
 
                 // Setup the real servicess
                 IFileSystem::Register(std::make_shared<STLFileSystem>());
-                IProcessManager::Register(std::make_shared<STLProcessManager>());
+                IProcessManager::Register(std::make_shared<PlatformProcessManager>());
 
                 // Enable full diagnostics
                 // _filter->Enable(TraceEventFlag::Diagnostic);
@@ -100,6 +100,11 @@ namespace Soup::Client
             catch (const std::exception& ex)
             {
                 Log::Error(ex.what());
+                return -1;
+            }
+            catch (...)
+            {
+                Log::Error("Unknown exception encountered");
                 return -1;
             }
         }

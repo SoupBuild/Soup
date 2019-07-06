@@ -33,10 +33,18 @@ namespace Soup
         /// <summary>
         /// Creates a process for the provided executable path
         /// </summary>
-        virtual bool Execute(const Path& path, const std::vector<std::string>& arguments) override final
+        virtual int Execute(
+            const Path& application,
+            const std::vector<std::string>& arguments,
+            const Path& workingDirectory) override final
         {
-            _requests.push_back(path.ToString());
-            return true;
+            std::stringstream message;
+            message << workingDirectory.ToString() << ": " << application.ToString();
+            for (auto& value : arguments)
+                message << " " << value;
+
+            _requests.push_back(message.str());
+            return 0;
         }
 
     private:

@@ -10,6 +10,7 @@ TestState RunBuildStateTests()
     state += SoupTest::RunTest(className, "TryBuildIncludeClosure_DependencyFileMissingFails", [&testClass]() { testClass->TryBuildIncludeClosure_DependencyFileMissingFails(); });
     state += SoupTest::RunTest(className, "TryBuildIncludeClosure_NoDependencies", [&testClass]() { testClass->TryBuildIncludeClosure_NoDependencies(); });
     state += SoupTest::RunTest(className, "TryBuildIncludeClosure_MultipleDependencies", [&testClass]() { testClass->TryBuildIncludeClosure_MultipleDependencies(); });
+    state += SoupTest::RunTest(className, "TryBuildIncludeClosure_CircularDependencies", [&testClass]() { testClass->TryBuildIncludeClosure_CircularDependencies(); });
 
     return state;
 }

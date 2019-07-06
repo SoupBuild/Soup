@@ -120,15 +120,25 @@ namespace Soup
                     [&file](const FileInfo& fileInfo) { return fileInfo.File == file; });
                 if (fileInfoResult != KnownFiles.end())
                 {
-                    // Copy all of the includes from the file info into the closure
+                    // Find all of the files that do not already exist in the closure
                     auto& includes =  fileInfoResult->Includes;
+                    auto newIncludes = std::vector<Path>();
+                    for (auto& include : includes)
+                    {
+                        if (std::find(closure.begin(), closure.end(), include) == closure.end())
+                        {
+                            newIncludes.push_back(include);
+                        }
+                    }
+
+                    // Add all the new files to the closure
                     std::copy(
-                        includes.begin(),
-                        includes.end(),
+                        newIncludes.begin(),
+                        newIncludes.end(),
                         std::back_inserter(closure));
 
                     // Build up the child includes
-                    if (!TryBuildIncludeClosure(includes, closure))
+                    if (!TryBuildIncludeClosure(newIncludes, closure))
                     {
                         // Propagate the failed result
                         return false;

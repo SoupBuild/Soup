@@ -146,7 +146,53 @@ namespace Soup::UnitTests
             auto expectedClosure = std::vector<Path>({
                 Path("TestFile1.h"),
                 Path("TestFile2.h"),
-                Path("TestFile3.h")
+                Path("TestFile3.h"),
+            });
+            Assert::AreEqual(expectedClosure, actualClosure, "Verify the closure matches.");
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({}),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
+        }
+
+        [[Fact]]
+        void TryBuildIncludeClosure_CircularDependencies()
+        {
+            // Register the test listener
+            auto testListener = std::make_shared<TestTraceListener>();
+            Log::RegisterListener(testListener);
+
+            auto uut = BuildState(std::vector<FileInfo>({
+                FileInfo(
+                    Path("TestFile.cpp"),
+                    std::vector<Path>({
+                        Path("TestFile1.h"),
+                    })),
+                FileInfo(
+                    Path("TestFile1.h"),
+                    std::vector<Path>({
+                        Path("TestFile2.h"),
+                    })),
+                FileInfo(
+                    Path("TestFile2.h"),
+                    std::vector<Path>({
+                        Path("TestFile1.h"),
+                    })),
+            }));
+
+            auto sourceFile = Path("TestFile.cpp");
+            auto actualClosure = std::vector<Path>();
+            auto result = uut.TryBuildIncludeClosure(
+                sourceFile,
+                actualClosure);
+
+            Assert::IsTrue(result, "Verify result is true.");
+
+            auto expectedClosure = std::vector<Path>({
+                Path("TestFile1.h"),
+                Path("TestFile2.h"),
             });
             Assert::AreEqual(expectedClosure, actualClosure, "Verify the closure matches.");
 

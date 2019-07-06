@@ -101,12 +101,14 @@ namespace Soup::Compiler::Clang
             //         process.BeginErrorReadLine();
             //         process.WaitForExit();
 
-            auto result = IProcessManager::Current().Execute(compilerPath, commandArgs);
-
-            // if (process.ExitCode != 0)
-            // {
-            //     throw new InvalidOperationException();
-            // }
+            auto exitCode = IProcessManager::Current().Execute(
+                compilerPath,
+                commandArgs,
+                args.RootDirectory);
+            if (exitCode != 0)
+            {
+                throw std::runtime_error("Compiler failed: " + std::to_string(exitCode));
+            }
 
             //         HeaderInclude result = null;
 

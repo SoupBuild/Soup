@@ -70,10 +70,19 @@ namespace Soup
             {
                 if (knownFiles.TryGetValue(file, out var info))
                 {
-                    set.AddRange(info.Includes);
+                    // Add all of the new files and recursively check their includes
+                    List<string> newIncludes = new List<string>();
+                    foreach (var include in info.Includes)
+                    {
+                        if (set.Contains(include))
+                        {
+                            set.Add(include);
+                            newIncludes.Add(include);
+                        }
+                    }
 
                     // Build up the child includes
-                    if (!TryBuildIncludeSet(info.Includes, knownFiles, set))
+                    if (!TryBuildIncludeSet(newIncludes, knownFiles, set))
                     {
                         return false;
                     }

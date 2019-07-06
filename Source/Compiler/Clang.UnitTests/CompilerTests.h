@@ -13,10 +13,10 @@ namespace Soup::Compiler::Clang::UnitTests
         void Initialize()
         {
             auto uut = Compiler();
-            Assert::AreEqual(uut.GetName(), "Clang", "Verify name match expected.");
-            Assert::AreEqual(uut.GetObjectFileExtension(), "o", "Verify object file extension match expected.");
-            Assert::AreEqual(uut.GetModuleFileExtension(), "pcm", "Verify module file extension match expected.");
-            Assert::AreEqual(uut.GetStaticLibraryFileExtension(), "a", "Verify static library file extension match expected.");
+            Assert::AreEqual(uut.GetName(), std::string_view("Clang"), "Verify name match expected.");
+            Assert::AreEqual(uut.GetObjectFileExtension(), std::string_view("o"), "Verify object file extension match expected.");
+            Assert::AreEqual(uut.GetModuleFileExtension(), std::string_view("pcm"), "Verify module file extension match expected.");
+            Assert::AreEqual(uut.GetStaticLibraryFileExtension(), std::string_view("a"), "Verify static library file extension match expected.");
         }
 
         [[Fact]]
@@ -35,8 +35,17 @@ namespace Soup::Compiler::Clang::UnitTests
 
             // Verify expected file system requests
             Assert::AreEqual(
-                std::vector<std::string>({
-                    "D:/Repos/llvm/build/Release/bin/clang++.exe",
+                std::vector<std::pair<std::string, std::vector<std::string>>>({
+                    std::make_pair(
+                        "D:/Repos/llvm/build/Release/bin/clang++.exe",
+                        std::vector<std::string>({
+                            "-fno-ms-compatibility",
+                            "-Xclang",
+                            "-flto-visibility-public-std",
+                            "-std=c++11",
+                            "-c",
+                            "File.cpp",
+                        })),
                 }),
                 processManager->GetRequests(),
                 "Verify process manager requests match expected.");

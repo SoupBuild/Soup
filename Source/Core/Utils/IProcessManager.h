@@ -36,7 +36,10 @@ namespace Soup
         /// <summary>
         /// Creates a process for the provided executable path
         /// </summary>
-        virtual bool Execute(const Path& path, const std::vector<std::string>& arguments) = 0;
+        virtual int Execute(
+            const Path& application,
+            const std::vector<std::string>& arguments,
+            const Path& workingDirectory) = 0;
 
     private:
         static std::shared_ptr<IProcessManager> _current;

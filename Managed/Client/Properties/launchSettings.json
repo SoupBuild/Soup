@@ -8,7 +8,7 @@
     "TestBuild": {
       "commandName": "Project",
       "commandLineArgs": "build -v",
-      "workingDirectory": "D:\\Repos\\SoupSyntax\\tests"
+      "workingDirectory": "D:\\Repos\\Soup\\Source\\Client"
     },
     "TestPublish": {
       "commandName": "Project",

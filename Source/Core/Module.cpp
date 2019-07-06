@@ -1,4 +1,7 @@
 ﻿
+
+#include "PlatformProcessManagerImpl.h"
+
 export module Soup.Core;
 
 import std.core;
@@ -23,6 +26,6 @@ import json11;
 #include "Utils\MockFileSystem.h"
 #include "Utils\MockProcessManager.h"
 #include "Utils\Path.h"
+#include "Utils\PlatformProcessManager.h"
 #include "Utils\SemanticVersion.h"
 #include "Utils\STLFileSystem.h"
-#include "Utils\STLProcessManager.h"
