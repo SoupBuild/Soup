@@ -97,6 +97,11 @@ namespace Soup::Client
 
                 return 0;
             }
+            catch (const HandledException& ex)
+            {
+                Log::Verbose("Exception Handled: Exiting.");
+                return -21;
+            }
             catch (const std::exception& ex)
             {
                 Log::Error(ex.what());

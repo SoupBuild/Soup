@@ -6,6 +6,8 @@
 
 namespace Soup
 {
+    typedef void OutputCallBackFunction(void* context, const char*, int);
+
     /// <summary>
     /// A platform specific process executable using system
     /// </summary>
@@ -18,6 +20,10 @@ namespace Soup
         static int Execute(
             const char* path,
             char* arguments,
-            const char* workingDirectory);
+            const char* workingDirectory,
+            OutputCallBackFunction stdOutputCallback,
+            void* stdOutputContext,
+            OutputCallBackFunction stdErrorCallback,
+            void* stdErrorContext);
     };
 }

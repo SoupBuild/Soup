@@ -7,6 +7,13 @@
 
 namespace Soup
 {
+    export struct ProcessResult
+    {
+        int ExitCode;
+        std::string StdOut;
+        std::string StdErr;
+    };
+
     /// <summary>
     /// The process manager interface
     /// Interface mainly used to allow for unit testing client code
@@ -36,7 +43,7 @@ namespace Soup
         /// <summary>
         /// Creates a process for the provided executable path
         /// </summary>
-        virtual int Execute(
+        virtual ProcessResult Execute(
             const Path& application,
             const std::vector<std::string>& arguments,
             const Path& workingDirectory) = 0;

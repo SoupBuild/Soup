@@ -33,7 +33,7 @@ namespace Soup
         /// <summary>
         /// Creates a process for the provided executable path
         /// </summary>
-        virtual int Execute(
+        virtual ProcessResult Execute(
             const Path& application,
             const std::vector<std::string>& arguments,
             const Path& workingDirectory) override final
@@ -44,7 +44,11 @@ namespace Soup
                 message << " " << value;
 
             _requests.push_back(message.str());
-            return 0;
+            return {
+                0,
+                std::string(),
+                std::string(),
+            };
         }
 
     private:

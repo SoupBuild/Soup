@@ -136,7 +136,7 @@ namespace Soup.Compiler.Clang
         }
 
         /// <summary>
-        /// Link library
+        /// Link libraryx
         /// </summary>
         public Task LinkLibraryAsync(LinkerArguments args)
         {

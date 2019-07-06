@@ -40,7 +40,11 @@ struct SmartHandle
 int PlatformProcessManagerImpl::Execute(
     const char* application,
     char* arguments,
-    const char* workingDirectory)
+    const char* workingDirectory,
+    OutputCallBackFunction stdOutputCallback,
+    void* stdOutputContext,
+    OutputCallBackFunction stdErrorCallback,
+    void* stdErrorContext)
 {
     // Setup the input/output streams
     // Set the bInheritHandle flag so pipe handles are inherited.
@@ -57,6 +61,16 @@ int PlatformProcessManagerImpl::Execute(
 
     // Ensure the read handle to the pipe for STDOUT is not inherited.
     if (!SetHandleInformation(childStdOutRead._handle, HANDLE_FLAG_INHERIT, 0))
+        return -1;
+
+    // Create a pipe for the child process's STDERR.
+    SmartHandle childStdErrRead;
+    SmartHandle childStdErrWrite;
+    if (!CreatePipe(&childStdErrRead._handle, &childStdErrWrite._handle, &securityAttributes, 0))
+        return -1;
+
+    // Ensure the read handle to the pipe for STDERR is not inherited.
+    if (!SetHandleInformation(childStdErrRead._handle, HANDLE_FLAG_INHERIT, 0))
         return -1;
 
     // Create a pipe for the child process's STDIN.
@@ -79,7 +93,7 @@ int PlatformProcessManagerImpl::Execute(
     STARTUPINFOA startupInfo = {};
     ZeroMemory(&startupInfo, sizeof(STARTUPINFOA));
     startupInfo.cb = sizeof(startupInfo);
-    startupInfo.hStdError = childStdOutWrite._handle;
+    startupInfo.hStdError = childStdErrWrite._handle;
     startupInfo.hStdOutput = childStdOutWrite._handle;
     startupInfo.hStdInput = childStdInRead._handle;
     startupInfo.dwFlags |= STARTF_USESTDHANDLES;
@@ -107,34 +121,43 @@ int PlatformProcessManagerImpl::Execute(
     auto processHandle = SmartHandle(processInfo.hProcess);
     auto threadHandle = SmartHandle(processInfo.hThread);
 
-    // Read all and write to stdout
-    DWORD dwRead, dwWritten;
-    const int BufferSize = 6;
-    CHAR chBuf[BufferSize];
-    HANDLE hParentStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    if (!WriteFile(hParentStdOut, "Hello there", 9, &dwWritten, nullptr))
-        return -1;
-
     // Wait until child process exits.
     WaitForSingleObject(processHandle._handle, INFINITE);
 
     // Close the child write handle to ensure we stop reading
     childStdOutWrite.Close();
+    childStdErrWrite.Close();
 
+    // Read all and write to stdout
+    // TODO: May want to switch over to a background thread with peak to read in order
+    DWORD dwRead = -1;
+    const int BufferSize = 256;
+    char buffer[BufferSize + 1];
+
+    // Read on output
     while (true)
     {
-        if(!ReadFile(childStdOutRead._handle, chBuf, BufferSize, &dwRead, nullptr))
-            return -2;
+        if(!ReadFile(childStdOutRead._handle, buffer, BufferSize, &dwRead, nullptr))
+            break;
         if (dwRead == 0)
             break;
 
-        if (!WriteFile(hParentStdOut, chBuf, dwRead, &dwWritten, nullptr))
-            return -3;
+        // Make the string null terminated
+        buffer[dwRead] = '\0';
+        stdOutputCallback(stdOutputContext, buffer, dwRead);
+    }
 
-        // Stop reading if we ran out of things to read
-        if (dwRead != BufferSize)
+    // Read all errors
+    while (true)
+    {
+        if(!ReadFile(childStdErrRead._handle, buffer, BufferSize, &dwRead, nullptr))
+           break;
+        if (dwRead == 0)
             break;
+
+        // Make the string null terminated
+        buffer[dwRead] = '\0';
+        stdErrorCallback(stdErrorContext, buffer, dwRead);
     }
 
     return 0;

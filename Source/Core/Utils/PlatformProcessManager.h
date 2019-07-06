@@ -23,7 +23,7 @@ namespace Soup
         /// <summary>
         /// Creates a process for the provided executable path
         /// </summary>
-        virtual int Execute(
+        virtual ProcessResult Execute(
             const Path& application,
             const std::vector<std::string>& arguments,
             const Path& workingDirectory) override final
@@ -34,10 +34,38 @@ namespace Soup
 
             std::string argumentsString = argumentsValue.str();
             Log::Verbose(workingDirectory.ToString() + ": " + application.ToString() + " " + argumentsString);
-            return PlatformProcessManagerImpl::Execute(
+
+            // Aggregate all the output
+            std::stringstream stdOut;
+            std::stringstream stdErr;
+
+            // Convert to c style since we do not have access to stdlib in this helper
+            // TODO: Remove crazyness when we get a good implementation of modules
+            auto outputCallback = [](void* context, const char* value, int length) 
+            { 
+                auto& stdOut = *reinterpret_cast<std::stringstream*>(context);
+                stdOut << value;
+            };
+            auto errorCallback = [](void* context, const char* value, int length)
+            {
+                auto& stdErr = *reinterpret_cast<std::stringstream*>(context);
+                stdErr << value;
+            };
+
+            int exitCode = PlatformProcessManagerImpl::Execute(
                 application.ToString().c_str(),
                 const_cast<char*>(argumentsString.c_str()),
-                workingDirectory.ToString().c_str());
+                workingDirectory.ToString().c_str(),
+                outputCallback,
+                &stdOut,
+                errorCallback,
+                &stdErr);
+
+            return {
+                exitCode,
+                stdOut.str(),
+                stdErr.str(),
+            };
         }
     };
 }

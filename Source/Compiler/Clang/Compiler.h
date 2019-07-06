@@ -101,13 +101,22 @@ namespace Soup::Compiler::Clang
             //         process.BeginErrorReadLine();
             //         process.WaitForExit();
 
-            auto exitCode = IProcessManager::Current().Execute(
+            auto result = IProcessManager::Current().Execute(
                 compilerPath,
                 commandArgs,
                 args.RootDirectory);
-            if (exitCode != 0)
+            if (result.ExitCode != 0)
             {
-                throw std::runtime_error("Compiler failed: " + std::to_string(exitCode));
+                throw std::runtime_error("Compiler Error: " + std::to_string(result.ExitCode));
+            }
+
+            Log::Verbose(result.StdOut);
+
+            // If there was any error output then the build failed
+            if (!result.StdErr.empty())
+            {
+                Log::Error(result.StdErr);
+                throw std::runtime_error(result.StdErr);
             }
 
             //         HeaderInclude result = null;
