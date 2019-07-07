@@ -110,7 +110,10 @@ namespace Soup::Compiler::Clang
                 throw std::runtime_error("Compiler Error: " + std::to_string(result.ExitCode));
             }
 
-            Log::Verbose(result.StdOut);
+            if (!result.StdOut.empty())
+            {
+                Log::Verbose(result.StdOut);
+            }
 
             // If there was any error output then the build failed
             if (!result.StdErr.empty())

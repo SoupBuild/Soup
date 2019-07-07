@@ -40,8 +40,8 @@ namespace Soup
                 Path relativeInputFile = inputFile.HasRoot() ? inputFile : rootPath + inputFile;
                 if (!IFileSystem::Current().Exists(relativeInputFile))
                 {
-                    Log::Verbose("Input file missing [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "].");
-                    return true;
+                    Log::Error("Input file missing [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "].");
+                    throw std::runtime_error("Missing input file, not possible.");
                 }
 
                 auto dependencyLastWriteTime = 

@@ -100,6 +100,16 @@ namespace Soup
             try
             {
                 // Determine the include paths
+                std::unordered_set<std::string> includePaths;
+                for (auto& entry : std::filesystem::recursive_directory_iterator(workingDirectory.ToString()))
+                {
+                    if (entry.path().extension() == ".h")
+                    {
+                        includePaths.insert(
+                            entry.path().parent_path().string());
+                    }
+                }
+
                 // var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
                 // var uniqueFolders = folderWithHeadersSet.ToList();
 
@@ -107,20 +117,21 @@ namespace Soup
                 auto includeModules = std::vector<Path>();
                 for (auto dependecy : recipe.GetDependencies())
                 {
-                    auto packagePath = dependecy.GetPath();
-                    includeModules.push_back(std::move(packagePath));
+                    auto modulePath = GetRecipeModulePath(dependecy.GetPath());
+                    includeModules.push_back(std::move(modulePath));
                 }
 
                 // Build up arguments to build this individual recipe
                 auto arguments = BuildArguments();
-                arguments.Target = BuildTargetType::Executable;
+                arguments.TargetName = recipe.GetName();
+                arguments.TargetType = BuildTargetType::Executable;
                 arguments.WorkingDirectory = workingDirectory;
                 arguments.ObjectDirectory = GetObjectDirectory();
                 arguments.BinaryDirectory = GetBinaryDirectory();
                 arguments.ModuleSourceFile = 
                     recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
                 arguments.SourceFiles = recipe.GetSourceAsPath();
-                arguments.IncludeDirectories = std::vector<Path>({});
+                arguments.IncludeDirectories = std::vector<Path>(includePaths.begin(), includePaths.end());
                 arguments.IncludeModules = std::move(includeModules);
                 arguments.IsIncremental = true;
 
@@ -144,6 +155,23 @@ namespace Soup
         Path GetBinaryDirectory() const
         {
             return _binaryDirectory + Path(_compiler->GetName());
+        }
+
+        Path GetRecipeModulePath(const Path& packagePath) const
+        {
+            auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
+            Recipe dependecyRecipe = {};
+            if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
+            {
+                Log::Error("Failed to load the dependency package: {packagePath}");
+                throw std::runtime_error("Failed to load dependency.");
+            }
+
+            auto packageBinaryPath = packagePath + GetBinaryDirectory();
+            auto moduleFilename = Path(dependecyRecipe.GetName() + "." + std::string(_compiler->GetModuleFileExtension()));
+            auto modulePath = packageBinaryPath + moduleFilename;
+
+            return modulePath;
         }
 
     private:

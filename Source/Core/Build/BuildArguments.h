@@ -52,9 +52,14 @@ namespace Soup
     export struct BuildArguments
     {
         /// <summary>
+        /// Gets or sets the target name
+        /// </summary>
+        std::string TargetName;
+
+        /// <summary>
         /// Gets or sets the target type
         /// </summary>
-        BuildTargetType Target;
+        BuildTargetType TargetType;
 
         /// <summary>
         /// Gets or sets the working directory
@@ -101,7 +106,8 @@ namespace Soup
         /// </summary>
         bool operator ==(const BuildArguments& rhs) const
         {
-            return Target == rhs.Target &&
+            return TargetName == rhs.TargetName &&
+                TargetType == rhs.TargetType &&
                 WorkingDirectory == rhs.WorkingDirectory &&
                 ObjectDirectory == rhs.ObjectDirectory &&
                 BinaryDirectory == rhs.BinaryDirectory &&

@@ -32,7 +32,8 @@ namespace Soup
         virtual void Execute(const BuildArguments& arguments) override final
         {
             // Log the incoming request for verbose logs
-            Log::Verbose("Target = " + ToString(arguments.Target));
+            Log::Verbose("TargetName = " + arguments.TargetName);
+            Log::Verbose("TargetType = " + ToString(arguments.TargetType));
             Log::Verbose("WorkingDirectory = " + arguments.WorkingDirectory.ToString());
             Log::Verbose("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
             Log::Verbose("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
@@ -136,18 +137,21 @@ namespace Soup
                 // Setup the shared properties
                 auto compileArguments = CompileArguments();
                 compileArguments.Standard = LanguageStandard::CPP20;
+                compileArguments.Optimize = OptimizationLevel::Speed;
                 compileArguments.RootDirectory = arguments.WorkingDirectory;
-                compileArguments.OutputDirectory = arguments.ObjectDirectory;
                 compileArguments.PreprocessorDefinitions = {};
                 compileArguments.IncludeDirectories = arguments.IncludeDirectories;
                 compileArguments.IncludeModules = arguments.IncludeModules;
-                compileArguments.GenerateIncludeTree = true;
+                compileArguments.GenerateIncludeTree = false;
 
                 for (auto& file : source)
                 {
                     // Compile the individual translation unit
                     Log::Verbose(file.ToString());
                     compileArguments.SourceFile = file;
+                    compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
+                    compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
+
                     auto result = _compiler->Compile(compileArguments);
                 }
 
@@ -177,7 +181,7 @@ namespace Soup
             auto linkArguments = LinkArguments();
 
             // Translate the target type into the link target
-            switch (arguments.Target)
+            switch (arguments.TargetType)
             {
                 case BuildTargetType::Library:
                     linkArguments.Target = LinkTarget::StaticLibrary;

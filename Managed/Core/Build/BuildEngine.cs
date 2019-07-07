@@ -524,7 +524,7 @@ namespace Soup
 
         private string BuildRecipeModuleFilename(Recipe recipe)
         {
-            return $"{recipe.Name.Replace(".", "_")}.{_compiler.ModuleFileExtension}";
+            return $"{recipe.Name}.{_compiler.ModuleFileExtension}";
         }
 
         private string GetNamespace(SemanticVersion version)

@@ -65,7 +65,7 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
-        void IsOutdated_SingleInput_TargetExists_MissingInput()
+        void IsOutdated_SingleInput_TargetExists_MissingInputThrows()
         {
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
@@ -87,10 +87,9 @@ namespace Soup::UnitTests
             auto rootPath = Path("Root");
 
             // Perform the check
-            bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
-
-            // Verify the results
-            Assert::IsTrue(result, "Verify the result is true.");
+            Assert::ThrowsRuntimeError([&targetFile, &inputFiles, &rootPath]() {
+                bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
+            });
 
             // Verify expected file system requests
             Assert::AreEqual(
@@ -105,7 +104,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: Input file missing [Input.cpp] -> [Output.bin].",
+                    "ERRO: Input file missing [Input.cpp] -> [Output.bin].",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");

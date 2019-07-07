@@ -32,6 +32,59 @@ namespace Soup
         CPP20,
     };
 
+    std::string ToString(LanguageStandard value)
+    {
+        switch (value)
+        {
+            case LanguageStandard::CPP11:
+                return "C++11";
+            case LanguageStandard::CPP14:
+                return "C++14";
+            case LanguageStandard::CPP17:
+                return "C++17";
+            case LanguageStandard::CPP20:
+                return "C++20";
+            default:
+                throw std::runtime_error("Unknown LanguageStandard");
+        }
+    }
+
+    /// <summary>
+    /// The enumeration of optimization levels
+    /// </summary>
+    export enum class OptimizationLevel
+    {
+        /// <summary>
+        /// Disable all optimization for build speed and debugability
+        /// </summary>
+        Disabled,
+
+        /// <summary>
+        /// Optimize for speed
+        /// </summary>
+        Speed,
+
+        /// <summary>
+        /// Optimize for size
+        /// </summary>
+        Size,
+    };
+
+    std::string ToString(OptimizationLevel value)
+    {
+        switch (value)
+        {
+            case OptimizationLevel::Disabled:
+                return "Disabled";
+            case OptimizationLevel::Speed:
+                return "Speed";
+            case OptimizationLevel::Size:
+                return "Size";
+            default:
+                throw std::runtime_error("Unknown OptimizationLevel");
+        }
+    }
+
     /// <summary>
     /// The set of standard compiler arguments
     /// </summary>
@@ -43,14 +96,14 @@ namespace Soup
         LanguageStandard Standard;
 
         /// <summary>
+        /// Gets or sets the optimization level
+        /// </summary>
+        OptimizationLevel Optimize;
+
+        /// <summary>
         /// Gets or sets the root directory
         /// </summary>
         Path RootDirectory;
-
-        /// <summary>
-        /// Gets or sets the output directory
-        /// </summary>
-        Path OutputDirectory;
 
         /// <summary>
         /// Gets or sets the list of preprocessor definitions
@@ -61,6 +114,11 @@ namespace Soup
         /// Gets or sets the source file
         /// </summary>
         Path SourceFile;
+
+        /// <summary>
+        /// Gets or sets the target file
+        /// </summary>
+        Path TargetFile;
 
         /// <summary>
         /// Gets or sets the list of include directories
@@ -88,10 +146,11 @@ namespace Soup
         bool operator ==(const CompileArguments& rhs) const
         {
             return Standard == rhs.Standard &&
+                Optimize == rhs.Optimize &&
                 RootDirectory == rhs.RootDirectory &&
-                OutputDirectory == rhs.OutputDirectory &&
                 PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
                 SourceFile  == rhs.SourceFile &&
+                TargetFile  == rhs.TargetFile &&
                 IncludeDirectories == rhs.IncludeDirectories &&
                 IncludeModules == rhs.IncludeModules &&
                 ExportModule == rhs.ExportModule &&
@@ -107,14 +166,16 @@ namespace Soup
         {
             auto stringBuilder = std::stringstream();
             stringBuilder << "[" <<
-                static_cast<int>(Standard) << ", " <<
-                RootDirectory.ToString() << ", " <<
-                OutputDirectory.ToString() << ", [";
+                ::Soup::ToString(Standard) << ", " <<
+                ::Soup::ToString(Optimize) << ", " <<
+                RootDirectory.ToString() << ", [";
 
             for (auto& value : PreprocessorDefinitions)
                 stringBuilder << value << ", ";
 
-            stringBuilder << "], " << SourceFile.ToString() << ", [";
+            stringBuilder << "], " << 
+                SourceFile.ToString() << ", " <<
+                TargetFile.ToString() << ", [";
 
             for (auto& value : IncludeDirectories)
                 stringBuilder << value.ToString() << ", ";

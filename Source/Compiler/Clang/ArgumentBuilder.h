@@ -18,9 +18,9 @@ namespace Soup::Compiler::Clang
         {
             // Verify the input
             if (args.SourceFile.GetFileName().empty())
-            {
                 throw std::runtime_error("Source file cannot be empty.");
-            }
+            if (args.TargetFile.GetFileName().empty())
+                throw std::runtime_error("Target file cannot be empty.");
 
             // Calculate object output file
             auto commandArgs = std::vector<std::string>();
@@ -28,8 +28,11 @@ namespace Soup::Compiler::Clang
             // Enable verbose output
             // commandArgs.Add("-v");
 
+            // Disable warnings on unknown attributes to allow test attributes
+            commandArgs.push_back("-Wno-unknown-attributes");
+
             // Disable ms compatibility (workaround for bug with inplicit types in pcm)
-            commandArgs.push_back("-fno-ms-compatibility");
+            // commandArgs.push_back("-fno-ms-compatibility");
 
             // Allow public std visible during link time
             commandArgs.push_back("-Xclang");
@@ -58,10 +61,20 @@ namespace Soup::Compiler::Clang
                     throw std::runtime_error("Unknown language standard.");
             }
 
-            // Enable experimental features for C++ 20
-            if (args.Standard == LanguageStandard::CPP20)
+            // Set the optimization level
+            switch (args.Optimize)
             {
-                commandArgs.push_back("-fmodules-ts");
+                case OptimizationLevel::Disabled:
+                    // DEFAULT: "-O0";
+                    break;
+                case OptimizationLevel::Speed:
+                    commandArgs.push_back("-O3");
+                    break;
+                case OptimizationLevel::Size:
+                    commandArgs.push_back("-Oz");
+                    break;
+                default:
+                    throw std::runtime_error("Unknown optimization level.");
             }
 
             // Set the include paths
@@ -76,6 +89,12 @@ namespace Soup::Compiler::Clang
             {
                 auto argument = "-D" + definition;
                 commandArgs.push_back(std::move(argument));
+            }
+
+            // Enable experimental features for C++ 20
+            if (args.Standard == LanguageStandard::CPP20)
+            {
+                commandArgs.push_back("-fmodules-ts");
             }
 
             // Ignore Standard Include Paths to prevent pulling in accidental headers
@@ -107,8 +126,12 @@ namespace Soup::Compiler::Clang
                 commandArgs.push_back("-c");
             }
 
-            // Lastly add the file
+            // Add the source file
             commandArgs.push_back(args.SourceFile.ToString());
+
+            // Add the target file
+            commandArgs.push_back("-o");
+            commandArgs.push_back(args.TargetFile.ToString());
 
             return commandArgs;
         }

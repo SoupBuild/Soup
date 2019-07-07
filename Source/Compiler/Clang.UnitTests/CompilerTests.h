@@ -30,22 +30,14 @@ namespace Soup::Compiler::Clang::UnitTests
 
             CompileArguments arguments = {};
             arguments.SourceFile = Path("File.cpp");
+            arguments.TargetFile = Path("obj/File.o");
 
             auto result = uut.Compile(arguments);
 
             // Verify expected file system requests
             Assert::AreEqual(
-                std::vector<std::pair<std::string, std::vector<std::string>>>({
-                    std::make_pair(
-                        "D:/Repos/llvm/build/Release/bin/clang++.exe",
-                        std::vector<std::string>({
-                            "-fno-ms-compatibility",
-                            "-Xclang",
-                            "-flto-visibility-public-std",
-                            "-std=c++11",
-                            "-c",
-                            "File.cpp",
-                        })),
+                std::vector<std::string>({
+                    ": D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
                 }),
                 processManager->GetRequests(),
                 "Verify process manager requests match expected.");
