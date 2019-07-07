@@ -36,12 +36,11 @@ namespace Soup
                 IFileSystem::Current().GetLastWriteTime(relativeOutputFile);
             for (auto& inputFile : inputFiles)
             {
-                // if the file is relative then combine it with the root path
+                // If the file is relative then combine it with the root path
                 Path relativeInputFile = inputFile.HasRoot() ? inputFile : rootPath + inputFile;
                 if (!IFileSystem::Current().Exists(relativeInputFile))
                 {
-                    Log::Verbose("Input file missing, rebuild required.");
-                    Log::Verbose("[" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "].");
+                    Log::Verbose("Input file missing [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "].");
                     return true;
                 }
 
@@ -49,12 +48,9 @@ namespace Soup
                     IFileSystem::Current().GetLastWriteTime(relativeInputFile);
                 if (dependencyLastWriteTime > outputFileLastWriteTime)
                 {
-                    Log::Verbose("Input file altered after target, rebuild required.");
-                    Log::Verbose("[" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "].");
+                    Log::Verbose("Input altered after target [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "].");
                     return true;
                 }
-
-                Log::Verbose("File up to date: " + inputFile.ToString());
             }
 
             return false;

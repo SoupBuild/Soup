@@ -74,7 +74,7 @@ namespace Soup
                     List<string> newIncludes = new List<string>();
                     foreach (var include in info.Includes)
                     {
-                        if (set.Contains(include))
+                        if (!set.Contains(include))
                         {
                             set.Add(include);
                             newIncludes.Add(include);

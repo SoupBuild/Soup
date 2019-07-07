@@ -37,9 +37,6 @@ namespace Soup
             Log::Verbose("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
             Log::Verbose("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
             Log::Verbose("ModuleSourceFile = " + arguments.ModuleSourceFile.ToString());
-            // Log::Verbose("SourceFiles = " + arguments.SourceFiles.ToString());
-            // Log::Verbose("IncludeDirectories = " + arguments.IncludeDirectories.ToString());
-            // Log::Verbose("IncludeModules = " + arguments.IncludeModules.ToString());
             Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
 
             // Perform the core compilation of the source files
@@ -86,6 +83,12 @@ namespace Soup
                             // Include the source file itself
                             inputClosure.push_back(sourceFile);
 
+                            // All modules are input dependencies
+                            std::copy(
+                                arguments.IncludeModules.begin(),
+                                arguments.IncludeModules.end(),
+                                std::back_inserter(inputClosure));
+
                             // Build the expected object file
                             auto outputFile = arguments.ObjectDirectory + Path(sourceFile.GetFileName());
                             outputFile.SetFileExtension(_compiler->GetObjectFileExtension());
@@ -98,6 +101,10 @@ namespace Soup
                             {
                                 // The file or a dependecy has changed
                                 source.push_back(sourceFile);
+                            }
+                            else
+                            {
+                                Log::Verbose("File up to date: " + sourceFile.ToString());
                             }
                         }
                         else

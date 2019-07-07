@@ -26,7 +26,7 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
-        void Build_Executable_SingleFile_NotIncremental()
+        void Build_Executable_Simple_NotIncremental()
         {
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
@@ -105,7 +105,7 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
-        void Build_Executable_SingleFile_Incremental_MissingBuildState()
+        void Build_Executable_Simple_Incremental_MissingBuildState()
         {
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
@@ -188,7 +188,7 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
-        void Build_Executable_SingleFile_Incremental_MissingFileInfo()
+        void Build_Executable_Simple_Incremental_MissingFileInfo()
         {
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
@@ -280,7 +280,7 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
-        void Build_Executable_SingleFile_Incremental_UpToDate()
+        void Build_Executable_Simple_Incremental_UpToDate()
         {
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
@@ -359,6 +359,292 @@ namespace Soup::UnitTests
                     "VERB: Loading previous build state.",
                     "VERB: Check for updated source.",
                     "VERB: File up to date: TestFile.cpp",
+                    "INFO: Up to date",
+                }),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
+        }
+
+        [[Fact]]
+        void Build_Library_Complex_IncludeModuleUpdated()
+        {
+            // Register the test listener
+            auto testListener = std::make_shared<TestTraceListener>();
+            Log::RegisterListener(testListener);
+
+            // Register the test file system
+            auto fileSystem = std::make_shared<MockFileSystem>();
+            IFileSystem::Register(fileSystem);
+
+            // Create the initial build state
+            auto initialBuildState = BuildState({
+                FileInfo(Path("TestFile1.cpp"), { }),
+                FileInfo(Path("TestFile2.cpp"), { }),
+                FileInfo(Path("TestFile3.cpp"), { }),
+            });
+            std::stringstream initialBuildStateJson;
+            BuildStateJson::Serialize(initialBuildState, initialBuildStateJson);
+            fileSystem->CreateMockFile(
+                Path("root/.soup/BuildState.json"),
+                MockFileState(std::move(initialBuildStateJson)));
+
+            // Setup the input/output files to be up to date
+            auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
+            auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+            auto outdatedInputTime = CreateDateTime(2015, 5, 22, 9, 13);
+            fileSystem->CreateMockFile(Path("root/obj/TestFile1.mock.obj"), MockFileState(outputTime));
+            fileSystem->CreateMockFile(Path("root/obj/TestFile2.mock.obj"), MockFileState(outputTime));
+            fileSystem->CreateMockFile(Path("root/obj/TestFile3.mock.obj"), MockFileState(outputTime));
+            fileSystem->CreateMockFile(Path("root/TestFile1.cpp"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("root/TestFile2.cpp"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("root/TestFile3.cpp"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("../Other/bin/OtherModule1.mock.bmi"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("OtherModule2.mock.bmi"), MockFileState(outdatedInputTime));
+
+            auto compiler = std::make_shared<Compiler::Mock::Compiler>();
+            auto uut = BuildEngine(compiler);
+
+            auto arguments = BuildArguments();
+            arguments.Target = BuildTargetType::Library;
+            arguments.WorkingDirectory = Path("root");
+            arguments.ObjectDirectory = Path("obj");
+            arguments.BinaryDirectory = Path("bin");
+            arguments.SourceFiles = std::vector<Path>({ 
+                Path("TestFile1.cpp"),
+                Path("TestFile2.cpp"),
+                Path("TestFile3.cpp"),
+            });
+            arguments.IncludeDirectories = std::vector<Path>({
+                Path("Folder"),
+                Path("AnotherFolder/Sub"),
+            });
+            arguments.IncludeModules = std::vector<Path>({
+                Path("../../Other/bin/OtherModule1.mock.bmi"),
+                Path("../OtherModule2.mock.bmi"),
+            });
+            arguments.IsIncremental = true;
+
+            uut.Execute(arguments);
+
+            // Setup the shared arguments
+            auto expectedCompileArguments = CompileArguments();
+            expectedCompileArguments.Standard = LanguageStandard::CPP20;
+            expectedCompileArguments.RootDirectory = Path("root");
+            expectedCompileArguments.OutputDirectory = Path("obj");
+            expectedCompileArguments.IncludeDirectories = std::vector<Path>({
+                Path("Folder"),
+                Path("AnotherFolder/Sub"),
+            });
+            expectedCompileArguments.IncludeModules = std::vector<Path>({
+                Path("../../Other/bin/OtherModule1.mock.bmi"),
+                Path("../OtherModule2.mock.bmi"),
+            });
+            expectedCompileArguments.GenerateIncludeTree = true;
+
+            auto expectedCompile1Arguments = expectedCompileArguments;
+            expectedCompile1Arguments.SourceFile = Path("TestFile1.cpp");
+            auto expectedCompile2Arguments = expectedCompileArguments;
+            expectedCompile2Arguments.SourceFile = Path("TestFile2.cpp");
+            auto expectedCompile3Arguments = expectedCompileArguments;
+            expectedCompile3Arguments.SourceFile = Path("TestFile3.cpp");
+
+            auto expectedLinkArguments = LinkArguments();
+            expectedLinkArguments.Target = LinkTarget::StaticLibrary;
+
+            // Verify expected compiler calls
+            Assert::AreEqual(
+                std::vector<CompileArguments>({
+                    expectedCompile1Arguments,
+                    expectedCompile2Arguments,
+                    expectedCompile3Arguments,
+                }),
+                compiler->GetCompileRequests(),
+                "Verify compiler requests match expected.");
+            Assert::AreEqual(
+                std::vector<LinkArguments>({
+                    expectedLinkArguments,
+                }),
+                compiler->GetLinkRequests(),
+                "Verify link requests match expected.");
+
+            // Verify expected file system requests
+            Assert::AreEqual(
+                std::vector<std::pair<std::string, FileSystemRequestType>>({
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenRead),
+                    std::make_pair("root/obj/TestFile1.mock.obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj/TestFile1.mock.obj", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/TestFile1.cpp", FileSystemRequestType::Exists),
+                    std::make_pair("root/TestFile1.cpp", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/obj/TestFile2.mock.obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj/TestFile2.mock.obj", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/TestFile2.cpp", FileSystemRequestType::Exists),
+                    std::make_pair("root/TestFile2.cpp", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/obj/TestFile3.mock.obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj/TestFile3.mock.obj", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/TestFile3.cpp", FileSystemRequestType::Exists),
+                    std::make_pair("root/TestFile3.cpp", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
+                }),
+                fileSystem->GetRequests(),
+                "Verify file system requests match expected.");
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "VERB: Target = Library",
+                    "VERB: WorkingDirectory = root",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleSourceFile = ",
+                    "VERB: IsIncremental = true",
+                    "VERB: Task: CoreCompile",
+                    "VERB: Loading previous build state.",
+                    "VERB: Check for updated source.",
+                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile1.mock.obj].",
+                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile2.mock.obj].",
+                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile3.mock.obj].",
+                    "VERB: Compiling source files.",
+                    "VERB: TestFile1.cpp",
+                    "VERB: TestFile2.cpp",
+                    "VERB: TestFile3.cpp",
+                    "VERB: Saving updated build state",
+                    "VERB: Task: CoreLink",
+                }),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
+        }
+
+        [[Fact]]
+        void Build_Library_Complex_UpToDate()
+        {
+            // Register the test listener
+            auto testListener = std::make_shared<TestTraceListener>();
+            Log::RegisterListener(testListener);
+
+            // Register the test file system
+            auto fileSystem = std::make_shared<MockFileSystem>();
+            IFileSystem::Register(fileSystem);
+
+            // Create the initial build state
+            auto initialBuildState = BuildState({
+                FileInfo(Path("TestFile1.cpp"), { }),
+                FileInfo(Path("TestFile2.cpp"), { }),
+                FileInfo(Path("TestFile3.cpp"), { }),
+            });
+            std::stringstream initialBuildStateJson;
+            BuildStateJson::Serialize(initialBuildState, initialBuildStateJson);
+            fileSystem->CreateMockFile(
+                Path("root/.soup/BuildState.json"),
+                MockFileState(std::move(initialBuildStateJson)));
+
+            // Setup the input/output files to be up to date
+            auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
+            auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+            fileSystem->CreateMockFile(Path("root/obj/TestFile1.mock.obj"), MockFileState(outputTime));
+            fileSystem->CreateMockFile(Path("root/obj/TestFile2.mock.obj"), MockFileState(outputTime));
+            fileSystem->CreateMockFile(Path("root/obj/TestFile3.mock.obj"), MockFileState(outputTime));
+            fileSystem->CreateMockFile(Path("root/TestFile1.cpp"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("root/TestFile2.cpp"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("root/TestFile3.cpp"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("../Other/bin/OtherModule1.mock.bmi"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("OtherModule2.mock.bmi"), MockFileState(inputTime));
+
+            auto compiler = std::make_shared<Compiler::Mock::Compiler>();
+            auto uut = BuildEngine(compiler);
+
+            auto arguments = BuildArguments();
+            arguments.Target = BuildTargetType::Library;
+            arguments.WorkingDirectory = Path("root");
+            arguments.ObjectDirectory = Path("obj");
+            arguments.BinaryDirectory = Path("bin");
+            arguments.SourceFiles = std::vector<Path>({ 
+                Path("TestFile1.cpp"),
+                Path("TestFile2.cpp"),
+                Path("TestFile3.cpp"),
+            });
+            arguments.IncludeDirectories = std::vector<Path>({
+                Path("Folder"),
+                Path("AnotherFolder/Sub"),
+            });
+            arguments.IncludeModules = std::vector<Path>({
+                Path("../../Other/bin/OtherModule1.mock.bmi"),
+                Path("../OtherModule2.mock.bmi"),
+            });
+            arguments.IsIncremental = true;
+
+            uut.Execute(arguments);
+
+            // Verify expected compiler calls
+            Assert::AreEqual(
+                std::vector<CompileArguments>({}),
+                compiler->GetCompileRequests(),
+                "Verify compiler requests match expected.");
+            Assert::AreEqual(
+                std::vector<LinkArguments>({}),
+                compiler->GetLinkRequests(),
+                "Verify link requests match expected.");
+
+            // Verify expected file system requests
+            Assert::AreEqual(
+                std::vector<std::pair<std::string, FileSystemRequestType>>({
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenRead),
+                    std::make_pair("root/obj/TestFile1.mock.obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj/TestFile1.mock.obj", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/TestFile1.cpp", FileSystemRequestType::Exists),
+                    std::make_pair("root/TestFile1.cpp", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/obj/TestFile2.mock.obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj/TestFile2.mock.obj", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/TestFile2.cpp", FileSystemRequestType::Exists),
+                    std::make_pair("root/TestFile2.cpp", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/obj/TestFile3.mock.obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj/TestFile3.mock.obj", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/TestFile3.cpp", FileSystemRequestType::Exists),
+                    std::make_pair("root/TestFile3.cpp", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                }),
+                fileSystem->GetRequests(),
+                "Verify file system requests match expected.");
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "VERB: Target = Library",
+                    "VERB: WorkingDirectory = root",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleSourceFile = ",
+                    "VERB: IsIncremental = true",
+                    "VERB: Task: CoreCompile",
+                    "VERB: Loading previous build state.",
+                    "VERB: Check for updated source.",
+                    "VERB: File up to date: TestFile1.cpp",
+                    "VERB: File up to date: TestFile2.cpp",
+                    "VERB: File up to date: TestFile3.cpp",
                     "INFO: Up to date",
                 }),
                 testListener->GetMessages(),

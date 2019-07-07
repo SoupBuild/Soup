@@ -105,8 +105,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: Input file missing, rebuild required.",
-                    "VERB: [Input.cpp] -> [Output.bin].",
+                    "VERB: Input file missing [Input.cpp] -> [Output.bin].",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -156,8 +155,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: Input file altered after target, rebuild required.",
-                    "VERB: [Input.cpp] -> [Output.bin].",
+                    "VERB: Input altered after target [Input.cpp] -> [Output.bin].",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -206,9 +204,7 @@ namespace Soup::UnitTests
 
             // Verify expected logs
             Assert::AreEqual(
-                std::vector<std::string>({
-                    "VERB: File up to date: Input.cpp",
-                }),
+                std::vector<std::string>({}),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
         }
@@ -260,10 +256,7 @@ namespace Soup::UnitTests
 
             // Verify expected logs
             Assert::AreEqual(
-                std::vector<std::string>({
-                    "VERB: File up to date: Input.cpp",
-                    "VERB: File up to date: C:/Input.h",
-                }),
+                std::vector<std::string>({}),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
         }

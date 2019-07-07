@@ -22,6 +22,11 @@ namespace Soup
         {
             if (_compiler == nullptr)
                 throw std::runtime_error("Argument null: compiler");
+
+            // Setup the output directories
+            auto outputDirectory = Path("out");
+            _objectDirectory = outputDirectory + Path("obj");
+            _binaryDirectory = outputDirectory + Path("bin");
         }
 
         /// <summary>
@@ -94,30 +99,29 @@ namespace Soup
 
             try
             {
-                // Initialize the required target paths
-                auto compilerFolder = Path(_compiler->GetName());
-                auto buildPath =
-                    Path(Constants::ProjectGenerateFolderName) +
-                    Path(Constants::StoreBuildFolderName);
-                auto outputDirectory = Path("out");
-                auto objectDirectory = outputDirectory + Path("obj") + compilerFolder;
-                auto binaryDirectory = outputDirectory + Path("bin") + compilerFolder;
-
                 // Determine the include paths
                 // var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
                 // var uniqueFolders = folderWithHeadersSet.ToList();
+
+                // Add all dependency packages modules references
+                auto includeModules = std::vector<Path>();
+                for (auto dependecy : recipe.GetDependencies())
+                {
+                    auto packagePath = dependecy.GetPath();
+                    includeModules.push_back(std::move(packagePath));
+                }
 
                 // Build up arguments to build this individual recipe
                 auto arguments = BuildArguments();
                 arguments.Target = BuildTargetType::Executable;
                 arguments.WorkingDirectory = workingDirectory;
-                arguments.ObjectDirectory = objectDirectory;
-                arguments.BinaryDirectory = binaryDirectory;
+                arguments.ObjectDirectory = GetObjectDirectory();
+                arguments.BinaryDirectory = GetBinaryDirectory();
                 arguments.ModuleSourceFile = 
                     recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
                 arguments.SourceFiles = recipe.GetSourceAsPath();
                 arguments.IncludeDirectories = std::vector<Path>({});
-                arguments.IncludeModules = std::vector<Path>({});
+                arguments.IncludeModules = std::move(includeModules);
                 arguments.IsIncremental = true;
 
                 // Perform the build
@@ -132,7 +136,19 @@ namespace Soup
             }
         }
 
+        Path GetObjectDirectory() const
+        {
+            return _objectDirectory + Path(_compiler->GetName());
+        }
+
+        Path GetBinaryDirectory() const
+        {
+            return _binaryDirectory + Path(_compiler->GetName());
+        }
+
     private:
         std::shared_ptr<ICompiler> _compiler;
+        Path _objectDirectory;
+        Path _binaryDirectory;
     };
 }
