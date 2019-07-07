@@ -12,6 +12,7 @@ namespace Soup
     {
     private:
         static constexpr char DirectorySeparator = '/';
+        static constexpr std::string_view AllValidDirectorySeparators = "/\\";
         static constexpr char LetterDriveSpecifier = ':';
         static constexpr char FileExtensionSeparator = '.';
         static constexpr std::string_view ParentDirectory = "..";
@@ -234,7 +235,7 @@ private:
         size_t current = 0;
         size_t next = 0;
         bool isFirst = true;
-        while ((next = value.find(DirectorySeparator, current)) != std::string::npos)
+        while ((next = value.find_first_of(AllValidDirectorySeparators, current)) != std::string::npos)
         {
             auto directory = value.substr(current, next - current);
 
