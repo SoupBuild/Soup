@@ -97,6 +97,11 @@ namespace Soup
         std::vector<Path> IncludeModules;
 
         /// <summary>
+        /// Gets or sets the list of link
+        /// </summary>
+        std::vector<Path> LinkLibraries;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the build is incremental or not
         /// </summary>
         bool IsIncremental;

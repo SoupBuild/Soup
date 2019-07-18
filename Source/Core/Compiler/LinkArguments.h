@@ -15,10 +15,23 @@ namespace Soup
         StaticLibrary,
 
         /// <summary>
-        /// v
+        /// Executable
         /// </summary>
         Executable,
     };
+
+    std::string ToString(LinkTarget value)
+    {
+        switch (value)
+        {
+            case LinkTarget::StaticLibrary:
+                return "StaticLibrary";
+            case LinkTarget::Executable:
+                return "Executable";
+            default:
+                throw std::runtime_error("Unknown LinkTarget");
+        }
+    }
 
     /// <summary>
     /// The shared link arguments
@@ -27,51 +40,66 @@ namespace Soup
     {
     public:
         /// <summary>
+        /// Gets or sets the target file
+        /// </summary>
+        Path TargetFile;
+
+        /// <summary>
         /// Gets or sets the target type
         /// </summary>
-        LinkTarget Target;
+        LinkTarget TargetType;
 
         /// <summary>
         /// Gets or sets the root directory
         /// </summary>
-        std::string RootDirectory;
+        Path RootDirectory;
 
         /// <summary>
-        /// Gets or sets the output directory
+        /// Gets or sets the list of object files
         /// </summary>
-        std::string OutputDirectory;
-
-        /// <summary>
-        /// Gets or sets the target name
-        /// </summary>
-        std::string Name;
-
-        /// <summary>
-        /// Gets or sets the list of source files
-        /// </summary>
-        std::vector<std::string> SourceFiles;
+        std::vector<Path> ObjectFiles;
 
         /// <summary>
         /// Gets or sets the list of library files
         /// </summary>
-        std::vector<std::string> LibraryFiles;
+        std::vector<Path> LibraryFiles;
 
         /// <summary>
         /// Equality operator
         /// </summary>
         bool operator ==(const LinkArguments& rhs) const
         {
-            return Target == rhs.Target &&
+            return TargetFile == rhs.TargetFile &&
+                TargetType == rhs.TargetType &&
                 RootDirectory == rhs.RootDirectory &&
-                OutputDirectory == rhs.OutputDirectory &&
-                Name == rhs.Name &&
-                SourceFiles == rhs.SourceFiles &&
+                ObjectFiles == rhs.ObjectFiles &&
                 LibraryFiles == rhs.LibraryFiles;
         }
 
         bool operator !=(const LinkArguments& rhs) const
         {
             return !(*this == rhs);
+        }
+
+        std::string ToString() const
+        {
+            auto stringBuilder = std::stringstream();
+            stringBuilder << "[" <<
+                TargetFile.ToString() << ", " <<
+                ::Soup::ToString(TargetType) << ", " <<
+                RootDirectory.ToString() << ", [";
+
+            for (auto& value : ObjectFiles)
+                stringBuilder << value.ToString() << ", ";
+
+            stringBuilder << "], [";
+
+            for (auto& value : LibraryFiles)
+                stringBuilder << value.ToString() << ", ";
+
+            stringBuilder << "]";
+
+            return stringBuilder.str();
         }
     };
 }

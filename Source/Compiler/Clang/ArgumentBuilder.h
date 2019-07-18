@@ -135,5 +135,54 @@ namespace Soup::Compiler::Clang
 
             return commandArgs;
         }
+
+        static std::vector<std::string> BuildLinkerArguments(const LinkArguments& args)
+        {
+            // Verify the input
+            if (args.ObjectFiles.empty())
+                throw std::runtime_error("Object files cannot be empty.");
+            if (args.TargetFile.GetFileName().empty())
+                throw std::runtime_error("Target file cannot be empty.");
+
+            // Calculate object output file
+            auto commandArgs = std::vector<std::string>();
+
+            switch (args.TargetType)
+            {
+                case LinkTarget::StaticLibrary:
+                    // Static libraries are linked with ar
+                    // r - Replace existing
+                    // c - Create without warning if does not exist
+                    commandArgs.push_back("rc");
+                    break;
+                case LinkTarget::Executable:
+                    // Executables are put togehter by clang
+
+                    // Enable verbose output
+                    // commandArgs.push_back("-v");
+
+                    commandArgs.push_back("-o");
+                    break;
+                default:
+                    throw std::runtime_error("Unknown LinkTarget.");
+            }
+
+            // Add the output file
+            commandArgs.push_back(args.TargetFile.ToString());
+
+            // Add the library files
+            for (auto& file : args.LibraryFiles)
+            {
+                commandArgs.push_back(file.ToString());
+            }
+
+            // Add the object files
+            for (auto& file : args.ObjectFiles)
+            {
+                commandArgs.push_back(file.ToString());
+            }
+
+            return commandArgs;
+        }
     };
 }

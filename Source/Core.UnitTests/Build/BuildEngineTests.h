@@ -40,6 +40,7 @@ namespace Soup::UnitTests
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();
+            arguments.TargetName = "Program";
             arguments.TargetType = BuildTargetType::Executable;
             arguments.WorkingDirectory = Path("root");
             arguments.ObjectDirectory = Path("obj");
@@ -62,7 +63,12 @@ namespace Soup::UnitTests
             expectedCompileArguments.GenerateIncludeTree = false;
 
             auto expectedLinkArguments = LinkArguments();
-            expectedLinkArguments.Target = LinkTarget::Executable;
+            expectedLinkArguments.TargetType = LinkTarget::Executable;
+            expectedLinkArguments.TargetFile = Path("bin/Program.exe");
+            expectedLinkArguments.RootDirectory = Path("root");
+            expectedLinkArguments.ObjectFiles = std::vector<Path>({
+                Path("obj/TestFile.mock.obj"),
+            });
 
             // Verify expected compiler calls
             Assert::AreEqual(
@@ -89,7 +95,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: TargetName = ",
+                    "VERB: TargetName = Program",
                     "VERB: TargetType = Executable",
                     "VERB: WorkingDirectory = root",
                     "VERB: ObjectDirectory = obj",
@@ -121,6 +127,7 @@ namespace Soup::UnitTests
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();
+            arguments.TargetName = "Program";
             arguments.TargetType = BuildTargetType::Executable;
             arguments.WorkingDirectory = Path("root");
             arguments.ObjectDirectory = Path("obj");
@@ -143,7 +150,12 @@ namespace Soup::UnitTests
             expectedCompileArguments.GenerateIncludeTree = false;
 
             auto expectedLinkArguments = LinkArguments();
-            expectedLinkArguments.Target = LinkTarget::Executable;
+            expectedLinkArguments.TargetFile = Path("bin/Program.exe");
+            expectedLinkArguments.TargetType = LinkTarget::Executable;
+            expectedLinkArguments.RootDirectory = Path("root");
+            expectedLinkArguments.ObjectFiles = std::vector<Path>({
+                Path("obj/TestFile.mock.obj"),
+            });
 
             // Verify expected compiler calls
             Assert::AreEqual(
@@ -171,7 +183,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: TargetName = ",
+                    "VERB: TargetName = Program",
                     "VERB: TargetType = Executable",
                     "VERB: WorkingDirectory = root",
                     "VERB: ObjectDirectory = obj",
@@ -214,6 +226,7 @@ namespace Soup::UnitTests
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();
+            arguments.TargetName = "Program";
             arguments.TargetType = BuildTargetType::Executable;
             arguments.WorkingDirectory = Path("root");
             arguments.ObjectDirectory = Path("obj");
@@ -236,7 +249,12 @@ namespace Soup::UnitTests
             expectedCompileArguments.GenerateIncludeTree = false;
 
             auto expectedLinkArguments = LinkArguments();
-            expectedLinkArguments.Target = LinkTarget::Executable;
+            expectedLinkArguments.TargetFile = Path("bin/Program.exe");
+            expectedLinkArguments.TargetType = LinkTarget::Executable;
+            expectedLinkArguments.RootDirectory = Path("root");
+            expectedLinkArguments.ObjectFiles = std::vector<Path>({
+                Path("obj/TestFile.mock.obj"),
+            });
 
             // Verify expected compiler calls
             Assert::AreEqual(
@@ -265,7 +283,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: TargetName = ",
+                    "VERB: TargetName = Program",
                     "VERB: TargetType = Executable",
                     "VERB: WorkingDirectory = root",
                     "VERB: ObjectDirectory = obj",
@@ -316,6 +334,7 @@ namespace Soup::UnitTests
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();
+            arguments.TargetName = "Program";
             arguments.TargetType = BuildTargetType::Executable;
             arguments.WorkingDirectory = Path("root");
             arguments.ObjectDirectory = Path("obj");
@@ -355,7 +374,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: TargetName = ",
+                    "VERB: TargetName = Program",
                     "VERB: TargetType = Executable",
                     "VERB: WorkingDirectory = root",
                     "VERB: ObjectDirectory = obj",
@@ -412,6 +431,7 @@ namespace Soup::UnitTests
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();
+            arguments.TargetName = "Library";
             arguments.TargetType = BuildTargetType::Library;
             arguments.WorkingDirectory = Path("root");
             arguments.ObjectDirectory = Path("obj");
@@ -428,6 +448,10 @@ namespace Soup::UnitTests
             arguments.IncludeModules = std::vector<Path>({
                 Path("../../Other/bin/OtherModule1.mock.bmi"),
                 Path("../OtherModule2.mock.bmi"),
+            });
+            arguments.LinkLibraries = std::vector<Path>({
+                Path("../../Other/bin/OtherModule1.mock.a"),
+                Path("../OtherModule2.mock.a"),
             });
             arguments.IsIncremental = true;
 
@@ -459,7 +483,18 @@ namespace Soup::UnitTests
             expectedCompile3Arguments.TargetFile = Path("obj/TestFile3.mock.obj");
 
             auto expectedLinkArguments = LinkArguments();
-            expectedLinkArguments.Target = LinkTarget::StaticLibrary;
+            expectedLinkArguments.TargetFile = Path("bin/Library.mock.lib");
+            expectedLinkArguments.TargetType = LinkTarget::StaticLibrary;
+            expectedLinkArguments.RootDirectory = Path("root");
+            expectedLinkArguments.ObjectFiles = std::vector<Path>({
+                Path("obj/TestFile1.mock.obj"),
+                Path("obj/TestFile2.mock.obj"),
+                Path("obj/TestFile3.mock.obj"),
+            });
+            expectedLinkArguments.LibraryFiles = std::vector<Path>({
+                Path("../../Other/bin/OtherModule1.mock.a"),
+                Path("../OtherModule2.mock.a"),
+            });
 
             // Verify expected compiler calls
             Assert::AreEqual(
@@ -514,7 +549,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: TargetName = ",
+                    "VERB: TargetName = Library",
                     "VERB: TargetType = Library",
                     "VERB: WorkingDirectory = root",
                     "VERB: ObjectDirectory = obj",
@@ -577,6 +612,7 @@ namespace Soup::UnitTests
             auto uut = BuildEngine(compiler);
 
             auto arguments = BuildArguments();
+            arguments.TargetName = "Library";
             arguments.TargetType = BuildTargetType::Library;
             arguments.WorkingDirectory = Path("root");
             arguments.ObjectDirectory = Path("obj");
@@ -644,7 +680,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: TargetName = ",
+                    "VERB: TargetName = Library",
                     "VERB: TargetType = Library",
                     "VERB: WorkingDirectory = root",
                     "VERB: ObjectDirectory = obj",

@@ -180,59 +180,48 @@ namespace Soup
 
             auto linkArguments = LinkArguments();
 
+            linkArguments.LibraryFiles = arguments.LinkLibraries;
+            linkArguments.RootDirectory = arguments.WorkingDirectory;
+
             // Translate the target type into the link target
             switch (arguments.TargetType)
             {
                 case BuildTargetType::Library:
-                    linkArguments.Target = LinkTarget::StaticLibrary;
+                    linkArguments.TargetType = LinkTarget::StaticLibrary;
+                    linkArguments.TargetFile = 
+                        arguments.BinaryDirectory + 
+                        Path(arguments.TargetName + "." + std::string(_compiler->GetStaticLibraryFileExtension()));
                     break;
                 case BuildTargetType::Executable:
-                    linkArguments.Target = LinkTarget::Executable;
+                    linkArguments.TargetType = LinkTarget::Executable;
+                    linkArguments.TargetFile = 
+                        arguments.BinaryDirectory + 
+                        Path(arguments.TargetName + ".exe");
                     break;
                 default:
                     throw std::runtime_error("Unknown build target type.");
             }
 
+            // Build up the set of object files
+            std::vector<Path> objectFiles;
+            for (auto& sourceFile : arguments.SourceFiles)
+            {
+                auto objectFile = arguments.ObjectDirectory + Path(sourceFile.GetFileName());
+                objectFile.SetFileExtension(_compiler->GetObjectFileExtension());
+                objectFiles.push_back(objectFile);
+            }
+
+            linkArguments.ObjectFiles = std::move(objectFiles);
+
+            // Ensure the binary directory exists
+            // var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
+            // if (!Directory.Exists(objectDirectry))
+            // {
+            //     Directory.CreateDirectory(objectDirectry);
+            // }
+
             // Perform the link
             _compiler->Link(linkArguments);
-        }
-
-        /// <summary>
-        /// Link the executable
-        /// </summary>
-        void LinkExecutable(const BuildArguments& arguments)
-        {
-            Log::Verbose("Task: LinkExecutable");
-        //     var allFiles = new List<string>(recipe.Source);
-        //     if (recipe.Type == RecipeType.Library)
-        //     {
-        //         allFiles.Add(recipe.Public);
-        //     }
-
-        //     // Add all of the dependencies as module references
-        //     var librarySet = new HashSet<string>();
-        //     await GenerateDependencyLibrarySetAsync(path, binaryDirectory, recipe, librarySet);
-
-        //     var objectFiles = recipe.Source.Select(file => $"{objectDirectory.EnsureTrailingSlash()}{Path.GetFileNameWithoutExtension(file)}.{_compiler.ObjectFileExtension}").ToList();
-        //     var libraryFiles = librarySet.ToList();
-        //     var args = new LinkArguments()
-        //     {
-        //         Name = recipe.Name,
-        //         RootDirectory = path,
-        //         OutputDirectory = binaryDirectory,
-        //         SourceFiles = objectFiles,
-        //         LibraryFiles = libraryFiles,
-        //     };
-
-        //     // Ensure the object directory exists
-        //     var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
-        //     if (!Directory.Exists(objectDirectry))
-        //     {
-        //         Directory.CreateDirectory(objectDirectry);
-        //     }
-
-        //     // Link
-        //     await _compiler.LinkExecutableAsync(args);
         }
 
     private:

@@ -1,4 +1,4 @@
-// <copyright file="ArgumentBuilderTests.h" company="Soup">
+// <copyright file="CompilerArgumentBuilderTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,11 +6,11 @@
 
 namespace Soup::Compiler::Clang::UnitTests
 {
-    class ArgumentBuilderTests
+    class CompilerArgumentBuilderTests
     {
     public:
         [[Fact]]
-        void SingleArgument_ThrowsZeroSource()
+        void EmptySourceFile_Throws()
         {
             CompileArguments arguments = {};
             arguments.SourceFile = Path("");
@@ -21,7 +21,7 @@ namespace Soup::Compiler::Clang::UnitTests
         }
 
         [[Fact]]
-        void SingleArgument_ThrowsZeroTarget()
+        void EmptyTargetFile_Throws()
         {
             CompileArguments arguments = {};
             arguments.SourceFile = Path("File.cpp");
@@ -32,7 +32,7 @@ namespace Soup::Compiler::Clang::UnitTests
         }
 
         [[Fact]]
-        void NoParameters()
+        void DefaultParameters()
         {
             CompileArguments arguments = {};
             arguments.SourceFile = Path("File.cpp");
