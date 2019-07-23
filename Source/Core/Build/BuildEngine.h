@@ -205,7 +205,7 @@ namespace Soup
 
             if (linkRequired)
             {
-                Log::Verbose("Linking target.");
+                Log::Verbose("Linking target");
 
                 auto linkArguments = LinkArguments();
 

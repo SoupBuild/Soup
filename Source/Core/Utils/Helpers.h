@@ -5,6 +5,24 @@
 
 namespace Soup
 {
+    export std::string EscapeString(std::string_view value)
+    {
+        std::stringstream stringBuilder;
+
+        // TODO: THIS IS HORRIBLY WRONG! Utf8 could have multi-byte characters
+        for (size_t i = 0; i < value.size(); i++)
+        {
+            // Add the escape character to all known escapes 
+            // TODO: This is only a partial set
+            if (value[i] == '\\' || value[i] == '"')
+                stringBuilder << '\\';
+
+            stringBuilder << value[i];
+        }
+
+        return stringBuilder.str();
+    }
+
     export std::string ToString(bool value)
     {
         return value ? "true" : "false";

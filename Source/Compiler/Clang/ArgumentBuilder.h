@@ -167,8 +167,8 @@ namespace Soup::Compiler::Clang
                     // Enable verbose output
                     // commandArgs.push_back("-v");
 
-                    auto outputArgument = "-o\"" + args.TargetFile.ToString() + "\"";
-                    commandArgs.push_back(std::move(outputArgument));
+                    commandArgs.push_back("-o");
+                    commandArgs.push_back(args.TargetFile.ToString());
                     break;
                 }
                 default:

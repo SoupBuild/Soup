@@ -29,11 +29,12 @@ namespace Soup
             const Path& workingDirectory) override final
         {
             std::stringstream argumentsValue;
+            argumentsValue << application.ToString();
             for (auto& value : arguments)
                 argumentsValue << " " << value;
 
             std::string argumentsString = argumentsValue.str();
-            Log::Verbose(workingDirectory.ToString() + ": " + application.ToString() + " " + argumentsString);
+            Log::Verbose(workingDirectory.ToString() + ": " + argumentsString);
 
             // Aggregate all the output
             std::stringstream stdOut;

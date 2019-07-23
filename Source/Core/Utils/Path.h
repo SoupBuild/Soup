@@ -12,6 +12,7 @@ namespace Soup
     {
     private:
         static constexpr char DirectorySeparator = '/';
+        static constexpr char AlternateDirectorySeparator = '\\';
         static constexpr std::string_view AllValidDirectorySeparators = "/\\";
         static constexpr char LetterDriveSpecifier = ':';
         static constexpr char FileExtensionSeparator = '.';
@@ -209,24 +210,12 @@ namespace Soup
         /// </summary>
         std::string ToString() const
         {
-            std::stringstream stringBuilder;
+            return ToString(DirectorySeparator);
+        }
 
-            if (HasRoot())
-            {
-                stringBuilder << _root << DirectorySeparator;
-            }
-
-            for (size_t i = 0; i < _directories.size(); i++)
-            {
-                stringBuilder << _directories[i] << DirectorySeparator;
-            }
-
-            if (HasFileName())
-            {
-                stringBuilder << _filename;
-            }
-
-            return stringBuilder.str();
+        std::string ToAlternateString() const
+        {
+            return ToString(AlternateDirectorySeparator);
         }
 
 private:
@@ -322,6 +311,31 @@ private:
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Convert to string with the provided directory separator
+    /// </summary>
+    std::string ToString(char directorySeparator) const
+    {
+        std::stringstream stringBuilder;
+
+        if (HasRoot())
+        {
+            stringBuilder << _root << directorySeparator;
+        }
+
+        for (size_t i = 0; i < _directories.size(); i++)
+        {
+            stringBuilder << _directories[i] << directorySeparator;
+        }
+
+        if (HasFileName())
+        {
+            stringBuilder << _filename;
+        }
+
+        return stringBuilder.str();
     }
 
     private:

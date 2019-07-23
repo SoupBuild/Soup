@@ -60,7 +60,7 @@ namespace Soup::Compiler::Clang::UnitTests
         {
             LinkArguments arguments = {};
             arguments.TargetType = LinkTarget::Executable;
-            arguments.TargetFile = Path("Something.exe");
+            arguments.TargetFile = Path("out/Something.exe");
             arguments.ObjectFiles = std::vector<Path>({
                 Path("File.mock.o"),
             });
@@ -71,7 +71,7 @@ namespace Soup::Compiler::Clang::UnitTests
 
             auto expected = std::vector<std::string>({
                 "-o",
-                "Something.exe",
+                "out/Something.exe",
                 "Library.mock.a",
                 "File.mock.o",
             });

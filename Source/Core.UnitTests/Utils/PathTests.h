@@ -22,6 +22,7 @@ namespace Soup::UnitTests
             Assert::IsFalse(uut.HasFileExtension(), "Verify has no file extension.");
             Assert::AreEqual("", uut.GetFileExtension(), "Verify file extension matches.");
             Assert::AreEqual("", uut.ToString(), "Verify string value matches.");
+            Assert::AreEqual("", uut.ToAlternateString(), "Verify alternate string value matches.");
         }
 
         [[Fact]]
@@ -37,6 +38,7 @@ namespace Soup::UnitTests
             Assert::IsTrue(uut.HasFileExtension(), "Verify has file extension.");
             Assert::AreEqual(".txt", uut.GetFileExtension(), "Verify file extension matches.");
             Assert::AreEqual("myfolder/anotherfolder/file.txt", uut.ToString(), "Verify string value matches.");
+            Assert::AreEqual("myfolder\\anotherfolder\\file.txt", uut.ToAlternateString(), "Verify alternate string value matches.");
         }
 
         [[Fact]]
