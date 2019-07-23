@@ -43,11 +43,8 @@ namespace Soup
             // Perform the core compilation of the source files
             bool sourceCompiled = CoreCompile(arguments);
 
-            // Link the final target only if the source was compiled
-            if (sourceCompiled)
-            {
-                CoreLink(arguments);
-            }
+            // Link the final target
+            CoreLink(arguments, sourceCompiled);
         }
 
     private:
@@ -166,7 +163,7 @@ namespace Soup
             }
             else
             {
-                Log::Info("Up to date");
+                Log::Info("Objects up to date");
                 return false;
             }
         }
@@ -174,27 +171,20 @@ namespace Soup
         /// <summary>
         /// Link the library
         /// </summary>
-        void CoreLink(const BuildArguments& arguments)
+        void CoreLink(const BuildArguments& arguments, bool force)
         {
             Log::Verbose("Task: CoreLink");
 
-            auto linkArguments = LinkArguments();
-
-            linkArguments.LibraryFiles = arguments.LinkLibraries;
-            linkArguments.RootDirectory = arguments.WorkingDirectory;
-
-            // Translate the target type into the link target
+            Path targetFile;
             switch (arguments.TargetType)
             {
                 case BuildTargetType::Library:
-                    linkArguments.TargetType = LinkTarget::StaticLibrary;
-                    linkArguments.TargetFile = 
+                    targetFile = 
                         arguments.BinaryDirectory + 
                         Path(arguments.TargetName + "." + std::string(_compiler->GetStaticLibraryFileExtension()));
                     break;
                 case BuildTargetType::Executable:
-                    linkArguments.TargetType = LinkTarget::Executable;
-                    linkArguments.TargetFile = 
+                    targetFile = 
                         arguments.BinaryDirectory + 
                         Path(arguments.TargetName + ".exe");
                     break;
@@ -202,26 +192,61 @@ namespace Soup
                     throw std::runtime_error("Unknown build target type.");
             }
 
-            // Build up the set of object files
-            std::vector<Path> objectFiles;
-            for (auto& sourceFile : arguments.SourceFiles)
+            // Check if the output target is missing
+            bool linkRequired = force;
+            if (!force)
             {
-                auto objectFile = arguments.ObjectDirectory + Path(sourceFile.GetFileName());
-                objectFile.SetFileExtension(_compiler->GetObjectFileExtension());
-                objectFiles.push_back(objectFile);
+                if (!IFileSystem::Current().Exists(arguments.WorkingDirectory + targetFile))
+                {
+                    Log::Verbose("Link target does not exist: " + targetFile.ToString());
+                    linkRequired = true;
+                }
             }
 
-            linkArguments.ObjectFiles = std::move(objectFiles);
+            if (linkRequired)
+            {
+                Log::Verbose("Linking target.");
 
-            // Ensure the binary directory exists
-            // var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
-            // if (!Directory.Exists(objectDirectry))
-            // {
-            //     Directory.CreateDirectory(objectDirectry);
-            // }
+                auto linkArguments = LinkArguments();
 
-            // Perform the link
-            _compiler->Link(linkArguments);
+                linkArguments.TargetFile = std::move(targetFile);
+                linkArguments.LibraryFiles = arguments.LinkLibraries;
+                linkArguments.RootDirectory = arguments.WorkingDirectory;
+
+                // Translate the target type into the link target
+                switch (arguments.TargetType)
+                {
+                    case BuildTargetType::Library:
+                        linkArguments.TargetType = LinkTarget::StaticLibrary;
+                        break;
+                    case BuildTargetType::Executable:
+                        linkArguments.TargetType = LinkTarget::Executable;
+                        break;
+                    default:
+                        throw std::runtime_error("Unknown build target type.");
+                }
+
+                // Build up the set of object files
+                std::vector<Path> objectFiles;
+                for (auto& sourceFile : arguments.SourceFiles)
+                {
+                    auto objectFile = arguments.ObjectDirectory + Path(sourceFile.GetFileName());
+                    objectFile.SetFileExtension(_compiler->GetObjectFileExtension());
+                    objectFiles.push_back(objectFile);
+                }
+
+                linkArguments.ObjectFiles = std::move(objectFiles);
+
+                // Ensure the binary directory exists
+                // var objectDirectry = Path.Combine(args.RootDirectory, binaryDirectory);
+                // if (!Directory.Exists(objectDirectry))
+                // {
+                //     Directory.CreateDirectory(objectDirectry);
+                // }
+
+                // Perform the link
+                _compiler->Link(linkArguments);
+            }
         }
 
     private:

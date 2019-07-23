@@ -304,7 +304,7 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
-        void Build_Executable_Simple_Incremental_UpToDate()
+        void Build_Executable_Simple_Incremental_MissingTargetFile()
         {
             // Register the test listener
             auto testListener = std::make_shared<TestTraceListener>();
@@ -348,6 +348,108 @@ namespace Soup::UnitTests
 
             uut.Execute(arguments);
 
+            auto expectedLinkArguments = LinkArguments();
+            expectedLinkArguments.TargetFile = Path("bin/Program.exe");
+            expectedLinkArguments.TargetType = LinkTarget::Executable;
+            expectedLinkArguments.RootDirectory = Path("root");
+            expectedLinkArguments.ObjectFiles = std::vector<Path>({
+                Path("obj/TestFile.mock.obj"),
+            });
+
+            // Verify expected compiler calls
+            Assert::AreEqual(
+                std::vector<CompileArguments>({}),
+                compiler->GetCompileRequests(),
+                "Verify compiler requests match expected.");
+            Assert::AreEqual(
+                std::vector<LinkArguments>({
+                    expectedLinkArguments,
+                }),
+                compiler->GetLinkRequests(),
+                "Verify link requests match expected.");
+
+            // Verify expected file system requests
+            Assert::AreEqual(
+                std::vector<std::pair<std::string, FileSystemRequestType>>({
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenRead),
+                    std::make_pair("root/obj/TestFile.mock.obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj/TestFile.mock.obj", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/TestFile.cpp", FileSystemRequestType::Exists),
+                    std::make_pair("root/TestFile.cpp", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/bin/Program.exe", FileSystemRequestType::Exists),
+                }),
+                fileSystem->GetRequests(),
+                "Verify file system requests match expected.");
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "VERB: TargetName = Program",
+                    "VERB: TargetType = Executable",
+                    "VERB: WorkingDirectory = root",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleSourceFile = ",
+                    "VERB: IsIncremental = true",
+                    "VERB: Task: CoreCompile",
+                    "VERB: Loading previous build state.",
+                    "VERB: Check for updated source.",
+                    "VERB: File up to date: TestFile.cpp",
+                    "INFO: Objects up to date",
+                    "VERB: Task: CoreLink",
+                    "VERB: Link target does not exist: bin/Program.exe",
+                }),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
+        }
+
+        [[Fact]]
+        void Build_Executable_Simple_Incremental_UpToDate()
+        {
+            // Register the test listener
+            auto testListener = std::make_shared<TestTraceListener>();
+            Log::RegisterListener(testListener);
+
+            // Register the test file system
+            auto fileSystem = std::make_shared<MockFileSystem>();
+            IFileSystem::Register(fileSystem);
+
+            // Create the initial build state
+            auto initialBuildState = BuildState({
+                FileInfo(Path("TestFile.cpp"), { }),
+            });
+            std::stringstream initialBuildStateJson;
+            BuildStateJson::Serialize(initialBuildState, initialBuildStateJson);
+            fileSystem->CreateMockFile(
+                Path("root/.soup/BuildState.json"),
+                MockFileState(std::move(initialBuildStateJson)));
+
+            // Setup the input/output files to be up to date
+            auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
+            auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+            fileSystem->CreateMockFile(Path("root/bin/Program.exe"), MockFileState(outputTime));
+            fileSystem->CreateMockFile(Path("root/obj/TestFile.mock.obj"), MockFileState(outputTime));
+            fileSystem->CreateMockFile(Path("root/TestFile.cpp"), MockFileState(inputTime));
+
+            auto compiler = std::make_shared<Compiler::Mock::Compiler>();
+            auto uut = BuildEngine(compiler);
+
+            auto arguments = BuildArguments();
+            arguments.TargetName = "Program";
+            arguments.TargetType = BuildTargetType::Executable;
+            arguments.WorkingDirectory = Path("root");
+            arguments.ObjectDirectory = Path("obj");
+            arguments.BinaryDirectory = Path("bin");
+            arguments.SourceFiles = std::vector<Path>({ 
+                Path("TestFile.cpp"),
+            });
+            arguments.IncludeDirectories = std::vector<Path>({});
+            arguments.IncludeModules = std::vector<Path>({});
+            arguments.IsIncremental = true;
+
+            uut.Execute(arguments);
+
             // Verify expected compiler calls
             Assert::AreEqual(
                 std::vector<CompileArguments>({}),
@@ -367,6 +469,7 @@ namespace Soup::UnitTests
                     std::make_pair("root/obj/TestFile.mock.obj", FileSystemRequestType::GetLastWriteTime),
                     std::make_pair("root/TestFile.cpp", FileSystemRequestType::Exists),
                     std::make_pair("root/TestFile.cpp", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/bin/Program.exe", FileSystemRequestType::Exists),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
@@ -385,7 +488,8 @@ namespace Soup::UnitTests
                     "VERB: Loading previous build state.",
                     "VERB: Check for updated source.",
                     "VERB: File up to date: TestFile.cpp",
-                    "INFO: Up to date",
+                    "INFO: Objects up to date",
+                    "VERB: Task: CoreLink",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -599,6 +703,7 @@ namespace Soup::UnitTests
             // Setup the input/output files to be up to date
             auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
             auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+            fileSystem->CreateMockFile(Path("root/bin/Library.mock.lib"), MockFileState(outputTime));
             fileSystem->CreateMockFile(Path("root/obj/TestFile1.mock.obj"), MockFileState(outputTime));
             fileSystem->CreateMockFile(Path("root/obj/TestFile2.mock.obj"), MockFileState(outputTime));
             fileSystem->CreateMockFile(Path("root/obj/TestFile3.mock.obj"), MockFileState(outputTime));
@@ -673,6 +778,7 @@ namespace Soup::UnitTests
                     std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::GetLastWriteTime),
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/bin/Library.mock.lib", FileSystemRequestType::Exists),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
@@ -693,7 +799,8 @@ namespace Soup::UnitTests
                     "VERB: File up to date: TestFile1.cpp",
                     "VERB: File up to date: TestFile2.cpp",
                     "VERB: File up to date: TestFile3.cpp",
-                    "INFO: Up to date",
+                    "INFO: Objects up to date",
+                    "VERB: Task: CoreLink",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");

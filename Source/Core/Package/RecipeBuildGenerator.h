@@ -92,7 +92,11 @@ namespace Soup
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        void CoreBuild(int projectId, const Path& workingDirectory, const Recipe& recipe, bool force)
+        void CoreBuild(
+            int projectId,
+            const Path& workingDirectory,
+            const Recipe& recipe,
+            bool force)
         {
             Log::SetActiveId(projectId);
             Log::Info("Building '" + recipe.GetName() + "'");
@@ -121,10 +125,19 @@ namespace Soup
                     includeModules.push_back(std::move(modulePath));
                 }
 
+                // Add the dependency static library closure to link if targeting an executable
+                std::vector<Path> linkLibraries;
+                if (recipe.GetType() == RecipeType::Executable)
+                {
+                    GenerateDependecyStaticLibraryClosure(
+                        workingDirectory,
+                        recipe,
+                        linkLibraries);
+                }
+
                 // Build up arguments to build this individual recipe
                 auto arguments = BuildArguments();
                 arguments.TargetName = recipe.GetName();
-                arguments.TargetType = BuildTargetType::Executable;
                 arguments.WorkingDirectory = workingDirectory;
                 arguments.ObjectDirectory = GetObjectDirectory();
                 arguments.BinaryDirectory = GetBinaryDirectory();
@@ -133,7 +146,21 @@ namespace Soup
                 arguments.SourceFiles = recipe.GetSourceAsPath();
                 arguments.IncludeDirectories = std::vector<Path>(includePaths.begin(), includePaths.end());
                 arguments.IncludeModules = std::move(includeModules);
+                arguments.LinkLibraries = std::move(linkLibraries);
                 arguments.IsIncremental = true;
+
+                // Convert the recipe type to the required build type
+                switch (recipe.GetType())
+                {
+                    case RecipeType::Library:
+                        arguments.TargetType = BuildTargetType::Library;
+                        break;
+                    case RecipeType::Executable:
+                        arguments.TargetType = BuildTargetType::Executable;
+                        break;
+                    default:
+                        throw std::runtime_error("Unknown build target type.");
+                }
 
                 // Perform the build
                 auto buildEngine = BuildEngine(_compiler);
@@ -144,6 +171,35 @@ namespace Soup
                 // Log the exception and convert to handled
                 Log::Error(std::string("Build Failed: ") + ex.what());
                 throw HandledException();
+            }
+        }
+
+        void GenerateDependecyStaticLibraryClosure(
+            const Path& workingDirectory,
+            const Recipe& recipe,
+            std::vector<Path>& closure) const
+        {
+            for (auto dependecy : recipe.GetDependencies())
+            {
+                // Load this package recipe
+                auto dependencyPackagePath = dependecy.GetPath();
+                auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
+                Recipe dependecyRecipe = {};
+                if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
+                {
+                    Log::Error("Failed to load the dependency package: {packagePath}");
+                    throw std::runtime_error("Failed to load dependency.");
+                }
+
+                // Add this dependency
+                auto dependencyStaticLibrary = 
+                    dependencyPackagePath +
+                    GetBinaryDirectory() +
+                    Path(dependecyRecipe.GetName() + "." + std::string(_compiler->GetStaticLibraryFileExtension()));
+                closure.push_back(std::move(dependencyStaticLibrary));
+
+                // Add all recursive dependencies
+                GenerateDependecyStaticLibraryClosure(dependencyPackagePath, dependecyRecipe, closure);
             }
         }
 

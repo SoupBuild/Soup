@@ -150,25 +150,32 @@ namespace Soup::Compiler::Clang
             switch (args.TargetType)
             {
                 case LinkTarget::StaticLibrary:
+                {
                     // Static libraries are linked with ar
                     // r - Replace existing
                     // c - Create without warning if does not exist
                     commandArgs.push_back("rc");
+
+                    // Add the output file
+                    commandArgs.push_back(args.TargetFile.ToString());
                     break;
+                }
                 case LinkTarget::Executable:
-                    // Executables are put togehter by clang
+                {
+                    // Executables are put together by clang
 
                     // Enable verbose output
                     // commandArgs.push_back("-v");
 
-                    commandArgs.push_back("-o");
+                    auto outputArgument = "-o\"" + args.TargetFile.ToString() + "\"";
+                    commandArgs.push_back(std::move(outputArgument));
                     break;
+                }
                 default:
+                {
                     throw std::runtime_error("Unknown LinkTarget.");
+                }
             }
-
-            // Add the output file
-            commandArgs.push_back(args.TargetFile.ToString());
 
             // Add the library files
             for (auto& file : args.LibraryFiles)

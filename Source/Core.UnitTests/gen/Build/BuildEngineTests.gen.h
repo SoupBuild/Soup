@@ -11,6 +11,7 @@ TestState RunBuildEngineTests()
     state += SoupTest::RunTest(className, "Build_Executable_Simple_NotIncremental", [&testClass]() { testClass->Build_Executable_Simple_NotIncremental(); });
     state += SoupTest::RunTest(className, "Build_Executable_Simple_Incremental_MissingBuildState", [&testClass]() { testClass->Build_Executable_Simple_Incremental_MissingBuildState(); });
     state += SoupTest::RunTest(className, "Build_Executable_Simple_Incremental_MissingFileInfo", [&testClass]() { testClass->Build_Executable_Simple_Incremental_MissingFileInfo(); });
+    state += SoupTest::RunTest(className, "Build_Executable_Simple_Incremental_MissingTargetFile", [&testClass]() { testClass->Build_Executable_Simple_Incremental_MissingTargetFile(); });
     state += SoupTest::RunTest(className, "Build_Executable_Simple_Incremental_UpToDate", [&testClass]() { testClass->Build_Executable_Simple_Incremental_UpToDate(); });
     state += SoupTest::RunTest(className, "Build_Library_Complex_IncludeModuleUpdated", [&testClass]() { testClass->Build_Library_Complex_IncludeModuleUpdated(); });
     state += SoupTest::RunTest(className, "Build_Library_Complex_UpToDate", [&testClass]() { testClass->Build_Library_Complex_UpToDate(); });
