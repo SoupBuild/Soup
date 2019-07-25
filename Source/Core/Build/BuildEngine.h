@@ -44,7 +44,11 @@ namespace Soup
             bool sourceCompiled = CoreCompile(arguments);
 
             // Link the final target
-            CoreLink(arguments, sourceCompiled);
+            bool targetLinked = CoreLink(arguments, sourceCompiled);
+            if (!targetLinked)
+            {
+                Log::Info("Up to date");
+            }
         }
 
     private:
@@ -301,15 +305,16 @@ namespace Soup
             }
             else
             {
-                Log::Info("Objects up to date");
+                Log::Verbose("Objects up to date");
                 return false;
             }
         }
 
         /// <summary>
         /// Link the library
+        /// Returns true if the target was linked, otherwise returns false
         /// </summary>
-        void CoreLink(const BuildArguments& arguments, bool force)
+        bool CoreLink(const BuildArguments& arguments, bool force)
         {
             Log::Verbose("Task: CoreLink");
 
@@ -383,11 +388,15 @@ namespace Soup
                 // }
 
                 // Perform the link
+                Log::Info(linkArguments.TargetFile.ToString());
                 _compiler->Link(linkArguments);
+
+                return true;
             }
             else
             {
                 Log::Verbose("Final target up to date");
+                return false;
             }
         }
 

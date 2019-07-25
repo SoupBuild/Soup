@@ -109,6 +109,7 @@ namespace Soup::UnitTests
                     "VERB: Saving updated build state",
                     "VERB: Task: CoreLink",
                     "VERB: Linking target",
+                    "INFO: bin/Program.exe",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -202,6 +203,7 @@ namespace Soup::UnitTests
                     "VERB: Saving updated build state",
                     "VERB: Task: CoreLink",
                     "VERB: Linking target",
+                    "INFO: bin/Program.exe",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -304,6 +306,7 @@ namespace Soup::UnitTests
                     "VERB: Saving updated build state",
                     "VERB: Task: CoreLink",
                     "VERB: Linking target",
+                    "INFO: bin/Program.exe",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -403,10 +406,11 @@ namespace Soup::UnitTests
                     "VERB: Task: CompileSourceFiles",
                     "VERB: Check for updated source",
                     "VERB: File up to date: TestFile.cpp",
-                    "INFO: Objects up to date",
+                    "VERB: Objects up to date",
                     "VERB: Task: CoreLink",
                     "VERB: Link target does not exist: bin/Program.exe",
                     "VERB: Linking target",
+                    "INFO: bin/Program.exe",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -497,9 +501,10 @@ namespace Soup::UnitTests
                     "VERB: Task: CompileSourceFiles",
                     "VERB: Check for updated source",
                     "VERB: File up to date: TestFile.cpp",
-                    "INFO: Objects up to date",
+                    "VERB: Objects up to date",
                     "VERB: Task: CoreLink",
                     "VERB: Final target up to date",
+                    "INFO: Up to date",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -684,6 +689,7 @@ namespace Soup::UnitTests
                     "VERB: Saving updated build state",
                     "VERB: Task: CoreLink",
                     "VERB: Linking target",
+                    "INFO: bin/Library.mock.lib",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -861,6 +867,7 @@ namespace Soup::UnitTests
                     "VERB: Saving updated build state",
                     "VERB: Task: CoreLink",
                     "VERB: Linking target",
+                    "INFO: bin/Library.mock.lib",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -958,9 +965,10 @@ namespace Soup::UnitTests
                     "VERB: File up to date: TestFile1.cpp",
                     "VERB: File up to date: TestFile2.cpp",
                     "VERB: File up to date: TestFile3.cpp",
-                    "INFO: Objects up to date",
+                    "VERB: Objects up to date",
                     "VERB: Task: CoreLink",
                     "VERB: Final target up to date",
+                    "INFO: Up to date",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
