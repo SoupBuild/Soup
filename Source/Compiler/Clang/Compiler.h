@@ -152,6 +152,7 @@ namespace Soup::Compiler::Clang
             generatePrecompiledModuleArgs.Optimize = args.Optimize;
             generatePrecompiledModuleArgs.RootDirectory = args.RootDirectory;
             generatePrecompiledModuleArgs.IncludeDirectories = args.IncludeDirectories;
+            generatePrecompiledModuleArgs.IncludeModules = args.IncludeModules;
             generatePrecompiledModuleArgs.ExportModule = true;
 
             // Use the target file as input to the build and generate an object with the same name

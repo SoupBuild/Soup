@@ -40,6 +40,7 @@ namespace Soup
             Log::Verbose("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
             Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
             Log::Verbose("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
+            Log::Verbose("IncludeModules = " + ToString(arguments.IncludeModules));
 
             // Perform the core compilation of the source files
             bool sourceCompiled = CoreCompile(arguments);

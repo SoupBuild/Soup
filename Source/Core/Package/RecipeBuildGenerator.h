@@ -32,7 +32,7 @@ namespace Soup
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        void Execute(const Path& workingDirectory, const Recipe& recipe, bool force)
+        void Execute(const Path& workingDirectory, const Recipe& recipe, bool forceBuild)
         {
             // Enable log event ids to track individual builds
             int projectId = 1;
@@ -41,8 +41,8 @@ namespace Soup
             // TODO: A scoped listener cleanup would be nice
             try
             {
-                projectId = BuildAllDependenciesRecursively(projectId, workingDirectory, recipe, force);
-                CoreBuild(projectId, workingDirectory, recipe, force);
+                projectId = BuildAllDependenciesRecursively(projectId, workingDirectory, recipe, forceBuild);
+                CoreBuild(projectId, workingDirectory, recipe, forceBuild);
 
                 Log::EnsureListener().SetShowEventId(false);
             }
@@ -61,7 +61,7 @@ namespace Soup
             int projectId,
             const Path& workingDirectory,
             const Recipe& recipe,
-            bool force)
+            bool forceBuild)
         {
             for (auto dependecy : recipe.GetDependencies())
             {
@@ -76,10 +76,10 @@ namespace Soup
                 }
 
                 // Build all recursive dependencies
-                projectId = BuildAllDependenciesRecursively(projectId, packagePath, dependecyRecipe, force);
+                projectId = BuildAllDependenciesRecursively(projectId, packagePath, dependecyRecipe, forceBuild);
 
                 // Build this dependecy
-                CoreBuild(projectId, packagePath, dependecyRecipe, force);
+                CoreBuild(projectId, packagePath, dependecyRecipe, forceBuild);
 
                 // Move to the next build project id
                 projectId++;
@@ -96,7 +96,7 @@ namespace Soup
             int projectId,
             const Path& workingDirectory,
             const Recipe& recipe,
-            bool force)
+            bool forceBuild)
         {
             Log::SetActiveId(projectId);
             Log::Info("Building '" + recipe.GetName() + "'");
@@ -149,11 +149,8 @@ namespace Soup
                 for (auto& entry : includePaths)
                 {
                     auto entryPath = Path(entry);
-                    if (entryPath != workingDirectory)
-                    {
-                        auto directory = entryPath.GetRelativeTo(workingDirectory);
-                        arguments.IncludeDirectories.push_back(directory);
-                    }
+                    auto directory = entryPath.GetRelativeTo(workingDirectory);
+                    arguments.IncludeDirectories.push_back(directory);
                 }
 
                 // Convert the recipe type to the required build type
