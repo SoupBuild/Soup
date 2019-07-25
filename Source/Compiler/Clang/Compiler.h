@@ -57,68 +57,16 @@ namespace Soup::Compiler::Clang
         /// </summary>
         virtual CompileResult Compile(const CompileArguments& args) override final
         {
-            auto executablePath = Path(ToolsPath) + Path(CompilerExecutable);
-            auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args);
-
-            auto result = IProcessManager::Current().Execute(
-                executablePath,
-                commandArgs,
-                args.RootDirectory);
-            if (result.ExitCode != 0)
-            {
-                throw std::runtime_error("Compiler Error: " + std::to_string(result.ExitCode));
-            }
-
-            if (!result.StdOut.empty())
-            {
-                Log::Verbose(result.StdOut);
-            }
-
-            // If there was any error output then the build failed
-            if (!result.StdErr.empty())
-            {
-                Log::Error(result.StdErr);
-                throw std::runtime_error(result.StdErr);
-            }
-
             // Clang decided to do their module compilation in two stages
             // Now we have to also generate the object file from the precompiled module
             if (args.ExportModule)
             {
-                auto compilePrecompiledArgs = CompileArguments();
-                compilePrecompiledArgs.Standard = args.Standard;
-                compilePrecompiledArgs.Optimize = args.Optimize;
-                compilePrecompiledArgs.RootDirectory = args.RootDirectory;
-
-                // Use the target file as input to the build and generate an object with the same name
-                compilePrecompiledArgs.SourceFile = args.TargetFile;
-                compilePrecompiledArgs.TargetFile = args.TargetFile;
-                compilePrecompiledArgs.TargetFile.SetFileExtension(GetObjectFileExtension());
-
-                auto commandPrecompiledArgs = ArgumentBuilder::BuildCompilerArguments(compilePrecompiledArgs);
-                auto result = IProcessManager::Current().Execute(
-                    executablePath,
-                    commandPrecompiledArgs,
-                    args.RootDirectory);
-                if (result.ExitCode != 0)
-                {
-                    throw std::runtime_error("Compiler Error2: " + std::to_string(result.ExitCode));
-                }
-
-                if (!result.StdOut.empty())
-                {
-                    Log::Verbose(result.StdOut);
-                }
-
-                // If there was any error output then the build failed
-                if (!result.StdErr.empty())
-                {
-                    Log::Error(result.StdErr);
-                    throw std::runtime_error(result.StdErr);
-                }
+                return CompileModuleInterfaceUnit(args);
             }
-
-            return CompileResult();
+            else
+            {
+                return CompileStandard(args);
+            }
         }
 
         /// <summary>
@@ -162,6 +110,108 @@ namespace Soup::Compiler::Clang
                 Log::Error(result.StdErr);
                 throw std::runtime_error(result.StdErr);
             }
+        }
+
+    private:
+        CompileResult CompileStandard(const CompileArguments& args)
+        {
+            auto executablePath = Path(ToolsPath) + Path(CompilerExecutable);
+            auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args);
+
+            auto result = IProcessManager::Current().Execute(
+                executablePath,
+                commandArgs,
+                args.RootDirectory);
+            if (result.ExitCode != 0)
+            {
+                throw std::runtime_error("Compiler Error: " + std::to_string(result.ExitCode));
+            }
+
+            if (!result.StdOut.empty())
+            {
+                Log::Verbose(result.StdOut);
+            }
+
+            // If there was any error output then the build failed
+            if (!result.StdErr.empty())
+            {
+                Log::Error(result.StdErr);
+                throw std::runtime_error(result.StdErr);
+            }
+
+            return CompileResult();
+        }
+
+        CompileResult CompileModuleInterfaceUnit(const CompileArguments& args)
+        {
+            auto executablePath = Path(ToolsPath) + Path(CompilerExecutable);
+
+            // Replace the final object target with the intermediate precompiled module
+            auto generatePrecompiledModuleArgs = CompileArguments();
+            generatePrecompiledModuleArgs.Standard = args.Standard;
+            generatePrecompiledModuleArgs.Optimize = args.Optimize;
+            generatePrecompiledModuleArgs.RootDirectory = args.RootDirectory;
+            generatePrecompiledModuleArgs.IncludeDirectories = args.IncludeDirectories;
+            generatePrecompiledModuleArgs.ExportModule = true;
+
+            // Use the target file as input to the build and generate an object with the same name
+            generatePrecompiledModuleArgs.SourceFile = args.SourceFile;
+            generatePrecompiledModuleArgs.TargetFile = args.TargetFile;
+            generatePrecompiledModuleArgs.TargetFile.SetFileExtension(GetModuleFileExtension());
+
+            auto generatePrecompiledModuleCommandArgs = ArgumentBuilder::BuildCompilerArguments(generatePrecompiledModuleArgs);
+            auto result = IProcessManager::Current().Execute(
+                executablePath,
+                generatePrecompiledModuleCommandArgs,
+                args.RootDirectory);
+            if (result.ExitCode != 0)
+            {
+                throw std::runtime_error("Compiler Precompile Error: " + std::to_string(result.ExitCode));
+            }
+
+            if (!result.StdOut.empty())
+            {
+                Log::Verbose(result.StdOut);
+            }
+
+            // If there was any error output then the build failed
+            if (!result.StdErr.empty())
+            {
+                Log::Error(result.StdErr);
+                throw std::runtime_error(result.StdErr);
+            }
+
+            // Now we can compile the object file from the precompiled module
+            auto compileObjectArgs = CompileArguments();
+            compileObjectArgs.Standard = args.Standard;
+            compileObjectArgs.Optimize = args.Optimize;
+            compileObjectArgs.RootDirectory = args.RootDirectory;
+            compileObjectArgs.SourceFile = generatePrecompiledModuleArgs.TargetFile;
+            compileObjectArgs.TargetFile = args.TargetFile;
+
+            auto compileObjectCommandArgs = ArgumentBuilder::BuildCompilerArguments(compileObjectArgs);
+            result = IProcessManager::Current().Execute(
+                executablePath,
+                compileObjectCommandArgs,
+                args.RootDirectory);
+            if (result.ExitCode != 0)
+            {
+                throw std::runtime_error("Compiler Object Error: " + std::to_string(result.ExitCode));
+            }
+
+            if (!result.StdOut.empty())
+            {
+                Log::Verbose(result.StdOut);
+            }
+
+            // If there was any error output then the build failed
+            if (!result.StdErr.empty())
+            {
+                Log::Error(result.StdErr);
+                throw std::runtime_error(result.StdErr);
+            }
+
+            return CompileResult();
         }
     };
 }

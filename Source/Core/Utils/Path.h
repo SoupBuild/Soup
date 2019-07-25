@@ -142,6 +142,62 @@ namespace Soup
         }
 
         /// <summary>
+        /// Get a path relative to the provided base
+        /// </summary>
+        Path GetRelativeTo(const Path& base)
+        {
+            // If the root does not match then there is no way to get a relative path
+            // simply return a copy of this path
+            if ((base.HasRoot() && HasRoot() && base._root != this->_root) ||
+                (base.HasRoot() ^ this->HasRoot()))
+            {
+                return *this;
+            }
+
+            // Force the base filenames as directories
+            auto baseDirectories = base._directories;
+            if (base.HasFileName())
+            {
+                baseDirectories.push_back(base._filename);
+            }
+
+            // Determine how many of the directories match
+            int minDirectories = std::min(baseDirectories.size(), this->_directories.size());
+            int countMatching = 0;
+            for (int i = 0; i < minDirectories; i++)
+            {
+                if (baseDirectories[i] != this->_directories[i])
+                {
+                    break;
+                }
+
+                countMatching++;
+            }
+
+            auto result = Path();
+
+            // Add in up directories for any not matching in the base
+            for (int i = countMatching; i < baseDirectories.size(); i++)
+            {
+                result._directories.push_back(std::string(ParentDirectory));
+            }
+
+            // Copy over the remaining entities from the target path
+            for (int i = countMatching; i < this->_directories.size(); i++)
+            {
+                result._directories.push_back(this->_directories[i]);
+            }
+
+            // Set the file if present
+            if (this->HasFileName())
+            {
+                result._filename = this->_filename;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Equality operator
         /// </summary>
         bool operator ==(const Path& rhs) const

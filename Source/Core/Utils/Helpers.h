@@ -1,7 +1,9 @@
 ﻿// <copyright file="Helpers.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
+
 #pragma once
+#include "Path.h"
 
 namespace Soup
 {
@@ -18,6 +20,23 @@ namespace Soup
                 stringBuilder << '\\';
 
             stringBuilder << value[i];
+        }
+
+        return stringBuilder.str();
+    }
+
+    export std::string ToString(const std::vector<Path>& values)
+    {
+        std::stringstream stringBuilder;
+
+        bool first = true;
+        for (auto& value : values)
+        {
+            if (!first)
+                stringBuilder << " ";
+            
+            stringBuilder << value.ToString();
+            first = false;
         }
 
         return stringBuilder.str();

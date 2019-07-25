@@ -18,6 +18,12 @@ TestState RunPathTests()
     state += SoupTest::RunTest(className, "Concatenate_UpDirectoryBeginning", [&testClass]() { testClass->Concatenate_UpDirectoryBeginning(); });
     state += SoupTest::RunTest(className, "SetFileExtension_Replace", [&testClass]() { testClass->SetFileExtension_Replace(); });
     state += SoupTest::RunTest(className, "SetFileExtension_Add", [&testClass]() { testClass->SetFileExtension_Add(); });
+    state += SoupTest::RunTest(className, "GetRelativeTo_Empty", [&testClass]() { testClass->GetRelativeTo_Empty(); });
+    state += SoupTest::RunTest(className, "GetRelativeTo_SingleRelative", [&testClass]() { testClass->GetRelativeTo_SingleRelative(); });
+    state += SoupTest::RunTest(className, "GetRelativeTo_UpParentRelative", [&testClass]() { testClass->GetRelativeTo_UpParentRelative(); });
+    state += SoupTest::RunTest(className, "GetRelativeTo_MismatchRelative", [&testClass]() { testClass->GetRelativeTo_MismatchRelative(); });
+    state += SoupTest::RunTest(className, "GetRelativeTo_Rooted_DifferentRoot", [&testClass]() { testClass->GetRelativeTo_Rooted_DifferentRoot(); });
+    state += SoupTest::RunTest(className, "GetRelativeTo_Rooted_SingleFolder", [&testClass]() { testClass->GetRelativeTo_Rooted_SingleFolder(); });
 
     return state;
 }

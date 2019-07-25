@@ -55,8 +55,11 @@ namespace Soup::Compiler::Clang::UnitTests
 
             CompileArguments arguments = {};
             arguments.SourceFile = Path("File.cpp");
-            arguments.TargetFile = Path("obj/File.pcm");
+            arguments.TargetFile = Path("obj/File.obj");
             arguments.RootDirectory = Path("Source");
+            arguments.IncludeDirectories = std::vector<Path>({
+                Path("Includes"),
+            });
             arguments.ExportModule = true;
 
             auto result = uut.Compile(arguments);
@@ -64,8 +67,8 @@ namespace Soup::Compiler::Clang::UnitTests
             // Verify expected file system requests
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "Source: D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 --precompile File.cpp -o obj/File.pcm",
-                    "Source: D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.o",
+                    "Source: D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" --precompile File.cpp -o obj/File.pcm",
+                    "Source: D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
                 }),
                 processManager->GetRequests(),
                 "Verify process manager requests match expected.");

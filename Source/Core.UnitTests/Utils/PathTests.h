@@ -139,5 +139,71 @@ namespace Soup::UnitTests
 
             Assert::AreEqual("../MyFile.awe", uut.ToString(), "Verify value matches.");
         }
+
+        [[Fact]]
+        void GetRelativeTo_Empty()
+        {
+            auto uut = Path("File.txt");
+            auto base = Path("");
+
+            auto result = uut.GetRelativeTo(base);
+
+            Assert::AreEqual("File.txt", result.ToString(), "Verify result matches.");
+        }
+
+        [[Fact]]
+        void GetRelativeTo_SingleRelative()
+        {
+            auto uut = Path("Folder/File.txt");
+            auto base = Path("Folder/");
+
+            auto result = uut.GetRelativeTo(base);
+
+            Assert::AreEqual("File.txt", result.ToString(), "Verify result matches.");
+        }
+
+        [[Fact]]
+        void GetRelativeTo_UpParentRelative()
+        {
+            auto uut = Path("../Folder/Target");
+            auto base = Path("../Folder");
+
+            auto result = uut.GetRelativeTo(base);
+
+            Assert::AreEqual("Target", result.ToString(), "Verify result matches.");
+        }
+
+        [[Fact]]
+        void GetRelativeTo_MismatchRelative()
+        {
+            auto uut = Path("Folder1/File.txt");
+            auto base = Path("Folder2/");
+
+            auto result = uut.GetRelativeTo(base);
+
+            Assert::AreEqual("../Folder1/File.txt", result.ToString(), "Verify result matches.");
+        }
+
+        [[Fact]]
+        void GetRelativeTo_Rooted_DifferentRoot()
+        {
+            auto uut = Path("C:/Folder1/File.txt");
+            auto base = Path("D:/Folder2/");
+
+            auto result = uut.GetRelativeTo(base);
+
+            Assert::AreEqual("C:/Folder1/File.txt", result.ToString(), "Verify result matches.");
+        }
+
+        [[Fact]]
+        void GetRelativeTo_Rooted_SingleFolder()
+        {
+            auto uut = Path("C:/Folder1/File.txt");
+            auto base = Path("C:/Folder1/");
+
+            auto result = uut.GetRelativeTo(base);
+
+            Assert::AreEqual("File.txt", result.ToString(), "Verify result matches.");
+        }
     };
 }

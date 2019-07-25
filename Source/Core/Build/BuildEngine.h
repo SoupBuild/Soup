@@ -39,6 +39,7 @@ namespace Soup
             Log::Verbose("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
             Log::Verbose("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
             Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
+            Log::Verbose("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
 
             // Perform the core compilation of the source files
             bool sourceCompiled = CoreCompile(arguments);

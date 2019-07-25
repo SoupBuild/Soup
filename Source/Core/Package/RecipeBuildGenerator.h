@@ -114,9 +114,6 @@ namespace Soup
                     }
                 }
 
-                // var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
-                // var uniqueFolders = folderWithHeadersSet.ToList();
-
                 // Add all dependency packages modules references
                 auto includeModules = std::vector<Path>();
                 for (auto dependecy : recipe.GetDependencies())
@@ -144,10 +141,20 @@ namespace Soup
                 arguments.ModuleInterfaceSourceFile = 
                     recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
                 arguments.SourceFiles = recipe.GetSourceAsPath();
-                arguments.IncludeDirectories = std::vector<Path>(includePaths.begin(), includePaths.end());
                 arguments.IncludeModules = std::move(includeModules);
                 arguments.LinkLibraries = std::move(linkLibraries);
                 arguments.IsIncremental = true;
+
+                // Strip out the working directory from the include paths
+                for (auto& entry : includePaths)
+                {
+                    auto entryPath = Path(entry);
+                    if (entryPath != workingDirectory)
+                    {
+                        auto directory = entryPath.GetRelativeTo(workingDirectory);
+                        arguments.IncludeDirectories.push_back(directory);
+                    }
+                }
 
                 // Convert the recipe type to the required build type
                 switch (recipe.GetType())
