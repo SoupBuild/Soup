@@ -81,6 +81,43 @@ namespace Soup::Compiler::Clang
                 throw std::runtime_error(result.StdErr);
             }
 
+            // Clang decided to do their module compilation in two stages
+            // Now we have to also generate the object file from the precompiled module
+            if (args.ExportModule)
+            {
+                auto compilePrecompiledArgs = CompileArguments();
+                compilePrecompiledArgs.Standard = args.Standard;
+                compilePrecompiledArgs.Optimize = args.Optimize;
+                compilePrecompiledArgs.RootDirectory = args.RootDirectory;
+
+                // Use the target file as input to the build and generate an object with the same name
+                compilePrecompiledArgs.SourceFile = args.TargetFile;
+                compilePrecompiledArgs.TargetFile = args.TargetFile;
+                compilePrecompiledArgs.TargetFile.SetFileExtension(GetObjectFileExtension());
+
+                auto commandPrecompiledArgs = ArgumentBuilder::BuildCompilerArguments(compilePrecompiledArgs);
+                auto result = IProcessManager::Current().Execute(
+                    executablePath,
+                    commandPrecompiledArgs,
+                    args.RootDirectory);
+                if (result.ExitCode != 0)
+                {
+                    throw std::runtime_error("Compiler Error2: " + std::to_string(result.ExitCode));
+                }
+
+                if (!result.StdOut.empty())
+                {
+                    Log::Verbose(result.StdOut);
+                }
+
+                // If there was any error output then the build failed
+                if (!result.StdErr.empty())
+                {
+                    Log::Error(result.StdErr);
+                    throw std::runtime_error(result.StdErr);
+                }
+            }
+
             return CompileResult();
         }
 

@@ -45,6 +45,33 @@ namespace Soup::Compiler::Clang::UnitTests
         }
 
         [[Fact]]
+        void Compile_Module()
+        {
+            // Register the test process manager
+            auto processManager = std::make_shared<MockProcessManager>();
+            IProcessManager::Register(processManager);
+
+            auto uut = Compiler();
+
+            CompileArguments arguments = {};
+            arguments.SourceFile = Path("File.cpp");
+            arguments.TargetFile = Path("obj/File.pcm");
+            arguments.RootDirectory = Path("Source");
+            arguments.ExportModule = true;
+
+            auto result = uut.Compile(arguments);
+
+            // Verify expected file system requests
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "Source: D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 --precompile File.cpp -o obj/File.pcm",
+                    "Source: D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.o",
+                }),
+                processManager->GetRequests(),
+                "Verify process manager requests match expected.");
+        }
+
+        [[Fact]]
         void LinkStaticLibrary_Simple()
         {
             // Register the test process manager
