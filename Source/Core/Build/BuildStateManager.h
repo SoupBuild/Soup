@@ -30,7 +30,7 @@ namespace Soup
                 Path(BuildStateFileName);
             if (!IFileSystem::Current().Exists(buildStateFile))
             {
-                Log::Verbose("BuildState file does not exist.");
+                Log::Verbose("BuildState file does not exist");
                 return false;
             }
 

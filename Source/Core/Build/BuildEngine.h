@@ -37,7 +37,7 @@ namespace Soup
             Log::Verbose("WorkingDirectory = " + arguments.WorkingDirectory.ToString());
             Log::Verbose("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
             Log::Verbose("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
-            Log::Verbose("ModuleSourceFile = " + arguments.ModuleSourceFile.ToString());
+            Log::Verbose("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
             Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
 
             // Perform the core compilation of the source files
@@ -49,7 +49,7 @@ namespace Soup
 
     private:
         /// <summary>
-        /// Compile the supporting source files
+        /// Compile the module and source files
         /// Returns true if any files were compiled
         /// </summary>
         bool CoreCompile(const BuildArguments& arguments)
@@ -58,58 +58,198 @@ namespace Soup
 
             // Load the previous build state if performing an incremental build
             BuildState buildState = {};
-            auto source = std::vector<Path>();
+            bool forceBuild = !arguments.IsIncremental;
             if (arguments.IsIncremental)
             {
-                Log::Verbose("Loading previous build state.");
+                Log::Verbose("Loading previous build state");
                 if (!BuildStateManager::TryLoadState(arguments.WorkingDirectory, buildState))
                 {
-                    Log::Verbose("No previous state found, full rebuild required.");
+                    Log::Verbose("No previous state found, full rebuild required");
                     buildState = BuildState();
-                    source = arguments.SourceFiles;
+                    forceBuild = true;
+                }
+            }
+
+            // Compile the module interface unit if present
+            if (!arguments.ModuleInterfaceSourceFile.ToString().empty())
+            {
+                auto moduleCompiled = CompileModuleInterfaceUnit(
+                    arguments,
+                    buildState,
+                    forceBuild);
+
+                // Force recompile the source files if the module was compiled
+                forceBuild |= moduleCompiled;
+            }
+
+            auto sourceCompiled = CompileSourceFiles(
+                arguments,
+                buildState,
+                forceBuild);
+
+            if (sourceCompiled)
+            {
+                Log::Verbose("Saving updated build state");
+                BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
+            }
+
+            return sourceCompiled;
+        }
+
+        /// <summary>
+        /// Compile the single module interface unit
+        /// Returns true if the file was compiled
+        /// </summary>
+        bool CompileModuleInterfaceUnit(
+            const BuildArguments& arguments,
+            BuildState& buildState,
+            bool forceBuild)
+        {
+            Log::Verbose("Task: CompileModuleInterfaceUnit");
+
+            bool buildRequired = forceBuild;
+            if (!forceBuild)
+            {
+                // Check if each source file is out of date and requires a rebuild
+                Log::Verbose("Check for updated source");
+                
+                // Try to build up the closure of include dependencies
+                auto inputClosure = std::vector<Path>();
+                const auto& sourceFile = arguments.ModuleInterfaceSourceFile;
+                if (buildState.TryBuildIncludeClosure(sourceFile, inputClosure))
+                {
+                    // Include the source file itself
+                    inputClosure.push_back(sourceFile);
+
+                    // All modules are input dependencies
+                    std::copy(
+                        arguments.IncludeModules.begin(),
+                        arguments.IncludeModules.end(),
+                        std::back_inserter(inputClosure));
+
+                    // Build the expected object file
+                    auto outputFile = arguments.ObjectDirectory + Path(sourceFile.GetFileName());
+                    outputFile.SetFileExtension(_compiler->GetObjectFileExtension());
+
+                    // TODO: Include the module binary interface as output too
+
+                    // Check if any of the input files have changed since lsat build
+                    if (BuildStateChecker::IsOutdated(
+                        outputFile,
+                        inputClosure,
+                        arguments.WorkingDirectory))
+                    {
+                        // The file or a dependecy has changed
+                        buildRequired = true;
+                    }
+                    else
+                    {
+                        Log::Verbose("File up to date: " + sourceFile.ToString());
+                    }
                 }
                 else
                 {
-                    // Check if each source file is out of date and requires a rebuild
-                    Log::Verbose("Check for updated source.");
-                    for (auto& sourceFile : arguments.SourceFiles)
+                    // Could not determine the set of input files, not enough info to perform incremental build
+                    buildRequired = true;
+                }
+            }
+
+            // Check if we can skip the whole dang thing
+            if (buildRequired)
+            {
+                // // Ensure the object directory exists
+                // var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
+                // if (!Directory.Exists(objectDirectry))
+                // {
+                //     Directory.CreateDirectory(objectDirectry);
+                // }
+
+                // Setup the shared properties
+                auto compileArguments = CompileArguments();
+                compileArguments.Standard = LanguageStandard::CPP20;
+                compileArguments.Optimize = OptimizationLevel::Speed;
+                compileArguments.RootDirectory = arguments.WorkingDirectory;
+                compileArguments.PreprocessorDefinitions = {};
+                compileArguments.IncludeDirectories = arguments.IncludeDirectories;
+                compileArguments.IncludeModules = arguments.IncludeModules;
+                compileArguments.GenerateIncludeTree = false;
+                compileArguments.ExportModule = true;
+
+                // Compile the individual translation unit
+                const auto& file = arguments.ModuleInterfaceSourceFile;
+                Log::Verbose(file.ToString());
+                compileArguments.SourceFile = file;
+                compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
+                compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
+
+                auto result = _compiler->Compile(compileArguments);
+
+                // // Save the build state
+                // if (result.HeaderIncludeFiles != null)
+                //     buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+
+                return true;
+            }
+            else
+            {
+                Log::Verbose("Module up to date");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Compile the supporting source files
+        /// Returns true if any files were compiled
+        /// </summary>
+        bool CompileSourceFiles(
+            const BuildArguments& arguments,
+            BuildState& buildState,
+            bool force)
+        {
+            Log::Verbose("Task: CompileSourceFiles");
+
+            auto source = std::vector<Path>();
+            if (!force)
+            {
+                // Check if each source file is out of date and requires a rebuild
+                Log::Verbose("Check for updated source");
+                for (auto& sourceFile : arguments.SourceFiles)
+                {
+                    // Try to build up the closure of include dependencies
+                    auto inputClosure = std::vector<Path>();
+                    if (buildState.TryBuildIncludeClosure(sourceFile, inputClosure))
                     {
-                        // Try to build up the closure of include dependencies
-                        auto inputClosure = std::vector<Path>();
-                        if (buildState.TryBuildIncludeClosure(sourceFile, inputClosure))
+                        // Include the source file itself
+                        inputClosure.push_back(sourceFile);
+
+                        // All modules are input dependencies
+                        std::copy(
+                            arguments.IncludeModules.begin(),
+                            arguments.IncludeModules.end(),
+                            std::back_inserter(inputClosure));
+
+                        // Build the expected object file
+                        auto outputFile = arguments.ObjectDirectory + Path(sourceFile.GetFileName());
+                        outputFile.SetFileExtension(_compiler->GetObjectFileExtension());
+
+                        // Check if any of the input files have changed since lsat build
+                        if (BuildStateChecker::IsOutdated(
+                            outputFile,
+                            inputClosure,
+                            arguments.WorkingDirectory))
                         {
-                            // Include the source file itself
-                            inputClosure.push_back(sourceFile);
-
-                            // All modules are input dependencies
-                            std::copy(
-                                arguments.IncludeModules.begin(),
-                                arguments.IncludeModules.end(),
-                                std::back_inserter(inputClosure));
-
-                            // Build the expected object file
-                            auto outputFile = arguments.ObjectDirectory + Path(sourceFile.GetFileName());
-                            outputFile.SetFileExtension(_compiler->GetObjectFileExtension());
-
-                            // Check if any of the input files have changed since lsat build
-                            if (BuildStateChecker::IsOutdated(
-                                outputFile,
-                                inputClosure,
-                                arguments.WorkingDirectory))
-                            {
-                                // The file or a dependecy has changed
-                                source.push_back(sourceFile);
-                            }
-                            else
-                            {
-                                Log::Verbose("File up to date: " + sourceFile.ToString());
-                            }
+                            // The file or a dependecy has changed
+                            source.push_back(sourceFile);
                         }
                         else
                         {
-                            // Could not determine the set of input files, not enough info to perform incremental build
-                            source.push_back(sourceFile);
+                            Log::Verbose("File up to date: " + sourceFile.ToString());
                         }
+                    }
+                    else
+                    {
+                        // Could not determine the set of input files, not enough info to perform incremental build
+                        source.push_back(sourceFile);
                     }
                 }
             }
@@ -122,7 +262,7 @@ namespace Soup
             // Check if we can skip the whole dang thing
             if (!source.empty())
             {
-                Log::Verbose("Compiling source files.");
+                Log::Verbose("Compiling source files");
 
                 // // Ensure the object directory exists
                 // var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
@@ -140,6 +280,7 @@ namespace Soup
                 compileArguments.IncludeDirectories = arguments.IncludeDirectories;
                 compileArguments.IncludeModules = arguments.IncludeModules;
                 compileArguments.GenerateIncludeTree = false;
+                compileArguments.ExportModule = false;
 
                 for (auto& file : source)
                 {
@@ -155,9 +296,6 @@ namespace Soup
                 // // Save the build state
                 // if (result.HeaderIncludeFiles != null)
                 //     buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
-
-                Log::Verbose("Saving updated build state");
-                BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
 
                 return true;
             }
@@ -246,6 +384,10 @@ namespace Soup
 
                 // Perform the link
                 _compiler->Link(linkArguments);
+            }
+            else
+            {
+                Log::Verbose("Final target up to date");
             }
         }
 

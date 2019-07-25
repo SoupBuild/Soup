@@ -13,8 +13,9 @@ TestState RunBuildEngineTests()
     state += SoupTest::RunTest(className, "Build_Executable_Simple_Incremental_MissingFileInfo", [&testClass]() { testClass->Build_Executable_Simple_Incremental_MissingFileInfo(); });
     state += SoupTest::RunTest(className, "Build_Executable_Simple_Incremental_MissingTargetFile", [&testClass]() { testClass->Build_Executable_Simple_Incremental_MissingTargetFile(); });
     state += SoupTest::RunTest(className, "Build_Executable_Simple_Incremental_UpToDate", [&testClass]() { testClass->Build_Executable_Simple_Incremental_UpToDate(); });
-    state += SoupTest::RunTest(className, "Build_Library_Complex_IncludeModuleUpdated", [&testClass]() { testClass->Build_Library_Complex_IncludeModuleUpdated(); });
-    state += SoupTest::RunTest(className, "Build_Library_Complex_UpToDate", [&testClass]() { testClass->Build_Library_Complex_UpToDate(); });
+    state += SoupTest::RunTest(className, "Build_Library_MultipleFiles_IncludeModuleUpdated", [&testClass]() { testClass->Build_Library_MultipleFiles_IncludeModuleUpdated(); });
+    state += SoupTest::RunTest(className, "Build_Library_Complex_OutOfDate", [&testClass]() { testClass->Build_Library_Complex_OutOfDate(); });
+    state += SoupTest::RunTest(className, "Build_Library_ModuleInterface_UpToDate", [&testClass]() { testClass->Build_Library_ModuleInterface_UpToDate(); });
 
     return state;
 }

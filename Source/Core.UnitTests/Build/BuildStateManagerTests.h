@@ -37,7 +37,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: BuildState file does not exist.",
+                    "VERB: BuildState file does not exist",
                 }),
                 testListener->GetMessages(),
                 "Verify messages match expected.");

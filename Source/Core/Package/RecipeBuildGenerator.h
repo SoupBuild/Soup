@@ -141,7 +141,7 @@ namespace Soup
                 arguments.WorkingDirectory = workingDirectory;
                 arguments.ObjectDirectory = GetObjectDirectory();
                 arguments.BinaryDirectory = GetBinaryDirectory();
-                arguments.ModuleSourceFile = 
+                arguments.ModuleInterfaceSourceFile = 
                     recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
                 arguments.SourceFiles = recipe.GetSourceAsPath();
                 arguments.IncludeDirectories = std::vector<Path>(includePaths.begin(), includePaths.end());

@@ -104,7 +104,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "ERRO: Input file missing [Input.cpp] -> [Output.bin].",
+                    "ERRO: Input file missing [Input.cpp] -> [Output.bin]",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -154,7 +154,7 @@ namespace Soup::UnitTests
             // Verify expected logs
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "VERB: Input altered after target [Input.cpp] -> [Output.bin].",
+                    "VERB: Input altered after target [Input.cpp] -> [Output.bin]",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");

@@ -77,12 +77,14 @@ namespace Soup
         Path BinaryDirectory;
 
         /// <summary>
-        /// Gets or sets the module source files
+        /// Gets or sets the single module interface source file
         /// </summary>
-        Path ModuleSourceFile;
+        Path ModuleInterfaceSourceFile;
 
         /// <summary>
         /// Gets or sets the list of source files
+        /// Note: These files can be plain old translation units 
+        /// or they can be module implementation units
         /// </summary>
         std::vector<Path> SourceFiles;
 
@@ -116,7 +118,7 @@ namespace Soup
                 WorkingDirectory == rhs.WorkingDirectory &&
                 ObjectDirectory == rhs.ObjectDirectory &&
                 BinaryDirectory == rhs.BinaryDirectory &&
-                ModuleSourceFile  == rhs.ModuleSourceFile &&
+                ModuleInterfaceSourceFile  == rhs.ModuleInterfaceSourceFile &&
                 SourceFiles == rhs.SourceFiles &&
                 IncludeDirectories == rhs.IncludeDirectories &&
                 IncludeModules == rhs.IncludeModules &&
