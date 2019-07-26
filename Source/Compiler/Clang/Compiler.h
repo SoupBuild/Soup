@@ -122,22 +122,17 @@ namespace Soup::Compiler::Clang
                 executablePath,
                 commandArgs,
                 args.RootDirectory);
-            if (result.ExitCode != 0)
-            {
-                throw std::runtime_error("Compiler Error: " + std::to_string(result.ExitCode));
-            }
 
             if (!result.StdOut.empty())
-            {
                 Log::Verbose(result.StdOut);
-            }
 
             // If there was any error output then the build failed
+            // TODO: Find warnings + errors
             if (!result.StdErr.empty())
-            {
-                Log::Error(result.StdErr);
-                throw std::runtime_error(result.StdErr);
-            }
+                Log::Warning(result.StdErr);
+
+            if (result.ExitCode != 0)
+                throw std::runtime_error("Compiler Error: " + std::to_string(result.ExitCode));
 
             return CompileResult();
         }
@@ -166,22 +161,17 @@ namespace Soup::Compiler::Clang
                 executablePath,
                 generatePrecompiledModuleCommandArgs,
                 args.RootDirectory);
-            if (result.ExitCode != 0)
-            {
-                throw std::runtime_error("Compiler Precompile Error: " + std::to_string(result.ExitCode));
-            }
 
             if (!result.StdOut.empty())
-            {
                 Log::Verbose(result.StdOut);
-            }
 
             // If there was any error output then the build failed
+            // TODO: Find warnings + errors
             if (!result.StdErr.empty())
-            {
-                Log::Error(result.StdErr);
-                throw std::runtime_error(result.StdErr);
-            }
+                Log::Warning(result.StdErr);
+
+            if (result.ExitCode != 0)
+                throw std::runtime_error("Compiler Precompile Error: " + std::to_string(result.ExitCode));
 
             // Now we can compile the object file from the precompiled module
             auto compileObjectArgs = CompileArguments();
@@ -196,22 +186,17 @@ namespace Soup::Compiler::Clang
                 executablePath,
                 compileObjectCommandArgs,
                 args.RootDirectory);
-            if (result.ExitCode != 0)
-            {
-                throw std::runtime_error("Compiler Object Error: " + std::to_string(result.ExitCode));
-            }
 
             if (!result.StdOut.empty())
-            {
                 Log::Verbose(result.StdOut);
-            }
 
             // If there was any error output then the build failed
+            // TODO: Find warnings + errors
             if (!result.StdErr.empty())
-            {
-                Log::Error(result.StdErr);
-                throw std::runtime_error(result.StdErr);
-            }
+                Log::Warning(result.StdErr);
+
+            if (result.ExitCode != 0)
+                throw std::runtime_error("Compiler Object Error: " + std::to_string(result.ExitCode));
 
             return CompileResult();
         }

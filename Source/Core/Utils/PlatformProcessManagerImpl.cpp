@@ -169,5 +169,5 @@ int PlatformProcessManagerImpl::Execute(
         stdErrorCallback(stdErrorContext, buffer, dwRead);
     }
 
-    return 0;
+    return exitCode;
 }
