@@ -104,6 +104,11 @@ namespace Soup
         std::vector<Path> LinkLibraries;
 
         /// <summary>
+        /// Gets or sets the list of preprocessor definitions
+        /// </summary>
+        std::vector<std::string> PreprocessorDefinitions;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the build is incremental or not
         /// </summary>
         bool IsIncremental;
@@ -122,6 +127,7 @@ namespace Soup
                 SourceFiles == rhs.SourceFiles &&
                 IncludeDirectories == rhs.IncludeDirectories &&
                 IncludeModules == rhs.IncludeModules &&
+                PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
                 IsIncremental == rhs.IsIncremental;
         }
 

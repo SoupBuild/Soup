@@ -25,6 +25,23 @@ namespace Soup
         return stringBuilder.str();
     }
 
+    export std::string ToString(const std::vector<std::string>& values)
+    {
+        std::stringstream stringBuilder;
+
+        bool first = true;
+        for (auto& value : values)
+        {
+            if (!first)
+                stringBuilder << " ";
+            
+            stringBuilder << value;
+            first = false;
+        }
+
+        return stringBuilder.str();
+    }
+
     export std::string ToString(const std::vector<Path>& values)
     {
         std::stringstream stringBuilder;

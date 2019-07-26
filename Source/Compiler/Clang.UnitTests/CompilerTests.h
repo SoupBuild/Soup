@@ -63,6 +63,9 @@ namespace Soup::Compiler::Clang::UnitTests
             arguments.IncludeModules = std::vector<Path>({
                 Path("Module.pcm"),
             });
+            arguments.PreprocessorDefinitions = std::vector<std::string>({
+                "DEBUG"
+            });
             arguments.ExportModule = true;
 
             auto result = uut.Compile(arguments);
@@ -70,7 +73,7 @@ namespace Soup::Compiler::Clang::UnitTests
             // Verify expected file system requests
             Assert::AreEqual(
                 std::vector<std::string>({
-                    "Source: D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
+                    "Source: D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
                     "Source: D:/Repos/llvm/build/Release/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
                 }),
                 processManager->GetRequests(),

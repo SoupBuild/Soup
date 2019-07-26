@@ -47,6 +47,10 @@ int PlatformProcessManagerImpl::Execute(
     void* stdErrorContext)
 {
     // Setup the input/output streams
+
+    // TODO: We need to read from the buffer to ensure it doesn't deadlock on the wait forever
+    int pipeBufferSize = 5 * 1024 * 1024;
+
     // Set the bInheritHandle flag so pipe handles are inherited.
     SECURITY_ATTRIBUTES securityAttributes; 
     securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES); 
@@ -56,7 +60,7 @@ int PlatformProcessManagerImpl::Execute(
     // Create a pipe for the child process's STDOUT.
     SmartHandle childStdOutRead;
     SmartHandle childStdOutWrite;
-    if (!CreatePipe(&childStdOutRead._handle, &childStdOutWrite._handle, &securityAttributes, 0))
+    if (!CreatePipe(&childStdOutRead._handle, &childStdOutWrite._handle, &securityAttributes, pipeBufferSize))
         return -1;
 
     // Ensure the read handle to the pipe for STDOUT is not inherited.
@@ -66,7 +70,7 @@ int PlatformProcessManagerImpl::Execute(
     // Create a pipe for the child process's STDERR.
     SmartHandle childStdErrRead;
     SmartHandle childStdErrWrite;
-    if (!CreatePipe(&childStdErrRead._handle, &childStdErrWrite._handle, &securityAttributes, 0))
+    if (!CreatePipe(&childStdErrRead._handle, &childStdErrWrite._handle, &securityAttributes, pipeBufferSize))
         return -1;
 
     // Ensure the read handle to the pipe for STDERR is not inherited.
@@ -123,6 +127,11 @@ int PlatformProcessManagerImpl::Execute(
 
     // Wait until child process exits.
     WaitForSingleObject(processHandle._handle, INFINITE);
+
+    // Get the exit code
+    DWORD exitCode;
+    if (!GetExitCodeProcess(processHandle._handle, &exitCode))
+        return -1;
 
     // Close the child write handle to ensure we stop reading
     childStdOutWrite.Close();

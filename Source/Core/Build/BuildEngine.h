@@ -41,6 +41,7 @@ namespace Soup
             Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
             Log::Verbose("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
             Log::Verbose("IncludeModules = " + ToString(arguments.IncludeModules));
+            Log::Verbose("PreprocessorDefinitions = " + ToString(arguments.PreprocessorDefinitions));
 
             // Perform the core compilation of the source files
             bool sourceCompiled = CoreCompile(arguments);
@@ -196,6 +197,7 @@ namespace Soup
                 compileArguments.IncludeModules = arguments.IncludeModules;
                 compileArguments.GenerateIncludeTree = false;
                 compileArguments.ExportModule = true;
+                compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 
                 // Compile the individual translation unit
                 const auto& file = arguments.ModuleInterfaceSourceFile;
@@ -305,6 +307,7 @@ namespace Soup
                 compileArguments.IncludeModules = arguments.IncludeModules;
                 compileArguments.GenerateIncludeTree = false;
                 compileArguments.ExportModule = false;
+                compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 
                 for (auto& file : source)
                 {

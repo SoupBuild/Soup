@@ -108,6 +108,7 @@ namespace Soup::UnitTests
                     "VERB: IsIncremental = false",
                     "VERB: IncludeDirectories = ",
                     "VERB: IncludeModules = ",
+                    "VERB: PreprocessorDefinitions = ",
                     "VERB: Task: CoreCompile",
                     "VERB: Create Directory: obj",
                     "VERB: Create Directory: bin",
@@ -207,6 +208,7 @@ namespace Soup::UnitTests
                     "VERB: IsIncremental = true",
                     "VERB: IncludeDirectories = ",
                     "VERB: IncludeModules = ",
+                    "VERB: PreprocessorDefinitions = ",
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state",
                     "VERB: BuildState file does not exist",
@@ -318,6 +320,7 @@ namespace Soup::UnitTests
                     "VERB: IsIncremental = true",
                     "VERB: IncludeDirectories = ",
                     "VERB: IncludeModules = ",
+                    "VERB: PreprocessorDefinitions = ",
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state",
                     "VERB: Create Directory: obj",
@@ -431,6 +434,7 @@ namespace Soup::UnitTests
                     "VERB: IsIncremental = true",
                     "VERB: IncludeDirectories = ",
                     "VERB: IncludeModules = ",
+                    "VERB: PreprocessorDefinitions = ",
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state",
                     "VERB: Create Directory: obj",
@@ -534,6 +538,7 @@ namespace Soup::UnitTests
                     "VERB: IsIncremental = true",
                     "VERB: IncludeDirectories = ",
                     "VERB: IncludeModules = ",
+                    "VERB: PreprocessorDefinitions = ",
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state",
                     "VERB: Create Directory: obj",
@@ -721,6 +726,7 @@ namespace Soup::UnitTests
                     "VERB: IsIncremental = true",
                     "VERB: IncludeDirectories = Folder AnotherFolder/Sub",
                     "VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
+                    "VERB: PreprocessorDefinitions = ",
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state",
                     "VERB: Create Directory: obj",
@@ -810,6 +816,10 @@ namespace Soup::UnitTests
                 Path("../OtherModule2.mock.a"),
             });
             arguments.IsIncremental = true;
+            arguments.PreprocessorDefinitions = std::vector<std::string>({ 
+                "DEBUG",
+                "AWESOME",
+            });
 
             uut.Execute(arguments);
 
@@ -827,6 +837,10 @@ namespace Soup::UnitTests
                 Path("../OtherModule2.mock.bmi"),
             });
             expectedCompileArguments.GenerateIncludeTree = false;
+            expectedCompileArguments.PreprocessorDefinitions = std::vector<std::string>({ 
+                "DEBUG",
+                "AWESOME",
+            });
 
             auto expectedCompileModuleArguments = expectedCompileArguments;
             expectedCompileModuleArguments.SourceFile = Path("Public.cpp");
@@ -909,6 +923,7 @@ namespace Soup::UnitTests
                     "VERB: IsIncremental = true",
                     "VERB: IncludeDirectories = Folder AnotherFolder/Sub",
                     "VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
+                    "VERB: PreprocessorDefinitions = DEBUG AWESOME",
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state",
                     "VERB: Create Directory: obj",
@@ -1015,6 +1030,7 @@ namespace Soup::UnitTests
                     "VERB: IsIncremental = true",
                     "VERB: IncludeDirectories = Folder AnotherFolder/Sub",
                     "VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
+                    "VERB: PreprocessorDefinitions = ",
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state",
                     "VERB: Create Directory: obj",
@@ -1162,6 +1178,7 @@ namespace Soup::UnitTests
                     "VERB: IsIncremental = true",
                     "VERB: IncludeDirectories = Folder AnotherFolder/Sub",
                     "VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
+                    "VERB: PreprocessorDefinitions = ",
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state",
                     "VERB: Create Directory: obj",

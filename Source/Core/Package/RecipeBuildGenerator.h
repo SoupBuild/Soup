@@ -144,6 +144,9 @@ namespace Soup
                 arguments.IncludeModules = std::move(includeModules);
                 arguments.LinkLibraries = std::move(linkLibraries);
                 arguments.IsIncremental = true;
+                arguments.PreprocessorDefinitions = std::vector<std::string>({
+                    "SOUP_BUILD",
+                });
 
                 // Strip out the working directory from the include paths
                 for (auto& entry : includePaths)
