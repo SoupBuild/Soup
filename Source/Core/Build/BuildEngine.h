@@ -92,6 +92,7 @@ namespace Soup
             }
 
             // Compile the module interface unit if present
+            bool codeCompiled = false;
             if (!arguments.ModuleInterfaceSourceFile.ToString().empty())
             {
                 auto moduleCompiled = CompileModuleInterfaceUnit(
@@ -101,20 +102,27 @@ namespace Soup
 
                 // Force recompile the source files if the module was compiled
                 forceBuild |= moduleCompiled;
+                codeCompiled |= moduleCompiled;
             }
 
-            auto sourceCompiled = CompileSourceFiles(
-                arguments,
-                buildState,
-                forceBuild);
+            if (!arguments.SourceFiles.empty())
+            {
+                auto sourceCompiled = CompileSourceFiles(
+                    arguments,
+                    buildState,
+                    forceBuild);
 
-            if (sourceCompiled)
+                // Force link if any of the source was compiled
+                codeCompiled |= sourceCompiled;
+            }
+
+            if (codeCompiled)
             {
                 Log::Verbose("Saving updated build state");
                 BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
             }
 
-            return sourceCompiled;
+            return codeCompiled;
         }
 
         /// <summary>
@@ -386,6 +394,14 @@ namespace Soup
                 for (auto& sourceFile : arguments.SourceFiles)
                 {
                     auto objectFile = arguments.ObjectDirectory + Path(sourceFile.GetFileName());
+                    objectFile.SetFileExtension(_compiler->GetObjectFileExtension());
+                    objectFiles.push_back(objectFile);
+                }
+
+                // Add the module interface object file if present
+                if (!arguments.ModuleInterfaceSourceFile.ToString().empty())
+                {
+                    auto objectFile = arguments.ObjectDirectory + Path(arguments.ModuleInterfaceSourceFile.GetFileName());
                     objectFile.SetFileExtension(_compiler->GetObjectFileExtension());
                     objectFiles.push_back(objectFile);
                 }

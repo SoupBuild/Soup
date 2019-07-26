@@ -16,6 +16,7 @@ TestState RunBuildEngineTests()
     state += SoupTest::RunTest(className, "Build_Library_MultipleFiles_IncludeModuleUpdated", [&testClass]() { testClass->Build_Library_MultipleFiles_IncludeModuleUpdated(); });
     state += SoupTest::RunTest(className, "Build_Library_Complex_OutOfDate", [&testClass]() { testClass->Build_Library_Complex_OutOfDate(); });
     state += SoupTest::RunTest(className, "Build_Library_ModuleInterface_UpToDate", [&testClass]() { testClass->Build_Library_ModuleInterface_UpToDate(); });
+    state += SoupTest::RunTest(className, "Build_Library_ModuleInterfaceNoSource_OutOfDate", [&testClass]() { testClass->Build_Library_ModuleInterfaceNoSource_OutOfDate(); });
 
     return state;
 }

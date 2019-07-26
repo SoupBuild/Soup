@@ -850,6 +850,7 @@ namespace Soup::UnitTests
                 Path("obj/TestFile1.mock.obj"),
                 Path("obj/TestFile2.mock.obj"),
                 Path("obj/TestFile3.mock.obj"),
+                Path("obj/Public.mock.obj"),
             });
             expectedLinkArguments.LibraryFiles = std::vector<Path>({
                 Path("../../Other/bin/OtherModule1.mock.a"),
@@ -1087,6 +1088,162 @@ namespace Soup::UnitTests
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
                     std::make_pair("root/bin/Library.mock.lib", FileSystemRequestType::Exists),
+                }),
+                fileSystem->GetRequests(),
+                "Verify file system requests match expected.");
+        }
+
+        [[Fact]]
+        void Build_Library_ModuleInterfaceNoSource_OutOfDate()
+        {
+            // Register the test listener
+            auto testListener = std::make_shared<TestTraceListener>();
+            Log::RegisterListener(testListener);
+
+            // Register the test file system
+            auto fileSystem = std::make_shared<MockFileSystem>();
+            IFileSystem::Register(fileSystem);
+
+            // Create the initial build state
+            auto initialBuildState = BuildState({
+                FileInfo(Path("Public.cpp"), { }),
+            });
+            std::stringstream initialBuildStateJson;
+            BuildStateJson::Serialize(initialBuildState, initialBuildStateJson);
+            fileSystem->CreateMockFile(
+                Path("root/.soup/BuildState.json"),
+                MockFileState(std::move(initialBuildStateJson)));
+
+            // Setup the input/output files to be up to date
+            auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
+            auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+            auto outdatedInputTime = CreateDateTime(2015, 5, 22, 9, 13);
+            fileSystem->CreateMockFile(Path("root/obj/Public.mock.obj"), MockFileState(outputTime));
+            fileSystem->CreateMockFile(Path("root/Public.cpp"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("../Other/bin/OtherModule1.mock.bmi"), MockFileState(inputTime));
+            fileSystem->CreateMockFile(Path("OtherModule2.mock.bmi"), MockFileState(outdatedInputTime));
+
+            auto compiler = std::make_shared<Compiler::Mock::Compiler>();
+            auto uut = BuildEngine(compiler);
+
+            auto arguments = BuildArguments();
+            arguments.TargetName = "Library";
+            arguments.TargetType = BuildTargetType::Library;
+            arguments.WorkingDirectory = Path("root");
+            arguments.ObjectDirectory = Path("obj");
+            arguments.BinaryDirectory = Path("bin");
+            arguments.ModuleInterfaceSourceFile = Path("Public.cpp");
+            arguments.SourceFiles = std::vector<Path>({});
+            arguments.IncludeDirectories = std::vector<Path>({
+                Path("Folder"),
+                Path("AnotherFolder/Sub"),
+            });
+            arguments.IncludeModules = std::vector<Path>({
+                Path("../../Other/bin/OtherModule1.mock.bmi"),
+                Path("../OtherModule2.mock.bmi"),
+            });
+            arguments.LinkLibraries = std::vector<Path>({
+                Path("../../Other/bin/OtherModule1.mock.a"),
+                Path("../OtherModule2.mock.a"),
+            });
+            arguments.IsIncremental = true;
+
+            uut.Execute(arguments);
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "VERB: TargetName = Library",
+                    "VERB: TargetType = Library",
+                    "VERB: WorkingDirectory = root",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleInterfaceSourceFile = Public.cpp",
+                    "VERB: IsIncremental = true",
+                    "VERB: IncludeDirectories = Folder AnotherFolder/Sub",
+                    "VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
+                    "VERB: Task: CoreCompile",
+                    "VERB: Loading previous build state",
+                    "VERB: Create Directory: obj",
+                    "VERB: Create Directory: bin",
+                    "VERB: Task: CompileModuleInterfaceUnit",
+                    "VERB: Check for updated source",
+                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/Public.mock.obj]",
+                    "VERB: Public.cpp",
+                    "VERB: Copy: [obj/Public.mock.bmi] -> [bin/Library.mock.bmi]",
+                    "VERB: Saving updated build state",
+                    "VERB: Task: CoreLink",
+                    "VERB: Linking target",
+                    "INFO: bin/Library.mock.lib",
+                }),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
+
+            // Setup the shared arguments
+            auto expectedCompileArguments = CompileArguments();
+            expectedCompileArguments.Standard = LanguageStandard::CPP20;
+            expectedCompileArguments.Optimize = OptimizationLevel::Speed;
+            expectedCompileArguments.RootDirectory = Path("root");
+            expectedCompileArguments.IncludeDirectories = std::vector<Path>({
+                Path("Folder"),
+                Path("AnotherFolder/Sub"),
+            });
+            expectedCompileArguments.IncludeModules = std::vector<Path>({
+                Path("../../Other/bin/OtherModule1.mock.bmi"),
+                Path("../OtherModule2.mock.bmi"),
+            });
+            expectedCompileArguments.GenerateIncludeTree = false;
+
+            auto expectedCompileModuleArguments = expectedCompileArguments;
+            expectedCompileModuleArguments.SourceFile = Path("Public.cpp");
+            expectedCompileModuleArguments.TargetFile = Path("obj/Public.mock.obj");
+            expectedCompileModuleArguments.ExportModule = true;
+
+            auto expectedLinkArguments = LinkArguments();
+            expectedLinkArguments.TargetFile = Path("bin/Library.mock.lib");
+            expectedLinkArguments.TargetType = LinkTarget::StaticLibrary;
+            expectedLinkArguments.RootDirectory = Path("root");
+            expectedLinkArguments.ObjectFiles = std::vector<Path>({
+                Path("obj/Public.mock.obj"),
+            });
+            expectedLinkArguments.LibraryFiles = std::vector<Path>({
+                Path("../../Other/bin/OtherModule1.mock.a"),
+                Path("../OtherModule2.mock.a"),
+            });
+
+            // Verify expected compiler calls
+            Assert::AreEqual(
+                std::vector<CompileArguments>({
+                    expectedCompileModuleArguments,
+                }),
+                compiler->GetCompileRequests(),
+                "Verify compiler requests match expected.");
+            Assert::AreEqual(
+                std::vector<LinkArguments>({
+                    expectedLinkArguments,
+                }),
+                compiler->GetLinkRequests(),
+                "Verify link requests match expected.");
+
+            // Verify expected file system requests
+            Assert::AreEqual(
+                std::vector<std::pair<std::string, FileSystemRequestType>>({
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenRead),
+                    std::make_pair("root/obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj", FileSystemRequestType::CreateDirectory),
+                    std::make_pair("root/bin", FileSystemRequestType::Exists),
+                    std::make_pair("root/bin", FileSystemRequestType::CreateDirectory),
+                    std::make_pair("root/obj/Public.mock.obj", FileSystemRequestType::Exists),
+                    std::make_pair("root/obj/Public.mock.obj", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/Public.cpp", FileSystemRequestType::Exists),
+                    std::make_pair("root/Public.cpp", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
+                    std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("[root/obj/Public.mock.bmi] -> [root/bin/Library.mock.bmi]", FileSystemRequestType::CopyFile),
+                    std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");

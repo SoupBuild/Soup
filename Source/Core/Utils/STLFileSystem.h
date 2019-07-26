@@ -85,7 +85,7 @@ namespace Soup
         /// </summary>
         virtual void CreateDirectory(const Path& path) override final
         {
-            std::filesystem::create_directory(path.ToString());
+            std::filesystem::create_directories(path.ToString());
         }
     };
 }
