@@ -846,6 +846,10 @@ namespace Soup::UnitTests
             expectedCompileModuleArguments.SourceFile = Path("Public.cpp");
             expectedCompileModuleArguments.TargetFile = Path("obj/Public.mock.obj");
             expectedCompileModuleArguments.ExportModule = true;
+
+            // Remaining source files should reference module interface
+            expectedCompileArguments.IncludeModules.push_back(Path("obj/Public.mock.bmi"));
+
             auto expectedCompile1Arguments = expectedCompileArguments;
             expectedCompile1Arguments.SourceFile = Path("TestFile1.cpp");
             expectedCompile1Arguments.TargetFile = Path("obj/TestFile1.mock.obj");

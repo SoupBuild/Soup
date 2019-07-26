@@ -309,9 +309,17 @@ namespace Soup
                 compileArguments.ExportModule = false;
                 compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 
+                // Add the module binary interface if present
+                if (!arguments.ModuleInterfaceSourceFile.ToString().empty())
+                {
+                    auto moduleInterfaceFile = arguments.ObjectDirectory + Path(arguments.ModuleInterfaceSourceFile.GetFileName());
+                    moduleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
+                    compileArguments.IncludeModules.push_back(moduleInterfaceFile);
+                }
+
+                // Compile the individual translation units
                 for (auto& file : source)
                 {
-                    // Compile the individual translation unit
                     Log::Verbose(file.ToString());
                     compileArguments.SourceFile = file;
                     compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
