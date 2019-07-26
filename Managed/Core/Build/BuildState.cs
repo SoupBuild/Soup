@@ -52,7 +52,9 @@ namespace Soup
             var lookup = new Dictionary<string, FileInfo>();
             foreach (var file in KnownFiles)
             {
-                lookup.Add(file.File, file);
+                var insertResult = lookup.TryAdd(file.File, file);
+                if (!insertResult)
+                    Log.Warning("Found second copy of file...");
             }
 
             return lookup;

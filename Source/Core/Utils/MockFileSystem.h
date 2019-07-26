@@ -12,7 +12,9 @@ namespace Soup
         Exists,
         GetLastWriteTime,
         OpenRead,
-        OpenWrite
+        OpenWrite,
+        CopyFile,
+        CreateDirectory,
     };
 
     export struct MockFileState
@@ -139,6 +141,23 @@ namespace Soup
                 auto insert = _files.emplace(path, MockFileState());
                 return insert.first->second.Contents;
             }
+        }
+
+        /// <summary>
+        /// Copy the source file to the destination
+        /// </summary>
+        virtual void CopyFile(const Path& source, const Path& destination) override final
+        {
+            auto message = "[" + source.ToString() + "] -> [" + destination.ToString() + "]";
+            _requests.push_back(std::make_pair(std::move(message), FileSystemRequestType::CopyFile));
+        }
+
+        /// <summary>
+        /// Create the directory at the requested path
+        /// </summary>
+        virtual void CreateDirectory(const Path& path) override final
+        {
+            _requests.push_back(std::make_pair(path.ToString(), FileSystemRequestType::CreateDirectory));
         }
 
     private:

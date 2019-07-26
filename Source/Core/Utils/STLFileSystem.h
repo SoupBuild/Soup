@@ -68,5 +68,24 @@ namespace Soup
             auto file = std::make_shared<std::fstream>(path.ToString(), std::fstream::out);
             return file;
         }
+        
+        /// <summary>
+        /// Copy the source file to the destination
+        /// </summary>
+        virtual void CopyFile(const Path& source, const Path& destination) override final
+        {
+            std::filesystem::copy(
+                source.ToString(),
+                destination.ToString(),
+                std::filesystem::copy_options::overwrite_existing);
+        }
+
+        /// <summary>
+        /// Create the directory at the requested path
+        /// </summary>
+        virtual void CreateDirectory(const Path& path) override final
+        {
+            std::filesystem::create_directory(path.ToString());
+        }
     };
 }

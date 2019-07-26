@@ -76,6 +76,21 @@ namespace Soup
                 }
             }
 
+            // Ensure the output directories exists
+            auto objectDirectry = arguments.WorkingDirectory + arguments.ObjectDirectory;
+            if (!IFileSystem::Current().Exists(objectDirectry))
+            {
+                Log::Verbose("Create Directory: " + arguments.ObjectDirectory.ToString());
+                IFileSystem::Current().CreateDirectory(objectDirectry);
+            }
+
+            auto binaryDirectry = arguments.WorkingDirectory + arguments.BinaryDirectory;
+            if (!IFileSystem::Current().Exists(binaryDirectry))
+            {
+                Log::Verbose("Create Directory: " + arguments.BinaryDirectory.ToString());
+                IFileSystem::Current().CreateDirectory(binaryDirectry);
+            }
+
             // Compile the module interface unit if present
             if (!arguments.ModuleInterfaceSourceFile.ToString().empty())
             {
@@ -163,13 +178,6 @@ namespace Soup
             // Check if we can skip the whole dang thing
             if (buildRequired)
             {
-                // // Ensure the object directory exists
-                // var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
-                // if (!Directory.Exists(objectDirectry))
-                // {
-                //     Directory.CreateDirectory(objectDirectry);
-                // }
-
                 // Setup the shared properties
                 auto compileArguments = CompileArguments();
                 compileArguments.Standard = LanguageStandard::CPP20;
@@ -189,6 +197,15 @@ namespace Soup
                 compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
 
                 auto result = _compiler->Compile(compileArguments);
+
+                // Copy the binary module interface to the binary directory
+                auto objectOutputModuleInterfaceFile = arguments.ObjectDirectory + Path(file.GetFileName());
+                objectOutputModuleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
+                auto binaryOutputModuleInterfaceFile = arguments.BinaryDirectory + Path(arguments.TargetName + "." + std::string(_compiler->GetModuleFileExtension()));
+                Log::Verbose("Copy: [" + objectOutputModuleInterfaceFile.ToString() + "] -> [" + binaryOutputModuleInterfaceFile.ToString() + "]");
+                IFileSystem::Current().CopyFile(
+                    arguments.WorkingDirectory + objectOutputModuleInterfaceFile,
+                    arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
 
                 // // Save the build state
                 // if (result.HeaderIncludeFiles != null)
@@ -269,13 +286,6 @@ namespace Soup
             if (!source.empty())
             {
                 Log::Verbose("Compiling source files");
-
-                // // Ensure the object directory exists
-                // var objectDirectry = Path.Combine(args.RootDirectory, objectDirectory);
-                // if (!Directory.Exists(objectDirectry))
-                // {
-                //     Directory.CreateDirectory(objectDirectry);
-                // }
 
                 // Setup the shared properties
                 auto compileArguments = CompileArguments();

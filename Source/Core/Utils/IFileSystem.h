@@ -54,6 +54,16 @@ namespace Soup
         /// </summary>
         virtual std::shared_ptr<std::ostream> OpenWrite(const Path& path) = 0;
 
+        /// <summary>
+        /// Copy the source file to the destination
+        /// </summary>
+        virtual void CopyFile(const Path& source, const Path& destination) = 0;
+
+        /// <summary>
+        /// Create the directory at the requested path
+        /// </summary>
+        virtual void CreateDirectory(const Path& path) = 0;
+
     private:
         static std::shared_ptr<IFileSystem> _current;
     };
