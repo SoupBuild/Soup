@@ -478,7 +478,7 @@ namespace Soup
                 var dependecyRecipe = await RecipeManager.LoadFromFileAsync(packagePath);
 
                 // Get recursive dependencies
-                await GenerateDependencyLibrarySetAsync(path, binaryDirectory, dependecyRecipe, set);
+                await GenerateDependencyLibrarySetAsync(packagePath, binaryDirectory, dependecyRecipe, set);
 
                 set.Add(Path.Combine(packagePath, binaryDirectory, $"{dependecyRecipe.Name}.a").ToLower());
             }
