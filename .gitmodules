@@ -1,0 +1,15 @@
+[submodule "Dependencies/SoupSTL"]
+	path = Dependencies/SoupSTL
+	url = https://github.com/mwasplund/SoupSTL.git
+[submodule "Dependencies/SoupTest"]
+	path = Dependencies/SoupTest
+	url = https://github.com/mwasplund/SoupTest.git
+[submodule "Dependencies/SoupSyntax"]
+	path = Dependencies/SoupSyntax
+	url = https://github.com/mwasplund/SoupSyntax.git
+[submodule "Dependencies/Antlr4"]
+	path = Dependencies/Antlr4
+	url = https://github.com/mwasplund/Antlr4.git
+[submodule "Dependencies/Json11"]
+	path = Dependencies/Json11
+	url = https://github.com/mwasplund/Json11.git

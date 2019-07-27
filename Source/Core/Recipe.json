@@ -2,9 +2,9 @@
   "name": "Soup.Core",
   "version": "0.1.0",
   "dependencies": [
-    "D:/Repos/SoupSTL/Core/",
-    "D:/Repos/json11/",
-    "D:/Repos/SoupSyntax/Syntax/"
+    "../../Dependencies/SoupSTL/Core/",
+    "../../Dependencies/json11/",
+    "../../Dependencies/SoupSyntax/Syntax/"
   ],
   "public": "Module.cppm",
   "source": [
