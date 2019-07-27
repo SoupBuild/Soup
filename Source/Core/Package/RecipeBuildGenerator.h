@@ -66,13 +66,13 @@ namespace Soup
             for (auto dependecy : recipe.GetDependencies())
             {
                 // Load this package recipe
-                auto packagePath = dependecy.GetPath();
+                auto packagePath = GetPackageReferencePath(workingDirectory, dependecy);
                 auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
                 Recipe dependecyRecipe = {};
                 if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
                 {
-                    Log::Error("Failed to load the dependency package: {packagePath}");
-                    throw std::runtime_error("Failed to load dependency.");
+                    Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+                    throw std::runtime_error("BuildAllDependenciesRecursively: Failed to load dependency.");
                 }
 
                 // Build all recursive dependencies
@@ -118,7 +118,8 @@ namespace Soup
                 auto includeModules = std::vector<Path>();
                 for (auto dependecy : recipe.GetDependencies())
                 {
-                    auto modulePath = GetRecipeModulePath(dependecy.GetPath());
+                    auto packagePath = GetPackageReferencePath(workingDirectory, dependecy);
+                    auto modulePath = GetRecipeModulePath(packagePath);
                     includeModules.push_back(std::move(modulePath));
                 }
 
@@ -186,16 +187,16 @@ namespace Soup
             const Recipe& recipe,
             std::vector<Path>& closure) const
         {
-            for (auto dependecy : recipe.GetDependencies())
+            for (auto& dependecy : recipe.GetDependencies())
             {
                 // Load this package recipe
-                auto dependencyPackagePath = dependecy.GetPath();
+                auto dependencyPackagePath = GetPackageReferencePath(workingDirectory, dependecy);
                 auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
                 Recipe dependecyRecipe = {};
                 if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
                 {
-                    Log::Error("Failed to load the dependency package: {packagePath}");
-                    throw std::runtime_error("Failed to load dependency.");
+                    Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+                    throw std::runtime_error("GenerateDependecyStaticLibraryClosure: Failed to load dependency.");
                 }
 
                 // Add this dependency
@@ -226,8 +227,8 @@ namespace Soup
             Recipe dependecyRecipe = {};
             if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
             {
-                Log::Error("Failed to load the dependency package: {packagePath}");
-                throw std::runtime_error("Failed to load dependency.");
+                Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+                throw std::runtime_error("GetRecipeModulePath: Failed to load dependency.");
             }
 
             auto packageBinaryPath = packagePath + GetBinaryDirectory();
@@ -235,6 +236,18 @@ namespace Soup
             auto modulePath = packageBinaryPath + moduleFilename;
 
             return modulePath;
+        }
+
+        Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const
+        {
+            // If the path is relative then combine with the working directory
+            auto packagePath = reference.GetPath();
+            if (!packagePath.HasRoot())
+            {
+                packagePath = workingDirectory + packagePath;
+            }
+
+            return packagePath;
         }
 
     private:
