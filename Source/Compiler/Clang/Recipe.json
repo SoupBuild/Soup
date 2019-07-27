@@ -1,0 +1,10 @@
+{
+  "name": "Soup.Compiler.Clang",
+  "version": "0.1.0",
+  "dependencies": [
+    "D:/Repos/Soup/Source/Core/"
+  ],
+  "public": "Module.cppm",
+  "source": [
+  ]
+}

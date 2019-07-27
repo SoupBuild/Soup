@@ -1,0 +1,11 @@
+{
+  "name": "Soup.Compiler.Clang.UnitTests",
+  "version": "1.0.0",
+  "type": "executable",
+  "dependencies": [
+    "../Clang/"
+  ],
+  "source": [
+    "gen/Main.cpp"
+  ]
+}

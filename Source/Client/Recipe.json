@@ -1,0 +1,12 @@
+{
+  "name": "Soup",
+  "version": "0.1.0",
+  "type": "Executable",
+  "dependencies": [
+    "../Core",
+    "../Compiler/Clang"
+  ],
+  "source": [
+    "Main.cpp"
+  ]
+}
