@@ -74,6 +74,8 @@
     "xlocmes": "cpp",
     "xlocmon": "cpp",
     "xloctime": "cpp",
-    "xtree": "cpp"
+    "xtree": "cpp",
+    "condition_variable": "cpp",
+    "cassert": "cpp"
   }
 }

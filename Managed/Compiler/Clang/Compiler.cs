@@ -18,7 +18,7 @@ namespace Soup.Compiler.Clang
     public class Compiler : ICompiler
     {
         //private static string ToolsPath => @"C:\Program Files\llvm\";
-        private static string ToolsPath => @"D:\Repos\llvm\build\Release";
+        private static string ToolsPath => @"D:\Repos\llvm-project\build\Release";
         private static Regex IsHeaderIncludeStart = new Regex("^[\\.]+ ", RegexOptions.Compiled);
         private static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
         private static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);
@@ -260,8 +260,8 @@ namespace Soup.Compiler.Clang
                     commandArgs.Add("-std=c++17");
                     break;
                 case LanguageStandard.Latest:
-                    commandArgs.Add("-std=c++17");
-                    // commandArgs.Add("-std=c++2a");
+                    // commandArgs.Add("-std=c++17");
+                    commandArgs.Add("-std=c++2a");
                     break;
                 default:
                     throw new NotSupportedException("Unknown language standard.");
@@ -294,10 +294,10 @@ namespace Soup.Compiler.Clang
             // commandArgs.Add("-EHs");
 
             // Enable experimental features
-            if (args.Standard == LanguageStandard.Latest)
-            {
-                commandArgs.Add("-fmodules-ts");
-            }
+            //if (args.Standard == LanguageStandard.Latest)
+            //{
+            //    commandArgs.Add("-fmodules-ts");
+            //}
 
             // Add the module references
             foreach (var module in args.Modules)

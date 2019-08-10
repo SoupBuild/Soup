@@ -1,9 +1,5 @@
-﻿
-
-#include "PlatformProcessManagerImpl.h"
-
-export module Soup.Core;
-
+﻿export module Soup.Core;
+import Soup.Platform;
 import std.core;
 import json11;
 

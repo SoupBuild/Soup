@@ -53,7 +53,7 @@ namespace Soup
                 stdErr << value;
             };
 
-            int exitCode = PlatformProcessManagerImpl::Execute(
+            int exitCode = Platform::ProcessManager::Execute(
                 application.ToString().c_str(),
                 const_cast<char*>(argumentsString.c_str()),
                 workingDirectory.ToString().c_str(),

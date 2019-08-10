@@ -4,10 +4,9 @@
   "dependencies": [
     "../../Dependencies/SoupSTL/Core/",
     "../../Dependencies/json11/",
-    "../../Dependencies/SoupSyntax/Syntax/"
+    "../../Dependencies/SoupSyntax/Source/Syntax/",
+    "../Platform/"
   ],
   "public": "Module.cppm",
-  "source": [
-      "Utils/PlatformProcessManagerImpl.cpp"
-  ]
+  "source": []
 }
