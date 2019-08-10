@@ -144,7 +144,7 @@ namespace Soup
                 arguments.SourceFiles = recipe.GetSourceAsPath();
                 arguments.IncludeModules = std::move(includeModules);
                 arguments.LinkLibraries = std::move(linkLibraries);
-                arguments.IsIncremental = true;
+                arguments.IsIncremental = !forceBuild;
                 arguments.PreprocessorDefinitions = std::vector<std::string>({
                     "SOUP_BUILD",
                 });

@@ -44,6 +44,7 @@ namespace Soup::Client
 
                 auto options = BuildOptions();
                 options.EnableVerbose = IsFlagSet("v", unusedArgs);
+                options.Force = IsFlagSet("f", unusedArgs);
 
                 result = std::move(options);
             }

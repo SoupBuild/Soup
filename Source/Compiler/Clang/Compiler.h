@@ -14,7 +14,7 @@ namespace Soup::Compiler::Clang
     {
     private:
         // static Path ToolsPath = "C:/Program Files/llvm/";
-        static constexpr std::string_view ToolsPath = "D:/Repos/llvm/build/Release/";
+        static constexpr std::string_view ToolsPath = "D:/Repos/llvm-project/build/Release/";
         static constexpr std::string_view CompilerExecutable = "bin/clang++.exe";
         static constexpr std::string_view LinkerExecutable = "bin/llvm-ar.exe";
 
