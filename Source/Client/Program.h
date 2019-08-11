@@ -151,7 +151,8 @@ namespace Soup::Client
             Log::Trace("Setup RunCommand");
             SetupShared(options);
             return std::make_shared<RunCommand>(
-                std::move(options));
+                std::move(options),
+                GetCompiler());
         }
 
         static std::shared_ptr<ICommand> Setup(InitializeOptions options)

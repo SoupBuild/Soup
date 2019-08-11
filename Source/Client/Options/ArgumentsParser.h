@@ -89,7 +89,10 @@ namespace Soup::Client
                 Log::Trace("Parse run");
 
                 auto options = RunOptions();
-                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+                // TODO: How to do verbose? options.EnableVerbose = IsFlagSet("v", unusedArgs);
+
+                // All remaining arguments are passed to the executable
+                options.Arguments = std::move(unusedArgs);
 
                 result = std::move(options);
             }
