@@ -1,10 +1,11 @@
-﻿// <copyright file="RecipeBuildGenerator.h" company="Soup">
+﻿// <copyright file="RecipeBuildManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 #include "RecipeExtensions.h"
 #include "RecipeBuilder.h"
+#include "RecipeBuildGenerator.h"
 
 namespace Soup
 {
@@ -16,7 +17,7 @@ namespace Soup
     {
     public:
         /// <summary>
-        /// Initializes a new instance of the <see cref="RecipeBuildGenerator"/> class.
+        /// Initializes a new instance of the <see cref="RecipeBuildManager"/> class.
         /// </summary>
         RecipeBuildManager(std::shared_ptr<ICompiler> compiler) :
             _builder(std::move(compiler))
@@ -100,6 +101,11 @@ namespace Soup
             }
             else
             {
+                // Gen the build
+                auto generator = RecipeBuildGenerator();
+                generator.Execute(workingDirectory, recipe);
+
+                // Run the build in process
                 _builder.Execute(projectId, workingDirectory, recipe, forceBuild);
 
                 // Keep track of the packages we have already built
