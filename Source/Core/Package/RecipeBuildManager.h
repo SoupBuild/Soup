@@ -28,6 +28,9 @@ namespace Soup
         /// </summary>
         void Execute(const Path& workingDirectory, const Recipe& recipe, bool forceBuild)
         {
+            // Clear the build set so we check all dependencies
+            _buildSet.clear();
+
             // Enable log event ids to track individual builds
             int projectId = 1;
             Log::EnsureListener().SetShowEventId(true);
@@ -36,7 +39,7 @@ namespace Soup
             try
             {
                 projectId = BuildAllDependenciesRecursively(projectId, workingDirectory, recipe, forceBuild);
-                _builder.Execute(projectId, workingDirectory, recipe, forceBuild);
+                BuildRecipe(projectId, workingDirectory, recipe, forceBuild);
 
                 Log::EnsureListener().SetShowEventId(false);
             }
@@ -73,13 +76,40 @@ namespace Soup
                 projectId = BuildAllDependenciesRecursively(projectId, packagePath, dependecyRecipe, forceBuild);
 
                 // Build this dependecy
-                _builder.Execute(projectId, packagePath, dependecyRecipe, forceBuild);
+                projectId = BuildRecipe(projectId, packagePath, dependecyRecipe, forceBuild);
+            }
+
+            // Return the updated project id after building all dependencies
+            return projectId;
+        }
+
+
+        /// <summary>
+        /// The core build that will either invoke the recipe builder directly
+        /// or compile it into an executable and invoke it.
+        /// </summary>
+        int BuildRecipe(
+            int projectId,
+            const Path& workingDirectory,
+            const Recipe& recipe,
+            bool forceBuild)
+        {
+            if (_buildSet.contains(recipe.GetName()))
+            {
+                Log::Verbose("Recipe already built: " + recipe.GetName());
+            }
+            else
+            {
+                _builder.Execute(projectId, workingDirectory, recipe, forceBuild);
+
+                // Keep track of the packages we have already built
+                // TODO: Verify unique names
+                _buildSet.insert(recipe.GetName());
 
                 // Move to the next build project id
                 projectId++;
             }
 
-            // Return the updated project id after building all dependencies
             return projectId;
         }
 
@@ -97,5 +127,6 @@ namespace Soup
 
     private:
         RecipeBuilder _builder;
+        std::set<std::string> _buildSet;
     };
 }
