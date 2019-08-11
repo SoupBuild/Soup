@@ -4,22 +4,22 @@
 
 #pragma once
 #include "RecipeExtensions.h"
-#include "RecipeBuild.h"
+#include "RecipeBuilder.h"
 
 namespace Soup
 {
     /// <summary>
-    /// The recipe build generator that knows how to build a recipe 
-    /// and all of its dependencies
+    /// The recipe build manager that knows how to perform the correct build for a recipe 
+    /// and all of its developer and runtime dependencies
     /// </summary>
-    export class RecipeBuildGenerator
+    export class RecipeBuildManager
     {
     public:
         /// <summary>
         /// Initializes a new instance of the <see cref="RecipeBuildGenerator"/> class.
         /// </summary>
-        RecipeBuildGenerator(std::shared_ptr<ICompiler> compiler) :
-            _build(std::move(compiler))
+        RecipeBuildManager(std::shared_ptr<ICompiler> compiler) :
+            _builder(std::move(compiler))
         {
         }
 
@@ -36,7 +36,7 @@ namespace Soup
             try
             {
                 projectId = BuildAllDependenciesRecursively(projectId, workingDirectory, recipe, forceBuild);
-                _build.Execute(projectId, workingDirectory, recipe, forceBuild);
+                _builder.Execute(projectId, workingDirectory, recipe, forceBuild);
 
                 Log::EnsureListener().SetShowEventId(false);
             }
@@ -73,7 +73,7 @@ namespace Soup
                 projectId = BuildAllDependenciesRecursively(projectId, packagePath, dependecyRecipe, forceBuild);
 
                 // Build this dependecy
-                _build.Execute(projectId, packagePath, dependecyRecipe, forceBuild);
+                _builder.Execute(projectId, packagePath, dependecyRecipe, forceBuild);
 
                 // Move to the next build project id
                 projectId++;
@@ -96,6 +96,6 @@ namespace Soup
         }
 
     private:
-        RecipeBuild _build;
+        RecipeBuilder _builder;
     };
 }

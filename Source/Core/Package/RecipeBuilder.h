@@ -8,15 +8,16 @@
 namespace Soup
 {
     /// <summary>
-    /// The recipe build that knows how to build a single recipe
+    /// The recipe builder that knows how to build a single recipe
+    /// Used either directly inside Soup builds or in the generated build executable
     /// </summary>
-    export class RecipeBuild
+    export class RecipeBuilder
     {
     public:
         /// <summary>
-        /// Initializes a new instance of the <see cref="RecipeBuild"/> class.
+        /// Initializes a new instance of the <see cref="RecipeBuilder"/> class.
         /// </summary>
-        RecipeBuild(std::shared_ptr<ICompiler> compiler) :
+        RecipeBuilder(std::shared_ptr<ICompiler> compiler) :
             _compiler(std::move(compiler))
         {
             if (_compiler == nullptr)
