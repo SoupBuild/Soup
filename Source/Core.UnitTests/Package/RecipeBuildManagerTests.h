@@ -1,4 +1,4 @@
-// <copyright file="RecipeBuildGeneratorTests.h" company="Soup">
+// <copyright file="RecipeBuildManagerTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,21 +6,21 @@
 
 namespace Soup::UnitTests
 {
-    class RecipeBuildGeneratorTests
+    class RecipeBuildManagerTests
     {
     public:
         [[Fact]]
-        void Initialze_Success()
+        void Initialize_Success()
         {
             auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-            auto uut = RecipeBuildGenerator(compiler);
+            auto uut = RecipeBuildManager(compiler);
         }
 
         [[Fact]]
-        void Initialze_NullCompilerThrows()
+        void Initialize_NullCompilerThrows()
         {
             Assert::ThrowsRuntimeError([]() {
-                auto uut = RecipeBuildGenerator(nullptr);
+                auto uut = RecipeBuildManager(nullptr);
             });
         }
 
