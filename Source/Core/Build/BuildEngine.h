@@ -29,7 +29,7 @@ namespace Soup
         /// <summary>
         /// The Core build task
         /// </summary>
-        virtual void Execute(const BuildArguments& arguments) override final
+        virtual bool Execute(const BuildArguments& arguments) override final
         {
             // Log the incoming request for verbose logs
             Log::Verbose("TargetName = " + arguments.TargetName);
@@ -48,10 +48,7 @@ namespace Soup
 
             // Link the final target
             bool targetLinked = CoreLink(arguments, sourceCompiled);
-            if (!targetLinked)
-            {
-                Log::Info("Up to date");
-            }
+            return targetLinked;
         }
 
     private:
@@ -427,7 +424,7 @@ namespace Soup
                 // }
 
                 // Perform the link
-                Log::Info(linkArguments.TargetFile.ToString());
+                Log::Verbose(linkArguments.TargetFile.ToString());
                 _compiler->Link(linkArguments);
 
                 return true;

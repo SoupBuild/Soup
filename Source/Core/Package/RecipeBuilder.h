@@ -112,7 +112,12 @@ namespace Soup
 
                 // Perform the build
                 auto buildEngine = BuildEngine(_compiler);
-                buildEngine.Execute(arguments);
+                auto wasBuilt = buildEngine.Execute(arguments);
+
+                if (wasBuilt)
+                    Log::Info("Done");
+                else
+                    Log::Info("Up to date");
             }
             catch (std::exception& ex)
             {

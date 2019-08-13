@@ -20,7 +20,8 @@ namespace Soup
         /// Initializes a new instance of the <see cref="RecipeBuildManager"/> class.
         /// </summary>
         RecipeBuildManager(std::shared_ptr<ICompiler> compiler) :
-            _builder(std::move(compiler))
+            _builder(compiler),
+            _generator(compiler)
         {
         }
 
@@ -102,8 +103,7 @@ namespace Soup
             else
             {
                 // Gen the build
-                auto generator = RecipeBuildGenerator();
-                generator.Execute(workingDirectory, recipe);
+                _generator.Execute(workingDirectory, recipe);
 
                 // Run the build in process
                 _builder.Execute(projectId, workingDirectory, recipe, forceBuild);
@@ -133,6 +133,7 @@ namespace Soup
 
     private:
         RecipeBuilder _builder;
+        RecipeBuildGenerator _generator;
         std::set<std::string> _buildSet;
     };
 }

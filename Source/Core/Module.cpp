@@ -1,5 +1,6 @@
 ﻿export module Soup.Core;
 import Soup.Platform;
+import Soup.Syntax;
 import std.core;
 import json11;
 
