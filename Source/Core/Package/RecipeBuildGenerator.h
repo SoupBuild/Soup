@@ -24,6 +24,11 @@ namespace Soup
         {
             if (_compiler == nullptr)
                 throw std::runtime_error("Argument null: compiler");
+
+            // Setup the output directories
+            auto outputDirectory = Path("out");
+            _objectDirectory = outputDirectory + Path("obj");
+            _binaryDirectory = outputDirectory + Path("bin");
         }
 
         /// <summary>
@@ -51,7 +56,13 @@ namespace Soup
             auto sourceFiles = std::vector<Path>({
                 buildFile,
             });
-            CompileBuildExecutable(generateBuildPath, sourceFiles);
+            auto buildDependencies = std::vector<Path>({
+                Path("D:/Repos/Soup/Source/Core/"), // TODO: This needs to come from feed
+            });
+            CompileBuildExecutable(
+                generateBuildPath,
+                sourceFiles,
+                buildDependencies);
         }
 
     private:
@@ -71,6 +82,7 @@ namespace Soup
             std::vector<std::shared_ptr<const Declaration>> declarations = {};
 
             // Add the main method
+            declarations.push_back(BuildImportModule("Soup.Core"));
             declarations.push_back(BuildMainMethod());
 
             auto translationUnit = SyntaxFactory::CreateTranslationUnit(
@@ -81,12 +93,37 @@ namespace Soup
                 std::move(translationUnit));
         }
 
+        static std::shared_ptr<const Declaration> BuildImportModule(std::string_view name)
+        {
+            return SyntaxFactory::CreateModuleImportDeclaration(
+                SyntaxFactory::CreateKeywordToken(
+                    SyntaxTokenType::Import,
+                    {},
+                    {
+                        SyntaxFactory::CreateTrivia(" "),
+                    }),
+                SyntaxFactory::CreateSyntaxSeparatorList<SyntaxToken>(
+                    {
+                        SyntaxFactory::CreateUniqueToken(SyntaxTokenType::Identifier, std::string(name)),
+                    },
+                    {}),
+                SyntaxFactory::CreateKeywordToken(
+                    SyntaxTokenType::Semicolon,
+                    {},
+                    {
+                        SyntaxFactory::CreateTrivia("\n"),
+                    }));
+        }
+
         static std::shared_ptr<const Declaration> BuildMainMethod()
         {
             std::vector<std::shared_ptr<const Statement>> statements = {};
 
-            // #include <vector>
+            //
             // int main()
+            // {
+            // 
+            // }
             auto runnerFunction =  SyntaxFactory::CreateFunctionDefinition(
                 SyntaxFactory::CreateDeclarationSpecifierSequence(
                     SyntaxFactory::CreatePrimitiveDataTypeSpecifier(
@@ -95,7 +132,6 @@ namespace Soup
                             SyntaxTokenType::Int,
                             {
                                 SyntaxFactory::CreateTrivia("\n"),
-                                SyntaxFactory::CreateTrivia("#include <vector>\n"),
                             },
                             {}))),
                 SyntaxFactory::CreateIdentifierExpression(
@@ -134,48 +170,60 @@ namespace Soup
         /// <summary>
         /// Compile the external build executable
         /// </summary>
-        void CompileBuildExecutable(const Path& targetDirectory, const std::vector<Path>& sourceFiles)
+        void CompileBuildExecutable(
+            const Path& targetDirectory,
+            const std::vector<Path>& sourceFiles,
+            const std::vector<Path>& buildDependencies)
         {
             Log::Verbose("Compiling Build Executable");
 
-            try
+            // Determine the include paths
+            std::unordered_set<std::string> includePaths;
+
+            // Add all dependency packages modules references
+            auto includeModules = std::vector<Path>();
+            for (auto dependecy : buildDependencies)
             {
-                // Determine the include paths
-                std::unordered_set<std::string> includePaths;
-
-                // Add all dependency packages modules references
-                auto includeModules = std::vector<Path>();
-
-                // Add the dependency static library closure to link if targeting an executable
-                std::vector<Path> linkLibraries;
-
-                // Build up arguments to build this individual recipe
-                auto arguments = BuildArguments();
-                arguments.TargetName = "SoupBuild";
-                arguments.WorkingDirectory = targetDirectory;
-                arguments.ObjectDirectory = Path("out/obj/Clang");
-                arguments.BinaryDirectory = Path("out/bin/Clang");
-                arguments.ModuleInterfaceSourceFile = Path();
-                arguments.SourceFiles = sourceFiles;
-                arguments.IncludeModules = std::move(includeModules);
-                arguments.LinkLibraries = std::move(linkLibraries);
-                arguments.IsIncremental = true;
-                arguments.PreprocessorDefinitions = std::vector<std::string>({});
-                arguments.TargetType = BuildTargetType::Executable;
-
-                // Perform the build
-                auto buildEngine = BuildEngine(_compiler);
-                auto wasBuilt = buildEngine.Execute(arguments);
+                auto packagePath = RecipeExtensions::GetPackageReferencePath(targetDirectory, dependecy);
+                auto modulePath = RecipeExtensions::GetRecipeModulePath(packagePath, GetBinaryDirectory(), std::string(_compiler->GetModuleFileExtension()));
+                includeModules.push_back(std::move(modulePath));
             }
-            catch (std::exception& ex)
-            {
-                // Log the exception and convert to handled
-                Log::Error(std::string("Build Failed: ") + ex.what());
-                throw HandledException();
-            }
+
+            // Add the dependency static library closure to link if targeting an executable
+            std::vector<Path> linkLibraries;
+
+            // Build up arguments to build this individual recipe
+            auto arguments = BuildArguments();
+            arguments.TargetName = "Soup.RecipeBuild";
+            arguments.WorkingDirectory = targetDirectory;
+            arguments.ObjectDirectory = GetObjectDirectory();
+            arguments.BinaryDirectory = GetBinaryDirectory();
+            arguments.ModuleInterfaceSourceFile = Path();
+            arguments.SourceFiles = sourceFiles;
+            arguments.IncludeModules = std::move(includeModules);
+            arguments.LinkLibraries = std::move(linkLibraries);
+            arguments.IsIncremental = true;
+            arguments.PreprocessorDefinitions = std::vector<std::string>({});
+            arguments.TargetType = BuildTargetType::Executable;
+
+            // Perform the build
+            auto buildEngine = BuildEngine(_compiler);
+            auto wasBuilt = buildEngine.Execute(arguments);
+        }
+
+        Path GetObjectDirectory() const
+        {
+            return _objectDirectory + Path(_compiler->GetName());
+        }
+
+        Path GetBinaryDirectory() const
+        {
+            return _binaryDirectory + Path(_compiler->GetName());
         }
 
     private:
         std::shared_ptr<ICompiler> _compiler;
+        Path _objectDirectory;
+        Path _binaryDirectory;
     };
 }

@@ -58,8 +58,8 @@ namespace Soup
                 auto includeModules = std::vector<Path>();
                 for (auto dependecy : recipe.GetDependencies())
                 {
-                    auto packagePath = GetPackageReferencePath(workingDirectory, dependecy);
-                    auto modulePath = GetRecipeModulePath(packagePath);
+                    auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
+                    auto modulePath = RecipeExtensions::GetRecipeModulePath(packagePath, GetBinaryDirectory(), std::string(_compiler->GetModuleFileExtension()));
                     includeModules.push_back(std::move(modulePath));
                 }
 
@@ -136,7 +136,7 @@ namespace Soup
             for (auto& dependecy : recipe.GetDependencies())
             {
                 // Load this package recipe
-                auto dependencyPackagePath = GetPackageReferencePath(workingDirectory, dependecy);
+                auto dependencyPackagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
                 auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
                 Recipe dependecyRecipe = {};
                 if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
@@ -165,35 +165,6 @@ namespace Soup
         Path GetBinaryDirectory() const
         {
             return _binaryDirectory + Path(_compiler->GetName());
-        }
-
-        Path GetRecipeModulePath(const Path& packagePath) const
-        {
-            auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
-            Recipe dependecyRecipe = {};
-            if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
-            {
-                Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
-                throw std::runtime_error("GetRecipeModulePath: Failed to load dependency.");
-            }
-
-            auto packageBinaryPath = packagePath + GetBinaryDirectory();
-            auto moduleFilename = Path(dependecyRecipe.GetName() + "." + std::string(_compiler->GetModuleFileExtension()));
-            auto modulePath = packageBinaryPath + moduleFilename;
-
-            return modulePath;
-        }
-
-        Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const
-        {
-            // If the path is relative then combine with the working directory
-            auto packagePath = reference.GetPath();
-            if (!packagePath.HasRoot())
-            {
-                packagePath = workingDirectory + packagePath;
-            }
-
-            return packagePath;
         }
 
     private:

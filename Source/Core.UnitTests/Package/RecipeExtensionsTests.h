@@ -127,5 +127,141 @@ namespace Soup::UnitTests
                 testListener->GetMessages(),
                 "Verify messages match expected.");
         }
+
+        [[Fact]]
+        void SaveToFile_SimpleFile()
+        {
+            // Register the test listener
+            auto testListener = std::make_shared<TestTraceListener>();
+            Log::RegisterListener(testListener);
+
+            // Register the test file system
+            auto fileSystem = std::make_shared<MockFileSystem>();
+            IFileSystem::Register(fileSystem);
+
+            auto directory = Path("TestFiles/SimpleRecipe/Recipe.json");
+            auto recipe = Recipe(
+                "MyPackage",
+                SemanticVersion(1, 2, 3));
+            RecipeExtensions::SaveToFile(directory, recipe);
+
+            // Verify expected file system requests
+            Assert::AreEqual(
+                std::vector<std::pair<std::string, FileSystemRequestType>>({
+                    std::make_pair("TestFiles/SimpleRecipe/Recipe.json", FileSystemRequestType::OpenWrite),
+                }),
+                fileSystem->GetRequests(),
+                "Verify file system requests match expected.");
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                }), 
+                testListener->GetMessages(),
+                "Verify messages match expected.");
+
+            // Verify the contents of the build file
+            std::string expectedBuildFile = 
+                R"({"name": "MyPackage", "version": "1.2.3"})";
+            auto& mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.json"));
+            Assert::AreEqual(expectedBuildFile, mockBuildFile.Contents->str(), "Verify file contents.");
+        }
+
+        [[Fact]]
+        void GetRecipeModulePath_MissingRecipeThrows()
+        {
+            // Register the test listener
+            auto testListener = std::make_shared<TestTraceListener>();
+            Log::RegisterListener(testListener);
+
+            // Register the test file system
+            auto fileSystem = std::make_shared<MockFileSystem>();
+            IFileSystem::Register(fileSystem);
+
+            auto packagePath = Path("Root/");
+            auto binaryDirectory = Path("out/bin/mock/");
+            std::string modileFileExtension = ".mock.bmi";
+            Assert::ThrowsRuntimeError([&packagePath, &binaryDirectory, &modileFileExtension]() {
+                auto result = RecipeExtensions::GetRecipeModulePath(packagePath, binaryDirectory, modileFileExtension);
+            });
+
+            // Verify expected file system requests
+            Assert::AreEqual(
+                std::vector<std::pair<std::string, FileSystemRequestType>>({
+                    std::make_pair("Root/Recipe.json", FileSystemRequestType::Exists),
+                }),
+                fileSystem->GetRequests(),
+                "Verify file system requests match expected.");
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "INFO: Recipe file does not exist.",
+                    "ERRO: Failed to load the dependency package: Root/Recipe.json",
+                }), 
+                testListener->GetMessages(),
+                "Verify messages match expected.");
+        }
+
+        [[Fact]]
+        void GetRecipeModulePath_Exists()
+        {
+            // Register the test listener
+            auto testListener = std::make_shared<TestTraceListener>();
+            Log::RegisterListener(testListener);
+
+            // Register the test file system
+            auto fileSystem = std::make_shared<MockFileSystem>();
+            IFileSystem::Register(fileSystem);
+            fileSystem->CreateMockFile(
+                Path("Root/Recipe.json"),
+                MockFileState(std::stringstream(R"({
+                   "name": "MyPackage",
+                   "version": "1.2.3"
+                })")));
+
+            auto packagePath = Path("Root/");
+            auto binaryDirectory = Path("out/bin/mock/");
+            std::string modileFileExtension = "mock.bmi";
+            auto result = RecipeExtensions::GetRecipeModulePath(packagePath, binaryDirectory, modileFileExtension);
+
+            Assert::AreEqual(result, Path("Root/out/bin/mock/MyPackage.mock.bmi"), "Verify the result matches expected.");
+
+            // Verify expected file system requests
+            Assert::AreEqual(
+                std::vector<std::pair<std::string, FileSystemRequestType>>({
+                    std::make_pair("Root/Recipe.json", FileSystemRequestType::Exists),
+                    std::make_pair("Root/Recipe.json", FileSystemRequestType::OpenRead),
+                }),
+                fileSystem->GetRequests(),
+                "Verify file system requests match expected.");
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                }), 
+                testListener->GetMessages(),
+                "Verify messages match expected.");
+        }
+
+        [[Fact]]
+        void GetPackageReferencePath_IsRooted()
+        {
+            auto reference = Path("Root/Sub/");
+            auto binaryDirectory = PackageReference(Path("C:/Other/Reference/"));
+            auto result = RecipeExtensions::GetPackageReferencePath(reference, binaryDirectory);
+
+            Assert::AreEqual(result, Path("C:/Other/Reference/"), "Verify the result matches expected.");
+        }
+
+        [[Fact]]
+        void GetPackageReferencePath_NotRooted()
+        {
+            auto reference = Path("Root/Sub/");
+            auto binaryDirectory = PackageReference(Path("../Reference/"));
+            auto result = RecipeExtensions::GetPackageReferencePath(reference, binaryDirectory);
+
+            Assert::AreEqual(result, Path("Root/Reference/"), "Verify the result matches expected.");
+        }
     };
 }

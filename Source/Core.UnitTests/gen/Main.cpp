@@ -2,8 +2,8 @@ import std.core;
 import Soup.Core;
 import json11;
 
-#include "../../../SoupTest/Assert/SoupAssert.h"
-#include "../../../SoupTest/Assert/RunTest.h"
+#include "../../Dependencies/SoupTest/Assert/SoupAssert.h"
+#include "../../Dependencies/SoupTest/Assert/RunTest.h"
 using namespace SoupTest;
 
 #include "Build\BuildEngineTests.gen.h"

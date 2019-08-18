@@ -35,6 +35,14 @@ namespace Soup::UnitTests
             auto fileSystem = std::make_shared<MockFileSystem>();
             IFileSystem::Register(fileSystem);
 
+            // Register the mock Soup.Core dependency
+            fileSystem->CreateMockFile(
+                Path("D:/Repos/Soup/Source/Core/Recipe.json"),
+                MockFileState(std::stringstream(R"({
+                   "name": "Soup.Core",
+                   "version": "1.2.3"
+                })")));
+
             auto compiler = std::make_shared<Compiler::Mock::Compiler>();
             auto uut = RecipeBuildGenerator(compiler);
 
@@ -48,29 +56,29 @@ namespace Soup::UnitTests
                     "VERB: Create Directory: Root/.soup/Build",
                     "VERB: Generate Build File: Build.cpp",
                     "VERB: Compiling Build Executable",
-                    "VERB: TargetName = SoupBuild",
+                    "VERB: TargetName = Soup.RecipeBuild",
                     "VERB: TargetType = Executable",
                     "VERB: WorkingDirectory = Root/.soup/Build",
-                    "VERB: ObjectDirectory = out/obj/Clang",
-                    "VERB: BinaryDirectory = out/bin/Clang",
+                    "VERB: ObjectDirectory = out/obj/MockCompiler",
+                    "VERB: BinaryDirectory = out/bin/MockCompiler",
                     "VERB: ModuleInterfaceSourceFile = ",
                     "VERB: IsIncremental = true",
                     "VERB: IncludeDirectories = ",
-                    "VERB: IncludeModules = ",
+                    "VERB: IncludeModules = D:/Repos/Soup/Source/Core/out/bin/MockCompiler/Soup.Core.mock.bmi",
                     "VERB: PreprocessorDefinitions = ",
                     "VERB: Task: CoreCompile",
                     "VERB: Loading previous build state",
                     "VERB: BuildState file does not exist",
                     "VERB: No previous state found, full rebuild required",
-                    "VERB: Create Directory: out/obj/Clang",
-                    "VERB: Create Directory: out/bin/Clang",
+                    "VERB: Create Directory: out/obj/MockCompiler",
+                    "VERB: Create Directory: out/bin/MockCompiler",
                     "VERB: Task: CompileSourceFiles",
                     "VERB: Compiling source files",
                     "VERB: Build.cpp",
                     "VERB: Saving updated build state",
                     "VERB: Task: CoreLink",
                     "VERB: Linking target",
-                    "VERB: out/bin/Clang/SoupBuild.exe",
+                    "VERB: out/bin/MockCompiler/Soup.RecipeBuild.exe",
                 }),
                 testListener->GetMessages(),
                 "Verify log messages match expected.");
@@ -81,11 +89,13 @@ namespace Soup::UnitTests
                     std::make_pair("Root/.soup/Build", FileSystemRequestType::Exists),
                     std::make_pair("Root/.soup/Build", FileSystemRequestType::CreateDirectory),
                     std::make_pair("Root/.soup/Build/Build.cpp", FileSystemRequestType::OpenWrite),
+                    std::make_pair("D:/Repos/Soup/Source/Core/Recipe.json", FileSystemRequestType::Exists),
+                    std::make_pair("D:/Repos/Soup/Source/Core/Recipe.json", FileSystemRequestType::OpenRead),
                     std::make_pair("Root/.soup/Build/.soup/BuildState.json", FileSystemRequestType::Exists),
-                    std::make_pair("Root/.soup/Build/out/obj/Clang", FileSystemRequestType::Exists),
-                    std::make_pair("Root/.soup/Build/out/obj/Clang", FileSystemRequestType::CreateDirectory),
-                    std::make_pair("Root/.soup/Build/out/bin/Clang", FileSystemRequestType::Exists),
-                    std::make_pair("Root/.soup/Build/out/bin/Clang", FileSystemRequestType::CreateDirectory),
+                    std::make_pair("Root/.soup/Build/out/obj/MockCompiler", FileSystemRequestType::Exists),
+                    std::make_pair("Root/.soup/Build/out/obj/MockCompiler", FileSystemRequestType::CreateDirectory),
+                    std::make_pair("Root/.soup/Build/out/bin/MockCompiler", FileSystemRequestType::Exists),
+                    std::make_pair("Root/.soup/Build/out/bin/MockCompiler", FileSystemRequestType::CreateDirectory),
                     std::make_pair("Root/.soup/Build/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
@@ -93,8 +103,8 @@ namespace Soup::UnitTests
 
             // Verify the contents of the build file
             std::string expectedBuildFile = 
-R"(
-#include <vector>
+R"(import Soup.Core;
+
 int main()
 {
 })";
