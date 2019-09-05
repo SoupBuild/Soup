@@ -1,10 +1,9 @@
 import std.core;
-import Antlr4.Runtime;
 import Soup.Core;
 import Soup.Compiler.Clang;
 
-#include "../../../../SoupTest/Assert/SoupAssert.h"
-#include "../../../../SoupTest/Assert/RunTest.h"
+#include "../../../Dependencies/SoupTest/Assert/SoupAssert.h"
+#include "../../../Dependencies/SoupTest/Assert/RunTest.h"
 using namespace SoupTest;
 
 #include "CompilerArgumentBuilderTests.gen.h"

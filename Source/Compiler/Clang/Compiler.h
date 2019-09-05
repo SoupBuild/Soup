@@ -14,7 +14,7 @@ namespace Soup::Compiler::Clang
     {
     private:
         // static Path ToolsPath = "C:/Program Files/llvm/";
-        static constexpr std::string_view ToolsPath = "D:/Repos/llvm-project/build/Release/";
+        static constexpr std::string_view ToolsPath = "C:/Clang";
         static constexpr std::string_view CompilerExecutable = "bin/clang++.exe";
         static constexpr std::string_view LinkerExecutable = "bin/llvm-ar.exe";
 
@@ -132,7 +132,10 @@ namespace Soup::Compiler::Clang
                 Log::Warning(result.StdErr);
 
             if (result.ExitCode != 0)
-                throw std::runtime_error("Compiler Error: " + std::to_string(result.ExitCode));
+            {
+                Log::Error("Compile standard failed");
+                throw std::runtime_error("Compile standard failed");
+            }
 
             return CompileResult();
         }
@@ -171,7 +174,10 @@ namespace Soup::Compiler::Clang
                 Log::Warning(result.StdErr);
 
             if (result.ExitCode != 0)
+            {
+                Log::Error("Compile module interface failed");
                 throw std::runtime_error("Compiler Precompile Error: " + std::to_string(result.ExitCode));
+            }
 
             // Now we can compile the object file from the precompiled module
             auto compileObjectArgs = CompileArguments();

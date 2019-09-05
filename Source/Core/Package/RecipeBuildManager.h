@@ -103,7 +103,7 @@ namespace Soup
             else
             {
                 // Gen the build
-                _generator.Execute(workingDirectory, recipe);
+                // _generator.Execute(workingDirectory, recipe);
 
                 // Run the build in process
                 _builder.Execute(projectId, workingDirectory, recipe, forceBuild);

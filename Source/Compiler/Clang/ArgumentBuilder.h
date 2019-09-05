@@ -55,6 +55,7 @@ namespace Soup::Compiler::Clang
                     break;
                 case LanguageStandard::CPP17:
                     commandArgs.push_back("-std=c++17");
+                    break;
                 case LanguageStandard::CPP20:
                     commandArgs.push_back("-std=c++2a");
                     break;

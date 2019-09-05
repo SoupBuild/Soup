@@ -41,90 +41,81 @@ namespace Soup
             Log::SetActiveId(projectId);
             Log::Info("Building '" + recipe.GetName() + "'");
 
-            try
+            // Determine the include paths
+            std::unordered_set<std::string> includePaths;
+            for (auto& entry : std::filesystem::recursive_directory_iterator(workingDirectory.ToString()))
             {
-                // Determine the include paths
-                std::unordered_set<std::string> includePaths;
-                for (auto& entry : std::filesystem::recursive_directory_iterator(workingDirectory.ToString()))
+                if (entry.path().extension() == ".h")
                 {
-                    if (entry.path().extension() == ".h")
-                    {
-                        includePaths.insert(
-                            entry.path().parent_path().string());
-                    }
+                    includePaths.insert(
+                        entry.path().parent_path().string());
                 }
-
-                // Add all dependency packages modules references
-                auto includeModules = std::vector<Path>();
-                for (auto dependecy : recipe.GetDependencies())
-                {
-                    auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
-                    auto modulePath = RecipeExtensions::GetRecipeModulePath(packagePath, GetBinaryDirectory(), std::string(_compiler->GetModuleFileExtension()));
-                    includeModules.push_back(std::move(modulePath));
-                }
-
-                // Add the dependency static library closure to link if targeting an executable
-                std::vector<Path> linkLibraries;
-                if (recipe.GetType() == RecipeType::Executable)
-                {
-                    GenerateDependecyStaticLibraryClosure(
-                        workingDirectory,
-                        recipe,
-                        linkLibraries);
-                }
-
-                // Build up arguments to build this individual recipe
-                auto arguments = BuildArguments();
-                arguments.TargetName = recipe.GetName();
-                arguments.WorkingDirectory = workingDirectory;
-                arguments.ObjectDirectory = GetObjectDirectory();
-                arguments.BinaryDirectory = GetBinaryDirectory();
-                arguments.ModuleInterfaceSourceFile = 
-                    recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
-                arguments.SourceFiles = recipe.GetSourceAsPath();
-                arguments.IncludeModules = std::move(includeModules);
-                arguments.LinkLibraries = std::move(linkLibraries);
-                arguments.IsIncremental = !forceBuild;
-                arguments.PreprocessorDefinitions = std::vector<std::string>({
-                    "SOUP_BUILD",
-                });
-
-                // Strip out the working directory from the include paths
-                for (auto& entry : includePaths)
-                {
-                    auto entryPath = Path(entry);
-                    auto directory = entryPath.GetRelativeTo(workingDirectory);
-                    arguments.IncludeDirectories.push_back(directory);
-                }
-
-                // Convert the recipe type to the required build type
-                switch (recipe.GetType())
-                {
-                    case RecipeType::Library:
-                        arguments.TargetType = BuildTargetType::Library;
-                        break;
-                    case RecipeType::Executable:
-                        arguments.TargetType = BuildTargetType::Executable;
-                        break;
-                    default:
-                        throw std::runtime_error("Unknown build target type.");
-                }
-
-                // Perform the build
-                auto buildEngine = BuildEngine(_compiler);
-                auto wasBuilt = buildEngine.Execute(arguments);
-
-                if (wasBuilt)
-                    Log::Info("Done");
-                else
-                    Log::Info("Up to date");
             }
-            catch (std::exception& ex)
+
+            // Add all dependency packages modules references
+            auto includeModules = std::vector<Path>();
+            for (auto dependecy : recipe.GetDependencies())
             {
-                // Log the exception and convert to handled
-                Log::Error(std::string("Build Failed: ") + ex.what());
-                throw HandledException();
+                auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
+                auto modulePath = RecipeExtensions::GetRecipeModulePath(packagePath, GetBinaryDirectory(), std::string(_compiler->GetModuleFileExtension()));
+                includeModules.push_back(std::move(modulePath));
             }
+
+            // Add the dependency static library closure to link if targeting an executable
+            std::vector<Path> linkLibraries;
+            if (recipe.GetType() == RecipeType::Executable)
+            {
+                GenerateDependecyStaticLibraryClosure(
+                    workingDirectory,
+                    recipe,
+                    linkLibraries);
+            }
+
+            // Build up arguments to build this individual recipe
+            auto arguments = BuildArguments();
+            arguments.TargetName = recipe.GetName();
+            arguments.WorkingDirectory = workingDirectory;
+            arguments.ObjectDirectory = GetObjectDirectory();
+            arguments.BinaryDirectory = GetBinaryDirectory();
+            arguments.ModuleInterfaceSourceFile = 
+                recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
+            arguments.SourceFiles = recipe.GetSourceAsPath();
+            arguments.IncludeModules = std::move(includeModules);
+            arguments.LinkLibraries = std::move(linkLibraries);
+            arguments.IsIncremental = !forceBuild;
+            arguments.PreprocessorDefinitions = std::vector<std::string>({
+                "SOUP_BUILD",
+            });
+
+            // Strip out the working directory from the include paths
+            for (auto& entry : includePaths)
+            {
+                auto entryPath = Path(entry);
+                auto directory = entryPath.GetRelativeTo(workingDirectory);
+                arguments.IncludeDirectories.push_back(directory);
+            }
+
+            // Convert the recipe type to the required build type
+            switch (recipe.GetType())
+            {
+                case RecipeType::Library:
+                    arguments.TargetType = BuildTargetType::Library;
+                    break;
+                case RecipeType::Executable:
+                    arguments.TargetType = BuildTargetType::Executable;
+                    break;
+                default:
+                    throw std::runtime_error("Unknown build target type.");
+            }
+
+            // Perform the build
+            auto buildEngine = BuildEngine(_compiler);
+            auto wasBuilt = buildEngine.Execute(arguments);
+
+            if (wasBuilt)
+                Log::Info("Done");
+            else
+                Log::Info("Up to date");
         }
 
     private:
