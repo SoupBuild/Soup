@@ -72,6 +72,13 @@ namespace Soup::UnitTests
         }
 
         [[Fact]]
+        void RemoveEmptyDirectoryInside()
+        {
+            auto uut = Path("C:/myfolder//file.txt");
+            Assert::AreEqual("C:/myfolder/file.txt", uut.ToString(), "Verify string value matches.");
+        }
+
+        [[Fact]]
         void RemoveParentDirectoryInside()
         {
             auto uut = Path("C:/myfolder/../file.txt");

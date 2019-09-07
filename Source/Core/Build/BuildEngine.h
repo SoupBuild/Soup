@@ -192,7 +192,7 @@ namespace Soup
                 compileArguments.PreprocessorDefinitions = {};
                 compileArguments.IncludeDirectories = arguments.IncludeDirectories;
                 compileArguments.IncludeModules = arguments.IncludeModules;
-                compileArguments.GenerateIncludeTree = false;
+                compileArguments.GenerateIncludeTree = true;
                 compileArguments.ExportModule = true;
                 compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 
@@ -214,9 +214,8 @@ namespace Soup
                     arguments.WorkingDirectory + objectOutputModuleInterfaceFile,
                     arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
 
-                // // Save the build state
-                // if (result.HeaderIncludeFiles != null)
-                //     buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+                // Save the build state for the module file
+                buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
 
                 return true;
             }
@@ -302,7 +301,7 @@ namespace Soup
                 compileArguments.PreprocessorDefinitions = {};
                 compileArguments.IncludeDirectories = arguments.IncludeDirectories;
                 compileArguments.IncludeModules = arguments.IncludeModules;
-                compileArguments.GenerateIncludeTree = false;
+                compileArguments.GenerateIncludeTree = true;
                 compileArguments.ExportModule = false;
                 compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 
@@ -322,12 +321,12 @@ namespace Soup
                     compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
                     compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
 
+                    // Compile the file
                     auto result = _compiler->Compile(compileArguments);
-                }
 
-                // // Save the build state
-                // if (result.HeaderIncludeFiles != null)
-                //     buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+                    // Save the build state for the compiled files
+                    buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+                }
 
                 return true;
             }

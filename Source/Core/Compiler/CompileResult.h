@@ -10,10 +10,16 @@ namespace Soup
     export class HeaderInclude
     {
     public:
+        HeaderInclude(Path filename) :
+            Filename(std::move(filename)),
+            Includes()
+        {
+        }
+
         /// <summary>
         /// Gets or sets the filename
         /// </summary>
-        std::string Filename;
+        Path Filename;
 
         /// <summary>
         /// Gets or sets the list of includes

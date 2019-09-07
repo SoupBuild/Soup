@@ -45,6 +45,14 @@ namespace Soup
         }
     };
 
+    struct FileInfo_LessThan
+    {
+        bool operator() (const FileInfo& lhs, const FileInfo& rhs) const
+        {
+            return lhs.File < rhs.File;
+        }
+    };
+
     export class BuildState
     {
     public:
@@ -86,6 +94,25 @@ namespace Soup
             {
                 return true;
             }
+        }
+
+        /// <summary>
+        /// Update the build state for the provided files
+        /// </summary>
+        void UpdateIncludeTree(const std::vector<HeaderInclude>& includeTree)
+        {
+            // Flatten out the tree
+            auto activeSet = std::set<FileInfo, FileInfo_LessThan>(
+                std::make_move_iterator(KnownFiles.begin()),
+                std::make_move_iterator(KnownFiles.end()));
+            KnownFiles.clear();
+
+            UpdateIncludes(activeSet, includeTree);
+
+            // Convert the set back to a vector
+            KnownFiles = std::vector<FileInfo>(
+                std::make_move_iterator(activeSet.begin()),
+                std::make_move_iterator(activeSet.end()));
         }
 
         /// <summary>
@@ -152,6 +179,38 @@ namespace Soup
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Update the build state for the provided files
+        /// </summary>
+        static void UpdateIncludes(
+            std::set<FileInfo, FileInfo_LessThan>& activeSet,
+            const std::vector<HeaderInclude>& level)
+        {
+            for (auto& current : level)
+            {
+                // Create the FileInfo
+                auto info = FileInfo();
+                info.File = current.Filename;
+                for (auto& include : current.Includes)
+                {
+                    info.Includes.push_back(include.Filename);
+                }
+
+                // Remove previous entry if exists
+                auto existingFileInfo = activeSet.find(info);
+                if (existingFileInfo != activeSet.end())
+                {
+                    activeSet.erase(existingFileInfo);
+                }
+
+                // Add the file info
+                activeSet.insert(std::move(info));
+
+                // Recurse to the children
+                UpdateIncludes(activeSet, current.Includes);
+            }
         }
     };
 }

@@ -10,6 +10,7 @@ TestState RunPathTests()
     state += SoupTest::RunTest(className, "SimpleRelativePath", [&testClass]() { testClass->SimpleRelativePath(); });
     state += SoupTest::RunTest(className, "SimpleAbsolutePath", [&testClass]() { testClass->SimpleAbsolutePath(); });
     state += SoupTest::RunTest(className, "AlternativeDirectoriesPath", [&testClass]() { testClass->AlternativeDirectoriesPath(); });
+    state += SoupTest::RunTest(className, "RemoveEmptyDirectoryInside", [&testClass]() { testClass->RemoveEmptyDirectoryInside(); });
     state += SoupTest::RunTest(className, "RemoveParentDirectoryInside", [&testClass]() { testClass->RemoveParentDirectoryInside(); });
     state += SoupTest::RunTest(className, "RemoveTwoParentDirectoryInside", [&testClass]() { testClass->RemoveTwoParentDirectoryInside(); });
     state += SoupTest::RunTest(className, "LeaveParentDirectoryAtStart", [&testClass]() { testClass->LeaveParentDirectoryAtStart(); });

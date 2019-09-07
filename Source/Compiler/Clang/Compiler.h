@@ -123,13 +123,29 @@ namespace Soup::Compiler::Clang
                 commandArgs,
                 args.RootDirectory);
 
+            // Pull out the include paths if requested
+            auto compileResult = CompileResult();
+            if (args.GenerateIncludeTree)
+            {
+                std::stringstream cleanOutput;
+                compileResult.HeaderIncludeFiles = ParseIncludes(
+                    args.SourceFile,
+                    result.StdErr,
+                    cleanOutput);
+                result.StdErr = cleanOutput.str();
+            }
+
             if (!result.StdOut.empty())
+            {
                 Log::Verbose(result.StdOut);
+            }
 
             // If there was any error output then the build failed
             // TODO: Find warnings + errors
             if (!result.StdErr.empty())
+            {
                 Log::Warning(result.StdErr);
+            }
 
             if (result.ExitCode != 0)
             {
@@ -137,7 +153,7 @@ namespace Soup::Compiler::Clang
                 throw std::runtime_error("Compile standard failed");
             }
 
-            return CompileResult();
+            return compileResult;
         }
 
         CompileResult CompileModuleInterfaceUnit(const CompileArguments& args)
@@ -153,6 +169,7 @@ namespace Soup::Compiler::Clang
             generatePrecompiledModuleArgs.IncludeModules = args.IncludeModules;
             generatePrecompiledModuleArgs.ExportModule = true;
             generatePrecompiledModuleArgs.PreprocessorDefinitions = args.PreprocessorDefinitions;
+            generatePrecompiledModuleArgs.GenerateIncludeTree = args.GenerateIncludeTree;
 
             // Use the target file as input to the build and generate an object with the same name
             generatePrecompiledModuleArgs.SourceFile = args.SourceFile;
@@ -165,13 +182,29 @@ namespace Soup::Compiler::Clang
                 generatePrecompiledModuleCommandArgs,
                 args.RootDirectory);
 
+            // Pull out the include paths if requested
+            auto compileResult = CompileResult();
+            if (generatePrecompiledModuleArgs.GenerateIncludeTree)
+            {
+                std::stringstream cleanOutput;
+                compileResult.HeaderIncludeFiles = ParseIncludes(
+                    generatePrecompiledModuleArgs.SourceFile,
+                    result.StdErr,
+                    cleanOutput);
+                result.StdErr = cleanOutput.str();
+            }
+
             if (!result.StdOut.empty())
+            {
                 Log::Verbose(result.StdOut);
+            }
 
             // If there was any error output then the build failed
             // TODO: Find warnings + errors
             if (!result.StdErr.empty())
+            {
                 Log::Warning(result.StdErr);
+            }
 
             if (result.ExitCode != 0)
             {
@@ -194,17 +227,102 @@ namespace Soup::Compiler::Clang
                 args.RootDirectory);
 
             if (!result.StdOut.empty())
+            {
                 Log::Verbose(result.StdOut);
+            }
 
             // If there was any error output then the build failed
             // TODO: Find warnings + errors
             if (!result.StdErr.empty())
+            {
                 Log::Warning(result.StdErr);
+            }
 
             if (result.ExitCode != 0)
+            {
                 throw std::runtime_error("Compiler Object Error: " + std::to_string(result.ExitCode));
+            }
 
-            return CompileResult();
+            return compileResult;
+        }
+
+        std::vector<HeaderInclude> ParseIncludes(
+            const Path& file,
+            const std::string& output,
+            std::stringstream& cleanOutput)
+        {
+            // Add the root file
+            std::stack<HeaderInclude> current;
+            current.push(HeaderInclude(file));
+
+            std::stringstream content(output);
+            std::string line;
+            while (std::getline(content, line))
+            {
+                // TODO: Getline is dumb and uses newline on windows
+                if (line[line.size() - 1] == '\r')
+                {
+                    line.resize(line.size() - 1);
+                }
+
+                auto includeDepth = GetIncludeDepth(line);
+                if (includeDepth > 0)
+                {
+                    // Parse the file reference
+                    auto includeFile = Path(line.substr(includeDepth + 1));
+
+                    // Ensure we are at the correct depth
+                    while (includeDepth < current.size())
+                    {
+                        // Remove the top file and push it onto its parent
+                        auto previous = std::move(current.top());
+                        current.pop();
+                        current.top().Includes.push_back(std::move(previous));
+                    }
+
+                    // Ensure we do not try to go up more than one level at a time
+                    if (includeDepth > current.size() + 1)
+                        throw std::runtime_error("Missing an include level.");
+
+                    current.push(HeaderInclude(includeFile));
+                }
+                else
+                {
+                    // Not an include, pass along
+                    cleanOutput << line << "\n";
+                }
+            }
+
+            // Ensure we are at the top level
+            while (1 < current.size())
+            {
+                // Remove the top file and push it onto its parent
+                auto previous = std::move(current.top());
+                current.pop();
+                current.top().Includes.push_back(std::move(previous));
+            }
+
+            return std::vector<HeaderInclude>({ std::move(current.top()) });
+        }
+
+        int GetIncludeDepth(const std::string& line)
+        {
+            int depth = 0;
+            for (depth = 0; depth < line.size(); depth++)
+            {
+                if (line[depth] != '.')
+                {
+                    break;
+                }
+            }
+
+            // Verify the next character is a space, otherwise reset the depth to zero
+            if (depth < line.size() && line[depth] != ' ')
+            {
+                depth = 0;
+            }
+
+            return depth;
         }
     };
 }
