@@ -60,10 +60,19 @@ namespace Soup
         /// </summary>
         static void SaveState(const Path& directory, const BuildState& state)
         {
-            // Open the file to write to
-            auto buildStateFile = directory +
-                Path(Constants::ProjectGenerateFolderName) +
+            auto buildProjectGenerateFolder = directory +
+                Path(Constants::ProjectGenerateFolderName);
+            auto buildStateFile = buildProjectGenerateFolder +
                 Path(BuildStateFileName);
+
+            // Ensure the target directories exists
+            if (!IFileSystem::Current().Exists(buildProjectGenerateFolder))
+            {
+                Log::Verbose("Create Directory: " + buildProjectGenerateFolder.ToString());
+                IFileSystem::Current().CreateDirectory(buildProjectGenerateFolder);
+            }
+
+            // Open the file to write to
             auto file = IFileSystem::Current().OpenWrite(buildStateFile);
 
             // Write the build state to the file stream
