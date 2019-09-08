@@ -8,5 +8,8 @@
   ],
   "source": [
     "gen/Main.cpp"
+  ],
+  "includePaths": [
+    "./"
   ]
 }

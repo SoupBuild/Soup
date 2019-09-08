@@ -20,6 +20,8 @@ TestState RunRecipeTests()
     state += SoupTest::RunTest(className, "OperatorNotEqualNoPublic", [&testClass]() { testClass->OperatorNotEqualNoPublic(); });
     state += SoupTest::RunTest(className, "OperatorNotEqualSource", [&testClass]() { testClass->OperatorNotEqualSource(); });
     state += SoupTest::RunTest(className, "OperatorNotEqualNoSource", [&testClass]() { testClass->OperatorNotEqualNoSource(); });
+    state += SoupTest::RunTest(className, "OperatorNotEqualIncludePaths", [&testClass]() { testClass->OperatorNotEqualIncludePaths(); });
+    state += SoupTest::RunTest(className, "OperatorNotEqualNoIncludePaths", [&testClass]() { testClass->OperatorNotEqualNoIncludePaths(); });
 
     return state;
 }

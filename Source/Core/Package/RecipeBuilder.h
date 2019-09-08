@@ -41,17 +41,6 @@ namespace Soup
             Log::SetActiveId(projectId);
             Log::Info("Building '" + recipe.GetName() + "'");
 
-            // Determine the include paths
-            std::unordered_set<std::string> includePaths;
-            for (auto& entry : std::filesystem::recursive_directory_iterator(workingDirectory.ToString()))
-            {
-                if (entry.path().extension() == ".h")
-                {
-                    includePaths.insert(
-                        entry.path().parent_path().string());
-                }
-            }
-
             // Add all dependency packages modules references
             auto includeModules = std::vector<Path>();
             for (auto dependecy : recipe.GetDependencies())
@@ -86,14 +75,8 @@ namespace Soup
             arguments.PreprocessorDefinitions = std::vector<std::string>({
                 "SOUP_BUILD",
             });
-
-            // Strip out the working directory from the include paths
-            for (auto& entry : includePaths)
-            {
-                auto entryPath = Path(entry);
-                auto directory = entryPath.GetRelativeTo(workingDirectory);
-                arguments.IncludeDirectories.push_back(directory);
-            }
+            arguments.IncludeDirectories =
+                recipe.HasIncludePaths() ? recipe.GetIncludePathsAsPath() : std::vector<Path>();
 
             // Convert the recipe type to the required build type
             switch (recipe.GetType())

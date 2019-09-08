@@ -25,10 +25,10 @@ namespace Soup
             _type(std::nullopt),
             _dependencies(std::nullopt),
             _public(std::nullopt),
-            _source(std::nullopt)
+            _source(std::nullopt),
+            _includePaths(std::nullopt)
         {
         }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Recipe"/> class.
@@ -39,10 +39,11 @@ namespace Soup
             _isDirty(false),
             _name(std::move(name)),
             _version(version),
-            _type(),
-            _dependencies(),
-            _public(),
-            _source()
+            _type(std::nullopt),
+            _dependencies(std::nullopt),
+            _public(std::nullopt),
+            _source(std::nullopt),
+            _includePaths(std::nullopt)
         {
         }
 
@@ -55,14 +56,16 @@ namespace Soup
             std::optional<RecipeType> type,
             std::optional<std::vector<PackageReference>> dependencies,
             std::optional<std::string> publicFile,
-            std::optional<std::vector<std::string>> source) :
+            std::optional<std::vector<std::string>> source,
+            std::optional<std::vector<std::string>> includePaths) :
             _isDirty(false),
             _name(std::move(name)),
             _version(version),
             _type(std::move(type)),
             _dependencies(std::move(dependencies)),
             _public(std::move(publicFile)),
-            _source(std::move(source))
+            _source(std::move(source)),
+            _includePaths(std::move(includePaths))
         {
         }
 
@@ -233,16 +236,55 @@ namespace Soup
         }
 
         /// <summary>
+        /// Gets or sets the include paths values
+        /// TODO: Observable?
+        /// </summary>
+        bool HasIncludePaths() const
+        {
+            return _includePaths.has_value();
+        }
+
+        const std::vector<std::string>& GetIncludePaths() const
+        {
+            if (!HasIncludePaths())
+                throw std::runtime_error("No includePaths.");
+            return _includePaths.value();
+        }
+
+        std::vector<Path> GetIncludePathsAsPath() const
+        {
+            if (!HasIncludePaths())
+                throw std::runtime_error("No includePaths.");
+
+            std::vector<Path> result;
+            result.reserve(_includePaths.value().size());
+            for (auto& value : _includePaths.value())
+                result.push_back(Path(value));
+
+            return result;
+        }
+
+        void SetIncludePaths(const std::vector<std::string>& value)
+        {
+            if (!HasIncludePaths() || _includePaths.value() != value)
+            {
+                _includePaths = value;
+                _isDirty = true;
+            }
+        }
+
+        /// <summary>
         /// Equality operator
         /// </summary>
         bool operator ==(const Recipe& rhs) const
         {
-            return _name == rhs. _name &&
-                _version == rhs. _version &&
-                _type == rhs. _type &&
-                _dependencies == rhs. _dependencies &&
-                _public == rhs. _public &&
-                _source == rhs. _source;
+            return _name == rhs._name &&
+                _version == rhs._version &&
+                _type == rhs._type &&
+                _dependencies == rhs._dependencies &&
+                _public == rhs._public &&
+                _source == rhs._source &&
+                _includePaths == rhs._includePaths;
         }
 
         /// <summary>
@@ -262,5 +304,6 @@ namespace Soup
         std::optional<std::vector<PackageReference>> _dependencies;
         std::optional<std::string> _public;
         std::optional<std::vector<std::string>> _source;
+        std::optional<std::vector<std::string>> _includePaths;
     };
 }

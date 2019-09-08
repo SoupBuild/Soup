@@ -8,5 +8,10 @@
     "../Platform/"
   ],
   "public": "Module.cppm",
-  "source": []
+  "source": [],
+  "includePaths": [
+    "./",
+    "Compiler/",
+    "Utils/"
+  ]
 }
