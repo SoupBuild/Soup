@@ -68,7 +68,7 @@ namespace Soup
             // Ensure the target directories exists
             if (!IFileSystem::Current().Exists(buildProjectGenerateFolder))
             {
-                Log::Verbose("Create Directory: " + buildProjectGenerateFolder.ToString());
+                Log::Verbose("Create Directory: " + Path(Constants::ProjectGenerateFolderName).ToString());
                 IFileSystem::Current().CreateDirectory(buildProjectGenerateFolder);
             }
 

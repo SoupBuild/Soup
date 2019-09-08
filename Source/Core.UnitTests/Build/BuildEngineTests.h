@@ -54,6 +54,34 @@ namespace Soup::UnitTests
 
             uut.Execute(arguments);
 
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "VERB: TargetName = Program",
+                    "VERB: TargetType = Executable",
+                    "VERB: WorkingDirectory = root",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleInterfaceSourceFile = ",
+                    "VERB: IsIncremental = false",
+                    "VERB: IncludeDirectories = ",
+                    "VERB: IncludeModules = ",
+                    "VERB: PreprocessorDefinitions = ",
+                    "VERB: Task: CoreCompile",
+                    "VERB: Create Directory: obj",
+                    "VERB: Create Directory: bin",
+                    "VERB: Task: CompileSourceFiles",
+                    "VERB: Compiling source files",
+                    "VERB: TestFile.cpp",
+                    "VERB: Saving updated build state",
+                    "VERB: Create Directory: .soup",
+                    "VERB: Task: CoreLink",
+                    "VERB: Linking target",
+                    "VERB: bin/Program.exe",
+                }),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
+
             auto expectedCompileArguments = CompileArguments();
             expectedCompileArguments.Standard = LanguageStandard::CPP20;
             expectedCompileArguments.Optimize = OptimizationLevel::Speed;
@@ -91,37 +119,12 @@ namespace Soup::UnitTests
                     std::make_pair("root/obj", FileSystemRequestType::CreateDirectory),
                     std::make_pair("root/bin", FileSystemRequestType::Exists),
                     std::make_pair("root/bin", FileSystemRequestType::CreateDirectory),
+                    std::make_pair("root/.soup", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup", FileSystemRequestType::CreateDirectory),
                     std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
-
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({
-                    "VERB: TargetName = Program",
-                    "VERB: TargetType = Executable",
-                    "VERB: WorkingDirectory = root",
-                    "VERB: ObjectDirectory = obj",
-                    "VERB: BinaryDirectory = bin",
-                    "VERB: ModuleInterfaceSourceFile = ",
-                    "VERB: IsIncremental = false",
-                    "VERB: IncludeDirectories = ",
-                    "VERB: IncludeModules = ",
-                    "VERB: PreprocessorDefinitions = ",
-                    "VERB: Task: CoreCompile",
-                    "VERB: Create Directory: obj",
-                    "VERB: Create Directory: bin",
-                    "VERB: Task: CompileSourceFiles",
-                    "VERB: Compiling source files",
-                    "VERB: TestFile.cpp",
-                    "VERB: Saving updated build state",
-                    "VERB: Task: CoreLink",
-                    "VERB: Linking target",
-                    "VERB: bin/Program.exe",
-                }),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
         }
 
         [[Fact]]
@@ -152,6 +155,37 @@ namespace Soup::UnitTests
             arguments.IsIncremental = true;
 
             uut.Execute(arguments);
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "VERB: TargetName = Program",
+                    "VERB: TargetType = Executable",
+                    "VERB: WorkingDirectory = root",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleInterfaceSourceFile = ",
+                    "VERB: IsIncremental = true",
+                    "VERB: IncludeDirectories = ",
+                    "VERB: IncludeModules = ",
+                    "VERB: PreprocessorDefinitions = ",
+                    "VERB: Task: CoreCompile",
+                    "VERB: Loading previous build state",
+                    "VERB: BuildState file does not exist",
+                    "VERB: No previous state found, full rebuild required",
+                    "VERB: Create Directory: obj",
+                    "VERB: Create Directory: bin",
+                    "VERB: Task: CompileSourceFiles",
+                    "VERB: Compiling source files",
+                    "VERB: TestFile.cpp",
+                    "VERB: Saving updated build state",
+                    "VERB: Create Directory: .soup",
+                    "VERB: Task: CoreLink",
+                    "VERB: Linking target",
+                    "VERB: bin/Program.exe",
+                }),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
 
             auto expectedCompileArguments = CompileArguments();
             expectedCompileArguments.Standard = LanguageStandard::CPP20;
@@ -191,40 +225,12 @@ namespace Soup::UnitTests
                     std::make_pair("root/obj", FileSystemRequestType::CreateDirectory),
                     std::make_pair("root/bin", FileSystemRequestType::Exists),
                     std::make_pair("root/bin", FileSystemRequestType::CreateDirectory),
+                    std::make_pair("root/.soup", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup", FileSystemRequestType::CreateDirectory),
                     std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
-
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({
-                    "VERB: TargetName = Program",
-                    "VERB: TargetType = Executable",
-                    "VERB: WorkingDirectory = root",
-                    "VERB: ObjectDirectory = obj",
-                    "VERB: BinaryDirectory = bin",
-                    "VERB: ModuleInterfaceSourceFile = ",
-                    "VERB: IsIncremental = true",
-                    "VERB: IncludeDirectories = ",
-                    "VERB: IncludeModules = ",
-                    "VERB: PreprocessorDefinitions = ",
-                    "VERB: Task: CoreCompile",
-                    "VERB: Loading previous build state",
-                    "VERB: BuildState file does not exist",
-                    "VERB: No previous state found, full rebuild required",
-                    "VERB: Create Directory: obj",
-                    "VERB: Create Directory: bin",
-                    "VERB: Task: CompileSourceFiles",
-                    "VERB: Compiling source files",
-                    "VERB: TestFile.cpp",
-                    "VERB: Saving updated build state",
-                    "VERB: Task: CoreLink",
-                    "VERB: Linking target",
-                    "VERB: bin/Program.exe",
-                }),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
         }
 
         [[Fact]]
@@ -263,6 +269,37 @@ namespace Soup::UnitTests
             arguments.IsIncremental = true;
 
             uut.Execute(arguments);
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "VERB: TargetName = Program",
+                    "VERB: TargetType = Executable",
+                    "VERB: WorkingDirectory = root",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleInterfaceSourceFile = ",
+                    "VERB: IsIncremental = true",
+                    "VERB: IncludeDirectories = ",
+                    "VERB: IncludeModules = ",
+                    "VERB: PreprocessorDefinitions = ",
+                    "VERB: Task: CoreCompile",
+                    "VERB: Loading previous build state",
+                    "VERB: Create Directory: obj",
+                    "VERB: Create Directory: bin",
+                    "VERB: Task: CompileSourceFiles",
+                    "VERB: Check for updated source",
+                    "VERB: Missing file info: TestFile.cpp",
+                    "VERB: Compiling source files",
+                    "VERB: TestFile.cpp",
+                    "VERB: Saving updated build state",
+                    "VERB: Create Directory: .soup",
+                    "VERB: Task: CoreLink",
+                    "VERB: Linking target",
+                    "VERB: bin/Program.exe",
+                }),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
 
             auto expectedCompileArguments = CompileArguments();
             expectedCompileArguments.Standard = LanguageStandard::CPP20;
@@ -303,40 +340,12 @@ namespace Soup::UnitTests
                     std::make_pair("root/obj", FileSystemRequestType::CreateDirectory),
                     std::make_pair("root/bin", FileSystemRequestType::Exists),
                     std::make_pair("root/bin", FileSystemRequestType::CreateDirectory),
+                    std::make_pair("root/.soup", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup", FileSystemRequestType::CreateDirectory),
                     std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
-
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({
-                    "VERB: TargetName = Program",
-                    "VERB: TargetType = Executable",
-                    "VERB: WorkingDirectory = root",
-                    "VERB: ObjectDirectory = obj",
-                    "VERB: BinaryDirectory = bin",
-                    "VERB: ModuleInterfaceSourceFile = ",
-                    "VERB: IsIncremental = true",
-                    "VERB: IncludeDirectories = ",
-                    "VERB: IncludeModules = ",
-                    "VERB: PreprocessorDefinitions = ",
-                    "VERB: Task: CoreCompile",
-                    "VERB: Loading previous build state",
-                    "VERB: Create Directory: obj",
-                    "VERB: Create Directory: bin",
-                    "VERB: Task: CompileSourceFiles",
-                    "VERB: Check for updated source",
-                    "VERB: Missing file info: TestFile.cpp",
-                    "VERB: Compiling source files",
-                    "VERB: TestFile.cpp",
-                    "VERB: Saving updated build state",
-                    "VERB: Task: CoreLink",
-                    "VERB: Linking target",
-                    "VERB: bin/Program.exe",
-                }),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
         }
 
         [[Fact]]
@@ -620,6 +629,41 @@ namespace Soup::UnitTests
 
             uut.Execute(arguments);
 
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "VERB: TargetName = Library",
+                    "VERB: TargetType = Library",
+                    "VERB: WorkingDirectory = root",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleInterfaceSourceFile = ",
+                    "VERB: IsIncremental = true",
+                    "VERB: IncludeDirectories = Folder AnotherFolder/Sub",
+                    "VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
+                    "VERB: PreprocessorDefinitions = ",
+                    "VERB: Task: CoreCompile",
+                    "VERB: Loading previous build state",
+                    "VERB: Create Directory: obj",
+                    "VERB: Create Directory: bin",
+                    "VERB: Task: CompileSourceFiles",
+                    "VERB: Check for updated source",
+                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile1.mock.obj]",
+                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile2.mock.obj]",
+                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile3.mock.obj]",
+                    "VERB: Compiling source files",
+                    "VERB: TestFile1.cpp",
+                    "VERB: TestFile2.cpp",
+                    "VERB: TestFile3.cpp",
+                    "VERB: Saving updated build state",
+                    "VERB: Create Directory: .soup",
+                    "VERB: Task: CoreLink",
+                    "VERB: Linking target",
+                    "VERB: bin/Library.mock.lib",
+                }),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
+
             // Setup the shared arguments
             auto expectedCompileArguments = CompileArguments();
             expectedCompileArguments.Standard = LanguageStandard::CPP20;
@@ -708,44 +752,12 @@ namespace Soup::UnitTests
                     std::make_pair("../Other/bin/OtherModule1.mock.bmi", FileSystemRequestType::GetLastWriteTime),
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
+                    std::make_pair("root/.soup", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup", FileSystemRequestType::CreateDirectory),
                     std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
-
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({
-                    "VERB: TargetName = Library",
-                    "VERB: TargetType = Library",
-                    "VERB: WorkingDirectory = root",
-                    "VERB: ObjectDirectory = obj",
-                    "VERB: BinaryDirectory = bin",
-                    "VERB: ModuleInterfaceSourceFile = ",
-                    "VERB: IsIncremental = true",
-                    "VERB: IncludeDirectories = Folder AnotherFolder/Sub",
-                    "VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
-                    "VERB: PreprocessorDefinitions = ",
-                    "VERB: Task: CoreCompile",
-                    "VERB: Loading previous build state",
-                    "VERB: Create Directory: obj",
-                    "VERB: Create Directory: bin",
-                    "VERB: Task: CompileSourceFiles",
-                    "VERB: Check for updated source",
-                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile1.mock.obj]",
-                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile2.mock.obj]",
-                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile3.mock.obj]",
-                    "VERB: Compiling source files",
-                    "VERB: TestFile1.cpp",
-                    "VERB: TestFile2.cpp",
-                    "VERB: TestFile3.cpp",
-                    "VERB: Saving updated build state",
-                    "VERB: Task: CoreLink",
-                    "VERB: Linking target",
-                    "VERB: bin/Library.mock.lib",
-                }),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
         }
 
         [[Fact]]
@@ -821,6 +833,42 @@ namespace Soup::UnitTests
             });
 
             uut.Execute(arguments);
+
+            // Verify expected logs
+            Assert::AreEqual(
+                std::vector<std::string>({
+                    "VERB: TargetName = Library",
+                    "VERB: TargetType = Library",
+                    "VERB: WorkingDirectory = root",
+                    "VERB: ObjectDirectory = obj",
+                    "VERB: BinaryDirectory = bin",
+                    "VERB: ModuleInterfaceSourceFile = Public.cpp",
+                    "VERB: IsIncremental = true",
+                    "VERB: IncludeDirectories = Folder AnotherFolder/Sub",
+                    "VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
+                    "VERB: PreprocessorDefinitions = DEBUG AWESOME",
+                    "VERB: Task: CoreCompile",
+                    "VERB: Loading previous build state",
+                    "VERB: Create Directory: obj",
+                    "VERB: Create Directory: bin",
+                    "VERB: Task: CompileModuleInterfaceUnit",
+                    "VERB: Check for updated source",
+                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/Public.mock.obj]",
+                    "VERB: Public.cpp",
+                    "VERB: Copy: [obj/Public.mock.bmi] -> [bin/Library.mock.bmi]",
+                    "VERB: Task: CompileSourceFiles",
+                    "VERB: Compiling source files",
+                    "VERB: TestFile1.cpp",
+                    "VERB: TestFile2.cpp",
+                    "VERB: TestFile3.cpp",
+                    "VERB: Saving updated build state",
+                    "VERB: Create Directory: .soup",
+                    "VERB: Task: CoreLink",
+                    "VERB: Linking target",
+                    "VERB: bin/Library.mock.lib",
+                }),
+                testListener->GetMessages(),
+                "Verify log messages match expected.");
 
             // Setup the shared arguments
             auto expectedCompileArguments = CompileArguments();
@@ -909,45 +957,12 @@ namespace Soup::UnitTests
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
                     std::make_pair("[root/obj/Public.mock.bmi] -> [root/bin/Library.mock.bmi]", FileSystemRequestType::CopyFile),
+                    std::make_pair("root/.soup", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup", FileSystemRequestType::CreateDirectory),
                     std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
                 "Verify file system requests match expected.");
-
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({
-                    "VERB: TargetName = Library",
-                    "VERB: TargetType = Library",
-                    "VERB: WorkingDirectory = root",
-                    "VERB: ObjectDirectory = obj",
-                    "VERB: BinaryDirectory = bin",
-                    "VERB: ModuleInterfaceSourceFile = Public.cpp",
-                    "VERB: IsIncremental = true",
-                    "VERB: IncludeDirectories = Folder AnotherFolder/Sub",
-                    "VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
-                    "VERB: PreprocessorDefinitions = DEBUG AWESOME",
-                    "VERB: Task: CoreCompile",
-                    "VERB: Loading previous build state",
-                    "VERB: Create Directory: obj",
-                    "VERB: Create Directory: bin",
-                    "VERB: Task: CompileModuleInterfaceUnit",
-                    "VERB: Check for updated source",
-                    "VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/Public.mock.obj]",
-                    "VERB: Public.cpp",
-                    "VERB: Copy: [obj/Public.mock.bmi] -> [bin/Library.mock.bmi]",
-                    "VERB: Task: CompileSourceFiles",
-                    "VERB: Compiling source files",
-                    "VERB: TestFile1.cpp",
-                    "VERB: TestFile2.cpp",
-                    "VERB: TestFile3.cpp",
-                    "VERB: Saving updated build state",
-                    "VERB: Task: CoreLink",
-                    "VERB: Linking target",
-                    "VERB: bin/Library.mock.lib",
-                }),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
         }
 
         [[Fact]]
@@ -1191,6 +1206,7 @@ namespace Soup::UnitTests
                     "VERB: Public.cpp",
                     "VERB: Copy: [obj/Public.mock.bmi] -> [bin/Library.mock.bmi]",
                     "VERB: Saving updated build state",
+                    "VERB: Create Directory: .soup",
                     "VERB: Task: CoreLink",
                     "VERB: Linking target",
                     "VERB: bin/Library.mock.lib",
@@ -1262,6 +1278,8 @@ namespace Soup::UnitTests
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::Exists),
                     std::make_pair("OtherModule2.mock.bmi", FileSystemRequestType::GetLastWriteTime),
                     std::make_pair("[root/obj/Public.mock.bmi] -> [root/bin/Library.mock.bmi]", FileSystemRequestType::CopyFile),
+                    std::make_pair("root/.soup", FileSystemRequestType::Exists),
+                    std::make_pair("root/.soup", FileSystemRequestType::CreateDirectory),
                     std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
                 }),
                 fileSystem->GetRequests(),
