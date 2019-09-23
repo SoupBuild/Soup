@@ -73,14 +73,32 @@ void LLVMBitCodeParser::Parse(std::istream& stream)
 	std::cout << "Done." << std::endl;
 }
 
-std::string_view GetBlockName(uint32_t blockId)
+std::string_view LLVMBitCodeParser::GetBlockName(uint32_t blockId)
 {
-	switch (static_cast<StandardBlockId>(blockId))
+	if (blockId < 8)
 	{
-		case StandardBlockId::BlockInfo:
-			return "BlockInfo";
-		default:
-			return "Unknown";
+		switch (static_cast<StandardBlockId>(blockId))
+		{
+			case StandardBlockId::BlockInfo:
+				return "BLOCK_INFO";
+			default:
+				return "UNKNOWN_STANDARD";
+		}
+	}
+	else
+	{
+		auto blockInfoResult = std::find_if(
+			m_blocks.begin(),
+			m_blocks.end(),
+			[blockId](const BlockInfo& value) { return value.Id == blockId; });
+		if (blockInfoResult != m_blocks.end())
+		{
+			return blockInfoResult->Name;
+		}
+		else
+		{
+			return "UNKNOWN";
+		}
 	}
 }
 
@@ -92,9 +110,9 @@ void LLVMBitCodeParser::ParseSubBlock(BitReader& reader, size_t abbreviationLeng
 	auto blockLength = reader.Read(32);
 
 	std::cout << "EnterSubBlock: " << GetBlockName(blockId) << std::endl;
-	std::cout << "BlockId:" << blockId << std::endl;
-	std::cout << "NewAbbreviationLength:" << newAbbreviationLength << std::endl;
-	std::cout << "BlockLength:" << blockLength << std::endl;
+	// std::cout << "BlockId:" << blockId << std::endl;
+	// std::cout << "NewAbbreviationLength:" << newAbbreviationLength << std::endl;
+	// std::cout << "BlockLength:" << blockLength << std::endl;
 
 	// Update the current context
 	abbreviationLength = newAbbreviationLength;
@@ -121,8 +139,7 @@ enum class BlockRecordId
 void LLVMBitCodeParser::ParseBlockInfo(BitReader& reader, size_t abbreviationLength)
 {
 	// Read until we hit an end block
-	std::cout << "BlockInfo" << std::endl;
-	int activeBlockid = -1;
+	BlockInfo* activeBlock = nullptr;
 	while (true)
 	{
 		auto code = static_cast<AbbreviationId>(reader.Read(abbreviationLength));
@@ -143,27 +160,28 @@ void LLVMBitCodeParser::ParseBlockInfo(BitReader& reader, size_t abbreviationLen
 					{
 						if (record.Operands.size() != 1)
 							throw std::runtime_error("A SetBlockId record must have exactly one operand.");
-						activeBlockid = record.Operands[0];
-						std::cout << "SetBlockId: " << activeBlockid  << std::endl;
+						
+						// Create the new block info
+						m_blocks.emplace_back();
+						activeBlock = &*std::prev(m_blocks.end());
+						activeBlock->Id = record.Operands[0];
 						break;
 					}
 					case BlockRecordId::BlockName:
 					{
-						if (activeBlockid < 0)
+						if (activeBlock == nullptr)
 							throw std::runtime_error("Cannot set BlockName without an active block.");
-						auto blockName = std::string(record.Operands.begin(), record.Operands.end());
-						std::cout << "BlockName: " << blockName << std::endl;
+						activeBlock->Name = std::string(record.Operands.begin(), record.Operands.end());
 						break;
 					}
 					case BlockRecordId::SetRecordName:
 					{
-						if (activeBlockid < 0)
+						if (activeBlock == nullptr)
 							throw std::runtime_error("Cannot set RecordName without an active block.");
 						if (record.Operands.size() < 1)
 							throw std::runtime_error("Set RecordName must have at least one operand.");
 						auto recordId = record.Operands[0];
 						auto recordName = std::string(record.Operands.begin()+1, record.Operands.end());
-						std::cout << "SetRecordName: " << recordId << " " << recordName << std::endl;
 						break;
 					}
 					default:
@@ -174,7 +192,7 @@ void LLVMBitCodeParser::ParseBlockInfo(BitReader& reader, size_t abbreviationLen
 				break;
 			}
 			case AbbreviationId::EndBlock:
-				std::cout << "EndBlock" << std::endl;
+				// std::cout << "EndBlock" << std::endl;
 				reader.Align32Bit();
 				return;
 			default:

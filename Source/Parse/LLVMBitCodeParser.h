@@ -9,15 +9,25 @@ namespace Soup
 		std::vector<uint32_t> Operands;
 	};
 
+	struct BlockInfo
+	{
+		uint32_t Id;
+		std::string Name;
+	};
+
 	class LLVMBitCodeParser
 	{
 	public:
-		static void Parse(std::istream& stream);
+		void Parse(std::istream& stream);
 
 	private:
-		static void ParseSubBlock(BitReader& reader, size_t abbreviationLength);
-		static void ParseBlockInfo(BitReader& reader, size_t abbreviationLength);
-		static void ParseDefineAbbreviation(BitReader& reader);
-		static UnabbreviatedRecord ParseUnabbreviatedRecord(BitReader& reader);
+		std::string_view GetBlockName(uint32_t blockId);
+		void ParseSubBlock(BitReader& reader, size_t abbreviationLength);
+		void ParseBlockInfo(BitReader& reader, size_t abbreviationLength);
+		void ParseDefineAbbreviation(BitReader& reader);
+		UnabbreviatedRecord ParseUnabbreviatedRecord(BitReader& reader);
+
+	private:
+		std::vector<BlockInfo> m_blocks;
 	};
 }

@@ -10,7 +10,8 @@ int main()
     auto stream = std::fstream(
       "D:/Repos/Soup/Source/Core/out/obj/Clang/Module.pcm",
       std::ios_base::in | std::ios_base::binary);
-    Soup::LLVMBitCodeParser::Parse(stream);
+    auto parser = Soup::LLVMBitCodeParser();
+    parser.Parse(stream);
   }
   catch (const std::exception& ex)
   {
