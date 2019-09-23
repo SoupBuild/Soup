@@ -76,6 +76,7 @@
     "xloctime": "cpp",
     "xtree": "cpp",
     "condition_variable": "cpp",
-    "cassert": "cpp"
+    "cassert": "cpp",
+    "cstdarg": "cpp"
   }
 }
