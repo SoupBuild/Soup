@@ -1,0 +1,13 @@
+{
+    "name": "Parse",
+    "version": "1.0.0",
+    "type": "Executable",
+    "dependencies": [
+        "../../Dependencies/SoupSTL/core/"
+    ],
+    "source": [
+      "BitReader.cpp",
+      "LLVMBitCodeParser.cpp",
+      "Main.cpp"
+    ]
+  }
