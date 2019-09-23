@@ -40,7 +40,7 @@ namespace Soup.Compiler.GCC
         /// </summary>
         public Task<CompileResults> CompileAsync(CompileArguments args)
         {
-            string compiler = "gcc";
+            string compiler = "g++-m";
             using (Process process = new Process())
             {
                 process.StartInfo.UseShellExecute = false;
@@ -88,13 +88,15 @@ namespace Soup.Compiler.GCC
             var commandArgs = new List<string>();
 
             // Set the Standard Library implementation
-            commandArgs.Add("-stdlib=libc++");
+            // commandArgs.Add("-stdlib=libc++");
 
             // Set the language version
-            commandArgs.Add("-std=c++1z");
+            commandArgs.Add("-std=c++20");
 
             // Enable experimental modules
             commandArgs.Add("-fmodules-ts");
+
+            commandArgs.Add("-c");
 
             // Lastly add the file
             commandArgs.AddRange(args.SourceFiles);

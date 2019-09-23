@@ -352,18 +352,30 @@ private:
         // Remove as many up directories as we can
         for (size_t i = 0; i < _directories.size(); i++)
         {
-            // Skip over the first directory entry
-            if (i != 0)
+            if (_directories.at(i).empty())
             {
-                // Remove a parent directory if possible
-                if ( _directories.at(i) == ParentDirectory &&
-                    _directories.at(i - 1) != ParentDirectory)
+                // Remove the empty directory
+                _directories.erase(
+                    _directories.begin() + (i),
+                    _directories.begin() + (i + 1));
+                i -= 1;
+            }
+            else
+            {
+                // Check if we can combine any parent directories
+                // Allow the first directory to remain a parent
+                if (i != 0)
                 {
-                    // Remove the directories and move back
-                    _directories.erase(
-                        _directories.begin() + (i - 1),
-                        _directories.begin() + (i + 1));
-                    i -= 2;
+                    // Remove a parent directory if possible
+                    if ( _directories.at(i) == ParentDirectory &&
+                        _directories.at(i - 1) != ParentDirectory)
+                    {
+                        // Remove the directories and move back
+                        _directories.erase(
+                            _directories.begin() + (i - 1),
+                            _directories.begin() + (i + 1));
+                        i -= 2;
+                    }
                 }
             }
         }

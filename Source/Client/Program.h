@@ -97,15 +97,11 @@ namespace Soup::Client
 
                 return 0;
             }
-            catch (const HandledException& ex)
-            {
-                Log::Verbose("Exception Handled: Exiting.");
-                return -21;
-            }
             catch (const std::exception& ex)
             {
+                Log::Error("Exception Handled: Exiting.");
                 Log::Error(ex.what());
-                return -1;
+                return -2;
             }
             catch (...)
             {
@@ -151,7 +147,8 @@ namespace Soup::Client
             Log::Trace("Setup RunCommand");
             SetupShared(options);
             return std::make_shared<RunCommand>(
-                std::move(options));
+                std::move(options),
+                GetCompiler());
         }
 
         static std::shared_ptr<ICommand> Setup(InitializeOptions options)

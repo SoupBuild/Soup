@@ -1,9 +1,6 @@
-﻿
-
-#include "PlatformProcessManagerImpl.h"
-
-export module Soup.Core;
-
+﻿export module Soup.Core;
+import Soup.Platform;
+import Soup.Syntax;
 import std.core;
 import json11;
 
@@ -20,7 +17,7 @@ import json11;
 #include "Logger\ConsoleTraceListener.h"
 #include "Logger\TestTraceListener.h"
 #include "Package\Recipe.h"
-#include "Package\RecipeBuildGenerator.h"
+#include "Package\RecipeBuildManager.h"
 #include "Package\RecipeExtensions.h"
 #include "Package\RecipeJson.h"
 #include "Utils\MockFileSystem.h"

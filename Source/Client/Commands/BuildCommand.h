@@ -36,21 +36,14 @@ namespace Soup::Client
             Recipe recipe = {};
             if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
             {
-                Log::Error("Could not find the recipe file.");
+                Log::Error("Could not load the recipe file.");
                 return;
             }
 
-            // // Ensure the library directory exists
-            // var libraryPath = PackageManager.BuildKitchenLibraryPath(_config);
-            // if (!Directory.Exists(libraryPath))
-            // {
-            //     Directory.CreateDirectory(libraryPath);
-            // }
-
             // Now build the current project
-            Log::Info("Begin Build:");
-            auto buildGenerator = RecipeBuildGenerator(_compiler);
-            buildGenerator.Execute(workingDirectory, recipe, _options.Force);
+            Log::Verbose("Begin Build:");
+            auto buildManager = RecipeBuildManager(_compiler);
+            buildManager.Execute(workingDirectory, recipe, _options.Force);
         }
 
     private:

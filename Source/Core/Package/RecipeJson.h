@@ -20,6 +20,7 @@ namespace Soup
         static constexpr const char* Property_Dependencies = "dependencies";
         static constexpr const char* Property_Public = "public";
         static constexpr const char* Property_Source = "source";
+        static constexpr const char* Property_IncludePaths = "includePaths";
 
     public:
         /// <summary>
@@ -66,6 +67,7 @@ namespace Soup
             std::optional<std::vector<PackageReference>> dependencies;
             std::optional<std::string> publicFile;
             std::optional<std::vector<std::string>> source;
+            std::optional<std::vector<std::string>> includePaths;
 
             if (!value[Property_Name].is_null())
             {
@@ -120,13 +122,25 @@ namespace Soup
                 source = std::move(values);
             }
 
+            if (!value[Property_IncludePaths].is_null())
+            {
+                auto values = std::vector<std::string>();
+                for (auto& value : value[Property_IncludePaths].array_items())
+                {
+                    values.push_back(value.string_value());
+                }
+
+                includePaths = std::move(values);
+            }
+
             return Recipe(
                 std::move(name),
                 version,
                 type,
                 std::move(dependencies),
                 std::move(publicFile),
-                std::move(source));
+                std::move(source),
+                std::move(includePaths));
         }
 
         static json11::Json BuildJson(const Recipe& recipe)
@@ -167,6 +181,17 @@ namespace Soup
                 }
 
                 result[Property_Source] = std::move(source);
+            }
+
+            if (recipe.HasIncludePaths())
+            {
+                json11::Json::array includePaths;
+                for (auto& value : recipe.GetIncludePaths())
+                {
+                    includePaths.push_back(value);
+                }
+
+                result[Property_IncludePaths] = std::move(includePaths);
             }
 
             return result;

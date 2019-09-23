@@ -1,10 +1,9 @@
 import std.core;
-import Antlr4.Runtime;
 import Soup.Core;
 import json11;
 
-#include "../../../SoupTest/Assert/SoupAssert.h"
-#include "../../../SoupTest/Assert/RunTest.h"
+#include "../../Dependencies/SoupTest/Assert/SoupAssert.h"
+#include "../../Dependencies/SoupTest/Assert/RunTest.h"
 using namespace SoupTest;
 
 #include "Build\BuildEngineTests.gen.h"
@@ -14,7 +13,9 @@ using namespace SoupTest;
 #include "Build\BuildStateManagerTests.gen.h"
 
 #include "Package\PackageReferenceTests.gen.h"
+#include "Package\RecipeBuilderTests.gen.h"
 #include "Package\RecipeBuildGeneratorTests.gen.h"
+#include "Package\RecipeBuildManagerTests.gen.h"
 #include "Package\RecipeExtensionsTests.gen.h"
 #include "Package\RecipeJsonTests.gen.h"
 #include "Package\RecipeTests.gen.h"
@@ -36,7 +37,9 @@ int main()
     state += RunBuildStateManagerTests();
 
     state += RunPackageReferenceTests();
+    state += RunRecipeBuilderTests();
     state += RunRecipeBuildGeneratorTests();
+    state += RunRecipeBuildManagerTests();
     state += RunRecipeExtensionsTests();
     state += RunRecipeJsonTests();
     state += RunRecipeTests();

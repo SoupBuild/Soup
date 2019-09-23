@@ -8,5 +8,9 @@
   ],
   "source": [
     "Main.cpp"
+  ],
+  "includePaths": [
+    "Commands/",
+    "Options/"
   ]
 }

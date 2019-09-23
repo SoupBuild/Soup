@@ -24,6 +24,11 @@ namespace Soup
         static constexpr std::string_view RecipeFileName = "Recipe.json";
 
         /// <summary>
+        /// Gets the generated build file name
+        /// </summary>
+        static constexpr std::string_view GenerateBuildFileName = "Build.cpp";
+
+        /// <summary>
         /// Gets the app data folder path
         /// </summary>
         // static constexpr std::string_view AppDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDataFolderName);
@@ -62,6 +67,11 @@ namespace Soup
         /// Gets the project generation folder name
         /// </summary>
         static constexpr std::string_view ProjectGenerateFolderName = ".soup";
+
+        /// <summary>
+        /// Gets the project generation build folder name
+        /// </summary>
+        static constexpr std::string_view ProjectGenerateBuildFolderName = "Build";
 
         /// <summary>
         /// Gets the settings file name for a Soup Recipe

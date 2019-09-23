@@ -71,7 +71,8 @@ namespace Soup::UnitTests
                    "type": "Executable",
                    "dependencies": [],
                    "public": "Public.cpp",
-                   "source": []
+                   "source": [],
+                   "includePaths": []
                 })");
             auto actual = RecipeJson::Deserialize(recipe);
 
@@ -81,6 +82,7 @@ namespace Soup::UnitTests
                 RecipeType::Executable,
                 std::vector<PackageReference>(),
                 "Public.cpp",
+                std::vector<std::string>(),
                 std::vector<std::string>());
 
             Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -114,6 +116,7 @@ namespace Soup::UnitTests
                 RecipeType::Executable,
                 std::vector<PackageReference>(),
                 "Public.cpp",
+                std::vector<std::string>(),
                 std::vector<std::string>());
 
             std::stringstream actual;
@@ -126,7 +129,8 @@ namespace Soup::UnitTests
                    "type": "Executable",
                    "dependencies": [],
                    "public": "Public.cpp",
-                   "source": []
+                   "source": [],
+                   "includePaths": []
                 })";
 
             VerifyJsonEquals(expected, actual.str(), "Verify matches expected.");

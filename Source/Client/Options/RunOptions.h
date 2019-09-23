@@ -13,5 +13,10 @@ namespace Soup::Client
     // TODO: [Verb("run")]
     class RunOptions : public SharedOptions
     {
+    public:
+        /// <summary>
+        /// Pass through all of the remaining arguments
+        /// </summary>
+        std::vector<std::string> Arguments;
     };
 }

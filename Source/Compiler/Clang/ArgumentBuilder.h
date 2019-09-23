@@ -54,8 +54,10 @@ namespace Soup::Compiler::Clang
                     commandArgs.push_back("-std=c++14");
                     break;
                 case LanguageStandard::CPP17:
-                case LanguageStandard::CPP20:
                     commandArgs.push_back("-std=c++17");
+                    break;
+                case LanguageStandard::CPP20:
+                    commandArgs.push_back("-std=c++2a");
                     break;
                 default:
                     throw std::runtime_error("Unknown language standard.");
@@ -94,7 +96,7 @@ namespace Soup::Compiler::Clang
             // Enable experimental features for C++ 20
             if (args.Standard == LanguageStandard::CPP20)
             {
-                commandArgs.push_back("-fmodules-ts");
+                // NO LONGER NEEDED commandArgs.push_back("-fmodules-ts");
             }
 
             // Ignore Standard Include Paths to prevent pulling in accidental headers

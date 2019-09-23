@@ -17,11 +17,12 @@ namespace Soup::Client
         /// <summary>
         /// Initializes a new instance of the <see cref="RunCommand"/> class.
         /// </summary>
-        RunCommand(RunOptions options) ://LocalUserConfig config, Compiler.ICompiler compiler)
-            _options(std::move(options))
+        RunCommand(
+            RunOptions options,
+            std::shared_ptr<ICompiler> compiler) :
+            _options(std::move(options)),
+            _compiler(std::move(compiler))
         {
-            // _config = config;
-            // _compiler = compiler;
         }
 
         /// <summary>
@@ -30,72 +31,61 @@ namespace Soup::Client
         virtual void Run() override final
         {
             Log::Trace("RunCommand::Run");
-            // var recipePath = "./";
-            // var recipe = await RecipeManager.LoadFromFileAsync(recipePath);
-            // if (recipe == null)
-            // {
-            //     Log.Error("Could not find the recipe file.");
-            //     return;
-            // }
+            auto workingDirectory = Path::GetCurrentDirectory();
+            auto recipePath = 
+                workingDirectory +
+                Path(Constants::RecipeFileName);
+            Recipe recipe = {};
+            if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+            {
+                Log::Error("Could not load the recipe file");
+                return;
+            }
 
-            // // Ensure that this is an executable
-            // if (recipe.Type != RecipeType.Executable)
-            // {
-            //     Log.Error("Cannot run a project not of type executable.");
-            //     return;
-            // }
+            // Ensure that this is an executable
+            if (recipe.GetType() != RecipeType::Executable)
+            {
+                Log::Error("Cannot run a project not of type executable");
+                return;
+            }
 
-            // // Ensure the library directory exists
-            // var exePath = Path.Combine(recipePath, "out", "bin", _compiler.Name, $"{recipe.Name}.exe");
-            // if (!File.Exists(exePath))
-            // {
-            //     Log.Error($"The executable ({exePath}) does not exist..");
-            //     return;
-            // }
+            // Ensure the executable exists
+            auto executablePath = workingDirectory + Path("out/bin") + Path(_compiler->GetName()) + Path(recipe.GetName() + ".exe");
+            Log::Verbose(executablePath.ToString());
+            if (!IFileSystem::Current().Exists(executablePath))
+            {
+                Log::Error("The executable does not exist");
+                return;
+            }
 
-            // // Now build the current project
-            // Log.Info(string.Empty);
-            // Log.Info("Run Project");
-            // Log.Verbose(exePath);
-            // using (Process process = new Process())
-            // {
-            //     process.StartInfo.UseShellExecute = false;
-            //     process.StartInfo.RedirectStandardOutput = true;
-            //     process.StartInfo.RedirectStandardError = true;
-            //     process.StartInfo.FileName = exePath;
+            // Execute the requested target
+            auto result = IProcessManager::Current().Execute(
+                executablePath,
+                _options.Arguments,
+                workingDirectory);
 
-            //     process.OutputDataReceived += ProcessOutputDataReceived;
-            //     process.ErrorDataReceived += ProcessErrorDataReceived;
+            // TODO: Directly pipe to output and make sure there is no extra newline
+            if (!result.StdOut.empty())
+            {
+                Log::Info(result.StdOut);
+            }
 
-            //     process.Start();
-            //     process.BeginOutputReadLine();
-            //     process.BeginErrorReadLine();
-            //     process.WaitForExit();
+            if (!result.StdErr.empty())
+            {
+                Log::Error(result.StdErr);
+            }
 
-            //     if (process.ExitCode != 0)
-            //     {
-            //         throw new InvalidOperationException();
-            //     }
-            // }
+            if (result.ExitCode != 0)
+            {
+                // TODO: Return error code
+                Log::Verbose("FAILED");
+            }
+
+            Log::Verbose("Done");
         }
 
     private:
-        // void ProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
-        // {
-        //     if (e.Data != null)
-        //     {
-        //         Log.Info(e.Data);
-        //     }
-        // }
-
-        // void ProcessErrorDataReceived(object sender, DataReceivedEventArgs e)
-        // {
-        //     Log.Error(e.Data);
-        // }
-
-    private:
         RunOptions _options;
-        //private LocalUserConfig _config;
-        //private Compiler.ICompiler _compiler;
+        std::shared_ptr<ICompiler> _compiler;
     };
 }

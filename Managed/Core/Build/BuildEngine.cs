@@ -283,7 +283,11 @@ namespace Soup
                 var moduleOutputFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ObjectFileExtension}");
                 if (force || BuildRequiredChecker.IsOutdated(path, moduleOutputFile, sharedDependecies))
                 {
-                    source.Add(moduleFile);
+                    // HACK 
+                    if (_compiler.Name == "Clang")
+                    {
+                        source.Add(moduleFile);
+                    }
                 }
             }
 
@@ -452,13 +456,25 @@ namespace Soup
         private void CloneModuleInterface(string path, Recipe recipe, string objectDirectory, string binaryDirectory)
         {
             Log.Verbose("Clone Module Interface");
-            var sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}");
+
+            // HACK since GCC places stuff in a different folder
+            string sourceModuleFile;
+            if (_compiler.Name == "GCC")
+            {
+                sourceModuleFile = Path.Combine(path, objectDirectory,"gcm.cache", BuildRecipeModuleFilename(recipe));
+            }
+            else
+            {
+                sourceModuleFile = Path.Combine(path, objectDirectory, $"{Path.GetFileNameWithoutExtension(recipe.Public)}.{_compiler.ModuleFileExtension}");
+            }
+
             var targetModuleFile = Path.Combine(path, binaryDirectory, BuildRecipeModuleFilename(recipe));
+
 
             // Ensure the object directory exists
             if (!File.Exists(sourceModuleFile))
             {
-                throw new InvalidOperationException("The resulting module interface definition was missing.");
+                throw new InvalidOperationException($"The resulting module interface definition was missing: {sourceModuleFile}");
             }
 
             Log.Verbose($"Clone Module: {sourceModuleFile} -> {targetModuleFile}");

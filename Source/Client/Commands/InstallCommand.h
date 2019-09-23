@@ -87,7 +87,7 @@ namespace Soup::Client
 
             //     if (!File.Exists(package))
             //     {
-            //         throw new ArgumentException("The specified file does not exist.");
+            //         throw ArgumentException("The specified file does not exist.");
             //     }
 
             //     // Install the package

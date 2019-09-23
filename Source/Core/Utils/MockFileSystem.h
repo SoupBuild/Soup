@@ -79,6 +79,23 @@ namespace Soup
         }
 
         /// <summary>
+        /// Create a test file
+        /// </summary>
+        const MockFileState& GetMockFile(Path path)
+        {
+            auto file = _files.find(path);
+            if (file != _files.end())
+            {
+                return file->second;
+            }
+            else
+            {
+                auto message = "Cannot find file: " + path.ToString();
+                throw std::runtime_error(message);
+            }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether the directory/file exists
         /// </summary>
         virtual bool Exists(const Path& path) override final

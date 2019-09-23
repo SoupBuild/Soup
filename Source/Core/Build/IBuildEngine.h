@@ -17,6 +17,6 @@ namespace Soup
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        virtual void Execute(const BuildArguments& arguments) = 0;
+        virtual bool Execute(const BuildArguments& arguments) = 0;
     };
 }

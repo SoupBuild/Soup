@@ -1,0 +1,8 @@
+{
+  "name": "Soup.Platform",
+  "version": "0.1.0",
+  "dependencies": [
+  ],
+  "public": "Module.cppm",
+  "source": []
+}

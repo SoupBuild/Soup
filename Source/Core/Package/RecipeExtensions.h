@@ -76,5 +76,42 @@ namespace Soup
             // Write the recipe to the file stream
             RecipeJson::Serialize(recipe, *file);
         }
+
+        /// <summary>
+        /// Get the recipe path
+        /// </summary>
+        static Path GetRecipeModulePath(const Path& packagePath, const Path& binaryDirectory, const std::string& modileFileExtension)
+        {
+            auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
+            Recipe dependecyRecipe = {};
+            if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
+            {
+                Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+                throw std::runtime_error("GetRecipeModulePath: Failed to load dependency.");
+            }
+
+            auto packageBinaryPath = packagePath + binaryDirectory;
+            auto moduleFilename = Path(dependecyRecipe.GetName() + "." + modileFileExtension);
+            auto modulePath = packageBinaryPath + moduleFilename;
+
+            return modulePath;
+        }
+
+        /// <summary>
+        /// Get the package reference path
+        /// </summary>
+        static Path GetPackageReferencePath(
+            const Path& workingDirectory,
+            const PackageReference& reference)
+        {
+            // If the path is relative then combine with the working directory
+            auto packagePath = reference.GetPath();
+            if (!packagePath.HasRoot())
+            {
+                packagePath = workingDirectory + packagePath;
+            }
+
+            return packagePath;
+        }
     };
 }
