@@ -13,7 +13,7 @@ BitReader::BitReader(std::istream& stream) :
 
 uint32_t BitReader::Read(size_t countBits)
 {
-	// std::cout << "Read: " << countBits << " " << std::endl;
+	// std::cout << "Read: " << countBits << " " << GetBitIndex() << std::endl;
 	constexpr size_t BufferBitSize = sizeof(uint32_t) * 8;
 	if (countBits == 0 || countBits > BufferBitSize)
 		throw std::runtime_error("The countBits is outside of the allowed range.");
@@ -88,13 +88,16 @@ void BitReader::Align32Bit()
 	// Calcuate the offset to get to the next 32 bit word
 	auto currentBitOffset = GetBitIndex();
 	auto currentWordOffset = currentBitOffset % 32;
-	auto nextWordOffset = 32 - currentWordOffset;
+	if (currentWordOffset != 0)
+	{
+		auto nextWordOffset = 32 - currentWordOffset;
 
-	// Read to the next word
-	// std::cout << "Align32Bit: " << currentBitOffset << " " << currentWordOffset << " " << nextWordOffset << std::endl;
-	auto ignoreResult = Read(nextWordOffset);
+		// Read to the next word
+		// std::cout << "Align32Bit: " << currentBitOffset << " " << currentWordOffset << " " << nextWordOffset << std::endl;
+		auto ignoreResult = Read(nextWordOffset);
 
-	// std::cout << "Align32Bit SKIP: 0x" << std::hex << ignoreResult << std::dec << std::endl;
+		// std::cout << "Align32Bit SKIP: 0x" << std::hex << ignoreResult << std::dec << std::endl;
+	}
 }
 
 uint32_t BitReader::GetBitIndex()
