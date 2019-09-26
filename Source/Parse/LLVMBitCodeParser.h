@@ -57,7 +57,7 @@ namespace Soup
 	struct UnabbreviatedRecord
 	{
 		uint32_t Code;
-		std::vector<uint32_t> Operands;
+		std::vector<uint64_t> Operands;
 	};
 
 	struct RecordInfo
@@ -101,6 +101,7 @@ namespace Soup
 
 		// Clang AST Parsing
 		void ParseControlBlock(BitReader& reader, size_t abbreviationLength);
+		void ParseASTBlock(BitReader& reader, size_t abbreviationLength);
 
 	private:
 		std::vector<BlockInfo> m_blocks;

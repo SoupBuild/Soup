@@ -127,8 +127,8 @@ std::string_view LLVMBitCodeParser::GetRecordName(uint32_t blockId, uint32_t cod
 
 void LLVMBitCodeParser::ParseRootBlock(BitReader &reader, size_t abbreviationLength)
 {
-	auto blockId = reader.ReadVBR(8);
-	auto newAbbreviationLength = reader.ReadVBR(4);
+	auto blockId = reader.ReadVBR32(8);
+	auto newAbbreviationLength = reader.ReadVBR32(4);
 	reader.Align32Bit();
 	auto blockLength = reader.Read(32);
 
@@ -155,6 +155,9 @@ void LLVMBitCodeParser::ParseRootBlock(BitReader &reader, size_t abbreviationLen
 	{
 		switch (static_cast<ClangASTBlockID>(blockId))
 		{
+		case ClangASTBlockID::AST:
+			ParseASTBlock(reader, abbreviationLength);
+			break;
 		case ClangASTBlockID::Control:
 			ParseControlBlock(reader, abbreviationLength);
 			break;
@@ -194,7 +197,8 @@ void LLVMBitCodeParser::ParseBlockInfoBlock(BitReader &reader, size_t abbreviati
 					// Create the new block info
 					m_blocks.emplace_back();
 					activeBlock = &*std::prev(m_blocks.end());
-					activeBlock->Id = record.Operands[0];
+					// Downcast the 64 bit value to the 32 bit id
+					activeBlock->Id = static_cast<uint32_t>(record.Operands[0]);
 					break;
 				}
 				case BlockRecordId::BlockName:
@@ -211,7 +215,7 @@ void LLVMBitCodeParser::ParseBlockInfoBlock(BitReader &reader, size_t abbreviati
 					if (record.Operands.size() < 1)
 						throw std::runtime_error("Set RecordName must have at least one operand.");
 					auto recordInfo = RecordInfo();
-					recordInfo.Id = record.Operands[0];
+					recordInfo.Id = static_cast<uint32_t>(record.Operands[0]);
 					recordInfo.Name = std::string(record.Operands.begin() + 1, record.Operands.end());
 					activeBlock->Records.push_back(std::move(recordInfo));
 					break;
@@ -241,7 +245,7 @@ void LLVMBitCodeParser::ParseBlockInfoBlock(BitReader &reader, size_t abbreviati
 BitCodeAbbreviation LLVMBitCodeParser::ParseDefineAbbreviation(BitReader &reader)
 {
 	auto result = BitCodeAbbreviation();
-	auto numberOperands = reader.ReadVBR(5);
+	auto numberOperands = reader.ReadVBR32(5);
 	result.Operands.reserve(numberOperands);
 
 	for (auto i = 0; i < numberOperands; i++)
@@ -250,7 +254,7 @@ BitCodeAbbreviation LLVMBitCodeParser::ParseDefineAbbreviation(BitReader &reader
 		operand.IsLiteral = static_cast<bool>(reader.Read(1));
 		if (operand.IsLiteral)
 		{
-			operand.Value = reader.ReadVBR(8);
+			operand.Value = reader.ReadVBR32(8);
 		}
 		else
 		{
@@ -259,7 +263,7 @@ BitCodeAbbreviation LLVMBitCodeParser::ParseDefineAbbreviation(BitReader &reader
 			{
 			case AbbreviationEncoding::Fixed:
 			case AbbreviationEncoding::VBR:
-				operand.Value = reader.ReadVBR(5);
+				operand.Value = reader.ReadVBR32(5);
 				break;
 			case AbbreviationEncoding::Array:
 			case AbbreviationEncoding::Char6:
@@ -279,20 +283,20 @@ BitCodeAbbreviation LLVMBitCodeParser::ParseDefineAbbreviation(BitReader &reader
 UnabbreviatedRecord LLVMBitCodeParser::ParseUnabbreviatedRecord(BitReader &reader)
 {
 	UnabbreviatedRecord result = {};
-	result.Code = reader.ReadVBR(6);
-	auto numberOperands = reader.ReadVBR(6);
+	result.Code = reader.ReadVBR32(6);
+	auto numberOperands = reader.ReadVBR32(6);
 	result.Operands.reserve(numberOperands);
 
 	for (auto i = 0; i < numberOperands; i++)
 	{
-		auto operand = reader.ReadVBR(6);
+		auto operand = reader.ReadVBR64(6);
 		result.Operands.push_back(operand);
 	}
 
 	return result;
 }
 
-uint32_t ReadSingleOperand(
+uint64_t ReadSingleOperand(
 	const BitCodeAbbreviationOperand& operand,
 	BitReader &reader)
 {
@@ -307,7 +311,7 @@ uint32_t ReadSingleOperand(
 			case AbbreviationEncoding::Fixed:
 				return reader.Read(operand.Value);
 			case AbbreviationEncoding::VBR:
-				return reader.ReadVBR(operand.Value);
+				return reader.ReadVBR64(operand.Value);
 			case AbbreviationEncoding::Char6:
 				return reader.Read(6);
 			case AbbreviationEncoding::Array:
@@ -339,6 +343,7 @@ void LLVMBitCodeParser::ParseRecord(uint32_t blockId, uint32_t abbreviationId, c
 		if (operand.IsLiteral || (operand.Encoding != AbbreviationEncoding::Array && operand.Encoding != AbbreviationEncoding::Blob))
 		{
 			auto value = ReadSingleOperand(operand, reader);
+			// TODO:
 		}
 		else
 		{
@@ -354,12 +359,13 @@ void LLVMBitCodeParser::ParseRecord(uint32_t blockId, uint32_t abbreviationId, c
 					if (i != abbreviation.Operands.size() - 1)
 						throw std::runtime_error("A blob can only occur as the last operand.");
 
-					auto blobSize = reader.ReadVBR(6);
+					auto blobSize = reader.ReadVBR32(6);
 					reader.Align32Bit();
 
 					for (auto blobIndex = 0; blobIndex < blobSize; blobIndex++)
 					{
 						auto value = reader.Read(8);
+						// TODO:
 					}
 
 					reader.Align32Bit();
@@ -388,8 +394,8 @@ void LLVMBitCodeParser::ParseControlBlock(BitReader &reader, size_t abbreviation
 			{
 				case StandardAbbreviationId::EnterSubBlock:
 				{
-					auto blockId = reader.ReadVBR(8);
-					auto newAbbreviationLength = reader.ReadVBR(4);
+					auto blockId = reader.ReadVBR32(8);
+					auto newAbbreviationLength = reader.ReadVBR32(4);
 					reader.Align32Bit();
 					auto blockLength = reader.Read(32);
 
@@ -417,7 +423,64 @@ void LLVMBitCodeParser::ParseControlBlock(BitReader &reader, size_t abbreviation
 				default:
 				{
 					throw std::runtime_error(
-							std::string("Unexpected AbbreviationId In ControlBlock: ") + std::to_string(abbreviationId));
+						std::string("Unexpected AbbreviationId In ControlBlock: ") +
+						std::to_string(abbreviationId));
+				}
+			}
+		}
+		else
+		{
+			ParseRecord(blockId, abbreviationId, abbreviations, reader);
+		}
+	}
+}
+
+
+void LLVMBitCodeParser::ParseASTBlock(BitReader &reader, size_t abbreviationLength)
+{
+	// Read until we hit an end block
+	auto blockId = static_cast<uint32_t>(ClangASTBlockID::AST);
+	auto abbreviations = std::vector<BitCodeAbbreviation>();
+	while (true)
+	{
+		auto abbreviationId = reader.Read(abbreviationLength);
+		if (abbreviationId < FirstApplicationAbbreviationId)
+		{
+			switch (static_cast<StandardAbbreviationId>(abbreviationId))
+			{
+				case StandardAbbreviationId::EnterSubBlock:
+				{
+					auto blockId = reader.ReadVBR32(8);
+					auto newAbbreviationLength = reader.ReadVBR32(4);
+					reader.Align32Bit();
+					auto blockLength = reader.Read(32);
+
+					std::cout << "EnterSubBlock: " << GetBlockName(blockId) << std::endl;
+					std::cout << "Skip Block" << std::endl;
+					reader.SeekByteOffset(blockLength * 4);
+					break;
+				}
+				case StandardAbbreviationId::DefineAbbreviation:
+				{
+					abbreviations.push_back(ParseDefineAbbreviation(reader));
+					break;
+				}
+				case StandardAbbreviationId::UnabbreviatedRecord:
+				{
+					auto record = ParseUnabbreviatedRecord(reader);
+					break;
+				}
+				case StandardAbbreviationId::EndBlock:
+				{
+					std::cout << "EndBlock" << std::endl;
+					reader.Align32Bit();
+					return;
+				}
+				default:
+				{
+					throw std::runtime_error(
+						std::string("Unexpected AbbreviationId In ControlBlock: ") +
+						std::to_string(abbreviationId));
 				}
 			}
 		}
