@@ -102,6 +102,7 @@ namespace Soup
 		// Clang AST Parsing
 		void ParseControlBlock(BitReader& reader, size_t abbreviationLength);
 		void ParseASTBlock(BitReader& reader, size_t abbreviationLength);
+		void ParseDeclTypesBlock(BitReader& reader, size_t abbreviationLength);
 
 	private:
 		std::vector<BlockInfo> m_blocks;
