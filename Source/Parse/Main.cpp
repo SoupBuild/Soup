@@ -5,24 +5,24 @@ import std.core;
 
 int main()
 {
-  try
-  {
-    auto stream = std::fstream(
-      "D:/Repos/Soup/Source/Core/out/obj/Clang/Module.pcm",
-      std::ios_base::in | std::ios_base::binary);
-    auto parser = Soup::LLVMBitCodeParser();
-    parser.Parse(stream);
-  }
-  catch (const std::exception& ex)
-  {
-    std::cout << std::string("Error: ") + ex.what() << std::endl;
-    return -1;
-  }
-  catch (...)
-  {
-    std::cout << "Unknown Error!" << std::endl;
-    return -1;
-  }
+	try
+	{
+		auto stream = std::fstream(
+			"D:/Repos/Soup/Source/Core/out/obj/Clang/Module.pcm",
+			std::ios_base::in | std::ios_base::binary);
+		auto parser = Soup::LLVMBitCodeParser();
+		parser.Parse(stream);
+	}
+	catch (const std::exception& ex)
+	{
+		std::cout << std::string("Error: ") + ex.what() << std::endl;
+		return -1;
+	}
+	catch (...)
+	{
+		std::cout << "Unknown Error!" << std::endl;
+		return -1;
+	}
 
-  return 0;
+	return 0;
 }

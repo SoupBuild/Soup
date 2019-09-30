@@ -7,11 +7,11 @@
 
 namespace Soup::Client
 {
-    /// <summary>
-    /// Initialize Command Options
-    /// </summary>
-    // TODO: [Verb("init")]
-    class InitializeOptions : public SharedOptions
-    {
-    };
+	/// <summary>
+	/// Initialize Command Options
+	/// </summary>
+	// TODO: [Verb("init")]
+	class InitializeOptions : public SharedOptions
+	{
+	};
 }

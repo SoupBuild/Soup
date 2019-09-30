@@ -4,16 +4,16 @@
 
 namespace Soup::Client::UnitTests
 {
-    /// <summary>
-    /// Initialize Command Tests
-    /// </summary>
-    class InitializeCommandTests
-    {
-    public:
-        [[Fact]]
-        void NameIsCorrect()
-        {
-            auto uut = InitializeCommand();
-        }
-    };
+	/// <summary>
+	/// Initialize Command Tests
+	/// </summary>
+	class InitializeCommandTests
+	{
+	public:
+		[[Fact]]
+		void NameIsCorrect()
+		{
+			auto uut = InitializeCommand();
+		}
+	};
 }

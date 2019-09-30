@@ -3,17 +3,17 @@
 
 TestState RunRecipeExtensionsTests() 
  {
-    auto className = "RecipeExtensionsTests";
-    auto testClass = std::make_shared<Soup::UnitTests::RecipeExtensionsTests>();
-    TestState state = { 0, 0 };
-    state += SoupTest::RunTest(className, "TryLoadFromFile_MissingFile", [&testClass]() { testClass->TryLoadFromFile_MissingFile(); });
-    state += SoupTest::RunTest(className, "TryLoadFromFile_GarbageFile", [&testClass]() { testClass->TryLoadFromFile_GarbageFile(); });
-    state += SoupTest::RunTest(className, "TryLoadFromFile_SimpleFile", [&testClass]() { testClass->TryLoadFromFile_SimpleFile(); });
-    state += SoupTest::RunTest(className, "SaveToFile_SimpleFile", [&testClass]() { testClass->SaveToFile_SimpleFile(); });
-    state += SoupTest::RunTest(className, "GetRecipeModulePath_MissingRecipeThrows", [&testClass]() { testClass->GetRecipeModulePath_MissingRecipeThrows(); });
-    state += SoupTest::RunTest(className, "GetRecipeModulePath_Exists", [&testClass]() { testClass->GetRecipeModulePath_Exists(); });
-    state += SoupTest::RunTest(className, "GetPackageReferencePath_IsRooted", [&testClass]() { testClass->GetPackageReferencePath_IsRooted(); });
-    state += SoupTest::RunTest(className, "GetPackageReferencePath_NotRooted", [&testClass]() { testClass->GetPackageReferencePath_NotRooted(); });
+	auto className = "RecipeExtensionsTests";
+	auto testClass = std::make_shared<Soup::UnitTests::RecipeExtensionsTests>();
+	TestState state = { 0, 0 };
+	state += SoupTest::RunTest(className, "TryLoadFromFile_MissingFile", [&testClass]() { testClass->TryLoadFromFile_MissingFile(); });
+	state += SoupTest::RunTest(className, "TryLoadFromFile_GarbageFile", [&testClass]() { testClass->TryLoadFromFile_GarbageFile(); });
+	state += SoupTest::RunTest(className, "TryLoadFromFile_SimpleFile", [&testClass]() { testClass->TryLoadFromFile_SimpleFile(); });
+	state += SoupTest::RunTest(className, "SaveToFile_SimpleFile", [&testClass]() { testClass->SaveToFile_SimpleFile(); });
+	state += SoupTest::RunTest(className, "GetRecipeModulePath_MissingRecipeThrows", [&testClass]() { testClass->GetRecipeModulePath_MissingRecipeThrows(); });
+	state += SoupTest::RunTest(className, "GetRecipeModulePath_Exists", [&testClass]() { testClass->GetRecipeModulePath_Exists(); });
+	state += SoupTest::RunTest(className, "GetPackageReferencePath_IsRooted", [&testClass]() { testClass->GetPackageReferencePath_IsRooted(); });
+	state += SoupTest::RunTest(className, "GetPackageReferencePath_NotRooted", [&testClass]() { testClass->GetPackageReferencePath_NotRooted(); });
 
-    return state;
+	return state;
 }

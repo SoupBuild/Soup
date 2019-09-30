@@ -4,16 +4,16 @@
 
 namespace Soup::Client::UnitTests
 {
-    /// <summary>
-    /// Install Command Tests
-    /// </summary>
-    class InstallCommandTests
-    {
-    public:
-        [[Fact]]
-        void Initialize()
-        {
-            auto uut = PackCommand();
-        }
-    };
+	/// <summary>
+	/// Install Command Tests
+	/// </summary>
+	class InstallCommandTests
+	{
+	public:
+		[[Fact]]
+		void Initialize()
+		{
+			auto uut = PackCommand();
+		}
+	};
 }

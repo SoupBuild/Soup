@@ -26,30 +26,30 @@ using namespace SoupTest;
 
 int main()
 {
-    std::cout << "Running Tests..." << std::endl;
+	std::cout << "Running Tests..." << std::endl;
 
-    TestState state = { 0, 0 };
+	TestState state = { 0, 0 };
 
-    state += RunBuildEngineTests();
-    state += RunBuildStateCheckerTests();
-    state += RunBuildStateJsonTests();
-    state += RunBuildStateTests();
-    state += RunBuildStateManagerTests();
+	state += RunBuildEngineTests();
+	state += RunBuildStateCheckerTests();
+	state += RunBuildStateJsonTests();
+	state += RunBuildStateTests();
+	state += RunBuildStateManagerTests();
 
-    state += RunPackageReferenceTests();
-    state += RunRecipeBuilderTests();
-    state += RunRecipeBuildGeneratorTests();
-    state += RunRecipeBuildManagerTests();
-    state += RunRecipeExtensionsTests();
-    state += RunRecipeJsonTests();
-    state += RunRecipeTests();
-    state += RunRecipeTypeTests();
+	state += RunPackageReferenceTests();
+	state += RunRecipeBuilderTests();
+	state += RunRecipeBuildGeneratorTests();
+	state += RunRecipeBuildManagerTests();
+	state += RunRecipeExtensionsTests();
+	state += RunRecipeJsonTests();
+	state += RunRecipeTests();
+	state += RunRecipeTypeTests();
 
-    state += RunPathTests();
-    state += RunSemanticVersionTests();
+	state += RunPathTests();
+	state += RunSemanticVersionTests();
 
-    std::cout << state.FailCount << " FAILED." << std::endl;
-    std::cout << state.PassCount << " PASSED." << std::endl;
+	std::cout << state.FailCount << " FAILED." << std::endl;
+	std::cout << state.PassCount << " PASSED." << std::endl;
 
-    return 0;
+	return 0;
 }

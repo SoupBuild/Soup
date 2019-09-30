@@ -4,13 +4,13 @@
 
 namespace Soup::Client::UnitTests
 {
-    class ViewCommandTests
-    {
-    public:
-        [[Fact]]
-        void Initialize()
-        {
-            auto uut = PackCommand();
-        }
-    };
+	class ViewCommandTests
+	{
+	public:
+		[[Fact]]
+		void Initialize()
+		{
+			auto uut = PackCommand();
+		}
+	};
 }

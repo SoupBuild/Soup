@@ -7,50 +7,50 @@
 
 namespace Soup
 {
-    export struct ProcessResult
-    {
-        int ExitCode;
-        std::string StdOut;
-        std::string StdErr;
-    };
+	export struct ProcessResult
+	{
+		int ExitCode;
+		std::string StdOut;
+		std::string StdErr;
+	};
 
-    /// <summary>
-    /// The process manager interface
-    /// Interface mainly used to allow for unit testing client code
-    /// </summary>
-    export class IProcessManager
-    {
-    public:
-        /// <summary>
-        /// Gets the current active process manager
-        /// </summary>
-        static IProcessManager& Current()
-        {
-            if (_current == nullptr)
-                throw std::runtime_error("No process manager implementation registered.");
-            return *_current;
-        }
+	/// <summary>
+	/// The process manager interface
+	/// Interface mainly used to allow for unit testing client code
+	/// </summary>
+	export class IProcessManager
+	{
+	public:
+		/// <summary>
+		/// Gets the current active process manager
+		/// </summary>
+		static IProcessManager& Current()
+		{
+			if (_current == nullptr)
+				throw std::runtime_error("No process manager implementation registered.");
+			return *_current;
+		}
 
-        /// <summary>
-        /// Register a new active process manager
-        /// </summary>
-        static void Register(std::shared_ptr<IProcessManager> value)
-        {
-            _current = std::move(value);
-        }
+		/// <summary>
+		/// Register a new active process manager
+		/// </summary>
+		static void Register(std::shared_ptr<IProcessManager> value)
+		{
+			_current = std::move(value);
+		}
 
-    public:
-        /// <summary>
-        /// Creates a process for the provided executable path
-        /// </summary>
-        virtual ProcessResult Execute(
-            const Path& application,
-            const std::vector<std::string>& arguments,
-            const Path& workingDirectory) = 0;
+	public:
+		/// <summary>
+		/// Creates a process for the provided executable path
+		/// </summary>
+		virtual ProcessResult Execute(
+			const Path& application,
+			const std::vector<std::string>& arguments,
+			const Path& workingDirectory) = 0;
 
-    private:
-        static std::shared_ptr<IProcessManager> _current;
-    };
+	private:
+		static std::shared_ptr<IProcessManager> _current;
+	};
 
-    std::shared_ptr<IProcessManager> IProcessManager::_current = nullptr;
+	std::shared_ptr<IProcessManager> IProcessManager::_current = nullptr;
 }

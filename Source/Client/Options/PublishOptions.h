@@ -7,11 +7,11 @@
 
 namespace Soup::Client
 {
-    /// <summary>
-    /// Publish Command Options
-    /// </summary>
-    // TODO: [Verb("publish")]
-    class PublishOptions : public SharedOptions
-    {
-    };
+	/// <summary>
+	/// Publish Command Options
+	/// </summary>
+	// TODO: [Verb("publish")]
+	class PublishOptions : public SharedOptions
+	{
+	};
 }

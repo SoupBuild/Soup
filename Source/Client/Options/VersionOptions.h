@@ -7,11 +7,11 @@
 
 namespace Soup::Client
 {
-    /// <summary>
-    /// Version Command
-    /// </summary>
-    // TODO: [Verb("version")]
-    class VersionOptions : public SharedOptions
-    {
-    };
+	/// <summary>
+	/// Version Command
+	/// </summary>
+	// TODO: [Verb("version")]
+	class VersionOptions : public SharedOptions
+	{
+	};
 }

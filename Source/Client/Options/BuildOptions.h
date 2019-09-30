@@ -7,17 +7,17 @@
 
 namespace Soup::Client
 {
-    /// <summary>
-    /// Build Command Options
-    /// </summary>
-    // TODO: [[Verb("build")]]
-    class BuildOptions : public SharedOptions
-    {
-    public:
-        /// <summary>
-        /// Gets or sets a value indicating whether to force a build
-        /// </summary>
-        [[Option('f', "force", Default = false, HelpText = "Force a rebuild.")]]
-        bool Force;
-    };
+	/// <summary>
+	/// Build Command Options
+	/// </summary>
+	// TODO: [[Verb("build")]]
+	class BuildOptions : public SharedOptions
+	{
+	public:
+		/// <summary>
+		/// Gets or sets a value indicating whether to force a build
+		/// </summary>
+		[[Option('f', "force", Default = false, HelpText = "Force a rebuild.")]]
+		bool Force;
+	};
 }
