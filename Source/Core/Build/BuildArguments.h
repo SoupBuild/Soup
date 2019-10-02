@@ -123,7 +123,7 @@ namespace Soup
 				WorkingDirectory == rhs.WorkingDirectory &&
 				ObjectDirectory == rhs.ObjectDirectory &&
 				BinaryDirectory == rhs.BinaryDirectory &&
-				ModuleInterfaceSourceFile  == rhs.ModuleInterfaceSourceFile &&
+				ModuleInterfaceSourceFile == rhs.ModuleInterfaceSourceFile &&
 				SourceFiles == rhs.SourceFiles &&
 				IncludeDirectories == rhs.IncludeDirectories &&
 				IncludeModules == rhs.IncludeModules &&

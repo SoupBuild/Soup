@@ -29,7 +29,7 @@ uint32_t BitReader::Read(size_t countBits)
 			throw std::runtime_error("Failed read.");
 
 		uint64_t expandValue = 0xFF & (uint64_t)value;
-		// std::cout << "ReadVal: 0x" << std::hex << expandValue << " 0x" << prevLoc << " 0x" << m_stream.tellg() << std::dec <<  std::endl;
+		// std::cout << "ReadVal: 0x" << std::hex << expandValue << " 0x" << prevLoc << " 0x" << m_stream.tellg() << std::dec << std::endl;
 
 		m_buffer |= expandValue << m_bufferBitSize;
 		m_bufferBitSize += 8;

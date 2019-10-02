@@ -95,8 +95,8 @@ namespace Soup::UnitTests
 			fileSystem->CreateMockFile(
 				Path("TestFiles/SimpleRecipe/Recipe.json"),
 				MockFileState(std::stringstream(R"({
-				   "name": "MyPackage",
-				   "version": "1.2.3"
+					"name": "MyPackage",
+					"version": "1.2.3"
 				})")));
 
 			auto directory = Path("TestFiles/SimpleRecipe/Recipe.json");
@@ -216,8 +216,8 @@ namespace Soup::UnitTests
 			fileSystem->CreateMockFile(
 				Path("Root/Recipe.json"),
 				MockFileState(std::stringstream(R"({
-				   "name": "MyPackage",
-				   "version": "1.2.3"
+					"name": "MyPackage",
+					"version": "1.2.3"
 				})")));
 
 			auto packagePath = Path("Root/");

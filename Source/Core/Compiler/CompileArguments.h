@@ -149,8 +149,8 @@ namespace Soup
 				Optimize == rhs.Optimize &&
 				RootDirectory == rhs.RootDirectory &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
-				SourceFile  == rhs.SourceFile &&
-				TargetFile  == rhs.TargetFile &&
+				SourceFile == rhs.SourceFile &&
+				TargetFile == rhs.TargetFile &&
 				IncludeDirectories == rhs.IncludeDirectories &&
 				IncludeModules == rhs.IncludeModules &&
 				ExportModule == rhs.ExportModule &&

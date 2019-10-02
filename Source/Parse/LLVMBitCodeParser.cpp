@@ -603,12 +603,12 @@ void ParseTypeSourceInfo(const std::vector<uint64_t>& values, uint32_t& index)
 void LLVMBitCodeParser::ParseExternalCPPBaseSpecifiers()
 {
 	auto record = ParseUnabbreviatedRecord();
-  if (static_cast<ClangAST::DeclarationCode>(record.Code) != ClangAST::DeclarationCode::CPP_BaseSpecifiers)
+	if (static_cast<ClangAST::DeclarationCode>(record.Code) != ClangAST::DeclarationCode::CPP_BaseSpecifiers)
 		throw std::runtime_error("Record must be CPP_BaseSpecifiers");
 
-  uint32_t index = 0;
-  auto basesCount = record.Operands[index++];
-  for (auto i = 0; i < basesCount; i++)
+	uint32_t index = 0;
+	auto basesCount = record.Operands[index++];
+	for (auto i = 0; i < basesCount; i++)
 	{
 		auto isVirtual = static_cast<bool>(record.Operands[index++]);
 		auto isBaseOfClass = static_cast<bool>(record.Operands[index++]);

@@ -114,13 +114,13 @@ namespace Soup::Client
 		static void WriteUsage()
 		{
 			Log::Info("Expected commands:");
-			Log::Info("   build - Build the provided recipe.");
-			Log::Info("   run - Run the provided recipe.");
-			Log::Info("   initialize - Initialize wizard for creating a new recipe.");
-			Log::Info("   install - Install a dependency to the target recipes.");
-			Log::Info("   pack - Pack the contents of a recipe.");
-			Log::Info("   publish - Publish the contents of a recipe to the target feed.");
-			Log::Info("   version - Display the version of the command line application.");
+			Log::Info("	build - Build the provided recipe.");
+			Log::Info("	run - Run the provided recipe.");
+			Log::Info("	initialize - Initialize wizard for creating a new recipe.");
+			Log::Info("	install - Install a dependency to the target recipes.");
+			Log::Info("	pack - Pack the contents of a recipe.");
+			Log::Info("	publish - Publish the contents of a recipe to the target feed.");
+			Log::Info("	version - Display the version of the command line application.");
 		}
 
 		static void SetupShared(SharedOptions& options)

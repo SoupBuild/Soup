@@ -14,7 +14,7 @@ int main()
 		wrapper.GetValue() << L" " <<
 		wrapper.GetVersion() << L" " <<
 		multiVersion.GetVersion() << L" " <<
-		multiVersion.GetVersionEx()  << std::endl;
+		multiVersion.GetVersionEx() << std::endl;
 
 	return 0;
 }

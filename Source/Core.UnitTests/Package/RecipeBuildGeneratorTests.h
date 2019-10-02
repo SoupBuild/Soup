@@ -39,8 +39,8 @@ namespace Soup::UnitTests
 			fileSystem->CreateMockFile(
 				Path("D:/Repos/Soup/Source/Core/Recipe.json"),
 				MockFileState(std::stringstream(R"({
-				   "name": "Soup.Core",
-				   "version": "1.2.3"
+					"name": "Soup.Core",
+					"version": "1.2.3"
 				})")));
 
 			auto compiler = std::make_shared<Compiler::Mock::Compiler>();

@@ -124,7 +124,7 @@ namespace Soup
 			// {
 			// 
 			// }
-			auto runnerFunction =  SyntaxFactory::CreateFunctionDefinition(
+			auto runnerFunction = SyntaxFactory::CreateFunctionDefinition(
 				SyntaxFactory::CreateDeclarationSpecifierSequence(
 					SyntaxFactory::CreatePrimitiveDataTypeSpecifier(
 						PrimitiveDataType::Int,

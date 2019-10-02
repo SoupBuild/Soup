@@ -36,7 +36,7 @@ namespace Soup::UnitTests
 		{
 			auto recipe = std::stringstream(
 				R"({
-				   "name": "MyPackage"
+					"name": "MyPackage"
 				})");
 
 			Assert::ThrowsRuntimeError([&recipe]() {
@@ -49,8 +49,8 @@ namespace Soup::UnitTests
 		{
 			auto recipe = std::stringstream(
 				R"({
-				   "name": "MyPackage",
-				   "version": "1.2.3"
+					"name": "MyPackage",
+					"version": "1.2.3"
 				})");
 			auto actual = RecipeJson::Deserialize(recipe);
 
@@ -66,13 +66,13 @@ namespace Soup::UnitTests
 		{
 			auto recipe = std::stringstream(
 				R"({
-				   "name": "MyPackage",
-				   "version": "1.2.3",
-				   "type": "Executable",
-				   "dependencies": [],
-				   "public": "Public.cpp",
-				   "source": [],
-				   "includePaths": []
+					"name": "MyPackage",
+					"version": "1.2.3",
+					"type": "Executable",
+					"dependencies": [],
+					"public": "Public.cpp",
+					"source": [],
+					"includePaths": []
 				})");
 			auto actual = RecipeJson::Deserialize(recipe);
 
@@ -100,8 +100,8 @@ namespace Soup::UnitTests
 
 			auto expected = 
 				R"({
-				   "name": "MyPackage",
-				   "version": "1.2.3"
+					"name": "MyPackage",
+					"version": "1.2.3"
 				})";
 
 			VerifyJsonEquals(expected, actual.str(), "Verify matches expected.");
@@ -124,13 +124,13 @@ namespace Soup::UnitTests
 
 			auto expected = 
 				R"({
-				   "name": "MyPackage",
-				   "version": "1.2.3",
-				   "type": "Executable",
-				   "dependencies": [],
-				   "public": "Public.cpp",
-				   "source": [],
-				   "includePaths": []
+					"name": "MyPackage",
+					"version": "1.2.3",
+					"type": "Executable",
+					"dependencies": [],
+					"public": "Public.cpp",
+					"source": [],
+					"includePaths": []
 				})";
 
 			VerifyJsonEquals(expected, actual.str(), "Verify matches expected.");

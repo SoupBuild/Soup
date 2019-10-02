@@ -35,11 +35,11 @@ namespace Soup::UnitTests
 		{
 			auto content = std::stringstream(
 				R"({
-				   "knownFiles": [
-					   {
-						   "includes": []
-					   }
-				   ]
+					"knownFiles": [
+						{
+							"includes": []
+						}
+					]
 				})");
 
 			Assert::ThrowsRuntimeError([&content]() {
@@ -52,11 +52,11 @@ namespace Soup::UnitTests
 		{
 			auto content = std::stringstream(
 				R"({
-				   "knownFiles": [
-					   {
-						   "file": "File.h"
-					   }
-				   ]
+					"knownFiles": [
+						{
+							"file": "File.h"
+						}
+					]
 				})");
 
 			Assert::ThrowsRuntimeError([&content]() {
@@ -69,12 +69,12 @@ namespace Soup::UnitTests
 		{
 			auto content = std::stringstream(
 				R"({
-				   "knownFiles": [
-					   {
-						   "file": "File.h",
-						   "includes": [ "Other.h" ]
-					   }
-				   ]
+					"knownFiles": [
+						{
+							"file": "File.h",
+							"includes": [ "Other.h" ]
+						}
+					]
 				})");
 			auto actual = BuildStateJson::Deserialize(content);
 
@@ -91,16 +91,16 @@ namespace Soup::UnitTests
 		{
 			auto content = std::stringstream(
 				R"({
-				   "knownFiles": [
-					   {
-						   "file": "File1.h",
-						   "includes": [ "Other1.h" ]
-					   },
-					   {
-						   "file": "File2.h",
-						   "includes": [ "Other2.h" ]
-					   }
-				   ]
+					"knownFiles": [
+						{
+							"file": "File1.h",
+							"includes": [ "Other1.h" ]
+						},
+						{
+							"file": "File2.h",
+							"includes": [ "Other2.h" ]
+						}
+					]
 				})");
 			auto actual = BuildStateJson::Deserialize(content);
 
@@ -125,12 +125,12 @@ namespace Soup::UnitTests
 
 			auto expected = 
 				R"({
-				   "knownFiles": [
-					   {
-						   "file": "File.h",
-						   "includes": [ "Other.h" ]
-					   }
-				   ]
+					"knownFiles": [
+						{
+							"file": "File.h",
+							"includes": [ "Other.h" ]
+						}
+					]
 				})";
 
 			VerifyJsonEquals(expected, actual.str(), "Verify matches expected.");
@@ -149,16 +149,16 @@ namespace Soup::UnitTests
 
 			auto expected = 
 				R"({
-				   "knownFiles": [
-					   {
-						   "file": "File1.h",
-						   "includes": [ "Other1.h" ]
-					   },
-					   {
-						   "file": "File2.h",
-						   "includes": [ "Other2.h" ]
-					   }
-				   ]
+					"knownFiles": [
+						{
+							"file": "File1.h",
+							"includes": [ "Other1.h" ]
+						},
+						{
+							"file": "File2.h",
+							"includes": [ "Other2.h" ]
+						}
+					]
 				})";
 
 			VerifyJsonEquals(expected, actual.str(), "Verify matches expected.");

@@ -148,7 +148,7 @@ namespace Soup
 				if (fileInfoResult != KnownFiles.end())
 				{
 					// Find all of the files that do not already exist in the closure
-					auto& includes =  fileInfoResult->Includes;
+					auto& includes = fileInfoResult->Includes;
 					auto newIncludes = std::vector<Path>();
 					for (auto& include : includes)
 					{
