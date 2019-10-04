@@ -18,7 +18,7 @@ namespace Soup.Compiler.Clang
     public class Compiler : ICompiler
     {
         //private static string ToolsPath => @"C:\Program Files\llvm\";
-        private static string ToolsPath => @"D:\Repos\llvm-project\build\Release";
+        private static string ToolsPath => @"C:\Clang";
         private static Regex IsHeaderIncludeStart = new Regex("^[\\.]+ ", RegexOptions.Compiled);
         private static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
         private static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);

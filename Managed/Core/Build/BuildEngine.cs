@@ -63,20 +63,19 @@ namespace Soup
             }
 
             // Determine the include paths
-            var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
-            var uniqueFolders = folderWithHeadersSet.ToList();
+            var includePaths = recipe.IncludePaths ?? new List<string>();
 
             bool moduleBuilt = false;
             if (recipe.Type == RecipeType.Library)
             {
-                moduleBuilt = await CheckCompileModuleAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
+                moduleBuilt = await CheckCompileModuleAsync(path, recipe, buildState, includePaths, objectDirectory, binaryDirectory, force);
             }
 
             bool sourceBuilt = await CheckCompileSourceAsync(
                 path,
                 recipe,
                 buildState,
-                uniqueFolders,
+                includePaths,
                 objectDirectory,
                 binaryDirectory,
                 force);
@@ -137,7 +136,7 @@ namespace Soup
             string path,
             Recipe recipe,
             BuildState buildState,
-            IList<string> uniqueFolders,
+            IList<string> includePaths,
             string objectDirectory,
             string binaryDirectory,
             bool force)
@@ -170,7 +169,7 @@ namespace Soup
                     path,
                     recipe,
                     buildState,
-                    uniqueFolders,
+                    includePaths,
                     objectDirectory,
                     binaryDirectory);
             }
@@ -185,7 +184,7 @@ namespace Soup
             string path,
             Recipe recipe,
             BuildState buildState,
-            IList<string> uniqueFolders,
+            IList<string> includePaths,
             string objectDirectory,
             string binaryDirectory)
         {
@@ -215,7 +214,7 @@ namespace Soup
                 OutputDirectory = objectDirectory,
                 PreprocessorDefinitions = defines,
                 SourceFiles = new List<string>() { recipe.Public },
-                IncludeDirectories = uniqueFolders,
+                IncludeDirectories = includePaths,
                 Modules = modules,
                 ExportModule = true,
                 GenerateIncludeTree = true,
@@ -243,7 +242,7 @@ namespace Soup
             string path,
             Recipe recipe,
             BuildState buildState,
-            IList<string> uniqueFolders,
+            IList<string> includePaths,
             string objectDirectory,
             string binaryDirectory,
             bool force)
@@ -316,7 +315,7 @@ namespace Soup
                     OutputDirectory = objectDirectory,
                     PreprocessorDefinitions = defines,
                     SourceFiles = source,
-                    IncludeDirectories = uniqueFolders,
+                    IncludeDirectories = includePaths,
                     Modules = modules,
                     GenerateIncludeTree = true,
                 };
