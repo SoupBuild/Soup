@@ -113,5 +113,55 @@ namespace Soup
 
 			return packagePath;
 		}
+
+		static void GenerateDependecyStaticLibraryClosure(
+			const ICompiler& compiler,
+			const Path& workingDirectory,
+			const std::vector<PackageReference>& dependencies,
+			std::vector<Path>& closure)
+		{
+			for (auto& dependecy : dependencies)
+			{
+				// Load this package recipe
+				auto dependencyPackagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
+				auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
+				Recipe dependecyRecipe = {};
+				if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
+				{
+					Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+					throw std::runtime_error("GenerateDependecyStaticLibraryClosure: Failed to load dependency.");
+				}
+
+				// Add this dependency
+				auto dependencyStaticLibrary = 
+					dependencyPackagePath +
+					GetBinaryDirectory(compiler) +
+					Path(dependecyRecipe.GetName() + "." + std::string(compiler.GetStaticLibraryFileExtension()));
+				closure.push_back(std::move(dependencyStaticLibrary));
+
+				// Add all recursive dependencies
+				GenerateDependecyStaticLibraryClosure(
+					compiler,
+					dependencyPackagePath,
+					dependecyRecipe.GetDependencies(),
+					closure);
+			}
+		}
+
+		static Path GetObjectDirectory(const ICompiler& compiler)
+		{
+			// Setup the output directories
+			auto outputDirectory = Path("out");
+			auto objectDirectory = outputDirectory + Path("obj");
+			return objectDirectory + Path(compiler.GetName());
+		}
+
+		static Path GetBinaryDirectory(const ICompiler& compiler)
+		{
+			// Setup the output directories
+			auto outputDirectory = Path("out");
+			auto binaryDirectory = outputDirectory + Path("bin");
+			return binaryDirectory + Path(compiler.GetName());
+		}
 	};
 }

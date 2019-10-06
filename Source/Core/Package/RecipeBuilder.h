@@ -22,11 +22,6 @@ namespace Soup
 		{
 			if (_compiler == nullptr)
 				throw std::runtime_error("Argument null: compiler");
-
-			// Setup the output directories
-			auto outputDirectory = Path("out");
-			_objectDirectory = outputDirectory + Path("obj");
-			_binaryDirectory = outputDirectory + Path("bin");
 		}
 
 		/// <summary>
@@ -46,7 +41,10 @@ namespace Soup
 			for (auto dependecy : recipe.GetDependencies())
 			{
 				auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
-				auto modulePath = RecipeExtensions::GetRecipeModulePath(packagePath, GetBinaryDirectory(), std::string(_compiler->GetModuleFileExtension()));
+				auto modulePath = RecipeExtensions::GetRecipeModulePath(
+					packagePath,
+					RecipeExtensions::GetBinaryDirectory(*_compiler),
+					std::string(_compiler->GetModuleFileExtension()));
 				includeModules.push_back(std::move(modulePath));
 			}
 
@@ -54,9 +52,10 @@ namespace Soup
 			std::vector<Path> linkLibraries;
 			if (recipe.GetType() == RecipeType::Executable)
 			{
-				GenerateDependecyStaticLibraryClosure(
+				RecipeExtensions::GenerateDependecyStaticLibraryClosure(
+					*_compiler,
 					workingDirectory,
-					recipe,
+					recipe.GetDependencies(),
 					linkLibraries);
 			}
 
@@ -64,8 +63,8 @@ namespace Soup
 			auto arguments = BuildArguments();
 			arguments.TargetName = recipe.GetName();
 			arguments.WorkingDirectory = workingDirectory;
-			arguments.ObjectDirectory = GetObjectDirectory();
-			arguments.BinaryDirectory = GetBinaryDirectory();
+			arguments.ObjectDirectory = RecipeExtensions::GetObjectDirectory(*_compiler);
+			arguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(*_compiler);
 			arguments.ModuleInterfaceSourceFile = 
 				recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
 			arguments.SourceFiles = recipe.GetSourceAsPath();
@@ -102,48 +101,6 @@ namespace Soup
 		}
 
 	private:
-		void GenerateDependecyStaticLibraryClosure(
-			const Path& workingDirectory,
-			const Recipe& recipe,
-			std::vector<Path>& closure) const
-		{
-			for (auto& dependecy : recipe.GetDependencies())
-			{
-				// Load this package recipe
-				auto dependencyPackagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
-				auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
-				Recipe dependecyRecipe = {};
-				if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
-				{
-					Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
-					throw std::runtime_error("GenerateDependecyStaticLibraryClosure: Failed to load dependency.");
-				}
-
-				// Add this dependency
-				auto dependencyStaticLibrary = 
-					dependencyPackagePath +
-					GetBinaryDirectory() +
-					Path(dependecyRecipe.GetName() + "." + std::string(_compiler->GetStaticLibraryFileExtension()));
-				closure.push_back(std::move(dependencyStaticLibrary));
-
-				// Add all recursive dependencies
-				GenerateDependecyStaticLibraryClosure(dependencyPackagePath, dependecyRecipe, closure);
-			}
-		}
-
-		Path GetObjectDirectory() const
-		{
-			return _objectDirectory + Path(_compiler->GetName());
-		}
-
-		Path GetBinaryDirectory() const
-		{
-			return _binaryDirectory + Path(_compiler->GetName());
-		}
-
-	private:
 		std::shared_ptr<ICompiler> _compiler;
-		Path _objectDirectory;
-		Path _binaryDirectory;
 	};
 }

@@ -6,6 +6,7 @@
 #include "RecipeExtensions.h"
 #include "RecipeBuilder.h"
 #include "RecipeBuildGenerator.h"
+#include "IProcessManager.h"
 
 namespace Soup
 {
@@ -85,7 +86,6 @@ namespace Soup
 			return projectId;
 		}
 
-
 		/// <summary>
 		/// The core build that will either invoke the recipe builder directly
 		/// or compile it into an executable and invoke it.
@@ -103,10 +103,33 @@ namespace Soup
 			else
 			{
 				// Gen the build
-				// _generator.Execute(workingDirectory, recipe);
+				auto executablePath = _generator.Execute(workingDirectory, recipe);
 
-				// Run the build in process
-				_builder.Execute(projectId, workingDirectory, recipe, forceBuild);
+				// Invoke the build
+				Log::Verbose("Invoke Compiler: " + executablePath.ToString());
+				auto arguments = std::vector<std::string>();
+				auto result = IProcessManager::Current().Execute(
+					executablePath,
+					arguments,
+					workingDirectory);
+
+				// TODO: Directly pipe to output and make sure there is no extra newline
+				if (!result.StdOut.empty())
+				{
+					Log::Info(result.StdOut);
+				}
+
+				if (!result.StdErr.empty())
+				{
+					Log::Error(result.StdErr);
+				}
+
+				if (result.ExitCode != 0)
+				{
+					// TODO: Return error code
+					Log::Verbose("Invoke Build Failed!");
+					throw std::runtime_error("Invoke Build Failed!");
+				}
 
 				// Keep track of the packages we have already built
 				// TODO: Verify unique names

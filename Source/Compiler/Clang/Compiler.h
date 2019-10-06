@@ -94,10 +94,6 @@ namespace Soup::Compiler::Clang
 				executablePath,
 				commandArgs,
 				args.RootDirectory);
-			if (result.ExitCode != 0)
-			{
-				throw std::runtime_error("Linker Error: " + std::to_string(result.ExitCode));
-			}
 
 			if (!result.StdOut.empty())
 			{
@@ -107,8 +103,12 @@ namespace Soup::Compiler::Clang
 			// If there was any error output then the build failed
 			if (!result.StdErr.empty())
 			{
-				Log::Error(result.StdErr);
-				throw std::runtime_error(result.StdErr);
+				Log::Warning(result.StdErr);
+			}
+			
+			if (result.ExitCode != 0)
+			{
+				throw std::runtime_error("Linker Error: " + std::to_string(result.ExitCode));
 			}
 		}
 
