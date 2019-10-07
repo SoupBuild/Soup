@@ -28,12 +28,10 @@ namespace Soup
 		/// The Core Execute task
 		/// </summary>
 		void Execute(
-			int projectId,
 			const Path& workingDirectory,
 			const Recipe& recipe,
 			bool forceBuild)
 		{
-			Log::SetActiveId(projectId);
 			Log::Info("Building '" + recipe.GetName() + "'");
 
 			// Add all dependency packages modules references

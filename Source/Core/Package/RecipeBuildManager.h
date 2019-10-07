@@ -24,6 +24,13 @@ namespace Soup
 			_builder(compiler),
 			_generator(compiler)
 		{
+			// Setup the core set of recipes that are required to break
+			// the circular build dependency from within the core command line executable
+			// TODO: Normalize uppercase?
+			_knownInProcessRecipes = std::set<std::string>({
+				"std.core",
+				"Soup.Core",
+			});
 		}
 
 		/// <summary>
@@ -102,33 +109,16 @@ namespace Soup
 			}
 			else
 			{
-				// Gen the build
-				auto executablePath = _generator.Execute(workingDirectory, recipe);
-
-				// Invoke the build
-				Log::Verbose("Invoke Compiler: " + executablePath.ToString());
-				auto arguments = std::vector<std::string>();
-				auto result = IProcessManager::Current().Execute(
-					executablePath,
-					arguments,
-					workingDirectory);
-
-				// TODO: Directly pipe to output and make sure there is no extra newline
-				if (!result.StdOut.empty())
+				if (_knownInProcessRecipes.contains(recipe.GetName()))
 				{
-					Log::Info(result.StdOut);
+					// Run the required builds in process
+					// This will break the circular requirments for the core build libraries
+					RunInProcessBuild(projectId, workingDirectory, recipe, forceBuild);
 				}
-
-				if (!result.StdErr.empty())
+				else
 				{
-					Log::Error(result.StdErr);
-				}
-
-				if (result.ExitCode != 0)
-				{
-					// TODO: Return error code
-					Log::Verbose("Invoke Build Failed!");
-					throw std::runtime_error("Invoke Build Failed!");
+					// Default to using a generated build executable
+					RunGenerateBuild(projectId, workingDirectory, recipe, forceBuild);
 				}
 
 				// Keep track of the packages we have already built
@@ -140,6 +130,65 @@ namespace Soup
 			}
 
 			return projectId;
+		}
+
+		void RunInProcessBuild(
+			int projectId,
+			const Path& packageRoot,
+			const Recipe& recipe,
+			bool forceBuild)
+		{
+			// TODO: RAII for active id
+			try
+			{
+				Log::Verbose("Running InProcess Build");
+
+				Log::SetActiveId(projectId);
+				_builder.Execute(packageRoot, recipe, forceBuild);
+				Log::SetActiveId(-1);
+			}
+			catch(...)
+			{
+				Log::SetActiveId(-1);
+			}
+		}
+
+		void RunGenerateBuild(
+			int projectId,
+			const Path& packageRoot,
+			const Recipe& recipe,
+			bool forceBuild)
+		{
+			Log::Verbose("Running Generate Build");
+
+			// Gen the build
+			auto executablePath = _generator.EnsureExecutableBuilt(packageRoot, recipe);
+
+			// Invoke the build
+			Log::Verbose("Invoke Compiler: " + executablePath.ToString());
+			auto arguments = std::vector<std::string>();
+			auto result = IProcessManager::Current().Execute(
+				executablePath,
+				arguments,
+				packageRoot);
+
+			// TODO: Directly pipe to output and make sure there is no extra newline
+			if (!result.StdOut.empty())
+			{
+				Log::Info(result.StdOut);
+			}
+
+			if (!result.StdErr.empty())
+			{
+				Log::Error(result.StdErr);
+			}
+
+			if (result.ExitCode != 0)
+			{
+				// TODO: Return error code
+				Log::Verbose("Invoke Build Failed: " + std::to_string(result.ExitCode));
+				throw std::runtime_error("Invoke Build Failed!");
+			}
 		}
 
 		Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const
@@ -158,5 +207,6 @@ namespace Soup
 		RecipeBuilder _builder;
 		RecipeBuildGenerator _generator;
 		std::set<std::string> _buildSet;
+		std::set<std::string> _knownInProcessRecipes;
 	};
 }

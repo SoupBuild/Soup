@@ -31,8 +31,9 @@ namespace Soup
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		Path Execute(const Path& packageRoot, const Recipe& recipe)
+		Path EnsureExecutableBuilt(const Path& packageRoot, const Recipe& recipe)
 		{
+			Log::Info("EnsureExecutableBuilt '" + recipe.GetName() + "'");
 			auto relativeGenerateBuildPath =
 				Path(Constants::ProjectGenerateFolderName) +
 				Path(Constants::ProjectGenerateBuildFolderName);
@@ -47,9 +48,25 @@ namespace Soup
 				IFileSystem::Current().CreateDirectory(generateBuildPath);
 			}
 
-			// Generate the build files
+			// Generate the build files if outdated
 			auto buildFile = Path(Constants::GenerateBuildFileName);
-			CreateBuildFile(packageRoot, generateBuildPath, buildFile);
+			auto relativeRootBuildFile = relativeGenerateBuildPath + buildFile;
+			auto buildFileInputClosure = std::vector<Path>({
+				Path(Constants::RecipeFileName),
+			});
+
+			Log::Verbose("Check if Generated Build source is outdated.");
+			if (BuildStateChecker::IsOutdated(
+				relativeRootBuildFile,
+				buildFileInputClosure,
+				packageRoot))
+			{
+				CreateBuildFile(packageRoot, generateBuildPath, buildFile);
+			}
+			else
+			{
+				Log::Verbose("Build file up to date: " + buildFile.ToString());
+			}
 
 			// Compile the build executable
 			auto sourceFiles = std::vector<Path>({
@@ -74,8 +91,12 @@ namespace Soup
 		/// </summary>
 		static int Run(const Path& packageRoot, std::shared_ptr<ICompiler> compiler)
 		{
+			auto projectId = 111;
+			// TODO: RAII for active id
 			try
 			{
+				Log::SetActiveId(projectId);
+
 				// Setup the filter
 				auto defaultTypes = 
 					static_cast<uint32_t>(TraceEventFlag::Verbose) |
@@ -113,10 +134,10 @@ namespace Soup
 				auto builder = RecipeBuilder(compiler);
 
 				// Run the build
-				auto projectId = 111;
 				auto forceBuild = false;
-				builder.Execute(projectId,packageRoot,recipe,forceBuild);
+				builder.Execute(packageRoot, recipe, forceBuild);
 
+				Log::Verbose("Build Completed.");
 				return 0;
 			}
 			catch (std::exception& ex)
