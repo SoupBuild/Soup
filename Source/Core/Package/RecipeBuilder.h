@@ -4,6 +4,7 @@
 
 #pragma once
 #include "RecipeExtensions.h"
+#include "RecipeBuildArguments.h"
 
 namespace Soup
 {
@@ -30,7 +31,7 @@ namespace Soup
 		void Execute(
 			const Path& workingDirectory,
 			const Recipe& recipe,
-			bool forceBuild)
+			const RecipeBuildArguments& arguments)
 		{
 			Log::Info("Building '" + recipe.GetName() + "'");
 
@@ -41,7 +42,7 @@ namespace Soup
 				auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
 				auto modulePath = RecipeExtensions::GetRecipeModulePath(
 					packagePath,
-					RecipeExtensions::GetBinaryDirectory(*_compiler),
+					RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration),
 					std::string(_compiler->GetModuleFileExtension()));
 				includeModules.push_back(std::move(modulePath));
 			}
@@ -52,37 +53,53 @@ namespace Soup
 			{
 				RecipeExtensions::GenerateDependecyStaticLibraryClosure(
 					*_compiler,
+					arguments.Configuration,
 					workingDirectory,
 					recipe.GetDependencies(),
 					linkLibraries);
 			}
 
 			// Build up arguments to build this individual recipe
-			auto arguments = BuildArguments();
-			arguments.TargetName = recipe.GetName();
-			arguments.WorkingDirectory = workingDirectory;
-			arguments.ObjectDirectory = RecipeExtensions::GetObjectDirectory(*_compiler);
-			arguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(*_compiler);
-			arguments.ModuleInterfaceSourceFile = 
+			auto buildArguments = BuildArguments();
+			buildArguments.TargetName = recipe.GetName();
+			buildArguments.WorkingDirectory = workingDirectory;
+			buildArguments.ObjectDirectory = RecipeExtensions::GetObjectDirectory(*_compiler, arguments.Configuration);
+			buildArguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration);
+			buildArguments.ModuleInterfaceSourceFile = 
 				recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
-			arguments.SourceFiles = recipe.GetSourceAsPath();
-			arguments.IncludeModules = std::move(includeModules);
-			arguments.LinkLibraries = std::move(linkLibraries);
-			arguments.IsIncremental = !forceBuild;
-			arguments.PreprocessorDefinitions = std::vector<std::string>({
+			buildArguments.SourceFiles = recipe.GetSourceAsPath();
+			buildArguments.IncludeModules = std::move(includeModules);
+			buildArguments.LinkLibraries = std::move(linkLibraries);
+			buildArguments.IsIncremental = !arguments.ForceRebuild;
+			buildArguments.PreprocessorDefinitions = std::vector<std::string>({
 				"SOUP_BUILD",
 			});
-			arguments.IncludeDirectories =
+			buildArguments.IncludeDirectories =
 				recipe.HasIncludePaths() ? recipe.GetIncludePathsAsPath() : std::vector<Path>();
+
+			// Set the correct optimization level for the requested configuration
+			if (arguments.Configuration == "debug")
+			{
+				buildArguments.OptimizationLevel = BuildOptimizationLevel::None;
+			}
+			else if (arguments.Configuration == "release")
+			{
+				buildArguments.OptimizationLevel = BuildOptimizationLevel::Speed;
+			}
+			else
+			{
+				Log::Error("Unknown build configuration type.");
+				throw std::runtime_error("Unknown build configuration type.");
+			}
 
 			// Convert the recipe type to the required build type
 			switch (recipe.GetType())
 			{
 				case RecipeType::Library:
-					arguments.TargetType = BuildTargetType::Library;
+					buildArguments.TargetType = BuildTargetType::Library;
 					break;
 				case RecipeType::Executable:
-					arguments.TargetType = BuildTargetType::Executable;
+					buildArguments.TargetType = BuildTargetType::Executable;
 					break;
 				default:
 					throw std::runtime_error("Unknown build target type.");
@@ -90,7 +107,7 @@ namespace Soup
 
 			// Perform the build
 			auto buildEngine = BuildEngine(_compiler);
-			auto wasBuilt = buildEngine.Execute(arguments);
+			auto wasBuilt = buildEngine.Execute(buildArguments);
 
 			if (wasBuilt)
 				Log::Info("Done");

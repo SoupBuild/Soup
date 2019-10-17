@@ -116,6 +116,7 @@ namespace Soup
 
 		static void GenerateDependecyStaticLibraryClosure(
 			const ICompiler& compiler,
+			const std::string& configuration,
 			const Path& workingDirectory,
 			const std::vector<PackageReference>& dependencies,
 			std::vector<Path>& closure)
@@ -135,33 +136,34 @@ namespace Soup
 				// Add this dependency
 				auto dependencyStaticLibrary = 
 					dependencyPackagePath +
-					GetBinaryDirectory(compiler) +
+					GetBinaryDirectory(compiler, configuration) +
 					Path(dependecyRecipe.GetName() + "." + std::string(compiler.GetStaticLibraryFileExtension()));
 				closure.push_back(std::move(dependencyStaticLibrary));
 
 				// Add all recursive dependencies
 				GenerateDependecyStaticLibraryClosure(
 					compiler,
+					configuration,
 					dependencyPackagePath,
 					dependecyRecipe.GetDependencies(),
 					closure);
 			}
 		}
 
-		static Path GetObjectDirectory(const ICompiler& compiler)
+		static Path GetObjectDirectory(const ICompiler& compiler, const std::string& configuration)
 		{
 			// Setup the output directories
 			auto outputDirectory = Path("out");
 			auto objectDirectory = outputDirectory + Path("obj");
-			return objectDirectory + Path(compiler.GetName());
+			return objectDirectory + Path(compiler.GetName()) + Path(configuration);
 		}
 
-		static Path GetBinaryDirectory(const ICompiler& compiler)
+		static Path GetBinaryDirectory(const ICompiler& compiler, const std::string& configuration)
 		{
 			// Setup the output directories
 			auto outputDirectory = Path("out");
 			auto binaryDirectory = outputDirectory + Path("bin");
-			return binaryDirectory + Path(compiler.GetName());
+			return binaryDirectory + Path(compiler.GetName()) + Path(configuration);
 		}
 	};
 }

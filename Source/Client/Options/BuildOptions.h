@@ -19,5 +19,11 @@ namespace Soup::Client
 		/// </summary>
 		[[Option('f', "force", Default = false, HelpText = "Force a rebuild.")]]
 		bool Force;
+
+		/// <summary>
+		/// Gets or sets a value indicating what configuration to use
+		/// </summary>
+		[[Option('c', "config", Default = false, HelpText = "Configuration.")]]
+		std::string Configuration;
 	};
 }

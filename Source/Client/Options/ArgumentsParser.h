@@ -46,6 +46,12 @@ namespace Soup::Client
 				options.EnableVerbose = IsFlagSet("v", unusedArgs);
 				options.Force = IsFlagSet("f", unusedArgs);
 
+				auto configValue = std::string();
+				if (TryGetValueArgument("c", unusedArgs, configValue))
+				{
+					options.Configuration = std::move(configValue);
+				}
+
 				result = std::move(options);
 			}
 			else if (commandType == "init")
@@ -165,15 +171,37 @@ namespace Soup::Client
 		}
 
 	private:
-		static bool IsFlagSet(const char* value, std::vector<std::string>& unusedArgs)
+		static bool IsFlagSet(const char* name, std::vector<std::string>& unusedArgs)
 		{
-			auto flagValue = std::string("-") + value;
+			auto flagValue = std::string("-") + name;
 			Log::Trace("IsFlagSet: " + flagValue);
 			auto flagLocation = std::find(unusedArgs.begin(), unusedArgs.end(), flagValue);
 			if (flagLocation != unusedArgs.end())
 			{
 				// Consume the flag value
 				unusedArgs.erase(flagLocation);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		static bool TryGetValueArgument(
+			const char* name,
+			std::vector<std::string>& unusedArgs,
+			std::string& value)
+		{
+			auto nameValue = std::string("-") + name;
+			Log::Trace("TryGetValueArgument: " + nameValue);
+			auto nameLocation = std::find(unusedArgs.begin(), unusedArgs.end(), nameValue);
+			if (nameLocation != unusedArgs.end())
+			{
+				// Consume the flag value
+				auto valueLocation = unusedArgs.erase(nameLocation);
+				value = std::move(*valueLocation);
+				unusedArgs.erase(valueLocation);
 				return true;
 			}
 			else

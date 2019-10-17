@@ -40,10 +40,18 @@ namespace Soup::Client
 				return;
 			}
 
+			// Setup the build arguments
+			auto arguments = RecipeBuildArguments();
+			arguments.ForceRebuild = _options.Force;
+			if (!_options.Configuration.empty())
+				arguments.Configuration = _options.Configuration;
+			else
+				arguments.Configuration = "release";
+
 			// Now build the current project
 			Log::Verbose("Begin Build:");
 			auto buildManager = RecipeBuildManager(_compiler);
-			buildManager.Execute(workingDirectory, recipe, _options.Force);
+			buildManager.Execute(workingDirectory, recipe, arguments);
 		}
 
 	private:

@@ -66,7 +66,7 @@ namespace Soup::Compiler::Clang
 			// Set the optimization level
 			switch (args.Optimize)
 			{
-				case OptimizationLevel::Disabled:
+				case OptimizationLevel::None:
 					// DEFAULT: "-O0";
 					break;
 				case OptimizationLevel::Speed:

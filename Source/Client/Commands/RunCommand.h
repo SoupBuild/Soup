@@ -50,7 +50,9 @@ namespace Soup::Client
 			}
 
 			// Ensure the executable exists
-			auto executablePath = workingDirectory + Path("out/bin") + Path(_compiler->GetName()) + Path(recipe.GetName() + ".exe");
+			auto configuration = "release";
+			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(*_compiler, configuration);
+			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
 			Log::Verbose(executablePath.ToString());
 			if (!IFileSystem::Current().Exists(executablePath))
 			{

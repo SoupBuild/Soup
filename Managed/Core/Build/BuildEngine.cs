@@ -50,8 +50,9 @@ namespace Soup
         /// </summary>
         private async Task CoreBuildAsync(string path, Recipe recipe, bool force)
         {
-            var objectDirectory = Path.Combine("out", "obj", _compiler.Name);
-            var binaryDirectory = Path.Combine("out", "bin", _compiler.Name);
+            var configuration = "release";
+            var objectDirectory = Path.Combine("out", "obj", _compiler.Name, configuration);
+            var binaryDirectory = Path.Combine("out", "bin", _compiler.Name, configuration);
 
             Log.Info($"Building {recipe.Name}.");
             Log.Verbose($"Loading previous build state.");

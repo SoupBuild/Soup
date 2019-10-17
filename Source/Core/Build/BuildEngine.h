@@ -39,6 +39,7 @@ namespace Soup
 			Log::Verbose("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
 			Log::Verbose("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
 			Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
+			Log::Verbose("OptimizationLevel = " + ToString(arguments.OptimizationLevel));
 			Log::Verbose("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
 			Log::Verbose("IncludeModules = " + ToString(arguments.IncludeModules));
 			Log::Verbose("PreprocessorDefinitions = " + ToString(arguments.PreprocessorDefinitions));
@@ -187,7 +188,7 @@ namespace Soup
 				// Setup the shared properties
 				auto compileArguments = CompileArguments();
 				compileArguments.Standard = LanguageStandard::CPP20;
-				compileArguments.Optimize = OptimizationLevel::Speed;
+				compileArguments.Optimize = Convert(arguments.OptimizationLevel);
 				compileArguments.RootDirectory = arguments.WorkingDirectory;
 				compileArguments.PreprocessorDefinitions = {};
 				compileArguments.IncludeDirectories = arguments.IncludeDirectories;
@@ -296,7 +297,7 @@ namespace Soup
 				// Setup the shared properties
 				auto compileArguments = CompileArguments();
 				compileArguments.Standard = LanguageStandard::CPP20;
-				compileArguments.Optimize = OptimizationLevel::Speed;
+				compileArguments.Optimize = Convert(arguments.OptimizationLevel);
 				compileArguments.RootDirectory = arguments.WorkingDirectory;
 				compileArguments.PreprocessorDefinitions = {};
 				compileArguments.IncludeDirectories = arguments.IncludeDirectories;
@@ -432,6 +433,21 @@ namespace Soup
 			{
 				Log::Verbose("Final target up to date");
 				return false;
+			}
+		}
+
+		OptimizationLevel Convert(BuildOptimizationLevel value)
+		{
+			switch (value)
+			{
+				case BuildOptimizationLevel::None:
+					return OptimizationLevel::None;
+				case BuildOptimizationLevel::Speed:
+					return OptimizationLevel::Speed;
+				case BuildOptimizationLevel::Size:
+					return OptimizationLevel::Size;
+				default:
+					throw std::runtime_error("Unknown BuildOptimizationLevel.");
 			}
 		}
 

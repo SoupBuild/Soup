@@ -64,6 +64,111 @@ namespace Soup::UnitTests
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = false",
+					"VERB: OptimizationLevel = None",
+					"VERB: IncludeDirectories = ",
+					"VERB: IncludeModules = ",
+					"VERB: PreprocessorDefinitions = ",
+					"VERB: Task: CoreCompile",
+					"VERB: Create Directory: obj",
+					"VERB: Create Directory: bin",
+					"VERB: Task: CompileSourceFiles",
+					"VERB: Compiling source files",
+					"VERB: TestFile.cpp",
+					"VERB: Saving updated build state",
+					"VERB: Create Directory: .soup",
+					"VERB: Task: CoreLink",
+					"VERB: Linking target",
+					"VERB: bin/Program.exe",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			auto expectedCompileArguments = CompileArguments();
+			expectedCompileArguments.Standard = LanguageStandard::CPP20;
+			expectedCompileArguments.Optimize = OptimizationLevel::None;
+			expectedCompileArguments.RootDirectory = Path("root");
+			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
+			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
+			expectedCompileArguments.GenerateIncludeTree = true;
+
+			auto expectedLinkArguments = LinkArguments();
+			expectedLinkArguments.TargetType = LinkTarget::Executable;
+			expectedLinkArguments.TargetFile = Path("bin/Program.exe");
+			expectedLinkArguments.RootDirectory = Path("root");
+			expectedLinkArguments.ObjectFiles = std::vector<Path>({
+				Path("obj/TestFile.mock.obj"),
+			});
+
+			// Verify expected compiler calls
+			Assert::AreEqual(
+				std::vector<CompileArguments>({
+					expectedCompileArguments,
+				}),
+				compiler->GetCompileRequests(),
+				"Verify compiler requests match expected.");
+			Assert::AreEqual(
+				std::vector<LinkArguments>({
+					expectedLinkArguments,
+				}),
+				compiler->GetLinkRequests(),
+				"Verify link requests match expected.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::pair<std::string, FileSystemRequestType>>({
+					std::make_pair("root/obj", FileSystemRequestType::Exists),
+					std::make_pair("root/obj", FileSystemRequestType::CreateDirectory),
+					std::make_pair("root/bin", FileSystemRequestType::Exists),
+					std::make_pair("root/bin", FileSystemRequestType::CreateDirectory),
+					std::make_pair("root/.soup", FileSystemRequestType::Exists),
+					std::make_pair("root/.soup", FileSystemRequestType::CreateDirectory),
+					std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+		}
+
+		[[Fact]]
+		void Build_Executable_Simple_NotIncremental_OptimizeSpeed()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			Log::RegisterListener(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			IFileSystem::Register(fileSystem);
+
+			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
+			auto uut = BuildEngine(compiler);
+
+			auto arguments = BuildArguments();
+			arguments.TargetName = "Program";
+			arguments.TargetType = BuildTargetType::Executable;
+			arguments.WorkingDirectory = Path("root");
+			arguments.ObjectDirectory = Path("obj");
+			arguments.BinaryDirectory = Path("bin");
+			arguments.SourceFiles = std::vector<Path>({ 
+				Path("TestFile.cpp"),
+			});
+			arguments.IncludeDirectories = std::vector<Path>({});
+			arguments.IncludeModules = std::vector<Path>({});
+			arguments.IsIncremental = false;
+			arguments.OptimizationLevel = BuildOptimizationLevel::Speed;
+
+			uut.Execute(arguments);
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"VERB: TargetName = Program",
+					"VERB: TargetType = Executable",
+					"VERB: WorkingDirectory = root",
+					"VERB: ObjectDirectory = obj",
+					"VERB: BinaryDirectory = bin",
+					"VERB: ModuleInterfaceSourceFile = ./",
+					"VERB: IsIncremental = false",
+					"VERB: OptimizationLevel = Speed",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -85,6 +190,110 @@ namespace Soup::UnitTests
 			auto expectedCompileArguments = CompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
 			expectedCompileArguments.Optimize = OptimizationLevel::Speed;
+			expectedCompileArguments.RootDirectory = Path("root");
+			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
+			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
+			expectedCompileArguments.GenerateIncludeTree = true;
+
+			auto expectedLinkArguments = LinkArguments();
+			expectedLinkArguments.TargetType = LinkTarget::Executable;
+			expectedLinkArguments.TargetFile = Path("bin/Program.exe");
+			expectedLinkArguments.RootDirectory = Path("root");
+			expectedLinkArguments.ObjectFiles = std::vector<Path>({
+				Path("obj/TestFile.mock.obj"),
+			});
+
+			// Verify expected compiler calls
+			Assert::AreEqual(
+				std::vector<CompileArguments>({
+					expectedCompileArguments,
+				}),
+				compiler->GetCompileRequests(),
+				"Verify compiler requests match expected.");
+			Assert::AreEqual(
+				std::vector<LinkArguments>({
+					expectedLinkArguments,
+				}),
+				compiler->GetLinkRequests(),
+				"Verify link requests match expected.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::pair<std::string, FileSystemRequestType>>({
+					std::make_pair("root/obj", FileSystemRequestType::Exists),
+					std::make_pair("root/obj", FileSystemRequestType::CreateDirectory),
+					std::make_pair("root/bin", FileSystemRequestType::Exists),
+					std::make_pair("root/bin", FileSystemRequestType::CreateDirectory),
+					std::make_pair("root/.soup", FileSystemRequestType::Exists),
+					std::make_pair("root/.soup", FileSystemRequestType::CreateDirectory),
+					std::make_pair("root/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+		}
+
+		[[Fact]]
+		void Build_Executable_Simple_NotIncremental_OptimizeSize()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			Log::RegisterListener(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			IFileSystem::Register(fileSystem);
+
+			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
+			auto uut = BuildEngine(compiler);
+
+			auto arguments = BuildArguments();
+			arguments.TargetName = "Program";
+			arguments.TargetType = BuildTargetType::Executable;
+			arguments.WorkingDirectory = Path("root");
+			arguments.ObjectDirectory = Path("obj");
+			arguments.BinaryDirectory = Path("bin");
+			arguments.SourceFiles = std::vector<Path>({ 
+				Path("TestFile.cpp"),
+			});
+			arguments.IncludeDirectories = std::vector<Path>({});
+			arguments.IncludeModules = std::vector<Path>({});
+			arguments.IsIncremental = false;
+			arguments.OptimizationLevel = BuildOptimizationLevel::Size;
+
+			uut.Execute(arguments);
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"VERB: TargetName = Program",
+					"VERB: TargetType = Executable",
+					"VERB: WorkingDirectory = root",
+					"VERB: ObjectDirectory = obj",
+					"VERB: BinaryDirectory = bin",
+					"VERB: ModuleInterfaceSourceFile = ./",
+					"VERB: IsIncremental = false",
+					"VERB: OptimizationLevel = Size",
+					"VERB: IncludeDirectories = ",
+					"VERB: IncludeModules = ",
+					"VERB: PreprocessorDefinitions = ",
+					"VERB: Task: CoreCompile",
+					"VERB: Create Directory: obj",
+					"VERB: Create Directory: bin",
+					"VERB: Task: CompileSourceFiles",
+					"VERB: Compiling source files",
+					"VERB: TestFile.cpp",
+					"VERB: Saving updated build state",
+					"VERB: Create Directory: .soup",
+					"VERB: Task: CoreLink",
+					"VERB: Linking target",
+					"VERB: bin/Program.exe",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			auto expectedCompileArguments = CompileArguments();
+			expectedCompileArguments.Standard = LanguageStandard::CPP20;
+			expectedCompileArguments.Optimize = OptimizationLevel::Size;
 			expectedCompileArguments.RootDirectory = Path("root");
 			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
 			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
@@ -166,6 +375,7 @@ namespace Soup::UnitTests
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
+					"VERB: OptimizationLevel = None",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -189,7 +399,7 @@ namespace Soup::UnitTests
 
 			auto expectedCompileArguments = CompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::Speed;
+			expectedCompileArguments.Optimize = OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("root");
 			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
 			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
@@ -280,6 +490,7 @@ namespace Soup::UnitTests
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
+					"VERB: OptimizationLevel = None",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -303,7 +514,7 @@ namespace Soup::UnitTests
 
 			auto expectedCompileArguments = CompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::Speed;
+			expectedCompileArguments.Optimize = OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("root");
 			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
 			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
@@ -441,6 +652,7 @@ namespace Soup::UnitTests
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
+					"VERB: OptimizationLevel = None",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -545,6 +757,7 @@ namespace Soup::UnitTests
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
+					"VERB: OptimizationLevel = None",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -639,6 +852,7 @@ namespace Soup::UnitTests
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
+					"VERB: OptimizationLevel = None",
 					"VERB: IncludeDirectories = Folder AnotherFolder/Sub",
 					"VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"VERB: PreprocessorDefinitions = ",
@@ -667,7 +881,7 @@ namespace Soup::UnitTests
 			// Setup the shared arguments
 			auto expectedCompileArguments = CompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::Speed;
+			expectedCompileArguments.Optimize = OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("root");
 			expectedCompileArguments.IncludeDirectories = std::vector<Path>({
 				Path("Folder"),
@@ -844,6 +1058,7 @@ namespace Soup::UnitTests
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = Public.cpp",
 					"VERB: IsIncremental = true",
+					"VERB: OptimizationLevel = None",
 					"VERB: IncludeDirectories = Folder AnotherFolder/Sub",
 					"VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"VERB: PreprocessorDefinitions = DEBUG AWESOME",
@@ -873,7 +1088,7 @@ namespace Soup::UnitTests
 			// Setup the shared arguments
 			auto expectedCompileArguments = CompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::Speed;
+			expectedCompileArguments.Optimize = OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("root");
 			expectedCompileArguments.IncludeDirectories = std::vector<Path>({
 				Path("Folder"),
@@ -1046,6 +1261,7 @@ namespace Soup::UnitTests
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = Public.cpp",
 					"VERB: IsIncremental = true",
+					"VERB: OptimizationLevel = None",
 					"VERB: IncludeDirectories = Folder AnotherFolder/Sub",
 					"VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"VERB: PreprocessorDefinitions = ",
@@ -1193,6 +1409,7 @@ namespace Soup::UnitTests
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = Public.cpp",
 					"VERB: IsIncremental = true",
+					"VERB: OptimizationLevel = None",
 					"VERB: IncludeDirectories = Folder AnotherFolder/Sub",
 					"VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"VERB: PreprocessorDefinitions = ",
@@ -1217,7 +1434,7 @@ namespace Soup::UnitTests
 			// Setup the shared arguments
 			auto expectedCompileArguments = CompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::Speed;
+			expectedCompileArguments.Optimize = OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("root");
 			expectedCompileArguments.IncludeDirectories = std::vector<Path>({
 				Path("Folder"),

@@ -102,12 +102,13 @@ namespace Soup.Client
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // return new Compiler.MSVC.Compiler();
-                return new Compiler.Clang.Compiler();
+                return new Compiler.Clang.Compiler("C:/Clang/");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 // return new Compiler.Clang.Compiler();
-                return new Compiler.GCC.Compiler();
+                // return new Compiler.GCC.Compiler();
+                return new Compiler.Clang.Compiler("/mnt/d/Repos/llvm-project/linux-build/");
             }
             else
             {

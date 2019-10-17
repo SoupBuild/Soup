@@ -57,7 +57,7 @@ namespace Soup
 		/// <summary>
 		/// Disable all optimization for build speed and debugability
 		/// </summary>
-		Disabled,
+		None,
 
 		/// <summary>
 		/// Optimize for speed
@@ -74,8 +74,8 @@ namespace Soup
 	{
 		switch (value)
 		{
-			case OptimizationLevel::Disabled:
-				return "Disabled";
+			case OptimizationLevel::None:
+				return "None";
 			case OptimizationLevel::Speed:
 				return "Speed";
 			case OptimizationLevel::Size:

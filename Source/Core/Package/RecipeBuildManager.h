@@ -36,7 +36,10 @@ namespace Soup
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(const Path& workingDirectory, const Recipe& recipe, bool forceBuild)
+		void Execute(
+			const Path& workingDirectory,
+			const Recipe& recipe,
+			const RecipeBuildArguments& arguments)
 		{
 			// Clear the build set so we check all dependencies
 			_buildSet.clear();
@@ -48,8 +51,16 @@ namespace Soup
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
-				projectId = BuildAllDependenciesRecursively(projectId, workingDirectory, recipe, forceBuild);
-				BuildRecipe(projectId, workingDirectory, recipe, forceBuild);
+				projectId = BuildAllDependenciesRecursively(
+					projectId,
+					workingDirectory,
+					recipe,
+					arguments);
+				BuildRecipe(
+					projectId,
+					workingDirectory,
+					recipe,
+					arguments);
 
 				Log::EnsureListener().SetShowEventId(false);
 			}
@@ -68,7 +79,7 @@ namespace Soup
 			int projectId,
 			const Path& workingDirectory,
 			const Recipe& recipe,
-			bool forceBuild)
+			const RecipeBuildArguments& arguments)
 		{
 			for (auto dependecy : recipe.GetDependencies())
 			{
@@ -83,10 +94,18 @@ namespace Soup
 				}
 
 				// Build all recursive dependencies
-				projectId = BuildAllDependenciesRecursively(projectId, packagePath, dependecyRecipe, forceBuild);
+				projectId = BuildAllDependenciesRecursively(
+					projectId,
+					packagePath,
+					dependecyRecipe,
+					arguments);
 
 				// Build this dependecy
-				projectId = BuildRecipe(projectId, packagePath, dependecyRecipe, forceBuild);
+				projectId = BuildRecipe(
+					projectId,
+					packagePath,
+					dependecyRecipe,
+					arguments);
 			}
 
 			// Return the updated project id after building all dependencies
@@ -101,32 +120,45 @@ namespace Soup
 			int projectId,
 			const Path& workingDirectory,
 			const Recipe& recipe,
-			bool forceBuild)
+			const RecipeBuildArguments& arguments)
 		{
-			if (_buildSet.contains(recipe.GetName()))
+			// TODO: RAII for active id
+			try
 			{
-				Log::Verbose("Recipe already built: " + recipe.GetName());
+				Log::SetActiveId(projectId);
+				Log::Verbose("Running InProcess Build");
+
+				if (_buildSet.contains(recipe.GetName()))
+				{
+					Log::Verbose("Recipe already built: " + recipe.GetName());
+				}
+				else
+				{
+					// if (_knownInProcessRecipes.contains(recipe.GetName()))
+					// {
+						// Run the required builds in process
+						// This will break the circular requirments for the core build libraries
+						RunInProcessBuild(projectId, workingDirectory, recipe, arguments);
+					// }
+					// else
+					// {
+					// 	// Default to using a generated build executable
+					// 	RunGenerateBuild(projectId, workingDirectory, recipe);
+					// }
+
+					// Keep track of the packages we have already built
+					// TODO: Verify unique names
+					_buildSet.insert(recipe.GetName());
+
+					// Move to the next build project id
+					projectId++;
+				}
+
+				Log::SetActiveId(-1);
 			}
-			else
+			catch(...)
 			{
-				// if (_knownInProcessRecipes.contains(recipe.GetName()))
-				// {
-					// Run the required builds in process
-					// This will break the circular requirments for the core build libraries
-					RunInProcessBuild(projectId, workingDirectory, recipe, forceBuild);
-				// }
-				// else
-				// {
-				// 	// Default to using a generated build executable
-				// 	RunGenerateBuild(projectId, workingDirectory, recipe, forceBuild);
-				// }
-
-				// Keep track of the packages we have already built
-				// TODO: Verify unique names
-				_buildSet.insert(recipe.GetName());
-
-				// Move to the next build project id
-				projectId++;
+				Log::SetActiveId(-1);
 			}
 
 			return projectId;
@@ -136,28 +168,15 @@ namespace Soup
 			int projectId,
 			const Path& packageRoot,
 			const Recipe& recipe,
-			bool forceBuild)
+			const RecipeBuildArguments& arguments)
 		{
-			// TODO: RAII for active id
-			try
-			{
-				Log::Verbose("Running InProcess Build");
-
-				Log::SetActiveId(projectId);
-				_builder.Execute(packageRoot, recipe, forceBuild);
-				Log::SetActiveId(-1);
-			}
-			catch(...)
-			{
-				Log::SetActiveId(-1);
-			}
+			_builder.Execute(packageRoot, recipe, arguments);
 		}
 
 		void RunGenerateBuild(
 			int projectId,
 			const Path& packageRoot,
-			const Recipe& recipe,
-			bool forceBuild)
+			const Recipe& recipe)
 		{
 			Log::Verbose("Running Generate Build");
 

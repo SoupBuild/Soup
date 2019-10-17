@@ -8,6 +8,42 @@
 namespace Soup
 {
 	/// <summary>
+	/// The enumeration of build optimization levels
+	/// </summary>
+	export enum class BuildOptimizationLevel
+	{
+		/// <summary>
+		/// Debug
+		/// </summary>
+		None,
+
+		/// <summary>
+		/// Optimize for runtime speed, may sacrifice size
+		/// </summary>
+		Speed,
+
+		/// <summary>
+		/// Optimize for speed and size
+		/// </summary>
+		Size,
+	};
+
+	std::string ToString(BuildOptimizationLevel value)
+	{
+		switch (value)
+		{
+			case BuildOptimizationLevel::None:
+				return "None";
+			case BuildOptimizationLevel::Speed:
+				return "Speed";
+			case BuildOptimizationLevel::Size:
+				return "Size";
+			default:
+				throw std::runtime_error("Unknown BuildOptimizationLevel");
+		}
+	}
+
+	/// <summary>
 	/// The enumeration of target types
 	/// </summary>
 	export enum class BuildTargetType
@@ -114,6 +150,11 @@ namespace Soup
 		bool IsIncremental;
 
 		/// <summary>
+		/// Gets or sets the optimization level
+		/// </summary>
+		BuildOptimizationLevel OptimizationLevel;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		bool operator ==(const BuildArguments& rhs) const
@@ -128,7 +169,8 @@ namespace Soup
 				IncludeDirectories == rhs.IncludeDirectories &&
 				IncludeModules == rhs.IncludeModules &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
-				IsIncremental == rhs.IsIncremental;
+				IsIncremental == rhs.IsIncremental &&
+				OptimizationLevel == rhs.OptimizationLevel;
 		}
 
 		bool operator !=(const BuildArguments& rhs) const
