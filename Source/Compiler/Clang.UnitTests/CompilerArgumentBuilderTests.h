@@ -133,7 +133,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.o");
 			arguments.Standard = LanguageStandard::CPP17;
-			arguments.Optimize = OptimizationLevel::Disabled;
+			arguments.Optimize = OptimizationLevel::None;
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
