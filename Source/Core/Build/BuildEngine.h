@@ -91,7 +91,7 @@ namespace Soup
 
 			// Compile the module interface unit if present
 			bool codeCompiled = false;
-			if (!arguments.ModuleInterfaceSourceFile.ToString().empty())
+			if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
 			{
 				auto moduleCompiled = CompileModuleInterfaceUnit(
 					arguments,
@@ -306,7 +306,7 @@ namespace Soup
 				compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 
 				// Add the module binary interface if present
-				if (!arguments.ModuleInterfaceSourceFile.ToString().empty())
+				if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
 				{
 					auto moduleInterfaceFile = arguments.ObjectDirectory + Path(arguments.ModuleInterfaceSourceFile.GetFileName());
 					moduleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
@@ -406,7 +406,7 @@ namespace Soup
 				}
 
 				// Add the module interface object file if present
-				if (!arguments.ModuleInterfaceSourceFile.ToString().empty())
+				if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
 				{
 					auto objectFile = arguments.ObjectDirectory + Path(arguments.ModuleInterfaceSourceFile.GetFileName());
 					objectFile.SetFileExtension(_compiler->GetObjectFileExtension());

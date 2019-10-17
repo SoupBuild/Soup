@@ -33,7 +33,7 @@ namespace Soup
 		/// </summary>
 		Path EnsureExecutableBuilt(const Path& packageRoot, const Recipe& recipe)
 		{
-			Log::Info("EnsureExecutableBuilt '" + recipe.GetName() + "'");
+			Log::Verbose("EnsureExecutableBuilt '" + recipe.GetName() + "'");
 			auto relativeGenerateBuildPath =
 				Path(Constants::ProjectGenerateFolderName) +
 				Path(Constants::ProjectGenerateBuildFolderName);

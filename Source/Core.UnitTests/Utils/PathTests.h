@@ -21,8 +21,8 @@ namespace Soup::UnitTests
 			Assert::AreEqual("", uut.GetFileStem(), "Verify file stem matches.");
 			Assert::IsFalse(uut.HasFileExtension(), "Verify has no file extension.");
 			Assert::AreEqual("", uut.GetFileExtension(), "Verify file extension matches.");
-			Assert::AreEqual("", uut.ToString(), "Verify string value matches.");
-			Assert::AreEqual("", uut.ToAlternateString(), "Verify alternate string value matches.");
+			Assert::AreEqual("./", uut.ToString(), "Verify string value matches.");
+			Assert::AreEqual(".\\", uut.ToAlternateString(), "Verify alternate string value matches.");
 		}
 
 		[[Fact]]
@@ -96,6 +96,20 @@ namespace Soup::UnitTests
 		void LeaveParentDirectoryAtStart()
 		{
 			auto uut = Path("../file.txt");
+			Assert::AreEqual("../file.txt", uut.ToString(), "Verify string value matches.");
+		}
+
+		[[Fact]]
+		void CurrentDirectoryAtStart()
+		{
+			auto uut = Path("./file.txt");
+			Assert::AreEqual("file.txt", uut.ToString(), "Verify string value matches.");
+		}
+
+		[[Fact]]
+		void CurrentDirectoryAtStartAlternate()
+		{
+			auto uut = Path(".\\../file.txt");
 			Assert::AreEqual("../file.txt", uut.ToString(), "Verify string value matches.");
 		}
 

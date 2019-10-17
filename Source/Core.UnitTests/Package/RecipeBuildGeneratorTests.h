@@ -25,7 +25,7 @@ namespace Soup::UnitTests
 		}
 
 		[[Fact]]
-		void Execute()
+		void EnsureExecutableBuilt()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -48,7 +48,7 @@ namespace Soup::UnitTests
 
 			auto workingDirectory = Path("Root");
 			auto recipe = Recipe();
-			uut.Execute(workingDirectory, recipe);
+			uut.EnsureExecutableBuilt(workingDirectory, recipe);
 
 			// Verify expected logs
 			Assert::AreEqual(

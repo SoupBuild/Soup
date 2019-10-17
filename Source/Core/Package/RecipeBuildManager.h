@@ -109,17 +109,17 @@ namespace Soup
 			}
 			else
 			{
-				if (_knownInProcessRecipes.contains(recipe.GetName()))
-				{
+				// if (_knownInProcessRecipes.contains(recipe.GetName()))
+				// {
 					// Run the required builds in process
 					// This will break the circular requirments for the core build libraries
 					RunInProcessBuild(projectId, workingDirectory, recipe, forceBuild);
-				}
-				else
-				{
-					// Default to using a generated build executable
-					RunGenerateBuild(projectId, workingDirectory, recipe, forceBuild);
-				}
+				// }
+				// else
+				// {
+				// 	// Default to using a generated build executable
+				// 	RunGenerateBuild(projectId, workingDirectory, recipe, forceBuild);
+				// }
 
 				// Keep track of the packages we have already built
 				// TODO: Verify unique names

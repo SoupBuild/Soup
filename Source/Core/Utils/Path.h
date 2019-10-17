@@ -16,6 +16,7 @@ namespace Soup
 		static constexpr std::string_view AllValidDirectorySeparators = "/\\";
 		static constexpr char LetterDriveSpecifier = ':';
 		static constexpr char FileExtensionSeparator = '.';
+		static constexpr std::string_view RelativeDirectory = ".";
 		static constexpr std::string_view ParentDirectory = "..";
 
 	public:
@@ -46,6 +47,16 @@ namespace Soup
 		{
 			ParsePath(value);
 			NormalizeDirectories();
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the path is empty
+		/// </summary>
+		bool IsEmpty() const
+		{
+			return _root.empty() &&
+				_directories.empty() &&
+				_filename.empty();
 		}
 
 		/// <summary>
@@ -352,9 +363,9 @@ private:
 		// Remove as many up directories as we can
 		for (size_t i = 0; i < _directories.size(); i++)
 		{
-			if (_directories.at(i).empty())
+				// Remove the empty and current directories
+			if (_directories.at(i).empty() || _directories.at(i) == RelativeDirectory)
 			{
-				// Remove the empty directory
 				_directories.erase(
 					_directories.begin() + (i),
 					_directories.begin() + (i + 1));
@@ -388,19 +399,27 @@ private:
 	{
 		std::stringstream stringBuilder;
 
-		if (HasRoot())
+		if (IsEmpty())
 		{
-			stringBuilder << _root << directorySeparator;
+			// If the path is empty then add the single relative directory
+			stringBuilder << RelativeDirectory << directorySeparator;
 		}
-
-		for (size_t i = 0; i < _directories.size(); i++)
+		else
 		{
-			stringBuilder << _directories[i] << directorySeparator;
-		}
+			if (HasRoot())
+			{
+				stringBuilder << _root << directorySeparator;
+			}
 
-		if (HasFileName())
-		{
-			stringBuilder << _filename;
+			for (size_t i = 0; i < _directories.size(); i++)
+			{
+				stringBuilder << _directories[i] << directorySeparator;
+			}
+
+			if (HasFileName())
+			{
+				stringBuilder << _filename;
+			}
 		}
 
 		return stringBuilder.str();
