@@ -296,7 +296,7 @@ namespace Soup
 		}
 
 	private:
-		static const RecipeType DefaultRecipeType = RecipeType::Library;
+		static const RecipeType DefaultRecipeType = RecipeType::StaticLibrary;
 		bool _isDirty;
 		std::string _name;
 		SemanticVersion _version;

@@ -95,7 +95,7 @@ namespace Soup
 			// Convert the recipe type to the required build type
 			switch (recipe.GetType())
 			{
-				case RecipeType::Library:
+				case RecipeType::StaticLibrary:
 					buildArguments.TargetType = BuildTargetType::Library;
 					break;
 				case RecipeType::Executable:

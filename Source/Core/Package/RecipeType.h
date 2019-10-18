@@ -15,9 +15,14 @@ namespace Soup
 		Executable,
 
 		/// <summary>
-		/// Library
+		/// Static linked Library
 		/// </summary>
-		Library,
+		StaticLibrary,
+
+		/// <summary>
+		/// Dynamic linked Library
+		/// </summary>
+		DynamicLibrary,
 	};
 
 	export std::string ToString(RecipeType value)
@@ -26,8 +31,10 @@ namespace Soup
 		{
 			case RecipeType::Executable:
 				return "Executable";
-			case RecipeType::Library:
-				return "Library";
+			case RecipeType::StaticLibrary:
+				return "StaticLibrary";
+			case RecipeType::DynamicLibrary:
+				return "DynamicLibrary";
 			default:
 				throw std::runtime_error("Unknown recipe type.");
 		}
@@ -37,8 +44,10 @@ namespace Soup
 	{
 		if (value == "Executable")
 			return RecipeType::Executable;
-		else if (value == "Library")
-			return RecipeType::Library;
+		else if (value == "StaticLibrary")
+			return RecipeType::StaticLibrary;
+		else if (value == "DynamicLibrary")
+			return RecipeType::DynamicLibrary;
 		else
 			throw std::runtime_error("Unknown recipe type value.");
 	}

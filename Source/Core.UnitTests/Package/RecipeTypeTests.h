@@ -11,7 +11,8 @@ namespace Soup::UnitTests
 	public:
 		[[Theory]]
 		[[InlineData(Soup::RecipeType::Executable, "Executable")]]
-		[[InlineData(Soup::RecipeType::Library, "Library")]]
+		[[InlineData(Soup::RecipeType::StaticLibrary, "StaticLibrary")]]
+		[[InlineData(Soup::RecipeType::DynamicLibrary, "DynamicLibrary")]]
 		void ToStringValues(RecipeType value, std::string expected)
 		{
 			auto actual = ToString(value);
@@ -20,7 +21,8 @@ namespace Soup::UnitTests
 
 		[[Theory]]
 		[[InlineData("Executable", Soup::RecipeType::Executable)]]
-		[[InlineData("Library", Soup::RecipeType::Library)]]
+		[[InlineData("StaticLibrary", Soup::RecipeType::StaticLibrary)]]
+		[[InlineData("DynamicLibrary", Soup::RecipeType::DynamicLibrary)]]
 		void ParseValues(std::string value, RecipeType expected)
 		{
 			auto actual = Parse(value);

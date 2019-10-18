@@ -18,7 +18,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("", uut.GetName(), "Verify name matches expected.");
 			Assert::AreEqual(SemanticVersion(0, 0, 0), uut.GetVersion(), "Verify version is correct.");
 			Assert::IsFalse(uut.HasType(), "Verify has no type.");
-			Assert::AreEqual(RecipeType::Library, uut.GetType(), "Verify default type is correct.");
+			Assert::AreEqual(RecipeType::StaticLibrary, uut.GetType(), "Verify default type is correct.");
 			Assert::IsFalse(uut.HasDependencies(), "Verify has no dependencies.");
 			Assert::IsFalse(uut.HasPublic(), "Verify has no public.");
 			Assert::IsFalse(uut.HasSource(), "Verify has no source.");
@@ -214,7 +214,7 @@ namespace Soup::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Library,
+					RecipeType::StaticLibrary,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
