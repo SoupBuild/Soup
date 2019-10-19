@@ -229,6 +229,7 @@ namespace Soup::Client
 		static std::shared_ptr<ICompiler> GetCompiler()
 		{
 			return std::make_shared<Compiler::Clang::Compiler>();
+			// return std::make_shared<Compiler::MSVC::Compiler>();
 		}
 
 	private:

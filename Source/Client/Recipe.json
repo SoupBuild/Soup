@@ -4,7 +4,8 @@
   "type": "Executable",
   "dependencies": [
     "../Core",
-    "../Compiler/Clang"
+    "../Compiler/Clang",
+    "../Compiler/MSVC"
   ],
   "source": [
     "Main.cpp"

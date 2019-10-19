@@ -5,6 +5,7 @@
 import std.core;
 import Soup.Core;
 import Soup.Compiler.Clang;
+import Soup.Compiler.MSVC;
 
 #include "Program.h"
 
