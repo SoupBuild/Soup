@@ -21,7 +21,7 @@ namespace Soup
 		/// <summary>
 		/// Build the kitchen library path
 		/// </summary>
-		public static string BuildKitchenLibraryPath(LocalUserConfig config)
+		static string BuildKitchenLibraryPath(LocalUserConfig config)
 		{
 			return Path.Combine(
 				config.PackageStore,

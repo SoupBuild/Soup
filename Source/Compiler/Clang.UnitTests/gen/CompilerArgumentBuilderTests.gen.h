@@ -17,6 +17,7 @@ TestState RunCompilerArgumentBuilderTests()
 	state += SoupTest::RunTest(className, "SingleArgument_OptimizationLevel_Disabled", [&testClass]() { testClass->SingleArgument_OptimizationLevel_Disabled(); });
 	state += SoupTest::RunTest(className, "SingleArgument_OptimizationLevel(Soup::OptimizationLevel::Size, \"-Oz\")", [&testClass]() { testClass->SingleArgument_OptimizationLevel(Soup::OptimizationLevel::Size, "-Oz"); });
 	state += SoupTest::RunTest(className, "SingleArgument_OptimizationLevel(Soup::OptimizationLevel::Speed, \"-O3\")", [&testClass]() { testClass->SingleArgument_OptimizationLevel(Soup::OptimizationLevel::Speed, "-O3"); });
+	state += SoupTest::RunTest(className, "SingleArgument_GenerateDebugInformation", [&testClass]() { testClass->SingleArgument_GenerateDebugInformation(); });
 	state += SoupTest::RunTest(className, "SingleArgument_IncludePaths", [&testClass]() { testClass->SingleArgument_IncludePaths(); });
 	state += SoupTest::RunTest(className, "SingleArgument_PreprocessorDefinitions", [&testClass]() { testClass->SingleArgument_PreprocessorDefinitions(); });
 	state += SoupTest::RunTest(className, "SingleArgument_Modules", [&testClass]() { testClass->SingleArgument_Modules(); });

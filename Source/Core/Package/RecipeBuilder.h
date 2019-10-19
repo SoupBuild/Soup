@@ -55,7 +55,7 @@ namespace Soup
 					*_compiler,
 					arguments.Configuration,
 					workingDirectory,
-					recipe.GetDependencies(),
+					recipe,
 					linkLibraries);
 			}
 
@@ -71,6 +71,7 @@ namespace Soup
 			buildArguments.IncludeModules = std::move(includeModules);
 			buildArguments.LinkLibraries = std::move(linkLibraries);
 			buildArguments.IsIncremental = !arguments.ForceRebuild;
+			buildArguments.GenerateSourceDebugInfo = false;
 			buildArguments.PreprocessorDefinitions = std::vector<std::string>({
 				"SOUP_BUILD",
 			});
@@ -81,6 +82,7 @@ namespace Soup
 			if (arguments.Configuration == "debug")
 			{
 				buildArguments.OptimizationLevel = BuildOptimizationLevel::None;
+				buildArguments.GenerateSourceDebugInfo = true;
 			}
 			else if (arguments.Configuration == "release")
 			{

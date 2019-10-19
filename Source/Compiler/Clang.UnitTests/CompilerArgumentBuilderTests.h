@@ -178,6 +178,32 @@ namespace Soup::Compiler::Clang::UnitTests
 		}
 
 		[[Fact]]
+		void SingleArgument_GenerateDebugInformation()
+		{
+			CompileArguments arguments = {};
+			arguments.SourceFile = Path("File.cpp");
+			arguments.TargetFile = Path("File.o");
+			arguments.Standard = LanguageStandard::CPP17;
+			arguments.Optimize = OptimizationLevel::None;
+			arguments.GenerateSourceDebugInfo = true;
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+
+			auto expected = std::vector<std::string>({
+				"-Wno-unknown-attributes",
+				"-Xclang",
+				"-flto-visibility-public-std",
+				"-g",
+				"-std=c++17",
+				"-c",
+				"File.cpp",
+				"-o",
+				"File.o",
+			});
+
+			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+		}
+
+		[[Fact]]
 		void SingleArgument_IncludePaths()
 		{
 			CompileArguments arguments = {};

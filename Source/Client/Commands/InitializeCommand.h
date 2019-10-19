@@ -28,50 +28,52 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Trace("InitializeCommand::Run");
-			// Log.Info("The initialize utility will walk through the creation of the most basic Console recipe.\n");
+			Log::Info("The initialize utility will walk through the creation of the most basic Console recipe.\n");
 
-			// // Use the current directory as the default names
-			// var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+			// Use the current directory as the default names
+			auto workingDirectory = Path::GetCurrentDirectory();
+			auto recipePath = 
+				workingDirectory +
+				Path(Constants::RecipeFileName);
 
-			// var recipe = new Recipe(
-			//	 currentDirectory.Name)
-			// {
-			//	 Version = new SemanticVersion(1, 0, 0)
-			// };
+			auto recipe = Recipe(workingDirectory.GetFileName(), SemanticVersion(1, 0, 0));
 
-			// Log.Info($"Name: ({recipe.Name}) ");
-			// var newName = Console.ReadLine();
-			// if (!string.IsNullOrWhiteSpace(newName))
-			// {
-			//	 recipe.Name = newName;
-			// }
+			Log::Info("Name: (" + recipe.GetName() + ")");
+			auto newName = std::string();
+			std::getline(std::cin, newName);
+			if (!newName.empty())
+			{
+				recipe.SetName(newName);
+			}
 
-			// bool setVersion = false;
-			// while (!setVersion)
-			// {
-			//	 Log.Info($"Version: ({recipe.Version}) ");
-			//	 var newVersion = Console.ReadLine();
-			//	 if (string.IsNullOrEmpty(newVersion))
-			//	 {
-			//		 // Use the default
-			//		 setVersion = true;
-			//	 }
-			//	 else
-			//	 {
-			//		 if (SemanticVersion.TryParse(newVersion, out SemanticVersion value))
-			//		 {
-			//			 recipe.Version = value;
-			//			 setVersion = true;
-			//		 }
-			//		 else
-			//		 {
-			//			 Log.Warning($"Invalid version: \"{newVersion}\"");
-			//		 }
-			//	 }
-			// }
+			bool setVersion = false;
+			while (!setVersion)
+			{
+				Log::Info("Version: (" + recipe.GetVersion().ToString() + ")");
+				auto newVersion = std::string();
+				std::getline(std::cin, newVersion);
+				if (newVersion.empty())
+				{
+					// Use the default
+					setVersion = true;
+				}
+				else
+				{
+					auto value = SemanticVersion();
+					if (SemanticVersion::TryParse(newVersion, value))
+					{
+						recipe.SetVersion(value);
+						setVersion = true;
+					}
+					else
+					{
+						Log::Warning("Invalid version: \"" + newVersion + "\"");
+					}
+				}
+			}
 
-			// // Save the state of the recipe if it has changed
-			// await RecipeManager.SaveToFileAsync(recipe);
+			// Save the state of the recipe if it has changed
+			RecipeExtensions::SaveToFile(recipePath, recipe);
 		}
 
 	private:

@@ -155,6 +155,11 @@ namespace Soup
 		BuildOptimizationLevel OptimizationLevel;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to generate source debug information
+		/// </summary>
+		bool GenerateSourceDebugInfo;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		bool operator ==(const BuildArguments& rhs) const
@@ -170,7 +175,8 @@ namespace Soup
 				IncludeModules == rhs.IncludeModules &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
 				IsIncremental == rhs.IsIncremental &&
-				OptimizationLevel == rhs.OptimizationLevel;
+				OptimizationLevel == rhs.OptimizationLevel &&
+				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
 		}
 
 		bool operator !=(const BuildArguments& rhs) const

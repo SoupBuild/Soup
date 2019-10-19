@@ -141,6 +141,11 @@ namespace Soup
 		bool GenerateIncludeTree;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to generate source debug information
+		/// </summary>
+		bool GenerateSourceDebugInfo;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		bool operator ==(const CompileArguments& rhs) const
@@ -154,7 +159,8 @@ namespace Soup
 				IncludeDirectories == rhs.IncludeDirectories &&
 				IncludeModules == rhs.IncludeModules &&
 				ExportModule == rhs.ExportModule &&
-				GenerateIncludeTree == rhs.GenerateIncludeTree;
+				GenerateIncludeTree == rhs.GenerateIncludeTree &&
+				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
 		}
 
 		bool operator !=(const CompileArguments& rhs) const

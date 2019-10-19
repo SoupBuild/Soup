@@ -118,6 +118,24 @@ namespace Soup
 			const ICompiler& compiler,
 			const std::string& configuration,
 			const Path& workingDirectory,
+			const Recipe& recipe,
+			std::vector<Path>& closure)
+		{
+			if (recipe.HasDependencies())
+			{
+				GenerateDependecyStaticLibraryClosure(
+					compiler,
+					configuration,
+					workingDirectory,
+					recipe.GetDependencies(),
+					closure);
+			}
+		}
+
+		static void GenerateDependecyStaticLibraryClosure(
+			const ICompiler& compiler,
+			const std::string& configuration,
+			const Path& workingDirectory,
 			const std::vector<PackageReference>& dependencies,
 			std::vector<Path>& closure)
 		{
@@ -145,7 +163,7 @@ namespace Soup
 					compiler,
 					configuration,
 					dependencyPackagePath,
-					dependecyRecipe.GetDependencies(),
+					dependecyRecipe,
 					closure);
 			}
 		}

@@ -40,6 +40,7 @@ namespace Soup
 			Log::Verbose("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
 			Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
 			Log::Verbose("OptimizationLevel = " + ToString(arguments.OptimizationLevel));
+			Log::Verbose("GenerateSourceDebugInfo = " + ToString(arguments.GenerateSourceDebugInfo));
 			Log::Verbose("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
 			Log::Verbose("IncludeModules = " + ToString(arguments.IncludeModules));
 			Log::Verbose("PreprocessorDefinitions = " + ToString(arguments.PreprocessorDefinitions));
@@ -196,6 +197,7 @@ namespace Soup
 				compileArguments.GenerateIncludeTree = true;
 				compileArguments.ExportModule = true;
 				compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
+				compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
 
 				// Compile the individual translation unit
 				const auto& file = arguments.ModuleInterfaceSourceFile;
@@ -305,6 +307,7 @@ namespace Soup
 				compileArguments.GenerateIncludeTree = true;
 				compileArguments.ExportModule = false;
 				compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
+				compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
 
 				// Add the module binary interface if present
 				if (!arguments.ModuleInterfaceSourceFile.IsEmpty())

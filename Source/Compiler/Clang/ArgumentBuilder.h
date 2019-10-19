@@ -44,6 +44,12 @@ namespace Soup::Compiler::Clang
 				commandArgs.push_back("-H");
 			}
 
+			// Generate source debug information
+			if (args.GenerateSourceDebugInfo)
+			{
+				commandArgs.push_back("-g");
+			}
+
 			// Set the language standard
 			switch (args.Standard)
 			{
