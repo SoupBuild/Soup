@@ -162,6 +162,7 @@ namespace Soup
 			catch(...)
 			{
 				Log::SetActiveId(-1);
+				throw;
 			}
 
 			return projectId;

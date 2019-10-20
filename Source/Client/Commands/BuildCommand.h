@@ -29,7 +29,23 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Trace("BuildCommand::Run");
-			auto workingDirectory = Path::GetCurrentDirectory();
+			auto workingDirectory = Path();
+			if (_options.Path.empty())
+			{
+				// Buildin the current directory
+				workingDirectory = Path::GetCurrentDirectory();
+			}
+			else
+			{
+				workingDirectory = Path(_options.Path);
+
+				// Check if this is relative to current directory
+				if (!workingDirectory.HasRoot())
+				{
+					workingDirectory = Path::GetCurrentDirectory() + workingDirectory;
+				}
+			}
+			
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);

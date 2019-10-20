@@ -37,14 +37,17 @@ namespace Soup
 
 			// Add all dependency packages modules references
 			auto includeModules = std::vector<Path>();
-			for (auto dependecy : recipe.GetDependencies())
+			if (recipe.HasDependencies())
 			{
-				auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
-				auto modulePath = RecipeExtensions::GetRecipeModulePath(
-					packagePath,
-					RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration),
-					std::string(_compiler->GetModuleFileExtension()));
-				includeModules.push_back(std::move(modulePath));
+				for (auto dependecy : recipe.GetDependencies())
+				{
+					auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
+					auto modulePath = RecipeExtensions::GetRecipeModulePath(
+						packagePath,
+						RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration),
+						std::string(_compiler->GetModuleFileExtension()));
+					includeModules.push_back(std::move(modulePath));
+				}
 			}
 
 			// Add the dependency static library closure to link if targeting an executable

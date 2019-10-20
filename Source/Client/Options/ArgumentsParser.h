@@ -43,6 +43,14 @@ namespace Soup::Client
 				Log::Trace("Parse build");
 
 				auto options = BuildOptions();
+
+				// Check if the optional index arguments exist
+				auto argument = std::string();
+				if (TryGetOptional(unusedArgs, argument))
+				{
+					options.Path = std::move(argument);
+				}
+
 				options.EnableVerbose = IsFlagSet("v", unusedArgs);
 				options.Force = IsFlagSet("f", unusedArgs);
 
@@ -171,6 +179,21 @@ namespace Soup::Client
 		}
 
 	private:
+		static bool TryGetOptional(std::vector<std::string>& unusedArgs, std::string& argument)
+		{
+			// Check if the first arument is not a dash flag
+			if (!unusedArgs.empty() && !unusedArgs[0].empty() && unusedArgs[0][0] != '-')
+			{
+				argument = std::move(unusedArgs[0]);
+				unusedArgs.erase(unusedArgs.begin());
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		static bool IsFlagSet(const char* name, std::vector<std::string>& unusedArgs)
 		{
 			auto flagValue = std::string("-") + name;
