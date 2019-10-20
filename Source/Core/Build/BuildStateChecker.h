@@ -34,6 +34,7 @@ namespace Soup
 
 			auto outputFileLastWriteTime = 
 				IFileSystem::Current().GetLastWriteTime(relativeOutputFile);
+			Log::Verbose("IsOutdated: " + targetFile.ToString() + " [" + std::to_string(outputFileLastWriteTime) + "]");
 			for (auto& inputFile : inputFiles)
 			{
 				// If the file is relative then combine it with the root path
@@ -41,11 +42,12 @@ namespace Soup
 				if (!IFileSystem::Current().Exists(relativeInputFile))
 				{
 					Log::Error("Input file missing [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "]");
-					throw std::runtime_error("Missing input file, not possible.");
+					return true;
 				}
 
 				auto dependencyLastWriteTime = 
 					IFileSystem::Current().GetLastWriteTime(relativeInputFile);
+				Log::Verbose("  " + inputFile.ToString() + " [" + std::to_string(dependencyLastWriteTime) + "]");
 				if (dependencyLastWriteTime > outputFileLastWriteTime)
 				{
 					Log::Verbose("Input altered after target [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "]");

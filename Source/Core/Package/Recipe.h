@@ -215,13 +215,13 @@ namespace Soup
 
 		std::vector<Path> GetSourceAsPath() const
 		{
-			if (!HasSource())
-				throw std::runtime_error("No source.");
-
 			std::vector<Path> result;
-			result.reserve(_source.value().size());
-			for (auto& value : _source.value())
-				result.push_back(Path(value));
+			if (HasSource())
+			{
+				result.reserve(_source.value().size());
+				for (auto& value : _source.value())
+					result.push_back(Path(value));
+			}
 
 			return result;
 		}
