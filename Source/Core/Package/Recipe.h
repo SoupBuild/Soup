@@ -150,7 +150,7 @@ namespace Soup
 		/// </summary>
 		bool HasLanguageVersion() const
 		{
-			return _type.has_value();
+			return _languageVersion.has_value();
 		}
 
 		RecipeLanguageVersion GetLanguageVersion() const

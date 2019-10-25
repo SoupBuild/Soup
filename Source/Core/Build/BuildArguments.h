@@ -4,6 +4,7 @@
 
 #pragma once
 #include "Path.h"
+#include "CompileArguments.h"
 
 namespace Soup
 {
@@ -105,6 +106,11 @@ namespace Soup
 		BuildTargetType TargetType;
 
 		/// <summary>
+		/// Gets or sets the language standard
+		/// </summary>
+		LanguageStandard LanguageStandard;
+
+		/// <summary>
 		/// Gets or sets the working directory
 		/// </summary>
 		Path WorkingDirectory;
@@ -173,6 +179,7 @@ namespace Soup
 		{
 			return TargetName == rhs.TargetName &&
 				TargetType == rhs.TargetType &&
+				LanguageStandard == rhs.LanguageStandard &&
 				WorkingDirectory == rhs.WorkingDirectory &&
 				ObjectDirectory == rhs.ObjectDirectory &&
 				BinaryDirectory == rhs.BinaryDirectory &&

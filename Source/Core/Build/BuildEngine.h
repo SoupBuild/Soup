@@ -34,6 +34,7 @@ namespace Soup
 			// Log the incoming request for verbose logs
 			Log::Verbose("TargetName = " + arguments.TargetName);
 			Log::Verbose("TargetType = " + ToString(arguments.TargetType));
+			Log::Verbose("LanguageStandard = " + ToString(arguments.LanguageStandard));
 			Log::Verbose("WorkingDirectory = " + arguments.WorkingDirectory.ToString());
 			Log::Verbose("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
 			Log::Verbose("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
@@ -188,7 +189,7 @@ namespace Soup
 			{
 				// Setup the shared properties
 				auto compileArguments = CompileArguments();
-				compileArguments.Standard = LanguageStandard::CPP20;
+				compileArguments.Standard = arguments.LanguageStandard;
 				compileArguments.Optimize = Convert(arguments.OptimizationLevel);
 				compileArguments.RootDirectory = arguments.WorkingDirectory;
 				compileArguments.PreprocessorDefinitions = {};
@@ -298,7 +299,7 @@ namespace Soup
 
 				// Setup the shared properties
 				auto compileArguments = CompileArguments();
-				compileArguments.Standard = LanguageStandard::CPP20;
+				compileArguments.Standard = arguments.LanguageStandard;
 				compileArguments.Optimize = Convert(arguments.OptimizationLevel);
 				compileArguments.RootDirectory = arguments.WorkingDirectory;
 				compileArguments.PreprocessorDefinitions = {};

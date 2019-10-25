@@ -113,6 +113,25 @@ namespace Soup
 					throw std::runtime_error("Unknown build target type.");
 			}
 
+			// Convert the recipe language version to the required build language
+			switch (recipe.GetLanguageVersion())
+			{
+				case RecipeLanguageVersion::CPP11:
+					buildArguments.LanguageStandard = LanguageStandard::CPP11;
+					break;
+				case RecipeLanguageVersion::CPP14:
+					buildArguments.LanguageStandard = LanguageStandard::CPP14;
+					break;
+				case RecipeLanguageVersion::CPP17:
+					buildArguments.LanguageStandard = LanguageStandard::CPP17;
+					break;
+				case RecipeLanguageVersion::CPP20:
+					buildArguments.LanguageStandard = LanguageStandard::CPP20;
+					break;
+				default:
+					throw std::runtime_error("Unknown recipe language version.");
+			}
+
 			// Perform the build
 			auto buildEngine = BuildEngine(_compiler);
 			auto wasBuilt = buildEngine.Execute(buildArguments);

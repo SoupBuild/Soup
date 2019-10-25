@@ -42,6 +42,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Program";
 			arguments.TargetType = BuildTargetType::Executable;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -59,6 +60,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Program",
 					"VERB: TargetType = Executable",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -146,6 +148,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Program";
 			arguments.TargetType = BuildTargetType::Executable;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -164,6 +167,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Program",
 					"VERB: TargetType = Executable",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -251,6 +255,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Program";
 			arguments.TargetType = BuildTargetType::Executable;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -269,6 +274,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Program",
 					"VERB: TargetType = Executable",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -356,6 +362,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Program";
 			arguments.TargetType = BuildTargetType::Executable;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -373,6 +380,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Program",
 					"VERB: TargetType = Executable",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -472,6 +480,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Program";
 			arguments.TargetType = BuildTargetType::Executable;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -489,6 +498,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Program",
 					"VERB: TargetType = Executable",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -597,6 +607,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Program";
 			arguments.TargetType = BuildTargetType::Executable;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -652,6 +663,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Program",
 					"VERB: TargetType = Executable",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -715,6 +727,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Program";
 			arguments.TargetType = BuildTargetType::Executable;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -760,6 +773,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Program",
 					"VERB: TargetType = Executable",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -829,6 +843,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Library";
 			arguments.TargetType = BuildTargetType::StaticLibrary;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -858,6 +873,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Library",
 					"VERB: TargetType = StaticLibrary",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -1043,6 +1059,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Library";
 			arguments.TargetType = BuildTargetType::StaticLibrary;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -1077,6 +1094,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Library",
 					"VERB: TargetType = StaticLibrary",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -1255,6 +1273,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Library";
 			arguments.TargetType = BuildTargetType::StaticLibrary;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -1285,6 +1304,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Library",
 					"VERB: TargetType = StaticLibrary",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
@@ -1424,6 +1444,7 @@ namespace Soup::UnitTests
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Library";
 			arguments.TargetType = BuildTargetType::StaticLibrary;
+			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -1450,6 +1471,7 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"VERB: TargetName = Library",
 					"VERB: TargetType = StaticLibrary",
+					"VERB: LanguageStandard = C++20",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
