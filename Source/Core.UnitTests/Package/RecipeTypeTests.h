@@ -25,7 +25,7 @@ namespace Soup::UnitTests
 		[[InlineData("DynamicLibrary", Soup::RecipeType::DynamicLibrary)]]
 		void ParseValues(std::string value, RecipeType expected)
 		{
-			auto actual = Parse(value);
+			auto actual = ParseRecipeType(value);
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}
 
@@ -33,7 +33,7 @@ namespace Soup::UnitTests
 		void ParseGarbageThrows()
 		{
 			Assert::ThrowsRuntimeError([]() {
-				auto actual = Parse("garbage");
+				auto actual = ParseRecipeType("garbage");
 			});
 		}
 	};

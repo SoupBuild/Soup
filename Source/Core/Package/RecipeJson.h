@@ -17,6 +17,7 @@ namespace Soup
 		static constexpr const char* Property_Name = "name";
 		static constexpr const char* Property_Version = "version";
 		static constexpr const char* Property_Type = "type";
+		static constexpr const char* Property_Language = "language";
 		static constexpr const char* Property_Dependencies = "dependencies";
 		static constexpr const char* Property_Public = "public";
 		static constexpr const char* Property_Source = "source";
@@ -64,6 +65,7 @@ namespace Soup
 			std::string name;
 			SemanticVersion version;
 			std::optional<RecipeType> type;
+			std::optional<RecipeLanguageVersion> languageVersion;
 			std::optional<std::vector<PackageReference>> dependencies;
 			std::optional<std::string> publicFile;
 			std::optional<std::vector<std::string>> source;
@@ -90,8 +92,14 @@ namespace Soup
 
 			if (!value[Property_Type].is_null())
 			{
-				type = Parse(
+				type = ParseRecipeType(
 					value[Property_Type].string_value());
+			}
+
+			if (!value[Property_Language].is_null())
+			{
+				languageVersion = ParseRecipeLanguageVersion(
+					value[Property_Language].string_value());
 			}
 
 			if (!value[Property_Dependencies].is_null())
@@ -137,6 +145,7 @@ namespace Soup
 				std::move(name),
 				version,
 				type,
+				languageVersion,
 				std::move(dependencies),
 				std::move(publicFile),
 				std::move(source),
@@ -154,6 +163,11 @@ namespace Soup
 			if (recipe.HasType())
 			{
 				result[Property_Type] = ToString(recipe.GetType());
+			}
+
+			if (recipe.HasLanguageVersion())
+			{
+				result[Property_Language] = ToString(recipe.GetLanguageVersion());
 			}
 
 			if (recipe.HasDependencies())

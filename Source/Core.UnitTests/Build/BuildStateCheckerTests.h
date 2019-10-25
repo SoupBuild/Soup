@@ -65,7 +65,7 @@ namespace Soup::UnitTests
 		}
 
 		[[Fact]]
-		void IsOutdated_SingleInput_TargetExists_MissingInputThrows()
+		void IsOutdated_SingleInput_TargetExists_MissingInputFile()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -87,9 +87,8 @@ namespace Soup::UnitTests
 			auto rootPath = Path("Root");
 
 			// Perform the check
-			Assert::ThrowsRuntimeError([&targetFile, &inputFiles, &rootPath]() {
-				bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
-			});
+			bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
+			Assert::IsTrue(result, "Verify the result is true.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
@@ -104,6 +103,7 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"VERB: IsOutdated: Output.bin [1434993120]",
 					"ERRO: Input file missing [Input.cpp] -> [Output.bin]",
 				}),
 				testListener->GetMessages(),
@@ -154,6 +154,8 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"VERB: IsOutdated: Output.bin [1434993120]",
+					"VERB:   Input.cpp [1434993180]",
 					"VERB: Input altered after target [Input.cpp] -> [Output.bin]",
 				}),
 				testListener->GetMessages(),
@@ -203,7 +205,10 @@ namespace Soup::UnitTests
 
 			// Verify expected logs
 			Assert::AreEqual(
-				std::vector<std::string>({}),
+				std::vector<std::string>({
+					"VERB: IsOutdated: Output.bin [1434993120]",
+					"VERB:   Input.cpp [1434993060]",
+				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
 		}
@@ -255,7 +260,11 @@ namespace Soup::UnitTests
 
 			// Verify expected logs
 			Assert::AreEqual(
-				std::vector<std::string>({}),
+				std::vector<std::string>({
+					"VERB: IsOutdated: Output.bin [1434993120]",
+					"VERB:   Input.cpp [1434993060]",
+					"VERB:   C:/Input.h [1434993060]",
+				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
 		}

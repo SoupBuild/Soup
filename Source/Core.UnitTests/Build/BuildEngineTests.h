@@ -65,6 +65,7 @@ namespace Soup::UnitTests
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = false",
 					"VERB: OptimizationLevel = None",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -169,6 +170,7 @@ namespace Soup::UnitTests
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = false",
 					"VERB: OptimizationLevel = Speed",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -273,6 +275,7 @@ namespace Soup::UnitTests
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = false",
 					"VERB: OptimizationLevel = Size",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -376,6 +379,7 @@ namespace Soup::UnitTests
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
 					"VERB: OptimizationLevel = None",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -491,6 +495,7 @@ namespace Soup::UnitTests
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
 					"VERB: OptimizationLevel = None",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -653,6 +658,7 @@ namespace Soup::UnitTests
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
 					"VERB: OptimizationLevel = None",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -662,6 +668,8 @@ namespace Soup::UnitTests
 					"VERB: Create Directory: bin",
 					"VERB: Task: CompileSourceFiles",
 					"VERB: Check for updated source",
+					"VERB: IsOutdated: obj/TestFile.mock.obj [1434993120]",
+					"VERB:   TestFile.cpp [1434993060]",
 					"VERB: File up to date: TestFile.cpp",
 					"VERB: Objects up to date",
 					"VERB: Task: CoreLink",
@@ -758,6 +766,7 @@ namespace Soup::UnitTests
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
 					"VERB: OptimizationLevel = None",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = ",
 					"VERB: IncludeModules = ",
 					"VERB: PreprocessorDefinitions = ",
@@ -767,6 +776,8 @@ namespace Soup::UnitTests
 					"VERB: Create Directory: bin",
 					"VERB: Task: CompileSourceFiles",
 					"VERB: Check for updated source",
+					"VERB: IsOutdated: obj/TestFile.mock.obj [1434993120]",
+					"VERB:   TestFile.cpp [1434993060]",
 					"VERB: File up to date: TestFile.cpp",
 					"VERB: Objects up to date",
 					"VERB: Task: CoreLink",
@@ -817,7 +828,7 @@ namespace Soup::UnitTests
 
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Library";
-			arguments.TargetType = BuildTargetType::Library;
+			arguments.TargetType = BuildTargetType::StaticLibrary;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -846,13 +857,14 @@ namespace Soup::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"VERB: TargetName = Library",
-					"VERB: TargetType = Library",
+					"VERB: TargetType = StaticLibrary",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = ./",
 					"VERB: IsIncremental = true",
 					"VERB: OptimizationLevel = None",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = Folder AnotherFolder/Sub",
 					"VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"VERB: PreprocessorDefinitions = ",
@@ -862,8 +874,20 @@ namespace Soup::UnitTests
 					"VERB: Create Directory: bin",
 					"VERB: Task: CompileSourceFiles",
 					"VERB: Check for updated source",
+					"VERB: IsOutdated: obj/TestFile1.mock.obj [1434993120]",
+					"VERB:   TestFile1.cpp [1434993060]",
+					"VERB:   ../../Other/bin/OtherModule1.mock.bmi [1434993060]",
+					"VERB:   ../OtherModule2.mock.bmi [1434993180]",
 					"VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile1.mock.obj]",
+					"VERB: IsOutdated: obj/TestFile2.mock.obj [1434993120]",
+					"VERB:   TestFile2.cpp [1434993060]",
+					"VERB:   ../../Other/bin/OtherModule1.mock.bmi [1434993060]",
+					"VERB:   ../OtherModule2.mock.bmi [1434993180]",
 					"VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile2.mock.obj]",
+					"VERB: IsOutdated: obj/TestFile3.mock.obj [1434993120]",
+					"VERB:   TestFile3.cpp [1434993060]",
+					"VERB:   ../../Other/bin/OtherModule1.mock.bmi [1434993060]",
+					"VERB:   ../OtherModule2.mock.bmi [1434993180]",
 					"VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/TestFile3.mock.obj]",
 					"VERB: Compiling source files",
 					"VERB: TestFile1.cpp",
@@ -1018,7 +1042,7 @@ namespace Soup::UnitTests
 
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Library";
-			arguments.TargetType = BuildTargetType::Library;
+			arguments.TargetType = BuildTargetType::StaticLibrary;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -1052,13 +1076,14 @@ namespace Soup::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"VERB: TargetName = Library",
-					"VERB: TargetType = Library",
+					"VERB: TargetType = StaticLibrary",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = Public.cpp",
 					"VERB: IsIncremental = true",
 					"VERB: OptimizationLevel = None",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = Folder AnotherFolder/Sub",
 					"VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"VERB: PreprocessorDefinitions = DEBUG AWESOME",
@@ -1068,6 +1093,10 @@ namespace Soup::UnitTests
 					"VERB: Create Directory: bin",
 					"VERB: Task: CompileModuleInterfaceUnit",
 					"VERB: Check for updated source",
+					"VERB: IsOutdated: obj/Public.mock.obj [1434993120]",
+					"VERB:   Public.cpp [1434993060]",
+					"VERB:   ../../Other/bin/OtherModule1.mock.bmi [1434993060]",
+					"VERB:   ../OtherModule2.mock.bmi [1434993180]",
 					"VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/Public.mock.obj]",
 					"VERB: Public.cpp",
 					"VERB: Copy: [obj/Public.mock.bmi] -> [bin/Library.mock.bmi]",
@@ -1225,7 +1254,7 @@ namespace Soup::UnitTests
 
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Library";
-			arguments.TargetType = BuildTargetType::Library;
+			arguments.TargetType = BuildTargetType::StaticLibrary;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -1255,13 +1284,14 @@ namespace Soup::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"VERB: TargetName = Library",
-					"VERB: TargetType = Library",
+					"VERB: TargetType = StaticLibrary",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = Public.cpp",
 					"VERB: IsIncremental = true",
 					"VERB: OptimizationLevel = None",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = Folder AnotherFolder/Sub",
 					"VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"VERB: PreprocessorDefinitions = ",
@@ -1271,12 +1301,28 @@ namespace Soup::UnitTests
 					"VERB: Create Directory: bin",
 					"VERB: Task: CompileModuleInterfaceUnit",
 					"VERB: Check for updated source",
+					"VERB: IsOutdated: obj/Public.mock.obj [1434993120]",
+					"VERB:   Public.cpp [1434993060]",
+					"VERB:   ../../Other/bin/OtherModule1.mock.bmi [1434993060]",
+					"VERB:   ../OtherModule2.mock.bmi [1434993060]",
 					"VERB: File up to date: Public.cpp",
 					"VERB: Module up to date",
 					"VERB: Task: CompileSourceFiles",
 					"VERB: Check for updated source",
+					"VERB: IsOutdated: obj/TestFile1.mock.obj [1434993120]",
+					"VERB:   TestFile1.cpp [1434993060]",
+					"VERB:   ../../Other/bin/OtherModule1.mock.bmi [1434993060]",
+					"VERB:   ../OtherModule2.mock.bmi [1434993060]",
 					"VERB: File up to date: TestFile1.cpp",
+					"VERB: IsOutdated: obj/TestFile2.mock.obj [1434993120]",
+					"VERB:   TestFile2.cpp [1434993060]",
+					"VERB:   ../../Other/bin/OtherModule1.mock.bmi [1434993060]",
+					"VERB:   ../OtherModule2.mock.bmi [1434993060]",
 					"VERB: File up to date: TestFile2.cpp",
+					"VERB: IsOutdated: obj/TestFile3.mock.obj [1434993120]",
+					"VERB:   TestFile3.cpp [1434993060]",
+					"VERB:   ../../Other/bin/OtherModule1.mock.bmi [1434993060]",
+					"VERB:   ../OtherModule2.mock.bmi [1434993060]",
 					"VERB: File up to date: TestFile3.cpp",
 					"VERB: Objects up to date",
 					"VERB: Task: CoreLink",
@@ -1377,7 +1423,7 @@ namespace Soup::UnitTests
 
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Library";
-			arguments.TargetType = BuildTargetType::Library;
+			arguments.TargetType = BuildTargetType::StaticLibrary;
 			arguments.WorkingDirectory = Path("root");
 			arguments.ObjectDirectory = Path("obj");
 			arguments.BinaryDirectory = Path("bin");
@@ -1403,13 +1449,14 @@ namespace Soup::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"VERB: TargetName = Library",
-					"VERB: TargetType = Library",
+					"VERB: TargetType = StaticLibrary",
 					"VERB: WorkingDirectory = root",
 					"VERB: ObjectDirectory = obj",
 					"VERB: BinaryDirectory = bin",
 					"VERB: ModuleInterfaceSourceFile = Public.cpp",
 					"VERB: IsIncremental = true",
 					"VERB: OptimizationLevel = None",
+					"VERB: GenerateSourceDebugInfo = false",
 					"VERB: IncludeDirectories = Folder AnotherFolder/Sub",
 					"VERB: IncludeModules = ../../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"VERB: PreprocessorDefinitions = ",
@@ -1419,6 +1466,10 @@ namespace Soup::UnitTests
 					"VERB: Create Directory: bin",
 					"VERB: Task: CompileModuleInterfaceUnit",
 					"VERB: Check for updated source",
+					"VERB: IsOutdated: obj/Public.mock.obj [1434993120]",
+					"VERB:   Public.cpp [1434993060]",
+					"VERB:   ../../Other/bin/OtherModule1.mock.bmi [1434993060]",
+					"VERB:   ../OtherModule2.mock.bmi [1434993180]",
 					"VERB: Input altered after target [../OtherModule2.mock.bmi] -> [obj/Public.mock.obj]",
 					"VERB: Public.cpp",
 					"VERB: Copy: [obj/Public.mock.bmi] -> [bin/Library.mock.bmi]",

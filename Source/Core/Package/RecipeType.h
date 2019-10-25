@@ -1,4 +1,4 @@
-// <copyright file="RecipeType.cs" company="Soup">
+// <copyright file="RecipeType.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -40,7 +40,7 @@ namespace Soup
 		}
 	}
 
-	export RecipeType Parse(const std::string& value)
+	export RecipeType ParseRecipeType(const std::string& value)
 	{
 		if (value == "Executable")
 			return RecipeType::Executable;

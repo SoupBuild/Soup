@@ -5,6 +5,7 @@
 #pragma once
 #include "PackageReference.h"
 #include "RecipeType.h"
+#include "RecipeLanguageVersion.h"
 #include "SemanticVersion.h"
 
 namespace Soup
@@ -23,6 +24,7 @@ namespace Soup
 			_name(),
 			_version(),
 			_type(std::nullopt),
+			_languageVersion(std::nullopt),
 			_dependencies(std::nullopt),
 			_public(std::nullopt),
 			_source(std::nullopt),
@@ -40,6 +42,7 @@ namespace Soup
 			_name(std::move(name)),
 			_version(version),
 			_type(std::nullopt),
+			_languageVersion(std::nullopt),
 			_dependencies(std::nullopt),
 			_public(std::nullopt),
 			_source(std::nullopt),
@@ -54,6 +57,7 @@ namespace Soup
 			std::string name,
 			SemanticVersion version,
 			std::optional<RecipeType> type,
+			std::optional<RecipeLanguageVersion> languageVersion,
 			std::optional<std::vector<PackageReference>> dependencies,
 			std::optional<std::string> publicFile,
 			std::optional<std::vector<std::string>> source,
@@ -62,6 +66,7 @@ namespace Soup
 			_name(std::move(name)),
 			_version(version),
 			_type(std::move(type)),
+			_languageVersion(std::move(languageVersion)),
 			_dependencies(std::move(dependencies)),
 			_public(std::move(publicFile)),
 			_source(std::move(source)),
@@ -137,6 +142,26 @@ namespace Soup
 			{
 				_type = value;
 				_isDirty = true;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the language version
+		/// </summary>
+		bool HasLanguageVersion() const
+		{
+			return _type.has_value();
+		}
+
+		RecipeLanguageVersion GetLanguageVersion() const
+		{
+			if (HasLanguageVersion())
+			{
+				return _languageVersion.value();
+			}
+			else
+			{
+				return DefaultRecipeLanguageVersion;
 			}
 		}
 
@@ -281,6 +306,7 @@ namespace Soup
 			return _name == rhs._name &&
 				_version == rhs._version &&
 				_type == rhs._type &&
+				_languageVersion == rhs._languageVersion &&
 				_dependencies == rhs._dependencies &&
 				_public == rhs._public &&
 				_source == rhs._source &&
@@ -297,10 +323,12 @@ namespace Soup
 
 	private:
 		static const RecipeType DefaultRecipeType = RecipeType::StaticLibrary;
+		static const RecipeLanguageVersion DefaultRecipeLanguageVersion = RecipeLanguageVersion::CPP20;
 		bool _isDirty;
 		std::string _name;
 		SemanticVersion _version;
 		std::optional<RecipeType> _type;
+		std::optional<RecipeLanguageVersion> _languageVersion;
 		std::optional<std::vector<PackageReference>> _dependencies;
 		std::optional<std::string> _public;
 		std::optional<std::vector<std::string>> _source;

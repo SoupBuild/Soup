@@ -17,6 +17,7 @@ using namespace SoupTest;
 #include "Package\RecipeBuildGeneratorTests.gen.h"
 #include "Package\RecipeBuildManagerTests.gen.h"
 #include "Package\RecipeExtensionsTests.gen.h"
+#include "Package\RecipeLanguageVersionTests.gen.h"
 #include "Package\RecipeJsonTests.gen.h"
 #include "Package\RecipeTests.gen.h"
 #include "Package\RecipeTypeTests.gen.h"
@@ -41,6 +42,7 @@ int main()
 	state += RunRecipeBuildGeneratorTests();
 	state += RunRecipeBuildManagerTests();
 	state += RunRecipeExtensionsTests();
+	state += RunRecipeLanguageVersionTests();
 	state += RunRecipeJsonTests();
 	state += RunRecipeTests();
 	state += RunRecipeTypeTests();

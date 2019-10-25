@@ -72,6 +72,15 @@ namespace Soup::Compiler::Mock
 		}
 
 		/// <summary>
+		/// Gets the dynamic library file extension for the compiler
+		/// TODO: This is platform specific
+		/// </summary>
+		virtual std::string_view GetDynamicLibraryFileExtension() const override final
+		{
+			return "mock.dll";
+		}
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		virtual CompileResult Compile(const CompileArguments& args) override final
