@@ -53,6 +53,15 @@ namespace Soup::Compiler::Clang
 		}
 
 		/// <summary>
+		/// Gets the dynmaic library file extension for the compiler
+		/// TODO: This is platform specific
+		/// </summary>
+		virtual std::string_view GetDynamicLibraryFileExtension() const override final
+		{
+			return "dll";
+		}
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		virtual CompileResult Compile(const CompileArguments& args) override final
@@ -81,6 +90,7 @@ namespace Soup::Compiler::Clang
 				case LinkTarget::StaticLibrary:
 					executablePath = Path(ToolsPath) + Path(LinkerExecutable);
 					break;
+				case LinkTarget::DynamicLibrary:
 				case LinkTarget::Executable:
 					executablePath = Path(ToolsPath) + Path(CompilerExecutable);
 					break;

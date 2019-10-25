@@ -37,6 +37,12 @@ namespace Soup
 		virtual std::string_view GetStaticLibraryFileExtension() const = 0;
 
 		/// <summary>
+		/// Gets the dynamic library file extension for the compiler
+		/// TODO: This is platform specific
+		/// </summary>
+		virtual std::string_view GetDynamicLibraryFileExtension() const = 0;
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		virtual CompileResult Compile(const CompileArguments& args) = 0;

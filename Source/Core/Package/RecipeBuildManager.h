@@ -41,6 +41,23 @@ namespace Soup
 			const Recipe& recipe,
 			const RecipeBuildArguments& arguments)
 		{
+			try
+			{
+				Log::Info("TestDLL");
+				auto result = Platform::DynamicLibraryManager::Execute(
+					"Soup.BuildEx.dll",
+					"DoIt");
+				Log::Info("TestDLL Done: " + std::to_string(result));
+			}
+			catch (const char* message)
+			{
+				Log::Info(message);
+			}
+			catch (unsigned long error)
+			{
+				Log::Info("Failed: " + std::to_string(error));
+			}
+
 			// Clear the build set so we check all dependencies
 			_buildSet.clear();
 

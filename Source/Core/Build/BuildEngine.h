@@ -352,10 +352,15 @@ namespace Soup
 			Path targetFile;
 			switch (arguments.TargetType)
 			{
-				case BuildTargetType::Library:
+				case BuildTargetType::StaticLibrary:
 					targetFile = 
 						arguments.BinaryDirectory + 
 						Path(arguments.TargetName + "." + std::string(_compiler->GetStaticLibraryFileExtension()));
+					break;
+				case BuildTargetType::DynamicLibrary:
+					targetFile = 
+						arguments.BinaryDirectory + 
+						Path(arguments.TargetName + "." + std::string(_compiler->GetDynamicLibraryFileExtension()));
 					break;
 				case BuildTargetType::Executable:
 					targetFile = 
@@ -390,8 +395,11 @@ namespace Soup
 				// Translate the target type into the link target
 				switch (arguments.TargetType)
 				{
-					case BuildTargetType::Library:
+					case BuildTargetType::StaticLibrary:
 						linkArguments.TargetType = LinkTarget::StaticLibrary;
+						break;
+					case BuildTargetType::DynamicLibrary:
+						linkArguments.TargetType = LinkTarget::DynamicLibrary;
 						break;
 					case BuildTargetType::Executable:
 						linkArguments.TargetType = LinkTarget::Executable;

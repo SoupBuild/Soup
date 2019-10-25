@@ -144,27 +144,30 @@ namespace Soup
 				// Load this package recipe
 				auto dependencyPackagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
 				auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
-				Recipe dependecyRecipe = {};
-				if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
+				Recipe dependencyRecipe = {};
+				if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependencyRecipe))
 				{
 					Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
 					throw std::runtime_error("GenerateDependecyStaticLibraryClosure: Failed to load dependency.");
 				}
 
-				// Add this dependency
-				auto dependencyStaticLibrary = 
-					dependencyPackagePath +
-					GetBinaryDirectory(compiler, configuration) +
-					Path(dependecyRecipe.GetName() + "." + std::string(compiler.GetStaticLibraryFileExtension()));
-				closure.push_back(std::move(dependencyStaticLibrary));
+				// Add this dependency if it is a static library
+				if (dependencyRecipe.GetType() == RecipeType::StaticLibrary)
+				{
+					auto dependencyStaticLibrary = 
+						dependencyPackagePath +
+						GetBinaryDirectory(compiler, configuration) +
+						Path(dependencyRecipe.GetName() + "." + std::string(compiler.GetStaticLibraryFileExtension()));
+					closure.push_back(std::move(dependencyStaticLibrary));
 
-				// Add all recursive dependencies
-				GenerateDependecyStaticLibraryClosure(
-					compiler,
-					configuration,
-					dependencyPackagePath,
-					dependecyRecipe,
-					closure);
+					// Add all recursive dependencies
+					GenerateDependecyStaticLibraryClosure(
+						compiler,
+						configuration,
+						dependencyPackagePath,
+						dependencyRecipe,
+						closure);
+				}
 			}
 		}
 

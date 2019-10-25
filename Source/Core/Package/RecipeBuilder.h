@@ -101,7 +101,10 @@ namespace Soup
 			switch (recipe.GetType())
 			{
 				case RecipeType::StaticLibrary:
-					buildArguments.TargetType = BuildTargetType::Library;
+					buildArguments.TargetType = BuildTargetType::StaticLibrary;
+					break;
+				case RecipeType::DynamicLibrary:
+					buildArguments.TargetType = BuildTargetType::DynamicLibrary;
 					break;
 				case RecipeType::Executable:
 					buildArguments.TargetType = BuildTargetType::Executable;

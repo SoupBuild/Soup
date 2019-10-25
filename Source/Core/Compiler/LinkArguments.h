@@ -15,6 +15,11 @@ namespace Soup
 		StaticLibrary,
 
 		/// <summary>
+		/// Dynamic Library
+		/// </summary>
+		DynamicLibrary,
+
+		/// <summary>
 		/// Executable
 		/// </summary>
 		Executable,
@@ -26,6 +31,8 @@ namespace Soup
 		{
 			case LinkTarget::StaticLibrary:
 				return "StaticLibrary";
+			case LinkTarget::DynamicLibrary:
+				return "DynamicLibrary";
 			case LinkTarget::Executable:
 				return "Executable";
 			default:

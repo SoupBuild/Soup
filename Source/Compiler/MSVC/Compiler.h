@@ -53,6 +53,15 @@ namespace Soup::Compiler::MSVC
 		}
 
 		/// <summary>
+		/// Gets the dynmaic library file extension for the compiler
+		/// TODO: This is platform specific
+		/// </summary>
+		virtual std::string_view GetDynamicLibraryFileExtension() const override final
+		{
+			return "dll";
+		}
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		virtual CompileResult Compile(const CompileArguments& args) override final

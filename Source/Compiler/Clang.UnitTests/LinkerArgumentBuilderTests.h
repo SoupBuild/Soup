@@ -56,6 +56,28 @@ namespace Soup::Compiler::Clang::UnitTests
 		}
 
 		[[Fact]]
+		void DynamicLibrary()
+		{
+			LinkArguments arguments = {};
+			arguments.TargetType = LinkTarget::DynamicLibrary;
+			arguments.TargetFile = Path("Library.mock.so");
+			arguments.ObjectFiles = std::vector<Path>({
+				Path("File.mock.o"),
+			});
+			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
+
+			auto expected = std::vector<std::string>({
+				"-shared",
+				"-fpic",
+				"-o",
+				"Library.mock.so",
+				"File.mock.o",
+			});
+
+			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+		}
+
+		[[Fact]]
 		void Executable()
 		{
 			LinkArguments arguments = {};

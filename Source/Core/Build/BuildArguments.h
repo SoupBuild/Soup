@@ -54,9 +54,14 @@ namespace Soup
 		Executable,
 
 		/// <summary>
-		/// Library
+		/// Static Library
 		/// </summary>
-		Library,
+		StaticLibrary,
+
+		/// <summary>
+		/// Dynamic Library
+		/// </summary>
+		DynamicLibrary,
 	};
 
 	std::string ToString(BuildTargetType value)
@@ -65,8 +70,10 @@ namespace Soup
 		{
 			case BuildTargetType::Executable:
 				return "Executable";
-			case BuildTargetType::Library:
-				return "Library";
+			case BuildTargetType::StaticLibrary:
+				return "StaticLibrary";
+			case BuildTargetType::DynamicLibrary:
+				return "DynamicLibrary";
 			default:
 				throw std::runtime_error("Unknown BuildTargetType");
 		}

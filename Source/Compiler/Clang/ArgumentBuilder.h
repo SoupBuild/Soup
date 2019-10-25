@@ -168,6 +168,23 @@ namespace Soup::Compiler::Clang
 					commandArgs.push_back(args.TargetFile.ToString());
 					break;
 				}
+				case LinkTarget::DynamicLibrary:
+				{
+					// Dynamic libraries are put together by clang
+
+					// Enable verbose output
+					// commandArgs.push_back("-v");
+
+					// Create a shared library
+					commandArgs.push_back("-shared");
+
+					// Convert absolute addresses to relative
+					commandArgs.push_back("-fpic");
+
+					commandArgs.push_back("-o");
+					commandArgs.push_back(args.TargetFile.ToString());
+					break;
+				}
 				case LinkTarget::Executable:
 				{
 					// Executables are put together by clang

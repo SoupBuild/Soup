@@ -17,6 +17,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			Assert::AreEqual(uut.GetObjectFileExtension(), std::string_view("o"), "Verify object file extension match expected.");
 			Assert::AreEqual(uut.GetModuleFileExtension(), std::string_view("pcm"), "Verify module file extension match expected.");
 			Assert::AreEqual(uut.GetStaticLibraryFileExtension(), std::string_view("a"), "Verify static library file extension match expected.");
+			Assert::AreEqual(uut.GetDynamicLibraryFileExtension(), std::string_view("so"), "Verify dynamic library file extension match expected.");
 		}
 
 		[[Fact]]
