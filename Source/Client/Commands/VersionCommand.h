@@ -31,7 +31,7 @@ namespace Soup::Client
 
 			// TODO var version = Assembly.GetExecutingAssembly().GetName().Version;
 			// Log::Message($"{version.Major}.{version.Minor}.{version.Build}");
-			Log::Info("0.2.5");
+			Log::Info("0.2.6");
 		}
 
 	private:

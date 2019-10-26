@@ -17,19 +17,19 @@ namespace Soup::Client
 		/// <summary>
 		/// Gets or sets the path to build
 		/// </summary>
-		[[Option("path", Index = 0, HelpText = "Path to the package to build.")]]
+		[[Args::Option("path", Index = 0, HelpText = "Path to the package to build.")]]
 		std::string Path;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to force a build
 		/// </summary>
-		[[Option('f', "force", Default = false, HelpText = "Force a rebuild.")]]
+		[[Args::Option('f', "force", Default = false, HelpText = "Force a rebuild.")]]
 		bool Force;
 
 		/// <summary>
 		/// Gets or sets a value indicating what configuration to use
 		/// </summary>
-		[[Option('c', "config", Default = false, HelpText = "Configuration.")]]
+		[[Args::Option('c', "config", Default = false, HelpText = "Configuration.")]]
 		std::string Configuration;
 	};
 }

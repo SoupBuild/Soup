@@ -26,7 +26,11 @@ namespace Soup::Compiler::Clang
 			auto commandArgs = std::vector<std::string>();
 
 			// Enable verbose output
-			// commandArgs.Add("-v");
+			// commandArgs.push_back("-v");
+
+			// Disable std include paths
+			// It is not the job of the compiler to set this up
+			commandArgs.push_back("-nostdinc");
 
 			// Disable warnings on unknown attributes to allow test attributes
 			commandArgs.push_back("-Wno-unknown-attributes");
@@ -88,7 +92,18 @@ namespace Soup::Compiler::Clang
 			// Set the include paths
 			for (auto directory : args.IncludeDirectories)
 			{
-				auto argument = "-I\"" + directory.ToString() + "\"";
+				// TODO: May want to have flag for system rooted includes
+				auto argument = std::string();
+				if (directory.HasRoot())
+				{
+					// Treat the include as a system path to not produce warnings
+					argument = "-isystem \"" + directory.ToString() + "\"";
+				}
+				else
+				{
+					argument = "-I\"" + directory.ToString() + "\"";
+				}
+				
 				commandArgs.push_back(std::move(argument));
 			}
 
