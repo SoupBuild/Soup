@@ -19,6 +19,7 @@ namespace Soup
 		static constexpr const char* Property_Type = "type";
 		static constexpr const char* Property_Language = "language";
 		static constexpr const char* Property_Dependencies = "dependencies";
+		static constexpr const char* Property_DevDependencies = "devDependencies";
 		static constexpr const char* Property_Public = "public";
 		static constexpr const char* Property_Source = "source";
 		static constexpr const char* Property_IncludePaths = "includePaths";
@@ -67,6 +68,7 @@ namespace Soup
 			std::optional<RecipeType> type;
 			std::optional<RecipeLanguageVersion> languageVersion;
 			std::optional<std::vector<PackageReference>> dependencies;
+			std::optional<std::vector<PackageReference>> devDependencies;
 			std::optional<std::string> publicFile;
 			std::optional<std::vector<std::string>> source;
 			std::optional<std::vector<std::string>> includePaths;
@@ -114,6 +116,18 @@ namespace Soup
 				dependencies = std::move(values);
 			}
 
+			if (!value[Property_DevDependencies].is_null())
+			{
+				auto values = std::vector<PackageReference>();
+				for (auto& value : value[Property_DevDependencies].array_items())
+				{
+					auto dependency = PackageReference::Parse(value.string_value());
+					values.push_back(std::move(dependency));
+				}
+
+				devDependencies = std::move(values);
+			}
+
 			if (!value[Property_Public].is_null())
 			{
 				publicFile = value[Property_Public].string_value();
@@ -147,6 +161,7 @@ namespace Soup
 				type,
 				languageVersion,
 				std::move(dependencies),
+				std::move(devDependencies),
 				std::move(publicFile),
 				std::move(source),
 				std::move(includePaths));
@@ -179,6 +194,17 @@ namespace Soup
 				}
 
 				result[Property_Dependencies] = std::move(dependencies);
+			}
+
+			if (recipe.HasDevDependencies())
+			{
+				json11::Json::array devDependencies;
+				for (auto& value : recipe.GetDevDependencies())
+				{
+					devDependencies.push_back(value.ToString());
+				}
+
+				result[Property_DevDependencies] = std::move(devDependencies);
 			}
 
 			if (recipe.HasPublic())

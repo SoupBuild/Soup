@@ -111,6 +111,36 @@ namespace Soup
 				}
 			}
 
+			if (recipe.HasDevDependencies())
+			{
+				for (auto dependecy : recipe.GetDevDependencies())
+				{
+					// Load this package recipe
+					auto packagePath = GetPackageReferencePath(workingDirectory, dependecy);
+					auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
+					Recipe dependecyRecipe = {};
+					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
+					{
+						Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+						throw std::runtime_error("BuildAllDependenciesRecursively: Failed to load dependency.");
+					}
+
+					// Build all recursive dependencies
+					projectId = BuildAllDependenciesRecursively(
+						projectId,
+						packagePath,
+						dependecyRecipe,
+						arguments);
+
+					// Build this dependecy
+					projectId = BuildRecipe(
+						projectId,
+						packagePath,
+						dependecyRecipe,
+						arguments);
+				}
+			}
+
 			// Return the updated project id after building all dependencies
 			return projectId;
 		}

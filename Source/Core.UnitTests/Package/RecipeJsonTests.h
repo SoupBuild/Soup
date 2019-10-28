@@ -71,6 +71,7 @@ namespace Soup::UnitTests
 					"type": "Executable",
 					"language": "C++17",
 					"dependencies": [],
+					"devDependencies": [],
 					"public": "Public.cpp",
 					"source": [],
 					"includePaths": []
@@ -82,6 +83,7 @@ namespace Soup::UnitTests
 				SemanticVersion(1, 2, 3),
 				RecipeType::Executable,
 				RecipeLanguageVersion::CPP17,
+				std::vector<PackageReference>(),
 				std::vector<PackageReference>(),
 				"Public.cpp",
 				std::vector<std::string>(),
@@ -118,6 +120,7 @@ namespace Soup::UnitTests
 				RecipeType::Executable,
 				RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>(),
+				std::vector<PackageReference>(),
 				"Public.cpp",
 				std::vector<std::string>(),
 				std::vector<std::string>());
@@ -132,6 +135,7 @@ namespace Soup::UnitTests
 					"type": "Executable",
 					"language": "C++17",
 					"dependencies": [],
+					"devDependencies": [],
 					"public": "Public.cpp",
 					"source": [],
 					"includePaths": []

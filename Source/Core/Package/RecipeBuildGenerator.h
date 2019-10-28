@@ -433,7 +433,7 @@ namespace Soup
 			for (auto dependecy : buildDependencies)
 			{
 				auto packagePath = RecipeExtensions::GetPackageReferencePath(targetDirectory, dependecy);
-				auto modulePath = RecipeExtensions::GetRecipeModulePath(
+				auto modulePath = RecipeExtensions::GetRecipeOutputPath(
 					packagePath,
 					RecipeExtensions::GetBinaryDirectory(*_compiler, "todo"),
 					std::string(_compiler->GetModuleFileExtension()));

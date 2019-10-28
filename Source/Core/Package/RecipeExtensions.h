@@ -78,20 +78,20 @@ namespace Soup
 		}
 
 		/// <summary>
-		/// Get the recipe path
+		/// Get the recipe output path
 		/// </summary>
-		static Path GetRecipeModulePath(const Path& packagePath, const Path& binaryDirectory, const std::string& modileFileExtension)
+		static Path GetRecipeOutputPath(const Path& packagePath, const Path& binaryDirectory, const std::string& outputFileExtension)
 		{
 			auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
 			Recipe dependecyRecipe = {};
 			if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
 			{
 				Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
-				throw std::runtime_error("GetRecipeModulePath: Failed to load dependency.");
+				throw std::runtime_error("GetRecipeOutputPath: Failed to load dependency.");
 			}
 
 			auto packageBinaryPath = packagePath + binaryDirectory;
-			auto moduleFilename = Path(dependecyRecipe.GetName() + "." + modileFileExtension);
+			auto moduleFilename = Path(dependecyRecipe.GetName() + "." + outputFileExtension);
 			auto modulePath = packageBinaryPath + moduleFilename;
 
 			return modulePath;

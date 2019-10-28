@@ -21,6 +21,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(RecipeType::StaticLibrary, uut.GetType(), "Verify default type is correct.");
 			Assert::IsFalse(uut.HasLanguageVersion(), "Verify has no language version.");
 			Assert::IsFalse(uut.HasDependencies(), "Verify has no dependencies.");
+			Assert::IsFalse(uut.HasDevDependencies(), "Verify has no dev dependencies.");
 			Assert::IsFalse(uut.HasPublic(), "Verify has no public.");
 			Assert::IsFalse(uut.HasSource(), "Verify has no source.");
 			Assert::IsFalse(uut.HasIncludePaths(), "Verify has no include paths.");
@@ -36,6 +37,9 @@ namespace Soup::UnitTests
 				RecipeLanguageVersion::CPP20,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../DevTask")),
 				}),
 				"Main.cpp",
 				std::vector<std::string>({
@@ -58,7 +62,14 @@ namespace Soup::UnitTests
 					PackageReference(Path(Path("../OtherPackage"))),
 				}),
 				uut.GetDependencies(),
-				"Verify type is correct.");
+				"Verify dependencies are correct.");
+			Assert::IsTrue(uut.HasDevDependencies(), "Verify has dev dependencies.");
+			Assert::AreEqual(
+				std::vector<PackageReference>({
+					PackageReference(Path(Path("../DevTask"))),
+				}),
+				uut.GetDevDependencies(),
+				"Verify dev dependencies are correct.");
 			Assert::IsTrue(uut.HasPublic(), "Verify has public.");
 			Assert::AreEqual("Main.cpp", uut.GetPublic(), "Verify public is correct.");
 			Assert::IsTrue(uut.HasSource(), "Verify has source.");
@@ -96,6 +107,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -112,6 +126,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -135,6 +152,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -151,6 +171,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -174,6 +197,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -190,6 +216,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -213,6 +242,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -229,6 +261,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -252,6 +287,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -268,6 +306,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -291,6 +332,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -307,6 +351,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP20,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -330,6 +377,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -346,6 +396,9 @@ namespace Soup::UnitTests
 					std::nullopt,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -369,6 +422,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -384,6 +440,9 @@ namespace Soup::UnitTests
 					RecipeType::Executable,
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -407,6 +466,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -421,6 +483,96 @@ namespace Soup::UnitTests
 					SemanticVersion(1, 2, 3),
 					RecipeType::Executable,
 					RecipeLanguageVersion::CPP17,
+					std::nullopt,
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
+					}),
+					"Main.cpp",
+					std::vector<std::string>({
+						"SomeFile.cpp",
+					}),
+					std::vector<std::string>({
+						"Include/",
+					})),
+				uut,
+				"Verify are not equal.");
+		}
+
+		[[Fact]]
+		void OperatorNotEqualDevDependencies()
+		{
+			auto uut = Recipe(
+				"MyPackage",
+				SemanticVersion(1, 2, 3),
+				RecipeType::Executable,
+				RecipeLanguageVersion::CPP17,
+				std::vector<PackageReference>({
+					PackageReference(Path("../OtherPackage")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
+				"Main.cpp",
+				std::vector<std::string>({
+					"SomeFile.cpp",
+				}),
+				std::vector<std::string>({
+					"Include/",
+				}));
+
+			Assert::AreNotEqual(
+				Recipe(
+					"MyPackage",
+					SemanticVersion(1, 2, 3),
+					RecipeType::Executable,
+					RecipeLanguageVersion::CPP17,
+					std::vector<PackageReference>({
+						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+					}),
+					"Main.cpp",
+					std::vector<std::string>({
+						"SomeFile.cpp",
+					}),
+					std::vector<std::string>({
+						"Include/",
+					})),
+				uut,
+				"Verify are not equal.");
+		}
+
+		[[Fact]]
+		void OperatorNotEqualNoDevDependencies()
+		{
+			auto uut = Recipe(
+				"MyPackage",
+				SemanticVersion(1, 2, 3),
+				RecipeType::Executable,
+				RecipeLanguageVersion::CPP17,
+				std::vector<PackageReference>({
+					PackageReference(Path("../OtherPackage")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
+				"Main.cpp",
+				std::vector<std::string>({
+					"SomeFile.cpp",
+				}),
+				std::vector<std::string>({
+					"Include/",
+				}));
+
+			Assert::AreNotEqual(
+				Recipe(
+					"MyPackage",
+					SemanticVersion(1, 2, 3),
+					RecipeType::Executable,
+					RecipeLanguageVersion::CPP17,
+					std::vector<PackageReference>({
+						PackageReference(Path("../OtherPackage")),
+					}),
 					std::nullopt,
 					"Main.cpp",
 					std::vector<std::string>({
@@ -444,6 +596,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -460,6 +615,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main2.cpp",
 					std::vector<std::string>({
@@ -483,6 +641,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -499,6 +660,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					std::nullopt,
 					std::vector<std::string>({
@@ -522,6 +686,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -538,6 +705,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -560,6 +730,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -576,6 +749,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::nullopt,
@@ -597,6 +773,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -613,6 +792,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({
@@ -635,6 +817,9 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
 				"Main.cpp",
 				std::vector<std::string>({
 					"SomeFile.cpp",
@@ -651,6 +836,9 @@ namespace Soup::UnitTests
 					RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
 					}),
 					"Main.cpp",
 					std::vector<std::string>({

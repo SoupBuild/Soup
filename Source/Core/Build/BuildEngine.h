@@ -3,17 +3,17 @@
 // </copyright>
 
 #pragma once
-#include "IBuildEngine.h"
 #include "ICompiler.h"
 #include "BuildStateChecker.h"
 #include "BuildStateManager.h"
+#include "BuildArguments.h"
 
 namespace Soup
 {
 	/// <summary>
 	/// The build engine
 	/// </summary>
-	export class BuildEngine : public IBuildEngine
+	export class BuildEngine
 	{
 	public:
 		/// <summary>
@@ -29,7 +29,7 @@ namespace Soup
 		/// <summary>
 		/// The Core build task
 		/// </summary>
-		virtual bool Execute(const BuildArguments& arguments) override final
+		bool Execute(const BuildArguments& arguments)
 		{
 			// Log the incoming request for verbose logs
 			Log::Verbose("TargetName = " + arguments.TargetName);

@@ -26,6 +26,7 @@ namespace Soup
 			_type(std::nullopt),
 			_languageVersion(std::nullopt),
 			_dependencies(std::nullopt),
+			_devDependencies(std::nullopt),
 			_public(std::nullopt),
 			_source(std::nullopt),
 			_includePaths(std::nullopt)
@@ -44,6 +45,7 @@ namespace Soup
 			_type(std::nullopt),
 			_languageVersion(std::nullopt),
 			_dependencies(std::nullopt),
+			_devDependencies(std::nullopt),
 			_public(std::nullopt),
 			_source(std::nullopt),
 			_includePaths(std::nullopt)
@@ -59,6 +61,7 @@ namespace Soup
 			std::optional<RecipeType> type,
 			std::optional<RecipeLanguageVersion> languageVersion,
 			std::optional<std::vector<PackageReference>> dependencies,
+			std::optional<std::vector<PackageReference>> devDependencies,
 			std::optional<std::string> publicFile,
 			std::optional<std::vector<std::string>> source,
 			std::optional<std::vector<std::string>> includePaths) :
@@ -68,6 +71,7 @@ namespace Soup
 			_type(std::move(type)),
 			_languageVersion(std::move(languageVersion)),
 			_dependencies(std::move(dependencies)),
+			_devDependencies(std::move(devDependencies)),
 			_public(std::move(publicFile)),
 			_source(std::move(source)),
 			_includePaths(std::move(includePaths))
@@ -191,6 +195,31 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Gets or sets the list of dev dependency packages
+		/// TODO: Observable?
+		/// </summary>
+		bool HasDevDependencies() const
+		{
+			return _devDependencies.has_value();
+		}
+
+		const std::vector<PackageReference>& GetDevDependencies() const
+		{
+			if (!HasDevDependencies())
+				throw std::runtime_error("No dev dependencies.");
+			return _devDependencies.value();
+		}
+
+		void SetDevDependencies(const std::vector<PackageReference>& value)
+		{
+			if (!HasDevDependencies() || _devDependencies.value() != value)
+			{
+				_devDependencies = value;
+				_isDirty = true;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the public file
 		/// </summary>
 		bool HasPublic() const
@@ -308,6 +337,7 @@ namespace Soup
 				_type == rhs._type &&
 				_languageVersion == rhs._languageVersion &&
 				_dependencies == rhs._dependencies &&
+				_devDependencies == rhs._devDependencies &&
 				_public == rhs._public &&
 				_source == rhs._source &&
 				_includePaths == rhs._includePaths;
@@ -330,6 +360,7 @@ namespace Soup
 		std::optional<RecipeType> _type;
 		std::optional<RecipeLanguageVersion> _languageVersion;
 		std::optional<std::vector<PackageReference>> _dependencies;
+		std::optional<std::vector<PackageReference>> _devDependencies;
 		std::optional<std::string> _public;
 		std::optional<std::vector<std::string>> _source;
 		std::optional<std::vector<std::string>> _includePaths;

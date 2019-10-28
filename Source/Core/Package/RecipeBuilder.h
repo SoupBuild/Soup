@@ -5,6 +5,7 @@
 #pragma once
 #include "RecipeExtensions.h"
 #include "RecipeBuildArguments.h"
+#include "Build/BuildSystem.h"
 
 namespace Soup
 {
@@ -35,6 +36,21 @@ namespace Soup
 		{
 			Log::Info("Building '" + recipe.GetName() + "'");
 
+			// Run all build tasks
+			if (recipe.HasDevDependencies())
+			{
+				for (auto dependecy : recipe.GetDevDependencies())
+				{
+					auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
+					auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
+						packagePath,
+						RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration),
+						std::string(_compiler->GetDynamicLibraryFileExtension()));
+					
+					RunBuildExtension(libraryPath);
+				}
+			}
+
 			// Add all dependency packages modules references
 			auto includeModules = std::vector<Path>();
 			if (recipe.HasDependencies())
@@ -42,7 +58,7 @@ namespace Soup
 				for (auto dependecy : recipe.GetDependencies())
 				{
 					auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
-					auto modulePath = RecipeExtensions::GetRecipeModulePath(
+					auto modulePath = RecipeExtensions::GetRecipeOutputPath(
 						packagePath,
 						RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration),
 						std::string(_compiler->GetModuleFileExtension()));
@@ -140,6 +156,35 @@ namespace Soup
 				Log::Info("Done");
 			else
 				Log::Info("Up to date");
+		}
+
+	private:
+		void RunBuildExtension(Path& libraryPath)
+		{
+			try
+			{
+				auto buildSystem = BuildSystem();
+
+				Log::Info("Running Build Extension: " + libraryPath.ToString());
+				auto library = Platform::DynamicLibraryManager::LoadDynamicLibrary(
+					libraryPath.ToString().c_str());
+				auto function = (int(*)(BuildEx::IBuildSystem&))library.GetFunction(
+					"?RegisterBuildExtension@@YAHAEAVIBuildSystem@BuildEx@Soup@@@Z");
+				auto result = function(buildSystem);
+				Log::Info("TestDLL Done: " + std::to_string(result));
+			}
+			catch (const char* message)
+			{
+				Log::Info(message);
+			}
+			catch (unsigned long error)
+			{
+				Log::Info("Failed: " + std::to_string(error));
+			}
+			catch (...)
+			{
+				Log::Info("Unknown failure...");
+			}
 		}
 
 	private:
