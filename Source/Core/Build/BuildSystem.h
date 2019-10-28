@@ -29,16 +29,30 @@ namespace Soup
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BuildSystem"/> class.
 		/// </summary>
-		BuildSystem()
+		BuildSystem() :
+			_includePaths()
 		{
 		}
 
 		/// <summary>
 		/// Add include path
 		/// </summary>
-		virtual void AddIncludePath(const char* path) override final
+		void AddIncludePath(const char* path) override final
 		{
-			Log::Info(path);
+			auto includePath = Path(path);
+			Log::Verbose("AddIncludePath: " + includePath.ToString());
+			_includePaths.push_back(std::move(includePath));
 		}
+
+		/// <summary>
+		/// Get the set of added include paths
+		/// </summary>
+		const std::vector<Path>& GetIncludePaths()
+		{
+			return _includePaths;
+		}
+
+	private:
+		std::vector<Path> _includePaths;
 	};
 }

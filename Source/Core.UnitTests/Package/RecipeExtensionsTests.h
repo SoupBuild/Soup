@@ -168,7 +168,7 @@ namespace Soup::UnitTests
 		}
 
 		[[Fact]]
-		void GetRecipeModulePath_MissingRecipeThrows()
+		void GetRecipeOutputPath_MissingRecipeThrows()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -182,7 +182,7 @@ namespace Soup::UnitTests
 			auto binaryDirectory = Path("out/bin/mock/");
 			std::string modileFileExtension = ".mock.bmi";
 			Assert::ThrowsRuntimeError([&packagePath, &binaryDirectory, &modileFileExtension]() {
-				auto result = RecipeExtensions::GetRecipeModulePath(packagePath, binaryDirectory, modileFileExtension);
+				auto result = RecipeExtensions::GetRecipeOutputPath(packagePath, binaryDirectory, modileFileExtension);
 			});
 
 			// Verify expected file system requests
@@ -204,7 +204,7 @@ namespace Soup::UnitTests
 		}
 
 		[[Fact]]
-		void GetRecipeModulePath_Exists()
+		void GetRecipeOutputPath_Exists()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -223,7 +223,7 @@ namespace Soup::UnitTests
 			auto packagePath = Path("Root/");
 			auto binaryDirectory = Path("out/bin/mock/");
 			std::string modileFileExtension = "mock.bmi";
-			auto result = RecipeExtensions::GetRecipeModulePath(packagePath, binaryDirectory, modileFileExtension);
+			auto result = RecipeExtensions::GetRecipeOutputPath(packagePath, binaryDirectory, modileFileExtension);
 
 			Assert::AreEqual(result, Path("Root/out/bin/mock/MyPackage.mock.bmi"), "Verify the result matches expected.");
 

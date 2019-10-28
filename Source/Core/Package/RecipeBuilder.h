@@ -37,6 +37,7 @@ namespace Soup
 			Log::Info("Building '" + recipe.GetName() + "'");
 
 			// Run all build tasks
+			auto buildSystem = BuildSystem();
 			if (recipe.HasDevDependencies())
 			{
 				for (auto dependecy : recipe.GetDevDependencies())
@@ -47,7 +48,7 @@ namespace Soup
 						RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration),
 						std::string(_compiler->GetDynamicLibraryFileExtension()));
 					
-					RunBuildExtension(libraryPath);
+					RunBuildExtension(libraryPath, buildSystem);
 				}
 			}
 
@@ -78,6 +79,17 @@ namespace Soup
 					linkLibraries);
 			}
 
+			// Combine the include paths from the recipe and the system
+			auto includePaths = buildSystem.GetIncludePaths();
+			if (recipe.HasIncludePaths())
+			{
+				auto recipeIncludePaths = recipe.GetIncludePathsAsPath();
+				includePaths.insert(
+					includePaths.end(),
+					recipeIncludePaths.begin(),
+					recipeIncludePaths.end());
+			}
+
 			// Build up arguments to build this individual recipe
 			auto buildArguments = BuildArguments();
 			buildArguments.TargetName = recipe.GetName();
@@ -94,8 +106,7 @@ namespace Soup
 			buildArguments.PreprocessorDefinitions = std::vector<std::string>({
 				"SOUP_BUILD",
 			});
-			buildArguments.IncludeDirectories =
-				recipe.HasIncludePaths() ? recipe.GetIncludePathsAsPath() : std::vector<Path>();
+			buildArguments.IncludeDirectories = std::move(includePaths);
 
 			// Set the correct optimization level for the requested configuration
 			if (arguments.Configuration == "debug")
@@ -159,31 +170,22 @@ namespace Soup
 		}
 
 	private:
-		void RunBuildExtension(Path& libraryPath)
+		void RunBuildExtension(Path& libraryPath, BuildEx::IBuildSystem& buildSystem)
 		{
 			try
 			{
-				auto buildSystem = BuildSystem();
-
-				Log::Info("Running Build Extension: " + libraryPath.ToString());
+				Log::Verbose("Running Build Extension: " + libraryPath.ToString());
 				auto library = Platform::DynamicLibraryManager::LoadDynamicLibrary(
 					libraryPath.ToString().c_str());
 				auto function = (int(*)(BuildEx::IBuildSystem&))library.GetFunction(
 					"?RegisterBuildExtension@@YAHAEAVIBuildSystem@BuildEx@Soup@@@Z");
 				auto result = function(buildSystem);
-				Log::Info("TestDLL Done: " + std::to_string(result));
-			}
-			catch (const char* message)
-			{
-				Log::Info(message);
-			}
-			catch (unsigned long error)
-			{
-				Log::Info("Failed: " + std::to_string(error));
+				Log::Verbose("Build Extension Done: " + std::to_string(result));
 			}
 			catch (...)
 			{
-				Log::Info("Unknown failure...");
+				Log::Error("Build Extension Failed!");
+				throw;
 			}
 		}
 
