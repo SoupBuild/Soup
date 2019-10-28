@@ -21,10 +21,15 @@ namespace Soup::Client
 	class Program
 	{
 	public:
+		Program() :
+			_filter(nullptr)
+		{
+		}
+
 		/// <summary>
 		/// The main entry point of the program
 		/// </summary>
-		static int Run(std::vector<std::string> args)
+		int Run(std::vector<std::string> args)
 		{
 			try
 			{
@@ -123,7 +128,7 @@ namespace Soup::Client
 			Log::Info("	version - Display the version of the command line application.");
 		}
 
-		static void SetupShared(SharedOptions& options)
+		void SetupShared(SharedOptions& options)
 		{
 			Log::Trace("Setup SharedOptions");
 			if (options.EnableVerbose)
@@ -133,25 +138,23 @@ namespace Soup::Client
 			}
 		}
 
-		static std::shared_ptr<ICommand> Setup(BuildOptions options)
+		std::shared_ptr<ICommand> Setup(BuildOptions options)
 		{
 			Log::Trace("Setup BuildOptions");
 			SetupShared(options);
 			return std::make_shared<BuildCommand>(
-				std::move(options),
-				GetCompiler());
+				std::move(options));
 		}
 
-		static std::shared_ptr<ICommand> Setup(RunOptions options)
+		std::shared_ptr<ICommand> Setup(RunOptions options)
 		{
 			Log::Trace("Setup RunCommand");
 			SetupShared(options);
 			return std::make_shared<RunCommand>(
-				std::move(options),
-				GetCompiler());
+				std::move(options));
 		}
 
-		static std::shared_ptr<ICommand> Setup(InitializeOptions options)
+		std::shared_ptr<ICommand> Setup(InitializeOptions options)
 		{
 			Log::Trace("Setup InitializeCommand");
 			SetupShared(options);
@@ -159,7 +162,7 @@ namespace Soup::Client
 				std::move(options));
 		}
 
-		static std::shared_ptr<ICommand> Setup(InstallOptions options)
+		std::shared_ptr<ICommand> Setup(InstallOptions options)
 		{
 			Log::Trace("Setup InstallCommand");
 			SetupShared(options);
@@ -167,7 +170,7 @@ namespace Soup::Client
 				std::move(options));
 		}
 
-		static std::shared_ptr<ICommand> Setup(PackOptions options)
+		std::shared_ptr<ICommand> Setup(PackOptions options)
 		{
 			Log::Trace("Setup PackCommand");
 			SetupShared(options);
@@ -175,7 +178,7 @@ namespace Soup::Client
 				std::move(options));
 		}
 
-		static std::shared_ptr<ICommand> Setup(PublishOptions options)
+		std::shared_ptr<ICommand> Setup(PublishOptions options)
 		{
 			Log::Trace("Setup PublishCommand");
 			SetupShared(options);
@@ -183,7 +186,7 @@ namespace Soup::Client
 				std::move(options));
 		}
 
-		static std::shared_ptr<ICommand> Setup(VersionOptions options)
+		std::shared_ptr<ICommand> Setup(VersionOptions options)
 		{
 			Log::Trace("Setup VersionCommand");
 			SetupShared(options);
@@ -191,7 +194,7 @@ namespace Soup::Client
 				std::move(options));
 		}
 
-		static std::shared_ptr<ICommand> Setup(ViewOptions options)
+		std::shared_ptr<ICommand> Setup(ViewOptions options)
 		{
 			Log::Trace("Setup ViewCommand");
 			SetupShared(options);
@@ -199,42 +202,7 @@ namespace Soup::Client
 				std::move(options));
 		}
 
-		// /// <summary>
-		// /// Load the local user config
-		// /// </summary>
-		// static LocalUserConfig GetUserConfig()
-		// {
-		//	 return new LocalUserConfig();
-		// }
-
-		// /// <summary>
-		// /// Create the soup api helper
-		// /// </summary>
-		// static ISoupIdentity GetSoupIdentity()
-		// {
-		//	 return new SoupIdentity();
-		// }
-
-		// /// <summary>
-		// /// Create the soup api helper
-		// /// </summary>
-		// static ISoupApi GetSoupApi()
-		// {
-		//	 return new SoupApi();
-		// }
-
-		/// <summary>
-		/// Setup the required Compiler
-		/// </summary>
-		static std::shared_ptr<ICompiler> GetCompiler()
-		{
-			return std::make_shared<Compiler::Clang::Compiler>();
-			// return std::make_shared<Compiler::MSVC::Compiler>();
-		}
-
 	private:
-		static std::shared_ptr<EventTypeFilter> _filter;
+		std::shared_ptr<EventTypeFilter> _filter;
 	};
-
-	std::shared_ptr<EventTypeFilter> Program::_filter = nullptr;
 }

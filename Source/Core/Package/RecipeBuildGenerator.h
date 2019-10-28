@@ -21,11 +21,11 @@ namespace Soup
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuildGenerator"/> class.
 		/// </summary>
-		RecipeBuildGenerator(std::shared_ptr<ICompiler> compiler) :
-			_compiler(std::move(compiler))
+		RecipeBuildGenerator(std::shared_ptr<ICompiler> systemCompiler) :
+			_systemCompiler(std::move(systemCompiler))
 		{
-			if (_compiler == nullptr)
-				throw std::runtime_error("Argument null: compiler");
+			if (_systemCompiler == nullptr)
+				throw std::runtime_error("Argument null: systemCompiler");
 		}
 
 		/// <summary>
@@ -131,13 +131,15 @@ namespace Soup
 				}
 
 				// Setup the recipe builder
-				auto builder = RecipeBuilder(compiler);
+				// TODO: Break out system compiler
+				bool isSystemBuild = false;
+				auto builder = RecipeBuilder(compiler, compiler);
 
 				// Run the build
 				auto arguments = RecipeBuildArguments();
 				arguments.ForceRebuild = false;
 				arguments.Configuration = "todo";
-				builder.Execute(packageRoot, recipe, arguments);
+				builder.Execute(packageRoot, recipe, arguments, isSystemBuild);
 
 				Log::Verbose("Build Completed.");
 				return 0;
@@ -435,15 +437,15 @@ namespace Soup
 				auto packagePath = RecipeExtensions::GetPackageReferencePath(targetDirectory, dependecy);
 				auto modulePath = RecipeExtensions::GetRecipeOutputPath(
 					packagePath,
-					RecipeExtensions::GetBinaryDirectory(*_compiler, "todo"),
-					std::string(_compiler->GetModuleFileExtension()));
+					RecipeExtensions::GetBinaryDirectory(*_systemCompiler, "todo"),
+					std::string(_systemCompiler->GetModuleFileExtension()));
 				includeModules.push_back(std::move(modulePath));
 			}
 
 			// Add the dependency static library closure to link if targeting an executable
 			std::vector<Path> linkLibraries;
 			RecipeExtensions::GenerateDependecyStaticLibraryClosure(
-				*_compiler,
+				*_systemCompiler,
 				"todo",
 				targetDirectory,
 				buildDependencies,
@@ -453,8 +455,8 @@ namespace Soup
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Soup.RecipeBuild";
 			arguments.WorkingDirectory = targetDirectory;
-			arguments.ObjectDirectory = RecipeExtensions::GetObjectDirectory(*_compiler, "todo");
-			arguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(*_compiler, "todo");
+			arguments.ObjectDirectory = RecipeExtensions::GetObjectDirectory(*_systemCompiler, "todo");
+			arguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(*_systemCompiler, "todo");
 			arguments.ModuleInterfaceSourceFile = Path();
 			arguments.SourceFiles = sourceFiles;
 			arguments.IncludeModules = std::move(includeModules);
@@ -464,13 +466,13 @@ namespace Soup
 			arguments.TargetType = BuildTargetType::Executable;
 
 			// Perform the build
-			auto buildEngine = BuildEngine(_compiler);
+			auto buildEngine = BuildEngine(_systemCompiler);
 			auto wasBuilt = buildEngine.Execute(arguments);
 
 			return arguments.BinaryDirectory + Path(arguments.TargetName + ".exe");
 		}
 
 	private:
-		std::shared_ptr<ICompiler> _compiler;
+		std::shared_ptr<ICompiler> _systemCompiler;
 	};
 }

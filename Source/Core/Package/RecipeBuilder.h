@@ -19,11 +19,16 @@ namespace Soup
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuilder"/> class.
 		/// </summary>
-		RecipeBuilder(std::shared_ptr<ICompiler> compiler) :
-			_compiler(std::move(compiler))
+		RecipeBuilder(
+			std::shared_ptr<ICompiler> systemCompiler,
+			std::shared_ptr<ICompiler> runtimeCompiler) :
+			_systemCompiler(std::move(systemCompiler)),
+			_runtimeCompiler(std::move(runtimeCompiler))
 		{
-			if (_compiler == nullptr)
-				throw std::runtime_error("Argument null: compiler");
+			if (_systemCompiler == nullptr)
+				throw std::runtime_error("Argument null: systemCompiler");
+			if (_runtimeCompiler == nullptr)
+				throw std::runtime_error("Argument null: runtimeCompiler");
 		}
 
 		/// <summary>
@@ -32,9 +37,20 @@ namespace Soup
 		void Execute(
 			const Path& workingDirectory,
 			const Recipe& recipe,
-			const RecipeBuildArguments& arguments)
+			const RecipeBuildArguments& arguments,
+			bool isSystemBuild)
 		{
-			Log::Info("Building '" + recipe.GetName() + "'");
+			std::shared_ptr<ICompiler> activeCompiler = nullptr;
+			if (isSystemBuild)
+			{
+				Log::Info("System Build '" + recipe.GetName() + "'");
+				activeCompiler = _systemCompiler;
+			}
+			else
+			{
+				Log::Info("Build '" + recipe.GetName() + "'");
+				activeCompiler = _runtimeCompiler;
+			}
 
 			// Run all build tasks
 			auto buildSystem = BuildSystem();
@@ -45,8 +61,8 @@ namespace Soup
 					auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
 					auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 						packagePath,
-						RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration),
-						std::string(_compiler->GetDynamicLibraryFileExtension()));
+						RecipeExtensions::GetBinaryDirectory(*_systemCompiler, arguments.Configuration),
+						std::string(_systemCompiler->GetDynamicLibraryFileExtension()));
 					
 					RunBuildExtension(libraryPath, buildSystem);
 				}
@@ -61,8 +77,8 @@ namespace Soup
 					auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
 					auto modulePath = RecipeExtensions::GetRecipeOutputPath(
 						packagePath,
-						RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration),
-						std::string(_compiler->GetModuleFileExtension()));
+						RecipeExtensions::GetBinaryDirectory(*activeCompiler, arguments.Configuration),
+						std::string(activeCompiler->GetModuleFileExtension()));
 					includeModules.push_back(std::move(modulePath));
 				}
 			}
@@ -72,7 +88,7 @@ namespace Soup
 			if (recipe.GetType() == RecipeType::Executable)
 			{
 				RecipeExtensions::GenerateDependecyStaticLibraryClosure(
-					*_compiler,
+					*activeCompiler,
 					arguments.Configuration,
 					workingDirectory,
 					recipe,
@@ -107,8 +123,12 @@ namespace Soup
 			auto buildArguments = BuildArguments();
 			buildArguments.TargetName = recipe.GetName();
 			buildArguments.WorkingDirectory = workingDirectory;
-			buildArguments.ObjectDirectory = RecipeExtensions::GetObjectDirectory(*_compiler, arguments.Configuration);
-			buildArguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(*_compiler, arguments.Configuration);
+			buildArguments.ObjectDirectory = RecipeExtensions::GetObjectDirectory(
+				*activeCompiler,
+				arguments.Configuration);
+			buildArguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(
+				*activeCompiler,
+				arguments.Configuration);
 			buildArguments.ModuleInterfaceSourceFile = 
 				recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
 			buildArguments.SourceFiles = recipe.GetSourceAsPath();
@@ -171,7 +191,7 @@ namespace Soup
 			}
 
 			// Perform the build
-			auto buildEngine = BuildEngine(_compiler);
+			auto buildEngine = BuildEngine(activeCompiler);
 			auto wasBuilt = buildEngine.Execute(buildArguments);
 
 			if (wasBuilt)
@@ -201,6 +221,7 @@ namespace Soup
 		}
 
 	private:
-		std::shared_ptr<ICompiler> _compiler;
+		std::shared_ptr<ICompiler> _systemCompiler;
+		std::shared_ptr<ICompiler> _runtimeCompiler;
 	};
 }

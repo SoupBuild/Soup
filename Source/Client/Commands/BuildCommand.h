@@ -17,9 +17,8 @@ namespace Soup::Client
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BuildCommand"/> class.
 		/// </summary>
-		BuildCommand(BuildOptions options, std::shared_ptr<ICompiler> compiler) :
-			_options(std::move(options)),
-			_compiler(std::move(compiler))
+		BuildCommand(BuildOptions options) :
+			_options(std::move(options))
 		{
 		}
 
@@ -29,6 +28,10 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Trace("BuildCommand::Run");
+
+			auto systemCompiler = std::make_shared<Compiler::Clang::Compiler>();
+			auto runtimeCompiler = systemCompiler; // std::make_shared<Compiler::MSVC::Compiler>();
+
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
 			{
@@ -66,12 +69,11 @@ namespace Soup::Client
 
 			// Now build the current project
 			Log::Verbose("Begin Build:");
-			auto buildManager = RecipeBuildManager(_compiler);
+			auto buildManager = RecipeBuildManager(systemCompiler, runtimeCompiler);
 			buildManager.Execute(workingDirectory, recipe, arguments);
 		}
 
 	private:
 		BuildOptions _options;
-		std::shared_ptr<ICompiler> _compiler;
 	};
 }

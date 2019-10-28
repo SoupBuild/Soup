@@ -20,9 +20,11 @@ namespace Soup
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuildManager"/> class.
 		/// </summary>
-		RecipeBuildManager(std::shared_ptr<ICompiler> compiler) :
-			_builder(compiler),
-			_generator(compiler)
+		RecipeBuildManager(
+			std::shared_ptr<ICompiler> systemCompiler,
+			std::shared_ptr<ICompiler> runtimeCompiler) :
+			_builder(systemCompiler, runtimeCompiler),
+			_generator(systemCompiler)
 		{
 			// Setup the core set of recipes that are required to break
 			// the circular build dependency from within the core command line executable
@@ -46,6 +48,7 @@ namespace Soup
 
 			// Enable log event ids to track individual builds
 			int projectId = 1;
+			bool isSystemBuild = false;
 			Log::EnsureListener().SetShowEventId(true);
 
 			// TODO: A scoped listener cleanup would be nice
@@ -55,12 +58,14 @@ namespace Soup
 					projectId,
 					workingDirectory,
 					recipe,
-					arguments);
+					arguments,
+					isSystemBuild);
 				BuildRecipe(
 					projectId,
 					workingDirectory,
 					recipe,
-					arguments);
+					arguments,
+					isSystemBuild);
 
 				Log::EnsureListener().SetShowEventId(false);
 			}
@@ -79,7 +84,8 @@ namespace Soup
 			int projectId,
 			const Path& workingDirectory,
 			const Recipe& recipe,
-			const RecipeBuildArguments& arguments)
+			const RecipeBuildArguments& arguments,
+			bool isSystemBuild)
 		{
 			if (recipe.HasDependencies())
 			{
@@ -100,14 +106,16 @@ namespace Soup
 						projectId,
 						packagePath,
 						dependecyRecipe,
-						arguments);
+						arguments,
+						isSystemBuild);
 
 					// Build this dependecy
 					projectId = BuildRecipe(
 						projectId,
 						packagePath,
 						dependecyRecipe,
-						arguments);
+						arguments,
+						isSystemBuild);
 				}
 			}
 
@@ -130,14 +138,16 @@ namespace Soup
 						projectId,
 						packagePath,
 						dependecyRecipe,
-						arguments);
+						arguments,
+						true);
 
 					// Build this dependecy
 					projectId = BuildRecipe(
 						projectId,
 						packagePath,
 						dependecyRecipe,
-						arguments);
+						arguments,
+						true);
 				}
 			}
 
@@ -153,7 +163,8 @@ namespace Soup
 			int projectId,
 			const Path& workingDirectory,
 			const Recipe& recipe,
-			const RecipeBuildArguments& arguments)
+			const RecipeBuildArguments& arguments,
+			bool isSystemBuild)
 		{
 			// TODO: RAII for active id
 			try
@@ -171,7 +182,7 @@ namespace Soup
 					// {
 						// Run the required builds in process
 						// This will break the circular requirments for the core build libraries
-						RunInProcessBuild(projectId, workingDirectory, recipe, arguments);
+						RunInProcessBuild(projectId, workingDirectory, recipe, arguments, isSystemBuild);
 					// }
 					// else
 					// {
@@ -202,9 +213,10 @@ namespace Soup
 			int projectId,
 			const Path& packageRoot,
 			const Recipe& recipe,
-			const RecipeBuildArguments& arguments)
+			const RecipeBuildArguments& arguments,
+			bool isSystemBuild)
 		{
-			_builder.Execute(packageRoot, recipe, arguments);
+			_builder.Execute(packageRoot, recipe, arguments, isSystemBuild);
 		}
 
 		void RunGenerateBuild(

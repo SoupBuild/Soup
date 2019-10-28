@@ -20,7 +20,7 @@ namespace Soup::UnitTests
 		void Initialize_NullCompilerThrows()
 		{
 			Assert::ThrowsRuntimeError([]() {
-				auto uut = RecipeBuilder(nullptr);
+				auto uut = RecipeBuildGenerator(nullptr);
 			});
 		}
 

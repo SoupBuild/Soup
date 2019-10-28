@@ -17,11 +17,8 @@ namespace Soup::Client
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RunCommand"/> class.
 		/// </summary>
-		RunCommand(
-			RunOptions options,
-			std::shared_ptr<ICompiler> compiler) :
-			_options(std::move(options)),
-			_compiler(std::move(compiler))
+		RunCommand(RunOptions options) :
+			_options(std::move(options))
 		{
 		}
 
@@ -31,6 +28,9 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Trace("RunCommand::Run");
+
+			auto runtimeCompiler = std::make_shared<Compiler::Clang::Compiler>();
+
 			auto workingDirectory = Path::GetCurrentDirectory();
 			auto recipePath = 
 				workingDirectory +
@@ -51,7 +51,7 @@ namespace Soup::Client
 
 			// Ensure the executable exists
 			auto configuration = "release";
-			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(*_compiler, configuration);
+			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(*runtimeCompiler, configuration);
 			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
 			Log::Verbose(executablePath.ToString());
 			if (!IFileSystem::Current().Exists(executablePath))
@@ -88,6 +88,5 @@ namespace Soup::Client
 
 	private:
 		RunOptions _options;
-		std::shared_ptr<ICompiler> _compiler;
 	};
 }

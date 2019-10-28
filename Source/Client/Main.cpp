@@ -17,5 +17,6 @@ int main(int argc, char** argv)
 		args.push_back(argv[i]);
 	}
 
-	return Soup::Client::Program::Run(std::move(args));
+	auto program = Soup::Client::Program();
+	return program.Run(std::move(args));
 }
