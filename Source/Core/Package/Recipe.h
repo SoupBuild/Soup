@@ -29,7 +29,8 @@ namespace Soup
 			_devDependencies(std::nullopt),
 			_public(std::nullopt),
 			_source(std::nullopt),
-			_includePaths(std::nullopt)
+			_includePaths(std::nullopt),
+			_defines(std::nullopt)
 		{
 		}
 
@@ -48,7 +49,8 @@ namespace Soup
 			_devDependencies(std::nullopt),
 			_public(std::nullopt),
 			_source(std::nullopt),
-			_includePaths(std::nullopt)
+			_includePaths(std::nullopt),
+			_defines(std::nullopt)
 		{
 		}
 
@@ -64,7 +66,8 @@ namespace Soup
 			std::optional<std::vector<PackageReference>> devDependencies,
 			std::optional<std::string> publicFile,
 			std::optional<std::vector<std::string>> source,
-			std::optional<std::vector<std::string>> includePaths) :
+			std::optional<std::vector<std::string>> includePaths,
+			std::optional<std::vector<std::string>> defines) :
 			_isDirty(false),
 			_name(std::move(name)),
 			_version(version),
@@ -74,7 +77,8 @@ namespace Soup
 			_devDependencies(std::move(devDependencies)),
 			_public(std::move(publicFile)),
 			_source(std::move(source)),
-			_includePaths(std::move(includePaths))
+			_includePaths(std::move(includePaths)),
+			_defines(std::move(defines))
 		{
 		}
 
@@ -318,11 +322,27 @@ namespace Soup
 			return result;
 		}
 
-		void SetIncludePaths(const std::vector<std::string>& value)
+		/// <summary>
+		/// Gets or sets the define values
+		/// TODO: Observable?
+		/// </summary>
+		bool HasDefines() const
 		{
-			if (!HasIncludePaths() || _includePaths.value() != value)
+			return _defines.has_value();
+		}
+
+		const std::vector<std::string>& GetDefines() const
+		{
+			if (!HasDefines())
+				throw std::runtime_error("No defines.");
+			return _defines.value();
+		}
+
+		void SetDefines(const std::vector<std::string>& value)
+		{
+			if (!HasDefines() || _defines.value() != value)
 			{
-				_includePaths = value;
+				_defines = value;
 				_isDirty = true;
 			}
 		}
@@ -340,7 +360,8 @@ namespace Soup
 				_devDependencies == rhs._devDependencies &&
 				_public == rhs._public &&
 				_source == rhs._source &&
-				_includePaths == rhs._includePaths;
+				_includePaths == rhs._includePaths &&
+				_defines == rhs._defines;
 		}
 
 		/// <summary>
@@ -364,5 +385,6 @@ namespace Soup
 		std::optional<std::string> _public;
 		std::optional<std::vector<std::string>> _source;
 		std::optional<std::vector<std::string>> _includePaths;
+		std::optional<std::vector<std::string>> _defines;
 	};
 }

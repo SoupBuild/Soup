@@ -25,6 +25,7 @@ namespace Soup::UnitTests
 			Assert::IsFalse(uut.HasPublic(), "Verify has no public.");
 			Assert::IsFalse(uut.HasSource(), "Verify has no source.");
 			Assert::IsFalse(uut.HasIncludePaths(), "Verify has no include paths.");
+			Assert::IsFalse(uut.HasDefines(), "Verify has no defines.");
 		}
 
 		[[Fact]]
@@ -47,6 +48,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::IsFalse(uut.IsDirty(), "Verify is not dirty.");
@@ -85,7 +89,14 @@ namespace Soup::UnitTests
 					"Include/",
 				}),
 				uut.GetIncludePaths(),
-				"Verify include paths is correct.");
+				"Verify include paths are correct.");
+			Assert::IsTrue(uut.HasDefines(), "Verify has defines.");
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"MY_FLAG",
+				}),
+				uut.GetDefines(),
+				"Verify include defines are correct.");
 		}
 
 		[[Fact]]
@@ -116,6 +127,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreEqual(
@@ -136,6 +150,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify equal.");
@@ -161,6 +178,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -181,6 +201,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -206,6 +229,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -226,6 +252,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -251,6 +280,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -271,6 +303,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -296,6 +331,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -316,6 +354,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -341,6 +382,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -361,6 +405,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -386,6 +433,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -406,6 +456,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -431,6 +484,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -450,6 +506,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -475,6 +534,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -493,6 +555,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -518,6 +583,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -537,6 +605,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -562,6 +633,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -580,6 +654,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -605,6 +682,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -625,6 +705,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -650,6 +733,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -670,6 +756,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -695,6 +784,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -714,6 +806,9 @@ namespace Soup::UnitTests
 					}),
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -739,6 +834,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -757,6 +855,9 @@ namespace Soup::UnitTests
 					std::nullopt,
 					std::vector<std::string>({
 						"Include/",
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -782,6 +883,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -801,6 +905,9 @@ namespace Soup::UnitTests
 						"SomeFile.cpp",
 					}),
 					std::vector<std::string>({
+					}),
+					std::vector<std::string>({
+						"MY_FLAG",
 					})),
 				uut,
 				"Verify are not equal.");
@@ -826,6 +933,9 @@ namespace Soup::UnitTests
 				}),
 				std::vector<std::string>({
 					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
 				}));
 
 			Assert::AreNotEqual(
@@ -843,6 +953,108 @@ namespace Soup::UnitTests
 					"Main.cpp",
 					std::vector<std::string>({
 						"SomeFile.cpp",
+					}),
+					std::nullopt,
+					std::vector<std::string>({
+						"MY_FLAG",
+					})),
+				uut,
+				"Verify are not equal.");
+		}
+
+		[[Fact]]
+		void OperatorNotEqualDefines()
+		{
+			auto uut = Recipe(
+				"MyPackage",
+				SemanticVersion(1, 2, 3),
+				RecipeType::Executable,
+				RecipeLanguageVersion::CPP17,
+				std::vector<PackageReference>({
+					PackageReference(Path("../OtherPackage")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
+				"Main.cpp",
+				std::vector<std::string>({
+					"SomeFile.cpp",
+				}),
+				std::vector<std::string>({
+					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
+				}));
+
+			Assert::AreNotEqual(
+				Recipe(
+					"MyPackage",
+					SemanticVersion(1, 2, 3),
+					RecipeType::Executable,
+					RecipeLanguageVersion::CPP17,
+					std::vector<PackageReference>({
+						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
+					}),
+					"Main.cpp",
+					std::vector<std::string>({
+						"SomeFile.cpp",
+					}),
+					std::vector<std::string>({
+					"Include/",
+					}),
+					std::vector<std::string>({
+					})),
+				uut,
+				"Verify are not equal.");
+		}
+
+		[[Fact]]
+		void OperatorNotEqualNoDefines()
+		{
+			auto uut = Recipe(
+				"MyPackage",
+				SemanticVersion(1, 2, 3),
+				RecipeType::Executable,
+				RecipeLanguageVersion::CPP17,
+				std::vector<PackageReference>({
+					PackageReference(Path("../OtherPackage")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask")),
+				}),
+				"Main.cpp",
+				std::vector<std::string>({
+					"SomeFile.cpp",
+				}),
+				std::vector<std::string>({
+					"Include/",
+				}),
+				std::vector<std::string>({
+					"MY_FLAG",
+				}));
+
+			Assert::AreNotEqual(
+				Recipe(
+					"MyPackage",
+					SemanticVersion(1, 2, 3),
+					RecipeType::Executable,
+					RecipeLanguageVersion::CPP17,
+					std::vector<PackageReference>({
+						PackageReference(Path("../OtherPackage")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask")),
+					}),
+					"Main.cpp",
+					std::vector<std::string>({
+						"SomeFile.cpp",
+					}),
+					std::vector<std::string>({
+						"Include/",
 					}),
 					std::nullopt),
 				uut,

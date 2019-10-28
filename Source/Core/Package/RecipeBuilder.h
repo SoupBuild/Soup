@@ -90,6 +90,19 @@ namespace Soup
 					recipeIncludePaths.end());
 			}
 
+			// Combine the defines with the default set
+			auto defines = std::vector<std::string>({
+				"SOUP_BUILD",
+			});
+			if (recipe.HasDefines())
+			{
+				auto& recipeDefines = recipe.GetDefines();
+				defines.insert(
+					defines.end(),
+					recipeDefines.begin(),
+					recipeDefines.end());
+			}
+
 			// Build up arguments to build this individual recipe
 			auto buildArguments = BuildArguments();
 			buildArguments.TargetName = recipe.GetName();
@@ -103,9 +116,7 @@ namespace Soup
 			buildArguments.LinkLibraries = std::move(linkLibraries);
 			buildArguments.IsIncremental = !arguments.ForceRebuild;
 			buildArguments.GenerateSourceDebugInfo = false;
-			buildArguments.PreprocessorDefinitions = std::vector<std::string>({
-				"SOUP_BUILD",
-			});
+			buildArguments.PreprocessorDefinitions = std::move(defines);
 			buildArguments.IncludeDirectories = std::move(includePaths);
 
 			// Set the correct optimization level for the requested configuration

@@ -74,7 +74,8 @@ namespace Soup::UnitTests
 					"devDependencies": [],
 					"public": "Public.cpp",
 					"source": [],
-					"includePaths": []
+					"includePaths": [],
+					"defines": []
 				})");
 			auto actual = RecipeJson::Deserialize(recipe);
 
@@ -86,6 +87,7 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>(),
 				std::vector<PackageReference>(),
 				"Public.cpp",
+				std::vector<std::string>(),
 				std::vector<std::string>(),
 				std::vector<std::string>());
 
@@ -123,6 +125,7 @@ namespace Soup::UnitTests
 				std::vector<PackageReference>(),
 				"Public.cpp",
 				std::vector<std::string>(),
+				std::vector<std::string>(),
 				std::vector<std::string>());
 
 			std::stringstream actual;
@@ -138,7 +141,8 @@ namespace Soup::UnitTests
 					"devDependencies": [],
 					"public": "Public.cpp",
 					"source": [],
-					"includePaths": []
+					"includePaths": [],
+					"defines": []
 				})";
 
 			VerifyJsonEquals(expected, actual.str(), "Verify matches expected.");

@@ -23,6 +23,7 @@ namespace Soup
 		static constexpr const char* Property_Public = "public";
 		static constexpr const char* Property_Source = "source";
 		static constexpr const char* Property_IncludePaths = "includePaths";
+		static constexpr const char* Property_Defines = "defines";
 
 	public:
 		/// <summary>
@@ -72,6 +73,7 @@ namespace Soup
 			std::optional<std::string> publicFile;
 			std::optional<std::vector<std::string>> source;
 			std::optional<std::vector<std::string>> includePaths;
+			std::optional<std::vector<std::string>> defines;
 
 			if (!value[Property_Name].is_null())
 			{
@@ -155,6 +157,17 @@ namespace Soup
 				includePaths = std::move(values);
 			}
 
+			if (!value[Property_Defines].is_null())
+			{
+				auto values = std::vector<std::string>();
+				for (auto& value : value[Property_Defines].array_items())
+				{
+					values.push_back(value.string_value());
+				}
+
+				defines = std::move(values);
+			}
+
 			return Recipe(
 				std::move(name),
 				version,
@@ -164,7 +177,8 @@ namespace Soup
 				std::move(devDependencies),
 				std::move(publicFile),
 				std::move(source),
-				std::move(includePaths));
+				std::move(includePaths),
+				std::move(defines));
 		}
 
 		static json11::Json BuildJson(const Recipe& recipe)
@@ -232,6 +246,17 @@ namespace Soup
 				}
 
 				result[Property_IncludePaths] = std::move(includePaths);
+			}
+
+			if (recipe.HasDefines())
+			{
+				json11::Json::array defines;
+				for (auto& value : recipe.GetDefines())
+				{
+					defines.push_back(value);
+				}
+
+				result[Property_Defines] = std::move(defines);
 			}
 
 			return result;
