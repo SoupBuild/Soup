@@ -15,6 +15,12 @@ namespace Soup::Client
 	{
 	public:
 		/// <summary>
+		/// Gets or sets the executable path
+		/// </summary>
+		[[Args::ToolPath]]
+		std::string ExecutablePath;
+
+		/// <summary>
 		/// Pass through all of the remaining arguments
 		/// </summary>
 		std::vector<std::string> Arguments;

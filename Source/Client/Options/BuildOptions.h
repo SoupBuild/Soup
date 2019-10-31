@@ -15,6 +15,12 @@ namespace Soup::Client
 	{
 	public:
 		/// <summary>
+		/// Gets or sets the executable path
+		/// </summary>
+		[[Args::ToolPath]]
+		std::string ExecutablePath;
+
+		/// <summary>
 		/// Gets or sets the path to build
 		/// </summary>
 		[[Args::Option("path", Index = 0, HelpText = "Path to the package to build.")]]

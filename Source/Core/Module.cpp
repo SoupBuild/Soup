@@ -27,3 +27,4 @@ import json11;
 #include "Utils\PlatformProcessManager.h"
 #include "Utils\SemanticVersion.h"
 #include "Utils\STLFileSystem.h"
+#include "LocalUserConfigJson.h"

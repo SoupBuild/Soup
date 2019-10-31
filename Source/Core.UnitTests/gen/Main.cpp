@@ -25,6 +25,9 @@ using namespace SoupTest;
 #include "Utils\PathTests.gen.h"
 #include "Utils\SemanticVersionTests.gen.h"
 
+#include "LocalUserConfigJsonTests.gen.h"
+#include "LocalUserConfigTests.gen.h"
+
 int main()
 {
 	std::cout << "Running Tests..." << std::endl;
@@ -49,6 +52,9 @@ int main()
 
 	state += RunPathTests();
 	state += RunSemanticVersionTests();
+	
+	state += RunLocalUserConfigJsonTests();
+	state += RunLocalUserConfigTests();
 
 	std::cout << state.FailCount << " FAILED." << std::endl;
 	std::cout << state.PassCount << " PASSED." << std::endl;

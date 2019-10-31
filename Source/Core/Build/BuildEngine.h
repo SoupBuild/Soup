@@ -202,7 +202,7 @@ namespace Soup
 
 				// Compile the individual translation unit
 				const auto& file = arguments.ModuleInterfaceSourceFile;
-				Log::Verbose(file.ToString());
+				Log::Info(file.ToString());
 				compileArguments.SourceFile = file;
 				compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
 				compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
@@ -321,7 +321,7 @@ namespace Soup
 				// Compile the individual translation units
 				for (auto& file : source)
 				{
-					Log::Verbose(file.ToString());
+					Log::Info(file.ToString());
 					compileArguments.SourceFile = file;
 					compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
 					compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());

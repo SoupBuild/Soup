@@ -29,8 +29,36 @@ namespace Soup::Client
 		{
 			Log::Trace("BuildCommand::Run");
 
-			auto systemCompiler = std::make_shared<Compiler::Clang::Compiler>();
-			auto runtimeCompiler = systemCompiler; // std::make_shared<Compiler::MSVC::Compiler>();
+			// Load the user config
+			auto toolPath = Path(_options.ExecutablePath);
+			toolPath.SetFilename("");
+			auto localUserConfigFile = toolPath + Path("LocalUserConfig.json");
+			auto config = LocalUserConfig();
+			if (!LocalUserConfigJson::TryLoadFromFile(localUserConfigFile, config))
+			{
+				throw std::runtime_error("Failed to parse user config.");
+			}
+
+			auto systemCompiler = std::make_shared<Compiler::Clang::Compiler>(
+				Path(config.GetClangToolPath()));
+			std::shared_ptr<ICompiler> runtimeCompiler = nullptr;
+			if (config.GetRuntimeCompiler() == "clang")
+			{
+				runtimeCompiler = std::make_shared<Compiler::Clang::Compiler>(
+					Path(config.GetClangToolPath()));
+			}
+			else if (config.GetRuntimeCompiler() == "msvc")
+			{
+				runtimeCompiler = std::make_shared<Compiler::MSVC::Compiler>(
+					Path(config.GetMSVCToolPath()),
+					Path("cl.exe"),
+					Path("link.exe"),
+					Path("lib.exe"));
+			}
+			else
+			{
+				throw std::runtime_error("Unknown compiler.");
+			}
 
 			auto workingDirectory = Path();
 			if (_options.Path.empty())

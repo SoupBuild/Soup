@@ -13,12 +13,15 @@ namespace Soup::Compiler::Clang
 	export class Compiler : public ICompiler
 	{
 	private:
-		// static Path ToolsPath = "C:/Program Files/llvm/";
-		static constexpr std::string_view ToolsPath = "C:/Clang";
-		static constexpr std::string_view CompilerExecutable = "bin/clang++.exe";
-		static constexpr std::string_view LinkerExecutable = "bin/llvm-ar.exe";
+		static constexpr std::string_view CompilerExecutable = "clang++.exe";
+		static constexpr std::string_view LinkerExecutable = "llvm-ar.exe";
 
 	public:
+		Compiler(Path toolPath) :
+			_toolPath(std::move(toolPath))
+		{
+		}
+
 		/// <summary>
 		/// Gets the unique name for the compiler
 		/// </summary>
@@ -88,11 +91,11 @@ namespace Soup::Compiler::Clang
 			switch (args.TargetType)
 			{
 				case LinkTarget::StaticLibrary:
-					executablePath = Path(ToolsPath) + Path(LinkerExecutable);
+					executablePath = _toolPath + Path(LinkerExecutable);
 					break;
 				case LinkTarget::DynamicLibrary:
 				case LinkTarget::Executable:
-					executablePath = Path(ToolsPath) + Path(CompilerExecutable);
+					executablePath = _toolPath + Path(CompilerExecutable);
 					break;
 				default:
 					throw std::runtime_error("Unknown LinkTarget.");
@@ -125,7 +128,7 @@ namespace Soup::Compiler::Clang
 	private:
 		CompileResult CompileStandard(const CompileArguments& args)
 		{
-			auto executablePath = Path(ToolsPath) + Path(CompilerExecutable);
+			auto executablePath = _toolPath + Path(CompilerExecutable);
 			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args);
 
 			auto result = IProcessManager::Current().Execute(
@@ -168,7 +171,7 @@ namespace Soup::Compiler::Clang
 
 		CompileResult CompileModuleInterfaceUnit(const CompileArguments& args)
 		{
-			auto executablePath = Path(ToolsPath) + Path(CompilerExecutable);
+			auto executablePath = _toolPath + Path(CompilerExecutable);
 
 			// Replace the final object target with the intermediate precompiled module
 			auto generatePrecompiledModuleArgs = CompileArguments();
@@ -335,5 +338,8 @@ namespace Soup::Compiler::Clang
 
 			return depth;
 		}
+
+	private:
+		Path _toolPath;
 	};
 }

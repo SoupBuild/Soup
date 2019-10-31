@@ -26,13 +26,10 @@ namespace Soup::Compiler::MSVC
 			auto commandArgs = std::vector<std::string>();
 
 			// Enable verbose output
-			// commandArgs.Add("-v");
+			// commandArgs.push_back("-v");
 
-			// Disable warnings on unknown attributes to allow test attributes
-			// commandArgs.push_back("-Wno-unknown-attributes");
-
-			// Disable ms compatibility (workaround for bug with inplicit types in pcm)
-			// commandArgs.push_back("-fno-ms-compatibility");
+			// Disable the logo
+			commandArgs.push_back("/nologo");
 
 			// Enable Header includes if needed
 			if (args.GenerateIncludeTree)
@@ -97,12 +94,12 @@ namespace Soup::Compiler::MSVC
 			}
 
 			// Ignore Standard Include Paths to prevent pulling in accidental headers
-			// commandArgs.Add("-X");
+			// commandArgs.push_back("-X");
 
 			// Add in the std include paths
 
 			// Enable c++ exceptions
-			// commandArgs.Add("-EHs");
+			commandArgs.push_back("/EHsc");
 
 			// Add the module references
 			for (auto& moduleFile : args.IncludeModules)
@@ -129,8 +126,7 @@ namespace Soup::Compiler::MSVC
 			commandArgs.push_back(args.SourceFile.ToString());
 
 			// Add the target file
-			commandArgs.push_back("/o");
-			commandArgs.push_back(args.TargetFile.ToString());
+			commandArgs.push_back("/Fo\"" + args.TargetFile.ToString() + "\"");
 
 			return commandArgs;
 		}
@@ -150,18 +146,13 @@ namespace Soup::Compiler::MSVC
 			{
 				case LinkTarget::StaticLibrary:
 				{
-					// Static libraries are linked with ar
-					// r - Replace existing
-					// c - Create without warning if does not exist
-					commandArgs.push_back("rc");
-
-					// Add the output file
-					commandArgs.push_back(args.TargetFile.ToString());
+					// Set the target output
+					commandArgs.push_back("/OUT:\"" + args.TargetFile.ToString() + "\"");
 					break;
 				}
 				case LinkTarget::Executable:
 				{
-					// Executables are put together by clang
+					// Executables and dynamic libraries use linker
 
 					// Enable verbose output
 					// commandArgs.push_back("-v");

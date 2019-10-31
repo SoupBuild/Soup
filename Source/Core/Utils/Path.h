@@ -144,6 +144,14 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Set the filename
+		/// </summary>
+		void SetFilename(std::string_view value)
+		{
+			_filename = std::string(value);
+		}
+
+		/// <summary>
 		/// Set the file extension
 		/// </summary>
 		void SetFileExtension(std::string_view value)

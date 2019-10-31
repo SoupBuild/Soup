@@ -12,7 +12,7 @@ namespace Soup::Compiler::Clang::UnitTests
 		[[Fact]]
 		void Initialize()
 		{
-			auto uut = Compiler();
+			auto uut = Compiler(Path("C:/Clang/bin/"));
 			Assert::AreEqual(uut.GetName(), std::string_view("Clang"), "Verify name match expected.");
 			Assert::AreEqual(uut.GetObjectFileExtension(), std::string_view("o"), "Verify object file extension match expected.");
 			Assert::AreEqual(uut.GetModuleFileExtension(), std::string_view("pcm"), "Verify module file extension match expected.");
@@ -27,7 +27,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			IProcessManager::Register(processManager);
 
-			auto uut = Compiler();
+			auto uut = Compiler(Path("C:/Clang/bin/"));
 
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
@@ -52,7 +52,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			IProcessManager::Register(processManager);
 
-			auto uut = Compiler();
+			auto uut = Compiler(Path("C:/Clang/bin/"));
 
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
@@ -88,7 +88,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			IProcessManager::Register(processManager);
 
-			auto uut = Compiler();
+			auto uut = Compiler(Path("C:/Clang/bin/"));
 
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
@@ -116,7 +116,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			IProcessManager::Register(processManager);
 
-			auto uut = Compiler();
+			auto uut = Compiler(Path("C:/Clang/bin/"));
 
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::Executable;

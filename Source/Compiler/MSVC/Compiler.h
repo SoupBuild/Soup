@@ -12,13 +12,15 @@ namespace Soup::Compiler::MSVC
 	/// </summary>
 	export class Compiler : public ICompiler
 	{
-	private:
-		// static Path ToolsPath = "C:/Program Files/llvm/";
-		static constexpr std::string_view ToolsPath = "C:/Clang";
-		static constexpr std::string_view CompilerExecutable = "bin/clang-cl.exe";
-		static constexpr std::string_view LinkerExecutable = "bin/lld-link.exe";
-
 	public:
+		Compiler(Path toolsPath, Path compilerExecutable, Path linkerExecutable, Path libraryExecutable) :
+			_toolsPath(std::move(toolsPath)),
+			_compilerExecutable(std::move(compilerExecutable)),
+			_linkerExecutable(std::move(linkerExecutable)),
+			_libraryExecutable(std::move(libraryExecutable))
+		{
+		}
+
 		/// <summary>
 		/// Gets the unique name for the compiler
 		/// </summary>
@@ -88,10 +90,11 @@ namespace Soup::Compiler::MSVC
 			switch (args.TargetType)
 			{
 				case LinkTarget::StaticLibrary:
-					executablePath = Path(ToolsPath) + Path(LinkerExecutable);
+					executablePath = _toolsPath + _libraryExecutable;
 					break;
+				case LinkTarget::DynamicLibrary:
 				case LinkTarget::Executable:
-					executablePath = Path(ToolsPath) + Path(CompilerExecutable);
+					executablePath = _toolsPath + _linkerExecutable;
 					break;
 				default:
 					throw std::runtime_error("Unknown LinkTarget.");
@@ -124,7 +127,7 @@ namespace Soup::Compiler::MSVC
 	private:
 		CompileResult CompileStandard(const CompileArguments& args)
 		{
-			auto executablePath = Path(ToolsPath) + Path(CompilerExecutable);
+			auto executablePath = _toolsPath + _compilerExecutable;
 			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args);
 
 			auto result = IProcessManager::Current().Execute(
@@ -167,7 +170,7 @@ namespace Soup::Compiler::MSVC
 
 		CompileResult CompileModuleInterfaceUnit(const CompileArguments& args)
 		{
-			auto executablePath = Path(ToolsPath) + Path(CompilerExecutable);
+			auto executablePath = _toolsPath + _compilerExecutable;
 
 			// Replace the final object target with the intermediate precompiled module
 			auto generatePrecompiledModuleArgs = CompileArguments();
@@ -334,5 +337,11 @@ namespace Soup::Compiler::MSVC
 
 			return depth;
 		}
+
+	private:
+		Path _toolsPath;
+		Path _compilerExecutable;
+		Path _linkerExecutable;
+		Path _libraryExecutable;
 	};
 }
