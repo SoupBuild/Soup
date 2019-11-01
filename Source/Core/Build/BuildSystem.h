@@ -14,6 +14,7 @@ namespace Soup::BuildEx
 	{
 	public:
 		virtual void AddIncludePath(const char* path) = 0;
+		virtual void AddLibraryPath(const char* path) = 0;
 	};
 }
 
@@ -45,6 +46,16 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Add library path
+		/// </summary>
+		void AddLibraryPath(const char* path) override final
+		{
+			auto libraryPath = Path(path);
+			Log::Verbose("AddLibraryPath: " + libraryPath.ToString());
+			_libraryPaths.push_back(std::move(libraryPath));
+		}
+
+		/// <summary>
 		/// Get the set of added include paths
 		/// </summary>
 		const std::vector<Path>& GetIncludePaths()
@@ -52,7 +63,16 @@ namespace Soup
 			return _includePaths;
 		}
 
+		/// <summary>
+		/// Get the set of added library paths
+		/// </summary>
+		const std::vector<Path>& GetLibraryPaths()
+		{
+			return _libraryPaths;
+		}
+
 	private:
 		std::vector<Path> _includePaths;
+		std::vector<Path> _libraryPaths;
 	};
 }

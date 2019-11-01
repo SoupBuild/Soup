@@ -141,26 +141,15 @@ namespace Soup::Compiler::MSVC
 
 			// Calculate object output file
 			auto commandArgs = std::vector<std::string>();
-
 			switch (args.TargetType)
 			{
 				case LinkTarget::StaticLibrary:
 				{
-					// Set the target output
-					commandArgs.push_back("/OUT:\"" + args.TargetFile.ToString() + "\"");
 					break;
 				}
 				case LinkTarget::Executable:
 				{
 					// Executables and dynamic libraries use linker
-
-					// Disable the logo
-					commandArgs.push_back("/NOLOGO");
-
-					// Enable verbose output
-					// commandArgs.push_back("-v");
-
-					commandArgs.push_back("/OUT:\"" + args.TargetFile.ToString() + "\"");
 					break;
 				}
 				default:
@@ -168,6 +157,21 @@ namespace Soup::Compiler::MSVC
 					throw std::runtime_error("Unknown LinkTarget.");
 				}
 			}
+
+			// Disable the logo
+			commandArgs.push_back("/NOLOGO");
+
+			// Enable verbose output
+			// commandArgs.push_back("-v");
+
+			// Set the include paths
+			for (auto directory : args.LibraryPaths)
+			{
+				auto argument = "/LIBPATH:\"" + directory.ToString() + "\"";
+				commandArgs.push_back(std::move(argument));
+			}
+
+			commandArgs.push_back("/OUT:\"" + args.TargetFile.ToString() + "\"");
 
 			// Add the library files
 			for (auto& file : args.LibraryFiles)

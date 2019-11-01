@@ -47,6 +47,31 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/NOLOGO",
+				"/OUT:\"Library.mock.lib\"",
+				"File.mock.o",
+			});
+
+			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+		}
+
+		[[Fact]]
+		void StaticLibrary_LibraryPaths()
+		{
+			LinkArguments arguments = {};
+			arguments.TargetType = LinkTarget::StaticLibrary;
+			arguments.TargetFile = Path("Library.mock.lib");
+			arguments.ObjectFiles = std::vector<Path>({
+				Path("File.mock.o"),
+			});
+			arguments.LibraryPaths = std::vector<Path>({
+				Path("../libraries/"),
+			});
+			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
+
+			auto expected = std::vector<std::string>({
+				"/NOLOGO",
+				"/LIBPATH:\"../libraries/\"",
 				"/OUT:\"Library.mock.lib\"",
 				"File.mock.o",
 			});

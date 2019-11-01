@@ -148,9 +148,14 @@ namespace Soup
 		std::vector<Path> IncludeModules;
 
 		/// <summary>
-		/// Gets or sets the list of link
+		/// Gets or sets the list of link libraries
 		/// </summary>
 		std::vector<Path> LinkLibraries;
+
+		/// <summary>
+		/// Gets or sets the list of library paths
+		/// </summary>
+		std::vector<Path> LibraryPaths;
 
 		/// <summary>
 		/// Gets or sets the list of preprocessor definitions
@@ -187,6 +192,8 @@ namespace Soup
 				SourceFiles == rhs.SourceFiles &&
 				IncludeDirectories == rhs.IncludeDirectories &&
 				IncludeModules == rhs.IncludeModules &&
+				LinkLibraries == rhs.LinkLibraries &&
+				LibraryPaths == rhs.LibraryPaths &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
 				IsIncremental == rhs.IsIncremental &&
 				OptimizationLevel == rhs.OptimizationLevel &&

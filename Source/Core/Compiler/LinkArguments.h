@@ -72,6 +72,11 @@ namespace Soup
 		std::vector<Path> LibraryFiles;
 
 		/// <summary>
+		/// Gets or sets the list of library paths
+		/// </summary>
+		std::vector<Path> LibraryPaths;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		bool operator ==(const LinkArguments& rhs) const
@@ -80,7 +85,8 @@ namespace Soup
 				TargetType == rhs.TargetType &&
 				RootDirectory == rhs.RootDirectory &&
 				ObjectFiles == rhs.ObjectFiles &&
-				LibraryFiles == rhs.LibraryFiles;
+				LibraryFiles == rhs.LibraryFiles &&
+				LibraryPaths == rhs.LibraryPaths;
 		}
 
 		bool operator !=(const LinkArguments& rhs) const
@@ -102,6 +108,11 @@ namespace Soup
 			stringBuilder << "], [";
 
 			for (auto& value : LibraryFiles)
+				stringBuilder << value.ToString() << ", ";
+
+			stringBuilder << "], [";
+
+			for (auto& value : LibraryPaths)
 				stringBuilder << value.ToString() << ", ";
 
 			stringBuilder << "]";

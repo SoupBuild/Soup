@@ -106,6 +106,9 @@ namespace Soup
 					recipeIncludePaths.end());
 			}
 
+			// Load the extra library paths provided to the build system
+			auto libraryPaths = buildSystem.GetLibraryPaths();
+
 			// Combine the defines with the default set
 			auto defines = std::vector<std::string>({
 				"SOUP_BUILD",
@@ -138,6 +141,7 @@ namespace Soup
 			buildArguments.GenerateSourceDebugInfo = false;
 			buildArguments.PreprocessorDefinitions = std::move(defines);
 			buildArguments.IncludeDirectories = std::move(includePaths);
+			buildArguments.LibraryPaths = std::move(libraryPaths);
 
 			// Set the correct optimization level for the requested configuration
 			if (arguments.Configuration == "debug")

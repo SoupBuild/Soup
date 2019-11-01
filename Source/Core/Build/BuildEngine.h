@@ -392,6 +392,7 @@ namespace Soup
 				linkArguments.TargetFile = std::move(targetFile);
 				linkArguments.LibraryFiles = arguments.LinkLibraries;
 				linkArguments.RootDirectory = arguments.WorkingDirectory;
+				linkArguments.LibraryPaths = arguments.LibraryPaths;
 
 				// Translate the target type into the link target
 				switch (arguments.TargetType)
