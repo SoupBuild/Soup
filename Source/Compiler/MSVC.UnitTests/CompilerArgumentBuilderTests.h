@@ -40,11 +40,12 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
 				"/std:c++11",
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\""
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -60,11 +61,13 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
+				"/showIncludes",
 				"/std:c++11",
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\"",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -83,11 +86,12 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
 				expectedFlag,
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\"",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -103,11 +107,12 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
 				"/clang:-std=c++2a",
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\"",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -124,11 +129,12 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
 				"/std:c++17",
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\"",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -147,12 +153,13 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
 				"/std:c++17",
 				expectedFlag,
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\"",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -170,11 +177,13 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
+				"/Zi",
 				"/std:c++17",
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\"",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -193,13 +202,14 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
 				"/std:c++11",
 				"/I\"C:/Files/SDK/\"",
 				"/I\"my files/\"",
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\"",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -218,13 +228,14 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
 				"/std:c++11",
 				"/DDEBUG",
 				"/DVERSION=1",
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\"",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -243,11 +254,12 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
 				"/std:c++11",
+				"/EHsc",
 				"/c",
 				"File.cpp",
-				"/o",
-				"File.obj",
+				"/Fo\"File.obj\"",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
@@ -263,11 +275,12 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"/nologo",
 				"/std:c++11",
+				"/EHsc",
 				"/clang:--precompile",
 				"module.cpp",
-				"/o",
-				"module.pcm",
+				"/Fo\"module.pcm\"",
 			});
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
 		}

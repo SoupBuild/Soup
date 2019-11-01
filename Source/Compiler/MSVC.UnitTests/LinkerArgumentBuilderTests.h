@@ -14,7 +14,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 		{
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
-			arguments.TargetFile = Path("Library.mock.a");
+			arguments.TargetFile = Path("Library.mock.lib");
 			arguments.ObjectFiles = std::vector<Path>({});
 			Assert::ThrowsRuntimeError([&arguments]() {
 				auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
@@ -28,7 +28,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetType = LinkTarget::StaticLibrary;
 			arguments.TargetFile = Path("");
 			arguments.ObjectFiles = std::vector<Path>({
-				Path("File.mock.o"),
+				Path("File.mock.obj"),
 			});
 			Assert::ThrowsRuntimeError([&arguments]() {
 				auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
@@ -40,15 +40,14 @@ namespace Soup::Compiler::MSVC::UnitTests
 		{
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
-			arguments.TargetFile = Path("Library.mock.a");
+			arguments.TargetFile = Path("Library.mock.lib");
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.o"),
 			});
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
-				"rc",
-				"Library.mock.a",
+				"/OUT:\"Library.mock.lib\"",
 				"File.mock.o",
 			});
 
@@ -62,18 +61,18 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetType = LinkTarget::Executable;
 			arguments.TargetFile = Path("out/Something.exe");
 			arguments.ObjectFiles = std::vector<Path>({
-				Path("File.mock.o"),
+				Path("File.mock.obj"),
 			});
 			arguments.LibraryFiles = std::vector<Path>({
-				Path("Library.mock.a"),
+				Path("Library.mock.lib"),
 			});
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
-				"-o",
-				"out/Something.exe",
-				"Library.mock.a",
-				"File.mock.o",
+				"/NOLOGO",
+				"/OUT:\"out/Something.exe\"",
+				"Library.mock.lib",
+				"File.mock.obj",
 			});
 
 			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");

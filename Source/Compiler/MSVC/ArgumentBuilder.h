@@ -34,13 +34,13 @@ namespace Soup::Compiler::MSVC
 			// Enable Header includes if needed
 			if (args.GenerateIncludeTree)
 			{
-				// commandArgs.push_back("-H");
+				commandArgs.push_back("/showIncludes");
 			}
 
 			// Generate source debug information
 			if (args.GenerateSourceDebugInfo)
 			{
-				// commandArgs.push_back("-g");
+				commandArgs.push_back("/Zi");
 			}
 
 			// Set the language standard
@@ -154,11 +154,13 @@ namespace Soup::Compiler::MSVC
 				{
 					// Executables and dynamic libraries use linker
 
+					// Disable the logo
+					commandArgs.push_back("/NOLOGO");
+
 					// Enable verbose output
 					// commandArgs.push_back("-v");
 
-					commandArgs.push_back("-o");
-					commandArgs.push_back(args.TargetFile.ToString());
+					commandArgs.push_back("/OUT:\"" + args.TargetFile.ToString() + "\"");
 					break;
 				}
 				default:

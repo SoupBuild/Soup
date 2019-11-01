@@ -33,6 +33,7 @@ namespace Soup::Client
 			auto toolPath = Path(_options.ExecutablePath);
 			toolPath.SetFilename("");
 			auto localUserConfigFile = toolPath + Path("LocalUserConfig.json");
+			Log::Verbose("LocalConfig: " + localUserConfigFile.ToString());
 			auto config = LocalUserConfig();
 			if (!LocalUserConfigJson::TryLoadFromFile(localUserConfigFile, config))
 			{

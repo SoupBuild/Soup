@@ -29,7 +29,7 @@ namespace Soup
 			const Path& workingDirectory) override final
 		{
 			std::stringstream argumentsValue;
-			argumentsValue << application.ToString();
+			argumentsValue << "\"" << application.ToString() << "\"";
 			for (auto& value : arguments)
 				argumentsValue << " " << value;
 

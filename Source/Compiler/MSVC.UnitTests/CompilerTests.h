@@ -15,7 +15,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto uut = Compiler(
 				Path("./bin/"),
 				Path("mock.cl.exe"),
-				Path("mock.link.exe"));
+				Path("mock.link.exe"),
+				Path("mock.lib.exe"));
 			Assert::AreEqual(uut.GetName(), std::string_view("MSVC"), "Verify name match expected.");
 			Assert::AreEqual(uut.GetObjectFileExtension(), std::string_view("obj"), "Verify object file extension match expected.");
 			Assert::AreEqual(uut.GetModuleFileExtension(), std::string_view("pcm"), "Verify module file extension match expected.");
@@ -33,7 +34,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto uut = Compiler(
 				Path("./bin/"),
 				Path("mock.cl.exe"),
-				Path("mock.link.exe"));
+				Path("mock.link.exe"),
+				Path("mock.lib.exe"));
 
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
@@ -45,7 +47,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Source: bin/mock.cl.exe /std:c++11 /c File.cpp /o obj/File.obj",
+					"Source: bin/mock.cl.exe /nologo /std:c++11 /EHsc /c File.cpp /Fo\"obj/File.obj\"",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -61,7 +63,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto uut = Compiler(
 				Path("./bin/"),
 				Path("mock.cl.exe"),
-				Path("mock.link.exe"));
+				Path("mock.link.exe"),
+				Path("mock.lib.exe"));
 
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
@@ -83,8 +86,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Source: bin/mock.cl.exe /std:c++11 /I\"Includes\" /DDEBUG /clang:--precompile File.cpp /o obj/File.pcm",
-					"Source: bin/mock.cl.exe /std:c++11 /c obj/File.pcm /o obj/File.obj",
+					"Source: bin/mock.cl.exe /nologo /std:c++11 /I\"Includes\" /DDEBUG /EHsc /clang:--precompile File.cpp /Fo\"obj/File.pcm\"",
+					"Source: bin/mock.cl.exe /nologo /std:c++11 /EHsc /c obj/File.pcm /Fo\"obj/File.obj\"",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -100,7 +103,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto uut = Compiler(
 				Path("./bin/"),
 				Path("mock.cl.exe"),
-				Path("mock.link.exe"));
+				Path("mock.link.exe"),
+				Path("mock.lib.exe"));
 
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
@@ -115,7 +119,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Source: bin/mock.link.exe rc Library.mock.a File.mock.obj",
+					"Source: bin/mock.lib.exe /OUT:\"Library.mock.a\" File.mock.obj",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -131,7 +135,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto uut = Compiler(
 				Path("./bin/"),
 				Path("mock.cl.exe"),
-				Path("mock.link.exe"));
+				Path("mock.link.exe"),
+				Path("mock.lib.exe"));
 
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::Executable;
@@ -149,7 +154,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Source: bin/mock.cl.exe -o Something.exe Library.mock.a File.mock.obj",
+					"Source: bin/mock.link.exe /NOLOGO /OUT:\"Something.exe\" Library.mock.a File.mock.obj",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");

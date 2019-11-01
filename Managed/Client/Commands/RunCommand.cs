@@ -47,7 +47,8 @@ namespace Soup.Client
             }
 
             // Ensure the library directory exists
-            var exePath = Path.Combine(recipePath, "out", "bin", _compiler.Name, $"{recipe.Name}.exe");
+            var config = "release";
+            var exePath = Path.Combine(recipePath, "out", "bin", _compiler.Name, config, $"{recipe.Name}.exe");
             if (!File.Exists(exePath))
             {
                 Log.Error($"The executable ({exePath}) does not exist..");
