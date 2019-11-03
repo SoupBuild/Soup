@@ -21,9 +21,32 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Gets the process file name
+		/// </summary>
+		Path GetProcessFileName() override final
+		{
+			try
+			{
+				auto buffer = std::array<char, 1024>();
+				Platform::ProcessManager::GetProcessFileName(buffer.data(), buffer.size());
+				return Path(std::string(buffer.data(), buffer.size()));
+			}
+			catch (unsigned long error)
+			{
+				// Convert raw error into a std exception
+				throw std::runtime_error("GetProcessFileName Failed: " + std::to_string(error));
+			}
+			catch (const char* message)
+			{
+				// Convert raw message into a std exception
+				throw std::runtime_error(message);
+			}
+		}
+
+		/// <summary>
 		/// Creates a process for the provided executable path
 		/// </summary>
-		virtual ProcessResult Execute(
+		ProcessResult Execute(
 			const Path& application,
 			const std::vector<std::string>& arguments,
 			const Path& workingDirectory) override final

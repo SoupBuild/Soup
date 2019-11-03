@@ -12,6 +12,10 @@ using namespace SoupTest;
 #include "Build\BuildStateTests.gen.h"
 #include "Build\BuildStateManagerTests.gen.h"
 
+#include "Config\LocalUserConfigExtensionsTests.gen.h"
+#include "Config\LocalUserConfigJsonTests.gen.h"
+#include "Config\LocalUserConfigTests.gen.h"
+
 #include "Package\PackageReferenceTests.gen.h"
 #include "Package\RecipeBuilderTests.gen.h"
 #include "Package\RecipeBuildGeneratorTests.gen.h"
@@ -25,9 +29,6 @@ using namespace SoupTest;
 #include "Utils\PathTests.gen.h"
 #include "Utils\SemanticVersionTests.gen.h"
 
-#include "LocalUserConfigJsonTests.gen.h"
-#include "LocalUserConfigTests.gen.h"
-
 int main()
 {
 	std::cout << "Running Tests..." << std::endl;
@@ -39,6 +40,10 @@ int main()
 	state += RunBuildStateJsonTests();
 	state += RunBuildStateTests();
 	state += RunBuildStateManagerTests();
+
+	state += RunLocalUserConfigExtensionsTests();
+	state += RunLocalUserConfigJsonTests();
+	state += RunLocalUserConfigTests();
 
 	state += RunPackageReferenceTests();
 	state += RunRecipeBuilderTests();
@@ -52,9 +57,6 @@ int main()
 
 	state += RunPathTests();
 	state += RunSemanticVersionTests();
-	
-	state += RunLocalUserConfigJsonTests();
-	state += RunLocalUserConfigTests();
 
 	std::cout << state.FailCount << " FAILED." << std::endl;
 	std::cout << state.PassCount << " PASSED." << std::endl;

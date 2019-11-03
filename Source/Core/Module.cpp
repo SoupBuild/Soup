@@ -15,6 +15,8 @@ import json11;
 #include "Build\BuildStateManager.h"
 #include "Compiler\CompileArguments.h"
 #include "Compiler\MockCompiler.h"
+#include "Config\LocalUserConfigExtensions.h"
+#include "Config\LocalUserConfigJson.h"
 #include "Logger\ConsoleTraceListener.h"
 #include "Logger\TestTraceListener.h"
 #include "Package\Recipe.h"
@@ -27,4 +29,3 @@ import json11;
 #include "Utils\PlatformProcessManager.h"
 #include "Utils\SemanticVersion.h"
 #include "Utils\STLFileSystem.h"
-#include "LocalUserConfigJson.h"

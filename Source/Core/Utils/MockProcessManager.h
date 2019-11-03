@@ -18,6 +18,16 @@ namespace Soup
 		/// Initializes a new instance of the <see cref='MockProcessManager'/> class.
 		/// </summary>
 		MockProcessManager() :
+			_processFileName(Path("C:/testlocation/SoupCMDTest.exe")),
+			_requests()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref='MockProcessManager'/> class.
+		/// </summary>
+		MockProcessManager(Path processFileName) :
+			_processFileName(std::move(processFileName)),
 			_requests()
 		{
 		}
@@ -31,15 +41,27 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Gets the process file name
+		/// </summary>
+		Path GetProcessFileName() override final
+		{
+			std::stringstream message;
+			message << "GetProcessFileName";
+
+			_requests.push_back(message.str());
+			return _processFileName;
+		}
+
+		/// <summary>
 		/// Creates a process for the provided executable path
 		/// </summary>
-		virtual ProcessResult Execute(
+		ProcessResult Execute(
 			const Path& application,
 			const std::vector<std::string>& arguments,
 			const Path& workingDirectory) override final
 		{
 			std::stringstream message;
-			message << workingDirectory.ToString() << ": " << application.ToString();
+			message << "Execute: " << workingDirectory.ToString() << ": " << application.ToString();
 			for (auto& value : arguments)
 				message << " " << value;
 
@@ -52,6 +74,7 @@ namespace Soup
 		}
 
 	private:
+		Path _processFileName;
 		std::vector<std::string> _requests;
 	};
 }

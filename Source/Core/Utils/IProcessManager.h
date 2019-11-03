@@ -41,6 +41,11 @@ namespace Soup
 
 	public:
 		/// <summary>
+		/// Gets the process file name
+		/// </summary>
+		virtual Path GetProcessFileName() = 0;
+
+		/// <summary>
 		/// Creates a process for the provided executable path
 		/// </summary>
 		virtual ProcessResult Execute(

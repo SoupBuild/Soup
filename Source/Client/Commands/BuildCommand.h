@@ -30,15 +30,7 @@ namespace Soup::Client
 			Log::Trace("BuildCommand::Run");
 
 			// Load the user config
-			auto toolPath = Path(_options.ExecutablePath);
-			toolPath.SetFilename("");
-			auto localUserConfigFile = toolPath + Path("LocalUserConfig.json");
-			Log::Verbose("LocalConfig: " + localUserConfigFile.ToString());
-			auto config = LocalUserConfig();
-			if (!LocalUserConfigJson::TryLoadFromFile(localUserConfigFile, config))
-			{
-				throw std::runtime_error("Failed to parse user config.");
-			}
+			auto config =  LocalUserConfigExtensions::LoadFromFile();
 
 			auto systemCompiler = std::make_shared<Compiler::Clang::Compiler>(
 				Path(config.GetClangToolPath()));

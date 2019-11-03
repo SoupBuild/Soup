@@ -14,6 +14,25 @@ namespace Soup::Platform
 	public:
 		typedef void OutputCallBackFunction(void* context, const char*, int);
 
+		static void GetProcessFileName(char* buffer, int length)
+		{
+			// Pass in null handle to get current process information
+			auto handle = nullptr;
+			auto sizeRead = GetModuleFileNameA(
+				handle,
+				buffer,
+				length);
+			if (sizeRead == 0)
+			{
+				throw GetLastError();
+			}
+			else if (sizeRead == length)
+			{
+				// Note: This may have perfectly fit, but we are being lazy
+				throw "Ran out of room in the buffer";
+			}
+		}
+
 		/// <summary>
 		/// Creates a process for the provided executable path
 		/// </summary>

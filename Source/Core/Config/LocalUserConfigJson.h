@@ -59,12 +59,12 @@ namespace Soup
 				(std::istreambuf_iterator<char>(stream)),
 				std::istreambuf_iterator<char>());
 
-			// Read the contents of the recipe file
+			// Read the contents of the local user config file
 			std::string error = "";
 			auto jsonRoot = json11::Json::parse(content, error);
 			if (jsonRoot.is_null())
 			{
-				auto message = "Failed to parse the recipe json: " + error;
+				auto message = "Failed to parse the local user config json: " + error;
 				throw std::runtime_error(std::move(message));
 			}
 			else

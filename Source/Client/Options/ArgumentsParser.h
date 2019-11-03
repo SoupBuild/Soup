@@ -44,9 +44,6 @@ namespace Soup::Client
 
 				auto options = BuildOptions();
 
-				// Pass along the tool path
-				options.ExecutablePath = args[0];
-
 				// Check if the optional index arguments exist
 				auto argument = std::string();
 				if (TryGetOptional(unusedArgs, argument))
@@ -106,9 +103,6 @@ namespace Soup::Client
 				Log::Trace("Parse run");
 
 				auto options = RunOptions();
-
-				// Pass along the tool path
-				options.ExecutablePath = args[0];
 
 				// TODO: How to do verbose? options.EnableVerbose = IsFlagSet("v", unusedArgs);
 

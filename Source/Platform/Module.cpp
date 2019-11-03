@@ -1,5 +1,6 @@
 ﻿module;
 #include <Windows.h>
+#include <psapi.h>
 export module Soup.Platform;
 
 #include "SmartHandle.h"

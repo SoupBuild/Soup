@@ -1,5 +1,5 @@
 #pragma once
-#include "LocalUserConfigJsonTests.h"
+#include "Config/LocalUserConfigJsonTests.h"
 
 TestState RunLocalUserConfigJsonTests() 
  {

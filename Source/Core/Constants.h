@@ -19,6 +19,11 @@ namespace Soup
 		static constexpr std::string_view AppDataFolderName = "Soup";
 
 		/// <summary>
+		/// Gets the local user config file name
+		/// </summary>
+		static constexpr std::string_view LocalUserConfigFileName = "LocalUserConfig.json";
+
+		/// <summary>
 		/// Gets the Recipe file name
 		/// </summary>
 		static constexpr std::string_view RecipeFileName = "Recipe.json";
