@@ -142,9 +142,9 @@ namespace Soup::Compiler::MSVC
 				std::stringstream cleanOutput;
 				compileResult.HeaderIncludeFiles = ParseIncludes(
 					args.SourceFile,
-					result.StdErr,
+					result.StdOut,
 					cleanOutput);
-				result.StdErr = cleanOutput.str();
+				result.StdOut = cleanOutput.str();
 			}
 
 			if (!result.StdOut.empty())
@@ -202,9 +202,9 @@ namespace Soup::Compiler::MSVC
 				std::stringstream cleanOutput;
 				compileResult.HeaderIncludeFiles = ParseIncludes(
 					generatePrecompiledModuleArgs.SourceFile,
-					result.StdErr,
+					result.StdOut,
 					cleanOutput);
-				result.StdErr = cleanOutput.str();
+				result.StdOut = cleanOutput.str();
 			}
 
 			if (!result.StdOut.empty())
@@ -282,7 +282,9 @@ namespace Soup::Compiler::MSVC
 				if (includeDepth > 0)
 				{
 					// Parse the file reference
-					auto includeFile = Path(line.substr(includeDepth + 1));
+					auto includePrefix = GetIncludePrefix();
+					auto offset = includePrefix.size() + includeDepth;
+					auto includeFile = Path(line.substr(offset));
 
 					// Ensure we are at the correct depth
 					while (includeDepth < current.size())
@@ -321,21 +323,29 @@ namespace Soup::Compiler::MSVC
 		int GetIncludeDepth(const std::string& line)
 		{
 			int depth = 0;
-			for (depth = 0; depth < line.size(); depth++)
+			auto includePrefix = GetIncludePrefix();
+			if (line.rfind(includePrefix, 0) == 0)
 			{
-				if (line[depth] != '.')
+				// Find the end of the whitespace
+				int offset = includePrefix.size();
+				for (; offset < line.size(); offset++)
 				{
-					break;
+					if (line[offset] != ' ')
+					{
+						break;
+					}
 				}
-			}
 
-			// Verify the next character is a space, otherwise reset the depth to zero
-			if (depth < line.size() && line[depth] != ' ')
-			{
-				depth = 0;
+				// The depth is the number of whitespaces past the prefix
+				depth = offset - includePrefix.size();
 			}
 
 			return depth;
+		}
+
+		std::string_view GetIncludePrefix()
+		{
+			return std::string_view("Note: including file:");
 		}
 
 	private:
