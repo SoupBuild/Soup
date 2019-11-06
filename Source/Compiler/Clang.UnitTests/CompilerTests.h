@@ -17,7 +17,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			Assert::AreEqual(uut.GetObjectFileExtension(), std::string_view("o"), "Verify object file extension match expected.");
 			Assert::AreEqual(uut.GetModuleFileExtension(), std::string_view("pcm"), "Verify module file extension match expected.");
 			Assert::AreEqual(uut.GetStaticLibraryFileExtension(), std::string_view("a"), "Verify static library file extension match expected.");
-			Assert::AreEqual(uut.GetDynamicLibraryFileExtension(), std::string_view("so"), "Verify dynamic library file extension match expected.");
+			Assert::AreEqual(uut.GetDynamicLibraryFileExtension(), std::string_view("dll"), "Verify dynamic library file extension match expected.");
 		}
 
 		[[Fact]]
@@ -39,7 +39,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Source: C:/Clang/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
+					"Execute: Source: C:/Clang/bin/clang++.exe -nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -74,8 +74,8 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Source: C:/Clang/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
-					"Source: C:/Clang/bin/clang++.exe -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
+					"Execute: Source: C:/Clang/bin/clang++.exe -nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
+					"Execute: Source: C:/Clang/bin/clang++.exe -nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -103,7 +103,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Source: C:/Clang/bin/llvm-ar.exe rc Library.mock.a File.mock.o",
+					"Execute: Source: C:/Clang/bin/llvm-ar.exe rc Library.mock.a File.mock.o",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -134,7 +134,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Source: C:/Clang/bin/clang++.exe -o Something.exe Library.mock.a File.mock.o",
+					"Execute: Source: C:/Clang/bin/clang++.exe -fuse-ld=lld-link -o Something.exe Library.mock.a File.mock.o",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");

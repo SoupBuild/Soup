@@ -67,6 +67,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-fuse-ld=lld-link",
 				"-shared",
 				"-fpic",
 				"-o",
@@ -92,6 +93,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-fuse-ld=lld-link",
 				"-o",
 				"out/Something.exe",
 				"Library.mock.a",

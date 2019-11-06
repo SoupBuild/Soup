@@ -40,6 +40,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
@@ -63,6 +64,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
@@ -90,6 +92,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
@@ -113,6 +116,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
@@ -137,6 +141,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
@@ -163,6 +168,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
@@ -189,6 +195,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
@@ -216,11 +223,12 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
 				"-std=c++11",
-				"-I\"C:/Files/SDK/\"",
+				"-isystem \"C:/Files/SDK/\"",
 				"-I\"my files/\"",
 				"-c",
 				"File.cpp",
@@ -244,6 +252,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
@@ -272,6 +281,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",
@@ -297,6 +307,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
+				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
 				"-flto-visibility-public-std",

@@ -190,6 +190,9 @@ namespace Soup::Compiler::Clang
 					// Enable verbose output
 					// commandArgs.push_back("-v");
 
+					// Use the clang linker
+					commandArgs.push_back("-fuse-ld=lld-link");
+
 					// Create a shared library
 					commandArgs.push_back("-shared");
 
@@ -206,6 +209,9 @@ namespace Soup::Compiler::Clang
 
 					// Enable verbose output
 					// commandArgs.push_back("-v");
+
+					// Use the clang linker
+					commandArgs.push_back("-fuse-ld=lld-link");
 
 					commandArgs.push_back("-o");
 					commandArgs.push_back(args.TargetFile.ToString());
