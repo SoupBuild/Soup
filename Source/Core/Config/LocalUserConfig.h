@@ -12,18 +12,24 @@ namespace Soup
 	public:
 		LocalUserConfig() :
 			_runtimeCompiler(),
-			_msvcToolPath(std::nullopt),
-			_clangToolPath(std::nullopt)
+			_msvcRootPath(std::nullopt),
+			_clangToolPath(std::nullopt),
+			_windowsSDKIncludesPath(std::nullopt),
+			_windowsSDKLibrariesPath(std::nullopt)
 		{
 		}
 
 		LocalUserConfig(
 			std::string runtimeCompiler,
-			std::optional<std::string> msvcToolPath,
-			std::optional<std::string> clangToolPath) :
+			std::optional<std::string> msvcRootPath,
+			std::optional<std::string> clangToolPath,
+			std::optional<std::string> windowsSDKIncludesPath,
+			std::optional<std::string> windowsSDKLibrariesPath) :
 			_runtimeCompiler(std::move(runtimeCompiler)),
-			_msvcToolPath(std::move(msvcToolPath)),
-			_clangToolPath(std::move(clangToolPath))
+			_msvcRootPath(std::move(msvcRootPath)),
+			_clangToolPath(std::move(clangToolPath)),
+			_windowsSDKIncludesPath(std::move(windowsSDKIncludesPath)),
+			_windowsSDKLibrariesPath(std::move(windowsSDKLibrariesPath))
 		{
 		}
 
@@ -36,18 +42,18 @@ namespace Soup
 		}
 
 		/// <summary>
-		/// Gets the MSVC tool path
+		/// Gets the MSVC root path
 		/// </summary>
-		bool HasMSVCToolPath() const
+		bool HasMSVCRootPath() const
 		{
-			return _msvcToolPath.has_value();
+			return _msvcRootPath.has_value();
 		}
 
-		const std::string& GetMSVCToolPath() const
+		const std::string& GetMSVCRootPath() const
 		{
-			if (!HasMSVCToolPath())
-				throw std::runtime_error("No MSVC Tool Path.");
-			return _msvcToolPath.value();
+			if (!HasMSVCRootPath())
+				throw std::runtime_error("No MSVC Root Path.");
+			return _msvcRootPath.value();
 		}
 
 		/// <summary>
@@ -65,9 +71,58 @@ namespace Soup
 			return _clangToolPath.value();
 		}
 
+		/// <summary>
+		/// Gets the Windows SDK Includes path
+		/// </summary>
+		bool HasWindowsSDKIncludesPath() const
+		{
+			return _windowsSDKIncludesPath.has_value();
+		}
+
+		const std::string& GetWindowsSDKIncludesPath() const
+		{
+			if (!HasWindowsSDKIncludesPath())
+				throw std::runtime_error("No Windows SDK Includes Path.");
+			return _windowsSDKIncludesPath.value();
+		}
+
+		/// <summary>
+		/// Gets the Windows SDK Libraries path
+		/// </summary>
+		bool HasWindowsSDKLibrariesPath() const
+		{
+			return _windowsSDKLibrariesPath.has_value();
+		}
+
+		const std::string& GetWindowsSDKLibrariesPath() const
+		{
+			if (!HasWindowsSDKLibrariesPath())
+				throw std::runtime_error("No Windows SDK Libraries Path.");
+			return _windowsSDKLibrariesPath.value();
+		}
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const LocalUserConfig& rhs) const
+		{
+			return _runtimeCompiler == rhs._runtimeCompiler &&
+				_msvcRootPath == rhs._msvcRootPath &&
+				_clangToolPath == rhs._clangToolPath &&
+				_windowsSDKIncludesPath == rhs._windowsSDKIncludesPath &&
+				_windowsSDKLibrariesPath == rhs._windowsSDKLibrariesPath;
+		}
+
+		bool operator !=(const LocalUserConfig& rhs) const
+		{
+			return !(*this == rhs);
+		}
+
 	private:
 		std::string _runtimeCompiler;
-		std::optional<std::string> _msvcToolPath;
+		std::optional<std::string> _msvcRootPath;
 		std::optional<std::string> _clangToolPath;
+		std::optional<std::string> _windowsSDKIncludesPath;
+		std::optional<std::string> _windowsSDKLibrariesPath;
 	};
 }

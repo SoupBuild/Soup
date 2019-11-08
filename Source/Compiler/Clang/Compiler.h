@@ -14,7 +14,8 @@ namespace Soup::Compiler::Clang
 	{
 	private:
 		static constexpr std::string_view CompilerExecutable = "clang++.exe";
-		static constexpr std::string_view LinkerExecutable = "llvm-ar.exe";
+		static constexpr std::string_view ArchiverExecutable = "llvm-ar.exe";
+		static constexpr std::string_view MSVCLinkerExecutable = "lld-link.exe";
 
 	public:
 		Compiler(Path toolPath) :
@@ -91,11 +92,11 @@ namespace Soup::Compiler::Clang
 			switch (args.TargetType)
 			{
 				case LinkTarget::StaticLibrary:
-					executablePath = _toolPath + Path(LinkerExecutable);
+					executablePath = _toolPath + Path(ArchiverExecutable);
 					break;
 				case LinkTarget::DynamicLibrary:
 				case LinkTarget::Executable:
-					executablePath = _toolPath + Path(CompilerExecutable);
+					executablePath = _toolPath + Path(MSVCLinkerExecutable);
 					break;
 				default:
 					throw std::runtime_error("Unknown LinkTarget.");

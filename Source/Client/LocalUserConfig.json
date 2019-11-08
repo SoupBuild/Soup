@@ -1,5 +1,7 @@
 {
     "runtimeCompiler": "clang",
     "clang": "C:/Clang/bin/",
-    "msvc": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.23.28105/bin/Hostx64/x64/"
+    "msvc": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.23.28105/",
+    "windowsSDKLibraries": "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.17763.0/",
+    "windowsSDKIncludes": "C:/Program Files (x86)/Windows Kits/10/include/10.0.17763.0/"
 }

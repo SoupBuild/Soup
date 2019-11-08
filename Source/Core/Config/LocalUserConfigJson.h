@@ -16,6 +16,8 @@ namespace Soup
 		static constexpr const char* Property_RuntimeCompiler = "runtimeCompiler";
 		static constexpr const char* Property_MSVC = "msvc";
 		static constexpr const char* Property_Clang = "clang";
+		static constexpr const char* Property_WindowsSDKIncludes = "windowsSDKIncludes";
+		static constexpr const char* Property_WindowsSDKLibraries = "windowsSDKLibraries";
 
 	public:
 		/// <summary>
@@ -77,8 +79,10 @@ namespace Soup
 		static LocalUserConfig LoadJsonLocalUserConfig(const json11::Json& value)
 		{
 			std::string runtimeCompiler;
-			std::optional<std::string> msvcToolPath;
+			std::optional<std::string> msvcRootPath;
 			std::optional<std::string> clangToolPath;
+			std::optional<std::string> windowsSDKIncludesPath;
+			std::optional<std::string> windowsSDKLibrariesPath;
 
 			if (!value[Property_RuntimeCompiler].is_null())
 			{
@@ -91,7 +95,7 @@ namespace Soup
 
 			if (!value[Property_MSVC].is_null())
 			{
-				msvcToolPath = value[Property_MSVC].string_value();
+				msvcRootPath = value[Property_MSVC].string_value();
 			}
 
 			if (!value[Property_Clang].is_null())
@@ -99,10 +103,22 @@ namespace Soup
 				clangToolPath = value[Property_Clang].string_value();
 			}
 
+			if (!value[Property_WindowsSDKIncludes].is_null())
+			{
+				windowsSDKIncludesPath = value[Property_WindowsSDKIncludes].string_value();
+			}
+
+			if (!value[Property_WindowsSDKLibraries].is_null())
+			{
+				windowsSDKLibrariesPath = value[Property_WindowsSDKLibraries].string_value();
+			}
+
 			return LocalUserConfig(
 				std::move(runtimeCompiler),
-				std::move(msvcToolPath),
-				std::move(clangToolPath));
+				std::move(msvcRootPath),
+				std::move(clangToolPath),
+				std::move(windowsSDKIncludesPath),
+				std::move(windowsSDKLibrariesPath));
 		}
 	};
 }

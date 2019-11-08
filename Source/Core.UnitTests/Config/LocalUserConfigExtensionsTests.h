@@ -130,7 +130,7 @@ namespace Soup::UnitTests
 				"../clang/");
 
 			Assert::AreEqual(expected.GetRuntimeCompiler(), actual.GetRuntimeCompiler(), "Verify matches expected.");
-			Assert::AreEqual(expected.GetMSVCToolPath(), actual.GetMSVCToolPath(), "Verify matches expected.");
+			Assert::AreEqual(expected.GetMSVCRootPath(), actual.GetMSVCRootPath(), "Verify matches expected.");
 			Assert::AreEqual(expected.GetClangToolPath(), actual.GetClangToolPath(), "Verify matches expected.");
 
 			// Verify expected file system requests

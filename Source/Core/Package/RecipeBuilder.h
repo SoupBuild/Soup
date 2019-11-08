@@ -106,8 +106,20 @@ namespace Soup
 					recipeIncludePaths.end());
 			}
 
+			// Add the platform include paths
+			includePaths.insert(
+				includePaths.end(),
+				arguments.PlatformIncludePaths.begin(),
+				arguments.PlatformIncludePaths.end());
+
 			// Load the extra library paths provided to the build system
 			auto libraryPaths = buildSystem.GetLibraryPaths();
+
+			// Add the platform library paths
+			libraryPaths.insert(
+				libraryPaths.end(),
+				arguments.PlatformLibraryPaths.begin(),
+				arguments.PlatformLibraryPaths.end());
 
 			// Combine the defines with the default set
 			auto defines = std::vector<std::string>({

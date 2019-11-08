@@ -185,36 +185,53 @@ namespace Soup::Compiler::Clang
 				}
 				case LinkTarget::DynamicLibrary:
 				{
-					// Dynamic libraries are put together by clang
+					// Dynamic libraries targeting windows are put together by lld-link
+					
+					// Disable the banner
+					commandArgs.push_back("-nologo");
 
-					// Enable verbose output
-					// commandArgs.push_back("-v");
+					// set the default lib to mutlithreaded
+					commandArgs.push_back("-defaultlib:libcmt");
 
-					// Use the clang linker
-					commandArgs.push_back("-fuse-ld=lld-link");
+					// Create a dynamic library
+					commandArgs.push_back("-dll");
 
-					// Create a shared library
-					commandArgs.push_back("-shared");
+					// Set the lobrary paths
+					for (auto directory : args.LibraryPaths)
+					{
+						auto argument = "/LIBPATH:\"" + directory.ToString() + "\"";
+						commandArgs.push_back(std::move(argument));
+					}
 
-					// Convert absolute addresses to relative
-					commandArgs.push_back("-fpic");
+					// Add the target output dll and implementation library
+					commandArgs.push_back("-out:" + args.TargetFile.ToString());
 
-					commandArgs.push_back("-o");
-					commandArgs.push_back(args.TargetFile.ToString());
+					// Todo: this does not seem like the correct location for this
+					auto implemenationLibraryfile = args.TargetFile;
+					implemenationLibraryfile.SetFileExtension("lib");
+					commandArgs.push_back("-implib:" + implemenationLibraryfile.ToString());
 					break;
 				}
 				case LinkTarget::Executable:
 				{
-					// Executables are put together by clang
+					// Executables targeting windows are put together by lld-link
+					
+					// Disable the banner
+					commandArgs.push_back("-nologo");
 
-					// Enable verbose output
-					// commandArgs.push_back("-v");
+					// set the default lib to mutlithreaded
+					commandArgs.push_back("-defaultlib:libcmt");
 
-					// Use the clang linker
-					commandArgs.push_back("-fuse-ld=lld-link");
+					// Set the lobrary paths
+					for (auto directory : args.LibraryPaths)
+					{
+						auto argument = "/LIBPATH:\"" + directory.ToString() + "\"";
+						commandArgs.push_back(std::move(argument));
+					}
 
-					commandArgs.push_back("-o");
-					commandArgs.push_back(args.TargetFile.ToString());
+					// Add the target output
+					commandArgs.push_back("-out:" + args.TargetFile.ToString());
+
 					break;
 				}
 				default:

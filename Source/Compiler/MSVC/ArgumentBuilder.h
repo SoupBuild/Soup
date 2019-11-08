@@ -164,7 +164,7 @@ namespace Soup::Compiler::MSVC
 			// Enable verbose output
 			// commandArgs.push_back("-v");
 
-			// Set the include paths
+			// Set the lobrary paths
 			for (auto directory : args.LibraryPaths)
 			{
 				auto argument = "/LIBPATH:\"" + directory.ToString() + "\"";

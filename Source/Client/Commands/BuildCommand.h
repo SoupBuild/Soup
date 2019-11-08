@@ -43,7 +43,7 @@ namespace Soup::Client
 			else if (config.GetRuntimeCompiler() == "msvc")
 			{
 				runtimeCompiler = std::make_shared<Compiler::MSVC::Compiler>(
-					Path(config.GetMSVCToolPath()),
+					Path(config.GetMSVCRootPath()) + Path("bin/Hostx64/x64/"),
 					Path("cl.exe"),
 					Path("link.exe"),
 					Path("lib.exe"));
@@ -87,6 +87,17 @@ namespace Soup::Client
 				arguments.Configuration = _options.Configuration;
 			else
 				arguments.Configuration = "release";
+
+			// TODO: Hard coded to windows MSVC runtime libraries
+			arguments.PlatformIncludePaths = std::vector({
+				Path(config.GetMSVCRootPath()) + Path("include/"),
+				Path(config.GetWindowsSDKIncludesPath()) + Path("ucrt/"),
+			});
+			arguments.PlatformLibraryPaths = std::vector({
+				Path(config.GetMSVCRootPath()) + Path("lib/x64/"),
+				Path(config.GetWindowsSDKLibrariesPath()) + Path("ucrt/x64/"),
+				Path(config.GetWindowsSDKLibrariesPath()) + Path("um/x64/"),
+			});
 
 			// Now build the current project
 			Log::Verbose("Begin Build:");

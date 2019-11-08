@@ -15,7 +15,7 @@ namespace Soup::UnitTests
 			auto uut = LocalUserConfig();
 
 			Assert::AreEqual("", uut.GetRuntimeCompiler(), "Verify runtime compiler is correct.");
-			Assert::IsFalse(uut.HasMSVCToolPath(), "Verify has no msvc tool path.");
+			Assert::IsFalse(uut.HasMSVCRootPath(), "Verify has no msvc root path.");
 			Assert::IsFalse(uut.HasClangToolPath(), "Verify has no clang tool path.");
 		}
 
@@ -28,8 +28,8 @@ namespace Soup::UnitTests
 				"../clang/");
 
 			Assert::AreEqual("clang", uut.GetRuntimeCompiler(), "Verify runtime compiler is correct.");
-			Assert::IsTrue(uut.HasMSVCToolPath(), "Verify has msvc tool path.");
-			Assert::AreEqual("../msvc/", uut.GetMSVCToolPath(), "Verify msvc tool path is correct.");
+			Assert::IsTrue(uut.HasMSVCRootPath(), "Verify has msvc root path.");
+			Assert::AreEqual("../msvc/", uut.GetMSVCRootPath(), "Verify msvc root path is correct.");
 			Assert::IsTrue(uut.HasClangToolPath(), "Verify has clang tool path.");
 			Assert::AreEqual("../clang/", uut.GetClangToolPath(), "Verify clang tool path is correct.");
 		}
