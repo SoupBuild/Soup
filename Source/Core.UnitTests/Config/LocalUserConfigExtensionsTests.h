@@ -119,7 +119,13 @@ namespace Soup::UnitTests
 				MockFileState(std::stringstream(R"({
 					"runtimeCompiler": "clang",
 					"msvc": "../msvc/",
-					"clang": "../clang/"
+					"clang": "../clang/",
+					"windowsSDKIncludes": [
+						"windowsSDK/Include/"
+					],
+					"windowsSDKLibraries": [
+						"windowsSDK/Library/"
+					]
 				})")));
 
 			LocalUserConfig actual = LocalUserConfigExtensions::LoadFromFile();
@@ -127,7 +133,13 @@ namespace Soup::UnitTests
 			auto expected = LocalUserConfig(
 				"clang",
 				"../msvc/",
-				"../clang/");
+				"../clang/",
+				std::vector<std::string>({
+					"windowsSDK/Include/",
+				}),
+				std::vector<std::string>({
+					"windowsSDK/Library/",
+				}));
 
 			Assert::AreEqual(expected.GetRuntimeCompiler(), actual.GetRuntimeCompiler(), "Verify matches expected.");
 			Assert::AreEqual(expected.GetMSVCRootPath(), actual.GetMSVCRootPath(), "Verify matches expected.");

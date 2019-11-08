@@ -89,15 +89,22 @@ namespace Soup::Client
 				arguments.Configuration = "release";
 
 			// TODO: Hard coded to windows MSVC runtime libraries
+			// And we only trust the contig today
 			arguments.PlatformIncludePaths = std::vector({
 				Path(config.GetMSVCRootPath()) + Path("include/"),
-				Path(config.GetWindowsSDKIncludesPath()) + Path("ucrt/"),
 			});
+			for (auto& path : config.GetWindowsSDKIncludePaths())
+			{
+				arguments.PlatformIncludePaths.push_back(Path(path));
+			}
+
 			arguments.PlatformLibraryPaths = std::vector({
 				Path(config.GetMSVCRootPath()) + Path("lib/x64/"),
-				Path(config.GetWindowsSDKLibrariesPath()) + Path("ucrt/x64/"),
-				Path(config.GetWindowsSDKLibrariesPath()) + Path("um/x64/"),
 			});
+			for (auto& path : config.GetWindowsSDKLibraryPaths())
+			{
+				arguments.PlatformLibraryPaths.push_back(Path(path));
+			}
 
 			// Now build the current project
 			Log::Verbose("Begin Build:");

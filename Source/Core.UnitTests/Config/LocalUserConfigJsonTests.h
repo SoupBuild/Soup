@@ -42,11 +42,11 @@ namespace Soup::UnitTests
 			auto expected = LocalUserConfig(
 				"clang",
 				std::nullopt,
+				std::nullopt,
+				std::nullopt,
 				std::nullopt);
 
-			Assert::AreEqual(expected.GetRuntimeCompiler(), actual.GetRuntimeCompiler(), "Verify matches expected.");
-			Assert::IsFalse(actual.HasMSVCRootPath(), "Verify matches expected.");
-			Assert::IsFalse(actual.HasClangToolPath(), "Verify matches expected.");
+			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}
 
 		[[Fact]]
@@ -56,18 +56,28 @@ namespace Soup::UnitTests
 				R"({
 					"runtimeCompiler": "clang",
 					"msvc": "../msvc/",
-					"clang": "../clang/"
+					"clang": "../clang/",
+					"windowsSDKIncludes": [
+						"windowsSDK/Include/"
+					],
+					"windowsSDKLibraries": [
+						"windowsSDK/Library/"
+					]
 				})");
 			auto actual = LocalUserConfigJson::Deserialize(localUserConfig);
 
 			auto expected = LocalUserConfig(
 				"clang",
 				"../msvc/",
-				"../clang/");
+				"../clang/",
+				std::vector<std::string>({
+					"windowsSDK/Include/",
+				}),
+				std::vector<std::string>({
+					"windowsSDK/Library/",
+				}));
 
-			Assert::AreEqual(expected.GetRuntimeCompiler(), actual.GetRuntimeCompiler(), "Verify matches expected.");
-			Assert::AreEqual(expected.GetMSVCRootPath(), actual.GetMSVCRootPath(), "Verify matches expected.");
-			Assert::AreEqual(expected.GetClangToolPath(), actual.GetClangToolPath(), "Verify matches expected.");
+			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}
 	};
 }

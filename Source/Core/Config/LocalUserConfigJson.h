@@ -81,8 +81,8 @@ namespace Soup
 			std::string runtimeCompiler;
 			std::optional<std::string> msvcRootPath;
 			std::optional<std::string> clangToolPath;
-			std::optional<std::string> windowsSDKIncludesPath;
-			std::optional<std::string> windowsSDKLibrariesPath;
+			std::optional<std::vector<std::string>> windowsSDKIncludePaths;
+			std::optional<std::vector<std::string>> windowsSDKLibraryPaths;
 
 			if (!value[Property_RuntimeCompiler].is_null())
 			{
@@ -105,20 +105,32 @@ namespace Soup
 
 			if (!value[Property_WindowsSDKIncludes].is_null())
 			{
-				windowsSDKIncludesPath = value[Property_WindowsSDKIncludes].string_value();
+				auto values = std::vector<std::string>();
+				for (auto& value : value[Property_WindowsSDKIncludes].array_items())
+				{
+					values.push_back(value.string_value());
+				}
+
+				windowsSDKIncludePaths = std::move(values);
 			}
 
 			if (!value[Property_WindowsSDKLibraries].is_null())
 			{
-				windowsSDKLibrariesPath = value[Property_WindowsSDKLibraries].string_value();
+				auto values = std::vector<std::string>();
+				for (auto& value : value[Property_WindowsSDKLibraries].array_items())
+				{
+					values.push_back(value.string_value());
+				}
+
+				windowsSDKLibraryPaths = std::move(values);
 			}
 
 			return LocalUserConfig(
 				std::move(runtimeCompiler),
 				std::move(msvcRootPath),
 				std::move(clangToolPath),
-				std::move(windowsSDKIncludesPath),
-				std::move(windowsSDKLibrariesPath));
+				std::move(windowsSDKIncludePaths),
+				std::move(windowsSDKLibraryPaths));
 		}
 	};
 }
