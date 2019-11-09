@@ -134,8 +134,6 @@ namespace Soup::Compiler::MSVC
 		static std::vector<std::string> BuildLinkerArguments(const LinkArguments& args)
 		{
 			// Verify the input
-			if (args.ObjectFiles.empty())
-				throw std::runtime_error("Object files cannot be empty.");
 			if (args.TargetFile.GetFileName().empty())
 				throw std::runtime_error("Target file cannot be empty.");
 
@@ -147,9 +145,14 @@ namespace Soup::Compiler::MSVC
 				{
 					break;
 				}
+				case LinkTarget::DynamicLibrary:
+				{
+					// Create a dynamic library
+					commandArgs.push_back("/DLL");
+					break;
+				}
 				case LinkTarget::Executable:
 				{
-					// Executables and dynamic libraries use linker
 					break;
 				}
 				default:

@@ -23,7 +23,7 @@ namespace Soup::Client
 	public:
 		static ArgumentsParser Parse(const std::vector<std::string>& args)
 		{
-			Log::Trace("ArgumentsParser::Parse");
+			Log::Diag("ArgumentsParser::Parse");
 			if (args.size() <= 1)
 			{
 				throw std::runtime_error("No arguments provided.");
@@ -40,7 +40,7 @@ namespace Soup::Client
 			std::any result = nullptr;
 			if (commandType == "build")
 			{
-				Log::Trace("Parse build");
+				Log::Diag("Parse build");
 
 				auto options = BuildOptions();
 
@@ -51,7 +51,7 @@ namespace Soup::Client
 					options.Path = std::move(argument);
 				}
 
-				options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				options.Verbosity = CheckVerbosity(unusedArgs);
 				options.Force = IsFlagSet("f", unusedArgs);
 
 				auto configValue = std::string();
@@ -64,47 +64,47 @@ namespace Soup::Client
 			}
 			else if (commandType == "init")
 			{
-				Log::Trace("Parse initialize");
+				Log::Diag("Parse initialize");
 
 				auto options = InitializeOptions();
-				options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				options.Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
 			else if (commandType == "install")
 			{
-				Log::Trace("Parse install");
+				Log::Diag("Parse install");
 
 				auto options = InstallOptions();
-				options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				options.Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
 			else if (commandType == "pack")
 			{
-				Log::Trace("Parse pack");
+				Log::Diag("Parse pack");
 
 				auto options = PackOptions();
-				options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				options.Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
 			else if (commandType == "publish")
 			{
-				Log::Trace("Parse publish");
+				Log::Diag("Parse publish");
 
 				auto options = PublishOptions();
-				options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				options.Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
 			else if (commandType == "run")
 			{
-				Log::Trace("Parse run");
+				Log::Diag("Parse run");
 
 				auto options = RunOptions();
 
-				// TODO: How to do verbose? options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				// TODO: How to do verbose? options.Verbosity = CheckVerbosity(unusedArgs);
 
 				// All remaining arguments are passed to the executable
 				options.Arguments = std::move(unusedArgs);
@@ -113,19 +113,19 @@ namespace Soup::Client
 			}
 			else if (commandType == "version")
 			{
-				Log::Trace("Parse version");
+				Log::Diag("Parse version");
 
 				auto options = VersionOptions();
-				options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				options.Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
 			else if (commandType == "view")
 			{
-				Log::Trace("Parse view");
+				Log::Diag("Parse view");
 
 				auto options = ViewOptions();
-				options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				options.Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
@@ -198,7 +198,7 @@ namespace Soup::Client
 		static bool IsFlagSet(const char* name, std::vector<std::string>& unusedArgs)
 		{
 			auto flagValue = std::string("-") + name;
-			Log::Trace("IsFlagSet: " + flagValue);
+			Log::Diag("IsFlagSet: " + flagValue);
 			auto flagLocation = std::find(unusedArgs.begin(), unusedArgs.end(), flagValue);
 			if (flagLocation != unusedArgs.end())
 			{
@@ -218,7 +218,7 @@ namespace Soup::Client
 			std::string& value)
 		{
 			auto nameValue = std::string("-") + name;
-			Log::Trace("TryGetValueArgument: " + nameValue);
+			Log::Diag("TryGetValueArgument: " + nameValue);
 			auto nameLocation = std::find(unusedArgs.begin(), unusedArgs.end(), nameValue);
 			if (nameLocation != unusedArgs.end())
 			{
@@ -232,6 +232,35 @@ namespace Soup::Client
 			{
 				return false;
 			}
+		}
+
+		static TraceEventFlag CheckVerbosity(std::vector<std::string>& unusedArgs)
+		{
+			auto level = 
+				static_cast<uint32_t>(TraceEventFlag::HighPriority) |
+				static_cast<uint32_t>(TraceEventFlag::Warning) |
+				static_cast<uint32_t>(TraceEventFlag::Error) |
+				static_cast<uint32_t>(TraceEventFlag::Critical);
+			if (IsFlagSet("v:d", unusedArgs))
+			{
+				level |=
+					static_cast<uint32_t>(TraceEventFlag::Information) |
+					static_cast<uint32_t>(TraceEventFlag::Diagnostic);
+			}
+			else if (IsFlagSet("v:n", unusedArgs))
+			{
+				level |= static_cast<uint32_t>(TraceEventFlag::Information);
+			}
+			else if (IsFlagSet("v:q", unusedArgs))
+			{
+				// Nothing else to add
+			}
+			else
+			{
+				// Default to quiet level
+			}
+			
+			return static_cast<TraceEventFlag>(level);
 		}
 
 	private:

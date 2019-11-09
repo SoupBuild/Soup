@@ -27,7 +27,7 @@ namespace Soup::Client
 		/// </summary>
 		virtual void Run() override final
 		{
-			Log::Trace("VersionsCommand::Run");
+			Log::Diag("VersionsCommand::Run");
 
 			// TODO var version = Assembly.GetExecutingAssembly().GetName().Version;
 			// Log::Message($"{version.Major}.{version.Minor}.{version.Build}");

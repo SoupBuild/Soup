@@ -162,8 +162,6 @@ namespace Soup::Compiler::Clang
 		static std::vector<std::string> BuildLinkerArguments(const LinkArguments& args)
 		{
 			// Verify the input
-			if (args.ObjectFiles.empty())
-				throw std::runtime_error("Object files cannot be empty.");
 			if (args.TargetFile.GetFileName().empty())
 				throw std::runtime_error("Target file cannot be empty.");
 

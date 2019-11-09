@@ -109,7 +109,7 @@ namespace Soup::Compiler::MSVC
 
 			if (!result.StdOut.empty())
 			{
-				Log::Verbose(result.StdOut);
+				Log::Info(result.StdOut);
 			}
 
 			// If there was any error output then the build failed
@@ -149,7 +149,7 @@ namespace Soup::Compiler::MSVC
 
 			if (!result.StdOut.empty())
 			{
-				Log::Verbose(result.StdOut);
+				Log::Info(result.StdOut);
 			}
 
 			// If there was any error output then the build failed
@@ -209,7 +209,7 @@ namespace Soup::Compiler::MSVC
 
 			if (!result.StdOut.empty())
 			{
-				Log::Verbose(result.StdOut);
+				Log::Info(result.StdOut);
 			}
 
 			// If there was any error output then the build failed
@@ -241,7 +241,7 @@ namespace Soup::Compiler::MSVC
 
 			if (!result.StdOut.empty())
 			{
-				Log::Verbose(result.StdOut);
+				Log::Info(result.StdOut);
 			}
 
 			// If there was any error output then the build failed

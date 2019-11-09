@@ -31,7 +31,7 @@ namespace Soup::Client
 		/// </summary>
 		virtual void Run() override final
 		{
-			Log::Trace("PublishCommand::Run");
+			Log::Diag("PublishCommand::Run");
 			// var projectDirectory = Directory.GetCurrentDirectory();
 			// var recipe = await RecipeManager.LoadFromFileAsync(projectDirectory);
 			// Log.Info($"Publish Project: {recipe.Name}@{recipe.Version}");

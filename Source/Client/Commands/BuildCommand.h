@@ -27,7 +27,7 @@ namespace Soup::Client
 		/// </summary>
 		virtual void Run() override final
 		{
-			Log::Trace("BuildCommand::Run");
+			Log::Diag("BuildCommand::Run");
 
 			// Load the user config
 			auto config =  LocalUserConfigExtensions::LoadFromFile();
@@ -107,7 +107,7 @@ namespace Soup::Client
 			}
 
 			// Now build the current project
-			Log::Verbose("Begin Build:");
+			Log::Info("Begin Build:");
 			auto buildManager = RecipeBuildManager(systemCompiler, runtimeCompiler);
 			buildManager.Execute(workingDirectory, recipe, arguments);
 		}

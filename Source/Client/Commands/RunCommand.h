@@ -27,7 +27,7 @@ namespace Soup::Client
 		/// </summary>
 		virtual void Run() override final
 		{
-			Log::Trace("RunCommand::Run");
+			Log::Diag("RunCommand::Run");
 
 			// Load the user config
 			auto config =  LocalUserConfigExtensions::LoadFromFile();
@@ -73,7 +73,7 @@ namespace Soup::Client
 			auto configuration = "release";
 			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(*runtimeCompiler, configuration);
 			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
-			Log::Verbose(executablePath.ToString());
+			Log::Info(executablePath.ToString());
 			if (!IFileSystem::Current().Exists(executablePath))
 			{
 				Log::Error("The executable does not exist");
@@ -89,7 +89,7 @@ namespace Soup::Client
 			// TODO: Directly pipe to output and make sure there is no extra newline
 			if (!result.StdOut.empty())
 			{
-				Log::Info(result.StdOut);
+				Log::HighPriority(result.StdOut);
 			}
 
 			if (!result.StdErr.empty())
@@ -100,10 +100,10 @@ namespace Soup::Client
 			if (result.ExitCode != 0)
 			{
 				// TODO: Return error code
-				Log::Verbose("FAILED");
+				Log::HighPriority("FAILED");
 			}
 
-			Log::Verbose("Done");
+			Log::HighPriority("Done");
 		}
 
 	private:

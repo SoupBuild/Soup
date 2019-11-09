@@ -43,12 +43,12 @@ namespace Soup
 			std::shared_ptr<ICompiler> activeCompiler = nullptr;
 			if (isSystemBuild)
 			{
-				Log::Info("System Build '" + recipe.GetName() + "'");
+				Log::HighPriority("System Build '" + recipe.GetName() + "'");
 				activeCompiler = _systemCompiler;
 			}
 			else
 			{
-				Log::Info("Build '" + recipe.GetName() + "'");
+				Log::HighPriority("Build '" + recipe.GetName() + "'");
 				activeCompiler = _runtimeCompiler;
 			}
 
@@ -211,9 +211,9 @@ namespace Soup
 			auto wasBuilt = buildEngine.Execute(buildArguments);
 
 			if (wasBuilt)
-				Log::Info("Done");
+				Log::HighPriority("Done");
 			else
-				Log::Info("Up to date");
+				Log::HighPriority("Up to date");
 		}
 
 	private:
@@ -221,13 +221,13 @@ namespace Soup
 		{
 			try
 			{
-				Log::Verbose("Running Build Extension: " + libraryPath.ToString());
+				Log::Info("Running Build Extension: " + libraryPath.ToString());
 				auto library = Platform::DynamicLibraryManager::LoadDynamicLibrary(
 					libraryPath.ToString().c_str());
 				auto function = (int(*)(BuildEx::IBuildSystem&))library.GetFunction(
 					"?RegisterBuildExtension@@YAHAEAVIBuildSystem@BuildEx@Soup@@@Z");
 				auto result = function(buildSystem);
-				Log::Verbose("Build Extension Done: " + std::to_string(result));
+				Log::Info("Build Extension Done: " + std::to_string(result));
 			}
 			catch (...)
 			{

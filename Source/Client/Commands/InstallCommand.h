@@ -31,7 +31,7 @@ namespace Soup::Client
 		/// </summary>
 		virtual void Run() override final
 		{
-			Log::Trace("InstallCommand::Run");
+			Log::Diag("InstallCommand::Run");
 			// var workingDirectory = @"./";
 			// Recipe recipe = null;
 			// try

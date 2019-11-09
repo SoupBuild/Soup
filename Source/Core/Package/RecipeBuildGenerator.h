@@ -33,7 +33,7 @@ namespace Soup
 		/// </summary>
 		Path EnsureExecutableBuilt(const Path& packageRoot, const Recipe& recipe)
 		{
-			Log::Verbose("EnsureExecutableBuilt '" + recipe.GetName() + "'");
+			Log::Info("EnsureExecutableBuilt '" + recipe.GetName() + "'");
 			auto relativeGenerateBuildPath =
 				Path(Constants::ProjectGenerateFolderName) +
 				Path(Constants::ProjectGenerateBuildFolderName);
@@ -44,7 +44,7 @@ namespace Soup
 			// Ensure the build directories exists
 			if (!IFileSystem::Current().Exists(generateBuildPath))
 			{
-				Log::Verbose("Create Directory: " + generateBuildPath.ToString());
+				Log::Info("Create Directory: " + generateBuildPath.ToString());
 				IFileSystem::Current().CreateDirectory(generateBuildPath);
 			}
 
@@ -55,7 +55,7 @@ namespace Soup
 				Path(Constants::RecipeFileName),
 			});
 
-			Log::Verbose("Check if Generated Build source is outdated.");
+			Log::Info("Check if Generated Build source is outdated.");
 			if (BuildStateChecker::IsOutdated(
 				relativeRootBuildFile,
 				buildFileInputClosure,
@@ -65,7 +65,7 @@ namespace Soup
 			}
 			else
 			{
-				Log::Verbose("Build file up to date: " + buildFile.ToString());
+				Log::Info("Build file up to date: " + buildFile.ToString());
 			}
 
 			// Compile the build executable
@@ -99,7 +99,7 @@ namespace Soup
 
 				// Setup the filter
 				auto defaultTypes = 
-					static_cast<uint32_t>(TraceEventFlag::Verbose) |
+					static_cast<uint32_t>(TraceEventFlag::HighPriority) |
 					static_cast<uint32_t>(TraceEventFlag::Information) |
 					static_cast<uint32_t>(TraceEventFlag::Warning) |
 					static_cast<uint32_t>(TraceEventFlag::Error) |
@@ -141,7 +141,7 @@ namespace Soup
 				arguments.Configuration = "todo";
 				builder.Execute(packageRoot, recipe, arguments, isSystemBuild);
 
-				Log::Verbose("Build Completed.");
+				Log::Info("Build Completed.");
 				return 0;
 			}
 			catch (std::exception& ex)
@@ -162,7 +162,7 @@ namespace Soup
 			const Path& targetDirectory,
 			const Path& targetFile)
 		{
-			Log::Verbose("Generate Build File: " + targetFile.ToString());
+			Log::Info("Generate Build File: " + targetFile.ToString());
 
 			// Build up the core build translation unit and write it to disk
 			auto buildTranslationUnit = BuildTranslationUnit(packageRoot);
@@ -425,7 +425,7 @@ namespace Soup
 			const std::vector<Path>& sourceFiles,
 			const std::vector<PackageReference>& buildDependencies)
 		{
-			Log::Verbose("Compiling Build Executable");
+			Log::Info("Compiling Build Executable");
 
 			// Determine the include paths
 			std::unordered_set<std::string> includePaths;

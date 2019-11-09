@@ -41,7 +41,7 @@ namespace Soup
 		void AddIncludePath(const char* path) override final
 		{
 			auto includePath = Path(path);
-			Log::Verbose("AddIncludePath: " + includePath.ToString());
+			Log::Info("AddIncludePath: " + includePath.ToString());
 			_includePaths.push_back(std::move(includePath));
 		}
 
@@ -51,7 +51,7 @@ namespace Soup
 		void AddLibraryPath(const char* path) override final
 		{
 			auto libraryPath = Path(path);
-			Log::Verbose("AddLibraryPath: " + libraryPath.ToString());
+			Log::Info("AddLibraryPath: " + libraryPath.ToString());
 			_libraryPaths.push_back(std::move(libraryPath));
 		}
 

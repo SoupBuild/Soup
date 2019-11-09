@@ -30,7 +30,7 @@ namespace Soup
 				Path(BuildStateFileName);
 			if (!IFileSystem::Current().Exists(buildStateFile))
 			{
-				Log::Verbose("BuildState file does not exist");
+				Log::Info("BuildState file does not exist");
 				return false;
 			}
 
@@ -68,7 +68,7 @@ namespace Soup
 			// Ensure the target directories exists
 			if (!IFileSystem::Current().Exists(buildProjectGenerateFolder))
 			{
-				Log::Verbose("Create Directory: " + Path(Constants::ProjectGenerateFolderName).ToString());
+				Log::Info("Create Directory: " + Path(Constants::ProjectGenerateFolderName).ToString());
 				IFileSystem::Current().CreateDirectory(buildProjectGenerateFolder);
 			}
 

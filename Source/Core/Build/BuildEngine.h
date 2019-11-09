@@ -32,19 +32,19 @@ namespace Soup
 		bool Execute(const BuildArguments& arguments)
 		{
 			// Log the incoming request for verbose logs
-			Log::Verbose("TargetName = " + arguments.TargetName);
-			Log::Verbose("TargetType = " + ToString(arguments.TargetType));
-			Log::Verbose("LanguageStandard = " + ToString(arguments.LanguageStandard));
-			Log::Verbose("WorkingDirectory = " + arguments.WorkingDirectory.ToString());
-			Log::Verbose("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
-			Log::Verbose("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
-			Log::Verbose("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
-			Log::Verbose("IsIncremental = " + ToString(arguments.IsIncremental));
-			Log::Verbose("OptimizationLevel = " + ToString(arguments.OptimizationLevel));
-			Log::Verbose("GenerateSourceDebugInfo = " + ToString(arguments.GenerateSourceDebugInfo));
-			Log::Verbose("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
-			Log::Verbose("IncludeModules = " + ToString(arguments.IncludeModules));
-			Log::Verbose("PreprocessorDefinitions = " + ToString(arguments.PreprocessorDefinitions));
+			Log::Diag("TargetName = " + arguments.TargetName);
+			Log::Diag("TargetType = " + ToString(arguments.TargetType));
+			Log::Diag("LanguageStandard = " + ToString(arguments.LanguageStandard));
+			Log::Diag("WorkingDirectory = " + arguments.WorkingDirectory.ToString());
+			Log::Diag("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
+			Log::Diag("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
+			Log::Diag("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
+			Log::Diag("IsIncremental = " + ToString(arguments.IsIncremental));
+			Log::Diag("OptimizationLevel = " + ToString(arguments.OptimizationLevel));
+			Log::Diag("GenerateSourceDebugInfo = " + ToString(arguments.GenerateSourceDebugInfo));
+			Log::Diag("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
+			Log::Diag("IncludeModules = " + ToString(arguments.IncludeModules));
+			Log::Diag("PreprocessorDefinitions = " + ToString(arguments.PreprocessorDefinitions));
 
 			// Perform the core compilation of the source files
 			bool sourceCompiled = CoreCompile(arguments);
@@ -61,17 +61,17 @@ namespace Soup
 		/// </summary>
 		bool CoreCompile(const BuildArguments& arguments)
 		{
-			Log::Verbose("Task: CoreCompile");
+			Log::Info("Task: CoreCompile");
 
 			// Load the previous build state if performing an incremental build
 			BuildState buildState = {};
 			bool forceBuild = !arguments.IsIncremental;
 			if (arguments.IsIncremental)
 			{
-				Log::Verbose("Loading previous build state");
+				Log::Info("Loading previous build state");
 				if (!BuildStateManager::TryLoadState(arguments.WorkingDirectory, buildState))
 				{
-					Log::Verbose("No previous state found, full rebuild required");
+					Log::Info("No previous state found, full rebuild required");
 					buildState = BuildState();
 					forceBuild = true;
 				}
@@ -81,14 +81,14 @@ namespace Soup
 			auto objectDirectry = arguments.WorkingDirectory + arguments.ObjectDirectory;
 			if (!IFileSystem::Current().Exists(objectDirectry))
 			{
-				Log::Verbose("Create Directory: " + arguments.ObjectDirectory.ToString());
+				Log::Info("Create Directory: " + arguments.ObjectDirectory.ToString());
 				IFileSystem::Current().CreateDirectory(objectDirectry);
 			}
 
 			auto binaryDirectry = arguments.WorkingDirectory + arguments.BinaryDirectory;
 			if (!IFileSystem::Current().Exists(binaryDirectry))
 			{
-				Log::Verbose("Create Directory: " + arguments.BinaryDirectory.ToString());
+				Log::Info("Create Directory: " + arguments.BinaryDirectory.ToString());
 				IFileSystem::Current().CreateDirectory(binaryDirectry);
 			}
 
@@ -119,7 +119,7 @@ namespace Soup
 
 			if (codeCompiled)
 			{
-				Log::Verbose("Saving updated build state");
+				Log::Info("Saving updated build state");
 				BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
 			}
 
@@ -135,13 +135,13 @@ namespace Soup
 			BuildState& buildState,
 			bool forceBuild)
 		{
-			Log::Verbose("Task: CompileModuleInterfaceUnit");
+			Log::Info("Task: CompileModuleInterfaceUnit");
 
 			bool buildRequired = forceBuild;
 			if (!forceBuild)
 			{
 				// Check if each source file is out of date and requires a rebuild
-				Log::Verbose("Check for updated source");
+				Log::Info("Check for updated source");
 				
 				// Try to build up the closure of include dependencies
 				auto inputClosure = std::vector<Path>();
@@ -174,7 +174,7 @@ namespace Soup
 					}
 					else
 					{
-						Log::Verbose("File up to date: " + sourceFile.ToString());
+						Log::Info("File up to date: " + sourceFile.ToString());
 					}
 				}
 				else
@@ -202,7 +202,7 @@ namespace Soup
 
 				// Compile the individual translation unit
 				const auto& file = arguments.ModuleInterfaceSourceFile;
-				Log::Info(file.ToString());
+				Log::HighPriority(file.ToString());
 				compileArguments.SourceFile = file;
 				compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
 				compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
@@ -213,7 +213,7 @@ namespace Soup
 				auto objectOutputModuleInterfaceFile = arguments.ObjectDirectory + Path(file.GetFileName());
 				objectOutputModuleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
 				auto binaryOutputModuleInterfaceFile = arguments.BinaryDirectory + Path(arguments.TargetName + "." + std::string(_compiler->GetModuleFileExtension()));
-				Log::Verbose("Copy: [" + objectOutputModuleInterfaceFile.ToString() + "] -> [" + binaryOutputModuleInterfaceFile.ToString() + "]");
+				Log::Info("Copy: [" + objectOutputModuleInterfaceFile.ToString() + "] -> [" + binaryOutputModuleInterfaceFile.ToString() + "]");
 				IFileSystem::Current().CopyFile(
 					arguments.WorkingDirectory + objectOutputModuleInterfaceFile,
 					arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
@@ -225,7 +225,7 @@ namespace Soup
 			}
 			else
 			{
-				Log::Verbose("Module up to date");
+				Log::Info("Module up to date");
 				return false;
 			}
 		}
@@ -239,13 +239,13 @@ namespace Soup
 			BuildState& buildState,
 			bool force)
 		{
-			Log::Verbose("Task: CompileSourceFiles");
+			Log::Info("Task: CompileSourceFiles");
 
 			auto source = std::vector<Path>();
 			if (!force)
 			{
 				// Check if each source file is out of date and requires a rebuild
-				Log::Verbose("Check for updated source");
+				Log::Info("Check for updated source");
 				for (auto& sourceFile : arguments.SourceFiles)
 				{
 					// Try to build up the closure of include dependencies
@@ -276,7 +276,7 @@ namespace Soup
 						}
 						else
 						{
-							Log::Verbose("File up to date: " + sourceFile.ToString());
+							Log::Info("File up to date: " + sourceFile.ToString());
 						}
 					}
 					else
@@ -295,7 +295,7 @@ namespace Soup
 			// Check if we can skip the whole dang thing
 			if (!source.empty())
 			{
-				Log::Verbose("Compiling source files");
+				Log::Info("Compiling source files");
 
 				// Setup the shared properties
 				auto compileArguments = CompileArguments();
@@ -337,7 +337,7 @@ namespace Soup
 			}
 			else
 			{
-				Log::Verbose("Objects up to date");
+				Log::Info("Objects up to date");
 				return false;
 			}
 		}
@@ -348,7 +348,7 @@ namespace Soup
 		/// </summary>
 		bool CoreLink(const BuildArguments& arguments, bool force)
 		{
-			Log::Verbose("Task: CoreLink");
+			Log::Info("Task: CoreLink");
 
 			Path targetFile;
 			switch (arguments.TargetType)
@@ -378,14 +378,14 @@ namespace Soup
 			{
 				if (!IFileSystem::Current().Exists(arguments.WorkingDirectory + targetFile))
 				{
-					Log::Verbose("Link target does not exist: " + targetFile.ToString());
+					Log::Info("Link target does not exist: " + targetFile.ToString());
 					linkRequired = true;
 				}
 			}
 
 			if (linkRequired)
 			{
-				Log::Verbose("Linking target");
+				Log::Info("Linking target");
 
 				auto linkArguments = LinkArguments();
 
@@ -437,14 +437,14 @@ namespace Soup
 				// }
 
 				// Perform the link
-				Log::Verbose(linkArguments.TargetFile.ToString());
+				Log::Info(linkArguments.TargetFile.ToString());
 				_compiler->Link(linkArguments);
 
 				return true;
 			}
 			else
 			{
-				Log::Verbose("Final target up to date");
+				Log::Info("Final target up to date");
 				return false;
 			}
 		}

@@ -173,7 +173,7 @@ namespace Soup
 				}
 				else
 				{
-					Log::Verbose("Missing file info: " + file.ToString());
+					Log::Info("Missing file info: " + file.ToString());
 					return false;
 				}
 			}

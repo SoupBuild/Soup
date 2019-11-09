@@ -27,7 +27,7 @@ namespace Soup::Client
 		/// </summary>
 		virtual void Run() override final
 		{
-			Log::Trace("InitializeCommand::Run");
+			Log::Diag("InitializeCommand::Run");
 			Log::Info("The initialize utility will walk through the creation of the most basic Console recipe.\n");
 
 			// Use the current directory as the default names

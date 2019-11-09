@@ -32,7 +32,7 @@ namespace Soup
 		{
 			// Verify the requested file exists
 			auto localUserConfigFile = GetLocalUserConfigFilePath();
-			Log::Verbose("LocalConfig: " + localUserConfigFile.ToString());
+			Log::Info("LocalConfig: " + localUserConfigFile.ToString());
 			if (!IFileSystem::Current().Exists(localUserConfigFile))
 			{
 				throw std::runtime_error("LocalUserConfig file does not exist.");
@@ -49,7 +49,7 @@ namespace Soup
 			}
 			catch (std::exception& ex)
 			{
-				Log::Trace(std::string("Deserialze Threw: ") + ex.what());
+				Log::Diag(std::string("Deserialze Threw: ") + ex.what());
 				throw std::runtime_error("Failed to parse LocalUserConfig file.");
 			}
 		}

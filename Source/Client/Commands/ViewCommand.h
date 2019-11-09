@@ -28,7 +28,7 @@ namespace Soup::Client
 		/// </summary>
 		virtual void Run() override final
 		{
-			Log::Trace("ViewCommand::Run");
+			Log::Diag("ViewCommand::Run");
 			// var packageName = options.Package;
 			// try
 			// {

@@ -16,6 +16,6 @@ namespace Soup::Client
 		/// Gets or sets the package name
 		/// </summary>
 		// TODO: [Option('v', "verbose", Default = false, HelpText = "Enable verbose logging.")]
-		bool EnableVerbose;
+		TraceEventFlag Verbosity;
 	};
 }

@@ -40,6 +40,18 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Log a high priority message
+		/// </summary>
+		static void HighPriority(std::string_view message, int id)
+		{
+			EnsureListener().TraceEvent(TraceEventFlag::HighPriority, id, message);
+		}
+		static void HighPriority(std::string_view message)
+		{
+			HighPriority(message, s_activeId);
+		}
+
+		/// <summary>
 		/// Log a generic infomational message
 		/// </summary>
 		static void Info(std::string_view message, int id)
@@ -52,28 +64,17 @@ namespace Soup
 		}
 
 		/// <summary>
-		/// Log a verbose message
+		/// Log a diagnostic message
 		/// </summary>
-		static void Verbose(std::string_view message, int id)
-		{
-			EnsureListener().TraceEvent(TraceEventFlag::Verbose, id, message);
-		}
-		static void Verbose(std::string_view message)
-		{
-			Verbose(message, s_activeId);
-		}
-
-		/// <summary>
-		/// Log a trace message
-		/// </summary>
-		static void Trace(std::string_view message, int id)
+		static void Diag(std::string_view message, int id)
 		{
 			EnsureListener().TraceEvent(TraceEventFlag::Diagnostic, id, message);
 		}
-		static void Trace(std::string_view message)
+		static void Diag(std::string_view message)
 		{
-			Trace(message, s_activeId);
+			Diag(message, s_activeId);
 		}
+
 
 		/// <summary>
 		/// Log a warning message

@@ -170,11 +170,11 @@ namespace Soup
 			try
 			{
 				Log::SetActiveId(projectId);
-				Log::Verbose("Running InProcess Build");
+				Log::Diag("Running InProcess Build");
 
 				if (_buildSet.contains(recipe.GetName()))
 				{
-					Log::Verbose("Recipe already built: " + recipe.GetName());
+					Log::Diag("Recipe already built: " + recipe.GetName());
 				}
 				else
 				{
@@ -224,13 +224,13 @@ namespace Soup
 			const Path& packageRoot,
 			const Recipe& recipe)
 		{
-			Log::Verbose("Running Generate Build");
+			Log::Info("Running Generate Build");
 
 			// Gen the build
 			auto executablePath = _generator.EnsureExecutableBuilt(packageRoot, recipe);
 
 			// Invoke the build
-			Log::Verbose("Invoke Compiler: " + executablePath.ToString());
+			Log::Info("Invoke Compiler: " + executablePath.ToString());
 			auto arguments = std::vector<std::string>();
 			auto result = IProcessManager::Current().Execute(
 				executablePath,
@@ -251,7 +251,7 @@ namespace Soup
 			if (result.ExitCode != 0)
 			{
 				// TODO: Return error code
-				Log::Verbose("Invoke Build Failed: " + std::to_string(result.ExitCode));
+				Log::Info("Invoke Build Failed: " + std::to_string(result.ExitCode));
 				throw std::runtime_error("Invoke Build Failed!");
 			}
 		}

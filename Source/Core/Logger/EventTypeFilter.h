@@ -15,6 +15,11 @@ namespace Soup
 		{
 		}
 
+		void Set(TraceEventFlag eventType)
+		{
+			_types = static_cast<uint32_t>(eventType);
+		}
+
 		void Disable(TraceEventFlag eventType)
 		{
 			_types &= ~static_cast<uint32_t>(eventType);

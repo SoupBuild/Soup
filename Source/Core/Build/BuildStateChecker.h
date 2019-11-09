@@ -28,13 +28,13 @@ namespace Soup
 			auto relativeOutputFile = rootPath + targetFile;
 			if (!IFileSystem::Current().Exists(relativeOutputFile))
 			{
-				Log::Verbose("Output target does not exist: " + targetFile.ToString());
+				Log::Info("Output target does not exist: " + targetFile.ToString());
 				return true;
 			}
 
 			auto outputFileLastWriteTime = 
 				IFileSystem::Current().GetLastWriteTime(relativeOutputFile);
-			Log::Verbose("IsOutdated: " + targetFile.ToString() + " [" + std::to_string(outputFileLastWriteTime) + "]");
+			Log::Diag("IsOutdated: " + targetFile.ToString() + " [" + std::to_string(outputFileLastWriteTime) + "]");
 			for (auto& inputFile : inputFiles)
 			{
 				// If the file is relative then combine it with the root path
@@ -47,10 +47,10 @@ namespace Soup
 
 				auto dependencyLastWriteTime = 
 					IFileSystem::Current().GetLastWriteTime(relativeInputFile);
-				Log::Verbose("  " + inputFile.ToString() + " [" + std::to_string(dependencyLastWriteTime) + "]");
+				Log::Diag("  " + inputFile.ToString() + " [" + std::to_string(dependencyLastWriteTime) + "]");
 				if (dependencyLastWriteTime > outputFileLastWriteTime)
 				{
-					Log::Verbose("Input altered after target [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "]");
+					Log::Info("Input altered after target [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "]");
 					return true;
 				}
 			}

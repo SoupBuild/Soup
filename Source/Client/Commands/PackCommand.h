@@ -27,7 +27,7 @@ namespace Soup::Client
 		/// </summary>
 		virtual void Run() override final
 		{
-			Log::Trace("PackCommand::Run");
+			Log::Diag("PackCommand::Run");
 			// var recipe = await RecipeManager.LoadFromFileAsync(@"./");
 			// Log.Info($"Packaging Project: {recipe.Name}@{recipe.Version}");
 

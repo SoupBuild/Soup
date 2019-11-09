@@ -34,8 +34,7 @@ namespace Soup::Client
 			try
 			{
 				// Setup the filter
-				auto defaultTypes = 
-					static_cast<uint32_t>(TraceEventFlag::Information) |
+				auto defaultTypes =
 					static_cast<uint32_t>(TraceEventFlag::Warning) |
 					static_cast<uint32_t>(TraceEventFlag::Error) |
 					static_cast<uint32_t>(TraceEventFlag::Critical);
@@ -54,11 +53,8 @@ namespace Soup::Client
 				IFileSystem::Register(std::make_shared<STLFileSystem>());
 				IProcessManager::Register(std::make_shared<PlatformProcessManager>());
 
-				// Enable full diagnostics
-				// _filter->Enable(TraceEventFlag::Diagnostic);
-
 				// Attempt to parse the provided arguments
-				Log::Trace("ProgramStart");
+				Log::Diag("ProgramStart");
 				ArgumentsParser arguments;
 
 				try
@@ -97,7 +93,7 @@ namespace Soup::Client
 					throw std::runtime_error("Unknown arguments.");
 
 				// Run the requested command
-				Log::Trace("Run Command");
+				Log::Diag("Run Command");
 				command->Run();
 
 				return 0;
@@ -130,17 +126,13 @@ namespace Soup::Client
 
 		void SetupShared(SharedOptions& options)
 		{
-			Log::Trace("Setup SharedOptions");
-			if (options.EnableVerbose)
-			{
-				_filter->Enable(TraceEventFlag::Verbose);
-				_filter->Enable(TraceEventFlag::Diagnostic);
-			}
+			Log::Diag("Setup SharedOptions");
+			_filter->Set(options.Verbosity);
 		}
 
 		std::shared_ptr<ICommand> Setup(BuildOptions options)
 		{
-			Log::Trace("Setup BuildOptions");
+			Log::Diag("Setup BuildOptions");
 			SetupShared(options);
 			return std::make_shared<BuildCommand>(
 				std::move(options));
@@ -148,7 +140,7 @@ namespace Soup::Client
 
 		std::shared_ptr<ICommand> Setup(RunOptions options)
 		{
-			Log::Trace("Setup RunCommand");
+			Log::Diag("Setup RunCommand");
 			SetupShared(options);
 			return std::make_shared<RunCommand>(
 				std::move(options));
@@ -156,7 +148,7 @@ namespace Soup::Client
 
 		std::shared_ptr<ICommand> Setup(InitializeOptions options)
 		{
-			Log::Trace("Setup InitializeCommand");
+			Log::Diag("Setup InitializeCommand");
 			SetupShared(options);
 			return std::make_shared<InitializeCommand>(
 				std::move(options));
@@ -164,7 +156,7 @@ namespace Soup::Client
 
 		std::shared_ptr<ICommand> Setup(InstallOptions options)
 		{
-			Log::Trace("Setup InstallCommand");
+			Log::Diag("Setup InstallCommand");
 			SetupShared(options);
 			return std::make_shared<InstallCommand>(
 				std::move(options));
@@ -172,7 +164,7 @@ namespace Soup::Client
 
 		std::shared_ptr<ICommand> Setup(PackOptions options)
 		{
-			Log::Trace("Setup PackCommand");
+			Log::Diag("Setup PackCommand");
 			SetupShared(options);
 			return std::make_shared<PackCommand>(
 				std::move(options));
@@ -180,7 +172,7 @@ namespace Soup::Client
 
 		std::shared_ptr<ICommand> Setup(PublishOptions options)
 		{
-			Log::Trace("Setup PublishCommand");
+			Log::Diag("Setup PublishCommand");
 			SetupShared(options);
 			return std::make_shared<PublishCommand>(
 				std::move(options));
@@ -188,7 +180,7 @@ namespace Soup::Client
 
 		std::shared_ptr<ICommand> Setup(VersionOptions options)
 		{
-			Log::Trace("Setup VersionCommand");
+			Log::Diag("Setup VersionCommand");
 			SetupShared(options);
 			return std::make_shared<VersionCommand>(
 				std::move(options));
@@ -196,7 +188,7 @@ namespace Soup::Client
 
 		std::shared_ptr<ICommand> Setup(ViewOptions options)
 		{
-			Log::Trace("Setup ViewCommand");
+			Log::Diag("Setup ViewCommand");
 			SetupShared(options);
 			return std::make_shared<ViewCommand>(
 				std::move(options));

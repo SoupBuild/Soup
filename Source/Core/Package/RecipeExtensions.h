@@ -39,7 +39,7 @@ namespace Soup
 			}
 			catch (std::exception& ex)
 			{
-				Log::Trace(std::string("Deserialze Threw: ") + ex.what());
+				Log::Diag(std::string("Deserialze Threw: ") + ex.what());
 				Log::Info("Failed to parse Recipe.");
 				return false;
 			}

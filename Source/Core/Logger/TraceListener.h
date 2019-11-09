@@ -8,10 +8,10 @@ namespace Soup
 {
 	export enum class TraceEventFlag : uint32_t
 	{
+		// High Priority message.
+		HighPriority = 1 << 0,
 		// Informational message.
-		Information = 1 << 0,
-		// Debugging trace.
-		Verbose = 1 << 1,
+		Information = 1 << 1,
 		// Diagnostic trace.
 		Diagnostic = 1 << 2,
 		// Noncritical problem.
@@ -152,11 +152,11 @@ namespace Soup
 			{
 				switch (eventType)
 				{
+					case TraceEventFlag::HighPriority:
+						stream << "HIGH";
+						break;
 					case TraceEventFlag::Information:
 						stream << "INFO";
-						break;
-					case TraceEventFlag::Verbose:
-						stream << "VERB";
 						break;
 					case TraceEventFlag::Diagnostic:
 						stream << "DIAG";
