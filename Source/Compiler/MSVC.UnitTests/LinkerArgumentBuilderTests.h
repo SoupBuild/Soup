@@ -20,8 +20,9 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
-				"/NOLOGO",
-				"/OUT:\"Library.mock.lib\"",
+				"/nologo",
+				"/machine:X64",
+				"/out:\"Library.mock.lib\"",
 			});
 		}
 
@@ -51,8 +52,9 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
-				"/NOLOGO",
-				"/OUT:\"Library.mock.lib\"",
+				"/nologo",
+				"/machine:X64",
+				"/out:\"Library.mock.lib\"",
 				"File.mock.o",
 			});
 
@@ -74,9 +76,10 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
-				"/NOLOGO",
-				"/LIBPATH:\"../libraries/\"",
-				"/OUT:\"Library.mock.lib\"",
+				"/nologo",
+				"/machine:X64",
+				"/libpath:\"../libraries/\"",
+				"/out:\"Library.mock.lib\"",
 				"File.mock.o",
 			});
 
@@ -98,8 +101,9 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
-				"/NOLOGO",
-				"/OUT:\"out/Something.exe\"",
+				"/nologo",
+				"/machine:X64",
+				"/out:\"out/Something.exe\"",
 				"Library.mock.lib",
 				"File.mock.obj",
 			});

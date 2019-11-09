@@ -47,7 +47,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /EHsc /c File.cpp /Fo\"obj/File.obj\"",
+					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /X /RTC1 /EHsc /MDd /c File.cpp /Fo\"obj/File.obj\"",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -86,8 +86,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /I\"Includes\" /DDEBUG /EHsc /clang:--precompile File.cpp /Fo\"obj/File.pcm\"",
-					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /EHsc /c obj/File.pcm /Fo\"obj/File.obj\"",
+					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MDd File.cpp /Fo\"obj/File.pcm\"",
+					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /X /RTC1 /EHsc /MDd /c obj/File.pcm /Fo\"obj/File.obj\"",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -119,7 +119,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: Source: bin/mock.lib.exe /NOLOGO /OUT:\"Library.mock.a\" File.mock.obj",
+					"Execute: Source: bin/mock.lib.exe /nologo /machine:X64 /out:\"Library.mock.a\" File.mock.obj",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -154,7 +154,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: Source: bin/mock.link.exe /NOLOGO /OUT:\"Something.exe\" Library.mock.a File.mock.obj",
+					"Execute: Source: bin/mock.link.exe /nologo /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");

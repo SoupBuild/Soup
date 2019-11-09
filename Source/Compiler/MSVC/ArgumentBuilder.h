@@ -12,6 +12,31 @@ namespace Soup::Compiler::MSVC
 	/// </summary>
 	export class ArgumentBuilder
 	{
+	private:
+		static constexpr std::string_view ArgumentFlag_NoLogo = "nologo";
+
+		static constexpr std::string_view Compiler_ArgumentFlag_GenerateDebugInformation = "Zi";
+		static constexpr std::string_view Compiler_ArgumentFlag_ShowIncludes = "showincludes";
+		static constexpr std::string_view Compiler_ArgumentFlag_CompileOnly = "c";
+		static constexpr std::string_view Compiler_ArgumentFlag_IgnoreStandardIncludePaths = "X";
+		static constexpr std::string_view Compiler_ArgumentFlag_Optimization_Disable = "Od";
+		static constexpr std::string_view Compiler_ArgumentFlag_Optimization_Speed = "Ot";
+		static constexpr std::string_view Compiler_ArgumentFlag_Optimization_Size = "Os";
+		static constexpr std::string_view Compiler_ArgumentFlag_RuntimeChecks = "RTC1";
+		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Debug = "MDd";
+		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Release = "MD";
+		static constexpr std::string_view Compiler_ArgumentParameter_Standard = "std";
+		static constexpr std::string_view Compiler_ArgumentParameter_ObjectFile = "Fo";
+		static constexpr std::string_view Compiler_ArgumentParameter_Include = "I";
+		static constexpr std::string_view Compiler_ArgumentParameter_PreprocessorDefine = "D";
+
+		static constexpr std::string_view Linker_ArgumentFlag_DLL = "dll";
+		static constexpr std::string_view Linker_ArgumentFlag_Verbose = "verbose";
+		static constexpr std::string_view Linker_ArgumentParameter_Output = "out";
+		static constexpr std::string_view Linker_ArgumentParameter_LibraryPath = "libpath";
+		static constexpr std::string_view Linker_ArgumentParameter_Machine = "machine";
+		static constexpr std::string_view Linker_ArgumentValue_X64 = "X64";
+
 	public:
 		static std::vector<std::string> BuildCompilerArguments(
 			const CompileArguments& args)
@@ -25,39 +50,35 @@ namespace Soup::Compiler::MSVC
 			// Calculate object output file
 			auto commandArgs = std::vector<std::string>();
 
-			// Enable verbose output
-			// commandArgs.push_back("-v");
-
 			// Disable the logo
-			commandArgs.push_back("/nologo");
+			AddFlag(commandArgs, ArgumentFlag_NoLogo);
 
 			// Enable Header includes if needed
 			if (args.GenerateIncludeTree)
 			{
-				commandArgs.push_back("/showIncludes");
+				AddFlag(commandArgs, Compiler_ArgumentFlag_ShowIncludes);
 			}
 
 			// Generate source debug information
 			if (args.GenerateSourceDebugInfo)
 			{
-				commandArgs.push_back("/Zi");
+				AddFlag(commandArgs, Compiler_ArgumentFlag_GenerateDebugInformation);
 			}
 
 			// Set the language standard
 			switch (args.Standard)
 			{
 				case LanguageStandard::CPP11:
-					commandArgs.push_back("/std:c++11");
+					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++11");
 					break;
 				case LanguageStandard::CPP14:
-					commandArgs.push_back("/std:c++14");
+					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++14");
 					break;
 				case LanguageStandard::CPP17:
-					commandArgs.push_back("/std:c++17");
+					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++17");
 					break;
 				case LanguageStandard::CPP20:
-					// Temporary while cl does not have c++20
-					commandArgs.push_back("/clang:-std=c++2a");
+					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++latest");
 					break;
 				default:
 					throw std::runtime_error("Unknown language standard.");
@@ -67,13 +88,13 @@ namespace Soup::Compiler::MSVC
 			switch (args.Optimize)
 			{
 				case OptimizationLevel::None:
-					// DEFAULT: "/O0";
+					AddFlag(commandArgs, Compiler_ArgumentFlag_Optimization_Disable);
 					break;
 				case OptimizationLevel::Speed:
-					commandArgs.push_back("/Ot");
+					AddFlag(commandArgs, Compiler_ArgumentFlag_Optimization_Speed);
 					break;
 				case OptimizationLevel::Size:
-					commandArgs.push_back("/Os");
+					AddFlag(commandArgs, Compiler_ArgumentFlag_Optimization_Size);
 					break;
 				default:
 					throw std::runtime_error("Unknown optimization level.");
@@ -82,24 +103,33 @@ namespace Soup::Compiler::MSVC
 			// Set the include paths
 			for (auto directory : args.IncludeDirectories)
 			{
-				auto argument = "/I\"" + directory.ToString() + "\"";
-				commandArgs.push_back(std::move(argument));
+				AddFlagValueWithQuotes(commandArgs, Compiler_ArgumentParameter_Include, directory.ToString());
 			}
 
 			// Set the preprocessor definitions
 			for (auto& definition : args.PreprocessorDefinitions)
 			{
-				auto argument = "/D" + definition;
-				commandArgs.push_back(std::move(argument));
+				AddFlagValue(commandArgs, Compiler_ArgumentParameter_PreprocessorDefine, definition);
 			}
 
 			// Ignore Standard Include Paths to prevent pulling in accidental headers
-			// commandArgs.push_back("-X");
+			AddFlag(commandArgs, Compiler_ArgumentFlag_IgnoreStandardIncludePaths);
 
-			// Add in the std include paths
+			// Enable basic runtime checks
+			AddFlag(commandArgs, Compiler_ArgumentFlag_RuntimeChecks);
 
 			// Enable c++ exceptions
-			commandArgs.push_back("/EHsc");
+			AddFlag(commandArgs, "EHsc");
+
+			// Enable multithreaded runtime dynamic linked
+			if (args.Optimize == OptimizationLevel::None)
+			{
+				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Debug);
+			}
+			else
+			{
+				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Release);
+			}
 
 			// Add the module references
 			for (auto& moduleFile : args.IncludeModules)
@@ -110,7 +140,7 @@ namespace Soup::Compiler::MSVC
 
 			if (args.ExportModule)
 			{
-				commandArgs.push_back("/clang:--precompile");
+				// commandArgs.push_back("/clang:--precompile");
 
 				// Place the ifc in the output directory
 				//var outputFile = "{Path.GetFileNameWithoutExtension(sourceFile)}.{ModuleFileExtension}";
@@ -119,14 +149,14 @@ namespace Soup::Compiler::MSVC
 			else
 			{
 				// Only run preprocessor, compile and assemble
-				commandArgs.push_back("/c");
+				AddFlag(commandArgs, Compiler_ArgumentFlag_CompileOnly);
 			}
 
 			// Add the source file
 			commandArgs.push_back(args.SourceFile.ToString());
 
 			// Add the target file
-			commandArgs.push_back("/Fo\"" + args.TargetFile.ToString() + "\"");
+			AddFlagValueWithQuotes(commandArgs, Compiler_ArgumentParameter_ObjectFile, args.TargetFile.ToString());
 
 			return commandArgs;
 		}
@@ -137,8 +167,15 @@ namespace Soup::Compiler::MSVC
 			if (args.TargetFile.GetFileName().empty())
 				throw std::runtime_error("Target file cannot be empty.");
 
-			// Calculate object output file
 			auto commandArgs = std::vector<std::string>();
+
+			// Disable the logo
+			AddFlag(commandArgs, ArgumentFlag_NoLogo);
+
+			// Enable verbose output
+			// AddFlag(commandArgs, Linker_ArgumentFlag_Verbose);
+
+			// Calculate object output file
 			switch (args.TargetType)
 			{
 				case LinkTarget::StaticLibrary:
@@ -148,7 +185,7 @@ namespace Soup::Compiler::MSVC
 				case LinkTarget::DynamicLibrary:
 				{
 					// Create a dynamic library
-					commandArgs.push_back("/DLL");
+					AddFlag(commandArgs, Linker_ArgumentFlag_DLL);
 					break;
 				}
 				case LinkTarget::Executable:
@@ -161,20 +198,16 @@ namespace Soup::Compiler::MSVC
 				}
 			}
 
-			// Disable the logo
-			commandArgs.push_back("/NOLOGO");
+			// Add the machine target
+			AddParameter(commandArgs, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X64);
 
-			// Enable verbose output
-			// commandArgs.push_back("-v");
-
-			// Set the lobrary paths
+			// Set the library paths
 			for (auto directory : args.LibraryPaths)
 			{
-				auto argument = "/LIBPATH:\"" + directory.ToString() + "\"";
-				commandArgs.push_back(std::move(argument));
+				AddParameterWithQuotes(commandArgs, Linker_ArgumentParameter_LibraryPath, directory.ToString());
 			}
 
-			commandArgs.push_back("/OUT:\"" + args.TargetFile.ToString() + "\"");
+			AddParameterWithQuotes(commandArgs, Linker_ArgumentParameter_Output, args.TargetFile.ToString());
 
 			// Add the library files
 			for (auto& file : args.LibraryFiles)
@@ -189,6 +222,54 @@ namespace Soup::Compiler::MSVC
 			}
 
 			return commandArgs;
+		}
+
+	private:
+		static void AddFlag(std::vector<std::string>& args, std::string_view flag)
+		{
+			auto builder = std::stringstream();
+			builder << "/" << flag;
+			args.push_back(builder.str());
+		}
+
+		static void AddFlagValue(
+			std::vector<std::string>& args,
+			std::string_view flag,
+			std::string value)
+		{
+			auto builder = std::stringstream();
+			builder << "/" << flag << value;
+			args.push_back(builder.str());
+		}
+
+		static void AddFlagValueWithQuotes(
+			std::vector<std::string>& args,
+			std::string_view flag,
+			std::string value)
+		{
+			auto builder = std::stringstream();
+			builder << "/" << flag << "\"" << value << "\"";
+			args.push_back(builder.str());
+		}
+
+		static void AddParameter(
+			std::vector<std::string>& args,
+			std::string_view name,
+			std::string_view value)
+		{
+			auto builder = std::stringstream();
+			builder << "/" << name << ":" << value;
+			args.push_back(builder.str());
+		}
+
+		static void AddParameterWithQuotes(
+			std::vector<std::string>& args,
+			std::string_view name,
+			std::string_view value)
+		{
+			auto builder = std::stringstream();
+			builder << "/" << name << ":\"" << value << "\"";
+			args.push_back(builder.str());
 		}
 	};
 }
