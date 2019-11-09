@@ -10,14 +10,18 @@ namespace Soup::Compiler::MSVC::UnitTests
 	{
 	public:
 		[[Fact]]
-		void ZeroObjectFiles_Throws()
+		void ZeroObjectFiles()
 		{
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
 			arguments.TargetFile = Path("Library.mock.lib");
 			arguments.ObjectFiles = std::vector<Path>({});
-			Assert::ThrowsRuntimeError([&arguments]() {
-				auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
+
+			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
+
+			auto expected = std::vector<std::string>({
+				"/NOLOGO",
+				"/OUT:\"Library.mock.lib\"",
 			});
 		}
 

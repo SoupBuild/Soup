@@ -10,15 +10,19 @@ namespace Soup::Compiler::Clang::UnitTests
 	{
 	public:
 		[[Fact]]
-		void ZeroObjectFiles_Throws()
+		void ZeroObjectFiles()
 		{
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
 			arguments.TargetFile = Path("Library.mock.a");
 			arguments.ObjectFiles = std::vector<Path>({});
-			Assert::ThrowsRuntimeError([&arguments]() {
-				auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
+
+			auto expected = std::vector<std::string>({
+				"rc",
+				"Library.mock.a",
 			});
+
+			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
 		}
 
 		[[Fact]]

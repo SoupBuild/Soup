@@ -104,7 +104,9 @@ namespace Soup::Client
 
 				auto options = RunOptions();
 
-				// TODO: How to do verbose? options.Verbosity = CheckVerbosity(unusedArgs);
+				// Set defaults
+				auto syntheticParams = std::vector<std::string>();
+				options.Verbosity = CheckVerbosity(syntheticParams);
 
 				// All remaining arguments are passed to the executable
 				options.Arguments = std::move(unusedArgs);

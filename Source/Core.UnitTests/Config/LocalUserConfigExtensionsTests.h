@@ -52,7 +52,7 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: LocalConfig: C:/TestInstall/LocalUserConfig.json",
+					"INFO: LocalConfig: C:/TestInstall/LocalUserConfig.json",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -93,7 +93,7 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: LocalConfig: C:/TestInstall/LocalUserConfig.json",
+					"INFO: LocalConfig: C:/TestInstall/LocalUserConfig.json",
 					"DIAG: Deserialze Threw: Failed to parse the local user config json: expected value, got 'g' (103)",
 				}), 
 				testListener->GetMessages(),
@@ -157,7 +157,7 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: LocalConfig: C:/TestInstall/LocalUserConfig.json",
+					"INFO: LocalConfig: C:/TestInstall/LocalUserConfig.json",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");

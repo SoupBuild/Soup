@@ -32,7 +32,7 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: Missing file info: TestFile.cpp",
+					"INFO: Missing file info: TestFile.cpp",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -67,7 +67,7 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: Missing file info: OtherTestFile.h",
+					"INFO: Missing file info: OtherTestFile.h",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");

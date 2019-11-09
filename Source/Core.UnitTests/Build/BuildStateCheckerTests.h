@@ -58,7 +58,7 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: Output target does not exist: Output.bin",
+					"INFO: Output target does not exist: Output.bin",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -103,7 +103,7 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: IsOutdated: Output.bin [1434993120]",
+					"DIAG: IsOutdated: Output.bin [1434993120]",
 					"ERRO: Input file missing [Input.cpp] -> [Output.bin]",
 				}),
 				testListener->GetMessages(),
@@ -154,9 +154,9 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: IsOutdated: Output.bin [1434993120]",
-					"VERB:   Input.cpp [1434993180]",
-					"VERB: Input altered after target [Input.cpp] -> [Output.bin]",
+					"DIAG: IsOutdated: Output.bin [1434993120]",
+					"DIAG:   Input.cpp [1434993180]",
+					"INFO: Input altered after target [Input.cpp] -> [Output.bin]",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -206,8 +206,8 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: IsOutdated: Output.bin [1434993120]",
-					"VERB:   Input.cpp [1434993060]",
+					"DIAG: IsOutdated: Output.bin [1434993120]",
+					"DIAG:   Input.cpp [1434993060]",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -261,9 +261,9 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"VERB: IsOutdated: Output.bin [1434993120]",
-					"VERB:   Input.cpp [1434993060]",
-					"VERB:   C:/Input.h [1434993060]",
+					"DIAG: IsOutdated: Output.bin [1434993120]",
+					"DIAG:   Input.cpp [1434993060]",
+					"DIAG:   C:/Input.h [1434993060]",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
