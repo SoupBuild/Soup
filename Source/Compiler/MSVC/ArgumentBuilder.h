@@ -16,7 +16,7 @@ namespace Soup::Compiler::MSVC
 		static constexpr std::string_view ArgumentFlag_NoLogo = "nologo";
 
 		static constexpr std::string_view Compiler_ArgumentFlag_GenerateDebugInformation = "Zi";
-		static constexpr std::string_view Compiler_ArgumentFlag_ShowIncludes = "showincludes";
+		static constexpr std::string_view Compiler_ArgumentFlag_ShowIncludes = "showIncludes";
 		static constexpr std::string_view Compiler_ArgumentFlag_CompileOnly = "c";
 		static constexpr std::string_view Compiler_ArgumentFlag_IgnoreStandardIncludePaths = "X";
 		static constexpr std::string_view Compiler_ArgumentFlag_Optimization_Disable = "Od";
@@ -184,6 +184,10 @@ namespace Soup::Compiler::MSVC
 				}
 				case LinkTarget::DynamicLibrary:
 				{
+					// TODO: May want to specify the exact value
+					// set the default lib to mutlithreaded
+					commandArgs.push_back("-defaultlib:libcmt");
+
 					// Create a dynamic library
 					AddFlag(commandArgs, Linker_ArgumentFlag_DLL);
 					break;

@@ -66,7 +66,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
-				"/showincludes",
+				"/showIncludes",
 				"/std:c++11",
 				"/Od",
 				"/X",

@@ -321,7 +321,7 @@ namespace Soup
 				// Compile the individual translation units
 				for (auto& file : source)
 				{
-					Log::Info(file.ToString());
+					Log::HighPriority(file.ToString());
 					compileArguments.SourceFile = file;
 					compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
 					compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
