@@ -87,6 +87,30 @@ namespace Soup::Compiler::MSVC::UnitTests
 		}
 
 		[[Fact]]
+		void DynamicLibrary()
+		{
+			LinkArguments arguments = {};
+			arguments.TargetType = LinkTarget::DynamicLibrary;
+			arguments.TargetFile = Path("Library.mock.dll");
+			arguments.ObjectFiles = std::vector<Path>({
+				Path("File.mock.obj"),
+			});
+			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
+
+			auto expected = std::vector<std::string>({
+				"/nologo",
+				"/defaultlib:libcmt",
+				"/dll",
+				"/implib:\"Library.mock.lib\"",
+				"/machine:X64",
+				"/out:\"Library.mock.dll\"",
+				"File.mock.obj",
+			});
+
+			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+		}
+
+		[[Fact]]
 		void Executable()
 		{
 			LinkArguments arguments = {};

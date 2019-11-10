@@ -33,6 +33,7 @@ namespace Soup::Compiler::MSVC
 		static constexpr std::string_view Linker_ArgumentFlag_DLL = "dll";
 		static constexpr std::string_view Linker_ArgumentFlag_Verbose = "verbose";
 		static constexpr std::string_view Linker_ArgumentParameter_Output = "out";
+		static constexpr std::string_view Linker_ArgumentParameter_ImplementationLibrary = "implib";
 		static constexpr std::string_view Linker_ArgumentParameter_LibraryPath = "libpath";
 		static constexpr std::string_view Linker_ArgumentParameter_Machine = "machine";
 		static constexpr std::string_view Linker_ArgumentValue_X64 = "X64";
@@ -186,10 +187,19 @@ namespace Soup::Compiler::MSVC
 				{
 					// TODO: May want to specify the exact value
 					// set the default lib to mutlithreaded
-					commandArgs.push_back("-defaultlib:libcmt");
+					AddParameter(commandArgs, "defaultlib", "libcmt");
 
 					// Create a dynamic library
 					AddFlag(commandArgs, Linker_ArgumentFlag_DLL);
+
+					// Todo: this does not seem like the correct location for this
+					auto implemenationLibraryfile = args.TargetFile;
+					implemenationLibraryfile.SetFileExtension("lib");
+					AddParameterWithQuotes(
+						commandArgs,
+						Linker_ArgumentParameter_ImplementationLibrary,
+						implemenationLibraryfile.ToString());
+
 					break;
 				}
 				case LinkTarget::Executable:

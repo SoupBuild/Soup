@@ -179,75 +179,32 @@ namespace Soup::Compiler::Clang
 
 					// Add the output file
 					commandArgs.push_back(args.TargetFile.ToString());
+
+					// Add the library files
+					for (auto& file : args.LibraryFiles)
+					{
+						commandArgs.push_back(file.ToString());
+					}
+
+					// Add the object files
+					for (auto& file : args.ObjectFiles)
+					{
+						commandArgs.push_back(file.ToString());
+					}
+
 					break;
 				}
 				case LinkTarget::DynamicLibrary:
-				{
-					// Dynamic libraries targeting windows are put together by lld-link
-					
-					// Disable the banner
-					commandArgs.push_back("-nologo");
-
-					// set the default lib to mutlithreaded
-					commandArgs.push_back("-defaultlib:libcmt");
-
-					// Create a dynamic library
-					commandArgs.push_back("-dll");
-
-					// Set the lobrary paths
-					for (auto directory : args.LibraryPaths)
-					{
-						auto argument = "/LIBPATH:\"" + directory.ToString() + "\"";
-						commandArgs.push_back(std::move(argument));
-					}
-
-					// Add the target output dll and implementation library
-					commandArgs.push_back("-out:" + args.TargetFile.ToString());
-
-					// Todo: this does not seem like the correct location for this
-					auto implemenationLibraryfile = args.TargetFile;
-					implemenationLibraryfile.SetFileExtension("lib");
-					commandArgs.push_back("-implib:" + implemenationLibraryfile.ToString());
-					break;
-				}
 				case LinkTarget::Executable:
 				{
-					// Executables targeting windows are put together by lld-link
-					
-					// Disable the banner
-					commandArgs.push_back("-nologo");
-
-					// set the default lib to mutlithreaded
-					commandArgs.push_back("-defaultlib:libcmt");
-
-					// Set the lobrary paths
-					for (auto directory : args.LibraryPaths)
-					{
-						auto argument = "/LIBPATH:\"" + directory.ToString() + "\"";
-						commandArgs.push_back(std::move(argument));
-					}
-
-					// Add the target output
-					commandArgs.push_back("-out:" + args.TargetFile.ToString());
-
+					// Dynamic libraries and executables targeting windows are put together by lld-link
+					return MSVC::ArgumentBuilder::BuildLinkerArguments(args);
 					break;
 				}
 				default:
 				{
 					throw std::runtime_error("Unknown LinkTarget.");
 				}
-			}
-
-			// Add the library files
-			for (auto& file : args.LibraryFiles)
-			{
-				commandArgs.push_back(file.ToString());
-			}
-
-			// Add the object files
-			for (auto& file : args.ObjectFiles)
-			{
-				commandArgs.push_back(file.ToString());
 			}
 
 			return commandArgs;

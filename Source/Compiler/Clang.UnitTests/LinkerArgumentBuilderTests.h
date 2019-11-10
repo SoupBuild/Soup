@@ -17,6 +17,8 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.TargetFile = Path("Library.mock.a");
 			arguments.ObjectFiles = std::vector<Path>({});
 
+			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
+
 			auto expected = std::vector<std::string>({
 				"rc",
 				"Library.mock.a",
@@ -71,11 +73,12 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
-				"-fuse-ld=lld-link",
-				"-shared",
-				"-fpic",
-				"-o",
-				"Library.mock.so",
+				"/nologo",
+				"/defaultlib:libcmt",
+				"/dll",
+				"/implib:\"Library.mock.lib\"",
+				"/machine:X64",
+				"/out:\"Library.mock.so\"",
 				"File.mock.o",
 			});
 
@@ -97,9 +100,9 @@ namespace Soup::Compiler::Clang::UnitTests
 			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto expected = std::vector<std::string>({
-				"-fuse-ld=lld-link",
-				"-o",
-				"out/Something.exe",
+				"/nologo",
+				"/machine:X64",
+				"/out:\"out/Something.exe\"",
 				"Library.mock.a",
 				"File.mock.o",
 			});

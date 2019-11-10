@@ -134,7 +134,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: Source: C:/Clang/bin/clang++.exe -fuse-ld=lld-link -o Something.exe Library.mock.a File.mock.o",
+					"Execute: Source: C:/Clang/bin/lld-link.exe /nologo /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
