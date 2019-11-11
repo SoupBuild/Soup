@@ -188,6 +188,7 @@ namespace Soup::Compiler::MSVC
 					// TODO: May want to specify the exact value
 					// set the default lib to mutlithreaded
 					AddParameter(commandArgs, "defaultlib", "libcmt");
+					AddParameter(commandArgs, "subsystem", "console");
 
 					// Create a dynamic library
 					AddFlag(commandArgs, Linker_ArgumentFlag_DLL);
@@ -204,6 +205,11 @@ namespace Soup::Compiler::MSVC
 				}
 				case LinkTarget::Executable:
 				{
+					// TODO: May want to specify the exact value
+					// set the default lib to mutlithreaded
+					AddParameter(commandArgs, "defaultlib", "libcmt");
+					AddParameter(commandArgs, "subsystem", "console");
+
 					break;
 				}
 				default:

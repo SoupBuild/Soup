@@ -36,7 +36,7 @@ namespace Soup::Compiler::Clang
 		/// </summary>
 		virtual std::string_view GetObjectFileExtension() const override final
 		{
-			return "o";
+			return "obj";
 		}
 
 		/// <summary>
@@ -53,7 +53,7 @@ namespace Soup::Compiler::Clang
 		/// </summary>
 		virtual std::string_view GetStaticLibraryFileExtension() const override final
 		{
-			return "a";
+			return "lib";
 		}
 
 		/// <summary>

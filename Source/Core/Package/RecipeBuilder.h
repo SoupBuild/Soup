@@ -70,7 +70,7 @@ namespace Soup
 
 			// Add all dependency packages modules references
 			auto includeModules = std::vector<Path>();
-			if (recipe.HasDependencies())
+			if (recipe.GetLanguageVersion() == RecipeLanguageVersion::CPP20 && recipe.HasDependencies())
 			{
 				for (auto dependecy : recipe.GetDependencies())
 				{
@@ -83,9 +83,9 @@ namespace Soup
 				}
 			}
 
-			// Add the dependency static library closure to link if targeting an executable
+			// Add the dependency static library closure to link if targeting an executable or dynamic library
 			std::vector<Path> linkLibraries;
-			if (recipe.GetType() == RecipeType::Executable)
+			if (recipe.GetType() == RecipeType::Executable || recipe.GetType() == RecipeType::DynamicLibrary)
 			{
 				RecipeExtensions::GenerateDependecyStaticLibraryClosure(
 					*activeCompiler,
@@ -209,6 +209,25 @@ namespace Soup
 			// Perform the build
 			auto buildEngine = BuildEngine(activeCompiler);
 			auto wasBuilt = buildEngine.Execute(buildArguments);
+
+			// Build up the runtime dependencies
+			if (recipe.GetType() == RecipeType::Executable || recipe.GetType() == RecipeType::DynamicLibrary)
+			{
+				std::vector<Path> runtimeDependencies;
+				RecipeExtensions::GenerateDependecyDynamicLibraryClosure(
+					*activeCompiler,
+					arguments.Configuration,
+					workingDirectory,
+					recipe,
+					runtimeDependencies);
+
+				for (auto source : runtimeDependencies)
+				{
+					auto target = buildArguments.BinaryDirectory + Path(source.GetFileName());
+					Log::Info("Copy: [" + source.ToString() + "] -> [" + target.ToString() + "]");
+					IFileSystem::Current().CopyFile(source, target);
+				}
+			}
 
 			if (wasBuilt)
 				Log::HighPriority("Done");

@@ -151,8 +151,8 @@ namespace Soup
 					throw std::runtime_error("GenerateDependecyStaticLibraryClosure: Failed to load dependency.");
 				}
 
-				// Add this dependency if it is a static library
-				if (dependencyRecipe.GetType() == RecipeType::StaticLibrary)
+				// Add this dependency if it is a library
+				if (dependencyRecipe.GetType() == RecipeType::StaticLibrary || dependencyRecipe.GetType() == RecipeType::DynamicLibrary)
 				{
 					auto dependencyStaticLibrary = 
 						dependencyPackagePath +
@@ -160,13 +160,55 @@ namespace Soup
 						Path(dependencyRecipe.GetName() + "." + std::string(compiler.GetStaticLibraryFileExtension()));
 					closure.push_back(std::move(dependencyStaticLibrary));
 
-					// Add all recursive dependencies
-					GenerateDependecyStaticLibraryClosure(
-						compiler,
-						configuration,
-						dependencyPackagePath,
-						dependencyRecipe,
-						closure);
+					// Add transient dependencies for a static library to ensure all symbols are discoverable
+					if (dependencyRecipe.GetType() == RecipeType::StaticLibrary)
+					{
+						// Add all recursive dependencies
+						GenerateDependecyStaticLibraryClosure(
+							compiler,
+							configuration,
+							dependencyPackagePath,
+							dependencyRecipe,
+							closure);
+					}
+				}
+				else
+				{
+					throw std::runtime_error("Cannot reference a non library dependency.");
+				}
+			}
+		}
+
+		static void GenerateDependecyDynamicLibraryClosure(
+			const ICompiler& compiler,
+			const std::string& configuration,
+			const Path& workingDirectory,
+			const Recipe& recipe,
+			std::vector<Path>& closure)
+		{
+			if (recipe.HasDependencies())
+			{
+				for (auto& dependecy : recipe.GetDependencies())
+				{
+					// Load this package recipe
+					auto dependencyPackagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
+					auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
+					Recipe dependencyRecipe = {};
+					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependencyRecipe))
+					{
+						Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+						throw std::runtime_error("GenerateDependecyDynamicLibraryClosure: Failed to load dependency.");
+					}
+
+					// Add this dependency if it is a dynamic library
+					if (dependencyRecipe.GetType() == RecipeType::DynamicLibrary)
+					{
+						auto dependencyLibrary = 
+							dependencyPackagePath +
+							GetBinaryDirectory(compiler, configuration) +
+							Path(dependencyRecipe.GetName() + "." + std::string(compiler.GetDynamicLibraryFileExtension()));
+						closure.push_back(std::move(dependencyLibrary));
+					}
 				}
 			}
 		}

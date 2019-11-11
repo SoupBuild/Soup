@@ -123,7 +123,7 @@ namespace Soup
 				BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
 			}
 
-			return codeCompiled;
+			return codeCompiled || forceBuild;
 		}
 
 		/// <summary>
