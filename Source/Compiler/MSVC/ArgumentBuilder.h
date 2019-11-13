@@ -25,6 +25,8 @@ namespace Soup::Compiler::MSVC
 		static constexpr std::string_view Compiler_ArgumentFlag_RuntimeChecks = "RTC1";
 		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Debug = "MDd";
 		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Release = "MD";
+		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Debug = "MTd";
+		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Release = "MT";
 		static constexpr std::string_view Compiler_ArgumentParameter_Standard = "std";
 		static constexpr std::string_view Compiler_ArgumentParameter_ObjectFile = "Fo";
 		static constexpr std::string_view Compiler_ArgumentParameter_Include = "I";
@@ -125,11 +127,11 @@ namespace Soup::Compiler::MSVC
 			// Enable multithreaded runtime dynamic linked
 			if (args.Optimize == OptimizationLevel::None)
 			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Debug);
+				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Debug);
 			}
 			else
 			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Release);
+				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Release);
 			}
 
 			// Add the module references

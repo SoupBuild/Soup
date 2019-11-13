@@ -15,6 +15,8 @@ namespace Soup::BuildEx
 	public:
 		virtual void AddIncludePath(const char* path) = 0;
 		virtual void AddLibraryPath(const char* path) = 0;
+		virtual void AddStaticLibrary(const char* path) = 0;
+		virtual void AddPreprocessorDefinition(const char* value) = 0;
 	};
 }
 
@@ -41,7 +43,7 @@ namespace Soup
 		void AddIncludePath(const char* path) override final
 		{
 			auto includePath = Path(path);
-			Log::Info("AddIncludePath: " + includePath.ToString());
+			Log::Diag("AddIncludePath: " + includePath.ToString());
 			_includePaths.push_back(std::move(includePath));
 		}
 
@@ -51,8 +53,28 @@ namespace Soup
 		void AddLibraryPath(const char* path) override final
 		{
 			auto libraryPath = Path(path);
-			Log::Info("AddLibraryPath: " + libraryPath.ToString());
+			Log::Diag("AddLibraryPath: " + libraryPath.ToString());
 			_libraryPaths.push_back(std::move(libraryPath));
+		}
+
+		/// <summary>
+		/// Add library path
+		/// </summary>
+		void AddStaticLibrary(const char* path) override final
+		{
+			auto library = Path(path);
+			Log::Diag("AddStaticLibrary: " + library.ToString());
+			_staticLibraries.push_back(std::move(library));
+		}
+
+		/// <summary>
+		/// Add a preprocessor definition
+		/// </summary>
+		void AddPreprocessorDefinition(const char* value) override final
+		{
+			auto definition = std::string(value);
+			Log::Diag("AddPreprocessorDefinition: " + definition);
+			_preprocessorDefinitions.push_back(std::move(definition));
 		}
 
 		/// <summary>
@@ -71,8 +93,26 @@ namespace Soup
 			return _libraryPaths;
 		}
 
+		/// <summary>
+		/// Get the set of added static libraries
+		/// </summary>
+		const std::vector<Path>& GetStaticLibraries()
+		{
+			return _staticLibraries;
+		}
+
+		/// <summary>
+		/// Get the set of added preprocessor definitions
+		/// </summary>
+		const std::vector<std::string>& GetPreprocessorDefinitions()
+		{
+			return _preprocessorDefinitions;
+		}
+
 	private:
 		std::vector<Path> _includePaths;
 		std::vector<Path> _libraryPaths;
+		std::vector<Path> _staticLibraries;
+		std::vector<std::string> _preprocessorDefinitions;
 	};
 }

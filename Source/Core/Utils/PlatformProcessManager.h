@@ -57,7 +57,7 @@ namespace Soup
 				argumentsValue << " " << value;
 
 			std::string argumentsString = argumentsValue.str();
-			Log::Diag(workingDirectory.ToString() + ": " + argumentsString);
+			Log::Info(workingDirectory.ToString() + ": " + argumentsString);
 
 			// Aggregate all the output
 			std::stringstream stdOut;

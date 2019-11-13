@@ -84,7 +84,7 @@ namespace Soup
 			}
 
 			// Add the dependency static library closure to link if targeting an executable or dynamic library
-			std::vector<Path> linkLibraries;
+			std::vector<Path> linkLibraries = buildSystem.GetStaticLibraries();
 			if (recipe.GetType() == RecipeType::Executable || recipe.GetType() == RecipeType::DynamicLibrary)
 			{
 				RecipeExtensions::GenerateDependecyStaticLibraryClosure(
@@ -122,14 +122,13 @@ namespace Soup
 				arguments.PlatformLibraryPaths.end());
 
 			// Combine the defines with the default set
-			auto defines = std::vector<std::string>({
-				"SOUP_BUILD",
-			});
+			auto preprocessorDefinitions = buildSystem.GetPreprocessorDefinitions();
+			preprocessorDefinitions.push_back("SOUP_BUILD");
 			if (recipe.HasDefines())
 			{
 				auto& recipeDefines = recipe.GetDefines();
-				defines.insert(
-					defines.end(),
+				preprocessorDefinitions.insert(
+					preprocessorDefinitions.end(),
 					recipeDefines.begin(),
 					recipeDefines.end());
 			}
@@ -151,7 +150,7 @@ namespace Soup
 			buildArguments.LinkLibraries = std::move(linkLibraries);
 			buildArguments.IsIncremental = !arguments.ForceRebuild;
 			buildArguments.GenerateSourceDebugInfo = false;
-			buildArguments.PreprocessorDefinitions = std::move(defines);
+			buildArguments.PreprocessorDefinitions = std::move(preprocessorDefinitions);
 			buildArguments.IncludeDirectories = std::move(includePaths);
 			buildArguments.LibraryPaths = std::move(libraryPaths);
 
