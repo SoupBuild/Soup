@@ -30,6 +30,18 @@ namespace Soup
 		std::vector<Path> PlatformLibraryPaths;
 
 		/// <summary>
+		/// Gets or sets the platform preprocessor definitions
+		/// TODO: Pull this from somewhere when we implement platforms
+		/// </summary>
+		std::vector<std::string> PlatformPreprocessorDefinitions;
+
+		/// <summary>
+		/// Gets or sets the platform libraries
+		/// TODO: Pull this from somewhere when we implement platforms
+		/// </summary>
+		std::vector<Path> PlatformLibraries;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to force a rebuild
 		/// </summary>
 		bool ForceRebuild;
@@ -42,6 +54,8 @@ namespace Soup
 			return Configuration == rhs.Configuration &&
 				PlatformIncludePaths == rhs.PlatformIncludePaths &&
 				PlatformLibraryPaths == rhs.PlatformLibraryPaths &&
+				PlatformPreprocessorDefinitions == rhs.PlatformPreprocessorDefinitions &&
+				PlatformLibraries == rhs.PlatformLibraries &&
 				ForceRebuild == rhs.ForceRebuild;
 		}
 

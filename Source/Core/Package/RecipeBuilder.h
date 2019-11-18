@@ -85,6 +85,7 @@ namespace Soup
 
 			// Add the dependency static library closure to link if targeting an executable or dynamic library
 			std::vector<Path> linkLibraries = buildSystem.GetStaticLibraries();
+			std::vector<Path> externalLinkLibraries = std::vector<Path>();
 			if (recipe.GetType() == RecipeType::Executable || recipe.GetType() == RecipeType::DynamicLibrary)
 			{
 				RecipeExtensions::GenerateDependecyStaticLibraryClosure(
@@ -93,6 +94,12 @@ namespace Soup
 					workingDirectory,
 					recipe,
 					linkLibraries);
+
+				// Add the platform libraries
+				externalLinkLibraries.insert(
+					externalLinkLibraries.end(),
+					arguments.PlatformLibraries.begin(),
+					arguments.PlatformLibraries.end());
 			}
 
 			// Combine the include paths from the recipe and the system
@@ -121,8 +128,12 @@ namespace Soup
 				arguments.PlatformLibraryPaths.begin(),
 				arguments.PlatformLibraryPaths.end());
 
-			// Combine the defines with the default set
+			// Combine the defines with the default set and the platform
 			auto preprocessorDefinitions = buildSystem.GetPreprocessorDefinitions();
+			preprocessorDefinitions.insert(
+				preprocessorDefinitions.end(),
+				arguments.PlatformPreprocessorDefinitions.begin(),
+				arguments.PlatformPreprocessorDefinitions.end());
 			preprocessorDefinitions.push_back("SOUP_BUILD");
 			if (recipe.HasDefines())
 			{
@@ -148,6 +159,7 @@ namespace Soup
 			buildArguments.SourceFiles = recipe.GetSourceAsPath();
 			buildArguments.IncludeModules = std::move(includeModules);
 			buildArguments.LinkLibraries = std::move(linkLibraries);
+			buildArguments.ExternalLinkLibraries = std::move(externalLinkLibraries);
 			buildArguments.IsIncremental = !arguments.ForceRebuild;
 			buildArguments.GenerateSourceDebugInfo = false;
 			buildArguments.PreprocessorDefinitions = std::move(preprocessorDefinitions);

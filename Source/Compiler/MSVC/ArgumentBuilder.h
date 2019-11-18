@@ -15,7 +15,8 @@ namespace Soup::Compiler::MSVC
 	private:
 		static constexpr std::string_view ArgumentFlag_NoLogo = "nologo";
 
-		static constexpr std::string_view Compiler_ArgumentFlag_GenerateDebugInformation = "Zi";
+		static constexpr std::string_view Compiler_ArgumentFlag_GenerateDebugInformation = "Z7";
+		static constexpr std::string_view Compiler_ArgumentFlag_GenerateDebugInformationExternal = "Zi";
 		static constexpr std::string_view Compiler_ArgumentFlag_ShowIncludes = "showIncludes";
 		static constexpr std::string_view Compiler_ArgumentFlag_CompileOnly = "c";
 		static constexpr std::string_view Compiler_ArgumentFlag_IgnoreStandardIncludePaths = "X";
@@ -32,12 +33,14 @@ namespace Soup::Compiler::MSVC
 		static constexpr std::string_view Compiler_ArgumentParameter_Include = "I";
 		static constexpr std::string_view Compiler_ArgumentParameter_PreprocessorDefine = "D";
 
+		static constexpr std::string_view Linker_ArgumentFlag_NoDefaultLibraries = "nodefaultlib";
 		static constexpr std::string_view Linker_ArgumentFlag_DLL = "dll";
 		static constexpr std::string_view Linker_ArgumentFlag_Verbose = "verbose";
 		static constexpr std::string_view Linker_ArgumentParameter_Output = "out";
 		static constexpr std::string_view Linker_ArgumentParameter_ImplementationLibrary = "implib";
 		static constexpr std::string_view Linker_ArgumentParameter_LibraryPath = "libpath";
 		static constexpr std::string_view Linker_ArgumentParameter_Machine = "machine";
+		static constexpr std::string_view Linker_ArgumentParameter_DefaultLibrary = "defaultlib";
 		static constexpr std::string_view Linker_ArgumentValue_X64 = "X64";
 
 	public:
@@ -127,11 +130,11 @@ namespace Soup::Compiler::MSVC
 			// Enable multithreaded runtime dynamic linked
 			if (args.Optimize == OptimizationLevel::None)
 			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Debug);
+				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Debug);
 			}
 			else
 			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Release);
+				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Release);
 			}
 
 			// Add the module references
@@ -175,6 +178,9 @@ namespace Soup::Compiler::MSVC
 			// Disable the logo
 			AddFlag(commandArgs, ArgumentFlag_NoLogo);
 
+			// Disable the default libraries, we will set this up
+			// AddFlag(commandArgs, Linker_ArgumentFlag_NoDefaultLibraries);
+
 			// Enable verbose output
 			// AddFlag(commandArgs, Linker_ArgumentFlag_Verbose);
 
@@ -189,7 +195,7 @@ namespace Soup::Compiler::MSVC
 				{
 					// TODO: May want to specify the exact value
 					// set the default lib to mutlithreaded
-					AddParameter(commandArgs, "defaultlib", "libcmt");
+					// AddParameter(commandArgs, "defaultlib", "libcmt");
 					AddParameter(commandArgs, "subsystem", "console");
 
 					// Create a dynamic library
@@ -209,7 +215,7 @@ namespace Soup::Compiler::MSVC
 				{
 					// TODO: May want to specify the exact value
 					// set the default lib to mutlithreaded
-					AddParameter(commandArgs, "defaultlib", "libcmt");
+					// AddParameter(commandArgs, "defaultlib", "libcmt");
 					AddParameter(commandArgs, "subsystem", "console");
 
 					break;
@@ -235,6 +241,12 @@ namespace Soup::Compiler::MSVC
 			for (auto& file : args.LibraryFiles)
 			{
 				commandArgs.push_back(file.ToString());
+			}
+
+			// Add the external libraries as default libraries so they are resolved last
+			for (auto& file : args.ExternalLibraryFiles)
+			{
+				AddParameter(commandArgs, Linker_ArgumentParameter_DefaultLibrary, file.ToString());
 			}
 
 			// Add the object files

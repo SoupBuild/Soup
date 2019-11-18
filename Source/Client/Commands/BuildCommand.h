@@ -90,26 +90,67 @@ namespace Soup::Client
 
 			// TODO: Hard coded to windows MSVC runtime libraries
 			// And we only trust the contig today
-			arguments.PlatformIncludePaths = std::vector({
-				Path(config.GetMSVCRootPath()) + Path("include/"),
-			});
+			arguments.PlatformIncludePaths = std::vector<Path>({});
 			for (auto& path : config.GetWindowsSDKIncludePaths())
 			{
 				arguments.PlatformIncludePaths.push_back(Path(path));
 			}
 
-			arguments.PlatformLibraryPaths = std::vector({
-				Path(config.GetMSVCRootPath()) + Path("lib/x64/"),
-			});
+			arguments.PlatformLibraryPaths = std::vector<Path>({});
 			for (auto& path : config.GetWindowsSDKLibraryPaths())
 			{
 				arguments.PlatformLibraryPaths.push_back(Path(path));
 			}
 
+			arguments.PlatformPreprocessorDefinitions = std::vector<std::string>({
+				"_DLL", // Link against the dynamic runtime dll
+				"_MT", // Use multithreaded runtime
+			});
+
+			if (_options.Configuration == "debug")
+			{
+				arguments.PlatformPreprocessorDefinitions.push_back("_DEBUG");
+				arguments.PlatformLibraries = std::vector<Path>({
+					Path("msvcprtd.lib"),
+					Path("msvcrtd.lib"),
+					Path("ucrtd.lib"),
+					Path("vcruntimed.lib"),
+				});
+			}
+			else
+			{
+				arguments.PlatformLibraries = std::vector<Path>({
+					Path("msvcprt.lib"),
+					Path("msvcrt.lib"),
+					Path("ucrt.lib"),
+					Path("vcruntime.lib"),
+				});
+			}
+
+			// arguments.PlatformLibraries.push_back(Path("kernel32.lib"));
+			// arguments.PlatformLibraries.push_back(Path("user32.lib"));
+			// arguments.PlatformLibraries.push_back(Path("gdi32.lib"));
+			// arguments.PlatformLibraries.push_back(Path("winspool.lib"));
+			// arguments.PlatformLibraries.push_back(Path("comdlg32.lib"));
+			// arguments.PlatformLibraries.push_back(Path("advapi32.lib"));
+			// arguments.PlatformLibraries.push_back(Path("shell32.lib"));
+			// arguments.PlatformLibraries.push_back(Path("ole32.lib"));
+			// arguments.PlatformLibraries.push_back(Path("oleaut32.lib"));
+			// arguments.PlatformLibraries.push_back(Path("uuid.lib"));
+			// arguments.PlatformLibraries.push_back(Path("odbc32.lib"));
+			// arguments.PlatformLibraries.push_back(Path("odbccp32.lib"));
+
 			// Now build the current project
 			Log::Info("Begin Build:");
+			//auto startTime = std::chrono::high_resolution_clock::now();
+
 			auto buildManager = RecipeBuildManager(systemCompiler, runtimeCompiler);
 			buildManager.Execute(workingDirectory, recipe, arguments);
+
+			//auto endTime = std::chrono::high_resolution_clock::now();
+			//auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(startTime - endTime);
+
+			//Log::Info(std::to_string(duration.count()) + " seconds.");
 		}
 
 	private:

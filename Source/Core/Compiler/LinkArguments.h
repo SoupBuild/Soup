@@ -72,6 +72,11 @@ namespace Soup
 		std::vector<Path> LibraryFiles;
 
 		/// <summary>
+		/// Gets or sets the list of external library files
+		/// </summary>
+		std::vector<Path> ExternalLibraryFiles;
+
+		/// <summary>
 		/// Gets or sets the list of library paths
 		/// </summary>
 		std::vector<Path> LibraryPaths;
@@ -86,6 +91,7 @@ namespace Soup
 				RootDirectory == rhs.RootDirectory &&
 				ObjectFiles == rhs.ObjectFiles &&
 				LibraryFiles == rhs.LibraryFiles &&
+				ExternalLibraryFiles == rhs.ExternalLibraryFiles &&
 				LibraryPaths == rhs.LibraryPaths;
 		}
 

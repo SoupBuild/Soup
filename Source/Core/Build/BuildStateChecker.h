@@ -12,6 +12,11 @@ namespace Soup
 	export class BuildStateChecker
 	{
 	public:
+		BuildStateChecker() :
+			m_cache()
+		{
+		}
+
 		/// <summary>
 		/// Perform a check if the requested target is outdated with
 		/// respect to the input files
@@ -57,5 +62,8 @@ namespace Soup
 
 			return false;
 		}
+
+	private:
+		std::unordered_map<std::string, std::time_t> m_cache;
 	};
 }

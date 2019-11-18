@@ -198,7 +198,7 @@ namespace Soup::Compiler::Clang
 				case LinkTarget::Executable:
 				{
 					// Dynamic libraries and executables targeting windows are put together by lld-link
-					return MSVC::ArgumentBuilder::BuildLinkerArguments(args);
+					commandArgs = MSVC::ArgumentBuilder::BuildLinkerArguments(args);
 					break;
 				}
 				default:

@@ -153,6 +153,11 @@ namespace Soup
 		std::vector<Path> LinkLibraries;
 
 		/// <summary>
+		/// Gets or sets the list of external link libraries
+		/// </summary>
+		std::vector<Path> ExternalLinkLibraries;
+
+		/// <summary>
 		/// Gets or sets the list of library paths
 		/// </summary>
 		std::vector<Path> LibraryPaths;
@@ -193,6 +198,7 @@ namespace Soup
 				IncludeDirectories == rhs.IncludeDirectories &&
 				IncludeModules == rhs.IncludeModules &&
 				LinkLibraries == rhs.LinkLibraries &&
+				ExternalLinkLibraries == rhs.ExternalLinkLibraries &&
 				LibraryPaths == rhs.LibraryPaths &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
 				IsIncremental == rhs.IsIncremental &&
