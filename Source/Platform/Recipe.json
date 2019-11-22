@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "dependencies": [
   ],
-  "public": "Module.cppm",
+  "public": "Module.cpp",
   "source": [],
   "includePaths": [
     "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.23.28105/include/",

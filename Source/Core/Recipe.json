@@ -7,7 +7,7 @@
     "../../Dependencies/SoupSyntax/Source/Syntax/",
     "../Platform/"
   ],
-  "public": "Module.cppm",
+  "public": "Module.cpp",
   "source": [],
   "includePaths": [
     "./",

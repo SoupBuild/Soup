@@ -154,8 +154,7 @@ namespace Soup
 			buildArguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(
 				*activeCompiler,
 				arguments.Configuration);
-			buildArguments.ModuleInterfaceSourceFile = 
-				recipe.HasPublic() ? recipe.GetPublicAsPath() : Path();
+			buildArguments.ModuleInterfaceSourceFile = Path();
 			buildArguments.SourceFiles = recipe.GetSourceAsPath();
 			buildArguments.IncludeModules = std::move(includeModules);
 			buildArguments.LinkLibraries = std::move(linkLibraries);
@@ -165,6 +164,17 @@ namespace Soup
 			buildArguments.PreprocessorDefinitions = std::move(preprocessorDefinitions);
 			buildArguments.IncludeDirectories = std::move(includePaths);
 			buildArguments.LibraryPaths = std::move(libraryPaths);
+
+			if (recipe.HasPublic())
+			{
+				buildArguments.ModuleInterfaceSourceFile = recipe.GetPublicAsPath();
+				
+				// TODO: Clang requires annoying cppm extension
+				if (_runtimeCompiler->GetName() == "Clang")
+				{
+					buildArguments.ModuleInterfaceSourceFile.SetFileExtension("cppm");
+				}
+			}
 
 			// Set the correct optimization level for the requested configuration
 			if (arguments.Configuration == "debug")

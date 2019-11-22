@@ -208,13 +208,16 @@ namespace Soup
             // and set their version defintions
             await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
 
+            // TODO: Clang wants modules to be cppm
+            var publicFile = Path.GetFileNameWithoutExtension(recipe.Public) + ".cppm";
+
             var args = new CompileArguments()
             {
                 Standard = Compiler.LanguageStandard.Latest,
                 RootDirectory = path,
                 OutputDirectory = objectDirectory,
                 PreprocessorDefinitions = defines,
-                SourceFiles = new List<string>() { recipe.Public },
+                SourceFiles = new List<string>() { publicFile },
                 IncludeDirectories = includePaths,
                 Modules = modules,
                 ExportModule = true,
