@@ -20,6 +20,7 @@ namespace Soup
 		/// Initializes a new instance of the <see cref="BuildEngine"/> class.
 		/// </summary>
 		BuildEngine(std::shared_ptr<ICompiler> compiler) :
+			_stateChecker(),
 			_compiler(std::move(compiler))
 		{
 			if (_compiler == nullptr)
@@ -164,7 +165,7 @@ namespace Soup
 					// TODO: Include the module binary interface as output too
 
 					// Check if any of the input files have changed since lsat build
-					if (BuildStateChecker::IsOutdated(
+					if (_stateChecker.IsOutdated(
 						outputFile,
 						inputClosure,
 						arguments.WorkingDirectory))
@@ -266,7 +267,7 @@ namespace Soup
 						outputFile.SetFileExtension(_compiler->GetObjectFileExtension());
 
 						// Check if any of the input files have changed since lsat build
-						if (BuildStateChecker::IsOutdated(
+						if (_stateChecker.IsOutdated(
 							outputFile,
 							inputClosure,
 							arguments.WorkingDirectory))
@@ -466,6 +467,7 @@ namespace Soup
 		}
 
 	private:
+		BuildStateChecker _stateChecker;
 		std::shared_ptr<ICompiler> _compiler;
 	};
 }

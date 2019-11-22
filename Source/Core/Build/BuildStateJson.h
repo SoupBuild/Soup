@@ -118,7 +118,7 @@ namespace Soup
 
 			// Add required fields
 			json11::Json::array knownFiles;
-			for (auto& value : state.KnownFiles)
+			for (auto& value : state.GetKnownFiles())
 			{
 				knownFiles.push_back(BuildJsonFileInfo(value));
 			}

@@ -29,6 +29,7 @@ namespace Soup::Compiler::MSVC
 		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Debug = "MTd";
 		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Release = "MT";
 		static constexpr std::string_view Compiler_ArgumentParameter_Standard = "std";
+		static constexpr std::string_view Compiler_ArgumentParameter_Experimental = "experimental";
 		static constexpr std::string_view Compiler_ArgumentParameter_ObjectFile = "Fo";
 		static constexpr std::string_view Compiler_ArgumentParameter_Include = "I";
 		static constexpr std::string_view Compiler_ArgumentParameter_PreprocessorDefine = "D";
@@ -85,6 +86,7 @@ namespace Soup::Compiler::MSVC
 					break;
 				case LanguageStandard::CPP20:
 					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++latest");
+					AddParameter(commandArgs, Compiler_ArgumentParameter_Experimental, "module");
 					break;
 				default:
 					throw std::runtime_error("Unknown language standard.");

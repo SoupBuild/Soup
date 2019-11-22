@@ -86,20 +86,20 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("Root/.soup/Build", FileSystemRequestType::Exists),
-					std::make_pair("Root/.soup/Build", FileSystemRequestType::CreateDirectory),
-					std::make_pair("Root/.soup/Build/Build.cpp", FileSystemRequestType::OpenWrite),
-					std::make_pair("D:/Repos/Soup/Source/Core/Recipe.json", FileSystemRequestType::Exists),
-					std::make_pair("D:/Repos/Soup/Source/Core/Recipe.json", FileSystemRequestType::OpenRead),
-					std::make_pair("Root/.soup/Build/.soup/BuildState.json", FileSystemRequestType::Exists),
-					std::make_pair("Root/.soup/Build/out/obj/MockCompiler", FileSystemRequestType::Exists),
-					std::make_pair("Root/.soup/Build/out/obj/MockCompiler", FileSystemRequestType::CreateDirectory),
-					std::make_pair("Root/.soup/Build/out/bin/MockCompiler", FileSystemRequestType::Exists),
-					std::make_pair("Root/.soup/Build/out/bin/MockCompiler", FileSystemRequestType::CreateDirectory),
-					std::make_pair("Root/.soup/Build/.soup", FileSystemRequestType::Exists),
-					std::make_pair("Root/.soup/Build/.soup", FileSystemRequestType::CreateDirectory),
-					std::make_pair("Root/.soup/Build/.soup/BuildState.json", FileSystemRequestType::OpenWrite),
+				std::vector<std::string>({
+					"Exists: Root/.soup/Build",
+					"CreateDirectory: Root/.soup/Build",
+					"OpenWrite: Root/.soup/Build/Build.cpp",
+					"Exists: D:/Repos/Soup/Source/Core/Recipe.json",
+					"OpenRead: D:/Repos/Soup/Source/Core/Recipe.json",
+					"Exists: Root/.soup/Build/.soup/BuildState.json",
+					"Exists: Root/.soup/Build/out/obj/MockCompiler",
+					"CreateDirectory: Root/.soup/Build/out/obj/MockCompiler",
+					"Exists: Root/.soup/Build/out/bin/MockCompiler",
+					"CreateDirectory: Root/.soup/Build/out/bin/MockCompiler",
+					"Exists: Root/.soup/Build/.soup",
+					"CreateDirectory: Root/.soup/Build/.soup",
+					"OpenWrite: Root/.soup/Build/.soup/BuildState.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

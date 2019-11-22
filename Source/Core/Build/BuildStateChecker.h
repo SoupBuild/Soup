@@ -21,11 +21,13 @@ namespace Soup
 		/// Perform a check if the requested target is outdated with
 		/// respect to the input files
 		/// </summary>
-		static bool IsOutdated(
+		bool IsOutdated(
 			const Path& targetFile,
 			const std::vector<Path>& inputFiles,
 			const Path& rootPath)
 		{
+			if (!rootPath.HasRoot())
+				throw std::runtime_error("The root path must have a root.");
 			if (inputFiles.empty())
 				throw std::runtime_error("Cannot check outdated with no input files.");
 
@@ -33,29 +35,20 @@ namespace Soup
 			auto relativeOutputFile = rootPath + targetFile;
 			if (!IFileSystem::Current().Exists(relativeOutputFile))
 			{
-				Log::Info("Output target does not exist: " + targetFile.ToString());
+				Log::Info("Output target does not exist: " + relativeOutputFile.ToString());
 				return true;
 			}
 
+			// Note: No need to use cache here since target files should only be analyzed once
 			auto outputFileLastWriteTime = 
 				IFileSystem::Current().GetLastWriteTime(relativeOutputFile);
-			Log::Diag("IsOutdated: " + targetFile.ToString() + " [" + std::to_string(outputFileLastWriteTime) + "]");
+			Log::Diag("IsOutdated: " + relativeOutputFile.ToString() + " [" + std::to_string(outputFileLastWriteTime) + "]");
 			for (auto& inputFile : inputFiles)
 			{
 				// If the file is relative then combine it with the root path
-				Path relativeInputFile = inputFile.HasRoot() ? inputFile : rootPath + inputFile;
-				if (!IFileSystem::Current().Exists(relativeInputFile))
+				auto relativeInputFile = inputFile.HasRoot() ? inputFile : rootPath + inputFile;
+				if (IsOutdated(relativeInputFile, relativeOutputFile, outputFileLastWriteTime))
 				{
-					Log::Error("Input file missing [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "]");
-					return true;
-				}
-
-				auto dependencyLastWriteTime = 
-					IFileSystem::Current().GetLastWriteTime(relativeInputFile);
-				Log::Diag("  " + inputFile.ToString() + " [" + std::to_string(dependencyLastWriteTime) + "]");
-				if (dependencyLastWriteTime > outputFileLastWriteTime)
-				{
-					Log::Info("Input altered after target [" + inputFile.ToString() + "] -> [" + targetFile.ToString() + "]");
 					return true;
 				}
 			}
@@ -64,6 +57,54 @@ namespace Soup
 		}
 
 	private:
-		std::unordered_map<std::string, std::time_t> m_cache;
+		bool IsOutdated(Path inputFile, Path outputFile, std::time_t outputFileLastWriteTime)
+		{
+			// Check if the file exists in the cache
+			std::optional<std::time_t> lastWriteTime = std::nullopt;
+			auto search = m_cache.find(inputFile.ToString());
+			if (search != m_cache.end())
+			{
+				lastWriteTime = search->second;
+			}
+			else
+			{
+				// The file does not exist in the cache
+				// Load the actual value and save it for later
+				if (IFileSystem::Current().Exists(inputFile))
+				{
+					lastWriteTime = IFileSystem::Current().GetLastWriteTime(inputFile);
+				}
+				else
+				{
+					lastWriteTime = std::nullopt;
+				}
+
+				// Store the result for later
+				m_cache.emplace(inputFile.ToString(), lastWriteTime);
+			}
+
+			// Perform the final check
+			if (!lastWriteTime.has_value())
+			{
+				// The input 
+				Log::Error("  " + inputFile.ToString() + " [MISSING]");
+				return true;
+			}
+			else
+			{
+				Log::Diag("  " + inputFile.ToString() + " [" + std::to_string(lastWriteTime.value()) + "]");
+				if (lastWriteTime.value() > outputFileLastWriteTime)
+				{
+					Log::Info("Input altered after target [" + inputFile.ToString() + "] -> [" + outputFile.ToString() + "]");
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
+		std::unordered_map<std::string, std::optional<time_t>> m_cache;
 	};
 }

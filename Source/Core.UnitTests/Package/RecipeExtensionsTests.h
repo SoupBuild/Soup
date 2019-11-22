@@ -28,8 +28,8 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("TestFiles/NoFile/Recipe.json", FileSystemRequestType::Exists),
+				std::vector<std::string>({
+					"Exists: TestFiles/NoFile/Recipe.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -65,9 +65,9 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("TestFiles/GarbageRecipe/Recipe.json", FileSystemRequestType::Exists),
-					std::make_pair("TestFiles/GarbageRecipe/Recipe.json", FileSystemRequestType::OpenRead),
+				std::vector<std::string>({
+					"Exists: TestFiles/GarbageRecipe/Recipe.json",
+					"OpenRead: TestFiles/GarbageRecipe/Recipe.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -113,9 +113,9 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("TestFiles/SimpleRecipe/Recipe.json", FileSystemRequestType::Exists),
-					std::make_pair("TestFiles/SimpleRecipe/Recipe.json", FileSystemRequestType::OpenRead),
+				std::vector<std::string>({
+					"Exists: TestFiles/SimpleRecipe/Recipe.json",
+					"OpenRead: TestFiles/SimpleRecipe/Recipe.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -147,8 +147,8 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("TestFiles/SimpleRecipe/Recipe.json", FileSystemRequestType::OpenWrite),
+				std::vector<std::string>({
+					"OpenWrite: TestFiles/SimpleRecipe/Recipe.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -187,8 +187,8 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("Root/Recipe.json", FileSystemRequestType::Exists),
+				std::vector<std::string>({
+					"Exists: Root/Recipe.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -229,9 +229,9 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("Root/Recipe.json", FileSystemRequestType::Exists),
-					std::make_pair("Root/Recipe.json", FileSystemRequestType::OpenRead),
+				std::vector<std::string>({
+					"Exists: Root/Recipe.json",
+					"OpenRead: Root/Recipe.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

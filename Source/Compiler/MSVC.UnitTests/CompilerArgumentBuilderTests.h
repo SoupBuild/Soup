@@ -121,6 +121,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto expected = std::vector<std::string>({
 				"/nologo",
 				"/std:c++latest",
+				"/experimental:module",
 				"/Od",
 				"/X",
 				"/RTC1",
@@ -201,7 +202,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
-				"/Zi",
+				"/Z7",
 				"/std:c++17",
 				"/Od",
 				"/X",

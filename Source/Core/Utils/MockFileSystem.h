@@ -7,16 +7,6 @@
 
 namespace Soup
 {
-	export enum class FileSystemRequestType
-	{
-		Exists,
-		GetLastWriteTime,
-		OpenRead,
-		OpenWrite,
-		CopyFile,
-		CreateDirectory,
-	};
-
 	export struct MockFileState
 	{
 		MockFileState(std::stringstream contents, std::time_t lastWriteTime) :
@@ -63,7 +53,7 @@ namespace Soup
 		/// <summary>
 		/// Get the load requests
 		/// </summary>
-		const std::vector<std::pair<std::string, FileSystemRequestType>>& GetRequests() const
+		const std::vector<std::string>& GetRequests() const
 		{
 			return _requests;
 		}
@@ -100,7 +90,10 @@ namespace Soup
 		/// </summary>
 		virtual bool Exists(const Path& path) override final
 		{
-			_requests.push_back(std::make_pair(path.ToString(), FileSystemRequestType::Exists));
+			std::stringstream message;
+			message << "Exists: " << path.ToString();
+			_requests.push_back(message.str());
+
 			auto file = _files.find(path);
 			return file != _files.end();
 		}
@@ -110,7 +103,10 @@ namespace Soup
 		/// </summary>
 		virtual std::time_t GetLastWriteTime(const Path& path) override final
 		{
-			_requests.push_back(std::make_pair(path.ToString(), FileSystemRequestType::GetLastWriteTime));
+			std::stringstream message;
+			message << "GetLastWriteTime: " << path.ToString();
+			_requests.push_back(message.str());
+
 			auto file = _files.find(path);
 			if (file != _files.end())
 			{
@@ -128,7 +124,10 @@ namespace Soup
 		/// </summary>
 		virtual std::shared_ptr<std::istream> OpenRead(const Path& path) override final
 		{
-			_requests.push_back(std::make_pair(path.ToString(), FileSystemRequestType::OpenRead));
+			std::stringstream message;
+			message << "OpenRead: " << path.ToString();
+			_requests.push_back(message.str());
+
 			auto file = _files.find(path);
 			if (file != _files.end())
 			{
@@ -146,7 +145,10 @@ namespace Soup
 		/// </summary>
 		virtual std::shared_ptr<std::ostream> OpenWrite(const Path& path) override final
 		{
-			_requests.push_back(std::make_pair(path.ToString(), FileSystemRequestType::OpenWrite));
+			std::stringstream message;
+			message << "OpenWrite: " << path.ToString();
+			_requests.push_back(message.str());
+
 			auto file = _files.find(path);
 			if (file != _files.end())
 			{
@@ -165,8 +167,9 @@ namespace Soup
 		/// </summary>
 		virtual void CopyFile(const Path& source, const Path& destination) override final
 		{
-			auto message = "[" + source.ToString() + "] -> [" + destination.ToString() + "]";
-			_requests.push_back(std::make_pair(std::move(message), FileSystemRequestType::CopyFile));
+			std::stringstream message;
+			message << "CopyFile: [" << source.ToString() << "] -> [" << destination.ToString() << "]";
+			_requests.push_back(message.str());
 		}
 
 		/// <summary>
@@ -174,11 +177,13 @@ namespace Soup
 		/// </summary>
 		virtual void CreateDirectory(const Path& path) override final
 		{
-			_requests.push_back(std::make_pair(path.ToString(), FileSystemRequestType::CreateDirectory));
+			std::stringstream message;
+			message << "CreateDirectory: " << path.ToString();
+			_requests.push_back(message.str());
 		}
 
 	private:
-		std::vector<std::pair<std::string, FileSystemRequestType>> _requests;
+		std::vector<std::string> _requests;
 		std::map<Path, MockFileState> _files;
 	};
 }

@@ -60,7 +60,8 @@ namespace Soup
 		/// Initializes a new instance of the <see cref="BuildState"/> class.
 		/// </summary>
 		BuildState() :
-			KnownFiles()
+			_knownFiles(),
+			_fastLookup()
 		{
 		}
 
@@ -68,11 +69,19 @@ namespace Soup
 		/// Initializes a new instance of the <see cref="BuildState"/> class.
 		/// </summary>
 		BuildState(std::vector<FileInfo> knownFiles) :
-			KnownFiles(std::move(knownFiles))
+			_knownFiles(std::move(knownFiles)),
+			_fastLookup()
 		{
+			BuildFastLookupDictionary();
 		}
 
-		std::vector<FileInfo> KnownFiles;
+		/// <summary>
+		/// Get the known files list
+		/// </summary>
+		const std::vector<FileInfo>& GetKnownFiles() const
+		{
+			return _knownFiles;
+		}
 
 		/// <summary>
 		/// Recursively build up the closure of all included files
@@ -83,16 +92,22 @@ namespace Soup
 			std::vector<Path>& closure)
 		{
 			closure.clear();
-			if (!TryBuildIncludeClosure(
+			auto closureSet = std::unordered_set<std::string>();
+			if (TryBuildIncludeClosure(
 				std::vector<Path>({ sourceFile }),
-				closure))
+				closureSet))
 			{
-				closure.clear();
-				return false;
+				// Convert the set to a vector output
+				for (auto& file : closureSet)
+				{
+					closure.push_back(Path(file));
+				}
+
+				return true;
 			}
 			else
 			{
-				return true;
+				return false;
 			}
 		}
 
@@ -103,16 +118,19 @@ namespace Soup
 		{
 			// Flatten out the tree
 			auto activeSet = std::set<FileInfo, FileInfo_LessThan>(
-				std::make_move_iterator(KnownFiles.begin()),
-				std::make_move_iterator(KnownFiles.end()));
-			KnownFiles.clear();
+				std::make_move_iterator(_knownFiles.begin()),
+				std::make_move_iterator(_knownFiles.end()));
+			_knownFiles.clear();
 
 			UpdateIncludes(activeSet, includeTree);
 
 			// Convert the set back to a vector
-			KnownFiles = std::vector<FileInfo>(
+			_knownFiles = std::vector<FileInfo>(
 				std::make_move_iterator(activeSet.begin()),
 				std::make_move_iterator(activeSet.end()));
+
+			// Ensure the dictionary is up to date
+			BuildFastLookupDictionary();
 		}
 
 		/// <summary>
@@ -120,7 +138,7 @@ namespace Soup
 		/// </summary>
 		bool operator ==(const BuildState& rhs) const
 		{
-			return KnownFiles == rhs.KnownFiles;
+			return _knownFiles == rhs._knownFiles;
 		}
 
 		/// <summary>
@@ -132,37 +150,38 @@ namespace Soup
 		}
 
 	private:
+		void BuildFastLookupDictionary()
+		{
+			_fastLookup.clear();
+			for (auto& info : _knownFiles)
+			{
+				_fastLookup.emplace(info.File.ToString(), info);
+			}
+		}
+
 		/// <summary>
 		/// Internal implentation
 		/// </summary>
 		bool TryBuildIncludeClosure(
 			const std::vector<Path>& sourceFiles,
-			std::vector<Path>& closure)
+			std::unordered_set<std::string>& closure)
 		{
 			for (auto& file : sourceFiles)
 			{
-				auto fileInfoResult = std::find_if(
-					KnownFiles.begin(),
-					KnownFiles.end(),
-					[&file](const FileInfo& fileInfo) { return fileInfo.File == file; });
-				if (fileInfoResult != KnownFiles.end())
+				auto fileInfoResult = _fastLookup.find(file.ToString());
+				if (fileInfoResult != _fastLookup.end())
 				{
 					// Find all of the files that do not already exist in the closure
-					auto& includes = fileInfoResult->Includes;
+					auto& includes = fileInfoResult->second.Includes;
 					auto newIncludes = std::vector<Path>();
 					for (auto& include : includes)
 					{
-						if (std::find(closure.begin(), closure.end(), include) == closure.end())
+						auto insertResult = closure.insert(include.ToString());
+						if (insertResult.second)
 						{
 							newIncludes.push_back(include);
 						}
 					}
-
-					// Add all the new files to the closure
-					std::copy(
-						newIncludes.begin(),
-						newIncludes.end(),
-						std::back_inserter(closure));
 
 					// Build up the child includes
 					if (!TryBuildIncludeClosure(newIncludes, closure))
@@ -212,5 +231,9 @@ namespace Soup
 				UpdateIncludes(activeSet, current.Includes);
 			}
 		}
+
+	private:
+		std::unordered_map<std::string, FileInfo&> _fastLookup;
+		std::vector<FileInfo> _knownFiles;
 	};
 }

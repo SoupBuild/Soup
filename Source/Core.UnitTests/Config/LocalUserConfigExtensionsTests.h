@@ -43,8 +43,8 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("C:/TestInstall/LocalUserConfig.json", FileSystemRequestType::Exists),
+				std::vector<std::string>({
+					"Exists: C:/TestInstall/LocalUserConfig.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -83,9 +83,9 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("C:/TestInstall/LocalUserConfig.json", FileSystemRequestType::Exists),
-					std::make_pair("C:/TestInstall/LocalUserConfig.json", FileSystemRequestType::OpenRead),
+				std::vector<std::string>({
+					"Exists: C:/TestInstall/LocalUserConfig.json",
+					"OpenRead: C:/TestInstall/LocalUserConfig.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -147,9 +147,9 @@ namespace Soup::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::pair<std::string, FileSystemRequestType>>({
-					std::make_pair("C:/TestInstall/LocalUserConfig.json", FileSystemRequestType::Exists),
-					std::make_pair("C:/TestInstall/LocalUserConfig.json", FileSystemRequestType::OpenRead),
+				std::vector<std::string>({
+					"Exists: C:/TestInstall/LocalUserConfig.json",
+					"OpenRead: C:/TestInstall/LocalUserConfig.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

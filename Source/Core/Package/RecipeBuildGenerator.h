@@ -56,7 +56,8 @@ namespace Soup
 			});
 
 			Log::Info("Check if Generated Build source is outdated.");
-			if (BuildStateChecker::IsOutdated(
+			auto stateChecker = BuildStateChecker();
+			if (stateChecker.IsOutdated(
 				relativeRootBuildFile,
 				buildFileInputClosure,
 				packageRoot))

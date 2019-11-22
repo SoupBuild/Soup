@@ -154,7 +154,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: Source: bin/mock.link.exe /nologo /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",
+					"Execute: Source: bin/mock.link.exe /nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
