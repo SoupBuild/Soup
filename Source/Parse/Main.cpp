@@ -1,5 +1,5 @@
 
-import std.core;
+import StandardLibrary;;
 
 #include "LLVMBitCodeParser.h"
 

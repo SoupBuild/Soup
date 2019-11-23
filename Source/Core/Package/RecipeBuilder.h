@@ -70,17 +70,17 @@ namespace Soup
 
 			// Add all dependency packages modules references
 			auto includeModules = std::vector<Path>();
-			if (recipe.GetLanguageVersion() == RecipeLanguageVersion::CPP20 && recipe.HasDependencies())
+			if (recipe.GetLanguageVersion() == RecipeLanguageVersion::CPP20)
 			{
-				for (auto dependecy : recipe.GetDependencies())
-				{
-					auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
-					auto modulePath = RecipeExtensions::GetRecipeOutputPath(
-						packagePath,
-						RecipeExtensions::GetBinaryDirectory(*activeCompiler, arguments.Configuration),
-						std::string(activeCompiler->GetModuleFileExtension()));
-					includeModules.push_back(std::move(modulePath));
-				}
+				// TODO: MSVC requires the entire closure of interfaces
+				bool isRecursive = activeCompiler->GetName() == "MSVC";
+				RecipeExtensions::GenerateDependecyModuleIncludeClosure(
+					*activeCompiler,
+					arguments.Configuration,
+					workingDirectory,
+					recipe,
+					includeModules,
+					isRecursive);
 			}
 
 			// Add the dependency static library closure to link if targeting an executable or dynamic library

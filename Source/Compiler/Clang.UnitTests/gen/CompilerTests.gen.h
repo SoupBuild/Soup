@@ -1,5 +1,5 @@
 #pragma once
-#include "/CompilerTests.h"
+#include "CompilerTests.h"
 
 TestState RunCompilerTests() 
  {

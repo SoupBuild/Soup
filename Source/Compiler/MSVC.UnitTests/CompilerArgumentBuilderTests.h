@@ -15,8 +15,9 @@ namespace Soup::Compiler::MSVC::UnitTests
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("");
 			arguments.TargetFile = Path("File.obj");
-			Assert::ThrowsRuntimeError([&arguments]() {
-				auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			Assert::ThrowsRuntimeError([&arguments, &toolsPath]() {
+				auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 			});
 		}
 
@@ -26,8 +27,9 @@ namespace Soup::Compiler::MSVC::UnitTests
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("");
-			Assert::ThrowsRuntimeError([&arguments]() {
-				auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			Assert::ThrowsRuntimeError([&arguments, &toolsPath]() {
+				auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 			});
 		}
 
@@ -37,7 +39,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.obj");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -62,7 +65,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.obj");
 			arguments.GenerateIncludeTree = true;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -91,7 +95,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.obj");
 			arguments.Standard = standard;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -116,7 +121,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.obj");
 			arguments.Standard = LanguageStandard::CPP20;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -143,7 +149,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("File.obj");
 			arguments.Standard = LanguageStandard::CPP17;
 			arguments.Optimize = OptimizationLevel::None;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -171,7 +178,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("File.obj");
 			arguments.Standard = LanguageStandard::CPP17;
 			arguments.Optimize = level;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -198,7 +206,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.Standard = LanguageStandard::CPP17;
 			arguments.Optimize = OptimizationLevel::None;
 			arguments.GenerateSourceDebugInfo = true;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -227,7 +236,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("C:/Files/SDK/"),
 				Path("my files/")
 			});
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -257,7 +267,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"DEBUG",
 				"VERSION=1"
 			});
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -287,7 +298,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("Module.pcm"),
 				Path("Std.pcm")
 			});
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
@@ -312,7 +324,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.SourceFile = Path("module.cpp");
 			arguments.TargetFile = Path("module.pcm");
 			arguments.ExportModule = true;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+			auto toolsPath = Path("tools/");
+			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
 			auto expected = std::vector<std::string>({
 				"/nologo",

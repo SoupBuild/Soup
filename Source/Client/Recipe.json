@@ -1,6 +1,6 @@
 {
   "name": "Soup",
-  "version": "0.2.12",
+  "version": "0.3.0",
   "type": "Executable",
   "dependencies": [
     "../Core",

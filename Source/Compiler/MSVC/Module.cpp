@@ -1,8 +1,8 @@
 ﻿
-export module Soup.Compiler.MSVC;
+export module SoupCompilerMSVC;
 
-import std.core;
-import Soup.Core;
+import StandardLibrary;;
+import SoupCore;
 
 #include "ArgumentBuilder.h"
 #include "Compiler.h"

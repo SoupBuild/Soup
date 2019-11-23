@@ -12,6 +12,10 @@ namespace Soup::Client
 	class SharedOptions
 	{
 	public:
+		virtual ~SharedOptions()
+		{
+		}
+
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>

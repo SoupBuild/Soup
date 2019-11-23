@@ -103,29 +103,29 @@ namespace Soup::Client
 			}
 
 			arguments.PlatformPreprocessorDefinitions = std::vector<std::string>({
-				"_DLL", // Link against the dynamic runtime dll
-				"_MT", // Use multithreaded runtime
+				// "_DLL", // Link against the dynamic runtime dll
+				// "_MT", // Use multithreaded runtime
 			});
 
-			if (_options.Configuration == "debug")
-			{
-				arguments.PlatformPreprocessorDefinitions.push_back("_DEBUG");
-				arguments.PlatformLibraries = std::vector<Path>({
-					Path("msvcprtd.lib"),
-					Path("msvcrtd.lib"),
-					Path("ucrtd.lib"),
-					Path("vcruntimed.lib"),
-				});
-			}
-			else
-			{
-				arguments.PlatformLibraries = std::vector<Path>({
-					Path("msvcprt.lib"),
-					Path("msvcrt.lib"),
-					Path("ucrt.lib"),
-					Path("vcruntime.lib"),
-				});
-			}
+			// if (_options.Configuration == "debug")
+			// {
+			// 	// arguments.PlatformPreprocessorDefinitions.push_back("_DEBUG");
+			// 	arguments.PlatformLibraries = std::vector<Path>({
+			// 		Path("msvcprtd.lib"),
+			// 		Path("msvcrtd.lib"),
+			// 		Path("ucrtd.lib"),
+			// 		Path("vcruntimed.lib"),
+			// 	});
+			// }
+			// else
+			// {
+			// 	arguments.PlatformLibraries = std::vector<Path>({
+			// 		Path("msvcprt.lib"),
+			// 		Path("msvcrt.lib"),
+			// 		Path("ucrt.lib"),
+			// 		Path("vcruntime.lib"),
+			// 	});
+			// }
 
 			// arguments.PlatformLibraries.push_back(Path("kernel32.lib"));
 			// arguments.PlatformLibraries.push_back(Path("user32.lib"));

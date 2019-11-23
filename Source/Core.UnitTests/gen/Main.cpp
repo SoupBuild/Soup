@@ -1,5 +1,5 @@
-import std.core;
-import Soup.Core;
+import StandardLibrary;
+import SoupCore;
 import json11;
 
 #include "../../Dependencies/SoupTest/Assert/SoupAssert.h"

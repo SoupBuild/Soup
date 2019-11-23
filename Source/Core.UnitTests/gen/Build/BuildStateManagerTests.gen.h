@@ -1,5 +1,5 @@
 #pragma once
-#include "/Build/BuildStateManagerTests.h"
+#include "Build/BuildStateManagerTests.h"
 
 TestState RunBuildStateManagerTests() 
  {

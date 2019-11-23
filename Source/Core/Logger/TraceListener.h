@@ -61,7 +61,7 @@ namespace Soup
 		/// <summary>
 		/// Implementation dependant write methods
 		/// </summary>
-		virtual void WriteLine(std::string_view message) = 0;
+		virtual void WriteLine(const std::string& message) = 0;
 
 	public:
 		/// <summary>
@@ -106,11 +106,15 @@ namespace Soup
 			}
 
 			// Build up the resulting message with required header/footer
-			std::stringstream builder;
+			auto builder = std::stringstream();
 			WriteHeader(builder, eventType, id);
 			builder << message;
 
-			WriteLine(builder.str());
+			bool isEmpty = builder.rdbuf()->in_avail() == 0;
+			if (isEmpty)
+				WriteLine("");
+			else
+				WriteLine(builder.str());
 		}
 
 		/// <summary>

@@ -82,6 +82,11 @@ namespace Soup
 		std::vector<Path> LibraryPaths;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to generate source debug information
+		/// </summary>
+		bool GenerateSourceDebugInfo;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		bool operator ==(const LinkArguments& rhs) const
@@ -92,7 +97,8 @@ namespace Soup
 				ObjectFiles == rhs.ObjectFiles &&
 				LibraryFiles == rhs.LibraryFiles &&
 				ExternalLibraryFiles == rhs.ExternalLibraryFiles &&
-				LibraryPaths == rhs.LibraryPaths;
+				LibraryPaths == rhs.LibraryPaths &&
+				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
 		}
 
 		bool operator !=(const LinkArguments& rhs) const

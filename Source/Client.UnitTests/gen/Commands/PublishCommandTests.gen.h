@@ -1,5 +1,5 @@
 #pragma once
-#include "/Commands/PublishCommandTests.h"
+#include "Commands/PublishCommandTests.h"
 
 TestState RunPublishCommandTests() 
  {

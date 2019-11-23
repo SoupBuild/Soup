@@ -1,4 +1,4 @@
-// <copyright file="Program.cs" company="Soup">
+// <copyright file="ArgumentParser.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -37,27 +37,27 @@ namespace Soup::Client
 			std::copy(args.begin()+2, args.end(), std::back_inserter(unusedArgs));
 
 			// Handle the individual commands and their expected arguments
-			std::any result = nullptr;
+			std::unique_ptr<SharedOptions> result = nullptr;
 			if (commandType == "build")
 			{
 				Log::Diag("Parse build");
 
-				auto options = BuildOptions();
+				auto options = std::make_unique<BuildOptions>();
 
 				// Check if the optional index arguments exist
 				auto argument = std::string();
 				if (TryGetOptional(unusedArgs, argument))
 				{
-					options.Path = std::move(argument);
+					options->Path = std::move(argument);
 				}
 
-				options.Verbosity = CheckVerbosity(unusedArgs);
-				options.Force = IsFlagSet("f", unusedArgs);
+				options->Verbosity = CheckVerbosity(unusedArgs);
+				options->Force = IsFlagSet("f", unusedArgs);
 
 				auto configValue = std::string();
 				if (TryGetValueArgument("c", unusedArgs, configValue))
 				{
-					options.Configuration = std::move(configValue);
+					options->Configuration = std::move(configValue);
 				}
 
 				result = std::move(options);
@@ -66,8 +66,8 @@ namespace Soup::Client
 			{
 				Log::Diag("Parse initialize");
 
-				auto options = InitializeOptions();
-				options.Verbosity = CheckVerbosity(unusedArgs);
+				auto options = std::make_unique<InitializeOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
@@ -75,8 +75,8 @@ namespace Soup::Client
 			{
 				Log::Diag("Parse install");
 
-				auto options = InstallOptions();
-				options.Verbosity = CheckVerbosity(unusedArgs);
+				auto options = std::make_unique<InstallOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
@@ -84,8 +84,8 @@ namespace Soup::Client
 			{
 				Log::Diag("Parse pack");
 
-				auto options = PackOptions();
-				options.Verbosity = CheckVerbosity(unusedArgs);
+				auto options = std::make_unique<PackOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
@@ -93,8 +93,8 @@ namespace Soup::Client
 			{
 				Log::Diag("Parse publish");
 
-				auto options = PublishOptions();
-				options.Verbosity = CheckVerbosity(unusedArgs);
+				auto options = std::make_unique<PublishOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
@@ -102,14 +102,14 @@ namespace Soup::Client
 			{
 				Log::Diag("Parse run");
 
-				auto options = RunOptions();
+				auto options = std::make_unique<RunOptions>();
 
 				// Set defaults
 				auto syntheticParams = std::vector<std::string>();
-				options.Verbosity = CheckVerbosity(syntheticParams);
+				options->Verbosity = CheckVerbosity(syntheticParams);
 
 				// All remaining arguments are passed to the executable
-				options.Arguments = std::move(unusedArgs);
+				options->Arguments = std::move(unusedArgs);
 
 				result = std::move(options);
 			}
@@ -117,8 +117,8 @@ namespace Soup::Client
 			{
 				Log::Diag("Parse version");
 
-				auto options = VersionOptions();
-				options.Verbosity = CheckVerbosity(unusedArgs);
+				auto options = std::make_unique<VersionOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
@@ -126,8 +126,8 @@ namespace Soup::Client
 			{
 				Log::Diag("Parse view");
 
-				auto options = ViewOptions();
-				options.Verbosity = CheckVerbosity(unusedArgs);
+				auto options = std::make_unique<ViewOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
 			}
@@ -158,7 +158,7 @@ namespace Soup::Client
 		}
 
 	private:
-		ArgumentsParser(std::any result) :
+		ArgumentsParser(std::unique_ptr<SharedOptions>&& result) :
 			_result(std::move(result))
 		{
 		}
@@ -172,13 +172,13 @@ namespace Soup::Client
 		template<typename T>
 		bool IsA()
 		{
-			return _result.type() == typeid(T);
+			return std::ext::are_equal(typeid(*_result), typeid(T));
 		}
 
 		template<typename T>
-		auto ExtractsResult() -> T
+		auto ExtractResult() -> T
 		{
-			return std::any_cast<T>( _result);
+			return *dynamic_cast<T*>(_result.get());
 		}
 
 	private:
@@ -266,6 +266,6 @@ namespace Soup::Client
 		}
 
 	private:
-		std::any _result;
+		std::unique_ptr<SharedOptions> _result;
 	};
 }

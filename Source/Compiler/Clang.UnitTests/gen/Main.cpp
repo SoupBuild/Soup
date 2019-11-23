@@ -1,6 +1,6 @@
-import std.core;
-import Soup.Core;
-import Soup.Compiler.Clang;
+import StandardLibrary;;
+import SoupCore;
+import SoupCompilerClang;
 
 #include "../../../../Dependencies/SoupTest/Assert/SoupAssert.h"
 #include "../../../../Dependencies/SoupTest/Assert/RunTest.h"

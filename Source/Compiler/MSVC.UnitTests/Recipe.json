@@ -1,5 +1,5 @@
 {
-  "name": "Soup.Compiler.MSVC.UnitTests",
+  "name": "SoupCompilerMSVCUnitTests",
   "version": "1.0.0",
   "type": "Executable",
   "dependencies": [

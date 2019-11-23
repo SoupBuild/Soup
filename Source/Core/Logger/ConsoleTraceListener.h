@@ -40,7 +40,7 @@ namespace Soup
 		/// <summary>
 		/// Writes a message and newline terminator
 		/// </summary>
-		virtual void WriteLine(std::string_view message) override final
+		virtual void WriteLine(const std::string& message) override final
 		{
 			// if (NeedIndent)
 			// {

@@ -1,4 +1,4 @@
-import std.core;
+import StandardLibrary;;
 
 #include "BitReader.h"
 

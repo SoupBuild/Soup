@@ -29,6 +29,7 @@ namespace Soup::Compiler::MSVC
 		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Debug = "MTd";
 		static constexpr std::string_view Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Release = "MT";
 		static constexpr std::string_view Compiler_ArgumentParameter_Standard = "std";
+		static constexpr std::string_view Compiler_ArgumentParameter_Module = "module";
 		static constexpr std::string_view Compiler_ArgumentParameter_Experimental = "experimental";
 		static constexpr std::string_view Compiler_ArgumentParameter_ObjectFile = "Fo";
 		static constexpr std::string_view Compiler_ArgumentParameter_Include = "I";
@@ -46,7 +47,8 @@ namespace Soup::Compiler::MSVC
 
 	public:
 		static std::vector<std::string> BuildCompilerArguments(
-			const CompileArguments& args)
+			const CompileArguments& args,
+			const Path& toolsPath)
 		{
 			// Verify the input
 			if (args.SourceFile.GetFileName().empty())
@@ -87,6 +89,9 @@ namespace Soup::Compiler::MSVC
 				case LanguageStandard::CPP20:
 					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++latest");
 					AddParameter(commandArgs, Compiler_ArgumentParameter_Experimental, "module");
+					
+					AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "stdIfcDir");
+					AddValueWithQuotes(commandArgs, (toolsPath + Path("ifc/x64")).ToString());
 					break;
 				default:
 					throw std::runtime_error("Unknown language standard.");
@@ -129,36 +134,43 @@ namespace Soup::Compiler::MSVC
 			// Enable c++ exceptions
 			AddFlag(commandArgs, "EHsc");
 
-			// Enable multithreaded runtime dynamic linked
+			// Enable multithreaded runtime static linked
 			if (args.Optimize == OptimizationLevel::None)
 			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Debug);
+				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Debug);
 			}
 			else
 			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedDynamic_Release);
+				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Release);
 			}
 
 			// Add the module references
 			for (auto& moduleFile : args.IncludeModules)
 			{
-				// auto argument = "-fmodule-file=\"" + moduleFile.ToString() + "\"";
-				// commandArgs.push_back(std::move(argument));
+				AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "reference");
+				AddValueWithQuotes(commandArgs, moduleFile.ToString());
 			}
 
 			if (args.ExportModule)
 			{
-				// commandArgs.push_back("/clang:--precompile");
+				AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "export");
 
 				// Place the ifc in the output directory
 				//var outputFile = "{Path.GetFileNameWithoutExtension(sourceFile)}.{ModuleFileExtension}";
 				//commandArgs.AddRange(new string[] { "-o", outputFile });
+				
+				// Place the module interface file in the output directory
+				auto moduleInterfaceFile = args.TargetFile;
+				moduleInterfaceFile.SetFileExtension("ifc"); // TODO
+				AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "output");
+				AddValueWithQuotes(commandArgs, moduleInterfaceFile.ToString());
 			}
-			else
-			{
-				// Only run preprocessor, compile and assemble
-				AddFlag(commandArgs, Compiler_ArgumentFlag_CompileOnly);
-			}
+
+			// TODO: For now we allow exports to be large
+			AddFlag(commandArgs, "bigobj");
+
+			// Only run preprocessor, compile and assemble
+			AddFlag(commandArgs, Compiler_ArgumentFlag_CompileOnly);
 
 			// Add the source file
 			commandArgs.push_back(args.SourceFile.ToString());
@@ -185,6 +197,12 @@ namespace Soup::Compiler::MSVC
 
 			// Enable verbose output
 			// AddFlag(commandArgs, Linker_ArgumentFlag_Verbose);
+
+			// Generate source debug information
+			if (args.GenerateSourceDebugInfo)
+			{
+				AddParameter(commandArgs, "debug", "fastlink");
+			}
 
 			// Calculate object output file
 			switch (args.TargetType)
@@ -261,6 +279,15 @@ namespace Soup::Compiler::MSVC
 		}
 
 	private:
+		static void AddValueWithQuotes(
+			std::vector<std::string>& args,
+			std::string value)
+		{
+			auto builder = std::stringstream();
+			builder << "\"" << value << "\"";
+			args.push_back(builder.str());
+		}
+
 		static void AddFlag(std::vector<std::string>& args, std::string_view flag)
 		{
 			auto builder = std::stringstream();

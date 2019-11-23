@@ -1,5 +1,5 @@
 #pragma once
-#include "/LinkerArgumentBuilderTests.h"
+#include "LinkerArgumentBuilderTests.h"
 
 TestState RunLinkerArgumentBuilderTests() 
  {

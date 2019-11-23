@@ -1,6 +1,6 @@
-import std.core;
+import StandardLibrary;;
 import Antlr4.Runtime;
-import Soup.Core;
+import SoupCore;
 
 #include "../../../SoupTest/Assert/SoupAssert.h"
 #include "../../../SoupTest/Assert/RunTest.h"

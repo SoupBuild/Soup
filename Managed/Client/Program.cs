@@ -101,8 +101,10 @@ namespace Soup.Client
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // return new Compiler.MSVC.Compiler();
-                return new Compiler.Clang.Compiler("C:/Clang/");
+                return new Compiler.MSVC.Compiler(
+                    "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.23.28105",
+                    "10.0.18362.0");
+                // return new Compiler.Clang.Compiler("C:/Clang/");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {

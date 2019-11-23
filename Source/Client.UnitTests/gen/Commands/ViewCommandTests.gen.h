@@ -1,5 +1,5 @@
 #pragma once
-#include "/Commands/ViewCommandTests.h"
+#include "Commands/ViewCommandTests.h"
 
 TestState RunViewCommandTests() 
  {

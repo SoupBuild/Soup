@@ -1,5 +1,5 @@
 #pragma once
-#include "/Build/BuildStateJsonTests.h"
+#include "Build/BuildStateJsonTests.h"
 
 TestState RunBuildStateJsonTests() 
 {

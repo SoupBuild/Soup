@@ -1,5 +1,5 @@
 #pragma once
-#include "/Package/RecipeTests.h"
+#include "Package/RecipeTests.h"
 
 TestState RunRecipeTests() 
  {

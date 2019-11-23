@@ -1,5 +1,5 @@
 {
-  "name": "Soup.Core.UnitTests",
+  "name": "SoupCoreUnitTests",
   "version": "1.0.0",
   "type": "Executable",
   "dependencies": [

@@ -150,7 +150,8 @@ namespace Soup
                 // Add all of the direct dependencies as module references
                 var modules = new List<string>();
                 var defines = new List<string>();
-                await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
+                bool isRecursive = false;
+                await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines, isRecursive);
 
                 // The dependencies for this file are all of the direct module references
                 var dependencies = new List<string>();
@@ -206,10 +207,17 @@ namespace Soup
 
             // Add all of the direct dependencies as module references
             // and set their version defintions
-            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
+
+            // TODO: MSVC requires all transient modules also
+            bool isRecursive = _compiler.Name == "MSVC";
+            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines, isRecursive);
 
             // TODO: Clang wants modules to be cppm
-            var publicFile = Path.GetFileNameWithoutExtension(recipe.Public) + ".cppm";
+            var publicFile = recipe.Public;
+            if (_compiler.Name == "Clang")
+            {
+                publicFile = Path.GetFileNameWithoutExtension(publicFile) + ".cppm";
+            }
 
             var args = new CompileArguments()
             {
@@ -267,7 +275,9 @@ namespace Soup
 
             // Add all of the direct dependencies as module references
             // and set their version defintions
-            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
+            // TODO: MSVC requires all transient modules also
+            bool isRecursive = _compiler.Name == "MSVC";
+            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines, isRecursive);
 
             var source = new List<string>();
 
@@ -348,7 +358,8 @@ namespace Soup
             string binaryDirectory,
             Recipe recipe,
             IList<string> modules,
-            IList<string> defines)
+            IList<string> defines,
+            bool isRecursive)
         {
             foreach (var dependecy in recipe.Dependencies)
             {
@@ -358,6 +369,11 @@ namespace Soup
 
                 modules.Add(Path.Combine(packagePath, binaryDirectory, BuildRecipeModuleFilename(dependecyRecipe)));
                 defines.Add(BuildRecipeNamespaceDefine(dependecyRecipe));
+
+                if (isRecursive)
+                {
+                    await BuildDependencyModuleReferences(packagePath, binaryDirectory, dependecyRecipe, modules, defines, isRecursive);
+                }
             }
         }
 
@@ -499,7 +515,7 @@ namespace Soup
                 // Get recursive dependencies
                 await GenerateDependencyLibrarySetAsync(packagePath, binaryDirectory, dependecyRecipe, set);
 
-                set.Add(Path.Combine(packagePath, binaryDirectory, $"{dependecyRecipe.Name}.a").ToLower());
+                set.Add(Path.Combine(packagePath, binaryDirectory, $"{dependecyRecipe.Name}.{_compiler.StaticLibraryFileExtension}").ToLower());
             }
         }
 

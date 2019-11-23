@@ -395,6 +395,7 @@ namespace Soup
 				linkArguments.ExternalLibraryFiles = arguments.ExternalLinkLibraries;
 				linkArguments.RootDirectory = arguments.WorkingDirectory;
 				linkArguments.LibraryPaths = arguments.LibraryPaths;
+				linkArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
 
 				// Translate the target type into the link target
 				switch (arguments.TargetType)

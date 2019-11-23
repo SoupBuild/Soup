@@ -1,6 +1,6 @@
-import std.core;
-import Soup.Core;
-import Soup.Compiler.MSVC;
+import StandardLibrary;;
+import SoupCore;
+import SoupCompilerMSVC;
 
 #include "../../../../Dependencies/SoupTest/Assert/SoupAssert.h"
 #include "../../../../Dependencies/SoupTest/Assert/RunTest.h"

@@ -2,10 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-import std.core;
-import Soup.Core;
-import Soup.Compiler.Clang;
-import Soup.Compiler.MSVC;
+import StandardLibrary;;
+import SoupCore;
+import SoupCompilerClang;
+import SoupCompilerMSVC;
 
 #include "Program.h"
 

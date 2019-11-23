@@ -33,7 +33,7 @@ namespace Soup
 		/// <summary>
 		/// Writes a message and newline terminator
 		/// </summary>
-		virtual void WriteLine(std::string_view message) override final
+		virtual void WriteLine(const std::string& message) override final
 		{
 			auto line = std::string(message);
 			_messages.push_back(std::move(line));

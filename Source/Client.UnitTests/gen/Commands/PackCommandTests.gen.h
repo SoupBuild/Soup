@@ -1,5 +1,5 @@
 #pragma once
-#include "/Commands/PackCommandTests.h"
+#include "Commands/PackCommandTests.h"
 
 TestState RunPackCommandTests() 
  {

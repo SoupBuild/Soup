@@ -42,7 +42,7 @@ namespace Soup::Compiler::MSVC
 		/// </summary>
 		virtual std::string_view GetModuleFileExtension() const override final
 		{
-			return "pcm";
+			return "ifc";
 		}
 
 		/// <summary>
@@ -128,7 +128,7 @@ namespace Soup::Compiler::MSVC
 		CompileResult CompileStandard(const CompileArguments& args)
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
-			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args);
+			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, _toolsPath);
 
 			auto result = IProcessManager::Current().Execute(
 				executablePath,
@@ -173,35 +173,35 @@ namespace Soup::Compiler::MSVC
 			auto executablePath = _toolsPath + _compilerExecutable;
 
 			// Replace the final object target with the intermediate precompiled module
-			auto generatePrecompiledModuleArgs = CompileArguments();
-			generatePrecompiledModuleArgs.Standard = args.Standard;
-			generatePrecompiledModuleArgs.Optimize = args.Optimize;
-			generatePrecompiledModuleArgs.RootDirectory = args.RootDirectory;
-			generatePrecompiledModuleArgs.IncludeDirectories = args.IncludeDirectories;
-			generatePrecompiledModuleArgs.IncludeModules = args.IncludeModules;
-			generatePrecompiledModuleArgs.ExportModule = true;
-			generatePrecompiledModuleArgs.PreprocessorDefinitions = args.PreprocessorDefinitions;
-			generatePrecompiledModuleArgs.GenerateIncludeTree = args.GenerateIncludeTree;
-			generatePrecompiledModuleArgs.GenerateSourceDebugInfo = args.GenerateSourceDebugInfo;
+			auto compiledModuleArgs = CompileArguments();
+			compiledModuleArgs.Standard = args.Standard;
+			compiledModuleArgs.Optimize = args.Optimize;
+			compiledModuleArgs.RootDirectory = args.RootDirectory;
+			compiledModuleArgs.IncludeDirectories = args.IncludeDirectories;
+			compiledModuleArgs.IncludeModules = args.IncludeModules;
+			compiledModuleArgs.ExportModule = true;
+			compiledModuleArgs.PreprocessorDefinitions = args.PreprocessorDefinitions;
+			compiledModuleArgs.GenerateIncludeTree = args.GenerateIncludeTree;
+			compiledModuleArgs.GenerateSourceDebugInfo = args.GenerateSourceDebugInfo;
 
 			// Use the target file as input to the build and generate an object with the same name
-			generatePrecompiledModuleArgs.SourceFile = args.SourceFile;
-			generatePrecompiledModuleArgs.TargetFile = args.TargetFile;
-			generatePrecompiledModuleArgs.TargetFile.SetFileExtension(GetModuleFileExtension());
+			compiledModuleArgs.SourceFile = args.SourceFile;
+			compiledModuleArgs.TargetFile = args.TargetFile;
 
-			auto generatePrecompiledModuleCommandArgs = ArgumentBuilder::BuildCompilerArguments(generatePrecompiledModuleArgs);
+			auto compiledModuleCommandArgs =
+				ArgumentBuilder::BuildCompilerArguments(compiledModuleArgs, _toolsPath);
 			auto result = IProcessManager::Current().Execute(
 				executablePath,
-				generatePrecompiledModuleCommandArgs,
+				compiledModuleCommandArgs,
 				args.RootDirectory);
 
 			// Pull out the include paths if requested
 			auto compileResult = CompileResult();
-			if (generatePrecompiledModuleArgs.GenerateIncludeTree)
+			if (compiledModuleArgs.GenerateIncludeTree)
 			{
 				std::stringstream cleanOutput;
 				compileResult.HeaderIncludeFiles = ParseIncludes(
-					generatePrecompiledModuleArgs.SourceFile,
+					compiledModuleArgs.SourceFile,
 					result.StdOut,
 					cleanOutput);
 				result.StdOut = cleanOutput.str();
@@ -223,37 +223,6 @@ namespace Soup::Compiler::MSVC
 			{
 				Log::Error("Compile module interface failed");
 				throw std::runtime_error("Compiler Precompile Error: " + std::to_string(result.ExitCode));
-			}
-
-			// Now we can compile the object file from the precompiled module
-			auto compileObjectArgs = CompileArguments();
-			compileObjectArgs.Standard = args.Standard;
-			compileObjectArgs.Optimize = args.Optimize;
-			compileObjectArgs.RootDirectory = args.RootDirectory;
-			compileObjectArgs.SourceFile = generatePrecompiledModuleArgs.TargetFile;
-			compileObjectArgs.TargetFile = args.TargetFile;
-
-			auto compileObjectCommandArgs = ArgumentBuilder::BuildCompilerArguments(compileObjectArgs);
-			result = IProcessManager::Current().Execute(
-				executablePath,
-				compileObjectCommandArgs,
-				args.RootDirectory);
-
-			if (!result.StdOut.empty())
-			{
-				Log::Info(result.StdOut);
-			}
-
-			// If there was any error output then the build failed
-			// TODO: Find warnings + errors
-			if (!result.StdErr.empty())
-			{
-				Log::Warning(result.StdErr);
-			}
-
-			if (result.ExitCode != 0)
-			{
-				throw std::runtime_error("Compiler Object Error: " + std::to_string(result.ExitCode));
 			}
 
 			return compileResult;

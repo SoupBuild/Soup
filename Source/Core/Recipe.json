@@ -1,5 +1,5 @@
 {
-  "name": "Soup.Core",
+  "name": "SoupCore",
   "version": "0.1.0",
   "dependencies": [
     "../../Dependencies/SoupSTL/Core/",

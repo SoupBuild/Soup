@@ -74,21 +74,21 @@ namespace Soup::Client
 				// Use functions to map the commands
 				std::shared_ptr<ICommand> command;
 				if (arguments.IsA<BuildOptions>())
-					command = Setup(arguments.ExtractsResult<BuildOptions>());
+					command = Setup(arguments.ExtractResult<BuildOptions>());
 				else if (arguments.IsA<RunOptions>())
-					command = Setup(arguments.ExtractsResult<RunOptions>());
+					command = Setup(arguments.ExtractResult<RunOptions>());
 				else if (arguments.IsA<InitializeOptions>())
-					command = Setup(arguments.ExtractsResult<InitializeOptions>());
+					command = Setup(arguments.ExtractResult<InitializeOptions>());
 				else if (arguments.IsA<InstallOptions>())
-					command = Setup(arguments.ExtractsResult<InstallOptions>());
+					command = Setup(arguments.ExtractResult<InstallOptions>());
 				else if (arguments.IsA<PackOptions>())
-					command = Setup(arguments.ExtractsResult<PackOptions>());
+					command = Setup(arguments.ExtractResult<PackOptions>());
 				else if (arguments.IsA<PublishOptions>())
-					command = Setup(arguments.ExtractsResult<PublishOptions>());
+					command = Setup(arguments.ExtractResult<PublishOptions>());
 				else if (arguments.IsA<VersionOptions>())
-					command = Setup(arguments.ExtractsResult<VersionOptions>());
+					command = Setup(arguments.ExtractResult<VersionOptions>());
 				else if (arguments.IsA<ViewOptions>())
-					command = Setup(arguments.ExtractsResult<ViewOptions>());
+					command = Setup(arguments.ExtractResult<ViewOptions>());
 				else
 					throw std::runtime_error("Unknown arguments.");
 

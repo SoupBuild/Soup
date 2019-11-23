@@ -1,8 +1,8 @@
-﻿export module Soup.Core;
+﻿export module SoupCore;
 // import Soup.BuildEx;
-import Soup.Platform;
-import Soup.Syntax;
-import std.core;
+import SoupPlatform;
+import SoupSyntax;
+import StandardLibrary;;
 import json11;
 
 #include "Logger\Log.h"
