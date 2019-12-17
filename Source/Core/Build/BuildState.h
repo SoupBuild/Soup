@@ -6,211 +6,234 @@
 
 namespace Soup
 {
-    export class FileInfo
-    {
-    public:
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileInfo"/> class.
-        /// </summary>
-        FileInfo() :
-            File(),
-            Includes()
-        {
-        }
+	export class FileInfo
+	{
+	public:
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileInfo"/> class.
+		/// </summary>
+		FileInfo() :
+			File(),
+			Includes()
+		{
+		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileInfo"/> class.
-        /// </summary>
-        FileInfo(Path file, std::vector<Path> includes) :
-            File(std::move(file)),
-            Includes(std::move(includes))
-        {
-        }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileInfo"/> class.
+		/// </summary>
+		FileInfo(Path file, std::vector<Path> includes) :
+			File(std::move(file)),
+			Includes(std::move(includes))
+		{
+		}
 
-        Path File;
-        std::vector<Path> Includes;
+		Path File;
+		std::vector<Path> Includes;
 
-        /// <summary>
-        /// Equality operator
-        /// </summary>
-        bool operator ==(const FileInfo& rhs) const
-        {
-            return File == rhs.File &&
-                Includes == rhs.Includes;
-        }
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const FileInfo& rhs) const
+		{
+			return File == rhs.File &&
+				Includes == rhs.Includes;
+		}
 
-        bool operator !=(const FileInfo& rhs) const
-        {
-            return !(*this == rhs);
-        }
-    };
+		bool operator !=(const FileInfo& rhs) const
+		{
+			return !(*this == rhs);
+		}
+	};
 
-    struct FileInfo_LessThan
-    {
-        bool operator() (const FileInfo& lhs, const FileInfo& rhs) const
-        {
-            return lhs.File < rhs.File;
-        }
-    };
+	struct FileInfo_LessThan
+	{
+		bool operator() (const FileInfo& lhs, const FileInfo& rhs) const
+		{
+			return lhs.File < rhs.File;
+		}
+	};
 
-    export class BuildState
-    {
-    public:
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BuildState"/> class.
-        /// </summary>
-        BuildState() :
-            KnownFiles()
-        {
-        }
+	export class BuildState
+	{
+	public:
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BuildState"/> class.
+		/// </summary>
+		BuildState() :
+			_knownFiles(),
+			_fastLookup()
+		{
+		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BuildState"/> class.
-        /// </summary>
-        BuildState(std::vector<FileInfo> knownFiles) :
-            KnownFiles(std::move(knownFiles))
-        {
-        }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BuildState"/> class.
+		/// </summary>
+		BuildState(std::vector<FileInfo> knownFiles) :
+			_knownFiles(std::move(knownFiles)),
+			_fastLookup()
+		{
+			BuildFastLookupDictionary();
+		}
 
-        std::vector<FileInfo> KnownFiles;
+		/// <summary>
+		/// Get the known files list
+		/// </summary>
+		const std::vector<FileInfo>& GetKnownFiles() const
+		{
+			return _knownFiles;
+		}
 
-        /// <summary>
-        /// Recursively build up the closure of all included files
-        /// from the build state
-        /// </summary>
-        bool TryBuildIncludeClosure(
-            const Path& sourceFile,
-            std::vector<Path>& closure)
-        {
-            closure.clear();
-            if (!TryBuildIncludeClosure(
-                std::vector<Path>({ sourceFile }),
-                closure))
-            {
-                closure.clear();
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+		/// <summary>
+		/// Recursively build up the closure of all included files
+		/// from the build state
+		/// </summary>
+		bool TryBuildIncludeClosure(
+			const Path& sourceFile,
+			std::vector<Path>& closure)
+		{
+			closure.clear();
+			auto closureSet = std::unordered_set<std::string>();
+			if (TryBuildIncludeClosure(
+				std::vector<Path>({ sourceFile }),
+				closureSet))
+			{
+				// Convert the set to a vector output
+				for (auto& file : closureSet)
+				{
+					closure.push_back(Path(file));
+				}
 
-        /// <summary>
-        /// Update the build state for the provided files
-        /// </summary>
-        void UpdateIncludeTree(const std::vector<HeaderInclude>& includeTree)
-        {
-            // Flatten out the tree
-            auto activeSet = std::set<FileInfo, FileInfo_LessThan>(
-                std::make_move_iterator(KnownFiles.begin()),
-                std::make_move_iterator(KnownFiles.end()));
-            KnownFiles.clear();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
-            UpdateIncludes(activeSet, includeTree);
+		/// <summary>
+		/// Update the build state for the provided files
+		/// </summary>
+		void UpdateIncludeTree(const std::vector<HeaderInclude>& includeTree)
+		{
+			// Flatten out the tree
+			auto activeSet = std::set<FileInfo, FileInfo_LessThan>(
+				std::make_move_iterator(_knownFiles.begin()),
+				std::make_move_iterator(_knownFiles.end()));
+			_knownFiles.clear();
 
-            // Convert the set back to a vector
-            KnownFiles = std::vector<FileInfo>(
-                std::make_move_iterator(activeSet.begin()),
-                std::make_move_iterator(activeSet.end()));
-        }
+			UpdateIncludes(activeSet, includeTree);
 
-        /// <summary>
-        /// Equality operator
-        /// </summary>
-        bool operator ==(const BuildState& rhs) const
-        {
-            return KnownFiles == rhs.KnownFiles;
-        }
+			// Convert the set back to a vector
+			_knownFiles = std::vector<FileInfo>(
+				std::make_move_iterator(activeSet.begin()),
+				std::make_move_iterator(activeSet.end()));
 
-        /// <summary>
-        /// Inequality operator
-        /// </summary>
-        bool operator !=(const BuildState& rhs) const
-        {
-            return !(*this == rhs);
-        }
+			// Ensure the dictionary is up to date
+			BuildFastLookupDictionary();
+		}
 
-    private:
-        /// <summary>
-        /// Internal implentation
-        /// </summary>
-        bool TryBuildIncludeClosure(
-            const std::vector<Path>& sourceFiles,
-            std::vector<Path>& closure)
-        {
-            for (auto& file : sourceFiles)
-            {
-                auto fileInfoResult = std::find_if(
-                    KnownFiles.begin(),
-                    KnownFiles.end(),
-                    [&file](const FileInfo& fileInfo) { return fileInfo.File == file; });
-                if (fileInfoResult != KnownFiles.end())
-                {
-                    // Find all of the files that do not already exist in the closure
-                    auto& includes =  fileInfoResult->Includes;
-                    auto newIncludes = std::vector<Path>();
-                    for (auto& include : includes)
-                    {
-                        if (std::find(closure.begin(), closure.end(), include) == closure.end())
-                        {
-                            newIncludes.push_back(include);
-                        }
-                    }
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const BuildState& rhs) const
+		{
+			return _knownFiles == rhs._knownFiles;
+		}
 
-                    // Add all the new files to the closure
-                    std::copy(
-                        newIncludes.begin(),
-                        newIncludes.end(),
-                        std::back_inserter(closure));
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const BuildState& rhs) const
+		{
+			return !(*this == rhs);
+		}
 
-                    // Build up the child includes
-                    if (!TryBuildIncludeClosure(newIncludes, closure))
-                    {
-                        // Propagate the failed result
-                        return false;
-                    }
-                }
-                else
-                {
-                    Log::Verbose("Missing file info: " + file.ToString());
-                    return false;
-                }
-            }
+	private:
+		void BuildFastLookupDictionary()
+		{
+			_fastLookup.clear();
+			for (auto& info : _knownFiles)
+			{
+				_fastLookup.emplace(info.File.ToString(), info);
+			}
+		}
 
-            return true;
-        }
+		/// <summary>
+		/// Internal implentation
+		/// </summary>
+		bool TryBuildIncludeClosure(
+			const std::vector<Path>& sourceFiles,
+			std::unordered_set<std::string>& closure)
+		{
+			for (auto& file : sourceFiles)
+			{
+				auto fileInfoResult = _fastLookup.find(file.ToString());
+				if (fileInfoResult != _fastLookup.end())
+				{
+					// Find all of the files that do not already exist in the closure
+					auto& includes = fileInfoResult->second.Includes;
+					auto newIncludes = std::vector<Path>();
+					for (auto& include : includes)
+					{
+						auto insertResult = closure.insert(include.ToString());
+						if (insertResult.second)
+						{
+							newIncludes.push_back(include);
+						}
+					}
 
-        /// <summary>
-        /// Update the build state for the provided files
-        /// </summary>
-        static void UpdateIncludes(
-            std::set<FileInfo, FileInfo_LessThan>& activeSet,
-            const std::vector<HeaderInclude>& level)
-        {
-            for (auto& current : level)
-            {
-                // Create the FileInfo
-                auto info = FileInfo();
-                info.File = current.Filename;
-                for (auto& include : current.Includes)
-                {
-                    info.Includes.push_back(include.Filename);
-                }
+					// Build up the child includes
+					if (!TryBuildIncludeClosure(newIncludes, closure))
+					{
+						// Propagate the failed result
+						return false;
+					}
+				}
+				else
+				{
+					Log::Info("Missing file info: " + file.ToString());
+					return false;
+				}
+			}
 
-                // Remove previous entry if exists
-                auto existingFileInfo = activeSet.find(info);
-                if (existingFileInfo != activeSet.end())
-                {
-                    activeSet.erase(existingFileInfo);
-                }
+			return true;
+		}
 
-                // Add the file info
-                activeSet.insert(std::move(info));
+		/// <summary>
+		/// Update the build state for the provided files
+		/// </summary>
+		static void UpdateIncludes(
+			std::set<FileInfo, FileInfo_LessThan>& activeSet,
+			const std::vector<HeaderInclude>& level)
+		{
+			for (auto& current : level)
+			{
+				// Create the FileInfo
+				auto info = FileInfo();
+				info.File = current.Filename;
+				for (auto& include : current.Includes)
+				{
+					info.Includes.push_back(include.Filename);
+				}
 
-                // Recurse to the children
-                UpdateIncludes(activeSet, current.Includes);
-            }
-        }
-    };
+				// Remove previous entry if exists
+				auto existingFileInfo = activeSet.find(info);
+				if (existingFileInfo != activeSet.end())
+				{
+					activeSet.erase(existingFileInfo);
+				}
+
+				// Add the file info
+				activeSet.insert(std::move(info));
+
+				// Recurse to the children
+				UpdateIncludes(activeSet, current.Includes);
+			}
+		}
+
+	private:
+		std::unordered_map<std::string, FileInfo&> _fastLookup;
+		std::vector<FileInfo> _knownFiles;
+	};
 }

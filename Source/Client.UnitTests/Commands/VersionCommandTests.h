@@ -4,16 +4,16 @@
 
 namespace Soup::Client::UnitTests
 {
-    /// <summary>
-    /// Version Command Tests
-    /// </summary>
-    class VersionCommandTests
-    {
-    public:
-        [[Fact]]
-        void Initialize()
-        {
-            auto uut = VersionCommand();
-        }
-    };
+	/// <summary>
+	/// Version Command Tests
+	/// </summary>
+	class VersionCommandTests
+	{
+	public:
+		[[Fact]]
+		void Initialize()
+		{
+			auto uut = VersionCommand();
+		}
+	};
 }

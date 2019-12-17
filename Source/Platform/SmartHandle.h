@@ -6,33 +6,33 @@
 
 namespace Soup::Platform
 {
-  struct SmartHandle
-  {
-      SmartHandle(HANDLE handle) :
-          _handle(handle)
-      {
-      }
+	struct SmartHandle
+	{
+		SmartHandle(HANDLE handle) :
+			_handle(handle)
+		{
+		}
 
-      SmartHandle() :
-          _handle(INVALID_HANDLE_VALUE)
-      {
-      }
+		SmartHandle() :
+			_handle(INVALID_HANDLE_VALUE)
+		{
+		}
 
-      ~SmartHandle()
-      {
-          Close();
-      }
+		~SmartHandle()
+		{
+			Close();
+		}
 
-      void Close()
-      {
-          if (_handle != INVALID_HANDLE_VALUE)
-          {
-              if (!CloseHandle(_handle))
-                  throw "TODO: Better error";
-              _handle = INVALID_HANDLE_VALUE;
-          }
-      }
+		void Close()
+		{
+			if (_handle != INVALID_HANDLE_VALUE)
+			{
+				if (!CloseHandle(_handle))
+					throw "TODO: Better error";
+				_handle = INVALID_HANDLE_VALUE;
+			}
+		}
 
-      HANDLE _handle;
-  };
+		HANDLE _handle;
+	};
 }

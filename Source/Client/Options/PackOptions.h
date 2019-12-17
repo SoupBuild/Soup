@@ -7,11 +7,11 @@
 
 namespace Soup::Client
 {
-    /// <summary>
-    /// Pack Command Options
-    /// </summary>
-    // TODO: [Verb("install")]
-    class PackOptions : public SharedOptions
-    {
-    };
+	/// <summary>
+	/// Pack Command Options
+	/// </summary>
+	// TODO: [Verb("install")]
+	class PackOptions : public SharedOptions
+	{
+	};
 }

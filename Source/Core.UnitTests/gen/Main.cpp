@@ -1,5 +1,5 @@
-import std.core;
-import Soup.Core;
+import StandardLibrary;
+import SoupCore;
 import json11;
 
 #include "../../Dependencies/SoupTest/Assert/SoupAssert.h"
@@ -12,11 +12,16 @@ using namespace SoupTest;
 #include "Build\BuildStateTests.gen.h"
 #include "Build\BuildStateManagerTests.gen.h"
 
+#include "Config\LocalUserConfigExtensionsTests.gen.h"
+#include "Config\LocalUserConfigJsonTests.gen.h"
+#include "Config\LocalUserConfigTests.gen.h"
+
 #include "Package\PackageReferenceTests.gen.h"
 #include "Package\RecipeBuilderTests.gen.h"
 #include "Package\RecipeBuildGeneratorTests.gen.h"
 #include "Package\RecipeBuildManagerTests.gen.h"
 #include "Package\RecipeExtensionsTests.gen.h"
+#include "Package\RecipeLanguageVersionTests.gen.h"
 #include "Package\RecipeJsonTests.gen.h"
 #include "Package\RecipeTests.gen.h"
 #include "Package\RecipeTypeTests.gen.h"
@@ -26,30 +31,35 @@ using namespace SoupTest;
 
 int main()
 {
-    std::cout << "Running Tests..." << std::endl;
+	std::cout << "Running Tests..." << std::endl;
 
-    TestState state = { 0, 0 };
+	TestState state = { 0, 0 };
 
-    state += RunBuildEngineTests();
-    state += RunBuildStateCheckerTests();
-    state += RunBuildStateJsonTests();
-    state += RunBuildStateTests();
-    state += RunBuildStateManagerTests();
+	state += RunBuildEngineTests();
+	state += RunBuildStateCheckerTests();
+	state += RunBuildStateJsonTests();
+	state += RunBuildStateTests();
+	state += RunBuildStateManagerTests();
 
-    state += RunPackageReferenceTests();
-    state += RunRecipeBuilderTests();
-    state += RunRecipeBuildGeneratorTests();
-    state += RunRecipeBuildManagerTests();
-    state += RunRecipeExtensionsTests();
-    state += RunRecipeJsonTests();
-    state += RunRecipeTests();
-    state += RunRecipeTypeTests();
+	state += RunLocalUserConfigExtensionsTests();
+	state += RunLocalUserConfigJsonTests();
+	state += RunLocalUserConfigTests();
 
-    state += RunPathTests();
-    state += RunSemanticVersionTests();
+	state += RunPackageReferenceTests();
+	state += RunRecipeBuilderTests();
+	state += RunRecipeBuildGeneratorTests();
+	state += RunRecipeBuildManagerTests();
+	state += RunRecipeExtensionsTests();
+	state += RunRecipeLanguageVersionTests();
+	state += RunRecipeJsonTests();
+	state += RunRecipeTests();
+	state += RunRecipeTypeTests();
 
-    std::cout << state.FailCount << " FAILED." << std::endl;
-    std::cout << state.PassCount << " PASSED." << std::endl;
+	state += RunPathTests();
+	state += RunSemanticVersionTests();
 
-    return 0;
+	std::cout << state.FailCount << " FAILED." << std::endl;
+	std::cout << state.PassCount << " PASSED." << std::endl;
+
+	return 0;
 }

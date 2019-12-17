@@ -1,45 +1,54 @@
-// <copyright file="RecipeType.cs" company="Soup">
+// <copyright file="RecipeType.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup
 {
-    /// <summary>
-    /// The enumeration of recipe types
-    /// </summary>
-    export enum class RecipeType
-    {
-        /// <summary>
-        /// Executable
-        /// </summary>
-        Executable,
+	/// <summary>
+	/// The enumeration of recipe types
+	/// </summary>
+	export enum class RecipeType
+	{
+		/// <summary>
+		/// Executable
+		/// </summary>
+		Executable,
 
-        /// <summary>
-        /// Library
-        /// </summary>
-        Library,
-    };
+		/// <summary>
+		/// Static linked Library
+		/// </summary>
+		StaticLibrary,
 
-    export std::string ToString(RecipeType value)
-    {
-        switch (value)
-        {
-            case RecipeType::Executable:
-                return "Executable";
-            case RecipeType::Library:
-                return "Library";
-            default:
-                throw std::runtime_error("Unknown recipe type.");
-        }
-    }
+		/// <summary>
+		/// Dynamic linked Library
+		/// </summary>
+		DynamicLibrary,
+	};
 
-    export RecipeType Parse(const std::string& value)
-    {
-        if (value == "Executable")
-            return RecipeType::Executable;
-        else if (value == "Library")
-            return RecipeType::Library;
-        else
-            throw std::runtime_error("Unknown recipe type value.");
-    }
+	export std::string ToString(RecipeType value)
+	{
+		switch (value)
+		{
+			case RecipeType::Executable:
+				return "Executable";
+			case RecipeType::StaticLibrary:
+				return "StaticLibrary";
+			case RecipeType::DynamicLibrary:
+				return "DynamicLibrary";
+			default:
+				throw std::runtime_error("Unknown recipe type.");
+		}
+	}
+
+	export RecipeType ParseRecipeType(const std::string& value)
+	{
+		if (value == "Executable")
+			return RecipeType::Executable;
+		else if (value == "StaticLibrary")
+			return RecipeType::StaticLibrary;
+		else if (value == "DynamicLibrary")
+			return RecipeType::DynamicLibrary;
+		else
+			throw std::runtime_error("Unknown recipe type value.");
+	}
 }

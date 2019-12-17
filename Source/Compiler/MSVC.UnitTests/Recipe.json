@@ -1,0 +1,14 @@
+{
+  "name": "SoupCompilerMSVCUnitTests",
+  "version": "1.0.0",
+  "type": "Executable",
+  "dependencies": [
+    "../MSVC/"
+  ],
+  "source": [
+    "gen/Main.cpp"
+  ],
+  "includePaths": [
+    "./"
+  ]
+}

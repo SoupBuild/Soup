@@ -1,5 +1,5 @@
 {
-  "name": "Soup.Compiler.Clang.UnitTests",
+  "name": "SoupCompilerClangUnitTests",
   "version": "1.0.0",
   "type": "Executable",
   "dependencies": [
@@ -7,5 +7,8 @@
   ],
   "source": [
     "gen/Main.cpp"
+  ],
+  "includePaths": [
+    "./"
   ]
 }

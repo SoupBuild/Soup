@@ -77,6 +77,8 @@
     "xtree": "cpp",
     "condition_variable": "cpp",
     "cassert": "cpp",
-    "cstdarg": "cpp"
+    "cstdarg": "cpp",
+    "*.rh": "cpp",
+    "concepts": "cpp"
   }
 }

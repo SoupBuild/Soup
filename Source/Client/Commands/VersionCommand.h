@@ -8,33 +8,33 @@
 
 namespace Soup::Client
 {
-    /// <summary>
-    /// Version Command
-    /// </summary>
-    class VersionCommand : public ICommand
-    {
-    public:
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VersionCommand"/> class.
-        /// </summary>
-        VersionCommand(VersionOptions options) :
-            _options(std::move(options))
-        {
-        }
+	/// <summary>
+	/// Version Command
+	/// </summary>
+	class VersionCommand : public ICommand
+	{
+	public:
+		/// <summary>
+		/// Initializes a new instance of the <see cref="VersionCommand"/> class.
+		/// </summary>
+		VersionCommand(VersionOptions options) :
+			_options(std::move(options))
+		{
+		}
 
-        /// <summary>
-        /// Main entry point for a unique command
-        /// </summary>
-        virtual void Run() override final
-        {
-            Log::Trace("VersionsCommand::Run");
+		/// <summary>
+		/// Main entry point for a unique command
+		/// </summary>
+		virtual void Run() override final
+		{
+			Log::Diag("VersionsCommand::Run");
 
-            // TODO var version = Assembly.GetExecutingAssembly().GetName().Version;
-            // Log::Message($"{version.Major}.{version.Minor}.{version.Build}");
-            Log::Info("0.2.3");
-        }
+			// TODO var version = Assembly.GetExecutingAssembly().GetName().Version;
+			// Log::Message($"{version.Major}.{version.Minor}.{version.Build}");
+			Log::HighPriority("0.3.0");
+		}
 
-    private:
-        VersionOptions _options;
-    };
+	private:
+		VersionOptions _options;
+	};
 }

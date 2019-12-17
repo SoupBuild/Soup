@@ -6,258 +6,290 @@
 
 namespace Soup::UnitTests
 {
-    class BuildStateCheckerTests
-    {
-    public:
-        [[Fact]]
-        void IsOutdated_ZeroInput_Throws()
-        {
-            // Setup the input parameters
-            auto targetFile = Path("Output.bin");
-            auto inputFiles = std::vector<Path>({});
-            auto rootPath = Path("Root");
+	class BuildStateCheckerTests
+	{
+	public:
+		[[Fact]]
+		void IsOutdated_NonRootedRoot_Throws()
+		{
+			// Setup the input parameters
+			auto targetFile = Path("Output.bin");
+			auto inputFiles = std::vector<Path>({
+				Path("Input.cpp")
+			});
+			auto rootPath = Path("NotRooted/");
 
-            // Perform the check
-            Assert::ThrowsRuntimeError([&targetFile, &inputFiles, &rootPath]() {
-                bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
-            });
-        }
+			// Perform the check
+			auto uut = BuildStateChecker();
+			Assert::ThrowsRuntimeError([&uut, &targetFile, &inputFiles, &rootPath]() {
+				bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			});
+		}
 
-        [[Fact]]
-        void IsOutdated_SingleInput_MissingTarget()
-        {
-            // Register the test listener
-            auto testListener = std::make_shared<TestTraceListener>();
-            Log::RegisterListener(testListener);
+		[[Fact]]
+		void IsOutdated_ZeroInput_Throws()
+		{
+			// Setup the input parameters
+			auto targetFile = Path("Output.bin");
+			auto inputFiles = std::vector<Path>({});
+			auto rootPath = Path("C:/Root/");
 
-            // Register the test file system
-            auto fileSystem = std::make_shared<MockFileSystem>();
-            IFileSystem::Register(fileSystem);
+			// Perform the check
+			auto uut = BuildStateChecker();
+			Assert::ThrowsRuntimeError([&uut, &targetFile, &inputFiles, &rootPath]() {
+				bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			});
+		}
 
-            // Setup the input parameters
-            auto targetFile = Path("Output.bin");
-            auto inputFiles = std::vector<Path>({
-                Path("Input.cpp")
-            });
-            auto rootPath = Path("Root");
+		[[Fact]]
+		void IsOutdated_SingleInput_MissingTarget()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			Log::RegisterListener(testListener);
 
-            // Perform the check
-            bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			IFileSystem::Register(fileSystem);
 
-            // Verify the results
-            Assert::IsTrue(result, "Verify the result is true.");
+			// Setup the input parameters
+			auto targetFile = Path("Output.bin");
+			auto inputFiles = std::vector<Path>({
+				Path("Input.cpp")
+			});
+			auto rootPath = Path("C:/Root/");
 
-            // Verify expected file system requests
-            Assert::AreEqual(
-                std::vector<std::pair<std::string, FileSystemRequestType>>({
-                    std::make_pair("Root/Output.bin", FileSystemRequestType::Exists),
-                }),
-                fileSystem->GetRequests(),
-                "Verify file system requests match expected.");
+			// Perform the check
+			auto uut = BuildStateChecker();
+			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
 
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({
-                    "VERB: Output target does not exist: Output.bin",
-                }),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
-        }
+			// Verify the results
+			Assert::IsTrue(result, "Verify the result is true.");
 
-        [[Fact]]
-        void IsOutdated_SingleInput_TargetExists_MissingInputThrows()
-        {
-            // Register the test listener
-            auto testListener = std::make_shared<TestTraceListener>();
-            Log::RegisterListener(testListener);
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: C:/Root/Output.bin",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
 
-            // Register the test file system
-            auto fileSystem = std::make_shared<MockFileSystem>();
-            IFileSystem::Register(fileSystem);
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"INFO: Output target does not exist: C:/Root/Output.bin",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+		}
 
-            // Create the file state
-            auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
-            fileSystem->CreateMockFile(Path("Root/Output.bin"), MockFileState(outputTime));
+		[[Fact]]
+		void IsOutdated_SingleInput_TargetExists_MissingInputFile()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			Log::RegisterListener(testListener);
 
-            // Setup the input parameters
-            auto targetFile = Path("Output.bin");
-            auto inputFiles = std::vector<Path>({
-                Path("Input.cpp")
-            });
-            auto rootPath = Path("Root");
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			IFileSystem::Register(fileSystem);
 
-            // Perform the check
-            Assert::ThrowsRuntimeError([&targetFile, &inputFiles, &rootPath]() {
-                bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
-            });
+			// Create the file state
+			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
+			fileSystem->CreateMockFile(Path("C:/Root/Output.bin"), MockFileState(outputTime));
 
-            // Verify expected file system requests
-            Assert::AreEqual(
-                std::vector<std::pair<std::string, FileSystemRequestType>>({
-                    std::make_pair("Root/Output.bin", FileSystemRequestType::Exists),
-                    std::make_pair("Root/Output.bin", FileSystemRequestType::GetLastWriteTime),
-                    std::make_pair("Root/Input.cpp", FileSystemRequestType::Exists),
-                }),
-                fileSystem->GetRequests(),
-                "Verify file system requests match expected.");
+			// Setup the input parameters
+			auto targetFile = Path("Output.bin");
+			auto inputFiles = std::vector<Path>({
+				Path("Input.cpp")
+			});
+			auto rootPath = Path("C:/Root/");
 
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({
-                    "ERRO: Input file missing [Input.cpp] -> [Output.bin]",
-                }),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
-        }
+			// Perform the check
+			auto uut = BuildStateChecker();
+			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			Assert::IsTrue(result, "Verify the result is true.");
 
-        [[Fact]]
-        void IsOutdated_SingleInput_TargetExists_Outdated()
-        {
-            // Register the test listener
-            auto testListener = std::make_shared<TestTraceListener>();
-            Log::RegisterListener(testListener);
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: C:/Root/Output.bin",
+					"GetLastWriteTime: C:/Root/Output.bin",
+					"Exists: C:/Root/Input.cpp",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
 
-            // Register the test file system
-            auto fileSystem = std::make_shared<MockFileSystem>();
-            IFileSystem::Register(fileSystem);
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"DIAG: IsOutdated: C:/Root/Output.bin [1434993120]",
+					"ERRO:   C:/Root/Input.cpp [MISSING]",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+		}
 
-            // Create the file state
-            auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
-            auto inputTime = CreateDateTime(2015, 5, 22, 9, 13);
-            fileSystem->CreateMockFile(Path("Root/Output.bin"), MockFileState(outputTime));
-            fileSystem->CreateMockFile(Path("Root/Input.cpp"), MockFileState(inputTime));
+		[[Fact]]
+		void IsOutdated_SingleInput_TargetExists_Outdated()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			Log::RegisterListener(testListener);
 
-            // Setup the input parameters
-            auto targetFile = Path("Output.bin");
-            auto inputFiles = std::vector<Path>({
-                Path("Input.cpp"),
-            });
-            auto rootPath = Path("Root");
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			IFileSystem::Register(fileSystem);
 
-            // Perform the check
-            bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
+			// Create the file state
+			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
+			auto inputTime = CreateDateTime(2015, 5, 22, 9, 13);
+			fileSystem->CreateMockFile(Path("C:/Root/Output.bin"), MockFileState(outputTime));
+			fileSystem->CreateMockFile(Path("C:/Root/Input.cpp"), MockFileState(inputTime));
 
-            // Verify the results
-            Assert::IsTrue(result, "Verify the result is true.");
+			// Setup the input parameters
+			auto targetFile = Path("Output.bin");
+			auto inputFiles = std::vector<Path>({
+				Path("Input.cpp"),
+			});
+			auto rootPath = Path("C:/Root/");
 
-            // Verify expected file system requests
-            Assert::AreEqual(
-                std::vector<std::pair<std::string, FileSystemRequestType>>({
-                    std::make_pair("Root/Output.bin", FileSystemRequestType::Exists),
-                    std::make_pair("Root/Output.bin", FileSystemRequestType::GetLastWriteTime),
-                    std::make_pair("Root/Input.cpp", FileSystemRequestType::Exists),
-                    std::make_pair("Root/Input.cpp", FileSystemRequestType::GetLastWriteTime),
-                }),
-                fileSystem->GetRequests(),
-                "Verify file system requests match expected.");
+			// Perform the check
+			auto uut = BuildStateChecker();
+			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
 
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({
-                    "VERB: Input altered after target [Input.cpp] -> [Output.bin]",
-                }),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
-        }
+			// Verify the results
+			Assert::IsTrue(result, "Verify the result is true.");
 
-        [[Fact]]
-        void IsOutdated_SingleInput_TargetExists_UpToDate()
-        {
-            // Register the test listener
-            auto testListener = std::make_shared<TestTraceListener>();
-            Log::RegisterListener(testListener);
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: C:/Root/Output.bin",
+					"GetLastWriteTime: C:/Root/Output.bin",
+					"Exists: C:/Root/Input.cpp",
+					"GetLastWriteTime: C:/Root/Input.cpp",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
 
-            // Register the test file system
-            auto fileSystem = std::make_shared<MockFileSystem>();
-            IFileSystem::Register(fileSystem);
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"DIAG: IsOutdated: C:/Root/Output.bin [1434993120]",
+					"DIAG:   C:/Root/Input.cpp [1434993180]",
+					"INFO: Input altered after target [C:/Root/Input.cpp] -> [C:/Root/Output.bin]",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+		}
 
-            // Create the file state
-            auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
-            auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-            fileSystem->CreateMockFile(Path("Root/Output.bin"), MockFileState(outputTime));
-            fileSystem->CreateMockFile(Path("Root/Input.cpp"), MockFileState(inputTime));
+		[[Fact]]
+		void IsOutdated_SingleInput_TargetExists_UpToDate()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			Log::RegisterListener(testListener);
 
-            // Setup the input parameters
-            auto targetFile = Path("Output.bin");
-            auto inputFiles = std::vector<Path>({
-                Path("Input.cpp"),
-            });
-            auto rootPath = Path("Root");
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			IFileSystem::Register(fileSystem);
 
-            // Perform the check
-            bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
+			// Create the file state
+			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
+			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+			fileSystem->CreateMockFile(Path("C:/Root/Output.bin"), MockFileState(outputTime));
+			fileSystem->CreateMockFile(Path("C:/Root/Input.cpp"), MockFileState(inputTime));
 
-            // Verify the results
-            Assert::IsFalse(result, "Verify the result is false.");
+			// Setup the input parameters
+			auto targetFile = Path("Output.bin");
+			auto inputFiles = std::vector<Path>({
+				Path("Input.cpp"),
+			});
+			auto rootPath = Path("C:/Root/");
 
-            // Verify expected file system requests
-            Assert::AreEqual(
-                std::vector<std::pair<std::string, FileSystemRequestType>>({
-                    std::make_pair("Root/Output.bin", FileSystemRequestType::Exists),
-                    std::make_pair("Root/Output.bin", FileSystemRequestType::GetLastWriteTime),
-                    std::make_pair("Root/Input.cpp", FileSystemRequestType::Exists),
-                    std::make_pair("Root/Input.cpp", FileSystemRequestType::GetLastWriteTime),
-                }),
-                fileSystem->GetRequests(),
-                "Verify file system requests match expected.");
+			// Perform the check
+			auto uut = BuildStateChecker();
+			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
 
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({}),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
-        }
+			// Verify the results
+			Assert::IsFalse(result, "Verify the result is false.");
 
-        [[Fact]]
-        void IsOutdated_MultipleInputs_RelativeAndAbsolute()
-        {
-            // Register the test listener
-            auto testListener = std::make_shared<TestTraceListener>();
-            Log::RegisterListener(testListener);
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: C:/Root/Output.bin",
+					"GetLastWriteTime: C:/Root/Output.bin",
+					"Exists: C:/Root/Input.cpp",
+					"GetLastWriteTime: C:/Root/Input.cpp",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
 
-            // Register the test file system
-            auto fileSystem = std::make_shared<MockFileSystem>();
-            IFileSystem::Register(fileSystem);
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"DIAG: IsOutdated: C:/Root/Output.bin [1434993120]",
+					"DIAG:   C:/Root/Input.cpp [1434993060]",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+		}
 
-            // Create the file state
-            auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
-            auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-            fileSystem->CreateMockFile(Path("Root/Output.bin"), MockFileState(outputTime));
-            fileSystem->CreateMockFile(Path("Root/Input.cpp"), MockFileState(inputTime));
-            fileSystem->CreateMockFile(Path("C:/Input.h"), MockFileState(inputTime));
+		[[Fact]]
+		void IsOutdated_MultipleInputs_RelativeAndAbsolute()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			Log::RegisterListener(testListener);
 
-            // Setup the input parameters
-            auto targetFile = Path("Output.bin");
-            auto inputFiles = std::vector<Path>({
-                Path("Input.cpp"),
-                Path("C:/Input.h"),
-            });
-            auto rootPath = Path("Root");
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			IFileSystem::Register(fileSystem);
 
-            // Perform the check
-            bool result = BuildStateChecker::IsOutdated(targetFile, inputFiles, rootPath);
+			// Create the file state
+			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
+			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+			fileSystem->CreateMockFile(Path("C:/Root/Output.bin"), MockFileState(outputTime));
+			fileSystem->CreateMockFile(Path("C:/Root/Input.cpp"), MockFileState(inputTime));
+			fileSystem->CreateMockFile(Path("C:/Input.h"), MockFileState(inputTime));
 
-            // Verify the results
-            Assert::IsFalse(result, "Verify the result is false.");
+			// Setup the input parameters
+			auto targetFile = Path("Output.bin");
+			auto inputFiles = std::vector<Path>({
+				Path("Input.cpp"),
+				Path("C:/Input.h"),
+			});
+			auto rootPath = Path("C:/Root/");
 
-            // Verify expected file system requests
-            Assert::AreEqual(
-                std::vector<std::pair<std::string, FileSystemRequestType>>({
-                    std::make_pair("Root/Output.bin", FileSystemRequestType::Exists),
-                    std::make_pair("Root/Output.bin", FileSystemRequestType::GetLastWriteTime),
-                    std::make_pair("Root/Input.cpp", FileSystemRequestType::Exists),
-                    std::make_pair("Root/Input.cpp", FileSystemRequestType::GetLastWriteTime),
-                    std::make_pair("C:/Input.h", FileSystemRequestType::Exists),
-                    std::make_pair("C:/Input.h", FileSystemRequestType::GetLastWriteTime),
-                }),
-                fileSystem->GetRequests(),
-                "Verify file system requests match expected.");
+			// Perform the check
+			auto uut = BuildStateChecker();
+			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
 
-            // Verify expected logs
-            Assert::AreEqual(
-                std::vector<std::string>({}),
-                testListener->GetMessages(),
-                "Verify log messages match expected.");
-        }
-    };
+			// Verify the results
+			Assert::IsFalse(result, "Verify the result is false.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: C:/Root/Output.bin",
+					"GetLastWriteTime: C:/Root/Output.bin",
+					"Exists: C:/Root/Input.cpp",
+					"GetLastWriteTime: C:/Root/Input.cpp",
+					"Exists: C:/Input.h",
+					"GetLastWriteTime: C:/Input.h",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"DIAG: IsOutdated: C:/Root/Output.bin [1434993120]",
+					"DIAG:   C:/Root/Input.cpp [1434993060]",
+					"DIAG:   C:/Input.h [1434993060]",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+		}
+	};
 }

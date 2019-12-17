@@ -1,4 +1,4 @@
-// <copyright file="Program.cs" company="Soup">
+// <copyright file="ArgumentParser.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -14,175 +14,258 @@
 
 namespace Soup::Client
 {
-    /// <summary>
-    /// Arguments parser custom made for Soup,
-    /// TODO: Create awesome generated version
-    /// </summary>
-    class ArgumentsParser
-    {
-    public:
-        static ArgumentsParser Parse(const std::vector<std::string>& args)
-        {
-            Log::Trace("ArgumentsParser::Parse");
-            if (args.size() <= 1)
-            {
-                throw std::runtime_error("No arguments provided.");
-            }
+	/// <summary>
+	/// Arguments parser custom made for Soup,
+	/// TODO: Create awesome generated version
+	/// </summary>
+	class ArgumentsParser
+	{
+	public:
+		static ArgumentsParser Parse(const std::vector<std::string>& args)
+		{
+			Log::Diag("ArgumentsParser::Parse");
+			if (args.size() <= 1)
+			{
+				throw std::runtime_error("No arguments provided.");
+			}
 
-            // The first argument must be the requested command
-            auto& commandType = args[1];
+			// The first argument must be the requested command
+			auto& commandType = args[1];
 
-            // Copy the set of unused args to ensure we consume everythings
-            std::vector<std::string> unusedArgs;
-            std::copy(args.begin()+2, args.end(), std::back_inserter(unusedArgs));
+			// Copy the set of unused args to ensure we consume everythings
+			std::vector<std::string> unusedArgs;
+			std::copy(args.begin()+2, args.end(), std::back_inserter(unusedArgs));
 
-            // Handle the individual commands and their expected arguments
-            std::any result = nullptr;
-            if (commandType == "build")
-            {
-                Log::Trace("Parse build");
+			// Handle the individual commands and their expected arguments
+			std::unique_ptr<SharedOptions> result = nullptr;
+			if (commandType == "build")
+			{
+				Log::Diag("Parse build");
 
-                auto options = BuildOptions();
-                options.EnableVerbose = IsFlagSet("v", unusedArgs);
-                options.Force = IsFlagSet("f", unusedArgs);
+				auto options = std::make_unique<BuildOptions>();
 
-                result = std::move(options);
-            }
-            else if (commandType == "init")
-            {
-                Log::Trace("Parse initialize");
+				// Check if the optional index arguments exist
+				auto argument = std::string();
+				if (TryGetOptional(unusedArgs, argument))
+				{
+					options->Path = std::move(argument);
+				}
 
-                auto options = InitializeOptions();
-                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				options->Verbosity = CheckVerbosity(unusedArgs);
+				options->Force = IsFlagSet("f", unusedArgs);
 
-                result = std::move(options);
-            }
-            else if (commandType == "install")
-            {
-                Log::Trace("Parse install");
+				auto configValue = std::string();
+				if (TryGetValueArgument("c", unusedArgs, configValue))
+				{
+					options->Configuration = std::move(configValue);
+				}
 
-                auto options = InstallOptions();
-                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				result = std::move(options);
+			}
+			else if (commandType == "init")
+			{
+				Log::Diag("Parse initialize");
 
-                result = std::move(options);
-            }
-            else if (commandType == "pack")
-            {
-                Log::Trace("Parse pack");
+				auto options = std::make_unique<InitializeOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
-                auto options = PackOptions();
-                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				result = std::move(options);
+			}
+			else if (commandType == "install")
+			{
+				Log::Diag("Parse install");
 
-                result = std::move(options);
-            }
-            else if (commandType == "publish")
-            {
-                Log::Trace("Parse publish");
+				auto options = std::make_unique<InstallOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
-                auto options = PublishOptions();
-                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				result = std::move(options);
+			}
+			else if (commandType == "pack")
+			{
+				Log::Diag("Parse pack");
 
-                result = std::move(options);
-            }
-            else if (commandType == "run")
-            {
-                Log::Trace("Parse run");
+				auto options = std::make_unique<PackOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
-                auto options = RunOptions();
-                // TODO: How to do verbose? options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				result = std::move(options);
+			}
+			else if (commandType == "publish")
+			{
+				Log::Diag("Parse publish");
 
-                // All remaining arguments are passed to the executable
-                options.Arguments = std::move(unusedArgs);
+				auto options = std::make_unique<PublishOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
-                result = std::move(options);
-            }
-            else if (commandType == "version")
-            {
-                Log::Trace("Parse version");
+				result = std::move(options);
+			}
+			else if (commandType == "run")
+			{
+				Log::Diag("Parse run");
 
-                auto options = VersionOptions();
-                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				auto options = std::make_unique<RunOptions>();
 
-                result = std::move(options);
-            }
-            else if (commandType == "view")
-            {
-                Log::Trace("Parse view");
+				// Set defaults
+				auto syntheticParams = std::vector<std::string>();
+				options->Verbosity = CheckVerbosity(syntheticParams);
 
-                auto options = ViewOptions();
-                options.EnableVerbose = IsFlagSet("v", unusedArgs);
+				// All remaining arguments are passed to the executable
+				options->Arguments = std::move(unusedArgs);
 
-                result = std::move(options);
-            }
-            else
-            {
-                throw std::runtime_error("Unknown command argument: " + commandType);
-            }
+				result = std::move(options);
+			}
+			else if (commandType == "version")
+			{
+				Log::Diag("Parse version");
 
-            if (!unusedArgs.empty())
-            {
-                std::stringstream message;
-                message << "Unrecognized argument(s): ";
-                for (int i = 0; i < unusedArgs.size(); i++)
-                {
-                    if (i > 0)
-                    {
-                        message << ", ";
-                    }
+				auto options = std::make_unique<VersionOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
-                    message << unusedArgs[i];
-                }
+				result = std::move(options);
+			}
+			else if (commandType == "view")
+			{
+				Log::Diag("Parse view");
 
-                throw std::runtime_error(message.str());
-            }
+				auto options = std::make_unique<ViewOptions>();
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
-            return ArgumentsParser(
-                std::move(result));
-        }
+				result = std::move(options);
+			}
+			else
+			{
+				throw std::runtime_error("Unknown command argument: " + commandType);
+			}
 
-    private:
-        ArgumentsParser(std::any result) :
-            _result(std::move(result))
-        {
-        }
+			if (!unusedArgs.empty())
+			{
+				std::stringstream message;
+				message << "Unrecognized argument(s): ";
+				for (int i = 0; i < unusedArgs.size(); i++)
+				{
+					if (i > 0)
+					{
+						message << ", ";
+					}
 
-    public:
-        ArgumentsParser() :
-            _result(nullptr)
-        {
-        }
+					message << unusedArgs[i];
+				}
 
-        template<typename T>
-        bool IsA()
-        {
-            return _result.type() == typeid(T);
-        }
+				throw std::runtime_error(message.str());
+			}
 
-        template<typename T>
-        auto ExtractsResult() -> T
-        {
-            return std::any_cast<T>( _result);
-        }
+			return ArgumentsParser(
+				std::move(result));
+		}
 
-    private:
-        static bool IsFlagSet(const char* value, std::vector<std::string>& unusedArgs)
-        {
-            auto flagValue = std::string("-") + value;
-            Log::Trace("IsFlagSet: " + flagValue);
-            auto flagLocation = std::find(unusedArgs.begin(), unusedArgs.end(), flagValue);
-            if (flagLocation != unusedArgs.end())
-            {
-                // Consume the flag value
-                unusedArgs.erase(flagLocation);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+	private:
+		ArgumentsParser(std::unique_ptr<SharedOptions>&& result) :
+			_result(std::move(result))
+		{
+		}
 
-    private:
-        std::any _result;
-    };
+	public:
+		ArgumentsParser() :
+			_result(nullptr)
+		{
+		}
+
+		template<typename T>
+		bool IsA()
+		{
+			return std::ext::are_equal(typeid(*_result), typeid(T));
+		}
+
+		template<typename T>
+		auto ExtractResult() -> T
+		{
+			return *dynamic_cast<T*>(_result.get());
+		}
+
+	private:
+		static bool TryGetOptional(std::vector<std::string>& unusedArgs, std::string& argument)
+		{
+			// Check if the first arument is not a dash flag
+			if (!unusedArgs.empty() && !unusedArgs[0].empty() && unusedArgs[0][0] != '-')
+			{
+				argument = std::move(unusedArgs[0]);
+				unusedArgs.erase(unusedArgs.begin());
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		static bool IsFlagSet(const char* name, std::vector<std::string>& unusedArgs)
+		{
+			auto flagValue = std::string("-") + name;
+			Log::Diag("IsFlagSet: " + flagValue);
+			auto flagLocation = std::find(unusedArgs.begin(), unusedArgs.end(), flagValue);
+			if (flagLocation != unusedArgs.end())
+			{
+				// Consume the flag value
+				unusedArgs.erase(flagLocation);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		static bool TryGetValueArgument(
+			const char* name,
+			std::vector<std::string>& unusedArgs,
+			std::string& value)
+		{
+			auto nameValue = std::string("-") + name;
+			Log::Diag("TryGetValueArgument: " + nameValue);
+			auto nameLocation = std::find(unusedArgs.begin(), unusedArgs.end(), nameValue);
+			if (nameLocation != unusedArgs.end())
+			{
+				// Consume the flag value
+				auto valueLocation = unusedArgs.erase(nameLocation);
+				value = std::move(*valueLocation);
+				unusedArgs.erase(valueLocation);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		static TraceEventFlag CheckVerbosity(std::vector<std::string>& unusedArgs)
+		{
+			auto level = 
+				static_cast<uint32_t>(TraceEventFlag::HighPriority) |
+				static_cast<uint32_t>(TraceEventFlag::Warning) |
+				static_cast<uint32_t>(TraceEventFlag::Error) |
+				static_cast<uint32_t>(TraceEventFlag::Critical);
+			if (IsFlagSet("v:d", unusedArgs))
+			{
+				level |=
+					static_cast<uint32_t>(TraceEventFlag::Information) |
+					static_cast<uint32_t>(TraceEventFlag::Diagnostic);
+			}
+			else if (IsFlagSet("v:n", unusedArgs))
+			{
+				level |= static_cast<uint32_t>(TraceEventFlag::Information);
+			}
+			else if (IsFlagSet("v:q", unusedArgs))
+			{
+				// Nothing else to add
+			}
+			else
+			{
+				// Default to quiet level
+			}
+			
+			return static_cast<TraceEventFlag>(level);
+		}
+
+	private:
+		std::unique_ptr<SharedOptions> _result;
+	};
 }

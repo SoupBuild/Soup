@@ -6,18 +6,18 @@
 
 namespace Soup
 {
-    /// <summary>
-    /// A special exception overload that indicates an early exit for the application that was handled
-    /// </summary>
-    export class HandledException : std::exception
-    {
-    public:
-        /// <summary>
-        /// Initialize a new instance of the HandledException class
-        /// </summary>
-        HandledException() :
-            std::exception()
-        {
-        }
-    };
+	/// <summary>
+	/// A special exception overload that indicates an early exit for the application that was handled
+	/// </summary>
+	export class HandledException : std::exception
+	{
+	public:
+		/// <summary>
+		/// Initialize a new instance of the HandledException class
+		/// </summary>
+		HandledException() :
+			std::exception()
+		{
+		}
+	};
 }

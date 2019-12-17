@@ -1,7 +1,8 @@
-﻿export module Soup.Core;
-import Soup.Platform;
-import Soup.Syntax;
-import std.core;
+﻿export module SoupCore;
+// import Soup.BuildEx;
+import SoupPlatform;
+import SoupSyntax;
+import StandardLibrary;;
 import json11;
 
 #include "Logger\Log.h"
@@ -14,6 +15,8 @@ import json11;
 #include "Build\BuildStateManager.h"
 #include "Compiler\CompileArguments.h"
 #include "Compiler\MockCompiler.h"
+#include "Config\LocalUserConfigExtensions.h"
+#include "Config\LocalUserConfigJson.h"
 #include "Logger\ConsoleTraceListener.h"
 #include "Logger\TestTraceListener.h"
 #include "Package\Recipe.h"

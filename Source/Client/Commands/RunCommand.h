@@ -8,84 +8,105 @@
 
 namespace Soup::Client
 {
-    /// <summary>
-    /// Run Command
-    /// </summary>
-    class RunCommand : public ICommand
-    {
-    public:
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RunCommand"/> class.
-        /// </summary>
-        RunCommand(
-            RunOptions options,
-            std::shared_ptr<ICompiler> compiler) :
-            _options(std::move(options)),
-            _compiler(std::move(compiler))
-        {
-        }
+	/// <summary>
+	/// Run Command
+	/// </summary>
+	class RunCommand : public ICommand
+	{
+	public:
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RunCommand"/> class.
+		/// </summary>
+		RunCommand(RunOptions options) :
+			_options(std::move(options))
+		{
+		}
 
-        /// <summary>
-        /// Main entry point for a unique command
-        /// </summary>
-        virtual void Run() override final
-        {
-            Log::Trace("RunCommand::Run");
-            auto workingDirectory = Path::GetCurrentDirectory();
-            auto recipePath = 
-                workingDirectory +
-                Path(Constants::RecipeFileName);
-            Recipe recipe = {};
-            if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
-            {
-                Log::Error("Could not load the recipe file");
-                return;
-            }
+		/// <summary>
+		/// Main entry point for a unique command
+		/// </summary>
+		virtual void Run() override final
+		{
+			Log::Diag("RunCommand::Run");
 
-            // Ensure that this is an executable
-            if (recipe.GetType() != RecipeType::Executable)
-            {
-                Log::Error("Cannot run a project not of type executable");
-                return;
-            }
+			// Load the user config
+			auto config =  LocalUserConfigExtensions::LoadFromFile();
 
-            // Ensure the executable exists
-            auto executablePath = workingDirectory + Path("out/bin") + Path(_compiler->GetName()) + Path(recipe.GetName() + ".exe");
-            Log::Verbose(executablePath.ToString());
-            if (!IFileSystem::Current().Exists(executablePath))
-            {
-                Log::Error("The executable does not exist");
-                return;
-            }
+			std::shared_ptr<ICompiler> runtimeCompiler = nullptr;
+			if (config.GetRuntimeCompiler() == "clang")
+			{
+				runtimeCompiler = std::make_shared<Compiler::Clang::Compiler>(
+					Path(config.GetClangToolPath()));
+			}
+			else if (config.GetRuntimeCompiler() == "msvc")
+			{
+				runtimeCompiler = std::make_shared<Compiler::MSVC::Compiler>(
+					Path(config.GetMSVCRootPath()) + Path("bin/Hostx64/x64/"),
+					Path("cl.exe"),
+					Path("link.exe"),
+					Path("lib.exe"));
+			}
+			else
+			{
+				throw std::runtime_error("Unknown compiler.");
+			}
 
-            // Execute the requested target
-            auto result = IProcessManager::Current().Execute(
-                executablePath,
-                _options.Arguments,
-                workingDirectory);
+			auto workingDirectory = Path::GetCurrentDirectory();
+			auto recipePath = 
+				workingDirectory +
+				Path(Constants::RecipeFileName);
+			Recipe recipe = {};
+			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			{
+				Log::Error("Could not load the recipe file");
+				return;
+			}
 
-            // TODO: Directly pipe to output and make sure there is no extra newline
-            if (!result.StdOut.empty())
-            {
-                Log::Info(result.StdOut);
-            }
+			// Ensure that this is an executable
+			if (recipe.GetType() != RecipeType::Executable)
+			{
+				Log::Error("Cannot run a project not of type executable");
+				return;
+			}
 
-            if (!result.StdErr.empty())
-            {
-                Log::Error(result.StdErr);
-            }
+			// Ensure the executable exists
+			auto configuration = "release";
+			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(*runtimeCompiler, configuration);
+			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
+			Log::Info(executablePath.ToString());
+			if (!IFileSystem::Current().Exists(executablePath))
+			{
+				Log::Error("The executable does not exist");
+				return;
+			}
 
-            if (result.ExitCode != 0)
-            {
-                // TODO: Return error code
-                Log::Verbose("FAILED");
-            }
+			// Execute the requested target
+			auto result = IProcessManager::Current().Execute(
+				executablePath,
+				_options.Arguments,
+				workingDirectory);
 
-            Log::Verbose("Done");
-        }
+			// TODO: Directly pipe to output and make sure there is no extra newline
+			if (!result.StdOut.empty())
+			{
+				Log::HighPriority(result.StdOut);
+			}
 
-    private:
-        RunOptions _options;
-        std::shared_ptr<ICompiler> _compiler;
-    };
+			if (!result.StdErr.empty())
+			{
+				Log::Error(result.StdErr);
+			}
+
+			if (result.ExitCode != 0)
+			{
+				// TODO: Return error code
+				Log::HighPriority("FAILED");
+			}
+
+			Log::HighPriority("Done");
+		}
+
+	private:
+		RunOptions _options;
+	};
 }

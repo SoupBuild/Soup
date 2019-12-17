@@ -1,5 +1,5 @@
 {
-  "name": "Soup.Core",
+  "name": "SoupCore",
   "version": "0.1.0",
   "dependencies": [
     "../../Dependencies/SoupSTL/Core/",
@@ -7,7 +7,7 @@
     "../../Dependencies/SoupSyntax/Source/Syntax/",
     "../Platform/"
   ],
-  "public": "Module.cppm",
+  "public": "Module.cpp",
   "source": [],
   "includePaths": [
     "./",

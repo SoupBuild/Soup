@@ -17,8 +17,7 @@ namespace Soup.Compiler.Clang
     /// </summary>
     public class Compiler : ICompiler
     {
-        //private static string ToolsPath => @"C:\Program Files\llvm\";
-        private static string ToolsPath => @"D:\Repos\llvm-project\build\Release";
+        private string _toolsPath;
         private static Regex IsHeaderIncludeStart = new Regex("^[\\.]+ ", RegexOptions.Compiled);
         private static Regex IsWarningMessage = new Regex("^.* warning: ", RegexOptions.Compiled);
         private static Regex IsErrorMessage = new Regex("^.* error: ", RegexOptions.Compiled);
@@ -49,6 +48,14 @@ namespace Soup.Compiler.Clang
         public string StaticLibraryFileExtension => "a";
 
         /// <summary>
+        /// Initializes a new instance of the Compiler class
+        /// </summary>
+        public Compiler(string toolsPath)
+        {
+            _toolsPath = toolsPath;
+        }
+
+        /// <summary>
         /// Compile
         /// </summary>
         public async Task<CompileResults> CompileAsync(CompileArguments args)
@@ -72,7 +79,7 @@ namespace Soup.Compiler.Clang
             // Set the working directory to the output directory
             var workingDirectory = Path.Combine(args.RootDirectory, args.OutputDirectory);
 
-            string compiler = Path.Combine(ToolsPath, @"bin\clang++.exe");
+            string compiler = Path.Combine(_toolsPath, @"bin/clang++.exe");
             var commandArgs = BuildCompilerArguments(file, args, workingDirectory);
 
             Log.Info($"{file}");
@@ -143,7 +150,7 @@ namespace Soup.Compiler.Clang
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;
 
-            string linker = Path.Combine(ToolsPath, @"bin\llvm-ar.exe");
+            string linker = Path.Combine(_toolsPath, @"bin\llvm-ar.exe");
             var linkerArgs = BuildLinkerLibraryArguments(args);
 
             Log.Verbose($"PWD={workingDirectory}");
@@ -185,7 +192,7 @@ namespace Soup.Compiler.Clang
             // Set the working directory to the output directory
             var workingDirectory = args.RootDirectory;
 
-            string linker = Path.Combine(ToolsPath, @"bin\clang++.exe");
+            string linker = Path.Combine(_toolsPath, @"bin\clang++.exe");
             var linkerArgs = BuildLinkerExecutableArguments(args);
 
             Log.Verbose($"PWD={workingDirectory}");

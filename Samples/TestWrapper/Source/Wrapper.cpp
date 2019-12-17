@@ -5,16 +5,16 @@ using namespace TestWrapper_VersionNamespace;
 
 Wrapper::Wrapper()
 {
-  _value = 100;
+	_value = 100;
 }
 
 int Wrapper::GetValue()
 {
-  return _value;
+	return _value;
 }
 
 int Wrapper::GetVersion()
 {
-  TestMultiVersion_VersionNamespace::MultiVersion version;
-  return version.GetVersion();
+	TestMultiVersion_VersionNamespace::MultiVersion version;
+	return version.GetVersion();
 }

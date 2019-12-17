@@ -50,8 +50,9 @@ namespace Soup
         /// </summary>
         private async Task CoreBuildAsync(string path, Recipe recipe, bool force)
         {
-            var objectDirectory = Path.Combine("out", "obj", _compiler.Name);
-            var binaryDirectory = Path.Combine("out", "bin", _compiler.Name);
+            var configuration = "release";
+            var objectDirectory = Path.Combine("out", "obj", _compiler.Name, configuration);
+            var binaryDirectory = Path.Combine("out", "bin", _compiler.Name, configuration);
 
             Log.Info($"Building {recipe.Name}.");
             Log.Verbose($"Loading previous build state.");
@@ -63,20 +64,19 @@ namespace Soup
             }
 
             // Determine the include paths
-            var folderWithHeadersSet = Directory.EnumerateFiles(path, "*.h", SearchOption.AllDirectories).Select(file => Path.GetDirectoryName(file)).ToHashSet();
-            var uniqueFolders = folderWithHeadersSet.ToList();
+            var includePaths = recipe.IncludePaths ?? new List<string>();
 
             bool moduleBuilt = false;
             if (recipe.Type == RecipeType.Library)
             {
-                moduleBuilt = await CheckCompileModuleAsync(path, recipe, buildState, uniqueFolders, objectDirectory, binaryDirectory, force);
+                moduleBuilt = await CheckCompileModuleAsync(path, recipe, buildState, includePaths, objectDirectory, binaryDirectory, force);
             }
 
             bool sourceBuilt = await CheckCompileSourceAsync(
                 path,
                 recipe,
                 buildState,
-                uniqueFolders,
+                includePaths,
                 objectDirectory,
                 binaryDirectory,
                 force);
@@ -137,7 +137,7 @@ namespace Soup
             string path,
             Recipe recipe,
             BuildState buildState,
-            IList<string> uniqueFolders,
+            IList<string> includePaths,
             string objectDirectory,
             string binaryDirectory,
             bool force)
@@ -150,7 +150,8 @@ namespace Soup
                 // Add all of the direct dependencies as module references
                 var modules = new List<string>();
                 var defines = new List<string>();
-                await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
+                bool isRecursive = false;
+                await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines, isRecursive);
 
                 // The dependencies for this file are all of the direct module references
                 var dependencies = new List<string>();
@@ -170,7 +171,7 @@ namespace Soup
                     path,
                     recipe,
                     buildState,
-                    uniqueFolders,
+                    includePaths,
                     objectDirectory,
                     binaryDirectory);
             }
@@ -185,7 +186,7 @@ namespace Soup
             string path,
             Recipe recipe,
             BuildState buildState,
-            IList<string> uniqueFolders,
+            IList<string> includePaths,
             string objectDirectory,
             string binaryDirectory)
         {
@@ -206,7 +207,17 @@ namespace Soup
 
             // Add all of the direct dependencies as module references
             // and set their version defintions
-            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
+
+            // TODO: MSVC requires all transient modules also
+            bool isRecursive = _compiler.Name == "MSVC";
+            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines, isRecursive);
+
+            // TODO: Clang wants modules to be cppm
+            var publicFile = recipe.Public;
+            if (_compiler.Name == "Clang")
+            {
+                publicFile = Path.GetFileNameWithoutExtension(publicFile) + ".cppm";
+            }
 
             var args = new CompileArguments()
             {
@@ -214,8 +225,8 @@ namespace Soup
                 RootDirectory = path,
                 OutputDirectory = objectDirectory,
                 PreprocessorDefinitions = defines,
-                SourceFiles = new List<string>() { recipe.Public },
-                IncludeDirectories = uniqueFolders,
+                SourceFiles = new List<string>() { publicFile },
+                IncludeDirectories = includePaths,
                 Modules = modules,
                 ExportModule = true,
                 GenerateIncludeTree = true,
@@ -243,7 +254,7 @@ namespace Soup
             string path,
             Recipe recipe,
             BuildState buildState,
-            IList<string> uniqueFolders,
+            IList<string> includePaths,
             string objectDirectory,
             string binaryDirectory,
             bool force)
@@ -264,7 +275,9 @@ namespace Soup
 
             // Add all of the direct dependencies as module references
             // and set their version defintions
-            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines);
+            // TODO: MSVC requires all transient modules also
+            bool isRecursive = _compiler.Name == "MSVC";
+            await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines, isRecursive);
 
             var source = new List<string>();
 
@@ -316,7 +329,7 @@ namespace Soup
                     OutputDirectory = objectDirectory,
                     PreprocessorDefinitions = defines,
                     SourceFiles = source,
-                    IncludeDirectories = uniqueFolders,
+                    IncludeDirectories = includePaths,
                     Modules = modules,
                     GenerateIncludeTree = true,
                 };
@@ -345,7 +358,8 @@ namespace Soup
             string binaryDirectory,
             Recipe recipe,
             IList<string> modules,
-            IList<string> defines)
+            IList<string> defines,
+            bool isRecursive)
         {
             foreach (var dependecy in recipe.Dependencies)
             {
@@ -355,6 +369,11 @@ namespace Soup
 
                 modules.Add(Path.Combine(packagePath, binaryDirectory, BuildRecipeModuleFilename(dependecyRecipe)));
                 defines.Add(BuildRecipeNamespaceDefine(dependecyRecipe));
+
+                if (isRecursive)
+                {
+                    await BuildDependencyModuleReferences(packagePath, binaryDirectory, dependecyRecipe, modules, defines, isRecursive);
+                }
             }
         }
 
@@ -496,7 +515,7 @@ namespace Soup
                 // Get recursive dependencies
                 await GenerateDependencyLibrarySetAsync(packagePath, binaryDirectory, dependecyRecipe, set);
 
-                set.Add(Path.Combine(packagePath, binaryDirectory, $"{dependecyRecipe.Name}.a").ToLower());
+                set.Add(Path.Combine(packagePath, binaryDirectory, $"{dependecyRecipe.Name}.{_compiler.StaticLibraryFileExtension}").ToLower());
             }
         }
 

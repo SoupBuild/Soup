@@ -26,6 +26,7 @@ namespace Soup
         private ObservableCollection<PackageReference> _dependencies;
         private string _public;
         private ObservableCollection<string> _source;
+        private ObservableCollection<string> _includePaths;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Recipe"/> class.
@@ -217,6 +218,33 @@ namespace Soup
                 {
                     _source = new ObservableCollection<string>(value);
                     _source.CollectionChanged += OnCollectionChanged;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the source values
+        /// </summary>
+        [JsonProperty("includePaths")]
+        public IList<string> IncludePaths
+        {
+            get
+            {
+                return _includePaths;
+            }
+
+            set
+            {
+                if (_includePaths != null)
+                {
+                    _includePaths.CollectionChanged -= OnCollectionChanged;
+                    _includePaths = null;
+                }
+
+                if (value != null)
+                {
+                    _includePaths = new ObservableCollection<string>(value);
+                    _includePaths.CollectionChanged += OnCollectionChanged;
                 }
             }
         }

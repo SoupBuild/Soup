@@ -1,6 +1,8 @@
-﻿module;
+﻿// TODO: MSVC Not implemented module;
 #include <Windows.h>
-export module Soup.Platform;
+#include <psapi.h>
+export module SoupPlatform;
 
 #include "SmartHandle.h"
+#include "DynamicLibraryManager.h"
 #include "ProcessManager.h"
