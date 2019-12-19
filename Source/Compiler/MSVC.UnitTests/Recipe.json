@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "Executable",
   "dependencies": [
+    "../../../Dependencies/SoupTest/Assert/",
     "../MSVC/"
   ],
   "source": [

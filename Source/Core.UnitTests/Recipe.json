@@ -4,6 +4,7 @@
   "type": "Executable",
   "dependencies": [
     "../../Dependencies/json11/",
+    "../../Dependencies/SoupTest/Assert/",
     "../Core/"
   ],
   "source": [

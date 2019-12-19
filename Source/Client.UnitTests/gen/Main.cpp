@@ -1,8 +1,7 @@
 import Antlr4Runtime;
 import SoupCore;
+import SoupTest;
 
-#include "../../../SoupTest/Assert/SoupAssert.h"
-#include "../../../SoupTest/Assert/RunTest.h"
 using namespace SoupTest;
 
 #include "Commands\BuildCommandTests.gen.h"

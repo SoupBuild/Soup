@@ -109,7 +109,10 @@ namespace Soup::Compiler::MSVC
 
 			if (!result.StdOut.empty())
 			{
-				Log::Info(result.StdOut);
+				if (result.ExitCode != 0)
+					Log::Warning(result.StdOut);
+				else
+					Log::Info(result.StdOut);
 			}
 
 			// If there was any error output then the build failed
@@ -149,7 +152,10 @@ namespace Soup::Compiler::MSVC
 
 			if (!result.StdOut.empty())
 			{
-				Log::Info(result.StdOut);
+				if (result.ExitCode != 0)
+					Log::Warning(result.StdOut);
+				else
+					Log::Info(result.StdOut);
 			}
 
 			// If there was any error output then the build failed
@@ -209,7 +215,10 @@ namespace Soup::Compiler::MSVC
 
 			if (!result.StdOut.empty())
 			{
-				Log::Info(result.StdOut);
+				if (result.ExitCode != 0)
+					Log::Warning(result.StdOut);
+				else
+					Log::Info(result.StdOut);
 			}
 
 			// If there was any error output then the build failed

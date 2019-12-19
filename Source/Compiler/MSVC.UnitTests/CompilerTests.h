@@ -19,7 +19,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("mock.lib.exe"));
 			Assert::AreEqual(uut.GetName(), std::string_view("MSVC"), "Verify name match expected.");
 			Assert::AreEqual(uut.GetObjectFileExtension(), std::string_view("obj"), "Verify object file extension match expected.");
-			Assert::AreEqual(uut.GetModuleFileExtension(), std::string_view("pcm"), "Verify module file extension match expected.");
+			Assert::AreEqual(uut.GetModuleFileExtension(), std::string_view("ifc"), "Verify module file extension match expected.");
 			Assert::AreEqual(uut.GetStaticLibraryFileExtension(), std::string_view("lib"), "Verify static library file extension match expected.");
 			Assert::AreEqual(uut.GetDynamicLibraryFileExtension(), std::string_view("dll"), "Verify dynamic library file extension match expected.");
 		}
@@ -47,7 +47,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /X /RTC1 /EHsc /MDd /c File.cpp /Fo\"obj/File.obj\"",
+					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /X /RTC1 /EHsc /MTd /bigobj /c File.cpp /Fo\"obj/File.obj\"",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -86,8 +86,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MDd File.cpp /Fo\"obj/File.pcm\"",
-					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /X /RTC1 /EHsc /MDd /c obj/File.pcm /Fo\"obj/File.obj\"",
+					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MTd /module:reference \"Module.pcm\" /module:export /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");

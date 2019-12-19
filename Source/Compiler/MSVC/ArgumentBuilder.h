@@ -89,9 +89,6 @@ namespace Soup::Compiler::MSVC
 				case LanguageStandard::CPP20:
 					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++latest");
 					AddParameter(commandArgs, Compiler_ArgumentParameter_Experimental, "module");
-					
-					AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "stdIfcDir");
-					AddValueWithQuotes(commandArgs, (toolsPath + Path("ifc/x64")).ToString());
 					break;
 				default:
 					throw std::runtime_error("Unknown language standard.");

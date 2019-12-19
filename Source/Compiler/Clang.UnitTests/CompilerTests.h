@@ -14,9 +14,9 @@ namespace Soup::Compiler::Clang::UnitTests
 		{
 			auto uut = Compiler(Path("C:/Clang/bin/"));
 			Assert::AreEqual(uut.GetName(), std::string_view("Clang"), "Verify name match expected.");
-			Assert::AreEqual(uut.GetObjectFileExtension(), std::string_view("o"), "Verify object file extension match expected.");
+			Assert::AreEqual(uut.GetObjectFileExtension(), std::string_view("obj"), "Verify object file extension match expected.");
 			Assert::AreEqual(uut.GetModuleFileExtension(), std::string_view("pcm"), "Verify module file extension match expected.");
-			Assert::AreEqual(uut.GetStaticLibraryFileExtension(), std::string_view("a"), "Verify static library file extension match expected.");
+			Assert::AreEqual(uut.GetStaticLibraryFileExtension(), std::string_view("lib"), "Verify static library file extension match expected.");
 			Assert::AreEqual(uut.GetDynamicLibraryFileExtension(), std::string_view("dll"), "Verify dynamic library file extension match expected.");
 		}
 
@@ -134,7 +134,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: Source: C:/Clang/bin/lld-link.exe /nologo /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
+					"Execute: Source: C:/Clang/bin/lld-link.exe /nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");

@@ -74,7 +74,7 @@ namespace Soup::Compiler::Clang::UnitTests
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
-				"/defaultlib:libcmt",
+				"/subsystem:console",
 				"/dll",
 				"/implib:\"Library.mock.lib\"",
 				"/machine:X64",
@@ -101,6 +101,7 @@ namespace Soup::Compiler::Clang::UnitTests
 
 			auto expected = std::vector<std::string>({
 				"/nologo",
+				"/subsystem:console",
 				"/machine:X64",
 				"/out:\"out/Something.exe\"",
 				"Library.mock.a",

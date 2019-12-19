@@ -7,9 +7,8 @@
 
 import SoupCore;
 import json11;
+import SoupTest;
 
-#include "../../Dependencies/SoupTest/Assert/SoupAssert.h"
-#include "../../Dependencies/SoupTest/Assert/RunTest.h"
 using namespace SoupTest;
 
 #include "Build\BuildEngineTests.gen.h"

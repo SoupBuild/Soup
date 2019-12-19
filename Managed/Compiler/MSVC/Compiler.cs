@@ -190,9 +190,6 @@ namespace Soup.Compiler.MSVC
                 case LanguageStandard.Latest:
                     commandArgs.Add("-std:c++latest");
                     commandArgs.Add("-experimental:module");
-
-                    commandArgs.Add($"/module:stdIfcDir");
-                    commandArgs.Add($"\"{Path.Combine(_toolsPath, "ifc/x64")}\"");
                     break;
                 default:
                     throw new NotSupportedException("Unknown language standard.");
