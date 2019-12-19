@@ -142,15 +142,15 @@ namespace Soup::Client
 
 			// Now build the current project
 			Log::Info("Begin Build:");
-			//auto startTime = std::chrono::high_resolution_clock::now();
+			auto startTime = std::chrono::high_resolution_clock::now();
 
 			auto buildManager = RecipeBuildManager(systemCompiler, runtimeCompiler);
 			buildManager.Execute(workingDirectory, recipe, arguments);
 
-			//auto endTime = std::chrono::high_resolution_clock::now();
-			//auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(startTime - endTime);
+			auto endTime = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime -startTime);
 
-			//Log::Info(std::to_string(duration.count()) + " seconds.");
+			Log::HighPriority(std::to_string(duration.count()) + " seconds.");
 		}
 
 	private:

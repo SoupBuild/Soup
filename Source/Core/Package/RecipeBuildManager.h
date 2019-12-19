@@ -52,12 +52,14 @@ namespace Soup
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
+				auto rootParentSet = std::set<std::string>();
 				projectId = BuildAllDependenciesRecursively(
 					projectId,
 					workingDirectory,
 					recipe,
 					arguments,
-					isSystemBuild);
+					isSystemBuild,
+					rootParentSet);
 				BuildRecipe(
 					projectId,
 					workingDirectory,
@@ -83,8 +85,13 @@ namespace Soup
 			const Path& workingDirectory,
 			const Recipe& recipe,
 			const RecipeBuildArguments& arguments,
-			bool isSystemBuild)
+			bool isSystemBuild,
+			const std::set<std::string>& parentSet)
 		{
+			// Add current package to the parent set when building child dependencies
+			auto activeParentSet = parentSet;
+			activeParentSet.insert(recipe.GetName());
+
 			if (recipe.HasDependencies())
 			{
 				for (auto dependecy : recipe.GetDependencies())
@@ -99,13 +106,21 @@ namespace Soup
 						throw std::runtime_error("BuildAllDependenciesRecursively: Failed to load dependency.");
 					}
 
+					// Ensure we do not have any circular dependencies
+					if (activeParentSet.contains(dependecyRecipe.GetName()))
+					{
+						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
+						throw std::runtime_error("BuildAllDependenciesRecursively: Circular dependency.");
+					}
+
 					// Build all recursive dependencies
 					projectId = BuildAllDependenciesRecursively(
 						projectId,
 						packagePath,
 						dependecyRecipe,
 						arguments,
-						isSystemBuild);
+						isSystemBuild,
+						activeParentSet);
 
 					// Build this dependecy
 					projectId = BuildRecipe(
@@ -131,13 +146,21 @@ namespace Soup
 						throw std::runtime_error("BuildAllDependenciesRecursively: Failed to load dependency.");
 					}
 
+					// Ensure we do not have any circular dependencies
+					if (activeParentSet.contains(dependecyRecipe.GetName()))
+					{
+						Log::Error("Found circular dev dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
+						throw std::runtime_error("BuildAllDependenciesRecursively: Circular dev dependency.");
+					}
+
 					// Build all recursive dependencies
 					projectId = BuildAllDependenciesRecursively(
 						projectId,
 						packagePath,
 						dependecyRecipe,
 						arguments,
-						true);
+						true,
+						activeParentSet);
 
 					// Build this dependecy
 					projectId = BuildRecipe(

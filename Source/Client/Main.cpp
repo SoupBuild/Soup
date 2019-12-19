@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#include <chrono>
 #include <iostream>
 #include <memory>
 #include <sstream>

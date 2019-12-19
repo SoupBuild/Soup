@@ -198,7 +198,7 @@ namespace Soup::Compiler::MSVC
 			// Generate source debug information
 			if (args.GenerateSourceDebugInfo)
 			{
-				AddParameter(commandArgs, "debug", "fastlink");
+				AddParameter(commandArgs, "debug", "full");
 			}
 
 			// Calculate object output file
