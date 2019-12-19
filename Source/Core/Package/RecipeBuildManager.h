@@ -5,7 +5,6 @@
 #pragma once
 #include "RecipeExtensions.h"
 #include "RecipeBuilder.h"
-#include "RecipeBuildGenerator.h"
 #include "IProcessManager.h"
 
 namespace Soup
@@ -23,8 +22,7 @@ namespace Soup
 		RecipeBuildManager(
 			std::shared_ptr<ICompiler> systemCompiler,
 			std::shared_ptr<ICompiler> runtimeCompiler) :
-			_builder(systemCompiler, runtimeCompiler),
-			_generator(systemCompiler)
+			_builder(systemCompiler, runtimeCompiler)
 		{
 			// Setup the core set of recipes that are required to break
 			// the circular build dependency from within the core command line executable
@@ -178,17 +176,9 @@ namespace Soup
 				}
 				else
 				{
-					// if (_knownInProcessRecipes.contains(recipe.GetName()))
-					// {
-						// Run the required builds in process
-						// This will break the circular requirments for the core build libraries
-						RunInProcessBuild(projectId, workingDirectory, recipe, arguments, isSystemBuild);
-					// }
-					// else
-					// {
-					// 	// Default to using a generated build executable
-					// 	RunGenerateBuild(projectId, workingDirectory, recipe);
-					// }
+					// Run the required builds in process
+					// This will break the circular requirments for the core build libraries
+					RunInProcessBuild(projectId, workingDirectory, recipe, arguments, isSystemBuild);
 
 					// Keep track of the packages we have already built
 					// TODO: Verify unique names
@@ -219,43 +209,6 @@ namespace Soup
 			_builder.Execute(packageRoot, recipe, arguments, isSystemBuild);
 		}
 
-		void RunGenerateBuild(
-			int projectId,
-			const Path& packageRoot,
-			const Recipe& recipe)
-		{
-			Log::Info("Running Generate Build");
-
-			// Gen the build
-			auto executablePath = _generator.EnsureExecutableBuilt(packageRoot, recipe);
-
-			// Invoke the build
-			Log::Info("Invoke Compiler: " + executablePath.ToString());
-			auto arguments = std::vector<std::string>();
-			auto result = IProcessManager::Current().Execute(
-				executablePath,
-				arguments,
-				packageRoot);
-
-			// TODO: Directly pipe to output and make sure there is no extra newline
-			if (!result.StdOut.empty())
-			{
-				Log::Info(result.StdOut);
-			}
-
-			if (!result.StdErr.empty())
-			{
-				Log::Error(result.StdErr);
-			}
-
-			if (result.ExitCode != 0)
-			{
-				// TODO: Return error code
-				Log::Info("Invoke Build Failed: " + std::to_string(result.ExitCode));
-				throw std::runtime_error("Invoke Build Failed!");
-			}
-		}
-
 		Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const
 		{
 			// If the path is relative then combine with the working directory
@@ -270,7 +223,6 @@ namespace Soup
 
 	private:
 		RecipeBuilder _builder;
-		RecipeBuildGenerator _generator;
 		std::set<std::string> _buildSet;
 		std::set<std::string> _knownInProcessRecipes;
 	};
