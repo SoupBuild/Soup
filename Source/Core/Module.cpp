@@ -1,8 +1,18 @@
-﻿export module SoupCore;
-// import Soup.BuildEx;
+﻿module;
+#include <array>
+#include <fstream>
+#include <filesystem>
+#include <iostream>
+#include <optional>
+#include <set>
+#include <sstream>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+export module SoupCore;
 import SoupPlatform;
 import SoupSyntax;
-import StandardLibrary;;
 import json11;
 
 #include "Logger\Log.h"

@@ -1,5 +1,4 @@
-import StandardLibrary;;
-import Antlr4.Runtime;
+import Antlr4Runtime;
 import SoupCore;
 
 #include "../../../SoupTest/Assert/SoupAssert.h"

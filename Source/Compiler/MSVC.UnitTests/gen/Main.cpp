@@ -1,4 +1,10 @@
-import StandardLibrary;;
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <sstream>
+#include <vector>
+
 import SoupCore;
 import SoupCompilerMSVC;
 

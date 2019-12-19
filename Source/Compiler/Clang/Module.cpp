@@ -1,7 +1,12 @@
-﻿
+﻿module;
+#include <memory>
+#include <stack>
+#include <stdexcept>
+#include <string>
+#include <sstream>
+#include <vector>
 export module SoupCompilerClang;
 
-import StandardLibrary;;
 import SoupCore;
 import SoupCompilerMSVC;
 

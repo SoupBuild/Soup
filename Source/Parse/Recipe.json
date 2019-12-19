@@ -3,7 +3,6 @@
     "version": "1.0.0",
     "type": "Executable",
     "dependencies": [
-        "../../Dependencies/SoupSTL/core/"
     ],
     "source": [
       "BitReader.cpp",

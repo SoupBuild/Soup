@@ -1,7 +1,11 @@
-﻿
+﻿module;
+#include <sstream>
+#include <stack>
+#include <stdexcept>
+#include <string>
+#include <vector>
 export module SoupCompilerMSVC;
 
-import StandardLibrary;;
 import SoupCore;
 
 #include "ArgumentBuilder.h"

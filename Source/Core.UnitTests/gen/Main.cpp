@@ -1,4 +1,10 @@
-import StandardLibrary;
+#include <iostream>
+#include <memory>
+#include <optional>
+#include <sstream>
+#include <string>
+#include <vector>
+
 import SoupCore;
 import json11;
 

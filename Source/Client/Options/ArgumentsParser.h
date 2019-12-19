@@ -172,7 +172,7 @@ namespace Soup::Client
 		template<typename T>
 		bool IsA()
 		{
-			return std::ext::are_equal(typeid(*_result), typeid(T));
+			return typeid(*_result) == typeid(T);
 		}
 
 		template<typename T>

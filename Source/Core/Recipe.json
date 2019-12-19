@@ -2,7 +2,6 @@
   "name": "SoupCore",
   "version": "0.1.0",
   "dependencies": [
-    "../../Dependencies/SoupSTL/Core/",
     "../../Dependencies/json11/",
     "../../Dependencies/SoupSyntax/Source/Syntax/",
     "../Platform/"

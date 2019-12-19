@@ -1,6 +1,4 @@
 
-import StandardLibrary;;
-
 #include "LLVMBitCodeParser.h"
 
 int main()

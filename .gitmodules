@@ -1,6 +1,3 @@
-[submodule "Dependencies/SoupSTL"]
-	path = Dependencies/SoupSTL
-	url = https://github.com/mwasplund/SoupSTL.git
 [submodule "Dependencies/SoupTest"]
 	path = Dependencies/SoupTest
 	url = https://github.com/mwasplund/SoupTest.git

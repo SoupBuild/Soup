@@ -2,7 +2,13 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-import StandardLibrary;;
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 import SoupCore;
 import SoupCompilerClang;
 import SoupCompilerMSVC;

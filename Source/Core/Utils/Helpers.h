@@ -75,7 +75,7 @@ namespace Soup
 		timeInfo.tm_hour = hour;
 		timeInfo.tm_min = minutes;
 
-		std::time_t time = std::ext::mktime(&timeInfo);
+		std::time_t time = std::mktime(&timeInfo);
 		return time;
 	}
 }
