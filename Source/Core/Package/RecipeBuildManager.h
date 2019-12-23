@@ -4,13 +4,14 @@
 
 #pragma once
 #include "RecipeExtensions.h"
-#include "RecipeBuilder.h"
+#include "Build/System/BuildSystem.h"
+#include "Build/Tasks/RecipeBuildTask.h"
 
 namespace Soup
 {
 	/// <summary>
 	/// The recipe build manager that knows how to perform the correct build for a recipe 
-	/// and all of its developer and runtime dependencies
+	/// and all of its development and runtime dependencies
 	/// </summary>
 	export class RecipeBuildManager
 	{
@@ -21,15 +22,9 @@ namespace Soup
 		RecipeBuildManager(
 			std::shared_ptr<ICompiler> systemCompiler,
 			std::shared_ptr<ICompiler> runtimeCompiler) :
-			_builder(systemCompiler, runtimeCompiler)
+			_systemCompiler(systemCompiler),
+			_runtimeCompiler(runtimeCompiler)
 		{
-			// Setup the core set of recipes that are required to break
-			// the circular build dependency from within the core command line executable
-			// TODO: Normalize uppercase?
-			_knownInProcessRecipes = std::set<std::string>({
-				"std.core",
-				"Soup.Core",
-			});
 		}
 
 		/// <summary>
@@ -228,7 +223,21 @@ namespace Soup
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild)
 		{
-			_builder.Execute(packageRoot, recipe, arguments, isSystemBuild);
+			// Create a new build system for the requested build
+			auto buildSystem = BuildSystem();
+
+			// Register the single build task
+			auto recipeBuildTask = std::make_shared<RecipeBuildTask>(
+				_systemCompiler,
+				_runtimeCompiler,
+				packageRoot,
+				recipe,
+				arguments,
+				isSystemBuild);
+			buildSystem.RegisterTask(recipeBuildTask);
+
+			// Run the build
+			buildSystem.Execute();
 		}
 
 		Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const
@@ -244,8 +253,8 @@ namespace Soup
 		}
 
 	private:
-		RecipeBuilder _builder;
+		std::shared_ptr<ICompiler> _systemCompiler;
+		std::shared_ptr<ICompiler> _runtimeCompiler;
 		std::set<std::string> _buildSet;
-		std::set<std::string> _knownInProcessRecipes;
 	};
 }

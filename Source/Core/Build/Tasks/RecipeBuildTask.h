@@ -5,25 +5,31 @@
 #pragma once
 #include "RecipeExtensions.h"
 #include "RecipeBuildArguments.h"
-#include "Build/BuildSystem.h"
 
 namespace Soup
 {
 	/// <summary>
-	/// The recipe builder that knows how to build a single recipe
-	/// Used either directly inside Soup builds or in the generated build executable
+	/// The recipe build task that knows how to build a single recipe
 	/// </summary>
-	export class RecipeBuilder
+	export class RecipeBuildTask : public BuildEx::IBuildTask
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RecipeBuilder"/> class.
+		/// Initializes a new instance of the <see cref="RecipeBuildTask"/> class.
 		/// </summary>
-		RecipeBuilder(
+		RecipeBuildTask(
 			std::shared_ptr<ICompiler> systemCompiler,
-			std::shared_ptr<ICompiler> runtimeCompiler) :
+			std::shared_ptr<ICompiler> runtimeCompiler,
+			const Path& workingDirectory,
+			const Recipe& recipe,
+			const RecipeBuildArguments& arguments,
+			bool isSystemBuild) :
 			_systemCompiler(std::move(systemCompiler)),
-			_runtimeCompiler(std::move(runtimeCompiler))
+			_runtimeCompiler(std::move(runtimeCompiler)),
+			_workingDirectory(workingDirectory),
+			_recipe(recipe),
+			_arguments(arguments),
+			_isSystemBuild(isSystemBuild)
 		{
 			if (_systemCompiler == nullptr)
 				throw std::runtime_error("Argument null: systemCompiler");
@@ -32,36 +38,40 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Get the task name
+		/// </summary>
+		const char* GetName() override final
+		{
+			return "RecipeBuild";
+		}
+
+		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(
-			const Path& workingDirectory,
-			const Recipe& recipe,
-			const RecipeBuildArguments& arguments,
-			bool isSystemBuild)
+		void Execute() override final
 		{
 			std::shared_ptr<ICompiler> activeCompiler = nullptr;
-			if (isSystemBuild)
+			if (_isSystemBuild)
 			{
-				Log::HighPriority("System Build '" + recipe.GetName() + "'");
+				Log::HighPriority("System Build '" + _recipe.GetName() + "'");
 				activeCompiler = _systemCompiler;
 			}
 			else
 			{
-				Log::HighPriority("Build '" + recipe.GetName() + "'");
+				Log::HighPriority("Build '" + _recipe.GetName() + "'");
 				activeCompiler = _runtimeCompiler;
 			}
 
 			// Run all build tasks
 			auto buildSystem = BuildSystem();
-			if (recipe.HasDevDependencies())
+			if (_recipe.HasDevDependencies())
 			{
-				for (auto dependecy : recipe.GetDevDependencies())
+				for (auto dependecy : _recipe.GetDevDependencies())
 				{
-					auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
+					auto packagePath = RecipeExtensions::GetPackageReferencePath(_workingDirectory, dependecy);
 					auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 						packagePath,
-						RecipeExtensions::GetBinaryDirectory(*_systemCompiler, arguments.Flavor),
+						RecipeExtensions::GetBinaryDirectory(*_systemCompiler, _arguments.Flavor),
 						std::string(_systemCompiler->GetDynamicLibraryFileExtension()));
 					
 					RunBuildExtension(libraryPath, buildSystem);
@@ -70,43 +80,43 @@ namespace Soup
 
 			// Add all dependency packages modules references
 			auto includeModules = std::vector<Path>();
-			if (recipe.GetLanguageVersion() == RecipeLanguageVersion::CPP20)
+			if (_recipe.GetLanguageVersion() == RecipeLanguageVersion::CPP20)
 			{
 				// TODO: MSVC requires the entire closure of interfaces
 				bool isRecursive = activeCompiler->GetName() == "MSVC";
 				RecipeExtensions::GenerateDependecyModuleIncludeClosure(
 					*activeCompiler,
-					arguments.Flavor,
-					workingDirectory,
-					recipe,
+					_arguments.Flavor,
+					_workingDirectory,
+					_recipe,
 					includeModules,
 					isRecursive);
 			}
 
 			// Add the dependency static library closure to link if targeting an executable or dynamic library
-			std::vector<Path> linkLibraries = buildSystem.GetStaticLibraries();
+			std::vector<Path> linkLibraries = std::vector<Path>();
 			std::vector<Path> externalLinkLibraries = std::vector<Path>();
-			if (recipe.GetType() == RecipeType::Executable || recipe.GetType() == RecipeType::DynamicLibrary)
+			if (_recipe.GetType() == RecipeType::Executable || _recipe.GetType() == RecipeType::DynamicLibrary)
 			{
 				RecipeExtensions::GenerateDependecyStaticLibraryClosure(
 					*activeCompiler,
-					arguments.Flavor,
-					workingDirectory,
-					recipe,
+					_arguments.Flavor,
+					_workingDirectory,
+					_recipe,
 					linkLibraries);
 
 				// Add the platform libraries
 				externalLinkLibraries.insert(
 					externalLinkLibraries.end(),
-					arguments.PlatformLibraries.begin(),
-					arguments.PlatformLibraries.end());
+					_arguments.PlatformLibraries.begin(),
+					_arguments.PlatformLibraries.end());
 			}
 
 			// Combine the include paths from the recipe and the system
-			auto includePaths = buildSystem.GetIncludePaths();
-			if (recipe.HasIncludePaths())
+			auto includePaths = std::vector<Path>();
+			if (_recipe.HasIncludePaths())
 			{
-				auto recipeIncludePaths = recipe.GetIncludePathsAsPath();
+				auto recipeIncludePaths = _recipe.GetIncludePathsAsPath();
 				includePaths.insert(
 					includePaths.end(),
 					recipeIncludePaths.begin(),
@@ -116,28 +126,28 @@ namespace Soup
 			// Add the platform include paths
 			includePaths.insert(
 				includePaths.end(),
-				arguments.PlatformIncludePaths.begin(),
-				arguments.PlatformIncludePaths.end());
+				_arguments.PlatformIncludePaths.begin(),
+				_arguments.PlatformIncludePaths.end());
 
 			// Load the extra library paths provided to the build system
-			auto libraryPaths = buildSystem.GetLibraryPaths();
+			auto libraryPaths = std::vector<Path>();
 
 			// Add the platform library paths
 			libraryPaths.insert(
 				libraryPaths.end(),
-				arguments.PlatformLibraryPaths.begin(),
-				arguments.PlatformLibraryPaths.end());
+				_arguments.PlatformLibraryPaths.begin(),
+				_arguments.PlatformLibraryPaths.end());
 
 			// Combine the defines with the default set and the platform
-			auto preprocessorDefinitions = buildSystem.GetPreprocessorDefinitions();
+			auto preprocessorDefinitions = std::vector<std::string>();
 			preprocessorDefinitions.insert(
 				preprocessorDefinitions.end(),
-				arguments.PlatformPreprocessorDefinitions.begin(),
-				arguments.PlatformPreprocessorDefinitions.end());
+				_arguments.PlatformPreprocessorDefinitions.begin(),
+				_arguments.PlatformPreprocessorDefinitions.end());
 			preprocessorDefinitions.push_back("SOUP_BUILD");
-			if (recipe.HasDefines())
+			if (_recipe.HasDefines())
 			{
-				auto& recipeDefines = recipe.GetDefines();
+				auto& recipeDefines = _recipe.GetDefines();
 				preprocessorDefinitions.insert(
 					preprocessorDefinitions.end(),
 					recipeDefines.begin(),
@@ -146,28 +156,28 @@ namespace Soup
 
 			// Build up arguments to build this individual recipe
 			auto buildArguments = BuildArguments();
-			buildArguments.TargetName = recipe.GetName();
-			buildArguments.WorkingDirectory = workingDirectory;
+			buildArguments.TargetName = _recipe.GetName();
+			buildArguments.WorkingDirectory = _workingDirectory;
 			buildArguments.ObjectDirectory = RecipeExtensions::GetObjectDirectory(
 				*activeCompiler,
-				arguments.Flavor);
+				_arguments.Flavor);
 			buildArguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(
 				*activeCompiler,
-				arguments.Flavor);
+				_arguments.Flavor);
 			buildArguments.ModuleInterfaceSourceFile = Path();
-			buildArguments.SourceFiles = recipe.GetSourceAsPath();
+			buildArguments.SourceFiles = _recipe.GetSourceAsPath();
 			buildArguments.IncludeModules = std::move(includeModules);
 			buildArguments.LinkLibraries = std::move(linkLibraries);
 			buildArguments.ExternalLinkLibraries = std::move(externalLinkLibraries);
-			buildArguments.IsIncremental = !arguments.ForceRebuild;
+			buildArguments.IsIncremental = !_arguments.ForceRebuild;
 			buildArguments.GenerateSourceDebugInfo = false;
 			buildArguments.PreprocessorDefinitions = std::move(preprocessorDefinitions);
 			buildArguments.IncludeDirectories = std::move(includePaths);
 			buildArguments.LibraryPaths = std::move(libraryPaths);
 
-			if (recipe.HasPublic())
+			if (_recipe.HasPublic())
 			{
-				buildArguments.ModuleInterfaceSourceFile = recipe.GetPublicAsPath();
+				buildArguments.ModuleInterfaceSourceFile = _recipe.GetPublicAsPath();
 				
 				// TODO: Clang requires annoying cppm extension
 				if (_runtimeCompiler->GetName() == "Clang")
@@ -177,12 +187,12 @@ namespace Soup
 			}
 
 			// Set the correct optimization level for the requested flavor
-			if (arguments.Flavor == "debug")
+			if (_arguments.Flavor == "debug")
 			{
 				buildArguments.OptimizationLevel = BuildOptimizationLevel::None;
 				buildArguments.GenerateSourceDebugInfo = true;
 			}
-			else if (arguments.Flavor == "release")
+			else if (_arguments.Flavor == "release")
 			{
 				buildArguments.OptimizationLevel = BuildOptimizationLevel::Speed;
 			}
@@ -193,7 +203,7 @@ namespace Soup
 			}
 
 			// Convert the recipe type to the required build type
-			switch (recipe.GetType())
+			switch (_recipe.GetType())
 			{
 				case RecipeType::StaticLibrary:
 					buildArguments.TargetType = BuildTargetType::StaticLibrary;
@@ -209,7 +219,7 @@ namespace Soup
 			}
 
 			// Convert the recipe language version to the required build language
-			switch (recipe.GetLanguageVersion())
+			switch (_recipe.GetLanguageVersion())
 			{
 				case RecipeLanguageVersion::CPP11:
 					buildArguments.LanguageStandard = LanguageStandard::CPP11;
@@ -232,14 +242,14 @@ namespace Soup
 			auto wasBuilt = buildEngine.Execute(buildArguments);
 
 			// Build up the runtime dependencies
-			if (recipe.GetType() == RecipeType::Executable || recipe.GetType() == RecipeType::DynamicLibrary)
+			if (_recipe.GetType() == RecipeType::Executable || _recipe.GetType() == RecipeType::DynamicLibrary)
 			{
 				std::vector<Path> runtimeDependencies;
 				RecipeExtensions::GenerateDependecyDynamicLibraryClosure(
 					*activeCompiler,
-					arguments.Flavor,
-					workingDirectory,
-					recipe,
+					_arguments.Flavor,
+					_workingDirectory,
+					_recipe,
 					runtimeDependencies);
 
 				for (auto source : runtimeDependencies)
@@ -279,5 +289,9 @@ namespace Soup
 	private:
 		std::shared_ptr<ICompiler> _systemCompiler;
 		std::shared_ptr<ICompiler> _runtimeCompiler;
+		Path _workingDirectory;
+		Recipe _recipe;
+		RecipeBuildArguments _arguments;
+		bool _isSystemBuild;
 	};
 }
