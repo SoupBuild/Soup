@@ -16,7 +16,7 @@
 #ifdef max
 #undef max
 #endif
-export module Dubious;
+export module Opal;
 
 #include "Core/Path.h"
 #include "Core/SemanticVersion.h"

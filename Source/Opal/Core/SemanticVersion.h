@@ -3,7 +3,7 @@
 // </copyright>
 #pragma once
 
-namespace Dubious
+namespace Opal
 {
 	/// <summary>
 	/// The semantic version class

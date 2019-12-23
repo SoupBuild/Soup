@@ -8,10 +8,10 @@
 
 export module SoupCompilerMSVC;
 
-import Dubious;
+import Opal;
 import SoupCore;
 
-using namespace Dubious;
+using namespace Opal;
 
 #include "ArgumentBuilder.h"
 #include "Compiler.h"

@@ -4,7 +4,7 @@
   "dependencies": [
     "../../Dependencies/json11/",
     "../../Dependencies/SoupSyntax/Source/Syntax/",
-    "../Dubious/"
+    "../Opal/"
   ],
   "public": "Module.cpp",
   "source": [],

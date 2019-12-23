@@ -3,7 +3,7 @@
 // </copyright>
 #pragma once
 
-namespace Dubious
+namespace Opal
 {
 	/// <summary>
 	/// A container for a path string

@@ -5,13 +5,13 @@
 #include <sstream>
 #include <vector>
 
-import Dubious;
+import Opal;
 import SoupCore;
 import SoupCompilerMSVC;
 import SoupTest;
 
-using namespace Dubious;
-using namespace Dubious::System;
+using namespace Opal;
+using namespace Opal::System;
 using namespace SoupTest;
 
 #include "CompilerArgumentBuilderTests.gen.h"

@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Dubious::System
+namespace Opal::System
 {
 	struct SmartHandle
 	{

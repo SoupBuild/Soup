@@ -9,11 +9,11 @@
 
 export module SoupCompilerClang;
 
-import Dubious;
+import Opal;
 import SoupCore;
 import SoupCompilerMSVC;
 
-using namespace Dubious;
+using namespace Opal;
 
 #include "ArgumentBuilder.h"
 #include "Compiler.h"

@@ -6,7 +6,7 @@
 #include "IProcessManager.h"
 #include "ProcessManager.h"
 
-namespace Dubious::System
+namespace Opal::System
 {
 	/// <summary>
 	/// A platform specific process executable using system

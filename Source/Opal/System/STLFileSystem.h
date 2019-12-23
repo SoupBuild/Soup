@@ -5,7 +5,7 @@
 #pragma once
 #include "IFileSystem.h"
 
-namespace Dubious::System
+namespace Opal::System
 {
 	/// <summary>
 	/// The standard library file system

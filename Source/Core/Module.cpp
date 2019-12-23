@@ -13,11 +13,11 @@
 
 export module SoupCore;
 
-import Dubious;
+import Opal;
 import SoupSyntax;
 import json11;
 
-using namespace Dubious;
+using namespace Opal;
 
 #include "Logger\Log.h"
 #include "Utils\Helpers.h"

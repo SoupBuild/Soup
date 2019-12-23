@@ -5,13 +5,13 @@
 #include <string>
 #include <vector>
 
-import Dubious;
+import Opal;
 import SoupCore;
 import json11;
 import SoupTest;
 
-using namespace Dubious;
-using namespace Dubious::System;
+using namespace Opal;
+using namespace Opal::System;
 using namespace SoupTest;
 
 #include "Build\BuildEngineTests.gen.h"

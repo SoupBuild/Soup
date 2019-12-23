@@ -5,7 +5,7 @@
 #pragma once
 #include "IProcessManager.h"
 
-namespace Dubious::System
+namespace Opal::System
 {
 	/// <summary>
 	/// The mock process manager
