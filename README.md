@@ -16,3 +16,9 @@ Because C++ is a fully compiled language (not interpreted nor Just In-Time Compi
 
 ## Contributing
 Soup is currently in active prototyping and testing. If you are interested in contributing to the project feel free to submit a PR or file an issue with your suggestion. Otherwise feel free to download the latest release to give it a try. We are always looking for feedback to be the best possibly solution for the largest audience.
+
+
+## FAQ
+
+### What about a package repository?
+Absolutely, package management and a repository of publicly available packages is definitely on the backlog. Because we have limited time we have put this work off for now while ensuring that we can easily add this in the future. The general idea is that any directory reference can be replaced with a name/version pair that will be pulled from a registered feed and built with the same common properties as all local packages.
