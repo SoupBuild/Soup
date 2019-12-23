@@ -20,14 +20,6 @@ namespace Opal
 		static constexpr std::string_view ParentDirectory = "..";
 
 	public:
-		// TODO: Move to filesystem
-		static Path GetCurrentDirectory2()
-		{
-			auto current = std::filesystem::current_path();
-			return Path(current.string());
-		}
-
-	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Path"/> class.
 		/// </summary>

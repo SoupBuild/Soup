@@ -21,9 +21,18 @@ namespace Opal::System
 		}
 
 		/// <summary>
+		/// Gets the current directory for the running processes
+		/// </summary>
+		Path GetCurrentDirectory2() override final
+		{
+			auto current = std::filesystem::current_path();
+			return Path(current.string());
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the directory/file exists
 		/// </summary>
-		virtual bool Exists(const Path& path) override final
+		bool Exists(const Path& path) override final
 		{
 			return std::filesystem::exists(path.ToString());
 		}
@@ -31,7 +40,7 @@ namespace Opal::System
 		/// <summary>
 		/// Get the last write time of the file/directory
 		/// </summary>
-		virtual std::time_t GetLastWriteTime(const Path& path) override final
+		std::time_t GetLastWriteTime(const Path& path) override final
 		{
 			#if defined ( _WIN32 )
 				struct _stat64 fileInfo;
@@ -48,7 +57,7 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
-		virtual std::shared_ptr<std::istream> OpenRead(const Path& path) override final
+		std::shared_ptr<std::istream> OpenRead(const Path& path) override final
 		{
 			auto file = std::make_shared<std::fstream>(path.ToString(), std::fstream::in);
 			if (file->fail())
@@ -63,7 +72,7 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		virtual std::shared_ptr<std::ostream> OpenWrite(const Path& path) override final
+		std::shared_ptr<std::ostream> OpenWrite(const Path& path) override final
 		{
 			auto file = std::make_shared<std::fstream>(path.ToString(), std::fstream::out);
 			return file;
@@ -72,7 +81,7 @@ namespace Opal::System
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
-		virtual void CopyFile2(const Path& source, const Path& destination) override final
+		void CopyFile2(const Path& source, const Path& destination) override final
 		{
 			std::filesystem::copy(
 				source.ToString(),
@@ -83,7 +92,7 @@ namespace Opal::System
 		/// <summary>
 		/// Create the directory at the requested path
 		/// </summary>
-		virtual void CreateDirectory2(const Path& path) override final
+		void CreateDirectory2(const Path& path) override final
 		{
 			std::filesystem::create_directories(path.ToString());
 		}

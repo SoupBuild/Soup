@@ -33,6 +33,11 @@ namespace Opal::System
 
 	public:
 		/// <summary>
+		/// Gets the current directory for the running processes
+		/// </summary>
+		virtual Path GetCurrentDirectory2() = 0;
+
+		/// <summary>
 		/// Gets a value indicating whether the directory/file exists
 		/// </summary>
 		virtual bool Exists(const Path& path) = 0;

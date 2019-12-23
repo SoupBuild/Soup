@@ -51,7 +51,7 @@ namespace Soup::Client
 				throw std::runtime_error("Unknown compiler.");
 			}
 
-			auto workingDirectory = Path::GetCurrentDirectory2();
+			auto workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);

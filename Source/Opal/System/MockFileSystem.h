@@ -86,9 +86,19 @@ namespace Opal::System
 		}
 
 		/// <summary>
+		/// Gets the current directory for the running processes
+		/// </summary>
+		Path GetCurrentDirectory2() override final
+		{
+			_requests.push_back("GetCurrentDirectory");
+
+			return Path("C:/Current/");
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the directory/file exists
 		/// </summary>
-		virtual bool Exists(const Path& path) override final
+		bool Exists(const Path& path) override final
 		{
 			std::stringstream message;
 			message << "Exists: " << path.ToString();
@@ -101,7 +111,7 @@ namespace Opal::System
 		/// <summary>
 		/// Get the last write time of the file/directory
 		/// </summary>
-		virtual std::time_t GetLastWriteTime(const Path& path) override final
+		std::time_t GetLastWriteTime(const Path& path) override final
 		{
 			std::stringstream message;
 			message << "GetLastWriteTime: " << path.ToString();
@@ -122,7 +132,7 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
-		virtual std::shared_ptr<std::istream> OpenRead(const Path& path) override final
+		std::shared_ptr<std::istream> OpenRead(const Path& path) override final
 		{
 			std::stringstream message;
 			message << "OpenRead: " << path.ToString();
@@ -143,7 +153,7 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		virtual std::shared_ptr<std::ostream> OpenWrite(const Path& path) override final
+		std::shared_ptr<std::ostream> OpenWrite(const Path& path) override final
 		{
 			std::stringstream message;
 			message << "OpenWrite: " << path.ToString();
@@ -165,7 +175,7 @@ namespace Opal::System
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
-		virtual void CopyFile2(const Path& source, const Path& destination) override final
+		void CopyFile2(const Path& source, const Path& destination) override final
 		{
 			std::stringstream message;
 			message << "CopyFile: [" << source.ToString() << "] -> [" << destination.ToString() << "]";
@@ -175,7 +185,7 @@ namespace Opal::System
 		/// <summary>
 		/// Create the directory at the requested path
 		/// </summary>
-		virtual void CreateDirectory2(const Path& path) override final
+		void CreateDirectory2(const Path& path) override final
 		{
 			std::stringstream message;
 			message << "CreateDirectory: " << path.ToString();
