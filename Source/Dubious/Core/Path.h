@@ -3,7 +3,7 @@
 // </copyright>
 #pragma once
 
-namespace Soup
+namespace Dubious
 {
 	/// <summary>
 	/// A container for a path string
@@ -20,7 +20,8 @@ namespace Soup
 		static constexpr std::string_view ParentDirectory = "..";
 
 	public:
-		static Path GetCurrentDirectory()
+		// TODO: Move to filesystem
+		static Path GetCurrentDirectory2()
 		{
 			auto current = std::filesystem::current_path();
 			return Path(current.string());

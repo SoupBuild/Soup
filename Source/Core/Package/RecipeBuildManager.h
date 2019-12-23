@@ -5,7 +5,6 @@
 #pragma once
 #include "RecipeExtensions.h"
 #include "RecipeBuilder.h"
-#include "IProcessManager.h"
 
 namespace Soup
 {

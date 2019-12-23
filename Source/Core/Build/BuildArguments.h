@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "Path.h"
 #include "CompileArguments.h"
 
 namespace Soup

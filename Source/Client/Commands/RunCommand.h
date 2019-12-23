@@ -51,7 +51,7 @@ namespace Soup::Client
 				throw std::runtime_error("Unknown compiler.");
 			}
 
-			auto workingDirectory = Path::GetCurrentDirectory();
+			auto workingDirectory = Path::GetCurrentDirectory2();
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);
@@ -74,14 +74,14 @@ namespace Soup::Client
 			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(*runtimeCompiler, configuration);
 			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
 			Log::Info(executablePath.ToString());
-			if (!IFileSystem::Current().Exists(executablePath))
+			if (!System::IFileSystem::Current().Exists(executablePath))
 			{
 				Log::Error("The executable does not exist");
 				return;
 			}
 
 			// Execute the requested target
-			auto result = IProcessManager::Current().Execute(
+			auto result = System::IProcessManager::Current().Execute(
 				executablePath,
 				_options.Arguments,
 				workingDirectory);

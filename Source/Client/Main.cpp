@@ -10,9 +10,12 @@
 #include <string>
 #include <vector>
 
+import Dubious;
 import SoupCore;
 import SoupCompilerClang;
 import SoupCompilerMSVC;
+
+using namespace Dubious;
 
 #include "Program.h"
 

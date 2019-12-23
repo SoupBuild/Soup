@@ -5,7 +5,7 @@
 #pragma once
 #include "IFileSystem.h"
 
-namespace Soup
+namespace Dubious::System
 {
 	export struct MockFileState
 	{
@@ -165,7 +165,7 @@ namespace Soup
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
-		virtual void CopyFile(const Path& source, const Path& destination) override final
+		virtual void CopyFile2(const Path& source, const Path& destination) override final
 		{
 			std::stringstream message;
 			message << "CopyFile: [" << source.ToString() << "] -> [" << destination.ToString() << "]";
@@ -175,7 +175,7 @@ namespace Soup
 		/// <summary>
 		/// Create the directory at the requested path
 		/// </summary>
-		virtual void CreateDirectory(const Path& path) override final
+		virtual void CreateDirectory2(const Path& path) override final
 		{
 			std::stringstream message;
 			message << "CreateDirectory: " << path.ToString();

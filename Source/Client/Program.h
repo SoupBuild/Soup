@@ -50,8 +50,8 @@ namespace Soup::Client
 						false));
 
 				// Setup the real servicess
-				IFileSystem::Register(std::make_shared<STLFileSystem>());
-				IProcessManager::Register(std::make_shared<PlatformProcessManager>());
+				System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
+				System::IProcessManager::Register(std::make_shared<System::PlatformProcessManager>());
 
 				// Attempt to parse the provided arguments
 				Log::Diag("ProgramStart");

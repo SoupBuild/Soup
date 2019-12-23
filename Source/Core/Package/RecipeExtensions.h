@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "IFileSystem.h"
 #include "RecipeJson.h"
 
 namespace Soup
@@ -22,14 +21,14 @@ namespace Soup
 			Recipe& result)
 		{
 			// Verify the requested file exists
-			if (!IFileSystem::Current().Exists(recipeFile))
+			if (!System::IFileSystem::Current().Exists(recipeFile))
 			{
 				Log::Info("Recipe file does not exist.");
 				return false;
 			}
 
 			// Open the file to read from
-			auto file = IFileSystem::Current().OpenRead(recipeFile);
+			auto file = System::IFileSystem::Current().OpenRead(recipeFile);
 
 			// Read the contents of the recipe file
 			try
@@ -71,7 +70,7 @@ namespace Soup
 			Recipe& recipe)
 		{
 			// Open the file to write to
-			auto file = IFileSystem::Current().OpenWrite(recipeFile);
+			auto file = System::IFileSystem::Current().OpenWrite(recipeFile);
 
 			// Write the recipe to the file stream
 			RecipeJson::Serialize(recipe, *file);

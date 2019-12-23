@@ -31,7 +31,7 @@ namespace Soup::Client
 			Log::Info("The initialize utility will walk through the creation of the most basic Console recipe.\n");
 
 			// Use the current directory as the default names
-			auto workingDirectory = Path::GetCurrentDirectory();
+			auto workingDirectory = Path::GetCurrentDirectory2();
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);

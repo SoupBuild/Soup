@@ -4,8 +4,9 @@
 
 #pragma once
 #include "IProcessManager.h"
+#include "ProcessManager.h"
 
-namespace Soup
+namespace Dubious::System
 {
 	/// <summary>
 	/// A platform specific process executable using system
@@ -28,7 +29,7 @@ namespace Soup
 			try
 			{
 				auto buffer = std::array<char, 1024>();
-				Platform::ProcessManager::GetProcessFileName(buffer.data(), buffer.size());
+				ProcessManager::GetProcessFileName(buffer.data(), buffer.size());
 				return Path(std::string(buffer.data(), buffer.size()));
 			}
 			catch (unsigned long error)
@@ -57,7 +58,6 @@ namespace Soup
 				argumentsValue << " " << value;
 
 			std::string argumentsString = argumentsValue.str();
-			Log::Info(workingDirectory.ToString() + ": " + argumentsString);
 
 			// Aggregate all the output
 			std::stringstream stdOut;
@@ -76,7 +76,7 @@ namespace Soup
 				stdErr << value;
 			};
 
-			int exitCode = Platform::ProcessManager::Execute(
+			int exitCode = ProcessManager::Execute(
 				application.ToString().c_str(),
 				const_cast<char*>(argumentsString.c_str()),
 				workingDirectory.ToString().c_str(),

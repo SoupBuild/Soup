@@ -6,7 +6,6 @@
 #include "PackageReference.h"
 #include "RecipeType.h"
 #include "RecipeLanguageVersion.h"
-#include "SemanticVersion.h"
 
 namespace Soup
 {

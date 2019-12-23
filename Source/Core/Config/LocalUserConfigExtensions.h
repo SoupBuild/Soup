@@ -3,8 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "IFileSystem.h"
-#include "IProcessManager.h"
 #include "LocalUserConfigJson.h"
 
 namespace Soup
@@ -20,7 +18,7 @@ namespace Soup
 		/// </summary>
 		static Path GetLocalUserConfigFilePath()
 		{
-			auto result = IProcessManager::Current().GetProcessFileName();
+			auto result = System::IProcessManager::Current().GetProcessFileName();
 			result.SetFilename(Constants::LocalUserConfigFileName);
 			return result;
 		}
@@ -33,13 +31,13 @@ namespace Soup
 			// Verify the requested file exists
 			auto localUserConfigFile = GetLocalUserConfigFilePath();
 			Log::Info("LocalConfig: " + localUserConfigFile.ToString());
-			if (!IFileSystem::Current().Exists(localUserConfigFile))
+			if (!System::IFileSystem::Current().Exists(localUserConfigFile))
 			{
 				throw std::runtime_error("LocalUserConfig file does not exist.");
 			}
 
 			// Open the file to read from
-			auto file = IFileSystem::Current().OpenRead(localUserConfigFile);
+			auto file = System::IFileSystem::Current().OpenRead(localUserConfigFile);
 
 			// Read the contents of the LocalUserConfig file
 			try

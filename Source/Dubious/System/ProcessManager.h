@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Platform
+namespace Dubious::System
 {
 	/// <summary>
 	/// A platform specific process executable using system

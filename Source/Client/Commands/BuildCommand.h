@@ -57,7 +57,7 @@ namespace Soup::Client
 			if (_options.Path.empty())
 			{
 				// Buildin the current directory
-				workingDirectory = Path::GetCurrentDirectory();
+				workingDirectory = Path::GetCurrentDirectory2();
 			}
 			else
 			{
@@ -66,7 +66,7 @@ namespace Soup::Client
 				// Check if this is relative to current directory
 				if (!workingDirectory.HasRoot())
 				{
-					workingDirectory = Path::GetCurrentDirectory() + workingDirectory;
+					workingDirectory = Path::GetCurrentDirectory2() + workingDirectory;
 				}
 			}
 			

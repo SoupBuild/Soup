@@ -5,7 +5,7 @@
 #pragma once
 #include "IProcessManager.h"
 
-namespace Soup
+namespace Dubious::System
 {
 	/// <summary>
 	/// The mock process manager

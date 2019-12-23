@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Platform
+namespace Dubious::System
 {
 	/// <summary>
 	/// A platform specific dynamic library manager
@@ -49,7 +49,7 @@ namespace Soup::Platform
 
 			auto names = (BYTE**)((size_t)_handle + exports->AddressOfNames);
 			for (int i = 0; i < exports->NumberOfNames; i++)
-				callback((char*)_handle + (int)names[i]);
+				callback((char*)_handle + (size_t)names[i]);
 		}
 
 		/// <summary>

@@ -3,9 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "Path.h"
 
-namespace Soup
+namespace Dubious::System
 {
 	export struct ProcessResult
 	{

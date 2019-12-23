@@ -102,7 +102,7 @@ namespace Soup::Compiler::MSVC
 
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args);
 
-			auto result = IProcessManager::Current().Execute(
+			auto result = System::IProcessManager::Current().Execute(
 				executablePath,
 				commandArgs,
 				args.RootDirectory);
@@ -133,7 +133,7 @@ namespace Soup::Compiler::MSVC
 			auto executablePath = _toolsPath + _compilerExecutable;
 			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, _toolsPath);
 
-			auto result = IProcessManager::Current().Execute(
+			auto result = System::IProcessManager::Current().Execute(
 				executablePath,
 				commandArgs,
 				args.RootDirectory);
@@ -196,7 +196,7 @@ namespace Soup::Compiler::MSVC
 
 			auto compiledModuleCommandArgs =
 				ArgumentBuilder::BuildCompilerArguments(compiledModuleArgs, _toolsPath);
-			auto result = IProcessManager::Current().Execute(
+			auto result = System::IProcessManager::Current().Execute(
 				executablePath,
 				compiledModuleCommandArgs,
 				args.RootDirectory);

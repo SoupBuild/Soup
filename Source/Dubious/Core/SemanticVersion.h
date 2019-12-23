@@ -1,9 +1,9 @@
-﻿// <copyright file="SemanticVersion.hs" company="Soup">
+﻿// <copyright file="SemanticVersion.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 #pragma once
 
-namespace Soup
+namespace Dubious
 {
 	/// <summary>
 	/// The semantic version class

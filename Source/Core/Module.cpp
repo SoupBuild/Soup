@@ -1,7 +1,7 @@
 ﻿module;
+
 #include <array>
-#include <fstream>
-#include <filesystem>
+#include <ctime>
 #include <iostream>
 #include <optional>
 #include <set>
@@ -10,10 +10,14 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
 export module SoupCore;
-import SoupPlatform;
+
+import Dubious;
 import SoupSyntax;
 import json11;
+
+using namespace Dubious;
 
 #include "Logger\Log.h"
 #include "Utils\Helpers.h"
@@ -33,9 +37,3 @@ import json11;
 #include "Package\RecipeBuildManager.h"
 #include "Package\RecipeExtensions.h"
 #include "Package\RecipeJson.h"
-#include "Utils\MockFileSystem.h"
-#include "Utils\MockProcessManager.h"
-#include "Utils\Path.h"
-#include "Utils\PlatformProcessManager.h"
-#include "Utils\SemanticVersion.h"
-#include "Utils\STLFileSystem.h"

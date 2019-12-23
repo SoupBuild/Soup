@@ -104,7 +104,7 @@ namespace Soup::Compiler::Clang
 
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args);
 
-			auto result = IProcessManager::Current().Execute(
+			auto result = System::IProcessManager::Current().Execute(
 				executablePath,
 				commandArgs,
 				args.RootDirectory);
@@ -132,7 +132,7 @@ namespace Soup::Compiler::Clang
 			auto executablePath = _toolPath + Path(CompilerExecutable);
 			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args);
 
-			auto result = IProcessManager::Current().Execute(
+			auto result = System::IProcessManager::Current().Execute(
 				executablePath,
 				commandArgs,
 				args.RootDirectory);
@@ -192,7 +192,7 @@ namespace Soup::Compiler::Clang
 			generatePrecompiledModuleArgs.TargetFile.SetFileExtension(GetModuleFileExtension());
 
 			auto generatePrecompiledModuleCommandArgs = ArgumentBuilder::BuildCompilerArguments(generatePrecompiledModuleArgs);
-			auto result = IProcessManager::Current().Execute(
+			auto result = System::IProcessManager::Current().Execute(
 				executablePath,
 				generatePrecompiledModuleCommandArgs,
 				args.RootDirectory);
@@ -236,7 +236,7 @@ namespace Soup::Compiler::Clang
 			compileObjectArgs.TargetFile = args.TargetFile;
 
 			auto compileObjectCommandArgs = ArgumentBuilder::BuildCompilerArguments(compileObjectArgs);
-			result = IProcessManager::Current().Execute(
+			result = System::IProcessManager::Current().Execute(
 				executablePath,
 				compileObjectCommandArgs,
 				args.RootDirectory);

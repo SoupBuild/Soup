@@ -4,8 +4,6 @@
 
 #pragma once
 #include "BuildState.h"
-#include "IFileSystem.h"
-#include "Path.h"
 
 namespace Soup
 {
@@ -33,7 +31,7 @@ namespace Soup
 
 			// Verify the output file exists
 			auto relativeOutputFile = rootPath + targetFile;
-			if (!IFileSystem::Current().Exists(relativeOutputFile))
+			if (!System::IFileSystem::Current().Exists(relativeOutputFile))
 			{
 				Log::Info("Output target does not exist: " + relativeOutputFile.ToString());
 				return true;
@@ -41,7 +39,7 @@ namespace Soup
 
 			// Note: No need to use cache here since target files should only be analyzed once
 			auto outputFileLastWriteTime = 
-				IFileSystem::Current().GetLastWriteTime(relativeOutputFile);
+				System::IFileSystem::Current().GetLastWriteTime(relativeOutputFile);
 			Log::Diag("IsOutdated: " + relativeOutputFile.ToString() + " [" + std::to_string(outputFileLastWriteTime) + "]");
 			for (auto& inputFile : inputFiles)
 			{
@@ -70,9 +68,9 @@ namespace Soup
 			{
 				// The file does not exist in the cache
 				// Load the actual value and save it for later
-				if (IFileSystem::Current().Exists(inputFile))
+				if (System::IFileSystem::Current().Exists(inputFile))
 				{
-					lastWriteTime = IFileSystem::Current().GetLastWriteTime(inputFile);
+					lastWriteTime = System::IFileSystem::Current().GetLastWriteTime(inputFile);
 				}
 				else
 				{

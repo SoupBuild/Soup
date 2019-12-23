@@ -3,8 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "Path.h"
-#include "SemanticVersion.h"
 
 namespace Soup
 {

@@ -28,14 +28,14 @@ namespace Soup
 			LocalUserConfig& result)
 		{
 			// Verify the requested file exists
-			if (!IFileSystem::Current().Exists(filePath))
+			if (!System::IFileSystem::Current().Exists(filePath))
 			{
 				Log::Info("LocalUserConfig file does not exist.");
 				return false;
 			}
 
 			// Open the file to read from
-			auto file = IFileSystem::Current().OpenRead(filePath);
+			auto file = System::IFileSystem::Current().OpenRead(filePath);
 
 			// Read the contents of the file
 			try

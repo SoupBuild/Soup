@@ -246,7 +246,7 @@ namespace Soup
 				{
 					auto target = buildArguments.BinaryDirectory + Path(source.GetFileName());
 					Log::Info("Copy: [" + source.ToString() + "] -> [" + target.ToString() + "]");
-					IFileSystem::Current().CopyFile(source, target);
+					System::IFileSystem::Current().CopyFile2(source, target);
 				}
 			}
 
@@ -262,7 +262,7 @@ namespace Soup
 			try
 			{
 				Log::Info("Running Build Extension: " + libraryPath.ToString());
-				auto library = Platform::DynamicLibraryManager::LoadDynamicLibrary(
+				auto library = System::DynamicLibraryManager::LoadDynamicLibrary(
 					libraryPath.ToString().c_str());
 				auto function = (int(*)(BuildEx::IBuildSystem&))library.GetFunction(
 					"?RegisterBuildExtension@@YAHAEAVIBuildSystem@BuildEx@Soup@@@Z");

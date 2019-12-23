@@ -4,7 +4,6 @@
 
 #pragma once
 #include "Recipe.h"
-#include "Path.h"
 
 namespace Soup
 {

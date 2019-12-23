@@ -6,7 +6,6 @@
 #include "BuildState.h"
 #include "BuildStateJson.h"
 #include "Constants.h"
-#include "IFileSystem.h"
 
 namespace Soup
 {
@@ -28,14 +27,14 @@ namespace Soup
 			auto buildStateFile = directory +
 				Path(Constants::ProjectGenerateFolderName) +
 				Path(BuildStateFileName);
-			if (!IFileSystem::Current().Exists(buildStateFile))
+			if (!System::IFileSystem::Current().Exists(buildStateFile))
 			{
 				Log::Info("BuildState file does not exist");
 				return false;
 			}
 
 			// Open the file to read from
-			auto file = IFileSystem::Current().OpenRead(buildStateFile);
+			auto file = System::IFileSystem::Current().OpenRead(buildStateFile);
 
 			// Read the contents of the build state file
 			try
@@ -66,14 +65,14 @@ namespace Soup
 				Path(BuildStateFileName);
 
 			// Ensure the target directories exists
-			if (!IFileSystem::Current().Exists(buildProjectGenerateFolder))
+			if (!System::IFileSystem::Current().Exists(buildProjectGenerateFolder))
 			{
 				Log::Info("Create Directory: " + Path(Constants::ProjectGenerateFolderName).ToString());
-				IFileSystem::Current().CreateDirectory(buildProjectGenerateFolder);
+				System::IFileSystem::Current().CreateDirectory2(buildProjectGenerateFolder);
 			}
 
 			// Open the file to write to
-			auto file = IFileSystem::Current().OpenWrite(buildStateFile);
+			auto file = System::IFileSystem::Current().OpenWrite(buildStateFile);
 
 			// Write the build state to the file stream
 			BuildStateJson::Serialize(state, *file);

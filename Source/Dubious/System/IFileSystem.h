@@ -3,9 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "Path.h"
 
-namespace Soup
+namespace Dubious::System
 {
 	/// <summary>
 	/// The file system interface
@@ -57,12 +56,12 @@ namespace Soup
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
-		virtual void CopyFile(const Path& source, const Path& destination) = 0;
+		virtual void CopyFile2(const Path& source, const Path& destination) = 0;
 
 		/// <summary>
 		/// Create the directory at the requested path
 		/// </summary>
-		virtual void CreateDirectory(const Path& path) = 0;
+		virtual void CreateDirectory2(const Path& path) = 0;
 
 	private:
 		static std::shared_ptr<IFileSystem> _current;

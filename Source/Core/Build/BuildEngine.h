@@ -80,17 +80,17 @@ namespace Soup
 
 			// Ensure the output directories exists
 			auto objectDirectry = arguments.WorkingDirectory + arguments.ObjectDirectory;
-			if (!IFileSystem::Current().Exists(objectDirectry))
+			if (!System::IFileSystem::Current().Exists(objectDirectry))
 			{
 				Log::Info("Create Directory: " + arguments.ObjectDirectory.ToString());
-				IFileSystem::Current().CreateDirectory(objectDirectry);
+				System::IFileSystem::Current().CreateDirectory2(objectDirectry);
 			}
 
 			auto binaryDirectry = arguments.WorkingDirectory + arguments.BinaryDirectory;
-			if (!IFileSystem::Current().Exists(binaryDirectry))
+			if (!System::IFileSystem::Current().Exists(binaryDirectry))
 			{
 				Log::Info("Create Directory: " + arguments.BinaryDirectory.ToString());
-				IFileSystem::Current().CreateDirectory(binaryDirectry);
+				System::IFileSystem::Current().CreateDirectory2(binaryDirectry);
 			}
 
 			// Compile the module interface unit if present
@@ -215,7 +215,7 @@ namespace Soup
 				objectOutputModuleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
 				auto binaryOutputModuleInterfaceFile = arguments.BinaryDirectory + Path(arguments.TargetName + "." + std::string(_compiler->GetModuleFileExtension()));
 				Log::Info("Copy: [" + objectOutputModuleInterfaceFile.ToString() + "] -> [" + binaryOutputModuleInterfaceFile.ToString() + "]");
-				IFileSystem::Current().CopyFile(
+				System::IFileSystem::Current().CopyFile2(
 					arguments.WorkingDirectory + objectOutputModuleInterfaceFile,
 					arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
 
@@ -377,7 +377,7 @@ namespace Soup
 			bool linkRequired = force;
 			if (!force)
 			{
-				if (!IFileSystem::Current().Exists(arguments.WorkingDirectory + targetFile))
+				if (!System::IFileSystem::Current().Exists(arguments.WorkingDirectory + targetFile))
 				{
 					Log::Info("Link target does not exist: " + targetFile.ToString());
 					linkRequired = true;
