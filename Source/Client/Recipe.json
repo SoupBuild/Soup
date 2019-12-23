@@ -7,6 +7,9 @@
     "../Compiler/Clang",
     "../Compiler/MSVC"
   ],
+  "devDependencies": [
+    "../../Dependencies/SoupBuildEx/Source/Core/"
+  ],
   "source": [
     "Main.cpp"
   ],
