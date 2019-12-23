@@ -52,12 +52,12 @@ namespace Soup::Client
 				}
 
 				options->Verbosity = CheckVerbosity(unusedArgs);
-				options->Force = IsFlagSet("f", unusedArgs);
+				options->Force = IsFlagSet("force", unusedArgs);
 
-				auto configValue = std::string();
-				if (TryGetValueArgument("c", unusedArgs, configValue))
+				auto flavorValue = std::string();
+				if (TryGetValueArgument("flavor", unusedArgs, flavorValue))
 				{
-					options->Configuration = std::move(configValue);
+					options->Flavor = std::move(flavorValue);
 				}
 
 				result = std::move(options);

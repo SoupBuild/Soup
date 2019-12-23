@@ -12,9 +12,9 @@ namespace Soup
 	export struct RecipeBuildArguments
 	{
 		/// <summary>
-		/// Gets or sets the configuration name
+		/// Gets or sets the flavor name
 		/// </summary>
-		std::string Configuration;
+		std::string Flavor;
 
 		/// <summary>
 		/// Gets or sets the platform library paths
@@ -50,7 +50,7 @@ namespace Soup
 		/// </summary>
 		bool operator ==(const RecipeBuildArguments& rhs) const
 		{
-			return Configuration == rhs.Configuration &&
+			return Flavor == rhs.Flavor &&
 				PlatformIncludePaths == rhs.PlatformIncludePaths &&
 				PlatformLibraryPaths == rhs.PlatformLibraryPaths &&
 				PlatformPreprocessorDefinitions == rhs.PlatformPreprocessorDefinitions &&

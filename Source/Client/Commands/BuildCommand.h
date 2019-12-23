@@ -32,8 +32,6 @@ namespace Soup::Client
 			// Load the user config
 			auto config =  LocalUserConfigExtensions::LoadFromFile();
 
-			auto systemCompiler = std::make_shared<Compiler::Clang::Compiler>(
-				Path(config.GetClangToolPath()));
 			std::shared_ptr<ICompiler> runtimeCompiler = nullptr;
 			if (config.GetRuntimeCompiler() == "clang")
 			{
@@ -52,6 +50,9 @@ namespace Soup::Client
 			{
 				throw std::runtime_error("Unknown compiler.");
 			}
+
+			// TODOL Use the same system compiler for now
+			auto systemCompiler = runtimeCompiler;
 
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
@@ -83,10 +84,10 @@ namespace Soup::Client
 			// Setup the build arguments
 			auto arguments = RecipeBuildArguments();
 			arguments.ForceRebuild = _options.Force;
-			if (!_options.Configuration.empty())
-				arguments.Configuration = _options.Configuration;
+			if (!_options.Flavor.empty())
+				arguments.Flavor = _options.Flavor;
 			else
-				arguments.Configuration = "release";
+				arguments.Flavor = "release";
 
 			// TODO: Hard coded to windows MSVC runtime libraries
 			// And we only trust the contig today

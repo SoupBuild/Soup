@@ -61,7 +61,7 @@ namespace Soup
 					auto packagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
 					auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 						packagePath,
-						RecipeExtensions::GetBinaryDirectory(*_systemCompiler, arguments.Configuration),
+						RecipeExtensions::GetBinaryDirectory(*_systemCompiler, arguments.Flavor),
 						std::string(_systemCompiler->GetDynamicLibraryFileExtension()));
 					
 					RunBuildExtension(libraryPath, buildSystem);
@@ -76,7 +76,7 @@ namespace Soup
 				bool isRecursive = activeCompiler->GetName() == "MSVC";
 				RecipeExtensions::GenerateDependecyModuleIncludeClosure(
 					*activeCompiler,
-					arguments.Configuration,
+					arguments.Flavor,
 					workingDirectory,
 					recipe,
 					includeModules,
@@ -90,7 +90,7 @@ namespace Soup
 			{
 				RecipeExtensions::GenerateDependecyStaticLibraryClosure(
 					*activeCompiler,
-					arguments.Configuration,
+					arguments.Flavor,
 					workingDirectory,
 					recipe,
 					linkLibraries);
@@ -150,10 +150,10 @@ namespace Soup
 			buildArguments.WorkingDirectory = workingDirectory;
 			buildArguments.ObjectDirectory = RecipeExtensions::GetObjectDirectory(
 				*activeCompiler,
-				arguments.Configuration);
+				arguments.Flavor);
 			buildArguments.BinaryDirectory = RecipeExtensions::GetBinaryDirectory(
 				*activeCompiler,
-				arguments.Configuration);
+				arguments.Flavor);
 			buildArguments.ModuleInterfaceSourceFile = Path();
 			buildArguments.SourceFiles = recipe.GetSourceAsPath();
 			buildArguments.IncludeModules = std::move(includeModules);
@@ -176,20 +176,20 @@ namespace Soup
 				}
 			}
 
-			// Set the correct optimization level for the requested configuration
-			if (arguments.Configuration == "debug")
+			// Set the correct optimization level for the requested flavor
+			if (arguments.Flavor == "debug")
 			{
 				buildArguments.OptimizationLevel = BuildOptimizationLevel::None;
 				buildArguments.GenerateSourceDebugInfo = true;
 			}
-			else if (arguments.Configuration == "release")
+			else if (arguments.Flavor == "release")
 			{
 				buildArguments.OptimizationLevel = BuildOptimizationLevel::Speed;
 			}
 			else
 			{
-				Log::Error("Unknown build configuration type.");
-				throw std::runtime_error("Unknown build configuration type.");
+				Log::Error("Unknown build flavor type.");
+				throw std::runtime_error("Unknown build flavors type.");
 			}
 
 			// Convert the recipe type to the required build type
@@ -237,7 +237,7 @@ namespace Soup
 				std::vector<Path> runtimeDependencies;
 				RecipeExtensions::GenerateDependecyDynamicLibraryClosure(
 					*activeCompiler,
-					arguments.Configuration,
+					arguments.Flavor,
 					workingDirectory,
 					recipe,
 					runtimeDependencies);
