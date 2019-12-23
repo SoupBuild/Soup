@@ -14,9 +14,11 @@ A common problem with C++ builds today is the leaking of one individual componen
 ### Shareable
 Because C++ is a fully compiled language (not interpreted nor Just In-Time Compiled) sharing libraries has always been painful. By writing the entire build system in an integrated extension mechanism all packages can be shared through a simple source drop (similar to how JavaScript is shared through NPM).
 
+### Reproducible
+Core to any build system is the requirement that a build must be deterministic and reproducible.
+
 ## Contributing
 Soup is currently in active prototyping and testing. If you are interested in contributing to the project feel free to submit a PR or file an issue with your suggestion. Otherwise feel free to download the latest release to give it a try. We are always looking for feedback to be the best possibly solution for the largest audience.
-
 
 ## FAQ
 
