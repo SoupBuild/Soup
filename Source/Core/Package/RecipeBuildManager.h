@@ -226,15 +226,31 @@ namespace Soup
 			// Create a new build system for the requested build
 			auto buildSystem = BuildSystem();
 
-			// Register the single build task
+			// Select the correct compiler to use
+			std::shared_ptr<ICompiler> activeCompiler = nullptr;
+			if (isSystemBuild)
+			{
+				Log::HighPriority("System Build '" + recipe.GetName() + "'");
+				activeCompiler = _systemCompiler;
+			}
+			else
+			{
+				Log::HighPriority("Build '" + recipe.GetName() + "'");
+				activeCompiler = _runtimeCompiler;
+			}
+
+			// Register the recipe build task
 			auto recipeBuildTask = std::make_shared<RecipeBuildTask>(
 				_systemCompiler,
-				_runtimeCompiler,
+				activeCompiler,
 				packageRoot,
 				recipe,
-				arguments,
-				isSystemBuild);
+				arguments);
 			buildSystem.RegisterTask(recipeBuildTask);
+
+			// Register the compile task
+			auto buildTask = std::make_shared<BuildTask>(activeCompiler);
+			buildSystem.RegisterTask(buildTask);
 
 			// Run the build
 			buildSystem.Execute();

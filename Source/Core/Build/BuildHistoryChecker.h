@@ -1,16 +1,16 @@
-﻿// <copyright file="BuildStateChecker.h" company="Soup">
+﻿// <copyright file="BuildHistoryChecker.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "BuildState.h"
+#include "BuildHistory.h"
 
 namespace Soup
 {
-	export class BuildStateChecker
+	export class BuildHistoryChecker
 	{
 	public:
-		BuildStateChecker() :
+		BuildHistoryChecker() :
 			m_cache()
 		{
 		}

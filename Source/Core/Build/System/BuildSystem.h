@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "BuildState.h"
 
 namespace Soup
 {
@@ -16,6 +17,7 @@ namespace Soup
 		/// Initializes a new instance of the <see cref="BuildSystem"/> class.
 		/// </summary>
 		BuildSystem() :
+			_state(),
 			_tasks()
 		{
 		}
@@ -36,11 +38,13 @@ namespace Soup
 		{
 			for (auto& task : _tasks)
 			{
-				task->Execute();
+				Log::Info(std::string("Task: ") + task->GetName());
+				task->Execute(_state);
 			}
 		}
 
 	private:
+		BuildState _state;
 		std::vector<std::shared_ptr<BuildEx::IBuildTask>> _tasks;
 	};
 }

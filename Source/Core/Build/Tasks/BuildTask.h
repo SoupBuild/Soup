@@ -1,25 +1,25 @@
-﻿// <copyright file="BuildEngine.h" company="Soup">
+﻿// <copyright file="BuildTask.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 #include "ICompiler.h"
-#include "BuildStateChecker.h"
-#include "BuildStateManager.h"
-#include "BuildArguments.h"
+#include "Build\BuildHistoryChecker.h"
+#include "Build\BuildHistoryManager.h"
+#include "Build\BuildArguments.h"
 
 namespace Soup
 {
 	/// <summary>
-	/// The build engine
+	/// The build task
 	/// </summary>
-	export class BuildEngine
+	export class BuildTask : public BuildEx::IBuildTask
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="BuildEngine"/> class.
+		/// Initializes a new instance of the <see cref="BuildTask"/> class.
 		/// </summary>
-		BuildEngine(std::shared_ptr<ICompiler> compiler) :
+		BuildTask(std::shared_ptr<ICompiler> compiler) :
 			_stateChecker(),
 			_compiler(std::move(compiler))
 		{
@@ -28,10 +28,37 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Get the task name
+		/// </summary>
+		const char* GetName() override final
+		{
+			return "Build";
+		}
+
+		/// <summary>
 		/// The Core build task
 		/// </summary>
-		bool Execute(const BuildArguments& arguments)
+		void Execute(BuildEx::IBuildState& state) override final
 		{
+			auto arguments = BuildArguments();
+			arguments.TargetName = std::any_cast<std::string>(state.GetProperty("TargetName"));
+			arguments.TargetType = std::any_cast<BuildTargetType>(state.GetProperty("TargetType"));
+			arguments.LanguageStandard = std::any_cast<LanguageStandard>(state.GetProperty("LanguageStandard"));
+			arguments.WorkingDirectory = std::any_cast<Path>(state.GetProperty("WorkingDirectory"));
+			arguments.ObjectDirectory = std::any_cast<Path>(state.GetProperty("ObjectDirectory"));
+			arguments.BinaryDirectory = std::any_cast<Path>(state.GetProperty("BinaryDirectory"));
+			arguments.ModuleInterfaceSourceFile = std::any_cast<Path>(state.GetProperty("ModuleInterfaceSourceFile"));
+			arguments.SourceFiles = std::any_cast<std::vector<Path>>(state.GetProperty("SourceFiles"));
+			arguments.IncludeDirectories = std::any_cast<std::vector<Path>>(state.GetProperty("IncludeDirectories"));
+			arguments.IncludeModules = std::any_cast<std::vector<Path>>(state.GetProperty("IncludeModules"));
+			arguments.LinkLibraries = std::any_cast<std::vector<Path>>(state.GetProperty("LinkLibraries"));
+			arguments.ExternalLinkLibraries = std::any_cast<std::vector<Path>>(state.GetProperty("ExternalLinkLibraries"));
+			arguments.LibraryPaths = std::any_cast<std::vector<Path>>(state.GetProperty("LibraryPaths"));
+			arguments.PreprocessorDefinitions = std::any_cast<std::vector<std::string>>(state.GetProperty("PreprocessorDefinitions"));
+			arguments.IsIncremental = std::any_cast<bool>(state.GetProperty("IsIncremental"));
+			arguments.OptimizationLevel = std::any_cast<BuildOptimizationLevel>(state.GetProperty("OptimizationLevel"));
+			arguments.GenerateSourceDebugInfo = std::any_cast<bool>(state.GetProperty("GenerateSourceDebugInfo"));
+
 			// Log the incoming request for verbose logs
 			Log::Diag("TargetName = " + arguments.TargetName);
 			Log::Diag("TargetType = " + ToString(arguments.TargetType));
@@ -52,7 +79,11 @@ namespace Soup
 
 			// Link the final target
 			bool targetLinked = CoreLink(arguments, sourceCompiled);
-			return targetLinked;
+
+			if (targetLinked)
+				Log::HighPriority("Done");
+			else
+				Log::HighPriority("Up to date");
 		}
 
 	private:
@@ -62,18 +93,16 @@ namespace Soup
 		/// </summary>
 		bool CoreCompile(const BuildArguments& arguments)
 		{
-			Log::Info("Task: CoreCompile");
-
 			// Load the previous build state if performing an incremental build
-			BuildState buildState = {};
+			BuildHistory buildHistory = {};
 			bool forceBuild = !arguments.IsIncremental;
 			if (arguments.IsIncremental)
 			{
-				Log::Info("Loading previous build state");
-				if (!BuildStateManager::TryLoadState(arguments.WorkingDirectory, buildState))
+				Log::Diag("Loading previous build state");
+				if (!BuildHistoryManager::TryLoadState(arguments.WorkingDirectory, buildHistory))
 				{
 					Log::Info("No previous state found, full rebuild required");
-					buildState = BuildState();
+					buildHistory = BuildHistory();
 					forceBuild = true;
 				}
 			}
@@ -99,7 +128,7 @@ namespace Soup
 			{
 				auto moduleCompiled = CompileModuleInterfaceUnit(
 					arguments,
-					buildState,
+					buildHistory,
 					forceBuild);
 
 				// Force recompile the source files if the module was compiled
@@ -111,7 +140,7 @@ namespace Soup
 			{
 				auto sourceCompiled = CompileSourceFiles(
 					arguments,
-					buildState,
+					buildHistory,
 					forceBuild);
 
 				// Force link if any of the source was compiled
@@ -121,7 +150,7 @@ namespace Soup
 			if (codeCompiled)
 			{
 				Log::Info("Saving updated build state");
-				BuildStateManager::SaveState(arguments.WorkingDirectory, buildState);
+				BuildHistoryManager::SaveState(arguments.WorkingDirectory, buildHistory);
 			}
 
 			return codeCompiled || forceBuild;
@@ -133,7 +162,7 @@ namespace Soup
 		/// </summary>
 		bool CompileModuleInterfaceUnit(
 			const BuildArguments& arguments,
-			BuildState& buildState,
+			BuildHistory& buildHistory,
 			bool forceBuild)
 		{
 			Log::Info("Task: CompileModuleInterfaceUnit");
@@ -147,7 +176,7 @@ namespace Soup
 				// Try to build up the closure of include dependencies
 				auto inputClosure = std::vector<Path>();
 				const auto& sourceFile = arguments.ModuleInterfaceSourceFile;
-				if (buildState.TryBuildIncludeClosure(sourceFile, inputClosure))
+				if (buildHistory.TryBuildIncludeClosure(sourceFile, inputClosure))
 				{
 					// Include the source file itself
 					inputClosure.push_back(sourceFile);
@@ -220,7 +249,7 @@ namespace Soup
 					arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
 
 				// Save the build state for the module file
-				buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+				buildHistory.UpdateIncludeTree(result.HeaderIncludeFiles);
 
 				return true;
 			}
@@ -237,7 +266,7 @@ namespace Soup
 		/// </summary>
 		bool CompileSourceFiles(
 			const BuildArguments& arguments,
-			BuildState& buildState,
+			BuildHistory& buildHistory,
 			bool force)
 		{
 			Log::Info("Task: CompileSourceFiles");
@@ -251,7 +280,7 @@ namespace Soup
 				{
 					// Try to build up the closure of include dependencies
 					auto inputClosure = std::vector<Path>();
-					if (buildState.TryBuildIncludeClosure(sourceFile, inputClosure))
+					if (buildHistory.TryBuildIncludeClosure(sourceFile, inputClosure))
 					{
 						// Include the source file itself
 						inputClosure.push_back(sourceFile);
@@ -331,7 +360,7 @@ namespace Soup
 					auto result = _compiler->Compile(compileArguments);
 
 					// Save the build state for the compiled files
-					buildState.UpdateIncludeTree(result.HeaderIncludeFiles);
+					buildHistory.UpdateIncludeTree(result.HeaderIncludeFiles);
 				}
 
 				return true;
@@ -468,7 +497,7 @@ namespace Soup
 		}
 
 	private:
-		BuildStateChecker _stateChecker;
+		BuildHistoryChecker _stateChecker;
 		std::shared_ptr<ICompiler> _compiler;
 	};
 }

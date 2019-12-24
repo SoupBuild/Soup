@@ -1,4 +1,4 @@
-﻿// <copyright file="BuildState.h" company="Soup">
+﻿// <copyright file="BuildHistory.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -53,22 +53,22 @@ namespace Soup
 		}
 	};
 
-	export class BuildState
+	export class BuildHistory
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="BuildState"/> class.
+		/// Initializes a new instance of the <see cref="BuildHistory"/> class.
 		/// </summary>
-		BuildState() :
+		BuildHistory() :
 			_knownFiles(),
 			_fastLookup()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="BuildState"/> class.
+		/// Initializes a new instance of the <see cref="BuildHistory"/> class.
 		/// </summary>
-		BuildState(std::vector<FileInfo> knownFiles) :
+		BuildHistory(std::vector<FileInfo> knownFiles) :
 			_knownFiles(std::move(knownFiles)),
 			_fastLookup()
 		{
@@ -136,7 +136,7 @@ namespace Soup
 		/// <summary>
 		/// Equality operator
 		/// </summary>
-		bool operator ==(const BuildState& rhs) const
+		bool operator ==(const BuildHistory& rhs) const
 		{
 			return _knownFiles == rhs._knownFiles;
 		}
@@ -144,7 +144,7 @@ namespace Soup
 		/// <summary>
 		/// Inequality operator
 		/// </summary>
-		bool operator !=(const BuildState& rhs) const
+		bool operator !=(const BuildHistory& rhs) const
 		{
 			return !(*this == rhs);
 		}

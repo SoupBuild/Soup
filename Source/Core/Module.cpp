@@ -1,5 +1,6 @@
 ﻿module;
 
+#include <any>
 #include <array>
 #include <ctime>
 #include <iostream>
@@ -24,10 +25,10 @@ using namespace Opal;
 #include "Utils\Helpers.h"
 #include "Utils\HandledException.h"
 
-#include "Build\BuildEngine.h"
-#include "Build\BuildStateChecker.h"
-#include "Build\BuildStateJson.h"
-#include "Build\BuildStateManager.h"
+#include "Build\Tasks\BuildTask.h"
+#include "Build\BuildHistoryChecker.h"
+#include "Build\BuildHistoryJson.h"
+#include "Build\BuildHistoryManager.h"
 #include "Compiler\CompileArguments.h"
 #include "Compiler\MockCompiler.h"
 #include "Config\LocalUserConfigExtensions.h"

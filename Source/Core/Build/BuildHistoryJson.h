@@ -1,16 +1,16 @@
-﻿// <copyright file="BuildStateJson.h" company="Soup">
+﻿// <copyright file="BuildHistoryJson.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "BuildState.h"
+#include "BuildHistory.h"
 
 namespace Soup
 {
 	/// <summary>
 	/// The build state json serializer
 	/// </summary>
-	export class BuildStateJson
+	export class BuildHistoryJson
 	{
 	private:
 		static constexpr const char* Property_File = "file";
@@ -21,7 +21,7 @@ namespace Soup
 		/// <summary>
 		/// Load from stream
 		/// </summary>
-		static BuildState Deserialize(std::istream& stream)
+		static BuildHistory Deserialize(std::istream& stream)
 		{
 			// Read the entire file into a string
 			std::string content(
@@ -38,23 +38,23 @@ namespace Soup
 			}
 			else
 			{
-				return LoadJsonBuildState(jsonRoot);
+				return LoadJsonBuildHistory(jsonRoot);
 			}
 		}
 
 		/// <summary>
-		/// Save the BuildState to the root file
+		/// Save the BuildHistory to the root file
 		/// </summary>
-		static void Serialize(const BuildState& state, std::ostream& stream)
+		static void Serialize(const BuildHistory& state, std::ostream& stream)
 		{
 			// Serialize the contents of the build state
-			json11::Json json = BuildJsonBuildState(state);
+			json11::Json json = BuildJsonBuildHistory(state);
 
 			stream << json.dump();
 		}
 
 	private:
-		static BuildState LoadJsonBuildState(const json11::Json& value)
+		static BuildHistory LoadJsonBuildHistory(const json11::Json& value)
 		{
 			std::vector<FileInfo> knownFiles;
 
@@ -74,7 +74,7 @@ namespace Soup
 				throw std::runtime_error("Missing Required field: knownFiles.");
 			}
 
-			return BuildState(
+			return BuildHistory(
 				std::move(knownFiles));
 		}
 
@@ -112,7 +112,7 @@ namespace Soup
 				std::move(includes));
 		}
 
-		static json11::Json BuildJsonBuildState(const BuildState& state)
+		static json11::Json BuildJsonBuildHistory(const BuildHistory& state)
 		{
 			json11::Json::object result = {};
 
