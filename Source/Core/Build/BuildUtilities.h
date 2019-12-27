@@ -28,7 +28,7 @@ namespace Soup::Build
 
 			// Build the arguments
 			std::stringstream arguments;
-			arguments << "/C copy \"" << source.ToString() << "\" \"" << destination.ToString() << "\"";
+			arguments << "/C copy /Y \"" << source.ToAlternateString() << "\" \"" << destination.ToAlternateString() << "\"";
 
 			return std::make_shared<BuildGraphNode>(
 				std::move(program),

@@ -849,7 +849,7 @@ namespace Soup::Build::UnitTests
 			auto expectedCopyModuleInterfaceNode =
 				std::make_shared<BuildGraphNode>(
 					Path("C:/Windows/System32/cmd.exe"),
-					"/C copy \"C:/root/obj/Public.mock.bmi\" \"C:/root/bin/Library.mock.bmi\"",
+					"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
 					Path("./"),
 					std::vector<Path>({
 						Path("C:/root/obj/Public.mock.bmi"),
@@ -1025,7 +1025,7 @@ namespace Soup::Build::UnitTests
 			auto expectedCopyModuleInterfaceNode =
 				std::make_shared<BuildGraphNode>(
 					Path("C:/Windows/System32/cmd.exe"),
-					"/C copy \"C:/root/obj/Public.mock.bmi\" \"C:/root/bin/Library.mock.bmi\"",
+					"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
 					Path("./"),
 					std::vector<Path>({
 						Path("C:/root/obj/Public.mock.bmi"),
