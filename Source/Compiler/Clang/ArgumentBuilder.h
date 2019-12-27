@@ -159,7 +159,10 @@ namespace Soup::Compiler::Clang
 			return commandArgs;
 		}
 
-		static std::vector<std::string> BuildLinkerArguments(const LinkArguments& args)
+		static std::vector<std::string> BuildLinkerArguments(
+			const LinkArguments& args,
+			std::vector<Path>& inputFiles,
+			std::vector<Path>& outputFiles)
 		{
 			// Verify the input
 			if (args.TargetFile.GetFileName().empty())
@@ -178,17 +181,22 @@ namespace Soup::Compiler::Clang
 					commandArgs.push_back("rc");
 
 					// Add the output file
+					outputFiles.push_back(args.TargetFile);
 					commandArgs.push_back(args.TargetFile.ToString());
 
 					// Add the library files
 					for (auto& file : args.LibraryFiles)
 					{
+						// Add the library files as input
+						inputFiles.push_back(file);
 						commandArgs.push_back(file.ToString());
 					}
 
 					// Add the object files
 					for (auto& file : args.ObjectFiles)
 					{
+						// Add the object files as input
+						inputFiles.push_back(file);
 						commandArgs.push_back(file.ToString());
 					}
 
@@ -198,7 +206,10 @@ namespace Soup::Compiler::Clang
 				case LinkTarget::Executable:
 				{
 					// Dynamic libraries and executables targeting windows are put together by lld-link
-					commandArgs = MSVC::ArgumentBuilder::BuildLinkerArguments(args);
+					commandArgs = MSVC::ArgumentBuilder::BuildLinkerArguments(
+						args,
+						inputFiles,
+						outputFiles);
 					break;
 				}
 				default:

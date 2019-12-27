@@ -77,12 +77,12 @@ namespace Soup::Build
 				{
 					// Insert a new entry with a single count
 					_dependencyCounts.emplace(node->GetId(), 1);
+					
+					// Recurse to children only the first time we see a node
+					auto updatedParentSet = parentSet;
+					updatedParentSet.insert(node->GetId());
+					BuildDependencies(node->GetChildren(), updatedParentSet);
 				}
-
-				// Recurse to children
-				auto updatedParentSet = parentSet;
-				updatedParentSet.insert(node->GetId());
-				BuildDependencies(node->GetChildren(), updatedParentSet);
 			}
 		}
 
@@ -175,14 +175,18 @@ namespace Soup::Build
 
 				if (!result.StdOut.empty())
 				{
-					Log::Info(result.StdOut);
+					// Upgrade output to a warning if the command fails
+					if (result.ExitCode != 0)
+						Log::Warning(result.StdOut);
+					else
+						Log::Info(result.StdOut);
 				}
 
 				// If there was any error output then the build failed
 				// TODO: Find warnings + errors
 				if (!result.StdErr.empty())
 				{
-					Log::Warning(result.StdErr);
+					Log::Error(result.StdErr);
 				}
 
 				if (result.ExitCode != 0)
@@ -191,7 +195,7 @@ namespace Soup::Build
 				}
 
 				// Save the build state
-				// buildHistory.UpdateIncludeTree(result.HeaderIncludeFiles);
+				// TODO: buildHistory.UpdateIncludeTree(result.HeaderIncludeFiles);
 			}
 
 			// Recursively build all of the node chilren

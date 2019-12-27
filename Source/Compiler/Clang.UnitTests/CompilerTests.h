@@ -104,8 +104,12 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("C:/Clang/bin/llvm-ar.exe"),
 				"rc Library.mock.a File.mock.o",
 				Path("Source"),
-				std::vector<Path>(),
-				std::vector<Path>());
+				std::vector<Path>({
+					Path("File.mock.o"),
+				}),
+				std::vector<Path>({
+					Path("Library.mock.a"),
+				}));
 
 			AssertExtensions::AreEqual(expected, result);
 		}
@@ -133,8 +137,13 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("C:/Clang/bin/lld-link.exe"),
 				"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
 				Path("Source"),
-				std::vector<Path>(),
-				std::vector<Path>());
+				std::vector<Path>({
+					Path("Library.mock.a"),
+					Path("File.mock.o"),
+				}),
+				std::vector<Path>({
+					Path("Something.exe")
+				}));
 
 			AssertExtensions::AreEqual(expected, result);
 		}

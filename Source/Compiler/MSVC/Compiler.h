@@ -100,14 +100,17 @@ namespace Soup::Compiler::MSVC
 					throw std::runtime_error("Unknown LinkTarget.");
 			}
 
-			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args);
+			// Build the set of input/output files along with the arguments
+			auto inputFiles = std::vector<Path>();
+			auto outputFiles = std::vector<Path>();
+			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
 
 			auto buildNode = std::make_shared<Build::BuildGraphNode>(
 				std::move(executablePath),
 				CombineArguments(commandArgs),
 				args.RootDirectory,
-				std::vector<Path>(),
-				std::vector<Path>());
+				std::move(inputFiles),
+				std::move(outputFiles));
 
 			return buildNode;
 		}

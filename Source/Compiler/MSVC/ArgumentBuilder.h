@@ -178,7 +178,10 @@ namespace Soup::Compiler::MSVC
 			return commandArgs;
 		}
 
-		static std::vector<std::string> BuildLinkerArguments(const LinkArguments& args)
+		static std::vector<std::string> BuildLinkerArguments(
+			const LinkArguments& args,
+			std::vector<Path>& inputFiles,
+			std::vector<Path>& outputFiles)
 		{
 			// Verify the input
 			if (args.TargetFile.GetFileName().empty())
@@ -226,6 +229,9 @@ namespace Soup::Compiler::MSVC
 						Linker_ArgumentParameter_ImplementationLibrary,
 						implemenationLibraryfile.ToString());
 
+					// Add the library as an output
+					outputFiles.push_back(implemenationLibraryfile);
+
 					break;
 				}
 				case LinkTarget::Executable:
@@ -252,23 +258,31 @@ namespace Soup::Compiler::MSVC
 				AddParameterWithQuotes(commandArgs, Linker_ArgumentParameter_LibraryPath, directory.ToString());
 			}
 
+			// Add the target as an output
+			outputFiles.push_back(args.TargetFile);
 			AddParameterWithQuotes(commandArgs, Linker_ArgumentParameter_Output, args.TargetFile.ToString());
 
 			// Add the library files
 			for (auto& file : args.LibraryFiles)
 			{
+				// Add the library files as input
+				inputFiles.push_back(file);
 				commandArgs.push_back(file.ToString());
 			}
 
 			// Add the external libraries as default libraries so they are resolved last
 			for (auto& file : args.ExternalLibraryFiles)
 			{
+				// Add the external library files as input
+				inputFiles.push_back(file);
 				AddParameter(commandArgs, Linker_ArgumentParameter_DefaultLibrary, file.ToString());
 			}
 
 			// Add the object files
 			for (auto& file : args.ObjectFiles)
 			{
+				// Add the object files as input
+				inputFiles.push_back(file);
 				commandArgs.push_back(file.ToString());
 			}
 
