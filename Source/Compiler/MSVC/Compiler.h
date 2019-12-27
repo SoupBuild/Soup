@@ -119,14 +119,19 @@ namespace Soup::Compiler::MSVC
 		std::shared_ptr<Build::BuildGraphNode> CompileStandard(const CompileArguments& args)
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
-			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, _toolsPath);
+
+			// Build the set of input/output files along with the arguments
+			auto inputFiles = std::vector<Path>();
+			auto outputFiles = std::vector<Path>();
+			auto commandArgs = 
+				ArgumentBuilder::BuildCompilerArguments(args, _toolsPath, inputFiles, outputFiles);
 
 			auto buildNode = std::make_shared<Build::BuildGraphNode>(
 				std::move(executablePath),
 				CombineArguments(commandArgs),
 				args.RootDirectory,
-				std::vector<Path>(),
-				std::vector<Path>());
+				std::move(inputFiles),
+				std::move(outputFiles));
 
 			return buildNode;
 		}
@@ -151,14 +156,21 @@ namespace Soup::Compiler::MSVC
 			compiledModuleArgs.SourceFile = args.SourceFile;
 			compiledModuleArgs.TargetFile = args.TargetFile;
 
-			auto compiledModuleCommandArgs = ArgumentBuilder::BuildCompilerArguments(compiledModuleArgs, _toolsPath);
+			// Build the set of input/output files along with the arguments
+			auto inputFiles = std::vector<Path>();
+			auto outputFiles = std::vector<Path>();
+			auto compiledModuleCommandArgs = ArgumentBuilder::BuildCompilerArguments(
+				compiledModuleArgs,
+				_toolsPath,
+				inputFiles,
+				outputFiles);
 
 			auto buildNode = std::make_shared<Build::BuildGraphNode>(
 				std::move(executablePath),
 				CombineArguments(compiledModuleCommandArgs),
 				args.RootDirectory,
-				std::vector<Path>(),
-				std::vector<Path>());
+				std::move(inputFiles),
+				std::move(outputFiles));
 
 			return buildNode;
 		}

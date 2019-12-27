@@ -16,8 +16,15 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.SourceFile = Path("");
 			arguments.TargetFile = Path("File.obj");
 			auto toolsPath = Path("tools/");
+
 			Assert::ThrowsRuntimeError([&arguments, &toolsPath]() {
-				auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
+				auto actualInput = std::vector<Path>();
+				auto actualOutput = std::vector<Path>();
+				auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+					arguments,
+					toolsPath,
+					actualInput,
+					actualOutput);
 			});
 		}
 
@@ -28,8 +35,15 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("");
 			auto toolsPath = Path("tools/");
+
 			Assert::ThrowsRuntimeError([&arguments, &toolsPath]() {
-				auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
+				auto actualInput = std::vector<Path>();
+				auto actualOutput = std::vector<Path>();
+				auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+					arguments,
+					toolsPath,
+					actualInput,
+					actualOutput);
 			});
 		}
 
@@ -40,9 +54,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.obj");
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/std:c++11",
 				"/Od",
@@ -55,8 +76,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -67,9 +96,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("File.obj");
 			arguments.GenerateIncludeTree = true;
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/showIncludes",
 				"/std:c++11",
@@ -83,8 +119,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Theory]]
@@ -98,9 +142,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("File.obj");
 			arguments.Standard = standard;
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				expectedFlag,
 				"/Od",
@@ -113,8 +164,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -125,9 +184,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("File.obj");
 			arguments.Standard = LanguageStandard::CPP20;
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/std:c++latest",
 				"/experimental:module",
@@ -141,8 +207,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -154,9 +228,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.Standard = LanguageStandard::CPP17;
 			arguments.Optimize = OptimizationLevel::None;
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/std:c++17",
 				"/Od",
@@ -169,8 +250,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Theory]]
@@ -184,9 +273,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.Standard = LanguageStandard::CPP17;
 			arguments.Optimize = level;
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/std:c++17",
 				expectedFlag,
@@ -199,8 +295,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -213,9 +317,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.Optimize = OptimizationLevel::None;
 			arguments.GenerateSourceDebugInfo = true;
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/Z7",
 				"/std:c++17",
@@ -229,8 +340,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -244,9 +363,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("my files/")
 			});
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/std:c++11",
 				"/Od",
@@ -261,8 +387,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -276,9 +410,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"VERSION=1"
 			});
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/std:c++11",
 				"/Od",
@@ -293,8 +434,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -305,12 +454,19 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("File.obj");
 			arguments.IncludeModules = std::vector<Path>({
 				Path("Module.pcm"),
-				Path("Std.pcm")
+				Path("Std.pcm"),
 			});
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/std:c++11",
 				"/Od",
@@ -327,8 +483,18 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"File.cpp",
 				"/Fo\"File.obj\"",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("Module.pcm"),
+				Path("Std.pcm"),
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.obj"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -339,9 +505,16 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("module.obj");
 			arguments.ExportModule = true;
 			auto toolsPath = Path("tools/");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments, toolsPath);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				toolsPath,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/std:c++11",
 				"/Od",
@@ -357,7 +530,17 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"module.cpp",
 				"/Fo\"module.obj\"",
 			});
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			auto expectedInput = std::vector<Path>({
+				Path("module.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("module.ifc"),
+				Path("module.obj"),
+			});
+
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 	};
 }

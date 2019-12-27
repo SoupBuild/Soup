@@ -121,14 +121,18 @@ namespace Soup::Compiler::Clang
 		std::shared_ptr<Build::BuildGraphNode> CompileStandard(const CompileArguments& args)
 		{
 			auto executablePath = _toolPath + Path(CompilerExecutable);
-			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args);
+			
+			// Build the set of input/output files along with the arguments
+			auto inputFiles = std::vector<Path>();
+			auto outputFiles = std::vector<Path>();
+			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, inputFiles, outputFiles);
 
 			auto buildNode = std::make_shared<Build::BuildGraphNode>(
 				std::move(executablePath),
 				CombineArguments(commandArgs),
 				args.RootDirectory,
-				std::vector<Path>(),
-				std::vector<Path>());
+				std::move(inputFiles),
+				std::move(outputFiles));
 
 			return buildNode;
 		}
@@ -154,14 +158,21 @@ namespace Soup::Compiler::Clang
 			generatePrecompiledModuleArgs.TargetFile = args.TargetFile;
 			generatePrecompiledModuleArgs.TargetFile.SetFileExtension(GetModuleFileExtension());
 
-			auto generatePrecompiledModuleCommandArgs = ArgumentBuilder::BuildCompilerArguments(generatePrecompiledModuleArgs);
+			// Build the set of input/output files along with the arguments
+			auto generatePrecompiledModuleInputFiles = std::vector<Path>();
+			auto generatePrecompiledModuleOutputFiles = std::vector<Path>();
+			auto generatePrecompiledModuleCommandArgs = 
+				ArgumentBuilder::BuildCompilerArguments(
+					generatePrecompiledModuleArgs,
+					generatePrecompiledModuleInputFiles,
+					generatePrecompiledModuleOutputFiles);
 
 			auto precompiledModuleBuildNode = std::make_shared<Build::BuildGraphNode>(
 				executablePath,
 				CombineArguments(generatePrecompiledModuleCommandArgs),
 				args.RootDirectory,
-				std::vector<Path>(),
-				std::vector<Path>());
+				std::move(generatePrecompiledModuleInputFiles),
+				std::move(generatePrecompiledModuleOutputFiles));
 
 			// Now we can compile the object file from the precompiled module
 			auto compileObjectArgs = CompileArguments();
@@ -171,14 +182,21 @@ namespace Soup::Compiler::Clang
 			compileObjectArgs.SourceFile = generatePrecompiledModuleArgs.TargetFile;
 			compileObjectArgs.TargetFile = args.TargetFile;
 
-			auto compileObjectCommandArgs = ArgumentBuilder::BuildCompilerArguments(compileObjectArgs);
+			// Build the set of input/output files along with the arguments
+			auto compileObjectInputFiles = std::vector<Path>();
+			auto compileObjectOutputFiles = std::vector<Path>();
+			auto compileObjectCommandArgs = 
+				ArgumentBuilder::BuildCompilerArguments(
+					compileObjectArgs,
+					compileObjectInputFiles,
+					compileObjectOutputFiles);
 
 			auto compileBuildNode = std::make_shared<Build::BuildGraphNode>(
 				std::move(executablePath),
 				CombineArguments(compileObjectCommandArgs),
 				args.RootDirectory,
-				std::vector<Path>(),
-				std::vector<Path>());
+				std::move(compileObjectInputFiles),
+				std::move(compileObjectOutputFiles));
 
 			// Ensure the compile node runs after the precompile
 			Build::BuildGraphNode::AddLeafChild(precompiledModuleBuildNode, compileBuildNode);

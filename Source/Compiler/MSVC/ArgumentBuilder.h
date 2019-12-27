@@ -48,7 +48,9 @@ namespace Soup::Compiler::MSVC
 	public:
 		static std::vector<std::string> BuildCompilerArguments(
 			const CompileArguments& args,
-			const Path& toolsPath)
+			const Path& toolsPath,
+			std::vector<Path>& inputFiles,
+			std::vector<Path>& outputFiles)
 		{
 			// Verify the input
 			if (args.SourceFile.GetFileName().empty())
@@ -141,9 +143,10 @@ namespace Soup::Compiler::MSVC
 				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Release);
 			}
 
-			// Add the module references
+			// Add the module references as input
 			for (auto& moduleFile : args.IncludeModules)
 			{
+				inputFiles.push_back(moduleFile);
 				AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "reference");
 				AddValueWithQuotes(commandArgs, moduleFile.ToString());
 			}
@@ -159,6 +162,7 @@ namespace Soup::Compiler::MSVC
 				// Place the module interface file in the output directory
 				auto moduleInterfaceFile = args.TargetFile;
 				moduleInterfaceFile.SetFileExtension("ifc"); // TODO
+				outputFiles.push_back(moduleInterfaceFile);
 				AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "output");
 				AddValueWithQuotes(commandArgs, moduleInterfaceFile.ToString());
 			}
@@ -169,10 +173,12 @@ namespace Soup::Compiler::MSVC
 			// Only run preprocessor, compile and assemble
 			AddFlag(commandArgs, Compiler_ArgumentFlag_CompileOnly);
 
-			// Add the source file
+			// Add the source file as input
+			inputFiles.push_back(args.SourceFile);
 			commandArgs.push_back(args.SourceFile.ToString());
 
-			// Add the target file
+			// Add the target file as outputs
+			outputFiles.push_back(args.TargetFile);
 			AddFlagValueWithQuotes(commandArgs, Compiler_ArgumentParameter_ObjectFile, args.TargetFile.ToString());
 
 			return commandArgs;

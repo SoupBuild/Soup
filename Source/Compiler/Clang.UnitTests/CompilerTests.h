@@ -37,8 +37,12 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("C:/Clang/bin/clang++.exe"),
 				"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
 				Path("Source"),
-				std::vector<Path>(),
-				std::vector<Path>());
+				std::vector<Path>({
+					Path("File.cpp"),
+				}),
+				std::vector<Path>({
+					Path("obj/File.o"),
+				}));
 
 			AssertExtensions::AreEqual(expected, result);
 		}
@@ -70,15 +74,24 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("C:/Clang/bin/clang++.exe"),
 				"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
 				Path("Source"),
-				std::vector<Path>(),
-				std::vector<Path>(),
+				std::vector<Path>({
+					Path("Module.pcm"),
+					Path("File.cpp"),
+				}),
+				std::vector<Path>({
+					Path("obj/File.pcm")
+				}),
 				std::vector<std::shared_ptr<Build::BuildGraphNode>>({
 					std::make_shared<Build::BuildGraphNode>(
 						Path("C:/Clang/bin/clang++.exe"),
 						"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
 						Path("Source"),
-						std::vector<Path>(),
-						std::vector<Path>())
+						std::vector<Path>({
+							Path("obj/File.pcm"),
+						}),
+						std::vector<Path>({
+							Path("obj/File.obj"),
+						}))
 				}));
 
 			AssertExtensions::AreEqual(expected, result);
