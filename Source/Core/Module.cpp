@@ -15,26 +15,37 @@
 export module SoupCore;
 
 import Opal;
-import SoupBuildEx;
+import SoupBuildExtension;
 import SoupSyntax;
 import json11;
 
 using namespace Opal;
 
 #include "Logger\Log.h"
+
 #include "Utils\Helpers.h"
 #include "Utils\HandledException.h"
 
+#include "Build\Runner\BuildHistory.h"
+#include "Build\Runner\BuildHistoryChecker.h"
+#include "Build\Runner\BuildHistoryJson.h"
+#include "Build\Runner\BuildHistoryManager.h"
+#include "Build\Runner\BuildRunner.h"
+
+#include "Build\System\BuildGraph.h"
+
 #include "Build\Tasks\BuildTask.h"
-#include "Build\BuildHistoryChecker.h"
-#include "Build\BuildHistoryJson.h"
-#include "Build\BuildHistoryManager.h"
+
 #include "Compiler\CompileArguments.h"
 #include "Compiler\MockCompiler.h"
+
 #include "Config\LocalUserConfigExtensions.h"
 #include "Config\LocalUserConfigJson.h"
+
 #include "Logger\ConsoleTraceListener.h"
+#include "Logger\ScopedTraceListenerRegister.h"
 #include "Logger\TestTraceListener.h"
+
 #include "Package\Recipe.h"
 #include "Package\RecipeBuildManager.h"
 #include "Package\RecipeExtensions.h"

@@ -1,3 +1,4 @@
+#include <any>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -13,28 +14,31 @@ import SoupTest;
 using namespace Opal;
 using namespace Opal::System;
 using namespace SoupTest;
+import SoupTestUtilities;
 
-#include "Build\BuildEngineTests.gen.h"
-#include "Build\BuildStateCheckerTests.gen.h"
-#include "Build\BuildStateJsonTests.gen.h"
-#include "Build\BuildStateTests.gen.h"
-#include "Build\BuildStateManagerTests.gen.h"
+#include "Build/Runner/BuildHistoryCheckerTests.gen.h"
+#include "Build/Runner/BuildHistoryJsonTests.gen.h"
+#include "Build/Runner/BuildHistoryTests.gen.h"
+#include "Build/Runner/BuildHistoryManagerTests.gen.h"
+#include "Build/Runner/BuildRunnerTests.gen.h"
 
-#include "Config\LocalUserConfigExtensionsTests.gen.h"
-#include "Config\LocalUserConfigJsonTests.gen.h"
-#include "Config\LocalUserConfigTests.gen.h"
+#include "Build/Tasks/BuildTaskTests.gen.h"
 
-#include "Package\PackageReferenceTests.gen.h"
-#include "Package\RecipeBuilderTests.gen.h"
-#include "Package\RecipeBuildManagerTests.gen.h"
-#include "Package\RecipeExtensionsTests.gen.h"
-#include "Package\RecipeLanguageVersionTests.gen.h"
-#include "Package\RecipeJsonTests.gen.h"
-#include "Package\RecipeTests.gen.h"
-#include "Package\RecipeTypeTests.gen.h"
+#include "Config/LocalUserConfigExtensionsTests.gen.h"
+#include "Config/LocalUserConfigJsonTests.gen.h"
+#include "Config/LocalUserConfigTests.gen.h"
 
-#include "Utils\PathTests.gen.h"
-#include "Utils\SemanticVersionTests.gen.h"
+#include "Package/PackageReferenceTests.gen.h"
+#include "Package/RecipeBuilderTests.gen.h"
+#include "Package/RecipeBuildManagerTests.gen.h"
+#include "Package/RecipeExtensionsTests.gen.h"
+#include "Package/RecipeLanguageVersionTests.gen.h"
+#include "Package/RecipeJsonTests.gen.h"
+#include "Package/RecipeTests.gen.h"
+#include "Package/RecipeTypeTests.gen.h"
+
+#include "Utils/PathTests.gen.h"
+#include "Utils/SemanticVersionTests.gen.h"
 
 int main()
 {
@@ -42,11 +46,13 @@ int main()
 
 	TestState state = { 0, 0 };
 
-	state += RunBuildEngineTests();
-	state += RunBuildStateCheckerTests();
-	state += RunBuildStateJsonTests();
-	state += RunBuildStateTests();
-	state += RunBuildStateManagerTests();
+	state += RunBuildHistoryCheckerTests();
+	state += RunBuildHistoryJsonTests();
+	state += RunBuildHistoryTests();
+	state += RunBuildHistoryManagerTests();
+	state += RunBuildRunnerTests();
+
+	state += RunBuildTaskTests();
 
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigJsonTests();

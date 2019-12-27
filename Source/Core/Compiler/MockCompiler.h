@@ -41,7 +41,7 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Gets the unique name for the compiler
 		/// </summary>
-		virtual std::string_view GetName() const override final
+		std::string_view GetName() const override final
 		{
 			return "MockCompiler";
 		}
@@ -49,7 +49,7 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Gets the object file extension for the compiler
 		/// </summary>
-		virtual std::string_view GetObjectFileExtension() const override final
+		std::string_view GetObjectFileExtension() const override final
 		{
 			return "mock.obj";
 		}
@@ -57,7 +57,7 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Gets the module file extension for the compiler
 		/// </summary>
-		virtual std::string_view GetModuleFileExtension() const override final
+		std::string_view GetModuleFileExtension() const override final
 		{
 			return "mock.bmi";
 		}
@@ -66,7 +66,7 @@ namespace Soup::Compiler::Mock
 		/// Gets the static library file extension for the compiler
 		/// TODO: This is platform specific
 		/// </summary>
-		virtual std::string_view GetStaticLibraryFileExtension() const override final
+		std::string_view GetStaticLibraryFileExtension() const override final
 		{
 			return "mock.lib";
 		}
@@ -75,7 +75,7 @@ namespace Soup::Compiler::Mock
 		/// Gets the dynamic library file extension for the compiler
 		/// TODO: This is platform specific
 		/// </summary>
-		virtual std::string_view GetDynamicLibraryFileExtension() const override final
+		std::string_view GetDynamicLibraryFileExtension() const override final
 		{
 			return "mock.dll";
 		}
@@ -83,18 +83,37 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Compile
 		/// </summary>
-		virtual CompileResult Compile(const CompileArguments& args) override final
+		std::shared_ptr<Build::BuildGraphNode> CreateCompileNode(const CompileArguments& args) override final
 		{
 			_compileRequests.push_back(args);
-			return CompileResult();
+			return std::make_shared<Build::BuildGraphNode>(
+				Path("MockCompiler.exe"),
+				std::to_string(_compileRequests.size()),
+				Path("MockWorkingDirectory"),
+				std::vector<Path>({
+					Path("InputFile.in"),
+				}),
+				std::vector<Path>({
+					Path("OutputFile.out"),
+				}));
 		}
 
 		/// <summary>
 		/// Link
 		/// </summary>
-		virtual void Link(const LinkArguments& args) override final
+		std::shared_ptr<Build::BuildGraphNode> CreateLinkNode(const LinkArguments& args) override final
 		{
 			_linkRequests.push_back(args);
+			return std::make_shared<Build::BuildGraphNode>(
+				Path("MockLinker.exe"),
+				std::to_string(_linkRequests.size()),
+				Path("MockWorkingDirectory"),
+				std::vector<Path>({
+					Path("InputFile.in"),
+				}),
+				std::vector<Path>({
+					Path("OutputFile.out"),
+				}));
 		}
 
 	private:

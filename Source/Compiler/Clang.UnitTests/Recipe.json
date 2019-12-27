@@ -4,7 +4,8 @@
   "type": "Executable",
   "dependencies": [
     "../../../Dependencies/SoupTest/Assert/",
-    "../Clang/"
+    "../Clang/",
+    "../../TestUtilities/"
   ],
   "source": [
     "gen/Main.cpp"

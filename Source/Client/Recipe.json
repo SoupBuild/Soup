@@ -1,6 +1,6 @@
 {
   "name": "Soup",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "Executable",
   "dependencies": [
     "../Core",
@@ -8,7 +8,6 @@
     "../Compiler/MSVC"
   ],
   "devDependencies": [
-    "../../Dependencies/SoupBuildEx/Source/Core/"
   ],
   "source": [
     "Main.cpp"

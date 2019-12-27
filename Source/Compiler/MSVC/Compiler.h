@@ -24,7 +24,7 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Gets the unique name for the compiler
 		/// </summary>
-		virtual std::string_view GetName() const override final
+		std::string_view GetName() const override final
 		{
 			return "MSVC";
 		}
@@ -32,7 +32,7 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Gets the object file extension for the compiler
 		/// </summary>
-		virtual std::string_view GetObjectFileExtension() const override final
+		std::string_view GetObjectFileExtension() const override final
 		{
 			return "obj";
 		}
@@ -40,7 +40,7 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Gets the module file extension for the compiler
 		/// </summary>
-		virtual std::string_view GetModuleFileExtension() const override final
+		std::string_view GetModuleFileExtension() const override final
 		{
 			return "ifc";
 		}
@@ -49,7 +49,7 @@ namespace Soup::Compiler::MSVC
 		/// Gets the static library file extension for the compiler
 		/// TODO: This is platform specific
 		/// </summary>
-		virtual std::string_view GetStaticLibraryFileExtension() const override final
+		std::string_view GetStaticLibraryFileExtension() const override final
 		{
 			return "lib";
 		}
@@ -58,7 +58,7 @@ namespace Soup::Compiler::MSVC
 		/// Gets the dynmaic library file extension for the compiler
 		/// TODO: This is platform specific
 		/// </summary>
-		virtual std::string_view GetDynamicLibraryFileExtension() const override final
+		std::string_view GetDynamicLibraryFileExtension() const override final
 		{
 			return "dll";
 		}
@@ -66,7 +66,7 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Compile
 		/// </summary>
-		virtual CompileResult Compile(const CompileArguments& args) override final
+		std::shared_ptr<Build::BuildGraphNode> CreateCompileNode(const CompileArguments& args) override final
 		{
 			// Clang decided to do their module compilation in two stages
 			// Now we have to also generate the object file from the precompiled module
@@ -83,7 +83,7 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Link
 		/// </summary>
-		virtual void Link(const LinkArguments& args) override final
+		std::shared_ptr<Build::BuildGraphNode> CreateLinkNode(const LinkArguments& args) override final
 		{
 			// Select the correct executable for linking libraries or executables
 			Path executablePath;
@@ -102,79 +102,33 @@ namespace Soup::Compiler::MSVC
 
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args);
 
-			auto result = System::IProcessManager::Current().Execute(
-				executablePath,
-				commandArgs,
-				args.RootDirectory);
+			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+				std::move(executablePath),
+				CombineArguments(commandArgs),
+				args.RootDirectory,
+				std::vector<Path>(),
+				std::vector<Path>());
 
-			if (!result.StdOut.empty())
-			{
-				if (result.ExitCode != 0)
-					Log::Warning(result.StdOut);
-				else
-					Log::Info(result.StdOut);
-			}
-
-			// If there was any error output then the build failed
-			if (!result.StdErr.empty())
-			{
-				Log::Warning(result.StdErr);
-			}
-			
-			if (result.ExitCode != 0)
-			{
-				throw std::runtime_error("Linker Error: " + std::to_string(result.ExitCode));
-			}
+			return buildNode;
 		}
 
 	private:
-		CompileResult CompileStandard(const CompileArguments& args)
+		std::shared_ptr<Build::BuildGraphNode> CompileStandard(const CompileArguments& args)
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
 			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, _toolsPath);
 
-			auto result = System::IProcessManager::Current().Execute(
-				executablePath,
-				commandArgs,
-				args.RootDirectory);
+			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+				std::move(executablePath),
+				CombineArguments(commandArgs),
+				args.RootDirectory,
+				std::vector<Path>(),
+				std::vector<Path>());
 
-			// Pull out the include paths if requested
-			auto compileResult = CompileResult();
-			if (args.GenerateIncludeTree)
-			{
-				std::stringstream cleanOutput;
-				compileResult.HeaderIncludeFiles = ParseIncludes(
-					args.SourceFile,
-					result.StdOut,
-					cleanOutput);
-				result.StdOut = cleanOutput.str();
-			}
-
-			if (!result.StdOut.empty())
-			{
-				if (result.ExitCode != 0)
-					Log::Warning(result.StdOut);
-				else
-					Log::Info(result.StdOut);
-			}
-
-			// If there was any error output then the build failed
-			// TODO: Find warnings + errors
-			if (!result.StdErr.empty())
-			{
-				Log::Warning(result.StdErr);
-			}
-
-			if (result.ExitCode != 0)
-			{
-				Log::Error("Compile standard failed");
-				throw std::runtime_error("Compile standard failed");
-			}
-
-			return compileResult;
+			return buildNode;
 		}
 
-		CompileResult CompileModuleInterfaceUnit(const CompileArguments& args)
+		std::shared_ptr<Build::BuildGraphNode> CompileModuleInterfaceUnit(const CompileArguments& args)
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
 
@@ -194,136 +148,32 @@ namespace Soup::Compiler::MSVC
 			compiledModuleArgs.SourceFile = args.SourceFile;
 			compiledModuleArgs.TargetFile = args.TargetFile;
 
-			auto compiledModuleCommandArgs =
-				ArgumentBuilder::BuildCompilerArguments(compiledModuleArgs, _toolsPath);
-			auto result = System::IProcessManager::Current().Execute(
-				executablePath,
-				compiledModuleCommandArgs,
-				args.RootDirectory);
+			auto compiledModuleCommandArgs = ArgumentBuilder::BuildCompilerArguments(compiledModuleArgs, _toolsPath);
 
-			// Pull out the include paths if requested
-			auto compileResult = CompileResult();
-			if (compiledModuleArgs.GenerateIncludeTree)
-			{
-				std::stringstream cleanOutput;
-				compileResult.HeaderIncludeFiles = ParseIncludes(
-					compiledModuleArgs.SourceFile,
-					result.StdOut,
-					cleanOutput);
-				result.StdOut = cleanOutput.str();
-			}
+			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+				std::move(executablePath),
+				CombineArguments(compiledModuleCommandArgs),
+				args.RootDirectory,
+				std::vector<Path>(),
+				std::vector<Path>());
 
-			if (!result.StdOut.empty())
-			{
-				if (result.ExitCode != 0)
-					Log::Warning(result.StdOut);
-				else
-					Log::Info(result.StdOut);
-			}
-
-			// If there was any error output then the build failed
-			// TODO: Find warnings + errors
-			if (!result.StdErr.empty())
-			{
-				Log::Warning(result.StdErr);
-			}
-
-			if (result.ExitCode != 0)
-			{
-				Log::Error("Compile module interface failed");
-				throw std::runtime_error("Compiler Precompile Error: " + std::to_string(result.ExitCode));
-			}
-
-			return compileResult;
+			return buildNode;
 		}
 
-		std::vector<HeaderInclude> ParseIncludes(
-			const Path& file,
-			const std::string& output,
-			std::stringstream& cleanOutput)
+		static std::string CombineArguments(const std::vector<std::string>& args)
 		{
-			// Add the root file
-			std::stack<HeaderInclude> current;
-			current.push(HeaderInclude(file));
-
-			std::stringstream content(output);
-			std::string line;
-			while (std::getline(content, line))
+			auto argumentString = std::stringstream();
+			bool isFirst = true;
+			for (auto& arg : args)
 			{
-				// TODO: Getline is dumb and uses newline on windows
-				if (line[line.size() - 1] == '\r')
-				{
-					line.resize(line.size() - 1);
-				}
+				if (!isFirst)
+					argumentString << " ";
 
-				auto includeDepth = GetIncludeDepth(line);
-				if (includeDepth > 0)
-				{
-					// Parse the file reference
-					auto includePrefix = GetIncludePrefix();
-					auto offset = includePrefix.size() + includeDepth;
-					auto includeFile = Path(line.substr(offset));
-
-					// Ensure we are at the correct depth
-					while (includeDepth < current.size())
-					{
-						// Remove the top file and push it onto its parent
-						auto previous = std::move(current.top());
-						current.pop();
-						current.top().Includes.push_back(std::move(previous));
-					}
-
-					// Ensure we do not try to go up more than one level at a time
-					if (includeDepth > current.size() + 1)
-						throw std::runtime_error("Missing an include level.");
-
-					current.push(HeaderInclude(includeFile));
-				}
-				else
-				{
-					// Not an include, pass along
-					cleanOutput << line << "\n";
-				}
+				argumentString << arg;
+				isFirst = false;
 			}
 
-			// Ensure we are at the top level
-			while (1 < current.size())
-			{
-				// Remove the top file and push it onto its parent
-				auto previous = std::move(current.top());
-				current.pop();
-				current.top().Includes.push_back(std::move(previous));
-			}
-
-			return std::vector<HeaderInclude>({ std::move(current.top()) });
-		}
-
-		int GetIncludeDepth(const std::string& line)
-		{
-			int depth = 0;
-			auto includePrefix = GetIncludePrefix();
-			if (line.rfind(includePrefix, 0) == 0)
-			{
-				// Find the end of the whitespace
-				int offset = includePrefix.size();
-				for (; offset < line.size(); offset++)
-				{
-					if (line[offset] != ' ')
-					{
-						break;
-					}
-				}
-
-				// The depth is the number of whitespaces past the prefix
-				depth = offset - includePrefix.size();
-			}
-
-			return depth;
-		}
-
-		std::string_view GetIncludePrefix()
-		{
-			return std::string_view("Note: including file:");
+			return argumentString.str();
 		}
 
 	private:

@@ -4,17 +4,23 @@
 
 #pragma once
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	class BuildState : public BuildEx::IBuildState
+	class BuildState : public IBuildState
 	{
 	public:
 		BuildState() :
-			_properties()
+			_properties(),
+			_graph()
 		{
+		}
+
+		bool HasProperty(const char* name) override final
+		{
+			return _properties.contains(name);
 		}
 
 		const std::any& GetProperty(const char* name) override final
@@ -27,7 +33,23 @@ namespace Soup
 			_properties.insert_or_assign(name, std::move(value));
 		}
 
+		void AddBuildNode(std::shared_ptr<BuildGraphNode> node) override final
+		{
+			_graph.GetNodes().push_back(std::move(node));
+		}
+
+		std::vector<std::shared_ptr<BuildGraphNode>>& GetBuildNodes()
+		{
+			return _graph.GetNodes();
+		}
+
+		const std::vector<std::shared_ptr<BuildGraphNode>>& GetBuildNodes() const
+		{
+			return _graph.GetNodes();
+		}
+
 	private:
 		std::map<std::string, std::any> _properties;
+		BuildGraph _graph;
 	};
 }

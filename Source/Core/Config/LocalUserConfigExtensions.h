@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "Constants.h"
 #include "LocalUserConfigJson.h"
 
 namespace Soup

@@ -1,12 +1,12 @@
-// <copyright file="BuildStateManagerTests.h" company="Soup">
+// <copyright file="BuildHistoryManagerTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 
-namespace Soup::UnitTests
+namespace Soup::Build::UnitTests
 {
-	class BuildStateManagerTests
+	class BuildHistoryManagerTests
 	{
 	public:
 		[[Fact]]
@@ -14,22 +14,22 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto directory = Path("TestFiles/NoFile");
-			BuildState actual;
-			auto result = BuildStateManager::TryLoadState(directory, actual);
+			BuildHistory actual;
+			auto result = BuildHistoryManager::TryLoadState(directory, actual);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/NoFile/.soup/BuildState.json",
+					"Exists: TestFiles/NoFile/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -37,7 +37,7 @@ namespace Soup::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"INFO: BuildState file does not exist",
+					"INFO: BuildHistory file does not exist",
 				}),
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -48,26 +48,26 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageBuildState/.soup/BuildState.json"),
+				Path("TestFiles/GarbageBuildHistory/.soup/BuildHistory.json"),
 				MockFileState(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageBuildState");
-			BuildState actual;
-			auto result = BuildStateManager::TryLoadState(directory, actual);
+			auto directory = Path("TestFiles/GarbageBuildHistory");
+			BuildHistory actual;
+			auto result = BuildHistoryManager::TryLoadState(directory, actual);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/GarbageBuildState/.soup/BuildState.json",
-					"OpenRead: TestFiles/GarbageBuildState/.soup/BuildState.json",
+					"Exists: TestFiles/GarbageBuildHistory/.soup/BuildHistory.json",
+					"OpenRead: TestFiles/GarbageBuildHistory/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -86,13 +86,13 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleBuildState/.soup/BuildState.json"),
+				Path("TestFiles/SimpleBuildHistory/.soup/BuildHistory.json"),
 				MockFileState(std::stringstream(R"({
 					"knownFiles": [
 						{
@@ -102,13 +102,13 @@ namespace Soup::UnitTests
 					]
 				})")));
 
-			auto directory = Path("TestFiles/SimpleBuildState");
-			BuildState actual;
-			auto result = BuildStateManager::TryLoadState(directory, actual);
+			auto directory = Path("TestFiles/SimpleBuildHistory");
+			BuildHistory actual;
+			auto result = BuildHistoryManager::TryLoadState(directory, actual);
 
 			Assert::IsTrue(result, "Verify result is false.");
 
-			auto expected = BuildState({
+			auto expected = BuildHistory({
 					FileInfo(Path("File.h"), { Path("Other.h") }),
 				});
 
@@ -117,8 +117,8 @@ namespace Soup::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/SimpleBuildState/.soup/BuildState.json",
-					"OpenRead: TestFiles/SimpleBuildState/.soup/BuildState.json",
+					"Exists: TestFiles/SimpleBuildHistory/.soup/BuildHistory.json",
+					"OpenRead: TestFiles/SimpleBuildHistory/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

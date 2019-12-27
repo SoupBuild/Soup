@@ -5,12 +5,12 @@
 #pragma once
 #include "BuildState.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The build system implementation
 	/// </summary>
-	export class BuildSystem : public BuildEx::IBuildSystem
+	export class BuildSystem : public IBuildSystem
 	{
 	public:
 		/// <summary>
@@ -25,7 +25,7 @@ namespace Soup
 		/// <summary>
 		/// Register task
 		/// </summary>
-		void RegisterTask(std::shared_ptr<BuildEx::IBuildTask> task) override final
+		void RegisterTask(std::shared_ptr<IBuildTask> task) override final
 		{
 			Log::Diag(std::string("RegisterTask: ") + task->GetName());
 			_tasks.push_back(std::move(task));
@@ -43,8 +43,13 @@ namespace Soup
 			}
 		}
 
+		const BuildState& GetState()
+		{
+			return _state;
+		}
+
 	private:
 		BuildState _state;
-		std::vector<std::shared_ptr<BuildEx::IBuildTask>> _tasks;
+		std::vector<std::shared_ptr<IBuildTask>> _tasks;
 	};
 }

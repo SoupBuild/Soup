@@ -28,5 +28,7 @@ export module Opal;
 #include "System/MockFileSystem.h"
 #include "System/MockProcessManager.h"
 #include "System/PlatformProcessManager.h"
+#include "System/ScopedFileSystemRegister.h"
+#include "System/ScopedProcessManagerRegister.h"
 #include "System/STLEnvironment.h"
 #include "System/STLFileSystem.h"

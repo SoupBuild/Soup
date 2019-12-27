@@ -6,12 +6,12 @@
 #include "RecipeExtensions.h"
 #include "RecipeBuildArguments.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The recipe build task that knows how to build a single recipe
 	/// </summary>
-	export class RecipeBuildTask : public BuildEx::IBuildTask
+	export class RecipeBuildTask : public IBuildTask
 	{
 	public:
 		/// <summary>
@@ -46,7 +46,7 @@ namespace Soup
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(BuildEx::IBuildState& state) override final
+		void Execute(IBuildState& state) override final
 		{
 			// Run all build tasks
 			auto buildSystem = BuildSystem();
@@ -245,14 +245,14 @@ namespace Soup
 		}
 
 	private:
-		void RunBuildExtension(Path& libraryPath, BuildEx::IBuildSystem& buildSystem)
+		void RunBuildExtension(Path& libraryPath, IBuildSystem& buildSystem)
 		{
 			// try
 			// {
 			// 	Log::Info("Running Build Extension: " + libraryPath.ToString());
 			// 	auto library = System::DynamicLibraryManager::LoadDynamicLibrary(
 			// 		libraryPath.ToString().c_str());
-			// 	auto function = (int(*)(BuildEx::IBuildSystem&))library.GetFunction(
+			// 	auto function = (int(*)(Build::IBuildSystem&))library.GetFunction(
 			// 		"?RegisterBuildExtension@@YAHAEAVIBuildSystem@BuildEx@Soup@@@Z");
 			// 	auto result = function(buildSystem);
 			// 	Log::Info("Build Extension Done: " + std::to_string(result));

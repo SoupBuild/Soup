@@ -1,0 +1,10 @@
+{
+  "name": "SoupTestUtilities",
+  "version": "0.1.0",
+  "dependencies": [
+    "../../Dependencies/SoupTest/Assert/",
+    "../Opal/",
+    "../Build/Extension/"
+  ],
+  "public": "Module.cpp"
+}

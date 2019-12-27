@@ -14,11 +14,11 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto directory = Path("TestFiles/NoFile/Recipe.json");
 			Recipe actual;
@@ -48,11 +48,11 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("TestFiles/GarbageRecipe/Recipe.json"),
 				MockFileState(std::stringstream("garbage")));
@@ -87,11 +87,11 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("TestFiles/SimpleRecipe/Recipe.json"),
 				MockFileState(std::stringstream(R"({
@@ -133,11 +133,11 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto directory = Path("TestFiles/SimpleRecipe/Recipe.json");
 			auto recipe = Recipe(
@@ -172,11 +172,11 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto packagePath = Path("Root/");
 			auto binaryDirectory = Path("out/bin/mock/");
@@ -208,11 +208,11 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("Root/Recipe.json"),
 				MockFileState(std::stringstream(R"({

@@ -7,7 +7,7 @@
 #include "BuildHistoryJson.h"
 #include "Constants.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The build state manager

@@ -49,7 +49,7 @@ namespace Opal::System
 		/// </summary>
 		virtual ProcessResult Execute(
 			const Path& application,
-			const std::vector<std::string>& arguments,
+			const std::string& arguments,
 			const Path& workingDirectory) = 0;
 
 	private:

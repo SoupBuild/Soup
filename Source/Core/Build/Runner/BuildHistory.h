@@ -3,8 +3,9 @@
 // </copyright>
 
 #pragma once
+#include "CompileResult.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	export class FileInfo
 	{
@@ -88,13 +89,13 @@ namespace Soup
 		/// from the build state
 		/// </summary>
 		bool TryBuildIncludeClosure(
-			const Path& sourceFile,
+			const std::vector<Path>& sourceFiles,
 			std::vector<Path>& closure)
 		{
 			closure.clear();
 			auto closureSet = std::unordered_set<std::string>();
 			if (TryBuildIncludeClosure(
-				std::vector<Path>({ sourceFile }),
+				sourceFiles,
 				closureSet))
 			{
 				// Convert the set to a vector output

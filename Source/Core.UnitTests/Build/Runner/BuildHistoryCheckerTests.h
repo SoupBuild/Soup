@@ -1,28 +1,30 @@
-// <copyright file="BuildStateCheckerTests.h" company="Soup">
+// <copyright file="BuildHistoryCheckerTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 
-namespace Soup::UnitTests
+namespace Soup::Build::UnitTests
 {
-	class BuildStateCheckerTests
+	class BuildHistoryCheckerTests
 	{
 	public:
 		[[Fact]]
 		void IsOutdated_NonRootedRoot_Throws()
 		{
 			// Setup the input parameters
-			auto targetFile = Path("Output.bin");
+			auto targetFiles = std::vector<Path>({
+				Path("Output.bin"),
+			});
 			auto inputFiles = std::vector<Path>({
 				Path("Input.cpp")
 			});
 			auto rootPath = Path("NotRooted/");
 
 			// Perform the check
-			auto uut = BuildStateChecker();
-			Assert::ThrowsRuntimeError([&uut, &targetFile, &inputFiles, &rootPath]() {
-				bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			auto uut = BuildHistoryChecker();
+			Assert::ThrowsRuntimeError([&uut, &targetFiles, &inputFiles, &rootPath]() {
+				bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
 			});
 		}
 
@@ -30,14 +32,16 @@ namespace Soup::UnitTests
 		void IsOutdated_ZeroInput_Throws()
 		{
 			// Setup the input parameters
-			auto targetFile = Path("Output.bin");
+			auto targetFiles = std::vector<Path>({
+				Path("Output.bin"),
+			});
 			auto inputFiles = std::vector<Path>({});
 			auto rootPath = Path("C:/Root/");
 
 			// Perform the check
-			auto uut = BuildStateChecker();
-			Assert::ThrowsRuntimeError([&uut, &targetFile, &inputFiles, &rootPath]() {
-				bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			auto uut = BuildHistoryChecker();
+			Assert::ThrowsRuntimeError([&uut, &targetFiles, &inputFiles, &rootPath]() {
+				bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
 			});
 		}
 
@@ -46,22 +50,24 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Setup the input parameters
-			auto targetFile = Path("Output.bin");
+			auto targetFiles = std::vector<Path>({
+				Path("Output.bin"),
+			});
 			auto inputFiles = std::vector<Path>({
 				Path("Input.cpp")
 			});
 			auto rootPath = Path("C:/Root/");
 
 			// Perform the check
-			auto uut = BuildStateChecker();
-			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			auto uut = BuildHistoryChecker();
+			bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
 
 			// Verify the results
 			Assert::IsTrue(result, "Verify the result is true.");
@@ -88,26 +94,28 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Create the file state
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 			fileSystem->CreateMockFile(Path("C:/Root/Output.bin"), MockFileState(outputTime));
 
 			// Setup the input parameters
-			auto targetFile = Path("Output.bin");
+			auto targetFiles = std::vector<Path>({
+				Path("Output.bin"),
+			});
 			auto inputFiles = std::vector<Path>({
 				Path("Input.cpp")
 			});
 			auto rootPath = Path("C:/Root/");
 
 			// Perform the check
-			auto uut = BuildStateChecker();
-			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			auto uut = BuildHistoryChecker();
+			bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
 			Assert::IsTrue(result, "Verify the result is true.");
 
 			// Verify expected file system requests
@@ -135,11 +143,11 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Create the file state
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
@@ -148,15 +156,17 @@ namespace Soup::UnitTests
 			fileSystem->CreateMockFile(Path("C:/Root/Input.cpp"), MockFileState(inputTime));
 
 			// Setup the input parameters
-			auto targetFile = Path("Output.bin");
+			auto targetFiles = std::vector<Path>({
+				Path("Output.bin"),
+			});
 			auto inputFiles = std::vector<Path>({
 				Path("Input.cpp"),
 			});
 			auto rootPath = Path("C:/Root/");
 
 			// Perform the check
-			auto uut = BuildStateChecker();
-			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			auto uut = BuildHistoryChecker();
+			bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
 
 			// Verify the results
 			Assert::IsTrue(result, "Verify the result is true.");
@@ -188,11 +198,11 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Create the file state
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
@@ -201,15 +211,17 @@ namespace Soup::UnitTests
 			fileSystem->CreateMockFile(Path("C:/Root/Input.cpp"), MockFileState(inputTime));
 
 			// Setup the input parameters
-			auto targetFile = Path("Output.bin");
+			auto targetFiles = std::vector<Path>({
+				Path("Output.bin"),
+			});
 			auto inputFiles = std::vector<Path>({
 				Path("Input.cpp"),
 			});
 			auto rootPath = Path("C:/Root/");
 
 			// Perform the check
-			auto uut = BuildStateChecker();
-			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			auto uut = BuildHistoryChecker();
+			bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
 
 			// Verify the results
 			Assert::IsFalse(result, "Verify the result is false.");
@@ -240,11 +252,11 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Create the file state
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
@@ -254,7 +266,9 @@ namespace Soup::UnitTests
 			fileSystem->CreateMockFile(Path("C:/Input.h"), MockFileState(inputTime));
 
 			// Setup the input parameters
-			auto targetFile = Path("Output.bin");
+			auto targetFiles = std::vector<Path>({
+				Path("Output.bin"),
+			});
 			auto inputFiles = std::vector<Path>({
 				Path("Input.cpp"),
 				Path("C:/Input.h"),
@@ -262,8 +276,8 @@ namespace Soup::UnitTests
 			auto rootPath = Path("C:/Root/");
 
 			// Perform the check
-			auto uut = BuildStateChecker();
-			bool result = uut.IsOutdated(targetFile, inputFiles, rootPath);
+			auto uut = BuildHistoryChecker();
+			bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
 
 			// Verify the results
 			Assert::IsFalse(result, "Verify the result is false.");

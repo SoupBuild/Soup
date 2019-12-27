@@ -80,10 +80,16 @@ namespace Soup::Client
 				return;
 			}
 
+			auto arguments = std::stringstream();
+			for (auto& argument : _options.Arguments)
+			{
+				arguments << argument << " ";
+			}
+
 			// Execute the requested target
 			auto result = System::IProcessManager::Current().Execute(
 				executablePath,
-				_options.Arguments,
+				arguments.str(),
 				workingDirectory);
 
 			// TODO: Directly pipe to output and make sure there is no extra newline

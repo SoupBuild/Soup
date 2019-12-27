@@ -1,10 +1,10 @@
 #pragma once
-#include "Build/BuildStateJsonTests.h"
+#include "Build/Runner/BuildHistoryJsonTests.h"
 
-TestState RunBuildStateJsonTests() 
+TestState RunBuildHistoryJsonTests() 
 {
-	auto className = "BuildStateJsonTests";
-	auto testClass = std::make_shared<Soup::UnitTests::BuildStateJsonTests>();
+	auto className = "BuildHistoryJsonTests";
+	auto testClass = std::make_shared<Soup::Build::UnitTests::BuildHistoryJsonTests>();
 	TestState state = { 0, 0 };
 	state += SoupTest::RunTest(className, "Deserialize_GarbageThrows", [&testClass]() { testClass->Deserialize_GarbageThrows(); });
 	state += SoupTest::RunTest(className, "Deserialize_MissingKnownFiles", [&testClass]() { testClass->Deserialize_MissingKnownFiles(); });

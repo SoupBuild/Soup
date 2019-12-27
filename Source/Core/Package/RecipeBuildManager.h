@@ -4,6 +4,7 @@
 
 #pragma once
 #include "RecipeExtensions.h"
+#include "Build/Runner/BuildRunner.h"
 #include "Build/System/BuildSystem.h"
 #include "Build/Tasks/RecipeBuildTask.h"
 
@@ -25,6 +26,10 @@ namespace Soup
 			_systemCompiler(systemCompiler),
 			_runtimeCompiler(runtimeCompiler)
 		{
+			if (_systemCompiler == nullptr)
+				throw std::runtime_error("Argument null: systemCompiler");
+			if (_runtimeCompiler == nullptr)
+				throw std::runtime_error("Argument null: runtimeCompiler");
 		}
 
 		/// <summary>
@@ -224,7 +229,7 @@ namespace Soup
 			bool isSystemBuild)
 		{
 			// Create a new build system for the requested build
-			auto buildSystem = BuildSystem();
+			auto buildSystem = Build::BuildSystem();
 
 			// Select the correct compiler to use
 			std::shared_ptr<ICompiler> activeCompiler = nullptr;
@@ -240,7 +245,7 @@ namespace Soup
 			}
 
 			// Register the recipe build task
-			auto recipeBuildTask = std::make_shared<RecipeBuildTask>(
+			auto recipeBuildTask = std::make_shared<Build::RecipeBuildTask>(
 				_systemCompiler,
 				activeCompiler,
 				packageRoot,
@@ -249,11 +254,15 @@ namespace Soup
 			buildSystem.RegisterTask(recipeBuildTask);
 
 			// Register the compile task
-			auto buildTask = std::make_shared<BuildTask>(activeCompiler);
+			auto buildTask = std::make_shared<Build::BuildTask>(activeCompiler);
 			buildSystem.RegisterTask(buildTask);
 
 			// Run the build
 			buildSystem.Execute();
+
+			// Execute the build nodes
+			auto runner = Build::BuildRunner(packageRoot);
+			runner.Execute(buildSystem.GetState().GetBuildNodes(), arguments.ForceRebuild);
 		}
 
 		Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const

@@ -5,7 +5,7 @@
 #pragma once
 #include "BuildHistory.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The build state json serializer
