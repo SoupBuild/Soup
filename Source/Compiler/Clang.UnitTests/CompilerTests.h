@@ -23,10 +23,6 @@ namespace Soup::Compiler::Clang::UnitTests
 		[[Fact]]
 		void Compile_Simple()
 		{
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			IProcessManager::Register(processManager);
-
 			auto uut = Compiler(Path("C:/Clang/bin/"));
 
 			CompileArguments arguments = {};
@@ -34,24 +30,27 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.TargetFile = Path("obj/File.o");
 			arguments.RootDirectory = Path("Source");
 
-			auto result = uut.Compile(arguments);
+			auto result = uut.CreateCompileNode(arguments);
 
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Execute: Source: C:/Clang/bin/clang++.exe -nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
+			// Verify result
+			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"File.cpp",
+				Path("C:/Clang/bin/clang++.exe"),
+				"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
+				Path("Source"),
+				std::vector<Path>({
+					Path("File.cpp"),
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				std::vector<Path>({
+					Path("obj/File.o"),
+				}));
+
+			AssertExtensions::AreEqual(expected, result);
 		}
 
 		[[Fact]]
 		void Compile_Module()
 		{
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			IProcessManager::Register(processManager);
-
 			auto uut = Compiler(Path("C:/Clang/bin/"));
 
 			CompileArguments arguments = {};
@@ -69,25 +68,41 @@ namespace Soup::Compiler::Clang::UnitTests
 			});
 			arguments.ExportModule = true;
 
-			auto result = uut.Compile(arguments);
+			auto result = uut.CreateCompileNode(arguments);
 
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Execute: Source: C:/Clang/bin/clang++.exe -nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
-					"Execute: Source: C:/Clang/bin/clang++.exe -nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
+			// Verify result
+			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"File.cpp",
+				Path("C:/Clang/bin/clang++.exe"),
+				"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
+				Path("Source"),
+				std::vector<Path>({
+					Path("Module.pcm"),
+					Path("File.cpp"),
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				std::vector<Path>({
+					Path("obj/File.pcm")
+				}),
+				std::vector<std::shared_ptr<Build::BuildGraphNode>>({
+					std::make_shared<Build::BuildGraphNode>(
+						"obj/File.pcm",
+						Path("C:/Clang/bin/clang++.exe"),
+						"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
+						Path("Source"),
+						std::vector<Path>({
+							Path("obj/File.pcm"),
+						}),
+						std::vector<Path>({
+							Path("obj/File.obj"),
+						}))
+				}));
+
+			AssertExtensions::AreEqual(expected, result);
 		}
 
 		[[Fact]]
 		void LinkStaticLibrary_Simple()
 		{
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			IProcessManager::Register(processManager);
-
 			auto uut = Compiler(Path("C:/Clang/bin/"));
 
 			LinkArguments arguments = {};
@@ -98,24 +113,27 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("File.mock.o"),
 			});
 
-			uut.Link(arguments);
+			auto result = uut.CreateLinkNode(arguments);
 
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Execute: Source: C:/Clang/bin/llvm-ar.exe rc Library.mock.a File.mock.o",
+			// Verify result
+			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"Library.mock.a",
+				Path("C:/Clang/bin/llvm-ar.exe"),
+				"rc Library.mock.a File.mock.o",
+				Path("Source"),
+				std::vector<Path>({
+					Path("File.mock.o"),
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				std::vector<Path>({
+					Path("Library.mock.a"),
+				}));
+
+			AssertExtensions::AreEqual(expected, result);
 		}
 
 		[[Fact]]
 		void LinkExecutable_Simple()
 		{
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			IProcessManager::Register(processManager);
-
 			auto uut = Compiler(Path("C:/Clang/bin/"));
 
 			LinkArguments arguments = {};
@@ -129,15 +147,23 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("Library.mock.a"),
 			});
 
-			uut.Link(arguments);
+			auto result = uut.CreateLinkNode(arguments);
 
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Execute: Source: C:/Clang/bin/lld-link.exe /nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
+			// Verify result
+			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"Something.exe",
+				Path("C:/Clang/bin/lld-link.exe"),
+				"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
+				Path("Source"),
+				std::vector<Path>({
+					Path("Library.mock.a"),
+					Path("File.mock.o"),
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				std::vector<Path>({
+					Path("Something.exe")
+				}));
+
+			AssertExtensions::AreEqual(expected, result);
 		}
 	};
 }

@@ -17,14 +17,23 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.TargetFile = Path("Library.mock.a");
 			arguments.ObjectFiles = std::vector<Path>({});
 
-			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildLinkerArguments(arguments, actualInput, actualOutput);
 
-			auto expected = std::vector<std::string>({
+			auto expectedArguments = std::vector<std::string>({
 				"rc",
 				"Library.mock.a",
 			});
+			auto expectedInput = std::vector<Path>({
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("Library.mock.a"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -36,8 +45,11 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.o"),
 			});
+
 			Assert::ThrowsRuntimeError([&arguments]() {
-				auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
+				auto actualInput = std::vector<Path>();
+				auto actualOutput = std::vector<Path>();
+				auto actualArguments = ArgumentBuilder::BuildLinkerArguments(arguments, actualInput, actualOutput);
 			});
 		}
 
@@ -50,15 +62,26 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.o"),
 			});
-			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildLinkerArguments(arguments, actualInput, actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"rc",
 				"Library.mock.a",
 				"File.mock.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.mock.o"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("Library.mock.a"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -70,9 +93,12 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.o"),
 			});
-			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildLinkerArguments(arguments, actualInput, actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/subsystem:console",
 				"/dll",
@@ -81,8 +107,17 @@ namespace Soup::Compiler::Clang::UnitTests
 				"/out:\"Library.mock.so\"",
 				"File.mock.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.mock.o"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("Library.mock.lib"),
+				Path("Library.mock.so"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -97,9 +132,12 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.LibraryFiles = std::vector<Path>({
 				Path("Library.mock.a"),
 			});
-			auto actual = ArgumentBuilder::BuildLinkerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildLinkerArguments(arguments, actualInput, actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/subsystem:console",
 				"/machine:X64",
@@ -107,8 +145,17 @@ namespace Soup::Compiler::Clang::UnitTests
 				"Library.mock.a",
 				"File.mock.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("Library.mock.a"),
+				Path("File.mock.o"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("out/Something.exe"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 	};
 }

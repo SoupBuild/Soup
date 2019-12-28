@@ -1,12 +1,12 @@
-// <copyright file="BuildStateJsonTests.h" company="Soup">
+// <copyright file="BuildHistoryJsonTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 
-namespace Soup::UnitTests
+namespace Soup::Build::UnitTests
 {
-	class BuildStateJsonTests
+	class BuildHistoryJsonTests
 	{
 	public:
 		[[Fact]]
@@ -14,7 +14,7 @@ namespace Soup::UnitTests
 		{
 			auto content = std::stringstream("garbage");
 			Assert::ThrowsRuntimeError([&content]() {
-				auto actual = BuildStateJson::Deserialize(content);
+				auto actual = BuildHistoryJson::Deserialize(content);
 			});
 		}
 
@@ -26,7 +26,7 @@ namespace Soup::UnitTests
 				})");
 
 			Assert::ThrowsRuntimeError([&content]() {
-				auto actual = BuildStateJson::Deserialize(content);
+				auto actual = BuildHistoryJson::Deserialize(content);
 			});
 		}
 
@@ -43,7 +43,7 @@ namespace Soup::UnitTests
 				})");
 
 			Assert::ThrowsRuntimeError([&content]() {
-				auto actual = BuildStateJson::Deserialize(content);
+				auto actual = BuildHistoryJson::Deserialize(content);
 			});
 		}
 
@@ -60,7 +60,7 @@ namespace Soup::UnitTests
 				})");
 
 			Assert::ThrowsRuntimeError([&content]() {
-				auto actual = BuildStateJson::Deserialize(content);
+				auto actual = BuildHistoryJson::Deserialize(content);
 			});
 		}
 
@@ -76,9 +76,9 @@ namespace Soup::UnitTests
 						}
 					]
 				})");
-			auto actual = BuildStateJson::Deserialize(content);
+			auto actual = BuildHistoryJson::Deserialize(content);
 
-			auto expected = BuildState(
+			auto expected = BuildHistory(
 				{
 					FileInfo(Path("File.h"), { Path("Other.h") }),
 				});
@@ -102,9 +102,9 @@ namespace Soup::UnitTests
 						}
 					]
 				})");
-			auto actual = BuildStateJson::Deserialize(content);
+			auto actual = BuildHistoryJson::Deserialize(content);
 
-			auto expected = BuildState(
+			auto expected = BuildHistory(
 				{
 					FileInfo(Path("File1.h"), { Path("Other1.h") }),
 					FileInfo(Path("File2.h"), { Path("Other2.h") }),
@@ -116,12 +116,12 @@ namespace Soup::UnitTests
 		[[Fact]]
 		void Serialize_Simple()
 		{
-			auto state = BuildState({
+			auto state = BuildHistory({
 				FileInfo(Path("File.h"), { Path("Other.h") }),
 			});
 
 			std::stringstream actual;
-			BuildStateJson::Serialize(state, actual);
+			BuildHistoryJson::Serialize(state, actual);
 
 			auto expected = 
 				R"({
@@ -139,13 +139,13 @@ namespace Soup::UnitTests
 		[[Fact]]
 		void Serialize_Multipl()
 		{
-			auto state = BuildState({
+			auto state = BuildHistory({
 				FileInfo(Path("File1.h"), { Path("Other1.h") }),
 				FileInfo(Path("File2.h"), { Path("Other2.h") }),
 			});
 
 			std::stringstream actual;
-			BuildStateJson::Serialize(state, actual);
+			BuildHistoryJson::Serialize(state, actual);
 
 			auto expected = 
 				R"({

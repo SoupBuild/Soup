@@ -4,7 +4,8 @@
   "type": "Executable",
   "dependencies": [
     "../../../Dependencies/SoupTest/Assert/",
-    "../MSVC/"
+    "../MSVC/",
+    "../../TestUtilities/"
   ],
   "source": [
     "gen/Main.cpp"

@@ -4,13 +4,15 @@
 
 #pragma once
 #include "RecipeExtensions.h"
-#include "RecipeBuilder.h"
+#include "Build/Runner/BuildRunner.h"
+#include "Build/System/BuildSystem.h"
+#include "Build/Tasks/RecipeBuildTask.h"
 
 namespace Soup
 {
 	/// <summary>
 	/// The recipe build manager that knows how to perform the correct build for a recipe 
-	/// and all of its developer and runtime dependencies
+	/// and all of its development and runtime dependencies
 	/// </summary>
 	export class RecipeBuildManager
 	{
@@ -21,15 +23,13 @@ namespace Soup
 		RecipeBuildManager(
 			std::shared_ptr<ICompiler> systemCompiler,
 			std::shared_ptr<ICompiler> runtimeCompiler) :
-			_builder(systemCompiler, runtimeCompiler)
+			_systemCompiler(systemCompiler),
+			_runtimeCompiler(runtimeCompiler)
 		{
-			// Setup the core set of recipes that are required to break
-			// the circular build dependency from within the core command line executable
-			// TODO: Normalize uppercase?
-			_knownInProcessRecipes = std::set<std::string>({
-				"std.core",
-				"Soup.Core",
-			});
+			if (_systemCompiler == nullptr)
+				throw std::runtime_error("Argument null: systemCompiler");
+			if (_runtimeCompiler == nullptr)
+				throw std::runtime_error("Argument null: runtimeCompiler");
 		}
 
 		/// <summary>
@@ -228,7 +228,41 @@ namespace Soup
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild)
 		{
-			_builder.Execute(packageRoot, recipe, arguments, isSystemBuild);
+			// Create a new build system for the requested build
+			auto buildSystem = Build::BuildSystem();
+
+			// Select the correct compiler to use
+			std::shared_ptr<ICompiler> activeCompiler = nullptr;
+			if (isSystemBuild)
+			{
+				Log::HighPriority("System Build '" + recipe.GetName() + "'");
+				activeCompiler = _systemCompiler;
+			}
+			else
+			{
+				Log::HighPriority("Build '" + recipe.GetName() + "'");
+				activeCompiler = _runtimeCompiler;
+			}
+
+			// Register the recipe build task
+			auto recipeBuildTask = std::make_shared<Build::RecipeBuildTask>(
+				_systemCompiler,
+				activeCompiler,
+				packageRoot,
+				recipe,
+				arguments);
+			buildSystem.RegisterTask(recipeBuildTask);
+
+			// Register the compile task
+			auto buildTask = std::make_shared<Build::BuildTask>(activeCompiler);
+			buildSystem.RegisterTask(buildTask);
+
+			// Run the build
+			buildSystem.Execute();
+
+			// Execute the build nodes
+			auto runner = Build::BuildRunner(packageRoot);
+			runner.Execute(buildSystem.GetState().GetBuildNodes(), arguments.ForceRebuild);
 		}
 
 		Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const
@@ -244,8 +278,8 @@ namespace Soup
 		}
 
 	private:
-		RecipeBuilder _builder;
+		std::shared_ptr<ICompiler> _systemCompiler;
+		std::shared_ptr<ICompiler> _runtimeCompiler;
 		std::set<std::string> _buildSet;
-		std::set<std::string> _knownInProcessRecipes;
 	};
 }

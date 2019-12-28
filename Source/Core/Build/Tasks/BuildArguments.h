@@ -167,11 +167,6 @@ namespace Soup
 		std::vector<std::string> PreprocessorDefinitions;
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the build is incremental or not
-		/// </summary>
-		bool IsIncremental;
-
-		/// <summary>
 		/// Gets or sets the optimization level
 		/// </summary>
 		BuildOptimizationLevel OptimizationLevel;
@@ -200,7 +195,6 @@ namespace Soup
 				ExternalLinkLibraries == rhs.ExternalLinkLibraries &&
 				LibraryPaths == rhs.LibraryPaths &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
-				IsIncremental == rhs.IsIncremental &&
 				OptimizationLevel == rhs.OptimizationLevel &&
 				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
 		}

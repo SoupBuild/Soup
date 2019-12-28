@@ -57,13 +57,11 @@ namespace Opal::System
 		/// </summary>
 		ProcessResult Execute(
 			const Path& application,
-			const std::vector<std::string>& arguments,
+			const std::string& arguments,
 			const Path& workingDirectory) override final
 		{
 			std::stringstream message;
-			message << "Execute: " << workingDirectory.ToString() << ": " << application.ToString();
-			for (auto& value : arguments)
-				message << " " << value;
+			message << "Execute: " << workingDirectory.ToString() << ": " << application.ToString() << " " << arguments;
 
 			_requests.push_back(message.str());
 			return {

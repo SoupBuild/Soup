@@ -1,10 +1,10 @@
 #pragma once
-#include "Build/BuildStateCheckerTests.h"
+#include "Build/Runner/BuildHistoryCheckerTests.h"
 
-TestState RunBuildStateCheckerTests() 
+TestState RunBuildHistoryCheckerTests() 
 {
-	auto className = "BuildStateCheckerTests";
-	auto testClass = std::make_shared<Soup::UnitTests::BuildStateCheckerTests>();
+	auto className = "BuildHistoryCheckerTests";
+	auto testClass = std::make_shared<Soup::Build::UnitTests::BuildHistoryCheckerTests>();
 	TestState state = { 0, 0 };
 	state += SoupTest::RunTest(className, "IsOutdated_NonRootedRoot_Throws", [&testClass]() { testClass->IsOutdated_NonRootedRoot_Throws(); });
 	state += SoupTest::RunTest(className, "IsOutdated_ZeroInput_Throws", [&testClass]() { testClass->IsOutdated_ZeroInput_Throws(); });

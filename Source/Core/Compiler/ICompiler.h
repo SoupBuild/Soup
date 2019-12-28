@@ -4,7 +4,6 @@
 
 #pragma once
 #include "CompileArguments.h"
-#include "CompileResult.h"
 #include "LinkArguments.h"
 
 namespace Soup
@@ -45,11 +44,11 @@ namespace Soup
 		/// <summary>
 		/// Compile
 		/// </summary>
-		virtual CompileResult Compile(const CompileArguments& args) = 0;
+		virtual std::shared_ptr<Build::BuildGraphNode> CreateCompileNode(const CompileArguments& args) = 0;
 
 		/// <summary>
 		/// Link
 		/// </summary>
-		virtual void Link(const LinkArguments& args) = 0;
+		virtual std::shared_ptr<Build::BuildGraphNode> CreateLinkNode(const LinkArguments& args) = 0;
 	};
 }

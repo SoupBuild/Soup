@@ -1,0 +1,8 @@
+{
+    "name": "SoupBuildExtension",
+    "version": "1.0.0",
+    "public": "Module.cpp",
+    "dependencies": [
+      "../../Opal/"
+    ]
+}

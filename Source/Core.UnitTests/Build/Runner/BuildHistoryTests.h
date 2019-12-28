@@ -1,12 +1,12 @@
-// <copyright file="BuildStateTests.h" company="Soup">
+// <copyright file="BuildHistoryTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 
-namespace Soup::UnitTests
+namespace Soup::Build::UnitTests
 {
-	class BuildStateTests
+	class BuildHistoryTests
 	{
 	public:
 		[[Fact]]
@@ -14,15 +14,13 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
-			auto uut = BuildState();
+			auto uut = BuildHistory();
 
 			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFile,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -43,9 +41,9 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
-			auto uut = BuildState(std::vector<FileInfo>({
+			auto uut = BuildHistory(std::vector<FileInfo>({
 				FileInfo(
 					Path("TestFile.cpp"),
 					std::vector<Path>({
@@ -55,9 +53,7 @@ namespace Soup::UnitTests
 
 			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFile,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -78,9 +74,9 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
-			auto uut = BuildState(std::vector<FileInfo>({
+			auto uut = BuildHistory(std::vector<FileInfo>({
 				FileInfo(
 					Path("TestFile.cpp"),
 					std::vector<Path>({
@@ -89,9 +85,7 @@ namespace Soup::UnitTests
 
 			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFile,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsTrue(result, "Verify result is true.");
 
@@ -110,9 +104,9 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
-			auto uut = BuildState(std::vector<FileInfo>({
+			auto uut = BuildHistory(std::vector<FileInfo>({
 				FileInfo(
 					Path("TestFile.cpp"),
 					std::vector<Path>({
@@ -137,9 +131,7 @@ namespace Soup::UnitTests
 
 			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFile,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsTrue(result, "Verify result is true.");
 
@@ -162,9 +154,9 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
-			auto uut = BuildState(std::vector<FileInfo>({
+			auto uut = BuildHistory(std::vector<FileInfo>({
 				FileInfo(
 					Path("TestFile.cpp"),
 					std::vector<Path>({
@@ -184,9 +176,7 @@ namespace Soup::UnitTests
 
 			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFile,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsTrue(result, "Verify result is true.");
 

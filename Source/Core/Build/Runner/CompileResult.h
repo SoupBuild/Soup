@@ -2,7 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// Header includes recursive container

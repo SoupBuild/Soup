@@ -1,16 +1,16 @@
-﻿// <copyright file="BuildStateChecker.h" company="Soup">
+﻿// <copyright file="BuildHistoryChecker.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "BuildState.h"
+#include "BuildHistory.h"
 
-namespace Soup
+namespace Soup::Build
 {
-	export class BuildStateChecker
+	export class BuildHistoryChecker
 	{
 	public:
-		BuildStateChecker() :
+		BuildHistoryChecker() :
 			m_cache()
 		{
 		}
@@ -20,17 +20,36 @@ namespace Soup
 		/// respect to the input files
 		/// </summary>
 		bool IsOutdated(
+			const std::vector<Path>& targetFiles,
+			const std::vector<Path>& inputFiles,
+			const Path& rootPath)
+		{
+			if (inputFiles.empty())
+				throw std::runtime_error("Cannot check outdated with no input files.");
+
+			for (auto& targetFile : targetFiles)
+			{
+				if (IsOutdated(targetFile, inputFiles, rootPath))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+	private:
+		/// <summary>
+		/// Perform a check if the requested target is outdated with
+		/// respect to the input files
+		/// </summary>
+		bool IsOutdated(
 			const Path& targetFile,
 			const std::vector<Path>& inputFiles,
 			const Path& rootPath)
 		{
-			if (!rootPath.HasRoot())
-				throw std::runtime_error("The root path must have a root.");
-			if (inputFiles.empty())
-				throw std::runtime_error("Cannot check outdated with no input files.");
-
 			// Verify the output file exists
-			auto relativeOutputFile = rootPath + targetFile;
+			auto relativeOutputFile = targetFile.HasRoot() ? targetFile : rootPath + targetFile;
 			if (!System::IFileSystem::Current().Exists(relativeOutputFile))
 			{
 				Log::Info("Output target does not exist: " + relativeOutputFile.ToString());

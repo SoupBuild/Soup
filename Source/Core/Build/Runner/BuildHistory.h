@@ -1,10 +1,11 @@
-﻿// <copyright file="BuildState.h" company="Soup">
+﻿// <copyright file="BuildHistory.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
+#include "CompileResult.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	export class FileInfo
 	{
@@ -53,22 +54,22 @@ namespace Soup
 		}
 	};
 
-	export class BuildState
+	export class BuildHistory
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="BuildState"/> class.
+		/// Initializes a new instance of the <see cref="BuildHistory"/> class.
 		/// </summary>
-		BuildState() :
+		BuildHistory() :
 			_knownFiles(),
 			_fastLookup()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="BuildState"/> class.
+		/// Initializes a new instance of the <see cref="BuildHistory"/> class.
 		/// </summary>
-		BuildState(std::vector<FileInfo> knownFiles) :
+		BuildHistory(std::vector<FileInfo> knownFiles) :
 			_knownFiles(std::move(knownFiles)),
 			_fastLookup()
 		{
@@ -88,16 +89,22 @@ namespace Soup
 		/// from the build state
 		/// </summary>
 		bool TryBuildIncludeClosure(
-			const Path& sourceFile,
+			const Path& sourceFiles,
 			std::vector<Path>& closure)
 		{
-			closure.clear();
+			// Convert the input vector into a set of strings
 			auto closureSet = std::unordered_set<std::string>();
+			for (auto& file : closure)
+			{
+				closureSet.insert(file.ToString());
+			}
+
 			if (TryBuildIncludeClosure(
-				std::vector<Path>({ sourceFile }),
+				std::vector<Path>({ sourceFiles }),
 				closureSet))
 			{
 				// Convert the set to a vector output
+				closure.clear();
 				for (auto& file : closureSet)
 				{
 					closure.push_back(Path(file));
@@ -136,7 +143,7 @@ namespace Soup
 		/// <summary>
 		/// Equality operator
 		/// </summary>
-		bool operator ==(const BuildState& rhs) const
+		bool operator ==(const BuildHistory& rhs) const
 		{
 			return _knownFiles == rhs._knownFiles;
 		}
@@ -144,7 +151,7 @@ namespace Soup
 		/// <summary>
 		/// Inequality operator
 		/// </summary>
-		bool operator !=(const BuildState& rhs) const
+		bool operator !=(const BuildHistory& rhs) const
 		{
 			return !(*this == rhs);
 		}

@@ -1,45 +1,45 @@
-﻿// <copyright file="BuildStateManager.h" company="Soup">
+﻿// <copyright file="BuildHistoryManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "BuildState.h"
-#include "BuildStateJson.h"
+#include "BuildHistory.h"
+#include "BuildHistoryJson.h"
 #include "Constants.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The build state manager
 	/// </summary>
-	export class BuildStateManager
+	export class BuildHistoryManager
 	{
 	private:
-		static constexpr std::string_view BuildStateFileName = "BuildState.json";
+		static constexpr std::string_view BuildHistoryFileName = "BuildHistory.json";
 
 	public:
 		/// <summary>
 		/// Load the build state from the provided directory
 		/// </summary>
-		static bool TryLoadState(const Path& directory, BuildState& result)
+		static bool TryLoadState(const Path& directory, BuildHistory& result)
 		{
 			// Verify the requested file exists
-			auto buildStateFile = directory +
+			auto BuildHistoryFile = directory +
 				Path(Constants::ProjectGenerateFolderName) +
-				Path(BuildStateFileName);
-			if (!System::IFileSystem::Current().Exists(buildStateFile))
+				Path(BuildHistoryFileName);
+			if (!System::IFileSystem::Current().Exists(BuildHistoryFile))
 			{
-				Log::Info("BuildState file does not exist");
+				Log::Info("BuildHistory file does not exist");
 				return false;
 			}
 
 			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(buildStateFile);
+			auto file = System::IFileSystem::Current().OpenRead(BuildHistoryFile);
 
 			// Read the contents of the build state file
 			try
 			{
-				result = BuildStateJson::Deserialize(*file);
+				result = BuildHistoryJson::Deserialize(*file);
 				return true;
 			}
 			catch(std::runtime_error& ex)
@@ -49,7 +49,7 @@ namespace Soup
 			}
 			catch(...)
 			{
-				Log::Info("Failed to parse BuildState.");
+				Log::Info("Failed to parse BuildHistory.");
 				return false;
 			}
 		}
@@ -57,12 +57,12 @@ namespace Soup
 		/// <summary>
 		/// Save the build state for the provided directory
 		/// </summary>
-		static void SaveState(const Path& directory, const BuildState& state)
+		static void SaveState(const Path& directory, const BuildHistory& state)
 		{
 			auto buildProjectGenerateFolder = directory +
 				Path(Constants::ProjectGenerateFolderName);
-			auto buildStateFile = buildProjectGenerateFolder +
-				Path(BuildStateFileName);
+			auto BuildHistoryFile = buildProjectGenerateFolder +
+				Path(BuildHistoryFileName);
 
 			// Ensure the target directories exists
 			if (!System::IFileSystem::Current().Exists(buildProjectGenerateFolder))
@@ -72,10 +72,10 @@ namespace Soup
 			}
 
 			// Open the file to write to
-			auto file = System::IFileSystem::Current().OpenWrite(buildStateFile);
+			auto file = System::IFileSystem::Current().OpenWrite(BuildHistoryFile);
 
 			// Write the build state to the file stream
-			BuildStateJson::Serialize(state, *file);
+			BuildHistoryJson::Serialize(state, *file);
 		}
 	};
 }

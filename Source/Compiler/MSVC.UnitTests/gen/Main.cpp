@@ -9,6 +9,7 @@ import Opal;
 import SoupCore;
 import SoupCompilerMSVC;
 import SoupTest;
+import SoupTestUtilities;
 
 using namespace Opal;
 using namespace Opal::System;

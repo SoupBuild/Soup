@@ -238,8 +238,10 @@ namespace Opal
 		Path operator +(const Path& rhs) const
 		{
 			if (rhs.HasRoot())
+			{
 				throw std::runtime_error(
 					"Cannot combine a rooted path on the right hand side: " + rhs.ToString());
+			}
 
 			auto result = Path();
 

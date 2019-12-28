@@ -14,7 +14,7 @@ namespace Soup::UnitTests
 		{
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>(Path("C:/TestInstall/TestProcess.exe"));
-			IProcessManager::Register(processManager);
+			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
 			auto result = LocalUserConfigExtensions::GetLocalUserConfigFilePath();
 
@@ -26,15 +26,15 @@ namespace Soup::UnitTests
 		{
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>(Path("C:/TestInstall/TestProcess.exe"));
-			IProcessManager::Register(processManager);
+			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			LocalUserConfig actual;
 			Assert::ThrowsRuntimeError([&actual]() {
@@ -63,15 +63,15 @@ namespace Soup::UnitTests
 		{
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>(Path("C:/TestInstall/TestProcess.exe"));
-			IProcessManager::Register(processManager);
+			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("C:/TestInstall/LocalUserConfig.json"),
 				MockFileState(std::stringstream("garbage")));
@@ -105,15 +105,15 @@ namespace Soup::UnitTests
 		{
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>(Path("C:/TestInstall/TestProcess.exe"));
-			IProcessManager::Register(processManager);
+			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			Log::RegisterListener(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
-			IFileSystem::Register(fileSystem);
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("C:/TestInstall/LocalUserConfig.json"),
 				MockFileState(std::stringstream(R"({

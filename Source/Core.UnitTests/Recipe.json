@@ -5,7 +5,8 @@
   "dependencies": [
     "../../Dependencies/json11/",
     "../../Dependencies/SoupTest/Assert/",
-    "../Core/"
+    "../Core/",
+    "../TestUtilities/"
   ],
   "source": [
     "gen/Main.cpp"

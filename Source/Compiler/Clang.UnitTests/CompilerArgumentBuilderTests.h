@@ -15,8 +15,14 @@ namespace Soup::Compiler::Clang::UnitTests
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("");
 			arguments.TargetFile = Path("File.o");
+
 			Assert::ThrowsRuntimeError([&arguments]() {
-				auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+				auto actualInput = std::vector<Path>();
+				auto actualOutput = std::vector<Path>();
+				auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+					arguments,
+					actualInput,
+					actualOutput);
 			});
 		}
 
@@ -26,8 +32,14 @@ namespace Soup::Compiler::Clang::UnitTests
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("");
+
 			Assert::ThrowsRuntimeError([&arguments]() {
-				auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
+				auto actualInput = std::vector<Path>();
+				auto actualOutput = std::vector<Path>();
+				auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+					arguments,
+					actualInput,
+					actualOutput);
 			});
 		}
 
@@ -37,9 +49,15 @@ namespace Soup::Compiler::Clang::UnitTests
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.o");
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -50,8 +68,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -61,9 +87,15 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.o");
 			arguments.GenerateIncludeTree = true;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -75,8 +107,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Theory]]
@@ -89,9 +129,15 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.o");
 			arguments.Standard = standard;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -102,8 +148,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -113,9 +167,15 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("File.o");
 			arguments.Standard = LanguageStandard::CPP20;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -126,8 +186,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -138,9 +206,15 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.TargetFile = Path("File.o");
 			arguments.Standard = LanguageStandard::CPP17;
 			arguments.Optimize = OptimizationLevel::None;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -151,8 +225,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Theory]]
@@ -165,9 +247,15 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.TargetFile = Path("File.o");
 			arguments.Standard = LanguageStandard::CPP17;
 			arguments.Optimize = level;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -179,8 +267,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -192,9 +288,15 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.Standard = LanguageStandard::CPP17;
 			arguments.Optimize = OptimizationLevel::None;
 			arguments.GenerateSourceDebugInfo = true;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -206,8 +308,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -220,9 +330,15 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("C:/Files/SDK/"),
 				Path("my files/")
 			});
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -235,8 +351,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -249,9 +373,15 @@ namespace Soup::Compiler::Clang::UnitTests
 				"DEBUG",
 				"VERSION=1"
 			});
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -264,8 +394,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -276,11 +414,17 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.TargetFile = Path("File.o");
 			arguments.IncludeModules = std::vector<Path>({
 				Path("Module.pcm"),
-				Path("Std.pcm")
+				Path("Std.pcm"),
 			});
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -293,8 +437,18 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"File.o",
 			});
+			auto expectedInput = std::vector<Path>({
+				Path("Module.pcm"),
+				Path("Std.pcm"),
+				Path("File.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("File.o"),
+			});
 
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
 		[[Fact]]
@@ -304,9 +458,15 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.SourceFile = Path("module.cpp");
 			arguments.TargetFile = Path("module.pcm");
 			arguments.ExportModule = true;
-			auto actual = ArgumentBuilder::BuildCompilerArguments(arguments);
 
-			auto expected = std::vector<std::string>({
+			auto actualInput = std::vector<Path>();
+			auto actualOutput = std::vector<Path>();
+			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
+				arguments,
+				actualInput,
+				actualOutput);
+
+			auto expectedArguments = std::vector<std::string>({
 				"-nostdinc",
 				"-Wno-unknown-attributes",
 				"-Xclang",
@@ -317,7 +477,16 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-o",
 				"module.pcm",
 			});
-			Assert::AreEqual(expected, actual, "Verify generated arguments match expected.");
+			auto expectedInput = std::vector<Path>({
+				Path("module.cpp"),
+			});
+			auto expectedOutput = std::vector<Path>({
+				Path("module.pcm"),
+			});
+
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
+			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 	};
 }

@@ -27,10 +27,6 @@ namespace Soup::Compiler::MSVC::UnitTests
 		[[Fact]]
 		void Compile_Simple()
 		{
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			IProcessManager::Register(processManager);
-
 			auto uut = Compiler(
 				Path("./bin/"),
 				Path("mock.cl.exe"),
@@ -42,24 +38,27 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("obj/File.obj");
 			arguments.RootDirectory = Path("Source");
 
-			auto result = uut.Compile(arguments);
+			auto result = uut.CreateCompileNode(arguments);
 
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /X /RTC1 /EHsc /MTd /bigobj /c File.cpp /Fo\"obj/File.obj\"",
+			// Verify result
+			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"File.cpp",
+				Path("./bin/mock.cl.exe"),
+				"/nologo /std:c++11 /Od /X /RTC1 /EHsc /MTd /bigobj /c File.cpp /Fo\"obj/File.obj\"",
+				Path("Source"),
+				std::vector<Path>({
+					Path("File.cpp"),
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				std::vector<Path>({
+					Path("obj/File.obj"),
+				}));
+
+			AssertExtensions::AreEqual(expected, result);
 		}
 
 		[[Fact]]
 		void Compile_Module()
 		{
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			IProcessManager::Register(processManager);
-
 			auto uut = Compiler(
 				Path("./bin/"),
 				Path("mock.cl.exe"),
@@ -81,24 +80,29 @@ namespace Soup::Compiler::MSVC::UnitTests
 			});
 			arguments.ExportModule = true;
 
-			auto result = uut.Compile(arguments);
+			auto result = uut.CreateCompileNode(arguments);
 
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Execute: Source: bin/mock.cl.exe /nologo /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MTd /module:reference \"Module.pcm\" /module:export /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
+			// Verify result
+			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"File.cpp",
+				Path("./bin/mock.cl.exe"),
+				"/nologo /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MTd /module:reference \"Module.pcm\" /module:export /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
+				Path("Source"),
+				std::vector<Path>({
+					Path("Module.pcm"),
+					Path("File.cpp"),
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				std::vector<Path>({
+					Path("obj/File.ifc"),
+					Path("obj/File.obj"),
+				}));
+
+			AssertExtensions::AreEqual(expected, result);
 		}
 
 		[[Fact]]
 		void LinkStaticLibrary_Simple()
 		{
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			IProcessManager::Register(processManager);
-
 			auto uut = Compiler(
 				Path("./bin/"),
 				Path("mock.cl.exe"),
@@ -113,24 +117,27 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("File.mock.obj"),
 			});
 
-			uut.Link(arguments);
+			auto result = uut.CreateLinkNode(arguments);
 
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Execute: Source: bin/mock.lib.exe /nologo /machine:X64 /out:\"Library.mock.a\" File.mock.obj",
+			// Verify result
+			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"Library.mock.a",
+				Path("./bin/mock.lib.exe"),
+				"/nologo /machine:X64 /out:\"Library.mock.a\" File.mock.obj",
+				Path("Source"),
+				std::vector<Path>({
+					Path("File.mock.obj"),
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				std::vector<Path>({
+					Path("Library.mock.a"),
+				}));
+
+			AssertExtensions::AreEqual(expected, result);
 		}
 
 		[[Fact]]
 		void LinkExecutable_Simple()
 		{
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			IProcessManager::Register(processManager);
-
 			auto uut = Compiler(
 				Path("./bin/"),
 				Path("mock.cl.exe"),
@@ -148,15 +155,23 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("Library.mock.a"),
 			});
 
-			uut.Link(arguments);
+			auto result = uut.CreateLinkNode(arguments);
 
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Execute: Source: bin/mock.link.exe /nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",
+			// Verify result
+			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"Something.exe",
+				Path("./bin/mock.link.exe"),
+				"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",
+				Path("Source"),
+				std::vector<Path>({
+					Path("Library.mock.a"),
+					Path("File.mock.obj"),
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				std::vector<Path>({
+					Path("Something.exe"),
+				}));
+				
+			AssertExtensions::AreEqual(expected, result);
 		}
 	};
 }
