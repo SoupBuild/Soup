@@ -42,6 +42,7 @@ namespace Soup::Build::UnitTests
 				std::vector<std::string>({
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
+					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -93,6 +94,7 @@ namespace Soup::Build::UnitTests
 					"INFO: No previous state found, full rebuild required",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
+					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -135,8 +137,9 @@ namespace Soup::Build::UnitTests
 			// Setup the input build state
 			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"TestCommand: 1",
 					Path("Command.exe"),
-					"1",
+					"Arguments",
 					Path("C:/TestWorkingDirectory/"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -151,9 +154,11 @@ namespace Soup::Build::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Execute: Command.exe 1",
+					"HIGH: TestCommand: 1",
+					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
+					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -171,7 +176,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: C:/TestWorkingDirectory/: Command.exe 1",
+					"Execute: C:/TestWorkingDirectory/: Command.exe Arguments",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -197,8 +202,9 @@ namespace Soup::Build::UnitTests
 			// Setup the input build state
 			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"TestCommand: 1",
 					Path("Command.exe"),
-					"1",
+					"Arguments",
 					Path("C:/TestWorkingDirectory/"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -216,9 +222,11 @@ namespace Soup::Build::UnitTests
 					"DIAG: Loading previous build state",
 					"INFO: BuildHistory file does not exist",
 					"INFO: No previous state found, full rebuild required",
-					"DIAG: Execute: Command.exe 1",
+					"HIGH: TestCommand: 1",
+					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
+					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -237,7 +245,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: C:/TestWorkingDirectory/: Command.exe 1",
+					"Execute: C:/TestWorkingDirectory/: Command.exe Arguments",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -271,8 +279,9 @@ namespace Soup::Build::UnitTests
 			// Setup the input build state
 			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"TestCommand: 1",
 					Path("Command.exe"),
-					"1",
+					"Arguments",
 					Path("C:/TestWorkingDirectory/"),
 					std::vector<Path>({
 						Path("InputFile.cpp"),
@@ -290,9 +299,11 @@ namespace Soup::Build::UnitTests
 					"DIAG: Loading previous build state",
 					"INFO: Check for updated source",
 					"INFO: Missing file info: InputFile.cpp",
-					"DIAG: Execute: Command.exe 1",
+					"HIGH: TestCommand: 1",
+					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
+					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -344,8 +355,9 @@ namespace Soup::Build::UnitTests
 			// Setup the input build state
 			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"TestCommand: 1",
 					Path("Command.exe"),
-					"1",
+					"Arguments",
 					Path("C:/TestWorkingDirectory/"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -363,9 +375,11 @@ namespace Soup::Build::UnitTests
 					"DIAG: Loading previous build state",
 					"INFO: Check for updated source",
 					"INFO: Output target does not exist: C:/TestWorkingDirectory/OutputFile.out",
-					"DIAG: Execute: Command.exe 1",
+					"HIGH: TestCommand: 1",
+					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
+					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -421,8 +435,9 @@ namespace Soup::Build::UnitTests
 			// Setup the input build state
 			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"TestCommand: 1",
 					Path("Command.exe"),
-					"1",
+					"Arguments",
 					Path("C:/TestWorkingDirectory/"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -442,9 +457,11 @@ namespace Soup::Build::UnitTests
 					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434993000]",
 					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
 					"INFO: Input altered after target [C:/TestWorkingDirectory/InputFile.in] -> [C:/TestWorkingDirectory/OutputFile.out]",
-					"DIAG: Execute: Command.exe 1",
+					"HIGH: TestCommand: 1",
+					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
+					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -503,8 +520,9 @@ namespace Soup::Build::UnitTests
 			// Setup the input build state
 			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"TestCommand: 1",
 					Path("Command.exe"),
-					"1",
+					"Arguments",
 					Path("C:/TestWorkingDirectory/"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -527,6 +545,7 @@ namespace Soup::Build::UnitTests
 					"INFO: Up to date",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
+					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");

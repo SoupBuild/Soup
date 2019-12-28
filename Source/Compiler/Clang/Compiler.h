@@ -108,6 +108,7 @@ namespace Soup::Compiler::Clang
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
 
 			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+				args.TargetFile.ToString(),
 				std::move(executablePath),
 				CombineArguments(commandArgs),
 				args.RootDirectory,
@@ -128,6 +129,7 @@ namespace Soup::Compiler::Clang
 			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, inputFiles, outputFiles);
 
 			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+				args.SourceFile.ToString(),
 				std::move(executablePath),
 				CombineArguments(commandArgs),
 				args.RootDirectory,
@@ -168,6 +170,7 @@ namespace Soup::Compiler::Clang
 					generatePrecompiledModuleOutputFiles);
 
 			auto precompiledModuleBuildNode = std::make_shared<Build::BuildGraphNode>(
+				generatePrecompiledModuleArgs.SourceFile.ToString(),
 				executablePath,
 				CombineArguments(generatePrecompiledModuleCommandArgs),
 				args.RootDirectory,
@@ -192,6 +195,7 @@ namespace Soup::Compiler::Clang
 					compileObjectOutputFiles);
 
 			auto compileBuildNode = std::make_shared<Build::BuildGraphNode>(
+				compileObjectArgs.SourceFile.ToString(),
 				std::move(executablePath),
 				CombineArguments(compileObjectCommandArgs),
 				args.RootDirectory,

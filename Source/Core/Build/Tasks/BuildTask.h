@@ -101,7 +101,7 @@ namespace Soup::Build
 			auto linkNode = CoreLink(arguments);
 			BuildGraphNode::AddLeafChild(compileNodes, linkNode);
 
-			Log::HighPriority("Done");
+			Log::Info("Build Generate Done");
 
 			for (auto& node : compileNodes)
 			{
@@ -174,7 +174,7 @@ namespace Soup::Build
 
 			// Compile the individual translation unit
 			const auto& file = arguments.ModuleInterfaceSourceFile;
-			Log::HighPriority(file.ToString());
+			Log::Info("Generate Compile Node: " + file.ToString());
 			compileArguments.SourceFile = file;
 			compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
 			compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
@@ -226,7 +226,7 @@ namespace Soup::Build
 			auto buildNodes = std::vector<std::shared_ptr<BuildGraphNode>>();
 			for (auto& file : arguments.SourceFiles)
 			{
-				Log::HighPriority(file.ToString());
+				Log::Info("Generate Compile Node: " + file.ToString());
 				compileArguments.SourceFile = file;
 				compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
 				compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
@@ -315,7 +315,7 @@ namespace Soup::Build
 			linkArguments.ObjectFiles = std::move(objectFiles);
 
 			// Perform the link
-			Log::Info(linkArguments.TargetFile.ToString());
+			Log::Info("Generate Link Node: " + linkArguments.TargetFile.ToString());
 			auto linkNode = _compiler->CreateLinkNode(linkArguments);
 
 			return linkNode;

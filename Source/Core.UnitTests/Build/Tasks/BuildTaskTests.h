@@ -72,11 +72,11 @@ namespace Soup::Build::UnitTests
 					"DIAG: IncludeModules = ",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
-					"HIGH: TestFile.cpp",
+					"INFO: Generate Compile Node: TestFile.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: bin/Program.exe",
-					"HIGH: Done",
+					"INFO: Generate Link Node: bin/Program.exe",
+					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -114,8 +114,9 @@ namespace Soup::Build::UnitTests
 			// Verify build state
 			auto expectedLinkNode =
 				std::make_shared<BuildGraphNode>(
+					"MockLink: 1",
 					Path("MockLinker.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -126,8 +127,9 @@ namespace Soup::Build::UnitTests
 
 			auto expectedCompileNode =
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 1",
 					Path("MockCompiler.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -141,6 +143,7 @@ namespace Soup::Build::UnitTests
 
 			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					Path("./"),
@@ -150,6 +153,7 @@ namespace Soup::Build::UnitTests
 						expectedCompileNode,
 					})),
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					Path("./"),
@@ -210,11 +214,11 @@ namespace Soup::Build::UnitTests
 					"DIAG: IncludeModules = ",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
-					"HIGH: TestFile.cpp",
+					"INFO: Generate Compile Node: TestFile.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: bin/Program.exe",
-					"HIGH: Done",
+					"INFO: Generate Link Node: bin/Program.exe",
+					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -252,8 +256,9 @@ namespace Soup::Build::UnitTests
 			// Verify build state
 			auto expectedLinkNode =
 				std::make_shared<BuildGraphNode>(
+					"MockLink: 1",
 					Path("MockLinker.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -264,8 +269,9 @@ namespace Soup::Build::UnitTests
 
 			auto expectedCompileNode =
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 1",
 					Path("MockCompiler.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -279,6 +285,7 @@ namespace Soup::Build::UnitTests
 
 			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					Path("./"),
@@ -288,6 +295,7 @@ namespace Soup::Build::UnitTests
 						expectedCompileNode,
 					})),
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					Path("./"),
@@ -348,11 +356,11 @@ namespace Soup::Build::UnitTests
 					"DIAG: IncludeModules = ",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
-					"HIGH: TestFile.cpp",
+					"INFO: Generate Compile Node: TestFile.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: bin/Program.exe",
-					"HIGH: Done",
+					"INFO: Generate Link Node: bin/Program.exe",
+					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -390,8 +398,9 @@ namespace Soup::Build::UnitTests
 			// Verify build state
 			auto expectedLinkNode =
 				std::make_shared<BuildGraphNode>(
+					"MockLink: 1",
 					Path("MockLinker.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -402,8 +411,9 @@ namespace Soup::Build::UnitTests
 
 			auto expectedCompileNode =
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 1",
 					Path("MockCompiler.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -417,6 +427,7 @@ namespace Soup::Build::UnitTests
 
 			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					Path("./"),
@@ -426,6 +437,7 @@ namespace Soup::Build::UnitTests
 						expectedCompileNode,
 					})),
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					Path("./"),
@@ -500,13 +512,13 @@ namespace Soup::Build::UnitTests
 					"DIAG: IncludeModules = ../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
-					"HIGH: TestFile1.cpp",
-					"HIGH: TestFile2.cpp",
-					"HIGH: TestFile3.cpp",
+					"INFO: Generate Compile Node: TestFile1.cpp",
+					"INFO: Generate Compile Node: TestFile2.cpp",
+					"INFO: Generate Compile Node: TestFile3.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: bin/Library.mock.lib",
-					"HIGH: Done",
+					"INFO: Generate Link Node: bin/Library.mock.lib",
+					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -569,8 +581,9 @@ namespace Soup::Build::UnitTests
 			// Verify build state
 			auto expectedLinkNode =
 				std::make_shared<BuildGraphNode>(
+					"MockLink: 1",
 					Path("MockLinker.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -581,8 +594,9 @@ namespace Soup::Build::UnitTests
 
 			auto expectedCompileNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 1",
 					Path("MockCompiler.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -594,8 +608,9 @@ namespace Soup::Build::UnitTests
 						expectedLinkNode,
 					})),
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 2",
 					Path("MockCompiler.exe"),
-					"2",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -607,8 +622,9 @@ namespace Soup::Build::UnitTests
 						expectedLinkNode,
 					})),
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 3",
 					Path("MockCompiler.exe"),
-					"3",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -623,6 +639,7 @@ namespace Soup::Build::UnitTests
 
 			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					Path("./"),
@@ -630,6 +647,7 @@ namespace Soup::Build::UnitTests
 					std::vector<Path>({}),
 					expectedCompileNodes),
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					Path("./"),
@@ -709,15 +727,15 @@ namespace Soup::Build::UnitTests
 					"DIAG: IncludeModules = ../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"DIAG: PreprocessorDefinitions = DEBUG AWESOME",
 					"INFO: CompileModuleInterfaceUnit",
-					"HIGH: Public.cpp",
+					"INFO: Generate Compile Node: Public.cpp",
 					"INFO: Compiling source files",
-					"HIGH: TestFile1.cpp",
-					"HIGH: TestFile2.cpp",
-					"HIGH: TestFile3.cpp",
+					"INFO: Generate Compile Node: TestFile1.cpp",
+					"INFO: Generate Compile Node: TestFile2.cpp",
+					"INFO: Generate Compile Node: TestFile3.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: bin/Library.mock.lib",
-					"HIGH: Done",
+					"INFO: Generate Link Node: bin/Library.mock.lib",
+					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -794,8 +812,9 @@ namespace Soup::Build::UnitTests
 			// Verify build state
 			auto expectedLinkNode =
 				std::make_shared<BuildGraphNode>(
+					"MockLink: 1",
 					Path("MockLinker.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -806,8 +825,9 @@ namespace Soup::Build::UnitTests
 
 			auto expectedCompileSourceNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 2",
 					Path("MockCompiler.exe"),
-					"2",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -819,8 +839,9 @@ namespace Soup::Build::UnitTests
 						expectedLinkNode,
 					})),
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 3",
 					Path("MockCompiler.exe"),
-					"3",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -832,8 +853,9 @@ namespace Soup::Build::UnitTests
 						expectedLinkNode,
 					})),
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 4",
 					Path("MockCompiler.exe"),
-					"4",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -848,6 +870,7 @@ namespace Soup::Build::UnitTests
 
 			auto expectedCopyModuleInterfaceNode =
 				std::make_shared<BuildGraphNode>(
+					"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
 					Path("./"),
@@ -861,8 +884,9 @@ namespace Soup::Build::UnitTests
 
 			auto expectedCompileModuleNode =
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 1",
 					Path("MockCompiler.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -876,6 +900,7 @@ namespace Soup::Build::UnitTests
 
 			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					Path("./"),
@@ -885,6 +910,7 @@ namespace Soup::Build::UnitTests
 						expectedCompileModuleNode,
 					})),
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					Path("./"),
@@ -954,11 +980,11 @@ namespace Soup::Build::UnitTests
 					"DIAG: IncludeModules = ../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: CompileModuleInterfaceUnit",
-					"HIGH: Public.cpp",
+					"INFO: Generate Compile Node: Public.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: bin/Library.mock.lib",
-					"HIGH: Done",
+					"INFO: Generate Link Node: bin/Library.mock.lib",
+					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1012,8 +1038,9 @@ namespace Soup::Build::UnitTests
 			// Verify build state
 			auto expectedLinkNode =
 				std::make_shared<BuildGraphNode>(
+					"MockLink: 1",
 					Path("MockLinker.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -1024,6 +1051,7 @@ namespace Soup::Build::UnitTests
 
 			auto expectedCopyModuleInterfaceNode =
 				std::make_shared<BuildGraphNode>(
+					"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
 					Path("./"),
@@ -1039,8 +1067,9 @@ namespace Soup::Build::UnitTests
 
 			auto expectedCompileModuleNode =
 				std::make_shared<BuildGraphNode>(
+					"MockCompile: 1",
 					Path("MockCompiler.exe"),
-					"1",
+					"Arguments",
 					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
@@ -1054,6 +1083,7 @@ namespace Soup::Build::UnitTests
 
 			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					Path("./"),
@@ -1063,6 +1093,7 @@ namespace Soup::Build::UnitTests
 						expectedCompileModuleNode,
 					})),
 				std::make_shared<BuildGraphNode>(
+					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					Path("./"),

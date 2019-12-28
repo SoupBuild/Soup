@@ -17,6 +17,9 @@ namespace Soup::Build
 		/// </summary>
 		static std::shared_ptr<BuildGraphNode> CreateCopyFileNode(const Path& source, const Path& destination)
 		{
+			auto titleStream = std::stringstream();
+			titleStream << "Copy [" << source.ToString() << "] -> [" << destination.ToString() << "]";
+
 			auto program = Path("C:/Windows/System32/cmd.exe");
 			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({
@@ -31,6 +34,7 @@ namespace Soup::Build
 			arguments << "/C copy /Y \"" << source.ToAlternateString() << "\" \"" << destination.ToAlternateString() << "\"";
 
 			return std::make_shared<BuildGraphNode>(
+				titleStream.str(),
 				std::move(program),
 				arguments.str(),
 				std::move(workingDirectory),
@@ -43,6 +47,9 @@ namespace Soup::Build
 		/// </summary>
 		static std::shared_ptr<BuildGraphNode> CreateCreateDirectoryNode(const Path& directory)
 		{
+			auto titleStream = std::stringstream();
+			titleStream << "MakeDir [" << directory.ToString() << "]";
+
 			auto program = Path("C:/Windows/System32/cmd.exe");
 			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({});
@@ -53,6 +60,7 @@ namespace Soup::Build
 			arguments << "/C if not exist \"" << directory.ToString() << "\" mkdir \"" << directory.ToString() << "\"";
 
 			return std::make_shared<BuildGraphNode>(
+				titleStream.str(),
 				std::move(program),
 				arguments.str(),
 				std::move(workingDirectory),

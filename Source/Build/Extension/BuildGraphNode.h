@@ -16,12 +16,14 @@ namespace Soup::Build
 
 	public:
 		BuildGraphNode(
+			std::string title,
 			Path program,
 			std::string arguments,
 			Path workingDirectory,
 			std::vector<Path> inputFiles,
 			std::vector<Path> outputFiles) :
 			_id(UniqueId++),
+			_title(std::move(title)),
 			_program(std::move(program)),
 			_arguments(std::move(arguments)),
 			_workingDirectory(std::move(workingDirectory)),
@@ -32,6 +34,7 @@ namespace Soup::Build
 		}
 
 		BuildGraphNode(
+			std::string title,
 			Path program,
 			std::string arguments,
 			Path workingDirectory,
@@ -39,6 +42,7 @@ namespace Soup::Build
 			std::vector<Path> outputFiles,
 			std::vector<std::shared_ptr<BuildGraphNode>> children) :
 			_id(UniqueId++),
+			_title(std::move(title)),
 			_program(std::move(program)),
 			_arguments(std::move(arguments)),
 			_workingDirectory(std::move(workingDirectory)),
@@ -111,6 +115,11 @@ namespace Soup::Build
 			return _id;
 		}
 
+		const std::string& GetTitle() const
+		{
+			return _title;
+		}
+
 		const Path& GetProgram() const
 		{
 			return _program;
@@ -143,6 +152,7 @@ namespace Soup::Build
 
 	private:
 		int _id;
+		std::string _title;
 		Path _program;
 		std::string _arguments;
 		Path _workingDirectory;

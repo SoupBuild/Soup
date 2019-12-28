@@ -87,8 +87,9 @@ namespace Soup::Compiler::Mock
 		{
 			_compileRequests.push_back(args);
 			return std::make_shared<Build::BuildGraphNode>(
+				"MockCompile: " + std::to_string(_compileRequests.size()),
 				Path("MockCompiler.exe"),
-				std::to_string(_compileRequests.size()),
+				"Arguments",
 				Path("MockWorkingDirectory"),
 				std::vector<Path>({
 					Path("InputFile.in"),
@@ -105,8 +106,9 @@ namespace Soup::Compiler::Mock
 		{
 			_linkRequests.push_back(args);
 			return std::make_shared<Build::BuildGraphNode>(
+				"MockLink: " + std::to_string(_linkRequests.size()),
 				Path("MockLinker.exe"),
-				std::to_string(_linkRequests.size()),
+				"Arguments",
 				Path("MockWorkingDirectory"),
 				std::vector<Path>({
 					Path("InputFile.in"),

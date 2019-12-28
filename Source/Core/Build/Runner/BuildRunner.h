@@ -50,6 +50,8 @@ namespace Soup::Build
 
 			Log::Info("Saving updated build state");
 			BuildHistoryManager::SaveState(_workingDirectory, _buildHistory);
+
+			Log::HighPriority("Done");
 		}
 
 	private:
@@ -176,6 +178,7 @@ namespace Soup::Build
 
 			if (buildRequired)
 			{
+				Log::HighPriority(node.GetTitle());
 				auto message = "Execute: " + node.GetProgram().ToString() + " " + node.GetArguments();
 				Log::Diag(message);
 				auto result = System::IProcessManager::Current().Execute(

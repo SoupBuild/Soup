@@ -34,6 +34,7 @@ namespace Soup::Compiler::Clang::UnitTests
 
 			// Verify result
 			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"File.cpp",
 				Path("C:/Clang/bin/clang++.exe"),
 				"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
 				Path("Source"),
@@ -71,6 +72,7 @@ namespace Soup::Compiler::Clang::UnitTests
 
 			// Verify result
 			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"File.cpp",
 				Path("C:/Clang/bin/clang++.exe"),
 				"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
 				Path("Source"),
@@ -83,6 +85,7 @@ namespace Soup::Compiler::Clang::UnitTests
 				}),
 				std::vector<std::shared_ptr<Build::BuildGraphNode>>({
 					std::make_shared<Build::BuildGraphNode>(
+						"obj/File.pcm",
 						Path("C:/Clang/bin/clang++.exe"),
 						"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
 						Path("Source"),
@@ -114,6 +117,7 @@ namespace Soup::Compiler::Clang::UnitTests
 
 			// Verify result
 			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"Library.mock.a",
 				Path("C:/Clang/bin/llvm-ar.exe"),
 				"rc Library.mock.a File.mock.o",
 				Path("Source"),
@@ -147,6 +151,7 @@ namespace Soup::Compiler::Clang::UnitTests
 
 			// Verify result
 			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"Something.exe",
 				Path("C:/Clang/bin/lld-link.exe"),
 				"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
 				Path("Source"),

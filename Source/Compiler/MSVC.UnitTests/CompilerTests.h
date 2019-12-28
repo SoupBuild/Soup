@@ -42,6 +42,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			// Verify result
 			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"File.cpp",
 				Path("./bin/mock.cl.exe"),
 				"/nologo /std:c++11 /Od /X /RTC1 /EHsc /MTd /bigobj /c File.cpp /Fo\"obj/File.obj\"",
 				Path("Source"),
@@ -83,6 +84,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			// Verify result
 			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"File.cpp",
 				Path("./bin/mock.cl.exe"),
 				"/nologo /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MTd /module:reference \"Module.pcm\" /module:export /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
 				Path("Source"),
@@ -119,6 +121,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			// Verify result
 			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"Library.mock.a",
 				Path("./bin/mock.lib.exe"),
 				"/nologo /machine:X64 /out:\"Library.mock.a\" File.mock.obj",
 				Path("Source"),
@@ -156,6 +159,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			// Verify result
 			auto expected = std::make_shared<Build::BuildGraphNode>(
+				"Something.exe",
 				Path("./bin/mock.link.exe"),
 				"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",
 				Path("Source"),

@@ -106,6 +106,7 @@ namespace Soup::Compiler::MSVC
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
 
 			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+				args.TargetFile.ToString(),
 				std::move(executablePath),
 				CombineArguments(commandArgs),
 				args.RootDirectory,
@@ -127,6 +128,7 @@ namespace Soup::Compiler::MSVC
 				ArgumentBuilder::BuildCompilerArguments(args, _toolsPath, inputFiles, outputFiles);
 
 			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+				args.SourceFile.ToString(),
 				std::move(executablePath),
 				CombineArguments(commandArgs),
 				args.RootDirectory,
@@ -166,6 +168,7 @@ namespace Soup::Compiler::MSVC
 				outputFiles);
 
 			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+				args.SourceFile.ToString(),
 				std::move(executablePath),
 				CombineArguments(compiledModuleCommandArgs),
 				args.RootDirectory,

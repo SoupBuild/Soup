@@ -14,6 +14,10 @@ namespace Soup
 			const std::shared_ptr<Build::BuildGraphNode>& actual)
 		{
 			Assert::AreEqual(
+				expected->GetTitle(),
+				actual->GetTitle(),
+				"Verify build node title match expected.");
+			Assert::AreEqual(
 				expected->GetProgram().ToString(),
 				actual->GetProgram().ToString(),
 				"Verify build node program match expected.");
