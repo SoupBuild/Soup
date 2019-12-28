@@ -18,13 +18,9 @@ namespace Soup::Build::UnitTests
 
 			auto uut = BuildHistory();
 
-			auto sourceFiles = std::vector<Path>({
-				Path("TestFile.cpp"),
-			});
+			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFiles,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -55,13 +51,9 @@ namespace Soup::Build::UnitTests
 					})),
 			}));
 
-			auto sourceFiles = std::vector<Path>({
-				Path("TestFile.cpp"),
-			});
+			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFiles,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -91,13 +83,9 @@ namespace Soup::Build::UnitTests
 					})),
 			}));
 
-			auto sourceFiles = std::vector<Path>({
-				Path("TestFile.cpp"),
-			});
+			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFiles,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsTrue(result, "Verify result is true.");
 
@@ -141,13 +129,9 @@ namespace Soup::Build::UnitTests
 					std::vector<Path>({})),
 			}));
 
-			auto sourceFiles = std::vector<Path>({
-				Path("TestFile.cpp"),
-			});
+			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFiles,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsTrue(result, "Verify result is true.");
 
@@ -190,13 +174,9 @@ namespace Soup::Build::UnitTests
 					})),
 			}));
 
-			auto sourceFiles = std::vector<Path>({
-				Path("TestFile.cpp"),
-			});
+			auto sourceFile = Path("TestFile.cpp");
 			auto actualClosure = std::vector<Path>();
-			auto result = uut.TryBuildIncludeClosure(
-				sourceFiles,
-				actualClosure);
+			auto result = uut.TryBuildIncludeClosure(sourceFile, actualClosure);
 
 			Assert::IsTrue(result, "Verify result is true.");
 

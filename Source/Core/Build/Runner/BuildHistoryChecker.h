@@ -49,7 +49,7 @@ namespace Soup::Build
 			const Path& rootPath)
 		{
 			// Verify the output file exists
-			auto relativeOutputFile = rootPath + targetFile;
+			auto relativeOutputFile = targetFile.HasRoot() ? targetFile : rootPath + targetFile;
 			if (!System::IFileSystem::Current().Exists(relativeOutputFile))
 			{
 				Log::Info("Output target does not exist: " + relativeOutputFile.ToString());

@@ -89,16 +89,22 @@ namespace Soup::Build
 		/// from the build state
 		/// </summary>
 		bool TryBuildIncludeClosure(
-			const std::vector<Path>& sourceFiles,
+			const Path& sourceFiles,
 			std::vector<Path>& closure)
 		{
-			closure.clear();
+			// Convert the input vector into a set of strings
 			auto closureSet = std::unordered_set<std::string>();
+			for (auto& file : closure)
+			{
+				closureSet.insert(file.ToString());
+			}
+
 			if (TryBuildIncludeClosure(
-				sourceFiles,
+				std::vector<Path>({ sourceFiles }),
 				closureSet))
 			{
 				// Convert the set to a vector output
+				closure.clear();
 				for (auto& file : closureSet)
 				{
 					closure.push_back(Path(file));

@@ -242,7 +242,7 @@ namespace Soup::Build::UnitTests
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
 		}
-		
+
 		[[Fact]]
 		void Execute_OneNode_Incremental_MissingFileInfo()
 		{
@@ -275,10 +275,10 @@ namespace Soup::Build::UnitTests
 					"1",
 					Path("C:/TestWorkingDirectory/"),
 					std::vector<Path>({
-						Path("InputFile.in"),
+						Path("InputFile.cpp"),
 					}),
 					std::vector<Path>({
-						Path("OutputFile.out"),
+						Path("OutputFile.obj"),
 					})),
 			});
 			auto forceBuild = false;
@@ -289,7 +289,7 @@ namespace Soup::Build::UnitTests
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
 					"INFO: Check for updated source",
-					"INFO: Missing file info: InputFile.in",
+					"INFO: Missing file info: InputFile.cpp",
 					"DIAG: Execute: Command.exe 1",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
@@ -522,6 +522,7 @@ namespace Soup::Build::UnitTests
 					"DIAG: Loading previous build state",
 					"INFO: Check for updated source",
 					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434993120]",
+					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
 					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
 					"INFO: Up to date",
 					"INFO: Saving updated build state",

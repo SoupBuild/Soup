@@ -136,8 +136,23 @@ namespace Soup::Build
 				{
 					// TODO: Is this how we want to handle no input nodes?
 					// If there are source files to the node check their build state
-					auto inputClosure = std::vector<Path>();
-					if (_buildHistory.TryBuildIncludeClosure(sourceFiles, inputClosure))
+					auto inputClosure = sourceFiles;
+					for (auto& inputFile : sourceFiles)
+					{
+						// Build the input closure for all source files
+						if (inputFile.GetFileExtension() == ".cpp")
+						{
+							if (!_buildHistory.TryBuildIncludeClosure(inputFile, inputClosure))
+							{
+								// Could not determine the set of input files, not enough info to perform incremental build
+								buildRequired = true;
+								break;
+							}
+						}
+					}
+
+					// If we were able to load all of the build history then perform the timestamp checks
+					if (!buildRequired)
 					{
 						// Include the source files itself
 						inputClosure.insert(inputClosure.end(), sourceFiles.begin(), sourceFiles.end());
@@ -155,11 +170,6 @@ namespace Soup::Build
 						{
 							Log::Info("Up to date");
 						}
-					}
-					else
-					{
-						// Could not determine the set of input files, not enough info to perform incremental build
-						buildRequired = true;
 					}
 				}
 			}
@@ -195,12 +205,33 @@ namespace Soup::Build
 				}
 
 				// Save the build state
-				// TODO: buildHistory.UpdateIncludeTree(result.HeaderIncludeFiles);
+				auto cleanOutput = std::stringstream();
+				auto headerIncludes = ParsesHeaderIncludes(node, result.StdOut, cleanOutput);
+				_buildHistory.UpdateIncludeTree(headerIncludes);
 			}
 
 			// Recursively build all of the node chilren
 			// Note: Force build if this node was built
 			CheckExecuteNodes(node.GetChildren(), buildRequired);
+		}
+
+		std::vector<HeaderInclude> ParsesHeaderIncludes(
+			const BuildGraphNode& node,
+			const std::string& output,
+			std::stringstream& cleanOutput)
+		{
+			auto result = std::vector<HeaderInclude>();
+
+			// Check for any cpp input files
+			for (auto& inputFile : node.GetInputFiles())
+			{
+				if (inputFile.GetFileExtension() == ".cpp")
+				{
+					result.push_back(HeaderInclude(inputFile));
+				}
+			}
+
+			return result;
 		}
 
 		// std::vector<HeaderInclude> ParseClangIncludes(
