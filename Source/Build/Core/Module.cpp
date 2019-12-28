@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-export module SoupBuildExtension;
+export module SoupBuildCore;
 import Opal;
 
 using namespace Opal;

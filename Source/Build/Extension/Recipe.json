@@ -1,8 +1,11 @@
 {
     "name": "SoupBuildExtension",
+    "type": "DynamicLibrary",
     "version": "1.0.0",
-    "public": "Module.cpp",
     "dependencies": [
-      "../../Opal/"
+      "../Core/"
+    ],
+    "source": [
+        "Main.cpp"
     ]
 }

@@ -9,7 +9,7 @@ export module SoupTestUtilities;
 
 import Opal;
 import SoupTest;
-import SoupBuildExtension;
+import SoupBuildCore;
 
 using namespace Opal;
 using namespace SoupTest;

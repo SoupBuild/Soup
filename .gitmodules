@@ -10,6 +10,3 @@
 [submodule "Dependencies/Json11"]
 	path = Dependencies/Json11
 	url = https://github.com/mwasplund/Json11.git
-[submodule "Dependencies/SoupBuildEx"]
-	path = Dependencies/SoupBuildEx
-	url = https://github.com/mwasplund/SoupBuildEx.git

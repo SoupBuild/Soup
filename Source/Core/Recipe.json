@@ -5,7 +5,7 @@
     "../../Dependencies/json11/",
     "../../Dependencies/SoupSyntax/Source/Syntax/",
     "../Opal/",
-    "../Build/Extension/"
+    "../Build/Core/"
   ],
   "public": "Module.cpp",
   "source": [],
