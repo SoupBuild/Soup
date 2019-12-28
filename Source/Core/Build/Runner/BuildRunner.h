@@ -220,187 +220,193 @@ namespace Soup::Build
 			const std::string& output,
 			std::stringstream& cleanOutput)
 		{
-			auto result = std::vector<HeaderInclude>();
-
 			// Check for any cpp input files
 			for (auto& inputFile : node.GetInputFiles())
 			{
 				if (inputFile.GetFileExtension() == ".cpp")
 				{
-					result.push_back(HeaderInclude(inputFile));
+					// Parse known compiler output
+					if (node.GetProgram().GetFileName() == "cl.exe")
+					{
+						return ParseMSVCIncludes(inputFile, output, cleanOutput);
+					}
+					else if (node.GetProgram().GetFileName() == "clang++.exe")
+					{
+						return ParseMSVCIncludes(inputFile, output, cleanOutput);
+					}
 				}
 			}
 
-			return result;
+			return std::vector<HeaderInclude>();
 		}
 
-		// std::vector<HeaderInclude> ParseClangIncludes(
-		// 	const Path& file,
-		// 	const std::string& output,
-		// 	std::stringstream& cleanOutput)
-		// {
-		// 	// Add the root file
-		// 	std::stack<HeaderInclude> current;
-		// 	current.push(HeaderInclude(file));
+		std::vector<HeaderInclude> ParseClangIncludes(
+			const Path& file,
+			const std::string& output,
+			std::stringstream& cleanOutput)
+		{
+			// Add the root file
+			std::stack<HeaderInclude> current;
+			current.push(HeaderInclude(file));
 
-		// 	std::stringstream content(output);
-		// 	std::string line;
-		// 	while (std::getline(content, line))
-		// 	{
-		// 		// TODO: Getline is dumb and uses newline on windows
-		// 		if (line[line.size() - 1] == '\r')
-		// 		{
-		// 			line.resize(line.size() - 1);
-		// 		}
+			std::stringstream content(output);
+			std::string line;
+			while (std::getline(content, line))
+			{
+				// TODO: Getline is dumb and uses newline on windows
+				if (line[line.size() - 1] == '\r')
+				{
+					line.resize(line.size() - 1);
+				}
 
-		// 		auto includeDepth = GetIncludeDepth(line);
-		// 		if (includeDepth > 0)
-		// 		{
-		// 			// Parse the file reference
-		// 			auto includeFile = Path(line.substr(includeDepth + 1));
+				auto includeDepth = GetClangIncludeDepth(line);
+				if (includeDepth > 0)
+				{
+					// Parse the file reference
+					auto includeFile = Path(line.substr(includeDepth + 1));
 
-		// 			// Ensure we are at the correct depth
-		// 			while (includeDepth < current.size())
-		// 			{
-		// 				// Remove the top file and push it onto its parent
-		// 				auto previous = std::move(current.top());
-		// 				current.pop();
-		// 				current.top().Includes.push_back(std::move(previous));
-		// 			}
+					// Ensure we are at the correct depth
+					while (includeDepth < current.size())
+					{
+						// Remove the top file and push it onto its parent
+						auto previous = std::move(current.top());
+						current.pop();
+						current.top().Includes.push_back(std::move(previous));
+					}
 
-		// 			// Ensure we do not try to go up more than one level at a time
-		// 			if (includeDepth > current.size() + 1)
-		// 				throw std::runtime_error("Missing an include level.");
+					// Ensure we do not try to go up more than one level at a time
+					if (includeDepth > current.size() + 1)
+						throw std::runtime_error("Missing an include level.");
 
-		// 			current.push(HeaderInclude(includeFile));
-		// 		}
-		// 		else
-		// 		{
-		// 			// Not an include, pass along
-		// 			cleanOutput << line << "\n";
-		// 		}
-		// 	}
+					current.push(HeaderInclude(includeFile));
+				}
+				else
+				{
+					// Not an include, pass along
+					cleanOutput << line << "\n";
+				}
+			}
 
-		// 	// Ensure we are at the top level
-		// 	while (1 < current.size())
-		// 	{
-		// 		// Remove the top file and push it onto its parent
-		// 		auto previous = std::move(current.top());
-		// 		current.pop();
-		// 		current.top().Includes.push_back(std::move(previous));
-		// 	}
+			// Ensure we are at the top level
+			while (1 < current.size())
+			{
+				// Remove the top file and push it onto its parent
+				auto previous = std::move(current.top());
+				current.pop();
+				current.top().Includes.push_back(std::move(previous));
+			}
 
-		// 	return std::vector<HeaderInclude>({ std::move(current.top()) });
-		// }
+			return std::vector<HeaderInclude>({ std::move(current.top()) });
+		}
 
-		// int GetIncludeDepth(const std::string& line)
-		// {
-		// 	int depth = 0;
-		// 	for (depth = 0; depth < line.size(); depth++)
-		// 	{
-		// 		if (line[depth] != '.')
-		// 		{
-		// 			break;
-		// 		}
-		// 	}
+		int GetClangIncludeDepth(const std::string& line)
+		{
+			int depth = 0;
+			for (depth = 0; depth < line.size(); depth++)
+			{
+				if (line[depth] != '.')
+				{
+					break;
+				}
+			}
 
-		// 	// Verify the next character is a space, otherwise reset the depth to zero
-		// 	if (depth < line.size() && line[depth] != ' ')
-		// 	{
-		// 		depth = 0;
-		// 	}
+			// Verify the next character is a space, otherwise reset the depth to zero
+			if (depth < line.size() && line[depth] != ' ')
+			{
+				depth = 0;
+			}
 
-		// 	return depth;
-		// }
+			return depth;
+		}
 
-		// std::vector<HeaderInclude> ParseMSVCIncludes(
-		// 	const Path& file,
-		// 	const std::string& output,
-		// 	std::stringstream& cleanOutput)
-		// {
-		// 	// Add the root file
-		// 	std::stack<HeaderInclude> current;
-		// 	current.push(HeaderInclude(file));
+		std::vector<HeaderInclude> ParseMSVCIncludes(
+			const Path& file,
+			const std::string& output,
+			std::stringstream& cleanOutput)
+		{
+			// Add the root file
+			std::stack<HeaderInclude> current;
+			current.push(HeaderInclude(file));
 
-		// 	std::stringstream content(output);
-		// 	std::string line;
-		// 	while (std::getline(content, line))
-		// 	{
-		// 		// TODO: Getline is dumb and uses newline on windows
-		// 		if (line[line.size() - 1] == '\r')
-		// 		{
-		// 			line.resize(line.size() - 1);
-		// 		}
+			std::stringstream content(output);
+			std::string line;
+			while (std::getline(content, line))
+			{
+				// TODO: Getline is dumb and uses newline on windows
+				if (line[line.size() - 1] == '\r')
+				{
+					line.resize(line.size() - 1);
+				}
 
-		// 		auto includeDepth = GetIncludeDepth(line);
-		// 		if (includeDepth > 0)
-		// 		{
-		// 			// Parse the file reference
-		// 			auto includePrefix = GetIncludePrefix();
-		// 			auto offset = includePrefix.size() + includeDepth;
-		// 			auto includeFile = Path(line.substr(offset));
+				auto includeDepth = GetMSVCIncludeDepth(line);
+				if (includeDepth > 0)
+				{
+					// Parse the file reference
+					auto includePrefix = GetMSVCIncludePrefix();
+					auto offset = includePrefix.size() + includeDepth;
+					auto includeFile = Path(line.substr(offset));
 
-		// 			// Ensure we are at the correct depth
-		// 			while (includeDepth < current.size())
-		// 			{
-		// 				// Remove the top file and push it onto its parent
-		// 				auto previous = std::move(current.top());
-		// 				current.pop();
-		// 				current.top().Includes.push_back(std::move(previous));
-		// 			}
+					// Ensure we are at the correct depth
+					while (includeDepth < current.size())
+					{
+						// Remove the top file and push it onto its parent
+						auto previous = std::move(current.top());
+						current.pop();
+						current.top().Includes.push_back(std::move(previous));
+					}
 
-		// 			// Ensure we do not try to go up more than one level at a time
-		// 			if (includeDepth > current.size() + 1)
-		// 				throw std::runtime_error("Missing an include level.");
+					// Ensure we do not try to go up more than one level at a time
+					if (includeDepth > current.size() + 1)
+						throw std::runtime_error("Missing an include level.");
 
-		// 			current.push(HeaderInclude(includeFile));
-		// 		}
-		// 		else
-		// 		{
-		// 			// Not an include, pass along
-		// 			cleanOutput << line << "\n";
-		// 		}
-		// 	}
+					current.push(HeaderInclude(includeFile));
+				}
+				else
+				{
+					// Not an include, pass along
+					cleanOutput << line << "\n";
+				}
+			}
 
-		// 	// Ensure we are at the top level
-		// 	while (1 < current.size())
-		// 	{
-		// 		// Remove the top file and push it onto its parent
-		// 		auto previous = std::move(current.top());
-		// 		current.pop();
-		// 		current.top().Includes.push_back(std::move(previous));
-		// 	}
+			// Ensure we are at the top level
+			while (1 < current.size())
+			{
+				// Remove the top file and push it onto its parent
+				auto previous = std::move(current.top());
+				current.pop();
+				current.top().Includes.push_back(std::move(previous));
+			}
 
-		// 	return std::vector<HeaderInclude>({ std::move(current.top()) });
-		// }
+			return std::vector<HeaderInclude>({ std::move(current.top()) });
+		}
 
-		// int GetIncludeDepth(const std::string& line)
-		// {
-		// 	int depth = 0;
-		// 	auto includePrefix = GetIncludePrefix();
-		// 	if (line.rfind(includePrefix, 0) == 0)
-		// 	{
-		// 		// Find the end of the whitespace
-		// 		int offset = includePrefix.size();
-		// 		for (; offset < line.size(); offset++)
-		// 		{
-		// 			if (line[offset] != ' ')
-		// 			{
-		// 				break;
-		// 			}
-		// 		}
+		int GetMSVCIncludeDepth(const std::string& line)
+		{
+			int depth = 0;
+			auto includePrefix = GetMSVCIncludePrefix();
+			if (line.rfind(includePrefix, 0) == 0)
+			{
+				// Find the end of the whitespace
+				int offset = includePrefix.size();
+				for (; offset < line.size(); offset++)
+				{
+					if (line[offset] != ' ')
+					{
+						break;
+					}
+				}
 
-		// 		// The depth is the number of whitespaces past the prefix
-		// 		depth = offset - includePrefix.size();
-		// 	}
+				// The depth is the number of whitespaces past the prefix
+				depth = offset - includePrefix.size();
+			}
 
-		// 	return depth;
-		// }
+			return depth;
+		}
 
-		// std::string_view GetIncludePrefix()
-		// {
-		// 	return std::string_view("Note: including file:");
-		// }
+		std::string_view GetMSVCIncludePrefix()
+		{
+			return std::string_view("Note: including file:");
+		}
 
 	private:
 		Path _workingDirectory;
