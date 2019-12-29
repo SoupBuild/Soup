@@ -223,25 +223,6 @@ namespace Soup::Build
 				default:
 					throw std::runtime_error("Unknown recipe language version.");
 			}
-
-			// Build up the runtime dependencies
-			if (_recipe.GetType() == RecipeType::Executable || _recipe.GetType() == RecipeType::DynamicLibrary)
-			{
-				std::vector<Path> runtimeDependencies;
-				RecipeExtensions::GenerateDependecyDynamicLibraryClosure(
-					*_activeCompiler,
-					_arguments.Flavor,
-					_workingDirectory,
-					_recipe,
-					runtimeDependencies);
-
-				for (auto source : runtimeDependencies)
-				{
-					auto target = binaryDirectory + Path(source.GetFileName());
-					Log::Info("Copy: [" + source.ToString() + "] -> [" + target.ToString() + "]");
-					System::IFileSystem::Current().CopyFile2(source, target);
-				}
-			}
 		}
 
 	private:

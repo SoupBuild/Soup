@@ -236,7 +236,8 @@ namespace Soup::Compiler::MSVC
 						implemenationLibraryfile.ToString());
 
 					// Add the library as an output
-					outputFiles.push_back(implemenationLibraryfile);
+					// TODO: This breaks incremental builds (Link.exe doesn't always touch this)
+					// outputFiles.push_back(implemenationLibraryfile);
 
 					break;
 				}

@@ -5,6 +5,7 @@
     "dependencies": [
       "../Core/"
     ],
+    "public": "Module.cpp",
     "source": [
         "Main.cpp"
     ]

@@ -94,22 +94,54 @@ namespace Soup::Build
 			Log::Diag("IncludeModules = " + ToString(arguments.IncludeModules));
 			Log::Diag("PreprocessorDefinitions = " + ToString(arguments.PreprocessorDefinitions));
 
+			// Copy previous runtime dependencies
+			auto copyRuntimeDependencies = CopyRuntimeDependencies(state, arguments);
+			for (auto& node : copyRuntimeDependencies)
+			{
+				state.AddBuildNode(node);
+			}
+
 			// Perform the core compilation of the source files
 			auto compileNodes = CoreCompile(arguments);
-
-			// Link the final target after all of the compile graph is done
-			auto linkNode = CoreLink(arguments);
-			BuildGraphNode::AddLeafChild(compileNodes, linkNode);
-
-			Log::Info("Build Generate Done");
-
 			for (auto& node : compileNodes)
 			{
 				state.AddBuildNode(node);
 			}
+
+			// Link the final target after all of the compile graph is done
+			auto linkNode = CoreLink(state, arguments);
+			BuildGraphNode::AddLeafChild(compileNodes, linkNode);
+
+			Log::Info("Build Generate Done");
 		}
 
 	private:
+		/// <summary>
+		/// Copy runtime dependencies
+		/// </summary>
+		std::vector<std::shared_ptr<BuildGraphNode>> CopyRuntimeDependencies(
+			IBuildState& state,
+			const BuildArguments& arguments)
+		{
+			auto copyNodes = std::vector<std::shared_ptr<BuildGraphNode>>();
+			if (arguments.TargetType == BuildTargetType::Executable ||
+				arguments.TargetType == BuildTargetType::DynamicLibrary)
+			{
+				if (state.HasProperty("RuntimeDependencies"))
+				{
+					auto runtimeDependencies = std::any_cast<std::vector<Path>>(state.GetProperty("RuntimeDependencies"));
+					for (auto source : runtimeDependencies)
+					{
+						auto target = arguments.WorkingDirectory + arguments.BinaryDirectory + Path(source.GetFileName());
+						auto node = BuildUtilities::CreateCopyFileNode(source, target);
+						copyNodes.push_back(node);
+					}
+				}
+			}
+
+			return copyNodes;
+		}
+
 		/// <summary>
 		/// Compile the module and source files
 		/// </summary>
@@ -242,7 +274,9 @@ namespace Soup::Build
 		/// <summary>
 		/// Link the library
 		/// </summary>
-		std::shared_ptr<BuildGraphNode> CoreLink(const BuildArguments& arguments)
+		std::shared_ptr<BuildGraphNode> CoreLink(
+			IBuildState& state,
+			const BuildArguments& arguments)
 		{
 			Log::Info("CoreLink");
 
@@ -283,16 +317,32 @@ namespace Soup::Build
 			switch (arguments.TargetType)
 			{
 				case BuildTargetType::StaticLibrary:
+				{
 					linkArguments.TargetType = LinkTarget::StaticLibrary;
 					break;
+				}
 				case BuildTargetType::DynamicLibrary:
+				{
 					linkArguments.TargetType = LinkTarget::DynamicLibrary;
+
+					// Add the DLL as a runtime dependency
+					auto runtimeDependencies = std::vector<Path>();
+					if (state.HasProperty("RuntimeDependencies"))
+						runtimeDependencies = std::any_cast<std::vector<Path>>(state.GetProperty("RuntimeDependencies"));
+
+					runtimeDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
+					state.SetProperty("RuntimeDependencies", runtimeDependencies);
 					break;
+				}
 				case BuildTargetType::Executable:
+				{
 					linkArguments.TargetType = LinkTarget::Executable;
 					break;
+				}
 				default:
+				{
 					throw std::runtime_error("Unknown build target type.");
+				}
 			}
 
 			// Build up the set of object files

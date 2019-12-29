@@ -43,7 +43,7 @@ namespace Soup::Build
 			}
 		}
 
-		const BuildState& GetState()
+		BuildState& GetState()
 		{
 			return _state;
 		}

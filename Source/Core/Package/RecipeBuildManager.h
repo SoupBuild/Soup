@@ -52,19 +52,15 @@ namespace Soup
 			try
 			{
 				auto rootParentSet = std::set<std::string>();
-				projectId = BuildAllDependenciesRecursively(
+				auto rootRuntimeDependencies = std::vector<Path>();
+				projectId = BuildRecipeAndDependencies(
 					projectId,
 					workingDirectory,
 					recipe,
 					arguments,
 					isSystemBuild,
-					rootParentSet);
-				BuildRecipe(
-					projectId,
-					workingDirectory,
-					recipe,
-					arguments,
-					isSystemBuild);
+					rootParentSet,
+					rootRuntimeDependencies);
 
 				Log::EnsureListener().SetShowEventId(false);
 			}
@@ -79,13 +75,14 @@ namespace Soup
 		/// <summary>
 		/// Build the dependecies for the provided recipe recursively
 		/// </summary>
-		int BuildAllDependenciesRecursively(
+		int BuildRecipeAndDependencies(
 			int projectId,
 			const Path& workingDirectory,
 			const Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
-			const std::set<std::string>& parentSet)
+			const std::set<std::string>& parentSet,
+			std::vector<Path>& runtimeDependencies)
 		{
 			// Add current package to the parent set when building child dependencies
 			auto activeParentSet = parentSet;
@@ -102,32 +99,32 @@ namespace Soup
 					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
 					{
 						Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
-						throw std::runtime_error("BuildAllDependenciesRecursively: Failed to load dependency.");
+						throw std::runtime_error("BuildRecipeAndDependencies: Failed to load dependency.");
 					}
 
 					// Ensure we do not have any circular dependencies
 					if (activeParentSet.contains(dependecyRecipe.GetName()))
 					{
 						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
-						throw std::runtime_error("BuildAllDependenciesRecursively: Circular dependency.");
+						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 					}
 
 					// Build all recursive dependencies
-					projectId = BuildAllDependenciesRecursively(
+					auto childRuntimeDependencies = std::vector<Path>();
+					projectId = BuildRecipeAndDependencies(
 						projectId,
 						packagePath,
 						dependecyRecipe,
 						arguments,
 						isSystemBuild,
-						activeParentSet);
+						activeParentSet,
+						childRuntimeDependencies);
 
-					// Build this dependecy
-					projectId = BuildRecipe(
-						projectId,
-						packagePath,
-						dependecyRecipe,
-						arguments,
-						isSystemBuild);
+					// Copy all runtime dependencies up to the parent context
+					runtimeDependencies.insert(
+						runtimeDependencies.end(),
+						childRuntimeDependencies.begin(),
+						childRuntimeDependencies.end());
 				}
 			}
 
@@ -142,34 +139,37 @@ namespace Soup
 					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
 					{
 						Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
-						throw std::runtime_error("BuildAllDependenciesRecursively: Failed to load dependency.");
+						throw std::runtime_error("BuildRecipeAndDependencies: Failed to load dependency.");
 					}
 
 					// Ensure we do not have any circular dependencies
 					if (activeParentSet.contains(dependecyRecipe.GetName()))
 					{
 						Log::Error("Found circular dev dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
-						throw std::runtime_error("BuildAllDependenciesRecursively: Circular dev dependency.");
+						throw std::runtime_error("BuildRecipeAndDependencies: Circular dev dependency.");
 					}
 
 					// Build all recursive dependencies
-					projectId = BuildAllDependenciesRecursively(
+					auto childRuntimeDependencies = std::vector<Path>();
+					projectId = BuildRecipeAndDependencies(
 						projectId,
 						packagePath,
 						dependecyRecipe,
 						arguments,
 						true,
-						activeParentSet);
-
-					// Build this dependecy
-					projectId = BuildRecipe(
-						projectId,
-						packagePath,
-						dependecyRecipe,
-						arguments,
-						true);
+						activeParentSet,
+						childRuntimeDependencies);
 				}
 			}
+
+			// Build the root recipe
+			projectId = BuildRecipe(
+				projectId,
+				workingDirectory,
+				recipe,
+				arguments,
+				isSystemBuild,
+				runtimeDependencies);
 
 			// Return the updated project id after building all dependencies
 			return projectId;
@@ -184,7 +184,8 @@ namespace Soup
 			const Path& workingDirectory,
 			const Recipe& recipe,
 			const RecipeBuildArguments& arguments,
-			bool isSystemBuild)
+			bool isSystemBuild,
+			std::vector<Path>& runtimeDependencies)
 		{
 			// TODO: RAII for active id
 			try
@@ -200,7 +201,13 @@ namespace Soup
 				{
 					// Run the required builds in process
 					// This will break the circular requirments for the core build libraries
-					RunInProcessBuild(projectId, workingDirectory, recipe, arguments, isSystemBuild);
+					RunInProcessBuild(
+						projectId,
+						workingDirectory,
+						recipe,
+						arguments,
+						isSystemBuild,
+						runtimeDependencies);
 
 					// Keep track of the packages we have already built
 					// TODO: Verify unique names
@@ -226,7 +233,8 @@ namespace Soup
 			const Path& packageRoot,
 			const Recipe& recipe,
 			const RecipeBuildArguments& arguments,
-			bool isSystemBuild)
+			bool isSystemBuild,
+			std::vector<Path>& runtimeDependencies)
 		{
 			// Create a new build system for the requested build
 			auto buildSystem = Build::BuildSystem();
@@ -242,6 +250,14 @@ namespace Soup
 			{
 				Log::HighPriority("Build '" + recipe.GetName() + "'");
 				activeCompiler = _runtimeCompiler;
+			}
+
+			// Pass in any shared properties and clear our state
+			if (!runtimeDependencies.empty())
+			{
+				Log::Diag("Move Shared Properties");
+				buildSystem.GetState().SetProperty("RuntimeDependencies", runtimeDependencies);
+				runtimeDependencies.clear();
 			}
 
 			// Register the recipe build task
@@ -263,6 +279,17 @@ namespace Soup
 			// Execute the build nodes
 			auto runner = Build::BuildRunner(packageRoot);
 			runner.Execute(buildSystem.GetState().GetBuildNodes(), arguments.ForceRebuild);
+
+			// Pass along any shared properties
+			if (buildSystem.GetState().HasProperty("RuntimeDependencies"))
+			{
+				Log::Diag("Found Shared Properties");
+				auto updateRuntimeDependencies = std::any_cast<std::vector<Path>>(buildSystem.GetState().GetProperty("RuntimeDependencies"));
+				runtimeDependencies.insert(
+					runtimeDependencies.end(),
+					updateRuntimeDependencies.begin(),
+					updateRuntimeDependencies.end());
+			}
 		}
 
 		Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const

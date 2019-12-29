@@ -1,13 +1,12 @@
 {
   "name": "Soup",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "Executable",
   "dependencies": [
     "../Core",
     "../Compiler/Clang",
-    "../Compiler/MSVC"
-  ],
-  "devDependencies": [
+    "../Compiler/MSVC",
+    "../Build/Extension/"
   ],
   "source": [
     "Main.cpp"
