@@ -17,7 +17,6 @@ export module SoupCore;
 
 import Opal;
 import SoupBuildCore;
-import SoupSyntax;
 import json11;
 
 using namespace Opal;
