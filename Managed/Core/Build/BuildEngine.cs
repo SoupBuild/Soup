@@ -33,6 +33,7 @@ namespace Soup
         /// </summary>
         public async Task ExecuteAsync(string path, Recipe recipe, bool force)
         {
+            Log.Info("Build: " + _compiler.Name);
             if (!Path.IsPathFullyQualified(path))
             {
                 throw new InvalidOperationException("Build must provide qualified path.");
