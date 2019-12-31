@@ -29,8 +29,8 @@ int main()
 	state += RunCompilerTests();
 	state += RunLinkerArgumentBuilderTests();
 
-	std::cout << state.FailCount << " FAILED." << std::endl;
 	std::cout << state.PassCount << " PASSED." << std::endl;
+	std::cout << state.FailCount << " FAILED." << std::endl;
 
 	return 0;
 }
