@@ -4,16 +4,17 @@ import SoupBuildCore;
 
 #define DllExport __declspec( dllexport )
 
-class MyBuildTask : public Soup::Build::IBuildTask
+class MyBuildTask : public Soup::Build::IBuildTask, public Opal::Memory::ReferenceCounted
 {
 public:
-    const char* GetName() override final
+    const char* GetName() const noexcept override final
     {
-        return "my Build task";
+        return "MyBuildTask";
     }
 
-    void Execute(Soup::Build::IBuildState& state) override final
+    Soup::Build::BuildSystemResult Execute(Soup::Build::IBuildState& state) noexcept override final
     {
+        return 0;
     }
 };
 

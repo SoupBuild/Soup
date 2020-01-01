@@ -1,6 +1,7 @@
 ﻿module;
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <fstream>
 #include <filesystem>
 #include <locale>
@@ -20,6 +21,10 @@ export module Opal;
 
 #include "Core/Path.h"
 #include "Core/SemanticVersion.h"
+
+#include "Memory/IReferenceCounted.h"
+#include "Memory/Reference.h"
+#include "Memory/ReferenceCounted.h"
 
 #include "System/SmartHandle.h"
 #include "System/DynamicLibraryManager.h"

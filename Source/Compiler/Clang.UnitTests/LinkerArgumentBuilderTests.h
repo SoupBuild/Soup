@@ -111,7 +111,7 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("File.mock.o"),
 			});
 			auto expectedOutput = std::vector<Path>({
-				Path("Library.mock.lib"),
+				// TODO: Path("Library.mock.lib"),
 				Path("Library.mock.so"),
 			});
 

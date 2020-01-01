@@ -12,7 +12,7 @@ namespace Soup::Build
 	/// <summary>
 	/// The build task
 	/// </summary>
-	export class BuildTask : public IBuildTask
+	export class BuildTask : public IBuildTask, public Memory::ReferenceCounted
 	{
 	public:
 		/// <summary>
@@ -28,7 +28,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Get the task name
 		/// </summary>
-		const char* GetName() override final
+		const char* GetName() const noexcept override final
 		{
 			return "Build";
 		}
@@ -36,83 +36,94 @@ namespace Soup::Build
 		/// <summary>
 		/// The Core build task
 		/// </summary>
-		void Execute(IBuildState& state) override final
+		BuildSystemResult Execute(IBuildState& buildState) noexcept override final
 		{
-			auto arguments = BuildArguments();
-			arguments.TargetName = std::any_cast<std::string>(state.GetProperty("TargetName"));
-			arguments.TargetType = std::any_cast<BuildTargetType>(state.GetProperty("TargetType"));
-			arguments.LanguageStandard = std::any_cast<LanguageStandard>(state.GetProperty("LanguageStandard"));
-			arguments.WorkingDirectory = std::any_cast<Path>(state.GetProperty("WorkingDirectory"));
-			arguments.ObjectDirectory = std::any_cast<Path>(state.GetProperty("ObjectDirectory"));
-			arguments.BinaryDirectory = std::any_cast<Path>(state.GetProperty("BinaryDirectory"));
-
-			if (state.HasProperty("ModuleInterfaceSourceFile"))
-				arguments.ModuleInterfaceSourceFile = std::any_cast<Path>(state.GetProperty("ModuleInterfaceSourceFile"));
-
-			if (state.HasProperty("SourceFiles"))
-				arguments.SourceFiles = std::any_cast<std::vector<Path>>(state.GetProperty("SourceFiles"));
-
-			if (state.HasProperty("IncludeDirectories"))
-				arguments.IncludeDirectories = std::any_cast<std::vector<Path>>(state.GetProperty("IncludeDirectories"));
-
-			if (state.HasProperty("IncludeModules"))
-				arguments.IncludeModules = std::any_cast<std::vector<Path>>(state.GetProperty("IncludeModules"));
-
-			if (state.HasProperty("LinkLibraries"))
-				arguments.LinkLibraries = std::any_cast<std::vector<Path>>(state.GetProperty("LinkLibraries"));
-
-			if (state.HasProperty("ExternalLinkLibraries"))
-				arguments.ExternalLinkLibraries = std::any_cast<std::vector<Path>>(state.GetProperty("ExternalLinkLibraries"));
-
-			if (state.HasProperty("LibraryPaths"))
-				arguments.LibraryPaths = std::any_cast<std::vector<Path>>(state.GetProperty("LibraryPaths"));
-
-			if (state.HasProperty("PreprocessorDefinitions"))
-				arguments.PreprocessorDefinitions = std::any_cast<std::vector<std::string>>(state.GetProperty("PreprocessorDefinitions"));
-
-			if (state.HasProperty("OptimizationLevel"))
-				arguments.OptimizationLevel = std::any_cast<BuildOptimizationLevel>(state.GetProperty("OptimizationLevel"));
-			else
-				arguments.OptimizationLevel = BuildOptimizationLevel::None;
-
-			if (state.HasProperty("GenerateSourceDebugInfo"))
-				arguments.GenerateSourceDebugInfo = std::any_cast<bool>(state.GetProperty("GenerateSourceDebugInfo"));
-			else
-				arguments.GenerateSourceDebugInfo = false;
-
-			// Log the incoming request for verbose logs
-			Log::Diag("TargetName = " + arguments.TargetName);
-			Log::Diag("TargetType = " + ToString(arguments.TargetType));
-			Log::Diag("LanguageStandard = " + ToString(arguments.LanguageStandard));
-			Log::Diag("WorkingDirectory = " + arguments.WorkingDirectory.ToString());
-			Log::Diag("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
-			Log::Diag("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
-			Log::Diag("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
-			Log::Diag("OptimizationLevel = " + ToString(arguments.OptimizationLevel));
-			Log::Diag("GenerateSourceDebugInfo = " + ToString(arguments.GenerateSourceDebugInfo));
-			Log::Diag("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
-			Log::Diag("IncludeModules = " + ToString(arguments.IncludeModules));
-			Log::Diag("PreprocessorDefinitions = " + ToString(arguments.PreprocessorDefinitions));
-
-			// Copy previous runtime dependencies
-			auto copyRuntimeDependencies = CopyRuntimeDependencies(state, arguments);
-			for (auto& node : copyRuntimeDependencies)
+			try
 			{
-				state.AddBuildNode(node);
-			}
+				auto state = BuildStateWrapper(buildState);
 
-			// Perform the core compilation of the source files
-			auto compileNodes = CoreCompile(arguments);
-			for (auto& node : compileNodes)
+				auto arguments = BuildArguments();
+				arguments.TargetName = state.GetPropertyStringValue("TargetName");
+				arguments.TargetType = static_cast<BuildTargetType>(state.GetPropertyIntegerValue("TargetType"));
+				arguments.LanguageStandard = static_cast<LanguageStandard>(state.GetPropertyIntegerValue("LanguageStandard"));
+				arguments.WorkingDirectory = Path(state.GetPropertyStringValue("WorkingDirectory"));
+				arguments.ObjectDirectory = Path(state.GetPropertyStringValue("ObjectDirectory"));
+				arguments.BinaryDirectory = Path(state.GetPropertyStringValue("BinaryDirectory"));
+
+				if (state.HasPropertyValue("ModuleInterfaceSourceFile"))
+					arguments.ModuleInterfaceSourceFile = Path(state.GetPropertyStringValue("ModuleInterfaceSourceFile"));
+
+				if (state.HasPropertyStringList("SourceFiles"))
+					arguments.SourceFiles = state.CopyPropertyStringListAsPathVector("SourceFiles");
+
+				if (state.HasPropertyStringList("IncludeDirectories"))
+					arguments.IncludeDirectories = state.CopyPropertyStringListAsPathVector("IncludeDirectories");
+
+				if (state.HasPropertyStringList("IncludeModules"))
+					arguments.IncludeModules = state.CopyPropertyStringListAsPathVector("IncludeModules");
+
+				if (state.HasPropertyStringList("LinkLibraries"))
+					arguments.LinkLibraries = state.CopyPropertyStringListAsPathVector("LinkLibraries");
+
+				if (state.HasPropertyStringList("ExternalLinkLibraries"))
+					arguments.ExternalLinkLibraries = state.CopyPropertyStringListAsPathVector("ExternalLinkLibraries");
+
+				if (state.HasPropertyStringList("LibraryPaths"))
+					arguments.LibraryPaths = state.CopyPropertyStringListAsPathVector("LibraryPaths");
+
+				if (state.HasPropertyStringList("PreprocessorDefinitions"))
+					arguments.PreprocessorDefinitions = state.CopyPropertyStringListAsStringVector("PreprocessorDefinitions");
+
+				if (state.HasPropertyValue("OptimizationLevel"))
+					arguments.OptimizationLevel = static_cast<BuildOptimizationLevel>(state.GetPropertyIntegerValue("OptimizationLevel"));
+				else
+					arguments.OptimizationLevel = BuildOptimizationLevel::None;
+
+				if (state.HasPropertyValue("GenerateSourceDebugInfo"))
+					arguments.GenerateSourceDebugInfo = state.GetPropertyBooleanValue("GenerateSourceDebugInfo");
+				else
+					arguments.GenerateSourceDebugInfo = false;
+
+				// Log the incoming request for verbose logs
+				Log::Diag("TargetName = " + arguments.TargetName);
+				Log::Diag("TargetType = " + ToString(arguments.TargetType));
+				Log::Diag("LanguageStandard = " + ToString(arguments.LanguageStandard));
+				Log::Diag("WorkingDirectory = " + arguments.WorkingDirectory.ToString());
+				Log::Diag("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
+				Log::Diag("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
+				Log::Diag("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
+				Log::Diag("OptimizationLevel = " + ToString(arguments.OptimizationLevel));
+				Log::Diag("GenerateSourceDebugInfo = " + ToString(arguments.GenerateSourceDebugInfo));
+				Log::Diag("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
+				Log::Diag("IncludeModules = " + ToString(arguments.IncludeModules));
+				Log::Diag("PreprocessorDefinitions = " + ToString(arguments.PreprocessorDefinitions));
+
+				// Copy previous runtime dependencies
+				auto copyRuntimeDependencies = CopyRuntimeDependencies(state, arguments);
+				for (auto& node : copyRuntimeDependencies)
+				{
+					state.AddBuildNode(node);
+				}
+
+				// Perform the core compilation of the source files
+				auto compileNodes = CoreCompile(arguments);
+				for (auto& node : compileNodes)
+				{
+					state.AddBuildNode(node);
+				}
+
+				// Link the final target after all of the compile graph is done
+				auto linkNode = CoreLink(state, arguments);
+				BuildGraphNode::AddLeafChild(compileNodes, linkNode);
+
+				Log::Info("Build Generate Done");
+				return 0;
+			}
+			catch(...)
 			{
-				state.AddBuildNode(node);
+				// Unknown error
+				return -1;
 			}
-
-			// Link the final target after all of the compile graph is done
-			auto linkNode = CoreLink(state, arguments);
-			BuildGraphNode::AddLeafChild(compileNodes, linkNode);
-
-			Log::Info("Build Generate Done");
 		}
 
 	private:
@@ -120,16 +131,16 @@ namespace Soup::Build
 		/// Copy runtime dependencies
 		/// </summary>
 		std::vector<std::shared_ptr<BuildGraphNode>> CopyRuntimeDependencies(
-			IBuildState& state,
+			BuildStateWrapper& state,
 			const BuildArguments& arguments)
 		{
 			auto copyNodes = std::vector<std::shared_ptr<BuildGraphNode>>();
 			if (arguments.TargetType == BuildTargetType::Executable ||
 				arguments.TargetType == BuildTargetType::DynamicLibrary)
 			{
-				if (state.HasProperty("RuntimeDependencies"))
+				if (state.HasPropertyStringList("RuntimeDependencies"))
 				{
-					auto runtimeDependencies = std::any_cast<std::vector<Path>>(state.GetProperty("RuntimeDependencies"));
+					auto runtimeDependencies = state.CopyPropertyStringListAsPathVector("RuntimeDependencies");
 					for (auto source : runtimeDependencies)
 					{
 						auto target = arguments.WorkingDirectory + arguments.BinaryDirectory + Path(source.GetFileName());
@@ -275,7 +286,7 @@ namespace Soup::Build
 		/// Link the library
 		/// </summary>
 		std::shared_ptr<BuildGraphNode> CoreLink(
-			IBuildState& state,
+			BuildStateWrapper& state,
 			const BuildArguments& arguments)
 		{
 			Log::Info("CoreLink");
@@ -327,11 +338,11 @@ namespace Soup::Build
 
 					// Add the DLL as a runtime dependency
 					auto runtimeDependencies = std::vector<Path>();
-					if (state.HasProperty("RuntimeDependencies"))
-						runtimeDependencies = std::any_cast<std::vector<Path>>(state.GetProperty("RuntimeDependencies"));
+					if (state.HasPropertyStringList("RuntimeDependencies"))
+						runtimeDependencies = state.CopyPropertyStringListAsPathVector("RuntimeDependencies");
 
 					runtimeDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
-					state.SetProperty("RuntimeDependencies", runtimeDependencies);
+					state.SetPropertyStringList("RuntimeDependencies", runtimeDependencies);
 					break;
 				}
 				case BuildTargetType::Executable:

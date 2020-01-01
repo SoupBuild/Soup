@@ -39,22 +39,30 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			buildState.SetProperty("TargetName", std::string("Program"));
-			buildState.SetProperty("TargetType", BuildTargetType::Executable);
-			buildState.SetProperty("LanguageStandard", LanguageStandard::CPP20);
-			buildState.SetProperty("WorkingDirectory", Path("C:/root/"));
-			buildState.SetProperty("ObjectDirectory", Path("obj"));
-			buildState.SetProperty("BinaryDirectory", Path("bin"));
-			buildState.SetProperty(
-				"SourceFiles",
-				 std::vector<Path>({ 
-					Path("TestFile.cpp"),
+			auto state = BuildStateWrapper(buildState);
+			state.SetPropertyStringValue("TargetName", "Program");
+			state.SetPropertyIntegerValue(
+				"TargetType",
+				static_cast<int64_t>(BuildTargetType::Executable));
+			state.SetPropertyIntegerValue(
+				"LanguageStandard",
+				static_cast<int64_t>(LanguageStandard::CPP20));
+			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
+			state.SetPropertyStringValue("ObjectDirectory", "obj");
+			state.SetPropertyStringValue("BinaryDirectory", "bin");
+			state.SetPropertyStringList(
+				"SourceFiles", 
+				std::vector<std::string>({
+					"TestFile.cpp",
 				}));
-			buildState.SetProperty("IncludeDirectories", std::vector<Path>({}));
-			buildState.SetProperty("IncludeModules", std::vector<Path>({}));
-			buildState.SetProperty("OptimizationLevel", BuildOptimizationLevel::None);
+			state.SetPropertyStringList("IncludeDirectories", std::vector<std::string>());
+			state.SetPropertyStringList("IncludeModules", std::vector<std::string>());
+			state.SetPropertyIntegerValue(
+				"OptimizationLevel", 
+				static_cast<int64_t>(BuildOptimizationLevel::None));
 
-			uut.Execute(buildState);
+			auto result = uut.Execute(buildState);
+			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -181,22 +189,30 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			buildState.SetProperty("TargetName", std::string("Program"));
-			buildState.SetProperty("TargetType", BuildTargetType::Executable);
-			buildState.SetProperty("LanguageStandard", LanguageStandard::CPP20);
-			buildState.SetProperty("WorkingDirectory", Path("C:/root/"));
-			buildState.SetProperty("ObjectDirectory", Path("obj"));
-			buildState.SetProperty("BinaryDirectory", Path("bin"));
-			buildState.SetProperty(
+			auto state = BuildStateWrapper(buildState);
+			state.SetPropertyStringValue("TargetName", "Program");
+			state.SetPropertyIntegerValue(
+				"TargetType",
+				static_cast<int64_t>(BuildTargetType::Executable));
+			state.SetPropertyIntegerValue(
+				"LanguageStandard",
+				static_cast<int64_t>(LanguageStandard::CPP20));
+			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
+			state.SetPropertyStringValue("ObjectDirectory", "obj");
+			state.SetPropertyStringValue("BinaryDirectory", "bin");
+			state.SetPropertyStringList(
 				"SourceFiles",
-				 std::vector<Path>({ 
-					Path("TestFile.cpp"),
+				 std::vector<std::string>({
+					"TestFile.cpp",
 				}));
-			buildState.SetProperty("IncludeDirectories", std::vector<Path>({}));
-			buildState.SetProperty("IncludeModules", std::vector<Path>({}));
-			buildState.SetProperty("OptimizationLevel", BuildOptimizationLevel::Speed);
+			state.SetPropertyStringList("IncludeDirectories", std::vector<std::string>());
+			state.SetPropertyStringList("IncludeModules", std::vector<std::string>());
+			state.SetPropertyIntegerValue(
+				"OptimizationLevel",
+				static_cast<int64_t>(BuildOptimizationLevel::Speed));
 
-			uut.Execute(buildState);
+			auto result = uut.Execute(buildState);
+			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -323,22 +339,30 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			buildState.SetProperty("TargetName", std::string("Program"));
-			buildState.SetProperty("TargetType", BuildTargetType::Executable);
-			buildState.SetProperty("LanguageStandard", LanguageStandard::CPP20);
-			buildState.SetProperty("WorkingDirectory", Path("C:/root/"));
-			buildState.SetProperty("ObjectDirectory", Path("obj"));
-			buildState.SetProperty("BinaryDirectory", Path("bin"));
-			buildState.SetProperty(
+			auto state = BuildStateWrapper(buildState);
+			state.SetPropertyStringValue("TargetName", "Program");
+			state.SetPropertyIntegerValue(
+				"TargetType",
+				static_cast<int64_t>(BuildTargetType::Executable));
+			state.SetPropertyIntegerValue(
+				"LanguageStandard",
+				static_cast<int64_t>(LanguageStandard::CPP20));
+			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
+			state.SetPropertyStringValue("ObjectDirectory", "obj");
+			state.SetPropertyStringValue("BinaryDirectory", "bin");
+			state.SetPropertyStringList(
 				"SourceFiles",
-				 std::vector<Path>({ 
-					Path("TestFile.cpp"),
+				 std::vector<std::string>({
+					"TestFile.cpp",
 				}));
-			buildState.SetProperty("IncludeDirectories", std::vector<Path>({}));
-			buildState.SetProperty("IncludeModules", std::vector<Path>({}));
-			buildState.SetProperty("OptimizationLevel", BuildOptimizationLevel::Size);
+			state.SetPropertyStringList("IncludeDirectories", std::vector<std::string>());
+			state.SetPropertyStringList("IncludeModules", std::vector<std::string>());
+			state.SetPropertyIntegerValue(
+				"OptimizationLevel", 
+				static_cast<int64_t>(BuildOptimizationLevel::Size));
 
-			uut.Execute(buildState);
+			auto result = uut.Execute(buildState);
+			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -465,36 +489,48 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			buildState.SetProperty("TargetName", std::string("Library"));
-			buildState.SetProperty("TargetType", BuildTargetType::StaticLibrary);
-			buildState.SetProperty("LanguageStandard", LanguageStandard::CPP20);
-			buildState.SetProperty("WorkingDirectory", Path("C:/root/"));
-			buildState.SetProperty("ObjectDirectory", Path("obj"));
-			buildState.SetProperty("BinaryDirectory", Path("bin"));
-			buildState.SetProperty(
+			auto state = BuildStateWrapper(buildState);
+			state.SetPropertyStringValue("TargetName", "Library");
+			state.SetPropertyIntegerValue(
+				"TargetType",
+				static_cast<int64_t>(BuildTargetType::StaticLibrary));
+			state.SetPropertyIntegerValue(
+				"LanguageStandard",
+				static_cast<int64_t>(LanguageStandard::CPP20));
+			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
+			state.SetPropertyStringValue("ObjectDirectory", "obj");
+			state.SetPropertyStringValue("BinaryDirectory", "bin");
+			state.SetPropertyStringList(
 				"SourceFiles",
-				std::vector<Path>({ 
-					Path("TestFile1.cpp"),
-					Path("TestFile2.cpp"),
-					Path("TestFile3.cpp"),
+				std::vector<std::string>({ 
+					"TestFile1.cpp",
+					"TestFile2.cpp",
+					"TestFile3.cpp",
 				}));
-			buildState.SetProperty("IncludeDirectories", std::vector<Path>({
-				Path("Folder"),
-				Path("AnotherFolder/Sub"),
-			}));
-			buildState.SetProperty("IncludeModules", std::vector<Path>({
-				Path("../Other/bin/OtherModule1.mock.bmi"),
-				Path("../OtherModule2.mock.bmi"),
-			}));
-			buildState.SetProperty("OptimizationLevel", BuildOptimizationLevel::None);
-			buildState.SetProperty(
+			state.SetPropertyStringList(
+				"IncludeDirectories", 
+				std::vector<std::string>({
+					"Folder",
+					"AnotherFolder/Sub",
+				}));
+			state.SetPropertyStringList(
+				"IncludeModules",
+				std::vector<std::string>({
+					"../Other/bin/OtherModule1.mock.bmi",
+					"../OtherModule2.mock.bmi",
+				}));
+			state.SetPropertyIntegerValue(
+				"OptimizationLevel", 
+				static_cast<int64_t>(BuildOptimizationLevel::None));
+			state.SetPropertyStringList(
 				"LinkLibraries",
-				std::vector<Path>({
-					Path("../Other/bin/OtherModule1.mock.a"),
-					Path("../OtherModule2.mock.a"),
+				std::vector<std::string>({
+					"../Other/bin/OtherModule1.mock.a",
+					"../OtherModule2.mock.a",
 				}));
 
-			uut.Execute(buildState);
+			auto result = uut.Execute(buildState);
+			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -673,43 +709,55 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			buildState.SetProperty("TargetName", std::string("Library"));
-			buildState.SetProperty("TargetType", BuildTargetType::StaticLibrary);
-			buildState.SetProperty("LanguageStandard", LanguageStandard::CPP20);
-			buildState.SetProperty("WorkingDirectory", Path("C:/root/"));
-			buildState.SetProperty("ObjectDirectory", Path("obj"));
-			buildState.SetProperty("BinaryDirectory", Path("bin"));
-			buildState.SetProperty("ModuleInterfaceSourceFile", Path("Public.cpp"));
-			buildState.SetProperty(
+			auto state = BuildStateWrapper(buildState);
+			state.SetPropertyStringValue("TargetName", "Library");
+			state.SetPropertyIntegerValue(
+				"TargetType",
+				static_cast<int64_t>(BuildTargetType::StaticLibrary));
+			state.SetPropertyIntegerValue(
+				"LanguageStandard",
+				static_cast<int64_t>(LanguageStandard::CPP20));
+			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
+			state.SetPropertyStringValue("ObjectDirectory", "obj");
+			state.SetPropertyStringValue("BinaryDirectory", "bin");
+			state.SetPropertyStringValue("ModuleInterfaceSourceFile", "Public.cpp");
+			state.SetPropertyStringList(
 				"SourceFiles",
-				std::vector<Path>({ 
-					Path("TestFile1.cpp"),
-					Path("TestFile2.cpp"),
-					Path("TestFile3.cpp"),
-				}));
-			buildState.SetProperty("IncludeDirectories", std::vector<Path>({
-				Path("Folder"),
-				Path("AnotherFolder/Sub"),
-			}));
-			buildState.SetProperty("IncludeModules", std::vector<Path>({
-				Path("../Other/bin/OtherModule1.mock.bmi"),
-				Path("../OtherModule2.mock.bmi"),
-			}));
-			buildState.SetProperty("OptimizationLevel", BuildOptimizationLevel::None);
-			buildState.SetProperty(
-				"LinkLibraries",
-				std::vector<Path>({
-					Path("../Other/bin/OtherModule1.mock.a"),
-					Path("../OtherModule2.mock.a"),
-				}));
-			buildState.SetProperty(
-				"PreprocessorDefinitions",
 				std::vector<std::string>({ 
+					"TestFile1.cpp",
+					"TestFile2.cpp",
+					"TestFile3.cpp",
+				}));
+			state.SetPropertyStringList(
+				"IncludeDirectories",
+				std::vector<std::string>({
+					"Folder",
+					"AnotherFolder/Sub",
+				}));
+			state.SetPropertyStringList(
+				"IncludeModules",
+				std::vector<std::string>({
+					"../Other/bin/OtherModule1.mock.bmi",
+					"../OtherModule2.mock.bmi",
+				}));
+			state.SetPropertyIntegerValue(
+				"OptimizationLevel", 
+				static_cast<int64_t>(BuildOptimizationLevel::None));
+			state.SetPropertyStringList(
+				"LinkLibraries",
+				std::vector<std::string>({
+					"../Other/bin/OtherModule1.mock.a",
+					"../OtherModule2.mock.a",
+				}));
+			state.SetPropertyStringList(
+				"PreprocessorDefinitions",
+				std::vector<std::string>({
 					"DEBUG",
 					"AWESOME",
 				}));
 
-			uut.Execute(buildState);
+			auto result = uut.Execute(buildState);
+			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -938,31 +986,43 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			buildState.SetProperty("TargetName", std::string("Library"));
-			buildState.SetProperty("TargetType", BuildTargetType::StaticLibrary);
-			buildState.SetProperty("LanguageStandard", LanguageStandard::CPP20);
-			buildState.SetProperty("WorkingDirectory", Path("C:/root/"));
-			buildState.SetProperty("ObjectDirectory", Path("obj"));
-			buildState.SetProperty("BinaryDirectory", Path("bin"));
-			buildState.SetProperty("ModuleInterfaceSourceFile", Path("Public.cpp"));
-			buildState.SetProperty("SourceFiles", std::vector<Path>({}));
-			buildState.SetProperty("IncludeDirectories", std::vector<Path>({
-				Path("Folder"),
-				Path("AnotherFolder/Sub"),
-			}));
-			buildState.SetProperty("IncludeModules", std::vector<Path>({
-				Path("../Other/bin/OtherModule1.mock.bmi"),
-				Path("../OtherModule2.mock.bmi"),
-			}));
-			buildState.SetProperty("OptimizationLevel", BuildOptimizationLevel::None);
-			buildState.SetProperty(
+			auto state = BuildStateWrapper(buildState);
+			state.SetPropertyStringValue("TargetName", "Library");
+			state.SetPropertyIntegerValue(
+				"TargetType", 
+				static_cast<int64_t>(BuildTargetType::StaticLibrary));
+			state.SetPropertyIntegerValue(
+				"LanguageStandard",  
+				static_cast<int64_t>(LanguageStandard::CPP20));
+			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
+			state.SetPropertyStringValue("ObjectDirectory", "obj");
+			state.SetPropertyStringValue("BinaryDirectory", "bin");
+			state.SetPropertyStringValue("ModuleInterfaceSourceFile", "Public.cpp");
+			state.SetPropertyStringList("SourceFiles", std::vector<std::string>({}));
+			state.SetPropertyStringList(
+				"IncludeDirectories", 
+				std::vector<std::string>({
+					"Folder",
+					"AnotherFolder/Sub",
+				}));
+			state.SetPropertyStringList(
+				"IncludeModules",
+				std::vector<std::string>({
+					"../Other/bin/OtherModule1.mock.bmi",
+					"../OtherModule2.mock.bmi",
+				}));
+			state.SetPropertyIntegerValue(
+				"OptimizationLevel",
+				static_cast<int64_t>(BuildOptimizationLevel::None));
+			state.SetPropertyStringList(
 				"LinkLibraries",
-				std::vector<Path>({
-					Path("../Other/bin/OtherModule1.mock.a"),
-					Path("../OtherModule2.mock.a"),
+				std::vector<std::string>({
+					"../Other/bin/OtherModule1.mock.a",
+					"../OtherModule2.mock.a",
 				}));
 
-			uut.Execute(buildState);
+			auto result = uut.Execute(buildState);
+			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
 
 			// Verify expected logs
 			Assert::AreEqual(

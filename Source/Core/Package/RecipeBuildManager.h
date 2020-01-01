@@ -238,6 +238,10 @@ namespace Soup
 		{
 			// Create a new build system for the requested build
 			auto buildSystem = Build::BuildSystem();
+			auto state = Build::BuildStateWrapper(buildSystem.GetState());
+
+			// Set the system default properties
+			state.SetPropertyStringValue("PackageRoot", packageRoot.ToString());
 
 			// Select the correct compiler to use
 			std::shared_ptr<ICompiler> activeCompiler = nullptr;
@@ -256,7 +260,7 @@ namespace Soup
 			if (!runtimeDependencies.empty())
 			{
 				Log::Diag("Move Shared Properties");
-				buildSystem.GetState().SetProperty("RuntimeDependencies", runtimeDependencies);
+				state.CreatePropertyStringList("RuntimeDependencies").SetAll(runtimeDependencies);
 				runtimeDependencies.clear();
 			}
 
@@ -273,6 +277,21 @@ namespace Soup
 			auto buildTask = std::make_shared<Build::BuildTask>(activeCompiler);
 			buildSystem.RegisterTask(buildTask);
 
+			// Run all build tasks
+			if (recipe.HasDevDependencies())
+			{
+				for (auto dependecy : recipe.GetDevDependencies())
+				{
+					auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependecy);
+					auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
+						packagePath,
+						RecipeExtensions::GetBinaryDirectory(*_systemCompiler, arguments.Flavor),
+						std::string(_systemCompiler->GetDynamicLibraryFileExtension()));
+					
+					RunBuildExtension(libraryPath, buildSystem);
+				}
+			}
+
 			// Run the build
 			buildSystem.Execute();
 
@@ -281,10 +300,10 @@ namespace Soup
 			runner.Execute(buildSystem.GetState().GetBuildNodes(), arguments.ForceRebuild);
 
 			// Pass along any shared properties
-			if (buildSystem.GetState().HasProperty("RuntimeDependencies"))
+			if (state.HasPropertyValue("RuntimeDependencies"))
 			{
 				Log::Diag("Found Shared Properties");
-				auto updateRuntimeDependencies = std::any_cast<std::vector<Path>>(buildSystem.GetState().GetProperty("RuntimeDependencies"));
+				auto updateRuntimeDependencies = state.GetPropertyStringList("RuntimeDependencies").CopyAsStringVector();
 				runtimeDependencies.insert(
 					runtimeDependencies.end(),
 					updateRuntimeDependencies.begin(),
@@ -302,6 +321,25 @@ namespace Soup
 			}
 
 			return packagePath;
+		}
+
+		void RunBuildExtension(Path& libraryPath, Build::IBuildSystem& buildSystem)
+		{
+			// try
+			// {
+			// 	Log::Info("Running Build Extension: " + libraryPath.ToString());
+			// 	auto library = System::DynamicLibraryManager::LoadDynamicLibrary(
+			// 		libraryPath.ToString().c_str());
+			// 	auto function = (int(*)(Build::IBuildSystem&))library.GetFunction(
+			// 		"?RegisterBuildExtension@@YAHAEAVIBuildSystem@BuildEx@Soup@@@Z");
+			// 	auto result = function(buildSystem);
+			// 	Log::Info("Build Extension Done: " + std::to_string(result));
+			// }
+			// catch (...)
+			// {
+			// 	Log::Error("Build Extension Failed!");
+			// 	throw;
+			// }
 		}
 
 	private:

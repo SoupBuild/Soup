@@ -3,6 +3,7 @@
 #include <any>
 #include <atomic>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -11,6 +12,8 @@ import Opal;
 
 using namespace Opal;
 
-#include "BuildGraphNode.h"
-#include "IBuildTask.h"
-#include "IBuildSystem.h"
+#include "Definition/BuildGraphNode.h"
+#include "Definition/IBuildTask.h"
+#include "Definition/IBuildSystem.h"
+
+#include "Wrapper/BuildStateWrapper.h"

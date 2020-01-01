@@ -11,7 +11,7 @@ namespace Soup::Build
 	/// <summary>
 	/// The recipe build task that knows how to build a single recipe
 	/// </summary>
-	export class RecipeBuildTask : public IBuildTask
+	export class RecipeBuildTask : public IBuildTask, public Memory::ReferenceCounted
 	{
 	public:
 		/// <summary>
@@ -38,7 +38,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Get the task name
 		/// </summary>
-		const char* GetName() override final
+		const char* GetName() const noexcept override final
 		{
 			return "RecipeBuild";
 		}
@@ -46,203 +46,189 @@ namespace Soup::Build
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(IBuildState& state) override final
+		BuildSystemResult Execute(IBuildState& buildState) noexcept override final
 		{
-			// Run all build tasks
-			auto buildSystem = BuildSystem();
-			if (_recipe.HasDevDependencies())
+			try
 			{
-				for (auto dependecy : _recipe.GetDevDependencies())
+				auto state = BuildStateWrapper(buildState);
+
+				// Add all dependency packages modules references
+				auto includeModules = std::vector<Path>();
+				if (_recipe.GetLanguageVersion() == RecipeLanguageVersion::CPP20)
 				{
-					auto packagePath = RecipeExtensions::GetPackageReferencePath(_workingDirectory, dependecy);
-					auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
-						packagePath,
-						RecipeExtensions::GetBinaryDirectory(*_systemCompiler, _arguments.Flavor),
-						std::string(_systemCompiler->GetDynamicLibraryFileExtension()));
-					
-					RunBuildExtension(libraryPath, buildSystem);
+					// TODO: MSVC requires the entire closure of interfaces
+					bool isRecursive = _activeCompiler->GetName() == "MSVC";
+					RecipeExtensions::GenerateDependecyModuleIncludeClosure(
+						*_activeCompiler,
+						_arguments.Flavor,
+						_workingDirectory,
+						_recipe,
+						includeModules,
+						isRecursive);
 				}
-			}
 
-			// Add all dependency packages modules references
-			auto includeModules = std::vector<Path>();
-			if (_recipe.GetLanguageVersion() == RecipeLanguageVersion::CPP20)
-			{
-				// TODO: MSVC requires the entire closure of interfaces
-				bool isRecursive = _activeCompiler->GetName() == "MSVC";
-				RecipeExtensions::GenerateDependecyModuleIncludeClosure(
-					*_activeCompiler,
-					_arguments.Flavor,
-					_workingDirectory,
-					_recipe,
-					includeModules,
-					isRecursive);
-			}
+				// Add the dependency static library closure to link if targeting an executable or dynamic library
+				std::vector<Path> linkLibraries = std::vector<Path>();
+				std::vector<Path> externalLinkLibraries = std::vector<Path>();
+				if (_recipe.GetType() == RecipeType::Executable || _recipe.GetType() == RecipeType::DynamicLibrary)
+				{
+					RecipeExtensions::GenerateDependecyStaticLibraryClosure(
+						*_activeCompiler,
+						_arguments.Flavor,
+						_workingDirectory,
+						_recipe,
+						linkLibraries);
 
-			// Add the dependency static library closure to link if targeting an executable or dynamic library
-			std::vector<Path> linkLibraries = std::vector<Path>();
-			std::vector<Path> externalLinkLibraries = std::vector<Path>();
-			if (_recipe.GetType() == RecipeType::Executable || _recipe.GetType() == RecipeType::DynamicLibrary)
-			{
-				RecipeExtensions::GenerateDependecyStaticLibraryClosure(
-					*_activeCompiler,
-					_arguments.Flavor,
-					_workingDirectory,
-					_recipe,
-					linkLibraries);
+					// Add the platform libraries
+					externalLinkLibraries.insert(
+						externalLinkLibraries.end(),
+						_arguments.PlatformLibraries.begin(),
+						_arguments.PlatformLibraries.end());
+				}
 
-				// Add the platform libraries
-				externalLinkLibraries.insert(
-					externalLinkLibraries.end(),
-					_arguments.PlatformLibraries.begin(),
-					_arguments.PlatformLibraries.end());
-			}
+				// Combine the include paths from the recipe and the system
+				auto includePaths = std::vector<Path>();
+				if (_recipe.HasIncludePaths())
+				{
+					auto recipeIncludePaths = _recipe.GetIncludePathsAsPath();
+					includePaths.insert(
+						includePaths.end(),
+						recipeIncludePaths.begin(),
+						recipeIncludePaths.end());
+				}
 
-			// Combine the include paths from the recipe and the system
-			auto includePaths = std::vector<Path>();
-			if (_recipe.HasIncludePaths())
-			{
-				auto recipeIncludePaths = _recipe.GetIncludePathsAsPath();
+				// Add the platform include paths
 				includePaths.insert(
 					includePaths.end(),
-					recipeIncludePaths.begin(),
-					recipeIncludePaths.end());
-			}
+					_arguments.PlatformIncludePaths.begin(),
+					_arguments.PlatformIncludePaths.end());
 
-			// Add the platform include paths
-			includePaths.insert(
-				includePaths.end(),
-				_arguments.PlatformIncludePaths.begin(),
-				_arguments.PlatformIncludePaths.end());
+				// Load the extra library paths provided to the build system
+				auto libraryPaths = std::vector<Path>();
 
-			// Load the extra library paths provided to the build system
-			auto libraryPaths = std::vector<Path>();
+				// Add the platform library paths
+				libraryPaths.insert(
+					libraryPaths.end(),
+					_arguments.PlatformLibraryPaths.begin(),
+					_arguments.PlatformLibraryPaths.end());
 
-			// Add the platform library paths
-			libraryPaths.insert(
-				libraryPaths.end(),
-				_arguments.PlatformLibraryPaths.begin(),
-				_arguments.PlatformLibraryPaths.end());
-
-			// Combine the defines with the default set and the platform
-			auto preprocessorDefinitions = std::vector<std::string>();
-			preprocessorDefinitions.insert(
-				preprocessorDefinitions.end(),
-				_arguments.PlatformPreprocessorDefinitions.begin(),
-				_arguments.PlatformPreprocessorDefinitions.end());
-			preprocessorDefinitions.push_back("SOUP_BUILD");
-			if (_recipe.HasDefines())
-			{
-				auto& recipeDefines = _recipe.GetDefines();
+				// Combine the defines with the default set and the platform
+				auto preprocessorDefinitions = std::vector<std::string>();
 				preprocessorDefinitions.insert(
 					preprocessorDefinitions.end(),
-					recipeDefines.begin(),
-					recipeDefines.end());
-			}
-
-			// Build up arguments to build this individual recipe
-			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(*_activeCompiler, _arguments.Flavor);
-
-			state.SetProperty("TargetName", _recipe.GetName());
-			state.SetProperty("WorkingDirectory", _workingDirectory);
-			state.SetProperty(
-				"ObjectDirectory",
-				RecipeExtensions::GetObjectDirectory(*_activeCompiler, _arguments.Flavor));
-			state.SetProperty("BinaryDirectory", binaryDirectory);
-			state.SetProperty("ModuleInterfaceSourceFile", Path());
-			state.SetProperty("SourceFiles", _recipe.GetSourceAsPath());
-			state.SetProperty("IncludeModules", std::move(includeModules));
-			state.SetProperty("LinkLibraries", std::move(linkLibraries));
-			state.SetProperty("ExternalLinkLibraries", std::move(externalLinkLibraries));
-			state.SetProperty("IsIncremental", !_arguments.ForceRebuild);
-			state.SetProperty("GenerateSourceDebugInfo", false);
-			state.SetProperty("PreprocessorDefinitions", std::move(preprocessorDefinitions));
-			state.SetProperty("IncludeDirectories", std::move(includePaths));
-			state.SetProperty("LibraryPaths", std::move(libraryPaths));
-
-			if (_recipe.HasPublic())
-			{
-				auto moduleInterfaceSourceFile = _recipe.GetPublicAsPath();
-				
-				// TODO: Clang requires annoying cppm extension
-				if (_activeCompiler->GetName() == "Clang")
+					_arguments.PlatformPreprocessorDefinitions.begin(),
+					_arguments.PlatformPreprocessorDefinitions.end());
+				preprocessorDefinitions.push_back("SOUP_BUILD");
+				if (_recipe.HasDefines())
 				{
-					moduleInterfaceSourceFile.SetFileExtension("cppm");
+					auto& recipeDefines = _recipe.GetDefines();
+					preprocessorDefinitions.insert(
+						preprocessorDefinitions.end(),
+						recipeDefines.begin(),
+						recipeDefines.end());
 				}
 
-				state.SetProperty("ModuleInterfaceSourceFile", moduleInterfaceSourceFile);
-			}
+				// Build up arguments to build this individual recipe
+				auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(*_activeCompiler, _arguments.Flavor);
 
-			// Set the correct optimization level for the requested flavor
-			if (_arguments.Flavor == "debug")
-			{
-				state.SetProperty("OptimizationLevel", BuildOptimizationLevel::None);
-				state.SetProperty("GenerateSourceDebugInfo", true);
-			}
-			else if (_arguments.Flavor == "release")
-			{
-				state.SetProperty("OptimizationLevel", BuildOptimizationLevel::Speed);
-			}
-			else
-			{
-				Log::Error("Unknown build flavor type.");
-				throw std::runtime_error("Unknown build flavors type.");
-			}
+				state.SetPropertyStringValue("TargetName", _recipe.GetName());
+				state.SetPropertyStringValue("WorkingDirectory", _workingDirectory.ToString());
+				state.SetPropertyStringValue(
+					"ObjectDirectory",
+					RecipeExtensions::GetObjectDirectory(*_activeCompiler, _arguments.Flavor).ToString());
+				state.SetPropertyStringValue("BinaryDirectory", binaryDirectory.ToString());
+				state.SetPropertyStringValue("ModuleInterfaceSourceFile", "");
+				state.SetPropertyStringList("SourceFiles", _recipe.GetSourceAsPath());
+				state.SetPropertyStringList("IncludeModules", includeModules);
+				state.SetPropertyStringList("LinkLibraries", linkLibraries);
+				state.SetPropertyStringList("ExternalLinkLibraries", externalLinkLibraries);
+				state.SetPropertyBooleanValue("IsIncremental", !_arguments.ForceRebuild);
+				state.SetPropertyBooleanValue("GenerateSourceDebugInfo", false);
+				state.SetPropertyStringList("PreprocessorDefinitions", preprocessorDefinitions);
+				state.SetPropertyStringList("IncludeDirectories", includePaths);
+				state.SetPropertyStringList("LibraryPaths", libraryPaths);
 
-			// Convert the recipe type to the required build type
-			switch (_recipe.GetType())
-			{
-				case RecipeType::StaticLibrary:
-					state.SetProperty("TargetType", BuildTargetType::StaticLibrary);
-					break;
-				case RecipeType::DynamicLibrary:
-					state.SetProperty("TargetType", BuildTargetType::DynamicLibrary);
-					break;
-				case RecipeType::Executable:
-					state.SetProperty("TargetType", BuildTargetType::Executable);
-					break;
-				default:
-					throw std::runtime_error("Unknown build target type.");
-			}
+				if (_recipe.HasPublic())
+				{
+					auto moduleInterfaceSourceFile = _recipe.GetPublicAsPath();
+					
+					// TODO: Clang requires annoying cppm extension
+					if (_activeCompiler->GetName() == "Clang")
+					{
+						moduleInterfaceSourceFile.SetFileExtension("cppm");
+					}
 
-			// Convert the recipe language version to the required build language
-			switch (_recipe.GetLanguageVersion())
-			{
-				case RecipeLanguageVersion::CPP11:
-					state.SetProperty("LanguageStandard", LanguageStandard::CPP11);
-					break;
-				case RecipeLanguageVersion::CPP14:
-					state.SetProperty("LanguageStandard", LanguageStandard::CPP14);
-					break;
-				case RecipeLanguageVersion::CPP17:
-					state.SetProperty("LanguageStandard", LanguageStandard::CPP17);
-					break;
-				case RecipeLanguageVersion::CPP20:
-					state.SetProperty("LanguageStandard", LanguageStandard::CPP20);
-					break;
-				default:
-					throw std::runtime_error("Unknown recipe language version.");
-			}
-		}
+					state.SetPropertyStringValue("ModuleInterfaceSourceFile", moduleInterfaceSourceFile.ToString());
+				}
 
-	private:
-		void RunBuildExtension(Path& libraryPath, IBuildSystem& buildSystem)
-		{
-			// try
-			// {
-			// 	Log::Info("Running Build Extension: " + libraryPath.ToString());
-			// 	auto library = System::DynamicLibraryManager::LoadDynamicLibrary(
-			// 		libraryPath.ToString().c_str());
-			// 	auto function = (int(*)(Build::IBuildSystem&))library.GetFunction(
-			// 		"?RegisterBuildExtension@@YAHAEAVIBuildSystem@BuildEx@Soup@@@Z");
-			// 	auto result = function(buildSystem);
-			// 	Log::Info("Build Extension Done: " + std::to_string(result));
-			// }
-			// catch (...)
-			// {
-			// 	Log::Error("Build Extension Failed!");
-			// 	throw;
-			// }
+				// Set the correct optimization level for the requested flavor
+				if (_arguments.Flavor == "debug")
+				{
+					state.SetPropertyIntegerValue(
+						"OptimizationLevel",
+						static_cast<int64_t>(BuildOptimizationLevel::None));
+					state.SetPropertyBooleanValue("GenerateSourceDebugInfo", true);
+				}
+				else if (_arguments.Flavor == "release")
+				{
+					state.SetPropertyIntegerValue(
+						"OptimizationLevel",
+						static_cast<int64_t>(BuildOptimizationLevel::Speed));
+				}
+				else
+				{
+					Log::Error("Unknown build flavor type.");
+					throw std::runtime_error("Unknown build flavors type.");
+				}
+
+				// Convert the recipe type to the required build type
+				BuildTargetType targetType;
+				switch (_recipe.GetType())
+				{
+					case RecipeType::StaticLibrary:
+						targetType = BuildTargetType::StaticLibrary;
+						break;
+					case RecipeType::DynamicLibrary:
+						targetType = BuildTargetType::DynamicLibrary;
+						break;
+					case RecipeType::Executable:
+						targetType = BuildTargetType::Executable;
+						break;
+					default:
+						throw std::runtime_error("Unknown build target type.");
+				}
+
+				state.SetPropertyIntegerValue("TargetType", static_cast<int64_t>(targetType));
+
+				// Convert the recipe language version to the required build language
+				LanguageStandard languageStandard;
+				switch (_recipe.GetLanguageVersion())
+				{
+					case RecipeLanguageVersion::CPP11:
+						languageStandard = LanguageStandard::CPP11;
+						break;
+					case RecipeLanguageVersion::CPP14:
+						languageStandard = LanguageStandard::CPP14;
+						break;
+					case RecipeLanguageVersion::CPP17:
+						languageStandard = LanguageStandard::CPP17;
+						break;
+					case RecipeLanguageVersion::CPP20:
+						languageStandard = LanguageStandard::CPP20;
+						break;
+					default:
+						throw std::runtime_error("Unknown recipe language version.");
+				}
+
+				state.SetPropertyIntegerValue("LanguageStandard", static_cast<int64_t>(languageStandard));
+
+				return 0;
+			}
+			catch(...)
+			{
+				// Unknown error
+				return -1;
+			}
 		}
 
 	private:
