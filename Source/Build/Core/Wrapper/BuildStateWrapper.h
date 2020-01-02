@@ -199,8 +199,15 @@ namespace Soup::Build
 
 		std::vector<std::string> CopyPropertyStringListAsStringVector(std::string_view name)
 		{
-			auto property = GetPropertyStringList(name);
-			return property.CopyAsStringVector();
+			if (HasPropertyStringList(name))
+			{
+				auto property = GetPropertyStringList(name);
+				return property.CopyAsStringVector();
+			}
+			else
+			{
+				return std::vector<std::string>();
+			}
 		}
 
 		std::vector<Path> CopyPropertyStringListAsPathVector(std::string_view name)

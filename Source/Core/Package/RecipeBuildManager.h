@@ -244,8 +244,14 @@ namespace Soup
 				auto buildSystem = Build::BuildSystem();
 				auto state = Build::BuildStateWrapper(buildSystem.GetState());
 
-				// Set the system default properties
+				// Set the input properties
 				state.SetPropertyStringValue("PackageRoot", packageRoot.ToString());
+				state.SetPropertyBooleanValue("ForceRebuild", arguments.ForceRebuild);
+				state.SetPropertyStringValue("BuildFlavor", arguments.Flavor);
+				state.SetPropertyStringList("PlatformLibraries", arguments.PlatformLibraries);
+				state.SetPropertyStringList("PlatformIncludePaths", arguments.PlatformIncludePaths);
+				state.SetPropertyStringList("PlatformLibraryPaths", arguments.PlatformLibraryPaths);
+				state.SetPropertyStringList("PlatformPreprocessorDefinitions", arguments.PlatformPreprocessorDefinitions);
 
 				// Select the correct compiler to use
 				std::shared_ptr<ICompiler> activeCompiler = nullptr;
@@ -272,10 +278,7 @@ namespace Soup
 				auto recipeBuildTask = Memory::Reference<Build::RecipeBuildTask>(
 					new Build::RecipeBuildTask(
 						_systemCompiler,
-						activeCompiler,
-						packageRoot,
-						recipe,
-						arguments));
+						activeCompiler));
 				buildSystem.RegisterTask(recipeBuildTask.GetRaw());
 
 				// Register the compile task

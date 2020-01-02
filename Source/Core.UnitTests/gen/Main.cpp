@@ -23,6 +23,7 @@ import SoupTestUtilities;
 #include "Build/Runner/BuildRunnerTests.gen.h"
 
 #include "Build/Tasks/BuildTaskTests.gen.h"
+#include "Build/Tasks/RecipeBuildTaskTests.gen.h"
 
 #include "Config/LocalUserConfigExtensionsTests.gen.h"
 #include "Config/LocalUserConfigJsonTests.gen.h"
@@ -53,6 +54,7 @@ int main()
 	state += RunBuildRunnerTests();
 
 	state += RunBuildTaskTests();
+	state += RunRecipeBuildTaskTests();
 
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigJsonTests();
