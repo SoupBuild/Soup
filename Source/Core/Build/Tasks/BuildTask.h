@@ -12,7 +12,7 @@ namespace Soup::Build
 	/// <summary>
 	/// The build task
 	/// </summary>
-	export class BuildTask : public IBuildTask, public Memory::ReferenceCounted
+	export class BuildTask : public Memory::ReferenceCounted<IBuildTask>
 	{
 	public:
 		/// <summary>

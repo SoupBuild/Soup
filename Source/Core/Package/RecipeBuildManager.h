@@ -236,78 +236,88 @@ namespace Soup
 			bool isSystemBuild,
 			std::vector<Path>& runtimeDependencies)
 		{
-			// Create a new build system for the requested build
-			auto buildSystem = Build::BuildSystem();
-			auto state = Build::BuildStateWrapper(buildSystem.GetState());
+			// Ensure the external build extension libraries outlive all usage in the build system
+			auto activeExtensionLibraries = std::vector<System::Library>();
 
-			// Set the system default properties
-			state.SetPropertyStringValue("PackageRoot", packageRoot.ToString());
-
-			// Select the correct compiler to use
-			std::shared_ptr<ICompiler> activeCompiler = nullptr;
-			if (isSystemBuild)
 			{
-				Log::HighPriority("System Build '" + recipe.GetName() + "'");
-				activeCompiler = _systemCompiler;
-			}
-			else
-			{
-				Log::HighPriority("Build '" + recipe.GetName() + "'");
-				activeCompiler = _runtimeCompiler;
-			}
+				// Create a new build system for the requested build
+				auto buildSystem = Build::BuildSystem();
+				auto state = Build::BuildStateWrapper(buildSystem.GetState());
 
-			// Pass in any shared properties and clear our state
-			if (!runtimeDependencies.empty())
-			{
-				Log::Diag("Move Shared Properties");
-				state.CreatePropertyStringList("RuntimeDependencies").SetAll(runtimeDependencies);
-				runtimeDependencies.clear();
-			}
+				// Set the system default properties
+				state.SetPropertyStringValue("PackageRoot", packageRoot.ToString());
 
-			// Register the recipe build task
-			auto recipeBuildTask = std::make_shared<Build::RecipeBuildTask>(
-				_systemCompiler,
-				activeCompiler,
-				packageRoot,
-				recipe,
-				arguments);
-			buildSystem.RegisterTask(recipeBuildTask);
-
-			// Register the compile task
-			auto buildTask = std::make_shared<Build::BuildTask>(activeCompiler);
-			buildSystem.RegisterTask(buildTask);
-
-			// Run all build tasks
-			if (recipe.HasDevDependencies())
-			{
-				for (auto dependecy : recipe.GetDevDependencies())
+				// Select the correct compiler to use
+				std::shared_ptr<ICompiler> activeCompiler = nullptr;
+				if (isSystemBuild)
 				{
-					auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependecy);
-					auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
-						packagePath,
-						RecipeExtensions::GetBinaryDirectory(*_systemCompiler, arguments.Flavor),
-						std::string(_systemCompiler->GetDynamicLibraryFileExtension()));
-					
-					RunBuildExtension(libraryPath, buildSystem);
+					Log::HighPriority("System Build '" + recipe.GetName() + "'");
+					activeCompiler = _systemCompiler;
 				}
-			}
+				else
+				{
+					Log::HighPriority("Build '" + recipe.GetName() + "'");
+					activeCompiler = _runtimeCompiler;
+				}
 
-			// Run the build
-			buildSystem.Execute();
+				// Pass in any shared properties and clear our state
+				if (!runtimeDependencies.empty())
+				{
+					Log::Diag("Move Shared Properties");
+					state.SetPropertyStringList("RuntimeDependencies", runtimeDependencies);
+					runtimeDependencies.clear();
+				}
 
-			// Execute the build nodes
-			auto runner = Build::BuildRunner(packageRoot);
-			runner.Execute(buildSystem.GetState().GetBuildNodes(), arguments.ForceRebuild);
+				// Register the recipe build task
+				auto recipeBuildTask = Memory::Reference<Build::RecipeBuildTask>(
+					new Build::RecipeBuildTask(
+						_systemCompiler,
+						activeCompiler,
+						packageRoot,
+						recipe,
+						arguments));
+				buildSystem.RegisterTask(recipeBuildTask.GetRaw());
 
-			// Pass along any shared properties
-			if (state.HasPropertyValue("RuntimeDependencies"))
-			{
-				Log::Diag("Found Shared Properties");
-				auto updateRuntimeDependencies = state.GetPropertyStringList("RuntimeDependencies").CopyAsStringVector();
-				runtimeDependencies.insert(
-					runtimeDependencies.end(),
-					updateRuntimeDependencies.begin(),
-					updateRuntimeDependencies.end());
+				// Register the compile task
+				auto buildTask = Memory::Reference<Build::BuildTask>(
+					new Build::BuildTask(activeCompiler));
+				buildSystem.RegisterTask(buildTask.GetRaw());
+
+				// Run all build extensions
+				// Note: Keep the extension libraries open while running the build system
+				// to ensure their memory is kept alive
+				if (recipe.HasDevDependencies())
+				{
+					for (auto dependecy : recipe.GetDevDependencies())
+					{
+						auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependecy);
+						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
+							packagePath,
+							RecipeExtensions::GetBinaryDirectory(*_systemCompiler, arguments.Flavor),
+							std::string(_systemCompiler->GetDynamicLibraryFileExtension()));
+						
+						auto library = RunBuildExtension(libraryPath, buildSystem);
+						activeExtensionLibraries.push_back(std::move(library));
+					}
+				}
+
+				// Run the build
+				buildSystem.Execute();
+
+				// Execute the build nodes
+				auto runner = Build::BuildRunner(packageRoot);
+				runner.Execute(buildSystem.GetState().GetBuildNodes(), arguments.ForceRebuild);
+
+				// Pass along any shared properties
+				if (state.HasPropertyStringList("RuntimeDependencies"))
+				{
+					Log::Diag("Found Shared Properties");
+					auto updateRuntimeDependencies = state.CopyPropertyStringListAsPathVector("RuntimeDependencies");
+					runtimeDependencies.insert(
+						runtimeDependencies.end(),
+						updateRuntimeDependencies.begin(),
+						updateRuntimeDependencies.end());
+				}
 			}
 		}
 
@@ -323,23 +333,35 @@ namespace Soup
 			return packagePath;
 		}
 
-		void RunBuildExtension(Path& libraryPath, Build::IBuildSystem& buildSystem)
+		System::Library RunBuildExtension(
+			Path& libraryPath,
+			Build::IBuildSystem& buildSystem)
 		{
-			// try
-			// {
-			// 	Log::Info("Running Build Extension: " + libraryPath.ToString());
-			// 	auto library = System::DynamicLibraryManager::LoadDynamicLibrary(
-			// 		libraryPath.ToString().c_str());
-			// 	auto function = (int(*)(Build::IBuildSystem&))library.GetFunction(
-			// 		"?RegisterBuildExtension@@YAHAEAVIBuildSystem@BuildEx@Soup@@@Z");
-			// 	auto result = function(buildSystem);
-			// 	Log::Info("Build Extension Done: " + std::to_string(result));
-			// }
-			// catch (...)
-			// {
-			// 	Log::Error("Build Extension Failed!");
-			// 	throw;
-			// }
+			try
+			{
+				Log::Diag("Running Build Extension: " + libraryPath.ToString());
+				auto library = System::DynamicLibraryManager::LoadDynamicLibrary(
+					libraryPath.ToString().c_str());
+				auto function = (int(*)(Build::IBuildSystem&))library.GetFunction(
+					"RegisterBuildExtension");
+				auto result = function(buildSystem);
+				if (result != 0)
+				{
+					Log::Error("Build Extension Failed: " + std::to_string(result));
+				}
+				else
+				{
+					Log::Info("Build Extension Done: " + std::to_string(result));
+				}
+
+				// Keep the library open to ensure the registered tasks are not lost
+				return library;
+			}
+			catch (...)
+			{
+				Log::Error("Build Extension Failed!");
+				throw;
+			}
 		}
 
 	private:

@@ -11,7 +11,7 @@ namespace Soup::Build
 	/// <summary>
 	/// The recipe build task that knows how to build a single recipe
 	/// </summary>
-	export class RecipeBuildTask : public IBuildTask, public Memory::ReferenceCounted
+	export class RecipeBuildTask : public Memory::ReferenceCounted<IBuildTask>
 	{
 	public:
 		/// <summary>

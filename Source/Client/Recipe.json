@@ -5,8 +5,7 @@
   "dependencies": [
     "../Core",
     "../Compiler/Clang",
-    "../Compiler/MSVC",
-    "../Build/Extension/"
+    "../Compiler/MSVC"
   ],
   "source": [
     "Main.cpp"

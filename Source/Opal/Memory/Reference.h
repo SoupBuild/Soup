@@ -56,11 +56,32 @@ namespace Opal::Memory
 			Assign(nullptr);
 		}
 
+		/// <summary>
+		/// Pointer operator overloads
+		/// </summary>
+		operator T*() noexcept
+		{
+			return _reference;
+		}
+
+		T* operator->() noexcept
+		{
+			return _reference;
+		}
+
+		/// <summary>
+		/// Get the raw pointer value
+		/// </summary>
+		T* GetRaw() noexcept
+		{
+			return _reference;
+		}
+
 	private:
 		/// <summary>
 		/// Assign the reference to a new value
 		/// </summary>
-		inline void Assign(T* reference) const noexcept
+		inline void Assign(T* reference) noexcept
 		{
 			if (_reference != nullptr)
 			{

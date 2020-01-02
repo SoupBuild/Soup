@@ -25,10 +25,19 @@ namespace Soup::Build
 		/// <summary>
 		/// Register task
 		/// </summary>
-		void RegisterTask(std::shared_ptr<IBuildTask> task) override final
+		BuildSystemResult RegisterTask(IBuildTask* task) noexcept override final
 		{
-			Log::Diag(std::string("RegisterTask: ") + task->GetName());
-			_tasks.push_back(std::move(task));
+			try
+			{
+				Log::Diag(std::string("RegisterTask: ") + task->GetName());
+				_tasks.push_back(task);
+				return 0;
+			}
+			catch (...)
+			{
+				// Unknown error
+				return -1;
+			}
 		}
 
 		/// <summary>
@@ -38,8 +47,16 @@ namespace Soup::Build
 		{
 			for (auto& task : _tasks)
 			{
-				Log::Info(std::string("Task: ") + task->GetName());
-				task->Execute(_state);
+				Log::Info(std::string("TaskStart: ") + task->GetName());
+				auto status = task->Execute(_state);
+				if (status != 0)
+				{
+					Log::Error("TaskFailed: " + std::to_string(status));
+				}
+				else
+				{
+					Log::Info(std::string("TaskDone: ") + task->GetName());
+				}
 			}
 		}
 
@@ -50,6 +67,6 @@ namespace Soup::Build
 
 	private:
 		BuildState _state;
-		std::vector<std::shared_ptr<IBuildTask>> _tasks;
+		std::vector<Memory::Reference<IBuildTask>> _tasks;
 	};
 }

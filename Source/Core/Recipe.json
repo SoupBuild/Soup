@@ -6,6 +6,9 @@
     "../Opal/",
     "../Build/Core/"
   ],
+  "devDependencies": [
+    "../Build/TestExtension/"
+  ],
   "public": "Module.cpp",
   "source": [],
   "includePaths": [

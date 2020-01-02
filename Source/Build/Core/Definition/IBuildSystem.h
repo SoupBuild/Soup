@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "BuildSystemResult.h"
 
 namespace Soup::Build
 {
@@ -15,6 +16,6 @@ namespace Soup::Build
 	export class IBuildSystem
 	{
 	public:
-		virtual void RegisterTask(std::shared_ptr<IBuildTask> task) = 0;
+		virtual BuildSystemResult RegisterTask(IBuildTask* task) noexcept = 0;
 	};
 }

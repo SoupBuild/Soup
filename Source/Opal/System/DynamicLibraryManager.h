@@ -17,6 +17,14 @@ namespace Opal::System
 		{
 		}
 
+		Library(Library&& other) :
+			_handle(std::move(other._handle))
+		{
+			other._handle = nullptr;
+		}
+
+		Library(Library& other) = delete;
+
 		~Library()
 		{
 			// Free the DLL module.

@@ -9,7 +9,8 @@ namespace Opal::Memory
 	/// <summary>
 	/// The shared implementation of a thread safe reference counted object
 	/// </summary>
-	export class ReferenceCounted : public virtual IReferenceCounted
+	export template<typename T>
+	class ReferenceCounted : public T
 	{
 	protected:
 		/// <summary>
@@ -65,9 +66,13 @@ namespace Opal::Memory
 			{
 				delete this;
 			}
+			else if (currentCount < 0)
+			{
+				std::abort();
+			}
 		}
 
 	private:
-		mutable std::atomic<size_t> _referenceCount;
+		mutable std::atomic<int64_t> _referenceCount;
 	};
 }
