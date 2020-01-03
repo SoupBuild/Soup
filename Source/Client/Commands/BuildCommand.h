@@ -89,8 +89,13 @@ namespace Soup::Client
 			else
 				arguments.Flavor = "release";
 
+			if (!_options.Platform.empty())
+				arguments.Platform = _options.Platform;
+			else
+				arguments.Platform = "Windows"; // TODO: Pull current platform
+
 			// TODO: Hard coded to windows MSVC runtime libraries
-			// And we only trust the contig today
+			// And we only trust the config today
 			arguments.PlatformIncludePaths = std::vector<Path>({});
 			for (auto& path : config.GetWindowsSDKIncludePaths())
 			{

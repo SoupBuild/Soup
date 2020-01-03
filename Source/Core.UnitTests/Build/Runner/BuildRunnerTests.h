@@ -176,7 +176,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: C:/TestWorkingDirectory/: Command.exe Arguments",
+					"Execute: [C:/TestWorkingDirectory/] Command.exe Arguments",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -245,7 +245,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: C:/TestWorkingDirectory/: Command.exe Arguments",
+					"Execute: [C:/TestWorkingDirectory/] Command.exe Arguments",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -297,7 +297,7 @@ namespace Soup::Build::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
-					"INFO: Check for updated source",
+					"DIAG: Check for updated source",
 					"INFO: Missing file info: InputFile.cpp",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: Command.exe Arguments",
@@ -373,7 +373,7 @@ namespace Soup::Build::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
-					"INFO: Check for updated source",
+					"DIAG: Check for updated source",
 					"INFO: Output target does not exist: C:/TestWorkingDirectory/OutputFile.out",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: Command.exe Arguments",
@@ -453,7 +453,7 @@ namespace Soup::Build::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
-					"INFO: Check for updated source",
+					"DIAG: Check for updated source",
 					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434993000]",
 					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
 					"INFO: Input altered after target [C:/TestWorkingDirectory/InputFile.in] -> [C:/TestWorkingDirectory/OutputFile.out]",
@@ -538,7 +538,7 @@ namespace Soup::Build::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
-					"INFO: Check for updated source",
+					"DIAG: Check for updated source",
 					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434993120]",
 					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
 					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",

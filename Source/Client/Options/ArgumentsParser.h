@@ -60,6 +60,12 @@ namespace Soup::Client
 					options->Flavor = std::move(flavorValue);
 				}
 
+				auto platformValue = std::string();
+				if (TryGetValueArgument("platform", unusedArgs, platformValue))
+				{
+					options->Platform = std::move(platformValue);
+				}
+
 				result = std::move(options);
 			}
 			else if (commandType == "init")

@@ -129,7 +129,7 @@ namespace Soup::Build
 			if (!forceBuild)
 			{
 				// Check if each source file is out of date and requires a rebuild
-				Log::Info("Check for updated source");
+				Log::Diag("Check for updated source");
 				
 				// Try to build up the closure of include dependencies
 				const auto& sourceFiles = node.GetInputFiles();

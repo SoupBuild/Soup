@@ -7,6 +7,8 @@
 #include "Build/Runner/BuildRunner.h"
 #include "Build/System/BuildSystem.h"
 #include "Build/Tasks/RecipeBuildTask.h"
+#include "Build/Tasks/ResolveToolsTask.h"
+#include "Build/Tasks/StandardLibraryIncludeTask.h"
 
 namespace Soup
 {
@@ -273,6 +275,16 @@ namespace Soup
 					state.SetPropertyStringList("RuntimeDependencies", runtimeDependencies);
 					runtimeDependencies.clear();
 				}
+
+				// Register the resolve tools task
+				auto resolveToolsTask = Memory::Reference<Build::ResolveToolsTask>(
+					new Build::ResolveToolsTask());
+				buildSystem.RegisterTask(resolveToolsTask.GetRaw());
+
+				// Register the standard library include task
+				auto standardLibraryIncludeTask = Memory::Reference<Build::StandardLibraryIncludeTask>(
+					new Build::StandardLibraryIncludeTask());
+				buildSystem.RegisterTask(standardLibraryIncludeTask.GetRaw());
 
 				// Register the recipe build task
 				auto recipeBuildTask = Memory::Reference<Build::RecipeBuildTask>(

@@ -18,8 +18,9 @@ namespace Opal::System
 		/// Initializes a new instance of the <see cref='MockProcessManager'/> class.
 		/// </summary>
 		MockProcessManager() :
+			_requests(),
 			_processFileName(Path("C:/testlocation/SoupCMDTest.exe")),
-			_requests()
+			_executeResults()
 		{
 		}
 
@@ -27,9 +28,20 @@ namespace Opal::System
 		/// Initializes a new instance of the <see cref='MockProcessManager'/> class.
 		/// </summary>
 		MockProcessManager(Path processFileName) :
+			_requests(),
 			_processFileName(std::move(processFileName)),
-			_requests()
+			_executeResults()
 		{
+		}
+
+		/// <summary>
+		/// Create a result 
+		/// </summary>
+		void RegisterExecuteResult(std::string command, std::string output)
+		{
+			_executeResults.emplace(
+				std::move(command),
+				std::move(output));
 		}
 
 		/// <summary>
@@ -61,18 +73,33 @@ namespace Opal::System
 			const Path& workingDirectory) override final
 		{
 			std::stringstream message;
-			message << "Execute: " << workingDirectory.ToString() << ": " << application.ToString() << " " << arguments;
+			message << "Execute: [" << workingDirectory.ToString() << "] " << application.ToString() << " " << arguments;
 
 			_requests.push_back(message.str());
-			return {
-				0,
-				std::string(),
-				std::string(),
-			};
+
+			// Check if there is a registered output
+			auto findOutput = _executeResults.find(message.str());
+			if (findOutput != _executeResults.end())
+			{
+				return {
+					0,
+					findOutput->second,
+					std::string(),
+				};
+			}
+			else
+			{
+				return {
+					0,
+					std::string(),
+					std::string(),
+				};
+			}
 		}
 
 	private:
-		Path _processFileName;
 		std::vector<std::string> _requests;
+		Path _processFileName;
+		std::map<std::string, std::string> _executeResults;
 	};
 }
