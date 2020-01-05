@@ -165,6 +165,36 @@ namespace Soup::Build
 			return _propertyStringLists;
 		}
 
+		void Log()
+		{
+			auto stream = std::stringstream();
+			stream << "BuildState\n";
+			for (auto& propertyValue : _propertyValues)
+			{
+				stream << "\t" << propertyValue.first << "=\"" << propertyValue.second.ToString() << "\"\n";
+			}
+
+			for (auto& propertyList : _propertyStringLists)
+			{
+				stream << "\t" << propertyList.first << "=[";
+				bool isFirst = true;
+				for (auto& value : propertyList.second.GetValues())
+				{
+					if (!isFirst)
+					{
+						stream << ", ";
+					}
+					
+					stream << "\"" << value << "\"";
+					isFirst = false;
+				}
+
+				stream << "]\n";
+			}
+
+			Log::Diag(stream.str());
+		}
+
 	private:
 		BuildGraph _graph;
 		std::map<std::string, BuildPropertyValue> _propertyValues;

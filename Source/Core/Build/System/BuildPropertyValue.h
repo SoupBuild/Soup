@@ -208,6 +208,30 @@ namespace Soup::Build
 			}
 		}
 
+		std::string ToString() const
+		{
+			if (_value.type() == typeid(std::string))
+			{
+				return std::any_cast<std::string>(_value);
+			}
+			else if (_value.type() == typeid(int64_t))
+			{
+				return std::to_string(std::any_cast<int64_t>(_value));
+			}
+			else if (_value.type() == typeid(double))
+			{
+				return std::to_string(std::any_cast<double>(_value));
+			}
+			else if (_value.type() == typeid(bool))
+			{
+				return std::to_string(std::any_cast<bool>(_value));
+			}
+			else
+			{
+				return "";
+			}
+		}
+
 	private:
 		std::any _value;
 	};

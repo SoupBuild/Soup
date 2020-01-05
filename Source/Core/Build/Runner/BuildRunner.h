@@ -186,13 +186,19 @@ namespace Soup::Build
 					node.GetArguments(),
 					node.GetWorkingDirectory());
 
-				if (!result.StdOut.empty())
+				// Try parse includes if available
+				auto cleanOutput = std::stringstream();
+				auto headerIncludes = ParsesHeaderIncludes(node, result.StdOut, cleanOutput);
+				_buildHistory.UpdateIncludeTree(headerIncludes);
+
+				auto cleanOutputString = cleanOutput.str();
+				if (!cleanOutputString.empty())
 				{
 					// Upgrade output to a warning if the command fails
 					if (result.ExitCode != 0)
-						Log::Warning(result.StdOut);
+						Log::Warning(cleanOutputString);
 					else
-						Log::Info(result.StdOut);
+						Log::Info(cleanOutputString);
 				}
 
 				// If there was any error output then the build failed
@@ -206,11 +212,6 @@ namespace Soup::Build
 				{
 					throw std::runtime_error("Compiler Object Error: " + std::to_string(result.ExitCode));
 				}
-
-				// Save the build state
-				auto cleanOutput = std::stringstream();
-				auto headerIncludes = ParsesHeaderIncludes(node, result.StdOut, cleanOutput);
-				_buildHistory.UpdateIncludeTree(headerIncludes);
 			}
 
 			// Recursively build all of the node chilren

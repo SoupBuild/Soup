@@ -288,9 +288,7 @@ namespace Soup
 
 				// Register the recipe build task
 				auto recipeBuildTask = Memory::Reference<Build::RecipeBuildTask>(
-					new Build::RecipeBuildTask(
-						_systemCompiler,
-						activeCompiler));
+					new Build::RecipeBuildTask(activeCompiler));
 				buildSystem.RegisterTask(recipeBuildTask.GetRaw());
 
 				// Register the compile task
@@ -317,6 +315,7 @@ namespace Soup
 				}
 
 				// Run the build
+				state.LogActive();
 				buildSystem.Execute(state);
 
 				// Execute the build nodes

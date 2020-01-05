@@ -18,13 +18,9 @@ namespace Soup::Build
 		/// Initializes a new instance of the <see cref="RecipeBuildTask"/> class.
 		/// </summary>
 		RecipeBuildTask(
-			std::shared_ptr<ICompiler> systemCompiler,
 			std::shared_ptr<ICompiler> activeCompiler) :
-			_systemCompiler(std::move(systemCompiler)),
 			_activeCompiler(std::move(activeCompiler))
 		{
-			if (_systemCompiler == nullptr)
-				throw std::runtime_error("Argument null: systemCompiler");
 			if (_activeCompiler == nullptr)
 				throw std::runtime_error("Argument null: activeCompiler");
 		}
@@ -211,7 +207,6 @@ namespace Soup::Build
 		}
 
 	private:
-		std::shared_ptr<ICompiler> _systemCompiler;
 		std::shared_ptr<ICompiler> _activeCompiler;
 	};
 }

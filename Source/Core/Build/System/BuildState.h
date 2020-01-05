@@ -75,6 +75,11 @@ namespace Soup::Build
 			}
 		}
 
+		void LogActive()
+		{
+			_activeState.Log();
+		}
+
 	private:
 		BuildGraph _graph;
 		BuildPropertyBag _activeState;
