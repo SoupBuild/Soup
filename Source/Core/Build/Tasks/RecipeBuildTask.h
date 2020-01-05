@@ -15,17 +15,6 @@ namespace Soup::Build
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RecipeBuildTask"/> class.
-		/// </summary>
-		RecipeBuildTask(
-			std::shared_ptr<ICompiler> activeCompiler) :
-			_activeCompiler(std::move(activeCompiler))
-		{
-			if (_activeCompiler == nullptr)
-				throw std::runtime_error("Argument null: activeCompiler");
-		}
-
-		/// <summary>
 		/// Get the task name
 		/// </summary>
 		const char* GetName() const noexcept override final
@@ -43,6 +32,7 @@ namespace Soup::Build
 				auto state = PropertyBagWrapper(buildState.GetActiveState());
 
 				// Load the input properties
+				auto compilerName = std::string(state.GetPropertyStringValue("CompilerName"));
 				auto packageRoot = Path(state.GetPropertyStringValue("PackageRoot"));
 				auto forceRebuild = state.GetPropertyBooleanValue("ForceRebuild");
 				auto buildFlavor = std::string(state.GetPropertyStringValue("BuildFlavor"));
@@ -106,13 +96,12 @@ namespace Soup::Build
 				}
 
 				// Build up arguments to build this individual recipe
-				auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(*_activeCompiler, buildFlavor);
+				auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
+				auto objectDirectory = RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
 
 				state.SetPropertyStringValue("TargetName", recipe.GetName());
 				state.SetPropertyStringValue("WorkingDirectory", packageRoot.ToString());
-				state.SetPropertyStringValue(
-					"ObjectDirectory",
-					RecipeExtensions::GetObjectDirectory(*_activeCompiler, buildFlavor).ToString());
+				state.SetPropertyStringValue("ObjectDirectory", objectDirectory.ToString());
 				state.SetPropertyStringValue("BinaryDirectory", binaryDirectory.ToString());
 				state.SetPropertyStringValue("ModuleInterfaceSourceFile", "");
 				state.SetPropertyStringList("SourceFiles", recipe.GetSourceAsPath());
@@ -128,7 +117,7 @@ namespace Soup::Build
 					auto moduleInterfaceSourceFile = recipe.GetPublicAsPath();
 					
 					// TODO: Clang requires annoying cppm extension
-					if (_activeCompiler->GetName() == "Clang")
+					if (compilerName == "Clang")
 					{
 						moduleInterfaceSourceFile.SetFileExtension("cppm");
 					}
@@ -205,8 +194,5 @@ namespace Soup::Build
 				return -1;
 			}
 		}
-
-	private:
-		std::shared_ptr<ICompiler> _activeCompiler;
 	};
 }

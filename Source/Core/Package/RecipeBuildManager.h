@@ -288,7 +288,7 @@ namespace Soup
 
 				// Register the recipe build task
 				auto recipeBuildTask = Memory::Reference<Build::RecipeBuildTask>(
-					new Build::RecipeBuildTask(activeCompiler));
+					new Build::RecipeBuildTask());
 				buildSystem.RegisterTask(recipeBuildTask.GetRaw());
 
 				// Register the compile task
@@ -306,7 +306,7 @@ namespace Soup
 						auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependecy);
 						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 							packagePath,
-							RecipeExtensions::GetBinaryDirectory(*_systemCompiler, arguments.Flavor),
+							RecipeExtensions::GetBinaryDirectory(std::string(_systemCompiler->GetName()), arguments.Flavor),
 							std::string(_systemCompiler->GetDynamicLibraryFileExtension()));
 						
 						auto library = RunBuildExtension(libraryPath, buildSystem);
@@ -315,7 +315,6 @@ namespace Soup
 				}
 
 				// Run the build
-				state.LogActive();
 				buildSystem.Execute(state);
 
 				// Execute the build nodes

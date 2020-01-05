@@ -113,20 +113,20 @@ namespace Soup
 			return packagePath;
 		}
 
-		static Path GetObjectDirectory(const ICompiler& compiler, const std::string& configuration)
+		static Path GetObjectDirectory(const std::string& compiler, const std::string& configuration)
 		{
 			// Setup the output directories
 			auto outputDirectory = Path("out");
 			auto objectDirectory = outputDirectory + Path("obj");
-			return objectDirectory + Path(compiler.GetName()) + Path(configuration);
+			return objectDirectory + Path(compiler) + Path(configuration);
 		}
 
-		static Path GetBinaryDirectory(const ICompiler& compiler, const std::string& configuration)
+		static Path GetBinaryDirectory(const std::string& compiler, const std::string& configuration)
 		{
 			// Setup the output directories
 			auto outputDirectory = Path("out");
 			auto binaryDirectory = outputDirectory + Path("bin");
-			return binaryDirectory + Path(compiler.GetName()) + Path(configuration);
+			return binaryDirectory + Path(compiler) + Path(configuration);
 		}
 	};
 }

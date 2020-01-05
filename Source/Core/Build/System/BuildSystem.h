@@ -42,7 +42,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Get the set of added include paths
 		/// </summary>
-		void Execute(IBuildState& state)
+		void Execute(BuildState& state)
 		{
 			for (auto& task : _tasks)
 			{
@@ -56,6 +56,8 @@ namespace Soup::Build
 				{
 					Log::Info(std::string("TaskDone: ") + task->GetName());
 				}
+
+				state.LogActive();
 			}
 		}
 
