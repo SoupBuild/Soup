@@ -127,6 +127,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::DynamicLibrary;
 			arguments.TargetFile = Path("Library.mock.dll");
+			arguments.ImplementationFile = Path("Library.mock.lib");
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.obj"),
 			});
