@@ -3,9 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "BuildSystemResult.h"
-#include "IBuildPropertyValue.h"
-#include "IBuildPropertyList.h"
+#include "OperationResult.h"
+#include "IPropertyBag.h"
 
 namespace Soup::Build
 {
@@ -23,14 +22,14 @@ namespace Soup::Build
 		virtual void AddBuildNode(std::shared_ptr<BuildGraphNode> node) noexcept = 0;
 		
 		/// <summary>
-		/// Property access methods
+		/// Get a reference to the active state
 		/// </summary>
-		virtual BuildSystemResult TryHasPropertyValue(const char* name, bool& result) const noexcept = 0;
-		virtual BuildSystemResult TryGetPropertyValue(const char* name, IBuildPropertyValue*& result) noexcept = 0;
-		virtual BuildSystemResult TryCreatePropertyValue(const char* name, IBuildPropertyValue*& result) noexcept = 0;
+		virtual IPropertyBag& GetActiveState() noexcept = 0;
 
-		virtual BuildSystemResult TryHasPropertyStringList(const char* name, bool& result) const noexcept = 0;
-		virtual BuildSystemResult TryGetPropertyStringList(const char* name, IBuildPropertyList<const char*>*& result) noexcept = 0;
-		virtual BuildSystemResult TryCreatePropertyStringList(const char* name, IBuildPropertyList<const char*>*& result) noexcept = 0;
+		/// <summary>
+		/// Get a reference to the child state. All of these properties will be 
+		/// moved into the active state of any parent build that has a direct reference to this build.
+		/// </summary>
+		virtual IPropertyBag& GetParentState() noexcept = 0;
 	};
 }

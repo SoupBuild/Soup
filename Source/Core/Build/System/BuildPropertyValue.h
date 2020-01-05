@@ -9,7 +9,7 @@ namespace Soup::Build
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	class BuildPropertyValue : public IBuildPropertyValue
+	class BuildPropertyValue : public IPropertyValue
 	{
 	public:
 		/// <summary>
@@ -54,7 +54,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		BuildSystemResult TryGetStringValue(const char*& result) const noexcept override final
+		OperationResult TryGetStringValue(const char*& result) const noexcept override final
 		{
 			try
 			{
@@ -78,7 +78,7 @@ namespace Soup::Build
 			}
 		}
 
-		BuildSystemResult TryGetIntegerValue(int64_t& result) const noexcept override final
+		OperationResult TryGetIntegerValue(int64_t& result) const noexcept override final
 		{
 			try
 			{
@@ -101,7 +101,7 @@ namespace Soup::Build
 			}
 		}
 
-		BuildSystemResult TryGetDoubleValue(double& result) const noexcept override final
+		OperationResult TryGetDoubleValue(double& result) const noexcept override final
 		{
 			try
 			{
@@ -124,7 +124,7 @@ namespace Soup::Build
 			}
 		}
 
-		BuildSystemResult TryGetBooleanValue(bool& result) const noexcept override final
+		OperationResult TryGetBooleanValue(bool& result) const noexcept override final
 		{
 			try
 			{
@@ -152,7 +152,7 @@ namespace Soup::Build
 		/// Note: Will perform a no-op if the value is immutable to prevent 
 		/// exceptions accross dll boundaries.
 		/// </summary>
-		BuildSystemResult TrySetStringValue(const char* value) noexcept override final
+		OperationResult TrySetStringValue(const char* value) noexcept override final
 		{
 			try
 			{
@@ -166,7 +166,7 @@ namespace Soup::Build
 			}
 		}
 
-		BuildSystemResult TrySetIntegerValue(int64_t value) noexcept override final
+		OperationResult TrySetIntegerValue(int64_t value) noexcept override final
 		{
 			try
 			{
@@ -180,7 +180,7 @@ namespace Soup::Build
 			}
 		}
 
-		BuildSystemResult TrySetDoubleValue(double value) noexcept override final
+		OperationResult TrySetDoubleValue(double value) noexcept override final
 		{
 			try
 			{
@@ -194,7 +194,7 @@ namespace Soup::Build
 			}
 		}
 
-		BuildSystemResult TrySetBooleanValue(bool value) noexcept override final
+		OperationResult TrySetBooleanValue(bool value) noexcept override final
 		{
 			try
 			{

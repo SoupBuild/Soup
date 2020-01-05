@@ -1,4 +1,4 @@
-// <copyright file="IBuildPropertyList.h" company="Soup">
+// <copyright file="IPropertyList.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -12,23 +12,23 @@ namespace Soup::Build
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
 	template<typename T>
-	class IBuildPropertyList
+	class IPropertyList
 	{
 	public:
 		/// <summary>
 		/// Size access methods
 		/// </summary>
 		virtual uint64_t GetSize() const noexcept = 0;
-		virtual BuildSystemResult Resize(uint64_t size) noexcept = 0;
+		virtual OperationResult Resize(uint64_t size) noexcept = 0;
 
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		virtual BuildSystemResult TryGetValueAt(uint64_t index, T& result) const noexcept = 0;
+		virtual OperationResult TryGetValueAt(uint64_t index, T& result) const noexcept = 0;
 
 		/// <summary>
 		/// Property setter methods.
 		/// </summary>
-		virtual BuildSystemResult TrySetValueAt(uint64_t index, T value) noexcept = 0;
+		virtual OperationResult TrySetValueAt(uint64_t index, T value) noexcept = 0;
 	};
 }

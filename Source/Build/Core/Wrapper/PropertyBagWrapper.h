@@ -1,59 +1,51 @@
-// <copyright file="BuildStateWrapper.h" company="Soup">
+// <copyright file="PropertyBagWrapper.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "Definition/IBuildState.h"
-#include "BuildPropertyValueWrapper.h"
-#include "BuildPropertyListWrapper.h"
+#include "Definition/IPropertyBag.h"
+#include "PropertyValueWrapper.h"
+#include "PropertyListWrapper.h"
 
 namespace Soup::Build
 {
 	/// <summary>
-	/// Build State Extension used to make the IBuildState interface more usable
+	/// Build Property Bag Extension used to make the IPropertyBag interface more usable
 	/// </summary>
-	export class BuildStateWrapper
+	export class PropertyBagWrapper
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the BuildStateWrapper class
+		/// Initializes a new instance of the PropertyBagWrapper class
 		/// </summary>
-		BuildStateWrapper(IBuildState& state) :
-			_state(state)
+		PropertyBagWrapper(IPropertyBag& value) :
+			_value(value)
 		{
 		}
 
-		/// <summary>
-		/// Build Graph Access Methods
-		/// </summary>
-		void AddBuildNode(std::shared_ptr<BuildGraphNode> node)
-		{
-			_state.AddBuildNode(std::move(node));
-		}
-		
 		/// <summary>
 		/// Property access methods
 		/// </summary>
 		bool HasPropertyValue(std::string_view name) const
 		{
 			bool result = false;
-			auto status = _state.TryHasPropertyValue(name.data(), result);
+			auto status = _value.TryHasPropertyValue(name.data(), result);
 			if (status != 0)
 				throw std::runtime_error("TryHasPropertyValue Failed");
 
 			return result;
 		}
 
-		BuildPropertyValueWrapper& GetPropertyValue(std::string_view name) const
+		PropertyValueWrapper& GetPropertyValue(std::string_view name) const
 		{
-			IBuildPropertyValue* result = nullptr;
-			auto status = _state.TryGetPropertyValue(name.data(), result);
+			IPropertyValue* result = nullptr;
+			auto status = _value.TryGetPropertyValue(name.data(), result);
 			if (status != 0)
 				throw std::runtime_error("TryGetPropertyValue Failed");
 			if (result == nullptr)
 				throw std::runtime_error("TryGetPropertyValue has no value.");
 
-			return BuildPropertyValueWrapper(*result);
+			return PropertyValueWrapper(*result);
 		}
 
 		std::string_view GetPropertyStringValue(std::string_view name) const
@@ -80,16 +72,16 @@ namespace Soup::Build
 			return property.GetBooleanValue();
 		}
 
-		BuildPropertyValueWrapper& CreatePropertyValue(std::string_view name)
+		PropertyValueWrapper& CreatePropertyValue(std::string_view name)
 		{
-			IBuildPropertyValue* result = nullptr;
-			auto status = _state.TryCreatePropertyValue(name.data(), result);
+			IPropertyValue* result = nullptr;
+			auto status = _value.TryCreatePropertyValue(name.data(), result);
 			if (status != 0)
 				throw std::runtime_error("TryCreatePropertyValue Failed");
 			if (result == nullptr)
 				throw std::runtime_error("TryCreatePropertyValue has no value.");
 
-			return BuildPropertyValueWrapper(*result);
+			return PropertyValueWrapper(*result);
 		}
 
 		void SetPropertyStringValue(std::string_view name, std::string_view value)
@@ -151,35 +143,35 @@ namespace Soup::Build
 		bool HasPropertyStringList(std::string_view name) const
 		{
 			bool result = false;
-			auto status = _state.TryHasPropertyStringList(name.data(), result);
+			auto status = _value.TryHasPropertyStringList(name.data(), result);
 			if (status != 0)
 				throw std::runtime_error("TryHasPropertyStringList Failed");
 
 			return result;
 		}
 
-		BuildPropertyListWrapper<const char*>& GetPropertyStringList(std::string_view name)
+		PropertyListWrapper<const char*>& GetPropertyStringList(std::string_view name)
 		{
-			IBuildPropertyList<const char*>* result = nullptr;
-			auto status = _state.TryGetPropertyStringList(name.data(), result);
+			IPropertyList<const char*>* result = nullptr;
+			auto status = _value.TryGetPropertyStringList(name.data(), result);
 			if (status != 0)
 				throw std::runtime_error("TryGetPropertyStringList Failed");
 			if (result == nullptr)
 				throw std::runtime_error("TryGetPropertyStringList has no value.");
 
-			return BuildPropertyListWrapper(*result);
+			return PropertyListWrapper(*result);
 		}
 
-		BuildPropertyListWrapper<const char*>& CreatePropertyStringList(std::string_view name)
+		PropertyListWrapper<const char*>& CreatePropertyStringList(std::string_view name)
 		{
-			IBuildPropertyList<const char*>* result = nullptr;
-			auto status = _state.TryCreatePropertyStringList(name.data(), result);
+			IPropertyList<const char*>* result = nullptr;
+			auto status = _value.TryCreatePropertyStringList(name.data(), result);
 			if (status != 0)
 				throw std::runtime_error("TryCreatePropertyStringList Failed");
 			if (result == nullptr)
 				throw std::runtime_error("TryCreatePropertyStringList has no value.");
 
-			return BuildPropertyListWrapper(*result);
+			return PropertyListWrapper(*result);
 		}
 
 		/// <summary>
@@ -195,6 +187,20 @@ namespace Soup::Build
 		{
 			auto property = CreatePropertyStringList(name);
 			property.SetAll(values);
+		}
+
+		void AppendPropertyStringList(std::string_view name, const std::vector<std::string>& values)
+		{
+			if (HasPropertyStringList(name))
+			{
+				auto property = GetPropertyStringList(name);
+				return property.Append(values);
+			}
+			else
+			{
+				auto property = CreatePropertyStringList(name);
+				property.SetAll(values);
+			}
 		}
 
 		std::vector<std::string> CopyPropertyStringListAsStringVector(std::string_view name)
@@ -217,6 +223,6 @@ namespace Soup::Build
 		}
 
 	private:
-		IBuildState& _state;
+		IPropertyBag& _value;
 	};
 }

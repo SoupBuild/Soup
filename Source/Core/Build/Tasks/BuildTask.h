@@ -36,51 +36,46 @@ namespace Soup::Build
 		/// <summary>
 		/// The Core build task
 		/// </summary>
-		BuildSystemResult Execute(IBuildState& buildState) noexcept override final
+		OperationResult Execute(IBuildState& buildState) noexcept override final
 		{
 			try
 			{
-				auto state = BuildStateWrapper(buildState);
+				auto activeState = PropertyBagWrapper(buildState.GetActiveState());
+				auto parentState = PropertyBagWrapper(buildState.GetParentState());
 
 				auto arguments = BuildArguments();
-				arguments.TargetName = state.GetPropertyStringValue("TargetName");
-				arguments.TargetType = static_cast<BuildTargetType>(state.GetPropertyIntegerValue("TargetType"));
-				arguments.LanguageStandard = static_cast<LanguageStandard>(state.GetPropertyIntegerValue("LanguageStandard"));
-				arguments.WorkingDirectory = Path(state.GetPropertyStringValue("WorkingDirectory"));
-				arguments.ObjectDirectory = Path(state.GetPropertyStringValue("ObjectDirectory"));
-				arguments.BinaryDirectory = Path(state.GetPropertyStringValue("BinaryDirectory"));
+				arguments.TargetName = activeState.GetPropertyStringValue("TargetName");
+				arguments.TargetType = static_cast<BuildTargetType>(activeState.GetPropertyIntegerValue("TargetType"));
+				arguments.LanguageStandard = static_cast<LanguageStandard>(activeState.GetPropertyIntegerValue("LanguageStandard"));
+				arguments.WorkingDirectory = Path(activeState.GetPropertyStringValue("WorkingDirectory"));
+				arguments.ObjectDirectory = Path(activeState.GetPropertyStringValue("ObjectDirectory"));
+				arguments.BinaryDirectory = Path(activeState.GetPropertyStringValue("BinaryDirectory"));
 
-				if (state.HasPropertyValue("ModuleInterfaceSourceFile"))
-					arguments.ModuleInterfaceSourceFile = Path(state.GetPropertyStringValue("ModuleInterfaceSourceFile"));
+				if (activeState.HasPropertyValue("ModuleInterfaceSourceFile"))
+					arguments.ModuleInterfaceSourceFile = Path(activeState.GetPropertyStringValue("ModuleInterfaceSourceFile"));
 
-				if (state.HasPropertyStringList("SourceFiles"))
-					arguments.SourceFiles = state.CopyPropertyStringListAsPathVector("SourceFiles");
+				if (activeState.HasPropertyStringList("SourceFiles"))
+					arguments.SourceFiles = activeState.CopyPropertyStringListAsPathVector("SourceFiles");
 
-				if (state.HasPropertyStringList("IncludeDirectories"))
-					arguments.IncludeDirectories = state.CopyPropertyStringListAsPathVector("IncludeDirectories");
+				if (activeState.HasPropertyStringList("IncludeDirectories"))
+					arguments.IncludeDirectories = activeState.CopyPropertyStringListAsPathVector("IncludeDirectories");
 
-				if (state.HasPropertyStringList("IncludeModules"))
-					arguments.IncludeModules = state.CopyPropertyStringListAsPathVector("IncludeModules");
+				if (activeState.HasPropertyStringList("LinkLibraries"))
+					arguments.LinkLibraries = activeState.CopyPropertyStringListAsPathVector("LinkLibraries");
 
-				if (state.HasPropertyStringList("LinkLibraries"))
-					arguments.LinkLibraries = state.CopyPropertyStringListAsPathVector("LinkLibraries");
+				if (activeState.HasPropertyStringList("LibraryPaths"))
+					arguments.LibraryPaths = activeState.CopyPropertyStringListAsPathVector("LibraryPaths");
 
-				if (state.HasPropertyStringList("ExternalLinkLibraries"))
-					arguments.ExternalLinkLibraries = state.CopyPropertyStringListAsPathVector("ExternalLinkLibraries");
+				if (activeState.HasPropertyStringList("PreprocessorDefinitions"))
+					arguments.PreprocessorDefinitions = activeState.CopyPropertyStringListAsStringVector("PreprocessorDefinitions");
 
-				if (state.HasPropertyStringList("LibraryPaths"))
-					arguments.LibraryPaths = state.CopyPropertyStringListAsPathVector("LibraryPaths");
-
-				if (state.HasPropertyStringList("PreprocessorDefinitions"))
-					arguments.PreprocessorDefinitions = state.CopyPropertyStringListAsStringVector("PreprocessorDefinitions");
-
-				if (state.HasPropertyValue("OptimizationLevel"))
-					arguments.OptimizationLevel = static_cast<BuildOptimizationLevel>(state.GetPropertyIntegerValue("OptimizationLevel"));
+				if (activeState.HasPropertyValue("OptimizationLevel"))
+					arguments.OptimizationLevel = static_cast<BuildOptimizationLevel>(activeState.GetPropertyIntegerValue("OptimizationLevel"));
 				else
 					arguments.OptimizationLevel = BuildOptimizationLevel::None;
 
-				if (state.HasPropertyValue("GenerateSourceDebugInfo"))
-					arguments.GenerateSourceDebugInfo = state.GetPropertyBooleanValue("GenerateSourceDebugInfo");
+				if (activeState.HasPropertyValue("GenerateSourceDebugInfo"))
+					arguments.GenerateSourceDebugInfo = activeState.GetPropertyBooleanValue("GenerateSourceDebugInfo");
 				else
 					arguments.GenerateSourceDebugInfo = false;
 
@@ -95,26 +90,52 @@ namespace Soup::Build
 				Log::Diag("OptimizationLevel = " + ToString(arguments.OptimizationLevel));
 				Log::Diag("GenerateSourceDebugInfo = " + ToString(arguments.GenerateSourceDebugInfo));
 				Log::Diag("IncludeDirectories = " + ToString(arguments.IncludeDirectories));
-				Log::Diag("IncludeModules = " + ToString(arguments.IncludeModules));
 				Log::Diag("PreprocessorDefinitions = " + ToString(arguments.PreprocessorDefinitions));
 
+				// Load the runtime dependencies
+				auto runtimeDependencies = std::vector<Path>();
+				if (activeState.HasPropertyStringList("RuntimeDependencies"))
+				{
+					runtimeDependencies = activeState.CopyPropertyStringListAsPathVector("RuntimeDependencies");
+				}
+
+				// Load the link dependencies
+				auto linkDependencies = std::vector<Path>();
+				if (activeState.HasPropertyStringList("LinkDependencies"))
+				{
+					linkDependencies = activeState.CopyPropertyStringListAsPathVector("LinkDependencies");
+				}
+
+				// Load the module references
+				auto moduleDependencies = std::vector<Path>();
+				if (activeState.HasPropertyStringList("ModuleDependencies"))
+				{
+					moduleDependencies = activeState.CopyPropertyStringListAsPathVector("ModuleDependencies");
+				}
+
 				// Copy previous runtime dependencies
-				auto copyRuntimeDependencies = CopyRuntimeDependencies(state, arguments);
+				auto copyRuntimeDependencies = CopyRuntimeDependencies(runtimeDependencies, arguments);
 				for (auto& node : copyRuntimeDependencies)
 				{
-					state.AddBuildNode(node);
+					buildState.AddBuildNode(node);
 				}
 
 				// Perform the core compilation of the source files
-				auto compileNodes = CoreCompile(arguments);
+				auto compileNodes = CoreCompile(moduleDependencies, arguments);
 				for (auto& node : compileNodes)
 				{
-					state.AddBuildNode(node);
+					buildState.AddBuildNode(node);
 				}
 
 				// Link the final target after all of the compile graph is done
-				auto linkNode = CoreLink(state, arguments);
+				auto linkNode = CoreLink(runtimeDependencies, linkDependencies, arguments);
 				BuildGraphNode::AddLeafChild(compileNodes, linkNode);
+
+				// Always pass along required input to parent build tasks
+				parentState.SetPropertyStringList("ModuleDependencies", moduleDependencies);
+				parentState.SetPropertyStringList("RuntimeDependencies", runtimeDependencies);
+				parentState.SetPropertyStringList("LinkDependencies", linkDependencies);
+
 
 				Log::Info("Build Generate Done");
 				return 0;
@@ -131,22 +152,18 @@ namespace Soup::Build
 		/// Copy runtime dependencies
 		/// </summary>
 		std::vector<std::shared_ptr<BuildGraphNode>> CopyRuntimeDependencies(
-			BuildStateWrapper& state,
+			const std::vector<Path>& runtimeDependencies,
 			const BuildArguments& arguments)
 		{
 			auto copyNodes = std::vector<std::shared_ptr<BuildGraphNode>>();
 			if (arguments.TargetType == BuildTargetType::Executable ||
 				arguments.TargetType == BuildTargetType::DynamicLibrary)
 			{
-				if (state.HasPropertyStringList("RuntimeDependencies"))
+				for (auto source : runtimeDependencies)
 				{
-					auto runtimeDependencies = state.CopyPropertyStringListAsPathVector("RuntimeDependencies");
-					for (auto source : runtimeDependencies)
-					{
-						auto target = arguments.WorkingDirectory + arguments.BinaryDirectory + Path(source.GetFileName());
-						auto node = BuildUtilities::CreateCopyFileNode(source, target);
-						copyNodes.push_back(node);
-					}
+					auto target = arguments.WorkingDirectory + arguments.BinaryDirectory + Path(source.GetFileName());
+					auto node = BuildUtilities::CreateCopyFileNode(source, target);
+					copyNodes.push_back(node);
 				}
 			}
 
@@ -156,9 +173,24 @@ namespace Soup::Build
 		/// <summary>
 		/// Compile the module and source files
 		/// </summary>
-		std::vector<std::shared_ptr<BuildGraphNode>> CoreCompile(const BuildArguments& arguments)
+		std::vector<std::shared_ptr<BuildGraphNode>> CoreCompile(
+			std::vector<Path>& moduleDependencies,
+			const BuildArguments& arguments)
 		{
 			auto buildSetupNodes = std::vector<std::shared_ptr<BuildGraphNode>>();
+
+			// Move the active module dependencies into an internal copy for compilation
+			// Note: The passed in module dependencies will now be used as an out parameter
+			// to be passed to the parent
+			auto activeModuleDependencies = std::move(moduleDependencies);
+
+			// There is a bug in MSVC that requires all input module interface files,
+			// Add a copy back into the parent list for now...
+			// TODO: MSVC requires the entire closure of interfaces
+			if (_compiler->GetName() == "MSVC")
+			{
+				moduleDependencies = activeModuleDependencies;
+			}
 
 			// Ensure the output directories exists
 			auto objectDirectry = arguments.WorkingDirectory + arguments.ObjectDirectory;
@@ -170,15 +202,37 @@ namespace Soup::Build
 			std::shared_ptr<BuildGraphNode> moduleCompileNode = nullptr;
 			if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
 			{
-				moduleCompileNode = CompileModuleInterfaceUnit(arguments);
+				auto moduleInterfaceFile = Path();
+				moduleCompileNode = CompileModuleInterfaceUnit(
+					activeModuleDependencies,
+					moduleInterfaceFile,
+					arguments);
+
+				// Add the module interface file to the active
+				activeModuleDependencies.push_back(moduleInterfaceFile);
+
+				// Copy the binary module interface to the binary directory after compiles
+				auto binaryOutputModuleInterfaceFile =
+					arguments.WorkingDirectory +
+					arguments.BinaryDirectory +
+					Path(arguments.TargetName + "." + std::string(_compiler->GetModuleFileExtension()));
+				auto copyInterfaceNode = BuildUtilities::CreateCopyFileNode(
+					arguments.WorkingDirectory + moduleInterfaceFile,
+					binaryOutputModuleInterfaceFile);
+				BuildGraphNode::AddLeafChild(moduleCompileNode, copyInterfaceNode);
 
 				// Perform the compile after the setup
 				BuildGraphNode::AddLeafChild(buildSetupNodes, moduleCompileNode);
+
+				// Add output module interface to the parent set of modules
+				// This will allow the module implmenentation units access as well as downstream
+				// dependencies to the public interface.
+				moduleDependencies.push_back(binaryOutputModuleInterfaceFile);
 			}
 
 			if (!arguments.SourceFiles.empty())
 			{
-				auto sourceCompileNodes = CompileSourceFiles(arguments);
+				auto sourceCompileNodes = CompileSourceFiles(activeModuleDependencies, arguments);
 				if (moduleCompileNode != nullptr)
 				{
 					// Run after the module interface unit compile
@@ -198,9 +252,16 @@ namespace Soup::Build
 		/// Compile the single module interface unit
 		/// Returns true if the file was compiled
 		/// </summary>
-		std::shared_ptr<BuildGraphNode> CompileModuleInterfaceUnit(const BuildArguments& arguments)
+		std::shared_ptr<BuildGraphNode> CompileModuleInterfaceUnit(
+			const std::vector<Path>& moduleDependencies,
+			Path& moduleInterfaceFile,
+			const BuildArguments& arguments)
 		{
 			Log::Info("CompileModuleInterfaceUnit");
+
+			// Build up the target object file name
+			auto targetFile = arguments.ObjectDirectory + Path(arguments.ModuleInterfaceSourceFile.GetFileName());
+			targetFile.SetFileExtension(_compiler->GetObjectFileExtension());
 
 			// Setup the shared properties
 			auto compileArguments = CompileArguments();
@@ -209,29 +270,23 @@ namespace Soup::Build
 			compileArguments.RootDirectory = arguments.WorkingDirectory;
 			compileArguments.PreprocessorDefinitions = {};
 			compileArguments.IncludeDirectories = arguments.IncludeDirectories;
-			compileArguments.IncludeModules = arguments.IncludeModules;
+			compileArguments.IncludeModules = moduleDependencies;
 			compileArguments.GenerateIncludeTree = true;
 			compileArguments.ExportModule = true;
 			compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 			compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
+			compileArguments.TargetFile = targetFile;
 
 			// Compile the individual translation unit
 			const auto& file = arguments.ModuleInterfaceSourceFile;
 			Log::Info("Generate Compile Node: " + file.ToString());
 			compileArguments.SourceFile = file;
-			compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
-			compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
 
 			auto compileNode = _compiler->CreateCompileNode(compileArguments);
 
-			// Copy the binary module interface to the binary directory after compiles
-			auto objectOutputModuleInterfaceFile = arguments.ObjectDirectory + Path(file.GetFileName());
-			objectOutputModuleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
-			auto binaryOutputModuleInterfaceFile = arguments.BinaryDirectory + Path(arguments.TargetName + "." + std::string(_compiler->GetModuleFileExtension()));
-			auto copyInterfaceNode = BuildUtilities::CreateCopyFileNode(
-				arguments.WorkingDirectory + objectOutputModuleInterfaceFile,
-				arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
-			BuildGraphNode::AddLeafChild(compileNode, copyInterfaceNode);
+			// Return the interface file location
+			moduleInterfaceFile = arguments.ObjectDirectory + Path(file.GetFileName());
+			moduleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
 
 			return compileNode;
 		}
@@ -239,7 +294,9 @@ namespace Soup::Build
 		/// <summary>
 		/// Compile the supporting source files
 		/// </summary>
-		std::vector<std::shared_ptr<BuildGraphNode>> CompileSourceFiles(const BuildArguments& arguments)
+		std::vector<std::shared_ptr<BuildGraphNode>> CompileSourceFiles(
+			const std::vector<Path>& moduleDependencies,
+			const BuildArguments& arguments)
 		{
 			// Check if we can skip the whole dang thing
 			Log::Info("Compiling source files");
@@ -251,19 +308,11 @@ namespace Soup::Build
 			compileArguments.RootDirectory = arguments.WorkingDirectory;
 			compileArguments.PreprocessorDefinitions = {};
 			compileArguments.IncludeDirectories = arguments.IncludeDirectories;
-			compileArguments.IncludeModules = arguments.IncludeModules;
+			compileArguments.IncludeModules = moduleDependencies;
 			compileArguments.GenerateIncludeTree = true;
 			compileArguments.ExportModule = false;
 			compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 			compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
-
-			// Add the module binary interface if present
-			if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
-			{
-				auto moduleInterfaceFile = arguments.ObjectDirectory + Path(arguments.ModuleInterfaceSourceFile.GetFileName());
-				moduleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
-				compileArguments.IncludeModules.push_back(moduleInterfaceFile);
-			}
 
 			// Compile the individual translation units
 			auto buildNodes = std::vector<std::shared_ptr<BuildGraphNode>>();
@@ -286,12 +335,14 @@ namespace Soup::Build
 		/// Link the library
 		/// </summary>
 		std::shared_ptr<BuildGraphNode> CoreLink(
-			BuildStateWrapper& state,
+			std::vector<Path>& runtimeDependencies,
+			std::vector<Path>& linkDependencies,
 			const BuildArguments& arguments)
 		{
 			Log::Info("CoreLink");
 
 			Path targetFile;
+			Path implementationFile;
 			switch (arguments.TargetType)
 			{
 				case BuildTargetType::StaticLibrary:
@@ -303,6 +354,9 @@ namespace Soup::Build
 					targetFile = 
 						arguments.BinaryDirectory + 
 						Path(arguments.TargetName + "." + std::string(_compiler->GetDynamicLibraryFileExtension()));
+					implementationFile = 
+						arguments.BinaryDirectory + 
+						Path(arguments.TargetName + "." + std::string(_compiler->GetStaticLibraryFileExtension()));
 					break;
 				case BuildTargetType::Executable:
 					targetFile = 
@@ -318,11 +372,17 @@ namespace Soup::Build
 			auto linkArguments = LinkArguments();
 
 			linkArguments.TargetFile = std::move(targetFile);
+			linkArguments.ImplementationFile = std::move(implementationFile);
 			linkArguments.LibraryFiles = arguments.LinkLibraries;
-			linkArguments.ExternalLibraryFiles = arguments.ExternalLinkLibraries;
 			linkArguments.RootDirectory = arguments.WorkingDirectory;
 			linkArguments.LibraryPaths = arguments.LibraryPaths;
 			linkArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
+
+			// Only resolve link libraries if not a library ourself
+			if (arguments.TargetType != BuildTargetType::StaticLibrary)
+			{
+				linkArguments.ExternalLibraryFiles = linkDependencies;
+			}
 
 			// Translate the target type into the link target
 			switch (arguments.TargetType)
@@ -330,6 +390,9 @@ namespace Soup::Build
 				case BuildTargetType::StaticLibrary:
 				{
 					linkArguments.TargetType = LinkTarget::StaticLibrary;
+					
+					// Add the library as a link dependency
+					linkDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
 					break;
 				}
 				case BuildTargetType::DynamicLibrary:
@@ -337,17 +400,20 @@ namespace Soup::Build
 					linkArguments.TargetType = LinkTarget::DynamicLibrary;
 
 					// Add the DLL as a runtime dependency
-					auto runtimeDependencies = std::vector<Path>();
-					if (state.HasPropertyStringList("RuntimeDependencies"))
-						runtimeDependencies = state.CopyPropertyStringListAsPathVector("RuntimeDependencies");
-
 					runtimeDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
-					state.SetPropertyStringList("RuntimeDependencies", runtimeDependencies);
+					
+					// Clear out all previous link dependencies and replace with the 
+					// single implementation library for the DLL
+					linkDependencies.clear();
+					linkDependencies.push_back(linkArguments.RootDirectory + linkArguments.ImplementationFile);
 					break;
 				}
 				case BuildTargetType::Executable:
 				{
 					linkArguments.TargetType = LinkTarget::Executable;
+
+					// Clear out all previous link dependencies
+					linkDependencies.clear();
 					break;
 				}
 				default:

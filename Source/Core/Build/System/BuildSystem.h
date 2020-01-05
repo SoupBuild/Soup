@@ -17,7 +17,6 @@ namespace Soup::Build
 		/// Initializes a new instance of the <see cref="BuildSystem"/> class.
 		/// </summary>
 		BuildSystem() :
-			_state(),
 			_tasks()
 		{
 		}
@@ -25,7 +24,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Register task
 		/// </summary>
-		BuildSystemResult RegisterTask(IBuildTask* task) noexcept override final
+		OperationResult RegisterTask(IBuildTask* task) noexcept override final
 		{
 			try
 			{
@@ -43,12 +42,12 @@ namespace Soup::Build
 		/// <summary>
 		/// Get the set of added include paths
 		/// </summary>
-		void Execute()
+		void Execute(IBuildState& state)
 		{
 			for (auto& task : _tasks)
 			{
 				Log::Info(std::string("TaskStart: ") + task->GetName());
-				auto status = task->Execute(_state);
+				auto status = task->Execute(state);
 				if (status != 0)
 				{
 					Log::Error("TaskFailed: " + std::to_string(status));
@@ -60,13 +59,7 @@ namespace Soup::Build
 			}
 		}
 
-		BuildState& GetState()
-		{
-			return _state;
-		}
-
 	private:
-		BuildState _state;
 		std::vector<Memory::Reference<IBuildTask>> _tasks;
 	};
 }

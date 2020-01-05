@@ -40,11 +40,11 @@ namespace Soup::Build
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		BuildSystemResult Execute(IBuildState& buildState) noexcept override final
+		OperationResult Execute(IBuildState& buildState) noexcept override final
 		{
 			try
 			{
-				auto state = BuildStateWrapper(buildState);
+				auto state = PropertyBagWrapper(buildState.GetActiveState());
 
 				// Load the input properties
 				auto packageRoot = Path(state.GetPropertyStringValue("PackageRoot"));
@@ -64,39 +64,8 @@ namespace Soup::Build
 					return -2;
 				}
 
-				// Add all dependency packages modules references
-				auto includeModules = std::vector<Path>();
-				if (recipe.GetLanguageVersion() == RecipeLanguageVersion::CPP20)
-				{
-					// TODO: MSVC requires the entire closure of interfaces
-					bool isRecursive = _activeCompiler->GetName() == "MSVC";
-					RecipeExtensions::GenerateDependecyModuleIncludeClosure(
-						*_activeCompiler,
-						buildFlavor,
-						packageRoot,
-						recipe,
-						includeModules,
-						isRecursive);
-				}
-
 				// Add the dependency static library closure to link if targeting an executable or dynamic library
 				std::vector<Path> linkLibraries = std::vector<Path>();
-				std::vector<Path> externalLinkLibraries = std::vector<Path>();
-				if (recipe.GetType() == RecipeType::Executable || recipe.GetType() == RecipeType::DynamicLibrary)
-				{
-					RecipeExtensions::GenerateDependecyStaticLibraryClosure(
-						*_activeCompiler,
-						buildFlavor,
-						packageRoot,
-						recipe,
-						linkLibraries);
-
-					// Add the platform libraries
-					externalLinkLibraries.insert(
-						externalLinkLibraries.end(),
-						platformLibraries.begin(),
-						platformLibraries.end());
-				}
 
 				// Combine the include paths from the recipe and the system
 				auto includePaths = std::vector<Path>();
@@ -151,9 +120,7 @@ namespace Soup::Build
 				state.SetPropertyStringValue("BinaryDirectory", binaryDirectory.ToString());
 				state.SetPropertyStringValue("ModuleInterfaceSourceFile", "");
 				state.SetPropertyStringList("SourceFiles", recipe.GetSourceAsPath());
-				state.SetPropertyStringList("IncludeModules", includeModules);
 				state.SetPropertyStringList("LinkLibraries", linkLibraries);
-				state.SetPropertyStringList("ExternalLinkLibraries", externalLinkLibraries);
 				state.SetPropertyBooleanValue("IsIncremental", !forceRebuild);
 				state.SetPropertyBooleanValue("GenerateSourceDebugInfo", false);
 				state.SetPropertyStringList("PreprocessorDefinitions", preprocessorDefinitions);

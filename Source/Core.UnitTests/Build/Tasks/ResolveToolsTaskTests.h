@@ -46,7 +46,7 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			auto state = BuildStateWrapper(buildState);
+			auto state = PropertyBagWrapper(buildState.GetActiveState());
 
 			auto result = uut.Execute(buildState);
 			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
@@ -59,22 +59,6 @@ namespace Soup::Build::UnitTests
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
-
-			auto expectedCompileArguments = CompileArguments();
-			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::None;
-			expectedCompileArguments.RootDirectory = Path("C:/root/");
-			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
-			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
-			expectedCompileArguments.GenerateIncludeTree = true;
-
-			auto expectedLinkArguments = LinkArguments();
-			expectedLinkArguments.TargetType = LinkTarget::Executable;
-			expectedLinkArguments.TargetFile = Path("bin/Program.exe");
-			expectedLinkArguments.RootDirectory = Path("C:/root/");
-			expectedLinkArguments.ObjectFiles = std::vector<Path>({
-				Path("obj/TestFile.mock.obj"),
-			});
 
 			// Verify build state
 			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>();

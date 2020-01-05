@@ -23,11 +23,11 @@ namespace Soup::Build
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		BuildSystemResult Execute(IBuildState& buildState) noexcept override final
+		OperationResult Execute(IBuildState& buildState) noexcept override final
 		{
 			try
 			{
-				auto state = BuildStateWrapper(buildState);
+				auto state = PropertyBagWrapper(buildState.GetActiveState());
 
 				return 0;
 			}

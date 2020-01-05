@@ -49,7 +49,7 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			auto state = BuildStateWrapper(buildState);
+			auto state = PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("PackageRoot", "C:/PackageRoot/");
 			state.SetPropertyBooleanValue("ForceRebuild", false);
 			state.SetPropertyStringValue("BuildFlavor", "debug");

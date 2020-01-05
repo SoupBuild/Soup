@@ -1,4 +1,4 @@
-// <copyright file="BuildPropertyListWrapper.h" company="Soup">
+// <copyright file="PropertyListWrapper.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -10,13 +10,13 @@ namespace Soup::Build
 	/// Build State property list implementation
 	/// </summary>
 	template<typename T>
-	class BuildPropertyListWrapper
+	class PropertyListWrapper
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the BuildPropertyListWrapper class
+		/// Initializes a new instance of the PropertyListWrapper class
 		/// </summary>
-		BuildPropertyListWrapper(IBuildPropertyList<T>& value) :
+		PropertyListWrapper(IPropertyList<T>& value) :
 			_value(value)
 		{
 		}
@@ -60,20 +60,20 @@ namespace Soup::Build
 		}
 
 	private:
-		IBuildPropertyList<T>& _value;
+		IPropertyList<T>& _value;
 	};
 
 	/// <summary>
 	/// Build State property list implementation, string specialization
 	/// </summary>
 	template<>
-	class BuildPropertyListWrapper<const char*>
+	class PropertyListWrapper<const char*>
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the BuildPropertyListWrapper class
+		/// Initializes a new instance of the PropertyListWrapper class
 		/// </summary>
-		BuildPropertyListWrapper(IBuildPropertyList<const char*>& value) :
+		PropertyListWrapper(IPropertyList<const char*>& value) :
 			_value(value)
 		{
 		}
@@ -161,7 +161,18 @@ namespace Soup::Build
 			}
 		}
 
+		void Append(const std::vector<std::string>& values)
+		{
+			auto currentSize = static_cast<size_t>(GetSize());
+			auto finalSize = currentSize + values.size();
+			Resize(static_cast<uint64_t>(finalSize));
+			for (size_t i = currentSize; i < finalSize; i++)
+			{
+				SetValueAt(i, values[i - currentSize]);
+			}
+		}
+
 	private:
-		IBuildPropertyList<const char*>& _value;
+		IPropertyList<const char*>& _value;
 	};
 }

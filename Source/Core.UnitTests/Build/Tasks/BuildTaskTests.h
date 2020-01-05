@@ -39,7 +39,7 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			auto state = BuildStateWrapper(buildState);
+			auto state = PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Program");
 			state.SetPropertyIntegerValue(
 				"TargetType",
@@ -77,7 +77,6 @@ namespace Soup::Build::UnitTests
 					"DIAG: OptimizationLevel = None",
 					"DIAG: GenerateSourceDebugInfo = false",
 					"DIAG: IncludeDirectories = ",
-					"DIAG: IncludeModules = ",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
 					"INFO: Generate Compile Node: TestFile.cpp",
@@ -189,7 +188,7 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			auto state = BuildStateWrapper(buildState);
+			auto state = PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Program");
 			state.SetPropertyIntegerValue(
 				"TargetType",
@@ -206,7 +205,6 @@ namespace Soup::Build::UnitTests
 					"TestFile.cpp",
 				}));
 			state.SetPropertyStringList("IncludeDirectories", std::vector<std::string>());
-			state.SetPropertyStringList("IncludeModules", std::vector<std::string>());
 			state.SetPropertyIntegerValue(
 				"OptimizationLevel",
 				static_cast<int64_t>(BuildOptimizationLevel::Speed));
@@ -227,7 +225,6 @@ namespace Soup::Build::UnitTests
 					"DIAG: OptimizationLevel = Speed",
 					"DIAG: GenerateSourceDebugInfo = false",
 					"DIAG: IncludeDirectories = ",
-					"DIAG: IncludeModules = ",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
 					"INFO: Generate Compile Node: TestFile.cpp",
@@ -339,7 +336,7 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			auto state = BuildStateWrapper(buildState);
+			auto state = PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Program");
 			state.SetPropertyIntegerValue(
 				"TargetType",
@@ -356,7 +353,6 @@ namespace Soup::Build::UnitTests
 					"TestFile.cpp",
 				}));
 			state.SetPropertyStringList("IncludeDirectories", std::vector<std::string>());
-			state.SetPropertyStringList("IncludeModules", std::vector<std::string>());
 			state.SetPropertyIntegerValue(
 				"OptimizationLevel", 
 				static_cast<int64_t>(BuildOptimizationLevel::Size));
@@ -377,7 +373,6 @@ namespace Soup::Build::UnitTests
 					"DIAG: OptimizationLevel = Size",
 					"DIAG: GenerateSourceDebugInfo = false",
 					"DIAG: IncludeDirectories = ",
-					"DIAG: IncludeModules = ",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
 					"INFO: Generate Compile Node: TestFile.cpp",
@@ -489,7 +484,7 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			auto state = BuildStateWrapper(buildState);
+			auto state = PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Library");
 			state.SetPropertyIntegerValue(
 				"TargetType",
@@ -514,7 +509,7 @@ namespace Soup::Build::UnitTests
 					"AnotherFolder/Sub",
 				}));
 			state.SetPropertyStringList(
-				"IncludeModules",
+				"ModuleDependencies",
 				std::vector<std::string>({
 					"../Other/bin/OtherModule1.mock.bmi",
 					"../OtherModule2.mock.bmi",
@@ -545,7 +540,6 @@ namespace Soup::Build::UnitTests
 					"DIAG: OptimizationLevel = None",
 					"DIAG: GenerateSourceDebugInfo = false",
 					"DIAG: IncludeDirectories = Folder AnotherFolder/Sub",
-					"DIAG: IncludeModules = ../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
 					"INFO: Generate Compile Node: TestFile1.cpp",
@@ -709,7 +703,7 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			auto state = BuildStateWrapper(buildState);
+			auto state = PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Library");
 			state.SetPropertyIntegerValue(
 				"TargetType",
@@ -735,7 +729,7 @@ namespace Soup::Build::UnitTests
 					"AnotherFolder/Sub",
 				}));
 			state.SetPropertyStringList(
-				"IncludeModules",
+				"ModuleDependencies",
 				std::vector<std::string>({
 					"../Other/bin/OtherModule1.mock.bmi",
 					"../OtherModule2.mock.bmi",
@@ -772,7 +766,6 @@ namespace Soup::Build::UnitTests
 					"DIAG: OptimizationLevel = None",
 					"DIAG: GenerateSourceDebugInfo = false",
 					"DIAG: IncludeDirectories = Folder AnotherFolder/Sub",
-					"DIAG: IncludeModules = ../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"DIAG: PreprocessorDefinitions = DEBUG AWESOME",
 					"INFO: CompileModuleInterfaceUnit",
 					"INFO: Generate Compile Node: Public.cpp",
@@ -986,7 +979,7 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto buildState = BuildState();
-			auto state = BuildStateWrapper(buildState);
+			auto state = PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Library");
 			state.SetPropertyIntegerValue(
 				"TargetType", 
@@ -1006,7 +999,7 @@ namespace Soup::Build::UnitTests
 					"AnotherFolder/Sub",
 				}));
 			state.SetPropertyStringList(
-				"IncludeModules",
+				"ModuleDependencies",
 				std::vector<std::string>({
 					"../Other/bin/OtherModule1.mock.bmi",
 					"../OtherModule2.mock.bmi",
@@ -1037,7 +1030,6 @@ namespace Soup::Build::UnitTests
 					"DIAG: OptimizationLevel = None",
 					"DIAG: GenerateSourceDebugInfo = false",
 					"DIAG: IncludeDirectories = Folder AnotherFolder/Sub",
-					"DIAG: IncludeModules = ../Other/bin/OtherModule1.mock.bmi ../OtherModule2.mock.bmi",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: CompileModuleInterfaceUnit",
 					"INFO: Generate Compile Node: Public.cpp",

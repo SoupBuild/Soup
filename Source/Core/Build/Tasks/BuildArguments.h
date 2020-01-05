@@ -142,19 +142,9 @@ namespace Soup
 		std::vector<Path> IncludeDirectories;
 
 		/// <summary>
-		/// Gets or sets the list of modules
-		/// </summary>
-		std::vector<Path> IncludeModules;
-
-		/// <summary>
 		/// Gets or sets the list of link libraries
 		/// </summary>
 		std::vector<Path> LinkLibraries;
-
-		/// <summary>
-		/// Gets or sets the list of external link libraries
-		/// </summary>
-		std::vector<Path> ExternalLinkLibraries;
 
 		/// <summary>
 		/// Gets or sets the list of library paths
@@ -190,9 +180,7 @@ namespace Soup
 				ModuleInterfaceSourceFile == rhs.ModuleInterfaceSourceFile &&
 				SourceFiles == rhs.SourceFiles &&
 				IncludeDirectories == rhs.IncludeDirectories &&
-				IncludeModules == rhs.IncludeModules &&
 				LinkLibraries == rhs.LinkLibraries &&
-				ExternalLinkLibraries == rhs.ExternalLinkLibraries &&
 				LibraryPaths == rhs.LibraryPaths &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
 				OptimizationLevel == rhs.OptimizationLevel &&

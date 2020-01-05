@@ -10,7 +10,7 @@ namespace Soup::Build
 	/// Build State property list implementation
 	/// </summary>
 	template<typename T>
-	class BuildPropertyList : public IBuildPropertyList<T>
+	class BuildPropertyList : public IPropertyList<T>
 	{
 	public:
 		/// <summary>
@@ -29,7 +29,7 @@ namespace Soup::Build
 			return _value.size();
 		}
 
-		BuildSystemResult Resize(uint64_t size) noexcept override final
+		OperationResult Resize(uint64_t size) noexcept override final
 		{
 			try
 			{
@@ -46,7 +46,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		BuildSystemResult TryGetValueAt(uint64_t index, T& result) const noexcept override final
+		OperationResult TryGetValueAt(uint64_t index, T& result) const noexcept override final
 		{
 			try
 			{
@@ -63,7 +63,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Property setter methods.
 		/// </summary>
-		BuildSystemResult TrySetValueAt(uint64_t index, T value) noexcept override final
+		OperationResult TrySetValueAt(uint64_t index, T value) noexcept override final
 		{
 			try
 			{
@@ -82,7 +82,7 @@ namespace Soup::Build
 	};
 
 	template<>
-	class BuildPropertyList<const char*> : public IBuildPropertyList<const char*>
+	class BuildPropertyList<const char*> : public IPropertyList<const char*>
 	{
 	public:
 		/// <summary>
@@ -101,7 +101,7 @@ namespace Soup::Build
 			return _value.size();
 		}
 
-		BuildSystemResult Resize(uint64_t size) noexcept override final
+		OperationResult Resize(uint64_t size) noexcept override final
 		{
 			try
 			{
@@ -118,7 +118,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		BuildSystemResult TryGetValueAt(uint64_t index, const char*& result) const noexcept override final
+		OperationResult TryGetValueAt(uint64_t index, const char*& result) const noexcept override final
 		{
 			try
 			{
@@ -135,7 +135,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Property setter methods.
 		/// </summary>
-		BuildSystemResult TrySetValueAt(uint64_t index, const char* value) noexcept override final
+		OperationResult TrySetValueAt(uint64_t index, const char* value) noexcept override final
 		{
 			try
 			{
@@ -147,6 +147,14 @@ namespace Soup::Build
 				// Unknown error
 				return -1;
 			}
+		}
+		
+		/// <summary>
+		/// Internal accessor
+		/// </summary>
+		const std::vector<std::string>& GetValues() const noexcept
+		{
+			return _value;
 		}
 
 	private:

@@ -16,7 +16,7 @@ public:
         return "MyBuildTask";
     }
 
-    Soup::Build::BuildSystemResult Execute(Soup::Build::IBuildState& state) noexcept override final
+    Soup::Build::OperationResult Execute(Soup::Build::IBuildState& state) noexcept override final
     {
         return 0;
     }

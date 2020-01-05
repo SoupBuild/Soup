@@ -1,4 +1,4 @@
-// <copyright file="BuildPropertyValueWrapper.h" company="Soup">
+// <copyright file="PropertyValueWrapper.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -9,13 +9,13 @@ namespace Soup::Build
 	/// <summary>
 	/// Build State property value wrapper that makes the strict API easier to use
 	/// </summary>
-	class BuildPropertyValueWrapper 
+	class PropertyValueWrapper
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the BuildPropertyValueWrapper class
+		/// Initializes a new instance of the PropertyValueWrapper  class
 		/// </summary>
-		BuildPropertyValueWrapper(IBuildPropertyValue& value) :
+		PropertyValueWrapper(IPropertyValue& value) :
 			_value(value)
 		{
 		}
@@ -130,6 +130,6 @@ namespace Soup::Build
 		}
 
 	private:
-		IBuildPropertyValue& _value;
+		IPropertyValue& _value;
 	};
 }

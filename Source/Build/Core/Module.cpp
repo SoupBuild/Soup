@@ -16,4 +16,4 @@ using namespace Opal;
 #include "Definition/IBuildTask.h"
 #include "Definition/IBuildSystem.h"
 
-#include "Wrapper/BuildStateWrapper.h"
+#include "Wrapper/PropertyBagWrapper.h"
