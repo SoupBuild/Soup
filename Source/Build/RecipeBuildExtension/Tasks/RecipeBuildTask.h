@@ -3,15 +3,13 @@
 // </copyright>
 
 #pragma once
-#include "RecipeExtensions.h"
-#include "RecipeBuildArguments.h"
 
-namespace Soup::Build
+namespace RecipeBuild
 {
 	/// <summary>
 	/// The recipe build task that knows how to build a single recipe
 	/// </summary>
-	export class RecipeBuildTask : public Memory::ReferenceCounted<IBuildTask>
+	export class RecipeBuildTask : public Memory::ReferenceCounted<Soup::Build::IBuildTask>
 	{
 	public:
 		/// <summary>
@@ -25,11 +23,12 @@ namespace Soup::Build
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		OperationResult Execute(IBuildState& buildState) noexcept override final
+		Soup::Build::OperationResult Execute(
+			Soup::Build::IBuildState& buildState) noexcept override final
 		{
 			try
 			{
-				auto state = PropertyBagWrapper(buildState.GetActiveState());
+				auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 
 				// Load the input properties
 				auto compilerName = std::string(state.GetPropertyStringValue("CompilerName"));
@@ -42,9 +41,9 @@ namespace Soup::Build
 				auto platformPreprocessorDefinitions = state.CopyPropertyStringListAsStringVector("PlatformPreprocessorDefinitions");
 
 				// Load the input recipe
-				auto packageRecipePath = packageRoot + Path(Constants::RecipeFileName);
-				Recipe recipe = {};
-				if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, recipe))
+				auto packageRecipePath = packageRoot + Path(Soup::Constants::RecipeFileName);
+				Soup::Recipe recipe = {};
+				if (!Soup::RecipeExtensions::TryLoadFromFile(packageRecipePath, recipe))
 				{
 					Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
 					return -2;
@@ -96,8 +95,8 @@ namespace Soup::Build
 				}
 
 				// Build up arguments to build this individual recipe
-				auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
-				auto objectDirectory = RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
+				auto binaryDirectory = Soup::RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
+				auto objectDirectory = Soup::RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
 
 				state.SetPropertyStringValue("TargetName", recipe.GetName());
 				state.SetPropertyStringValue("WorkingDirectory", packageRoot.ToString());
@@ -149,13 +148,13 @@ namespace Soup::Build
 				BuildTargetType targetType;
 				switch (recipe.GetType())
 				{
-					case RecipeType::StaticLibrary:
+					case Soup::RecipeType::StaticLibrary:
 						targetType = BuildTargetType::StaticLibrary;
 						break;
-					case RecipeType::DynamicLibrary:
+					case Soup::RecipeType::DynamicLibrary:
 						targetType = BuildTargetType::DynamicLibrary;
 						break;
-					case RecipeType::Executable:
+					case Soup::RecipeType::Executable:
 						targetType = BuildTargetType::Executable;
 						break;
 					default:
@@ -165,20 +164,20 @@ namespace Soup::Build
 				state.SetPropertyIntegerValue("TargetType", static_cast<int64_t>(targetType));
 
 				// Convert the recipe language version to the required build language
-				LanguageStandard languageStandard;
+				Soup::LanguageStandard languageStandard;
 				switch (recipe.GetLanguageVersion())
 				{
-					case RecipeLanguageVersion::CPP11:
-						languageStandard = LanguageStandard::CPP11;
+					case Soup::RecipeLanguageVersion::CPP11:
+						languageStandard = Soup::LanguageStandard::CPP11;
 						break;
-					case RecipeLanguageVersion::CPP14:
-						languageStandard = LanguageStandard::CPP14;
+					case Soup::RecipeLanguageVersion::CPP14:
+						languageStandard = Soup::LanguageStandard::CPP14;
 						break;
-					case RecipeLanguageVersion::CPP17:
-						languageStandard = LanguageStandard::CPP17;
+					case Soup::RecipeLanguageVersion::CPP17:
+						languageStandard = Soup::LanguageStandard::CPP17;
 						break;
-					case RecipeLanguageVersion::CPP20:
-						languageStandard = LanguageStandard::CPP20;
+					case Soup::RecipeLanguageVersion::CPP20:
+						languageStandard = Soup::LanguageStandard::CPP20;
 						break;
 					default:
 						throw std::runtime_error("Unknown recipe language version.");

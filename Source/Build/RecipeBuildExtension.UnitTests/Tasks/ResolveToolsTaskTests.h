@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::UnitTests
+namespace RecipeBuild::UnitTests
 {
 	class ResolveToolsTaskTests
 	{

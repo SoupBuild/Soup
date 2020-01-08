@@ -12,8 +12,8 @@ import Opal;
 
 using namespace Opal;
 
-#include "Definition/BuildGraphNode.h"
+#include "Definition/IGraphNode.h"
 #include "Definition/IBuildTask.h"
 #include "Definition/IBuildSystem.h"
 
-#include "Wrapper/PropertyBagWrapper.h"
+#include "Wrapper/BuildStateWrapper.h"

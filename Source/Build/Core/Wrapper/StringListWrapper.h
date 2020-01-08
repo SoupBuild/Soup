@@ -1,4 +1,4 @@
-// <copyright file="PropertyListWrapper.h" company="Soup">
+// <copyright file="StringListWrapper.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -7,73 +7,15 @@
 namespace Soup::Build
 {
 	/// <summary>
-	/// Build State property list implementation
-	/// </summary>
-	template<typename T>
-	class PropertyListWrapper
-	{
-	public:
-		/// <summary>
-		/// Initializes a new instance of the PropertyListWrapper class
-		/// </summary>
-		PropertyListWrapper(IPropertyList<T>& value) :
-			_value(value)
-		{
-		}
-
-		/// <summary>
-		/// Size access methods
-		/// </summary>
-		uint64_t GetSize() const noexcept
-		{
-			return _value.GetSize();
-		}
-
-		void Resize(uint64_t size)
-		{
-			auto status = _value.Resize(size);
-			if (status != 0)
-				throw std::runtime_error("Resize Failed");
-		}
-
-		/// <summary>
-		/// Type specific accessor methods
-		/// </summary>
-		T GetValueAt(uint64_t index) const
-		{
-			T result;
-			auto status = _value.TryGetValueAt(index, result);
-			if (status != 0)
-				throw std::runtime_error("TryGetValueAt Failed");
-
-			return result;
-		}
-
-		/// <summary>
-		/// Property setter methods.
-		/// </summary>
-		void SetValueAt(uint64_t index, T value)
-		{
-			auto status = _value.TryGetValueAt(index, value);
-			if (status != 0)
-				throw std::runtime_error("TrySetValueAt Failed");
-		}
-
-	private:
-		IPropertyList<T>& _value;
-	};
-
-	/// <summary>
 	/// Build State property list implementation, string specialization
 	/// </summary>
-	template<>
-	class PropertyListWrapper<const char*>
+	class StringListWrapper
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the PropertyListWrapper class
+		/// Initializes a new instance of the StringListWrapper class
 		/// </summary>
-		PropertyListWrapper(IPropertyList<const char*>& value) :
+		StringListWrapper(IList<const char*>& value) :
 			_value(value)
 		{
 		}
@@ -173,6 +115,6 @@ namespace Soup::Build
 		}
 
 	private:
-		IPropertyList<const char*>& _value;
+		IList<const char*>& _value;
 	};
 }

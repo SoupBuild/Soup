@@ -12,8 +12,6 @@
 
 import Opal;
 import SoupCore;
-import SoupCompilerClang;
-import SoupCompilerMSVC;
 
 using namespace Opal;
 

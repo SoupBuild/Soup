@@ -10,49 +10,49 @@ namespace Soup
 	{
 	public:
 		static void AreEqual(
-			const std::shared_ptr<Build::BuildGraphNode>& expected,
-			const std::shared_ptr<Build::BuildGraphNode>& actual)
+			Build::GraphNodeWrapper& expected,
+			Build::GraphNodeWrapper& actual)
 		{
 			Assert::AreEqual(
-				expected->GetTitle(),
-				actual->GetTitle(),
+				expected.GetTitle(),
+				actual.GetTitle(),
 				"Verify build node title match expected.");
 			Assert::AreEqual(
-				expected->GetProgram().ToString(),
-				actual->GetProgram().ToString(),
+				expected.GetProgram(),
+				actual.GetProgram(),
 				"Verify build node program match expected.");
 			Assert::AreEqual(
-				expected->GetArguments(),
-				actual->GetArguments(),
+				expected.GetArguments(),
+				actual.GetArguments(),
 				"Verify build node arguments match expected.");
 			Assert::AreEqual(
-				expected->GetWorkingDirectory().ToString(),
-				actual->GetWorkingDirectory().ToString(),
+				expected.GetWorkingDirectory(),
+				actual.GetWorkingDirectory(),
 				"Verify build node working directory match expected.");
 			Assert::AreEqual(
-				expected->GetInputFiles(),
-				actual->GetInputFiles(),
+				expected.GetInputFileList().CopyAsStringVector(),
+				actual.GetInputFileList().CopyAsStringVector(),
 				"Verify build node input files match expected.");
 			Assert::AreEqual(
-				expected->GetOutputFiles(),
-				actual->GetOutputFiles(),
+				expected.GetOutputFileList().CopyAsStringVector(),
+				actual.GetOutputFileList().CopyAsStringVector(),
 				"Verify build node output files match expected.");
 			
-			AreEqual(expected->GetChildren(), actual->GetChildren());
+			AreEqual(expected.GetChildList(), actual.GetChildList());
 		}
 
 		static void AreEqual(
-			const std::vector<std::shared_ptr<Build::BuildGraphNode>>& expected,
-			const std::vector<std::shared_ptr<Build::BuildGraphNode>>& actual)
+			Build::GraphNodeListWrapper& expected,
+			Build::GraphNodeListWrapper& actual)
 		{
 			Assert::AreEqual(
-				expected.size(),
-				actual.size(),
+				expected.GetSize(),
+				actual.GetSize(),
 				"Verify build nodes size match expected.");
 
-			for (size_t i = 0; i < expected.size(); i++)
+			for (size_t i = 0; i < expected.GetSize(); i++)
 			{
-				AreEqual(expected.at(i), actual.at(i));
+				AreEqual(expected.GetValueAt(i), actual.GetValueAt(i));
 			}
 		}
 	};

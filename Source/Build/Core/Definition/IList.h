@@ -1,30 +1,26 @@
-// <copyright file="IPropertyList.h" company="Soup">
+// <copyright file="IList.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
+#include "IReadOnlyList.h"
+#include "OperationResult.h"
 
 namespace Soup::Build
 {
 	/// <summary>
-	/// The build property interface definition to allow build extensions read/write
-	/// access to the active build state
+	/// The build list interface definition to allow build extensions read/write
+	/// access to the a collection of values
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
 	template<typename T>
-	class IPropertyList
+	class IList : public IReadOnlyList<T>
 	{
 	public:
 		/// <summary>
 		/// Size access methods
 		/// </summary>
-		virtual uint64_t GetSize() const noexcept = 0;
 		virtual OperationResult Resize(uint64_t size) noexcept = 0;
-
-		/// <summary>
-		/// Type specific accessor methods
-		/// </summary>
-		virtual OperationResult TryGetValueAt(uint64_t index, T& result) const noexcept = 0;
 
 		/// <summary>
 		/// Property setter methods.

@@ -33,7 +33,7 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>();
+			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>();
 			auto forceBuild = true;
 			uut.Execute(nodes, forceBuild);
 
@@ -82,7 +82,7 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>();
+			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>();
 			auto forceBuild = false;
 			uut.Execute(nodes, forceBuild);
 
@@ -135,17 +135,17 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
+				new BuildGraphNode(
 					"TestCommand: 1",
-					Path("Command.exe"),
+					"Command.exe",
 					"Arguments",
-					Path("C:/TestWorkingDirectory/"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"C:/TestWorkingDirectory/",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					})),
 			});
 			bool forceBuild = true;
@@ -200,17 +200,17 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
+				new BuildGraphNode(
 					"TestCommand: 1",
-					Path("Command.exe"),
+					"Command.exe",
 					"Arguments",
-					Path("C:/TestWorkingDirectory/"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"C:/TestWorkingDirectory/",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					})),
 			});
 			auto forceBuild = false;
@@ -277,17 +277,17 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
+				new BuildGraphNode(
 					"TestCommand: 1",
-					Path("Command.exe"),
+					"Command.exe",
 					"Arguments",
-					Path("C:/TestWorkingDirectory/"),
-					std::vector<Path>({
-						Path("InputFile.cpp"),
+					"C:/TestWorkingDirectory/",
+					std::vector<std::string>({
+						"InputFile.cpp",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.obj"),
+					std::vector<std::string>({
+						"OutputFile.obj",
 					})),
 			});
 			auto forceBuild = false;
@@ -353,17 +353,17 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
+				new BuildGraphNode(
 					"TestCommand: 1",
-					Path("Command.exe"),
+					"Command.exe",
 					"Arguments",
-					Path("C:/TestWorkingDirectory/"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"C:/TestWorkingDirectory/",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					})),
 			});
 			auto forceBuild = false;
@@ -433,17 +433,17 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
+				new BuildGraphNode(
 					"TestCommand: 1",
-					Path("Command.exe"),
+					"Command.exe",
 					"Arguments",
-					Path("C:/TestWorkingDirectory/"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"C:/TestWorkingDirectory/",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					})),
 			});
 			auto forceBuild = false;
@@ -518,17 +518,17 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
+				new BuildGraphNode(
 					"TestCommand: 1",
-					Path("Command.exe"),
+					"Command.exe",
 					"Arguments",
-					Path("C:/TestWorkingDirectory/"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"C:/TestWorkingDirectory/",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					})),
 			});
 			auto forceBuild = false;
@@ -540,7 +540,6 @@ namespace Soup::Build::UnitTests
 					"DIAG: Loading previous build state",
 					"DIAG: Check for updated source",
 					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434993120]",
-					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
 					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
 					"INFO: Up to date",
 					"INFO: Saving updated build state",

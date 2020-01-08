@@ -22,11 +22,6 @@ import SoupTestUtilities;
 #include "Build/Runner/BuildHistoryManagerTests.gen.h"
 #include "Build/Runner/BuildRunnerTests.gen.h"
 
-#include "Build/Tasks/BuildTaskTests.gen.h"
-#include "Build/Tasks/RecipeBuildTaskTests.gen.h"
-#include "Build/Tasks/ResolveToolsTaskTests.gen.h"
-#include "Build/Tasks/StandardLibraryIncludeTaskTests.gen.h"
-
 #include "Config/LocalUserConfigExtensionsTests.gen.h"
 #include "Config/LocalUserConfigJsonTests.gen.h"
 #include "Config/LocalUserConfigTests.gen.h"
@@ -54,11 +49,6 @@ int main()
 	state += RunBuildHistoryTests();
 	state += RunBuildHistoryManagerTests();
 	state += RunBuildRunnerTests();
-
-	state += RunBuildTaskTests();
-	state += RunRecipeBuildTaskTests();
-	state += RunResolveToolsTaskTests();
-	state += RunStandardLibraryIncludeTaskTests();
 
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigJsonTests();

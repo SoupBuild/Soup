@@ -5,7 +5,7 @@
 #pragma once
 #include "OperationResult.h"
 #include "IPropertyValue.h"
-#include "IPropertyList.h"
+#include "IList.h"
 
 namespace Soup::Build
 {
@@ -24,7 +24,7 @@ namespace Soup::Build
 		virtual OperationResult TryCreatePropertyValue(const char* name, IPropertyValue*& result) noexcept = 0;
 
 		virtual OperationResult TryHasPropertyStringList(const char* name, bool& result) const noexcept = 0;
-		virtual OperationResult TryGetPropertyStringList(const char* name, IPropertyList<const char*>*& result) noexcept = 0;
-		virtual OperationResult TryCreatePropertyStringList(const char* name, IPropertyList<const char*>*& result) noexcept = 0;
+		virtual OperationResult TryGetPropertyStringList(const char* name, IList<const char*>*& result) noexcept = 0;
+		virtual OperationResult TryCreatePropertyStringList(const char* name, IList<const char*>*& result) noexcept = 0;
 	};
 }

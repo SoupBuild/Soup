@@ -4,7 +4,7 @@
 
 #pragma once
 #include "BuildPropertyValue.h"
-#include "BuildPropertyList.h"
+#include "BuildStringList.h"
 
 namespace Soup::Build
 {
@@ -104,7 +104,7 @@ namespace Soup::Build
 			}
 		}
 
-		OperationResult TryGetPropertyStringList(const char* name, IPropertyList<const char*>*& result) noexcept override final
+		OperationResult TryGetPropertyStringList(const char* name, IList<const char*>*& result) noexcept override final
 		{
 			try
 			{
@@ -128,12 +128,12 @@ namespace Soup::Build
 			}
 		}
 
-		OperationResult TryCreatePropertyStringList(const char* name, IPropertyList<const char*>*& result) noexcept override final
+		OperationResult TryCreatePropertyStringList(const char* name, IList<const char*>*& result) noexcept override final
 		{
 			try
 			{
 				result = nullptr;
-				auto insertResult = _propertyStringLists.emplace(name, BuildPropertyList<const char*>());
+				auto insertResult = _propertyStringLists.emplace(name, BuildStringList());
 				if (insertResult.second)
 				{
 					result = &insertResult.first->second;
@@ -160,7 +160,7 @@ namespace Soup::Build
 			return _propertyValues;
 		}
 
-		const std::map<std::string, BuildPropertyList<const char*>>& GetPropertyLists() const
+		const std::map<std::string, BuildStringList>& GetPropertyLists() const
 		{
 			return _propertyStringLists;
 		}
@@ -196,8 +196,7 @@ namespace Soup::Build
 		}
 
 	private:
-		BuildGraph _graph;
 		std::map<std::string, BuildPropertyValue> _propertyValues;
-		std::map<std::string, BuildPropertyList<const char*>> _propertyStringLists;
+		std::map<std::string, BuildStringList> _propertyStringLists;
 	};
 }

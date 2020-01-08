@@ -15,7 +15,10 @@ namespace Soup::Build
 		/// <summary>
 		/// Create a build node that will copy a file
 		/// </summary>
-		static std::shared_ptr<BuildGraphNode> CreateCopyFileNode(const Path& source, const Path& destination)
+		static GraphNodeWrapper CreateCopyFileNode(
+			BuildStateWrapper& state,
+			const Path& source,
+			const Path& destination)
 		{
 			auto titleStream = std::stringstream();
 			titleStream << "Copy [" << source.ToString() << "] -> [" << destination.ToString() << "]";
@@ -33,19 +36,21 @@ namespace Soup::Build
 			std::stringstream arguments;
 			arguments << "/C copy /Y \"" << source.ToAlternateString() << "\" \"" << destination.ToAlternateString() << "\"";
 
-			return std::make_shared<BuildGraphNode>(
-				titleStream.str(),
-				std::move(program),
-				arguments.str(),
-				std::move(workingDirectory),
-				std::move(inputFiles),
-				std::move(outputFiles));
+			return state.CreateNode(
+					titleStream.str(),
+					std::move(program),
+					arguments.str(),
+					std::move(workingDirectory),
+					std::move(inputFiles),
+					std::move(outputFiles));
 		}
 
 		/// <summary>
 		/// Create a build node that will create a directory
 		/// </summary>
-		static std::shared_ptr<BuildGraphNode> CreateCreateDirectoryNode(const Path& directory)
+		static GraphNodeWrapper CreateCreateDirectoryNode(
+			BuildStateWrapper& state,
+			const Path& directory)
 		{
 			auto titleStream = std::stringstream();
 			titleStream << "MakeDir [" << directory.ToString() << "]";
@@ -59,13 +64,13 @@ namespace Soup::Build
 			std::stringstream arguments;
 			arguments << "/C if not exist \"" << directory.ToString() << "\" mkdir \"" << directory.ToString() << "\"";
 
-			return std::make_shared<BuildGraphNode>(
-				titleStream.str(),
-				std::move(program),
-				arguments.str(),
-				std::move(workingDirectory),
-				std::move(inputFiles),
-				std::move(outputFiles));
+			return state.CreateNode(
+					titleStream.str(),
+					std::move(program),
+					arguments.str(),
+					std::move(workingDirectory),
+					std::move(inputFiles),
+					std::move(outputFiles));
 		}
 	};
 }

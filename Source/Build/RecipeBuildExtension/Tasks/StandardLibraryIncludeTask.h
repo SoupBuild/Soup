@@ -4,12 +4,12 @@
 
 #pragma once
 
-namespace Soup::Build
+namespace RecipeBuild
 {
 	/// <summary>
 	/// The recipe build task that knows how to build a single recipe
 	/// </summary>
-	export class StandardLibraryIncludeTask : public Memory::ReferenceCounted<IBuildTask>
+	export class StandardLibraryIncludeTask : public Memory::ReferenceCounted<Soup::Build::IBuildTask>
 	{
 	public:
 		/// <summary>
@@ -23,11 +23,12 @@ namespace Soup::Build
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		OperationResult Execute(IBuildState& buildState) noexcept override final
+		Soup::Build::OperationResult Execute(
+			Soup::Build::IBuildState& buildState) noexcept override final
 		{
 			try
 			{
-				auto state = PropertyBagWrapper(buildState.GetActiveState());
+				auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 
 				return 0;
 			}

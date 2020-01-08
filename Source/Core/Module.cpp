@@ -32,10 +32,12 @@ using namespace Opal;
 #include "Build\Runner\BuildHistoryManager.h"
 #include "Build\Runner\BuildRunner.h"
 
-#include "Build\System\BuildGraph.h"
+#include "Build\System\BuildState.h"
+#include "Build\System\GraphNodeExtensions.h"
 
-#include "Build\Tasks\BuildTask.h"
+#include "Build\BuildUtilities.h"
 
+#include "Compiler\ICompiler.h"
 #include "Compiler\CompileArguments.h"
 #include "Compiler\MockCompiler.h"
 

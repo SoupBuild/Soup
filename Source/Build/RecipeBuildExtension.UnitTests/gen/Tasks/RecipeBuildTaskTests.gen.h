@@ -1,5 +1,5 @@
 #pragma once
-#include "Build/Tasks/RecipeBuildTaskTests.h"
+#include "Tasks/RecipeBuildTaskTests.h"
 
 TestState RunRecipeBuildTaskTests() 
  {

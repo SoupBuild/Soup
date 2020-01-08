@@ -83,7 +83,7 @@ namespace Soup::Compiler::Clang::UnitTests
 				std::vector<Path>({
 					Path("obj/File.pcm")
 				}),
-				std::vector<std::shared_ptr<Build::BuildGraphNode>>({
+				std::vector<Memory::Reference<Build::BuildGraphNode>>({
 					std::make_shared<Build::BuildGraphNode>(
 						"obj/File.pcm",
 						Path("C:/Clang/bin/clang++.exe"),

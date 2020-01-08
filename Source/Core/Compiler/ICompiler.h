@@ -44,11 +44,16 @@ namespace Soup
 		/// <summary>
 		/// Compile
 		/// </summary>
-		virtual std::shared_ptr<Build::BuildGraphNode> CreateCompileNode(const CompileArguments& args) = 0;
+		// TODO: Should this state be replaced with a factory to limit access?
+		virtual Build::GraphNodeWrapper CreateCompileNode(
+			Build::BuildStateWrapper& state,
+			const CompileArguments& args) const = 0;
 
 		/// <summary>
 		/// Link
 		/// </summary>
-		virtual std::shared_ptr<Build::BuildGraphNode> CreateLinkNode(const LinkArguments& args) = 0;
+		virtual Build::GraphNodeWrapper CreateLinkNode(
+			Build::BuildStateWrapper& state,
+			const LinkArguments& args) const = 0;
 	};
 }

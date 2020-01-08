@@ -1,5 +1,5 @@
 #pragma once
-#include "Build/Tasks/ResolveToolsTaskTests.h"
+#include "Tasks/ResolveToolsTaskTests.h"
 
 TestState RunResolveToolsTaskTests() 
  {

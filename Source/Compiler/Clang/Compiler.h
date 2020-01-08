@@ -68,24 +68,28 @@ namespace Soup::Compiler::Clang
 		/// <summary>
 		/// Compile
 		/// </summary>
-		std::shared_ptr<Build::BuildGraphNode> CreateCompileNode(const CompileArguments& args) override final
+		Build::GraphNodeWrapper CreateCompileNode(
+			Build::BuildStateWrapper& state,
+			const CompileArguments& args) const override final
 		{
 			// Clang decided to do their module compilation in two stages
 			// Now we have to also generate the object file from the precompiled module
 			if (args.ExportModule)
 			{
-				return CompileModuleInterfaceUnit(args);
+				return CompileModuleInterfaceUnit(state, args);
 			}
 			else
 			{
-				return CompileStandard(args);
+				return CompileStandard(state, args);
 			}
 		}
 
 		/// <summary>
 		/// Link
 		/// </summary>
-		std::shared_ptr<Build::BuildGraphNode> CreateLinkNode(const LinkArguments& args) override final
+		Build::GraphNodeWrapper CreateLinkNode(
+			Build::BuildStateWrapper& state,
+			const LinkArguments& args) const override final
 		{
 			// Select the correct executable for linking libraries or executables
 			Path executablePath;
@@ -107,7 +111,7 @@ namespace Soup::Compiler::Clang
 			auto outputFiles = std::vector<Path>();
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
 
-			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+			auto buildNode = state.CreateNode(
 				args.TargetFile.ToString(),
 				std::move(executablePath),
 				CombineArguments(commandArgs),
@@ -119,7 +123,9 @@ namespace Soup::Compiler::Clang
 		}
 
 	private:
-		std::shared_ptr<Build::BuildGraphNode> CompileStandard(const CompileArguments& args)
+		Build::GraphNodeWrapper CompileStandard(
+			Build::BuildStateWrapper& state,
+			const CompileArguments& args) const
 		{
 			auto executablePath = _toolPath + Path(CompilerExecutable);
 			
@@ -128,7 +134,7 @@ namespace Soup::Compiler::Clang
 			auto outputFiles = std::vector<Path>();
 			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, inputFiles, outputFiles);
 
-			auto buildNode = std::make_shared<Build::BuildGraphNode>(
+			auto buildNode = state.CreateNode(
 				args.SourceFile.ToString(),
 				std::move(executablePath),
 				CombineArguments(commandArgs),
@@ -139,7 +145,9 @@ namespace Soup::Compiler::Clang
 			return buildNode;
 		}
 
-		std::shared_ptr<Build::BuildGraphNode> CompileModuleInterfaceUnit(const CompileArguments& args)
+		Build::GraphNodeWrapper CompileModuleInterfaceUnit(
+			Build::BuildStateWrapper& state,
+			const CompileArguments& args) const
 		{
 			auto executablePath = _toolPath + Path(CompilerExecutable);
 
@@ -169,7 +177,7 @@ namespace Soup::Compiler::Clang
 					generatePrecompiledModuleInputFiles,
 					generatePrecompiledModuleOutputFiles);
 
-			auto precompiledModuleBuildNode = std::make_shared<Build::BuildGraphNode>(
+			auto precompiledModuleBuildNode = state.CreateNode(
 				generatePrecompiledModuleArgs.SourceFile.ToString(),
 				executablePath,
 				CombineArguments(generatePrecompiledModuleCommandArgs),
@@ -194,7 +202,7 @@ namespace Soup::Compiler::Clang
 					compileObjectInputFiles,
 					compileObjectOutputFiles);
 
-			auto compileBuildNode = std::make_shared<Build::BuildGraphNode>(
+			auto compileBuildNode = state.CreateNode(
 				compileObjectArgs.SourceFile.ToString(),
 				std::move(executablePath),
 				CombineArguments(compileObjectCommandArgs),
@@ -203,7 +211,7 @@ namespace Soup::Compiler::Clang
 				std::move(compileObjectOutputFiles));
 
 			// Ensure the compile node runs after the precompile
-			Build::BuildGraphNode::AddLeafChild(precompiledModuleBuildNode, compileBuildNode);
+			Build::GraphNodeExtensions::AddLeafChild(precompiledModuleBuildNode, compileBuildNode);
 
 			return precompiledModuleBuildNode;
 		}

@@ -3,12 +3,10 @@
 // </copyright>
 
 #pragma once
+#include "RecipeBuildArguments.h"
 #include "RecipeExtensions.h"
 #include "Build/Runner/BuildRunner.h"
 #include "Build/System/BuildSystem.h"
-#include "Build/Tasks/RecipeBuildTask.h"
-#include "Build/Tasks/ResolveToolsTask.h"
-#include "Build/Tasks/StandardLibraryIncludeTask.h"
 
 namespace Soup
 {
@@ -23,15 +21,11 @@ namespace Soup
 		/// Initializes a new instance of the <see cref="RecipeBuildManager"/> class.
 		/// </summary>
 		RecipeBuildManager(
-			std::shared_ptr<ICompiler> systemCompiler,
-			std::shared_ptr<ICompiler> runtimeCompiler) :
+			std::string systemCompiler,
+			std::string runtimeCompiler) :
 			_systemCompiler(systemCompiler),
 			_runtimeCompiler(runtimeCompiler)
 		{
-			if (_systemCompiler == nullptr)
-				throw std::runtime_error("Argument null: systemCompiler");
-			if (_runtimeCompiler == nullptr)
-				throw std::runtime_error("Argument null: runtimeCompiler");
 		}
 
 		/// <summary>
@@ -254,7 +248,7 @@ namespace Soup
 				auto activeState = Build::PropertyBagWrapper(state.GetActiveState());
 
 				// Select the correct compiler to use
-				std::shared_ptr<ICompiler> activeCompiler = nullptr;
+				std::string activeCompiler = "";
 				if (isSystemBuild)
 				{
 					Log::HighPriority("System Build '" + recipe.GetName() + "'");
@@ -270,35 +264,22 @@ namespace Soup
 				activeState.SetPropertyStringValue("PackageRoot", packageRoot.ToString());
 				activeState.SetPropertyBooleanValue("ForceRebuild", arguments.ForceRebuild); // TOOD: Remove?
 				activeState.SetPropertyStringValue("BuildFlavor", arguments.Flavor);
-				activeState.SetPropertyStringValue("CompilerName", activeCompiler->GetName());
+				activeState.SetPropertyStringValue("CompilerName", activeCompiler);
 				activeState.SetPropertyStringList("PlatformLibraries", arguments.PlatformLibraries);
 				activeState.SetPropertyStringList("PlatformIncludePaths", arguments.PlatformIncludePaths);
 				activeState.SetPropertyStringList("PlatformLibraryPaths", arguments.PlatformLibraryPaths);
 				activeState.SetPropertyStringList("PlatformPreprocessorDefinitions", arguments.PlatformPreprocessorDefinitions);
 
-				// Register the resolve tools task
-				auto resolveToolsTask = Memory::Reference<Build::ResolveToolsTask>(
-					new Build::ResolveToolsTask());
-				buildSystem.RegisterTask(resolveToolsTask.GetRaw());
-
-				// Register the standard library include task
-				auto standardLibraryIncludeTask = Memory::Reference<Build::StandardLibraryIncludeTask>(
-					new Build::StandardLibraryIncludeTask());
-				buildSystem.RegisterTask(standardLibraryIncludeTask.GetRaw());
-
-				// Register the recipe build task
-				auto recipeBuildTask = Memory::Reference<Build::RecipeBuildTask>(
-					new Build::RecipeBuildTask());
-				buildSystem.RegisterTask(recipeBuildTask.GetRaw());
-
-				// Register the compile task
-				auto buildTask = Memory::Reference<Build::BuildTask>(
-					new Build::BuildTask(activeCompiler));
-				buildSystem.RegisterTask(buildTask.GetRaw());
-
 				// Run all build extensions
 				// Note: Keep the extension libraries open while running the build system
 				// to ensure their memory is kept alive
+
+				// Run the RecipeBuild extension to inject core build tasks
+				auto recipeBuildExtensionPath = Path("RecipeBuildExtension.dll");
+				auto recipeBuildLibrary = RunBuildExtension(recipeBuildExtensionPath, buildSystem);
+				activeExtensionLibraries.push_back(std::move(recipeBuildLibrary));
+
+				// Run all dev dependency extensions
 				if (recipe.HasDevDependencies())
 				{
 					for (auto dependecy : recipe.GetDevDependencies())
@@ -306,8 +287,8 @@ namespace Soup
 						auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependecy);
 						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 							packagePath,
-							RecipeExtensions::GetBinaryDirectory(std::string(_systemCompiler->GetName()), arguments.Flavor),
-							std::string(_systemCompiler->GetDynamicLibraryFileExtension()));
+							RecipeExtensions::GetBinaryDirectory(_systemCompiler, arguments.Flavor),
+							std::string(".dll"));
 						
 						auto library = RunBuildExtension(libraryPath, buildSystem);
 						activeExtensionLibraries.push_back(std::move(library));
@@ -367,8 +348,8 @@ namespace Soup
 		}
 
 	private:
-		std::shared_ptr<ICompiler> _systemCompiler;
-		std::shared_ptr<ICompiler> _runtimeCompiler;
+		std::string _systemCompiler;
+		std::string _runtimeCompiler;
 		std::map<std::string, Build::BuildState> _buildSet;
 	};
 }

@@ -17,7 +17,7 @@ namespace Soup::Build
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
 		BuildState() :
-			_graph(),
+			_nodes(),
 			_activeState(),
 			_parentState()
 		{
@@ -26,9 +26,36 @@ namespace Soup::Build
 		/// <summary>
 		/// Build Graph Access Methods
 		/// </summary>
-		void AddBuildNode(std::shared_ptr<BuildGraphNode> node) noexcept override final
+		OperationResult TryRegisterRootNode(IGraphNode* node) noexcept override final
 		{
-			_graph.GetNodes().push_back(std::move(node));
+			try
+			{
+				auto internalNode = dynamic_cast<BuildGraphNode*>(node);
+				if (node == nullptr)
+					return -2;
+
+				_nodes.push_back(internalNode);
+				return 0;
+			}
+			catch (...)
+			{
+				// Unknown error
+				return -1;
+			}
+		}
+
+		OperationResult TryCreateNode(IGraphNode*& node) noexcept override final
+		{
+			try
+			{
+				node = new BuildGraphNode();
+				return 0;
+			}
+			catch (...)
+			{
+				// Unknown error
+				return -1;
+			}
 		}
 		
 		/// <summary>
@@ -51,14 +78,14 @@ namespace Soup::Build
 		/// <summary>
 		/// Internal access to build nodes
 		/// </summary>
-		std::vector<std::shared_ptr<BuildGraphNode>>& GetBuildNodes()
+		std::vector<Memory::Reference<BuildGraphNode>>& GetBuildNodes()
 		{
-			return _graph.GetNodes();
+			return _nodes;
 		}
 
-		const std::vector<std::shared_ptr<BuildGraphNode>>& GetBuildNodes() const
+		const std::vector<Memory::Reference<BuildGraphNode>>& GetBuildNodes() const
 		{
-			return _graph.GetNodes();
+			return _nodes;
 		}
 
 		/// <summary>
@@ -81,7 +108,7 @@ namespace Soup::Build
 		}
 
 	private:
-		BuildGraph _graph;
+		std::vector<Memory::Reference<BuildGraphNode>> _nodes;
 		BuildPropertyBag _activeState;
 		BuildPropertyBag _parentState;
 	};

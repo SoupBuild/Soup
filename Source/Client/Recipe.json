@@ -3,9 +3,8 @@
   "version": "0.4.4",
   "type": "Executable",
   "dependencies": [
-    "../Core",
-    "../Compiler/Clang",
-    "../Compiler/MSVC"
+    "../Core/",
+    "../Build/RecipeBuildExtension/"
   ],
   "source": [
     "Main.cpp"

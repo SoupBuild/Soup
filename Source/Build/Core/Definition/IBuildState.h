@@ -19,8 +19,9 @@ namespace Soup::Build
 		/// <summary>
 		/// Build Graph Access Methods
 		/// </summary>
-		virtual void AddBuildNode(std::shared_ptr<BuildGraphNode> node) noexcept = 0;
-		
+		virtual OperationResult TryRegisterRootNode(IGraphNode* node) noexcept = 0;
+		virtual OperationResult TryCreateNode(IGraphNode*& node) noexcept = 0;
+
 		/// <summary>
 		/// Get a reference to the active state
 		/// </summary>

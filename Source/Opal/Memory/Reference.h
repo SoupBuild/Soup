@@ -14,6 +14,14 @@ namespace Opal::Memory
 	{
 	public:
 		/// <summary>
+		/// Default initializer with null pointer
+		/// </summary>
+		Reference() noexcept :
+			_reference(nullptr)
+		{
+		}
+
+		/// <summary>
 		/// Special initializer that allows for creation with null pointer
 		/// </summary>
 		Reference(std::nullptr_t) noexcept :
@@ -64,9 +72,25 @@ namespace Opal::Memory
 			return _reference;
 		}
 
+		operator const T*() const noexcept
+		{
+			return _reference;
+		}
+
 		T* operator->() noexcept
 		{
 			return _reference;
+		}
+		
+		const T* operator->() const noexcept
+		{
+			return _reference;
+		}
+
+		template<class U>
+		bool operator==(const Reference<U>& rhs) noexcept
+		{
+			return GetRaw() == rhs.GetRaw();
 		}
 
 		/// <summary>
@@ -83,16 +107,21 @@ namespace Opal::Memory
 		/// </summary>
 		inline void Assign(T* reference) noexcept
 		{
-			if (_reference != nullptr)
+			// Add an initial reference to the incoming pointer to ensure we never assign
+			// a pointer that has been lost
+			if (reference != nullptr)
 			{
-				_reference->ReleaseReference();
-				_reference = nullptr;
+				reference->AddReference();
 			}
 
+			// Move out the old reference and replace it with the new
+			auto previousReference = _reference;
 			_reference = reference;
-			if (_reference != nullptr)
+
+			// Release the old reference if it was valid
+			if (previousReference != nullptr)
 			{
-				_reference->AddReference();
+				previousReference->ReleaseReference();
 			}
 		}
 

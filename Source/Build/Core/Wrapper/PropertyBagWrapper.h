@@ -5,7 +5,7 @@
 #pragma once
 #include "Definition/IPropertyBag.h"
 #include "PropertyValueWrapper.h"
-#include "PropertyListWrapper.h"
+#include "StringListWrapper.h"
 
 namespace Soup::Build
 {
@@ -150,28 +150,28 @@ namespace Soup::Build
 			return result;
 		}
 
-		PropertyListWrapper<const char*>& GetPropertyStringList(std::string_view name)
+		StringListWrapper& GetPropertyStringList(std::string_view name)
 		{
-			IPropertyList<const char*>* result = nullptr;
+			IList<const char*>* result = nullptr;
 			auto status = _value.TryGetPropertyStringList(name.data(), result);
 			if (status != 0)
 				throw std::runtime_error("TryGetPropertyStringList Failed");
 			if (result == nullptr)
 				throw std::runtime_error("TryGetPropertyStringList has no value.");
 
-			return PropertyListWrapper(*result);
+			return StringListWrapper(*result);
 		}
 
-		PropertyListWrapper<const char*>& CreatePropertyStringList(std::string_view name)
+		StringListWrapper& CreatePropertyStringList(std::string_view name)
 		{
-			IPropertyList<const char*>* result = nullptr;
+			IList<const char*>* result = nullptr;
 			auto status = _value.TryCreatePropertyStringList(name.data(), result);
 			if (status != 0)
 				throw std::runtime_error("TryCreatePropertyStringList Failed");
 			if (result == nullptr)
 				throw std::runtime_error("TryCreatePropertyStringList has no value.");
 
-			return PropertyListWrapper(*result);
+			return StringListWrapper(*result);
 		}
 
 		/// <summary>

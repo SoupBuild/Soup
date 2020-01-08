@@ -32,25 +32,6 @@ namespace Soup::Client
 			// Load the user config
 			auto config =  LocalUserConfigExtensions::LoadFromFile();
 
-			std::shared_ptr<ICompiler> runtimeCompiler = nullptr;
-			if (config.GetRuntimeCompiler() == "clang")
-			{
-				runtimeCompiler = std::make_shared<Compiler::Clang::Compiler>(
-					Path(config.GetClangToolPath()));
-			}
-			else if (config.GetRuntimeCompiler() == "msvc")
-			{
-				runtimeCompiler = std::make_shared<Compiler::MSVC::Compiler>(
-					Path(config.GetMSVCRootPath()) + Path("bin/Hostx64/x64/"),
-					Path("cl.exe"),
-					Path("link.exe"),
-					Path("lib.exe"));
-			}
-			else
-			{
-				throw std::runtime_error("Unknown compiler.");
-			}
-
 			auto workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
 			auto recipePath = 
 				workingDirectory +
@@ -71,7 +52,8 @@ namespace Soup::Client
 
 			// Ensure the executable exists
 			auto configuration = "release";
-			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(std::string(runtimeCompiler->GetName()), configuration);
+			auto compilerName = config.GetRuntimeCompiler();
+			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(compilerName, configuration);
 			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
 			Log::Info(executablePath.ToString());
 			if (!System::IFileSystem::Current().Exists(executablePath))

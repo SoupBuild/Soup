@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::UnitTests
+namespace RecipeBuild::UnitTests
 {
 	class StandardLibraryIncludeTaskTests
 	{
@@ -48,7 +48,7 @@ namespace Soup::Build::UnitTests
 				"Verify log messages match expected.");
 
 			// Verify build state
-			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>();
+			auto expectedBuildNodes = std::vector<Memory::Reference<BuildGraphNode>>();
 			AssertExtensions::AreEqual(
 				expectedBuildNodes,
 				buildState.GetBuildNodes());

@@ -43,7 +43,7 @@ namespace Opal::Memory
 		/// <summary>
 		/// Finalizes an instance of ReferenceCounted class
 		/// </summary>
-		~ReferenceCounted() noexcept
+		virtual ~ReferenceCounted() noexcept
 		{
 		}
 

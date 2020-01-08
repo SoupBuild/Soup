@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::UnitTests
+namespace RecipeBuild::UnitTests
 {
 	class BuildTaskTests
 	{
@@ -12,19 +12,9 @@ namespace Soup::Build::UnitTests
 		[[Fact]]
 		void Initialze_Success()
 		{
-			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-			auto uut = BuildTask(compiler);
+			auto uut = BuildTask();
 			
 			Assert::AreEqual("Build", uut.GetName(), "Verify name matches expected.");
-		}
-
-		[[Fact]]
-		void Initialze_NullCompilerThrows()
-		{
-			auto compiler = nullptr;
-			Assert::ThrowsRuntimeError([&compiler]() {
-				auto uut = BuildTask(compiler);
-			});
 		}
 
 		[[Fact]]
@@ -1141,7 +1131,7 @@ namespace Soup::Build::UnitTests
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					std::vector<Memory::Reference<BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
 				std::make_shared<BuildGraphNode>(
@@ -1151,7 +1141,7 @@ namespace Soup::Build::UnitTests
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					std::vector<Memory::Reference<BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
 			});
