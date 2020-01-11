@@ -1,5 +1,7 @@
 #include <any>
+#include <functional>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <optional>
 #include <sstream>
@@ -8,6 +10,7 @@
 
 import Opal;
 import SoupCore;
+import RecipeBuildExtension;
 import json11;
 import SoupTest;
 

@@ -3,7 +3,9 @@
 #include <any>
 #include <array>
 #include <ctime>
+#include <functional>
 #include <iostream>
+#include <map>
 #include <optional>
 #include <set>
 #include <sstream>

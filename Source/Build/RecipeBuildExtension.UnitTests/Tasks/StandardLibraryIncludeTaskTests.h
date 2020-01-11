@@ -29,14 +29,14 @@ namespace RecipeBuild::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Soup::TestTraceListener>();
+			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
 
 			auto uut = StandardLibraryIncludeTask();
 
 			// Setup the input build state
-			auto buildState = BuildState();
-			auto state = PropertyBagWrapper(buildState.GetActiveState());
+			auto buildState = Soup::Build::BuildState();
+			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 
 			auto result = uut.Execute(buildState);
 			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
@@ -48,8 +48,8 @@ namespace RecipeBuild::UnitTests
 				"Verify log messages match expected.");
 
 			// Verify build state
-			auto expectedBuildNodes = std::vector<Memory::Reference<BuildGraphNode>>();
-			AssertExtensions::AreEqual(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>();
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildNodes,
 				buildState.GetBuildNodes());
 

@@ -42,6 +42,15 @@ namespace Soup
 		}
 
 		static void AreEqual(
+			Memory::Reference<Build::BuildGraphNode>& expected,
+			Memory::Reference<Build::BuildGraphNode>& actual)
+		{
+			AreEqual(
+				Build::GraphNodeWrapper(expected), 
+				Build::GraphNodeWrapper(actual));
+		}
+
+		static void AreEqual(
 			Build::GraphNodeListWrapper& expected,
 			Build::GraphNodeListWrapper& actual)
 		{
@@ -53,6 +62,21 @@ namespace Soup
 			for (size_t i = 0; i < expected.GetSize(); i++)
 			{
 				AreEqual(expected.GetValueAt(i), actual.GetValueAt(i));
+			}
+		}
+
+		static void AreEqual(
+			std::vector<Memory::Reference<Build::BuildGraphNode>>& expected,
+			std::vector<Memory::Reference<Build::BuildGraphNode>>& actual)
+		{
+			Assert::AreEqual(
+				expected.size(),
+				actual.size(),
+				"Verify build nodes size match expected.");
+
+			for (size_t i = 0; i < expected.size(); i++)
+			{
+				AreEqual(expected.at(i), actual.at(i));
 			}
 		}
 	};

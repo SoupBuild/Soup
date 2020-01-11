@@ -12,7 +12,8 @@ namespace RecipeBuild::UnitTests
 		[[Fact]]
 		void Initialze_Success()
 		{
-			auto uut = BuildTask();
+			auto compilerFactory = CompilerFactory();
+			auto uut = BuildTask(compilerFactory);
 			
 			Assert::AreEqual("Build", uut.GetName(), "Verify name matches expected.");
 		}
@@ -21,22 +22,26 @@ namespace RecipeBuild::UnitTests
 		void Build_Executable()
 		{
 			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Soup::TestTraceListener>();
+			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
 
-			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-			auto uut = BuildTask(compiler);
+			// Register the mock compiler
+			auto compiler = std::make_shared<Soup::Compiler::Mock::Compiler>();
+			auto compilerFactory = CompilerFactory();
+			compilerFactory.emplace("MOCK", [compiler](Soup::Build::PropertyBagWrapper& state) { return compiler; });
+
+			auto uut = BuildTask(compilerFactory);
 
 			// Setup the input build state
-			auto buildState = BuildState();
-			auto state = PropertyBagWrapper(buildState.GetActiveState());
+			auto buildState = Soup::Build::BuildState();
+			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Program");
 			state.SetPropertyIntegerValue(
 				"TargetType",
 				static_cast<int64_t>(BuildTargetType::Executable));
 			state.SetPropertyIntegerValue(
 				"LanguageStandard",
-				static_cast<int64_t>(LanguageStandard::CPP20));
+				static_cast<int64_t>(Soup::LanguageStandard::CPP20));
 			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
 			state.SetPropertyStringValue("ObjectDirectory", "obj");
 			state.SetPropertyStringValue("BinaryDirectory", "bin");
@@ -78,16 +83,16 @@ namespace RecipeBuild::UnitTests
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
 
-			auto expectedCompileArguments = CompileArguments();
-			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::None;
+			auto expectedCompileArguments = Soup::CompileArguments();
+			expectedCompileArguments.Standard = Soup::LanguageStandard::CPP20;
+			expectedCompileArguments.Optimize = Soup::OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
 			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
 			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
 			expectedCompileArguments.GenerateIncludeTree = true;
 
-			auto expectedLinkArguments = LinkArguments();
-			expectedLinkArguments.TargetType = LinkTarget::Executable;
+			auto expectedLinkArguments = Soup::LinkArguments();
+			expectedLinkArguments.TargetType = Soup::LinkTarget::Executable;
 			expectedLinkArguments.TargetFile = Path("bin/Program.exe");
 			expectedLinkArguments.RootDirectory = Path("C:/root/");
 			expectedLinkArguments.ObjectFiles = std::vector<Path>({
@@ -96,13 +101,13 @@ namespace RecipeBuild::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
+				std::vector<Soup::CompileArguments>({
 					expectedCompileArguments,
 				}),
 				compiler->GetCompileRequests(),
 				"Verify compiler requests match expected.");
 			Assert::AreEqual(
-				std::vector<LinkArguments>({
+				std::vector<Soup::LinkArguments>({
 					expectedLinkArguments,
 				}),
 				compiler->GetLinkRequests(),
@@ -110,58 +115,60 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				std::make_shared<BuildGraphNode>(
-					"MockLink: 1",
-					Path("MockLinker.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockLink: 1",
+						"MockLinker.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						})));
 
 			auto expectedCompileNode =
-				std::make_shared<BuildGraphNode>(
-					"MockCompile: 1",
-					Path("MockCompiler.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
-						expectedLinkNode,
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockCompile: 1",
+						"MockCompiler.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						}),
+						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+							expectedLinkNode,
+						})));
 
-			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileNode,
 					})),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileNode,
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildNodes,
 				buildState.GetBuildNodes());
 		}
@@ -170,22 +177,26 @@ namespace RecipeBuild::UnitTests
 		void Build_Executable_OptimizeSpeed()
 		{
 			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Soup::TestTraceListener>();
+			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
 
-			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-			auto uut = BuildTask(compiler);
+			// Register the mock compiler
+			auto compiler = std::make_shared<Soup::Compiler::Mock::Compiler>();
+			auto compilerFactory = CompilerFactory();
+			compilerFactory.emplace("MOCK", [compiler](Soup::Build::PropertyBagWrapper& state) { return compiler; });
+
+			auto uut = BuildTask(compilerFactory);
 
 			// Setup the input build state
-			auto buildState = BuildState();
-			auto state = PropertyBagWrapper(buildState.GetActiveState());
+			auto buildState = Soup::Build::BuildState();
+			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Program");
 			state.SetPropertyIntegerValue(
 				"TargetType",
 				static_cast<int64_t>(BuildTargetType::Executable));
 			state.SetPropertyIntegerValue(
 				"LanguageStandard",
-				static_cast<int64_t>(LanguageStandard::CPP20));
+				static_cast<int64_t>(Soup::LanguageStandard::CPP20));
 			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
 			state.SetPropertyStringValue("ObjectDirectory", "obj");
 			state.SetPropertyStringValue("BinaryDirectory", "bin");
@@ -226,16 +237,16 @@ namespace RecipeBuild::UnitTests
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
 
-			auto expectedCompileArguments = CompileArguments();
-			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::Speed;
+			auto expectedCompileArguments = Soup::CompileArguments();
+			expectedCompileArguments.Standard = Soup::LanguageStandard::CPP20;
+			expectedCompileArguments.Optimize = Soup::OptimizationLevel::Speed;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
 			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
 			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
 			expectedCompileArguments.GenerateIncludeTree = true;
 
-			auto expectedLinkArguments = LinkArguments();
-			expectedLinkArguments.TargetType = LinkTarget::Executable;
+			auto expectedLinkArguments = Soup::LinkArguments();
+			expectedLinkArguments.TargetType = Soup::LinkTarget::Executable;
 			expectedLinkArguments.TargetFile = Path("bin/Program.exe");
 			expectedLinkArguments.RootDirectory = Path("C:/root/");
 			expectedLinkArguments.ObjectFiles = std::vector<Path>({
@@ -244,13 +255,13 @@ namespace RecipeBuild::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
+				std::vector<Soup::CompileArguments>({
 					expectedCompileArguments,
 				}),
 				compiler->GetCompileRequests(),
 				"Verify compiler requests match expected.");
 			Assert::AreEqual(
-				std::vector<LinkArguments>({
+				std::vector<Soup::LinkArguments>({
 					expectedLinkArguments,
 				}),
 				compiler->GetLinkRequests(),
@@ -258,58 +269,60 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				std::make_shared<BuildGraphNode>(
-					"MockLink: 1",
-					Path("MockLinker.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockLink: 1",
+						"MockLinker.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						})));
 
 			auto expectedCompileNode =
-				std::make_shared<BuildGraphNode>(
-					"MockCompile: 1",
-					Path("MockCompiler.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
-						expectedLinkNode,
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockCompile: 1",
+						"MockCompiler.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						}),
+						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+							expectedLinkNode,
+						})));
 
-			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileNode,
 					})),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileNode,
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildNodes,
 				buildState.GetBuildNodes());
 		}
@@ -318,22 +331,26 @@ namespace RecipeBuild::UnitTests
 		void Build_Executable_OptimizeSize()
 		{
 			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Soup::TestTraceListener>();
+			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
 
-			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-			auto uut = BuildTask(compiler);
+			// Register the mock compiler
+			auto compiler = std::make_shared<Soup::Compiler::Mock::Compiler>();
+			auto compilerFactory = CompilerFactory();
+			compilerFactory.emplace("MOCK", [compiler](Soup::Build::PropertyBagWrapper& state) { return compiler; });
+
+			auto uut = BuildTask(compilerFactory);
 
 			// Setup the input build state
-			auto buildState = BuildState();
-			auto state = PropertyBagWrapper(buildState.GetActiveState());
+			auto buildState = Soup::Build::BuildState();
+			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Program");
 			state.SetPropertyIntegerValue(
 				"TargetType",
 				static_cast<int64_t>(BuildTargetType::Executable));
 			state.SetPropertyIntegerValue(
 				"LanguageStandard",
-				static_cast<int64_t>(LanguageStandard::CPP20));
+				static_cast<int64_t>(Soup::LanguageStandard::CPP20));
 			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
 			state.SetPropertyStringValue("ObjectDirectory", "obj");
 			state.SetPropertyStringValue("BinaryDirectory", "bin");
@@ -374,16 +391,16 @@ namespace RecipeBuild::UnitTests
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
 
-			auto expectedCompileArguments = CompileArguments();
-			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::Size;
+			auto expectedCompileArguments = Soup::CompileArguments();
+			expectedCompileArguments.Standard = Soup::LanguageStandard::CPP20;
+			expectedCompileArguments.Optimize = Soup::OptimizationLevel::Size;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
 			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
 			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
 			expectedCompileArguments.GenerateIncludeTree = true;
 
-			auto expectedLinkArguments = LinkArguments();
-			expectedLinkArguments.TargetType = LinkTarget::Executable;
+			auto expectedLinkArguments = Soup::LinkArguments();
+			expectedLinkArguments.TargetType = Soup::LinkTarget::Executable;
 			expectedLinkArguments.TargetFile = Path("bin/Program.exe");
 			expectedLinkArguments.RootDirectory = Path("C:/root/");
 			expectedLinkArguments.ObjectFiles = std::vector<Path>({
@@ -392,13 +409,13 @@ namespace RecipeBuild::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
+				std::vector<Soup::CompileArguments>({
 					expectedCompileArguments,
 				}),
 				compiler->GetCompileRequests(),
 				"Verify compiler requests match expected.");
 			Assert::AreEqual(
-				std::vector<LinkArguments>({
+				std::vector<Soup::LinkArguments>({
 					expectedLinkArguments,
 				}),
 				compiler->GetLinkRequests(),
@@ -406,58 +423,60 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				std::make_shared<BuildGraphNode>(
-					"MockLink: 1",
-					Path("MockLinker.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockLink: 1",
+						"MockLinker.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						})));
 
 			auto expectedCompileNode =
-				std::make_shared<BuildGraphNode>(
-					"MockCompile: 1",
-					Path("MockCompiler.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
-						expectedLinkNode,
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockCompile: 1",
+						"MockCompiler.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						}),
+						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+							expectedLinkNode,
+						})));
 
-			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileNode,
 					})),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileNode,
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildNodes,
 				buildState.GetBuildNodes());
 		}
@@ -466,22 +485,26 @@ namespace RecipeBuild::UnitTests
 		void Build_Library_MultipleFiles()
 		{
 			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Soup::TestTraceListener>();
+			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
 
-			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-			auto uut = BuildTask(compiler);
+			// Register the mock compiler
+			auto compiler = std::make_shared<Soup::Compiler::Mock::Compiler>();
+			auto compilerFactory = CompilerFactory();
+			compilerFactory.emplace("MOCK", [compiler](Soup::Build::PropertyBagWrapper& state) { return compiler; });
+
+			auto uut = BuildTask(compilerFactory);
 
 			// Setup the input build state
-			auto buildState = BuildState();
-			auto state = PropertyBagWrapper(buildState.GetActiveState());
+			auto buildState = Soup::Build::BuildState();
+			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Library");
 			state.SetPropertyIntegerValue(
 				"TargetType",
 				static_cast<int64_t>(BuildTargetType::StaticLibrary));
 			state.SetPropertyIntegerValue(
 				"LanguageStandard",
-				static_cast<int64_t>(LanguageStandard::CPP20));
+				static_cast<int64_t>(Soup::LanguageStandard::CPP20));
 			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
 			state.SetPropertyStringValue("ObjectDirectory", "obj");
 			state.SetPropertyStringValue("BinaryDirectory", "bin");
@@ -544,9 +567,9 @@ namespace RecipeBuild::UnitTests
 				"Verify log messages match expected.");
 
 			// Setup the shared arguments
-			auto expectedCompileArguments = CompileArguments();
-			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::None;
+			auto expectedCompileArguments = Soup::CompileArguments();
+			expectedCompileArguments.Standard = Soup::LanguageStandard::CPP20;
+			expectedCompileArguments.Optimize = Soup::OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
 			expectedCompileArguments.IncludeDirectories = std::vector<Path>({
 				Path("Folder"),
@@ -568,9 +591,9 @@ namespace RecipeBuild::UnitTests
 			expectedCompile3Arguments.SourceFile = Path("TestFile3.cpp");
 			expectedCompile3Arguments.TargetFile = Path("obj/TestFile3.mock.obj");
 
-			auto expectedLinkArguments = LinkArguments();
+			auto expectedLinkArguments = Soup::LinkArguments();
 			expectedLinkArguments.TargetFile = Path("bin/Library.mock.lib");
-			expectedLinkArguments.TargetType = LinkTarget::StaticLibrary;
+			expectedLinkArguments.TargetType = Soup::LinkTarget::StaticLibrary;
 			expectedLinkArguments.RootDirectory = Path("C:/root/");
 			expectedLinkArguments.ObjectFiles = std::vector<Path>({
 				Path("obj/TestFile1.mock.obj"),
@@ -584,7 +607,7 @@ namespace RecipeBuild::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
+				std::vector<Soup::CompileArguments>({
 					expectedCompile1Arguments,
 					expectedCompile2Arguments,
 					expectedCompile3Arguments,
@@ -592,7 +615,7 @@ namespace RecipeBuild::UnitTests
 				compiler->GetCompileRequests(),
 				"Verify compiler requests match expected.");
 			Assert::AreEqual(
-				std::vector<LinkArguments>({
+				std::vector<Soup::LinkArguments>({
 					expectedLinkArguments,
 				}),
 				compiler->GetLinkRequests(),
@@ -600,83 +623,84 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				std::make_shared<BuildGraphNode>(
-					"MockLink: 1",
-					Path("MockLinker.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockLink: 1",
+						"MockLinker.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						})));
 
-			auto expectedCompileNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto expectedCompileNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+				new Soup::Build::BuildGraphNode(
 					"MockCompile: 1",
-					Path("MockCompiler.exe"),
+					"MockCompiler.exe",
 					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"MockWorkingDirectory",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MockCompile: 2",
-					Path("MockCompiler.exe"),
+					"MockCompiler.exe",
 					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"MockWorkingDirectory",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MockCompile: 3",
-					Path("MockCompiler.exe"),
+					"MockCompiler.exe",
 					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"MockWorkingDirectory",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
 			});
 
-			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
 					expectedCompileNodes),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
 					expectedCompileNodes),
 			});
 
-			AssertExtensions::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildNodes,
 				buildState.GetBuildNodes());
 		}
@@ -685,22 +709,26 @@ namespace RecipeBuild::UnitTests
 		void Build_Library_ModuleInterface()
 		{
 			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Soup::TestTraceListener>();
+			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
 
-			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-			auto uut = BuildTask(compiler);
+			// Register the mock compiler
+			auto compiler = std::make_shared<Soup::Compiler::Mock::Compiler>();
+			auto compilerFactory = CompilerFactory();
+			compilerFactory.emplace("MOCK", [compiler](Soup::Build::PropertyBagWrapper& state) { return compiler; });
+
+			auto uut = BuildTask(compilerFactory);
 
 			// Setup the input build state
-			auto buildState = BuildState();
-			auto state = PropertyBagWrapper(buildState.GetActiveState());
+			auto buildState = Soup::Build::BuildState();
+			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Library");
 			state.SetPropertyIntegerValue(
 				"TargetType",
 				static_cast<int64_t>(BuildTargetType::StaticLibrary));
 			state.SetPropertyIntegerValue(
 				"LanguageStandard",
-				static_cast<int64_t>(LanguageStandard::CPP20));
+				static_cast<int64_t>(Soup::LanguageStandard::CPP20));
 			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
 			state.SetPropertyStringValue("ObjectDirectory", "obj");
 			state.SetPropertyStringValue("BinaryDirectory", "bin");
@@ -772,9 +800,9 @@ namespace RecipeBuild::UnitTests
 				"Verify log messages match expected.");
 
 			// Setup the shared arguments
-			auto expectedCompileArguments = CompileArguments();
-			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::None;
+			auto expectedCompileArguments = Soup::CompileArguments();
+			expectedCompileArguments.Standard = Soup::LanguageStandard::CPP20;
+			expectedCompileArguments.Optimize = Soup::OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
 			expectedCompileArguments.IncludeDirectories = std::vector<Path>({
 				Path("Folder"),
@@ -808,9 +836,9 @@ namespace RecipeBuild::UnitTests
 			expectedCompile3Arguments.SourceFile = Path("TestFile3.cpp");
 			expectedCompile3Arguments.TargetFile = Path("obj/TestFile3.mock.obj");
 
-			auto expectedLinkArguments = LinkArguments();
+			auto expectedLinkArguments = Soup::LinkArguments();
 			expectedLinkArguments.TargetFile = Path("bin/Library.mock.lib");
-			expectedLinkArguments.TargetType = LinkTarget::StaticLibrary;
+			expectedLinkArguments.TargetType = Soup::LinkTarget::StaticLibrary;
 			expectedLinkArguments.RootDirectory = Path("C:/root/");
 			expectedLinkArguments.ObjectFiles = std::vector<Path>({
 				Path("obj/TestFile1.mock.obj"),
@@ -825,7 +853,7 @@ namespace RecipeBuild::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
+				std::vector<Soup::CompileArguments>({
 					expectedCompileModuleArguments,
 					expectedCompile1Arguments,
 					expectedCompile2Arguments,
@@ -834,7 +862,7 @@ namespace RecipeBuild::UnitTests
 				compiler->GetCompileRequests(),
 				"Verify compiler requests match expected.");
 			Assert::AreEqual(
-				std::vector<LinkArguments>({
+				std::vector<Soup::LinkArguments>({
 					expectedLinkArguments,
 				}),
 				compiler->GetLinkRequests(),
@@ -842,117 +870,120 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				std::make_shared<BuildGraphNode>(
-					"MockLink: 1",
-					Path("MockLinker.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockLink: 1",
+						"MockLinker.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						})));
 
-			auto expectedCompileSourceNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto expectedCompileSourceNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+				new Soup::Build::BuildGraphNode(
 					"MockCompile: 2",
-					Path("MockCompiler.exe"),
+					"MockCompiler.exe",
 					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"MockWorkingDirectory",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MockCompile: 3",
-					Path("MockCompiler.exe"),
+					"MockCompiler.exe",
 					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"MockWorkingDirectory",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MockCompile: 4",
-					Path("MockCompiler.exe"),
+					"MockCompiler.exe",
 					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
+					"MockWorkingDirectory",
+					std::vector<std::string>({
+						"InputFile.in",
 					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
+					std::vector<std::string>({
+						"OutputFile.out",
 					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
 			});
 
 			auto expectedCopyModuleInterfaceNode =
-				std::make_shared<BuildGraphNode>(
-					"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
-					Path("./"),
-					std::vector<Path>({
-						Path("C:/root/obj/Public.mock.bmi"),
-					}),
-					std::vector<Path>({
-						Path("C:/root/bin/Library.mock.bmi"),
-					}),
-					expectedCompileSourceNodes);
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
+						"C:/Windows/System32/cmd.exe",
+						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
+						"./",
+						std::vector<std::string>({
+							"C:/root/obj/Public.mock.bmi",
+						}),
+						std::vector<std::string>({
+							"C:/root/bin/Library.mock.bmi",
+						}),
+						expectedCompileSourceNodes));
 
 			auto expectedCompileModuleNode =
-				std::make_shared<BuildGraphNode>(
-					"MockCompile: 1",
-					Path("MockCompiler.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
-						expectedCopyModuleInterfaceNode,
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockCompile: 1",
+						"MockCompiler.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						}),
+						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+							expectedCopyModuleInterfaceNode,
+						})));
 
-			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildNodes,
 				buildState.GetBuildNodes());
 		}
@@ -961,29 +992,33 @@ namespace RecipeBuild::UnitTests
 		void Build_Library_ModuleInterfaceNoSource()
 		{
 			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Soup::TestTraceListener>();
+			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
 
-			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-			auto uut = BuildTask(compiler);
+			// Register the mock compiler
+			auto compiler = std::make_shared<Soup::Compiler::Mock::Compiler>();
+			auto compilerFactory = CompilerFactory();
+			compilerFactory.emplace("MOCK", [compiler](Soup::Build::PropertyBagWrapper& state) { return compiler; });
+
+			auto uut = BuildTask(compilerFactory);
 
 			// Setup the input build state
-			auto buildState = BuildState();
-			auto state = PropertyBagWrapper(buildState.GetActiveState());
+			auto buildState = Soup::Build::BuildState();
+			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("TargetName", "Library");
 			state.SetPropertyIntegerValue(
 				"TargetType", 
 				static_cast<int64_t>(BuildTargetType::StaticLibrary));
 			state.SetPropertyIntegerValue(
-				"LanguageStandard",  
-				static_cast<int64_t>(LanguageStandard::CPP20));
+				"LanguageStandard",
+				static_cast<int64_t>(Soup::LanguageStandard::CPP20));
 			state.SetPropertyStringValue("WorkingDirectory", "C:/root/");
 			state.SetPropertyStringValue("ObjectDirectory", "obj");
 			state.SetPropertyStringValue("BinaryDirectory", "bin");
 			state.SetPropertyStringValue("ModuleInterfaceSourceFile", "Public.cpp");
 			state.SetPropertyStringList("SourceFiles", std::vector<std::string>({}));
 			state.SetPropertyStringList(
-				"IncludeDirectories", 
+				"IncludeDirectories",
 				std::vector<std::string>({
 					"Folder",
 					"AnotherFolder/Sub",
@@ -1032,9 +1067,9 @@ namespace RecipeBuild::UnitTests
 				"Verify log messages match expected.");
 
 			// Setup the shared arguments
-			auto expectedCompileArguments = CompileArguments();
-			expectedCompileArguments.Standard = LanguageStandard::CPP20;
-			expectedCompileArguments.Optimize = OptimizationLevel::None;
+			auto expectedCompileArguments = Soup::CompileArguments();
+			expectedCompileArguments.Standard = Soup::LanguageStandard::CPP20;
+			expectedCompileArguments.Optimize = Soup::OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
 			expectedCompileArguments.IncludeDirectories = std::vector<Path>({
 				Path("Folder"),
@@ -1051,9 +1086,9 @@ namespace RecipeBuild::UnitTests
 			expectedCompileModuleArguments.TargetFile = Path("obj/Public.mock.obj");
 			expectedCompileModuleArguments.ExportModule = true;
 
-			auto expectedLinkArguments = LinkArguments();
+			auto expectedLinkArguments = Soup::LinkArguments();
 			expectedLinkArguments.TargetFile = Path("bin/Library.mock.lib");
-			expectedLinkArguments.TargetType = LinkTarget::StaticLibrary;
+			expectedLinkArguments.TargetType = Soup::LinkTarget::StaticLibrary;
 			expectedLinkArguments.RootDirectory = Path("C:/root/");
 			expectedLinkArguments.ObjectFiles = std::vector<Path>({
 				Path("obj/Public.mock.obj"),
@@ -1065,13 +1100,13 @@ namespace RecipeBuild::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
+				std::vector<Soup::CompileArguments>({
 					expectedCompileModuleArguments,
 				}),
 				compiler->GetCompileRequests(),
 				"Verify compiler requests match expected.");
 			Assert::AreEqual(
-				std::vector<LinkArguments>({
+				std::vector<Soup::LinkArguments>({
 					expectedLinkArguments,
 				}),
 				compiler->GetLinkRequests(),
@@ -1079,74 +1114,77 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				std::make_shared<BuildGraphNode>(
-					"MockLink: 1",
-					Path("MockLinker.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockLink: 1",
+						"MockLinker.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						})));
 
 			auto expectedCopyModuleInterfaceNode =
-				std::make_shared<BuildGraphNode>(
-					"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
-					Path("./"),
-					std::vector<Path>({
-						Path("C:/root/obj/Public.mock.bmi"),
-					}),
-					std::vector<Path>({
-						Path("C:/root/bin/Library.mock.bmi"),
-					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
-						expectedLinkNode,
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
+						"C:/Windows/System32/cmd.exe",
+						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
+						"./",
+						std::vector<std::string>({
+							"C:/root/obj/Public.mock.bmi",
+						}),
+						std::vector<std::string>({
+							"C:/root/bin/Library.mock.bmi",
+						}),
+						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+							expectedLinkNode,
+						})));
 
 			auto expectedCompileModuleNode =
-				std::make_shared<BuildGraphNode>(
-					"MockCompile: 1",
-					Path("MockCompiler.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					}),
-					std::vector<std::shared_ptr<BuildGraphNode>>({
-						expectedCopyModuleInterfaceNode,
-					}));
+				Memory::Reference<Soup::Build::BuildGraphNode>(
+					new Soup::Build::BuildGraphNode(
+						"MockCompile: 1",
+						"MockCompiler.exe",
+						"Arguments",
+						"MockWorkingDirectory",
+						std::vector<std::string>({
+							"InputFile.in",
+						}),
+						std::vector<std::string>({
+							"OutputFile.out",
+						}),
+						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+							expectedCopyModuleInterfaceNode,
+						})));
 
-			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>({
-				std::make_shared<BuildGraphNode>(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<Memory::Reference<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
-				std::make_shared<BuildGraphNode>(
+				new Soup::Build::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
+					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({}),
-					std::vector<Memory::Reference<BuildGraphNode>>({
+					"./",
+					std::vector<std::string>({}),
+					std::vector<std::string>({}),
+					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildNodes,
 				buildState.GetBuildNodes());
 		}

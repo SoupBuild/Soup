@@ -12,27 +12,17 @@ namespace RecipeBuild::UnitTests
 		[[Fact]]
 		void Initialze_Success()
 		{
-			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-			auto uut = RecipeBuildTask(compiler, compiler);
+			auto uut = RecipeBuildTask();
 			
 			Assert::AreEqual("RecipeBuild", uut.GetName(), "Verify name matches expected.");
-		}
-
-		[[Fact]]
-		void Initialze_NullCompilerThrows()
-		{
-			auto compiler = nullptr;
-			Assert::ThrowsRuntimeError([&compiler]() {
-				auto uut = RecipeBuildTask(compiler, compiler);
-			});
 		}
 
 		[[Fact]]
 		void Build_Executable()
 		{
 			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Soup::TestTraceListener>();
+			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -44,12 +34,11 @@ namespace RecipeBuild::UnitTests
 					"version": "1.2.3"
 				})")));
 
-			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
-			auto uut = RecipeBuildTask(compiler, compiler);
+			auto uut = RecipeBuildTask();
 
 			// Setup the input build state
-			auto buildState = BuildState();
-			auto state = PropertyBagWrapper(buildState.GetActiveState());
+			auto buildState = Soup::Build::BuildState();
+			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("PackageRoot", "C:/PackageRoot/");
 			state.SetPropertyBooleanValue("ForceRebuild", false);
 			state.SetPropertyStringValue("BuildFlavor", "debug");
@@ -68,20 +57,10 @@ namespace RecipeBuild::UnitTests
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
 
-			// Verify expected compiler calls
-			Assert::AreEqual(
-				std::vector<CompileArguments>(),
-				compiler->GetCompileRequests(),
-				"Verify compiler requests match expected.");
-			Assert::AreEqual(
-				std::vector<LinkArguments>(),
-				compiler->GetLinkRequests(),
-				"Verify link requests match expected.");
-
 			// Verify build state
-			auto expectedBuildNodes = std::vector<std::shared_ptr<BuildGraphNode>>();
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>();
 
-			AssertExtensions::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildNodes,
 				buildState.GetBuildNodes());
 

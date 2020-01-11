@@ -7,12 +7,21 @@
 
 namespace RecipeBuild
 {
+	export using CreateCompiler = std::function<std::shared_ptr<Soup::ICompiler>(Soup::Build::PropertyBagWrapper&)>;
+	export using CompilerFactory = std::map<std::string, CreateCompiler>;
+
 	/// <summary>
 	/// The build task
 	/// </summary>
 	export class BuildTask : public Memory::ReferenceCounted<Soup::Build::IBuildTask>
 	{
 	public:
+		BuildTask(CompilerFactory compilerFactory) :
+			_compilerFactory(std::move(compilerFactory))
+		{
+
+		}
+
 		/// <summary>
 		/// Get the task name
 		/// </summary>
@@ -119,12 +128,16 @@ namespace RecipeBuild
 			}
 
 			// Initialize the compiler to use
-			auto visualCompilerToolsRoot = activeState.GetPropertyStringValue("MSVC.VCToolsRoot");
-			std::unique_ptr<Soup::ICompiler> compiler = std::make_unique<Soup::Compiler::MSVC::Compiler>(
-				Path(visualCompilerToolsRoot) + Path("bin/Hostx64/x64/"),
-				Path("cl.exe"),
-				Path("link.exe"),
-				Path("lib.exe"));
+			auto compilerName = std::string(activeState.GetPropertyStringValue("Compiler"));
+			auto findCompilerFactory = _compilerFactory.find(compilerName);
+			if (findCompilerFactory == _compilerFactory.end())
+			{
+				Log::Error("Unknown compiler: " + compilerName);
+				return -2;
+			}
+
+			auto createCompiler = findCompilerFactory->second;
+			auto compiler = createCompiler(activeState);
 
 			// Copy previous runtime dependencies
 			auto copyRuntimeDependencies = CopyRuntimeDependencies(
@@ -494,5 +507,8 @@ namespace RecipeBuild
 					throw std::runtime_error("Unknown BuildOptimizationLevel.");
 			}
 		}
+
+	private:
+		CompilerFactory _compilerFactory;
 	};
 }

@@ -3,7 +3,9 @@
 #include <any>
 #include <array>
 #include <ctime>
+#include <functional>
 #include <iostream>
+#include <map>
 #include <optional>
 #include <set>
 #include <sstream>
@@ -17,6 +19,18 @@
 
 module RecipeBuildExtension;
 using namespace Opal;
+
+std::shared_ptr<Soup::ICompiler> CreateMSVCCompiler(Soup::Build::PropertyBagWrapper& activeState)
+{
+	auto visualCompilerToolsRoot = activeState.GetPropertyStringValue("MSVC.VCToolsRoot");
+	std::shared_ptr<Soup::ICompiler> compiler = std::make_shared<Soup::Compiler::MSVC::Compiler>(
+		Path(visualCompilerToolsRoot) + Path("bin/Hostx64/x64/"),
+		Path("cl.exe"),
+		Path("link.exe"),
+		Path("lib.exe"));
+
+	return compiler;
+}
 
 extern "C"
 {
@@ -57,9 +71,13 @@ extern "C"
 			new RecipeBuild::RecipeBuildTask());
 		buildSystem.RegisterTask(recipeBuildTask.GetRaw());
 
+		// Register all known compilers
+		auto compilerFactory = RecipeBuild::CompilerFactory();
+		compilerFactory.emplace("MSVC", CreateMSVCCompiler);
+
 		// Register the compile task
 		auto buildTask = Memory::Reference<RecipeBuild::BuildTask>(
-			new RecipeBuild::BuildTask());
+			new RecipeBuild::BuildTask(std::move(compilerFactory)));
 		buildSystem.RegisterTask(buildTask.GetRaw());
 
 		return 0;

@@ -26,6 +26,14 @@ namespace Soup::Build
 		/// <summary>
 		/// Initializes a new instance of the GraphNodeWrapper class
 		/// </summary>
+		GraphNodeWrapper(IGraphNode* value) :
+			_value(value)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the GraphNodeWrapper class
+		/// </summary>
 		GraphNodeWrapper(Memory::Reference<IGraphNode>& value) :
 			_value(value)
 		{

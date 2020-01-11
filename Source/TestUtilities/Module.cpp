@@ -8,6 +8,7 @@
 export module SoupTestUtilities;
 
 import Opal;
+import SoupCore;
 import SoupTest;
 import SoupBuildCore;
 
