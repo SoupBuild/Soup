@@ -90,6 +90,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::DynamicLibrary;
 			arguments.TargetFile = Path("Library.mock.so");
+			arguments.ImplementationFile = Path("Library.mock.lib");
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.o"),
 			});
@@ -111,7 +112,7 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("File.mock.o"),
 			});
 			auto expectedOutput = std::vector<Path>({
-				Path("Library.mock.lib"),
+				// TODO: Path("Library.mock.lib"),
 				Path("Library.mock.so"),
 			});
 

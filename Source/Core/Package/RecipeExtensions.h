@@ -113,172 +113,20 @@ namespace Soup
 			return packagePath;
 		}
 
-		static void GenerateDependecyStaticLibraryClosure(
-			const ICompiler& compiler,
-			const std::string& configuration,
-			const Path& workingDirectory,
-			const Recipe& recipe,
-			std::vector<Path>& closure)
-		{
-			if (recipe.HasDependencies())
-			{
-				GenerateDependecyStaticLibraryClosure(
-					compiler,
-					configuration,
-					workingDirectory,
-					recipe.GetDependencies(),
-					closure);
-			}
-		}
-
-		static void GenerateDependecyStaticLibraryClosure(
-			const ICompiler& compiler,
-			const std::string& configuration,
-			const Path& workingDirectory,
-			const std::vector<PackageReference>& dependencies,
-			std::vector<Path>& closure)
-		{
-			for (auto& dependecy : dependencies)
-			{
-				// Load this package recipe
-				auto dependencyPackagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
-				auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
-				Recipe dependencyRecipe = {};
-				if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependencyRecipe))
-				{
-					Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
-					throw std::runtime_error("GenerateDependecyStaticLibraryClosure: Failed to load dependency.");
-				}
-
-				// Add this dependency if it is a library
-				if (dependencyRecipe.GetType() == RecipeType::StaticLibrary || dependencyRecipe.GetType() == RecipeType::DynamicLibrary)
-				{
-					auto dependencyStaticLibrary = 
-						dependencyPackagePath +
-						GetBinaryDirectory(compiler, configuration) +
-						Path(dependencyRecipe.GetName() + "." + std::string(compiler.GetStaticLibraryFileExtension()));
-					closure.push_back(std::move(dependencyStaticLibrary));
-
-					// Add transient dependencies for a static library to ensure all symbols are discoverable
-					if (dependencyRecipe.GetType() == RecipeType::StaticLibrary)
-					{
-						// Add all recursive dependencies
-						GenerateDependecyStaticLibraryClosure(
-							compiler,
-							configuration,
-							dependencyPackagePath,
-							dependencyRecipe,
-							closure);
-					}
-				}
-				else
-				{
-					throw std::runtime_error("Cannot reference a non library dependency.");
-				}
-			}
-		}
-
-		static void GenerateDependecyModuleIncludeClosure(
-			const ICompiler& compiler,
-			const std::string& configuration,
-			const Path& workingDirectory,
-			const Recipe& recipe,
-			std::vector<Path>& closure,
-			bool isRecursive)
-		{
-			if (recipe.HasDependencies())
-			{
-				for (auto& dependecy : recipe.GetDependencies())
-				{
-					// Load this package recipe
-					auto dependencyPackagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
-					auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
-					Recipe dependencyRecipe = {};
-					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependencyRecipe))
-					{
-						Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
-						throw std::runtime_error("GenerateDependecyStaticLibraryClosure: Failed to load dependency.");
-					}
-
-					// Add this dependency if it is a library
-					if (dependencyRecipe.GetType() == RecipeType::StaticLibrary ||
-						dependencyRecipe.GetType() == RecipeType::DynamicLibrary)
-					{
-						auto dependencyModulePath = RecipeExtensions::GetRecipeOutputPath(
-							dependencyPackagePath,
-							RecipeExtensions::GetBinaryDirectory(compiler, configuration),
-							std::string(compiler.GetModuleFileExtension()));
-						closure.push_back(std::move(dependencyModulePath));
-
-						// Add transient dependencies for a static library to ensure all symbols are discoverable
-						if (isRecursive && dependencyRecipe.GetType() == RecipeType::StaticLibrary)
-						{
-							// Add all recursive dependencies
-							GenerateDependecyModuleIncludeClosure(
-								compiler,
-								configuration,
-								dependencyPackagePath,
-								dependencyRecipe,
-								closure,
-								isRecursive);
-						}
-					}
-					else
-					{
-						throw std::runtime_error("Cannot reference a non library dependency for module include.");
-					}
-				}
-			}
-		}
-
-		static void GenerateDependecyDynamicLibraryClosure(
-			const ICompiler& compiler,
-			const std::string& configuration,
-			const Path& workingDirectory,
-			const Recipe& recipe,
-			std::vector<Path>& closure)
-		{
-			if (recipe.HasDependencies())
-			{
-				for (auto& dependecy : recipe.GetDependencies())
-				{
-					// Load this package recipe
-					auto dependencyPackagePath = RecipeExtensions::GetPackageReferencePath(workingDirectory, dependecy);
-					auto packageRecipePath = dependencyPackagePath + Path(Constants::RecipeFileName);
-					Recipe dependencyRecipe = {};
-					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependencyRecipe))
-					{
-						Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
-						throw std::runtime_error("GenerateDependecyDynamicLibraryClosure: Failed to load dependency.");
-					}
-
-					// Add this dependency if it is a dynamic library
-					if (dependencyRecipe.GetType() == RecipeType::DynamicLibrary)
-					{
-						auto dependencyLibrary = 
-							dependencyPackagePath +
-							GetBinaryDirectory(compiler, configuration) +
-							Path(dependencyRecipe.GetName() + "." + std::string(compiler.GetDynamicLibraryFileExtension()));
-						closure.push_back(std::move(dependencyLibrary));
-					}
-				}
-			}
-		}
-
-		static Path GetObjectDirectory(const ICompiler& compiler, const std::string& configuration)
+		static Path GetObjectDirectory(const std::string& compiler, const std::string& configuration)
 		{
 			// Setup the output directories
 			auto outputDirectory = Path("out");
 			auto objectDirectory = outputDirectory + Path("obj");
-			return objectDirectory + Path(compiler.GetName()) + Path(configuration);
+			return objectDirectory + Path(compiler) + Path(configuration);
 		}
 
-		static Path GetBinaryDirectory(const ICompiler& compiler, const std::string& configuration)
+		static Path GetBinaryDirectory(const std::string& compiler, const std::string& configuration)
 		{
 			// Setup the output directories
 			auto outputDirectory = Path("out");
 			auto binaryDirectory = outputDirectory + Path("bin");
-			return binaryDirectory + Path(compiler.GetName()) + Path(configuration);
+			return binaryDirectory + Path(compiler) + Path(configuration);
 		}
 	};
 }

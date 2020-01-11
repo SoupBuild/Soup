@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "BuildPropertyBag.h"
 
 namespace Soup::Build
 {
@@ -12,44 +13,140 @@ namespace Soup::Build
 	class BuildState : public IBuildState
 	{
 	public:
+		/// <summary>
+		/// Initializes a new instance of the BuildState class
+		/// </summary>
 		BuildState() :
-			_properties(),
-			_graph()
+			_nodes(),
+			_activeState(),
+			_parentState()
 		{
 		}
 
-		bool HasProperty(const char* name) override final
+		/// <summary>
+		/// Build Graph Access Methods
+		/// </summary>
+		OperationResult TryRegisterRootNode(IGraphNode* node) noexcept override final
 		{
-			return _properties.contains(name);
+			try
+			{
+				auto internalNode = dynamic_cast<BuildGraphNode*>(node);
+				if (node == nullptr)
+					return -2;
+
+				_nodes.push_back(internalNode);
+				return 0;
+			}
+			catch (...)
+			{
+				// Unknown error
+				return -1;
+			}
 		}
 
-		const std::any& GetProperty(const char* name) override final
+		OperationResult TryCreateNode(IGraphNode*& node) noexcept override final
 		{
-			return _properties.at(name);
+			try
+			{
+				node = new BuildGraphNode();
+				return 0;
+			}
+			catch (...)
+			{
+				// Unknown error
+				return -1;
+			}
 		}
 
-		void SetProperty(const char* name, std::any value) override final
+		/// <summary>
+		/// Get a reference to the active state
+		/// </summary>
+		IPropertyBag& GetActiveState() noexcept override final
 		{
-			_properties.insert_or_assign(name, std::move(value));
+			return _activeState;
 		}
 
-		void AddBuildNode(std::shared_ptr<BuildGraphNode> node) override final
+		/// <summary>
+		/// Get a reference to the child state. All of these properties will be 
+		/// moved into the active state of any parent build that has a direct reference to this build.
+		/// </summary>
+		IPropertyBag& GetParentState() noexcept override final
 		{
-			_graph.GetNodes().push_back(std::move(node));
+			return _parentState;
 		}
 
-		std::vector<std::shared_ptr<BuildGraphNode>>& GetBuildNodes()
+		/// <summary>
+		/// Log a message to the build system
+		/// </summary>
+		OperationResult TryLogTrace(TraceLevel level, const char* message) noexcept override final
 		{
-			return _graph.GetNodes();
+			try
+			{
+				switch (level)
+				{
+				case TraceLevel::Diagnostic:
+					Log::Diag(message);
+					break;
+				case TraceLevel::Information:
+					Log::Info(message);
+					break;
+				case TraceLevel::HighPriority:
+					Log::HighPriority(message);
+					break;
+				case TraceLevel::Warning:
+					Log::Warning(message);
+					break;
+				case TraceLevel::Error:
+					Log::Error(message);
+					break;
+				default:
+					return -2;
+				}
+
+				return 0;
+			}
+			catch (...)
+			{
+				// Unknown error
+				return -1;
+			}
 		}
 
-		const std::vector<std::shared_ptr<BuildGraphNode>>& GetBuildNodes() const
+		/// <summary>
+		/// Internal access to build nodes
+		/// </summary>
+		std::vector<Memory::Reference<BuildGraphNode>>& GetBuildNodes()
 		{
-			return _graph.GetNodes();
+			return _nodes;
+		}
+
+		const std::vector<Memory::Reference<BuildGraphNode>>& GetBuildNodes() const
+		{
+			return _nodes;
+		}
+
+		/// <summary>
+		/// Get a reference to the child state. All of these properties will be 
+		/// moved into the active state of any parent build that has a direct reference to this build.
+		/// </summary>
+		void CombineChildState(const BuildState& childState)
+		{
+			auto& childParentState = childState._parentState;
+			auto activeState = PropertyBagWrapper(_activeState);
+			for (auto& propertyList : childParentState.GetPropertyLists())
+			{
+				activeState.AppendPropertyStringList(propertyList.first, propertyList.second.GetValues());
+			}
+		}
+
+		void LogActive()
+		{
+			_activeState.Log();
 		}
 
 	private:
-		std::map<std::string, std::any> _properties;
-		BuildGraph _graph;
+		std::vector<Memory::Reference<BuildGraphNode>> _nodes;
+		BuildPropertyBag _activeState;
+		BuildPropertyBag _parentState;
 	};
 }

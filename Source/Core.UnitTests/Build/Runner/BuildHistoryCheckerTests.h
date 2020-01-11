@@ -10,27 +10,16 @@ namespace Soup::Build::UnitTests
 	{
 	public:
 		[[Fact]]
-		void IsOutdated_NonRootedRoot_Throws()
-		{
-			// Setup the input parameters
-			auto targetFiles = std::vector<Path>({
-				Path("Output.bin"),
-			});
-			auto inputFiles = std::vector<Path>({
-				Path("Input.cpp")
-			});
-			auto rootPath = Path("NotRooted/");
-
-			// Perform the check
-			auto uut = BuildHistoryChecker();
-			Assert::ThrowsRuntimeError([&uut, &targetFiles, &inputFiles, &rootPath]() {
-				bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
-			});
-		}
-
-		[[Fact]]
 		void IsOutdated_ZeroInput_Throws()
 		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+
 			// Setup the input parameters
 			auto targetFiles = std::vector<Path>({
 				Path("Output.bin"),
@@ -43,6 +32,18 @@ namespace Soup::Build::UnitTests
 			Assert::ThrowsRuntimeError([&uut, &targetFiles, &inputFiles, &rootPath]() {
 				bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
 			});
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({}),
+					fileSystem->GetRequests(),
+					"Verify file system requests match expected.");
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
 		}
 
 		[[Fact]]

@@ -17,6 +17,11 @@ namespace Soup
 		std::string Flavor;
 
 		/// <summary>
+		/// Gets or sets the platform name
+		/// </summary>
+		std::string Platform;
+
+		/// <summary>
 		/// Gets or sets the platform library paths
 		/// TODO: Pull this from somewhere when we implement platforms
 		/// </summary>
@@ -51,6 +56,7 @@ namespace Soup
 		bool operator ==(const RecipeBuildArguments& rhs) const
 		{
 			return Flavor == rhs.Flavor &&
+				Platform == rhs.Platform &&
 				PlatformIncludePaths == rhs.PlatformIncludePaths &&
 				PlatformLibraryPaths == rhs.PlatformLibraryPaths &&
 				PlatformPreprocessorDefinitions == rhs.PlatformPreprocessorDefinitions &&

@@ -17,6 +17,14 @@ namespace Opal::System
 		{
 		}
 
+		Library(Library&& other) :
+			_handle(std::move(other._handle))
+		{
+			other._handle = nullptr;
+		}
+
+		Library(Library& other) = delete;
+
 		~Library()
 		{
 			// Free the DLL module.
@@ -102,7 +110,10 @@ namespace Opal::System
 
 			// If the handle is valid, try to get the function address.
 			if (libraryHandle == nullptr)
+			{
+				auto lastError = GetLastError();
 				throw "ERROR Failed to get library handle";
+			}
 
 			return Library(libraryHandle);
 		}

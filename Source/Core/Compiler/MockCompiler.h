@@ -83,10 +83,12 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Compile
 		/// </summary>
-		std::shared_ptr<Build::BuildGraphNode> CreateCompileNode(const CompileArguments& args) override final
+		Build::GraphNodeWrapper CreateCompileNode(
+			Build::BuildStateWrapper& state,
+			const CompileArguments& args) const override final
 		{
 			_compileRequests.push_back(args);
-			return std::make_shared<Build::BuildGraphNode>(
+			return state.CreateNode(
 				"MockCompile: " + std::to_string(_compileRequests.size()),
 				Path("MockCompiler.exe"),
 				"Arguments",
@@ -102,10 +104,12 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Link
 		/// </summary>
-		std::shared_ptr<Build::BuildGraphNode> CreateLinkNode(const LinkArguments& args) override final
+		Build::GraphNodeWrapper CreateLinkNode(
+			Build::BuildStateWrapper& state,
+			const LinkArguments& args) const override final
 		{
 			_linkRequests.push_back(args);
-			return std::make_shared<Build::BuildGraphNode>(
+			return state.CreateNode(
 				"MockLink: " + std::to_string(_linkRequests.size()),
 				Path("MockLinker.exe"),
 				"Arguments",
@@ -119,7 +123,7 @@ namespace Soup::Compiler::Mock
 		}
 
 	private:
-		std::vector<CompileArguments> _compileRequests;
-		std::vector<LinkArguments> _linkRequests;
+		mutable std::vector<CompileArguments> _compileRequests;
+		mutable std::vector<LinkArguments> _linkRequests;
 	};
 }

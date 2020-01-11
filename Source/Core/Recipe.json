@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "dependencies": [
     "../../Dependencies/json11/",
-    "../../Dependencies/SoupSyntax/Source/Syntax/",
     "../Opal/",
-    "../Build/Extension/"
+    "../Build/Core/"
+  ],
+  "devDependencies": [
   ],
   "public": "Module.cpp",
   "source": [],

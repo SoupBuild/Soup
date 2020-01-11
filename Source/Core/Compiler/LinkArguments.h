@@ -57,6 +57,11 @@ namespace Soup
 		LinkTarget TargetType;
 
 		/// <summary>
+		/// Gets or sets the implementation file
+		/// </summary>
+		Path ImplementationFile;
+
+		/// <summary>
 		/// Gets or sets the root directory
 		/// </summary>
 		Path RootDirectory;
@@ -93,6 +98,7 @@ namespace Soup
 		{
 			return TargetFile == rhs.TargetFile &&
 				TargetType == rhs.TargetType &&
+				ImplementationFile == rhs.ImplementationFile &&
 				RootDirectory == rhs.RootDirectory &&
 				ObjectFiles == rhs.ObjectFiles &&
 				LibraryFiles == rhs.LibraryFiles &&

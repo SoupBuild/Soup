@@ -22,8 +22,6 @@ import SoupTestUtilities;
 #include "Build/Runner/BuildHistoryManagerTests.gen.h"
 #include "Build/Runner/BuildRunnerTests.gen.h"
 
-#include "Build/Tasks/BuildTaskTests.gen.h"
-
 #include "Config/LocalUserConfigExtensionsTests.gen.h"
 #include "Config/LocalUserConfigJsonTests.gen.h"
 #include "Config/LocalUserConfigTests.gen.h"
@@ -52,8 +50,6 @@ int main()
 	state += RunBuildHistoryManagerTests();
 	state += RunBuildRunnerTests();
 
-	state += RunBuildTaskTests();
-
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigJsonTests();
 	state += RunLocalUserConfigTests();
@@ -70,8 +66,8 @@ int main()
 	state += RunPathTests();
 	state += RunSemanticVersionTests();
 
-	std::cout << state.FailCount << " FAILED." << std::endl;
 	std::cout << state.PassCount << " PASSED." << std::endl;
+	std::cout << state.FailCount << " FAILED." << std::endl;
 
 	return 0;
 }

@@ -1,0 +1,12 @@
+{
+    "name": "SoupTestExtension",
+    "type": "DynamicLibrary",
+    "version": "1.0.0",
+    "dependencies": [
+      "../Core/"
+    ],
+    "public": "Module.cpp",
+    "source": [
+        "Main.cpp"
+    ]
+}

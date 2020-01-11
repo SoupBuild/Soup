@@ -137,6 +137,12 @@ namespace Soup.Compiler.GCC
             // Enable experimental modules
             commandArgs.Add("-fmodules-ts");
 
+            // Set the preprocessor definitions
+            foreach (var definition in args.PreprocessorDefinitions)
+            {
+                commandArgs.Add($"-D{definition}");
+            }
+
             // Only compile the source
             commandArgs.Add("-c");
 

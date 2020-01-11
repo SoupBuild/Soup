@@ -32,28 +32,6 @@ namespace Soup::Client
 			// Load the user config
 			auto config =  LocalUserConfigExtensions::LoadFromFile();
 
-			std::shared_ptr<ICompiler> runtimeCompiler = nullptr;
-			if (config.GetRuntimeCompiler() == "clang")
-			{
-				runtimeCompiler = std::make_shared<Compiler::Clang::Compiler>(
-					Path(config.GetClangToolPath()));
-			}
-			else if (config.GetRuntimeCompiler() == "msvc")
-			{
-				runtimeCompiler = std::make_shared<Compiler::MSVC::Compiler>(
-					Path(config.GetMSVCRootPath()) + Path("bin/Hostx64/x64/"),
-					Path("cl.exe"),
-					Path("link.exe"),
-					Path("lib.exe"));
-			}
-			else
-			{
-				throw std::runtime_error("Unknown compiler.");
-			}
-
-			// TODOL Use the same system compiler for now
-			auto systemCompiler = runtimeCompiler;
-
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
 			{
@@ -89,8 +67,13 @@ namespace Soup::Client
 			else
 				arguments.Flavor = "release";
 
+			if (!_options.Platform.empty())
+				arguments.Platform = _options.Platform;
+			else
+				arguments.Platform = "Windows"; // TODO: Pull current platform
+
 			// TODO: Hard coded to windows MSVC runtime libraries
-			// And we only trust the contig today
+			// And we only trust the config today
 			arguments.PlatformIncludePaths = std::vector<Path>({});
 			for (auto& path : config.GetWindowsSDKIncludePaths())
 			{
@@ -140,6 +123,9 @@ namespace Soup::Client
 			// arguments.PlatformLibraries.push_back(Path("uuid.lib"));
 			// arguments.PlatformLibraries.push_back(Path("odbc32.lib"));
 			// arguments.PlatformLibraries.push_back(Path("odbccp32.lib"));
+
+			std::string runtimeCompiler = config.GetRuntimeCompiler();
+			std::string systemCompiler = runtimeCompiler;
 
 			// Now build the current project
 			Log::Info("Begin Build:");

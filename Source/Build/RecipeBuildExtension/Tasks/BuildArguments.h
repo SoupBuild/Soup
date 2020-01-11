@@ -3,14 +3,13 @@
 // </copyright>
 
 #pragma once
-#include "CompileArguments.h"
 
-namespace Soup
+namespace RecipeBuild
 {
 	/// <summary>
 	/// The enumeration of build optimization levels
 	/// </summary>
-	export enum class BuildOptimizationLevel
+	enum class BuildOptimizationLevel
 	{
 		/// <summary>
 		/// Debug
@@ -46,7 +45,7 @@ namespace Soup
 	/// <summary>
 	/// The enumeration of target types
 	/// </summary>
-	export enum class BuildTargetType
+	enum class BuildTargetType
 	{
 		/// <summary>
 		/// Executable
@@ -82,7 +81,7 @@ namespace Soup
 	/// <summary>
 	/// The source file definition
 	/// </summary>
-	export struct SourceFile
+	struct SourceFile
 	{
 	public:
 		Path File;
@@ -92,7 +91,7 @@ namespace Soup
 	/// <summary>
 	/// The set of build arguments
 	/// </summary>
-	export struct BuildArguments
+	struct BuildArguments
 	{
 		/// <summary>
 		/// Gets or sets the target name
@@ -107,7 +106,7 @@ namespace Soup
 		/// <summary>
 		/// Gets or sets the language standard
 		/// </summary>
-		LanguageStandard LanguageStandard;
+		Soup::LanguageStandard LanguageStandard;
 
 		/// <summary>
 		/// Gets or sets the working directory
@@ -142,19 +141,9 @@ namespace Soup
 		std::vector<Path> IncludeDirectories;
 
 		/// <summary>
-		/// Gets or sets the list of modules
-		/// </summary>
-		std::vector<Path> IncludeModules;
-
-		/// <summary>
 		/// Gets or sets the list of link libraries
 		/// </summary>
 		std::vector<Path> LinkLibraries;
-
-		/// <summary>
-		/// Gets or sets the list of external link libraries
-		/// </summary>
-		std::vector<Path> ExternalLinkLibraries;
 
 		/// <summary>
 		/// Gets or sets the list of library paths
@@ -190,9 +179,7 @@ namespace Soup
 				ModuleInterfaceSourceFile == rhs.ModuleInterfaceSourceFile &&
 				SourceFiles == rhs.SourceFiles &&
 				IncludeDirectories == rhs.IncludeDirectories &&
-				IncludeModules == rhs.IncludeModules &&
 				LinkLibraries == rhs.LinkLibraries &&
-				ExternalLinkLibraries == rhs.ExternalLinkLibraries &&
 				LibraryPaths == rhs.LibraryPaths &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
 				OptimizationLevel == rhs.OptimizationLevel &&

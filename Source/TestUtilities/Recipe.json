@@ -4,7 +4,8 @@
   "dependencies": [
     "../../Dependencies/SoupTest/Assert/",
     "../Opal/",
-    "../Build/Extension/"
+    "../Build/Core/",
+    "../Core/"
   ],
   "public": "Module.cpp"
 }

@@ -1,13 +1,13 @@
 #pragma once
-#include "Build/Tasks/BuildTaskTests.h"
+#include "Tasks/BuildTaskTests.h"
 
 TestState RunBuildTaskTests() 
  {
 	auto className = "BuildTaskTests";
-	auto testClass = std::make_shared<Soup::Build::UnitTests::BuildTaskTests>();
+	auto testClass = std::make_shared<RecipeBuild::UnitTests::BuildTaskTests>();
 	TestState state = { 0, 0 };
 	state += SoupTest::RunTest(className, "Initialze_Success", [&testClass]() { testClass->Initialze_Success(); });
-	state += SoupTest::RunTest(className, "Initialze_NullCompilerThrows", [&testClass]() { testClass->Initialze_NullCompilerThrows(); });
+	// state += SoupTest::RunTest(className, "Build_UnknownCompilerFails", [&testClass]() { testClass->Build_UnknownCompilerFails(); });
 	state += SoupTest::RunTest(className, "Build_Executable", [&testClass]() { testClass->Build_Executable(); });
 	state += SoupTest::RunTest(className, "Build_Executable_OptimizeSpeed", [&testClass]() { testClass->Build_Executable_OptimizeSpeed(); });
 	state += SoupTest::RunTest(className, "Build_Executable_OptimizeSize", [&testClass]() { testClass->Build_Executable_OptimizeSize(); });

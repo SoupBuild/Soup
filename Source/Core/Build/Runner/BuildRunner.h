@@ -4,7 +4,7 @@
 
 #pragma once
 #include "Build/Runner/BuildHistory.h"
-#include "Build/System/BuildGraph.h"
+#include "Build/System/BuildGraphNode.h"
 
 namespace Soup::Build
 {
@@ -25,7 +25,7 @@ namespace Soup::Build
 		{
 		}
 
-		void Execute(const std::vector<std::shared_ptr<BuildGraphNode>>& nodes, bool forceBuild)
+		void Execute(const std::vector<Memory::Reference<BuildGraphNode>>& nodes, bool forceBuild)
 		{
 			// Load the previous build state if performing an incremental build
 			if (!forceBuild)
@@ -59,7 +59,7 @@ namespace Soup::Build
 		/// Build dependencies
 		/// </summary>
 		void BuildDependencies(
-			const std::vector<std::shared_ptr<BuildGraphNode>>& nodes,
+			const std::vector<Memory::Reference<BuildGraphNode>>& nodes,
 			const std::set<int>& parentSet)
 		{
 			for (auto& node : nodes)
@@ -92,7 +92,7 @@ namespace Soup::Build
 		/// Execute the collection of build nodes
 		/// </summary>
 		void CheckExecuteNodes(
-			const std::vector<std::shared_ptr<BuildGraphNode>>& nodes,
+			const std::vector<Memory::Reference<BuildGraphNode>>& nodes,
 			bool forceBuild)
 		{
 			for (auto& node : nodes)
@@ -129,22 +129,23 @@ namespace Soup::Build
 			if (!forceBuild)
 			{
 				// Check if each source file is out of date and requires a rebuild
-				Log::Info("Check for updated source");
+				Log::Diag("Check for updated source");
 				
 				// Try to build up the closure of include dependencies
-				const auto& sourceFiles = node.GetInputFiles();
-				const auto& outputFiles = node.GetOutputFiles();
-				if (!sourceFiles.empty())
+				const auto& inputFiles = node.GetInputFiles();
+				if (!inputFiles.empty())
 				{
+					auto inputClosure = std::vector<Path>();
+
 					// TODO: Is this how we want to handle no input nodes?
 					// If there are source files to the node check their build state
-					auto inputClosure = sourceFiles;
-					for (auto& inputFile : sourceFiles)
+					for (auto& inputFile : inputFiles)
 					{
 						// Build the input closure for all source files
-						if (inputFile.GetFileExtension() == ".cpp")
+						auto inputFilePath = Path(inputFile);
+						if (inputFilePath.GetFileExtension() == ".cpp")
 						{
-							if (!_buildHistory.TryBuildIncludeClosure(inputFile, inputClosure))
+							if (!_buildHistory.TryBuildIncludeClosure(inputFilePath, inputClosure))
 							{
 								// Could not determine the set of input files, not enough info to perform incremental build
 								buildRequired = true;
@@ -157,13 +158,18 @@ namespace Soup::Build
 					if (!buildRequired)
 					{
 						// Include the source files itself
-						inputClosure.insert(inputClosure.end(), sourceFiles.begin(), sourceFiles.end());
+						inputClosure.insert(inputClosure.end(), inputFiles.begin(), inputFiles.end());
+
+						// Load the output files
+						auto outputFiles = std::vector<Path>();
+						for (auto& file : node.GetOutputFiles())
+							outputFiles.push_back(Path(file));
 
 						// Check if any of the input files have changed since last build
 						if (_stateChecker.IsOutdated(
 							outputFiles,
 							inputClosure,
-							node.GetWorkingDirectory()))
+							Path(node.GetWorkingDirectory())))
 						{
 							// The file or a dependency has changed
 							buildRequired = true;
@@ -179,12 +185,25 @@ namespace Soup::Build
 			if (buildRequired)
 			{
 				Log::HighPriority(node.GetTitle());
-				auto message = "Execute: " + node.GetProgram().ToString() + " " + node.GetArguments();
+				auto program = Path(node.GetProgram());
+				auto message = "Execute: " + program.ToString() + " " + node.GetArguments();
 				Log::Diag(message);
 				auto result = System::IProcessManager::Current().Execute(
-					node.GetProgram(),
+					program,
 					node.GetArguments(),
-					node.GetWorkingDirectory());
+					Path(node.GetWorkingDirectory()));
+
+				// Try parse includes if available
+				auto cleanOutput = std::stringstream();
+				auto headerIncludes = std::vector<HeaderInclude>();
+				if (TryParsesHeaderIncludes(node, result.StdOut, headerIncludes, cleanOutput))
+				{
+					// Save off the build history for future builds
+					_buildHistory.UpdateIncludeTree(headerIncludes);
+
+					// Replace the output string with the clean version
+					result.StdOut = cleanOutput.str();
+				}
 
 				if (!result.StdOut.empty())
 				{
@@ -206,11 +225,10 @@ namespace Soup::Build
 				{
 					throw std::runtime_error("Compiler Object Error: " + std::to_string(result.ExitCode));
 				}
-
-				// Save the build state
-				auto cleanOutput = std::stringstream();
-				auto headerIncludes = ParsesHeaderIncludes(node, result.StdOut, cleanOutput);
-				_buildHistory.UpdateIncludeTree(headerIncludes);
+			}
+			else
+			{
+				Log::Info(node.GetTitle());
 			}
 
 			// Recursively build all of the node chilren
@@ -218,29 +236,35 @@ namespace Soup::Build
 			CheckExecuteNodes(node.GetChildren(), buildRequired);
 		}
 
-		std::vector<HeaderInclude> ParsesHeaderIncludes(
+		bool TryParsesHeaderIncludes(
 			const BuildGraphNode& node,
 			const std::string& output,
+			std::vector<HeaderInclude>& headerIncludes,
 			std::stringstream& cleanOutput)
 		{
 			// Check for any cpp input files
+			auto program = Path(node.GetProgram());
 			for (auto& inputFile : node.GetInputFiles())
 			{
-				if (inputFile.GetFileExtension() == ".cpp")
+				auto inputFilePath = Path(inputFile);
+				if (inputFilePath.GetFileExtension() == ".cpp")
 				{
 					// Parse known compiler output
-					if (node.GetProgram().GetFileName() == "cl.exe")
+					if (program.GetFileName() == "cl.exe")
 					{
-						return ParseMSVCIncludes(inputFile, output, cleanOutput);
+						headerIncludes = ParseMSVCIncludes(inputFilePath, output, cleanOutput);
+						return true;
 					}
-					else if (node.GetProgram().GetFileName() == "clang++.exe")
+					else if (program.GetFileName() == "clang++.exe")
 					{
-						return ParseMSVCIncludes(inputFile, output, cleanOutput);
+						headerIncludes = ParseMSVCIncludes(inputFilePath, output, cleanOutput);
+						return true;
 					}
 				}
 			}
 
-			return std::vector<HeaderInclude>();
+			headerIncludes = std::vector<HeaderInclude>();
+			return false;
 		}
 
 		std::vector<HeaderInclude> ParseClangIncludes(
@@ -413,7 +437,7 @@ namespace Soup::Build
 
 	private:
 		Path _workingDirectory;
-		std::map<int, int> _dependencyCounts;
+		std::map<int64_t, int64_t> _dependencyCounts;
 		BuildHistory _buildHistory;
 		BuildHistoryChecker _stateChecker;
 	};

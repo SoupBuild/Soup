@@ -227,16 +227,15 @@ namespace Soup::Compiler::MSVC
 					// Create a dynamic library
 					AddFlag(commandArgs, Linker_ArgumentFlag_DLL);
 
-					// Todo: this does not seem like the correct location for this
-					auto implemenationLibraryfile = args.TargetFile;
-					implemenationLibraryfile.SetFileExtension("lib");
+					// Set the output implementation library
 					AddParameterWithQuotes(
 						commandArgs,
 						Linker_ArgumentParameter_ImplementationLibrary,
-						implemenationLibraryfile.ToString());
+						args.ImplementationFile.ToString());
 
 					// Add the library as an output
-					outputFiles.push_back(implemenationLibraryfile);
+					// TODO: This breaks incremental builds (Link.exe doesn't always touch this)
+					// outputFiles.push_back(implemenationLibraryfile);
 
 					break;
 				}

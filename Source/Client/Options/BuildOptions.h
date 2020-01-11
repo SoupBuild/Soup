@@ -31,5 +31,11 @@ namespace Soup::Client
 		/// </summary>
 		[[Args::Option('f', "flavor", Default = false, HelpText = "Flavor.")]]
 		std::string Flavor;
+
+		/// <summary>
+		/// Gets or sets a value indicating what target platform
+		/// </summary>
+		[[Args::Option('p', "platform", Default = false, HelpText = "Platform.")]]
+		std::string Platform;
 	};
 }
