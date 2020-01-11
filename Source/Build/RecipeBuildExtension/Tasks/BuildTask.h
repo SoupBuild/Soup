@@ -40,6 +40,11 @@ namespace RecipeBuild
 			{
 				return Execute(Soup::Build::BuildStateWrapper(buildState));
 			}
+			catch (const std::exception& ex)
+			{
+				Log::Error(ex.what());
+				return -3;
+			}
 			catch(...)
 			{
 				// Unknown error
@@ -128,7 +133,7 @@ namespace RecipeBuild
 			}
 
 			// Initialize the compiler to use
-			auto compilerName = std::string(activeState.GetPropertyStringValue("Compiler"));
+			auto compilerName = std::string(activeState.GetPropertyStringValue("CompilerName"));
 			auto findCompilerFactory = _compilerFactory.find(compilerName);
 			if (findCompilerFactory == _compilerFactory.end())
 			{

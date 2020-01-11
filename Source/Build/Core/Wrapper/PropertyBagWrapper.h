@@ -41,9 +41,9 @@ namespace Soup::Build
 			IPropertyValue* result = nullptr;
 			auto status = _value.TryGetPropertyValue(name.data(), result);
 			if (status != 0)
-				throw std::runtime_error("TryGetPropertyValue Failed");
+				throw std::runtime_error("TryGetPropertyValue(\"" + std::string(name) + "\") Failed");
 			if (result == nullptr)
-				throw std::runtime_error("TryGetPropertyValue has no value.");
+				throw std::runtime_error("TryGetPropertyValue(\"" + std::string(name) + "\") has no value.");
 
 			return PropertyValueWrapper(*result);
 		}
