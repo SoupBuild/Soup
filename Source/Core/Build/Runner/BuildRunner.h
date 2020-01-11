@@ -437,7 +437,7 @@ namespace Soup::Build
 
 	private:
 		Path _workingDirectory;
-		std::map<int, int> _dependencyCounts;
+		std::map<int64_t, int64_t> _dependencyCounts;
 		BuildHistory _buildHistory;
 		BuildHistoryChecker _stateChecker;
 	};
