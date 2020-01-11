@@ -179,14 +179,30 @@ namespace Soup::Build
 		/// </summary>
 		void SetPropertyStringList(std::string_view name, const std::vector<std::string>& values)
 		{
-			auto property = CreatePropertyStringList(name);
-			property.SetAll(values);
+			if (HasPropertyStringList(name))
+			{
+				auto property = GetPropertyStringList(name);
+				return property.Append(values);
+			}
+			else
+			{
+				auto property = CreatePropertyStringList(name);
+				property.SetAll(values);
+			}
 		}
 
 		void SetPropertyStringList(std::string_view name, const std::vector<Path>& values)
 		{
-			auto property = CreatePropertyStringList(name);
-			property.SetAll(values);
+			if (HasPropertyStringList(name))
+			{
+				auto property = GetPropertyStringList(name);
+				property.Append(values);
+			}
+			else
+			{
+				auto property = CreatePropertyStringList(name);
+				property.SetAll(values);
+			}
 		}
 
 		void AppendPropertyStringList(std::string_view name, const std::vector<std::string>& values)
@@ -194,7 +210,7 @@ namespace Soup::Build
 			if (HasPropertyStringList(name))
 			{
 				auto property = GetPropertyStringList(name);
-				return property.Append(values);
+				property.Append(values);
 			}
 			else
 			{

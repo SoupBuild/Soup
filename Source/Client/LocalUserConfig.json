@@ -1,16 +1,5 @@
 {
     "runtimeCompiler": "MSVC",
-    "clang": "C:/Clang/bin/",
-    "windowsSDKLibraries": [
-        "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.18362.0/ucrt/x64/",
-        "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.18362.0/um/x64/",
-        "C:/Program Files (x86)/Microsoft Visual Studio/2019/Preview/VC/Tools/MSVC/14.24.28314/atlmfc/lib/x64/",
-        "C:/Program Files (x86)/Microsoft Visual Studio/2019/Preview/VC/Tools/MSVC/14.24.28314/lib/x64/"
-    ],
-    "windowsSDKIncludes": [
-        "C:/Program Files (x86)/Microsoft Visual Studio/2019/Preview/VC/Tools/MSVC/14.24.28314/include/",
-        "C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/ucrt/",
-        "C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/um/",
-        "C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/shared/"
-    ]
+    "windowsSDKLibraries": [],
+    "windowsSDKIncludes": []
 }

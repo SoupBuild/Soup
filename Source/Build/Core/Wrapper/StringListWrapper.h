@@ -114,6 +114,17 @@ namespace Soup::Build
 			}
 		}
 
+		void Append(const std::vector<Path>& values)
+		{
+			auto currentSize = static_cast<size_t>(GetSize());
+			auto finalSize = currentSize + values.size();
+			Resize(static_cast<uint64_t>(finalSize));
+			for (size_t i = currentSize; i < finalSize; i++)
+			{
+				SetValueAt(i, values[i - currentSize].ToString());
+			}
+		}
+
 	private:
 		IList<const char*>& _value;
 	};

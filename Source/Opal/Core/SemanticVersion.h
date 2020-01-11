@@ -123,6 +123,22 @@ namespace Opal
 		}
 
 		/// <summary>
+		/// Comparison operator
+		/// </summary>
+		bool operator <(const SemanticVersion& rhs) const
+		{
+			return _major < rhs. _major ||
+				_minor < rhs. _minor ||
+				_patch < rhs. _patch;
+		}
+		bool operator >(const SemanticVersion& rhs) const
+		{
+			return _major > rhs. _major ||
+				_minor > rhs. _minor ||
+				_patch > rhs. _patch;
+		}
+
+		/// <summary>
 		/// Convert to string
 		/// </summary>
 		std::string ToString() const

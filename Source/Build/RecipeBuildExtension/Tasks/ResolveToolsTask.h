@@ -51,34 +51,56 @@ namespace RecipeBuild
 		Soup::Build::OperationResult Execute(
 			Soup::Build::BuildStateWrapper& buildState)
 		{
-			try
-			{
-				auto state = buildState.GetActiveState();
+			auto state = buildState.GetActiveState();
 
-				// Find the location of the Windows SDK
-				auto visualStudioInstallRoot = FindVSInstallRoot(buildState);
-				buildState.LogInfo("Using VS Installation: " + visualStudioInstallRoot.ToString());
+			// Find the location of the Windows SDK
+			auto visualStudioInstallRoot = FindVSInstallRoot(buildState);
+			buildState.LogInfo("Using VS Installation: " + visualStudioInstallRoot.ToString());
 
-				// Use the default version
-				auto visualCompilerVersion = FindDefaultVCToolsVersion(buildState, visualStudioInstallRoot);
-				buildState.LogInfo("Using VC Version: " + visualCompilerVersion);
+			// Use the default version
+			auto visualCompilerVersion = FindDefaultVCToolsVersion(buildState, visualStudioInstallRoot);
+			buildState.LogInfo("Using VC Version: " + visualCompilerVersion);
 
-				// Calculate the final VC tools folder
-				auto visualCompilerVersionFolder =
-					visualStudioInstallRoot + Path("/VC/Tools/MSVC/") + Path(visualCompilerVersion);
+			// Calculate the final VC tools folder
+			auto visualCompilerVersionFolder =
+				visualStudioInstallRoot + Path("/VC/Tools/MSVC/") + Path(visualCompilerVersion);
 
-				// Save the build properties
-				state.SetPropertyStringValue("MSVS.InstallRoot", visualStudioInstallRoot.ToString());
-				state.SetPropertyStringValue("MSVC.Version", visualCompilerVersion);
-				state.SetPropertyStringValue("MSVC.VCToolsRoot", visualCompilerVersionFolder.ToString());
+			// Save the build properties
+			state.SetPropertyStringValue("MSVS.InstallRoot", visualStudioInstallRoot.ToString());
+			state.SetPropertyStringValue("MSVC.Version", visualCompilerVersion);
+			state.SetPropertyStringValue("MSVC.VCToolsRoot", visualCompilerVersionFolder.ToString());
 
-				return 0;
-			}
-			catch(...)
-			{
-				// Unknown error
-				return -1;
-			}
+			// Calculate the windows kits directory
+			auto windows10KitPath = Path("C:/Program Files (x86)/Windows Kits/10/");
+			auto windows10KitIncludePath = windows10KitPath + Path("/include/");
+			auto windows10KitLibPath = windows10KitPath + Path("/Lib/");
+
+			auto windowsKitVersion = FindNewestWindows10KitVersion(buildState, windows10KitIncludePath);
+
+			buildState.LogInfo("Using Windows Kit Version: " + windowsKitVersion);
+			auto windows10KitVersionIncludePath = windows10KitIncludePath + Path(windowsKitVersion);
+			auto windows10KitVersionLibPath = windows10KitLibPath + Path(windowsKitVersion);
+
+			// Set the include paths
+			auto platformIncludePaths = std::vector<Path>({
+				visualCompilerVersionFolder + Path("/include/"),
+				windows10KitVersionIncludePath + Path("/ucrt/"),
+				windows10KitVersionIncludePath + Path("/um/"),
+				windows10KitVersionIncludePath + Path("/shared/"),
+			});
+
+			// Set the include paths
+			auto platformLibraryPaths = std::vector<Path>({
+				windows10KitVersionLibPath + Path("/ucrt/x64/"),
+				windows10KitVersionLibPath + Path("/um/x64/"),
+				visualCompilerVersionFolder + Path("/atlmfc/lib/x64/"),
+				visualCompilerVersionFolder + Path("/lib/x64/"),
+			});
+
+			state.SetPropertyStringList("PlatformIncludePaths", platformIncludePaths);
+			state.SetPropertyStringList("PlatformLibraryPaths", platformLibraryPaths);
+
+			return 0;
 		}
 
 	private:
@@ -153,6 +175,30 @@ namespace RecipeBuild
 				throw std::runtime_error("Failed to parse version from file.");
 			}
 
+			return version;
+		}
+
+		std::string FindNewestWindows10KitVersion(
+			Soup::Build::BuildStateWrapper& buildState,
+			const Path& windows10KitIncludePath)
+		{
+			// Check the default tools version
+			auto currentVersion = SemanticVersion(0, 0, 0);
+			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(windows10KitIncludePath))
+			{
+				auto name = child.GetFileName();
+				auto platformVersion = name.substr(0, 3);
+				if (platformVersion != "10.")
+					throw std::runtime_error("Unexpected Kit Version: " + name);
+
+				// Parse the version string
+				auto version = SemanticVersion::Parse(name.substr(3));
+				if (version > currentVersion)
+					currentVersion = version;
+			}
+
+			// The first line is the version
+			auto version = "10." + currentVersion.ToString();
 			return version;
 		}
 

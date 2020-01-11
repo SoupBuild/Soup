@@ -192,6 +192,20 @@ namespace Opal::System
 			_requests.push_back(message.str());
 		}
 
+
+		/// <summary>
+		/// Get the children of a directory
+		/// </summary>
+		std::vector<Path> GetDirectoryChildren(const Path& path) override final
+		{
+			std::stringstream message;
+			message << "GetDirectoryChildren: " << path.ToString();
+			_requests.push_back(message.str());
+
+			auto result = std::vector<Path>();
+			return result;
+		}
+
 	private:
 		std::vector<std::string> _requests;
 		std::map<Path, MockFileState> _files;

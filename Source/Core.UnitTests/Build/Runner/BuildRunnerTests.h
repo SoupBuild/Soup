@@ -542,6 +542,7 @@ namespace Soup::Build::UnitTests
 					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434993120]",
 					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
 					"INFO: Up to date",
+					"INFO: TestCommand: 1",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: .soup",
 					"HIGH: Done",

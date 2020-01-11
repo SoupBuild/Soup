@@ -96,5 +96,19 @@ namespace Opal::System
 		{
 			std::filesystem::create_directories(path.ToString());
 		}
+
+		/// <summary>
+		/// Get the children of a directory
+		/// </summary>
+		std::vector<Path> GetDirectoryChildren(const Path& path) override final
+		{
+			auto result = std::vector<Path>();
+			for(auto& child : std::filesystem::directory_iterator(path.ToString()))
+			{
+				result.push_back(Path(child.path().string()));
+			}
+
+			return result;
+		}
 	};
 }

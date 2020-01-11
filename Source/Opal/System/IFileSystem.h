@@ -68,6 +68,11 @@ namespace Opal::System
 		/// </summary>
 		virtual void CreateDirectory2(const Path& path) = 0;
 
+		/// <summary>
+		/// Get the children of a directory
+		/// </summary>
+		virtual std::vector<Path> GetDirectoryChildren(const Path& path) = 0;
+
 	private:
 		static std::shared_ptr<IFileSystem> _current;
 	};
