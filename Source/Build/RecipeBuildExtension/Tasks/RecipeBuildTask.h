@@ -26,13 +26,15 @@ namespace RecipeBuild
 		Soup::Build::OperationResult Execute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
+			auto buildStateWrapper = Soup::Build::BuildStateWrapper(buildState);
+
 			try
 			{
-				return Execute(Soup::Build::BuildStateWrapper(buildState));
+				return Execute(buildStateWrapper);
 			}
 			catch (const std::exception& ex)
 			{
-				Log::Error(ex.what());
+				buildStateWrapper.LogError(ex.what());
 				return -3;
 			}
 			catch(...)
@@ -66,7 +68,7 @@ namespace RecipeBuild
 			Soup::Recipe recipe = {};
 			if (!Soup::RecipeExtensions::TryLoadFromFile(packageRecipePath, recipe))
 			{
-				Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+				buildState.LogError("Failed to load the dependency package: " + packageRecipePath.ToString());
 				return -2;
 			}
 
@@ -161,7 +163,7 @@ namespace RecipeBuild
 			}
 			else
 			{
-				Log::Error("Unknown build flavor type.");
+				buildState.LogError("Unknown build flavor type.");
 				throw std::runtime_error("Unknown build flavors type.");
 			}
 

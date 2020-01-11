@@ -36,13 +36,15 @@ namespace RecipeBuild
 		Soup::Build::OperationResult Execute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
+			auto buildStateWrapper = Soup::Build::BuildStateWrapper(buildState);
+
 			try
 			{
-				return Execute(Soup::Build::BuildStateWrapper(buildState));
+				return Execute(buildStateWrapper);
 			}
 			catch (const std::exception& ex)
 			{
-				Log::Error(ex.what());
+				buildStateWrapper.LogError(ex.what());
 				return -3;
 			}
 			catch(...)
@@ -98,19 +100,6 @@ namespace RecipeBuild
 			else
 				arguments.GenerateSourceDebugInfo = false;
 
-			// Log the incoming request for verbose logs
-			Log::Diag("TargetName = " + arguments.TargetName);
-			Log::Diag("TargetType = " + ToString(arguments.TargetType));
-			Log::Diag("LanguageStandard = " + ToString(arguments.LanguageStandard));
-			Log::Diag("WorkingDirectory = " + arguments.WorkingDirectory.ToString());
-			Log::Diag("ObjectDirectory = " + arguments.ObjectDirectory.ToString());
-			Log::Diag("BinaryDirectory = " + arguments.BinaryDirectory.ToString());
-			Log::Diag("ModuleInterfaceSourceFile = " + arguments.ModuleInterfaceSourceFile.ToString());
-			Log::Diag("OptimizationLevel = " + ToString(arguments.OptimizationLevel));
-			Log::Diag("GenerateSourceDebugInfo = " + Soup::ToString(arguments.GenerateSourceDebugInfo));
-			Log::Diag("IncludeDirectories = " + Soup::ToString(arguments.IncludeDirectories));
-			Log::Diag("PreprocessorDefinitions = " + Soup::ToString(arguments.PreprocessorDefinitions));
-
 			// Load the runtime dependencies
 			auto runtimeDependencies = std::vector<Path>();
 			if (activeState.HasPropertyStringList("RuntimeDependencies"))
@@ -137,7 +126,7 @@ namespace RecipeBuild
 			auto findCompilerFactory = _compilerFactory.find(compilerName);
 			if (findCompilerFactory == _compilerFactory.end())
 			{
-				Log::Error("Unknown compiler: " + compilerName);
+				buildState.LogError("Unknown compiler: " + compilerName);
 				return -2;
 			}
 
@@ -175,8 +164,7 @@ namespace RecipeBuild
 			parentState.SetPropertyStringList("RuntimeDependencies", runtimeDependencies);
 			parentState.SetPropertyStringList("LinkDependencies", linkDependencies);
 
-
-			Log::Info("Build Generate Done");
+			buildState.LogInfo("Build Generate Done");
 			return 0;
 		}
 
@@ -303,7 +291,7 @@ namespace RecipeBuild
 			Path& moduleInterfaceFile,
 			const BuildArguments& arguments)
 		{
-			Log::Info("CompileModuleInterfaceUnit");
+			buildState.LogInfo("CompileModuleInterfaceUnit");
 
 			// Build up the target object file name
 			auto targetFile = arguments.ObjectDirectory + Path(arguments.ModuleInterfaceSourceFile.GetFileName());
@@ -325,7 +313,7 @@ namespace RecipeBuild
 
 			// Compile the individual translation unit
 			const auto& file = arguments.ModuleInterfaceSourceFile;
-			Log::Info("Generate Compile Node: " + file.ToString());
+			buildState.LogInfo("Generate Compile Node: " + file.ToString());
 			compileArguments.SourceFile = file;
 
 			auto compileNode = compiler.CreateCompileNode(buildState, compileArguments);
@@ -347,7 +335,7 @@ namespace RecipeBuild
 			const BuildArguments& arguments)
 		{
 			// Check if we can skip the whole dang thing
-			Log::Info("Compiling source files");
+			buildState.LogInfo("Compiling source files");
 
 			// Setup the shared properties
 			auto compileArguments = Soup::CompileArguments();
@@ -366,7 +354,7 @@ namespace RecipeBuild
 			auto buildNodes = std::vector<Soup::Build::GraphNodeWrapper>();
 			for (auto& file : arguments.SourceFiles)
 			{
-				Log::Info("Generate Compile Node: " + file.ToString());
+				buildState.LogInfo("Generate Compile Node: " + file.ToString());
 				compileArguments.SourceFile = file;
 				compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
 				compileArguments.TargetFile.SetFileExtension(compiler.GetObjectFileExtension());
@@ -389,7 +377,7 @@ namespace RecipeBuild
 			std::vector<Path>& linkDependencies,
 			const BuildArguments& arguments)
 		{
-			Log::Info("CoreLink");
+			buildState.LogInfo("CoreLink");
 
 			Path targetFile;
 			Path implementationFile;
@@ -417,7 +405,7 @@ namespace RecipeBuild
 					throw std::runtime_error("Unknown build target type.");
 			}
 
-			Log::Info("Linking target");
+			buildState.LogInfo("Linking target");
 
 			auto linkArguments = Soup::LinkArguments();
 
@@ -492,7 +480,7 @@ namespace RecipeBuild
 			linkArguments.ObjectFiles = std::move(objectFiles);
 
 			// Perform the link
-			Log::Info("Generate Link Node: " + linkArguments.TargetFile.ToString());
+			buildState.LogInfo("Generate Link Node: " + linkArguments.TargetFile.ToString());
 			auto linkNode = compiler.CreateLinkNode(buildState, linkArguments);
 
 			return linkNode;

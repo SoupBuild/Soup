@@ -8,6 +8,15 @@
 
 namespace Soup::Build
 {
+	export enum class TraceLevel : uint64_t
+	{
+		Diagnostic = 1,
+		Information = 2,
+		HighPriority = 3,
+		Warning = 4,
+		Error = 5,
+	};
+
 	/// <summary>
 	/// Build State Extension interface that is the core object granting
 	/// build extensions access to the shared build state.
@@ -32,5 +41,10 @@ namespace Soup::Build
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
 		virtual IPropertyBag& GetParentState() noexcept = 0;
+
+		/// <summary>
+		/// Log a message to the build system
+		/// </summary>
+		virtual OperationResult TryLogTrace(TraceLevel level, const char* message) noexcept = 0;
 	};
 }

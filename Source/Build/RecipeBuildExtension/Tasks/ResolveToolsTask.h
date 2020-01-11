@@ -26,17 +26,42 @@ namespace RecipeBuild
 		Soup::Build::OperationResult Execute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
+			auto buildStateWrapper = Soup::Build::BuildStateWrapper(buildState);
+
 			try
 			{
-				auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
+				return Execute(buildStateWrapper);
+			}
+			catch (const std::exception& ex)
+			{
+				buildStateWrapper.LogError(ex.what());
+				return -3;
+			}
+			catch(...)
+			{
+				// Unknown error
+				return -1;
+			}
+		}
+
+	private:
+		/// <summary>
+		/// The Core Execute task
+		/// </summary>
+		Soup::Build::OperationResult Execute(
+			Soup::Build::BuildStateWrapper& buildState)
+		{
+			try
+			{
+				auto state = buildState.GetActiveState();
 
 				// Find the location of the Windows SDK
-				auto visualStudioInstallRoot = FindVSInstallRoot();
-				Log::Info("Using VS Installation: " + visualStudioInstallRoot.ToString());
+				auto visualStudioInstallRoot = FindVSInstallRoot(buildState);
+				buildState.LogInfo("Using VS Installation: " + visualStudioInstallRoot.ToString());
 
 				// Use the default version
-				auto visualCompilerVersion = FindDefaultVCToolsVersion(visualStudioInstallRoot);
-				Log::Info("Using VC Version: " + visualCompilerVersion);
+				auto visualCompilerVersion = FindDefaultVCToolsVersion(buildState, visualStudioInstallRoot);
+				buildState.LogInfo("Using VC Version: " + visualCompilerVersion);
 
 				// Calculate the final VC tools folder
 				auto visualCompilerVersionFolder =
@@ -57,7 +82,7 @@ namespace RecipeBuild
 		}
 
 	private:
-		Path FindVSInstallRoot()
+		Path FindVSInstallRoot(Soup::Build::BuildStateWrapper& buildState)
 		{
 			// Find a copy of visual studio that has the required VisualCompiler
 			auto executablePath = Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
@@ -80,14 +105,14 @@ namespace RecipeBuild
 
 			if (!result.StdErr.empty())
 			{
-				Log::Error(result.StdErr);
+				buildState.LogError(result.StdErr);
 				throw std::runtime_error("VSWhere failed.");
 			}
 
 			if (result.ExitCode != 0)
 			{
 				// TODO: Return error code
-				Log::HighPriority("FAILED");
+				buildState.LogError("FAILED");
 				throw std::runtime_error("VSWhere failed.");
 			}
 
@@ -97,21 +122,23 @@ namespace RecipeBuild
 			auto path = std::string();
 			if (!std::getline(stream, path, '\r'))
 			{
-				Log::Error("Failed to parse vswhere output.");
+				buildState.LogError("Failed to parse vswhere output.");
 				throw std::runtime_error("Failed to parse vswhere output.");
 			}
 
 			return Path(path);
 		}
 
-		std::string FindDefaultVCToolsVersion(const Path& visualStudioInstallRoot)
+		std::string FindDefaultVCToolsVersion(
+			Soup::Build::BuildStateWrapper& buildState,
+			const Path& visualStudioInstallRoot)
 		{
 			// Check the default tools version
 			auto visualCompilerToolsDefaultVersionFile =
 				visualStudioInstallRoot + Path("VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
 			if (!System::IFileSystem::Current().Exists(visualCompilerToolsDefaultVersionFile))
 			{
-				Log::Error("VisualCompilerToolsDefaultVersionFile file does not exist: " + visualCompilerToolsDefaultVersionFile.ToString());
+				buildState.LogError("VisualCompilerToolsDefaultVersionFile file does not exist: " + visualCompilerToolsDefaultVersionFile.ToString());
 				throw std::runtime_error("VisualCompilerToolsDefaultVersionFile file does not exist.");
 			}
 
@@ -122,7 +149,7 @@ namespace RecipeBuild
 			auto version = std::string();
 			if (!std::getline(*stream, version, '\n'))
 			{
-				Log::Error("Failed to parse version from file.");
+				buildState.LogError("Failed to parse version from file.");
 				throw std::runtime_error("Failed to parse version from file.");
 			}
 

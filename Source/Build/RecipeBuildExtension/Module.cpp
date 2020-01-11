@@ -25,7 +25,6 @@ import SoupCompilerClang;
 import SoupCompilerMSVC;
 
 using namespace Opal;
-using Soup::Log;
 
 #include "Tasks/BuildTask.h"
 #include "Tasks/RecipeBuildTask.h"

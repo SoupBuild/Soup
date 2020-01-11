@@ -44,14 +44,6 @@ extern "C"
 		auto filter = std::make_shared<Soup::EventTypeFilter>(
 				static_cast<Soup::TraceEventFlag>(defaultTypes));
 
-		// Setup the console listener
-		Log::RegisterListener(
-			std::make_shared<Soup::ConsoleTraceListener>(
-				"Log",
-				filter,
-				false,
-				false));
-
 		// Setup the real services
 		System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
 		System::IProcessManager::Register(std::make_shared<System::PlatformProcessManager>());

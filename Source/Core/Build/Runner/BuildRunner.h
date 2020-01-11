@@ -226,6 +226,10 @@ namespace Soup::Build
 					throw std::runtime_error("Compiler Object Error: " + std::to_string(result.ExitCode));
 				}
 			}
+			else
+			{
+				Log::Info(node.GetTitle());
+			}
 
 			// Recursively build all of the node chilren
 			// Note: Force build if this node was built

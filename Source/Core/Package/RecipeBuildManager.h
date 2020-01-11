@@ -334,7 +334,7 @@ namespace Soup
 				}
 				else
 				{
-					Log::Info("Build Extension Done: " + std::to_string(result));
+					Log::Info("Build Extension Done");
 				}
 
 				// Keep the library open to ensure the registered tasks are not lost

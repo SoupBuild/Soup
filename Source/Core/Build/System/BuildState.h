@@ -57,7 +57,7 @@ namespace Soup::Build
 				return -1;
 			}
 		}
-		
+
 		/// <summary>
 		/// Get a reference to the active state
 		/// </summary>
@@ -73,6 +73,43 @@ namespace Soup::Build
 		IPropertyBag& GetParentState() noexcept override final
 		{
 			return _parentState;
+		}
+
+		/// <summary>
+		/// Log a message to the build system
+		/// </summary>
+		OperationResult TryLogTrace(TraceLevel level, const char* message) noexcept override final
+		{
+			try
+			{
+				switch (level)
+				{
+				case TraceLevel::Diagnostic:
+					Log::Diag(message);
+					break;
+				case TraceLevel::Information:
+					Log::Info(message);
+					break;
+				case TraceLevel::HighPriority:
+					Log::HighPriority(message);
+					break;
+				case TraceLevel::Warning:
+					Log::Warning(message);
+					break;
+				case TraceLevel::Error:
+					Log::Error(message);
+					break;
+				default:
+					return -2;
+				}
+
+				return 0;
+			}
+			catch (...)
+			{
+				// Unknown error
+				return -1;
+			}
 		}
 
 		/// <summary>

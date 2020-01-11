@@ -84,6 +84,44 @@ namespace Soup::Build
 			return PropertyBagWrapper(_value.GetParentState());
 		}
 
+		/// <summary>
+		/// Log a message to the build system
+		/// </summary>
+		void LogDiagnostic(std::string_view message)
+		{
+			auto status = _value.TryLogTrace(TraceLevel::Diagnostic, message.data());
+			if (status != 0)
+				throw std::runtime_error("TryLogTrace Failed");
+		}
+
+		void LogInfo(std::string_view message)
+		{
+			auto status = _value.TryLogTrace(TraceLevel::Information, message.data());
+			if (status != 0)
+				throw std::runtime_error("TryLogTrace Failed");
+		}
+
+		void LogHighPriority(std::string_view message)
+		{
+			auto status = _value.TryLogTrace(TraceLevel::HighPriority, message.data());
+			if (status != 0)
+				throw std::runtime_error("TryLogTrace Failed");
+		}
+
+		void LogWarning(std::string_view message)
+		{
+			auto status = _value.TryLogTrace(TraceLevel::Warning, message.data());
+			if (status != 0)
+				throw std::runtime_error("TryLogTrace Failed");
+		}
+
+		void LogError(std::string_view message)
+		{
+			auto status = _value.TryLogTrace(TraceLevel::Error, message.data());
+			if (status != 0)
+				throw std::runtime_error("TryLogTrace Failed");
+		}
+
 	private:
 		IBuildState& _value;
 	};
