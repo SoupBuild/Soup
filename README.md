@@ -1,5 +1,8 @@
 # Soup
 
+Jump right in:
+[Getting Started!](./Docs/GettingStarted.md)
+
 ## Overview
 Soup is a build authoring system that aims to be the core framework for the open source community to build and share components.
 

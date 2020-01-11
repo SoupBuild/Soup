@@ -28,7 +28,7 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Diag("InitializeCommand::Run");
-			Log::Info("The initialize utility will walk through the creation of the most basic Console recipe.\n");
+			Log::HighPriority("The initialize utility will walk through the creation of the most basic Console recipe.\n");
 
 			// Use the current directory as the default names
 			auto workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
@@ -36,9 +36,38 @@ namespace Soup::Client
 				workingDirectory +
 				Path(Constants::RecipeFileName);
 
-			auto recipe = Recipe(workingDirectory.GetFileName(), SemanticVersion(1, 0, 0));
+			auto recipe = Recipe(
+				workingDirectory.GetFileName(),
+				SemanticVersion(1, 0, 0));
 
-			Log::Info("Name: (" + recipe.GetName() + ")");
+			recipe.SetType(RecipeType::Executable);
+			recipe.SetSource(std::vector<std::string>({
+				"Main.cpp",
+			}));
+
+			UpdateDefaultValues(recipe);
+
+			// Save the state of the recipe if it has changed
+			RecipeExtensions::SaveToFile(recipePath, recipe);
+
+			// Save a simple main method
+			auto mainFileContent =
+R"(#include <iostream>
+int main()
+{
+	std::cout << "Hello World" << std::endl;
+	return 0;
+})";
+
+			auto mainFilePath = Path("Main.cpp");
+			auto mainFile = System::IFileSystem::Current().OpenWrite(mainFilePath);
+			*mainFile << mainFileContent;
+		}
+
+	private:
+		void UpdateDefaultValues(Recipe& recipe)
+		{
+			Log::HighPriority("Name: (" + recipe.GetName() + ")");
 			auto newName = std::string();
 			std::getline(std::cin, newName);
 			if (!newName.empty())
@@ -49,7 +78,7 @@ namespace Soup::Client
 			bool setVersion = false;
 			while (!setVersion)
 			{
-				Log::Info("Version: (" + recipe.GetVersion().ToString() + ")");
+				Log::HighPriority("Version: (" + recipe.GetVersion().ToString() + ")");
 				auto newVersion = std::string();
 				std::getline(std::cin, newVersion);
 				if (newVersion.empty())
@@ -71,9 +100,6 @@ namespace Soup::Client
 					}
 				}
 			}
-
-			// Save the state of the recipe if it has changed
-			RecipeExtensions::SaveToFile(recipePath, recipe);
 		}
 
 	private:
