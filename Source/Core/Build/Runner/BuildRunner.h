@@ -180,6 +180,22 @@ namespace Soup::Build
 						}
 					}
 				}
+				else
+				{
+					// Since there are no input files, the best we can do for an
+					// incremental build is check that the output exists
+					for (auto& file : node.GetOutputFiles())
+					{
+						auto filePath = Path(file);
+						auto relativeOutputFile = filePath.HasRoot() ? filePath : Path(node.GetWorkingDirectory()) + filePath;
+						if (!System::IFileSystem::Current().Exists(relativeOutputFile))
+						{
+							Log::Info("Output target does not exist: " + relativeOutputFile.ToString());
+							buildRequired = true;
+							break;
+						}
+					}
+				}
 			}
 
 			if (buildRequired)
