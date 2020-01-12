@@ -4,7 +4,10 @@ Note: The end goal is to have Soup running on all platforms building for any tar
 Note2: While clang will work, there is still work to auto-detect an installation so MSVC is the suggested target compiler.
 
 ## Requirements
-* [Visual Studio 2019 ](https://visualstudio.microsoft.com/downloads/) with "Desktop development with c++" workload
+* Build Tools
+    * [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/) with "Desktop development with c++" workload.
+    * OR
+    * [Build Tools For Visual Studio 2019](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) with "c++ build tools" workload.
 * [Latest Release](https://github.com/mwasplund/Soup/releases)
 
 ## Setup

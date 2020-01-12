@@ -58,7 +58,9 @@ namespace Soup::Build
 			auto program = Path("C:/Windows/System32/cmd.exe");
 			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({});
-			auto outputFiles = std::vector<Path>({});
+			auto outputFiles = std::vector<Path>({
+				directory,
+			});
 
 			// Build the arguments
 			std::stringstream arguments;
