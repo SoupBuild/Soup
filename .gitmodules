@@ -10,3 +10,6 @@
 [submodule "Dependencies/Json11"]
 	path = Dependencies/Json11
 	url = https://github.com/mwasplund/Json11.git
+[submodule "Dependencies/toml11"]
+	path = Dependencies/toml11
+	url = https://github.com/mwasplund/toml11.git
