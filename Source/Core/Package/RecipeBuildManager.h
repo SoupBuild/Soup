@@ -245,7 +245,7 @@ namespace Soup
 			{
 				// Create a new build system for the requested build
 				auto buildSystem = Build::BuildSystem();
-				auto activeState = Build::PropertyBagWrapper(state.GetActiveState());
+				auto activeState = Build::ValueTableWrapper(state.GetActiveState());
 
 				// Select the correct compiler to use
 				std::string activeCompiler = "";
@@ -261,14 +261,14 @@ namespace Soup
 				}
 
 				// Set the input properties
-				activeState.SetPropertyStringValue("PackageRoot", packageRoot.ToString());
-				activeState.SetPropertyBooleanValue("ForceRebuild", arguments.ForceRebuild); // TOOD: Remove?
-				activeState.SetPropertyStringValue("BuildFlavor", arguments.Flavor);
-				activeState.SetPropertyStringValue("CompilerName", activeCompiler);
-				activeState.SetPropertyStringList("PlatformLibraries", arguments.PlatformLibraries);
-				activeState.SetPropertyStringList("PlatformIncludePaths", arguments.PlatformIncludePaths);
-				activeState.SetPropertyStringList("PlatformLibraryPaths", arguments.PlatformLibraryPaths);
-				activeState.SetPropertyStringList("PlatformPreprocessorDefinitions", arguments.PlatformPreprocessorDefinitions);
+				activeState.EnsureValue("PackageRoot").SetValueString(packageRoot.ToString());
+				activeState.EnsureValue("ForceRebuild").SetValueBoolean(arguments.ForceRebuild); // TOOD: Remove?
+				activeState.EnsureValue("BuildFlavor").SetValueString(arguments.Flavor);
+				activeState.EnsureValue("CompilerName").SetValueString(activeCompiler);
+				activeState.EnsureValue("PlatformLibraries").SetValueStringList(arguments.PlatformLibraries);
+				activeState.EnsureValue("PlatformIncludePaths").SetValueStringList(arguments.PlatformIncludePaths);
+				activeState.EnsureValue("PlatformLibraryPaths").SetValueStringList(arguments.PlatformLibraryPaths);
+				activeState.EnsureValue("PlatformPreprocessorDefinitions").SetValueStringList(arguments.PlatformPreprocessorDefinitions);
 
 				// Run all build extensions
 				// Note: Keep the extension libraries open while running the build system
@@ -288,7 +288,7 @@ namespace Soup
 						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 							packagePath,
 							RecipeExtensions::GetBinaryDirectory(_systemCompiler, arguments.Flavor),
-							std::string(".dll"));
+							std::string("dll"));
 						
 						auto library = RunBuildExtension(libraryPath, buildSystem);
 						activeExtensionLibraries.push_back(std::move(library));

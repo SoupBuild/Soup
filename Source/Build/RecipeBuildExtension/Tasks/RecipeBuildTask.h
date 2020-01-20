@@ -54,14 +54,14 @@ namespace RecipeBuild
 			auto state = buildState.GetActiveState();
 
 			// Load the input properties
-			auto compilerName = std::string(state.GetPropertyStringValue("CompilerName"));
-			auto packageRoot = Path(state.GetPropertyStringValue("PackageRoot"));
-			auto forceRebuild = state.GetPropertyBooleanValue("ForceRebuild");
-			auto buildFlavor = std::string(state.GetPropertyStringValue("BuildFlavor"));
-			auto platformLibraries = state.CopyPropertyStringListAsPathVector("PlatformLibraries");
-			auto platformIncludePaths = state.CopyPropertyStringListAsPathVector("PlatformIncludePaths");
-			auto platformLibraryPaths = state.CopyPropertyStringListAsPathVector("PlatformLibraryPaths");
-			auto platformPreprocessorDefinitions = state.CopyPropertyStringListAsStringVector("PlatformPreprocessorDefinitions");
+			auto compilerName = std::string(state.GetValue("CompilerName").AsString().GetValue());
+			auto packageRoot = Path(state.GetValue("PackageRoot").AsString().GetValue());
+			auto forceRebuild = state.GetValue("ForceRebuild").AsBoolean().GetValue();
+			auto buildFlavor = std::string(state.GetValue("BuildFlavor").AsString().GetValue());
+			auto platformLibraries = state.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
+			auto platformIncludePaths = state.GetValue("PlatformIncludePaths").AsList().CopyAsPathVector();
+			auto platformLibraryPaths = state.GetValue("PlatformLibraryPaths").AsList().CopyAsPathVector();
+			auto platformPreprocessorDefinitions = state.GetValue("PlatformPreprocessorDefinitions").AsList().CopyAsStringVector();
 
 			// Load the input recipe
 			auto packageRecipePath = packageRoot + Path(Soup::Constants::RecipeFileName);
@@ -121,18 +121,18 @@ namespace RecipeBuild
 			auto binaryDirectory = Soup::RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
 			auto objectDirectory = Soup::RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
 
-			state.SetPropertyStringValue("TargetName", recipe.GetName());
-			state.SetPropertyStringValue("WorkingDirectory", packageRoot.ToString());
-			state.SetPropertyStringValue("ObjectDirectory", objectDirectory.ToString());
-			state.SetPropertyStringValue("BinaryDirectory", binaryDirectory.ToString());
-			state.SetPropertyStringValue("ModuleInterfaceSourceFile", "");
-			state.SetPropertyStringList("SourceFiles", recipe.GetSourceAsPath());
-			state.SetPropertyStringList("LinkLibraries", linkLibraries);
-			state.SetPropertyBooleanValue("IsIncremental", !forceRebuild);
-			state.SetPropertyBooleanValue("GenerateSourceDebugInfo", false);
-			state.SetPropertyStringList("PreprocessorDefinitions", preprocessorDefinitions);
-			state.SetPropertyStringList("IncludeDirectories", includePaths);
-			state.SetPropertyStringList("LibraryPaths", libraryPaths);
+			state.EnsureValue("TargetName").SetValueString(recipe.GetName());
+			state.EnsureValue("WorkingDirectory").SetValueString(packageRoot.ToString());
+			state.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
+			state.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
+			state.EnsureValue("ModuleInterfaceSourceFile").SetValueString("");
+			state.EnsureValue("SourceFiles").SetValuePathList(recipe.GetSourceAsPath());
+			state.EnsureValue("LinkLibraries").SetValuePathList(linkLibraries);
+			state.EnsureValue("IsIncremental").SetValueBoolean(!forceRebuild);
+			state.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(false);
+			state.EnsureValue("PreprocessorDefinitions").SetValueStringList(preprocessorDefinitions);
+			state.EnsureValue("IncludeDirectories").SetValuePathList(includePaths);
+			state.EnsureValue("LibraryPaths").SetValuePathList(libraryPaths);
 
 			if (recipe.HasPublic())
 			{
@@ -144,21 +144,19 @@ namespace RecipeBuild
 					moduleInterfaceSourceFile.SetFileExtension("cppm");
 				}
 
-				state.SetPropertyStringValue("ModuleInterfaceSourceFile", moduleInterfaceSourceFile.ToString());
+				state.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile.ToString());
 			}
 
 			// Set the correct optimization level for the requested flavor
 			if (buildFlavor == "debug")
 			{
-				state.SetPropertyIntegerValue(
-					"OptimizationLevel",
+				state.EnsureValue("OptimizationLevel").SetValueInteger(
 					static_cast<int64_t>(BuildOptimizationLevel::None));
-				state.SetPropertyBooleanValue("GenerateSourceDebugInfo", true);
+				state.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(true);
 			}
 			else if (buildFlavor == "release")
 			{
-				state.SetPropertyIntegerValue(
-					"OptimizationLevel",
+				state.EnsureValue("OptimizationLevel").SetValueInteger(
 					static_cast<int64_t>(BuildOptimizationLevel::Speed));
 			}
 			else
@@ -184,7 +182,7 @@ namespace RecipeBuild
 					throw std::runtime_error("Unknown build target type.");
 			}
 
-			state.SetPropertyIntegerValue("TargetType", static_cast<int64_t>(targetType));
+			state.EnsureValue("TargetType").SetValueInteger(static_cast<int64_t>(targetType));
 
 			// Convert the recipe language version to the required build language
 			Soup::LanguageStandard languageStandard;
@@ -206,7 +204,7 @@ namespace RecipeBuild
 					throw std::runtime_error("Unknown recipe language version.");
 			}
 
-			state.SetPropertyIntegerValue("LanguageStandard", static_cast<int64_t>(languageStandard));
+			state.EnsureValue("LanguageStandard").SetValueInteger(static_cast<int64_t>(languageStandard));
 
 			return 0;
 		}

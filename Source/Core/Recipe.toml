@@ -1,0 +1,17 @@
+Name = "SoupCore"
+Version = "0.1.0"
+
+Dependencies = [
+  "../../Dependencies/json11/",
+  "../Opal/",
+  "../Build/Core/",
+]
+DevDependencies = []
+
+Interface = "Module.cpp"
+Source = []
+IncludePaths = [
+  "./",
+  "Compiler/",
+  "Utils/",
+]

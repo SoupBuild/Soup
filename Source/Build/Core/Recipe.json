@@ -6,6 +6,7 @@
     ],
     "public": "Module.cpp",
     "source": [
-      "Wrapper/GraphNodeListWrapper.cpp"
+      "Wrapper/GraphNodeListWrapper.cpp",
+      "Wrapper/ValueWrapper.cpp"
     ]
 }

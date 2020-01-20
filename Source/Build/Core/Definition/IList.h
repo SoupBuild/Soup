@@ -3,28 +3,30 @@
 // </copyright>
 
 #pragma once
-#include "IReadOnlyList.h"
+#include "IValue.h"
 #include "OperationResult.h"
 
 namespace Soup::Build
 {
 	/// <summary>
 	/// The build list interface definition to allow build extensions read/write
-	/// access to the a collection of values
+	/// access to the a collection of typed values
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
 	template<typename T>
-	class IList : public IReadOnlyList<T>
+	class IList
 	{
 	public:
 		/// <summary>
 		/// Size access methods
 		/// </summary>
+		virtual uint64_t GetSize() const noexcept = 0;
 		virtual OperationResult Resize(uint64_t size) noexcept = 0;
 
 		/// <summary>
-		/// Property setter methods.
+		/// Value accessor methods
 		/// </summary>
-		virtual OperationResult TrySetValueAt(uint64_t index, T value) noexcept = 0;
+		virtual OperationResult TryGetValueAt(uint64_t index, T& result) noexcept = 0;
+		virtual OperationResult TrySetValueAt(uint64_t index, T result) noexcept = 0;
 	};
 }

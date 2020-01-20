@@ -1,6 +1,7 @@
 // <copyright file="GraphNodeListWrapper.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
+
 module;
 
 #include <memory>
@@ -14,7 +15,6 @@ using namespace Opal;
 
 namespace Soup::Build
 {
-
 	GraphNodeListWrapper::GraphNodeListWrapper(IList<IGraphNode*>& value) :
 		_value(value)
 	{

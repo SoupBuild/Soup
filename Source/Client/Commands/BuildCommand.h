@@ -74,16 +74,16 @@ namespace Soup::Client
 
 			// TODO: Hard coded to windows MSVC runtime libraries
 			// And we only trust the config today
-			arguments.PlatformIncludePaths = std::vector<Path>({});
+			arguments.PlatformIncludePaths = std::vector<std::string>({});
 			for (auto& path : config.GetWindowsSDKIncludePaths())
 			{
-				arguments.PlatformIncludePaths.push_back(Path(path));
+				arguments.PlatformIncludePaths.push_back(path);
 			}
 
-			arguments.PlatformLibraryPaths = std::vector<Path>({});
+			arguments.PlatformLibraryPaths = std::vector<std::string>({});
 			for (auto& path : config.GetWindowsSDKLibraryPaths())
 			{
-				arguments.PlatformLibraryPaths.push_back(Path(path));
+				arguments.PlatformLibraryPaths.push_back(path);
 			}
 
 			arguments.PlatformPreprocessorDefinitions = std::vector<std::string>({

@@ -28,9 +28,7 @@ namespace Soup::Build
 		virtual OperationResult TrySetWorkingDirectory(const char* value) noexcept = 0;
 
 		virtual IList<const char*>& GetInputFileList() noexcept = 0;
-
 		virtual IList<const char*>& GetOutputFileList() noexcept = 0;
-
 		virtual IList<IGraphNode*>& GetChildList() noexcept = 0;
 	};
 }

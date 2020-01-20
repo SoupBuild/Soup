@@ -25,13 +25,13 @@ namespace Soup
 		/// Gets or sets the platform library paths
 		/// TODO: Pull this from somewhere when we implement platforms
 		/// </summary>
-		std::vector<Path> PlatformIncludePaths;
+		std::vector<std::string> PlatformIncludePaths;
 
 		/// <summary>
 		/// Gets or sets the platform library paths
 		/// TODO: Pull this from somewhere when we implement platforms
 		/// </summary>
-		std::vector<Path> PlatformLibraryPaths;
+		std::vector<std::string> PlatformLibraryPaths;
 
 		/// <summary>
 		/// Gets or sets the platform preprocessor definitions
@@ -43,7 +43,7 @@ namespace Soup
 		/// Gets or sets the platform libraries
 		/// TODO: Pull this from somewhere when we implement platforms
 		/// </summary>
-		std::vector<Path> PlatformLibraries;
+		std::vector<std::string> PlatformLibraries;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to force a rebuild

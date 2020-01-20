@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "dependencies": [
     "../../Dependencies/json11/",
+    "../../Dependencies/toml11/",
     "../Opal/",
     "../Build/Core/"
   ],
   "devDependencies": [
   ],
   "public": "Module.cpp",
-  "source": [],
+  "source": [
+    "Build/System/Value.cpp"
+  ],
   "includePaths": [
     "./",
     "Compiler/",
