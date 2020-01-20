@@ -119,6 +119,13 @@ namespace RecipeBuild
 				"installationPath",
 			});
 
+			// Check if we should include pre-release versions
+			bool includePrerelease = true;
+			if (includePrerelease)
+			{
+				arguments.push_back("-prerelease");
+			}
+
 			// Execute the requested target
 			auto result = System::IProcessManager::Current().Execute(
 				executablePath,

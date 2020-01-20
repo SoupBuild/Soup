@@ -173,8 +173,7 @@ namespace Soup::Build
 			}
 		}
 
-		
-
+	private:
 		std::vector<Memory::Reference<BuildGraphNode>> _nodes;
 		ValueTable _activeState;
 		ValueTable _parentState;
