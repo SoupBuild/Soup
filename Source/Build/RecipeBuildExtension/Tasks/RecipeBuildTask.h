@@ -63,27 +63,14 @@ namespace RecipeBuild
 			auto platformLibraryPaths = state.GetValue("PlatformLibraryPaths").AsList().CopyAsPathVector();
 			auto platformPreprocessorDefinitions = state.GetValue("PlatformPreprocessorDefinitions").AsList().CopyAsStringVector();
 
-			// Load the input recipe
-			auto packageRecipePath = packageRoot + Path(Soup::Constants::RecipeFileName);
-			Soup::Recipe recipe = {};
-			if (!Soup::RecipeExtensions::TryLoadFromFile(packageRecipePath, recipe))
-			{
-				buildState.LogError("Failed to load the dependency package: " + packageRecipePath.ToString());
-				return -2;
-			}
-
 			// Add the dependency static library closure to link if targeting an executable or dynamic library
 			std::vector<Path> linkLibraries = std::vector<Path>();
 
 			// Combine the include paths from the recipe and the system
 			auto includePaths = std::vector<Path>();
-			if (recipe.HasIncludePaths())
+			if (state.HasValue("IncludePaths"))
 			{
-				auto recipeIncludePaths = recipe.GetIncludePathsAsPath();
-				includePaths.insert(
-					includePaths.end(),
-					recipeIncludePaths.begin(),
-					recipeIncludePaths.end());
+				includePaths = state.GetValue("IncludePaths").AsList().CopyAsPathVector();
 			}
 
 			// Add the platform include paths
@@ -103,30 +90,25 @@ namespace RecipeBuild
 
 			// Combine the defines with the default set and the platform
 			auto preprocessorDefinitions = std::vector<std::string>();
+			if (state.HasValue("Defines"))
+			{
+				preprocessorDefinitions = state.GetValue("Defines").AsList().CopyAsStringVector();
+			}
+
 			preprocessorDefinitions.insert(
 				preprocessorDefinitions.end(),
 				platformPreprocessorDefinitions.begin(),
 				platformPreprocessorDefinitions.end());
 			preprocessorDefinitions.push_back("SOUP_BUILD");
-			if (recipe.HasDefines())
-			{
-				auto& recipeDefines = recipe.GetDefines();
-				preprocessorDefinitions.insert(
-					preprocessorDefinitions.end(),
-					recipeDefines.begin(),
-					recipeDefines.end());
-			}
 
 			// Build up arguments to build this individual recipe
-			auto binaryDirectory = Soup::RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
-			auto objectDirectory = Soup::RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
+			auto binaryDirectory = Soup::Build::RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
+			auto objectDirectory = Soup::Build::RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
 
-			state.EnsureValue("TargetName").SetValueString(recipe.GetName());
 			state.EnsureValue("WorkingDirectory").SetValueString(packageRoot.ToString());
 			state.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
 			state.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
 			state.EnsureValue("ModuleInterfaceSourceFile").SetValueString("");
-			state.EnsureValue("SourceFiles").SetValuePathList(recipe.GetSourceAsPath());
 			state.EnsureValue("LinkLibraries").SetValuePathList(linkLibraries);
 			state.EnsureValue("IsIncremental").SetValueBoolean(!forceRebuild);
 			state.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(false);
@@ -134,9 +116,9 @@ namespace RecipeBuild
 			state.EnsureValue("IncludeDirectories").SetValuePathList(includePaths);
 			state.EnsureValue("LibraryPaths").SetValuePathList(libraryPaths);
 
-			if (recipe.HasPublic())
+			if (state.HasValue("Public"))
 			{
-				auto moduleInterfaceSourceFile = recipe.GetPublicAsPath();
+				auto moduleInterfaceSourceFile = Path(state.GetValue("Public").AsString().GetValue());
 				
 				// TODO: Clang requires annoying cppm extension
 				if (compilerName == "Clang")
@@ -167,7 +149,13 @@ namespace RecipeBuild
 
 			// Convert the recipe type to the required build type
 			BuildTargetType targetType;
-			switch (recipe.GetType())
+			auto recipeType = Soup::RecipeType::StaticLibrary;
+			if (state.HasValue("Type"))
+			{
+				recipeType = Soup::ParseRecipeType(state.GetValue("Type").AsString().GetValue());
+			}
+
+			switch (recipeType)
 			{
 				case Soup::RecipeType::StaticLibrary:
 					targetType = BuildTargetType::StaticLibrary;
@@ -185,8 +173,15 @@ namespace RecipeBuild
 			state.EnsureValue("TargetType").SetValueInteger(static_cast<int64_t>(targetType));
 
 			// Convert the recipe language version to the required build language
+			auto recipeLanguageVersion = Soup::RecipeLanguageVersion::CPP20;
+			if (state.HasValue("Language"))
+			{
+				recipeLanguageVersion =
+					Soup::ParseRecipeLanguageVersion(state.GetValue("Language").AsString().GetValue());
+			}
+
 			Soup::LanguageStandard languageStandard;
-			switch (recipe.GetLanguageVersion())
+			switch (recipeLanguageVersion)
 			{
 				case Soup::RecipeLanguageVersion::CPP11:
 					languageStandard = Soup::LanguageStandard::CPP11;

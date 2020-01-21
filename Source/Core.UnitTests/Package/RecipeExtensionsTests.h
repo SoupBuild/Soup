@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::UnitTests
+namespace Soup::Build::UnitTests
 {
 	class RecipeExtensionsTests
 	{
@@ -95,8 +95,8 @@ namespace Soup::UnitTests
 			fileSystem->CreateMockFile(
 				Path("TestFiles/SimpleRecipe/Recipe.json"),
 				MockFileState(std::stringstream(R"({
-					"name": "MyPackage",
-					"version": "1.2.3"
+					"Name": "MyPackage",
+					"Version": "1.2.3"
 				})")));
 
 			auto directory = Path("TestFiles/SimpleRecipe/Recipe.json");
@@ -162,7 +162,7 @@ namespace Soup::UnitTests
 
 			// Verify the contents of the build file
 			std::string expectedBuildFile = 
-				R"({"name": "MyPackage", "version": "1.2.3"})";
+				R"({"Name": "MyPackage", "Version": "1.2.3"})";
 			auto& mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.json"));
 			Assert::AreEqual(expectedBuildFile, mockBuildFile.Contents->str(), "Verify file contents.");
 		}
@@ -216,8 +216,8 @@ namespace Soup::UnitTests
 			fileSystem->CreateMockFile(
 				Path("Root/Recipe.json"),
 				MockFileState(std::stringstream(R"({
-					"name": "MyPackage",
-					"version": "1.2.3"
+					"Name": "MyPackage",
+					"Version": "1.2.3"
 				})")));
 
 			auto packagePath = Path("Root/");

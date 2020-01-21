@@ -45,6 +45,16 @@ namespace Soup::Build
 		ValueTable& AsTable();
 		ValueList& AsList();
 
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const Value& rhs) const;
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const Value& rhs) const;
+
 	private:
 		std::any _value;
 	};

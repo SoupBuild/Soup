@@ -1,16 +1,16 @@
 {
-  "name": "SoupCompilerClangUnitTests",
-  "version": "1.0.0",
-  "type": "Executable",
-  "dependencies": [
+  "Name": "SoupCompilerClangUnitTests",
+  "Version": "1.0.0",
+  "Type": "Executable",
+  "Dependencies": [
     "../../../Dependencies/SoupTest/Assert/",
     "../Clang/",
     "../../TestUtilities/"
   ],
-  "source": [
+  "Source": [
     "gen/Main.cpp"
   ],
-  "includePaths": [
+  "IncludePaths": [
     "./"
   ]
 }

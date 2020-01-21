@@ -1,11 +1,8 @@
 {
-  "name": "Opal",
-  "version": "0.1.0",
-  "dependencies": [
-  ],
-  "public": "Module.cpp",
-  "source": [],
-  "includePaths": [
+  "Name": "Opal",
+  "Version": "0.1.0",
+  "Public": "Module.cpp",
+  "IncludePaths": [
     "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.23.28105/include/",
     "C:/Program Files (x86)/Windows Kits/10/Include/10.0.17763.0/ucrt/",
     "C:/Program Files (x86)/Windows Kits/10/include/10.0.17763.0/um/",

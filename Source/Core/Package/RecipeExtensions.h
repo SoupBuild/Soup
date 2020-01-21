@@ -5,7 +5,7 @@
 #pragma once
 #include "RecipeJson.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The recipe extensions
@@ -90,7 +90,7 @@ namespace Soup
 			}
 
 			auto packageBinaryPath = packagePath + binaryDirectory;
-			auto moduleFilename = Path(dependecyRecipe.GetName() + "." + outputFileExtension);
+			auto moduleFilename = Path(std::string(dependecyRecipe.GetName()) + "." + outputFileExtension);
 			auto modulePath = packageBinaryPath + moduleFilename;
 
 			return modulePath;

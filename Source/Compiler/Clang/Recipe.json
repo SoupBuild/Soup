@@ -1,11 +1,9 @@
 {
-  "name": "SoupCompilerClang",
-  "version": "0.1.0",
-  "dependencies": [
+  "Name": "SoupCompilerClang",
+  "Version": "0.1.0",
+  "Dependencies": [
     "../../Core/",
     "../MSVC/"
   ],
-  "public": "Module.cpp",
-  "source": [
-  ]
+  "Public": "Module.cpp"
 }

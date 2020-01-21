@@ -1,11 +1,11 @@
 {
-  "name": "SoupTestUtilities",
-  "version": "0.1.0",
-  "dependencies": [
+  "Name": "SoupTestUtilities",
+  "Version": "0.1.0",
+  "Dependencies": [
     "../../Dependencies/SoupTest/Assert/",
     "../Opal/",
     "../Build/Core/",
     "../Core/"
   ],
-  "public": "Module.cpp"
+  "Public": "Module.cpp"
 }

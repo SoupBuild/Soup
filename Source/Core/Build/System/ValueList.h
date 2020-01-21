@@ -60,8 +60,13 @@ namespace Soup::Build
 		}
 
 		/// <summary>
-		/// Internal Accessor
+		/// Internal access to the state
 		/// </summary>
+		std::vector<Value>& GetValues()
+		{
+			return _values;
+		}
+
 		std::string ToString()
 		{
 			auto stream = std::stringstream();
@@ -82,6 +87,22 @@ namespace Soup::Build
 			stream << "]";
 
 			return stream.str();
+		}
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const ValueList& rhs) const
+		{
+			return _values == rhs._values;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const ValueList& rhs) const
+		{
+			return !(*this == rhs);
 		}
 
 	private:

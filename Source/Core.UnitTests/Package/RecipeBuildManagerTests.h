@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::UnitTests
+namespace Soup::Build::UnitTests
 {
 	class RecipeBuildManagerTests
 	{

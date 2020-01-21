@@ -16,9 +16,9 @@ namespace Soup::Build
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
-		BuildState() :
+		BuildState(ValueTable initialState) :
 			_nodes(),
-			_activeState(),
+			_activeState(std::move(initialState)),
 			_parentState()
 		{
 		}

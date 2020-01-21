@@ -46,6 +46,22 @@ namespace Soup::Build
 			return std::to_string(_value);
 		}
 
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const ValuePrimitive<T>& rhs) const
+		{
+			return _value == rhs._value;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const ValuePrimitive<T>& rhs) const
+		{
+			return !(*this == rhs);
+		}
+
 	private:
 		T _value;
 	};
@@ -92,6 +108,22 @@ namespace Soup::Build
 		const std::string& ToString() const noexcept
 		{
 			return _value;
+		}
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const ValuePrimitive<const char*>& rhs) const
+		{
+			return _value == rhs._value;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const ValuePrimitive<const char*>& rhs) const
+		{
+			return !(*this == rhs);
 		}
 
 	private:

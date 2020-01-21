@@ -296,4 +296,39 @@ ValueList& Value::AsList()
 	}
 }
 
+bool Value::operator ==(const Value& rhs) const
+{
+	if (GetType() == rhs.GetType())
+	{
+		switch (GetType())
+		{
+			case ValueType::Empty:
+				return true;
+			case ValueType::Table:
+				return std::any_cast<const ValueTable&>(_value) == std::any_cast<const ValueTable&>(rhs._value);
+			case ValueType::List:
+				return std::any_cast<const ValueList&>(_value) == std::any_cast<const ValueList&>(rhs._value);
+			case ValueType::String:
+				return std::any_cast<const ValuePrimitive<const char*>&>(_value) == std::any_cast<const ValuePrimitive<const char*>&>(rhs._value);
+			case ValueType::Integer:
+				return std::any_cast<const ValuePrimitive<int64_t>&>(_value) == std::any_cast<const ValuePrimitive<int64_t>&>(rhs._value);
+			case ValueType::Float:
+				return std::any_cast<const ValuePrimitive<double>&>(_value) == std::any_cast<const ValuePrimitive<double>&>(rhs._value);
+			case ValueType::Boolean:
+				return std::any_cast<const ValuePrimitive<bool>&>(_value) == std::any_cast<const ValuePrimitive<bool>&>(rhs._value);
+			default:
+				throw std::runtime_error("Unkown ValueType for comparison.");
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Value::operator !=(const Value& rhs) const
+{
+	return !(*this == rhs);
+}
+
 }

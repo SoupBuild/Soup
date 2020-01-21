@@ -52,8 +52,8 @@ namespace Soup::Client
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);
-			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			Build::Recipe recipe = {};
+			if (!Build::RecipeExtensions::TryLoadFromFile(recipePath, recipe))
 			{
 				Log::Error("Could not load the recipe file.");
 				return;
@@ -131,7 +131,7 @@ namespace Soup::Client
 			Log::Info("Begin Build:");
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			auto buildManager = RecipeBuildManager(systemCompiler, runtimeCompiler);
+			auto buildManager = Build::RecipeBuildManager(systemCompiler, runtimeCompiler);
 			buildManager.Execute(workingDirectory, recipe, arguments);
 
 			auto endTime = std::chrono::high_resolution_clock::now();

@@ -122,6 +122,22 @@ namespace Soup::Build
 			Log::Diag(stream.str());
 		}
 
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const ValueTable& rhs) const
+		{
+			return _values == rhs._values;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const ValueTable& rhs) const
+		{
+			return !(*this == rhs);
+		}
+
 	private:
 		std::map<std::string, Value> _values;
 	};

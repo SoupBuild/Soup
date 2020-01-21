@@ -1,17 +1,17 @@
 {
-  "name": "SoupCoreUnitTests",
-  "version": "1.0.0",
-  "type": "Executable",
-  "dependencies": [
+  "Name": "SoupCoreUnitTests",
+  "Version": "1.0.0",
+  "Type": "Executable",
+  "Dependencies": [
     "../../Dependencies/json11/",
     "../../Dependencies/SoupTest/Assert/",
     "../Core/",
     "../TestUtilities/"
   ],
-  "source": [
+  "Source": [
     "gen/Main.cpp"
   ],
-  "includePaths": [
+  "IncludePaths": [
     "./"
   ]
 }

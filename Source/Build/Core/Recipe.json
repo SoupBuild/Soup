@@ -1,12 +1,12 @@
 {
-    "name": "SoupBuildCore",
-    "version": "1.0.0",
-    "dependencies": [
-      "../../Opal/"
-    ],
-    "public": "Module.cpp",
-    "source": [
-      "Wrapper/GraphNodeListWrapper.cpp",
-      "Wrapper/ValueWrapper.cpp"
-    ]
+  "Name": "SoupBuildCore",
+  "Version": "1.0.0",
+  "Dependencies": [
+    "../../Opal/"
+  ],
+  "Public": "Module.cpp",
+  "Source": [
+    "Wrapper/GraphNodeListWrapper.cpp",
+    "Wrapper/ValueWrapper.cpp"
+  ]
 }

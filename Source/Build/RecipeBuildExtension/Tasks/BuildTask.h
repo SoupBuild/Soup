@@ -65,7 +65,7 @@ namespace RecipeBuild
 			auto parentState = buildState.GetParentState();
 
 			auto arguments = BuildArguments();
-			arguments.TargetName = activeState.GetValue("TargetName").AsString().GetValue();
+			arguments.TargetName = activeState.GetValue("Name").AsString().GetValue();
 			arguments.TargetType = static_cast<BuildTargetType>(
 				activeState.GetValue("TargetType").AsInteger().GetValue());
 			arguments.LanguageStandard = static_cast<Soup::LanguageStandard>(
@@ -77,8 +77,8 @@ namespace RecipeBuild
 			if (activeState.HasValue("ModuleInterfaceSourceFile"))
 				arguments.ModuleInterfaceSourceFile = Path(activeState.GetValue("ModuleInterfaceSourceFile").AsString().GetValue());
 
-			if (activeState.HasValue("SourceFiles"))
-				arguments.SourceFiles = activeState.GetValue("SourceFiles").AsList().CopyAsPathVector();
+			if (activeState.HasValue("Source"))
+				arguments.SourceFiles = activeState.GetValue("Source").AsList().CopyAsPathVector();
 
 			if (activeState.HasValue("IncludeDirectories"))
 				arguments.IncludeDirectories = activeState.GetValue("IncludeDirectories").AsList().CopyAsPathVector();

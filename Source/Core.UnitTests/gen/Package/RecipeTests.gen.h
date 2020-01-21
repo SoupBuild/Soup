@@ -2,9 +2,9 @@
 #include "Package/RecipeTests.h"
 
 TestState RunRecipeTests() 
- {
+{
 	auto className = "RecipeTests";
-	auto testClass = std::make_shared<Soup::UnitTests::RecipeTests>();
+	auto testClass = std::make_shared<Soup::Build::UnitTests::RecipeTests>();
 	TestState state = { 0, 0 };
 	state += SoupTest::RunTest(className, "InitializerDefault", [&testClass]() { testClass->InitializerDefault(); });
 	state += SoupTest::RunTest(className, "InitializerAll", [&testClass]() { testClass->InitializerAll(); });

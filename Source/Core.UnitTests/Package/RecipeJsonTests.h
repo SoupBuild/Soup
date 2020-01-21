@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::UnitTests
+namespace Soup::Build::UnitTests
 {
 	class RecipeJsonTests
 	{
@@ -23,7 +23,7 @@ namespace Soup::UnitTests
 		{
 			auto recipe = std::stringstream(
 				R"({
-					"version": "1.2.3"
+					"Version": "1.2.3"
 				})");
 
 			Assert::ThrowsRuntimeError([&recipe]() {
@@ -36,7 +36,7 @@ namespace Soup::UnitTests
 		{
 			auto recipe = std::stringstream(
 				R"({
-					"name": "MyPackage"
+					"Name": "MyPackage"
 				})");
 
 			Assert::ThrowsRuntimeError([&recipe]() {
@@ -49,8 +49,8 @@ namespace Soup::UnitTests
 		{
 			auto recipe = std::stringstream(
 				R"({
-					"name": "MyPackage",
-					"version": "1.2.3"
+					"Name": "MyPackage",
+					"Version": "1.2.3"
 				})");
 			auto actual = RecipeJson::Deserialize(recipe);
 
@@ -66,16 +66,16 @@ namespace Soup::UnitTests
 		{
 			auto recipe = std::stringstream(
 				R"({
-					"name": "MyPackage",
-					"version": "1.2.3",
-					"type": "Executable",
-					"language": "C++17",
-					"dependencies": [],
-					"devDependencies": [],
-					"public": "Public.cpp",
-					"source": [],
-					"includePaths": [],
-					"defines": []
+					"Name": "MyPackage",
+					"Version": "1.2.3",
+					"Type": "Executable",
+					"Language": "C++17",
+					"Dependencies": [],
+					"Extensions": [],
+					"Public": "Public.cpp",
+					"Source": [],
+					"IncludePaths": [],
+					"Defines": []
 				})");
 			auto actual = RecipeJson::Deserialize(recipe);
 
@@ -106,8 +106,8 @@ namespace Soup::UnitTests
 
 			auto expected = 
 				R"({
-					"name": "MyPackage",
-					"version": "1.2.3"
+					"Name": "MyPackage",
+					"Version": "1.2.3"
 				})";
 
 			VerifyJsonEquals(expected, actual.str(), "Verify matches expected.");
@@ -133,16 +133,16 @@ namespace Soup::UnitTests
 
 			auto expected = 
 				R"({
-					"name": "MyPackage",
-					"version": "1.2.3",
-					"type": "Executable",
-					"language": "C++17",
-					"dependencies": [],
-					"devDependencies": [],
-					"public": "Public.cpp",
-					"source": [],
-					"includePaths": [],
-					"defines": []
+					"Defines": [],
+					"Dependencies": [],
+					"Extensions": [],
+					"IncludePaths": [],
+					"Language": "C++17",
+					"Name": "MyPackage",
+					"Public": "Public.cpp",
+					"Source": [],
+					"Type": "Executable",
+					"Version": "1.2.3"
 				})";
 
 			VerifyJsonEquals(expected, actual.str(), "Verify matches expected.");

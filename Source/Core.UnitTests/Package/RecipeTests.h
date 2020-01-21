@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::UnitTests
+namespace Soup::Build::UnitTests
 {
 	class RecipeTests
 	{
@@ -14,14 +14,12 @@ namespace Soup::UnitTests
 		{
 			auto uut = Recipe();
 
-			Assert::IsFalse(uut.IsDirty(), "Verify is not dirty.");
-			Assert::AreEqual("", uut.GetName(), "Verify name matches expected.");
+			Assert::AreEqual<std::string_view>("", uut.GetName(), "Verify name matches expected.");
 			Assert::AreEqual(SemanticVersion(0, 0, 0), uut.GetVersion(), "Verify version is correct.");
 			Assert::IsFalse(uut.HasType(), "Verify has no type.");
-			Assert::AreEqual(RecipeType::StaticLibrary, uut.GetType(), "Verify default type is correct.");
 			Assert::IsFalse(uut.HasLanguageVersion(), "Verify has no language version.");
 			Assert::IsFalse(uut.HasDependencies(), "Verify has no dependencies.");
-			Assert::IsFalse(uut.HasDevDependencies(), "Verify has no dev dependencies.");
+			Assert::IsFalse(uut.HasExtensions(), "Verify has no extensions.");
 			Assert::IsFalse(uut.HasPublic(), "Verify has no public.");
 			Assert::IsFalse(uut.HasSource(), "Verify has no source.");
 			Assert::IsFalse(uut.HasIncludePaths(), "Verify has no include paths.");
@@ -53,8 +51,7 @@ namespace Soup::UnitTests
 					"MY_FLAG",
 				}));
 
-			Assert::IsFalse(uut.IsDirty(), "Verify is not dirty.");
-			Assert::AreEqual("MyPackage", uut.GetName(), "Verify name matches expected.");
+			Assert::AreEqual<std::string_view>("MyPackage", uut.GetName(), "Verify name matches expected.");
 			Assert::AreEqual(SemanticVersion(1, 2, 3), uut.GetVersion(), "Verify version is correct.");
 			Assert::IsTrue(uut.HasType(), "Verify has type.");
 			Assert::AreEqual(RecipeType::Executable, uut.GetType(), "Verify type is correct.");
@@ -67,15 +64,15 @@ namespace Soup::UnitTests
 				}),
 				uut.GetDependencies(),
 				"Verify dependencies are correct.");
-			Assert::IsTrue(uut.HasDevDependencies(), "Verify has dev dependencies.");
+			Assert::IsTrue(uut.HasExtensions(), "Verify has extensions.");
 			Assert::AreEqual(
 				std::vector<PackageReference>({
 					PackageReference(Path(Path("../DevTask"))),
 				}),
-				uut.GetDevDependencies(),
-				"Verify dev dependencies are correct.");
+				uut.GetExtensions(),
+				"Verify extensions are correct.");
 			Assert::IsTrue(uut.HasPublic(), "Verify has public.");
-			Assert::AreEqual("Main.cpp", uut.GetPublic(), "Verify public is correct.");
+			Assert::AreEqual<std::string_view>("Main.cpp", uut.GetPublic(), "Verify public is correct.");
 			Assert::IsTrue(uut.HasSource(), "Verify has source.");
 			Assert::AreEqual(
 				std::vector<std::string>({
