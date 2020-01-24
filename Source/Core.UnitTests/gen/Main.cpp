@@ -33,6 +33,7 @@ import SoupTestUtilities;
 #include "Package/RecipeLanguageVersionTests.gen.h"
 #include "Package/RecipeJsonTests.gen.h"
 #include "Package/RecipeTests.gen.h"
+#include "Package/RecipeTomlTests.gen.h"
 #include "Package/RecipeTypeTests.gen.h"
 
 #include "Utils/PathTests.gen.h"
@@ -61,6 +62,7 @@ int main()
 	state += RunRecipeLanguageVersionTests();
 	state += RunRecipeJsonTests();
 	state += RunRecipeTests();
+	state += RunRecipeTomlTests();
 	state += RunRecipeTypeTests();
 
 	state += RunPathTests();
