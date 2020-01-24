@@ -69,17 +69,8 @@ namespace Soup::Build
 			try
 			{
 				result = nullptr;
-				auto insertResult = _values.emplace(name, Value());
-				if (insertResult.second)
-				{
-					result = &insertResult.first->second;
-					return 0;
-				}
-				else
-				{
-					// The property already exists
-					return -4;
-				}
+				result = &SetValue(name, Value());
+				return 0;
 			}
 			catch (...)
 			{
@@ -91,21 +82,46 @@ namespace Soup::Build
 		/// <summary>
 		/// Internal access to the state
 		/// </summary>
+		Value& SetValue(std::string_view name, Value value)
+		{
+			auto insertResult = _values.emplace(name, std::move(value));
+			if (insertResult.second)
+			{
+				return insertResult.first->second;
+			}
+			else
+			{
+				throw std::runtime_error("Failed to insert a value.");
+			}
+		}
+
 		std::map<std::string, Value>& GetValues()
 		{
 			return _values;
 		}
 
-
 		/// <summary>
 		/// Internal Accessor
 		/// </summary>
-		std::string ToString() const
+		std::string ToString()
 		{
 			auto stream = std::stringstream();
 
-			stream << "{";
-			stream << "}";
+			stream << "{ ";
+
+			bool isFirst = true;
+			for (auto& value : _values)
+			{
+				if (!isFirst)
+				{
+					stream << ", ";
+				}
+
+				stream << value.first << "=\"" << value.second.ToString() << "\"";
+				isFirst = false;
+			}
+
+			stream << " }";
 
 			return stream.str();
 		}

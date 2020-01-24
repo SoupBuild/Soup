@@ -51,26 +51,30 @@ namespace RecipeBuild
 		Soup::Build::OperationResult Execute(
 			Soup::Build::BuildStateWrapper& buildState)
 		{
-			auto state = buildState.GetActiveState();
+			auto rootTable = buildState.GetActiveState();
+			auto recipeTable = rootTable.GetValue("Recipe").AsTable();
+			auto buildTable = rootTable.EnsureValue("Build").EnsureTable();
 
 			// Load the input properties
-			auto compilerName = std::string(state.GetValue("CompilerName").AsString().GetValue());
-			auto packageRoot = Path(state.GetValue("PackageRoot").AsString().GetValue());
-			auto forceRebuild = state.GetValue("ForceRebuild").AsBoolean().GetValue();
-			auto buildFlavor = std::string(state.GetValue("BuildFlavor").AsString().GetValue());
-			auto platformLibraries = state.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
-			auto platformIncludePaths = state.GetValue("PlatformIncludePaths").AsList().CopyAsPathVector();
-			auto platformLibraryPaths = state.GetValue("PlatformLibraryPaths").AsList().CopyAsPathVector();
-			auto platformPreprocessorDefinitions = state.GetValue("PlatformPreprocessorDefinitions").AsList().CopyAsStringVector();
+			auto compilerName = std::string(rootTable.GetValue("CompilerName").AsString().GetValue());
+			auto packageRoot = Path(rootTable.GetValue("PackageRoot").AsString().GetValue());
+			auto buildFlavor = std::string(rootTable.GetValue("BuildFlavor").AsString().GetValue());
+			auto platformLibraries = rootTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
+			auto platformIncludePaths = rootTable.GetValue("PlatformIncludePaths").AsList().CopyAsPathVector();
+			auto platformLibraryPaths = rootTable.GetValue("PlatformLibraryPaths").AsList().CopyAsPathVector();
+			auto platformPreprocessorDefinitions = rootTable.GetValue("PlatformPreprocessorDefinitions").AsList().CopyAsStringVector();
+
+			// Load Recipe properties
+			auto name = std::string(recipeTable.GetValue("Name").AsString().GetValue());
 
 			// Add the dependency static library closure to link if targeting an executable or dynamic library
 			std::vector<Path> linkLibraries = std::vector<Path>();
 
 			// Combine the include paths from the recipe and the system
 			auto includePaths = std::vector<Path>();
-			if (state.HasValue("IncludePaths"))
+			if (recipeTable.HasValue("IncludePaths"))
 			{
-				includePaths = state.GetValue("IncludePaths").AsList().CopyAsPathVector();
+				includePaths = recipeTable.GetValue("IncludePaths").AsList().CopyAsPathVector();
 			}
 
 			// Add the platform include paths
@@ -90,9 +94,9 @@ namespace RecipeBuild
 
 			// Combine the defines with the default set and the platform
 			auto preprocessorDefinitions = std::vector<std::string>();
-			if (state.HasValue("Defines"))
+			if (recipeTable.HasValue("Defines"))
 			{
-				preprocessorDefinitions = state.GetValue("Defines").AsList().CopyAsStringVector();
+				preprocessorDefinitions = recipeTable.GetValue("Defines").AsList().CopyAsStringVector();
 			}
 
 			preprocessorDefinitions.insert(
@@ -105,40 +109,50 @@ namespace RecipeBuild
 			auto binaryDirectory = Soup::Build::RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
 			auto objectDirectory = Soup::Build::RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
 
-			state.EnsureValue("WorkingDirectory").SetValueString(packageRoot.ToString());
-			state.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
-			state.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
-			state.EnsureValue("ModuleInterfaceSourceFile").SetValueString("");
-			state.EnsureValue("LinkLibraries").SetValuePathList(linkLibraries);
-			state.EnsureValue("IsIncremental").SetValueBoolean(!forceRebuild);
-			state.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(false);
-			state.EnsureValue("PreprocessorDefinitions").SetValueStringList(preprocessorDefinitions);
-			state.EnsureValue("IncludeDirectories").SetValuePathList(includePaths);
-			state.EnsureValue("LibraryPaths").SetValuePathList(libraryPaths);
-
-			if (state.HasValue("Public"))
+			// Load the module interface file if present
+			auto moduleInterfaceSourceFile = std::string();
+			if (recipeTable.HasValue("Public"))
 			{
-				auto moduleInterfaceSourceFile = Path(state.GetValue("Public").AsString().GetValue());
+				auto moduleInterfaceSourceFilePath = Path(recipeTable.GetValue("Public").AsString().GetValue());
 				
 				// TODO: Clang requires annoying cppm extension
 				if (compilerName == "Clang")
 				{
-					moduleInterfaceSourceFile.SetFileExtension("cppm");
+					moduleInterfaceSourceFilePath.SetFileExtension("cppm");
 				}
 
-				state.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile.ToString());
+				moduleInterfaceSourceFile = moduleInterfaceSourceFilePath.ToString();
 			}
+
+			// Load the source files if present
+			auto sourceFiles = std::vector<std::string>();
+			if (recipeTable.HasValue("Source"))
+			{
+				sourceFiles = recipeTable.GetValue("Source").AsList().CopyAsStringVector();
+			}
+
+			buildTable.EnsureValue("TargetName").SetValueString(name);
+			buildTable.EnsureValue("WorkingDirectory").SetValueString(packageRoot.ToString());
+			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
+			buildTable.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
+			buildTable.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile);
+			buildTable.EnsureValue("LinkLibraries").SetValuePathList(linkLibraries);
+			buildTable.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(false);
+			buildTable.EnsureValue("PreprocessorDefinitions").SetValueStringList(preprocessorDefinitions);
+			buildTable.EnsureValue("IncludeDirectories").SetValuePathList(includePaths);
+			buildTable.EnsureValue("LibraryPaths").SetValuePathList(libraryPaths);
+			buildTable.EnsureValue("Source").SetValueStringList(sourceFiles);
 
 			// Set the correct optimization level for the requested flavor
 			if (buildFlavor == "debug")
 			{
-				state.EnsureValue("OptimizationLevel").SetValueInteger(
+				buildTable.EnsureValue("OptimizationLevel").SetValueInteger(
 					static_cast<int64_t>(BuildOptimizationLevel::None));
-				state.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(true);
+				buildTable.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(true);
 			}
 			else if (buildFlavor == "release")
 			{
-				state.EnsureValue("OptimizationLevel").SetValueInteger(
+				buildTable.EnsureValue("OptimizationLevel").SetValueInteger(
 					static_cast<int64_t>(BuildOptimizationLevel::Speed));
 			}
 			else
@@ -150,9 +164,9 @@ namespace RecipeBuild
 			// Convert the recipe type to the required build type
 			BuildTargetType targetType;
 			auto recipeType = Soup::RecipeType::StaticLibrary;
-			if (state.HasValue("Type"))
+			if (recipeTable.HasValue("Type"))
 			{
-				recipeType = Soup::ParseRecipeType(state.GetValue("Type").AsString().GetValue());
+				recipeType = Soup::ParseRecipeType(recipeTable.GetValue("Type").AsString().GetValue());
 			}
 
 			switch (recipeType)
@@ -170,14 +184,14 @@ namespace RecipeBuild
 					throw std::runtime_error("Unknown build target type.");
 			}
 
-			state.EnsureValue("TargetType").SetValueInteger(static_cast<int64_t>(targetType));
+			buildTable.EnsureValue("TargetType").SetValueInteger(static_cast<int64_t>(targetType));
 
 			// Convert the recipe language version to the required build language
 			auto recipeLanguageVersion = Soup::RecipeLanguageVersion::CPP20;
-			if (state.HasValue("Language"))
+			if (recipeTable.HasValue("Language"))
 			{
 				recipeLanguageVersion =
-					Soup::ParseRecipeLanguageVersion(state.GetValue("Language").AsString().GetValue());
+					Soup::ParseRecipeLanguageVersion(recipeTable.GetValue("Language").AsString().GetValue());
 			}
 
 			Soup::LanguageStandard languageStandard;
@@ -199,7 +213,7 @@ namespace RecipeBuild
 					throw std::runtime_error("Unknown recipe language version.");
 			}
 
-			state.EnsureValue("LanguageStandard").SetValueInteger(static_cast<int64_t>(languageStandard));
+			buildTable.EnsureValue("LanguageStandard").SetValueInteger(static_cast<int64_t>(languageStandard));
 
 			return 0;
 		}

@@ -64,65 +64,93 @@ namespace RecipeBuild
 			auto activeState = buildState.GetActiveState();
 			auto parentState = buildState.GetParentState();
 
+			auto buildTable = activeState.GetValue("Build").AsTable();
+
 			auto arguments = BuildArguments();
-			arguments.TargetName = activeState.GetValue("Name").AsString().GetValue();
+			arguments.TargetName = buildTable.GetValue("TargetName").AsString().GetValue();
 			arguments.TargetType = static_cast<BuildTargetType>(
-				activeState.GetValue("TargetType").AsInteger().GetValue());
+				buildTable.GetValue("TargetType").AsInteger().GetValue());
 			arguments.LanguageStandard = static_cast<Soup::LanguageStandard>(
-				activeState.GetValue("LanguageStandard").AsInteger().GetValue());
-			arguments.WorkingDirectory = Path(activeState.GetValue("WorkingDirectory").AsString().GetValue());
-			arguments.ObjectDirectory = Path(activeState.GetValue("ObjectDirectory").AsString().GetValue());
-			arguments.BinaryDirectory = Path(activeState.GetValue("BinaryDirectory").AsString().GetValue());
+				buildTable.GetValue("LanguageStandard").AsInteger().GetValue());
+			arguments.WorkingDirectory = Path(buildTable.GetValue("WorkingDirectory").AsString().GetValue());
+			arguments.ObjectDirectory = Path(buildTable.GetValue("ObjectDirectory").AsString().GetValue());
+			arguments.BinaryDirectory = Path(buildTable.GetValue("BinaryDirectory").AsString().GetValue());
 
-			if (activeState.HasValue("ModuleInterfaceSourceFile"))
-				arguments.ModuleInterfaceSourceFile = Path(activeState.GetValue("ModuleInterfaceSourceFile").AsString().GetValue());
+			if (buildTable.HasValue("ModuleInterfaceSourceFile"))
+			{
+				arguments.ModuleInterfaceSourceFile =
+					Path(buildTable.GetValue("ModuleInterfaceSourceFile").AsString().GetValue());
+			}
 
-			if (activeState.HasValue("Source"))
-				arguments.SourceFiles = activeState.GetValue("Source").AsList().CopyAsPathVector();
+			if (buildTable.HasValue("Source"))
+			{
+				arguments.SourceFiles =
+					buildTable.GetValue("Source").AsList().CopyAsPathVector();
+			}
 
-			if (activeState.HasValue("IncludeDirectories"))
-				arguments.IncludeDirectories = activeState.GetValue("IncludeDirectories").AsList().CopyAsPathVector();
+			if (buildTable.HasValue("IncludeDirectories"))
+			{
+				arguments.IncludeDirectories =
+					buildTable.GetValue("IncludeDirectories").AsList().CopyAsPathVector();
+			}
 
-			if (activeState.HasValue("LinkLibraries"))
-				arguments.LinkLibraries = activeState.GetValue("LinkLibraries").AsList().CopyAsPathVector();
+			if (buildTable.HasValue("LinkLibraries"))
+			{
+				arguments.LinkLibraries =
+					buildTable.GetValue("LinkLibraries").AsList().CopyAsPathVector();
+			}
 
-			if (activeState.HasValue("LibraryPaths"))
-				arguments.LibraryPaths = activeState.GetValue("LibraryPaths").AsList().CopyAsPathVector();
+			if (buildTable.HasValue("LibraryPaths"))
+			{
+				arguments.LibraryPaths =
+					buildTable.GetValue("LibraryPaths").AsList().CopyAsPathVector();
+			}
 
-			if (activeState.HasValue("PreprocessorDefinitions"))
-				arguments.PreprocessorDefinitions = activeState.GetValue("PreprocessorDefinitions").AsList().CopyAsStringVector();
+			if (buildTable.HasValue("PreprocessorDefinitions"))
+			{
+				arguments.PreprocessorDefinitions =
+					buildTable.GetValue("PreprocessorDefinitions").AsList().CopyAsStringVector();
+			}
 
-			if (activeState.HasValue("OptimizationLevel"))
+			if (buildTable.HasValue("OptimizationLevel"))
+			{
 				arguments.OptimizationLevel = static_cast<BuildOptimizationLevel>(
-					activeState.GetValue("OptimizationLevel").AsInteger().GetValue());
+					buildTable.GetValue("OptimizationLevel").AsInteger().GetValue());
+			}
 			else
+			{
 				arguments.OptimizationLevel = BuildOptimizationLevel::None;
+			}
 
-			if (activeState.HasValue("GenerateSourceDebugInfo"))
+			if (buildTable.HasValue("GenerateSourceDebugInfo"))
+			{
 				arguments.GenerateSourceDebugInfo =
-					activeState.GetValue("GenerateSourceDebugInfo").AsBoolean().GetValue();
+					buildTable.GetValue("GenerateSourceDebugInfo").AsBoolean().GetValue();
+			}
 			else
+			{
 				arguments.GenerateSourceDebugInfo = false;
+			}
 
 			// Load the runtime dependencies
 			auto runtimeDependencies = std::vector<Path>();
-			if (activeState.HasValue("RuntimeDependencies"))
+			if (buildTable.HasValue("RuntimeDependencies"))
 			{
-				runtimeDependencies = activeState.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();
+				runtimeDependencies = buildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();
 			}
 
 			// Load the link dependencies
 			auto linkDependencies = std::vector<Path>();
-			if (activeState.HasValue("LinkDependencies"))
+			if (buildTable.HasValue("LinkDependencies"))
 			{
-				linkDependencies = activeState.GetValue("LinkDependencies").AsList().CopyAsPathVector();
+				linkDependencies = buildTable.GetValue("LinkDependencies").AsList().CopyAsPathVector();
 			}
 
 			// Load the module references
 			auto moduleDependencies = std::vector<Path>();
-			if (activeState.HasValue("ModuleDependencies"))
+			if (buildTable.HasValue("ModuleDependencies"))
 			{
-				moduleDependencies = activeState.GetValue("ModuleDependencies").AsList().CopyAsPathVector();
+				moduleDependencies = buildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector();
 			}
 
 			// Initialize the compiler to use
@@ -164,9 +192,10 @@ namespace RecipeBuild
 			Soup::Build::GraphNodeExtensions::AddLeafChild(compileNodes, linkNode);
 
 			// Always pass along required input to parent build tasks
-			parentState.EnsureValue("ModuleDependencies").EnsureList().SetAll(moduleDependencies);
-			parentState.EnsureValue("RuntimeDependencies").EnsureList().SetAll(runtimeDependencies);
-			parentState.EnsureValue("LinkDependencies").EnsureList().SetAll(linkDependencies);
+			auto parentBuildTable = parentState.EnsureValue("Build").EnsureTable();
+			parentBuildTable.EnsureValue("ModuleDependencies").EnsureList().SetAll(moduleDependencies);
+			parentBuildTable.EnsureValue("RuntimeDependencies").EnsureList().SetAll(runtimeDependencies);
+			parentBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(linkDependencies);
 
 			buildState.LogInfo("Build Generate Done");
 			return 0;

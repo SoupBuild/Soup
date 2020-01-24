@@ -19,6 +19,7 @@ namespace Soup::Build
 		/// Initializes a new instance of the Value class
 		/// </summary>
 		Value();
+		Value(ValueTable table);
 
 		/// <summary>
 		/// Type checker methods

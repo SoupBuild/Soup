@@ -23,6 +23,11 @@ Value::Value() :
 {
 }
 
+Value::Value(ValueTable table) :
+	_value(std::move(table))
+{
+}
+
 OperationResult Value::TryGetType(uint64_t& type) const noexcept
 {
 	try

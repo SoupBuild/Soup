@@ -16,11 +16,13 @@ namespace Soup::Build
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
-		BuildState(ValueTable initialState) :
+		BuildState(ValueTable recipeState) :
 			_nodes(),
-			_activeState(std::move(initialState)),
+			_activeState(),
 			_parentState()
 		{
+			// Initialize the Recipe state
+			_activeState.SetValue("Recipe", Value(std::move(recipeState)));
 		}
 
 		/// <summary>
