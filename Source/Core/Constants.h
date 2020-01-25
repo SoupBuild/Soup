@@ -26,7 +26,7 @@ namespace Soup
 		/// <summary>
 		/// Gets the Recipe file name
 		/// </summary>
-		static constexpr std::string_view RecipeFileName = "Recipe.json";
+		static constexpr std::string_view RecipeFileName = "Recipe.toml";
 
 		/// <summary>
 		/// Gets the generated build file name

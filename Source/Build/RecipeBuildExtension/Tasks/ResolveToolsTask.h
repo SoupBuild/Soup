@@ -172,7 +172,7 @@ namespace RecipeBuild
 			}
 
 			// Read the entire file into a string
-			auto stream = System::IFileSystem::Current().OpenRead(visualCompilerToolsDefaultVersionFile);
+			auto stream = System::IFileSystem::Current().OpenRead(visualCompilerToolsDefaultVersionFile, false);
 
 			// The first line is the version
 			auto version = std::string();

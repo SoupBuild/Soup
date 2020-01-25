@@ -60,7 +60,7 @@ namespace Soup
         public static string ProjectGenerateFolderName => ".soup";
 
         /// <summary>
-        /// Gets the settings file name for a Soup Recipe
+        /// Gets the definition file name for a Soup Recipe
         /// </summary>
         public static string RecipeFileName => "Recipe.json";
 

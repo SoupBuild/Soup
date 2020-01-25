@@ -3,13 +3,16 @@ Version = "0.1.0"
 
 Dependencies = [
   "../../Dependencies/json11/",
+  "../../Dependencies/toml11/",
   "../Opal/",
   "../Build/Core/",
 ]
 DevDependencies = []
 
-Interface = "Module.cpp"
-Source = []
+Public = "Module.cpp"
+Source = [
+  "Build/System/Value.cpp",
+]
 IncludePaths = [
   "./",
   "Compiler/",

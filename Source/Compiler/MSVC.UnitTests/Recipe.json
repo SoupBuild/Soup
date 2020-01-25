@@ -1,16 +1,16 @@
 {
-  "Name": "SoupCompilerMSVCUnitTests",
+  "name": "SoupCompilerMSVCUnitTests",
   "version": "1.0.0",
-  "Type": "Executable",
-  "Dependencies": [
+  "type": "Executable",
+  "dependencies": [
     "../../../Dependencies/SoupTest/Assert/",
     "../MSVC/",
     "../../TestUtilities/"
   ],
-  "Source": [
+  "source": [
     "gen/Main.cpp"
   ],
-  "IncludePaths": [
+  "includePaths": [
     "./"
   ]
 }

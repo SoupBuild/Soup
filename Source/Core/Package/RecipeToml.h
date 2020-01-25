@@ -18,25 +18,23 @@ namespace Soup::Build
 		/// </summary>
 		static Recipe Deserialize(std::istream& stream)
 		{
-			// Read the contents of the recipe file
-			auto root = toml::value();
 			try
 			{
-				root = toml::parse(stream);
+				// Read the contents of the recipe file
+				auto root = toml::parse(stream, "Recipe.toml");
+				if (!root.is_table())
+					throw std::runtime_error("Recipe Toml file root must be a table.");
+
+				// Load the entire root table
+				auto table = ValueTable();
+				Parse(ValueTableWrapper(table), root.as_table());
+
+				return Recipe(std::move(table));
 			}
 			catch(const toml::exception& ex)
 			{
 				throw std::runtime_error(std::string("Parsing the Recipe Toml failed: ") + ex.what());
 			}
-
-			if (!root.is_table())
-				throw std::runtime_error("Recipe Toml file root must be a table.");
-
-			// Load the entire root table
-			auto table = ValueTable();
-			Parse(ValueTableWrapper(table), root.as_table());
-
-			return Recipe(std::move(table));
 		}
 
 		/// <summary>

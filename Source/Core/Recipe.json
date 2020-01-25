@@ -1,17 +1,17 @@
 {
-  "Name": "SoupCore",
-  "Version": "0.1.0",
-  "Dependencies": [
+  "name": "SoupCore",
+  "version": "0.1.0",
+  "dependencies": [
     "../../Dependencies/json11/",
     "../../Dependencies/toml11/",
     "../Opal/",
     "../Build/Core/"
   ],
-  "Public": "Module.cpp",
-  "Source": [
+  "public": "Module.cpp",
+  "source": [
     "Build/System/Value.cpp"
   ],
-  "IncludePaths": [
+  "includePaths": [
     "./",
     "Compiler/",
     "Utils/"

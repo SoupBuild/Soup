@@ -38,7 +38,7 @@ namespace Soup
 			}
 
 			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(localUserConfigFile);
+			auto file = System::IFileSystem::Current().OpenRead(localUserConfigFile, false);
 
 			// Read the contents of the LocalUserConfig file
 			try
@@ -48,7 +48,7 @@ namespace Soup
 			}
 			catch (std::exception& ex)
 			{
-				Log::Diag(std::string("Deserialze Threw: ") + ex.what());
+				Log::Error(std::string("Deserialize Threw: ") + ex.what());
 				throw std::runtime_error("Failed to parse LocalUserConfig file.");
 			}
 		}

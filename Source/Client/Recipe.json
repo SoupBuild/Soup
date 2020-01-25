@@ -1,15 +1,15 @@
 {
-  "Name": "Soup",
-  "Version": "0.5.0",
-  "Type": "Executable",
-  "Dependencies": [
+  "name": "Soup",
+  "version": "0.5.1",
+  "type": "Executable",
+  "dependencies": [
     "../Core/",
     "../Build/RecipeBuildExtension/"
   ],
-  "Source": [
+  "source": [
     "Main.cpp"
   ],
-  "IncludePaths": [
+  "includePaths": [
     "Commands/",
     "Options/"
   ]

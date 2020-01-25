@@ -1,15 +1,15 @@
 {
-    "Name": "RecipeBuildExtension",
-    "Type": "DynamicLibrary",
-    "Version": "1.0.0",
-    "Dependencies": [
+    "name": "RecipeBuildExtension",
+    "type": "DynamicLibrary",
+    "version": "1.0.0",
+    "dependencies": [
       "../../Opal/",
       "../../Core/",
       "../../Compiler/Clang/",
       "../../Compiler/MSVC/"
     ],
-    "Public": "Module.cpp",
-    "Source": [
+    "public": "Module.cpp",
+    "source": [
         "RegisterBuildExtension.cpp"
     ]
 }

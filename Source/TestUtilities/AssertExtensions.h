@@ -51,6 +51,15 @@ namespace Soup
 		}
 
 		static void AreEqual(
+			Memory::Reference<Build::BuildGraphNode>& expected,
+			Build::GraphNodeWrapper& actual)
+		{
+			AreEqual(
+				Build::GraphNodeWrapper(expected), 
+				actual);
+		}
+
+		static void AreEqual(
 			Build::GraphNodeListWrapper& expected,
 			Build::GraphNodeListWrapper& actual)
 		{

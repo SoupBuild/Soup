@@ -20,7 +20,7 @@ namespace Soup::Build::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/NoFile/Recipe.json");
+			auto directory = Path("TestFiles/NoFile/Recipe.toml");
 			Recipe actual;
 			auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
 
@@ -29,7 +29,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/NoFile/Recipe.json",
+					"Exists: TestFiles/NoFile/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -37,6 +37,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"DIAG: Load Recipe: TestFiles/NoFile/Recipe.toml",
 					"INFO: Recipe file does not exist.",
 				}), 
 				testListener->GetMessages(),
@@ -54,10 +55,10 @@ namespace Soup::Build::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageRecipe/Recipe.json"),
+				Path("TestFiles/GarbageRecipe/Recipe.toml"),
 				MockFileState(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageRecipe/Recipe.json");
+			auto directory = Path("TestFiles/GarbageRecipe/Recipe.toml");
 			Recipe actual;
 			auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
 
@@ -66,8 +67,8 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/GarbageRecipe/Recipe.json",
-					"OpenRead: TestFiles/GarbageRecipe/Recipe.json",
+					"Exists: TestFiles/GarbageRecipe/Recipe.toml",
+					"OpenReadBinary: TestFiles/GarbageRecipe/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -75,7 +76,8 @@ namespace Soup::Build::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Deserialze Threw: Failed to parse the recipe json: expected value, got 'g' (103)",
+					"DIAG: Load Recipe: TestFiles/GarbageRecipe/Recipe.toml",
+					"ERRO: Deserialize Threw: Parsing the Recipe Toml failed: [error] toml::parse_key_value_pair: missing key-value separator `=`\n --> Recipe.toml\n   | \n 1 | garbage\n   |        ^ should be `=`",
 					"INFO: Failed to parse Recipe.",
 				}), 
 				testListener->GetMessages(),
@@ -93,13 +95,13 @@ namespace Soup::Build::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleRecipe/Recipe.json"),
-				MockFileState(std::stringstream(R"({
-					"Name": "MyPackage",
-					"Version": "1.2.3"
-				})")));
+				Path("TestFiles/SimpleRecipe/Recipe.toml"),
+				MockFileState(std::stringstream(R"(
+					Name = "MyPackage"
+					Version = "1.2.3"
+				)")));
 
-			auto directory = Path("TestFiles/SimpleRecipe/Recipe.json");
+			auto directory = Path("TestFiles/SimpleRecipe/Recipe.toml");
 			Recipe actual;
 			auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
 
@@ -114,8 +116,8 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/SimpleRecipe/Recipe.json",
-					"OpenRead: TestFiles/SimpleRecipe/Recipe.json",
+					"Exists: TestFiles/SimpleRecipe/Recipe.toml",
+					"OpenReadBinary: TestFiles/SimpleRecipe/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -123,6 +125,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"DIAG: Load Recipe: TestFiles/SimpleRecipe/Recipe.toml",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -139,7 +142,7 @@ namespace Soup::Build::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/SimpleRecipe/Recipe.json");
+			auto directory = Path("TestFiles/SimpleRecipe/Recipe.toml");
 			auto recipe = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3));
@@ -148,7 +151,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"OpenWrite: TestFiles/SimpleRecipe/Recipe.json",
+					"OpenWrite: TestFiles/SimpleRecipe/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -162,8 +165,10 @@ namespace Soup::Build::UnitTests
 
 			// Verify the contents of the build file
 			std::string expectedBuildFile = 
-				R"({"Name": "MyPackage", "Version": "1.2.3"})";
-			auto& mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.json"));
+				R"(Name = "MyPackage"
+Version = "1.2.3"
+)";
+			auto& mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.toml"));
 			Assert::AreEqual(expectedBuildFile, mockBuildFile.Contents->str(), "Verify file contents.");
 		}
 
@@ -188,7 +193,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Root/Recipe.json",
+					"Exists: Root/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -197,7 +202,7 @@ namespace Soup::Build::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Recipe file does not exist.",
-					"ERRO: Failed to load the dependency package: Root/Recipe.json",
+					"ERRO: Failed to load the dependency package: Root/Recipe.toml",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -214,11 +219,11 @@ namespace Soup::Build::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("Root/Recipe.json"),
-				MockFileState(std::stringstream(R"({
-					"Name": "MyPackage",
-					"Version": "1.2.3"
-				})")));
+				Path("Root/Recipe.toml"),
+				MockFileState(std::stringstream(R"(
+					Name = "MyPackage"
+					Version = "1.2.3"
+				)")));
 
 			auto packagePath = Path("Root/");
 			auto binaryDirectory = Path("out/bin/mock/");
@@ -230,8 +235,8 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Root/Recipe.json",
-					"OpenRead: Root/Recipe.json",
+					"Exists: Root/Recipe.toml",
+					"OpenReadBinary: Root/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

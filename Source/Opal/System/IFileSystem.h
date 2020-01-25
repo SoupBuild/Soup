@@ -51,7 +51,7 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
-		virtual std::shared_ptr<std::istream> OpenRead(const Path& path) = 0;
+		virtual std::shared_ptr<std::istream> OpenRead(const Path& path, bool isBinary) = 0;
 
 		/// <summary>
 		/// Open the requested file as a stream to write
