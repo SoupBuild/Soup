@@ -5,7 +5,5 @@
     "../../Core/",
     "../MSVC/"
   ],
-  "public": "Module.cpp",
-  "source": [
-  ]
+  "public": "Module.cpp"
 }

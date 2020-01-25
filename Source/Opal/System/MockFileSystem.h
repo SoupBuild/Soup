@@ -132,10 +132,17 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
-		std::shared_ptr<std::istream> OpenRead(const Path& path) override final
+		std::shared_ptr<std::istream> OpenRead(const Path& path, bool isBinary) override final
 		{
 			std::stringstream message;
-			message << "OpenRead: " << path.ToString();
+			if (isBinary)
+			{
+				message << "OpenReadBinary: " << path.ToString();
+			}
+			else
+			{
+				message << "OpenRead: " << path.ToString();
+			}
 			_requests.push_back(message.str());
 
 			auto file = _files.find(path);

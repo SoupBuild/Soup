@@ -1,4 +1,4 @@
-// <copyright file="BuildReferenceList.h" company="Soup">
+// <copyright file="ReferenceList.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -10,21 +10,21 @@ namespace Soup::Build
 	/// Build list implementation for simple objects
 	/// </summary>
 	template<typename TStorage, typename T>
-	class BuildReferenceList : public IList<T*>
+	class ReferenceList : public IList<T*>
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the BuildReferenceList class
+		/// Initializes a new instance of the ReferenceList class
 		/// </summary>
-		BuildReferenceList() :
+		ReferenceList() :
 			_values()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the BuildReferenceList class
+		/// Initializes a new instance of the ReferenceList class
 		/// </summary>
-		BuildReferenceList(std::vector<Memory::Reference<TStorage>> values) :
+		ReferenceList(std::vector<Memory::Reference<TStorage>> values) :
 			_values(std::move(values))
 		{
 		}
@@ -75,7 +75,7 @@ namespace Soup::Build
 		{
 			try
 			{
-				// TODO: Store interface type?s
+				// TODO: Store interface type?
 				auto internalValue = dynamic_cast<TStorage*>(value);
 				if (internalValue == nullptr)
 					return -2;

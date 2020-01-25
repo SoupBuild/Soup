@@ -94,7 +94,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: LocalConfig: C:/TestInstall/LocalUserConfig.json",
-					"DIAG: Deserialze Threw: Failed to parse the local user config json: expected value, got 'g' (103)",
+					"ERRO: Deserialize Threw: Failed to parse the local user config json: expected value, got 'g' (103)",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");

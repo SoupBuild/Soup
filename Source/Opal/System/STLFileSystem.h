@@ -57,9 +57,15 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
-		std::shared_ptr<std::istream> OpenRead(const Path& path) override final
+		std::shared_ptr<std::istream> OpenRead(const Path& path, bool isBinary) override final
 		{
-			auto file = std::make_shared<std::fstream>(path.ToString(), std::fstream::in);
+			int mode = std::fstream::in;
+			if (isBinary)
+			{
+				mode = mode | std::fstream::binary;
+			}
+
+			auto file = std::make_shared<std::fstream>(path.ToString(), mode);
 			if (file->fail())
 			{
 				auto message = "OpenRead Failed: File missing. " + path.ToString();

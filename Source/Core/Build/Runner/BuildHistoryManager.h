@@ -34,7 +34,7 @@ namespace Soup::Build
 			}
 
 			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(BuildHistoryFile);
+			auto file = System::IFileSystem::Current().OpenRead(BuildHistoryFile, false);
 
 			// Read the contents of the build state file
 			try

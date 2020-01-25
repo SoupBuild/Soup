@@ -3,9 +3,9 @@
 // </copyright>
 
 #pragma once
-#include "RecipeJson.h"
+#include "RecipeToml.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The recipe extensions
@@ -21,6 +21,7 @@ namespace Soup
 			Recipe& result)
 		{
 			// Verify the requested file exists
+			Log::Diag("Load Recipe: " + recipeFile.ToString());
 			if (!System::IFileSystem::Current().Exists(recipeFile))
 			{
 				Log::Info("Recipe file does not exist.");
@@ -28,17 +29,17 @@ namespace Soup
 			}
 
 			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(recipeFile);
+			auto file = System::IFileSystem::Current().OpenRead(recipeFile, true);
 
 			// Read the contents of the recipe file
 			try
 			{
-				result = RecipeJson::Deserialize(*file);
+				result = RecipeToml::Deserialize(*file);
 				return true;
 			}
 			catch (std::exception& ex)
 			{
-				Log::Diag(std::string("Deserialze Threw: ") + ex.what());
+				Log::Error(std::string("Deserialize Threw: ") + ex.what());
 				Log::Info("Failed to parse Recipe.");
 				return false;
 			}
@@ -73,7 +74,7 @@ namespace Soup
 			auto file = System::IFileSystem::Current().OpenWrite(recipeFile);
 
 			// Write the recipe to the file stream
-			RecipeJson::Serialize(recipe, *file);
+			RecipeToml::Serialize(recipe, *file);
 		}
 
 		/// <summary>
@@ -90,7 +91,7 @@ namespace Soup
 			}
 
 			auto packageBinaryPath = packagePath + binaryDirectory;
-			auto moduleFilename = Path(dependecyRecipe.GetName() + "." + outputFileExtension);
+			auto moduleFilename = Path(std::string(dependecyRecipe.GetName()) + "." + outputFileExtension);
 			auto modulePath = packageBinaryPath + moduleFilename;
 
 			return modulePath;

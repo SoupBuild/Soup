@@ -30,20 +30,22 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.TargetFile = Path("obj/File.o");
 			arguments.RootDirectory = Path("Source");
 
-			auto result = uut.CreateCompileNode(arguments);
+			auto buildState = Build::BuildState(Build::ValueTable());
+			auto result = uut.CreateCompileNode(Build::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = std::make_shared<Build::BuildGraphNode>(
-				"File.cpp",
-				Path("C:/Clang/bin/clang++.exe"),
-				"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
-				Path("Source"),
-				std::vector<Path>({
-					Path("File.cpp"),
-				}),
-				std::vector<Path>({
-					Path("obj/File.o"),
-				}));
+			auto expected = Memory::Reference<Build::BuildGraphNode>(
+				new Build::BuildGraphNode(
+					"File.cpp",
+					"C:/Clang/bin/clang++.exe",
+					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
+					"Source",
+					std::vector<std::string>({
+						"File.cpp",
+					}),
+					std::vector<std::string>({
+						"obj/File.o",
+					})));
 
 			AssertExtensions::AreEqual(expected, result);
 		}
@@ -68,34 +70,36 @@ namespace Soup::Compiler::Clang::UnitTests
 			});
 			arguments.ExportModule = true;
 
-			auto result = uut.CreateCompileNode(arguments);
+			auto buildState = Build::BuildState(Build::ValueTable());
+			auto result = uut.CreateCompileNode(Build::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = std::make_shared<Build::BuildGraphNode>(
-				"File.cpp",
-				Path("C:/Clang/bin/clang++.exe"),
-				"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
-				Path("Source"),
-				std::vector<Path>({
-					Path("Module.pcm"),
-					Path("File.cpp"),
-				}),
-				std::vector<Path>({
-					Path("obj/File.pcm")
-				}),
-				std::vector<Memory::Reference<Build::BuildGraphNode>>({
-					std::make_shared<Build::BuildGraphNode>(
+			auto expected = Memory::Reference<Build::BuildGraphNode>(
+				new Build::BuildGraphNode(
+					"File.cpp",
+					"C:/Clang/bin/clang++.exe",
+					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
+					"Source",
+					std::vector<std::string>({
+						"Module.pcm",
+						"File.cpp",
+					}),
+					std::vector<std::string>({
 						"obj/File.pcm",
-						Path("C:/Clang/bin/clang++.exe"),
-						"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
-						Path("Source"),
-						std::vector<Path>({
-							Path("obj/File.pcm"),
-						}),
-						std::vector<Path>({
-							Path("obj/File.obj"),
-						}))
-				}));
+					}),
+					std::vector<Memory::Reference<Build::BuildGraphNode>>({
+						new Build::BuildGraphNode(
+							"obj/File.pcm",
+							"C:/Clang/bin/clang++.exe",
+							"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
+							"Source",
+							std::vector<std::string>({
+								"obj/File.pcm",
+							}),
+							std::vector<std::string>({
+								"obj/File.obj",
+							})),
+					})));
 
 			AssertExtensions::AreEqual(expected, result);
 		}
@@ -113,20 +117,22 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("File.mock.o"),
 			});
 
-			auto result = uut.CreateLinkNode(arguments);
+			auto buildState = Build::BuildState(Build::ValueTable());
+			auto result = uut.CreateLinkNode(Build::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = std::make_shared<Build::BuildGraphNode>(
-				"Library.mock.a",
-				Path("C:/Clang/bin/llvm-ar.exe"),
-				"rc Library.mock.a File.mock.o",
-				Path("Source"),
-				std::vector<Path>({
-					Path("File.mock.o"),
-				}),
-				std::vector<Path>({
-					Path("Library.mock.a"),
-				}));
+			auto expected = Memory::Reference<Build::BuildGraphNode>(
+				new Build::BuildGraphNode(
+					"Library.mock.a",
+					"C:/Clang/bin/llvm-ar.exe",
+					"rc Library.mock.a File.mock.o",
+					"Source",
+					std::vector<std::string>({
+						"File.mock.o",
+					}),
+					std::vector<std::string>({
+						"Library.mock.a",
+					})));
 
 			AssertExtensions::AreEqual(expected, result);
 		}
@@ -147,21 +153,23 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("Library.mock.a"),
 			});
 
-			auto result = uut.CreateLinkNode(arguments);
+			auto buildState = Build::BuildState(Build::ValueTable());
+			auto result = uut.CreateLinkNode(Build::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = std::make_shared<Build::BuildGraphNode>(
-				"Something.exe",
-				Path("C:/Clang/bin/lld-link.exe"),
-				"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
-				Path("Source"),
-				std::vector<Path>({
-					Path("Library.mock.a"),
-					Path("File.mock.o"),
-				}),
-				std::vector<Path>({
-					Path("Something.exe")
-				}));
+			auto expected = Memory::Reference<Build::BuildGraphNode>(
+				new Build::BuildGraphNode(
+					"Something.exe",
+					"C:/Clang/bin/lld-link.exe",
+					"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
+					"Source",
+					std::vector<std::string>({
+						"Library.mock.a",
+						"File.mock.o",
+					}),
+					std::vector<std::string>({
+						"Something.exe",
+					})));
 
 			AssertExtensions::AreEqual(expected, result);
 		}

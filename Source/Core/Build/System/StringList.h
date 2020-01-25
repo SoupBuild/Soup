@@ -1,4 +1,4 @@
-// <copyright file="BuildStringList.h" company="Soup">
+// <copyright file="StringList.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,29 +6,29 @@
 
 namespace Soup::Build
 {
-	class BuildStringList : public IList<const char*>
+	class StringList : public IList<const char*>
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the BuildStringList class
+		/// Initializes a new instance of the StringList class
 		/// </summary>
-		BuildStringList() :
+		StringList() :
 			_values()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the BuildStringList class
+		/// Initializes a new instance of the StringList class
 		/// </summary>
-		BuildStringList(std::vector<std::string> values) :
+		StringList(std::vector<std::string> values) :
 			_values(std::move(values))
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the BuildStringList class
+		/// Initializes a new instance of the StringList class
 		/// </summary>
-		BuildStringList(const std::vector<Path>& values) :
+		StringList(const std::vector<Path>& values) :
 			_values()
 		{
 			_values.reserve(values.size());

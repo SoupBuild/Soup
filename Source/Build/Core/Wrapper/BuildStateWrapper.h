@@ -5,7 +5,7 @@
 #pragma once
 #include "Definition/IBuildState.h"
 #include "GraphNodeWrapper.h"
-#include "PropertyBagWrapper.h"
+#include "ValueTableWrapper.h"
 
 namespace Soup::Build
 {
@@ -26,7 +26,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Build Graph Access Methods
 		/// </summary>
-		void RegisterRootNode(GraphNodeWrapper& node) noexcept
+		void RegisterRootNode(GraphNodeWrapper& node)
 		{
 			auto status = _value.TryRegisterRootNode(node.GetRaw());
 			if (status != 0)
@@ -70,18 +70,18 @@ namespace Soup::Build
 		/// <summary>
 		/// Get a reference to the active state
 		/// </summary>
-		PropertyBagWrapper GetActiveState() noexcept
+		ValueTableWrapper GetActiveState() noexcept
 		{
-			return PropertyBagWrapper(_value.GetActiveState());
+			return ValueTableWrapper(_value.GetActiveState());
 		}
 
 		/// <summary>
 		/// Get a reference to the child state. All of these properties will be 
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
-		PropertyBagWrapper GetParentState() noexcept
+		ValueTableWrapper GetParentState() noexcept
 		{
-			return PropertyBagWrapper(_value.GetParentState());
+			return ValueTableWrapper(_value.GetParentState());
 		}
 
 		/// <summary>

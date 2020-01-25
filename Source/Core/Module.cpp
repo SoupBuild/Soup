@@ -2,7 +2,9 @@
 
 #include <any>
 #include <array>
+#include <chrono>
 #include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <optional>
 #include <set>
@@ -18,6 +20,7 @@ export module SoupCore;
 import Opal;
 import SoupBuildCore;
 import json11;
+import toml11;
 
 using namespace Opal;
 
@@ -34,6 +37,9 @@ using namespace Opal;
 
 #include "Build\System\BuildState.h"
 #include "Build\System\GraphNodeExtensions.h"
+#include "Build\System\ValueList.h"
+#include "Build\System\ValuePrimitive.h"
+#include "Build\System\ValueTable.h"
 
 #include "Build\BuildUtilities.h"
 
@@ -52,3 +58,4 @@ using namespace Opal;
 #include "Package\RecipeBuildManager.h"
 #include "Package\RecipeExtensions.h"
 #include "Package\RecipeJson.h"
+#include "Package\RecipeToml.h"

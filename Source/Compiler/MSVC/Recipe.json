@@ -4,7 +4,5 @@
   "dependencies": [
     "../../Core/"
   ],
-  "public": "Module.cpp",
-  "source": [
-  ]
+  "public": "Module.cpp"
 }

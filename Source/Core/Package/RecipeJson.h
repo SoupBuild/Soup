@@ -5,25 +5,13 @@
 #pragma once
 #include "Recipe.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The recipe json serialize manager
 	/// </summary>
 	export class RecipeJson
 	{
-	private:
-		static constexpr const char* Property_Name = "name";
-		static constexpr const char* Property_Version = "version";
-		static constexpr const char* Property_Type = "type";
-		static constexpr const char* Property_Language = "language";
-		static constexpr const char* Property_Dependencies = "dependencies";
-		static constexpr const char* Property_DevDependencies = "devDependencies";
-		static constexpr const char* Property_Public = "public";
-		static constexpr const char* Property_Source = "source";
-		static constexpr const char* Property_IncludePaths = "includePaths";
-		static constexpr const char* Property_Defines = "defines";
-
 	public:
 		/// <summary>
 		/// Load from stream
@@ -45,217 +33,117 @@ namespace Soup
 			}
 			else
 			{
-				return LoadJsonRecipe(jsonRoot);
+				if (!jsonRoot.is_object())
+					throw std::runtime_error("Root json was not an object.");
+
+				// Load the entire json blob into a root table
+				auto table = ValueTable();
+				ParseJson(ValueTableWrapper(table), jsonRoot.object_items());
+
+				return Recipe(std::move(table));
 			}
 		}
 
 		/// <summary>
 		/// Save the recipe to the root file
 		/// </summary>
-		static void Serialize(const Recipe& recipe, std::ostream& stream)
+		static void Serialize(Recipe& recipe, std::ostream& stream)
 		{
 			// Serialize the contents of the recipe
-			json11::Json json = BuildJson(recipe);
+			json11::Json json = BuildJson(recipe.GetTable());
 
 			stream << json.dump();
 		}
 
 	private:
-		static Recipe LoadJsonRecipe(const json11::Json& value)
+		static void ParseJson(ValueWrapper& value, const json11::Json& item)
 		{
-			std::string name;
-			SemanticVersion version;
-			std::optional<RecipeType> type;
-			std::optional<RecipeLanguageVersion> languageVersion;
-			std::optional<std::vector<PackageReference>> dependencies;
-			std::optional<std::vector<PackageReference>> devDependencies;
-			std::optional<std::string> publicFile;
-			std::optional<std::vector<std::string>> source;
-			std::optional<std::vector<std::string>> includePaths;
-			std::optional<std::vector<std::string>> defines;
-
-			if (!value[Property_Name].is_null())
+			switch (item.type())
 			{
-				name = value[Property_Name].string_value();
+				case json11::Json::Type::NUL:
+					// Leave empty
+					break;
+				case json11::Json::Type::NUMBER:
+					value.SetValueFloat(item.number_value());
+					break;
+				case json11::Json::Type::BOOL:
+					value.SetValueBoolean(item.bool_value());
+					break;
+				case json11::Json::Type::STRING:
+					value.SetValueString(item.string_value());
+					break;
+				case json11::Json::Type::ARRAY:
+					ParseJson(value.EnsureList(), item.array_items());
+					break;
+				case json11::Json::Type::OBJECT:
+					ParseJson(value.EnsureTable(), item.object_items());
+					break;
+				default:
+					throw std::runtime_error("Unknown json type.");
 			}
-			else
-			{
-				throw std::runtime_error("Missing Required field: name.");
-			}
-
-			if (!value[Property_Version].is_null())
-			{
-				version = SemanticVersion::Parse(
-					value[Property_Version].string_value());
-			}
-			else
-			{
-				throw std::runtime_error("Missing Required field: version.");
-			}
-
-			if (!value[Property_Type].is_null())
-			{
-				type = ParseRecipeType(
-					value[Property_Type].string_value());
-			}
-
-			if (!value[Property_Language].is_null())
-			{
-				languageVersion = ParseRecipeLanguageVersion(
-					value[Property_Language].string_value());
-			}
-
-			if (!value[Property_Dependencies].is_null())
-			{
-				auto values = std::vector<PackageReference>();
-				for (auto& value : value[Property_Dependencies].array_items())
-				{
-					auto dependency = PackageReference::Parse(value.string_value());
-					values.push_back(std::move(dependency));
-				}
-
-				dependencies = std::move(values);
-			}
-
-			if (!value[Property_DevDependencies].is_null())
-			{
-				auto values = std::vector<PackageReference>();
-				for (auto& value : value[Property_DevDependencies].array_items())
-				{
-					auto dependency = PackageReference::Parse(value.string_value());
-					values.push_back(std::move(dependency));
-				}
-
-				devDependencies = std::move(values);
-			}
-
-			if (!value[Property_Public].is_null())
-			{
-				publicFile = value[Property_Public].string_value();
-			}
-
-			if (!value[Property_Source].is_null())
-			{
-				auto values = std::vector<std::string>();
-				for (auto& value : value[Property_Source].array_items())
-				{
-					values.push_back(value.string_value());
-				}
-
-				source = std::move(values);
-			}
-
-			if (!value[Property_IncludePaths].is_null())
-			{
-				auto values = std::vector<std::string>();
-				for (auto& value : value[Property_IncludePaths].array_items())
-				{
-					values.push_back(value.string_value());
-				}
-
-				includePaths = std::move(values);
-			}
-
-			if (!value[Property_Defines].is_null())
-			{
-				auto values = std::vector<std::string>();
-				for (auto& value : value[Property_Defines].array_items())
-				{
-					values.push_back(value.string_value());
-				}
-
-				defines = std::move(values);
-			}
-
-			return Recipe(
-				std::move(name),
-				version,
-				type,
-				languageVersion,
-				std::move(dependencies),
-				std::move(devDependencies),
-				std::move(publicFile),
-				std::move(source),
-				std::move(includePaths),
-				std::move(defines));
 		}
 
-		static json11::Json BuildJson(const Recipe& recipe)
+		static void ParseJson(ValueTableWrapper& table, const json11::Json::object& items)
+		{
+			for (auto& item : items)
+			{
+				auto value = table.CreateValue(item.first);
+				ParseJson(value, item.second);
+			}
+		}
+
+		static void ParseJson(ValueListWrapper& list, const json11::Json::array& items)
+		{
+			list.Resize(items.size());
+			for (size_t i = 0; i < items.size(); i++)
+			{
+				auto value = list.GetValueAt(i);
+				ParseJson(value, items[i]);
+			}
+		}
+
+		static json11::Json BuildJson(Value& value)
+		{
+			switch (value.GetType())
+			{
+				case ValueType::Empty:
+					return json11::Json();
+				case ValueType::Table:
+					return BuildJson(value.AsTable());
+				case ValueType::List:
+					return BuildJson(value.AsList());
+				case ValueType::String:
+					return json11::Json(ValueWrapper(value).AsString().GetValue());
+				case ValueType::Integer:
+					return json11::Json(static_cast<int>(ValueWrapper(value).AsInteger().GetValue()));
+				case ValueType::Float:
+					return json11::Json(ValueWrapper(value).AsFloat().GetValue());
+				case ValueType::Boolean:
+					return json11::Json(ValueWrapper(value).AsBoolean().GetValue());
+				default:
+					throw std::runtime_error("Unknown value type.");
+			}
+		}
+
+		static json11::Json BuildJson(ValueTable& table)
 		{
 			json11::Json::object result = {};
 
-			// Add required fields
-			result[Property_Name] = recipe.GetName();
-			result[Property_Version] = recipe.GetVersion().ToString();
-
-			if (recipe.HasType())
+			for (auto& value : table.GetValues())
 			{
-				result[Property_Type] = ToString(recipe.GetType());
+				result.emplace(value.first, BuildJson(value.second));
 			}
 
-			if (recipe.HasLanguageVersion())
+			return result;
+		}
+
+		static json11::Json BuildJson(ValueList& list)
+		{
+			json11::Json::array result = {};
+
+			for (auto& value : list.GetValues())
 			{
-				result[Property_Language] = ToString(recipe.GetLanguageVersion());
-			}
-
-			if (recipe.HasDependencies())
-			{
-				json11::Json::array dependencies;
-				for (auto& value : recipe.GetDependencies())
-				{
-					dependencies.push_back(value.ToString());
-				}
-
-				result[Property_Dependencies] = std::move(dependencies);
-			}
-
-			if (recipe.HasDevDependencies())
-			{
-				json11::Json::array devDependencies;
-				for (auto& value : recipe.GetDevDependencies())
-				{
-					devDependencies.push_back(value.ToString());
-				}
-
-				result[Property_DevDependencies] = std::move(devDependencies);
-			}
-
-			if (recipe.HasPublic())
-			{
-				result[Property_Public] = recipe.GetPublic();
-			}
-
-			if (recipe.HasSource())
-			{
-				json11::Json::array source;
-				for (auto& value : recipe.GetSource())
-				{
-					source.push_back(value);
-				}
-
-				result[Property_Source] = std::move(source);
-			}
-
-			if (recipe.HasIncludePaths())
-			{
-				json11::Json::array includePaths;
-				for (auto& value : recipe.GetIncludePaths())
-				{
-					includePaths.push_back(value);
-				}
-
-				result[Property_IncludePaths] = std::move(includePaths);
-			}
-
-			if (recipe.HasDefines())
-			{
-				json11::Json::array defines;
-				for (auto& value : recipe.GetDefines())
-				{
-					defines.push_back(value);
-				}
-
-				result[Property_Defines] = std::move(defines);
+				result.push_back(BuildJson(value));
 			}
 
 			return result;

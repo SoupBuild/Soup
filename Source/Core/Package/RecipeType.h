@@ -40,7 +40,7 @@ namespace Soup
 		}
 	}
 
-	export RecipeType ParseRecipeType(const std::string& value)
+	export RecipeType ParseRecipeType(std::string_view value)
 	{
 		if (value == "Executable")
 			return RecipeType::Executable;

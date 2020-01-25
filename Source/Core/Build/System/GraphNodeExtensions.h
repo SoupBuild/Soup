@@ -3,8 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "BuildStringList.h"
-#include "BuildReferenceList.h"
+#include "StringList.h"
+#include "ReferenceList.h"
 
 namespace Soup::Build
 {

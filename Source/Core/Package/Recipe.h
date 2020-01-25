@@ -3,347 +3,340 @@
 // </copyright>
 
 #pragma once
+#include "Build/System/ValueTable.h"
 #include "PackageReference.h"
 #include "RecipeType.h"
 #include "RecipeLanguageVersion.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The recipe container
 	/// </summary>
 	export class Recipe
 	{
+	private:
+		static constexpr const char* Property_Name = "Name";
+		static constexpr const char* Property_Version = "Version";
+		static constexpr const char* Property_Type = "Type";
+		static constexpr const char* Property_Language = "Language";
+		static constexpr const char* Property_Dependencies = "Dependencies";
+		static constexpr const char* Property_Extensions = "Extensions";
+		static constexpr const char* Property_Public = "Public";
+		static constexpr const char* Property_Source = "Source";
+		static constexpr const char* Property_IncludePaths = "IncludePaths";
+		static constexpr const char* Property_Defines = "Defines";
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
 		Recipe() :
-			_isDirty(false),
-			_name(),
-			_version(),
-			_type(std::nullopt),
-			_languageVersion(std::nullopt),
-			_dependencies(std::nullopt),
-			_devDependencies(std::nullopt),
-			_public(std::nullopt),
-			_source(std::nullopt),
-			_includePaths(std::nullopt),
-			_defines(std::nullopt)
+			_table()
 		{
+			SetName("");
+			SetVersion(SemanticVersion());
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
 		Recipe(
-			std::string name,
+			std::string_view name,
 			SemanticVersion version) :
-			_isDirty(false),
-			_name(std::move(name)),
-			_version(version),
-			_type(std::nullopt),
-			_languageVersion(std::nullopt),
-			_dependencies(std::nullopt),
-			_devDependencies(std::nullopt),
-			_public(std::nullopt),
-			_source(std::nullopt),
-			_includePaths(std::nullopt),
-			_defines(std::nullopt)
+			_table()
 		{
+			SetName(name);
+			SetVersion(version);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
 		Recipe(
-			std::string name,
+			std::string_view name,
 			SemanticVersion version,
 			std::optional<RecipeType> type,
 			std::optional<RecipeLanguageVersion> languageVersion,
 			std::optional<std::vector<PackageReference>> dependencies,
-			std::optional<std::vector<PackageReference>> devDependencies,
+			std::optional<std::vector<PackageReference>> extensions,
 			std::optional<std::string> publicFile,
 			std::optional<std::vector<std::string>> source,
 			std::optional<std::vector<std::string>> includePaths,
 			std::optional<std::vector<std::string>> defines) :
-			_isDirty(false),
-			_name(std::move(name)),
-			_version(version),
-			_type(std::move(type)),
-			_languageVersion(std::move(languageVersion)),
-			_dependencies(std::move(dependencies)),
-			_devDependencies(std::move(devDependencies)),
-			_public(std::move(publicFile)),
-			_source(std::move(source)),
-			_includePaths(std::move(includePaths)),
-			_defines(std::move(defines))
+			_table()
 		{
+			SetName(name);
+			SetVersion(version);
+
+			if (type.has_value())
+				SetType(type.value());
+
+			if (languageVersion.has_value())
+				SetLanguageVersion(languageVersion.value());
+
+			if (dependencies.has_value())
+				SetDependencies(dependencies.value());
+
+			if (extensions.has_value())
+				SetExtensions(extensions.value());
+
+			if (publicFile.has_value())
+				SetPublic(publicFile.value());
+
+			if (source.has_value())
+				SetSource(source.value());
+
+			if (includePaths.has_value())
+				SetIncludePaths(includePaths.value());
+
+			if (defines.has_value())
+				SetDefines(defines.value());
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether the content has changed or not
+		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
-		bool IsDirty() const
+		Recipe(ValueTable table) :
+			_table(std::move(table))
 		{
-			return _isDirty;
+			if (!ValueTableWrapper(_table).HasValue(Property_Name))
+				throw std::runtime_error("Missing required property Name");
+			if (!ValueTableWrapper(_table).HasValue(Property_Version))
+				throw std::runtime_error("Missing required property Version");
 		}
 
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
-		const std::string& GetName() const
+		std::string_view GetName()
 		{
-			return _name;
+			return ValueTableWrapper(_table).GetValue(Property_Name).AsString().GetValue();
 		}
 
-		void SetName(std::string value)
+		void SetName(std::string_view value)
 		{
-			if (value != _name)
-			{
-				_name = std::move(value);
-				_isDirty = true;
-			}
+			ValueTableWrapper(_table).EnsureValue(Property_Name).SetValueString(value);
 		}
 
 		/// <summary>
 		/// Gets or sets the package version
 		/// </summary>
-		SemanticVersion GetVersion() const
+		SemanticVersion GetVersion()
 		{
-			return _version;
+			return SemanticVersion::Parse(
+				ValueTableWrapper(_table).GetValue(Property_Version).AsString().GetValue());
 		}
 
 		void SetVersion(SemanticVersion value)
 		{
-			if (value != _version)
-			{
-				_version = value;
-				_isDirty = true;
-			}
+			return ValueTableWrapper(_table).EnsureValue(Property_Version).SetValueString(value.ToString());
 		}
 
 		/// <summary>
 		/// Gets or sets the package type
 		/// </summary>
-		bool HasType() const
+		bool HasType()
 		{
-			return _type.has_value();
+			return ValueTableWrapper(_table).HasValue(Property_Type);
 		}
 
-		RecipeType GetType() const
+		RecipeType GetType()
 		{
-			if (HasType())
-			{
-				return _type.value();
-			}
-			else
-			{
-				return DefaultRecipeType;
-			}
+			if (!HasType())
+				throw std::runtime_error("No type.");
+
+			return ParseRecipeType(ValueTableWrapper(_table).GetValue(Property_Type).AsString().GetValue());
 		}
 
 		void SetType(RecipeType value)
 		{
-			if (!HasType() || _type.value() != value)
-			{
-				_type = value;
-				_isDirty = true;
-			}
+			return ValueTableWrapper(_table).EnsureValue(Property_Type).SetValueString(ToString(value));
 		}
 
 		/// <summary>
 		/// Gets or sets the language version
 		/// </summary>
-		bool HasLanguageVersion() const
+		bool HasLanguageVersion()
 		{
-			return _languageVersion.has_value();
+			return ValueTableWrapper(_table).HasValue(Property_Language);
 		}
 
-		RecipeLanguageVersion GetLanguageVersion() const
+		RecipeLanguageVersion GetLanguageVersion()
 		{
-			if (HasLanguageVersion())
-			{
-				return _languageVersion.value();
-			}
-			else
-			{
-				return DefaultRecipeLanguageVersion;
-			}
+			if (!HasLanguageVersion())
+				throw std::runtime_error("No language version.");
+
+			return ParseRecipeLanguageVersion(
+				ValueTableWrapper(_table).GetValue(Property_Language).AsString().GetValue());
+		}
+
+		void SetLanguageVersion(RecipeLanguageVersion value)
+		{
+			return ValueTableWrapper(_table).EnsureValue(Property_Language).SetValueString(ToString(value));
 		}
 
 		/// <summary>
 		/// Gets or sets the list of dependency packages
 		/// TODO: Observable?
 		/// </summary>
-		bool HasDependencies() const
+		bool HasDependencies()
 		{
-			return _dependencies.has_value();
+			return ValueTableWrapper(_table).HasValue(Property_Dependencies);
 		}
 
-		const std::vector<PackageReference>& GetDependencies() const
+		std::vector<PackageReference> GetDependencies()
 		{
 			if (!HasDependencies())
 				throw std::runtime_error("No dependencies.");
-			return _dependencies.value();
+
+			auto values = ValueTableWrapper(_table).GetValue(Property_Dependencies).AsList().CopyAsStringVector();
+			auto result = std::vector<PackageReference>();
+			for (auto& value : values)
+			{
+				result.push_back(PackageReference::Parse(value));
+			}
+
+			return result;
 		}
 
-		void SetDependencies(const std::vector<PackageReference>& value)
+		void SetDependencies(const std::vector<PackageReference>& values)
 		{
-			if (!HasDependencies() || _dependencies.value() != value)
+			auto stringValues = std::vector<std::string>();
+			for (auto& value : values)
 			{
-				_dependencies = value;
-				_isDirty = true;
+				stringValues.push_back(value.ToString());
 			}
+
+			ValueTableWrapper(_table).EnsureValue(Property_Dependencies).EnsureList().SetAll(stringValues);
 		}
 
 		/// <summary>
-		/// Gets or sets the list of dev dependency packages
+		/// Gets or sets the list of dextension packages
 		/// TODO: Observable?
 		/// </summary>
-		bool HasDevDependencies() const
+		bool HasExtensions()
 		{
-			return _devDependencies.has_value();
+			return ValueTableWrapper(_table).HasValue(Property_Extensions);
 		}
 
-		const std::vector<PackageReference>& GetDevDependencies() const
+		std::vector<PackageReference> GetExtensions()
 		{
-			if (!HasDevDependencies())
-				throw std::runtime_error("No dev dependencies.");
-			return _devDependencies.value();
-		}
+			if (!HasExtensions())
+				throw std::runtime_error("No extensions.");
 
-		void SetDevDependencies(const std::vector<PackageReference>& value)
-		{
-			if (!HasDevDependencies() || _devDependencies.value() != value)
+			auto values = ValueTableWrapper(_table).GetValue(Property_Extensions).AsList().CopyAsStringVector();
+			auto result = std::vector<PackageReference>();
+			for (auto& value : values)
 			{
-				_devDependencies = value;
-				_isDirty = true;
+				result.push_back(PackageReference::Parse(value));
 			}
+
+			return result;
+		}
+
+		void SetExtensions(const std::vector<PackageReference>& values)
+		{
+			auto stringValues = std::vector<std::string>();
+			for (auto& value : values)
+			{
+				stringValues.push_back(value.ToString());
+			}
+
+			ValueTableWrapper(_table).EnsureValue(Property_Extensions).EnsureList().SetAll(stringValues);
 		}
 
 		/// <summary>
 		/// Gets or sets the public file
 		/// </summary>
-		bool HasPublic() const
+		bool HasPublic()
 		{
-			return _public.has_value();
+			return ValueTableWrapper(_table).HasValue(Property_Public);
 		}
 
-		const std::string& GetPublic() const
-		{
-			if (!HasPublic())
-				throw std::runtime_error("No public.");
-			return _public.value();
-		}
-
-		Path GetPublicAsPath() const
+		std::string_view GetPublic()
 		{
 			if (!HasPublic())
 				throw std::runtime_error("No public.");
 
-			return Path(_public.value());
+			return ValueTableWrapper(_table).GetValue(Property_Public).AsString().GetValue();
 		}
 
-		void SetPublic(const std::string& value)
+		void SetPublic(std::string_view value)
 		{
-			if (!HasPublic() || _public.value() != value)
-			{
-				_public = value;
-				_isDirty = true;
-			}
+			ValueTableWrapper(_table).EnsureValue(Property_Public).SetValueString(value);
 		}
 
 		/// <summary>
 		/// Gets or sets the source values
 		/// TODO: Observable?
 		/// </summary>
-		bool HasSource() const
+		bool HasSource()
 		{
-			return _source.has_value();
+			return ValueTableWrapper(_table).HasValue(Property_Source);
 		}
 
-		const std::vector<std::string>& GetSource() const
+		std::vector<std::string> GetSource()
 		{
 			if (!HasSource())
 				throw std::runtime_error("No source.");
-			return _source.value();
+
+			return ValueTableWrapper(_table).GetValue(Property_Source).AsList().CopyAsStringVector();
 		}
 
-		std::vector<Path> GetSourceAsPath() const
+		void SetSource(const std::vector<std::string>& values)
 		{
-			std::vector<Path> result;
-			if (HasSource())
-			{
-				result.reserve(_source.value().size());
-				for (auto& value : _source.value())
-					result.push_back(Path(value));
-			}
-
-			return result;
-		}
-
-		void SetSource(const std::vector<std::string>& value)
-		{
-			if (!HasSource() || _source.value() != value)
-			{
-				_source = value;
-				_isDirty = true;
-			}
+			ValueTableWrapper(_table).EnsureValue(Property_Source).EnsureList().SetAll(values);
 		}
 
 		/// <summary>
 		/// Gets or sets the include paths values
-		/// TODO: Observable?
 		/// </summary>
-		bool HasIncludePaths() const
+		bool HasIncludePaths()
 		{
-			return _includePaths.has_value();
+			return ValueTableWrapper(_table).HasValue(Property_IncludePaths);
 		}
 
-		const std::vector<std::string>& GetIncludePaths() const
-		{
-			if (!HasIncludePaths())
-				throw std::runtime_error("No includePaths.");
-			return _includePaths.value();
-		}
-
-		std::vector<Path> GetIncludePathsAsPath() const
+		std::vector<std::string> GetIncludePaths()
 		{
 			if (!HasIncludePaths())
 				throw std::runtime_error("No includePaths.");
 
-			std::vector<Path> result;
-			result.reserve(_includePaths.value().size());
-			for (auto& value : _includePaths.value())
-				result.push_back(Path(value));
+			return ValueTableWrapper(_table).GetValue(Property_IncludePaths).AsList().CopyAsStringVector();
+		}
 
-			return result;
+		void SetIncludePaths(const std::vector<std::string>& values)
+		{
+			ValueTableWrapper(_table).EnsureValue(Property_IncludePaths).EnsureList().SetAll(values);
 		}
 
 		/// <summary>
 		/// Gets or sets the define values
-		/// TODO: Observable?
 		/// </summary>
-		bool HasDefines() const
+		bool HasDefines()
 		{
-			return _defines.has_value();
+			return ValueTableWrapper(_table).HasValue(Property_Defines);
 		}
 
-		const std::vector<std::string>& GetDefines() const
+		std::vector<std::string> GetDefines()
 		{
 			if (!HasDefines())
 				throw std::runtime_error("No defines.");
-			return _defines.value();
+
+			return ValueTableWrapper(_table).GetValue(Property_Defines).AsList().CopyAsStringVector();
 		}
 
-		void SetDefines(const std::vector<std::string>& value)
+		void SetDefines(const std::vector<std::string>& values)
 		{
-			if (!HasDefines() || _defines.value() != value)
-			{
-				_defines = value;
-				_isDirty = true;
-			}
+			ValueTableWrapper(_table).EnsureValue(Property_Defines).EnsureList().SetAll(values);
+		}
+
+		/// <summary>
+		/// Raw access
+		/// </summary>
+		ValueTable& GetTable()
+		{
+			return _table;
 		}
 
 		/// <summary>
@@ -351,16 +344,7 @@ namespace Soup
 		/// </summary>
 		bool operator ==(const Recipe& rhs) const
 		{
-			return _name == rhs._name &&
-				_version == rhs._version &&
-				_type == rhs._type &&
-				_languageVersion == rhs._languageVersion &&
-				_dependencies == rhs._dependencies &&
-				_devDependencies == rhs._devDependencies &&
-				_public == rhs._public &&
-				_source == rhs._source &&
-				_includePaths == rhs._includePaths &&
-				_defines == rhs._defines;
+			return _table == rhs._table;
 		}
 
 		/// <summary>
@@ -372,18 +356,6 @@ namespace Soup
 		}
 
 	private:
-		static const RecipeType DefaultRecipeType = RecipeType::StaticLibrary;
-		static const RecipeLanguageVersion DefaultRecipeLanguageVersion = RecipeLanguageVersion::CPP20;
-		bool _isDirty;
-		std::string _name;
-		SemanticVersion _version;
-		std::optional<RecipeType> _type;
-		std::optional<RecipeLanguageVersion> _languageVersion;
-		std::optional<std::vector<PackageReference>> _dependencies;
-		std::optional<std::vector<PackageReference>> _devDependencies;
-		std::optional<std::string> _public;
-		std::optional<std::vector<std::string>> _source;
-		std::optional<std::vector<std::string>> _includePaths;
-		std::optional<std::vector<std::string>> _defines;
+		ValueTable _table;
 	};
 }

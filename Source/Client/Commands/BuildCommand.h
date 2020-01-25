@@ -52,8 +52,8 @@ namespace Soup::Client
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);
-			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			Build::Recipe recipe = {};
+			if (!Build::RecipeExtensions::TryLoadFromFile(recipePath, recipe))
 			{
 				Log::Error("Could not load the recipe file.");
 				return;
@@ -74,16 +74,16 @@ namespace Soup::Client
 
 			// TODO: Hard coded to windows MSVC runtime libraries
 			// And we only trust the config today
-			arguments.PlatformIncludePaths = std::vector<Path>({});
+			arguments.PlatformIncludePaths = std::vector<std::string>({});
 			for (auto& path : config.GetWindowsSDKIncludePaths())
 			{
-				arguments.PlatformIncludePaths.push_back(Path(path));
+				arguments.PlatformIncludePaths.push_back(path);
 			}
 
-			arguments.PlatformLibraryPaths = std::vector<Path>({});
+			arguments.PlatformLibraryPaths = std::vector<std::string>({});
 			for (auto& path : config.GetWindowsSDKLibraryPaths())
 			{
-				arguments.PlatformLibraryPaths.push_back(Path(path));
+				arguments.PlatformLibraryPaths.push_back(path);
 			}
 
 			arguments.PlatformPreprocessorDefinitions = std::vector<std::string>({
@@ -131,7 +131,7 @@ namespace Soup::Client
 			Log::Info("Begin Build:");
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			auto buildManager = RecipeBuildManager(systemCompiler, runtimeCompiler);
+			auto buildManager = Build::RecipeBuildManager(systemCompiler, runtimeCompiler);
 			buildManager.Execute(workingDirectory, recipe, arguments);
 
 			auto endTime = std::chrono::high_resolution_clock::now();

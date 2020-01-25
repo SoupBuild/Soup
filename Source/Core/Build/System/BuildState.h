@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "BuildPropertyBag.h"
+#include "ValueTable.h"
 
 namespace Soup::Build
 {
@@ -16,11 +16,13 @@ namespace Soup::Build
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
-		BuildState() :
+		BuildState(ValueTable recipeState) :
 			_nodes(),
 			_activeState(),
 			_parentState()
 		{
+			// Initialize the Recipe state
+			_activeState.SetValue("Recipe", Value(std::move(recipeState)));
 		}
 
 		/// <summary>
@@ -61,7 +63,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Get a reference to the active state
 		/// </summary>
-		IPropertyBag& GetActiveState() noexcept override final
+		IValueTable& GetActiveState() noexcept override final
 		{
 			return _activeState;
 		}
@@ -70,7 +72,7 @@ namespace Soup::Build
 		/// Get a reference to the child state. All of these properties will be 
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
-		IPropertyBag& GetParentState() noexcept override final
+		IValueTable& GetParentState() noexcept override final
 		{
 			return _parentState;
 		}
@@ -129,14 +131,9 @@ namespace Soup::Build
 		/// Get a reference to the child state. All of these properties will be 
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
-		void CombineChildState(const BuildState& childState)
+		void CombineChildState(BuildState& childState)
 		{
-			auto& childParentState = childState._parentState;
-			auto activeState = PropertyBagWrapper(_activeState);
-			for (auto& propertyList : childParentState.GetPropertyLists())
-			{
-				activeState.AppendPropertyStringList(propertyList.first, propertyList.second.GetValues());
-			}
+			CombineListState(childState._parentState, ValueTableWrapper(_activeState));
 		}
 
 		void LogActive()
@@ -145,8 +142,42 @@ namespace Soup::Build
 		}
 
 	private:
+		/// <summary>
+		/// Combine the table and list structure from the input state into the target
+		/// Note: Ignores primitive value properties on a table
+		/// </summary>
+		void CombineListState(ValueTable& input, ValueTableWrapper target)
+		{
+			// Enumerate over all property values
+			// Recursively combine tables and concatenate lists
+			for (auto& valueIter : input.GetValues())
+			{
+				auto& name = valueIter.first;
+				auto& value = valueIter.second;
+				switch (value.GetType())
+				{
+					case ValueType::Table:
+						// Attempt to create the table in the target and recurse the merge
+						CombineListState(
+							value.AsTable(),
+							target.EnsureValue(name).EnsureTable());
+						break;
+					case ValueType::List:
+						// Attempt to create the list on the target and concatenate the input
+						target.EnsureValue(name).EnsureList().Append(
+							ValueListWrapper(value.AsList()));
+						break;
+					default:
+						// Ignore all other types
+						break;
+				}
+
+			}
+		}
+
+	private:
 		std::vector<Memory::Reference<BuildGraphNode>> _nodes;
-		BuildPropertyBag _activeState;
-		BuildPropertyBag _parentState;
+		ValueTable _activeState;
+		ValueTable _parentState;
 	};
 }

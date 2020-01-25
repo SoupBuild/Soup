@@ -36,7 +36,7 @@ namespace Soup::Client
 				workingDirectory +
 				Path(Constants::RecipeFileName);
 
-			auto recipe = Recipe(
+			auto recipe = Build::Recipe(
 				workingDirectory.GetFileName(),
 				SemanticVersion(1, 0, 0));
 
@@ -48,7 +48,7 @@ namespace Soup::Client
 			UpdateDefaultValues(recipe);
 
 			// Save the state of the recipe if it has changed
-			RecipeExtensions::SaveToFile(recipePath, recipe);
+			Build::RecipeExtensions::SaveToFile(recipePath, recipe);
 
 			// Save a simple main method
 			auto mainFileContent =
@@ -65,9 +65,9 @@ int main()
 		}
 
 	private:
-		void UpdateDefaultValues(Recipe& recipe)
+		void UpdateDefaultValues(Build::Recipe& recipe)
 		{
-			Log::HighPriority("Name: (" + recipe.GetName() + ")");
+			Log::HighPriority("Name: (" + std::string(recipe.GetName()) + ")");
 			auto newName = std::string();
 			std::getline(std::cin, newName);
 			if (!newName.empty())

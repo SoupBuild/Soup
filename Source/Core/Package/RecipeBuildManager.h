@@ -8,7 +8,7 @@
 #include "Build/Runner/BuildRunner.h"
 #include "Build/System/BuildSystem.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The recipe build manager that knows how to perform the correct build for a recipe 
@@ -33,7 +33,7 @@ namespace Soup
 		/// </summary>
 		void Execute(
 			const Path& workingDirectory,
-			const Recipe& recipe,
+			Recipe& recipe,
 			const RecipeBuildArguments& arguments)
 		{
 			// Clear the build set so we check all dependencies
@@ -48,7 +48,7 @@ namespace Soup
 			try
 			{
 				auto rootParentSet = std::set<std::string>();
-				auto rootState = Build::BuildState();
+				auto rootState = BuildState(recipe.GetTable());
 				projectId = BuildRecipeAndDependencies(
 					projectId,
 					workingDirectory,
@@ -74,18 +74,18 @@ namespace Soup
 		int BuildRecipeAndDependencies(
 			int projectId,
 			const Path& workingDirectory,
-			const Recipe& recipe,
+			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
 			const std::set<std::string>& parentSet,
-			Build::BuildState& parentState)
+			BuildState& parentState)
 		{
 			// Add current package to the parent set when building child dependencies
 			auto activeParentSet = parentSet;
-			activeParentSet.insert(recipe.GetName());
+			activeParentSet.insert(std::string(recipe.GetName()));
 
-			// Start a new active state
-			auto activeState = Build::BuildState();
+			// Start a new active state that is initialized to the recipe itself
+			auto activeState = BuildState(recipe.GetTable());
 
 			if (recipe.HasDependencies())
 			{
@@ -102,9 +102,9 @@ namespace Soup
 					}
 
 					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependecyRecipe.GetName()))
+					if (activeParentSet.contains(std::string(dependecyRecipe.GetName())))
 					{
-						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
+						Log::Error("Found circular dependency: " + std::string(recipe.GetName()) + " -> " + std::string(dependecyRecipe.GetName()));
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 					}
 
@@ -120,9 +120,9 @@ namespace Soup
 				}
 			}
 
-			if (recipe.HasDevDependencies())
+			if (recipe.HasExtensions())
 			{
-				for (auto dependecy : recipe.GetDevDependencies())
+				for (auto dependecy : recipe.GetExtensions())
 				{
 					// Load this package recipe
 					auto packagePath = GetPackageReferencePath(workingDirectory, dependecy);
@@ -135,15 +135,15 @@ namespace Soup
 					}
 
 					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependecyRecipe.GetName()))
+					if (activeParentSet.contains(std::string(dependecyRecipe.GetName())))
 					{
-						Log::Error("Found circular dev dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
+						Log::Error("Found circular dev dependency: " + std::string(recipe.GetName()) + " -> " + std::string(dependecyRecipe.GetName()));
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dev dependency.");
 					}
 
 					// Build all recursive dependencies
 					// Note: Ignore all shared dependencies. They are not exposed past dev dependencies.
-					auto ignoredBuildState = Build::BuildState();
+					auto ignoredBuildState = BuildState(dependecyRecipe.GetTable());
 					projectId = BuildRecipeAndDependencies(
 						projectId,
 						packagePath,
@@ -176,11 +176,11 @@ namespace Soup
 		int BuildRecipe(
 			int projectId,
 			const Path& workingDirectory,
-			const Recipe& recipe,
+			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
-			Build::BuildState& activeState,
-			Build::BuildState& parentState)
+			BuildState& activeState,
+			BuildState& parentState)
 		{
 			// TODO: RAII for active id
 			try
@@ -188,10 +188,10 @@ namespace Soup
 				Log::SetActiveId(projectId);
 				Log::Diag("Running InProcess Build");
 
-				auto findBuildState = _buildSet.find(recipe.GetName());
+				auto findBuildState = _buildSet.find(std::string(recipe.GetName()));
 				if (findBuildState != _buildSet.end())
 				{
-					Log::Diag("Recipe already built: " + recipe.GetName());
+					Log::Diag("Recipe already built: " + std::string(recipe.GetName()));
 
 					// Move the parent state from active into the parents active state :)
 					parentState.CombineChildState(findBuildState->second);
@@ -234,41 +234,41 @@ namespace Soup
 		void RunInProcessBuild(
 			int projectId,
 			const Path& packageRoot,
-			const Recipe& recipe,
+			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
-			Build::BuildState& state)
+			BuildState& state)
 		{
 			// Ensure the external build extension libraries outlive all usage in the build system
 			auto activeExtensionLibraries = std::vector<System::Library>();
 
 			{
 				// Create a new build system for the requested build
-				auto buildSystem = Build::BuildSystem();
-				auto activeState = Build::PropertyBagWrapper(state.GetActiveState());
+				auto buildSystem = BuildSystem();
+				auto activeState = ValueTableWrapper(state.GetActiveState());
 
 				// Select the correct compiler to use
 				std::string activeCompiler = "";
 				if (isSystemBuild)
 				{
-					Log::HighPriority("System Build '" + recipe.GetName() + "'");
+					Log::HighPriority("System Build '" + std::string(recipe.GetName()) + "'");
 					activeCompiler = _systemCompiler;
 				}
 				else
 				{
-					Log::HighPriority("Build '" + recipe.GetName() + "'");
+					Log::HighPriority("Build '" + std::string(recipe.GetName()) + "'");
 					activeCompiler = _runtimeCompiler;
 				}
 
 				// Set the input properties
-				activeState.SetPropertyStringValue("PackageRoot", packageRoot.ToString());
-				activeState.SetPropertyBooleanValue("ForceRebuild", arguments.ForceRebuild); // TOOD: Remove?
-				activeState.SetPropertyStringValue("BuildFlavor", arguments.Flavor);
-				activeState.SetPropertyStringValue("CompilerName", activeCompiler);
-				activeState.SetPropertyStringList("PlatformLibraries", arguments.PlatformLibraries);
-				activeState.SetPropertyStringList("PlatformIncludePaths", arguments.PlatformIncludePaths);
-				activeState.SetPropertyStringList("PlatformLibraryPaths", arguments.PlatformLibraryPaths);
-				activeState.SetPropertyStringList("PlatformPreprocessorDefinitions", arguments.PlatformPreprocessorDefinitions);
+				activeState.EnsureValue("PackageRoot").SetValueString(packageRoot.ToString());
+				activeState.EnsureValue("ForceRebuild").SetValueBoolean(arguments.ForceRebuild); // TOOD: Remove?
+				activeState.EnsureValue("BuildFlavor").SetValueString(arguments.Flavor);
+				activeState.EnsureValue("CompilerName").SetValueString(activeCompiler);
+				activeState.EnsureValue("PlatformLibraries").SetValueStringList(arguments.PlatformLibraries);
+				activeState.EnsureValue("PlatformIncludePaths").SetValueStringList(arguments.PlatformIncludePaths);
+				activeState.EnsureValue("PlatformLibraryPaths").SetValueStringList(arguments.PlatformLibraryPaths);
+				activeState.EnsureValue("PlatformPreprocessorDefinitions").SetValueStringList(arguments.PlatformPreprocessorDefinitions);
 
 				// Run all build extensions
 				// Note: Keep the extension libraries open while running the build system
@@ -279,16 +279,16 @@ namespace Soup
 				auto recipeBuildLibrary = RunBuildExtension(recipeBuildExtensionPath, buildSystem);
 				activeExtensionLibraries.push_back(std::move(recipeBuildLibrary));
 
-				// Run all dev dependency extensions
-				if (recipe.HasDevDependencies())
+				// Run all build extensions
+				if (recipe.HasExtensions())
 				{
-					for (auto dependecy : recipe.GetDevDependencies())
+					for (auto dependecy : recipe.GetExtensions())
 					{
 						auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependecy);
 						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 							packagePath,
 							RecipeExtensions::GetBinaryDirectory(_systemCompiler, arguments.Flavor),
-							std::string(".dll"));
+							std::string("dll"));
 						
 						auto library = RunBuildExtension(libraryPath, buildSystem);
 						activeExtensionLibraries.push_back(std::move(library));
@@ -299,7 +299,7 @@ namespace Soup
 				buildSystem.Execute(state);
 
 				// Execute the build nodes
-				auto runner = Build::BuildRunner(packageRoot);
+				auto runner = BuildRunner(packageRoot);
 				runner.Execute(state.GetBuildNodes(), arguments.ForceRebuild);
 			}
 		}
@@ -318,14 +318,14 @@ namespace Soup
 
 		System::Library RunBuildExtension(
 			Path& libraryPath,
-			Build::IBuildSystem& buildSystem)
+			IBuildSystem& buildSystem)
 		{
 			try
 			{
 				Log::Diag("Running Build Extension: " + libraryPath.ToString());
 				auto library = System::DynamicLibraryManager::LoadDynamicLibrary(
 					libraryPath.ToString().c_str());
-				auto function = (int(*)(Build::IBuildSystem&))library.GetFunction(
+				auto function = (int(*)(IBuildSystem&))library.GetFunction(
 					"RegisterBuildExtension");
 				auto result = function(buildSystem);
 				if (result != 0)
@@ -350,6 +350,6 @@ namespace Soup
 	private:
 		std::string _systemCompiler;
 		std::string _runtimeCompiler;
-		std::map<std::string, Build::BuildState> _buildSet;
+		std::map<std::string, BuildState> _buildSet;
 	};
 }

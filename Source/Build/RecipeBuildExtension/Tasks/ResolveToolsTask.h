@@ -66,9 +66,9 @@ namespace RecipeBuild
 				visualStudioInstallRoot + Path("/VC/Tools/MSVC/") + Path(visualCompilerVersion);
 
 			// Save the build properties
-			state.SetPropertyStringValue("MSVS.InstallRoot", visualStudioInstallRoot.ToString());
-			state.SetPropertyStringValue("MSVC.Version", visualCompilerVersion);
-			state.SetPropertyStringValue("MSVC.VCToolsRoot", visualCompilerVersionFolder.ToString());
+			state.EnsureValue("MSVS.InstallRoot").SetValueString(visualStudioInstallRoot.ToString());
+			state.EnsureValue("MSVC.Version").SetValueString(visualCompilerVersion);
+			state.EnsureValue("MSVC.VCToolsRoot").SetValueString(visualCompilerVersionFolder.ToString());
 
 			// Calculate the windows kits directory
 			auto windows10KitPath = Path("C:/Program Files (x86)/Windows Kits/10/");
@@ -97,8 +97,8 @@ namespace RecipeBuild
 				visualCompilerVersionFolder + Path("/lib/x64/"),
 			});
 
-			state.SetPropertyStringList("PlatformIncludePaths", platformIncludePaths);
-			state.SetPropertyStringList("PlatformLibraryPaths", platformLibraryPaths);
+			state.EnsureValue("PlatformIncludePaths").SetValuePathList(platformIncludePaths);
+			state.EnsureValue("PlatformLibraryPaths").SetValuePathList(platformLibraryPaths);
 
 			return 0;
 		}
@@ -118,6 +118,13 @@ namespace RecipeBuild
 				"-property",
 				"installationPath",
 			});
+
+			// Check if we should include pre-release versions
+			bool includePrerelease = true;
+			if (includePrerelease)
+			{
+				arguments.push_back("-prerelease");
+			}
 
 			// Execute the requested target
 			auto result = System::IProcessManager::Current().Execute(
@@ -165,7 +172,7 @@ namespace RecipeBuild
 			}
 
 			// Read the entire file into a string
-			auto stream = System::IFileSystem::Current().OpenRead(visualCompilerToolsDefaultVersionFile);
+			auto stream = System::IFileSystem::Current().OpenRead(visualCompilerToolsDefaultVersionFile, false);
 
 			// The first line is the version
 			auto version = std::string();

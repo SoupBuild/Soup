@@ -7,7 +7,7 @@
 
 namespace RecipeBuild
 {
-	export using CreateCompiler = std::function<std::shared_ptr<Soup::ICompiler>(Soup::Build::PropertyBagWrapper&)>;
+	export using CreateCompiler = std::function<std::shared_ptr<Soup::ICompiler>(Soup::Build::ValueTableWrapper&)>;
 	export using CompilerFactory = std::map<std::string, CreateCompiler>;
 
 	/// <summary>
@@ -64,65 +64,97 @@ namespace RecipeBuild
 			auto activeState = buildState.GetActiveState();
 			auto parentState = buildState.GetParentState();
 
+			auto buildTable = activeState.GetValue("Build").AsTable();
+
 			auto arguments = BuildArguments();
-			arguments.TargetName = activeState.GetPropertyStringValue("TargetName");
-			arguments.TargetType = static_cast<BuildTargetType>(activeState.GetPropertyIntegerValue("TargetType"));
-			arguments.LanguageStandard = static_cast<Soup::LanguageStandard>(activeState.GetPropertyIntegerValue("LanguageStandard"));
-			arguments.WorkingDirectory = Path(activeState.GetPropertyStringValue("WorkingDirectory"));
-			arguments.ObjectDirectory = Path(activeState.GetPropertyStringValue("ObjectDirectory"));
-			arguments.BinaryDirectory = Path(activeState.GetPropertyStringValue("BinaryDirectory"));
+			arguments.TargetName = buildTable.GetValue("TargetName").AsString().GetValue();
+			arguments.TargetType = static_cast<BuildTargetType>(
+				buildTable.GetValue("TargetType").AsInteger().GetValue());
+			arguments.LanguageStandard = static_cast<Soup::LanguageStandard>(
+				buildTable.GetValue("LanguageStandard").AsInteger().GetValue());
+			arguments.WorkingDirectory = Path(buildTable.GetValue("WorkingDirectory").AsString().GetValue());
+			arguments.ObjectDirectory = Path(buildTable.GetValue("ObjectDirectory").AsString().GetValue());
+			arguments.BinaryDirectory = Path(buildTable.GetValue("BinaryDirectory").AsString().GetValue());
 
-			if (activeState.HasPropertyValue("ModuleInterfaceSourceFile"))
-				arguments.ModuleInterfaceSourceFile = Path(activeState.GetPropertyStringValue("ModuleInterfaceSourceFile"));
+			if (buildTable.HasValue("ModuleInterfaceSourceFile"))
+			{
+				arguments.ModuleInterfaceSourceFile =
+					Path(buildTable.GetValue("ModuleInterfaceSourceFile").AsString().GetValue());
+			}
 
-			if (activeState.HasPropertyStringList("SourceFiles"))
-				arguments.SourceFiles = activeState.CopyPropertyStringListAsPathVector("SourceFiles");
+			if (buildTable.HasValue("Source"))
+			{
+				arguments.SourceFiles =
+					buildTable.GetValue("Source").AsList().CopyAsPathVector();
+			}
 
-			if (activeState.HasPropertyStringList("IncludeDirectories"))
-				arguments.IncludeDirectories = activeState.CopyPropertyStringListAsPathVector("IncludeDirectories");
+			if (buildTable.HasValue("IncludeDirectories"))
+			{
+				arguments.IncludeDirectories =
+					buildTable.GetValue("IncludeDirectories").AsList().CopyAsPathVector();
+			}
 
-			if (activeState.HasPropertyStringList("LinkLibraries"))
-				arguments.LinkLibraries = activeState.CopyPropertyStringListAsPathVector("LinkLibraries");
+			if (buildTable.HasValue("LinkLibraries"))
+			{
+				arguments.LinkLibraries =
+					buildTable.GetValue("LinkLibraries").AsList().CopyAsPathVector();
+			}
 
-			if (activeState.HasPropertyStringList("LibraryPaths"))
-				arguments.LibraryPaths = activeState.CopyPropertyStringListAsPathVector("LibraryPaths");
+			if (buildTable.HasValue("LibraryPaths"))
+			{
+				arguments.LibraryPaths =
+					buildTable.GetValue("LibraryPaths").AsList().CopyAsPathVector();
+			}
 
-			if (activeState.HasPropertyStringList("PreprocessorDefinitions"))
-				arguments.PreprocessorDefinitions = activeState.CopyPropertyStringListAsStringVector("PreprocessorDefinitions");
+			if (buildTable.HasValue("PreprocessorDefinitions"))
+			{
+				arguments.PreprocessorDefinitions =
+					buildTable.GetValue("PreprocessorDefinitions").AsList().CopyAsStringVector();
+			}
 
-			if (activeState.HasPropertyValue("OptimizationLevel"))
-				arguments.OptimizationLevel = static_cast<BuildOptimizationLevel>(activeState.GetPropertyIntegerValue("OptimizationLevel"));
+			if (buildTable.HasValue("OptimizationLevel"))
+			{
+				arguments.OptimizationLevel = static_cast<BuildOptimizationLevel>(
+					buildTable.GetValue("OptimizationLevel").AsInteger().GetValue());
+			}
 			else
+			{
 				arguments.OptimizationLevel = BuildOptimizationLevel::None;
+			}
 
-			if (activeState.HasPropertyValue("GenerateSourceDebugInfo"))
-				arguments.GenerateSourceDebugInfo = activeState.GetPropertyBooleanValue("GenerateSourceDebugInfo");
+			if (buildTable.HasValue("GenerateSourceDebugInfo"))
+			{
+				arguments.GenerateSourceDebugInfo =
+					buildTable.GetValue("GenerateSourceDebugInfo").AsBoolean().GetValue();
+			}
 			else
+			{
 				arguments.GenerateSourceDebugInfo = false;
+			}
 
 			// Load the runtime dependencies
 			auto runtimeDependencies = std::vector<Path>();
-			if (activeState.HasPropertyStringList("RuntimeDependencies"))
+			if (buildTable.HasValue("RuntimeDependencies"))
 			{
-				runtimeDependencies = activeState.CopyPropertyStringListAsPathVector("RuntimeDependencies");
+				runtimeDependencies = buildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();
 			}
 
 			// Load the link dependencies
 			auto linkDependencies = std::vector<Path>();
-			if (activeState.HasPropertyStringList("LinkDependencies"))
+			if (buildTable.HasValue("LinkDependencies"))
 			{
-				linkDependencies = activeState.CopyPropertyStringListAsPathVector("LinkDependencies");
+				linkDependencies = buildTable.GetValue("LinkDependencies").AsList().CopyAsPathVector();
 			}
 
 			// Load the module references
 			auto moduleDependencies = std::vector<Path>();
-			if (activeState.HasPropertyStringList("ModuleDependencies"))
+			if (buildTable.HasValue("ModuleDependencies"))
 			{
-				moduleDependencies = activeState.CopyPropertyStringListAsPathVector("ModuleDependencies");
+				moduleDependencies = buildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector();
 			}
 
 			// Initialize the compiler to use
-			auto compilerName = std::string(activeState.GetPropertyStringValue("CompilerName"));
+			auto compilerName = std::string(activeState.GetValue("CompilerName").AsString().GetValue());
 			auto findCompilerFactory = _compilerFactory.find(compilerName);
 			if (findCompilerFactory == _compilerFactory.end())
 			{
@@ -160,9 +192,10 @@ namespace RecipeBuild
 			Soup::Build::GraphNodeExtensions::AddLeafChild(compileNodes, linkNode);
 
 			// Always pass along required input to parent build tasks
-			parentState.SetPropertyStringList("ModuleDependencies", moduleDependencies);
-			parentState.SetPropertyStringList("RuntimeDependencies", runtimeDependencies);
-			parentState.SetPropertyStringList("LinkDependencies", linkDependencies);
+			auto parentBuildTable = parentState.EnsureValue("Build").EnsureTable();
+			parentBuildTable.EnsureValue("ModuleDependencies").EnsureList().SetAll(moduleDependencies);
+			parentBuildTable.EnsureValue("RuntimeDependencies").EnsureList().SetAll(runtimeDependencies);
+			parentBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(linkDependencies);
 
 			buildState.LogInfo("Build Generate Done");
 			return 0;

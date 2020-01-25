@@ -28,7 +28,7 @@ namespace RecipeBuild
 		{
 			try
 			{
-				auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
+				auto state = Soup::Build::BuildStateWrapper(buildState);
 
 				return 0;
 			}

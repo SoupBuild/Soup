@@ -4,7 +4,7 @@
 
 #pragma once
 #include "OperationResult.h"
-#include "IPropertyBag.h"
+#include "IValueTable.h"
 
 namespace Soup::Build
 {
@@ -34,13 +34,13 @@ namespace Soup::Build
 		/// <summary>
 		/// Get a reference to the active state
 		/// </summary>
-		virtual IPropertyBag& GetActiveState() noexcept = 0;
+		virtual IValueTable& GetActiveState() noexcept = 0;
 
 		/// <summary>
 		/// Get a reference to the child state. All of these properties will be 
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
-		virtual IPropertyBag& GetParentState() noexcept = 0;
+		virtual IValueTable& GetParentState() noexcept = 0;
 
 		/// <summary>
 		/// Log a message to the build system

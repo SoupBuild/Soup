@@ -4,7 +4,7 @@
 TestState RunRecipeJsonTests() 
  {
 	auto className = "RecipeJsonTests";
-	auto testClass = std::make_shared<Soup::UnitTests::RecipeJsonTests>();
+	auto testClass = std::make_shared<Soup::Build::UnitTests::RecipeJsonTests>();
 	TestState state = { 0, 0 };
 	state += SoupTest::RunTest(className, "Deserialize_GarbageThrows", [&testClass]() { testClass->Deserialize_GarbageThrows(); });
 	state += SoupTest::RunTest(className, "Deserialize_MissingNameThrows", [&testClass]() { testClass->Deserialize_MissingNameThrows(); });

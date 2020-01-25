@@ -3,8 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "BuildStringList.h"
-#include "BuildReferenceList.h"
+#include "StringList.h"
+#include "ReferenceList.h"
 
 namespace Soup::Build
 {
@@ -182,8 +182,8 @@ namespace Soup::Build
 		std::string _program;
 		std::string _arguments;
 		std::string _workingDirectory;
-		BuildStringList _inputFiles;
-		BuildStringList _outputFiles;
-		BuildReferenceList<BuildGraphNode, IGraphNode> _children;
+		StringList _inputFiles;
+		StringList _outputFiles;
+		ReferenceList<BuildGraphNode, IGraphNode> _children;
 	};
 }

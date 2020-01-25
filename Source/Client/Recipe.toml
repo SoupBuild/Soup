@@ -1,0 +1,16 @@
+Name = "Soup"
+Version = "0.5.1"
+Type = "Executable"
+
+Dependencies = [
+    "../Core/",
+    "../Build/RecipeBuildExtension/",
+]
+
+Source = [
+    "Main.cpp",
+]
+IncludePaths = [
+    "Commands/",
+    "Options/",
+]

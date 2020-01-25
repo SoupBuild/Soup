@@ -2,18 +2,14 @@
 
 import SoupBuildCore;
 
-#define DllExport __declspec( dllexport )
+#define DllExport __declspec(dllexport)
 
-class MyBuildTask : public Opal::Memory::ReferenceCounted<Soup::Build::IBuildTask>
+class TestBuildTask : public Opal::Memory::ReferenceCounted<Soup::Build::IBuildTask>
 {
 public:
-    ~MyBuildTask()
-    {
-    }
-
     const char* GetName() const noexcept override final
     {
-        return "MyBuildTask";
+        return "TestBuild";
     }
 
     Soup::Build::OperationResult Execute(Soup::Build::IBuildState& state) noexcept override final
@@ -26,8 +22,8 @@ extern "C"
 {
     DllExport int RegisterBuildExtension(Soup::Build::IBuildSystem& buildSystem)
     {
-        Opal::Memory::Reference<MyBuildTask> myTask = new MyBuildTask();
-        buildSystem.RegisterTask(myTask);
+        Opal::Memory::Reference<TestBuildTask> testBuildTask = new TestBuildTask();
+        buildSystem.RegisterTask(testBuildTask);
         return 0;
     }
 }

@@ -38,20 +38,22 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("obj/File.obj");
 			arguments.RootDirectory = Path("Source");
 
-			auto result = uut.CreateCompileNode(arguments);
+			auto buildState = Build::BuildState(Build::ValueTable());
+			auto result = uut.CreateCompileNode(Build::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = std::make_shared<Build::BuildGraphNode>(
-				"File.cpp",
-				Path("./bin/mock.cl.exe"),
-				"/nologo /std:c++11 /Od /X /RTC1 /EHsc /MTd /bigobj /c File.cpp /Fo\"obj/File.obj\"",
-				Path("Source"),
-				std::vector<Path>({
-					Path("File.cpp"),
-				}),
-				std::vector<Path>({
-					Path("obj/File.obj"),
-				}));
+			auto expected = Memory::Reference<Build::BuildGraphNode>(
+				new Build::BuildGraphNode(
+					"File.cpp",
+					"bin/mock.cl.exe",
+					"/nologo /std:c++11 /Od /X /RTC1 /EHsc /MTd /bigobj /c File.cpp /Fo\"obj/File.obj\"",
+					"Source",
+					std::vector<std::string>({
+						"File.cpp",
+					}),
+					std::vector<std::string>({
+						"obj/File.obj",
+					})));
 
 			AssertExtensions::AreEqual(expected, result);
 		}
@@ -80,22 +82,24 @@ namespace Soup::Compiler::MSVC::UnitTests
 			});
 			arguments.ExportModule = true;
 
-			auto result = uut.CreateCompileNode(arguments);
+			auto buildState = Build::BuildState(Build::ValueTable());
+			auto result = uut.CreateCompileNode(Build::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = std::make_shared<Build::BuildGraphNode>(
-				"File.cpp",
-				Path("./bin/mock.cl.exe"),
-				"/nologo /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MTd /module:reference \"Module.pcm\" /module:export /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
-				Path("Source"),
-				std::vector<Path>({
-					Path("Module.pcm"),
-					Path("File.cpp"),
-				}),
-				std::vector<Path>({
-					Path("obj/File.ifc"),
-					Path("obj/File.obj"),
-				}));
+			auto expected = Memory::Reference<Build::BuildGraphNode>(
+				new Build::BuildGraphNode(
+					"File.cpp",
+					"bin/mock.cl.exe",
+					"/nologo /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MTd /module:reference \"Module.pcm\" /module:export /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
+					"Source",
+					std::vector<std::string>({
+						"Module.pcm",
+						"File.cpp",
+					}),
+					std::vector<std::string>({
+						"obj/File.ifc",
+						"obj/File.obj",
+					})));
 
 			AssertExtensions::AreEqual(expected, result);
 		}
@@ -117,20 +121,22 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("File.mock.obj"),
 			});
 
-			auto result = uut.CreateLinkNode(arguments);
+			auto buildState = Build::BuildState(Build::ValueTable());
+			auto result = uut.CreateLinkNode(Build::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = std::make_shared<Build::BuildGraphNode>(
-				"Library.mock.a",
-				Path("./bin/mock.lib.exe"),
-				"/nologo /machine:X64 /out:\"Library.mock.a\" File.mock.obj",
-				Path("Source"),
-				std::vector<Path>({
-					Path("File.mock.obj"),
-				}),
-				std::vector<Path>({
-					Path("Library.mock.a"),
-				}));
+			auto expected = Memory::Reference<Build::BuildGraphNode>(
+				new Build::BuildGraphNode(
+					"Library.mock.a",
+					"bin/mock.lib.exe",
+					"/nologo /machine:X64 /out:\"Library.mock.a\" File.mock.obj",
+					"Source",
+					std::vector<std::string>({
+						"File.mock.obj",
+					}),
+					std::vector<std::string>({
+						"Library.mock.a",
+					})));
 
 			AssertExtensions::AreEqual(expected, result);
 		}
@@ -155,21 +161,23 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("Library.mock.a"),
 			});
 
-			auto result = uut.CreateLinkNode(arguments);
+			auto buildState = Build::BuildState(Build::ValueTable());
+			auto result = uut.CreateLinkNode(Build::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = std::make_shared<Build::BuildGraphNode>(
-				"Something.exe",
-				Path("./bin/mock.link.exe"),
-				"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",
-				Path("Source"),
-				std::vector<Path>({
-					Path("Library.mock.a"),
-					Path("File.mock.obj"),
-				}),
-				std::vector<Path>({
-					Path("Something.exe"),
-				}));
+			auto expected = Memory::Reference<Build::BuildGraphNode>(
+				new Build::BuildGraphNode(
+					"Something.exe",
+					"bin/mock.link.exe",
+					"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",
+					"Source",
+					std::vector<std::string>({
+						"Library.mock.a",
+						"File.mock.obj",
+					}),
+					std::vector<std::string>({
+						"Something.exe",
+					})));
 				
 			AssertExtensions::AreEqual(expected, result);
 		}
