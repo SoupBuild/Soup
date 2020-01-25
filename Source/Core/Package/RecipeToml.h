@@ -46,7 +46,7 @@ namespace Soup::Build
 			auto root = Build(recipe.GetTable());
 
 			// Write out the entire root table
-			stream << root;
+			stream << toml::format(root, 0);
 		}
 
 	private:

@@ -165,22 +165,18 @@ namespace RecipeBuild
 			auto createCompiler = findCompilerFactory->second;
 			auto compiler = createCompiler(activeState);
 
-			// Copy previous runtime dependencies
-			auto copyRuntimeDependencies = CopyRuntimeDependencies(
-				buildState,
-				runtimeDependencies,
-				arguments);
-			for (auto& node : copyRuntimeDependencies)
-			{
-				buildState.RegisterRootNode(node);
-			}
-
 			// Perform the core compilation of the source files
 			auto compileNodes = CoreCompile(buildState, *compiler, moduleDependencies, arguments);
 			for (auto& node : compileNodes)
 			{
 				buildState.RegisterRootNode(node);
 			}
+
+			// Create the copy nodes for the incoming runtime dependencies
+			auto copyRuntimeDependencyNodes = CopyRuntimeDependencies(
+				buildState,
+				runtimeDependencies,
+				arguments);
 
 			// Link the final target after all of the compile graph is done
 			auto linkNode = CoreLink(
@@ -190,6 +186,9 @@ namespace RecipeBuild
 				linkDependencies,
 				arguments);
 			Soup::Build::GraphNodeExtensions::AddLeafChild(compileNodes, linkNode);
+
+			// Copy previous runtime dependencies after linking has completed
+			Soup::Build::GraphNodeExtensions::AddLeafChildren(linkNode, copyRuntimeDependencyNodes);
 
 			// Always pass along required input to parent build tasks
 			auto parentBuildTable = parentState.EnsureValue("Build").EnsureTable();
