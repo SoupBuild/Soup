@@ -76,7 +76,7 @@ namespace Soup
 
 		static void AreEqual(
 			std::vector<Memory::Reference<Build::BuildGraphNode>>& expected,
-			std::vector<Memory::Reference<Build::BuildGraphNode>>& actual)
+			std::vector<Build::GraphNodeWrapper>& actual)
 		{
 			Assert::AreEqual(
 				expected.size(),

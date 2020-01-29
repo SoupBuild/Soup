@@ -4,7 +4,7 @@
 
 #pragma once
 #include "StringList.h"
-#include "ReferenceList.h"
+#include "BuildGraphNodeList.h"
 
 namespace Soup::Build
 {
@@ -57,6 +57,7 @@ namespace Soup::Build
 			_outputFiles(std::move(outputFiles)),
 			_children(std::move(children))
 		{
+			// TODO: Verify circular references in debug build
 		}
 
 		/// <summary>
@@ -184,6 +185,6 @@ namespace Soup::Build
 		std::string _workingDirectory;
 		StringList _inputFiles;
 		StringList _outputFiles;
-		ReferenceList<BuildGraphNode, IGraphNode> _children;
+		BuildGraphNodeList _children;
 	};
 }

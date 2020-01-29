@@ -6,8 +6,8 @@ TestState RunPackageReferenceTests()
 	auto className = "PackageReferenceTests";
 	auto testClass = std::make_shared<Soup::UnitTests::PackageReferenceTests>();
 	TestState state = { 0, 0 };
-	state += SoupTest::RunTest(className, "InitialzeNameVersion", [&testClass]() { testClass->InitialzeNameVersion(); });
-	state += SoupTest::RunTest(className, "InitialzePath", [&testClass]() { testClass->InitialzePath(); });
+	state += SoupTest::RunTest(className, "InitializeNameVersion", [&testClass]() { testClass->InitializeNameVersion(); });
+	state += SoupTest::RunTest(className, "InitializePath", [&testClass]() { testClass->InitializePath(); });
 	state += SoupTest::RunTest(className, "OperatorEqualNameVersion", [&testClass]() { testClass->OperatorEqualNameVersion(); });
 	state += SoupTest::RunTest(className, "OperatorEqualPath", [&testClass]() { testClass->OperatorEqualPath(); });
 	state += SoupTest::RunTest(className, "OperatorNotEqualName", [&testClass]() { testClass->OperatorNotEqualName(); });

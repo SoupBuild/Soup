@@ -7,14 +7,22 @@ Dependencies = [
   "../Opal/",
   "../Build/Core/",
 ]
-DevDependencies = []
+Extensions = [
+  "../Build/TestExtension/"
+]
 
 Public = "Module.cpp"
 Source = [
+  "Build/System/BuildGraphNodeList.cpp",
   "Build/System/Value.cpp",
 ]
 IncludePaths = [
   "./",
   "Compiler/",
   "Utils/",
+]
+
+[Test]
+Source = [
+  "../Core.UnitTests/gen/Main.cpp"
 ]

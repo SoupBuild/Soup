@@ -124,7 +124,7 @@ namespace Soup
 			Concept,
 			StaticAssert,
 			CPP_BaseSpecifiers,
-			CPP_ConstructorInitialzers,
+			CPP_ConstructorInitializers,
 			IndirectField,
 			ExpandedNonTypeTemplateParmPack,
 			ExpandedTemplateTemplateParmPack,

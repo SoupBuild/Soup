@@ -778,8 +778,8 @@ void LLVMBitCodeParser::ParseDeclaration(const BitCodeRecord& record)
 			throw std::runtime_error("NOT_IMPLEMENTED: StaticAssert");
 		case ClangAST::DeclarationCode::CPP_BaseSpecifiers:
 			throw std::runtime_error("NOT_IMPLEMENTED: CPP_BaseSpecifiers");
-		case ClangAST::DeclarationCode::CPP_ConstructorInitialzers:
-			throw std::runtime_error("NOT_IMPLEMENTED: CPP_ConstructorInitialzers");
+		case ClangAST::DeclarationCode::CPP_ConstructorInitializers:
+			throw std::runtime_error("NOT_IMPLEMENTED: CPP_ConstructorInitializers");
 		case ClangAST::DeclarationCode::IndirectField:
 			throw std::runtime_error("NOT_IMPLEMENTED: IndirectField");
 		case ClangAST::DeclarationCode::ExpandedNonTypeTemplateParmPack:

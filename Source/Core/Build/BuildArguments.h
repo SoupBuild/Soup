@@ -3,13 +3,14 @@
 // </copyright>
 
 #pragma once
+#include "Compiler/ICompiler.h"
 
-namespace RecipeBuild
+namespace Soup::Build
 {
 	/// <summary>
 	/// The enumeration of build optimization levels
 	/// </summary>
-	enum class BuildOptimizationLevel
+	export enum class BuildOptimizationLevel
 	{
 		/// <summary>
 		/// Debug
@@ -27,7 +28,7 @@ namespace RecipeBuild
 		Size,
 	};
 
-	std::string ToString(BuildOptimizationLevel value)
+	export std::string ToString(BuildOptimizationLevel value)
 	{
 		switch (value)
 		{
@@ -45,7 +46,7 @@ namespace RecipeBuild
 	/// <summary>
 	/// The enumeration of target types
 	/// </summary>
-	enum class BuildTargetType
+	export enum class BuildTargetType
 	{
 		/// <summary>
 		/// Executable
@@ -91,7 +92,7 @@ namespace RecipeBuild
 	/// <summary>
 	/// The set of build arguments
 	/// </summary>
-	struct BuildArguments
+	export struct BuildArguments
 	{
 		/// <summary>
 		/// Gets or sets the target name
@@ -106,7 +107,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Gets or sets the language standard
 		/// </summary>
-		Soup::LanguageStandard LanguageStandard;
+		LanguageStandard LanguageStandard;
 
 		/// <summary>
 		/// Gets or sets the working directory
@@ -141,9 +142,14 @@ namespace RecipeBuild
 		std::vector<Path> IncludeDirectories;
 
 		/// <summary>
+		/// Gets or sets the list of module dependencies
+		/// </summary>
+		std::vector<Path> ModuleDependencies;
+
+		/// <summary>
 		/// Gets or sets the list of link libraries
 		/// </summary>
-		std::vector<Path> LinkLibraries;
+		std::vector<Path> LinkDependencies;
 
 		/// <summary>
 		/// Gets or sets the list of library paths
@@ -154,6 +160,11 @@ namespace RecipeBuild
 		/// Gets or sets the list of preprocessor definitions
 		/// </summary>
 		std::vector<std::string> PreprocessorDefinitions;
+
+		/// <summary>
+		/// Gets or sets the list of runtime dependencies
+		/// </summary>
+		std::vector<Path> RuntimeDependencies;
 
 		/// <summary>
 		/// Gets or sets the optimization level
@@ -179,7 +190,7 @@ namespace RecipeBuild
 				ModuleInterfaceSourceFile == rhs.ModuleInterfaceSourceFile &&
 				SourceFiles == rhs.SourceFiles &&
 				IncludeDirectories == rhs.IncludeDirectories &&
-				LinkLibraries == rhs.LinkLibraries &&
+				LinkDependencies == rhs.LinkDependencies &&
 				LibraryPaths == rhs.LibraryPaths &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
 				OptimizationLevel == rhs.OptimizationLevel &&

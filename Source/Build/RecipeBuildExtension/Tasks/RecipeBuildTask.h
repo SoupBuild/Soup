@@ -130,30 +130,18 @@ namespace RecipeBuild
 			{
 				sourceFiles = recipeTable.GetValue("Source").AsList().CopyAsStringVector();
 			}
-
-			buildTable.EnsureValue("TargetName").SetValueString(name);
-			buildTable.EnsureValue("WorkingDirectory").SetValueString(packageRoot.ToString());
-			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
-			buildTable.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
-			buildTable.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile);
-			buildTable.EnsureValue("LinkLibraries").SetValuePathList(linkLibraries);
-			buildTable.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(false);
-			buildTable.EnsureValue("PreprocessorDefinitions").SetValueStringList(preprocessorDefinitions);
-			buildTable.EnsureValue("IncludeDirectories").SetValuePathList(includePaths);
-			buildTable.EnsureValue("LibraryPaths").SetValuePathList(libraryPaths);
-			buildTable.EnsureValue("Source").SetValueStringList(sourceFiles);
-
 			// Set the correct optimization level for the requested flavor
+			auto optimizationLevel = Soup::Build::BuildOptimizationLevel::None;
+			bool generateSourceDebugInfo = false;
 			if (buildFlavor == "debug")
 			{
-				buildTable.EnsureValue("OptimizationLevel").SetValueInteger(
-					static_cast<int64_t>(BuildOptimizationLevel::None));
-				buildTable.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(true);
+				// preprocessorDefinitions.push_back("DEBUG");
+				generateSourceDebugInfo = true;
 			}
 			else if (buildFlavor == "release")
 			{
-				buildTable.EnsureValue("OptimizationLevel").SetValueInteger(
-					static_cast<int64_t>(BuildOptimizationLevel::Speed));
+				preprocessorDefinitions.push_back("RELEASE");
+				optimizationLevel = Soup::Build::BuildOptimizationLevel::Speed;
 			}
 			else
 			{
@@ -161,8 +149,21 @@ namespace RecipeBuild
 				throw std::runtime_error("Unknown build flavors type.");
 			}
 
+			buildTable.EnsureValue("TargetName").SetValueString(name);
+			buildTable.EnsureValue("WorkingDirectory").SetValueString(packageRoot.ToString());
+			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
+			buildTable.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
+			buildTable.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile);
+			buildTable.EnsureValue("LinkLibraries").SetValuePathList(linkLibraries);
+			buildTable.EnsureValue("PreprocessorDefinitions").SetValueStringList(preprocessorDefinitions);
+			buildTable.EnsureValue("IncludeDirectories").SetValuePathList(includePaths);
+			buildTable.EnsureValue("LibraryPaths").SetValuePathList(libraryPaths);
+			buildTable.EnsureValue("Source").SetValueStringList(sourceFiles);
+			buildTable.EnsureValue("OptimizationLevel").SetValueInteger(static_cast<int64_t>(optimizationLevel));
+			buildTable.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(generateSourceDebugInfo);
+
 			// Convert the recipe type to the required build type
-			BuildTargetType targetType;
+			Soup::Build::BuildTargetType targetType;
 			auto recipeType = Soup::RecipeType::StaticLibrary;
 			if (recipeTable.HasValue("Type"))
 			{
@@ -172,13 +173,13 @@ namespace RecipeBuild
 			switch (recipeType)
 			{
 				case Soup::RecipeType::StaticLibrary:
-					targetType = BuildTargetType::StaticLibrary;
+					targetType = Soup::Build::BuildTargetType::StaticLibrary;
 					break;
 				case Soup::RecipeType::DynamicLibrary:
-					targetType = BuildTargetType::DynamicLibrary;
+					targetType = Soup::Build::BuildTargetType::DynamicLibrary;
 					break;
 				case Soup::RecipeType::Executable:
-					targetType = BuildTargetType::Executable;
+					targetType = Soup::Build::BuildTargetType::Executable;
 					break;
 				default:
 					throw std::runtime_error("Unknown build target type.");
@@ -190,8 +191,8 @@ namespace RecipeBuild
 			auto recipeLanguageVersion = Soup::RecipeLanguageVersion::CPP20;
 			if (recipeTable.HasValue("Language"))
 			{
-				recipeLanguageVersion =
-					Soup::ParseRecipeLanguageVersion(recipeTable.GetValue("Language").AsString().GetValue());
+				recipeLanguageVersion = Soup::ParseRecipeLanguageVersion(
+					recipeTable.GetValue("Language").AsString().GetValue());
 			}
 
 			Soup::LanguageStandard languageStandard;

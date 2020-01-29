@@ -4,7 +4,6 @@
 
 #pragma once
 #include "StringList.h"
-#include "ReferenceList.h"
 
 namespace Soup::Build
 {
@@ -18,17 +17,20 @@ namespace Soup::Build
 			GraphNodeWrapper parent,
 			GraphNodeWrapper child)
 		{
-			if (parent.GetId() == child.GetId())
-			{
-				// TODO: Clean up, the node has been added through a different path
-				return;
-			}
-
 			auto parentChildrenSize = parent.GetChildList().GetSize();
 			if (parentChildrenSize == 0)
 			{
-				// Add the new leaf node
-				parent.GetChildList().Append(child);
+				// Check if this child was added through a different path
+				if (parent.GetId() == child.GetId())
+				{
+					// The node has been added through a different path
+					return;
+				}
+				else
+				{
+					// Add the new leaf node
+					parent.GetChildList().Append(child);
+				}
 			}
 			else
 			{
@@ -108,6 +110,17 @@ namespace Soup::Build
 			std::vector<GraphNodeWrapper>& children)
 		{
 			auto size = parents.GetSize();
+			
+			// Check if this is the same set we trying to add, from a different path
+			if (size > 0 && size == children.size())
+			{
+				if (parents.GetValueAt(0).GetId() == children[0].GetId())
+				{
+					// The children match the parent set
+					return;
+				}
+			}
+
 			for (size_t i = 0; i < size; i++)
 			{
 				AddLeafChildren(parents.GetValueAt(i), children);

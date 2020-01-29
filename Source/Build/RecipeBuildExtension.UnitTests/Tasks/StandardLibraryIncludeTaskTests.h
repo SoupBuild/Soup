@@ -10,7 +10,7 @@ namespace RecipeBuild::UnitTests
 	{
 	public:
 		[[Fact]]
-		void Initialze_Success()
+		void Initialize_Success()
 		{
 			auto uut = StandardLibraryIncludeTask();
 			
