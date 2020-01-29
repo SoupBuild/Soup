@@ -16,6 +16,16 @@ namespace Soup::Build
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
+		BuildState() :
+			_nodes(),
+			_activeState(),
+			_parentState()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the BuildState class
+		/// </summary>
 		BuildState(ValueTable recipeState) :
 			_nodes(),
 			_activeState(),

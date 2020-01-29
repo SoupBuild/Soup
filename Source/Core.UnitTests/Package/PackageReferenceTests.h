@@ -10,7 +10,7 @@ namespace Soup::UnitTests
 	{
 	public:
 		[[Fact]]
-		void InitialzeNameVersion()
+		void InitializeNameVersion()
 		{
 			auto uut = PackageReference(
 				"MyPackage",
@@ -23,7 +23,7 @@ namespace Soup::UnitTests
 		}
 
 		[[Fact]]
-		void InitialzePath()
+		void InitializePath()
 		{
 			auto uut = PackageReference(Path("../MyPackage"));
 

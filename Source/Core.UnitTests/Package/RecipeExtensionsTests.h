@@ -201,6 +201,7 @@ Version = "1.2.3"
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"DIAG: Load Recipe: Root/Recipe.toml",
 					"INFO: Recipe file does not exist.",
 					"ERRO: Failed to load the dependency package: Root/Recipe.toml",
 				}), 
@@ -244,6 +245,7 @@ Version = "1.2.3"
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"DIAG: Load Recipe: Root/Recipe.toml",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");

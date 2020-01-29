@@ -134,7 +134,7 @@ namespace Soup::Compiler::MSVC
 			AddFlag(commandArgs, "EHsc");
 
 			// Enable multithreaded runtime static linked
-			if (args.Optimize == OptimizationLevel::None)
+			if (args.GenerateSourceDebugInfo)
 			{
 				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Debug);
 			}

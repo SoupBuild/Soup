@@ -41,6 +41,7 @@ using namespace Opal;
 #include "Build\System\ValuePrimitive.h"
 #include "Build\System\ValueTable.h"
 
+#include "Build\BuildEngine.h"
 #include "Build\BuildUtilities.h"
 
 #include "Compiler\ICompiler.h"

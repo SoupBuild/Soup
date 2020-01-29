@@ -22,6 +22,8 @@ import SoupTestUtilities;
 #include "Build/Runner/BuildHistoryManagerTests.gen.h"
 #include "Build/Runner/BuildRunnerTests.gen.h"
 
+#include "Build/BuildEngineTests.gen.h"
+
 #include "Config/LocalUserConfigExtensionsTests.gen.h"
 #include "Config/LocalUserConfigJsonTests.gen.h"
 #include "Config/LocalUserConfigTests.gen.h"
@@ -50,6 +52,8 @@ int main()
 	state += RunBuildHistoryTests();
 	state += RunBuildHistoryManagerTests();
 	state += RunBuildRunnerTests();
+
+	state += RunBuildEngineTests();
 
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigJsonTests();

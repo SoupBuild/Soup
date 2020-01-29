@@ -10,7 +10,7 @@ namespace RecipeBuild::UnitTests
 	{
 	public:
 		[[Fact]]
-		void Initialze_Success()
+		void Initialize_Success()
 		{
 			auto compilerFactory = CompilerFactory();
 			auto uut = BuildTask(compilerFactory);
@@ -531,7 +531,7 @@ namespace RecipeBuild::UnitTests
 				"OptimizationLevel", 
 				static_cast<int64_t>(BuildOptimizationLevel::None));
 			state.SetPropertyStringList(
-				"LinkLibraries",
+				"LinkDependencies",
 				std::vector<std::string>({
 					"../Other/bin/OtherModule1.mock.a",
 					"../OtherModule2.mock.a",
@@ -756,7 +756,7 @@ namespace RecipeBuild::UnitTests
 				"OptimizationLevel", 
 				static_cast<int64_t>(BuildOptimizationLevel::None));
 			state.SetPropertyStringList(
-				"LinkLibraries",
+				"LinkDependencies",
 				std::vector<std::string>({
 					"../Other/bin/OtherModule1.mock.a",
 					"../OtherModule2.mock.a",
@@ -1033,7 +1033,7 @@ namespace RecipeBuild::UnitTests
 				"OptimizationLevel",
 				static_cast<int64_t>(BuildOptimizationLevel::None));
 			state.SetPropertyStringList(
-				"LinkLibraries",
+				"LinkDependencies",
 				std::vector<std::string>({
 					"../Other/bin/OtherModule1.mock.a",
 					"../OtherModule2.mock.a",

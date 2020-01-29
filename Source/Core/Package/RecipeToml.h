@@ -42,11 +42,13 @@ namespace Soup::Build
 		/// </summary>
 		static void Serialize(Recipe& recipe, std::ostream& stream)
 		{
+			throw std::runtime_error("Toml serialize corrupts the stack!!");
+
 			// Serialize the contents of the recipe
 			auto root = Build(recipe.GetTable());
 
 			// Write out the entire root table
-			stream << root;
+			stream << toml::format(root, 0);
 		}
 
 	private:
