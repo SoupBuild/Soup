@@ -13,3 +13,6 @@
 [submodule "Dependencies/toml11"]
 	path = Dependencies/toml11
 	url = https://github.com/mwasplund/toml11.git
+[submodule "Dependencies/cpptoml"]
+	path = Dependencies/cpptoml
+	url = https://github.com/mwasplund/cpptoml.git

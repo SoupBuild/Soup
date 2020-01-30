@@ -79,6 +79,7 @@
     "cassert": "cpp",
     "cstdarg": "cpp",
     "*.rh": "cpp",
-    "concepts": "cpp"
+    "concepts": "cpp",
+    "clocale": "cpp"
   }
 }

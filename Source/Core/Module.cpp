@@ -20,7 +20,7 @@ export module SoupCore;
 import Opal;
 import SoupBuildCore;
 import json11;
-import toml11;
+import CPPToml;
 
 using namespace Opal;
 
