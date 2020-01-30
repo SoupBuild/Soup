@@ -3,12 +3,9 @@ Version = "0.1.0"
 
 Dependencies = [
   "../../Dependencies/json11/",
-  "../../Dependencies/toml11/",
+  "../../Dependencies/cpptoml/",
   "../Opal/",
   "../Build/Core/",
-]
-Extensions = [
-  "../Build/TestExtension/"
 ]
 
 Public = "Module.cpp"
