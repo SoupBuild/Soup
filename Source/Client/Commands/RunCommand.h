@@ -88,10 +88,10 @@ namespace Soup::Client
 			if (result.ExitCode != 0)
 			{
 				// TODO: Return error code
-				Log::HighPriority("FAILED");
+				Log::Error("FAILED");
 			}
 
-			Log::HighPriority("Done");
+			Log::Info("Done");
 		}
 
 	private:

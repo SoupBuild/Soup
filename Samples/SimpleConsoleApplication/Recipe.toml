@@ -1,0 +1,6 @@
+Name = "SimpleConsoleApplication"
+Type = "Executable"
+Version = "1.1.3"
+Source = [
+	"Main.cpp"
+]
