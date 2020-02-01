@@ -21,7 +21,8 @@ namespace Soup::Build
 		/// <summary>
 		/// Load the build state from the provided directory
 		/// </summary>
-		static bool TryLoadState(const Path& directory, BuildHistory& result)
+		static bool TryLoadState(
+			const Path& directory, BuildHistory& result)
 		{
 			// Verify the requested file exists
 			auto BuildHistoryFile = directory +
@@ -67,7 +68,7 @@ namespace Soup::Build
 			// Ensure the target directories exists
 			if (!System::IFileSystem::Current().Exists(buildProjectGenerateFolder))
 			{
-				Log::Info("Create Directory: " + Path(Constants::ProjectGenerateFolderName).ToString());
+				Log::Info("Create Directory: " + buildProjectGenerateFolder.ToString());
 				System::IFileSystem::Current().CreateDirectory2(buildProjectGenerateFolder);
 			}
 

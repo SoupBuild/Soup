@@ -298,9 +298,16 @@ namespace Soup::Build
 				// Run the build
 				buildSystem.Execute(state);
 
+				// Find the output object directory so we can use it in the runner
+				auto buildTable = activeState.GetValue("Build").AsTable();
+				auto objectDirectory = Path(buildTable.GetValue("ObjectDirectory").AsString().GetValue());
+
 				// Execute the build nodes
 				auto runner = BuildRunner(packageRoot);
-				runner.Execute(state.GetBuildNodes(), arguments.ForceRebuild);
+				runner.Execute(
+					state.GetBuildNodes(),
+					objectDirectory,
+					arguments.ForceRebuild);
 			}
 		}
 

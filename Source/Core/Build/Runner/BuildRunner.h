@@ -25,13 +25,17 @@ namespace Soup::Build
 		{
 		}
 
-		void Execute(const std::vector<Memory::Reference<BuildGraphNode>>& nodes, bool forceBuild)
+		void Execute(
+			const std::vector<Memory::Reference<BuildGraphNode>>& nodes,
+			const Path& objectDirectory,
+			bool forceBuild)
 		{
 			// Load the previous build state if performing an incremental build
+			auto targetDirectory = _workingDirectory + objectDirectory;
 			if (!forceBuild)
 			{
 				Log::Diag("Loading previous build state");
-				if (!BuildHistoryManager::TryLoadState(_workingDirectory, _buildHistory))
+				if (!BuildHistoryManager::TryLoadState(targetDirectory, _buildHistory))
 				{
 					Log::Info("No previous state found, full rebuild required");
 					_buildHistory = BuildHistory();
@@ -49,7 +53,7 @@ namespace Soup::Build
 			CheckExecuteNodes(nodes, forceBuild);
 
 			Log::Info("Saving updated build state");
-			BuildHistoryManager::SaveState(_workingDirectory, _buildHistory);
+			BuildHistoryManager::SaveState(targetDirectory, _buildHistory);
 
 			Log::HighPriority("Done");
 		}

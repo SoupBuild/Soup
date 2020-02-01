@@ -34,14 +34,15 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>();
+			auto objectDirectory = Path("out/obj/release/");
 			auto forceBuild = true;
-			uut.Execute(nodes, forceBuild);
+			uut.Execute(nodes, objectDirectory, forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: .soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/obj/release/.soup",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -50,9 +51,9 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/.soup",
-					"CreateDirectory: C:/BuildDirectory/.soup",
-					"OpenWrite: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/release/.soup",
+					"CreateDirectory: C:/BuildDirectory/out/obj/release/.soup",
+					"OpenWrite: C:/BuildDirectory/out/obj/release/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -83,8 +84,9 @@ namespace Soup::Build::UnitTests
 
 			// Setup the input build state
 			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>();
+			auto objectDirectory = Path("out/obj/release/");
 			auto forceBuild = false;
-			uut.Execute(nodes, forceBuild);
+			uut.Execute(nodes, objectDirectory, forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -93,7 +95,7 @@ namespace Soup::Build::UnitTests
 					"INFO: BuildHistory file does not exist",
 					"INFO: No previous state found, full rebuild required",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: .soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/obj/release/.soup",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -102,10 +104,10 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/.soup/BuildHistory.json",
-					"Exists: C:/BuildDirectory/.soup",
-					"CreateDirectory: C:/BuildDirectory/.soup",
-					"OpenWrite: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/release/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/release/.soup",
+					"CreateDirectory: C:/BuildDirectory/out/obj/release/.soup",
+					"OpenWrite: C:/BuildDirectory/out/obj/release/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -148,8 +150,9 @@ namespace Soup::Build::UnitTests
 						"OutputFile.out",
 					})),
 			});
+			auto objectDirectory = Path("out/obj/release/");
 			bool forceBuild = true;
-			uut.Execute(nodes, forceBuild);
+			uut.Execute(nodes, objectDirectory, forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -157,7 +160,7 @@ namespace Soup::Build::UnitTests
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: .soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/obj/release/.soup",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -166,9 +169,9 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/.soup",
-					"CreateDirectory: C:/BuildDirectory/.soup",
-					"OpenWrite: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/release/.soup",
+					"CreateDirectory: C:/BuildDirectory/out/obj/release/.soup",
+					"OpenWrite: C:/BuildDirectory/out/obj/release/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -213,8 +216,9 @@ namespace Soup::Build::UnitTests
 						"OutputFile.out",
 					})),
 			});
+			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, forceBuild);
+			uut.Execute(nodes, objectDirectory, forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -225,7 +229,7 @@ namespace Soup::Build::UnitTests
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: .soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -234,10 +238,10 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/.soup/BuildHistory.json",
-					"Exists: C:/BuildDirectory/.soup",
-					"CreateDirectory: C:/BuildDirectory/.soup",
-					"OpenWrite: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
+					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
+					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -271,7 +275,7 @@ namespace Soup::Build::UnitTests
 			std::stringstream initialBuildHistoryJson;
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
 			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/.soup/BuildHistory.json"),
+				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
 				MockFileState(std::move(initialBuildHistoryJson)));
 
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
@@ -290,8 +294,9 @@ namespace Soup::Build::UnitTests
 						"OutputFile.obj",
 					})),
 			});
+			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, forceBuild);
+			uut.Execute(nodes, objectDirectory, forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -302,7 +307,7 @@ namespace Soup::Build::UnitTests
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: .soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -311,11 +316,11 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/.soup/BuildHistory.json",
-					"OpenRead: C:/BuildDirectory/.soup/BuildHistory.json",
-					"Exists: C:/BuildDirectory/.soup",
-					"CreateDirectory: C:/BuildDirectory/.soup",
-					"OpenWrite: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"OpenRead: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
+					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
+					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -343,7 +348,7 @@ namespace Soup::Build::UnitTests
 			std::stringstream initialBuildHistoryJson;
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
 			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/.soup/BuildHistory.json"),
+				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
 				MockFileState(std::move(initialBuildHistoryJson)));
 
 			// Setup the input file only
@@ -366,8 +371,9 @@ namespace Soup::Build::UnitTests
 						"OutputFile.out",
 					})),
 			});
+			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, forceBuild);
+			uut.Execute(nodes, objectDirectory, forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -378,7 +384,7 @@ namespace Soup::Build::UnitTests
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: .soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -387,12 +393,12 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/.soup/BuildHistory.json",
-					"OpenRead: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"OpenRead: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
 					"Exists: C:/TestWorkingDirectory/OutputFile.out",
-					"Exists: C:/BuildDirectory/.soup",
-					"CreateDirectory: C:/BuildDirectory/.soup",
-					"OpenWrite: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
+					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
+					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -420,7 +426,7 @@ namespace Soup::Build::UnitTests
 			std::stringstream initialBuildHistoryJson;
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
 			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/.soup/BuildHistory.json"),
+				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
 				MockFileState(std::move(initialBuildHistoryJson)));
 
 			// Setup the input/output files to be out of date
@@ -446,8 +452,9 @@ namespace Soup::Build::UnitTests
 						"OutputFile.out",
 					})),
 			});
+			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, forceBuild);
+			uut.Execute(nodes, objectDirectory, forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -460,7 +467,7 @@ namespace Soup::Build::UnitTests
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: .soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -469,15 +476,15 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/.soup/BuildHistory.json",
-					"OpenRead: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"OpenRead: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
 					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"GetLastWriteTime: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/TestWorkingDirectory/InputFile.in",
 					"GetLastWriteTime: C:/TestWorkingDirectory/InputFile.in",
-					"Exists: C:/BuildDirectory/.soup",
-					"CreateDirectory: C:/BuildDirectory/.soup",
-					"OpenWrite: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
+					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
+					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -505,7 +512,7 @@ namespace Soup::Build::UnitTests
 			std::stringstream initialBuildHistoryJson;
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
 			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/.soup/BuildHistory.json"),
+				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
 				MockFileState(std::move(initialBuildHistoryJson)));
 
 			// Setup the input/output files to be up to date
@@ -531,8 +538,9 @@ namespace Soup::Build::UnitTests
 						"OutputFile.out",
 					})),
 			});
+			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, forceBuild);
+			uut.Execute(nodes, objectDirectory, forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -544,7 +552,7 @@ namespace Soup::Build::UnitTests
 					"INFO: Up to date",
 					"INFO: TestCommand: 1",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: .soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -553,15 +561,15 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/.soup/BuildHistory.json",
-					"OpenRead: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"OpenRead: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
 					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"GetLastWriteTime: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/TestWorkingDirectory/InputFile.in",
 					"GetLastWriteTime: C:/TestWorkingDirectory/InputFile.in",
-					"Exists: C:/BuildDirectory/.soup",
-					"CreateDirectory: C:/BuildDirectory/.soup",
-					"OpenWrite: C:/BuildDirectory/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
+					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
+					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
