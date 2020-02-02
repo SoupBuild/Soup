@@ -5,7 +5,7 @@ The internal architecture is still in flux, however the general concepts should 
 The Soup Recipe is a property bag defined in the [toml](https://github.com/toml-lang/toml) language. It contains a few special properties that will be used in the core build engine to recursively build all dependencies. The build engine will initialize the active build statue with a table named "Recipe" with all properties loaded from the file to grant access to the build extensions during execution.
 
 ## Build Engine
-Soup builds are fairly simple at their core. There are three phases.
+Soup builds are fairly simple at their core. There are five phases.
 
 1) **Parse Recipe** - The Recipe toml file is read from disk.
 2) **Build Dependencies** - The build engine recursively builds all transient dependencies.
