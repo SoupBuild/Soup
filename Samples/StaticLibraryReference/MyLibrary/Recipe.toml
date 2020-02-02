@@ -1,0 +1,3 @@
+Name = "MyLibrary"
+Version = "1.0.0"
+Public = "Module.cpp"
