@@ -1,0 +1,9 @@
+Name = "MyApplication"
+Type = "Executable"
+Version = "1.0.0"
+Dependencies = [
+	"../MyLibrary/"
+]
+Source = [
+	"Main.cpp"
+]
