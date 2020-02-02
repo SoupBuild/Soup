@@ -1,5 +1,5 @@
 Name = "Soup"
-Version = "0.5.4"
+Version = "0.5.5"
 Type = "Executable"
 
 # Ensure the core build extensions are runtime dependencies
