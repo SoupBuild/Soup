@@ -1,0 +1,7 @@
+Name = "ModuleConsoleApplication"
+Type = "Executable"
+Version = "1.2.5"
+Public = "Module.cpp"
+Source = [
+	"Main.cpp"
+]

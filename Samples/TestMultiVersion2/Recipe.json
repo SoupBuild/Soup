@@ -1,9 +1,0 @@
-{
-  "name": "TestMultiVersion",
-  "version": "2.0.3",
-  "dependencies": [],
-  "public": "Source/Module.cpp",
-  "source": [
-    "Source/MultiVersion.cpp"
-  ]
-}

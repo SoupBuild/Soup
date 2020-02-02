@@ -78,15 +78,6 @@ namespace Soup
 		/// </summary>
 		static constexpr std::string_view ProjectGenerateBuildFolderName = "Build";
 
-		/// <summary>
-		/// Gets the settings file name for a Soup Recipe
-		/// </summary>
-
-		/// <summary>
-		/// Gets the settings file name for a Build State
-		/// </summary>
-		static constexpr std::string_view BuildStateFileName = "BuildState.json";
-
 #if LOCAL
 		/// <summary>
 		/// Gets the local URL for the Soup identity service

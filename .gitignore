@@ -4,9 +4,4 @@
 .vscode/ipch/
 
 # Build
-obj/
-bin/
 out/
-
-# Soup
-.soup/
