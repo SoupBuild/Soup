@@ -2,7 +2,9 @@
 
 ## Quick Links
 * [Getting Started](./Docs/GettingStarted.md)
+* [Command Line Interface (CLI)](./Docs/CLI.md)
 * [Samples](./Docs/Samples.md)
+* [Architecture](./Docs/Architecture.md)
 
 ## Overview
 Soup is a build system that was created to simplify many aspects of developing C++. Soup was built from the ground up with C++20 Modules as a core principle for inter-project references. By only sharing a single module interface between the individual packages we can ensure that the internals of one project will not "leak" into other downstream dependencies. Soup also uses "just in time" compiled binaries to implement build extensions. These two aspects together allows for easy authoring of a project with custom build steps that can be shared with other teams or organizations (Package Manager!) and will allow for the ability to introduce breaking syntax changes in future versions of C++ while maintaining interface level compatibility (Epochs!).
