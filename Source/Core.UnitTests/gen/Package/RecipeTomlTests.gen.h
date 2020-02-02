@@ -11,8 +11,8 @@ TestState RunRecipeTomlTests()
 	state += SoupTest::RunTest(className, "Deserialize_MissingVersionThrows", [&testClass]() { testClass->Deserialize_MissingVersionThrows(); });
 	state += SoupTest::RunTest(className, "Deserialize_Simple", [&testClass]() { testClass->Deserialize_Simple(); });
 	state += SoupTest::RunTest(className, "Deserialize_AllProperties", [&testClass]() { testClass->Deserialize_AllProperties(); });
-	// state += SoupTest::RunTest(className, "Serialize_Simple", [&testClass]() { testClass->Serialize_Simple(); });
-	// state += SoupTest::RunTest(className, "Serialize_AllProperties", [&testClass]() { testClass->Serialize_AllProperties(); });
+	state += SoupTest::RunTest(className, "Serialize_Simple", [&testClass]() { testClass->Serialize_Simple(); });
+	state += SoupTest::RunTest(className, "Serialize_AllProperties", [&testClass]() { testClass->Serialize_AllProperties(); });
 
 	return state;
 }
