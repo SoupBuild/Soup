@@ -5,7 +5,7 @@
 export module TestExtension;
 
 import Opal;
-import SoupBuildCore;
+import SoupEngineCore;
 
 using namespace Opal;
 
