@@ -4,6 +4,7 @@
 #include <atomic>
 #include <fstream>
 #include <filesystem>
+#include <iostream>
 #include <locale>
 #include <map>
 #include <sstream>
@@ -17,10 +18,16 @@
 #ifdef max
 #undef max
 #endif
+
 export module Opal;
 
 #include "Core/Path.h"
 #include "Core/SemanticVersion.h"
+
+#include "Logger/Log.h"
+#include "Logger/ConsoleTraceListener.h"
+#include "Logger/ScopedTraceListenerRegister.h"
+#include "Logger/TestTraceListener.h"
 
 #include "Memory/IReferenceCounted.h"
 #include "Memory/Reference.h"

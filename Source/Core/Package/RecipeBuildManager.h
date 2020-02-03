@@ -6,7 +6,6 @@
 #include "RecipeBuildArguments.h"
 #include "RecipeExtensions.h"
 #include "Build/Runner/BuildRunner.h"
-#include "Build/System/BuildSystem.h"
 
 namespace Soup::Build
 {

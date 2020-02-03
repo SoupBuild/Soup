@@ -5,7 +5,7 @@
 #pragma once
 #include "EventTypeFilter.h"
 
-namespace Soup
+namespace Opal
 {
 	/// <summary>
 	/// The static logger class

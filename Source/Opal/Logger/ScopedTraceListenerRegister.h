@@ -5,7 +5,7 @@
 #pragma once
 #include "TraceListener.h"
 
-namespace Soup
+namespace Opal
 {
 	/// <summary>
 	/// A scopped trace listener registration helper

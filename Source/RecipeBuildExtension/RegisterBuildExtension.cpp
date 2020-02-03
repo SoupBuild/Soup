@@ -18,6 +18,7 @@
 #define DllExport __declspec( dllexport )
 
 module RecipeBuildExtension;
+
 using namespace Opal;
 
 std::shared_ptr<Soup::ICompiler> CreateMSVCCompiler(Soup::Build::ValueTableWrapper& activeState)
@@ -36,14 +37,6 @@ extern "C"
 {
 	DllExport int RegisterBuildExtension(Soup::Build::IBuildSystem& buildSystem)
 	{
-		// Setup the filter
-		auto defaultTypes =
-			static_cast<uint32_t>(Soup::TraceEventFlag::Warning) |
-			static_cast<uint32_t>(Soup::TraceEventFlag::Error) |
-			static_cast<uint32_t>(Soup::TraceEventFlag::Critical);
-		auto filter = std::make_shared<Soup::EventTypeFilter>(
-				static_cast<Soup::TraceEventFlag>(defaultTypes));
-
 		// Setup the real services
 		System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
 		System::IProcessManager::Register(std::make_shared<System::PlatformProcessManager>());

@@ -5,7 +5,7 @@
 #pragma once
 #include "TraceListener.h"
 
-namespace Soup
+namespace Opal
 {
 	export class EventTypeFilter : public IEventFilter
 	{

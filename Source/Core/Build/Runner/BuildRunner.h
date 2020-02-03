@@ -4,7 +4,6 @@
 
 #pragma once
 #include "Build/Runner/BuildHistory.h"
-#include "Build/System/BuildGraphNode.h"
 
 namespace Soup::Build
 {

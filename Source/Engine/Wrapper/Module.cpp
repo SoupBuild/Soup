@@ -13,5 +13,6 @@ import SoupEngineDefinition;
 using namespace Opal;
 
 #include "BuildStateWrapper.h"
+#include "GraphNodeExtensions.h"
 #include "ValueListWrapper.h"
 #include "ValuePrimitiveWrapper.h"

@@ -2,7 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup
+namespace Opal
 {
 	using System;
 	using System.IO;

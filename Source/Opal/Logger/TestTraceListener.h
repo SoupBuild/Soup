@@ -5,7 +5,7 @@
 #pragma once
 #include "TraceListener.h"
 
-namespace Soup
+namespace Opal
 {
 	/// <summary>
 	/// Test logger that wraps the base <see cref="TraceListener"/>

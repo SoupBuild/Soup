@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "BuildGraphNode.h"
 #include "ValueTable.h"
 
 namespace Soup::Build

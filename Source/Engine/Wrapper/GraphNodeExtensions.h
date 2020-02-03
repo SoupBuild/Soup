@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "StringList.h"
 
 namespace Soup::Build
 {

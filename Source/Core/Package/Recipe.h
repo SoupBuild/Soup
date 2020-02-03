@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "Build/System/ValueTable.h"
 #include "PackageReference.h"
 #include "RecipeType.h"
 #include "RecipeLanguageVersion.h"

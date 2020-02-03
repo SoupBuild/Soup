@@ -11,7 +11,7 @@ module;
 #include <string>
 #include <vector>
 
-module SoupCore;
+module SoupEngineCore;
 
 using namespace Opal;
 

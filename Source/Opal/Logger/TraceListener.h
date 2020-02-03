@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup
+namespace Opal
 {
 	export enum class TraceEventFlag : uint32_t
 	{

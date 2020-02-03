@@ -21,6 +21,7 @@ import Opal;
 import json11;
 import SoupEngineDefinition;
 import SoupEngineWrapper;
+import SoupEngineCore;
 import SoupCore;
 import SoupCompilerClang;
 import SoupCompilerMSVC;
