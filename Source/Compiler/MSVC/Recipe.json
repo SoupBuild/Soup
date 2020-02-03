@@ -1,8 +1,0 @@
-{
-  "name": "SoupCompilerMSVC",
-  "version": "0.1.0",
-  "dependencies": [
-    "../../Core/"
-  ],
-  "public": "Module.cpp"
-}
