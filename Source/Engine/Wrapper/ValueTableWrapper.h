@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "Definition/IValueTable.h"
 #include "ValueWrapper.h"
 #include "ValuePrimitiveWrapper.h"
 

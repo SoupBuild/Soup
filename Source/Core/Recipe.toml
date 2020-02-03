@@ -5,7 +5,8 @@ Dependencies = [
   "../../Dependencies/json11/",
   "../../Dependencies/cpptoml/",
   "../Opal/",
-  "../Build/Core/",
+  "../Engine/Definition/",
+  "../Engine/Wrapper/",
 ]
 
 Public = "Module.cpp"

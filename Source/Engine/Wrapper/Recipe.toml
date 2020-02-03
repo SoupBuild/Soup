@@ -1,0 +1,12 @@
+Name = "SoupEngineWrapper"
+Version = "1.0.0"
+Dependencies = [
+  "../../Opal/",
+  "../Definition/"
+]
+
+Public = "Module.cpp"
+Source = [
+  "GraphNodeListWrapper.cpp",
+  "ValueWrapper.cpp",
+]

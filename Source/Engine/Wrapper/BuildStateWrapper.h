@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "Definition/IBuildState.h"
 #include "GraphNodeWrapper.h"
 #include "ValueTableWrapper.h"
 

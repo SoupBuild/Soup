@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "Definition/IGraphNode.h"
 #include "StringListWrapper.h"
 #include "GraphNodeListWrapper.h"
 

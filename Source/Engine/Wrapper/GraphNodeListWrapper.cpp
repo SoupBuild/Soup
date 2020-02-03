@@ -9,7 +9,7 @@ module;
 #include <string>
 #include <vector>
 
-module SoupBuildCore;
+module SoupEngineWrapper;
 
 using namespace Opal;
 

@@ -18,7 +18,8 @@
 export module SoupCore;
 
 import Opal;
-import SoupBuildCore;
+import SoupEngineDefinition;
+import SoupEngineWrapper;
 import json11;
 import CPPToml;
 
