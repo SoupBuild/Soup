@@ -1,0 +1,7 @@
+Name = "SoupEngineDefinition"
+Version = "1.0.0"
+Dependencies = [
+  "../../Opal/",
+]
+
+Public = "Module.cpp"

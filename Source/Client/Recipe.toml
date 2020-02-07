@@ -1,11 +1,11 @@
 Name = "Soup"
-Version = "0.5.5"
+Version = "0.5.6"
 Type = "Executable"
 
 # Ensure the core build extensions are runtime dependencies
 Dependencies = [
 	"../Core/",
-	"../Build/RecipeBuildExtension/",
+	"../RecipeBuildExtension/",
 ]
 
 Source = [

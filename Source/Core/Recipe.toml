@@ -2,24 +2,17 @@ Name = "SoupCore"
 Version = "0.1.0"
 
 Dependencies = [
-  "../../Dependencies/json11/",
-  "../../Dependencies/cpptoml/",
-  "../Opal/",
-  "../Build/Core/",
+	"../../Dependencies/json11/",
+	"../../Dependencies/cpptoml/",
+	"../Opal/",
+	"../Engine/Definition/",
+	"../Engine/Core/",
+	"../Engine/Wrapper/",
 ]
 
 Public = "Module.cpp"
-Source = [
-  "Build/System/BuildGraphNodeList.cpp",
-  "Build/System/Value.cpp",
-]
 IncludePaths = [
-  "./",
-  "Compiler/",
-  "Utils/",
-]
-
-[Test]
-Source = [
-  "../Core.UnitTests/gen/Main.cpp"
+	"./",
+	"Compiler/",
+	"Utils/",
 ]

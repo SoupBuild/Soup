@@ -8,6 +8,9 @@
 import Opal;
 import SoupCore;
 import SoupCompilerMSVC;
+import SoupEngineDefinition;
+import SoupEngineWrapper;
+import SoupEngineCore;
 import SoupTest;
 import SoupTestUtilities;
 
