@@ -24,9 +24,9 @@ namespace Opal::Network
 		/// <summary>
 		/// Perform an Http Get request
 		/// </summary>
-		std::string Get(std::string_view requests) override final
+		HttpResponse Get(std::string_view request) override final
 		{
-			return "";
+			return HttpResponse();
 		}
 
 	private:

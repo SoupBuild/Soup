@@ -16,6 +16,8 @@ using namespace Opal::System;
 using namespace SoupTest;
 import SoupTestUtilities;
 
+#include "Api/SoupApiTests.gen.h"
+
 #include "Build/Runner/BuildHistoryCheckerTests.gen.h"
 #include "Build/Runner/BuildHistoryJsonTests.gen.h"
 #include "Build/Runner/BuildHistoryTests.gen.h"
@@ -46,6 +48,8 @@ int main()
 	std::cout << "Running Tests..." << std::endl;
 
 	TestState state = { 0, 0 };
+
+	state += RunSoupApiTests();
 
 	state += RunBuildHistoryCheckerTests();
 	state += RunBuildHistoryJsonTests();

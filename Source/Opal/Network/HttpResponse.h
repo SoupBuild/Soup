@@ -1,9 +1,9 @@
-﻿// <copyright file="IHttpClient.h" company="Soup">
+﻿// <copyright file="HttpResponse.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "HttpResponse.h"
+#include "HttpStatusCode.h"
 
 namespace Opal::Network
 {
@@ -11,12 +11,17 @@ namespace Opal::Network
 	/// The Http Client interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IHttpClient
+	export struct HttpResponse
 	{
 	public:
 		/// <summary>
-		/// Perform an Http Get request
+		/// The Status Code
 		/// </summary>
-		virtual HttpResponse Get(std::string_view requests) = 0;
+		HttpStatusCode StatusCode;
+
+		/// <summary>
+		/// The response body
+		/// </summary>
+		std::string Body;
 	};
 }

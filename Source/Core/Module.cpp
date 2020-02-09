@@ -29,6 +29,8 @@ using namespace Opal;
 #include "Utils/Helpers.h"
 #include "Utils/HandledException.h"
 
+#include "Api/SoupApi.h"
+
 #include "Build/Runner/BuildHistory.h"
 #include "Build/Runner/BuildHistoryChecker.h"
 #include "Build/Runner/BuildHistoryJson.h"
