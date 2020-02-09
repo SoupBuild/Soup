@@ -26,7 +26,7 @@ namespace Opal::Network
 		/// </summary>
 		HttpResponse Get(std::string_view request) override final
 		{
-			return HttpResponse();
+			return HttpResponse(HttpStatusCode::NotFound);
 		}
 
 	private:

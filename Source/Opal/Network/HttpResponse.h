@@ -14,6 +14,18 @@ namespace Opal::Network
 	export struct HttpResponse
 	{
 	public:
+		HttpResponse(HttpStatusCode statusCode) :
+			StatusCode(statusCode),
+			Body()
+		{
+		}
+
+		HttpResponse(HttpStatusCode statusCode, std::string body) :
+			StatusCode(statusCode),
+			Body(std::move(body))
+		{
+		}
+
 		/// <summary>
 		/// The Status Code
 		/// </summary>

@@ -24,11 +24,27 @@ namespace Opal::Network
 		}
 
 		/// <summary>
-		/// Get the load requests
+		/// Get the requests
 		/// </summary>
 		const std::vector<std::string>& GetRequests() const
 		{
 			return _requests;
+		}
+
+		/// <summary>
+		/// Register a mock Http client
+		/// </summary>
+		void RegisterClient(const std::shared_ptr<MockHttpClient>& client)
+		{
+			// Check if the requested client exists
+			auto hostPort = std::stringstream();
+			hostPort << client->GetHost() << ":" << std::to_string(client->GetPort());
+
+			auto insertResult = _clients.try_emplace(hostPort.str(), client);
+			if (!insertResult.second)
+			{
+				throw std::runtime_error("The mock client already exists.");
+			}
 		}
 
 		/// <summary>
@@ -38,14 +54,27 @@ namespace Opal::Network
 			std::string host,
 			int port) override final
 		{
-			std::stringstream message;
-			message << "CreateClient: " << host << " " << std::to_string(port);
+			auto message = std::stringstream();
+			message << "CreateClient: " << host << ":" << std::to_string(port);
 			_requests.push_back(message.str());
 
-			return std::make_shared<MockHttpClient>(std::move(host), port);
+			// Check if the requested client exists
+			auto hostPort = std::stringstream();
+			hostPort << host << ":" << std::to_string(port);
+
+			auto searchClient = _clients.find(hostPort.str());
+			if (searchClient != _clients.end())
+			{
+				return searchClient->second;
+			}
+			else
+			{
+				throw std::runtime_error("No mock client registered.");
+			}
 		}
 
 	private:
 		std::vector<std::string> _requests;
+		std::map<std::string, std::shared_ptr<Network::MockHttpClient>> _clients;
 	};
 }

@@ -6,7 +6,8 @@ TestState RunSoupApiTests()
 	auto className = "SoupApiTests";
 	auto testClass = std::make_shared<Soup::Api::UnitTests::SoupApiTests>();
 	TestState state = { 0, 0 };
-	state += SoupTest::RunTest(className, "Initialize_Success", [&testClass]() { testClass->Initialize_Success(); });
+	state += SoupTest::RunTest(className, "GetPackage_NotFound", [&testClass]() { testClass->GetPackage_NotFound(); });
+	state += SoupTest::RunTest(className, "GetPackage_Success", [&testClass]() { testClass->GetPackage_Success(); });
 
 	return state;
 }

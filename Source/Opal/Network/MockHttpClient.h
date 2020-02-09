@@ -18,20 +18,73 @@ namespace Opal::Network
 		/// </summary>
 		MockHttpClient(std::string host, int port) :
 			_host(std::move(host)),
-			_port(port)
+			_port(port),
+			_requests(),
+			_getResponses()
 		{
+		}
+
+		/// <summary>
+		/// Get the requests
+		/// </summary>
+		const std::vector<std::string>& GetRequests() const
+		{
+			return _requests;
+		}
+
+		/// <summary>
+		/// Get the host
+		/// </summary>
+		const std::string& GetHost() const
+		{
+			return _host;
+		}
+
+		/// <summary>
+		/// Get the port
+		/// </summary>
+		int GetPort() const
+		{
+			return _port;
+		}
+
+		/// <summary>
+		/// Set the response for given request
+		/// </summary>
+		void SetResponse(std::string url, std::string response)
+		{
+			auto insertResult = _getResponses.try_emplace(std::move(url), std::move(response));
+			if (!insertResult.second)
+			{
+				throw std::runtime_error("The mock client already has the requested url set.");
+			}
 		}
 
 		/// <summary>
 		/// Perform an Http Get request
 		/// </summary>
-		HttpResponse Get(std::string_view requests) override final
+		HttpResponse Get(std::string_view request) override final
 		{
-			return HttpResponse();
+			auto message = std::stringstream();
+			message << "Get: " << request;
+			_requests.push_back(message.str());
+
+			auto searchClient = _getResponses.find(std::string(request));
+			if (searchClient != _getResponses.end())
+			{
+				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+			}
+			else
+			{
+				// The response was not set, return not found
+				return HttpResponse(HttpStatusCode::NotFound);
+			}
 		}
 
 	private:
 		std::string _host;
 		int _port;
+		std::vector<std::string> _requests;
+		std::map<std::string, std::string> _getResponses;
 	};
 }

@@ -37,6 +37,7 @@ import HttpLib;
 
 #include "Network/HttpLibNetworkManager.h"
 #include "Network/MockNetworkManager.h"
+#include "Network/ScopedNetworkManagerRegister.h"
 
 #include "System/SmartHandle.h"
 #include "System/DynamicLibraryManager.h"
