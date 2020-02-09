@@ -80,6 +80,11 @@
     "cstdarg": "cpp",
     "*.rh": "cpp",
     "concepts": "cpp",
-    "clocale": "cpp"
+    "clocale": "cpp",
+    "csignal": "cpp",
+    "resumable": "cpp",
+    "future": "cpp",
+    "random": "cpp",
+    "regex": "cpp"
   }
 }

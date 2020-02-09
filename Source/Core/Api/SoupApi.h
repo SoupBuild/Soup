@@ -1,25 +1,19 @@
-﻿// <copyright file="SoupApi.cs" company="Soup">
+﻿// <copyright file="SoupApi.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Api
+namespace Soup::Api
 {
-    using System.IO;
-    using System.Net;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public class SoupApi : ISoupApi
+    class SoupApi
     {
+    public:
         /// <summary>
         /// Download a package version as an archive
         /// </summary>
-        public async Task<Stream> DownloadPackageAsync(string name, SemanticVersion version)
+        Task<Stream> DownloadPackageAsync(string name, SemanticVersion version)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -40,7 +34,7 @@ namespace Soup.Api
         /// <summary>
         /// Get the metadata for a package identified by the unique name
         /// </summary>
-        public async Task<PackageResultModel> GetPackageAsync(string name)
+        Task<PackageResultModel> GetPackageAsync(string name)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -65,7 +59,7 @@ namespace Soup.Api
         /// <summary>
         /// Get a package publication metadata
         /// </summary>
-        public async Task<PublicationResultModel> GetPublicationAsync(string name, SemanticVersion version)
+        Task<PublicationResultModel> GetPublicationAsync(string name, SemanticVersion version)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -87,7 +81,7 @@ namespace Soup.Api
         /// <summary>
         /// Publish a new package version as an archive
         /// </summary>
-        public async Task<bool> PublishPackageAsync(string name, Stream value)
+        Task<bool> PublishPackageAsync(string name, Stream value)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -113,7 +107,7 @@ namespace Soup.Api
         /// <summary>
         /// Search for a package using the query string
         /// </summary>
-        public async Task<SearchModel> SearchPackagesAsync(string q)
+        Task<SearchModel> SearchPackagesAsync(string q)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -131,5 +125,5 @@ namespace Soup.Api
                 return result;
             }
         }
-    }
+    };
 }

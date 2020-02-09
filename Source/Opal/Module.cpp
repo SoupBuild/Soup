@@ -21,6 +21,8 @@
 
 export module Opal;
 
+import HttpLib;
+
 #include "Core/Path.h"
 #include "Core/SemanticVersion.h"
 
@@ -32,6 +34,9 @@ export module Opal;
 #include "Memory/IReferenceCounted.h"
 #include "Memory/Reference.h"
 #include "Memory/ReferenceCounted.h"
+
+#include "Network/HttpLibNetworkManager.h"
+#include "Network/MockNetworkManager.h"
 
 #include "System/SmartHandle.h"
 #include "System/DynamicLibraryManager.h"
