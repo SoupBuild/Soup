@@ -17,6 +17,7 @@ using namespace SoupTest;
 import SoupTestUtilities;
 
 #include "Api/SoupApiTests.gen.h"
+#include "Api/SoupApiJsonModelsTests.gen.h"
 
 #include "Build/Runner/BuildHistoryCheckerTests.gen.h"
 #include "Build/Runner/BuildHistoryJsonTests.gen.h"
@@ -50,6 +51,7 @@ int main()
 	TestState state = { 0, 0 };
 
 	state += RunSoupApiTests();
+	state += RunSoupApiJsonModelsTests();
 
 	state += RunBuildHistoryCheckerTests();
 	state += RunBuildHistoryJsonTests();

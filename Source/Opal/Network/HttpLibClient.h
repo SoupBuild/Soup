@@ -26,7 +26,12 @@ namespace Opal::Network
 		/// </summary>
 		HttpResponse Get(std::string_view request) override final
 		{
-			return HttpResponse(HttpStatusCode::NotFound);
+			auto response = _client.Get(request.data());
+			if (response == nullptr)
+				throw std::runtime_error("HttpLibClient: Get failed.");
+
+			auto statusCode = static_cast<HttpStatusCode>(response->status);
+			return HttpResponse(statusCode, std::move(response->body));
 		}
 
 	private:

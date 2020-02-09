@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "Models/PackageResultModel.h"
+#include "SoupApiJsonModels.h"
 #include "ApiException.h"
 
 namespace Soup::Api
@@ -45,7 +45,7 @@ namespace Soup::Api
                 7071);
 
             auto urlBuilder = std::stringstream();
-            urlBuilder << "/packages/" << name;
+            urlBuilder << "/api/v1/packages/" << name;
             auto url = urlBuilder.str();
 
             auto response = client->Get(url);
@@ -57,9 +57,7 @@ namespace Soup::Api
             }
 
             // Parse the return result
-            // var result = JsonConvert.DeserializeObject<PackageResultModel>(content);
-            auto result = PackageResultModel(std::string(name));
-
+            auto result = SoupApiJsonModels::ParsePackageResult(response.Body);
             return result;
         }
 
