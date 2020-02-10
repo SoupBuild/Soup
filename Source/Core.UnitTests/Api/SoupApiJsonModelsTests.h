@@ -50,12 +50,14 @@ namespace Soup::Api::UnitTests
 		{
 			auto packageResult = std::string(
 				R"({
-					"name": "MyPackage"
+					"name": "MyPackage",
+					"latest": "1.2.3"
 				})");
 			auto actual = SoupApiJsonModels::ParsePackageResult(packageResult);
 
 			auto expected = PackageResultModel(
-				"MyPackage");
+				"MyPackage",
+				SemanticVersion(1, 2, 3));
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}

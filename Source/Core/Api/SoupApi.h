@@ -38,7 +38,7 @@ namespace Soup::Api
         /// <summary>
         /// Get the metadata for a package identified by the unique name
         /// </summary>
-        PackageResultModel GetPackage(std::string_view name)
+        static PackageResultModel GetPackage(std::string_view name)
         {
             auto client = Network::INetworkManager::Current().CreateClient(
                 "localhost",

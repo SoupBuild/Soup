@@ -14,6 +14,7 @@ namespace Soup::Api
 	{
 	private:
 		static constexpr const char* Property_Name = "name";
+		static constexpr const char* Property_Latest = "latest";
 
 	public:
 		/// <summary>
@@ -42,6 +43,7 @@ namespace Soup::Api
 		static PackageResultModel ParsePackageResult(const json11::Json& value)
 		{
 			std::string name;
+			std::optional<SemanticVersion> latest;
 
 			if (!value[Property_Name].is_null())
 			{
@@ -52,8 +54,14 @@ namespace Soup::Api
 				throw std::runtime_error("Missing Required field: name.");
 			}
 
+			if (!value[Property_Latest].is_null())
+			{
+				latest = SemanticVersion::Parse(value[Property_Latest].string_value());
+			}
+
 			return PackageResultModel(
-				std::move(name));
+				std::move(name),
+				latest);
 		}
 	};
 }

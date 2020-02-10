@@ -165,7 +165,7 @@ namespace Soup::Build::UnitTests
 
 			// Verify the contents of the build file
 			std::string expectedBuildFile = 
-				R"(Name = "MyPackage"
+R"(Name = "MyPackage"
 Version = "1.2.3"
 )";
 			auto& mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.toml"));

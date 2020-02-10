@@ -148,7 +148,10 @@ namespace Opal::System
 			auto file = _files.find(path);
 			if (file != _files.end())
 			{
-				return file->second.Contents;
+				// Reset the existing content offset and return it.
+				auto contents = file->second.Contents;
+				contents->seekg(0);
+				return contents;
 			}
 			else
 			{
@@ -169,7 +172,11 @@ namespace Opal::System
 			auto file = _files.find(path);
 			if (file != _files.end())
 			{
-				return file->second.Contents;
+				// Reset the existing content offset and return it.
+				auto contents = file->second.Contents;
+				contents->str("");
+				contents->clear();
+				return contents;
 			}
 			else
 			{

@@ -22,11 +22,9 @@ namespace Soup::Api::UnitTests
 				7071);
 			testNetworkManager->RegisterClient(testHttpClient);
 
-			auto uut = SoupApi();
-
 			auto packageName = "MissingPackage";
-			Assert::ThrowsRuntimeError([&uut, &packageName]() {
-				auto result = uut.GetPackage(packageName);
+			Assert::ThrowsRuntimeError([&packageName]() {
+				auto result = SoupApi::GetPackage(packageName);
 			});
 
 			// Verify expected network manager requests
@@ -66,10 +64,8 @@ namespace Soup::Api::UnitTests
 				})");
 			testHttpClient->SetResponse("/api/v1/packages/MyPackage", packageResult);
 
-			auto uut = SoupApi();
-
 			auto packageName = "MyPackage";
-			auto result = uut.GetPackage(packageName);
+			auto result = SoupApi::GetPackage(packageName);
 
 			Assert::AreEqual(
 				std::vector<std::string>({

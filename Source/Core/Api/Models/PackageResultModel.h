@@ -20,6 +20,15 @@ namespace Soup::Api
 		{
 		}
 
+		PackageResultModel(
+			std::string name,
+			std::optional<SemanticVersion> latest) :
+			_name(std::move(name)),
+			_description(),
+			_latest(latest)
+		{
+		}
+
 		/// <summary>
 		/// Gets the name
 		/// </summary>
@@ -37,11 +46,21 @@ namespace Soup::Api
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether there is a latest version
+		/// </summary>
+		bool HasLatest() const
+		{
+			return _latest.has_value();
+		}
+
+		/// <summary>
 		/// Gets the latest published version
 		/// </summary>
 		SemanticVersion GetLatest() const
 		{
-			return _latest;
+			if (!HasLatest())
+				throw std::runtime_error("No latest.");
+			return _latest.value();
 		}
 
 		/// <summary>
@@ -67,6 +86,6 @@ namespace Soup::Api
 	private:
 		std::string _name;
 		std::string _description;
-		SemanticVersion _latest;
+		std::optional<SemanticVersion> _latest;
 	};
 }

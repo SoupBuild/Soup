@@ -4,6 +4,7 @@
 
 #pragma once
 #include "RecipeExtensions.h"
+#include "Api/SoupApi.h"
 
 namespace Soup
 {
@@ -16,7 +17,7 @@ namespace Soup
 		/// <summary>
 		/// Install a package
 		/// </summary>
-		static void InstallPackage(const std::string& name)
+		static void InstallPackage(const std::string& package, const Path& packageStore)
 		{
 			auto workingDirectory = Path();
 			auto recipePath =
@@ -28,43 +29,45 @@ namespace Soup
 				throw std::runtime_error("Could not load the recipe file.");
 			}
 
-			// auto stagingPath = EnsureStagingDirectoryExists(_config.PackageStore);
+			// Create the staging directory
+			auto stagingPath = EnsureStagingDirectoryExists(packageStore);
 
-			// // Ensure that the staging directory exists
-			// var tempStagingPath = Path.Combine(stagingPath, "temp");
+			if (!Path(package).HasFileExtension())
+			{
+				Log::HighPriority("Install Package: " + package);
 
-			// var package = options.Package;
-			// if (string.IsNullOrEmpty(package))
-			// {
-			// 	 Log::Info("Install All");
+				// Check if the package is already installed
+				if (recipe.HasDependencies())
+				{
+					for (auto& dependency : recipe.GetDependencies())
+					{
+						if (dependency.GetName() == package)
+						{
+							Log::Warning("Package already installed.");
+							return;
+						}
+					}
+				}
 
-			// 	 InstallRecursiveDependencies(tempStagingPath, recipe);
-			// }
-			// else if (!Path.HasExtension(package))
-			// {
-			// 	 Log::Info($"Install Package: {package}");
+				 // Get the latest version
+				 auto latestVersion = GetLatestVersion(package);
 
-			// 	 // Check if the package is already installed
-			// 	 if (recipe.Dependencies.Any(dependency => dependency.Name == package))
-			// 	 {
-			// 		 Log::Warning("Package already installed.");
-			// 		 return;
-			// 	 }
+				//  // Download the archive
+				//  auto archiveStream = DownloadPackageAsync(package, latestVersion))
 
-			// 	 // Get the latest version
-			// 	 auto latestVersion = await GetLatestAsync(package);
+				// // Install the package
+				// auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
+				auto installedPackageReference = PackageReference(
+					package,
+					latestVersion);
 
-			// 	 // Download the archive
-			// 	 using (auto archiveStream = await DownloadPackageAsync(package, latestVersion))
-			// 	 {
-			// 		 // Install the package
-			// 		 auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
-			// 		 auto installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
-
-			// 		 // Register the package in the recipe
-			// 		 recipe.Dependencies.Add(installedPackageRef);
-			// 	 }
-			// }
+				// Register the package in the recipe
+				auto dependencies = std::vector<PackageReference>();
+				if (recipe.HasDependencies())
+					dependencies = recipe.GetDependencies();
+				dependencies.push_back(installedPackageReference);
+				recipe.SetDependencies(dependencies);
+			}
 			// else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
 			// {
 			// 	 Log.Info($"Installing Local Package: {package}");
@@ -105,6 +108,78 @@ namespace Soup
 		}
 
 	private:
+		static SemanticVersion GetLatestVersion(const std::string& name)
+		{
+			 auto package = Api::SoupApi::GetPackage(name);
+			 return package.GetLatest();
+		}
+
+		// Stream DownloadPackageAsync(string name, SemanticVersion version)
+		// {
+		// 	 var stream = await _soupApi.DownloadPackageAsync(name, version);
+		// 	 return stream;
+		// }
+
+		// Recipe InstallPackageAsync(string tempPath, Stream packageFile)
+		// {
+		// 	 var recipe = await UnpackArchiveAsync(tempPath, packageFile);
+		// 	 return recipe;
+		// }
+
+		// Recipe UnpackArchiveAsync(string tempPath, Stream packageFile)
+		// {
+		// 	 // Unpack the zip file into the package directory
+		// 	 var tempPackagePath = Path.Combine(tempPath, Constants.StorePackageFolderName);
+		// 	 Directory.CreateDirectory(tempPackagePath);
+		// 	 await PackageManager.ExtractAsync(packageFile, tempPackagePath);
+
+		// 	 // Load the packages recipe file
+		// 	 var recipe = await RecipeManager.LoadFromFileAsync(tempPackagePath);
+		// 	 var packagePath = PackageManager.BuildKitchenPackagePath(_config, recipe);
+
+		// 	 // TODO : Perform some verification that the package is valid
+
+		// 	 // TODO : Should not hit this when, verify the package exists before download
+		// 	 // For now delete and recreate it
+		// 	 if (Directory.Exists(packagePath))
+		// 	 {
+		// 		 Directory.Delete(packagePath, true);
+		// 	 }
+
+		// 	 // Ensure the parent directory exists
+		// 	 var packageParentDirectory = Directory.GetParent(packagePath);
+		// 	 if (!packageParentDirectory.Exists)
+		// 	 {
+		// 		 packageParentDirectory.Create();
+		// 	 }
+
+		// 	 // Move the results out of the staging directory
+		// 	 Directory.Move(tempPackagePath, packagePath);
+
+		// 	 return recipe;
+		// }
+
+		// /// <summary>
+		// /// Recursively install all dependencies and transitive dependencies
+		// /// </summary>
+		// void InstallRecursiveDependencies(string tempPath, Recipe recipe)
+		// {
+		// 	 foreach (var dep in recipe.Dependencies)
+		// 	 {
+		// 		 Log.Info($"{dep}");
+
+		// 		 // Download the archive
+		// 		 using (var archiveStream = await DownloadPackageAsync(dep.Name, dep.Version))
+		// 		 {
+		// 			 // Install the package
+		// 			 var installedRecipe = await InstallPackageAsync(tempPath, archiveStream);
+
+		// 			 // Install dependecies recursively
+		// 			 await InstallRecursiveDependencies(tempPath, installedRecipe);
+		// 		 }
+		// 	 }
+		// }
+
 		/// <summary>
 		/// Build the kitchen library path
 		/// </summary>
@@ -180,23 +255,23 @@ namespace Soup
 		// 	return result;
 		// }
 
-		// /// <summary>
-		// /// Ensure the staging directory exists
-		// /// </summary>
-		// static string EnsureStagingDirectoryExists(string directory)
-		// {
-		// 	var path = Path.Combine(directory, Constants.StagingFolderName);
-		// 	if (!Directory.Exists(path))
-		// 	{
-		// 		// Create the folder
-		// 		var info = Directory.CreateDirectory(path);
+		/// <summary>
+		/// Ensure the staging directory exists
+		/// </summary>
+		static Path EnsureStagingDirectoryExists(const Path& packageStore)
+		{
+			auto stagingDirectory = packageStore + Path(Constants::StagingFolderName);
+			if (System::IFileSystem::Current().Exists(stagingDirectory))
+			{
+				// TODO: Cleanup
+				throw std::runtime_error("The staging directory already exists from a previous failed run.");
+			}
 
-		// 		// Hide the folder
-		// 		info.Attributes |= FileAttributes.Hidden;
-		// 	}
+			// Create the folder
+			System::IFileSystem::Current().CreateDirectory2(stagingDirectory);
 
-		// 	return path;
-		// }
+			return stagingDirectory;
+		}
 
 		// /// <summary>
 		// /// Ensure the project generate folder exists
