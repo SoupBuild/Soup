@@ -5,7 +5,7 @@
 #pragma once
 #include "Recipe.h"
 
-namespace Soup::Build
+namespace Soup
 {
 	/// <summary>
 	/// The recipe json serialize manager
@@ -37,8 +37,8 @@ namespace Soup::Build
 					throw std::runtime_error("Root json was not an object.");
 
 				// Load the entire json blob into a root table
-				auto table = ValueTable();
-				ParseJson(ValueTableWrapper(table), jsonRoot.object_items());
+				auto table = Build::ValueTable();
+				ParseJson(Build::ValueTableWrapper(table), jsonRoot.object_items());
 
 				return Recipe(std::move(table));
 			}
@@ -56,7 +56,7 @@ namespace Soup::Build
 		}
 
 	private:
-		static void ParseJson(ValueWrapper& value, const json11::Json& item)
+		static void ParseJson(Build::ValueWrapper& value, const json11::Json& item)
 		{
 			switch (item.type())
 			{
@@ -83,7 +83,7 @@ namespace Soup::Build
 			}
 		}
 
-		static void ParseJson(ValueTableWrapper& table, const json11::Json::object& items)
+		static void ParseJson(Build::ValueTableWrapper& table, const json11::Json::object& items)
 		{
 			for (auto& item : items)
 			{
@@ -92,7 +92,7 @@ namespace Soup::Build
 			}
 		}
 
-		static void ParseJson(ValueListWrapper& list, const json11::Json::array& items)
+		static void ParseJson(Build::ValueListWrapper& list, const json11::Json::array& items)
 		{
 			list.Resize(items.size());
 			for (size_t i = 0; i < items.size(); i++)
@@ -102,30 +102,34 @@ namespace Soup::Build
 			}
 		}
 
-		static json11::Json BuildJson(Value& value)
+		static json11::Json BuildJson(Build::Value& value)
 		{
 			switch (value.GetType())
 			{
-				case ValueType::Empty:
+				case Build::ValueType::Empty:
 					return json11::Json();
-				case ValueType::Table:
+				case Build::ValueType::Table:
 					return BuildJson(value.AsTable());
-				case ValueType::List:
+				case Build::ValueType::List:
 					return BuildJson(value.AsList());
-				case ValueType::String:
-					return json11::Json(ValueWrapper(value).AsString().GetValue());
-				case ValueType::Integer:
-					return json11::Json(static_cast<int>(ValueWrapper(value).AsInteger().GetValue()));
-				case ValueType::Float:
-					return json11::Json(ValueWrapper(value).AsFloat().GetValue());
-				case ValueType::Boolean:
-					return json11::Json(ValueWrapper(value).AsBoolean().GetValue());
+				case Build::ValueType::String:
+					return json11::Json(
+						Build::ValueWrapper(value).AsString().GetValue());
+				case Build::ValueType::Integer:
+					return json11::Json(
+						static_cast<int>(Build::ValueWrapper(value).AsInteger().GetValue()));
+				case Build::ValueType::Float:
+					return json11::Json(
+						Build::ValueWrapper(value).AsFloat().GetValue());
+				case Build::ValueType::Boolean:
+					return json11::Json(
+						Build::ValueWrapper(value).AsBoolean().GetValue());
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}
 		}
 
-		static json11::Json BuildJson(ValueTable& table)
+		static json11::Json BuildJson(Build::ValueTable& table)
 		{
 			json11::Json::object result = {};
 
@@ -137,7 +141,7 @@ namespace Soup::Build
 			return result;
 		}
 
-		static json11::Json BuildJson(ValueList& list)
+		static json11::Json BuildJson(Build::ValueList& list)
 		{
 			json11::Json::array result = {};
 

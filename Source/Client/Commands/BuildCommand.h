@@ -48,7 +48,7 @@ namespace Soup::Client
 					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2() + workingDirectory;
 				}
 			}
-			
+
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);

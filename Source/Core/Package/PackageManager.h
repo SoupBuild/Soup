@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+#include "RecipeExtensions.h"
+
 namespace Soup
 {
 	/// <summary>
@@ -11,278 +14,361 @@ namespace Soup
 	{
 	public:
 		/// <summary>
-		/// Build the namespace version
+		/// Install a package
 		/// </summary>
-		static std::string BuildNamespaceVersion(SemanticVersion version)
+		static void InstallPackage(const std::string& name)
 		{
-			return $"v{version.Major}_{version.Minor}_{version.Patch}";
+			auto workingDirectory = Path();
+			auto recipePath =
+				workingDirectory +
+				Path(Constants::RecipeFileName);
+			Recipe recipe = {};
+			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			{
+				throw std::runtime_error("Could not load the recipe file.");
+			}
+
+			// auto stagingPath = EnsureStagingDirectoryExists(_config.PackageStore);
+
+			// // Ensure that the staging directory exists
+			// var tempStagingPath = Path.Combine(stagingPath, "temp");
+
+			// var package = options.Package;
+			// if (string.IsNullOrEmpty(package))
+			// {
+			// 	 Log::Info("Install All");
+
+			// 	 InstallRecursiveDependencies(tempStagingPath, recipe);
+			// }
+			// else if (!Path.HasExtension(package))
+			// {
+			// 	 Log::Info($"Install Package: {package}");
+
+			// 	 // Check if the package is already installed
+			// 	 if (recipe.Dependencies.Any(dependency => dependency.Name == package))
+			// 	 {
+			// 		 Log::Warning("Package already installed.");
+			// 		 return;
+			// 	 }
+
+			// 	 // Get the latest version
+			// 	 auto latestVersion = await GetLatestAsync(package);
+
+			// 	 // Download the archive
+			// 	 using (auto archiveStream = await DownloadPackageAsync(package, latestVersion))
+			// 	 {
+			// 		 // Install the package
+			// 		 auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
+			// 		 auto installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
+
+			// 		 // Register the package in the recipe
+			// 		 recipe.Dependencies.Add(installedPackageRef);
+			// 	 }
+			// }
+			// else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
+			// {
+			// 	 Log.Info($"Installing Local Package: {package}");
+
+			// 	 if (!File.Exists(package))
+			// 	 {
+			// 		 throw ArgumentException("The specified file does not exist.");
+			// 	 }
+
+			// 	 // Install the package
+			// 	 using (var archiveStream = File.OpenRead(package))
+			// 	 {
+			// 		 auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
+			// 		 auto installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
+
+			// 		 // Register the package in the recipe if it does not exist
+			// 		 if (!recipe.Dependencies.Any(dependency => dependency == installedPackageRef))
+			// 		 {
+			// 			 recipe.Dependencies.Add(installedPackageRef);
+			// 		 }
+			// 	 }
+			// }
+			// else
+			// {
+			// 	 Log.Error("Unknown install source type.");
+			// 	 Directory.Delete(tempStagingPath, true);
+			// 	 return;
+			// }
+
+			// // Cleanup the working directory
+			// if (Directory.Exists(tempStagingPath))
+			// {
+			// 	 Directory.Delete(tempStagingPath, true);
+			// }
+
+			// Save the state of the recipe
+			RecipeExtensions::SaveToFile(recipePath, recipe);
 		}
 
+	private:
 		/// <summary>
 		/// Build the kitchen library path
 		/// </summary>
-		static string BuildKitchenLibraryPath(LocalUserConfig config)
-		{
-			return Path.Combine(
-				config.PackageStore,
-				Constants.StoreLibraryFolderName);
-		}
+		// static string BuildKitchenLibraryPath(LocalUserConfig config)
+		// {
+		// 	return config.PackageStore +
+		// 		Path(Constants::StoreLibraryFolderName);
+		// }
 
-		/// <summary>
-		/// Build the kitchen build path
-		/// </summary>
-		public static string BuildKitchenBuildPath(LocalUserConfig config, Recipe recipe)
-		{
-			return BuildKitchenBuildPath(config, recipe.Name, recipe.Version);
-		}
+		// /// <summary>
+		// /// Build the kitchen build path
+		// /// </summary>
+		// static std::string BuildKitchenBuildPath(LocalUserConfig config, Recipe recipe)
+		// {
+		// 	return BuildKitchenBuildPath(config, recipe.Name, recipe.Version);
+		// }
 
-		/// <summary>
-		/// Build the kitchen build path
-		/// </summary>
-		public static string BuildKitchenBuildPath(LocalUserConfig config, PackageReference reference)
-		{
-			return BuildKitchenBuildPath(config, reference.Name, reference.Version);
-		}
+		// /// <summary>
+		// /// Build the kitchen build path
+		// /// </summary>
+		// static string BuildKitchenBuildPath(LocalUserConfig config, PackageReference reference)
+		// {
+		// 	return BuildKitchenBuildPath(config, reference.Name, reference.Version);
+		// }
 
-		/// <summary>
-		/// Build the kitchen package path
-		/// </summary>
-		public static string BuildKitchenPackagePath(LocalUserConfig config, Recipe recipe)
-		{
-			return BuildKitchenPackagePath(config, recipe.Name, recipe.Version);
-		}
+		// /// <summary>
+		// /// Build the kitchen package path
+		// /// </summary>
+		// static string BuildKitchenPackagePath(LocalUserConfig config, Recipe recipe)
+		// {
+		// 	return BuildKitchenPackagePath(config, recipe.Name, recipe.Version);
+		// }
 
-		/// <summary>
-		/// Build the kitchen package path
-		/// </summary>
-		public static string BuildKitchenPackagePath(LocalUserConfig config, PackageReference reference)
-		{
-			return BuildKitchenPackagePath(config, reference.Name, reference.Version);
-		}
+		// /// <summary>
+		// /// Build the kitchen package path
+		// /// </summary>
+		// static string BuildKitchenPackagePath(LocalUserConfig config, PackageReference reference)
+		// {
+		// 	return BuildKitchenPackagePath(config, reference.Name, reference.Version);
+		// }
 
-		/// <summary>
-		/// Build the kitchen package path
-		/// </summary>
-		public static string BuildKitchenIncludePath(LocalUserConfig config, Recipe recipe)
-		{
-			return BuildKitchenIncludePath(config, recipe.Name, recipe.Version);
-		}
+		// /// <summary>
+		// /// Build the kitchen package path
+		// /// </summary>
+		// static string BuildKitchenIncludePath(LocalUserConfig config, Recipe recipe)
+		// {
+		// 	return BuildKitchenIncludePath(config, recipe.Name, recipe.Version);
+		// }
 
-		/// <summary>
-		/// Build the kitchen include path
-		/// </summary>
-		public static string BuildKitchenIncludePath(LocalUserConfig config, PackageReference reference)
-		{
-			return BuildKitchenIncludePath(config, reference.Name, reference.Version);
-		}
+		// /// <summary>
+		// /// Build the kitchen include path
+		// /// </summary>
+		// static string BuildKitchenIncludePath(LocalUserConfig config, PackageReference reference)
+		// {
+		// 	return BuildKitchenIncludePath(config, reference.Name, reference.Version);
+		// }
 
-		/// <summary>
-		/// Build the recursive dependencies
-		/// </summary>
-		public static async Task<List<PackageReference>> BuildRecursiveDependeciesAsync(LocalUserConfig config, Recipe recipe)
-		{
-			List<PackageReference> result = new List<PackageReference>();
-			foreach (var dependency in recipe.Dependencies)
-			{
-				result.Add(dependency);
-				var dependencyPackagePath = BuildKitchenPackagePath(config, dependency);
-				var dependencyRecipe = await RecipeManager.LoadFromFileAsync(dependencyPackagePath);
-				var transientDependencies = await BuildRecursiveDependeciesAsync(config, dependencyRecipe);
-				result.AddRange(transientDependencies);
-			}
+		// /// <summary>
+		// /// Build the recursive dependencies
+		// /// </summary>
+		// static async Task<List<PackageReference>> BuildRecursiveDependeciesAsync(LocalUserConfig config, Recipe recipe)
+		// {
+		// 	List<PackageReference> result = new List<PackageReference>();
+		// 	foreach (var dependency in recipe.Dependencies)
+		// 	{
+		// 		result.Add(dependency);
+		// 		var dependencyPackagePath = BuildKitchenPackagePath(config, dependency);
+		// 		var dependencyRecipe = await RecipeManager.LoadFromFileAsync(dependencyPackagePath);
+		// 		var transientDependencies = await BuildRecursiveDependeciesAsync(config, dependencyRecipe);
+		// 		result.AddRange(transientDependencies);
+		// 	}
 
-			return result;
-		}
+		// 	return result;
+		// }
 
-		/// <summary>
-		/// Ensure the staging directory exists
-		/// </summary>
-		public static string EnsureStagingDirectoryExists(string directory)
-		{
-			var path = Path.Combine(directory, Constants.StagingFolderName);
-			if (!Directory.Exists(path))
-			{
-				// Create the folder
-				var info = Directory.CreateDirectory(path);
+		// /// <summary>
+		// /// Ensure the staging directory exists
+		// /// </summary>
+		// static string EnsureStagingDirectoryExists(string directory)
+		// {
+		// 	var path = Path.Combine(directory, Constants.StagingFolderName);
+		// 	if (!Directory.Exists(path))
+		// 	{
+		// 		// Create the folder
+		// 		var info = Directory.CreateDirectory(path);
 
-				// Hide the folder
-				info.Attributes |= FileAttributes.Hidden;
-			}
+		// 		// Hide the folder
+		// 		info.Attributes |= FileAttributes.Hidden;
+		// 	}
 
-			return path;
-		}
+		// 	return path;
+		// }
 
-		/// <summary>
-		/// Ensure the project generate folder exists
-		/// </summary>
-		public static void EnsureProjectGenerateFolderExists(string directory)
-		{
-			var path = Path.Combine(directory, Constants.ProjectGenerateFolderName);
-			if (!Directory.Exists(path))
-			{
-				// Create the folder
-				var info = Directory.CreateDirectory(path);
+		// /// <summary>
+		// /// Ensure the project generate folder exists
+		// /// </summary>
+		// static void EnsureProjectGenerateFolderExists(string directory)
+		// {
+		// 	var path = Path.Combine(directory, Constants.ProjectGenerateFolderName);
+		// 	if (!Directory.Exists(path))
+		// 	{
+		// 		// Create the folder
+		// 		var info = Directory.CreateDirectory(path);
 
-				// Hide the folder
-				info.Attributes |= FileAttributes.Hidden;
-			}
-		}
+		// 		// Hide the folder
+		// 		info.Attributes |= FileAttributes.Hidden;
+		// 	}
+		// }
 
-		/// <summary>
-		/// Find the source files
-		/// </summary>
-		public static List<string> FindSourceFiles(Recipe recipe, string packageDirectory)
-		{
-			return FindFiles(recipe.Source, packageDirectory);
-		}
+		// /// <summary>
+		// /// Find the source files
+		// /// </summary>
+		// static List<string> FindSourceFiles(Recipe recipe, string packageDirectory)
+		// {
+		// 	return FindFiles(recipe.Source, packageDirectory);
+		// }
 
-		/// <summary>
-		/// Find the files
-		/// </summary>
-		public static List<string> FindFiles(IList<string> patterns, string directory)
-		{
-			List<string> result = new List<string>();
+		// /// <summary>
+		// /// Find the files
+		// /// </summary>
+		// static List<string> FindFiles(IList<string> patterns, string directory)
+		// {
+		// 	List<string> result = new List<string>();
 
-			// Create matching patterns for each source items
-			var includePatterns = new List<Glob.Glob>();
-			foreach (var pattern in patterns)
-			{
-				var cleanPattern = pattern.Replace("/", "\\").ToLower();
-				includePatterns.Add(new Glob.Glob(cleanPattern));
-			}
+		// 	// Create matching patterns for each source items
+		// 	var includePatterns = new List<Glob.Glob>();
+		// 	foreach (var pattern in patterns)
+		// 	{
+		// 		var cleanPattern = pattern.Replace("/", "\\").ToLower();
+		// 		includePatterns.Add(new Glob.Glob(cleanPattern));
+		// 	}
 
-			// Check every file in the directory
-			foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
-			{
-				var relativePath = Path.GetRelativePath(directory, file);
-				var cleanRelativePath = relativePath.ToLower();
-				bool match = includePatterns.Any(pattern => pattern.IsMatch(cleanRelativePath));
-				if (match)
-				{
-					result.Add(relativePath);
-				}
-			}
+		// 	// Check every file in the directory
+		// 	foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+		// 	{
+		// 		var relativePath = Path.GetRelativePath(directory, file);
+		// 		var cleanRelativePath = relativePath.ToLower();
+		// 		bool match = includePatterns.Any(pattern => pattern.IsMatch(cleanRelativePath));
+		// 		if (match)
+		// 		{
+		// 			result.Add(relativePath);
+		// 		}
+		// 	}
 
-			return result;
-		}
+		// 	return result;
+		// }
 
-		/// <summary>
-		/// Pack the archive
-		/// </summary>
-		public static async Task PackAsync(Recipe recipe, string directory)
-		{
-			var zipFileName = $"{recipe.Name}_{recipe.Version}.tgz";
-			var zipFilePath = Path.Combine(directory, zipFileName);
-			using (var zipFile = File.Create(zipFilePath))
-			{
-				await PackAsync(recipe, directory, zipFile);
-			}
-		}
+		// /// <summary>
+		// /// Pack the archive
+		// /// </summary>
+		// static async Task PackAsync(Recipe recipe, string directory)
+		// {
+		// 	var zipFileName = $"{recipe.Name}_{recipe.Version}.tgz";
+		// 	var zipFilePath = Path.Combine(directory, zipFileName);
+		// 	using (var zipFile = File.Create(zipFilePath))
+		// 	{
+		// 		await PackAsync(recipe, directory, zipFile);
+		// 	}
+		// }
 
-		/// <summary>
-		/// Pack the archive
-		/// </summary>
-		public static Task PackAsync(Recipe recipe, string directory, Stream stream)
-		{
-			var includePatterns = new List<Glob.Glob>();
+		// /// <summary>
+		// /// Pack the archive
+		// /// </summary>
+		// static Task PackAsync(Recipe recipe, string directory, Stream stream)
+		// {
+		// 	var includePatterns = new List<Glob.Glob>();
 
-			// Include the Recipe file
-			includePatterns.Add(new Glob.Glob(Constants.RecipeFileName.ToLower()));
+		// 	// Include the Recipe file
+		// 	includePatterns.Add(new Glob.Glob(Constants.RecipeFileName.ToLower()));
 
-			// Include all or the source filess
-			foreach (var source in recipe.Source)
-			{
-				includePatterns.Add(new Glob.Glob(source.ToLower()));
-			}
+		// 	// Include all or the source filess
+		// 	foreach (var source in recipe.Source)
+		// 	{
+		// 		includePatterns.Add(new Glob.Glob(source.ToLower()));
+		// 	}
 
-			using (var gzipStream = new GZipStream(stream, CompressionLevel.Optimal, true))
-			using (var archive = TarArchive.CreateOutputTarArchive(gzipStream))
-			{
-				archive.RootPath = directory;
+		// 	using (var gzipStream = new GZipStream(stream, CompressionLevel.Optimal, true))
+		// 	using (var archive = TarArchive.CreateOutputTarArchive(gzipStream))
+		// 	{
+		// 		archive.RootPath = directory;
 
-				// Check every file in the directory
-				foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
-				{
-					var relativePath = Path.GetRelativePath(directory, file);
-					bool matchInclude = includePatterns.Any(pattern => pattern.IsMatch(relativePath.ToLower()));
-					if (matchInclude)
-					{
-						Log.Verbose(relativePath);
-						var entry = TarEntry.CreateEntryFromFile(file);
-						archive.WriteEntry(entry, true);
-					}
-				}
-			}
+		// 		// Check every file in the directory
+		// 		foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+		// 		{
+		// 			var relativePath = Path.GetRelativePath(directory, file);
+		// 			bool matchInclude = includePatterns.Any(pattern => pattern.IsMatch(relativePath.ToLower()));
+		// 			if (matchInclude)
+		// 			{
+		// 				Log.Verbose(relativePath);
+		// 				var entry = TarEntry.CreateEntryFromFile(file);
+		// 				archive.WriteEntry(entry, true);
+		// 			}
+		// 		}
+		// 	}
 
-			return Task.CompletedTask;
-		}
+		// 	return Task.CompletedTask;
+		// }
 
-		/// <summary>
-		/// Unpack the archive
-		/// </summary>
-		public static Task ExtractAsync(Stream source, string targetDirectory)
-		{
-			using (var gzipStream = new GZipStream(source, CompressionMode.Decompress))
-			using (TarArchive archive = TarArchive.CreateInputTarArchive(gzipStream))
-			{
-				archive.ExtractContents(targetDirectory);
-			}
+		// /// <summary>
+		// /// Unpack the archive
+		// /// </summary>
+		// static Task ExtractAsync(Stream source, string targetDirectory)
+		// {
+		// 	using (var gzipStream = new GZipStream(source, CompressionMode.Decompress))
+		// 	using (TarArchive archive = TarArchive.CreateInputTarArchive(gzipStream))
+		// 	{
+		// 		archive.ExtractContents(targetDirectory);
+		// 	}
 
-			return Task.CompletedTask;
-		}
+		// 	return Task.CompletedTask;
+		// }
 
-		/// <summary>
-		/// Verify the archive
-		/// </summary>
-		public static async Task<Recipe> VerifyArchiveAsync(Stream stream)
-		{
-			using (var gzipStream = new GZipStream(stream, CompressionMode.Decompress, true))
-			using (var archive = new TarInputStream(gzipStream))
-			{
-				Recipe recipe = null;
-				TarEntry entry = archive.GetNextEntry();
-				while (entry != null)
-				{
-					if (string.Compare(entry.Name, Constants.RecipeFileName, true) == 0)
-					{
-						recipe = await RecipeManager.LoadFromStreamAsync(archive);
-						break;
-					}
+		// /// <summary>
+		// /// Verify the archive
+		// /// </summary>
+		// static async Task<Recipe> VerifyArchiveAsync(Stream stream)
+		// {
+		// 	using (var gzipStream = new GZipStream(stream, CompressionMode.Decompress, true))
+		// 	using (var archive = new TarInputStream(gzipStream))
+		// 	{
+		// 		Recipe recipe = null;
+		// 		TarEntry entry = archive.GetNextEntry();
+		// 		while (entry != null)
+		// 		{
+		// 			if (string.Compare(entry.Name, Constants.RecipeFileName, true) == 0)
+		// 			{
+		// 				recipe = await RecipeManager.LoadFromStreamAsync(archive);
+		// 				break;
+		// 			}
 
-					entry = archive.GetNextEntry();
-				}
+		// 			entry = archive.GetNextEntry();
+		// 		}
 
-				return recipe;
-			}
-		}
+		// 		return recipe;
+		// 	}
+		// }
 
-		private static string BuildPackageVersionDirectory(string projectName, SemanticVersion version)
-		{
-			return Path.Combine(projectName, $"{version}");
-		}
+		// private static string BuildPackageVersionDirectory(string projectName, SemanticVersion version)
+		// {
+		// 	return Path.Combine(projectName, $"{version}");
+		// }
 
-		private static string BuildKitchenPackagePath(LocalUserConfig config, string projectName, SemanticVersion version)
-		{
-			var kitchenPath = config.PackageStore;
-			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
-			var path = Path.Combine(kitchenPath, Constants.StorePackageFolderName, packageVersionDirectory);
-			return path;
-		}
+		// private static string BuildKitchenPackagePath(LocalUserConfig config, string projectName, SemanticVersion version)
+		// {
+		// 	var kitchenPath = config.PackageStore;
+		// 	var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
+		// 	var path = Path.Combine(kitchenPath, Constants.StorePackageFolderName, packageVersionDirectory);
+		// 	return path;
+		// }
 
-		private static string BuildKitchenBuildPath(LocalUserConfig config, string projectName, SemanticVersion version)
-		{
-			var kitchenPath = config.PackageStore;
-			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
-			var path = Path.Combine(kitchenPath, Constants.StoreBuildFolderName, packageVersionDirectory);
-			return path;
-		}
+		// private static string BuildKitchenBuildPath(LocalUserConfig config, string projectName, SemanticVersion version)
+		// {
+		// 	var kitchenPath = config.PackageStore;
+		// 	var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
+		// 	var path = Path.Combine(kitchenPath, Constants.StoreBuildFolderName, packageVersionDirectory);
+		// 	return path;
+		// }
 
-		private static string BuildKitchenIncludePath(LocalUserConfig config, string projectName, SemanticVersion version)
-		{
-			var kitchenPath = config.PackageStore;
-			var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
-			var path = Path.Combine(kitchenPath, Constants.StoreIncludeRootFolderName, packageVersionDirectory);
-			return path;
-		}
+		// private static string BuildKitchenIncludePath(LocalUserConfig config, string projectName, SemanticVersion version)
+		// {
+		// 	var kitchenPath = config.PackageStore;
+		// 	var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
+		// 	var path = Path.Combine(kitchenPath, Constants.StoreIncludeRootFolderName, packageVersionDirectory);
+		// 	return path;
+		// }
 	};
 }

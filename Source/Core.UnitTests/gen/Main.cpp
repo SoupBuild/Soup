@@ -31,6 +31,7 @@ import SoupTestUtilities;
 #include "Config/LocalUserConfigJsonTests.gen.h"
 #include "Config/LocalUserConfigTests.gen.h"
 
+#include "Package/PackageManagerTests.gen.h"
 #include "Package/PackageReferenceTests.gen.h"
 #include "Package/RecipeBuilderTests.gen.h"
 #include "Package/RecipeBuildManagerTests.gen.h"
@@ -65,6 +66,7 @@ int main()
 	state += RunLocalUserConfigJsonTests();
 	state += RunLocalUserConfigTests();
 
+	state += RunPackageManagerTests();
 	state += RunPackageReferenceTests();
 	state += RunRecipeBuilderTests();
 	state += RunRecipeBuildManagerTests();

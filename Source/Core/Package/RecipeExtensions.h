@@ -5,7 +5,7 @@
 #pragma once
 #include "RecipeToml.h"
 
-namespace Soup::Build
+namespace Soup
 {
 	/// <summary>
 	/// The recipe extensions

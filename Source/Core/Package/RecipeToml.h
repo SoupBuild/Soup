@@ -5,7 +5,7 @@
 #pragma once
 #include "Recipe.h"
 
-namespace Soup::Build
+namespace Soup
 {
 	/// <summary>
 	/// The recipe Toml serialize manager
@@ -27,8 +27,8 @@ namespace Soup::Build
 					throw std::runtime_error("Recipe Toml file root must be a table.");
 
 				// Load the entire root table
-				auto table = ValueTable();
-				Parse(ValueTableWrapper(table), *root);
+				auto table = Build::ValueTable();
+				Parse(Build::ValueTableWrapper(table), *root);
 
 				return Recipe(std::move(table));
 			}
@@ -51,7 +51,7 @@ namespace Soup::Build
 		}
 
 	private:
-		static void Parse(ValueWrapper& target, cpptoml::base& source)
+		static void Parse(Build::ValueWrapper& target, cpptoml::base& source)
 		{
 			if (source.is_table())
 			{
@@ -99,7 +99,7 @@ namespace Soup::Build
 			}
 		}
 
-		static void Parse(ValueTableWrapper& target, const cpptoml::table& source)
+		static void Parse(Build::ValueTableWrapper& target, const cpptoml::table& source)
 		{
 			for (auto& item : source)
 			{
@@ -108,7 +108,7 @@ namespace Soup::Build
 			}
 		}
 
-		static void Parse(ValueListWrapper& target, const cpptoml::array& source)
+		static void Parse(Build::ValueListWrapper& target, const cpptoml::array& source)
 		{
 			auto& values = source.get();
 			target.Resize(values.size());
@@ -119,30 +119,34 @@ namespace Soup::Build
 			}
 		}
 
-		static std::shared_ptr<cpptoml::base> Build(Value& value)
+		static std::shared_ptr<cpptoml::base> Build(Build::Value& value)
 		{
 			switch (value.GetType())
 			{
-				case ValueType::Empty:
+				case Build::ValueType::Empty:
 					return nullptr;
-				case ValueType::Table:
+				case Build::ValueType::Table:
 					return Build(value.AsTable());
-				case ValueType::List:
+				case Build::ValueType::List:
 					return Build(value.AsList());
-				case ValueType::String:
-					return cpptoml::make_value<std::string>(ValueWrapper(value).AsString().GetValue());
-				case ValueType::Integer:
-					return cpptoml::make_value<int64_t>(ValueWrapper(value).AsInteger().GetValue());
-				case ValueType::Float:
-					return cpptoml::make_value<double>(ValueWrapper(value).AsFloat().GetValue());
-				case ValueType::Boolean:
-					return cpptoml::make_value<bool>(ValueWrapper(value).AsBoolean().GetValue());
+				case Build::ValueType::String:
+					return cpptoml::make_value<std::string>(
+						Build::ValueWrapper(value).AsString().GetValue());
+				case Build::ValueType::Integer:
+					return cpptoml::make_value<int64_t>(
+						Build::ValueWrapper(value).AsInteger().GetValue());
+				case Build::ValueType::Float:
+					return cpptoml::make_value<double>(
+						Build::ValueWrapper(value).AsFloat().GetValue());
+				case Build::ValueType::Boolean:
+					return cpptoml::make_value<bool>(
+						Build::ValueWrapper(value).AsBoolean().GetValue());
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}
 		}
 
-		static std::shared_ptr<cpptoml::base> Build(ValueTable& table)
+		static std::shared_ptr<cpptoml::base> Build(Build::ValueTable& table)
 		{
 			auto result = cpptoml::make_table();
 
@@ -154,7 +158,7 @@ namespace Soup::Build
 			return result;
 		}
 
-		static std::shared_ptr<cpptoml::base> Build(ValueList& list)
+		static std::shared_ptr<cpptoml::base> Build(Build::ValueList& list)
 		{
 			auto result = cpptoml::make_array();
 

@@ -46,6 +46,7 @@ using namespace Opal;
 #include "Compiler/CompileArguments.h"
 #include "Compiler/MockCompiler.h"
 
+#include "Package/PackageManager.h"
 #include "Package/Recipe.h"
 #include "Package/RecipeBuildManager.h"
 #include "Package/RecipeExtensions.h"
