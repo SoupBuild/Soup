@@ -50,6 +50,7 @@ namespace Soup::Client
 						false));
 
 				// Setup the real services
+				Network::INetworkManager::Register(std::make_shared<Network::HttpLibNetworkManager>());
 				System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
 				System::IProcessManager::Register(std::make_shared<System::PlatformProcessManager>());
 

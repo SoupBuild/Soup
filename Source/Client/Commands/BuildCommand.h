@@ -52,8 +52,8 @@ namespace Soup::Client
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);
-			Build::Recipe recipe = {};
-			if (!Build::RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			Recipe recipe = {};
+			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
 			{
 				Log::Error("Could not load the recipe file.");
 				return;

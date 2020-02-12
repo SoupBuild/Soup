@@ -29,6 +29,8 @@ namespace Soup::Client
 		{
 			Log::Diag("InstallCommand::Run");
 			
+			auto packageStore = Path("C:/users/mwasp/.soup/packages/");
+			PackageManager::InstallPackage(_options.Package, packageStore);
 		}
 
 	private:

@@ -106,8 +106,8 @@ namespace RecipeBuild
 			preprocessorDefinitions.push_back("SOUP_BUILD");
 
 			// Build up arguments to build this individual recipe
-			auto binaryDirectory = Soup::Build::RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
-			auto objectDirectory = Soup::Build::RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
+			auto binaryDirectory = Soup::RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
+			auto objectDirectory = Soup::RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
 
 			// Load the module interface file if present
 			auto moduleInterfaceSourceFile = std::string();

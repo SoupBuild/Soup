@@ -36,8 +36,8 @@ namespace Soup::Client
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);
-			Build::Recipe recipe = {};
-			if (!Build::RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			Recipe recipe = {};
+			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
 			{
 				Log::Error("Could not load the recipe file");
 				return;
@@ -53,7 +53,7 @@ namespace Soup::Client
 			// Ensure the executable exists
 			auto configuration = "release";
 			auto compilerName = config.GetRuntimeCompiler();
-			auto binaryDirectory = Build::RecipeExtensions::GetBinaryDirectory(compilerName, configuration);
+			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(compilerName, configuration);
 			auto executablePath = workingDirectory + binaryDirectory + Path(std::string(recipe.GetName()) + ".exe");
 			Log::Info(executablePath.ToString());
 			if (!System::IFileSystem::Current().Exists(executablePath))
