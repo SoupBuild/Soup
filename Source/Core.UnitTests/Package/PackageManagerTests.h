@@ -97,6 +97,7 @@ namespace Soup::UnitTests
 					"OpenReadBinary: Recipe.toml",
 					"Exists: PackageStore/.staging",
 					"CreateDirectory: PackageStore/.staging",
+					"DeleteDirectoryRecursive: PackageStore/.staging",
 					"OpenWrite: Recipe.toml",
 				}),
 				fileSystem->GetRequests(),

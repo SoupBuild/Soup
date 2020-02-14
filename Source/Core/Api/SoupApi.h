@@ -53,7 +53,7 @@ namespace Soup::Api
             // Verify that we got a success
             if (response.StatusCode != Network::HttpStatusCode::Ok)
             {
-                throw std::runtime_error("GetPackage: Api request failed.");
+                throw ApiException(response.StatusCode);
             }
 
             // Parse the return result

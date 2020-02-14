@@ -116,5 +116,20 @@ namespace Opal::System
 
 			return result;
 		}
+
+		/// <summary>
+		/// Delete the directory
+		/// </summary>
+		void DeleteDirectory(const Path& path, bool recursive) override final
+		{
+			if (recursive)
+			{
+				std::filesystem::remove_all(path.ToString());
+			}
+			else
+			{
+				std::filesystem::remove(path.ToString());
+			}
+		}
 	};
 }

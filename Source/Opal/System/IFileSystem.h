@@ -73,6 +73,11 @@ namespace Opal::System
 		/// </summary>
 		virtual std::vector<Path> GetDirectoryChildren(const Path& path) = 0;
 
+		/// <summary>
+		/// Delete the directory
+		/// </summary>
+		virtual void DeleteDirectory(const Path& path, bool recursive) = 0;
+
 	private:
 		static std::shared_ptr<IFileSystem> _current;
 	};

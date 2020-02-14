@@ -32,86 +32,104 @@ namespace Soup
 			// Create the staging directory
 			auto stagingPath = EnsureStagingDirectoryExists(packageStore);
 
-			if (!Path(package).HasFileExtension())
+			try
 			{
-				Log::HighPriority("Install Package: " + package);
-
-				// Check if the package is already installed
-				if (recipe.HasDependencies())
+				if (!Path(package).HasFileExtension())
 				{
-					for (auto& dependency : recipe.GetDependencies())
+					Log::HighPriority("Install Package: " + package);
+
+					// Check if the package is already installed
+					if (recipe.HasDependencies())
 					{
-						if (dependency.GetName() == package)
+						for (auto& dependency : recipe.GetDependencies())
 						{
-							Log::Warning("Package already installed.");
-							return;
+							if (dependency.GetName() == package)
+							{
+								Log::Warning("Package already installed.");
+								return;
+							}
 						}
 					}
+
+					// Get the latest version
+					auto latestVersion = GetLatestVersion(package);
+
+					//  // Download the archive
+					//  auto archiveStream = DownloadPackageAsync(package, latestVersion))
+
+					// // Install the package
+					// auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
+					auto installedPackageReference = PackageReference(
+						package,
+						latestVersion);
+
+					// Register the package in the recipe
+					auto dependencies = std::vector<PackageReference>();
+					if (recipe.HasDependencies())
+						dependencies = recipe.GetDependencies();
+					dependencies.push_back(installedPackageReference);
+					recipe.SetDependencies(dependencies);
 				}
+				// else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
+				// {
+				// 	 Log.Info($"Installing Local Package: {package}");
 
-				 // Get the latest version
-				 auto latestVersion = GetLatestVersion(package);
+				// 	 if (!File.Exists(package))
+				// 	 {
+				// 		 throw ArgumentException("The specified file does not exist.");
+				// 	 }
 
-				//  // Download the archive
-				//  auto archiveStream = DownloadPackageAsync(package, latestVersion))
+				// 	 // Install the package
+				// 	 using (var archiveStream = File.OpenRead(package))
+				// 	 {
+				// 		 auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
+				// 		 auto installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
 
-				// // Install the package
-				// auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
-				auto installedPackageReference = PackageReference(
-					package,
-					latestVersion);
+				// 		 // Register the package in the recipe if it does not exist
+				// 		 if (!recipe.Dependencies.Any(dependency => dependency == installedPackageRef))
+				// 		 {
+				// 			 recipe.Dependencies.Add(installedPackageRef);
+				// 		 }
+				// 	 }
+				// }
+				// else
+				// {
+				// 	 Log.Error("Unknown install source type.");
+				// 	 Directory.Delete(tempStagingPath, true);
+				// 	 return;
+				// }
+				// Cleanup the working directory
+				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 
-				// Register the package in the recipe
-				auto dependencies = std::vector<PackageReference>();
-				if (recipe.HasDependencies())
-					dependencies = recipe.GetDependencies();
-				dependencies.push_back(installedPackageReference);
-				recipe.SetDependencies(dependencies);
+				// Save the state of the recipe
+				RecipeExtensions::SaveToFile(recipePath, recipe);
 			}
-			// else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
-			// {
-			// 	 Log.Info($"Installing Local Package: {package}");
-
-			// 	 if (!File.Exists(package))
-			// 	 {
-			// 		 throw ArgumentException("The specified file does not exist.");
-			// 	 }
-
-			// 	 // Install the package
-			// 	 using (var archiveStream = File.OpenRead(package))
-			// 	 {
-			// 		 auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
-			// 		 auto installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
-
-			// 		 // Register the package in the recipe if it does not exist
-			// 		 if (!recipe.Dependencies.Any(dependency => dependency == installedPackageRef))
-			// 		 {
-			// 			 recipe.Dependencies.Add(installedPackageRef);
-			// 		 }
-			// 	 }
-			// }
-			// else
-			// {
-			// 	 Log.Error("Unknown install source type.");
-			// 	 Directory.Delete(tempStagingPath, true);
-			// 	 return;
-			// }
-
-			// // Cleanup the working directory
-			// if (Directory.Exists(tempStagingPath))
-			// {
-			// 	 Directory.Delete(tempStagingPath, true);
-			// }
-
-			// Save the state of the recipe
-			RecipeExtensions::SaveToFile(recipePath, recipe);
+			catch(const std::exception& e)
+			{
+				// Cleanup the staging directory and accept that we failed
+				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
+				throw;
+			}
 		}
 
 	private:
 		static SemanticVersion GetLatestVersion(const std::string& name)
 		{
-			 auto package = Api::SoupApi::GetPackage(name);
-			 return package.GetLatest();
+			try
+			{
+				auto package = Api::SoupApi::GetPackage(name);
+				return package.GetLatest();
+			}
+			catch(const Api::ApiException& ex)
+			{
+				switch (ex.GetStatusCode())
+				{
+					case Network::HttpStatusCode::NotFound:
+						Log::Error("Package does not exist: " + name);
+				}
+
+				throw;
+			}
 		}
 
 		// Stream DownloadPackageAsync(string name, SemanticVersion version)

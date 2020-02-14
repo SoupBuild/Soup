@@ -206,7 +206,6 @@ namespace Opal::System
 			_requests.push_back(message.str());
 		}
 
-
 		/// <summary>
 		/// Get the children of a directory
 		/// </summary>
@@ -218,6 +217,21 @@ namespace Opal::System
 
 			auto result = std::vector<Path>();
 			return result;
+		}
+
+		/// <summary>
+		/// Delete the directory
+		/// </summary>
+		void DeleteDirectory(const Path& path, bool recursive) override final
+		{
+			std::stringstream message;
+			if (recursive)
+				message << "DeleteDirectoryRecursive: ";
+			else
+				message << "DeleteDirectory: ";
+				
+			message << path.ToString();
+			_requests.push_back(message.str());
 		}
 
 	private:
