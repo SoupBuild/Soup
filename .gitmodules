@@ -19,3 +19,6 @@
 [submodule "Dependencies/cpp-httplib"]
 	path = Dependencies/cpp-httplib
 	url = https://github.com/mwasplund/cpp-httplib.git
+[submodule "Dependencies/7zip-cpp"]
+	path = Dependencies/7zip-cpp
+	url = https://github.com/mwasplund/7zip-cpp.git
