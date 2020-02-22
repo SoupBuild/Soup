@@ -93,6 +93,12 @@ namespace RecipeBuild
 					buildTable.GetValue("IncludeDirectories").AsList().CopyAsPathVector();
 			}
 
+			if (buildTable.HasValue("PlatformLibraries"))
+			{
+				arguments.PlatformLinkDependencies =
+					buildTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
+			}
+
 			if (buildTable.HasValue("LinkLibraries"))
 			{
 				arguments.LinkDependencies =

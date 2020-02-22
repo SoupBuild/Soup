@@ -85,6 +85,7 @@
     "resumable": "cpp",
     "future": "cpp",
     "random": "cpp",
-    "regex": "cpp"
+    "regex": "cpp",
+    "string_view": "cpp"
   }
 }

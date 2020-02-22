@@ -2,6 +2,7 @@ Name = "SoupCore"
 Version = "0.1.0"
 
 Dependencies = [
+	"../../Dependencies/LzmaSdk/CPP/",
 	"../../Dependencies/json11/",
 	"../../Dependencies/cpptoml/",
 	"../Opal/",

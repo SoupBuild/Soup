@@ -112,6 +112,46 @@ namespace Soup
 			}
 		}
 
+		/// <summary>
+		/// Publish a package
+		/// </summary>
+		static void PublishPackage(const Path& packageStore)
+		{
+			Log::Info("Publish Project: {recipe.Name}@{recipe.Version}");
+
+			auto workingDirectory = Path();
+			auto recipePath =
+				workingDirectory +
+				Path(Constants::RecipeFileName);
+			Recipe recipe = {};
+			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			{
+				throw std::runtime_error("Could not load the recipe file.");
+			}
+
+			// Create the staging directory
+			auto stagingPath = EnsureStagingDirectoryExists(packageStore);
+
+			try
+			{
+				auto archiveName = stagingPath + Path("TestArchive.7z");
+				auto files = std::vector<std::string>({
+					recipePath.ToString(),
+				});
+
+				LzmaSdk::CreateArchive(archiveName.ToString(), files);
+
+				//  // Pack the project into a memory stream
+				//  await PackageManager.PackAsync(recipe, projectDirectory, stream);
+			}
+			catch(const std::exception& e)
+			{
+				// Cleanup the staging directory and accept that we failed
+				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
+				throw;
+			}
+		}
+
 	private:
 		static SemanticVersion GetLatestVersion(const std::string& name)
 		{

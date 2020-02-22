@@ -147,6 +147,13 @@ namespace Soup::Build
 		std::vector<Path> ModuleDependencies;
 
 		/// <summary>
+		/// Gets or sets the list of platform link libraries
+		/// Note: These libraries will be included at link time, but will not be an input
+		/// for the incremental builds
+		/// </summary>
+		std::vector<Path> PlatformLinkDependencies;
+
+		/// <summary>
 		/// Gets or sets the list of link libraries
 		/// </summary>
 		std::vector<Path> LinkDependencies;
@@ -190,6 +197,7 @@ namespace Soup::Build
 				ModuleInterfaceSourceFile == rhs.ModuleInterfaceSourceFile &&
 				SourceFiles == rhs.SourceFiles &&
 				IncludeDirectories == rhs.IncludeDirectories &&
+				PlatformLinkDependencies == rhs.PlatformLinkDependencies &&
 				LinkDependencies == rhs.LinkDependencies &&
 				LibraryPaths == rhs.LibraryPaths &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&

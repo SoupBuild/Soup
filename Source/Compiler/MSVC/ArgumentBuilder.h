@@ -279,7 +279,7 @@ namespace Soup::Compiler::MSVC
 			for (auto& file : args.ExternalLibraryFiles)
 			{
 				// Add the external library files as input
-				inputFiles.push_back(file);
+				// TODO: Explicitly ignore these files from the input for now
 				AddParameter(commandArgs, Linker_ArgumentParameter_DefaultLibrary, file.ToString());
 			}
 

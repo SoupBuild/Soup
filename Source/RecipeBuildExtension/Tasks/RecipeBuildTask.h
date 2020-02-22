@@ -154,6 +154,7 @@ namespace RecipeBuild
 			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
 			buildTable.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
 			buildTable.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile);
+			buildTable.EnsureValue("PlatformLibraries").SetValuePathList(platformLibraries);
 			buildTable.EnsureValue("LinkLibraries").SetValuePathList(linkLibraries);
 			buildTable.EnsureValue("PreprocessorDefinitions").SetValueStringList(preprocessorDefinitions);
 			buildTable.EnsureValue("IncludeDirectories").SetValuePathList(includePaths);

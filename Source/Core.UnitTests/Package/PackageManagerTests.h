@@ -166,7 +166,7 @@ Version = "1.2.3"
 
 			auto packageName = "TheirPackage";
 			auto packageStore = Path("PackageStore");
-			PackageManager::PublishPackage(packageName, packageStore);
+			PackageManager::PublishPackage(packageStore);
 
 			Assert::AreEqual(
 				std::vector<std::string>({

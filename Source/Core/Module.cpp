@@ -21,6 +21,7 @@ import Opal;
 import SoupEngineDefinition;
 import SoupEngineWrapper;
 import SoupEngineCore;
+import LzmaSdk;
 import json11;
 import CPPToml;
 
