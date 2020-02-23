@@ -193,7 +193,7 @@ namespace RecipeBuild
 			auto currentVersion = SemanticVersion(0, 0, 0);
 			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(windows10KitIncludePath))
 			{
-				auto name = child.GetFileName();
+				auto name = child.Path.GetFileName();
 				auto platformVersion = name.substr(0, 3);
 				if (platformVersion != "10.")
 					throw std::runtime_error("Unexpected Kit Version: " + name);

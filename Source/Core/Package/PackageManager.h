@@ -134,15 +134,12 @@ namespace Soup
 
 			try
 			{
-				auto archiveName = stagingPath + Path("TestArchive.7z");
-				auto files = std::vector<std::string>({
-					recipePath.ToString(),
-				});
+				auto archiveName = stagingPath + Path(std::string(recipe.GetName()) + ".7z");
+				auto files = GetPackageFiles(workingDirectory);
 
-				LzmaSdk::CreateArchive(archiveName.ToString(), files);
-
-				//  // Pack the project into a memory stream
-				//  await PackageManager.PackAsync(recipe, projectDirectory, stream);
+				auto archive = LzmaSdk::Archive(archiveName.ToString());
+				archive.AddFiles(files);
+				archive.Save();
 			}
 			catch(const std::exception& e)
 			{
@@ -170,6 +167,56 @@ namespace Soup
 
 				throw;
 			}
+		}
+
+		static std::vector<std::string> GetPackageFiles(const Path& workingDirectory)
+		{
+			auto result = std::vector<std::string>();
+
+			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(workingDirectory))
+			{
+				if (child.IsDirectory)
+				{
+					// Ignore output folder
+					if (child.Path.GetFileName() != "out")
+					{
+						auto directoryFiles = GetAllFilesRecursive(child.Path);
+						result.insert(
+							result.end(),
+							directoryFiles.begin(),
+							directoryFiles.end());
+					}
+				}
+				else
+				{
+					result.push_back(child.Path.ToString());
+				}
+			}
+
+			return result;
+		}
+
+		static std::vector<std::string> GetAllFilesRecursive(const Path& directory)
+		{
+			auto result = std::vector<std::string>();
+
+			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(directory))
+			{
+				if (child.IsDirectory)
+				{
+					auto directoryFiles = GetAllFilesRecursive(child.Path);
+					result.insert(
+						result.end(),
+						directoryFiles.begin(),
+						directoryFiles.end());
+				}
+				else
+				{
+					result.push_back(child.Path.ToString());
+				}
+			}
+
+			return result;
 		}
 
 		// Stream DownloadPackageAsync(string name, SemanticVersion version)
@@ -321,8 +368,8 @@ namespace Soup
 			auto stagingDirectory = packageStore + Path(Constants::StagingFolderName);
 			if (System::IFileSystem::Current().Exists(stagingDirectory))
 			{
-				// TODO: Cleanup
-				throw std::runtime_error("The staging directory already exists from a previous failed run.");
+				Log::Warning("The staging directory already exists from a previous failed run.");
+				System::IFileSystem::Current().DeleteDirectory(stagingDirectory, true);
 			}
 
 			// Create the folder

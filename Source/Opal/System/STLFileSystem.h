@@ -106,12 +106,16 @@ namespace Opal::System
 		/// <summary>
 		/// Get the children of a directory
 		/// </summary>
-		std::vector<Path> GetDirectoryChildren(const Path& path) override final
+		std::vector<DirectoryEntry> GetDirectoryChildren(const Path& path) override final
 		{
-			auto result = std::vector<Path>();
+			auto result = std::vector<DirectoryEntry>();
 			for(auto& child : std::filesystem::directory_iterator(path.ToString()))
 			{
-				result.push_back(Path(child.path().string()));
+				result.push_back(
+					{
+						Path(child.path().string()),
+						child.is_directory()
+					});
 			}
 
 			return result;

@@ -6,6 +6,12 @@
 
 namespace Opal::System
 {
+	export struct DirectoryEntry
+	{
+		Path Path;
+		bool IsDirectory;
+	};
+
 	/// <summary>
 	/// The file system interface
 	/// Interface mainly used to allow for unit testing client code
@@ -71,7 +77,7 @@ namespace Opal::System
 		/// <summary>
 		/// Get the children of a directory
 		/// </summary>
-		virtual std::vector<Path> GetDirectoryChildren(const Path& path) = 0;
+		virtual std::vector<DirectoryEntry> GetDirectoryChildren(const Path& path) = 0;
 
 		/// <summary>
 		/// Delete the directory
