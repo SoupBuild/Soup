@@ -34,6 +34,23 @@ namespace Opal::Network
 			return HttpResponse(statusCode, std::move(response->body));
 		}
 
+		/// <summary>
+		/// Perform an Http Put request
+		/// </summary>
+		HttpResponse Put(
+			std::string_view request,
+			std::string_view contentType,
+			std::istream& content) override final
+		{
+			auto body = std::string(std::istreambuf_iterator<char>(content), {});
+			auto response = _client.Put(request.data(), body, contentType.data());
+			if (response == nullptr)
+				throw std::runtime_error("HttpLibClient: Put failed.");
+
+			auto statusCode = static_cast<HttpStatusCode>(response->status);
+			return HttpResponse(statusCode, std::move(response->body));
+		}
+
 	private:
 		httplib::Client _client;
 	};

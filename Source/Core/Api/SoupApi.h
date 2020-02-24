@@ -86,28 +86,36 @@ namespace Soup::Api
         /// <summary>
         /// Publish a new package version as an archive
         /// </summary>
-        // Task<bool> PublishPackageAsync(string name, Stream value)
-        // {
-        //     using (HttpClient client = new HttpClient())
-        //     {
-        //         var content = new StreamContent(value);
-        //         content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
-        //         var url = $"{Constants.SoupRESTEndpointV1}/packages/{name}";
-        //         Log.Verbose(url);
-        //         var response = await client.PutAsync(url, content);
+        static void PublishPackage(
+            std::string_view name,
+            SemanticVersion version,
+            std::istream& value)
+        {
+            auto client = Network::INetworkManager::Current().CreateClient(
+                "localhost",
+                7071);
 
-        //         // Check if the publish was a no-op
-        //         if (response.StatusCode == HttpStatusCode.Conflict)
-        //         {
-        //             return false;
-        //         }
+            auto urlBuilder = std::stringstream();
+            urlBuilder << "/api/v1/packages/" << name << "/v" << version.ToString();
+            auto url = urlBuilder.str();
 
-        //         // Verify that we got a success
-        //         response.EnsureSuccessStatusCode();
+            auto contentType = "application/x-7z-compressed";
 
-        //         return true;
-        //     }
-        // }
+            auto response = client->Put(url, contentType, value);
+
+            // Verify that we got a success
+            switch (response.StatusCode)
+            {
+                case Network::HttpStatusCode::Created:
+                    // All Good
+                    break;
+                case Network::HttpStatusCode::Conflict:
+                    // This version already existed
+                    throw std::runtime_error("Package version already exists");
+                default:
+                    throw ApiException(response.StatusCode);
+            }
+        }
 
         /// <summary>
         /// Search for a package using the query string

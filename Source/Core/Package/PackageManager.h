@@ -137,9 +137,14 @@ namespace Soup
 				auto archiveName = stagingPath + Path(std::string(recipe.GetName()) + ".7z");
 				auto files = GetPackageFiles(workingDirectory);
 
+				// Create the archive of the package
 				auto archive = LzmaSdk::Archive(archiveName.ToString());
 				archive.AddFiles(files);
 				archive.Save();
+
+				// Publish the archive
+				auto archiveStream = System::IFileSystem::Current().OpenRead(archiveName, true);
+				Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), *archiveStream);
 			}
 			catch(const std::exception& e)
 			{
@@ -147,6 +152,9 @@ namespace Soup
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 				throw;
 			}
+
+			// Cleanup the staging directory
+			System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 		}
 
 	private:

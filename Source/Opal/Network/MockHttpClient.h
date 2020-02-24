@@ -20,7 +20,8 @@ namespace Opal::Network
 			_host(std::move(host)),
 			_port(port),
 			_requests(),
-			_getResponses()
+			_getResponses(),
+			_putResponses()
 		{
 		}
 
@@ -81,10 +82,36 @@ namespace Opal::Network
 			}
 		}
 
+		/// <summary>
+		/// Perform an Http Put request
+		/// </summary>
+		HttpResponse Put(
+			std::string_view request,
+			std::string_view contentType,
+			std::istream& content) override final
+		{
+			auto message = std::stringstream();
+			message << "Put: " << request;
+			message << " [" << contentType << "]";
+			_requests.push_back(message.str());
+
+			auto searchClient = _putResponses.find(std::string(request));
+			if (searchClient != _putResponses.end())
+			{
+				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+			}
+			else
+			{
+				// The response was not set, return not found
+				return HttpResponse(HttpStatusCode::NotFound);
+			}
+		}
+
 	private:
 		std::string _host;
 		int _port;
 		std::vector<std::string> _requests;
 		std::map<std::string, std::string> _getResponses;
+		std::map<std::string, std::string> _putResponses;
 	};
 }
