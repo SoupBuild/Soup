@@ -60,7 +60,7 @@ int main()
 })";
 
 			auto mainFilePath = Path("Main.cpp");
-			auto mainFile = System::IFileSystem::Current().OpenWrite(mainFilePath);
+			auto mainFile = System::IFileSystem::Current().OpenWrite(mainFilePath, false);
 			*mainFile << mainFileContent;
 		}
 

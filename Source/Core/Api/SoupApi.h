@@ -17,23 +17,26 @@ namespace Soup::Api
         /// <summary>
         /// Download a package version as an archive
         /// </summary>
-        // Task<Stream> DownloadPackageAsync(string name, SemanticVersion version)
-        // {
-        //     using (HttpClient client = new HttpClient())
-        //     {
-        //         var url = $"{Constants.SoupRESTEndpointV1}/packages/{name}/{version}/{name}_{version}.tgz";
-        //         Log.Verbose(url);
-        //         var response = await client.GetAsync(url);
+        static std::string DownloadPackage(std::string_view name, SemanticVersion version)
+        {
+            auto client = Network::INetworkManager::Current().CreateClient(
+                "localhost",
+                7071);
 
-        //         // Verify that we got a success
-        //         response.EnsureSuccessStatusCode();
+            auto urlBuilder = std::stringstream();
+            urlBuilder << "/api/v1/packages/" << name << "/v" << version.ToString() << "/download";
+            auto url = urlBuilder.str();
 
-        //         // Parse the return result
-        //         var result = await response.Content.ReadAsStreamAsync();
+            auto response = client->Get(url);
 
-        //         return result;
-        //     }
-        // }
+            // Verify that we got a success
+            if (response.StatusCode != Network::HttpStatusCode::Ok)
+            {
+                throw ApiException(response.StatusCode);
+            }
+
+            return response.Body;
+        }
 
         /// <summary>
         /// Get the metadata for a package identified by the unique name

@@ -163,10 +163,17 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		std::shared_ptr<std::ostream> OpenWrite(const Path& path) override final
+		std::shared_ptr<std::ostream> OpenWrite(const Path& path, bool isBinary) override final
 		{
 			std::stringstream message;
-			message << "OpenWrite: " << path.ToString();
+			if (isBinary)
+			{
+				message << "OpenWriteBinary: " << path.ToString();
+			}
+			else
+			{
+				message << "OpenWrite: " << path.ToString();
+			}
 			_requests.push_back(message.str());
 
 			auto file = _files.find(path);
@@ -184,6 +191,16 @@ namespace Opal::System
 				auto insert = _files.emplace(path, MockFileState());
 				return insert.first->second.Contents;
 			}
+		}
+
+		/// <summary>
+		/// Rename the source file to the destination
+		/// </summary>
+		virtual void Rename(const Path& source, const Path& destination) override final
+		{
+			std::stringstream message;
+			message << "Rename: [" << source.ToString() << "] -> [" << destination.ToString() << "]";
+			_requests.push_back(message.str());
 		}
 
 		/// <summary>

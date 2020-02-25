@@ -17,7 +17,7 @@ namespace Soup
 		/// <summary>
 		/// Install a package
 		/// </summary>
-		static void InstallPackage(const std::string& package, const Path& packageStore)
+		static void InstallPackage(const std::string& packageName, const Path& packageStore)
 		{
 			auto workingDirectory = Path();
 			auto recipePath =
@@ -34,70 +34,66 @@ namespace Soup
 
 			try
 			{
-				if (!Path(package).HasFileExtension())
-				{
-					Log::HighPriority("Install Package: " + package);
+				Log::HighPriority("Install Package: " + packageName);
 
-					// Check if the package is already installed
-					if (recipe.HasDependencies())
+				// Check if the package is already installed
+				if (recipe.HasDependencies())
+				{
+					for (auto& dependency : recipe.GetDependencies())
 					{
-						for (auto& dependency : recipe.GetDependencies())
+						if (dependency.GetName() == packageName)
 						{
-							if (dependency.GetName() == package)
-							{
-								Log::Warning("Package already installed.");
-								return;
-							}
+							Log::Warning("Package already installed.");
+							return;
 						}
 					}
-
-					// Get the latest version
-					auto latestVersion = GetLatestVersion(package);
-
-					//  // Download the archive
-					//  auto archiveStream = DownloadPackageAsync(package, latestVersion))
-
-					// // Install the package
-					// auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
-					auto installedPackageReference = PackageReference(
-						package,
-						latestVersion);
-
-					// Register the package in the recipe
-					auto dependencies = std::vector<PackageReference>();
-					if (recipe.HasDependencies())
-						dependencies = recipe.GetDependencies();
-					dependencies.push_back(installedPackageReference);
-					recipe.SetDependencies(dependencies);
 				}
-				// else if (Path.GetExtension(package) == Constants.ArchiveFileExtension)
-				// {
-				// 	 Log.Info($"Installing Local Package: {package}");
 
-				// 	 if (!File.Exists(package))
-				// 	 {
-				// 		 throw ArgumentException("The specified file does not exist.");
-				// 	 }
+				// Get the latest version
+				auto packageModel = GetPackageModel(packageName);
+				auto latestVersion = packageModel.GetLatest();
 
-				// 	 // Install the package
-				// 	 using (var archiveStream = File.OpenRead(package))
-				// 	 {
-				// 		 auto installedRecipe = await InstallPackageAsync(tempStagingPath, archiveStream);
-				// 		 auto installedPackageRef = new PackageReference(installedRecipe.Name, installedRecipe.Version);
+				// Download the archive
+				auto archiveContent = Api::SoupApi::DownloadPackage(packageName, latestVersion);
+				auto archivePath = stagingPath + Path(packageModel.GetName() + ".7z");
 
-				// 		 // Register the package in the recipe if it does not exist
-				// 		 if (!recipe.Dependencies.Any(dependency => dependency == installedPackageRef))
-				// 		 {
-				// 			 recipe.Dependencies.Add(installedPackageRef);
-				// 		 }
-				// 	 }
-				// }
-				// else
-				// {
-				// 	 Log.Error("Unknown install source type.");
-				// 	 Directory.Delete(tempStagingPath, true);
-				// 	 return;
-				// }
+				// Write the contents to disk, scope cleanup
+				{
+					auto file = System::IFileSystem::Current().OpenWrite(archivePath, true);
+					*file << archiveContent;
+				}
+
+				// Create the package folder to extract to
+				auto stagingVersionFolder = stagingPath + Path(latestVersion.ToString());
+				System::IFileSystem::Current().CreateDirectory2(stagingVersionFolder);
+
+				// Unpack the contents of the archive
+				auto archive = LzmaSdk::ArchiveReader(archivePath.ToString());
+				archive.ExtractAll(stagingVersionFolder.ToString());
+
+				// Ensure the package root folder exists
+				auto packageRootFolder = packageStore + Path(packageModel.GetName());
+				if (!System::IFileSystem::Current().Exists(packageRootFolder))
+				{
+					// Create the folder
+					System::IFileSystem::Current().CreateDirectory2(packageRootFolder);
+				}
+
+				// Move the extracted contents into the version folder
+				auto packageVersionFolder = packageRootFolder + Path(latestVersion.ToString());
+				System::IFileSystem::Current().Rename(stagingVersionFolder, packageVersionFolder);
+
+				// Register the package in the recipe
+				auto installedPackageReference = PackageReference(
+					packageModel.GetName(),
+					latestVersion);
+				auto dependencies = std::vector<PackageReference>();
+				if (recipe.HasDependencies())
+					dependencies = recipe.GetDependencies();
+
+				dependencies.push_back(installedPackageReference);
+				recipe.SetDependencies(dependencies);
+
 				// Cleanup the working directory
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 
@@ -134,17 +130,22 @@ namespace Soup
 
 			try
 			{
-				auto archiveName = stagingPath + Path(std::string(recipe.GetName()) + ".7z");
+				auto archivePath = stagingPath + Path(std::string(recipe.GetName()) + ".7z");
 				auto files = GetPackageFiles(workingDirectory);
 
 				// Create the archive of the package
-				auto archive = LzmaSdk::Archive(archiveName.ToString());
+				auto archive = LzmaSdk::ArchiveWriter(archivePath.ToString());
 				archive.AddFiles(files);
 				archive.Save();
 
-				// Publish the archive
-				auto archiveStream = System::IFileSystem::Current().OpenRead(archiveName, true);
-				Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), *archiveStream);
+				// Publish the archive, scope cleanup file access
+				{
+					auto archiveStream = System::IFileSystem::Current().OpenRead(archivePath, true);
+					Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), *archiveStream);
+				}
+
+				// Cleanup the staging directory
+				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 			}
 			catch(const std::exception& e)
 			{
@@ -152,18 +153,15 @@ namespace Soup
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 				throw;
 			}
-
-			// Cleanup the staging directory
-			System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 		}
 
 	private:
-		static SemanticVersion GetLatestVersion(const std::string& name)
+		static Soup::Api::PackageResultModel GetPackageModel(const std::string& name)
 		{
 			try
 			{
 				auto package = Api::SoupApi::GetPackage(name);
-				return package.GetLatest();
+				return package;
 			}
 			catch(const Api::ApiException& ex)
 			{
@@ -226,51 +224,6 @@ namespace Soup
 
 			return result;
 		}
-
-		// Stream DownloadPackageAsync(string name, SemanticVersion version)
-		// {
-		// 	 var stream = await _soupApi.DownloadPackageAsync(name, version);
-		// 	 return stream;
-		// }
-
-		// Recipe InstallPackageAsync(string tempPath, Stream packageFile)
-		// {
-		// 	 var recipe = await UnpackArchiveAsync(tempPath, packageFile);
-		// 	 return recipe;
-		// }
-
-		// Recipe UnpackArchiveAsync(string tempPath, Stream packageFile)
-		// {
-		// 	 // Unpack the zip file into the package directory
-		// 	 var tempPackagePath = Path.Combine(tempPath, Constants.StorePackageFolderName);
-		// 	 Directory.CreateDirectory(tempPackagePath);
-		// 	 await PackageManager.ExtractAsync(packageFile, tempPackagePath);
-
-		// 	 // Load the packages recipe file
-		// 	 var recipe = await RecipeManager.LoadFromFileAsync(tempPackagePath);
-		// 	 var packagePath = PackageManager.BuildKitchenPackagePath(_config, recipe);
-
-		// 	 // TODO : Perform some verification that the package is valid
-
-		// 	 // TODO : Should not hit this when, verify the package exists before download
-		// 	 // For now delete and recreate it
-		// 	 if (Directory.Exists(packagePath))
-		// 	 {
-		// 		 Directory.Delete(packagePath, true);
-		// 	 }
-
-		// 	 // Ensure the parent directory exists
-		// 	 var packageParentDirectory = Directory.GetParent(packagePath);
-		// 	 if (!packageParentDirectory.Exists)
-		// 	 {
-		// 		 packageParentDirectory.Create();
-		// 	 }
-
-		// 	 // Move the results out of the staging directory
-		// 	 Directory.Move(tempPackagePath, packagePath);
-
-		// 	 return recipe;
-		// }
 
 		// /// <summary>
 		// /// Recursively install all dependencies and transitive dependencies

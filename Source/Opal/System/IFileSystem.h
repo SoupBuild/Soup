@@ -62,7 +62,12 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		virtual std::shared_ptr<std::ostream> OpenWrite(const Path& path) = 0;
+		virtual std::shared_ptr<std::ostream> OpenWrite(const Path& path, bool isBinary) = 0;
+
+		/// <summary>
+		/// Rename the source file to the destination
+		/// </summary>
+		virtual void Rename(const Path& source, const Path& destination) = 0;
 
 		/// <summary>
 		/// Copy the source file to the destination

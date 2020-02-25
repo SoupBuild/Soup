@@ -71,7 +71,7 @@ namespace Soup
 			Recipe& recipe)
 		{
 			// Open the file to write to
-			auto file = System::IFileSystem::Current().OpenWrite(recipeFile);
+			auto file = System::IFileSystem::Current().OpenWrite(recipeFile, false);
 
 			// Write the recipe to the file stream
 			RecipeToml::Serialize(recipe, *file);

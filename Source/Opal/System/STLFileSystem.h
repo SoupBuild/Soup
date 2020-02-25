@@ -78,12 +78,28 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		std::shared_ptr<std::ostream> OpenWrite(const Path& path) override final
+		std::shared_ptr<std::ostream> OpenWrite(const Path& path, bool isBinary) override final
 		{
-			auto file = std::make_shared<std::fstream>(path.ToString(), std::fstream::out);
+			int mode = std::fstream::out;
+			if (isBinary)
+			{
+				mode = mode | std::fstream::binary;
+			}
+
+			auto file = std::make_shared<std::fstream>(path.ToString(), mode);
 			return file;
 		}
-		
+
+		/// <summary>
+		/// Rename the source file to the destination
+		/// </summary>
+		virtual void Rename(const Path& source, const Path& destination) override final
+		{
+			std::filesystem::rename(
+				source.ToString(),
+				destination.ToString());
+		}
+
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
