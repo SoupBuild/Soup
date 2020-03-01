@@ -76,7 +76,7 @@ namespace Soup::Build
 			auto file = System::IFileSystem::Current().OpenWrite(BuildHistoryFile, false);
 
 			// Write the build state to the file stream
-			BuildHistoryJson::Serialize(state, *file);
+			BuildHistoryJson::Serialize(state, file->GetStream());
 		}
 	};
 }

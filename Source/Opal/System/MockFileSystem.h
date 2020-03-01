@@ -163,7 +163,7 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		std::shared_ptr<std::ostream> OpenWrite(const Path& path, bool isBinary) override final
+		std::shared_ptr<IOutputFile> OpenWrite(const Path& path, bool isBinary) override final
 		{
 			std::stringstream message;
 			if (isBinary)
@@ -183,13 +183,13 @@ namespace Opal::System
 				auto contents = file->second.Contents;
 				contents->str("");
 				contents->clear();
-				return contents;
+				return nullptr; // return contents;
 			}
 			else
 			{
 				// Create the file if it does not exist
 				auto insert = _files.emplace(path, MockFileState());
-				return insert.first->second.Contents;
+				return nullptr; // insert.first->second.Contents;
 			}
 		}
 

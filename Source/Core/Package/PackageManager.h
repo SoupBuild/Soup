@@ -5,6 +5,8 @@
 #pragma once
 #include "RecipeExtensions.h"
 #include "Api/SoupApi.h"
+#include "LzmaExtractCallback.h"
+#include "LzmaInStream.h"
 
 namespace Soup
 {
@@ -37,11 +39,13 @@ namespace Soup
 				Log::HighPriority("Install Package: " + packageName);
 
 				// Check if the package is already installed
+				auto packageNameNormalized = ToUpper(packageName);
 				if (recipe.HasDependencies())
 				{
 					for (auto& dependency : recipe.GetDependencies())
 					{
-						if (dependency.GetName() == packageName)
+						auto dependencyNameNormalized = ToUpper(dependency.GetName());
+						if (dependencyNameNormalized == packageNameNormalized)
 						{
 							Log::Warning("Package already installed.");
 							return;
@@ -52,38 +56,20 @@ namespace Soup
 				// Get the latest version
 				auto packageModel = GetPackageModel(packageName);
 				auto latestVersion = packageModel.GetLatest();
+				Log::HighPriority("Latest Version: " + latestVersion.ToString());
 
-				// Download the archive
-				auto archiveContent = Api::SoupApi::DownloadPackage(packageName, latestVersion);
-				auto archivePath = stagingPath + Path(packageModel.GetName() + ".7z");
+				EnsurePackageDownloaded(
+					packageModel.GetName(),
+					latestVersion,
+					packageStore,
+					stagingPath);
 
-				// Write the contents to disk, scope cleanup
-				{
-					auto file = System::IFileSystem::Current().OpenWrite(archivePath, true);
-					*file << archiveContent;
-				}
-
-				// Create the package folder to extract to
-				auto stagingVersionFolder = stagingPath + Path(latestVersion.ToString());
-				System::IFileSystem::Current().CreateDirectory2(stagingVersionFolder);
-
-				// Unpack the contents of the archive
-				auto archive = LzmaSdk::ArchiveReader(archivePath.ToString());
-				archive.ExtractAll(stagingVersionFolder.ToString());
-
-				// Ensure the package root folder exists
-				auto packageRootFolder = packageStore + Path(packageModel.GetName());
-				if (!System::IFileSystem::Current().Exists(packageRootFolder))
-				{
-					// Create the folder
-					System::IFileSystem::Current().CreateDirectory2(packageRootFolder);
-				}
-
-				// Move the extracted contents into the version folder
-				auto packageVersionFolder = packageRootFolder + Path(latestVersion.ToString());
-				System::IFileSystem::Current().Rename(stagingVersionFolder, packageVersionFolder);
+				// Cleanup the working directory
+				Log::Info("Deleting staging directory");
+				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 
 				// Register the package in the recipe
+				Log::Info("Adding reference to recipe");
 				auto installedPackageReference = PackageReference(
 					packageModel.GetName(),
 					latestVersion);
@@ -93,9 +79,6 @@ namespace Soup
 
 				dependencies.push_back(installedPackageReference);
 				recipe.SetDependencies(dependencies);
-
-				// Cleanup the working directory
-				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 
 				// Save the state of the recipe
 				RecipeExtensions::SaveToFile(recipePath, recipe);
@@ -146,6 +129,8 @@ namespace Soup
 
 				// Cleanup the staging directory
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
+
+				Log::HighPriority("Done");
 			}
 			catch(const std::exception& e)
 			{
@@ -223,6 +208,60 @@ namespace Soup
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Ensure a package version is downloaded
+		/// </summary>
+		static void EnsurePackageDownloaded(
+			const std::string name,
+			SemanticVersion version,
+			const Path& packagesDirectory,
+			const Path& stagingDirectory)
+		{
+			auto packageRootFolder = packagesDirectory + Path(name);
+			auto packageVersionFolder = packageRootFolder + Path(version.ToString());
+
+			// Check if the package version already exists
+			if (System::IFileSystem::Current().Exists(packageVersionFolder))
+			{
+				Log::HighPriority("Found local version");
+			}
+			else
+			{
+				// Download the archive
+				Log::HighPriority("Downloading package");
+				auto archiveContent = Api::SoupApi::DownloadPackage(name, version);
+				auto archivePath = stagingDirectory + Path(name + ".7z");
+
+				// Write the contents to disk, scope cleanup
+				auto archiveWriteFile = System::IFileSystem::Current().OpenWrite(archivePath, true);
+				archiveWriteFile->GetStream() << archiveContent;
+				archiveWriteFile->Close();
+
+				// Create the package folder to extract to
+				auto stagingVersionFolder = stagingDirectory + Path(version.ToString());
+				System::IFileSystem::Current().CreateDirectory2(stagingVersionFolder);
+
+				// Unpack the contents of the archive
+				{
+					auto archiveStream = System::IFileSystem::Current().OpenRead(archivePath, true);
+					auto inStream = std::make_shared<LzmaInStream>(archiveStream);
+					auto archive = LzmaSdk::ArchiveReader(inStream);
+					auto callback = std::make_shared<LzmaExtractCallback>();
+					archive.ExtractAll(stagingVersionFolder.ToString(), callback);
+				}
+
+				// Ensure the package root folder exists
+				if (!System::IFileSystem::Current().Exists(packageRootFolder))
+				{
+					// Create the folder
+					System::IFileSystem::Current().CreateDirectory2(packageRootFolder);
+				}
+
+				// Move the extracted contents into the version folder
+				System::IFileSystem::Current().Rename(stagingVersionFolder, packageVersionFolder);
+			}
 		}
 
 		// /// <summary>

@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "IOutputFile.h"
 
 namespace Opal::System
 {
@@ -55,6 +56,12 @@ namespace Opal::System
 		virtual std::time_t GetLastWriteTime(const Path& path) = 0;
 
 		/// <summary>
+		/// Set the last write time of the file/directory
+		/// TODO: This should be a better representation of datetime...
+		/// </summary>
+		virtual void SetLastWriteTime(const Path& path, std::time_t value) = 0;
+
+		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
 		virtual std::shared_ptr<std::istream> OpenRead(const Path& path, bool isBinary) = 0;
@@ -62,7 +69,7 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		virtual std::shared_ptr<std::ostream> OpenWrite(const Path& path, bool isBinary) = 0;
+		virtual std::shared_ptr<IOutputFile> OpenWrite(const Path& path, bool isBinary) = 0;
 
 		/// <summary>
 		/// Rename the source file to the destination

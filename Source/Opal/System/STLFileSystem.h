@@ -4,6 +4,7 @@
 
 #pragma once
 #include "IFileSystem.h"
+#include "STLOutputFile.h"
 
 namespace Opal::System
 {
@@ -42,6 +43,7 @@ namespace Opal::System
 		/// </summary>
 		std::time_t GetLastWriteTime(const Path& path) override final
 		{
+			// TODO: Remove when C++20 is ready
 			#if defined ( _WIN32 )
 				struct _stat64 fileInfo;
 				if (_stat64(path.ToString().c_str(), &fileInfo) != 0)
@@ -49,8 +51,50 @@ namespace Opal::System
 				return fileInfo.st_mtime;
 			#else
 				auto fileTime = std::filesystem::last_write_time(path.ToString());
-				auto time = decltype(fileTime)::clock::to_time_t(fileTime);
+				auto systemTime = std::chrono::file_time::to_sys(fileTime);
+				auto time = std::chrono::system_time::clock::to_time_t(systemTime);
 				return time;
+			#endif
+		}
+
+		/// <summary>
+		/// Set the last write time of the file/directory
+		/// </summary>
+		void SetLastWriteTime(const Path& path, std::time_t value) override final
+		{
+			// TODO: Remove when C++20 is ready
+			#if defined ( _WIN32 )
+				// Open a handle on the file
+				auto fileHandle = CreateFile(
+					path.ToString().c_str(),
+					GENERIC_WRITE,
+					FILE_SHARE_READ,
+					nullptr,
+					OPEN_EXISTING,
+					0,
+					nullptr);
+
+				auto fileTime = TimetToFileTime(value);
+
+				if (!SetFileTime(
+					fileHandle,
+					(LPFILETIME)nullptr,
+					(LPFILETIME)nullptr, 
+					&fileTime))
+				{
+					auto error = GetLastError();
+					throw std::runtime_error("Failed to set file time: " + std::to_string(error));
+				}
+
+				if (!CloseHandle(fileHandle))
+				{
+					auto error = GetLastError();
+					throw std::runtime_error("Failed to close file handle: " + std::to_string(error));
+				}
+			#else
+				auto systemTime = std::chrono::system_clock::from_time_t(value);
+				auto fileTime = std::chrono::file_time::from_sys(systemTime);
+				std::filesystem::last_write_time(path.ToString(), fileTime);
 			#endif
 		}
 
@@ -78,16 +122,22 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		std::shared_ptr<std::ostream> OpenWrite(const Path& path, bool isBinary) override final
+		std::shared_ptr<IOutputFile> OpenWrite(const Path& path, bool isBinary) override final
 		{
-			int mode = std::fstream::out;
+			int mode = std::ofstream::out;
 			if (isBinary)
 			{
-				mode = mode | std::fstream::binary;
+				mode = mode | std::ofstream::binary;
 			}
 
-			auto file = std::make_shared<std::fstream>(path.ToString(), mode);
-			return file;
+			auto file = std::ofstream(path.ToString(), mode);
+			if (file.fail())
+			{
+				auto message = "OpenWrite Failed: " + path.ToString();
+				throw std::runtime_error(std::move(message));
+			}
+
+			return std::make_shared<STLOutputFile>(std::move(file));
 		}
 
 		/// <summary>
@@ -150,6 +200,17 @@ namespace Opal::System
 			{
 				std::filesystem::remove(path.ToString());
 			}
+		}
+
+	private:
+		FILETIME TimetToFileTime(std::time_t time)
+		{
+			LONGLONG ll = Int32x32To64(time, 10000000) + 116444736000000000;
+			FILETIME result;
+			result.dwLowDateTime = (DWORD) ll;
+			result.dwHighDateTime = ll >>32;
+
+			return result;
 		}
 	};
 }
