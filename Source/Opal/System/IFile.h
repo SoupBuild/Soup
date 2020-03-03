@@ -1,22 +1,21 @@
-﻿// <copyright file="IOutputFile.h" company="Soup">
+﻿// <copyright file="IFile.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "IFile.h"
 
 namespace Opal::System
 {
 	/// <summary>
-	/// The output file interface
+	/// The file interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IOutputFile : virtual public IFile
+	export class IFile
 	{
 	public:
 		/// <summary>
-		/// Gets the output stream
+		/// Close the file
 		/// </summary>
-		virtual std::ostream& GetOutStream() = 0;
+		virtual void Close() = 0;
 	};
 }

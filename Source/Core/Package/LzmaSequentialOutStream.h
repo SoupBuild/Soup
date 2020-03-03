@@ -25,8 +25,9 @@ namespace Soup
 
 		uint32_t Write(const void* data, uint32_t size) override final
 		{
-			_file->GetStream().write((char*)data, size);
-			if (_file->GetStream().bad())
+			auto& stream = _file->GetOutStream();
+			stream.write((char*)data, size);
+			if (stream.bad())
 				throw std::runtime_error("Failed to write.");
 
 			return size;

@@ -123,8 +123,8 @@ namespace Soup
 
 				// Publish the archive, scope cleanup file access
 				{
-					auto archiveStream = System::IFileSystem::Current().OpenRead(archivePath, true);
-					Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), *archiveStream);
+					auto archiveFile = System::IFileSystem::Current().OpenRead(archivePath, true);
+					Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), archiveFile->GetInStream());
 				}
 
 				// Cleanup the staging directory
@@ -236,7 +236,7 @@ namespace Soup
 
 				// Write the contents to disk, scope cleanup
 				auto archiveWriteFile = System::IFileSystem::Current().OpenWrite(archivePath, true);
-				archiveWriteFile->GetStream() << archiveContent;
+				archiveWriteFile->GetOutStream() << archiveContent;
 				archiveWriteFile->Close();
 
 				// Create the package folder to extract to

@@ -34,7 +34,7 @@ namespace Soup
 			// Read the contents of the recipe file
 			try
 			{
-				result = RecipeToml::Deserialize(*file);
+				result = RecipeToml::Deserialize(file->GetInStream());
 				return true;
 			}
 			catch (std::exception& ex)
@@ -74,7 +74,7 @@ namespace Soup
 			auto file = System::IFileSystem::Current().OpenWrite(recipeFile, false);
 
 			// Write the recipe to the file stream
-			RecipeToml::Serialize(recipe, file->GetStream());
+			RecipeToml::Serialize(recipe, file->GetOutStream());
 		}
 
 		/// <summary>

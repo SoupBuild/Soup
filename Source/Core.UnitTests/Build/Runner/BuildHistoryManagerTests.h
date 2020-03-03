@@ -55,7 +55,7 @@ namespace Soup::Build::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("TestFiles/GarbageBuildHistory/.soup/BuildHistory.json"),
-				MockFileState(std::stringstream("garbage")));
+				std::make_shared<MockFile>(std::stringstream("garbage")));
 
 			auto directory = Path("TestFiles/GarbageBuildHistory");
 			BuildHistory actual;
@@ -93,7 +93,7 @@ namespace Soup::Build::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("TestFiles/SimpleBuildHistory/.soup/BuildHistory.json"),
-				MockFileState(std::stringstream(R"({
+				std::make_shared<MockFile>(std::stringstream(R"({
 					"knownFiles": [
 						{
 							"file": "File.h",

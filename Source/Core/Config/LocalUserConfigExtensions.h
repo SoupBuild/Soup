@@ -43,7 +43,7 @@ namespace Soup
 			// Read the contents of the LocalUserConfig file
 			try
 			{
-				auto result = LocalUserConfigJson::Deserialize(*file);
+				auto result = LocalUserConfigJson::Deserialize(file->GetInStream());
 				return result;
 			}
 			catch (std::exception& ex)

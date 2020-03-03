@@ -61,7 +61,7 @@ int main()
 
 			auto mainFilePath = Path("Main.cpp");
 			auto mainFile = System::IFileSystem::Current().OpenWrite(mainFilePath, false);
-			mainFile->GetStream() << mainFileContent;
+			mainFile->GetOutStream() << mainFileContent;
 			mainFile->Close();
 		}
 

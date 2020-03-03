@@ -56,7 +56,7 @@ namespace Soup::Build::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("TestFiles/GarbageRecipe/Recipe.toml"),
-				MockFileState(std::stringstream("garbage")));
+				std::make_shared<MockFile>(std::stringstream("garbage")));
 
 			auto directory = Path("TestFiles/GarbageRecipe/Recipe.toml");
 			Recipe actual;
@@ -96,7 +96,7 @@ namespace Soup::Build::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("TestFiles/SimpleRecipe/Recipe.toml"),
-				MockFileState(std::stringstream(R"(
+				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
 				)")));
@@ -169,7 +169,7 @@ R"(Name = "MyPackage"
 Version = "1.2.3"
 )";
 			auto& mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.toml"));
-			Assert::AreEqual(expectedBuildFile, mockBuildFile.Contents->str(), "Verify file contents.");
+			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");
 		}
 
 		[[Fact]]
@@ -221,7 +221,7 @@ Version = "1.2.3"
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("Root/Recipe.toml"),
-				MockFileState(std::stringstream(R"(
+				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
 				)")));

@@ -29,7 +29,7 @@ namespace RecipeBuild::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("C:/PackageRoot/Recipe.json"),
-				MockFileState(std::stringstream(R"({
+				std::make_shared<MockFile>(std::stringstream(R"({
 					"name": "MyPackage",
 					"version": "1.2.3"
 				})")));

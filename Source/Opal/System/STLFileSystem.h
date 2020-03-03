@@ -4,6 +4,7 @@
 
 #pragma once
 #include "IFileSystem.h"
+#include "STLInputFile.h"
 #include "STLOutputFile.h"
 
 namespace Opal::System
@@ -101,7 +102,7 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
-		std::shared_ptr<std::istream> OpenRead(const Path& path, bool isBinary) override final
+		std::shared_ptr<IInputFile> OpenRead(const Path& path, bool isBinary) override final
 		{
 			int mode = std::fstream::in;
 			if (isBinary)
@@ -109,14 +110,14 @@ namespace Opal::System
 				mode = mode | std::fstream::binary;
 			}
 
-			auto file = std::make_shared<std::fstream>(path.ToString(), mode);
-			if (file->fail())
+			auto file = std::fstream(path.ToString(), mode);
+			if (file.fail())
 			{
 				auto message = "OpenRead Failed: File missing. " + path.ToString();
 				throw std::runtime_error(std::move(message));
 			}
 
-			return file;
+			return std::make_shared<STLInputFile>(std::move(file));
 		}
 
 		/// <summary>
@@ -124,13 +125,13 @@ namespace Opal::System
 		/// </summary>
 		std::shared_ptr<IOutputFile> OpenWrite(const Path& path, bool isBinary) override final
 		{
-			int mode = std::ofstream::out;
+			int mode = std::fstream::out;
 			if (isBinary)
 			{
-				mode = mode | std::ofstream::binary;
+				mode = mode | std::fstream::binary;
 			}
 
-			auto file = std::ofstream(path.ToString(), mode);
+			auto file = std::fstream(path.ToString(), mode);
 			if (file.fail())
 			{
 				auto message = "OpenWrite Failed: " + path.ToString();

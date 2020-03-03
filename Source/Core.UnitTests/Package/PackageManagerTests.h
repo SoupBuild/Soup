@@ -60,7 +60,7 @@ namespace Soup::UnitTests
 			// Create the Recipe
 			fileSystem->CreateMockFile(
 				Path("Recipe.toml"),
-				MockFileState(std::stringstream(R"(
+				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
 				)")));
@@ -95,7 +95,7 @@ namespace Soup::UnitTests
 				0x01, 0x00, 0x5F, 0xFB, 0xB6, 0x43, 0xE8, 0xED, 0xD5, 0x01, 0x15, 0x06, 0x01, 0x00, 0x20, 0x00, 
 				0x00, 0x00, 0x00, 0x00,
 			});
-			auto packageContentString = std::string(packageResult.begin(), packageResult.end());
+			auto packageContentString = std::string(packageContent.begin(), packageContent.end());
 			testHttpClient->SetResponse("/api/v1/packages/TheirPackage/v2.2.2/download", packageContentString);
 
 			auto packageName = "TheirPackage";
@@ -106,6 +106,19 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"DIAG: Load Recipe: Recipe.toml",
 					"HIGH: Install Package: TheirPackage",
+					"HIGH: Latest Version: 2.2.2",
+					"HIGH: Downloading package",
+					"INFO: ExtractStart: 62",
+					"INFO: ExtractProgress: 0",
+					"INFO: ExtractProgress: 0",
+					"INFO: ExtractProgress: 0",
+					"INFO: ExtractProgress: 62",
+					"INFO: ExtractGetStream: PackageStore/.staging/2.2.2/Recipe.toml",
+					"INFO: ExtractOnOperationStart",
+					"INFO: ExtractOperationCompleted",
+					"INFO: ExtractProgress: 62",
+					"INFO: Deleting staging directory",
+					"INFO: Adding reference to recipe",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -116,6 +129,17 @@ namespace Soup::UnitTests
 					"OpenReadBinary: Recipe.toml",
 					"Exists: PackageStore/.staging",
 					"CreateDirectory: PackageStore/.staging",
+					"Exists: PackageStore/TheirPackage/2.2.2",
+					"OpenWriteBinary: PackageStore/.staging/TheirPackage.7z",
+					"CreateDirectory: PackageStore/.staging/2.2.2",
+					"OpenReadBinary: PackageStore/.staging/TheirPackage.7z",
+					"Exists: PackageStore/.staging/2.2.2/",
+					"CreateDirectory: PackageStore/.staging/2.2.2/",
+					"OpenWriteBinary: PackageStore/.staging/2.2.2/Recipe.toml",
+					"SetLastWriteTime: PackageStore/.staging/2.2.2/Recipe.toml",
+					"Exists: PackageStore/TheirPackage",
+					"CreateDirectory: PackageStore/TheirPackage",
+					"Rename: [PackageStore/.staging/2.2.2] -> [PackageStore/TheirPackage/2.2.2]",
 					"DeleteDirectoryRecursive: PackageStore/.staging",
 					"OpenWrite: Recipe.toml",
 				}),
@@ -125,6 +149,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"CreateClient: localhost:7071",
+					"CreateClient: localhost:7071",
 				}),
 				testNetworkManager->GetRequests(),
 				"Verify network manager requests match expected.");
@@ -132,6 +157,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"Get: /api/v1/packages/TheirPackage",
+					"Get: /api/v1/packages/TheirPackage/v2.2.2/download",
 				}),
 				testHttpClient->GetRequests(),
 				"Verify http requests match expected.");
@@ -143,7 +169,7 @@ Name = "MyPackage"
 Version = "1.2.3"
 )";
 			auto& mockRecipeFile = fileSystem->GetMockFile(Path("Recipe.toml"));
-			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile.Contents->str(), "Verify recipe file contents.");
+			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 
 		[[Fact]]
@@ -164,7 +190,7 @@ Version = "1.2.3"
 			// Create the Recipe
 			fileSystem->CreateMockFile(
 				Path("Recipe.toml"),
-				MockFileState(std::stringstream(R"(
+				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
 				)")));
@@ -228,7 +254,7 @@ Name = "MyPackage"
 Version = "1.2.3"
 )";
 			auto& mockRecipeFile = fileSystem->GetMockFile(Path("Recipe.toml"));
-			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile.Contents->str(), "Verify recipe file contents.");
+			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 	};
 }

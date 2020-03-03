@@ -16,17 +16,18 @@ namespace Soup
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LzmaInStream"/> class.
 		/// </summary>
-		LzmaInStream(std::shared_ptr<std::istream> stream) :
-			_stream(std::move(stream))
+		LzmaInStream(std::shared_ptr<System::IInputFile> file) :
+			_file(std::move(file))
 		{
-			if (_stream == nullptr)
-				throw std::runtime_error("Null stream");
+			if (_file == nullptr)
+				throw std::runtime_error("Null file");
 		}
 
 		uint32_t Read(void* data, uint32_t size) override final
 		{
-			_stream->read((char*)data, size);
-			if (_stream->bad())
+			auto& stream = _file->GetInStream();
+			stream.read((char*)data, size);
+			if (stream.bad())
 				throw std::runtime_error("Failed to write.");
 
 			return size;
@@ -50,14 +51,15 @@ namespace Soup
 					throw std::runtime_error("Unknown seek origin.");
 			}
 
-			_stream->seekg(offset, dir);
-			if (_stream->bad())
+			auto& stream = _file->GetInStream();
+			stream.seekg(offset, dir);
+			if (stream.bad())
 				throw std::runtime_error("Failed to write.");
 
-			return _stream->tellg();
+			return stream.tellg();
 		}
 
 	private:
-		std::shared_ptr<std::istream> _stream;
+		std::shared_ptr<System::IInputFile> _file;
 	};
 }

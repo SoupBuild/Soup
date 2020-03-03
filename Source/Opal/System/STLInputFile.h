@@ -1,28 +1,28 @@
-﻿// <copyright file="STLOutputFile.h" company="Soup">
+﻿// <copyright file="STLInputFile.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "IOutputFile.h"
+#include "IInputFile.h"
 
 namespace Opal::System
 {
 
 	/// <summary>
-	/// The standard library output file implementation
+	/// The standard library input file implementation
 	/// </summary>
-	class STLOutputFile : public IOutputFile
+	class STLInputFile : public IInputFile
 	{
 	public:
-		STLOutputFile(std::fstream stream) :
+		STLInputFile(std::fstream stream) :
 			_stream(std::move(stream))
 		{
 		}
 
 		/// <summary>
-		/// Get the file stream
+		/// Gets the file stream
 		/// </summary>
-		std::ostream& GetOutStream() override final
+		std::istream& GetInStream() override final
 		{
 			return _stream;
 		}

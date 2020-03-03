@@ -276,7 +276,7 @@ namespace Soup::Build::UnitTests
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
 			fileSystem->CreateMockFile(
 				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				MockFileState(std::move(initialBuildHistoryJson)));
+				std::make_shared<MockFile>(std::move(initialBuildHistoryJson)));
 
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
@@ -349,11 +349,13 @@ namespace Soup::Build::UnitTests
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
 			fileSystem->CreateMockFile(
 				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				MockFileState(std::move(initialBuildHistoryJson)));
+				std::make_shared<MockFile>(std::move(initialBuildHistoryJson)));
 
 			// Setup the input file only
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystem->CreateMockFile(Path("C:/TestWorkingDirectory/InputFile.in"), MockFileState(inputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/TestWorkingDirectory/InputFile.in"),
+				std::make_shared<MockFile>(inputTime));
 
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
@@ -427,14 +429,20 @@ namespace Soup::Build::UnitTests
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
 			fileSystem->CreateMockFile(
 				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				MockFileState(std::move(initialBuildHistoryJson)));
+				std::make_shared<MockFile>(std::move(initialBuildHistoryJson)));
 
 			// Setup the input/output files to be out of date
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 10);
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystem->CreateMockFile(Path("Command.exe"), MockFileState(outputTime));
-			fileSystem->CreateMockFile(Path("C:/TestWorkingDirectory/OutputFile.out"), MockFileState(outputTime));
-			fileSystem->CreateMockFile(Path("C:/TestWorkingDirectory/InputFile.in"), MockFileState(inputTime));
+			fileSystem->CreateMockFile(
+				Path("Command.exe"),
+				std::make_shared<MockFile>(outputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/TestWorkingDirectory/OutputFile.out"),
+				std::make_shared<MockFile>(outputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/TestWorkingDirectory/InputFile.in"),
+				std::make_shared<MockFile>(inputTime));
 
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
@@ -513,14 +521,20 @@ namespace Soup::Build::UnitTests
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
 			fileSystem->CreateMockFile(
 				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				MockFileState(std::move(initialBuildHistoryJson)));
+				std::make_shared<MockFile>(std::move(initialBuildHistoryJson)));
 
 			// Setup the input/output files to be up to date
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystem->CreateMockFile(Path("Command.exe"), MockFileState(outputTime));
-			fileSystem->CreateMockFile(Path("C:/TestWorkingDirectory/OutputFile.out"), MockFileState(outputTime));
-			fileSystem->CreateMockFile(Path("C:/TestWorkingDirectory/InputFile.in"), MockFileState(inputTime));
+			fileSystem->CreateMockFile(
+				Path("Command.exe"),
+				std::make_shared<MockFile>(outputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/TestWorkingDirectory/OutputFile.out"),
+				std::make_shared<MockFile>(outputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/TestWorkingDirectory/InputFile.in"),
+				std::make_shared<MockFile>(inputTime));
 
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 

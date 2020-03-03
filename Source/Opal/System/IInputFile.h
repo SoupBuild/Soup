@@ -1,4 +1,4 @@
-﻿// <copyright file="IOutputFile.h" company="Soup">
+﻿// <copyright file="IInputFile.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -8,15 +8,15 @@
 namespace Opal::System
 {
 	/// <summary>
-	/// The output file interface
+	/// The input file interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IOutputFile : virtual public IFile
+	export class IInputFile : virtual public IFile
 	{
 	public:
 		/// <summary>
-		/// Gets the output stream
+		/// Gets the input stream
 		/// </summary>
-		virtual std::ostream& GetOutStream() = 0;
+		virtual std::istream& GetInStream() = 0;
 	};
 }
