@@ -313,10 +313,19 @@ namespace Soup::Build
 		Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const
 		{
 			// If the path is relative then combine with the working directory
-			auto packagePath = reference.GetPath();
-			if (!packagePath.HasRoot())
+			Path packagePath;
+			if (reference.IsLocal())
 			{
-				packagePath = workingDirectory + packagePath;
+				packagePath = reference.GetPath();
+				if (!packagePath.HasRoot())
+				{
+					packagePath = workingDirectory + packagePath;
+				}
+			}
+			else
+			{
+				auto packageStore = Path("C:/users/mwasp/.soup/packages/");
+				packagePath = packageStore + Path(reference.GetName()) + Path(reference.GetVersion().ToString());
 			}
 
 			return packagePath;

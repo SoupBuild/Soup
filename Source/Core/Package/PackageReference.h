@@ -99,6 +99,8 @@ namespace Soup
 		/// </summary>
 		const std::string& GetName() const
 		{
+			if (IsLocal())
+				throw std::runtime_error("Cannot get the name of a local reference.");
 			return _name;
 		}
 
@@ -107,6 +109,8 @@ namespace Soup
 		/// </summary>
 		const SemanticVersion& GetVersion() const
 		{
+			if (IsLocal())
+				throw std::runtime_error("Cannot get the version of a local reference.");
 			return _version;
 		}
 
@@ -115,6 +119,8 @@ namespace Soup
 		/// </summary>
 		const Path& GetPath() const
 		{
+			if (!IsLocal())
+				throw std::runtime_error("Cannot get the path of a non-local reference.");
 			return _path;
 		}
 
