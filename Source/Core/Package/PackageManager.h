@@ -44,11 +44,14 @@ namespace Soup
 				{
 					for (auto& dependency : recipe.GetDependencies())
 					{
-						auto dependencyNameNormalized = ToUpper(dependency.GetName());
-						if (dependencyNameNormalized == packageNameNormalized)
+						if (!dependency.IsLocal())
 						{
-							Log::Warning("Package already installed.");
-							return;
+							auto dependencyNameNormalized = ToUpper(dependency.GetName());
+							if (dependencyNameNormalized == packageNameNormalized)
+							{
+								Log::Warning("Package already installed.");
+								return;
+							}
 						}
 					}
 				}
@@ -123,8 +126,49 @@ namespace Soup
 
 				// Publish the archive, scope cleanup file access
 				{
+					Log::Info("Publish package");
 					auto archiveFile = System::IFileSystem::Current().OpenRead(archivePath, true);
-					Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), archiveFile->GetInStream());
+					auto statusCode = Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), archiveFile->GetInStream());
+
+					// Check if we should publish the package
+					bool createPackageRequired = false;
+					switch (statusCode)
+					{
+						case Network::HttpStatusCode::Created:
+							// All Good
+							Log::Info("Package version created");
+							break;
+						case Network::HttpStatusCode::NotFound:
+							// Not found indicates the package does not exist, create it
+							Log::Info("Package does not exist");
+							createPackageRequired = true;
+							break;
+						case Network::HttpStatusCode::Conflict:
+							throw std::runtime_error("Package version already exists");
+						default:
+							throw Api::ApiException("PublishPackage", statusCode);
+					}
+
+					// Create the package if needed and retry
+					if (createPackageRequired)
+					{
+						// Create the package
+						Log::Info("Create package");
+						auto createModel = Api::PackageCreateModel(std::string(recipe.GetName()));
+						auto createdPackage = Api::SoupApi::CreatePackage(createModel);
+
+						// Retry
+						Log::Info("Retry publish package");
+						statusCode = Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), archiveFile->GetInStream());
+						switch (statusCode)
+						{
+							case Network::HttpStatusCode::Created:
+								// All Good
+								break;
+							default:
+								throw Api::ApiException("PublishPackage", statusCode);
+						}
+					}
 				}
 
 				// Cleanup the staging directory

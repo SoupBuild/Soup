@@ -13,8 +13,8 @@ namespace Soup::Api
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiException"/> class.
         /// </summary>
-        ApiException(Network::HttpStatusCode statusCode) :
-            std::runtime_error("Api Exception"),
+        ApiException(const std::string& function, Network::HttpStatusCode statusCode) :
+            std::runtime_error("ApiFailed[" + function + "] " + std::to_string((int)statusCode)),
             _statusCode(statusCode)
         {
         }

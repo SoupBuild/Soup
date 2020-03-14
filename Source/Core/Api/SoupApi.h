@@ -13,6 +13,10 @@ namespace Soup::Api
     /// </summary>
     class SoupApi
     {
+    private:
+        static const std::string_view ServiceEndpoint;
+        static const int ServicePort;
+
     public:
         /// <summary>
         /// Download a package version as an archive
@@ -20,8 +24,8 @@ namespace Soup::Api
         static std::string DownloadPackage(std::string_view name, SemanticVersion version)
         {
             auto client = Network::INetworkManager::Current().CreateClient(
-                "localhost",
-                7071);
+                ServiceEndpoint,
+                ServicePort);
 
             auto urlBuilder = std::stringstream();
             urlBuilder << "/api/v1/packages/" << name << "/v" << version.ToString() << "/download";
@@ -32,7 +36,7 @@ namespace Soup::Api
             // Verify that we got a success
             if (response.StatusCode != Network::HttpStatusCode::Ok)
             {
-                throw ApiException(response.StatusCode);
+                throw ApiException("DownloadPackage", response.StatusCode);
             }
 
             return response.Body;
@@ -44,8 +48,8 @@ namespace Soup::Api
         static PackageResultModel GetPackage(std::string_view name)
         {
             auto client = Network::INetworkManager::Current().CreateClient(
-                "localhost",
-                7071);
+                ServiceEndpoint,
+                ServicePort);
 
             auto urlBuilder = std::stringstream();
             urlBuilder << "/api/v1/packages/" << name;
@@ -56,7 +60,7 @@ namespace Soup::Api
             // Verify that we got a success
             if (response.StatusCode != Network::HttpStatusCode::Ok)
             {
-                throw ApiException(response.StatusCode);
+                throw ApiException("GetPackage", response.StatusCode);
             }
 
             // Parse the return result
@@ -88,15 +92,16 @@ namespace Soup::Api
 
         /// <summary>
         /// Publish a new package version as an archive
+        /// Returns false if the package did not exist, true if success.
         /// </summary>
-        static void PublishPackage(
+        static Network::HttpStatusCode PublishPackage(
             std::string_view name,
             SemanticVersion version,
             std::istream& value)
         {
             auto client = Network::INetworkManager::Current().CreateClient(
-                "localhost",
-                7071);
+                ServiceEndpoint,
+                ServicePort);
 
             auto urlBuilder = std::stringstream();
             urlBuilder << "/api/v1/packages/" << name << "/v" << version.ToString();
@@ -107,17 +112,38 @@ namespace Soup::Api
             auto response = client->Put(url, contentType, value);
 
             // Verify that we got a success
-            switch (response.StatusCode)
+            return response.StatusCode;
+        }
+
+        /// <summary>
+        /// Create a package
+        /// </summary>
+        static PackageResultModel CreatePackage(const PackageCreateModel& model)
+        {
+            auto client = Network::INetworkManager::Current().CreateClient(
+                ServiceEndpoint,
+                ServicePort);
+
+            auto urlBuilder = std::stringstream();
+            urlBuilder << "/api/v1/packages";
+            auto url = urlBuilder.str();
+
+            std::stringstream content;
+            SoupApiJsonModels::SerializePackageCreate(model, content);
+
+            auto contentType = "application/json";
+
+            auto response = client->Put(url, contentType, content);
+
+            // Verify that we got a success
+            if (response.StatusCode != Network::HttpStatusCode::Created)
             {
-                case Network::HttpStatusCode::Created:
-                    // All Good
-                    break;
-                case Network::HttpStatusCode::Conflict:
-                    // This version already existed
-                    throw std::runtime_error("Package version already exists");
-                default:
-                    throw ApiException(response.StatusCode);
+                throw ApiException("CreatePackage", response.StatusCode);
             }
+
+            // Parse the return result
+            auto result = SoupApiJsonModels::ParsePackageResult(response.Body);
+            return result;
         }
 
         /// <summary>
@@ -142,4 +168,13 @@ namespace Soup::Api
         //     }
         // }
     };
+
+// #define LOCAL_DEBUG
+#ifdef LOCAL_DEBUG
+    /*static*/ const std::string_view SoupApi::ServiceEndpoint = "localhost";
+    /*static*/ const int SoupApi::ServicePort = 7071;
+#else
+    /*static*/ const std::string_view SoupApi::ServiceEndpoint = "soupapi.trafficmanager.net";
+    /*static*/ const int SoupApi::ServicePort = 80;
+#endif
 }

@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "Models/PackageCreateModel.h"
 #include "Models/PackageResultModel.h"
 
 namespace Soup::Api
@@ -14,6 +15,7 @@ namespace Soup::Api
 	{
 	private:
 		static constexpr const char* Property_Name = "name";
+		static constexpr const char* Property_Description = "description";
 		static constexpr const char* Property_Latest = "latest";
 
 	public:
@@ -37,6 +39,24 @@ namespace Soup::Api
 
 				return ParsePackageResult(jsonRoot);
 			}
+		}
+
+		/// <summary>
+		/// Serialize the package create model
+		/// </summary>
+		static void SerializePackageCreate(const PackageCreateModel& model, std::ostream& stream)
+		{
+			json11::Json::object result = {};
+
+			// Add required fields
+			result[Property_Name] = model.GetName();
+
+			if (model.HasDescription())
+			{
+				result[Property_Description] = model.GetDescription();
+			}
+
+			stream << json11::Json(result).dump();
 		}
 
 	private:

@@ -51,7 +51,7 @@ namespace Opal::Network
 		/// Create an Http Client
 		/// </summary>
 		std::shared_ptr<IHttpClient> CreateClient(
-			std::string host,
+			std::string_view host,
 			int port) override final
 		{
 			auto message = std::stringstream();

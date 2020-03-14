@@ -86,6 +86,7 @@
     "future": "cpp",
     "random": "cpp",
     "regex": "cpp",
-    "string_view": "cpp"
+    "string_view": "cpp",
+    "complex": "cpp"
   }
 }

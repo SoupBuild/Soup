@@ -25,10 +25,10 @@ namespace Opal::Network
 		/// Create an Http Client
 		/// </summary>
 		std::shared_ptr<IHttpClient> CreateClient(
-			std::string host,
+			std::string_view host,
 			int port) override final
 		{
-			return std::make_shared<HttpLibClient>(std::move(host), port);
+			return std::make_shared<HttpLibClient>(std::string(host), port);
 		}
 	};
 }

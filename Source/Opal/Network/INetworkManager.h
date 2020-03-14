@@ -37,7 +37,7 @@ namespace Opal::Network
 		/// Create an Http Client
 		/// </summary>
 		virtual std::shared_ptr<IHttpClient> CreateClient(
-			std::string host,
+			std::string_view host,
 			int port) = 0;
 
 	private:
