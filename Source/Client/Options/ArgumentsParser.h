@@ -46,7 +46,7 @@ namespace Soup::Client
 
 				// Check if the optional index arguments exist
 				auto argument = std::string();
-				if (TryGetOptional(unusedArgs, argument))
+				if (TryGetIndexArgument(unusedArgs, argument))
 				{
 					options->Path = std::move(argument);
 				}
@@ -82,6 +82,18 @@ namespace Soup::Client
 				Log::Diag("Parse install");
 
 				auto options = std::make_unique<InstallOptions>();
+
+				// Check for required index argument
+				auto argument = std::string();
+				if (TryGetIndexArgument(unusedArgs, argument))
+				{
+					options->Package = std::move(argument);
+				}
+				else
+				{
+					throw std::runtime_error("Missing required package name argument.");
+				}
+
 				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
@@ -188,9 +200,9 @@ namespace Soup::Client
 		}
 
 	private:
-		static bool TryGetOptional(std::vector<std::string>& unusedArgs, std::string& argument)
+		static bool TryGetIndexArgument(std::vector<std::string>& unusedArgs, std::string& argument)
 		{
-			// Check if the first arument is not a dash flag
+			// Check if the first argument is not a dash flag
 			if (!unusedArgs.empty() && !unusedArgs[0].empty() && unusedArgs[0][0] != '-')
 			{
 				argument = std::move(unusedArgs[0]);

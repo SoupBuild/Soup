@@ -40,7 +40,7 @@ namespace RecipeBuild::UnitTests
 			// Setup the default version file
 			fileSystem->CreateMockFile(
 				Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
-				MockFileState(std::stringstream("1.2.3.4\n")));
+				std::make_shared<MockFile>(std::stringstream("1.2.3.4\n")));
 
 			auto uut = ResolveToolsTask();
 

@@ -4,36 +4,10 @@
 
 #pragma once
 #include "IFileSystem.h"
+#include "MockFile.h"
 
 namespace Opal::System
 {
-	export struct MockFileState
-	{
-		MockFileState(std::stringstream contents, std::time_t lastWriteTime) :
-			Contents(std::make_shared<std::stringstream>(std::move(contents))),
-			LastWriteTime(lastWriteTime)
-		{
-		}
-
-		MockFileState(std::stringstream contents) :
-			MockFileState(std::move(contents), std::time_t())
-		{
-		}
-
-		MockFileState(std::time_t lastWriteTime) :
-			MockFileState(std::stringstream(""), lastWriteTime)
-		{
-		}
-
-		MockFileState() :
-			MockFileState(std::stringstream(""))
-		{
-		}
-
-		std::shared_ptr<std::stringstream> Contents;
-		std::time_t LastWriteTime;
-	};
-
 	/// <summary>
 	/// The mock file system
 	/// TODO: Move into test project
@@ -61,17 +35,17 @@ namespace Opal::System
 		/// <summary>
 		/// Create a test file
 		/// </summary>
-		void CreateMockFile(Path path, MockFileState state)
+		void CreateMockFile(Path path, std::shared_ptr<MockFile> file)
 		{
 			_files.emplace(
-				path,
-				std::move(state));
+				std::move(path),
+				std::move(file));
 		}
 
 		/// <summary>
 		/// Create a test file
 		/// </summary>
-		const MockFileState& GetMockFile(Path path)
+		std::shared_ptr<MockFile> GetMockFile(Path path)
 		{
 			auto file = _files.find(path);
 			if (file != _files.end())
@@ -120,7 +94,7 @@ namespace Opal::System
 			auto file = _files.find(path);
 			if (file != _files.end())
 			{
-				return file->second.LastWriteTime;
+				return file->second->LastWriteTime;
 			}
 			else
 			{
@@ -130,9 +104,19 @@ namespace Opal::System
 		}
 
 		/// <summary>
+		/// Set the last write time of the file/directory
+		/// </summary>
+		void SetLastWriteTime(const Path& path, std::time_t value) override final
+		{
+			std::stringstream message;
+			message << "SetLastWriteTime: " << path.ToString();
+			_requests.push_back(message.str());
+		}
+
+		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
-		std::shared_ptr<std::istream> OpenRead(const Path& path, bool isBinary) override final
+		std::shared_ptr<IInputFile> OpenRead(const Path& path, bool isBinary) override final
 		{
 			std::stringstream message;
 			if (isBinary)
@@ -148,7 +132,10 @@ namespace Opal::System
 			auto file = _files.find(path);
 			if (file != _files.end())
 			{
-				return file->second.Contents;
+				// Reset the existing content offset and return it.
+				auto& content = file->second->Content;
+				content.seekg(0);
+				return std::make_shared<MockInputFile>(file->second);
 			}
 			else
 			{
@@ -160,23 +147,44 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		std::shared_ptr<std::ostream> OpenWrite(const Path& path) override final
+		std::shared_ptr<IOutputFile> OpenWrite(const Path& path, bool isBinary) override final
 		{
 			std::stringstream message;
-			message << "OpenWrite: " << path.ToString();
+			if (isBinary)
+			{
+				message << "OpenWriteBinary: " << path.ToString();
+			}
+			else
+			{
+				message << "OpenWrite: " << path.ToString();
+			}
 			_requests.push_back(message.str());
 
 			auto file = _files.find(path);
 			if (file != _files.end())
 			{
-				return file->second.Contents;
+				// Reset the existing content offset and return it.
+				auto& content = file->second->Content;
+				content.str("");
+				content.clear();
+				return std::make_shared<MockOutputFile>(file->second);
 			}
 			else
 			{
 				// Create the file if it does not exist
-				auto insert = _files.emplace(path, MockFileState());
-				return insert.first->second.Contents;
+				auto insert = _files.emplace(path, std::make_shared<MockFile>());
+				return std::make_shared<MockOutputFile>(insert.first->second);
 			}
+		}
+
+		/// <summary>
+		/// Rename the source file to the destination
+		/// </summary>
+		virtual void Rename(const Path& source, const Path& destination) override final
+		{
+			std::stringstream message;
+			message << "Rename: [" << source.ToString() << "] -> [" << destination.ToString() << "]";
+			_requests.push_back(message.str());
 		}
 
 		/// <summary>
@@ -199,22 +207,36 @@ namespace Opal::System
 			_requests.push_back(message.str());
 		}
 
-
 		/// <summary>
 		/// Get the children of a directory
 		/// </summary>
-		std::vector<Path> GetDirectoryChildren(const Path& path) override final
+		std::vector<DirectoryEntry> GetDirectoryChildren(const Path& path) override final
 		{
 			std::stringstream message;
 			message << "GetDirectoryChildren: " << path.ToString();
 			_requests.push_back(message.str());
 
-			auto result = std::vector<Path>();
+			auto result = std::vector<DirectoryEntry>();
 			return result;
+		}
+
+		/// <summary>
+		/// Delete the directory
+		/// </summary>
+		void DeleteDirectory(const Path& path, bool recursive) override final
+		{
+			std::stringstream message;
+			if (recursive)
+				message << "DeleteDirectoryRecursive: ";
+			else
+				message << "DeleteDirectory: ";
+				
+			message << path.ToString();
+			_requests.push_back(message.str());
 		}
 
 	private:
 		std::vector<std::string> _requests;
-		std::map<Path, MockFileState> _files;
+		std::map<Path, std::shared_ptr<MockFile>> _files;
 	};
 }

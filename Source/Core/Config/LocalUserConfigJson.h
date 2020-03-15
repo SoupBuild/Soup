@@ -40,7 +40,7 @@ namespace Soup
 			// Read the contents of the file
 			try
 			{
-				result = Deserialize(*file);
+				result = Deserialize(file->GetInStream());
 				return true;
 			}
 			catch (std::exception& ex)

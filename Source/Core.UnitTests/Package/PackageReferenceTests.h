@@ -19,7 +19,6 @@ namespace Soup::UnitTests
 			Assert::IsFalse(uut.IsLocal(), "Verify is not local.");
 			Assert::AreEqual("MyPackage", uut.GetName(), "Verify name matches expected.");
 			Assert::AreEqual(SemanticVersion(1, 2, 3), uut.GetVersion(), "Verify version matches expected.");
-			Assert::AreEqual(Path(), uut.GetPath(), "Verify path matches expected.");
 		}
 
 		[[Fact]]
@@ -28,8 +27,6 @@ namespace Soup::UnitTests
 			auto uut = PackageReference(Path("../MyPackage"));
 
 			Assert::IsTrue(uut.IsLocal(), "Verify is local.");
-			Assert::AreEqual("", uut.GetName(), "Verify name matches expected.");
-			Assert::AreEqual(SemanticVersion(), uut.GetVersion(), "Verify version matches expected.");
 			Assert::AreEqual(Path("../MyPackage"), uut.GetPath(), "Verify path matches expected.");
 		}
 

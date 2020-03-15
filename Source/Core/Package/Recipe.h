@@ -7,7 +7,7 @@
 #include "RecipeType.h"
 #include "RecipeLanguageVersion.h"
 
-namespace Soup::Build
+namespace Soup
 {
 	/// <summary>
 	/// The recipe container
@@ -96,12 +96,12 @@ namespace Soup::Build
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
-		Recipe(ValueTable table) :
+		Recipe(Build::ValueTable table) :
 			_table(std::move(table))
 		{
-			if (!ValueTableWrapper(_table).HasValue(Property_Name))
+			if (!Build::ValueTableWrapper(_table).HasValue(Property_Name))
 				throw std::runtime_error("Missing required property Name");
-			if (!ValueTableWrapper(_table).HasValue(Property_Version))
+			if (!Build::ValueTableWrapper(_table).HasValue(Property_Version))
 				throw std::runtime_error("Missing required property Version");
 		}
 
@@ -110,12 +110,12 @@ namespace Soup::Build
 		/// </summary>
 		std::string_view GetName()
 		{
-			return ValueTableWrapper(_table).GetValue(Property_Name).AsString().GetValue();
+			return Build::ValueTableWrapper(_table).GetValue(Property_Name).AsString().GetValue();
 		}
 
 		void SetName(std::string_view value)
 		{
-			ValueTableWrapper(_table).EnsureValue(Property_Name).SetValueString(value);
+			Build::ValueTableWrapper(_table).EnsureValue(Property_Name).SetValueString(value);
 		}
 
 		/// <summary>
@@ -124,12 +124,12 @@ namespace Soup::Build
 		SemanticVersion GetVersion()
 		{
 			return SemanticVersion::Parse(
-				ValueTableWrapper(_table).GetValue(Property_Version).AsString().GetValue());
+				Build::ValueTableWrapper(_table).GetValue(Property_Version).AsString().GetValue());
 		}
 
 		void SetVersion(SemanticVersion value)
 		{
-			return ValueTableWrapper(_table).EnsureValue(Property_Version).SetValueString(value.ToString());
+			return Build::ValueTableWrapper(_table).EnsureValue(Property_Version).SetValueString(value.ToString());
 		}
 
 		/// <summary>
@@ -137,7 +137,7 @@ namespace Soup::Build
 		/// </summary>
 		bool HasType()
 		{
-			return ValueTableWrapper(_table).HasValue(Property_Type);
+			return Build::ValueTableWrapper(_table).HasValue(Property_Type);
 		}
 
 		RecipeType GetType()
@@ -145,12 +145,12 @@ namespace Soup::Build
 			if (!HasType())
 				throw std::runtime_error("No type.");
 
-			return ParseRecipeType(ValueTableWrapper(_table).GetValue(Property_Type).AsString().GetValue());
+			return ParseRecipeType(Build::ValueTableWrapper(_table).GetValue(Property_Type).AsString().GetValue());
 		}
 
 		void SetType(RecipeType value)
 		{
-			return ValueTableWrapper(_table).EnsureValue(Property_Type).SetValueString(ToString(value));
+			return Build::ValueTableWrapper(_table).EnsureValue(Property_Type).SetValueString(ToString(value));
 		}
 
 		/// <summary>
@@ -158,7 +158,7 @@ namespace Soup::Build
 		/// </summary>
 		bool HasLanguageVersion()
 		{
-			return ValueTableWrapper(_table).HasValue(Property_Language);
+			return Build::ValueTableWrapper(_table).HasValue(Property_Language);
 		}
 
 		RecipeLanguageVersion GetLanguageVersion()
@@ -167,12 +167,12 @@ namespace Soup::Build
 				throw std::runtime_error("No language version.");
 
 			return ParseRecipeLanguageVersion(
-				ValueTableWrapper(_table).GetValue(Property_Language).AsString().GetValue());
+				Build::ValueTableWrapper(_table).GetValue(Property_Language).AsString().GetValue());
 		}
 
 		void SetLanguageVersion(RecipeLanguageVersion value)
 		{
-			return ValueTableWrapper(_table).EnsureValue(Property_Language).SetValueString(ToString(value));
+			return Build::ValueTableWrapper(_table).EnsureValue(Property_Language).SetValueString(ToString(value));
 		}
 
 		/// <summary>
@@ -181,7 +181,7 @@ namespace Soup::Build
 		/// </summary>
 		bool HasDependencies()
 		{
-			return ValueTableWrapper(_table).HasValue(Property_Dependencies);
+			return Build::ValueTableWrapper(_table).HasValue(Property_Dependencies);
 		}
 
 		std::vector<PackageReference> GetDependencies()
@@ -189,7 +189,7 @@ namespace Soup::Build
 			if (!HasDependencies())
 				throw std::runtime_error("No dependencies.");
 
-			auto values = ValueTableWrapper(_table).GetValue(Property_Dependencies).AsList().CopyAsStringVector();
+			auto values = Build::ValueTableWrapper(_table).GetValue(Property_Dependencies).AsList().CopyAsStringVector();
 			auto result = std::vector<PackageReference>();
 			for (auto& value : values)
 			{
@@ -207,7 +207,7 @@ namespace Soup::Build
 				stringValues.push_back(value.ToString());
 			}
 
-			ValueTableWrapper(_table).EnsureValue(Property_Dependencies).EnsureList().SetAll(stringValues);
+			Build::ValueTableWrapper(_table).EnsureValue(Property_Dependencies).EnsureList().SetAll(stringValues);
 		}
 
 		/// <summary>
@@ -216,7 +216,7 @@ namespace Soup::Build
 		/// </summary>
 		bool HasExtensions()
 		{
-			return ValueTableWrapper(_table).HasValue(Property_Extensions);
+			return Build::ValueTableWrapper(_table).HasValue(Property_Extensions);
 		}
 
 		std::vector<PackageReference> GetExtensions()
@@ -224,7 +224,7 @@ namespace Soup::Build
 			if (!HasExtensions())
 				throw std::runtime_error("No extensions.");
 
-			auto values = ValueTableWrapper(_table).GetValue(Property_Extensions).AsList().CopyAsStringVector();
+			auto values = Build::ValueTableWrapper(_table).GetValue(Property_Extensions).AsList().CopyAsStringVector();
 			auto result = std::vector<PackageReference>();
 			for (auto& value : values)
 			{
@@ -242,7 +242,7 @@ namespace Soup::Build
 				stringValues.push_back(value.ToString());
 			}
 
-			ValueTableWrapper(_table).EnsureValue(Property_Extensions).EnsureList().SetAll(stringValues);
+			Build::ValueTableWrapper(_table).EnsureValue(Property_Extensions).EnsureList().SetAll(stringValues);
 		}
 
 		/// <summary>
@@ -250,7 +250,7 @@ namespace Soup::Build
 		/// </summary>
 		bool HasPublic()
 		{
-			return ValueTableWrapper(_table).HasValue(Property_Public);
+			return Build::ValueTableWrapper(_table).HasValue(Property_Public);
 		}
 
 		std::string_view GetPublic()
@@ -258,12 +258,12 @@ namespace Soup::Build
 			if (!HasPublic())
 				throw std::runtime_error("No public.");
 
-			return ValueTableWrapper(_table).GetValue(Property_Public).AsString().GetValue();
+			return Build::ValueTableWrapper(_table).GetValue(Property_Public).AsString().GetValue();
 		}
 
 		void SetPublic(std::string_view value)
 		{
-			ValueTableWrapper(_table).EnsureValue(Property_Public).SetValueString(value);
+			Build::ValueTableWrapper(_table).EnsureValue(Property_Public).SetValueString(value);
 		}
 
 		/// <summary>
@@ -272,7 +272,7 @@ namespace Soup::Build
 		/// </summary>
 		bool HasSource()
 		{
-			return ValueTableWrapper(_table).HasValue(Property_Source);
+			return Build::ValueTableWrapper(_table).HasValue(Property_Source);
 		}
 
 		std::vector<std::string> GetSource()
@@ -280,12 +280,12 @@ namespace Soup::Build
 			if (!HasSource())
 				throw std::runtime_error("No source.");
 
-			return ValueTableWrapper(_table).GetValue(Property_Source).AsList().CopyAsStringVector();
+			return Build::ValueTableWrapper(_table).GetValue(Property_Source).AsList().CopyAsStringVector();
 		}
 
 		void SetSource(const std::vector<std::string>& values)
 		{
-			ValueTableWrapper(_table).EnsureValue(Property_Source).EnsureList().SetAll(values);
+			Build::ValueTableWrapper(_table).EnsureValue(Property_Source).EnsureList().SetAll(values);
 		}
 
 		/// <summary>
@@ -293,7 +293,7 @@ namespace Soup::Build
 		/// </summary>
 		bool HasIncludePaths()
 		{
-			return ValueTableWrapper(_table).HasValue(Property_IncludePaths);
+			return Build::ValueTableWrapper(_table).HasValue(Property_IncludePaths);
 		}
 
 		std::vector<std::string> GetIncludePaths()
@@ -301,12 +301,12 @@ namespace Soup::Build
 			if (!HasIncludePaths())
 				throw std::runtime_error("No includePaths.");
 
-			return ValueTableWrapper(_table).GetValue(Property_IncludePaths).AsList().CopyAsStringVector();
+			return Build::ValueTableWrapper(_table).GetValue(Property_IncludePaths).AsList().CopyAsStringVector();
 		}
 
 		void SetIncludePaths(const std::vector<std::string>& values)
 		{
-			ValueTableWrapper(_table).EnsureValue(Property_IncludePaths).EnsureList().SetAll(values);
+			Build::ValueTableWrapper(_table).EnsureValue(Property_IncludePaths).EnsureList().SetAll(values);
 		}
 
 		/// <summary>
@@ -314,7 +314,7 @@ namespace Soup::Build
 		/// </summary>
 		bool HasDefines()
 		{
-			return ValueTableWrapper(_table).HasValue(Property_Defines);
+			return Build::ValueTableWrapper(_table).HasValue(Property_Defines);
 		}
 
 		std::vector<std::string> GetDefines()
@@ -322,18 +322,18 @@ namespace Soup::Build
 			if (!HasDefines())
 				throw std::runtime_error("No defines.");
 
-			return ValueTableWrapper(_table).GetValue(Property_Defines).AsList().CopyAsStringVector();
+			return Build::ValueTableWrapper(_table).GetValue(Property_Defines).AsList().CopyAsStringVector();
 		}
 
 		void SetDefines(const std::vector<std::string>& values)
 		{
-			ValueTableWrapper(_table).EnsureValue(Property_Defines).EnsureList().SetAll(values);
+			Build::ValueTableWrapper(_table).EnsureValue(Property_Defines).EnsureList().SetAll(values);
 		}
 
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		ValueTable& GetTable()
+		Build::ValueTable& GetTable()
 		{
 			return _table;
 		}
@@ -355,6 +355,6 @@ namespace Soup::Build
 		}
 
 	private:
-		ValueTable _table;
+		Build::ValueTable _table;
 	};
 }

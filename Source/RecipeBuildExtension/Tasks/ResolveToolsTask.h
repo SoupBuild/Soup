@@ -172,11 +172,11 @@ namespace RecipeBuild
 			}
 
 			// Read the entire file into a string
-			auto stream = System::IFileSystem::Current().OpenRead(visualCompilerToolsDefaultVersionFile, false);
+			auto file = System::IFileSystem::Current().OpenRead(visualCompilerToolsDefaultVersionFile, false);
 
 			// The first line is the version
 			auto version = std::string();
-			if (!std::getline(*stream, version, '\n'))
+			if (!std::getline(file->GetInStream(), version, '\n'))
 			{
 				buildState.LogError("Failed to parse version from file.");
 				throw std::runtime_error("Failed to parse version from file.");
@@ -193,7 +193,7 @@ namespace RecipeBuild
 			auto currentVersion = SemanticVersion(0, 0, 0);
 			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(windows10KitIncludePath))
 			{
-				auto name = child.GetFileName();
+				auto name = child.Path.GetFileName();
 				auto platformVersion = name.substr(0, 3);
 				if (platformVersion != "10.")
 					throw std::runtime_error("Unexpected Kit Version: " + name);

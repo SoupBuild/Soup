@@ -16,6 +16,9 @@ using namespace Opal::System;
 using namespace SoupTest;
 import SoupTestUtilities;
 
+#include "Api/SoupApiTests.gen.h"
+#include "Api/SoupApiJsonModelsTests.gen.h"
+
 #include "Build/Runner/BuildHistoryCheckerTests.gen.h"
 #include "Build/Runner/BuildHistoryJsonTests.gen.h"
 #include "Build/Runner/BuildHistoryTests.gen.h"
@@ -28,6 +31,7 @@ import SoupTestUtilities;
 #include "Config/LocalUserConfigJsonTests.gen.h"
 #include "Config/LocalUserConfigTests.gen.h"
 
+#include "Package/PackageManagerTests.gen.h"
 #include "Package/PackageReferenceTests.gen.h"
 #include "Package/RecipeBuilderTests.gen.h"
 #include "Package/RecipeBuildManagerTests.gen.h"
@@ -47,6 +51,9 @@ int main()
 
 	TestState state = { 0, 0 };
 
+	state += RunSoupApiTests();
+	state += RunSoupApiJsonModelsTests();
+
 	state += RunBuildHistoryCheckerTests();
 	state += RunBuildHistoryJsonTests();
 	state += RunBuildHistoryTests();
@@ -59,6 +66,7 @@ int main()
 	state += RunLocalUserConfigJsonTests();
 	state += RunLocalUserConfigTests();
 
+	state += RunPackageManagerTests();
 	state += RunPackageReferenceTests();
 	state += RunRecipeBuilderTests();
 	state += RunRecipeBuildManagerTests();

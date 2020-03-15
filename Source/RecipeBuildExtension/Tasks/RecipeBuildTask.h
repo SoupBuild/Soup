@@ -106,8 +106,8 @@ namespace RecipeBuild
 			preprocessorDefinitions.push_back("SOUP_BUILD");
 
 			// Build up arguments to build this individual recipe
-			auto binaryDirectory = Soup::Build::RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
-			auto objectDirectory = Soup::Build::RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
+			auto binaryDirectory = Soup::RecipeExtensions::GetBinaryDirectory(compilerName, buildFlavor);
+			auto objectDirectory = Soup::RecipeExtensions::GetObjectDirectory(compilerName, buildFlavor);
 
 			// Load the module interface file if present
 			auto moduleInterfaceSourceFile = std::string();
@@ -154,6 +154,7 @@ namespace RecipeBuild
 			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
 			buildTable.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
 			buildTable.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile);
+			buildTable.EnsureValue("PlatformLibraries").SetValuePathList(platformLibraries);
 			buildTable.EnsureValue("LinkLibraries").SetValuePathList(linkLibraries);
 			buildTable.EnsureValue("PreprocessorDefinitions").SetValueStringList(preprocessorDefinitions);
 			buildTable.EnsureValue("IncludeDirectories").SetValuePathList(includePaths);

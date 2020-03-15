@@ -74,7 +74,7 @@ namespace Soup::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("C:/TestInstall/LocalUserConfig.json"),
-				MockFileState(std::stringstream("garbage")));
+				std::make_shared<MockFile>(std::stringstream("garbage")));
 
 			LocalUserConfig actual;
 			Assert::ThrowsRuntimeError([&actual]() {
@@ -116,7 +116,7 @@ namespace Soup::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
 				Path("C:/TestInstall/LocalUserConfig.json"),
-				MockFileState(std::stringstream(R"({
+				std::make_shared<MockFile>(std::stringstream(R"({
 					"runtimeCompiler": "clang",
 					"msvc": "../msvc/",
 					"clang": "../clang/",

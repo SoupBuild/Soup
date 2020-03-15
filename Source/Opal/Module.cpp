@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
+#include <chrono>
 #include <fstream>
 #include <filesystem>
 #include <iostream>
@@ -21,6 +22,8 @@
 
 export module Opal;
 
+import HttpLib;
+
 #include "Core/Path.h"
 #include "Core/SemanticVersion.h"
 
@@ -32,6 +35,10 @@ export module Opal;
 #include "Memory/IReferenceCounted.h"
 #include "Memory/Reference.h"
 #include "Memory/ReferenceCounted.h"
+
+#include "Network/HttpLibNetworkManager.h"
+#include "Network/MockNetworkManager.h"
+#include "Network/ScopedNetworkManagerRegister.h"
 
 #include "System/SmartHandle.h"
 #include "System/DynamicLibraryManager.h"

@@ -103,7 +103,9 @@ namespace Soup::Build::UnitTests
 
 			// Create the file state
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
-			fileSystem->CreateMockFile(Path("C:/Root/Output.bin"), MockFileState(outputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/Root/Output.bin"),
+				std::make_shared<MockFile>(outputTime));
 
 			// Setup the input parameters
 			auto targetFiles = std::vector<Path>({
@@ -153,8 +155,12 @@ namespace Soup::Build::UnitTests
 			// Create the file state
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 13);
-			fileSystem->CreateMockFile(Path("C:/Root/Output.bin"), MockFileState(outputTime));
-			fileSystem->CreateMockFile(Path("C:/Root/Input.cpp"), MockFileState(inputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/Root/Output.bin"),
+				std::make_shared<MockFile>(outputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/Root/Input.cpp"),
+				std::make_shared<MockFile>(inputTime));
 
 			// Setup the input parameters
 			auto targetFiles = std::vector<Path>({
@@ -208,8 +214,12 @@ namespace Soup::Build::UnitTests
 			// Create the file state
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystem->CreateMockFile(Path("C:/Root/Output.bin"), MockFileState(outputTime));
-			fileSystem->CreateMockFile(Path("C:/Root/Input.cpp"), MockFileState(inputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/Root/Output.bin"),
+				std::make_shared<MockFile>(outputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/Root/Input.cpp"),
+				std::make_shared<MockFile>(inputTime));
 
 			// Setup the input parameters
 			auto targetFiles = std::vector<Path>({
@@ -262,9 +272,15 @@ namespace Soup::Build::UnitTests
 			// Create the file state
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystem->CreateMockFile(Path("C:/Root/Output.bin"), MockFileState(outputTime));
-			fileSystem->CreateMockFile(Path("C:/Root/Input.cpp"), MockFileState(inputTime));
-			fileSystem->CreateMockFile(Path("C:/Input.h"), MockFileState(inputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/Root/Output.bin"),
+				std::make_shared<MockFile>(outputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/Root/Input.cpp"),
+				std::make_shared<MockFile>(inputTime));
+			fileSystem->CreateMockFile(
+				Path("C:/Input.h"),
+				std::make_shared<MockFile>(inputTime));
 
 			// Setup the input parameters
 			auto targetFiles = std::vector<Path>({

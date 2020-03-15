@@ -177,7 +177,7 @@ namespace Soup.Client
         }
 
         /// <summary>
-        /// Recusively install all dependencies and trasient dependecies
+        /// Recursively install all dependencies and transitive dependencies
         /// </summary>
         private async Task InstallRecursiveDependencies(string tempPath, Recipe recipe)
         {

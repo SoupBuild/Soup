@@ -48,12 +48,12 @@ namespace Soup::Client
 					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2() + workingDirectory;
 				}
 			}
-			
+
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);
-			Build::Recipe recipe = {};
-			if (!Build::RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			Recipe recipe = {};
+			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
 			{
 				Log::Error("Could not load the recipe file.");
 				return;
@@ -112,14 +112,14 @@ namespace Soup::Client
 			// }
 
 			// arguments.PlatformLibraries.push_back(Path("kernel32.lib"));
-			// arguments.PlatformLibraries.push_back(Path("user32.lib"));
+			arguments.PlatformLibraries.push_back("user32.lib");
 			// arguments.PlatformLibraries.push_back(Path("gdi32.lib"));
 			// arguments.PlatformLibraries.push_back(Path("winspool.lib"));
 			// arguments.PlatformLibraries.push_back(Path("comdlg32.lib"));
-			// arguments.PlatformLibraries.push_back(Path("advapi32.lib"));
+			arguments.PlatformLibraries.push_back("advapi32.lib");
 			// arguments.PlatformLibraries.push_back(Path("shell32.lib"));
 			// arguments.PlatformLibraries.push_back(Path("ole32.lib"));
-			// arguments.PlatformLibraries.push_back(Path("oleaut32.lib"));
+			arguments.PlatformLibraries.push_back("oleaut32.lib");
 			// arguments.PlatformLibraries.push_back(Path("uuid.lib"));
 			// arguments.PlatformLibraries.push_back(Path("odbc32.lib"));
 			// arguments.PlatformLibraries.push_back(Path("odbccp32.lib"));

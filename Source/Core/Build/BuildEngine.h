@@ -246,6 +246,7 @@ namespace Soup::Build
 			// Only resolve link libraries if not a library ourself
 			if (arguments.TargetType != BuildTargetType::StaticLibrary)
 			{
+				linkArguments.ExternalLibraryFiles = arguments.PlatformLinkDependencies;
 				linkArguments.LibraryFiles = arguments.LinkDependencies;
 			}
 

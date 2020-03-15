@@ -40,7 +40,7 @@ namespace Soup::Build
 			// Read the contents of the build state file
 			try
 			{
-				result = BuildHistoryJson::Deserialize(*file);
+				result = BuildHistoryJson::Deserialize(file->GetInStream());
 				return true;
 			}
 			catch(std::runtime_error& ex)
@@ -73,10 +73,10 @@ namespace Soup::Build
 			}
 
 			// Open the file to write to
-			auto file = System::IFileSystem::Current().OpenWrite(BuildHistoryFile);
+			auto file = System::IFileSystem::Current().OpenWrite(BuildHistoryFile, false);
 
 			// Write the build state to the file stream
-			BuildHistoryJson::Serialize(state, *file);
+			BuildHistoryJson::Serialize(state, file->GetOutStream());
 		}
 	};
 }

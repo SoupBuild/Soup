@@ -21,6 +21,7 @@ import Opal;
 import SoupEngineDefinition;
 import SoupEngineWrapper;
 import SoupEngineCore;
+import LzmaSdk;
 import json11;
 import CPPToml;
 
@@ -28,6 +29,8 @@ using namespace Opal;
 
 #include "Utils/Helpers.h"
 #include "Utils/HandledException.h"
+
+#include "Api/SoupApi.h"
 
 #include "Build/Runner/BuildHistory.h"
 #include "Build/Runner/BuildHistoryChecker.h"
@@ -44,6 +47,7 @@ using namespace Opal;
 #include "Compiler/CompileArguments.h"
 #include "Compiler/MockCompiler.h"
 
+#include "Package/PackageManager.h"
 #include "Package/Recipe.h"
 #include "Package/RecipeBuildManager.h"
 #include "Package/RecipeExtensions.h"

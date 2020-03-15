@@ -16,3 +16,9 @@
 [submodule "Dependencies/cpptoml"]
 	path = Dependencies/cpptoml
 	url = https://github.com/mwasplund/cpptoml.git
+[submodule "Dependencies/cpp-httplib"]
+	path = Dependencies/cpp-httplib
+	url = https://github.com/mwasplund/cpp-httplib.git
+[submodule "Dependencies/LzmaSdk"]
+	path = Dependencies/LzmaSdk
+	url = https://github.com/mwasplund/LzmaSdk.git

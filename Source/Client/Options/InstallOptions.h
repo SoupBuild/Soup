@@ -17,10 +17,8 @@ namespace Soup::Client
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
-		const std::string& GetPackage()
-		{
-			return _package;
-		}
+		[[Args::Option(Index = 0, HelpText = "The package reference to install.")]]
+		std::string Package;
 
 		/// <summary>
 		/// Show the usage details for this command

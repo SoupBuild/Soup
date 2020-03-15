@@ -24,6 +24,18 @@ namespace Soup
 		return stringBuilder.str();
 	}
 
+	export std::string ToUpper(const std::string& value)
+	{
+		std::string result = value;
+		std::transform(
+			result.begin(),
+			result.end(),
+			result.begin(), 
+			[](unsigned char c) { return std::toupper(c); });
+
+		return result;
+	}
+
 	export std::string ToString(const std::vector<std::string>& values)
 	{
 		std::stringstream stringBuilder;

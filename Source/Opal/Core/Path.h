@@ -69,6 +69,35 @@ namespace Opal
 		}
 
 		/// <summary>
+		/// Gets the parent directory
+		/// </summary>
+		Path GetParent() const
+		{
+			auto result = Path();
+
+			// Take the root from the left hand side
+			result._root = _root;
+
+			// If there is a filename then return the directory
+			// Otherwise return one less directory
+			if (HasFileName())
+			{
+				// Pass along the directories
+				result._directories = _directories;
+			}
+			else
+			{
+				result._directories.reserve(_directories.size() - 1);
+				for (int i = 0; i < _directories.size() - 1; i++)
+				{
+					result._directories.push_back(_directories[0]);
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the path has a file name
 		/// </summary>
 		bool HasFileName() const
