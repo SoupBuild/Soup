@@ -18,8 +18,8 @@ namespace Soup::Api::UnitTests
 
 			// Create the required http client
 			auto testHttpClient = std::make_shared<Network::MockHttpClient>(
-				"localhost",
-				7071);
+				"soupapi.trafficmanager.net",
+				80);
 			testNetworkManager->RegisterClient(testHttpClient);
 
 			auto packageName = "MissingPackage";
@@ -30,7 +30,7 @@ namespace Soup::Api::UnitTests
 			// Verify expected network manager requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateClient: localhost:7071",
+					"CreateClient: soupapi.trafficmanager.net:80",
 				}),
 				testNetworkManager->GetRequests(),
 				"Verify network manager requests match expected.");
@@ -53,8 +53,8 @@ namespace Soup::Api::UnitTests
 
 			// Create the required http client
 			auto testHttpClient = std::make_shared<Network::MockHttpClient>(
-				"localhost",
-				7071);
+				"soupapi.trafficmanager.net",
+				80);
 			testNetworkManager->RegisterClient(testHttpClient);
 
 			// Setup the expected http requests
@@ -69,7 +69,7 @@ namespace Soup::Api::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateClient: localhost:7071",
+					"CreateClient: soupapi.trafficmanager.net:80",
 				}),
 				testNetworkManager->GetRequests(),
 				"Verify network manager requests match expected.");
