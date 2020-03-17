@@ -21,18 +21,17 @@ namespace Soup
 			try
 			{
 				// Read the contents of the recipe file
-				auto parser = cpptoml::parser(stream);
-				auto root = parser.parse();
-				if (!root->is_table())
+				auto root = toml::parse(stream, "Recipe.toml");
+				if (!root.is_table())
 					throw std::runtime_error("Recipe Toml file root must be a table.");
 
 				// Load the entire root table
 				auto table = Build::ValueTable();
-				Parse(Build::ValueTableWrapper(table), *root);
+				Parse(Build::ValueTableWrapper(table), root.as_table());
 
 				return Recipe(std::move(table));
 			}
-			catch(const cpptoml::parse_exception& ex)
+			catch(const toml::exception& ex)
 			{
 				throw std::runtime_error(std::string("Parsing the Recipe Toml failed: ") + ex.what());
 			}
@@ -47,124 +46,106 @@ namespace Soup
 			auto root = Build(recipe.GetTable());
 
 			// Write out the entire root table
-			stream << *root;
+			stream << root;
 		}
 
 	private:
-		static void Parse(Build::ValueWrapper& target, cpptoml::base& source)
+		static void Parse(Build::ValueWrapper& target, const toml::value& source)
 		{
-			if (source.is_table())
+			switch (source.type())
 			{
-				Parse(target.EnsureTable(), *source.as_table());
-			}
-			else if (source.is_array())
-			{
-				Parse(target.EnsureList(), *source.as_array());
-			}
-			else if (source.is_value())
-			{
-				auto booleanValue = source.as<bool>();
-				if (booleanValue != nullptr)
-				{
-					target.SetValueBoolean(booleanValue->get());
-					return;
-				}
-
-				auto integerValue = source.as<int64_t>();
-				if (integerValue != nullptr)
-				{
-					target.SetValueInteger(integerValue->get());
-					return;
-				}
-
-				auto floatValue = source.as<double>();
-				if (floatValue != nullptr)
-				{
-					target.SetValueFloat(floatValue->get());
-					return;
-				}
-
-				auto stringValue = source.as<std::string>();
-				if (stringValue != nullptr)
-				{
-					target.SetValueString(stringValue->get());
-					return;
-				}
-
-				throw std::runtime_error("Unknown toml value type.");
-			}
-			else
-			{
-				throw std::runtime_error("Unknown toml type.");
+				case toml::value_t::empty:
+					// Leave empty
+					break;
+				case toml::value_t::boolean:
+					target.SetValueBoolean(source.as_boolean());
+					break;
+				case toml::value_t::integer:
+					target.SetValueInteger(source.as_integer());
+					break;
+				case toml::value_t::floating:
+					target.SetValueFloat(source.as_floating());
+					break;
+				case toml::value_t::string:
+					target.SetValueString(source.as_string().str);
+					break;
+				case toml::value_t::offset_datetime:
+				case toml::value_t::local_datetime:
+				case toml::value_t::local_date:
+				case toml::value_t::local_time:
+					throw std::runtime_error("TODO: What to do with datetime?");
+				case toml::value_t::array:
+					Parse(target.EnsureList(), source.as_array());
+					break;
+				case toml::value_t::table:
+					Parse(target.EnsureTable(), source.as_table());
+					break;
+				default:
+					throw std::runtime_error("Unknown toml type.");
 			}
 		}
 
-		static void Parse(Build::ValueTableWrapper& target, const cpptoml::table& source)
+		static void Parse(Build::ValueTableWrapper& target, const toml::table& source)
 		{
 			for (auto& item : source)
 			{
 				auto value = target.CreateValue(item.first);
-				Parse(value, *item.second);
+				Parse(value, item.second);
 			}
 		}
 
-		static void Parse(Build::ValueListWrapper& target, const cpptoml::array& source)
+		static void Parse(Build::ValueListWrapper& target, const toml::array& source)
 		{
-			auto& values = source.get();
-			target.Resize(values.size());
-			for (size_t i = 0; i < values.size(); i++)
+			target.Resize(source.size());
+			for (size_t i = 0; i < source.size(); i++)
 			{
 				auto value = target.GetValueAt(i);
-				Parse(value, *values[i]);
+				Parse(value, source[i]);
 			}
 		}
-
-		static std::shared_ptr<cpptoml::base> Build(Build::Value& value)
+		
+		static toml::value Build(Build::Value& value)
 		{
 			switch (value.GetType())
 			{
 				case Build::ValueType::Empty:
-					return nullptr;
+					return toml::value();
 				case Build::ValueType::Table:
 					return Build(value.AsTable());
 				case Build::ValueType::List:
 					return Build(value.AsList());
 				case Build::ValueType::String:
-					return cpptoml::make_value<std::string>(
-						Build::ValueWrapper(value).AsString().GetValue());
+					return toml::value(Build::ValueWrapper(value).AsString().GetValue());
 				case Build::ValueType::Integer:
-					return cpptoml::make_value<int64_t>(
-						Build::ValueWrapper(value).AsInteger().GetValue());
+					return toml::value(Build::ValueWrapper(value).AsInteger().GetValue());
 				case Build::ValueType::Float:
-					return cpptoml::make_value<double>(
-						Build::ValueWrapper(value).AsFloat().GetValue());
+					return toml::value(Build::ValueWrapper(value).AsFloat().GetValue());
 				case Build::ValueType::Boolean:
-					return cpptoml::make_value<bool>(
-						Build::ValueWrapper(value).AsBoolean().GetValue());
+					return toml::value(Build::ValueWrapper(value).AsBoolean().GetValue());
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}
 		}
 
-		static std::shared_ptr<cpptoml::base> Build(Build::ValueTable& table)
+		static toml::value Build(Build::ValueTable& table)
 		{
-			auto result = cpptoml::make_table();
+			toml::table result = {};
 
 			for (auto& value : table.GetValues())
 			{
-				result->insert(value.first, Build(value.second));
+				result.emplace(value.first, Build(value.second));
 			}
 
 			return result;
 		}
 
-		static std::shared_ptr<cpptoml::base> Build(Build::ValueList& list)
+		static toml::value Build(Build::ValueList& list)
 		{
-			auto result = cpptoml::make_array();
+			toml::array result = {};
 
 			for (auto& value : list.GetValues())
 			{
-				result->get().push_back(Build(value));
+				result.push_back(Build(value));
 			}
 
 			return result;

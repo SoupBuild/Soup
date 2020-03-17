@@ -164,7 +164,9 @@ namespace Soup::UnitTests
 
 			// Verify the contents of the recipe file
 			std::string expectedFinalRecipe = 
-R"(Dependencies = ["TheirPackage@2.2.2"]
+R"(Dependencies = [
+"TheirPackage@2.2.2",
+]
 Name = "MyPackage"
 Version = "1.2.3"
 )";

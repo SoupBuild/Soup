@@ -18,7 +18,6 @@ namespace RecipeBuild
 		BuildTask(CompilerFactory compilerFactory) :
 			_compilerFactory(std::move(compilerFactory))
 		{
-
 		}
 
 		/// <summary>

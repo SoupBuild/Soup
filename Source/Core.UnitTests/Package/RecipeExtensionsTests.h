@@ -77,7 +77,7 @@ namespace Soup::Build::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Load Recipe: TestFiles/GarbageRecipe/Recipe.toml",
-					"ERRO: Deserialize Threw: Parsing the Recipe Toml failed: Value must follow after a '=' at line 1",
+					"ERRO: Deserialize Threw: Parsing the Recipe Toml failed: [error] toml::parse_key_value_pair: missing key-value separator `=`\n --> Recipe.toml\n   | \n 1 | garbage\n   |        ^ should be `=`",
 					"INFO: Failed to parse Recipe.",
 				}), 
 				testListener->GetMessages(),
