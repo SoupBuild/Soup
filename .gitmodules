@@ -12,10 +12,7 @@
 	url = https://github.com/mwasplund/Json11.git
 [submodule "Dependencies/toml11"]
 	path = Dependencies/toml11
-	url = https://github.com/mwasplund/toml11.git
-[submodule "Dependencies/cpptoml"]
-	path = Dependencies/cpptoml
-	url = https://github.com/mwasplund/cpptoml.git
+	url = https://github.com/mwasplund/toml11.gits
 [submodule "Dependencies/cpp-httplib"]
 	path = Dependencies/cpp-httplib
 	url = https://github.com/mwasplund/cpp-httplib.git
