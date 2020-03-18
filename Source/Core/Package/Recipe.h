@@ -109,9 +109,14 @@ namespace Soup
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
-		std::string_view GetName()
+		RecipeValue& GetNameValue()
 		{
-			return GetValue(Property_Name).AsString();
+			return GetValue(Property_Name);
+		}
+
+		const std::string& GetName()
+		{
+			return GetNameValue().AsString();
 		}
 
 		void SetName(std::string_view value)
@@ -254,7 +259,7 @@ namespace Soup
 			return HasValue(Property_Public);
 		}
 
-		std::string_view GetPublic()
+		const std::string& GetPublic()
 		{
 			if (!HasPublic())
 				throw std::runtime_error("No public.");

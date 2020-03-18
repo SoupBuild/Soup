@@ -68,7 +68,7 @@ int main()
 	private:
 		void UpdateDefaultValues(Recipe& recipe)
 		{
-			Log::HighPriority("Name: (" + std::string(recipe.GetName()) + ")");
+			Log::HighPriority("Name: (" + recipe.GetName() + ")");
 			auto newName = std::string();
 			std::getline(std::cin, newName);
 			if (!newName.empty())

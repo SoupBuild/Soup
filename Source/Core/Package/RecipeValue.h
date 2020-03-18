@@ -25,13 +25,20 @@ namespace Soup
 	{
 	public:
 		RecipeValue() :
+			_comments(),
 			_value()
 		{
 		}
 
 		RecipeValue(std::string value) :
+			_comments(),
 			_value(std::move(value))
 		{
+		}
+
+		std::vector<std::string>& GetComments()
+		{
+			return _comments;
 		}
 
 		const std::string& AsString() const
@@ -199,6 +206,11 @@ namespace Soup
 		/// </summary>
 		bool operator ==(const RecipeValue& rhs) const
 		{
+			if (_comments != rhs._comments)
+			{
+				return false;
+			}
+
 			if (GetType() == rhs.GetType())
 			{
 				switch (GetType())
@@ -236,6 +248,7 @@ namespace Soup
 		}
 
 	private:
+		std::vector<std::string> _comments;
 		std::any _value;
 	};
 

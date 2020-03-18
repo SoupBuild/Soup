@@ -62,6 +62,26 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
+		void Deserialize_Comments()
+		{
+			auto recipe = std::stringstream(
+				R"(
+					# This is an awesome project
+					Name="MyPackage"
+					Version="1.2.3"
+				)");
+			auto actual = RecipeToml::Deserialize(recipe);
+
+			auto expected = Recipe(
+				"MyPackage",
+				SemanticVersion(1, 2, 3));
+			expected.GetNameValue().GetComments().push_back(" This is an awesome project");
+
+			Assert::AreEqual(expected, actual, "Verify matches expected.");
+		}
+
+
+		[[Fact]]
 		void Deserialize_AllProperties()
 		{
 			auto recipe = std::stringstream(
@@ -106,6 +126,27 @@ namespace Soup::Build::UnitTests
 
 			auto expected = 
 R"(Name = "MyPackage"
+Version = "1.2.3"
+)";
+
+			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");
+		}
+
+		[[Fact]]
+		void Serialize_Comments()
+		{
+			auto recipe = Recipe(
+				"MyPackage",
+				SemanticVersion(1, 2, 3));
+
+			recipe.GetNameValue().GetComments().push_back(" This is an awesome package");
+
+			std::stringstream actual;
+			RecipeToml::Serialize(recipe, actual);
+
+			auto expected =
+R"(# This is an awesome package
+Name = "MyPackage"
 Version = "1.2.3"
 )";
 

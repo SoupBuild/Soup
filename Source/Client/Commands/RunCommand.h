@@ -54,7 +54,7 @@ namespace Soup::Client
 			auto configuration = "release";
 			auto compilerName = config.GetRuntimeCompiler();
 			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(compilerName, configuration);
-			auto executablePath = workingDirectory + binaryDirectory + Path(std::string(recipe.GetName()) + ".exe");
+			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
 			Log::Info(executablePath.ToString());
 			if (!System::IFileSystem::Current().Exists(executablePath))
 			{

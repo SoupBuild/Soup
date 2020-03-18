@@ -157,9 +157,9 @@ namespace Soup::Build
 					}
 
 					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(std::string(dependecyRecipe.GetName())))
+					if (activeParentSet.contains(dependecyRecipe.GetName()))
 					{
-						Log::Error("Found circular dependency: " + std::string(recipe.GetName()) + " -> " + std::string(dependecyRecipe.GetName()));
+						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 					}
 
@@ -190,9 +190,9 @@ namespace Soup::Build
 					}
 
 					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(std::string(dependecyRecipe.GetName())))
+					if (activeParentSet.contains(dependecyRecipe.GetName()))
 					{
-						Log::Error("Found circular dev dependency: " + std::string(recipe.GetName()) + " -> " + std::string(dependecyRecipe.GetName()));
+						Log::Error("Found circular dev dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dev dependency.");
 					}
 
@@ -243,10 +243,10 @@ namespace Soup::Build
 				Log::SetActiveId(projectId);
 				Log::Diag("Running InProcess Build");
 
-				auto findBuildState = _buildSet.find(std::string(recipe.GetName()));
+				auto findBuildState = _buildSet.find(recipe.GetName());
 				if (findBuildState != _buildSet.end())
 				{
-					Log::Diag("Recipe already built: " + std::string(recipe.GetName()));
+					Log::Diag("Recipe already built: " + recipe.GetName());
 
 					// Move the parent state from active into the parents active state :)
 					parentState.CombineChildState(findBuildState->second);
@@ -306,12 +306,12 @@ namespace Soup::Build
 				std::string activeCompiler = "";
 				if (isSystemBuild)
 				{
-					Log::HighPriority("System Build '" + std::string(recipe.GetName()) + "'");
+					Log::HighPriority("System Build '" + recipe.GetName() + "'");
 					activeCompiler = _systemCompiler;
 				}
 				else
 				{
-					Log::HighPriority("Build '" + std::string(recipe.GetName()) + "'");
+					Log::HighPriority("Build '" + recipe.GetName() + "'");
 					activeCompiler = _runtimeCompiler;
 				}
 

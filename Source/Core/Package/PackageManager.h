@@ -116,7 +116,7 @@ namespace Soup
 
 			try
 			{
-				auto archivePath = stagingPath + Path(std::string(recipe.GetName()) + ".7z");
+				auto archivePath = stagingPath + Path(recipe.GetName() + ".7z");
 				auto files = GetPackageFiles(workingDirectory);
 
 				// Create the archive of the package
@@ -154,7 +154,7 @@ namespace Soup
 					{
 						// Create the package
 						Log::Info("Create package");
-						auto createModel = Api::PackageCreateModel(std::string(recipe.GetName()));
+						auto createModel = Api::PackageCreateModel(recipe.GetName());
 						auto createdPackage = Api::SoupApi::CreatePackage(createModel);
 
 						// Retry

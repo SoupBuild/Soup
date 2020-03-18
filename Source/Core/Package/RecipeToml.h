@@ -56,6 +56,12 @@ namespace Soup
 	private:
 		static void Parse(RecipeValue& target, const TomlValue& source)
 		{
+			// Copy over all of the comments
+			target.GetComments().insert(
+				target.GetComments().end(),
+				source.comments().begin(),
+				source.comments().end());
+
 			switch (source.type())
 			{
 				case toml::value_t::empty:
@@ -131,28 +137,40 @@ namespace Soup
 				target.push_back(std::move(value));
 			}
 		}
-		
+
 		static TomlValue Build(RecipeValue& value)
 		{
+			auto result = TomlValue();
 			switch (value.GetType())
 			{
 				case RecipeValueType::Empty:
-					return TomlValue();
+					// Leave empty
+					break;
 				case RecipeValueType::Table:
-					return Build(value.AsTable());
+					result = Build(value.AsTable());
+					break;
 				case RecipeValueType::List:
-					return Build(value.AsList());
+					result = Build(value.AsList());
+					break;
 				case RecipeValueType::String:
-					return TomlValue(value.AsString());
+					result = TomlValue(value.AsString());
+					break;
 				case RecipeValueType::Integer:
-					return TomlValue(value.AsInteger());
+					result = TomlValue(value.AsInteger());
+					break;
 				case RecipeValueType::Float:
-					return TomlValue(value.AsFloat());
+					result = TomlValue(value.AsFloat());
+					break;
 				case RecipeValueType::Boolean:
-					return TomlValue(value.AsBoolean());
+					result = TomlValue(value.AsBoolean());
+					break;
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}
+
+			result.comments() = value.GetComments();
+
+			return result;
 		}
 
 		static TomlValue Build(RecipeTable& table)

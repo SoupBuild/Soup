@@ -91,7 +91,7 @@ namespace Soup
 			}
 
 			auto packageBinaryPath = packagePath + binaryDirectory;
-			auto moduleFilename = Path(std::string(dependecyRecipe.GetName()) + "." + outputFileExtension);
+			auto moduleFilename = Path(dependecyRecipe.GetName() + "." + outputFileExtension);
 			auto modulePath = packageBinaryPath + moduleFilename;
 
 			return modulePath;
