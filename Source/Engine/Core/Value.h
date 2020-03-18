@@ -19,6 +19,11 @@ namespace Soup::Build
 		/// Initializes a new instance of the Value class
 		/// </summary>
 		Value();
+		Value(int64_t value);
+		Value(double value);
+		Value(bool value);
+		Value(std::string value);
+		Value(ValueList list);
 		Value(ValueTable table);
 
 		/// <summary>

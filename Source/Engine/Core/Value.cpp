@@ -23,6 +23,31 @@ Value::Value() :
 {
 }
 
+Value::Value(int64_t value) :
+	_value(value)
+{
+}
+
+Value::Value(double value) :
+	_value(value)
+{
+}
+
+Value::Value(bool value) :
+	_value(value)
+{
+}
+
+Value::Value(std::string value) :
+	_value(std::move(value))
+{
+}
+
+Value::Value(ValueList list) :
+	_value(std::move(list))
+{
+}
+
 Value::Value(ValueTable table) :
 	_value(std::move(table))
 {

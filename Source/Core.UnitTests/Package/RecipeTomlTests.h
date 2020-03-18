@@ -131,16 +131,16 @@ Version = "1.2.3"
 			RecipeToml::Serialize(recipe, actual);
 
 			auto expected = 
-R"(Language = "C++17"
-Extensions = []
-Defines = []
-Source = []
-Public = "Public.cpp"
-Dependencies = []
-IncludePaths = []
-Name = "MyPackage"
-Type = "Executable"
+R"(Name = "MyPackage"
 Version = "1.2.3"
+Type = "Executable"
+Language = "C++17"
+Extensions = []
+Dependencies = []
+Public = "Public.cpp"
+Source = []
+IncludePaths = []
+Defines = []
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");

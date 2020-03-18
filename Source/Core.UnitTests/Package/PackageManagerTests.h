@@ -164,11 +164,11 @@ namespace Soup::UnitTests
 
 			// Verify the contents of the recipe file
 			std::string expectedFinalRecipe = 
-R"(Dependencies = [
+R"(Name = "MyPackage"
+Version = "1.2.3"
+Dependencies = [
 "TheirPackage@2.2.2",
 ]
-Name = "MyPackage"
-Version = "1.2.3"
 )";
 			auto& mockRecipeFile = fileSystem->GetMockFile(Path("Recipe.toml"));
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");

@@ -7,6 +7,10 @@
 
 namespace Soup
 {
+	using TomlValue = toml::basic_value<toml::preserve_comments>;
+	using TomlArray = std::vector<TomlValue>;
+	using TomlTable = std::unordered_map<toml::key, TomlValue>;
+
 	/// <summary>
 	/// The recipe Toml serialize manager
 	/// </summary>
@@ -21,13 +25,13 @@ namespace Soup
 			try
 			{
 				// Read the contents of the recipe file
-				auto root = toml::parse(stream, "Recipe.toml");
+				auto root = toml::parse<toml::preserve_comments>(stream, "Recipe.toml");
 				if (!root.is_table())
 					throw std::runtime_error("Recipe Toml file root must be a table.");
 
 				// Load the entire root table
-				auto table = Build::ValueTable();
-				Parse(Build::ValueTableWrapper(table), root.as_table());
+				auto table = RecipeTable();
+				Parse(table, root.as_table());
 
 				return Recipe(std::move(table));
 			}
@@ -50,88 +54,112 @@ namespace Soup
 		}
 
 	private:
-		static void Parse(Build::ValueWrapper& target, const toml::value& source)
+		static void Parse(RecipeValue& target, const TomlValue& source)
 		{
 			switch (source.type())
 			{
 				case toml::value_t::empty:
+				{
 					// Leave empty
 					break;
+				}
 				case toml::value_t::boolean:
+				{
 					target.SetValueBoolean(source.as_boolean());
 					break;
+				}
 				case toml::value_t::integer:
+				{
 					target.SetValueInteger(source.as_integer());
 					break;
+				}
 				case toml::value_t::floating:
+				{
 					target.SetValueFloat(source.as_floating());
 					break;
+				}
 				case toml::value_t::string:
+				{
 					target.SetValueString(source.as_string().str);
 					break;
+				}
 				case toml::value_t::offset_datetime:
 				case toml::value_t::local_datetime:
 				case toml::value_t::local_date:
 				case toml::value_t::local_time:
+				{
 					throw std::runtime_error("TODO: What to do with datetime?");
+				}
 				case toml::value_t::array:
-					Parse(target.EnsureList(), source.as_array());
+				{
+					auto valueList = RecipeList();
+					Parse(valueList, source.as_array());
+					target.SetValueList(std::move(valueList));
 					break;
+				}
 				case toml::value_t::table:
-					Parse(target.EnsureTable(), source.as_table());
+				{
+					auto valueTable = RecipeTable();
+					Parse(valueTable, source.as_table());
+					target.SetValueTable(std::move(valueTable));
 					break;
+				}
 				default:
+				{
 					throw std::runtime_error("Unknown toml type.");
+				}
 			}
 		}
 
-		static void Parse(Build::ValueTableWrapper& target, const toml::table& source)
+		static void Parse(RecipeTable& target, const TomlTable& source)
 		{
 			for (auto& item : source)
 			{
-				auto value = target.CreateValue(item.first);
+				auto value = RecipeValue();
 				Parse(value, item.second);
+				target.emplace(item.first, std::move(value));
 			}
 		}
 
-		static void Parse(Build::ValueListWrapper& target, const toml::array& source)
+		static void Parse(RecipeList& target, const TomlArray& source)
 		{
-			target.Resize(source.size());
+			target.reserve(source.size());
 			for (size_t i = 0; i < source.size(); i++)
 			{
-				auto value = target.GetValueAt(i);
+				auto value = RecipeValue();
 				Parse(value, source[i]);
+				target.push_back(std::move(value));
 			}
 		}
 		
-		static toml::value Build(Build::Value& value)
+		static TomlValue Build(RecipeValue& value)
 		{
 			switch (value.GetType())
 			{
-				case Build::ValueType::Empty:
-					return toml::value();
-				case Build::ValueType::Table:
+				case RecipeValueType::Empty:
+					return TomlValue();
+				case RecipeValueType::Table:
 					return Build(value.AsTable());
-				case Build::ValueType::List:
+				case RecipeValueType::List:
 					return Build(value.AsList());
-				case Build::ValueType::String:
-					return toml::value(Build::ValueWrapper(value).AsString().GetValue());
-				case Build::ValueType::Integer:
-					return toml::value(Build::ValueWrapper(value).AsInteger().GetValue());
-				case Build::ValueType::Float:
-					return toml::value(Build::ValueWrapper(value).AsFloat().GetValue());
-				case Build::ValueType::Boolean:
-					return toml::value(Build::ValueWrapper(value).AsBoolean().GetValue());
+				case RecipeValueType::String:
+					return TomlValue(value.AsString());
+				case RecipeValueType::Integer:
+					return TomlValue(value.AsInteger());
+				case RecipeValueType::Float:
+					return TomlValue(value.AsFloat());
+				case RecipeValueType::Boolean:
+					return TomlValue(value.AsBoolean());
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}
 		}
 
-		static toml::value Build(Build::ValueTable& table)
+		static TomlValue Build(RecipeTable& table)
 		{
-			toml::table result = {};
+			TomlTable result = {};
 
-			for (auto& value : table.GetValues())
+			for (auto& value : table)
 			{
 				result.emplace(value.first, Build(value.second));
 			}
@@ -139,11 +167,11 @@ namespace Soup
 			return result;
 		}
 
-		static toml::value Build(Build::ValueList& list)
+		static TomlValue Build(RecipeList& list)
 		{
-			toml::array result = {};
+			TomlArray result = {};
 
-			for (auto& value : list.GetValues())
+			for (auto& value : list)
 			{
 				result.push_back(Build(value));
 			}
