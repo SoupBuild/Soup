@@ -24,22 +24,22 @@ Value::Value() :
 }
 
 Value::Value(int64_t value) :
-	_value(value)
+	_value(ValuePrimitive<int64_t>(value))
 {
 }
 
 Value::Value(double value) :
-	_value(value)
+	_value(ValuePrimitive<double>(value))
 {
 }
 
 Value::Value(bool value) :
-	_value(value)
+	_value(ValuePrimitive<bool>(value))
 {
 }
 
 Value::Value(std::string value) :
-	_value(std::move(value))
+	_value(ValuePrimitive<const char*>(std::move(value)))
 {
 }
 

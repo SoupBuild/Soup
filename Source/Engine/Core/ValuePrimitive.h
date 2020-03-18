@@ -24,6 +24,14 @@ namespace Soup::Build
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the ValuePrimitive class
+		/// </summary>
+		ValuePrimitive(T value) :
+			_value(value)
+		{
+		}
+
+		/// <summary>
 		/// Type checker methods
 		/// </summary>
 		OperationResult TryGetValue(T& value) const noexcept override final
@@ -75,6 +83,14 @@ namespace Soup::Build
 		/// </summary>
 		ValuePrimitive() :
 			_value()
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the ValuePrimitive class
+		/// </summary>
+		ValuePrimitive(std::string value) :
+			_value(std::move(value))
 		{
 		}
 
