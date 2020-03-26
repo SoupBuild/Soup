@@ -154,8 +154,8 @@ namespace Soup
 					{
 						// Create the package
 						Log::Info("Create package");
-						auto createModel = Api::PackageCreateModel(recipe.GetName());
-						auto createdPackage = Api::SoupApi::CreatePackage(createModel);
+						auto createModel = Api::PackageCreateOrUpdateModel();
+						auto createdPackage = Api::SoupApi::CreatePackage(recipe.GetName(), createModel);
 
 						// Retry
 						Log::Info("Retry publish package");

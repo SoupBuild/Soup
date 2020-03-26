@@ -28,9 +28,10 @@ namespace Soup::Api
                 ServicePort);
 
             auto urlBuilder = std::stringstream();
-            urlBuilder << "/api/v1/packages/" << name << "/v" << version.ToString() << "/download";
+            urlBuilder << "/v1/packages/" << name << "/v" << version.ToString() << "/download";
             auto url = urlBuilder.str();
 
+            Log::Diag(url);
             auto response = client->Get(url);
 
             // Verify that we got a success
@@ -52,9 +53,10 @@ namespace Soup::Api
                 ServicePort);
 
             auto urlBuilder = std::stringstream();
-            urlBuilder << "/api/v1/packages/" << name;
+            urlBuilder << "/v1/packages/" << name;
             auto url = urlBuilder.str();
 
+            Log::Diag(url);
             auto response = client->Get(url);
 
             // Verify that we got a success
@@ -104,11 +106,12 @@ namespace Soup::Api
                 ServicePort);
 
             auto urlBuilder = std::stringstream();
-            urlBuilder << "/api/v1/packages/" << name << "/v" << version.ToString();
+            urlBuilder << "/v1/packages/" << name << "/v" << version.ToString();
             auto url = urlBuilder.str();
 
             auto contentType = "application/x-7z-compressed";
 
+            Log::Diag(url);
             auto response = client->Put(url, contentType, value);
 
             // Verify that we got a success
@@ -118,21 +121,24 @@ namespace Soup::Api
         /// <summary>
         /// Create a package
         /// </summary>
-        static PackageResultModel CreatePackage(const PackageCreateModel& model)
+        static PackageResultModel CreatePackage(
+            std::string_view name,
+            const PackageCreateOrUpdateModel& model)
         {
             auto client = Network::INetworkManager::Current().CreateClient(
                 ServiceEndpoint,
                 ServicePort);
 
             auto urlBuilder = std::stringstream();
-            urlBuilder << "/api/v1/packages";
+            urlBuilder << "/v1/packages/" << name;
             auto url = urlBuilder.str();
 
             std::stringstream content;
-            SoupApiJsonModels::SerializePackageCreate(model, content);
+            SoupApiJsonModels::SerializePackageCreateOrUpdate(model, content);
 
             auto contentType = "application/json";
 
+            Log::Diag(url);
             auto response = client->Put(url, contentType, content);
 
             // Verify that we got a success
@@ -174,7 +180,7 @@ namespace Soup::Api
     /*static*/ const std::string_view SoupApi::ServiceEndpoint = "localhost";
     /*static*/ const int SoupApi::ServicePort = 7071;
 #else
-    /*static*/ const std::string_view SoupApi::ServiceEndpoint = "soupapi.trafficmanager.net";
+    /*static*/ const std::string_view SoupApi::ServiceEndpoint = "api.soupbuild.com";
     /*static*/ const int SoupApi::ServicePort = 80;
 #endif
 }
