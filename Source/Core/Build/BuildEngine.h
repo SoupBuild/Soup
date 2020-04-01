@@ -95,7 +95,7 @@ namespace Soup::Build
 				Soup::Build::GraphNodeExtensions::AddLeafChild(result.BuildNodes, copyInterfaceNode);
 
 				// Add output module interface to the parent set of modules
-				// This will allow the module implmenentation units access as well as downstream
+				// This will allow the module implementation units access as well as downstream
 				// dependencies to the public interface.
 				result.ModuleDependencies.push_back(binaryOutputModuleInterfaceFile);
 			}

@@ -139,19 +139,23 @@ namespace RecipeBuild
 			// Load the runtime dependencies
 			if (buildTable.HasValue("RuntimeDependencies"))
 			{
-				arguments.RuntimeDependencies = buildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();
+				arguments.RuntimeDependencies = MakeUnique(
+					buildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector());
 			}
 
 			// Load the link dependencies
 			if (buildTable.HasValue("LinkDependencies"))
 			{
-				arguments.LinkDependencies = buildTable.GetValue("LinkDependencies").AsList().CopyAsPathVector();
+				arguments.LinkDependencies = MakeUnique(
+					buildTable.GetValue("LinkDependencies").AsList().CopyAsPathVector());
 			}
 
 			// Load the module references
 			if (buildTable.HasValue("ModuleDependencies"))
 			{
-				arguments.ModuleDependencies = buildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector();
+				
+				arguments.ModuleDependencies = MakeUnique(
+					buildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector());
 			}
 
 			// Initialize the compiler to use
@@ -183,6 +187,19 @@ namespace RecipeBuild
 
 			buildState.LogInfo("Build Generate Done");
 			return 0;
+		}
+
+		static std::vector<Path> MakeUnique(const std::vector<Path>& collection)
+		{
+			std::unordered_set<std::string> valueSet;
+			for (auto& value : collection)
+				valueSet.insert(value.ToString());
+
+			std::vector<Path> result;
+			for (auto& value : valueSet)
+				result.push_back(Path(value));
+
+			return result;
 		}
 
 	private:

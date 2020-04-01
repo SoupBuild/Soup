@@ -10,5 +10,5 @@ Dependencies = [
 
 Public = "Module.cpp"
 Source = [
-	"RegisterBuildExtension.cpp",
+	# TODO: "RegisterBuildExtension.cpp",
 ]

@@ -64,6 +64,9 @@ namespace Soup::Compiler::MSVC
 			// Disable the logo
 			AddFlag(commandArgs, ArgumentFlag_NoLogo);
 
+			// Get better support for _cplusplus macro version
+			AddParameter(commandArgs, "Zc", "__cplusplus");
+
 			// Enable Header includes if needed
 			if (args.GenerateIncludeTree)
 			{
