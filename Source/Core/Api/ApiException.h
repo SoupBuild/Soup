@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+
 namespace Soup::Api
 {
     /// <summary>

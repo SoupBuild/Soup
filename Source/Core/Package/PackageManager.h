@@ -5,6 +5,7 @@
 #pragma once
 #include "RecipeExtensions.h"
 #include "Api/SoupApi.h"
+#include "Auth/SoupAuth.h"
 #include "LzmaExtractCallback.h"
 #include "LzmaInStream.h"
 
@@ -124,11 +125,25 @@ namespace Soup
 				archive.AddFiles(files);
 				archive.Save();
 
+				// Authenticate the user
+				Log::Info("Request Authentication Token");
+				auto password = "Pass123%24";
+				auto userName = "alice";
+				auto openIdConfiguration = Api::SoupAuth::GetOpenIdConfiguration();
+				auto token = Api::SoupAuth::RequestClientCredentialsToken(
+					openIdConfiguration.TokenEndpoint,
+					userName,
+					password);
+
 				// Publish the archive, scope cleanup file access
 				{
 					Log::Info("Publish package");
 					auto archiveFile = System::IFileSystem::Current().OpenRead(archivePath, true);
-					auto statusCode = Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), archiveFile->GetInStream());
+					auto statusCode = Api::SoupApi::PublishPackage(
+						token,
+						recipe.GetName(),
+						recipe.GetVersion(),
+						archiveFile->GetInStream());
 
 					// Check if we should publish the package
 					bool createPackageRequired = false;
@@ -155,11 +170,18 @@ namespace Soup
 						// Create the package
 						Log::Info("Create package");
 						auto createModel = Api::PackageCreateOrUpdateModel();
-						auto createdPackage = Api::SoupApi::CreatePackage(recipe.GetName(), createModel);
+						auto createdPackage = Api::SoupApi::CreatePackage(
+							token,
+							recipe.GetName(),
+							createModel);
 
 						// Retry
 						Log::Info("Retry publish package");
-						statusCode = Api::SoupApi::PublishPackage(recipe.GetName(), recipe.GetVersion(), archiveFile->GetInStream());
+						statusCode = Api::SoupApi::PublishPackage(
+							token,
+							recipe.GetName(),
+							recipe.GetVersion(),
+							archiveFile->GetInStream());
 						switch (statusCode)
 						{
 							case Network::HttpStatusCode::Created:

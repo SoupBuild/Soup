@@ -6,6 +6,7 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <regex>
 #include <optional>
 #include <set>
 #include <sstream>

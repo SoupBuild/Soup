@@ -21,6 +21,7 @@ namespace Opal::Network
 			_port(port),
 			_requests(),
 			_getResponses(),
+			_postResponses(),
 			_putResponses()
 		{
 		}
@@ -62,6 +63,16 @@ namespace Opal::Network
 		}
 
 		/// <summary>
+		/// Set the authentication token
+		/// </summary>
+		void SetAuthenticationToken(std::string_view scheme, std::string_view token) override final
+		{
+			auto message = std::stringstream();
+			message << "SetAuthenticationToken: " << scheme << ":" << token;
+			_requests.push_back(message.str());
+		}
+
+		/// <summary>
 		/// Perform an Http Get request
 		/// </summary>
 		HttpResponse Get(std::string_view request) override final
@@ -72,6 +83,31 @@ namespace Opal::Network
 
 			auto searchClient = _getResponses.find(std::string(request));
 			if (searchClient != _getResponses.end())
+			{
+				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+			}
+			else
+			{
+				// The response was not set, return not found
+				return HttpResponse(HttpStatusCode::NotFound);
+			}
+		}
+
+		/// <summary>
+		/// Perform an Http Post request
+		/// </summary>
+		HttpResponse Post(
+			std::string_view request,
+			std::string_view contentType,
+			std::istream& content) override final
+		{
+			auto message = std::stringstream();
+			message << "Post: " << request;
+			message << " [" << contentType << "]";
+			_requests.push_back(message.str());
+
+			auto searchClient = _postResponses.find(std::string(request));
+			if (searchClient != _postResponses.end())
 			{
 				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
 			}
@@ -112,6 +148,7 @@ namespace Opal::Network
 		int _port;
 		std::vector<std::string> _requests;
 		std::map<std::string, std::string> _getResponses;
+		std::map<std::string, std::string> _postResponses;
 		std::map<std::string, std::string> _putResponses;
 	};
 }

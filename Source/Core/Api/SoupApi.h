@@ -5,6 +5,7 @@
 #pragma once
 #include "SoupApiJsonModels.h"
 #include "ApiException.h"
+#include "../Auth/Models/ClientCredentialsTokenModel.h"
 
 namespace Soup::Api
 {
@@ -97,6 +98,7 @@ namespace Soup::Api
         /// Returns false if the package did not exist, true if success.
         /// </summary>
         static Network::HttpStatusCode PublishPackage(
+            const ClientCredentialsTokenModel& token,
             std::string_view name,
             SemanticVersion version,
             std::istream& value)
@@ -104,6 +106,8 @@ namespace Soup::Api
             auto client = Network::INetworkManager::Current().CreateClient(
                 ServiceEndpoint,
                 ServicePort);
+
+            client->SetAuthenticationToken("Bearer", token.AccessToken);
 
             auto urlBuilder = std::stringstream();
             urlBuilder << "/v1/packages/" << name << "/v" << version.ToString();
@@ -122,12 +126,15 @@ namespace Soup::Api
         /// Create a package
         /// </summary>
         static PackageResultModel CreatePackage(
+            const ClientCredentialsTokenModel& token,
             std::string_view name,
             const PackageCreateOrUpdateModel& model)
         {
             auto client = Network::INetworkManager::Current().CreateClient(
                 ServiceEndpoint,
                 ServicePort);
+
+            client->SetAuthenticationToken("Bearer", token.AccessToken);
 
             auto urlBuilder = std::stringstream();
             urlBuilder << "/v1/packages/" << name;

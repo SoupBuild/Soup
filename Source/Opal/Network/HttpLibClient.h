@@ -22,6 +22,14 @@ namespace Opal::Network
 		}
 
 		/// <summary>
+		/// Set the authentication token
+		/// </summary>
+		void SetAuthenticationToken(std::string_view scheme, std::string_view token) override final
+		{
+			_client.set_auth_token(scheme.data(), token.data());
+		}
+
+		/// <summary>
 		/// Perform an Http Get request
 		/// </summary>
 		HttpResponse Get(std::string_view request) override final
@@ -29,6 +37,23 @@ namespace Opal::Network
 			auto response = _client.Get(request.data());
 			if (response == nullptr)
 				throw std::runtime_error("HttpLibClient: Get failed.");
+
+			auto statusCode = static_cast<HttpStatusCode>(response->status);
+			return HttpResponse(statusCode, std::move(response->body));
+		}
+
+		/// <summary>
+		/// Perform an Http Post request
+		/// </summary>
+		HttpResponse Post(
+			std::string_view request,
+			std::string_view contentType,
+			std::istream& content) override final
+		{
+			auto body = std::string(std::istreambuf_iterator<char>(content), {});
+			auto response = _client.Post(request.data(), body, contentType.data());
+			if (response == nullptr)
+				throw std::runtime_error("HttpLibClient: Post failed.");
 
 			auto statusCode = static_cast<HttpStatusCode>(response->status);
 			return HttpResponse(statusCode, std::move(response->body));
