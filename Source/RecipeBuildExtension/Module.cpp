@@ -19,7 +19,7 @@ module;
 #include <unordered_set>
 #include <vector>
 
-export module RecipeBuildExtension;
+export module RecipeBuild;
 
 import Opal;
 import json11;
@@ -36,6 +36,3 @@ using namespace Opal;
 #include "Tasks/RecipeBuildTask.h"
 #include "Tasks/ResolveToolsTask.h"
 #include "Tasks/StandardLibraryIncludeTask.h"
-
-// TODO: Hack msvc bug not working with implementation units
-#include "RegisterBuildExtension.cpp"

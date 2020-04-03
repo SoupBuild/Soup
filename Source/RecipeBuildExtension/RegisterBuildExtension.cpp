@@ -2,28 +2,28 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-// module;
+module;
 
-// #include <any>
-// #include <array>
-// #include <ctime>
-// #include <functional>
-// #include <iostream>
-// #include <map>
-// #include <optional>
-// #include <set>
-// #include <sstream>
-// #include <stack>
-// #include <string>
-// #include <unordered_map>
-// #include <unordered_set>
-// #include <vector>
+#include <any>
+#include <array>
+#include <ctime>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <optional>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #define DllExport __declspec( dllexport )
 
-// module RecipeBuildExtension;
+module RecipeBuild;
 
-// using namespace Opal;
+using namespace Opal;
 
 std::shared_ptr<Soup::ICompiler> CreateMSVCCompiler(Soup::Build::ValueTableWrapper& activeState)
 {
