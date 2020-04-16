@@ -6,13 +6,13 @@
 
 namespace Soup::Build
 {
-	class ValueTable;
-	class ValueList;
+	export class ValueTable;
+	export class ValueList;
 
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	class Value : public IValue
+	export class Value : public IValue
 	{
 	public:
 		/// <summary>

@@ -156,7 +156,7 @@ namespace Soup::Compiler::MSVC
 
 			if (args.ExportModule)
 			{
-				AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "export");
+				AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "interface");
 
 				// Place the ifc in the output directory
 				//var outputFile = "{Path.GetFileNameWithoutExtension(sourceFile)}.{ModuleFileExtension}";

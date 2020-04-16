@@ -13,7 +13,7 @@ namespace Soup::Build
 	/// access to the a collection of values
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
-	class IValueList
+	export class IValueList
 	{
 	public:
 		/// <summary>

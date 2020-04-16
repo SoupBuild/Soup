@@ -9,7 +9,7 @@ namespace Soup::Build
 	/// <summary>
 	/// Build list implementation for simple objects
 	/// </summary>
-	class ValueList : public IValueList
+	export class ValueList : public IValueList
 	{
 	public:
 		/// <summary>

@@ -7,7 +7,7 @@
 
 namespace Soup::Build
 {
-	enum class ValueType
+	export enum class ValueType
 	{
 		Empty,
 		Table,
@@ -28,7 +28,7 @@ namespace Soup::Build
 	/// access to a single property value.
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
-	class IValue
+	export class IValue
 	{
 	public:
 		/// <summary>

@@ -11,7 +11,7 @@ namespace Soup::Build
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	class BuildState : public IBuildState
+	export class BuildState : public IBuildState
 	{
 	public:
 		/// <summary>

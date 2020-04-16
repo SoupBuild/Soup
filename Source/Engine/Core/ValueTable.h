@@ -11,7 +11,7 @@ namespace Soup::Build
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	class ValueTable : public IValueTable
+	export class ValueTable : public IValueTable
 	{
 	public:
 		/// <summary>
