@@ -120,6 +120,6 @@ namespace Soup::Api
     /*static*/ const int SoupAuth::ServicePort = 5051;
 #else
     /*static*/ const std::string_view SoupAuth::ServiceEndpoint = "auth.soupbuild.com";
-    /*static*/ const int SoupAuth::ServicePort = 80;
+    /*static*/ const int SoupAuth::ServicePort = 443;
 #endif
 }

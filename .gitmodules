@@ -19,3 +19,6 @@
 [submodule "Dependencies/LzmaSdk"]
 	path = Dependencies/LzmaSdk
 	url = https://github.com/mwasplund/LzmaSdk.git
+[submodule "Dependencies/botan"]
+	path = Dependencies/botan
+	url = https://github.com/mwasplund/botan.git
