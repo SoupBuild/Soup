@@ -9,7 +9,7 @@ namespace Soup::Api
 	/// <summary>
 	/// A class representing the package result
 	/// </summary>
-	class PackageResultModel
+	export class PackageResultModel
 	{
 	public:
 		PackageResultModel(

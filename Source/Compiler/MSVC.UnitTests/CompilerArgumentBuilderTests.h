@@ -533,7 +533,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/RTC1",
 				"/EHsc",
 				"/MT",
-				"/module:export",
+				"/module:interface",
 				"/module:output",
 				"\"module.ifc\"",
 				"/bigobj",

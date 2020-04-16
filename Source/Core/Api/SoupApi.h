@@ -12,7 +12,7 @@ namespace Soup::Api
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    class SoupApi
+    export class SoupApi
     {
     private:
         static const std::string_view ServiceEndpoint;

@@ -30,7 +30,7 @@ namespace Soup::Api::UnitTests
 			// Verify expected network manager requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateClient: api.soupbuild.com:80",
+					"CreateClient: api.soupbuild.com:443",
 				}),
 				testNetworkManager->GetRequests(),
 				"Verify network manager requests match expected.");
@@ -69,7 +69,7 @@ namespace Soup::Api::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateClient: api.soupbuild.com:80",
+					"CreateClient: api.soupbuild.com:443",
 				}),
 				testNetworkManager->GetRequests(),
 				"Verify network manager requests match expected.");
