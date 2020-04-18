@@ -72,6 +72,11 @@ namespace Soup::Api
 
             auto endpoint = authority;
             auto port = 80;
+            if (scheme == "https")
+            {
+                port = 443;
+            }
+
             auto portDelimiter = authority.find(':');
             if (portDelimiter != std::string::npos)
             {

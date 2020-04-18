@@ -19,10 +19,15 @@ namespace Opal::Network
 		HttpLibClient(std::string host, int port) :
 			_client(nullptr)
 		{
-			// if (port == 443)
-			// 	_client = std::make_unique<httplib::TLSClient>(host, port);
-			// else
+			if (port == 443)
+				_client = std::make_unique<httplib::SSLClient>(host, port);
+			else
 				_client = std::make_unique<httplib::Client>(host, port);
+
+#ifndef DEBUG
+			// Enable proxy for fiddler
+			_client->set_proxy("127.0.0.1", 8888);
+#endif
 		}
 
 		/// <summary>

@@ -177,11 +177,17 @@ namespace Soup
 
 						// Retry
 						Log::Info("Retry publish package");
+
+						// Reset the archive file
+						auto& archiveStream = archiveFile->GetInStream();
+						archiveStream.clear();
+						archiveStream.seekg(0, std::ios::beg);
+
 						statusCode = Api::SoupApi::PublishPackage(
 							token,
 							recipe.GetName(),
 							recipe.GetVersion(),
-							archiveFile->GetInStream());
+							archiveStream);
 						switch (statusCode)
 						{
 							case Network::HttpStatusCode::Created:

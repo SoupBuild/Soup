@@ -22,3 +22,6 @@
 [submodule "Dependencies/botan"]
 	path = Dependencies/botan
 	url = https://github.com/mwasplund/botan.git
+[submodule "Dependencies/openssl"]
+	path = Dependencies/openssl
+	url = https://github.com/openssl/openssl.git
