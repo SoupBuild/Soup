@@ -4,7 +4,7 @@ Version = "0.1.0"
 Dependencies = [
 	"../../Dependencies/LzmaSdk/CPP/Library/",
 	"../../Dependencies/json11/",
-	"../../Dependencies/cpptoml/",
+	"../../Dependencies/toml11/",
 	"../Opal/",
 	"../Engine/Definition/",
 	"../Engine/Core/",

@@ -23,6 +23,31 @@ Value::Value() :
 {
 }
 
+Value::Value(int64_t value) :
+	_value(ValuePrimitive<int64_t>(value))
+{
+}
+
+Value::Value(double value) :
+	_value(ValuePrimitive<double>(value))
+{
+}
+
+Value::Value(bool value) :
+	_value(ValuePrimitive<bool>(value))
+{
+}
+
+Value::Value(std::string value) :
+	_value(ValuePrimitive<const char*>(std::move(value)))
+{
+}
+
+Value::Value(ValueList list) :
+	_value(std::move(list))
+{
+}
+
 Value::Value(ValueTable table) :
 	_value(std::move(table))
 {

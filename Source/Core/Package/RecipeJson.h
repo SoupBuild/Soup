@@ -37,8 +37,8 @@ namespace Soup
 					throw std::runtime_error("Root json was not an object.");
 
 				// Load the entire json blob into a root table
-				auto table = Build::ValueTable();
-				ParseJson(Build::ValueTableWrapper(table), jsonRoot.object_items());
+				auto table = RecipeTable();
+				ParseJson(table, jsonRoot.object_items());
 
 				return Recipe(std::move(table));
 			}
@@ -56,84 +56,101 @@ namespace Soup
 		}
 
 	private:
-		static void ParseJson(Build::ValueWrapper& value, const json11::Json& item)
+		static void ParseJson(RecipeValue& value, const json11::Json& item)
 		{
 			switch (item.type())
 			{
 				case json11::Json::Type::NUL:
+				{
 					// Leave empty
 					break;
+				}
 				case json11::Json::Type::NUMBER:
+				{
 					value.SetValueFloat(item.number_value());
 					break;
+				}
 				case json11::Json::Type::BOOL:
+				{
 					value.SetValueBoolean(item.bool_value());
 					break;
+				}
 				case json11::Json::Type::STRING:
+				{
 					value.SetValueString(item.string_value());
 					break;
+				}
 				case json11::Json::Type::ARRAY:
-					ParseJson(value.EnsureList(), item.array_items());
+				{
+					auto list = RecipeList();
+					ParseJson(list, item.array_items());
+					value.SetValueList(std::move(list));
 					break;
+				}
 				case json11::Json::Type::OBJECT:
-					ParseJson(value.EnsureTable(), item.object_items());
+				{
+					auto table = RecipeTable();
+					ParseJson(table, item.object_items());
+					value.SetValueTable(std::move(table));
 					break;
+				}
 				default:
+				{
 					throw std::runtime_error("Unknown json type.");
+				}
 			}
 		}
 
-		static void ParseJson(Build::ValueTableWrapper& table, const json11::Json::object& items)
+		static void ParseJson(RecipeTable& table, const json11::Json::object& items)
 		{
 			for (auto& item : items)
 			{
-				auto value = table.CreateValue(item.first);
+				auto value = RecipeValue();
 				ParseJson(value, item.second);
+				table.emplace(item.first, std::move(value));
 			}
 		}
 
-		static void ParseJson(Build::ValueListWrapper& list, const json11::Json::array& items)
+		static void ParseJson(RecipeList& list, const json11::Json::array& items)
 		{
-			list.Resize(items.size());
+			list.reserve(items.size());
 			for (size_t i = 0; i < items.size(); i++)
 			{
-				auto value = list.GetValueAt(i);
+				auto value = RecipeValue();
 				ParseJson(value, items[i]);
+				list.push_back(std::move(value));
 			}
 		}
 
-		static json11::Json BuildJson(Build::Value& value)
+		static json11::Json BuildJson(RecipeValue& value)
 		{
 			switch (value.GetType())
 			{
-				case Build::ValueType::Empty:
+				case RecipeValueType::Empty:
 					return json11::Json();
 				case Build::ValueType::Table:
 					return BuildJson(value.AsTable());
-				case Build::ValueType::List:
+				case RecipeValueType::List:
 					return BuildJson(value.AsList());
-				case Build::ValueType::String:
+				case RecipeValueType::String:
+					return json11::Json(value.AsString());
+				case RecipeValueType::Integer:
 					return json11::Json(
-						Build::ValueWrapper(value).AsString().GetValue());
-				case Build::ValueType::Integer:
-					return json11::Json(
-						static_cast<int>(Build::ValueWrapper(value).AsInteger().GetValue()));
-				case Build::ValueType::Float:
-					return json11::Json(
-						Build::ValueWrapper(value).AsFloat().GetValue());
-				case Build::ValueType::Boolean:
-					return json11::Json(
-						Build::ValueWrapper(value).AsBoolean().GetValue());
+						static_cast<int>(value.AsInteger()));
+				case RecipeValueType::Float:
+					return json11::Json(value.AsFloat());
+				case RecipeValueType::Boolean:
+					return json11::Json(value.AsBoolean());
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}
 		}
 
-		static json11::Json BuildJson(Build::ValueTable& table)
+		static json11::Json BuildJson(RecipeTable& table)
 		{
 			json11::Json::object result = {};
 
-			for (auto& value : table.GetValues())
+			for (auto& value : table)
 			{
 				result.emplace(value.first, BuildJson(value.second));
 			}
@@ -141,11 +158,11 @@ namespace Soup
 			return result;
 		}
 
-		static json11::Json BuildJson(Build::ValueList& list)
+		static json11::Json BuildJson(RecipeList& list)
 		{
 			json11::Json::array result = {};
 
-			for (auto& value : list.GetValues())
+			for (auto& value : list)
 			{
 				result.push_back(BuildJson(value));
 			}

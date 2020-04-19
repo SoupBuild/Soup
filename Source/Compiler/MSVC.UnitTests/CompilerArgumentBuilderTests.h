@@ -65,6 +65,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/std:c++11",
 				"/Od",
 				"/X",
@@ -107,6 +108,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/showIncludes",
 				"/std:c++11",
 				"/Od",
@@ -153,6 +155,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				expectedFlag,
 				"/Od",
 				"/X",
@@ -195,6 +198,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/std:c++latest",
 				"/experimental:module",
 				"/Od",
@@ -239,6 +243,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/std:c++17",
 				"/Od",
 				"/X",
@@ -284,6 +289,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/std:c++17",
 				expectedFlag,
 				"/X",
@@ -328,6 +334,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/Z7",
 				"/std:c++17",
 				"/Od",
@@ -374,6 +381,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/std:c++11",
 				"/Od",
 				"/I\"C:/Files/SDK/\"",
@@ -421,6 +429,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/std:c++11",
 				"/Od",
 				"/DDEBUG",
@@ -468,6 +477,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/std:c++11",
 				"/Od",
 				"/X",
@@ -516,13 +526,14 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/Zc:__cplusplus",
 				"/std:c++11",
 				"/Od",
 				"/X",
 				"/RTC1",
 				"/EHsc",
 				"/MT",
-				"/module:export",
+				"/module:interface",
 				"/module:output",
 				"\"module.ifc\"",
 				"/bigobj",

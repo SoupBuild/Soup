@@ -69,6 +69,28 @@ namespace RecipeBuild
 
 			// Add the dependency static library closure to link if targeting an executable or dynamic library
 			std::vector<Path> linkLibraries = std::vector<Path>();
+			if (recipeTable.HasValue("LinkLibraries"))
+			{
+				linkLibraries = recipeTable.GetValue("LinkLibraries").AsList().CopyAsPathVector();
+			}
+
+			// Add the dependency runtime dependencies closure if present
+			if (recipeTable.HasValue("RuntimeDependencies"))
+			{
+				std::vector<Path> runtimeDependencies = std::vector<Path>();
+				if (buildTable.HasValue("RuntimeDependencies"))
+				{
+					runtimeDependencies = buildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();
+				}
+
+				auto recipeRuntimeDependencies = recipeTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();
+				std::copy(
+					recipeRuntimeDependencies.begin(),
+					recipeRuntimeDependencies.end(),
+					std::back_inserter(runtimeDependencies)); 
+
+				buildTable.EnsureValue("RuntimeDependencies").SetValuePathList(runtimeDependencies);
+			}
 
 			// Combine the include paths from the recipe and the system
 			auto includePaths = std::vector<Path>();

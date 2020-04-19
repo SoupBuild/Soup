@@ -53,6 +53,7 @@ namespace Soup::Client
 				Network::INetworkManager::Register(std::make_shared<Network::HttpLibNetworkManager>());
 				System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
 				System::IProcessManager::Register(std::make_shared<System::PlatformProcessManager>());
+				IO::IConsoleManager::Register(std::make_shared<IO::SystemConsoleManager>());
 
 				// Attempt to parse the provided arguments
 				Log::Diag("ProgramStart");
@@ -91,7 +92,7 @@ namespace Soup::Client
 				else if (arguments.IsA<ViewOptions>())
 					command = Setup(arguments.ExtractResult<ViewOptions>());
 				else
-					throw std::runtime_error("Unknown arguments.");
+					throw std::runtime_error("Unknown arguments");
 
 				// Run the requested command
 				Log::Diag("Run Command");
@@ -101,7 +102,7 @@ namespace Soup::Client
 			}
 			catch (const std::exception& ex)
 			{
-				Log::Error("Exception Handled: Exiting.");
+				Log::Error("Exception Handled: Exiting");
 				Log::Error(ex.what());
 				return -2;
 			}

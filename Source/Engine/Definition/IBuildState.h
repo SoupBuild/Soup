@@ -22,7 +22,7 @@ namespace Soup::Build
 	/// build extensions access to the shared build state.
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
-	class IBuildState
+	export class IBuildState
 	{
 	public:
 		/// <summary>

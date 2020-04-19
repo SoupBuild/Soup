@@ -5,13 +5,21 @@
 #pragma once
 #include "SoupApiJsonModels.h"
 #include "ApiException.h"
+#include "../Auth/Models/ClientCredentialsTokenModel.h"
 
 namespace Soup::Api
 {
+    export enum class PublishPackageResult
+    {
+        Success,
+        PackageDoesNotExist,
+        AlreadyExists,
+    };
+
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    class SoupApi
+    export class SoupApi
     {
     private:
         static const std::string_view ServiceEndpoint;
@@ -28,9 +36,10 @@ namespace Soup::Api
                 ServicePort);
 
             auto urlBuilder = std::stringstream();
-            urlBuilder << "/api/v1/packages/" << name << "/v" << version.ToString() << "/download";
+            urlBuilder << "/v1/packages/" << name << "/v" << version.ToString() << "/download";
             auto url = urlBuilder.str();
 
+            Log::Diag(url);
             auto response = client->Get(url);
 
             // Verify that we got a success
@@ -52,9 +61,10 @@ namespace Soup::Api
                 ServicePort);
 
             auto urlBuilder = std::stringstream();
-            urlBuilder << "/api/v1/packages/" << name;
+            urlBuilder << "/v1/packages/" << name;
             auto url = urlBuilder.str();
 
+            Log::Diag(url);
             auto response = client->Get(url);
 
             // Verify that we got a success
@@ -92,9 +102,9 @@ namespace Soup::Api
 
         /// <summary>
         /// Publish a new package version as an archive
-        /// Returns false if the package did not exist, true if success.
         /// </summary>
-        static Network::HttpStatusCode PublishPackage(
+        static PublishPackageResult PublishPackage(
+            const ClientCredentialsTokenModel& token,
             std::string_view name,
             SemanticVersion version,
             std::istream& value)
@@ -103,36 +113,55 @@ namespace Soup::Api
                 ServiceEndpoint,
                 ServicePort);
 
+            client->SetAuthenticationToken("Bearer", token.AccessToken);
+
             auto urlBuilder = std::stringstream();
-            urlBuilder << "/api/v1/packages/" << name << "/v" << version.ToString();
+            urlBuilder << "/v1/packages/" << name << "/v" << version.ToString();
             auto url = urlBuilder.str();
 
             auto contentType = "application/x-7z-compressed";
 
+            Log::Diag(url);
             auto response = client->Put(url, contentType, value);
 
             // Verify that we got a success
-            return response.StatusCode;
+            switch (response.StatusCode)
+            {
+                case Network::HttpStatusCode::Created:
+                    return PublishPackageResult::Success;
+                case Network::HttpStatusCode::NotFound:
+                    return PublishPackageResult::PackageDoesNotExist;
+                case Network::HttpStatusCode::Conflict:
+                    return PublishPackageResult::AlreadyExists;
+                default:
+                    throw Api::ApiException("PublishPackage", response.StatusCode);
+            }
         }
 
         /// <summary>
         /// Create a package
         /// </summary>
-        static PackageResultModel CreatePackage(const PackageCreateModel& model)
+        static PackageResultModel CreatePackage(
+            const ClientCredentialsTokenModel& token,
+            std::string_view name,
+            const PackageCreateOrUpdateModel& model)
         {
             auto client = Network::INetworkManager::Current().CreateClient(
                 ServiceEndpoint,
                 ServicePort);
 
+            client->SetAuthenticationToken("Bearer", token.AccessToken);
+
             auto urlBuilder = std::stringstream();
-            urlBuilder << "/api/v1/packages";
+            urlBuilder << "/v1/packages/" << name;
             auto url = urlBuilder.str();
 
             std::stringstream content;
-            SoupApiJsonModels::SerializePackageCreate(model, content);
+            SoupApiJsonModels::SerializePackageCreateOrUpdate(model, content);
 
             auto contentType = "application/json";
 
+            Log::Diag(url);
             auto response = client->Put(url, contentType, content);
 
             // Verify that we got a success
@@ -174,7 +203,7 @@ namespace Soup::Api
     /*static*/ const std::string_view SoupApi::ServiceEndpoint = "localhost";
     /*static*/ const int SoupApi::ServicePort = 7071;
 #else
-    /*static*/ const std::string_view SoupApi::ServiceEndpoint = "soupapi.trafficmanager.net";
-    /*static*/ const int SoupApi::ServicePort = 80;
+    /*static*/ const std::string_view SoupApi::ServiceEndpoint = "api.soupbuild.com";
+    /*static*/ const int SoupApi::ServicePort = 443;
 #endif
 }

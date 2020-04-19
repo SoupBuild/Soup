@@ -13,7 +13,7 @@ namespace Soup::Build
 	/// access to the a collection of typed values
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
-	template<typename T>
+	export template<typename T>
 	class IList
 	{
 	public:

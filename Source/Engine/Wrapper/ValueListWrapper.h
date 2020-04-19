@@ -10,7 +10,7 @@ namespace Soup::Build
 	/// <summary>
 	/// Build State property list implementation, string specialization
 	/// </summary>
-	class ValueListWrapper
+	export class ValueListWrapper
 	{
 	public:
 		/// <summary>

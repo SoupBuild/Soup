@@ -27,6 +27,10 @@ import HttpLib;
 #include "Core/Path.h"
 #include "Core/SemanticVersion.h"
 
+#include "IO/SystemConsoleManager.h"
+#include "IO/MockConsoleManager.h"
+#include "IO/ScopedConsoleManagerRegister.h"
+
 #include "Logger/Log.h"
 #include "Logger/ConsoleTraceListener.h"
 #include "Logger/ScopedTraceListenerRegister.h"

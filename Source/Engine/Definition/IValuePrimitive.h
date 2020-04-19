@@ -12,7 +12,7 @@ namespace Soup::Build
 	/// access to a single property value.
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
-	template<typename T>
+	export template<typename T>
 	class IValuePrimitive
 	{
 	public:

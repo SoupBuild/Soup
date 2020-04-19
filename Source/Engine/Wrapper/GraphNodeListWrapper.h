@@ -6,12 +6,12 @@
 
 namespace Soup::Build
 {
-	class GraphNodeWrapper;
+	export class GraphNodeWrapper;
 
 	/// <summary>
 	/// Build State property list implementation, string specialization
 	/// </summary>
-	class GraphNodeListWrapper
+	export class GraphNodeListWrapper
 	{
 	public:
 		/// <summary>

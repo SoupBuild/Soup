@@ -124,6 +124,8 @@ namespace Soup::Client
 			// arguments.PlatformLibraries.push_back(Path("odbc32.lib"));
 			// arguments.PlatformLibraries.push_back(Path("odbccp32.lib"));
 
+			arguments.PlatformLibraries.push_back("crypt32.lib");
+
 			std::string runtimeCompiler = config.GetRuntimeCompiler();
 			std::string systemCompiler = runtimeCompiler;
 

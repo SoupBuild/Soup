@@ -6,19 +6,24 @@
 
 namespace Soup::Build
 {
-	class ValueTable;
-	class ValueList;
+	export class ValueTable;
+	export class ValueList;
 
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	class Value : public IValue
+	export class Value : public IValue
 	{
 	public:
 		/// <summary>
 		/// Initializes a new instance of the Value class
 		/// </summary>
 		Value();
+		Value(int64_t value);
+		Value(double value);
+		Value(bool value);
+		Value(std::string value);
+		Value(ValueList list);
 		Value(ValueTable table);
 
 		/// <summary>

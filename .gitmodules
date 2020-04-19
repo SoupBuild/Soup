@@ -12,13 +12,16 @@
 	url = https://github.com/mwasplund/Json11.git
 [submodule "Dependencies/toml11"]
 	path = Dependencies/toml11
-	url = https://github.com/mwasplund/toml11.git
-[submodule "Dependencies/cpptoml"]
-	path = Dependencies/cpptoml
-	url = https://github.com/mwasplund/cpptoml.git
+	url = https://github.com/mwasplund/toml11.gits
 [submodule "Dependencies/cpp-httplib"]
 	path = Dependencies/cpp-httplib
 	url = https://github.com/mwasplund/cpp-httplib.git
 [submodule "Dependencies/LzmaSdk"]
 	path = Dependencies/LzmaSdk
 	url = https://github.com/mwasplund/LzmaSdk.git
+[submodule "Dependencies/botan"]
+	path = Dependencies/botan
+	url = https://github.com/mwasplund/botan.git
+[submodule "Dependencies/openssl"]
+	path = Dependencies/openssl
+	url = https://github.com/openssl/openssl.git

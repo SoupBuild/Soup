@@ -12,7 +12,7 @@ namespace Soup::Build
 	/// Build property bag interface that allows for read/write access to the active build state.
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
-	class IValueTable
+	export class IValueTable
 	{
 	public:
 		/// <summary>

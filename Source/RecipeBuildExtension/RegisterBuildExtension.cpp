@@ -1,4 +1,8 @@
-﻿module;
+﻿// <copyright file="RegisterBuildExtension.cpp" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
+
+module;
 
 #include <any>
 #include <array>
@@ -17,7 +21,7 @@
 
 #define DllExport __declspec( dllexport )
 
-module RecipeBuildExtension;
+module RecipeBuild;
 
 using namespace Opal;
 

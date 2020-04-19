@@ -6,12 +6,12 @@
 
 namespace Soup::Build
 {
-	class BuildGraphNode;
+	export class BuildGraphNode;
 
 	/// <summary>
 	/// Build list implementation for simple objects
 	/// </summary>
-	class BuildGraphNodeList : public IList<IGraphNode*>
+	export class BuildGraphNodeList : public IList<IGraphNode*>
 	{
 	public:
 		/// <summary>

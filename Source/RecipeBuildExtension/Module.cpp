@@ -1,4 +1,8 @@
-﻿module;
+﻿// <copyright file="Module.cpp" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
+
+module;
 
 #include <any>
 #include <array>
@@ -15,7 +19,7 @@
 #include <unordered_set>
 #include <vector>
 
-export module RecipeBuildExtension;
+export module RecipeBuild;
 
 import Opal;
 import json11;

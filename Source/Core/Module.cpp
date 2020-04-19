@@ -6,6 +6,7 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <regex>
 #include <optional>
 #include <set>
 #include <sstream>
@@ -23,7 +24,7 @@ import SoupEngineWrapper;
 import SoupEngineCore;
 import LzmaSdk;
 import json11;
-import CPPToml;
+import toml11;
 
 using namespace Opal;
 

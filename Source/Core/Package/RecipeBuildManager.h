@@ -47,7 +47,7 @@ namespace Soup::Build
 			try
 			{
 				auto rootParentSet = std::set<std::string>();
-				auto rootState = BuildState(recipe.GetTable());
+				auto rootState = BuildState(ConvertToBuildState(recipe.GetTable()));
 				projectId = BuildRecipeAndDependencies(
 					projectId,
 					workingDirectory,
@@ -68,7 +68,63 @@ namespace Soup::Build
 
 	private:
 		/// <summary>
-		/// Build the dependecies for the provided recipe recursively
+		/// Convert the recipe internal representation to initial build state
+		/// </summary>
+		ValueTable ConvertToBuildState(const RecipeTable& table)
+		{
+			auto result = ValueTable();
+			for (auto& value : table)
+			{
+				auto buildValue = ConvertToBuildState(value.second);
+				result.SetValue(value.first, std::move(buildValue));
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Convert the recipe internal representation to initial build state
+		/// </summary>
+		ValueList ConvertToBuildState(const RecipeList& list)
+		{
+			auto result = ValueList();
+			for (auto& value : list)
+			{
+				auto buildValue = ConvertToBuildState(value);
+				result.GetValues().push_back(std::move(buildValue));
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Convert the recipe internal representation to initial build state
+		/// </summary>
+		Value ConvertToBuildState(const RecipeValue& value)
+		{
+			switch (value.GetType())
+			{
+				case RecipeValueType::Empty:
+					return Value();
+				case RecipeValueType::Table:
+					return Value(ConvertToBuildState(value.AsTable()));
+				case RecipeValueType::List:
+					return Value(ConvertToBuildState(value.AsList()));
+				case RecipeValueType::String:
+					return Value(value.AsString());
+				case RecipeValueType::Integer:
+					return Value(value.AsInteger());
+				case RecipeValueType::Float:
+					return Value(value.AsFloat());
+				case RecipeValueType::Boolean:
+					return Value(value.AsBoolean());
+				default:
+					throw std::runtime_error("Unknown value type.");
+			}
+		}
+
+		/// <summary>
+		/// Build the dependencies for the provided recipe recursively
 		/// </summary>
 		int BuildRecipeAndDependencies(
 			int projectId,
@@ -84,7 +140,7 @@ namespace Soup::Build
 			activeParentSet.insert(std::string(recipe.GetName()));
 
 			// Start a new active state that is initialized to the recipe itself
-			auto activeState = BuildState(recipe.GetTable());
+			auto activeState = BuildState(ConvertToBuildState(recipe.GetTable()));
 
 			if (recipe.HasDependencies())
 			{
@@ -101,9 +157,9 @@ namespace Soup::Build
 					}
 
 					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(std::string(dependecyRecipe.GetName())))
+					if (activeParentSet.contains(dependecyRecipe.GetName()))
 					{
-						Log::Error("Found circular dependency: " + std::string(recipe.GetName()) + " -> " + std::string(dependecyRecipe.GetName()));
+						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 					}
 
@@ -134,15 +190,15 @@ namespace Soup::Build
 					}
 
 					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(std::string(dependecyRecipe.GetName())))
+					if (activeParentSet.contains(dependecyRecipe.GetName()))
 					{
-						Log::Error("Found circular dev dependency: " + std::string(recipe.GetName()) + " -> " + std::string(dependecyRecipe.GetName()));
+						Log::Error("Found circular dev dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dev dependency.");
 					}
 
 					// Build all recursive dependencies
 					// Note: Ignore all shared dependencies. They are not exposed past dev dependencies.
-					auto ignoredBuildState = BuildState(dependecyRecipe.GetTable());
+					auto ignoredBuildState = BuildState(ConvertToBuildState(dependecyRecipe.GetTable()));
 					projectId = BuildRecipeAndDependencies(
 						projectId,
 						packagePath,
@@ -187,10 +243,10 @@ namespace Soup::Build
 				Log::SetActiveId(projectId);
 				Log::Diag("Running InProcess Build");
 
-				auto findBuildState = _buildSet.find(std::string(recipe.GetName()));
+				auto findBuildState = _buildSet.find(recipe.GetName());
 				if (findBuildState != _buildSet.end())
 				{
-					Log::Diag("Recipe already built: " + std::string(recipe.GetName()));
+					Log::Diag("Recipe already built: " + recipe.GetName());
 
 					// Move the parent state from active into the parents active state :)
 					parentState.CombineChildState(findBuildState->second);
@@ -250,12 +306,12 @@ namespace Soup::Build
 				std::string activeCompiler = "";
 				if (isSystemBuild)
 				{
-					Log::HighPriority("System Build '" + std::string(recipe.GetName()) + "'");
+					Log::HighPriority("System Build '" + recipe.GetName() + "'");
 					activeCompiler = _systemCompiler;
 				}
 				else
 				{
-					Log::HighPriority("Build '" + std::string(recipe.GetName()) + "'");
+					Log::HighPriority("Build '" + recipe.GetName() + "'");
 					activeCompiler = _runtimeCompiler;
 				}
 

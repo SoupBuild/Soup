@@ -17,9 +17,22 @@ namespace Opal::Network
 	{
 	public:
 		/// <summary>
+		/// Set the authentication token
+		/// </summary>
+		virtual void SetAuthenticationToken(std::string_view scheme, std::string_view token) = 0;
+
+		/// <summary>
 		/// Perform an Http Get request
 		/// </summary>
 		virtual HttpResponse Get(std::string_view request) = 0;
+
+		/// <summary>
+		/// Perform an Http Post request
+		/// </summary>
+		virtual HttpResponse Post(
+			std::string_view request,
+			std::string_view contentType,
+			std::istream& content) = 0;
 
 		/// <summary>
 		/// Perform an Http Put request

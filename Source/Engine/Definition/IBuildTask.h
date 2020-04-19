@@ -13,7 +13,7 @@ namespace Soup::Build
 	/// and will be executed by the build system.
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
-	class IBuildTask : public virtual Opal::Memory::IReferenceCounted
+	export class IBuildTask : public virtual Opal::Memory::IReferenceCounted
 	{
 	public:
 		virtual const char* GetName() const noexcept = 0;

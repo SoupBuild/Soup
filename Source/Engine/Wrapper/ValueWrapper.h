@@ -6,9 +6,9 @@
 
 namespace Soup::Build
 {
-	class ValueTableWrapper;
-	class ValueListWrapper;
-	template<typename T>
+	export class ValueTableWrapper;
+	export class ValueListWrapper;
+	export template<typename T>
 	class ValuePrimitiveWrapper;
 
 	/// <summary>

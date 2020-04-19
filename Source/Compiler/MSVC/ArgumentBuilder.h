@@ -64,6 +64,9 @@ namespace Soup::Compiler::MSVC
 			// Disable the logo
 			AddFlag(commandArgs, ArgumentFlag_NoLogo);
 
+			// Get better support for _cplusplus macro version
+			AddParameter(commandArgs, "Zc", "__cplusplus");
+
 			// Enable Header includes if needed
 			if (args.GenerateIncludeTree)
 			{
@@ -153,7 +156,7 @@ namespace Soup::Compiler::MSVC
 
 			if (args.ExportModule)
 			{
-				AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "export");
+				AddParameter(commandArgs, Compiler_ArgumentParameter_Module, "interface");
 
 				// Place the ifc in the output directory
 				//var outputFile = "{Path.GetFileNameWithoutExtension(sourceFile)}.{ModuleFileExtension}";

@@ -5,3 +5,5 @@
 
 # Build
 out/
+bin/
+obj/

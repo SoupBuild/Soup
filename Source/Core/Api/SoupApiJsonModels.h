@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "Models/PackageCreateModel.h"
+#include "Models/PackageCreateOrUpdateModel.h"
 #include "Models/PackageResultModel.h"
 
 namespace Soup::Api
@@ -44,12 +44,9 @@ namespace Soup::Api
 		/// <summary>
 		/// Serialize the package create model
 		/// </summary>
-		static void SerializePackageCreate(const PackageCreateModel& model, std::ostream& stream)
+		static void SerializePackageCreateOrUpdate(const PackageCreateOrUpdateModel& model, std::ostream& stream)
 		{
 			json11::Json::object result = {};
-
-			// Add required fields
-			result[Property_Name] = model.GetName();
 
 			if (model.HasDescription())
 			{

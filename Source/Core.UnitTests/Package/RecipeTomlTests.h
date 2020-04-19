@@ -62,6 +62,26 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
+		void Deserialize_Comments()
+		{
+			auto recipe = std::stringstream(
+				R"(
+					# This is an awesome project
+					Name="MyPackage"
+					Version="1.2.3"
+				)");
+			auto actual = RecipeToml::Deserialize(recipe);
+
+			auto expected = Recipe(
+				"MyPackage",
+				SemanticVersion(1, 2, 3));
+			expected.GetNameValue().GetComments().push_back(" This is an awesome project");
+
+			Assert::AreEqual(expected, actual, "Verify matches expected.");
+		}
+
+
+		[[Fact]]
 		void Deserialize_AllProperties()
 		{
 			auto recipe = std::stringstream(
@@ -113,6 +133,27 @@ Version = "1.2.3"
 		}
 
 		[[Fact]]
+		void Serialize_Comments()
+		{
+			auto recipe = Recipe(
+				"MyPackage",
+				SemanticVersion(1, 2, 3));
+
+			recipe.GetNameValue().GetComments().push_back(" This is an awesome package");
+
+			std::stringstream actual;
+			RecipeToml::Serialize(recipe, actual);
+
+			auto expected =
+R"(# This is an awesome package
+Name = "MyPackage"
+Version = "1.2.3"
+)";
+
+			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");
+		}
+
+		[[Fact]]
 		void Serialize_AllProperties()
 		{
 			auto recipe = Recipe(
@@ -131,16 +172,16 @@ Version = "1.2.3"
 			RecipeToml::Serialize(recipe, actual);
 
 			auto expected = 
-R"(Language = "C++17"
-Extensions = []
-Defines = []
-Source = []
-Public = "Public.cpp"
-Dependencies = []
-IncludePaths = []
-Name = "MyPackage"
-Type = "Executable"
+R"(Name = "MyPackage"
 Version = "1.2.3"
+Type = "Executable"
+Language = "C++17"
+Extensions = []
+Dependencies = []
+Public = "Public.cpp"
+Source = []
+IncludePaths = []
+Defines = []
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");

@@ -67,8 +67,8 @@ namespace Soup::UnitTests
 
 			// Create the required http client
 			auto testHttpClient = std::make_shared<Network::MockHttpClient>(
-				"soupapi.trafficmanager.net",
-				80);
+				"api.soupbuild.com",
+				443);
 			testNetworkManager->RegisterClient(testHttpClient);
 
 			// Setup the expected http requests
@@ -77,7 +77,7 @@ namespace Soup::UnitTests
 					"name": "TheirPackage",
 					"latest": "2.2.2"
 				})");
-			testHttpClient->SetResponse("/api/v1/packages/TheirPackage", packageResult);
+			testHttpClient->SetResponse("/v1/packages/TheirPackage", packageResult);
 
 			auto packageContent = std::vector<unsigned char>(
 			{
@@ -96,7 +96,7 @@ namespace Soup::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 			});
 			auto packageContentString = std::string(packageContent.begin(), packageContent.end());
-			testHttpClient->SetResponse("/api/v1/packages/TheirPackage/v2.2.2/download", packageContentString);
+			testHttpClient->SetResponse("/v1/packages/TheirPackage/v2.2.2/download", packageContentString);
 
 			auto packageName = "TheirPackage";
 			auto packageStore = Path("PackageStore");
@@ -106,8 +106,10 @@ namespace Soup::UnitTests
 				std::vector<std::string>({
 					"DIAG: Load Recipe: Recipe.toml",
 					"HIGH: Install Package: TheirPackage",
+					"DIAG: /v1/packages/TheirPackage",
 					"HIGH: Latest Version: 2.2.2",
 					"HIGH: Downloading package",
+					"DIAG: /v1/packages/TheirPackage/v2.2.2/download",
 					"INFO: ExtractStart: 62",
 					"INFO: ExtractProgress: 0",
 					"INFO: ExtractProgress: 0",
@@ -148,25 +150,27 @@ namespace Soup::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateClient: soupapi.trafficmanager.net:80",
-					"CreateClient: soupapi.trafficmanager.net:80",
+					"CreateClient: api.soupbuild.com:443",
+					"CreateClient: api.soupbuild.com:443",
 				}),
 				testNetworkManager->GetRequests(),
 				"Verify network manager requests match expected.");
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Get: /api/v1/packages/TheirPackage",
-					"Get: /api/v1/packages/TheirPackage/v2.2.2/download",
+					"Get: /v1/packages/TheirPackage",
+					"Get: /v1/packages/TheirPackage/v2.2.2/download",
 				}),
 				testHttpClient->GetRequests(),
 				"Verify http requests match expected.");
 
 			// Verify the contents of the recipe file
 			std::string expectedFinalRecipe = 
-R"(Dependencies = ["TheirPackage@2.2.2"]
-Name = "MyPackage"
+R"(Name = "MyPackage"
 Version = "1.2.3"
+Dependencies = [
+"TheirPackage@2.2.2",
+]
 )";
 			auto& mockRecipeFile = fileSystem->GetMockFile(Path("Recipe.toml"));
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");

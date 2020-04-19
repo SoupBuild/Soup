@@ -1,36 +1,24 @@
-﻿// <copyright file="PackageCreateModel.h" company="Soup">
+﻿// <copyright file="PackageCreateOrUpdateModel.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup::Api
 {
     /// <summary>
-    /// A class representing the package creation parameters
+    /// A class representing the package create or update parameters
     /// </summary>
-    export class PackageCreateModel
+    export class PackageCreateOrUpdateModel
     {
     public:
-        PackageCreateModel(
-            std::string name) :
-            _name(std::move(name)),
+        PackageCreateOrUpdateModel() :
             _description()
         {
         }
 
-        PackageCreateModel(
-            std::string name,
+        PackageCreateOrUpdateModel(
             std::optional<std::string> description) :
-            _name(std::move(name)),
             _description(std::move(description))
         {
-        }
-
-        /// <summary>
-        /// Gets the name
-        /// </summary>
-        const std::string& GetName() const
-        {
-            return _name;
         }
 
         /// <summary>
@@ -52,7 +40,6 @@ namespace Soup::Api
         }
 
     private:
-        std::string _name;
         std::optional<std::string> _description;
     };
 }

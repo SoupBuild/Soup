@@ -46,7 +46,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 				new Build::BuildGraphNode(
 					"File.cpp",
 					"bin/mock.cl.exe",
-					"/nologo /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c File.cpp /Fo\"obj/File.obj\"",
+					"/nologo /Zc:__cplusplus /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c File.cpp /Fo\"obj/File.obj\"",
 					"Source",
 					std::vector<std::string>({
 						"File.cpp",
@@ -90,7 +90,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 				new Build::BuildGraphNode(
 					"File.cpp",
 					"bin/mock.cl.exe",
-					"/nologo /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MT /module:reference \"Module.pcm\" /module:export /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
+					"/nologo /Zc:__cplusplus /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MT /module:reference \"Module.pcm\" /module:interface /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
 					"Source",
 					std::vector<std::string>({
 						"Module.pcm",
