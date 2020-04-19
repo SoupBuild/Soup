@@ -9,6 +9,13 @@
 
 namespace Soup::Api
 {
+    export enum class PublishPackageResult
+    {
+        Success,
+        PackageDoesNotExist,
+        AlreadyExists,
+    };
+
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
@@ -95,9 +102,8 @@ namespace Soup::Api
 
         /// <summary>
         /// Publish a new package version as an archive
-        /// Returns false if the package did not exist, true if success.
         /// </summary>
-        static Network::HttpStatusCode PublishPackage(
+        static PublishPackageResult PublishPackage(
             const ClientCredentialsTokenModel& token,
             std::string_view name,
             SemanticVersion version,
@@ -119,7 +125,17 @@ namespace Soup::Api
             auto response = client->Put(url, contentType, value);
 
             // Verify that we got a success
-            return response.StatusCode;
+            switch (response.StatusCode)
+            {
+                case Network::HttpStatusCode::Created:
+                    return PublishPackageResult::Success;
+                case Network::HttpStatusCode::NotFound:
+                    return PublishPackageResult::PackageDoesNotExist;
+                case Network::HttpStatusCode::Conflict:
+                    return PublishPackageResult::AlreadyExists;
+                default:
+                    throw Api::ApiException("PublishPackage", response.StatusCode);
+            }
         }
 
         /// <summary>

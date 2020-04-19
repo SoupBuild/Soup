@@ -5,9 +5,16 @@
 #pragma once
 #include "SoupAuthJsonModels.h"
 #include "../Api/ApiException.h"
+#include "../Api/ApiStatusResult.h"
 
 namespace Soup::Api
 {
+    enum class RequestClientCredentialsTokenResult
+    {
+        Success,
+        InvalidUserNameOrPassword,
+    };
+
     /// <summary>
     /// Represents a collection of functions to interact with the Auth endpoints
     /// </summary>
@@ -48,7 +55,7 @@ namespace Soup::Api
         /// <summary>
         /// Get the OpenId configuration
         /// </summary>
-        static ClientCredentialsTokenModel RequestClientCredentialsToken(
+        static ApiStatusResult<RequestClientCredentialsTokenResult, ClientCredentialsTokenModel> RequestClientCredentialsToken(
             const std::string& tokenEndpoint,
             const std::string& userName,
             const std::string& password)
@@ -108,14 +115,20 @@ namespace Soup::Api
             auto response = client->Post(url, contentType, content);
 
             // Verify that we got a success
-            if (response.StatusCode != Network::HttpStatusCode::Ok)
+            switch (response.StatusCode)
             {
-                throw ApiException("RequestClientCredentialsToken", response.StatusCode);
+                case Network::HttpStatusCode::Ok:
+                    // Parse the return result
+                    return ApiStatusResult<RequestClientCredentialsTokenResult, ClientCredentialsTokenModel>(
+                        RequestClientCredentialsTokenResult::Success,
+                        SoupAuthJsonModels::ParseClientCredentialsTokenModel(response.Body));
+                case Network::HttpStatusCode::BadRequest:
+                    return ApiStatusResult<RequestClientCredentialsTokenResult, ClientCredentialsTokenModel>(
+                        RequestClientCredentialsTokenResult::InvalidUserNameOrPassword,
+                        ClientCredentialsTokenModel());
+                default:
+                    throw ApiException("RequestClientCredentialsToken", response.StatusCode);
             }
-
-            // Parse the return result
-            auto result = SoupAuthJsonModels::ParseClientCredentialsTokenModel(response.Body);
-            return result;
         }
     };
 

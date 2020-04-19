@@ -136,83 +136,96 @@ namespace Soup
 				Log::Info("Request Authentication Token");
 				auto userDetails = GetUserDetails();
 				auto openIdConfiguration = Api::SoupAuth::GetOpenIdConfiguration();
-				auto token = Api::SoupAuth::RequestClientCredentialsToken(
+				auto tokenResult = Api::SoupAuth::RequestClientCredentialsToken(
 					openIdConfiguration.TokenEndpoint,
 					userDetails.UserName,
 					userDetails.Password);
+				switch (tokenResult.Status)
+				{
+					case Api::RequestClientCredentialsTokenResult::Success:
+						// All good
+						break;
+					case Api::RequestClientCredentialsTokenResult::InvalidUserNameOrPassword:
+						Log::HighPriority("Invalid UserName or Password");
+						return;
+					default:
+						throw std::runtime_error("Unknown RequestClientCredentialsTokenResult");
+				}
 
 				// Publish the archive, scope cleanup file access
 				{
 					Log::Info("Publish package");
 					auto archiveFile = System::IFileSystem::Current().OpenRead(archivePath, true);
-					auto statusCode = Api::SoupApi::PublishPackage(
-						token,
+					auto publishResult = Api::SoupApi::PublishPackage(
+						tokenResult.Result,
 						recipe.GetName(),
 						recipe.GetVersion(),
 						archiveFile->GetInStream());
 
 					// Check if we should publish the package
 					bool createPackageRequired = false;
-					switch (statusCode)
+					switch (publishResult)
 					{
-						case Network::HttpStatusCode::Created:
+						case Api::PublishPackageResult::Success:
 							// All Good
 							Log::Info("Package version created");
 							break;
-						case Network::HttpStatusCode::NotFound:
+						case Api::PublishPackageResult::PackageDoesNotExist:
 							// Not found indicates the package does not exist, create it
-							Log::Info("Package does not exist");
+							Log::HighPriority("The provided package name does not exist");
 							createPackageRequired = true;
 							break;
-						case Network::HttpStatusCode::Conflict:
-							throw std::runtime_error("Package version already exists");
+						case Api::PublishPackageResult::AlreadyExists:
+							Log::HighPriority("A Package with this version already exists");
+							break;
 						default:
-							throw Api::ApiException("PublishPackage", statusCode);
+							throw std::runtime_error("Unknown PublishPackageResult");
 					}
 
 					// Create the package if needed and retry
 					if (createPackageRequired)
 					{
 						// Create the package
-						Log::Info("Create package");
+						Log::HighPriority("Create package");
 						auto createModel = Api::PackageCreateOrUpdateModel();
 						auto createdPackage = Api::SoupApi::CreatePackage(
-							token,
+							tokenResult.Result,
 							recipe.GetName(),
 							createModel);
 
 						// Retry
-						Log::Info("Retry publish package");
+						Log::HighPriority("Retry publish package");
 
 						// Reset the archive file
 						auto& archiveStream = archiveFile->GetInStream();
 						archiveStream.clear();
 						archiveStream.seekg(0, std::ios::beg);
 
-						statusCode = Api::SoupApi::PublishPackage(
-							token,
+						publishResult = Api::SoupApi::PublishPackage(
+							tokenResult.Result,
 							recipe.GetName(),
 							recipe.GetVersion(),
 							archiveStream);
-						switch (statusCode)
+						switch (publishResult)
 						{
-							case Network::HttpStatusCode::Created:
+							case Api::PublishPackageResult::Success:
 								// All Good
+								Log::Info("Package version created");
 								break;
 							default:
-								throw Api::ApiException("PublishPackage", statusCode);
+								throw std::runtime_error("Unknown PublishPackageResult");
 						}
 					}
 				}
 
 				// Cleanup the staging directory
+				Log::Info("Cleanup staging directory");
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
-
-				Log::HighPriority("Done");
 			}
 			catch(const std::exception& e)
 			{
 				// Cleanup the staging directory and accept that we failed
+				Log::Info("Publish Failed: Cleanup staging directory");
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 				throw;
 			}
@@ -236,21 +249,8 @@ namespace Soup
 
 		static Soup::Api::PackageResultModel GetPackageModel(const std::string& name)
 		{
-			try
-			{
-				auto package = Api::SoupApi::GetPackage(name);
-				return package;
-			}
-			catch(const Api::ApiException& ex)
-			{
-				switch (ex.GetStatusCode())
-				{
-					case Network::HttpStatusCode::NotFound:
-						Log::Error("Package does not exist: " + name);
-				}
-
-				throw;
-			}
+			auto package = Api::SoupApi::GetPackage(name);
+			return package;
 		}
 
 		static std::vector<std::string> GetPackageFiles(const Path& workingDirectory)

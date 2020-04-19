@@ -69,7 +69,7 @@ namespace Opal::IO
 			{
 				if (character == Return)
 				{
-					std::cout << character;
+					std::cout << std::endl;
 					break;
 				}
 				else if (character == Backspace)
