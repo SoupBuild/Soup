@@ -11,6 +11,13 @@
 
 namespace Soup
 {
+	class UserDetails
+	{
+	public:
+		std::string UserName;
+		std::string Password;
+	};
+
 	/// <summary>
 	/// The package manager
 	/// </summary>
@@ -127,13 +134,12 @@ namespace Soup
 
 				// Authenticate the user
 				Log::Info("Request Authentication Token");
-				auto password = "Pass123%24";
-				auto userName = "alice";
+				auto userDetails = GetUserDetails();
 				auto openIdConfiguration = Api::SoupAuth::GetOpenIdConfiguration();
 				auto token = Api::SoupAuth::RequestClientCredentialsToken(
 					openIdConfiguration.TokenEndpoint,
-					userName,
-					password);
+					userDetails.UserName,
+					userDetails.Password);
 
 				// Publish the archive, scope cleanup file access
 				{
@@ -213,6 +219,21 @@ namespace Soup
 		}
 
 	private:
+		static UserDetails GetUserDetails()
+		{
+			auto userDetails = UserDetails();
+
+			auto inputStream = IO::IConsoleManager::Current().GetStandardInput();
+
+			Log::HighPriority("UserName:");
+			userDetails.UserName = inputStream->ReadLine();
+
+			Log::HighPriority("Password:");
+			userDetails.Password = inputStream->ReadPassword();
+
+			return userDetails;
+		}
+
 		static Soup::Api::PackageResultModel GetPackageModel(const std::string& name)
 		{
 			try
