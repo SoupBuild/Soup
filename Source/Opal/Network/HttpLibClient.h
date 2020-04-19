@@ -60,7 +60,7 @@ namespace Opal::Network
 			auto body = std::string(std::istreambuf_iterator<char>(content), {});
 			auto response = _client->Post(request.data(), body, contentType.data());
 			if (response == nullptr)
-				throw std::runtime_error("HttpLibClient: Post failed.");
+				throw std::runtime_error("HttpLibClient: Post failed");
 
 			auto statusCode = static_cast<HttpStatusCode>(response->status);
 			return HttpResponse(statusCode, std::move(response->body));

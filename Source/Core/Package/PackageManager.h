@@ -461,7 +461,7 @@ namespace Soup
 			auto stagingDirectory = packageStore + Path(Constants::StagingFolderName);
 			if (System::IFileSystem::Current().Exists(stagingDirectory))
 			{
-				Log::Warning("The staging directory already exists from a previous failed run.");
+				Log::Warning("The staging directory already exists from a previous failed run");
 				System::IFileSystem::Current().DeleteDirectory(stagingDirectory, true);
 			}
 

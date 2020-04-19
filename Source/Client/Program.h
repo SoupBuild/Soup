@@ -92,7 +92,7 @@ namespace Soup::Client
 				else if (arguments.IsA<ViewOptions>())
 					command = Setup(arguments.ExtractResult<ViewOptions>());
 				else
-					throw std::runtime_error("Unknown arguments.");
+					throw std::runtime_error("Unknown arguments");
 
 				// Run the requested command
 				Log::Diag("Run Command");
@@ -102,7 +102,7 @@ namespace Soup::Client
 			}
 			catch (const std::exception& ex)
 			{
-				Log::Error("Exception Handled: Exiting.");
+				Log::Error("Exception Handled: Exiting");
 				Log::Error(ex.what());
 				return -2;
 			}
