@@ -79,7 +79,7 @@ namespace Soup::Api::UnitTests
 				R"({
 					"name": "MyPackage"
 				})");
-			testHttpClient->SetGetResponse("/v1/packages/MyPackage", packageResult);
+			testHttpClient->AddGetResponse("/v1/packages/MyPackage", packageResult);
 
 			auto packageName = "MyPackage";
 			auto result = SoupApi::GetPackage(packageName);

@@ -77,7 +77,7 @@ namespace Soup::UnitTests
 					"name": "TheirPackage",
 					"latest": "2.2.2"
 				})");
-			testHttpClient->SetGetResponse("/v1/packages/TheirPackage", packageResult);
+			testHttpClient->AddGetResponse("/v1/packages/TheirPackage", packageResult);
 
 			auto packageContent = std::vector<unsigned char>(
 			{
@@ -98,7 +98,7 @@ namespace Soup::UnitTests
 			auto packageContentString = Network::HttpResponse(
 				Network::HttpStatusCode::Ok,
 				std::string(packageContent.begin(), packageContent.end()));
-			testHttpClient->SetGetResponse("/v1/packages/TheirPackage/v2.2.2/download", packageContentString);
+			testHttpClient->AddGetResponse("/v1/packages/TheirPackage/v2.2.2/download", packageContentString);
 
 			auto packageName = "TheirPackage";
 			PackageManager::InstallPackageReference(packageName);
@@ -222,17 +222,17 @@ Dependencies = [
 			auto openIdConfigResult = Network::HttpResponse(
 				Network::HttpStatusCode::Ok,
 				R"({"issuer":"https://auth.soupbuild.com","jwks_uri":"https://auth.soupbuild.com/.well-known/openid-configuration/jwks","authorization_endpoint":"https://auth.soupbuild.com/connect/authorize","token_endpoint":"https://auth.soupbuild.com/connect/token","userinfo_endpoint":"https://auth.soupbuild.com/connect/userinfo","end_session_endpoint":"https://auth.soupbuild.com/connect/endsession","check_session_iframe":"https://auth.soupbuild.com/connect/checksession","revocation_endpoint":"https://auth.soupbuild.com/connect/revocation","introspection_endpoint":"https://auth.soupbuild.com/connect/introspect","device_authorization_endpoint":"https://auth.soupbuild.com/connect/deviceauthorization","frontchannel_logout_supported":true,"frontchannel_logout_session_supported":true,"backchannel_logout_supported":true,"backchannel_logout_session_supported":true,"scopes_supported":["openid","profile","soup_api","offline_access"],"claims_supported":["sub","name","family_name","given_name","middle_name","nickname","preferred_username","profile","picture","website","gender","birthdate","zoneinfo","locale","updated_at"],"grant_types_supported":["authorization_code","client_credentials","refresh_token","implicit","password","urn:ietf:params:oauth:grant-type:device_code"],"response_types_supported":["code","token","id_token","id_token token","code id_token","code token","code id_token token"],"response_modes_supported":["form_post","query","fragment"],"token_endpoint_auth_methods_supported":["client_secret_basic","client_secret_post"],"id_token_signing_alg_values_supported":["RS256"],"subject_types_supported":["public"],"code_challenge_methods_supported":["plain","S256"],"request_parameter_supported":true})");
-			testAuthHttpClient->SetGetResponse("/.well-known/openid-configuration", openIdConfigResult);
+			testAuthHttpClient->AddGetResponse("/.well-known/openid-configuration", openIdConfigResult);
 			
 			auto connectTokenResult = Network::HttpResponse(
 				Network::HttpStatusCode::Ok,
 				R"({"access_token":"SUPER_TOKEN","expires_in":3600,"token_type":"Bearer","scope":"soup_api"})");
-			testAuthHttpClient->SetPostResponse("/connect/token", connectTokenResult);
+			testAuthHttpClient->AddPostResponse("/connect/token", connectTokenResult);
 
 			auto packageResult = Network::HttpResponse(
 				Network::HttpStatusCode::Created,
 				"");
-			testApiHttpClient->SetPutResponse("/v1/packages/MyPackage/v1.2.3", packageResult);
+			testApiHttpClient->AddPutResponse("/v1/packages/MyPackage/v1.2.3", packageResult);
 
 			auto packageName = "TheirPackage";
 			PackageManager::PublishPackage();
@@ -301,6 +301,155 @@ Dependencies = [
 
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"SetAuthenticationToken: Bearer:SUPER_TOKEN",
+					"Put: /v1/packages/MyPackage/v1.2.3 [application/x-7z-compressed]",
+				}),
+				testApiHttpClient->GetRequests(),
+				"Verify http requests match expected.");
+		}
+
+		[[Fact]]
+		void PublishPackage_PackageMissing_Success()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test file system
+			auto consoleManager = std::make_shared<IO::MockConsoleManager>();
+			auto scopedConsoleManager = IO::ScopedConsoleManagerRegister(consoleManager);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+
+			// Register the test listener
+			auto testNetworkManager = std::make_shared<Network::MockNetworkManager>();
+			auto scopedNetworkManager = Network::ScopedNetworkManagerRegister(testNetworkManager);
+
+			// Create the Recipe
+			fileSystem->CreateMockFile(
+				Path("Recipe.toml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name = "MyPackage"
+					Version = "1.2.3"
+				)")));
+
+			// Create the required http client
+			auto testAuthHttpClient = std::make_shared<Network::MockHttpClient>(
+				"auth.soupbuild.com",
+				443);
+			testNetworkManager->RegisterClient(testAuthHttpClient);
+
+			auto testApiHttpClient = std::make_shared<Network::MockHttpClient>(
+				"api.soupbuild.com",
+				443);
+			testNetworkManager->RegisterClient(testApiHttpClient);
+
+			// Setup the expected http requests
+			auto openIdConfigResult = Network::HttpResponse(
+				Network::HttpStatusCode::Ok,
+				R"({"issuer":"https://auth.soupbuild.com","jwks_uri":"https://auth.soupbuild.com/.well-known/openid-configuration/jwks","authorization_endpoint":"https://auth.soupbuild.com/connect/authorize","token_endpoint":"https://auth.soupbuild.com/connect/token","userinfo_endpoint":"https://auth.soupbuild.com/connect/userinfo","end_session_endpoint":"https://auth.soupbuild.com/connect/endsession","check_session_iframe":"https://auth.soupbuild.com/connect/checksession","revocation_endpoint":"https://auth.soupbuild.com/connect/revocation","introspection_endpoint":"https://auth.soupbuild.com/connect/introspect","device_authorization_endpoint":"https://auth.soupbuild.com/connect/deviceauthorization","frontchannel_logout_supported":true,"frontchannel_logout_session_supported":true,"backchannel_logout_supported":true,"backchannel_logout_session_supported":true,"scopes_supported":["openid","profile","soup_api","offline_access"],"claims_supported":["sub","name","family_name","given_name","middle_name","nickname","preferred_username","profile","picture","website","gender","birthdate","zoneinfo","locale","updated_at"],"grant_types_supported":["authorization_code","client_credentials","refresh_token","implicit","password","urn:ietf:params:oauth:grant-type:device_code"],"response_types_supported":["code","token","id_token","id_token token","code id_token","code token","code id_token token"],"response_modes_supported":["form_post","query","fragment"],"token_endpoint_auth_methods_supported":["client_secret_basic","client_secret_post"],"id_token_signing_alg_values_supported":["RS256"],"subject_types_supported":["public"],"code_challenge_methods_supported":["plain","S256"],"request_parameter_supported":true})");
+			testAuthHttpClient->AddGetResponse("/.well-known/openid-configuration", openIdConfigResult);
+			
+			auto connectTokenResult = Network::HttpResponse(
+				Network::HttpStatusCode::Ok,
+				R"({"access_token":"SUPER_TOKEN","expires_in":3600,"token_type":"Bearer","scope":"soup_api"})");
+			testAuthHttpClient->AddPostResponse("/connect/token", connectTokenResult);
+
+			auto publishPackageResultMissing = Network::HttpResponse(
+				Network::HttpStatusCode::NotFound,
+				"");
+			testApiHttpClient->AddPutResponse("/v1/packages/MyPackage/v1.2.3", publishPackageResultMissing);
+			
+			auto createPackageResult = Network::HttpResponse(
+				Network::HttpStatusCode::Created,
+				R"({"name":"MyPackage"})");
+			testApiHttpClient->AddPutResponse("/v1/packages/MyPackage", createPackageResult);
+
+			auto publishPackageResultSuccess = Network::HttpResponse(
+				Network::HttpStatusCode::Created,
+				"");
+			testApiHttpClient->AddPutResponse("/v1/packages/MyPackage/v1.2.3", publishPackageResultSuccess);
+
+			auto packageName = "TheirPackage";
+			PackageManager::PublishPackage();
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"INFO: Publish Project: {recipe.Name}@{recipe.Version}",
+					"DIAG: Load Recipe: Recipe.toml",
+					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
+					"INFO: UpdateStart: 0",
+					"INFO: UpdateProgress: 0.000000",
+					"INFO: UpdateDone",
+					"INFO: Request Authentication Token",
+					"HIGH: UserName:",
+					"HIGH: Password:",
+					"DIAG: /.well-known/openid-configuration",
+					"DIAG: /connect/token",
+					"INFO: Publish package",
+					"DIAG: /v1/packages/MyPackage/v1.2.3",
+					"HIGH: The provided package name does not exist",
+					"HIGH: Create package",
+					"DIAG: /v1/packages/MyPackage",
+					"HIGH: Retry publish package",
+					"DIAG: /v1/packages/MyPackage/v1.2.3",
+					"INFO: Package version created",
+					"INFO: Cleanup staging directory",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetStandardInput",
+					"ReadLine: ",
+					"ReadPassword: ",
+				}),
+				consoleManager->GetRequests(),
+				"Verify console manager requests match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: Recipe.toml",
+					"OpenReadBinary: Recipe.toml",
+					"GetCurrentDirectory",
+					"Exists: C:/Users/Me/.soup/packages/.staging",
+					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
+					"GetDirectoryChildren: ./",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/.staging/MyPackage.7z",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/.staging/MyPackage.7z",
+					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"CreateClient: auth.soupbuild.com:443",
+					"CreateClient: auth.soupbuild.com:443",
+					"CreateClient: api.soupbuild.com:443",
+					"CreateClient: api.soupbuild.com:443",
+					"CreateClient: api.soupbuild.com:443",
+				}),
+				testNetworkManager->GetRequests(),
+				"Verify network manager requests match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Get: /.well-known/openid-configuration",
+					"Post: /connect/token [application/x-www-form-urlencoded]",
+				}),
+				testAuthHttpClient->GetRequests(),
+				"Verify http requests match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"SetAuthenticationToken: Bearer:SUPER_TOKEN",
+					"Put: /v1/packages/MyPackage/v1.2.3 [application/x-7z-compressed]",
+					"SetAuthenticationToken: Bearer:SUPER_TOKEN",
+					"Put: /v1/packages/MyPackage [application/json]",
 					"SetAuthenticationToken: Bearer:SUPER_TOKEN",
 					"Put: /v1/packages/MyPackage/v1.2.3 [application/x-7z-compressed]",
 				}),
