@@ -143,6 +143,31 @@ namespace Opal::Network
 		}
 
 		/// <summary>
+		/// Perform an Http Post request
+		/// </summary>
+		HttpResponse Post(
+			std::string_view request,
+			std::string_view contentType,
+			std::istream& content) override final
+		{
+			auto message = std::stringstream();
+			message << "Post: " << request;
+			message << " [" << contentType << "]";
+			_requests.push_back(message.str());
+
+			auto searchClient = _postResponses.find(std::string(request));
+			if (searchClient != _postResponses.end())
+			{
+				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+			}
+			else
+			{
+				// The response was not set, return not found
+				return HttpResponse(HttpStatusCode::NotFound);
+			}
+		}
+
+		/// <summary>
 		/// Perform an Http Put request
 		/// </summary>
 		HttpResponse Put(

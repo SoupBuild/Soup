@@ -168,6 +168,26 @@ namespace Soup
 						throw std::runtime_error("Unknown RequestClientCredentialsTokenResult");
 				}
 
+				// Authenticate the user
+				Log::Info("Request Authentication Token");
+				auto userDetails = GetUserDetails();
+				auto openIdConfiguration = Api::SoupAuth::GetOpenIdConfiguration();
+				auto tokenResult = Api::SoupAuth::RequestClientCredentialsToken(
+					openIdConfiguration.TokenEndpoint,
+					userDetails.UserName,
+					userDetails.Password);
+				switch (tokenResult.Status)
+				{
+					case Api::RequestClientCredentialsTokenResult::Success:
+						// All good
+						break;
+					case Api::RequestClientCredentialsTokenResult::InvalidUserNameOrPassword:
+						Log::HighPriority("Invalid UserName or Password");
+						return;
+					default:
+						throw std::runtime_error("Unknown RequestClientCredentialsTokenResult");
+				}
+
 				// Publish the archive, scope cleanup file access
 				{
 					Log::Info("Publish package");
