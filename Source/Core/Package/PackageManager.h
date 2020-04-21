@@ -7,6 +7,8 @@
 #include "Api/SoupApi.h"
 #include "Auth/SoupAuth.h"
 #include "LzmaExtractCallback.h"
+#include "LzmaUpdateCallback.h"
+#include "LzmaOutStream.h"
 #include "LzmaInStream.h"
 
 namespace Soup
@@ -27,7 +29,7 @@ namespace Soup
 		/// <summary>
 		/// Install a package
 		/// </summary>
-		static void InstallPackage(const std::string& packageName, const Path& packageStore)
+		static void InstallPackageReference(const std::string& packageReference)
 		{
 			auto workingDirectory = Path();
 			auto recipePath =
@@ -39,15 +41,19 @@ namespace Soup
 				throw std::runtime_error("Could not load the recipe file.");
 			}
 
+			auto packageStore = System::IFileSystem::Current().GetUserProfileDirectory() +
+				Path(".soup/packages/");
+			Log::Info("Using Package Store: " + packageStore.ToString());
+
 			// Create the staging directory
 			auto stagingPath = EnsureStagingDirectoryExists(packageStore);
 
 			try
 			{
-				Log::HighPriority("Install Package: " + packageName);
+				Log::HighPriority("Install Package: " + packageReference);
 
 				// Check if the package is already installed
-				auto packageNameNormalized = ToUpper(packageName);
+				auto packageNameNormalized = ToUpper(packageReference);
 				if (recipe.HasDependencies())
 				{
 					for (auto& dependency : recipe.GetDependencies())
@@ -65,7 +71,7 @@ namespace Soup
 				}
 
 				// Get the latest version
-				auto packageModel = GetPackageModel(packageName);
+				auto packageModel = GetPackageModel(packageReference);
 				auto latestVersion = packageModel.GetLatest();
 				Log::HighPriority("Latest Version: " + latestVersion.ToString());
 
@@ -105,7 +111,7 @@ namespace Soup
 		/// <summary>
 		/// Publish a package
 		/// </summary>
-		static void PublishPackage(const Path& packageStore)
+		static void PublishPackage()
 		{
 			Log::Info("Publish Project: {recipe.Name}@{recipe.Version}");
 
@@ -119,6 +125,10 @@ namespace Soup
 				throw std::runtime_error("Could not load the recipe file.");
 			}
 
+			auto packageStore = System::IFileSystem::Current().GetUserProfileDirectory() +
+				Path(".soup/packages/");
+			Log::Info("Using Package Store: " + packageStore.ToString());
+
 			// Create the staging directory
 			auto stagingPath = EnsureStagingDirectoryExists(packageStore);
 
@@ -128,9 +138,15 @@ namespace Soup
 				auto files = GetPackageFiles(workingDirectory);
 
 				// Create the archive of the package
-				auto archive = LzmaSdk::ArchiveWriter(archivePath.ToString());
-				archive.AddFiles(files);
-				archive.Save();
+				{
+					auto archiveStream = System::IFileSystem::Current().OpenWrite(archivePath, true);
+					auto outStream = std::make_shared<LzmaOutStream>(archiveStream);
+					auto archive = LzmaSdk::ArchiveWriter(outStream);
+					archive.AddFiles(files);
+
+					auto callback = std::make_shared<LzmaUpdateCallback>();
+					archive.Save(callback);
+				}
 
 				// Authenticate the user
 				Log::Info("Request Authentication Token");

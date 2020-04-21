@@ -12,6 +12,7 @@
 #include <string>
 
 #include <Windows.h>
+#include <shlobj.h>
 #include <psapi.h>
 #ifdef min
 #undef min

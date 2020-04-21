@@ -86,7 +86,7 @@ namespace Soup
 			Recipe dependecyRecipe = {};
 			if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
 			{
-				Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+				Log::Error("Failed to load the package: " + packageRecipePath.ToString());
 				throw std::runtime_error("GetRecipeOutputPath: Failed to load dependency.");
 			}
 

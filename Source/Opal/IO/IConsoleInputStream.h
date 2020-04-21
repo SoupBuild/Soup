@@ -19,7 +19,7 @@ namespace Opal::IO
 		virtual std::string ReadLine() = 0;
 
 		/// <summary>
-		/// Get the standard input stream
+		/// Read a password from the stream
 		/// </summary>
 		virtual std::string ReadPassword() = 0;
 	};

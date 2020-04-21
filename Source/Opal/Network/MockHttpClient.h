@@ -53,9 +53,33 @@ namespace Opal::Network
 		/// <summary>
 		/// Set the response for given request
 		/// </summary>
-		void SetResponse(std::string url, std::string response)
+		void SetGetResponse(std::string url, HttpResponse response)
 		{
 			auto insertResult = _getResponses.try_emplace(std::move(url), std::move(response));
+			if (!insertResult.second)
+			{
+				throw std::runtime_error("The mock client already has the requested url set.");
+			}
+		}
+
+		/// <summary>
+		/// Set the response for given request
+		/// </summary>
+		void SetPostResponse(std::string url, HttpResponse response)
+		{
+			auto insertResult = _postResponses.try_emplace(std::move(url), std::move(response));
+			if (!insertResult.second)
+			{
+				throw std::runtime_error("The mock client already has the requested url set.");
+			}
+		}
+
+		/// <summary>
+		/// Set the response for given request
+		/// </summary>
+		void SetPutResponse(std::string url, HttpResponse response)
+		{
+			auto insertResult = _putResponses.try_emplace(std::move(url), std::move(response));
 			if (!insertResult.second)
 			{
 				throw std::runtime_error("The mock client already has the requested url set.");
@@ -84,7 +108,7 @@ namespace Opal::Network
 			auto searchClient = _getResponses.find(std::string(request));
 			if (searchClient != _getResponses.end())
 			{
-				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+				return searchClient->second;
 			}
 			else
 			{
@@ -109,7 +133,7 @@ namespace Opal::Network
 			auto searchClient = _postResponses.find(std::string(request));
 			if (searchClient != _postResponses.end())
 			{
-				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+				return searchClient->second;
 			}
 			else
 			{
@@ -134,7 +158,7 @@ namespace Opal::Network
 			auto searchClient = _putResponses.find(std::string(request));
 			if (searchClient != _putResponses.end())
 			{
-				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+				return searchClient->second;
 			}
 			else
 			{
@@ -147,8 +171,8 @@ namespace Opal::Network
 		std::string _host;
 		int _port;
 		std::vector<std::string> _requests;
-		std::map<std::string, std::string> _getResponses;
-		std::map<std::string, std::string> _postResponses;
-		std::map<std::string, std::string> _putResponses;
+		std::map<std::string, HttpResponse> _getResponses;
+		std::map<std::string, HttpResponse> _postResponses;
+		std::map<std::string, HttpResponse> _putResponses;
 	};
 }

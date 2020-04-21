@@ -117,7 +117,7 @@ namespace Soup::Client
 			// arguments.PlatformLibraries.push_back(Path("winspool.lib"));
 			// arguments.PlatformLibraries.push_back(Path("comdlg32.lib"));
 			arguments.PlatformLibraries.push_back("advapi32.lib");
-			// arguments.PlatformLibraries.push_back(Path("shell32.lib"));
+			arguments.PlatformLibraries.push_back("shell32.lib");
 			// arguments.PlatformLibraries.push_back(Path("ole32.lib"));
 			arguments.PlatformLibraries.push_back("oleaut32.lib");
 			// arguments.PlatformLibraries.push_back(Path("uuid.lib"));

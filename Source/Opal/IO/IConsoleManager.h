@@ -20,7 +20,7 @@ namespace Opal::IO
 		static IConsoleManager& Current()
 		{
 			if (_current == nullptr)
-				throw std::runtime_error("No input manager implementation registered.");
+				throw std::runtime_error("No console manager implementation registered.");
 			return *_current;
 		}
 

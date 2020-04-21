@@ -60,6 +60,16 @@ namespace Opal::System
 		}
 
 		/// <summary>
+		/// Gets the current user profile directory
+		/// </summary>
+		Path GetUserProfileDirectory() override final
+		{
+			_requests.push_back("GetCurrentDirectory");
+
+			return Path("C:/Users/Me/");
+		}
+
+		/// <summary>
 		/// Gets the current directory for the running processes
 		/// </summary>
 		Path GetCurrentDirectory2() override final

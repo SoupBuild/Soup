@@ -87,6 +87,7 @@
     "random": "cpp",
     "regex": "cpp",
     "string_view": "cpp",
-    "complex": "cpp"
+    "complex": "cpp",
+    "*.inc": "cpp"
   }
 }

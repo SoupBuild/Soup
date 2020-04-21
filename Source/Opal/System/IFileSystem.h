@@ -41,6 +41,11 @@ namespace Opal::System
 
 	public:
 		/// <summary>
+		/// Gets the current user profile directory
+		/// </summary>
+		virtual Path GetUserProfileDirectory() = 0;
+
+		/// <summary>
 		/// Gets the current directory for the running processes
 		/// </summary>
 		virtual Path GetCurrentDirectory2() = 0;

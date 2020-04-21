@@ -144,22 +144,33 @@ namespace Soup::Build
 
 			if (recipe.HasDependencies())
 			{
-				for (auto dependecy : recipe.GetDependencies())
+				for (auto dependency : recipe.GetDependencies())
 				{
 					// Load this package recipe
-					auto packagePath = GetPackageReferencePath(workingDirectory, dependecy);
+					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
 					auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
-					Recipe dependecyRecipe = {};
-					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
+					Recipe dependencyRecipe = {};
+					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependencyRecipe))
 					{
-						Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
-						throw std::runtime_error("BuildRecipeAndDependencies: Failed to load dependency.");
+						if (dependency.IsLocal())
+						{
+							Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+							Log::HighPriority("Make sure the path is correct and try again");
+						}
+						else
+						{
+							Log::Error("The Recipe version has not been installed: " + dependency.ToString());
+							Log::HighPriority("Run `install` and try again");
+						}
+
+						// Nothing we can do, exit
+						throw HandledException();
 					}
 
 					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependecyRecipe.GetName()))
+					if (activeParentSet.contains(dependencyRecipe.GetName()))
 					{
-						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
+						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 					}
 
@@ -167,7 +178,7 @@ namespace Soup::Build
 					projectId = BuildRecipeAndDependencies(
 						projectId,
 						packagePath,
-						dependecyRecipe,
+						dependencyRecipe,
 						arguments,
 						isSystemBuild,
 						activeParentSet,
@@ -177,32 +188,32 @@ namespace Soup::Build
 
 			if (recipe.HasExtensions())
 			{
-				for (auto dependecy : recipe.GetExtensions())
+				for (auto dependency : recipe.GetExtensions())
 				{
 					// Load this package recipe
-					auto packagePath = GetPackageReferencePath(workingDirectory, dependecy);
+					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
 					auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
-					Recipe dependecyRecipe = {};
-					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
+					Recipe dependencyRecipe = {};
+					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependencyRecipe))
 					{
-						Log::Error("Failed to load the dependency package: " + packageRecipePath.ToString());
+						Log::Error("Failed to load the extension package: " + packageRecipePath.ToString());
 						throw std::runtime_error("BuildRecipeAndDependencies: Failed to load dependency.");
 					}
 
 					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependecyRecipe.GetName()))
+					if (activeParentSet.contains(dependencyRecipe.GetName()))
 					{
-						Log::Error("Found circular dev dependency: " + recipe.GetName() + " -> " + dependecyRecipe.GetName());
+						Log::Error("Found circular dev dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dev dependency.");
 					}
 
 					// Build all recursive dependencies
 					// Note: Ignore all shared dependencies. They are not exposed past dev dependencies.
-					auto ignoredBuildState = BuildState(ConvertToBuildState(dependecyRecipe.GetTable()));
+					auto ignoredBuildState = BuildState(ConvertToBuildState(dependencyRecipe.GetTable()));
 					projectId = BuildRecipeAndDependencies(
 						projectId,
 						packagePath,
-						dependecyRecipe,
+						dependencyRecipe,
 						arguments,
 						true,
 						activeParentSet,
@@ -275,11 +286,11 @@ namespace Soup::Build
 				}
 
 
-				Log::SetActiveId(-1);
+				Log::SetActiveId(0);
 			}
 			catch(...)
 			{
-				Log::SetActiveId(-1);
+				Log::SetActiveId(0);
 				throw;
 			}
 
@@ -337,9 +348,9 @@ namespace Soup::Build
 				// Run all build extensions
 				if (recipe.HasExtensions())
 				{
-					for (auto dependecy : recipe.GetExtensions())
+					for (auto dependency : recipe.GetExtensions())
 					{
-						auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependecy);
+						auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependency);
 						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 							packagePath,
 							RecipeExtensions::GetBinaryDirectory(_systemCompiler, arguments.Flavor),

@@ -9,6 +9,7 @@ Dependencies = [
 	"../Engine/Definition/",
 	"../Engine/Core/",
 	"../Engine/Wrapper/",
+	# "json11@1.0.0",
 ]
 
 Public = "Module.cpp"

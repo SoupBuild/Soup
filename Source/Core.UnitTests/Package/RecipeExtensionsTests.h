@@ -203,7 +203,7 @@ Version = "1.2.3"
 				std::vector<std::string>({
 					"DIAG: Load Recipe: Root/Recipe.toml",
 					"INFO: Recipe file does not exist.",
-					"ERRO: Failed to load the dependency package: Root/Recipe.toml",
+					"ERRO: Failed to load the package: Root/Recipe.toml",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");
