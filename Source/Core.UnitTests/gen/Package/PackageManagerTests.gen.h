@@ -8,6 +8,7 @@ TestState RunPackageManagerTests()
 	TestState state = { 0, 0 };
 	state += SoupTest::RunTest(className, "InstallPackageReference_MissingRecipe_Throws", [&testClass]() { testClass->InstallPackageReference_MissingRecipe_Throws(); });
 	state += SoupTest::RunTest(className, "InstallPackageReference_Version_Success", [&testClass]() { testClass->InstallPackageReference_Version_Success(); });
+	state += SoupTest::RunTest(className, "InstallPackageReference_Recursive_Success", [&testClass]() { testClass->InstallPackageReference_Recursive_Success(); });
 	state += SoupTest::RunTest(className, "InstallPackageReference_Latest_Success", [&testClass]() { testClass->InstallPackageReference_Latest_Success(); });
 	state += SoupTest::RunTest(className, "PublishPackage_Success", [&testClass]() { testClass->PublishPackage_Success(); });
 	state += SoupTest::RunTest(className, "PublishPackage_PackageMissing_Success", [&testClass]() { testClass->PublishPackage_PackageMissing_Success(); });
