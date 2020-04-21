@@ -50,10 +50,16 @@ namespace Soup
 
 			try
 			{
-				Log::HighPriority("Install Package: " + packageReference);
+				// Parse the package reference to get the name
+				PackageReference targetPackageReference = PackageReference::Parse(packageReference);
+				std::string packageName = packageReference;
+				if (!targetPackageReference.IsLocal())
+				{
+					packageName = targetPackageReference.GetName();
+				}
 
 				// Check if the package is already installed
-				auto packageNameNormalized = ToUpper(packageReference);
+				auto packageNameNormalized = ToUpper(packageName);
 				if (recipe.HasDependencies())
 				{
 					for (auto& dependency : recipe.GetDependencies())
@@ -70,14 +76,18 @@ namespace Soup
 					}
 				}
 
-				// Get the latest version
-				auto packageModel = GetPackageModel(packageReference);
-				auto latestVersion = packageModel.GetLatest();
-				Log::HighPriority("Latest Version: " + latestVersion.ToString());
+				// Get the latest version if no version provided
+				if (targetPackageReference.IsLocal())
+				{
+					auto packageModel = GetPackageModel(packageReference);
+					auto latestVersion = packageModel.GetLatest();
+					Log::HighPriority("Latest Version: " + latestVersion.ToString());
+					targetPackageReference = PackageReference(packageModel.GetName(), latestVersion);
+				}
 
 				EnsurePackageDownloaded(
-					packageModel.GetName(),
-					latestVersion,
+					targetPackageReference.GetName(),
+					targetPackageReference.GetVersion(),
 					packageStore,
 					stagingPath);
 
@@ -87,14 +97,11 @@ namespace Soup
 
 				// Register the package in the recipe
 				Log::Info("Adding reference to recipe");
-				auto installedPackageReference = PackageReference(
-					packageModel.GetName(),
-					latestVersion);
 				auto dependencies = std::vector<PackageReference>();
 				if (recipe.HasDependencies())
 					dependencies = recipe.GetDependencies();
 
-				dependencies.push_back(installedPackageReference);
+				dependencies.push_back(targetPackageReference);
 				recipe.SetDependencies(dependencies);
 
 				// Save the state of the recipe
@@ -323,13 +330,15 @@ namespace Soup
 		/// Ensure a package version is downloaded
 		/// </summary>
 		static void EnsurePackageDownloaded(
-			const std::string name,
-			SemanticVersion version,
+			const std::string packageName,
+			SemanticVersion packageVersion,
 			const Path& packagesDirectory,
 			const Path& stagingDirectory)
 		{
-			auto packageRootFolder = packagesDirectory + Path(name);
-			auto packageVersionFolder = packageRootFolder + Path(version.ToString());
+			Log::HighPriority("Install Package: " + packageName + "@" + packageVersion.ToString());
+
+			auto packageRootFolder = packagesDirectory + Path(packageName);
+			auto packageVersionFolder = packageRootFolder + Path(packageVersion.ToString());
 
 			// Check if the package version already exists
 			if (System::IFileSystem::Current().Exists(packageVersionFolder))
@@ -340,8 +349,8 @@ namespace Soup
 			{
 				// Download the archive
 				Log::HighPriority("Downloading package");
-				auto archiveContent = Api::SoupApi::DownloadPackage(name, version);
-				auto archivePath = stagingDirectory + Path(name + ".7z");
+				auto archiveContent = Api::SoupApi::DownloadPackage(packageName, packageVersion);
+				auto archivePath = stagingDirectory + Path(packageName + ".7z");
 
 				// Write the contents to disk, scope cleanup
 				auto archiveWriteFile = System::IFileSystem::Current().OpenWrite(archivePath, true);
@@ -349,7 +358,7 @@ namespace Soup
 				archiveWriteFile->Close();
 
 				// Create the package folder to extract to
-				auto stagingVersionFolder = stagingDirectory + Path(version.ToString());
+				auto stagingVersionFolder = stagingDirectory + Path(packageVersion.ToString());
 				System::IFileSystem::Current().CreateDirectory2(stagingVersionFolder);
 
 				// Unpack the contents of the archive
