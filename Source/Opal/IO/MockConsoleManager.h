@@ -55,5 +55,5 @@ namespace Opal::IO
 	private:
 		std::vector<std::string> _requests;
 		std::shared_ptr<MockConsoleInputStream> _standardInput;
-	}
+	};
 }
