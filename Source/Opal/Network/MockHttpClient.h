@@ -53,12 +53,51 @@ namespace Opal::Network
 		/// <summary>
 		/// Set the response for given request
 		/// </summary>
-		void SetResponse(std::string url, std::string response)
+		void AddGetResponse(std::string url, HttpResponse response)
 		{
-			auto insertResult = _getResponses.try_emplace(std::move(url), std::move(response));
-			if (!insertResult.second)
+			auto findExistingQueue = _getResponses.find(url);
+			if (findExistingQueue != _getResponses.end())
 			{
-				throw std::runtime_error("The mock client already has the requested url set.");
+				findExistingQueue->second.push(std::move(response));
+			}
+			else
+			{
+				auto insertResult = _getResponses.emplace(url, std::queue<HttpResponse>());
+				insertResult.first->second.push(std::move(response));
+			}
+		}
+
+		/// <summary>
+		/// Set the response for given request
+		/// </summary>
+		void AddPostResponse(std::string url, HttpResponse response)
+		{
+			auto findExistingQueue = _postResponses.find(url);
+			if (findExistingQueue != _postResponses.end())
+			{
+				findExistingQueue->second.push(std::move(response));
+			}
+			else
+			{
+				auto insertResult = _postResponses.emplace(url, std::queue<HttpResponse>());
+				insertResult.first->second.push(std::move(response));
+			}
+		}
+
+		/// <summary>
+		/// Set the response for given request
+		/// </summary>
+		void AddPutResponse(std::string url, HttpResponse response)
+		{
+			auto findExistingQueue = _putResponses.find(url);
+			if (findExistingQueue != _putResponses.end())
+			{
+				findExistingQueue->second.push(std::move(response));
+			}
+			else
+			{
+				auto insertResult = _putResponses.emplace(url, std::queue<HttpResponse>());
+				insertResult.first->second.push(std::move(response));
 			}
 		}
 
@@ -84,7 +123,17 @@ namespace Opal::Network
 			auto searchClient = _getResponses.find(std::string(request));
 			if (searchClient != _getResponses.end())
 			{
-				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+				auto& responseQueue = searchClient->second;
+				if (responseQueue.empty())
+				{
+					throw std::runtime_error("Ran out of Get responses.");
+				}
+				else
+				{
+					auto result = std::move(responseQueue.front());
+					responseQueue.pop();
+					return result;
+				}
 			}
 			else
 			{
@@ -109,7 +158,17 @@ namespace Opal::Network
 			auto searchClient = _postResponses.find(std::string(request));
 			if (searchClient != _postResponses.end())
 			{
-				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+				auto& responseQueue = searchClient->second;
+				if (responseQueue.empty())
+				{
+					throw std::runtime_error("Ran out of Post responses.");
+				}
+				else
+				{
+					auto result = std::move(responseQueue.front());
+					responseQueue.pop();
+					return result;
+				}
 			}
 			else
 			{
@@ -134,7 +193,17 @@ namespace Opal::Network
 			auto searchClient = _putResponses.find(std::string(request));
 			if (searchClient != _putResponses.end())
 			{
-				return HttpResponse(HttpStatusCode::Ok, searchClient->second);
+				auto& responseQueue = searchClient->second;
+				if (responseQueue.empty())
+				{
+					throw std::runtime_error("Ran out of Put responses.");
+				}
+				else
+				{
+					auto result = std::move(responseQueue.front());
+					responseQueue.pop();
+					return result;
+				}
 			}
 			else
 			{
@@ -147,8 +216,8 @@ namespace Opal::Network
 		std::string _host;
 		int _port;
 		std::vector<std::string> _requests;
-		std::map<std::string, std::string> _getResponses;
-		std::map<std::string, std::string> _postResponses;
-		std::map<std::string, std::string> _putResponses;
+		std::map<std::string, std::queue<HttpResponse>> _getResponses;
+		std::map<std::string, std::queue<HttpResponse>> _postResponses;
+		std::map<std::string, std::queue<HttpResponse>> _putResponses;
 	};
 }

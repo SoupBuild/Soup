@@ -11,7 +11,7 @@ namespace Soup
 	/// A callback interface implementation to get progress updates and provide integration
 	/// with the filesystem during extraction of an archive.
 	/// </summary>
-	class LzmaExtractCallback : public LzmaSdk::IExtractCallback
+	class LzmaExtractCallback : public LzmaSdk::IArchiveExtractCallback
 	{
 	public:
 		/// <summary>

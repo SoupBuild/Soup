@@ -4,6 +4,7 @@
 
 #pragma once
 #include "IConsoleManager.h"
+#include "MockConsoleInputStream.h"
 
 namespace Opal::IO
 {
@@ -19,7 +20,7 @@ namespace Opal::IO
 		/// </summary>
 		MockConsoleManager() :
 			_requests(),
-			_stream()
+			_standardInput(std::make_shared<MockConsoleInputStream>(_requests))
 		{
 		}
 
@@ -34,9 +35,9 @@ namespace Opal::IO
 		/// <summary>
 		/// Get the mock input stream
 		/// </summary>
-		std::stringstream& GetMockInputStream()
+		MockConsoleInputStream& GetMockInputStream()
 		{
-			return _stream;
+			return *_standardInput;
 		}
 
 		/// <summary>
@@ -48,11 +49,11 @@ namespace Opal::IO
 			message << "GetStandardInput";
 			_requests.push_back(message.str());
 
-			return nullptr;
+			return _standardInput;
 		}
 
 	private:
 		std::vector<std::string> _requests;
-		std::stringstream _stream;
+		std::shared_ptr<MockConsoleInputStream> _standardInput;
 	};
 }

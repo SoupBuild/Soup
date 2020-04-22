@@ -7,6 +7,8 @@
 #include "Api/SoupApi.h"
 #include "Auth/SoupAuth.h"
 #include "LzmaExtractCallback.h"
+#include "LzmaUpdateCallback.h"
+#include "LzmaOutStream.h"
 #include "LzmaInStream.h"
 
 namespace Soup
@@ -25,9 +27,41 @@ namespace Soup
 	{
 	public:
 		/// <summary>
+		/// Install packages
+		/// </summary>
+		static void InstallPackages()
+		{
+			auto workingDirectory = Path();
+			auto packageStore = System::IFileSystem::Current().GetUserProfileDirectory() +
+				Path(".soup/packages/");
+			Log::Info("Using Package Store: " + packageStore.ToString());
+
+			// Create the staging directory
+			auto stagingPath = EnsureStagingDirectoryExists(packageStore);
+
+			try
+			{
+				InstallRecursiveDependencies(
+					workingDirectory,
+					packageStore,
+					stagingPath);
+
+				// Cleanup the working directory
+				Log::Info("Deleting staging directory");
+				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
+			}
+			catch(const std::exception& e)
+			{
+				// Cleanup the staging directory and accept that we failed
+				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
+				throw;
+			}
+		}
+
+		/// <summary>
 		/// Install a package
 		/// </summary>
-		static void InstallPackage(const std::string& packageName, const Path& packageStore)
+		static void InstallPackageReference(const std::string& packageReference)
 		{
 			auto workingDirectory = Path();
 			auto recipePath =
@@ -39,12 +73,22 @@ namespace Soup
 				throw std::runtime_error("Could not load the recipe file.");
 			}
 
+			auto packageStore = System::IFileSystem::Current().GetUserProfileDirectory() +
+				Path(".soup/packages/");
+			Log::Info("Using Package Store: " + packageStore.ToString());
+
 			// Create the staging directory
 			auto stagingPath = EnsureStagingDirectoryExists(packageStore);
 
 			try
 			{
-				Log::HighPriority("Install Package: " + packageName);
+				// Parse the package reference to get the name
+				PackageReference targetPackageReference = PackageReference::Parse(packageReference);
+				std::string packageName = packageReference;
+				if (!targetPackageReference.IsLocal())
+				{
+					packageName = targetPackageReference.GetName();
+				}
 
 				// Check if the package is already installed
 				auto packageNameNormalized = ToUpper(packageName);
@@ -64,14 +108,18 @@ namespace Soup
 					}
 				}
 
-				// Get the latest version
-				auto packageModel = GetPackageModel(packageName);
-				auto latestVersion = packageModel.GetLatest();
-				Log::HighPriority("Latest Version: " + latestVersion.ToString());
+				// Get the latest version if no version provided
+				if (targetPackageReference.IsLocal())
+				{
+					auto packageModel = GetPackageModel(packageReference);
+					auto latestVersion = packageModel.GetLatest();
+					Log::HighPriority("Latest Version: " + latestVersion.ToString());
+					targetPackageReference = PackageReference(packageModel.GetName(), latestVersion);
+				}
 
 				EnsurePackageDownloaded(
-					packageModel.GetName(),
-					latestVersion,
+					targetPackageReference.GetName(),
+					targetPackageReference.GetVersion(),
 					packageStore,
 					stagingPath);
 
@@ -81,14 +129,11 @@ namespace Soup
 
 				// Register the package in the recipe
 				Log::Info("Adding reference to recipe");
-				auto installedPackageReference = PackageReference(
-					packageModel.GetName(),
-					latestVersion);
 				auto dependencies = std::vector<PackageReference>();
 				if (recipe.HasDependencies())
 					dependencies = recipe.GetDependencies();
 
-				dependencies.push_back(installedPackageReference);
+				dependencies.push_back(targetPackageReference);
 				recipe.SetDependencies(dependencies);
 
 				// Save the state of the recipe
@@ -105,7 +150,7 @@ namespace Soup
 		/// <summary>
 		/// Publish a package
 		/// </summary>
-		static void PublishPackage(const Path& packageStore)
+		static void PublishPackage()
 		{
 			Log::Info("Publish Project: {recipe.Name}@{recipe.Version}");
 
@@ -119,6 +164,10 @@ namespace Soup
 				throw std::runtime_error("Could not load the recipe file.");
 			}
 
+			auto packageStore = System::IFileSystem::Current().GetUserProfileDirectory() +
+				Path(".soup/packages/");
+			Log::Info("Using Package Store: " + packageStore.ToString());
+
 			// Create the staging directory
 			auto stagingPath = EnsureStagingDirectoryExists(packageStore);
 
@@ -128,9 +177,15 @@ namespace Soup
 				auto files = GetPackageFiles(workingDirectory);
 
 				// Create the archive of the package
-				auto archive = LzmaSdk::ArchiveWriter(archivePath.ToString());
-				archive.AddFiles(files);
-				archive.Save();
+				{
+					auto archiveStream = System::IFileSystem::Current().OpenWrite(archivePath, true);
+					auto outStream = std::make_shared<LzmaOutStream>(archiveStream);
+					auto archive = LzmaSdk::ArchiveWriter(outStream);
+					archive.AddFiles(files);
+
+					auto callback = std::make_shared<LzmaUpdateCallback>();
+					archive.Save(callback);
+				}
 
 				// Authenticate the user
 				Log::Info("Request Authentication Token");
@@ -307,13 +362,15 @@ namespace Soup
 		/// Ensure a package version is downloaded
 		/// </summary>
 		static void EnsurePackageDownloaded(
-			const std::string name,
-			SemanticVersion version,
+			const std::string packageName,
+			SemanticVersion packageVersion,
 			const Path& packagesDirectory,
 			const Path& stagingDirectory)
 		{
-			auto packageRootFolder = packagesDirectory + Path(name);
-			auto packageVersionFolder = packageRootFolder + Path(version.ToString());
+			Log::HighPriority("Install Package: " + packageName + "@" + packageVersion.ToString());
+
+			auto packageRootFolder = packagesDirectory + Path(packageName);
+			auto packageVersionFolder = packageRootFolder + Path(packageVersion.ToString());
 
 			// Check if the package version already exists
 			if (System::IFileSystem::Current().Exists(packageVersionFolder))
@@ -324,8 +381,8 @@ namespace Soup
 			{
 				// Download the archive
 				Log::HighPriority("Downloading package");
-				auto archiveContent = Api::SoupApi::DownloadPackage(name, version);
-				auto archivePath = stagingDirectory + Path(name + ".7z");
+				auto archiveContent = Api::SoupApi::DownloadPackage(packageName, packageVersion);
+				auto archivePath = stagingDirectory + Path(packageName + ".7z");
 
 				// Write the contents to disk, scope cleanup
 				auto archiveWriteFile = System::IFileSystem::Current().OpenWrite(archivePath, true);
@@ -333,7 +390,7 @@ namespace Soup
 				archiveWriteFile->Close();
 
 				// Create the package folder to extract to
-				auto stagingVersionFolder = stagingDirectory + Path(version.ToString());
+				auto stagingVersionFolder = stagingDirectory + Path(packageName) + Path(packageVersion.ToString());
 				System::IFileSystem::Current().CreateDirectory2(stagingVersionFolder);
 
 				// Unpack the contents of the archive
@@ -344,6 +401,12 @@ namespace Soup
 					auto callback = std::make_shared<LzmaExtractCallback>();
 					archive.ExtractAll(stagingVersionFolder.ToString(), callback);
 				}
+
+				// Install transitive dependencies
+				InstallRecursiveDependencies(
+					stagingVersionFolder,
+					packagesDirectory,
+					stagingDirectory);
 
 				// Ensure the package root folder exists
 				if (!System::IFileSystem::Current().Exists(packageRootFolder))
@@ -357,26 +420,48 @@ namespace Soup
 			}
 		}
 
-		// /// <summary>
-		// /// Recursively install all dependencies and transitive dependencies
-		// /// </summary>
-		// void InstallRecursiveDependencies(string tempPath, Recipe recipe)
-		// {
-		// 	 foreach (var dep in recipe.Dependencies)
-		// 	 {
-		// 		 Log.Info($"{dep}");
-
-		// 		 // Download the archive
-		// 		 using (var archiveStream = await DownloadPackageAsync(dep.Name, dep.Version))
-		// 		 {
-		// 			 // Install the package
-		// 			 var installedRecipe = await InstallPackageAsync(tempPath, archiveStream);
-
-		// 			 // Install dependecies recursively
-		// 			 await InstallRecursiveDependencies(tempPath, installedRecipe);
-		// 		 }
-		// 	 }
-		// }
+		/// <summary>
+		/// Recursively install all dependencies and transitive dependencies
+		/// </summary>
+		static void InstallRecursiveDependencies(
+			const Path& recipeDirectory,
+			const Path& packagesDirectory,
+			const Path& stagingDirectory)
+		{
+			auto recipePath =
+				recipeDirectory +
+				Path(Constants::RecipeFileName);
+			Recipe recipe = {};
+			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			{
+				throw std::runtime_error("Could not load the recipe file.");
+			}
+	
+			if (recipe.HasDependencies())
+			{
+				for (auto& dependency : recipe.GetDependencies())
+				{
+					// If local then check children for external package references
+					// Otherwise install the external package reference and its dependencies
+					if (dependency.IsLocal())
+					{
+						auto dependencyPath = recipeDirectory + dependency.GetPath();
+						InstallRecursiveDependencies(
+							dependencyPath,
+							packagesDirectory,
+							stagingDirectory);
+					}
+					else
+					{
+						EnsurePackageDownloaded(
+							dependency.GetName(),
+							dependency.GetVersion(),
+							packagesDirectory,
+							stagingDirectory);
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// Build the kitchen library path
@@ -435,24 +520,6 @@ namespace Soup
 		// 	return BuildKitchenIncludePath(config, reference.Name, reference.Version);
 		// }
 
-		// /// <summary>
-		// /// Build the recursive dependencies
-		// /// </summary>
-		// static async Task<List<PackageReference>> BuildRecursiveDependeciesAsync(LocalUserConfig config, Recipe recipe)
-		// {
-		// 	List<PackageReference> result = new List<PackageReference>();
-		// 	foreach (var dependency in recipe.Dependencies)
-		// 	{
-		// 		result.Add(dependency);
-		// 		var dependencyPackagePath = BuildKitchenPackagePath(config, dependency);
-		// 		var dependencyRecipe = await RecipeManager.LoadFromFileAsync(dependencyPackagePath);
-		// 		var transientDependencies = await BuildRecursiveDependeciesAsync(config, dependencyRecipe);
-		// 		result.AddRange(transientDependencies);
-		// 	}
-
-		// 	return result;
-		// }
-
 		/// <summary>
 		/// Ensure the staging directory exists
 		/// </summary>
@@ -470,125 +537,6 @@ namespace Soup
 
 			return stagingDirectory;
 		}
-
-		// /// <summary>
-		// /// Ensure the project generate folder exists
-		// /// </summary>
-		// static void EnsureProjectGenerateFolderExists(string directory)
-		// {
-		// 	var path = Path.Combine(directory, Constants.ProjectGenerateFolderName);
-		// 	if (!Directory.Exists(path))
-		// 	{
-		// 		// Create the folder
-		// 		var info = Directory.CreateDirectory(path);
-
-		// 		// Hide the folder
-		// 		info.Attributes |= FileAttributes.Hidden;
-		// 	}
-		// }
-
-		// /// <summary>
-		// /// Find the source files
-		// /// </summary>
-		// static List<string> FindSourceFiles(Recipe recipe, string packageDirectory)
-		// {
-		// 	return FindFiles(recipe.Source, packageDirectory);
-		// }
-
-		// /// <summary>
-		// /// Find the files
-		// /// </summary>
-		// static List<string> FindFiles(IList<string> patterns, string directory)
-		// {
-		// 	List<string> result = new List<string>();
-
-		// 	// Create matching patterns for each source items
-		// 	var includePatterns = new List<Glob.Glob>();
-		// 	foreach (var pattern in patterns)
-		// 	{
-		// 		var cleanPattern = pattern.Replace("/", "\\").ToLower();
-		// 		includePatterns.Add(new Glob.Glob(cleanPattern));
-		// 	}
-
-		// 	// Check every file in the directory
-		// 	foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
-		// 	{
-		// 		var relativePath = Path.GetRelativePath(directory, file);
-		// 		var cleanRelativePath = relativePath.ToLower();
-		// 		bool match = includePatterns.Any(pattern => pattern.IsMatch(cleanRelativePath));
-		// 		if (match)
-		// 		{
-		// 			result.Add(relativePath);
-		// 		}
-		// 	}
-
-		// 	return result;
-		// }
-
-		// /// <summary>
-		// /// Pack the archive
-		// /// </summary>
-		// static async Task PackAsync(Recipe recipe, string directory)
-		// {
-		// 	var zipFileName = $"{recipe.Name}_{recipe.Version}.tgz";
-		// 	var zipFilePath = Path.Combine(directory, zipFileName);
-		// 	using (var zipFile = File.Create(zipFilePath))
-		// 	{
-		// 		await PackAsync(recipe, directory, zipFile);
-		// 	}
-		// }
-
-		// /// <summary>
-		// /// Pack the archive
-		// /// </summary>
-		// static Task PackAsync(Recipe recipe, string directory, Stream stream)
-		// {
-		// 	var includePatterns = new List<Glob.Glob>();
-
-		// 	// Include the Recipe file
-		// 	includePatterns.Add(new Glob.Glob(Constants.RecipeFileName.ToLower()));
-
-		// 	// Include all or the source filess
-		// 	foreach (var source in recipe.Source)
-		// 	{
-		// 		includePatterns.Add(new Glob.Glob(source.ToLower()));
-		// 	}
-
-		// 	using (var gzipStream = new GZipStream(stream, CompressionLevel.Optimal, true))
-		// 	using (var archive = TarArchive.CreateOutputTarArchive(gzipStream))
-		// 	{
-		// 		archive.RootPath = directory;
-
-		// 		// Check every file in the directory
-		// 		foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
-		// 		{
-		// 			var relativePath = Path.GetRelativePath(directory, file);
-		// 			bool matchInclude = includePatterns.Any(pattern => pattern.IsMatch(relativePath.ToLower()));
-		// 			if (matchInclude)
-		// 			{
-		// 				Log.Verbose(relativePath);
-		// 				var entry = TarEntry.CreateEntryFromFile(file);
-		// 				archive.WriteEntry(entry, true);
-		// 			}
-		// 		}
-		// 	}
-
-		// 	return Task.CompletedTask;
-		// }
-
-		// /// <summary>
-		// /// Unpack the archive
-		// /// </summary>
-		// static Task ExtractAsync(Stream source, string targetDirectory)
-		// {
-		// 	using (var gzipStream = new GZipStream(source, CompressionMode.Decompress))
-		// 	using (TarArchive archive = TarArchive.CreateInputTarArchive(gzipStream))
-		// 	{
-		// 		archive.ExtractContents(targetDirectory);
-		// 	}
-
-		// 	return Task.CompletedTask;
-		// }
 
 		// /// <summary>
 		// /// Verify the archive

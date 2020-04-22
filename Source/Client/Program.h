@@ -100,16 +100,21 @@ namespace Soup::Client
 
 				return 0;
 			}
+			catch (const HandledException&)
+			{
+				Log::Info("Exception Handled: Exiting");
+				return -1;
+			}
 			catch (const std::exception& ex)
 			{
-				Log::Error("Exception Handled: Exiting");
+				Log::Error("Exception Caught: Exiting");
 				Log::Error(ex.what());
 				return -2;
 			}
 			catch (...)
 			{
 				Log::Error("Unknown exception encountered");
-				return -1;
+				return -3;
 			}
 		}
 

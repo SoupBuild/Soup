@@ -28,9 +28,8 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Diag("PublishCommand::Run");
-			
-			auto packageStore = Path("C:/users/mwasp/.soup/packages/");
-			PackageManager::PublishPackage(packageStore);
+
+			PackageManager::PublishPackage();
 		}
 
 	private:

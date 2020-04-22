@@ -23,6 +23,30 @@ namespace Opal::System
 		}
 
 		/// <summary>
+		/// Gets the current user profile directory
+		/// </summary>
+		Path GetUserProfileDirectory() override final
+		{
+			#ifdef _WIN32
+
+			char userProfile[MAX_PATH];
+			HRESULT result = SHGetFolderPath(
+				nullptr,
+				CSIDL_PROFILE,
+				nullptr,
+				SHGFP_TYPE_CURRENT,
+				userProfile);
+			if (result != S_OK)
+				throw std::runtime_error("SHGetFolderPath failed.");
+
+			return Path(userProfile);
+
+			#else
+			#error NOT IMPLEMENTED
+			#endif
+		}
+
+		/// <summary>
 		/// Gets the current directory for the running processes
 		/// </summary>
 		Path GetCurrentDirectory2() override final

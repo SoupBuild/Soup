@@ -69,7 +69,7 @@ namespace Opal::Network
 			}
 			else
 			{
-				throw std::runtime_error("No mock client registered.");
+				throw std::runtime_error("No mock network client registered.");
 			}
 		}
 

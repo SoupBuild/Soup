@@ -26,11 +26,13 @@ namespace Soup
 		uint32_t Read(void* data, uint32_t size) override final
 		{
 			auto& stream = _file->GetInStream();
+
 			stream.read((char*)data, size);
 			if (stream.bad())
 				throw std::runtime_error("Failed to write.");
 
-			return size;
+			auto sizeRead = stream.gcount();
+			return sizeRead;
 		}
 
 		uint64_t Seek(int64_t offset, LzmaSdk::StreamSeekOrigin origin) override final
