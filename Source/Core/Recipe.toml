@@ -3,13 +3,13 @@ Version = "0.1.0"
 
 Dependencies = [
 	"../../Dependencies/LzmaSdk/CPP/Library/",
-	"../../Dependencies/json11/",
+	# "../../Dependencies/json11/",
 	"../../Dependencies/toml11/",
 	"../Opal/",
 	"../Engine/Definition/",
 	"../Engine/Core/",
 	"../Engine/Wrapper/",
-	# "json11@1.0.0",
+	"json11@1.0.0",
 ]
 
 Public = "Module.cpp"

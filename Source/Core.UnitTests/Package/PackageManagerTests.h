@@ -10,6 +10,232 @@ namespace Soup::UnitTests
 	{
 	public:
 		[[Fact]]
+		void InstallPackages_NoDependencies_Success()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener =  ScopedTraceListenerRegister(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+
+			// Create the Recipe
+			fileSystem->CreateMockFile(
+				Path("Recipe.toml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name = "MyPackage"
+					Version = "1.2.3"
+				)")));
+
+			PackageManager::InstallPackages();
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Load Recipe: Recipe.toml",
+					"INFO: Deleting staging directory",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentDirectory",
+					"Exists: C:/Users/Me/.soup/packages/.staging",
+					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
+					"Exists: Recipe.toml",
+					"OpenReadBinary: Recipe.toml",
+					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+		}
+
+		[[Fact]]
+		void InstallPackages_OnlyLocalDependencies_Success()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener =  ScopedTraceListenerRegister(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+
+			// Create the Recipe
+			fileSystem->CreateMockFile(
+				Path("Recipe.toml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name = "MyPackage"
+					Version = "1.2.3"
+					Dependencies = [
+						"../MyProject1/",
+						"../../MyProject2/",
+					]
+				)")));
+
+			fileSystem->CreateMockFile(
+				Path("../MyProject1/Recipe.toml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name = "MyProject1"
+					Version = "1.2.3"
+				)")));
+
+			fileSystem->CreateMockFile(
+				Path("../../MyProject2/Recipe.toml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name = "MyProject2"
+					Version = "1.2.3"
+					Dependencies = [
+						"../MyProject3/",
+					]
+				)")));
+
+			fileSystem->CreateMockFile(
+				Path("../../MyProject3/Recipe.toml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name = "MyProject3"
+					Version = "1.2.3"
+				)")));
+
+			PackageManager::InstallPackages();
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Load Recipe: Recipe.toml",
+					"DIAG: Load Recipe: ../MyProject1/Recipe.toml",
+					"DIAG: Load Recipe: ../../MyProject2/Recipe.toml",
+					"DIAG: Load Recipe: ../../MyProject3/Recipe.toml",
+					"INFO: Deleting staging directory",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentDirectory",
+					"Exists: C:/Users/Me/.soup/packages/.staging",
+					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
+					"Exists: Recipe.toml",
+					"OpenReadBinary: Recipe.toml",
+					"Exists: ../MyProject1/Recipe.toml",
+					"OpenReadBinary: ../MyProject1/Recipe.toml",
+					"Exists: ../../MyProject2/Recipe.toml",
+					"OpenReadBinary: ../../MyProject2/Recipe.toml",
+					"Exists: ../../MyProject3/Recipe.toml",
+					"OpenReadBinary: ../../MyProject3/Recipe.toml",
+					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+		}
+
+		[[Fact]]
+		void InstallPackages_SingleDependency_Success()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener =  ScopedTraceListenerRegister(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+
+			// Register the test listener
+			auto testNetworkManager = std::make_shared<Network::MockNetworkManager>();
+			auto scopedNetworkManager = Network::ScopedNetworkManagerRegister(testNetworkManager);
+
+			// Create the Recipe
+			fileSystem->CreateMockFile(
+				Path("Recipe.toml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name = "MyPackage"
+					Version = "1.2.3"
+					Dependencies = [
+						"TheirPackage@2.2.2",
+					]
+				)")));
+
+			// Create the required http client
+			auto testHttpClient = std::make_shared<Network::MockHttpClient>(
+				"api.soupbuild.com",
+				443);
+			testNetworkManager->RegisterClient(testHttpClient);
+
+			// Setup the expected http requests
+			auto packageContentResponse = Network::HttpResponse(
+				Network::HttpStatusCode::Ok,
+				GetTheirPackageArchive());
+			testHttpClient->AddGetResponse("/v1/packages/TheirPackage/v2.2.2/download", packageContentResponse);
+
+			PackageManager::InstallPackages();
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Load Recipe: Recipe.toml",
+					"HIGH: Install Package: TheirPackage@2.2.2",
+					"HIGH: Downloading package",
+					"DIAG: /v1/packages/TheirPackage/v2.2.2/download",
+					"INFO: ExtractStart: 62",
+					"INFO: ExtractProgress: 0",
+					"INFO: ExtractProgress: 0",
+					"INFO: ExtractProgress: 0",
+					"INFO: ExtractProgress: 62",
+					"INFO: ExtractGetStream: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/Recipe.toml",
+					"INFO: ExtractOnOperationStart",
+					"INFO: ExtractOperationCompleted",
+					"INFO: ExtractProgress: 62",
+					"INFO: ExtractDone",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/Recipe.toml",
+					"INFO: Deleting staging directory",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentDirectory",
+					"Exists: C:/Users/Me/.soup/packages/.staging",
+					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
+					"Exists: Recipe.toml",
+					"OpenReadBinary: Recipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/TheirPackage/2.2.2",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/.staging/TheirPackage.7z",
+					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/.staging/TheirPackage.7z",
+					"Exists: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/Recipe.toml",
+					"SetLastWriteTime: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/Recipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/Recipe.toml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/Recipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/TheirPackage",
+					"CreateDirectory: C:/Users/Me/.soup/packages/TheirPackage",
+					"Rename: [C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2] -> [C:/Users/Me/.soup/packages/TheirPackage/2.2.2]",
+					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"CreateClient: api.soupbuild.com:443",
+				}),
+				testNetworkManager->GetRequests(),
+				"Verify network manager requests match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Get: /v1/packages/TheirPackage/v2.2.2/download",
+				}),
+				testHttpClient->GetRequests(),
+				"Verify http requests match expected.");
+		}
+
+		[[Fact]]
 		void InstallPackageReference_MissingRecipe_Throws()
 		{
 			// Register the test listener

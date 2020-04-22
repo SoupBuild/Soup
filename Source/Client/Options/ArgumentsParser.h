@@ -89,10 +89,6 @@ namespace Soup::Client
 				{
 					options->Package = std::move(argument);
 				}
-				else
-				{
-					throw std::runtime_error("Missing required package name argument.");
-				}
 
 				options->Verbosity = CheckVerbosity(unusedArgs);
 

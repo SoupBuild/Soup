@@ -31,7 +31,7 @@ namespace Soup::Client
 			
 			if (_options.Package.empty())
 			{
-				// PackageManager::InstallPackages();
+				PackageManager::InstallPackages();
 			}
 			else
 			{

@@ -27,6 +27,38 @@ namespace Soup
 	{
 	public:
 		/// <summary>
+		/// Install packages
+		/// </summary>
+		static void InstallPackages()
+		{
+			auto workingDirectory = Path();
+			auto packageStore = System::IFileSystem::Current().GetUserProfileDirectory() +
+				Path(".soup/packages/");
+			Log::Info("Using Package Store: " + packageStore.ToString());
+
+			// Create the staging directory
+			auto stagingPath = EnsureStagingDirectoryExists(packageStore);
+
+			try
+			{
+				InstallRecursiveDependencies(
+					workingDirectory,
+					packageStore,
+					stagingPath);
+
+				// Cleanup the working directory
+				Log::Info("Deleting staging directory");
+				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
+			}
+			catch(const std::exception& e)
+			{
+				// Cleanup the staging directory and accept that we failed
+				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
+				throw;
+			}
+		}
+
+		/// <summary>
 		/// Install a package
 		/// </summary>
 		static void InstallPackageReference(const std::string& packageReference)
@@ -409,11 +441,24 @@ namespace Soup
 			{
 				for (auto& dependency : recipe.GetDependencies())
 				{
-					EnsurePackageDownloaded(
-						dependency.GetName(),
-						dependency.GetVersion(),
-						packagesDirectory,
-						stagingDirectory);
+					// If local then check children for external package references
+					// Otherwise install the external package reference and its dependencies
+					if (dependency.IsLocal())
+					{
+						auto dependencyPath = recipeDirectory + dependency.GetPath();
+						InstallRecursiveDependencies(
+							dependencyPath,
+							packagesDirectory,
+							stagingDirectory);
+					}
+					else
+					{
+						EnsurePackageDownloaded(
+							dependency.GetName(),
+							dependency.GetVersion(),
+							packagesDirectory,
+							stagingDirectory);
+					}
 				}
 			}
 		}
