@@ -198,7 +198,6 @@ namespace Soup::Api
         // }
     };
 
-// #define LOCAL_DEBUG
 #ifdef LOCAL_DEBUG
     /*static*/ const std::string_view SoupApi::ServiceEndpoint = "localhost";
     /*static*/ const int SoupApi::ServicePort = 7071;

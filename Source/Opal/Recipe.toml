@@ -4,4 +4,5 @@ Public = "Module.cpp"
 
 Dependencies = [
 	"../../Dependencies/cpp-httplib/",
+	# "httplib@1.0.0",
 ]

@@ -1,9 +1,10 @@
 Name = "SoupTestUtilities"
 Version = "0.1.0"
 Dependencies = [
-  "../../Dependencies/SoupTest/Assert/",
+  # "../../Dependencies/SoupTest/Assert/",
   "../Opal/",
   "../Engine/Core/",
   "../Core/",
+  "SoupTest@0.1.0",
 ]
 Public = "Module.cpp"

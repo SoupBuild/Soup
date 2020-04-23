@@ -100,14 +100,15 @@ namespace Soup::Api
             auto url = urlBuilder.str();
 
             auto secret = "secret_for_client";
+            auto scope = "soup_api";
+            auto clientId = "soup.client";
 
             auto content = std::stringstream();
             content << "grant_type=password";
-            content << "&username=" << userName;
-            content << "&password=" << password;
-            content << "&scope=soup_api";
-            content << "&client_id=soup.client";
-            content << "&client_secret=" << secret;
+            content << "&username=" << httplib::detail::encode_url(userName);
+            content << "&password=" << httplib::detail::encode_url(password);
+            content << "&scope=" << httplib::detail::encode_url(scope);
+            content << "&client_id=" << httplib::detail::encode_url(clientId);
 
             auto contentType = "application/x-www-form-urlencoded";
 
@@ -132,7 +133,6 @@ namespace Soup::Api
         }
     };
 
-// #define LOCAL_DEBUG
 #ifdef LOCAL_DEBUG
     /*static*/ const std::string_view SoupAuth::ServiceEndpoint = "localhost";
     /*static*/ const int SoupAuth::ServicePort = 5051;
