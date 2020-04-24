@@ -1,9 +1,9 @@
 Name = "SoupEngineWrapper"
 Version = "1.0.0"
 Dependencies = [
-	"../../../Dependencies/Opal/Source/",
-  "../Definition/"
-	# "Opal@0.1.1",
+	# "../../../Dependencies/Opal/Source/",
+  "../Definition/",
+	"Opal@0.1.1",
 ]
 
 Public = "Module.cpp"

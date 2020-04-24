@@ -34,7 +34,9 @@ namespace Soup
 			// Read the contents of the recipe file
 			try
 			{
-				result = RecipeToml::Deserialize(file->GetInStream());
+				result = RecipeToml::Deserialize(
+					recipeFile,
+					file->GetInStream());
 				return true;
 			}
 			catch (std::exception& ex)

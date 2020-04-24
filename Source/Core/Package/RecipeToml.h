@@ -20,12 +20,14 @@ namespace Soup
 		/// <summary>
 		/// Load from stream
 		/// </summary>
-		static Recipe Deserialize(std::istream& stream)
+		static Recipe Deserialize(
+			const Path& recipeFile,
+			std::istream& stream)
 		{
 			try
 			{
 				// Read the contents of the recipe file
-				auto root = toml::parse<toml::preserve_comments>(stream, "Recipe.toml");
+				auto root = toml::parse<toml::preserve_comments>(stream, recipeFile.ToString());
 				if (!root.is_table())
 					throw std::runtime_error("Recipe Toml file root must be a table.");
 

@@ -12,47 +12,51 @@ namespace Soup::Build::UnitTests
 		[[Fact]]
 		void Deserialize_GarbageThrows()
 		{
+			auto recipeFile = Path("Recipe.toml");
 			auto recipe = std::stringstream("garbage");
-			Assert::ThrowsRuntimeError([&recipe]() {
-				auto actual = RecipeToml::Deserialize(recipe);
+			Assert::ThrowsRuntimeError([&recipeFile, &recipe]() {
+				auto actual = RecipeToml::Deserialize(recipeFile, recipe);
 			});
 		}
 
 		[[Fact]]
 		void Deserialize_MissingNameThrows()
 		{
+			auto recipeFile = Path("Recipe.toml");
 			auto recipe = std::stringstream(
 				R"(
 					Version="1.2.3"
 				)");
 
-			Assert::ThrowsRuntimeError([&recipe]() {
-				auto actual = RecipeToml::Deserialize(recipe);
+			Assert::ThrowsRuntimeError([&recipeFile, &recipe]() {
+				auto actual = RecipeToml::Deserialize(recipeFile, recipe);
 			});
 		}
 
 		[[Fact]]
 		void Deserialize_MissingVersionThrows()
 		{
+			auto recipeFile = Path("Recipe.toml");
 			auto recipe = std::stringstream(
 				R"(
 					Name="MyPackage"
 				)");
 
-			Assert::ThrowsRuntimeError([&recipe]() {
-				auto actual = RecipeToml::Deserialize(recipe);
+			Assert::ThrowsRuntimeError([&recipeFile, &recipe]() {
+				auto actual = RecipeToml::Deserialize(recipeFile, recipe);
 			});
 		}
 
 		[[Fact]]
 		void Deserialize_Simple()
 		{
+			auto recipeFile = Path("Recipe.toml");
 			auto recipe = std::stringstream(
 				R"(
 					Name="MyPackage"
 					Version="1.2.3"
 				)");
-			auto actual = RecipeToml::Deserialize(recipe);
+			auto actual = RecipeToml::Deserialize(recipeFile, recipe);
 
 			auto expected = Recipe(
 				"MyPackage",
@@ -64,13 +68,14 @@ namespace Soup::Build::UnitTests
 		[[Fact]]
 		void Deserialize_Comments()
 		{
+			auto recipeFile = Path("Recipe.toml");
 			auto recipe = std::stringstream(
 				R"(
 					# This is an awesome project
 					Name="MyPackage"
 					Version="1.2.3"
 				)");
-			auto actual = RecipeToml::Deserialize(recipe);
+			auto actual = RecipeToml::Deserialize(recipeFile, recipe);
 
 			auto expected = Recipe(
 				"MyPackage",
@@ -84,6 +89,7 @@ namespace Soup::Build::UnitTests
 		[[Fact]]
 		void Deserialize_AllProperties()
 		{
+			auto recipeFile = Path("Recipe.toml");
 			auto recipe = std::stringstream(
 				R"(
 					Name="MyPackage"
@@ -97,7 +103,7 @@ namespace Soup::Build::UnitTests
 					IncludePaths=[]
 					Defines=[]
 				)");
-			auto actual = RecipeToml::Deserialize(recipe);
+			auto actual = RecipeToml::Deserialize(recipeFile, recipe);
 
 			auto expected = Recipe(
 				"MyPackage",
@@ -117,6 +123,7 @@ namespace Soup::Build::UnitTests
 		[[Fact]]
 		void Serialize_Simple()
 		{
+			auto recipeFile = Path("Recipe.toml");
 			auto recipe = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3));
@@ -135,6 +142,7 @@ Version = "1.2.3"
 		[[Fact]]
 		void Serialize_Comments()
 		{
+			auto recipeFile = Path("Recipe.toml");
 			auto recipe = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3));
@@ -156,6 +164,7 @@ Version = "1.2.3"
 		[[Fact]]
 		void Serialize_AllProperties()
 		{
+			auto recipeFile = Path("Recipe.toml");
 			auto recipe = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),

@@ -4,7 +4,7 @@ Public = "Module.cpp"
 
 Dependencies = [
 	"../../Dependencies/cpp-httplib/",
-	"../../Dependencies/Opal/Source/",
-	# "Opal@0.1.1",
+	# "../../Dependencies/Opal/Source/",
+	"Opal@0.1.1",
 	# "httplib@1.0.0",
 ]
