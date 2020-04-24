@@ -3,8 +3,9 @@ Version = "0.1.0"
 
 Dependencies = [
 	# "../../../Dependencies/Opal/Source/",
-	"../Definition/",
+	# "../Definition/",
 	"../Wrapper/",
+	"Soup.Engine.Definition@0.1.0",
 	"Opal@0.1.1",
 ]
 

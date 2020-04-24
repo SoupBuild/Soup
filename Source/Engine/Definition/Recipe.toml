@@ -1,5 +1,5 @@
-Name = "SoupEngineDefinition"
-Version = "1.0.0"
+Name = "Soup.Engine.Definition"
+Version = "0.1.0"
 Dependencies = [
 	# "../../../Dependencies/Opal/Source/",
 	"Opal@0.1.1",

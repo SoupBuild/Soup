@@ -6,9 +6,10 @@ Dependencies = [
 	# "../../Dependencies/json11/",
 	# "../../Dependencies/toml11/",
 	"../OpalExtensions/",
-	"../Engine/Definition/",
+	# "../Engine/Definition/",
 	"../Engine/Core/",
 	"../Engine/Wrapper/",
+	"Soup.Engine.Definition@0.1.0",
 	"json11@1.0.0",
 	"toml11@1.0.0",
 ]
