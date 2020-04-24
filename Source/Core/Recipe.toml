@@ -5,7 +5,7 @@ Dependencies = [
 	"../../Dependencies/LzmaSdk/CPP/Library/",
 	# "../../Dependencies/json11/",
 	# "../../Dependencies/toml11/",
-	"../Opal/",
+	"../OpalExtensions/",
 	"../Engine/Definition/",
 	"../Engine/Core/",
 	"../Engine/Wrapper/",

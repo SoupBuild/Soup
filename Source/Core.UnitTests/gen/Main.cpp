@@ -7,6 +7,7 @@
 #include <vector>
 
 import Opal;
+import Opal.Extensions;
 import SoupCore;
 import json11;
 import SoupTest;

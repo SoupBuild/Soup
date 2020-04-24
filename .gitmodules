@@ -25,3 +25,6 @@
 [submodule "Dependencies/openssl"]
 	path = Dependencies/openssl
 	url = https://github.com/openssl/openssl.git
+[submodule "Dependencies/Opal"]
+	path = Dependencies/Opal
+	url = https://github.com/mwasplund/Opal.git

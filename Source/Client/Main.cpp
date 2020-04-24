@@ -11,6 +11,7 @@
 #include <vector>
 
 import Opal;
+import Opal.Extensions;
 import SoupCore;
 
 using namespace Opal;

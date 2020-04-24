@@ -2,9 +2,10 @@ Name = "SoupEngineCore"
 Version = "0.1.0"
 
 Dependencies = [
-	"../../Opal/",
+	"../../../Dependencies/Opal/Source/",
 	"../Definition/",
 	"../Wrapper/",
+	# "Opal@0.1.1",
 ]
 
 Public = "Module.cpp"

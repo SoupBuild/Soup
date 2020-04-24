@@ -19,6 +19,7 @@
 export module SoupCore;
 
 import Opal;
+import Opal.Extensions;
 import SoupEngineDefinition;
 import SoupEngineWrapper;
 import SoupEngineCore;
