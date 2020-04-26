@@ -25,7 +25,7 @@ module RecipeBuild;
 
 using namespace Opal;
 
-std::shared_ptr<Soup::ICompiler> CreateMSVCCompiler(Soup::Build::ValueTableWrapper& activeState)
+std::shared_ptr<Soup::ICompiler> CreateMSVCCompiler(Soup::Build::Extensions::ValueTableWrapper& activeState)
 {
 	auto visualCompilerToolsRoot = activeState.GetValue("MSVC.VCToolsRoot").AsString().GetValue();
 	std::shared_ptr<Soup::ICompiler> compiler = std::make_shared<Soup::Compiler::MSVC::Compiler>(

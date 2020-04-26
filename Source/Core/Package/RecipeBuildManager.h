@@ -7,7 +7,7 @@
 #include "RecipeExtensions.h"
 #include "Build/Runner/BuildRunner.h"
 
-namespace Soup::Build
+namespace Soup::Build::Runtime
 {
 	/// <summary>
 	/// The recipe build manager that knows how to perform the correct build for a recipe 
@@ -311,7 +311,7 @@ namespace Soup::Build
 			{
 				// Create a new build system for the requested build
 				auto buildSystem = BuildSystem();
-				auto activeState = ValueTableWrapper(state.GetActiveState());
+				auto activeState = Extensions::ValueTableWrapper(state.GetActiveState());
 
 				// Select the correct compiler to use
 				std::string activeCompiler = "";

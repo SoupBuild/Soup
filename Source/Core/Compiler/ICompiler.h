@@ -45,15 +45,15 @@ namespace Soup
 		/// Compile
 		/// </summary>
 		// TODO: Should this state be replaced with a factory to limit access?
-		virtual Build::GraphNodeWrapper CreateCompileNode(
-			Build::BuildStateWrapper& state,
+		virtual Build::Extensions::GraphNodeWrapper CreateCompileNode(
+			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const = 0;
 
 		/// <summary>
 		/// Link
 		/// </summary>
-		virtual Build::GraphNodeWrapper CreateLinkNode(
-			Build::BuildStateWrapper& state,
+		virtual Build::Extensions::GraphNodeWrapper CreateLinkNode(
+			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const = 0;
 	};
 }

@@ -26,7 +26,7 @@ namespace RecipeBuild
 		Soup::Build::OperationResult Execute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
 
 			try
 			{
@@ -49,7 +49,7 @@ namespace RecipeBuild
 		/// The Core Execute task
 		/// </summary>
 		Soup::Build::OperationResult Execute(
-			Soup::Build::BuildStateWrapper& buildState)
+			Soup::Build::Extensions::BuildStateWrapper& buildState)
 		{
 			auto state = buildState.GetActiveState();
 
@@ -104,7 +104,7 @@ namespace RecipeBuild
 		}
 
 	private:
-		Path FindVSInstallRoot(Soup::Build::BuildStateWrapper& buildState)
+		Path FindVSInstallRoot(Soup::Build::Extensions::BuildStateWrapper& buildState)
 		{
 			// Find a copy of visual studio that has the required VisualCompiler
 			auto executablePath = Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
@@ -159,7 +159,7 @@ namespace RecipeBuild
 		}
 
 		std::string FindDefaultVCToolsVersion(
-			Soup::Build::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
 			const Path& visualStudioInstallRoot)
 		{
 			// Check the default tools version
@@ -186,7 +186,7 @@ namespace RecipeBuild
 		}
 
 		std::string FindNewestWindows10KitVersion(
-			Soup::Build::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
 			const Path& windows10KitIncludePath)
 		{
 			// Check the default tools version

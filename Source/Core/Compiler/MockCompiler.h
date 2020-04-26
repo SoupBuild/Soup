@@ -83,8 +83,8 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::GraphNodeWrapper CreateCompileNode(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CreateCompileNode(
+			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
 			_compileRequests.push_back(args);
@@ -104,8 +104,8 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::GraphNodeWrapper CreateLinkNode(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CreateLinkNode(
+			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
 			_linkRequests.push_back(args);

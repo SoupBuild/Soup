@@ -4,7 +4,7 @@
 TestState RunRecipeBuildManagerTests() 
 {
 	auto className = "RecipeBuildManagerTests";
-	auto testClass = std::make_shared<Soup::Build::UnitTests::RecipeBuildManagerTests>();
+	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::RecipeBuildManagerTests>();
 	TestState state = { 0, 0 };
 	state += SoupTest::RunTest(className, "Initialize", [&testClass]() { testClass->Initialize(); });
 

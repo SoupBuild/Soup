@@ -26,7 +26,7 @@ namespace RecipeBuild
 		Soup::Build::OperationResult Execute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
 
 			try
 			{
@@ -49,7 +49,7 @@ namespace RecipeBuild
 		/// Internal implementation that can throw
 		/// </summary>
 		Soup::Build::OperationResult Execute(
-			Soup::Build::BuildStateWrapper& buildState)
+			Soup::Build::Extensions::BuildStateWrapper& buildState)
 		{
 			auto rootTable = buildState.GetActiveState();
 			auto recipeTable = rootTable.GetValue("Recipe").AsTable();

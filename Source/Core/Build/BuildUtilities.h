@@ -15,8 +15,8 @@ namespace Soup::Build
 		/// <summary>
 		/// Create a build node that will copy a file
 		/// </summary>
-		static GraphNodeWrapper CreateCopyFileNode(
-			BuildStateWrapper& state,
+		static Extensions::GraphNodeWrapper CreateCopyFileNode(
+			Extensions::BuildStateWrapper& state,
 			const Path& source,
 			const Path& destination)
 		{
@@ -48,8 +48,8 @@ namespace Soup::Build
 		/// <summary>
 		/// Create a build node that will create a directory
 		/// </summary>
-		static GraphNodeWrapper CreateCreateDirectoryNode(
-			BuildStateWrapper& state,
+		static Extensions::GraphNodeWrapper CreateCreateDirectoryNode(
+			Extensions::BuildStateWrapper& state,
 			const Path& directory)
 		{
 			auto titleStream = std::stringstream();

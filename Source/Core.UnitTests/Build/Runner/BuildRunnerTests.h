@@ -33,7 +33,7 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>();
+			auto nodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>();
 			auto objectDirectory = Path("out/obj/release/");
 			auto forceBuild = true;
 			uut.Execute(nodes, objectDirectory, forceBuild);
@@ -83,7 +83,7 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>();
+			auto nodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>();
 			auto objectDirectory = Path("out/obj/release/");
 			auto forceBuild = false;
 			uut.Execute(nodes, objectDirectory, forceBuild);
@@ -137,8 +137,8 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
-				new BuildGraphNode(
+			auto nodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+				new Runtime::BuildGraphNode(
 					"TestCommand: 1",
 					"Command.exe",
 					"Arguments",
@@ -203,8 +203,8 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
-				new BuildGraphNode(
+			auto nodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+				new Runtime::BuildGraphNode(
 					"TestCommand: 1",
 					"Command.exe",
 					"Arguments",
@@ -281,8 +281,8 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
-				new BuildGraphNode(
+			auto nodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+				new Runtime::BuildGraphNode(
 					"TestCommand: 1",
 					"Command.exe",
 					"Arguments",
@@ -360,8 +360,8 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
-				new BuildGraphNode(
+			auto nodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+				new Runtime::BuildGraphNode(
 					"TestCommand: 1",
 					"Command.exe",
 					"Arguments",
@@ -447,8 +447,8 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
-				new BuildGraphNode(
+			auto nodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+				new Runtime::BuildGraphNode(
 					"TestCommand: 1",
 					"Command.exe",
 					"Arguments",
@@ -539,8 +539,8 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<BuildGraphNode>>({
-				new BuildGraphNode(
+			auto nodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+				new Runtime::BuildGraphNode(
 					"TestCommand: 1",
 					"Command.exe",
 					"Arguments",

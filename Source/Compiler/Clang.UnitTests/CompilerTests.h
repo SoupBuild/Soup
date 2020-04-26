@@ -30,12 +30,12 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.TargetFile = Path("obj/File.o");
 			arguments.RootDirectory = Path("Source");
 
-			auto buildState = Build::BuildState(Build::ValueTable());
-			auto result = uut.CreateCompileNode(Build::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto result = uut.CreateCompileNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::BuildGraphNode>(
-				new Build::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
+				new Build::Runtime::BuildGraphNode(
 					"File.cpp",
 					"C:/Clang/bin/clang++.exe",
 					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
@@ -70,12 +70,12 @@ namespace Soup::Compiler::Clang::UnitTests
 			});
 			arguments.ExportModule = true;
 
-			auto buildState = Build::BuildState(Build::ValueTable());
-			auto result = uut.CreateCompileNode(Build::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto result = uut.CreateCompileNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::BuildGraphNode>(
-				new Build::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
+				new Build::Runtime::BuildGraphNode(
 					"File.cpp",
 					"C:/Clang/bin/clang++.exe",
 					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
@@ -87,8 +87,8 @@ namespace Soup::Compiler::Clang::UnitTests
 					std::vector<std::string>({
 						"obj/File.pcm",
 					}),
-					std::vector<Memory::Reference<Build::BuildGraphNode>>({
-						new Build::BuildGraphNode(
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
+						new Build::Runtime::BuildGraphNode(
 							"obj/File.pcm",
 							"C:/Clang/bin/clang++.exe",
 							"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
@@ -117,12 +117,12 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("File.mock.o"),
 			});
 
-			auto buildState = Build::BuildState(Build::ValueTable());
-			auto result = uut.CreateLinkNode(Build::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto result = uut.CreateLinkNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::BuildGraphNode>(
-				new Build::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
+				new Build::Runtime::BuildGraphNode(
 					"Library.mock.a",
 					"C:/Clang/bin/llvm-ar.exe",
 					"rc Library.mock.a File.mock.o",
@@ -153,12 +153,12 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("Library.mock.a"),
 			});
 
-			auto buildState = Build::BuildState(Build::ValueTable());
-			auto result = uut.CreateLinkNode(Build::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto result = uut.CreateLinkNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::BuildGraphNode>(
-				new Build::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
+				new Build::Runtime::BuildGraphNode(
 					"Something.exe",
 					"C:/Clang/bin/lld-link.exe",
 					"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",

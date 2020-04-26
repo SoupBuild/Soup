@@ -68,8 +68,8 @@ namespace Soup::Compiler::Clang
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::GraphNodeWrapper CreateCompileNode(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CreateCompileNode(
+			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
 			// Clang decided to do their module compilation in two stages
@@ -87,8 +87,8 @@ namespace Soup::Compiler::Clang
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::GraphNodeWrapper CreateLinkNode(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CreateLinkNode(
+			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
 			// Select the correct executable for linking libraries or executables
@@ -123,8 +123,8 @@ namespace Soup::Compiler::Clang
 		}
 
 	private:
-		Build::GraphNodeWrapper CompileStandard(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CompileStandard(
+			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolPath + Path(CompilerExecutable);
@@ -145,8 +145,8 @@ namespace Soup::Compiler::Clang
 			return buildNode;
 		}
 
-		Build::GraphNodeWrapper CompileModuleInterfaceUnit(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CompileModuleInterfaceUnit(
+			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolPath + Path(CompilerExecutable);
@@ -211,7 +211,7 @@ namespace Soup::Compiler::Clang
 				std::move(compileObjectOutputFiles));
 
 			// Ensure the compile node runs after the precompile
-			Build::GraphNodeExtensions::AddLeafChild(precompiledModuleBuildNode, compileBuildNode);
+			Build::Extensions::GraphNodeExtensions::AddLeafChild(precompiledModuleBuildNode, compileBuildNode);
 
 			return precompiledModuleBuildNode;
 		}

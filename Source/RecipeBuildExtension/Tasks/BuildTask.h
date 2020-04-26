@@ -6,7 +6,7 @@
 
 namespace RecipeBuild
 {
-	export using CreateCompiler = std::function<std::shared_ptr<Soup::ICompiler>(Soup::Build::ValueTableWrapper&)>;
+	export using CreateCompiler = std::function<std::shared_ptr<Soup::ICompiler>(Soup::Build::Extensions::ValueTableWrapper&)>;
 	export using CompilerFactory = std::map<std::string, CreateCompiler>;
 
 	/// <summary>
@@ -34,7 +34,7 @@ namespace RecipeBuild
 		Soup::Build::OperationResult Execute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
 
 			try
 			{
@@ -57,7 +57,7 @@ namespace RecipeBuild
 		/// The Core build task
 		/// </summary>
 		Soup::Build::OperationResult Execute(
-			Soup::Build::BuildStateWrapper& buildState)
+			Soup::Build::Extensions::BuildStateWrapper& buildState)
 		{
 			auto activeState = buildState.GetActiveState();
 			auto parentState = buildState.GetParentState();

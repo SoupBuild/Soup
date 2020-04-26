@@ -25,7 +25,7 @@ namespace Soup::Build
 		/// Generate the required build nodes for the requested build
 		/// </summary>
 		BuildResult Execute(
-			Soup::Build::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
 			const BuildArguments& arguments)
 		{
 			auto result = BuildResult();
@@ -63,14 +63,14 @@ namespace Soup::Build
 		/// Compile the module and source files
 		/// </summary>
 		void CoreCompile(
-			Soup::Build::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
-			auto rootCompileNodes = std::vector<Soup::Build::GraphNodeWrapper>();
+			auto rootCompileNodes = std::vector<Soup::Build::Extensions::GraphNodeWrapper>();
 
 			// Compile the module interface unit if present
-			auto moduleCompileNode = Soup::Build::GraphNodeWrapper();
+			auto moduleCompileNode = Soup::Build::Extensions::GraphNodeWrapper();
 			if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
 			{
 				CompileModuleInterfaceUnit(
@@ -92,7 +92,7 @@ namespace Soup::Build
 					buildState,
 					objectModuleInterfaceFile,
 					binaryOutputModuleInterfaceFile);
-				Soup::Build::GraphNodeExtensions::AddLeafChild(result.BuildNodes, copyInterfaceNode);
+				Soup::Build::Extensions::GraphNodeExtensions::AddLeafChild(result.BuildNodes, copyInterfaceNode);
 
 				// Add output module interface to the parent set of modules
 				// This will allow the module implementation units access as well as downstream
@@ -114,7 +114,7 @@ namespace Soup::Build
 		/// Returns true if the file was compiled
 		/// </summary>
 		void CompileModuleInterfaceUnit(
-			Soup::Build::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
@@ -146,14 +146,14 @@ namespace Soup::Build
 			auto compileNode = _compiler->CreateCompileNode(buildState, compileArguments);
 
 			// Run after the module interface unit compile
-			Soup::Build::GraphNodeExtensions::AddLeafChild(result.BuildNodes, compileNode);
+			Soup::Build::Extensions::GraphNodeExtensions::AddLeafChild(result.BuildNodes, compileNode);
 		}
 
 		/// <summary>
 		/// Compile the supporting source files
 		/// </summary>
 		void CompileSourceFiles(
-			Soup::Build::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
@@ -180,7 +180,7 @@ namespace Soup::Build
 				std::back_inserter(compileArguments.IncludeModules)); 
 
 			// Compile the individual translation units
-			auto buildNodes = std::vector<Soup::Build::GraphNodeWrapper>();
+			auto buildNodes = std::vector<Soup::Build::Extensions::GraphNodeWrapper>();
 			for (auto& file : arguments.SourceFiles)
 			{
 				buildState.LogInfo("Generate Compile Node: " + file.ToString());
@@ -194,14 +194,14 @@ namespace Soup::Build
 			}
 
 			// Run the core compile next
-			Soup::Build::GraphNodeExtensions::AddLeafChildren(result.BuildNodes, buildNodes);
+			Soup::Build::Extensions::GraphNodeExtensions::AddLeafChildren(result.BuildNodes, buildNodes);
 		}
 
 		/// <summary>
 		/// Link the library
 		/// </summary>
 		void CoreLink(
-			Soup::Build::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
@@ -316,21 +316,21 @@ namespace Soup::Build
 			auto linkNode = _compiler->CreateLinkNode(buildState, linkArguments);
 
 			// Run the link node
-			Soup::Build::GraphNodeExtensions::AddLeafChild(result.BuildNodes, linkNode);
+			Soup::Build::Extensions::GraphNodeExtensions::AddLeafChild(result.BuildNodes, linkNode);
 		}
 
 		/// <summary>
 		/// Copy runtime dependencies
 		/// </summary>
 		void CopyRuntimeDependencies(
-			Soup::Build::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
 			if (arguments.TargetType == BuildTargetType::Executable ||
 				arguments.TargetType == BuildTargetType::DynamicLibrary)
 			{
-				auto copyNodes = std::vector<Soup::Build::GraphNodeWrapper>();
+				auto copyNodes = std::vector<Soup::Build::Extensions::GraphNodeWrapper>();
 				for (auto source : arguments.RuntimeDependencies)
 				{
 					auto target = arguments.WorkingDirectory + arguments.BinaryDirectory + Path(source.GetFileName());
@@ -340,7 +340,7 @@ namespace Soup::Build
 				
 				if (!copyNodes.empty())
 				{
-					Soup::Build::GraphNodeExtensions::AddLeafChildren(result.BuildNodes, copyNodes);
+					Soup::Build::Extensions::GraphNodeExtensions::AddLeafChildren(result.BuildNodes, copyNodes);
 				}
 			}
 		}

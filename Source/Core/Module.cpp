@@ -20,9 +20,9 @@ export module SoupCore;
 
 import Opal;
 import Opal.Extensions;
-import SoupEngineDefinition;
-import SoupEngineWrapper;
-import SoupEngineCore;
+import Soup.Build;
+import Soup.Build.Extensions;
+import Soup.Build.Runtime;
 import LzmaSdk;
 import json11;
 import toml11;

@@ -23,9 +23,9 @@ export module RecipeBuild;
 
 import Opal;
 import json11;
-import SoupEngineDefinition;
-import SoupEngineWrapper;
-import SoupEngineCore;
+import Soup.Build;
+import Soup.Build.Extensions;
+import Soup.Build.Runtime;
 import SoupCore;
 import SoupCompilerClang;
 import SoupCompilerMSVC;

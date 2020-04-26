@@ -10,9 +10,9 @@ import SoupCore;
 import SoupCompilerClang;
 import SoupTest;
 import SoupTestUtilities;
-import SoupEngineDefinition;
-import SoupEngineWrapper;
-import SoupEngineCore;
+import Soup.Build;
+import Soup.Build.Extensions;
+import Soup.Build.Runtime;
 
 using namespace Opal;
 using namespace Opal::System;

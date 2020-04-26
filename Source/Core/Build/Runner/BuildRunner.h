@@ -25,7 +25,7 @@ namespace Soup::Build
 		}
 
 		void Execute(
-			const std::vector<Memory::Reference<BuildGraphNode>>& nodes,
+			const std::vector<Memory::Reference<Runtime::BuildGraphNode>>& nodes,
 			const Path& objectDirectory,
 			bool forceBuild)
 		{
@@ -62,7 +62,7 @@ namespace Soup::Build
 		/// Build dependencies
 		/// </summary>
 		void BuildDependencies(
-			const std::vector<Memory::Reference<BuildGraphNode>>& nodes,
+			const std::vector<Memory::Reference<Runtime::BuildGraphNode>>& nodes,
 			const std::set<int>& parentSet)
 		{
 			for (auto& node : nodes)
@@ -95,7 +95,7 @@ namespace Soup::Build
 		/// Execute the collection of build nodes
 		/// </summary>
 		void CheckExecuteNodes(
-			const std::vector<Memory::Reference<BuildGraphNode>>& nodes,
+			const std::vector<Memory::Reference<Runtime::BuildGraphNode>>& nodes,
 			bool forceBuild)
 		{
 			for (auto& node : nodes)
@@ -125,7 +125,7 @@ namespace Soup::Build
 		/// Execute a single build node and all of its children
 		/// </summary>
 		void ExecuteNode(
-			const BuildGraphNode& node,
+			const Runtime::BuildGraphNode& node,
 			bool forceBuild)
 		{
 			bool buildRequired = forceBuild;
@@ -256,7 +256,7 @@ namespace Soup::Build
 		}
 
 		bool TryParsesHeaderIncludes(
-			const BuildGraphNode& node,
+			const Runtime::BuildGraphNode& node,
 			const std::string& output,
 			std::vector<HeaderInclude>& headerIncludes,
 			std::stringstream& cleanOutput)

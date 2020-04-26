@@ -14,7 +14,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Gets or sets the resulting root build nodes
 		/// </summary>
-		std::vector<Soup::Build::GraphNodeWrapper> BuildNodes;
+		std::vector<Soup::Build::Extensions::GraphNodeWrapper> BuildNodes;
 
 		/// <summary>
 		/// Gets or sets the list of module dependencies

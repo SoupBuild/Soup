@@ -66,8 +66,8 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::GraphNodeWrapper CreateCompileNode(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CreateCompileNode(
+			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
 			// Clang decided to do their module compilation in two stages
@@ -85,8 +85,8 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::GraphNodeWrapper CreateLinkNode(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CreateLinkNode(
+			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
 			// Select the correct executable for linking libraries or executables
@@ -121,8 +121,8 @@ namespace Soup::Compiler::MSVC
 		}
 
 	private:
-		Build::GraphNodeWrapper CompileStandard(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CompileStandard(
+			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
@@ -144,8 +144,8 @@ namespace Soup::Compiler::MSVC
 			return buildNode;
 		}
 
-		Build::GraphNodeWrapper CompileModuleInterfaceUnit(
-			Build::BuildStateWrapper& state,
+		Build::Extensions::GraphNodeWrapper CompileModuleInterfaceUnit(
+			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
