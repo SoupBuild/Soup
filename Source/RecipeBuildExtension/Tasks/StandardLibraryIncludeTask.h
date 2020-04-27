@@ -21,6 +21,22 @@ namespace RecipeBuild
 		}
 
 		/// <summary>
+		/// Get the run before list
+		/// </summary>
+		const Soup::Build::IList<const char*>& GetRunBeforeList() const noexcept override final
+		{
+			return _runBeforeList;
+		}
+
+		/// <summary>
+		/// Get the run after list
+		/// </summary>
+		const Soup::Build::IList<const char*>& GetRunAfterList() const noexcept override final
+		{
+			return _runAfterList;
+		}
+
+		/// <summary>
 		/// The Core Execute task
 		/// </summary>
 		Soup::Build::OperationResult Execute(
@@ -38,5 +54,9 @@ namespace RecipeBuild
 				return -1;
 			}
 		}
+
+	private:
+		Soup::Build::Runtime::StringList _runBeforeList;
+		Soup::Build::Runtime::StringList _runAfterList;
 	};
 }

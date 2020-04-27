@@ -6,7 +6,7 @@
 
 namespace Soup::Build::Runtime
 {
-	class StringList : public IList<const char*>
+	export class StringList : public IList<const char*>
 	{
 	public:
 		/// <summary>
