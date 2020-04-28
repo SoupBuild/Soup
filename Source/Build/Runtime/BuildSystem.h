@@ -29,6 +29,37 @@ namespace Soup::Build::Runtime
 			try
 			{
 				Log::Diag(std::string("RegisterTask: ") + task->GetName());
+
+				std::stringstream runBeforeMessage;
+				runBeforeMessage << "RunBefore [";
+				bool isFirst = true;
+				for (auto& taskName : Extensions::StringListWrapper(task->GetRunBeforeList()).CopyAsStringVector())
+				{
+					if (!isFirst)
+						runBeforeMessage << ", ";
+
+					runBeforeMessage << "\"" << taskName << "\"";
+					isFirst = false;
+				}
+
+				runBeforeMessage << "]";
+				Log::Diag(runBeforeMessage.str());
+
+				std::stringstream runAfterMessage;
+				runAfterMessage << "RunAfter [";
+				isFirst = true;
+				for (auto& taskName : Extensions::StringListWrapper(task->GetRunAfterList()).CopyAsStringVector())
+				{
+					if (!isFirst)
+						runAfterMessage << ", ";
+
+					runAfterMessage << "\"" << taskName << "\"";
+					isFirst = false;
+				}
+
+				runAfterMessage << "]";
+				Log::Diag(runAfterMessage.str());
+
 				_tasks.push_back(task);
 				return 0;
 			}

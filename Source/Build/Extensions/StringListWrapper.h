@@ -9,7 +9,7 @@ namespace Soup::Build::Extensions
 	/// <summary>
 	/// Build State property list implementation, string specialization
 	/// </summary>
-	class StringListWrapper
+	export class StringListWrapper
 	{
 	public:
 		/// <summary>
