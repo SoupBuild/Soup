@@ -1,6 +1,6 @@
 @echo off
 SET ScriptsDir=%~dp0
-SET ClientDir=%ScriptsDir%..\Source\Client
+SET ClientDir=%ScriptsDir%..\Source\Client\CLI
 SET OutDir=%ClientDir%\out
 SET BinaryDir=%OutDir%\bin
 SET RunDir=%OutDir%\run

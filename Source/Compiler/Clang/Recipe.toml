@@ -1,8 +1,0 @@
-Name = "SoupCompilerClang"
-Version = "0.1.0"
-Dependencies = [
-	"../../Core/",
-	"../MSVC/",
-]
-
-Public = "Module.cpp"

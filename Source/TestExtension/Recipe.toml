@@ -3,7 +3,7 @@ Type = "DynamicLibrary"
 Version = "1.0.0"
 
 Dependencies = [
-	"../Core/",
+	"../Client/Core/",
 ]
 
 Public = "Module.cpp"

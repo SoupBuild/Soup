@@ -6,6 +6,6 @@ Dependencies = [
   # "../../Dependencies/Opal/Source/",
   "Opal@0.1.1",
   "../Build/Runtime/",
-  "../Core/",
+  "../Client/Core/",
 ]
 Public = "Module.cpp"

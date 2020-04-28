@@ -16,3 +16,6 @@ using namespace Opal;
 #include "GraphNodeExtensions.h"
 #include "ValueListWrapper.h"
 #include "ValuePrimitiveWrapper.h"
+
+#include "RecipeLanguageVersion.h"
+#include "RecipeType.h"
