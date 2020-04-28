@@ -1,14 +1,14 @@
-Name = "SoupCompilerMSVCUnitTests"
+Name = "SoupCompilerCoreUnitTests"
 Version = "1.0.0"
 Type = "Executable"
 Dependencies = [
-  # "../../../Dependencies/SoupTest/Assert/",
-  "../MSVC/",
+  "../Core/",
+  "../../../Build/Runtime/",
   "../../../TestUtilities/",
   "SoupTest@0.1.0",
 ]
 Source = [
-  "gen/Main.cpp",
+  "gen/Main.cpp"
 ]
 IncludePaths = [
   "./",

@@ -11,11 +11,11 @@ import Opal.Extensions;
 import SoupCore;
 import json11;
 import SoupTest;
+import SoupTestUtilities;
 
 using namespace Opal;
 using namespace Opal::System;
 using namespace SoupTest;
-import SoupTestUtilities;
 
 #include "Api/SoupApiTests.gen.h"
 #include "Api/SoupApiJsonModelsTests.gen.h"
@@ -26,8 +26,6 @@ import SoupTestUtilities;
 #include "Build/Runner/BuildHistoryManagerTests.gen.h"
 #include "Build/Runner/BuildRunnerTests.gen.h"
 
-#include "Build/BuildEngineTests.gen.h"
-
 #include "Config/LocalUserConfigExtensionsTests.gen.h"
 #include "Config/LocalUserConfigJsonTests.gen.h"
 #include "Config/LocalUserConfigTests.gen.h"
@@ -37,11 +35,9 @@ import SoupTestUtilities;
 #include "Package/RecipeBuilderTests.gen.h"
 #include "Package/RecipeBuildManagerTests.gen.h"
 #include "Package/RecipeExtensionsTests.gen.h"
-#include "Package/RecipeLanguageVersionTests.gen.h"
 #include "Package/RecipeJsonTests.gen.h"
 #include "Package/RecipeTests.gen.h"
 #include "Package/RecipeTomlTests.gen.h"
-#include "Package/RecipeTypeTests.gen.h"
 
 #include "Utils/PathTests.gen.h"
 #include "Utils/SemanticVersionTests.gen.h"
@@ -61,8 +57,6 @@ int main()
 	state += RunBuildHistoryManagerTests();
 	state += RunBuildRunnerTests();
 
-	state += RunBuildEngineTests();
-
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigJsonTests();
 	state += RunLocalUserConfigTests();
@@ -72,11 +66,9 @@ int main()
 	state += RunRecipeBuilderTests();
 	state += RunRecipeBuildManagerTests();
 	state += RunRecipeExtensionsTests();
-	state += RunRecipeLanguageVersionTests();
 	state += RunRecipeJsonTests();
 	state += RunRecipeTests();
 	state += RunRecipeTomlTests();
-	state += RunRecipeTypeTests();
 
 	state += RunPathTests();
 	state += RunSemanticVersionTests();

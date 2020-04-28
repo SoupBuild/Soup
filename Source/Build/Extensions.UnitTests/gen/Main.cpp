@@ -1,16 +1,14 @@
+#include <any>
 #include <iostream>
 #include <memory>
-#include <stdexcept>
-#include <string>
+#include <optional>
 #include <sstream>
+#include <string>
 #include <vector>
 
 import Opal;
-import SoupCompiler;
-import SoupCompilerMSVC;
-import Soup.Build;
 import Soup.Build.Extensions;
-import Soup.Build.Runtime;
+import json11;
 import SoupTest;
 import SoupTestUtilities;
 
@@ -18,9 +16,8 @@ using namespace Opal;
 using namespace Opal::System;
 using namespace SoupTest;
 
-#include "CompilerArgumentBuilderTests.gen.h"
-#include "CompilerTests.gen.h"
-#include "LinkerArgumentBuilderTests.gen.h"
+#include "RecipeLanguageVersionTests.gen.h"
+#include "RecipeTypeTests.gen.h"
 
 int main()
 {
@@ -28,9 +25,8 @@ int main()
 
 	TestState state = { 0, 0 };
 
-	state += RunCompilerArgumentBuilderTests();
-	state += RunCompilerTests();
-	state += RunLinkerArgumentBuilderTests();
+	state += RunRecipeLanguageVersionTests();
+	state += RunRecipeTypeTests();
 
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;

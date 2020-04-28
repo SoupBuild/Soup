@@ -134,9 +134,9 @@ namespace Soup::Compiler::MSVC::UnitTests
 		}
 
 		[[Theory]]
-		[[InlineData(Soup::LanguageStandard::CPP11, "/std:c++11")]]
-		[[InlineData(Soup::LanguageStandard::CPP14, "/std:c++14")]]
-		[[InlineData(Soup::LanguageStandard::CPP17, "/clang:-std=c++17")]]
+		[[InlineData(Soup::Compiler::LanguageStandard::CPP11, "/std:c++11")]]
+		[[InlineData(Soup::Compiler::LanguageStandard::CPP14, "/std:c++14")]]
+		[[InlineData(Soup::Compiler::LanguageStandard::CPP17, "/clang:-std=c++17")]]
 		void SingleArgument_LanguageStandard(LanguageStandard standard, std::string expectedFlag)
 		{
 			CompileArguments arguments = {};

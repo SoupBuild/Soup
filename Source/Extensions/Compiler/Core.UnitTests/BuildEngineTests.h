@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::UnitTests
+namespace Soup::Compiler::UnitTests
 {
 	class BuildEngineTests
 	{
@@ -44,8 +44,8 @@ namespace Soup::Build::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Runtime::BuildState();
-			auto result = uut.Execute(Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Runtime::BuildState();
+			auto result = uut.Execute(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -95,8 +95,8 @@ namespace Soup::Build::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Runtime::BuildGraphNode>(
-					new Runtime::BuildGraphNode(
+				Memory::Reference<Build::Runtime::BuildGraphNode>(
+					new Build::Runtime::BuildGraphNode(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -109,8 +109,8 @@ namespace Soup::Build::UnitTests
 						})));
 
 			auto expectedCompileNode =
-				Memory::Reference<Runtime::BuildGraphNode>(
-					new Runtime::BuildGraphNode(
+				Memory::Reference<Build::Runtime::BuildGraphNode>(
+					new Build::Runtime::BuildGraphNode(
 						"MockCompile: 1",
 						"MockCompiler.exe",
 						"Arguments",
@@ -121,12 +121,12 @@ namespace Soup::Build::UnitTests
 						std::vector<std::string>({
 							"OutputFile.out",
 						}),
-						std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+						std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 							expectedLinkNode,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
-				new Runtime::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
+				new Build::Runtime::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
@@ -135,10 +135,10 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"C:/root/obj",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedCompileNode,
 					})),
-				new Runtime::BuildGraphNode(
+				new Build::Runtime::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
@@ -147,7 +147,7 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"C:/root/bin",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedCompileNode,
 					})),
 			});
@@ -210,8 +210,8 @@ namespace Soup::Build::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Runtime::BuildState();
-			auto result = uut.Execute(Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Runtime::BuildState();
+			auto result = uut.Execute(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -283,8 +283,8 @@ namespace Soup::Build::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Runtime::BuildGraphNode>(
-					new Runtime::BuildGraphNode(
+				Memory::Reference<Build::Runtime::BuildGraphNode>(
+					new Build::Runtime::BuildGraphNode(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -296,8 +296,8 @@ namespace Soup::Build::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCompileNodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
-				new Runtime::BuildGraphNode(
+			auto expectedCompileNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
+				new Build::Runtime::BuildGraphNode(
 					"MockCompile: 1",
 					"MockCompiler.exe",
 					"Arguments",
@@ -308,10 +308,10 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
-				new Runtime::BuildGraphNode(
+				new Build::Runtime::BuildGraphNode(
 					"MockCompile: 2",
 					"MockCompiler.exe",
 					"Arguments",
@@ -322,10 +322,10 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
-				new Runtime::BuildGraphNode(
+				new Build::Runtime::BuildGraphNode(
 					"MockCompile: 3",
 					"MockCompiler.exe",
 					"Arguments",
@@ -336,13 +336,13 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
 			});
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
-				new Runtime::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
+				new Build::Runtime::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
@@ -352,7 +352,7 @@ namespace Soup::Build::UnitTests
 						"C:/root/obj",
 					}),
 					expectedCompileNodes),
-				new Runtime::BuildGraphNode(
+				new Build::Runtime::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
@@ -431,8 +431,8 @@ namespace Soup::Build::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Runtime::BuildState();
-			auto result = uut.Execute(Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Runtime::BuildState();
+			auto result = uut.Execute(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -518,8 +518,8 @@ namespace Soup::Build::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Runtime::BuildGraphNode>(
-					new Runtime::BuildGraphNode(
+				Memory::Reference<Build::Runtime::BuildGraphNode>(
+					new Build::Runtime::BuildGraphNode(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -531,8 +531,8 @@ namespace Soup::Build::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCompileSourceNodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
-				new Runtime::BuildGraphNode(
+			auto expectedCompileSourceNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
+				new Build::Runtime::BuildGraphNode(
 					"MockCompile: 2",
 					"MockCompiler.exe",
 					"Arguments",
@@ -543,10 +543,10 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
-				new Runtime::BuildGraphNode(
+				new Build::Runtime::BuildGraphNode(
 					"MockCompile: 3",
 					"MockCompiler.exe",
 					"Arguments",
@@ -557,10 +557,10 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
-				new Runtime::BuildGraphNode(
+				new Build::Runtime::BuildGraphNode(
 					"MockCompile: 4",
 					"MockCompiler.exe",
 					"Arguments",
@@ -571,14 +571,14 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedLinkNode,
 					})),
 			});
 
 			auto expectedCopyModuleInterfaceNode =
-				Memory::Reference<Runtime::BuildGraphNode>(
-					new Runtime::BuildGraphNode(
+				Memory::Reference<Build::Runtime::BuildGraphNode>(
+					new Build::Runtime::BuildGraphNode(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
 						"C:/Windows/System32/cmd.exe",
 						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
@@ -592,8 +592,8 @@ namespace Soup::Build::UnitTests
 						expectedCompileSourceNodes));
 
 			auto expectedCompileModuleNode =
-				Memory::Reference<Runtime::BuildGraphNode>(
-					new Runtime::BuildGraphNode(
+				Memory::Reference<Build::Runtime::BuildGraphNode>(
+					new Build::Runtime::BuildGraphNode(
 						"MockCompile: 1",
 						"MockCompiler.exe",
 						"Arguments",
@@ -604,12 +604,12 @@ namespace Soup::Build::UnitTests
 						std::vector<std::string>({
 							"OutputFile.out",
 						}),
-						std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+						std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 							expectedCopyModuleInterfaceNode,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
-				new Runtime::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
+				new Build::Runtime::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
@@ -618,10 +618,10 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"C:/root/obj",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
-				new Runtime::BuildGraphNode(
+				new Build::Runtime::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
@@ -630,7 +630,7 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"C:/root/bin",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
 			});
@@ -696,8 +696,8 @@ namespace Soup::Build::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Runtime::BuildState();
-			auto result = uut.Execute(Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Runtime::BuildState();
+			auto result = uut.Execute(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -756,8 +756,8 @@ namespace Soup::Build::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Runtime::BuildGraphNode>(
-					new Runtime::BuildGraphNode(
+				Memory::Reference<Build::Runtime::BuildGraphNode>(
+					new Build::Runtime::BuildGraphNode(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -770,8 +770,8 @@ namespace Soup::Build::UnitTests
 						})));
 
 			auto expectedCopyModuleInterfaceNode =
-				Memory::Reference<Runtime::BuildGraphNode>(
-					new Runtime::BuildGraphNode(
+				Memory::Reference<Build::Runtime::BuildGraphNode>(
+					new Build::Runtime::BuildGraphNode(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
 						"C:/Windows/System32/cmd.exe",
 						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
@@ -782,13 +782,13 @@ namespace Soup::Build::UnitTests
 						std::vector<std::string>({
 							"C:/root/bin/Library.mock.bmi",
 						}),
-						std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+						std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 							expectedLinkNode,
 						})));
 
 			auto expectedCompileModuleNode =
-				Memory::Reference<Runtime::BuildGraphNode>(
-					new Runtime::BuildGraphNode(
+				Memory::Reference<Build::Runtime::BuildGraphNode>(
+					new Build::Runtime::BuildGraphNode(
 						"MockCompile: 1",
 						"MockCompiler.exe",
 						"Arguments",
@@ -799,12 +799,12 @@ namespace Soup::Build::UnitTests
 						std::vector<std::string>({
 							"OutputFile.out",
 						}),
-						std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+						std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 							expectedCopyModuleInterfaceNode,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
-				new Runtime::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
+				new Build::Runtime::BuildGraphNode(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
@@ -813,10 +813,10 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"C:/root/obj",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
-				new Runtime::BuildGraphNode(
+				new Build::Runtime::BuildGraphNode(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
@@ -825,7 +825,7 @@ namespace Soup::Build::UnitTests
 					std::vector<std::string>({
 						"C:/root/bin",
 					}),
-					std::vector<Memory::Reference<Runtime::BuildGraphNode>>({
+					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
 						expectedCompileModuleNode,
 					})),
 			});

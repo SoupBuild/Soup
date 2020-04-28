@@ -1,4 +1,4 @@
-Name = "SoupCompiler"
+Name = "SoupCompilerCore"
 Version = "0.1.0"
 Dependencies = [
   # "../../../Dependencies/Opal/Source/",

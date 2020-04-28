@@ -32,8 +32,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP20,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP20,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -54,9 +54,9 @@ namespace Soup::Build::UnitTests
 			Assert::AreEqual<std::string_view>("MyPackage", uut.GetName(), "Verify name matches expected.");
 			Assert::AreEqual(SemanticVersion(1, 2, 3), uut.GetVersion(), "Verify version is correct.");
 			Assert::IsTrue(uut.HasType(), "Verify has type.");
-			Assert::AreEqual(RecipeType::Executable, uut.GetType(), "Verify type is correct.");
+			Assert::AreEqual(Build::Extensions::RecipeType::Executable, uut.GetType(), "Verify type is correct.");
 			Assert::IsTrue(uut.HasLanguageVersion(), "Verify has language version.");
-			Assert::AreEqual(RecipeLanguageVersion::CPP20, uut.GetLanguageVersion(), "Verify language version is correct.");
+			Assert::AreEqual(Build::Extensions::RecipeLanguageVersion::CPP20, uut.GetLanguageVersion(), "Verify language version is correct.");
 			Assert::IsTrue(uut.HasDependencies(), "Verify has dependencies.");
 			Assert::AreEqual(
 				std::vector<PackageReference>({
@@ -110,8 +110,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -133,8 +133,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -161,8 +161,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -184,8 +184,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage2",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -212,8 +212,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -235,8 +235,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(11, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -263,8 +263,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -286,8 +286,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::StaticLibrary,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::StaticLibrary,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -314,8 +314,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -338,7 +338,7 @@ namespace Soup::Build::UnitTests
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
 					std::nullopt,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -365,8 +365,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -388,8 +388,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP20,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP20,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -416,8 +416,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -439,7 +439,7 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
+					Build::Extensions::RecipeType::Executable,
 					std::nullopt,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
@@ -467,8 +467,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -490,8 +490,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 					}),
 					std::vector<PackageReference>({
@@ -517,8 +517,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -540,8 +540,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::nullopt,
 					std::vector<PackageReference>({
 						PackageReference(Path("../BuildTask")),
@@ -566,8 +566,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -589,8 +589,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -616,8 +616,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -639,8 +639,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -665,8 +665,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -688,8 +688,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -716,8 +716,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -739,8 +739,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -767,8 +767,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -790,8 +790,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -817,8 +817,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -840,8 +840,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -866,8 +866,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -889,8 +889,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -916,8 +916,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -939,8 +939,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -965,8 +965,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -988,8 +988,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),
@@ -1015,8 +1015,8 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				RecipeType::Executable,
-				RecipeLanguageVersion::CPP17,
+				Build::Extensions::RecipeType::Executable,
+				Build::Extensions::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
 				}),
@@ -1038,8 +1038,8 @@ namespace Soup::Build::UnitTests
 				Recipe(
 					"MyPackage",
 					SemanticVersion(1, 2, 3),
-					RecipeType::Executable,
-					RecipeLanguageVersion::CPP17,
+					Build::Extensions::RecipeType::Executable,
+					Build::Extensions::RecipeLanguageVersion::CPP17,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),
 					}),

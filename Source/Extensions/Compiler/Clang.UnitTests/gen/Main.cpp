@@ -6,7 +6,7 @@
 #include <vector>
 
 import Opal;
-import SoupCore;
+import SoupCompiler;
 import SoupCompilerClang;
 import SoupTest;
 import SoupTestUtilities;
