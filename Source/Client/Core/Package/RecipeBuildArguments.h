@@ -46,6 +46,11 @@ namespace Soup
 		std::vector<std::string> PlatformLibraries;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to skip running the build operations
+		/// </summary>
+		bool SkipRun;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to force a rebuild
 		/// </summary>
 		bool ForceRebuild;

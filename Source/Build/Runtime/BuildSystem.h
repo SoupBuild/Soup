@@ -28,17 +28,20 @@ namespace Soup::Build::Runtime
 		{
 			try
 			{
-				Log::Diag(std::string("RegisterTask: ") + task->GetName());
+				Memory::Reference<IBuildTask> ourTask = task;
+
+				std::string taskName = ourTask->GetName();
+				Log::Diag("RegisterTask: " + taskName);
 
 				std::stringstream runBeforeMessage;
 				runBeforeMessage << "RunBefore [";
 				bool isFirst = true;
-				for (auto& taskName : Extensions::StringListWrapper(task->GetRunBeforeList()).CopyAsStringVector())
+				for (auto& name : Extensions::StringListWrapper(ourTask->GetRunBeforeList()).CopyAsStringVector())
 				{
 					if (!isFirst)
 						runBeforeMessage << ", ";
 
-					runBeforeMessage << "\"" << taskName << "\"";
+					runBeforeMessage << "\"" << name << "\"";
 					isFirst = false;
 				}
 
@@ -48,19 +51,25 @@ namespace Soup::Build::Runtime
 				std::stringstream runAfterMessage;
 				runAfterMessage << "RunAfter [";
 				isFirst = true;
-				for (auto& taskName : Extensions::StringListWrapper(task->GetRunAfterList()).CopyAsStringVector())
+				for (auto& name : Extensions::StringListWrapper(ourTask->GetRunAfterList()).CopyAsStringVector())
 				{
 					if (!isFirst)
 						runAfterMessage << ", ";
 
-					runAfterMessage << "\"" << taskName << "\"";
+					runAfterMessage << "\"" << name << "\"";
 					isFirst = false;
 				}
 
 				runAfterMessage << "]";
 				Log::Diag(runAfterMessage.str());
 
-				_tasks.push_back(task);
+				auto insertResult = _tasks.try_emplace(taskName, ourTask);
+				if (!insertResult.second)
+				{
+					Log::HighPriority("A task with the provided name has already been registered: " + taskName);
+					return -2;
+				}
+
 				return 0;
 			}
 			catch (...)
@@ -77,15 +86,15 @@ namespace Soup::Build::Runtime
 		{
 			for (auto& task : _tasks)
 			{
-				Log::Info(std::string("TaskStart: ") + task->GetName());
-				auto status = task->Execute(state);
+				Log::Info("TaskStart: " + task.first);
+				auto status = task.second->Execute(state);
 				if (status != 0)
 				{
 					Log::Error("TaskFailed: " + std::to_string(status));
 				}
 				else
 				{
-					Log::Info(std::string("TaskDone: ") + task->GetName());
+					Log::Info("TaskDone: " + task.first);
 				}
 
 				state.LogActive();
@@ -93,6 +102,6 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		std::vector<Memory::Reference<IBuildTask>> _tasks;
+		std::unordered_map<std::string, Memory::Reference<IBuildTask>> _tasks;
 	};
 }

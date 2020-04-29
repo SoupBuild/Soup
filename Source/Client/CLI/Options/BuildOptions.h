@@ -21,6 +21,12 @@ namespace Soup::Client
 		std::string Path;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to skip the execution of the build operations
+		/// </summary>
+		[[Args::Option("skipRun", Default = false, HelpText = "Do not run the build operations.")]]
+		bool SkipRun;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to force a build
 		/// </summary>
 		[[Args::Option("force", Default = false, HelpText = "Force a rebuild.")]]

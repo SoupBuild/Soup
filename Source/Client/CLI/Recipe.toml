@@ -4,14 +4,14 @@ Type = "Executable"
 
 # Ensure the core build extensions are runtime dependencies
 Dependencies = [
-  "../Core/",
-  "../../Extensions/RecipeBuild/",
+	"../Core/",
+	"../../Extensions/RecipeBuild/",
 ]
 
 Source = [
-  "Main.cpp",
+	"Main.cpp",
 ]
 IncludePaths = [
-  "Commands/",
-  "Options/",
+	"Commands/",
+	"Options/",
 ]

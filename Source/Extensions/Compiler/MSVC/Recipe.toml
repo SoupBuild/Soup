@@ -1,7 +1,7 @@
 Name = "SoupCompilerMSVC"
 Version = "0.1.0"
 Dependencies = [
-  "../Core/",
+	"../Core/",
 ]
 
 Public = "Module.cpp"

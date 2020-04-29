@@ -372,12 +372,15 @@ namespace Soup::Build::Runtime
 				// Find the output object directory so we can use it in the runner
 				auto buildTable = activeState.GetValue("Build").AsTable();
 
-				// Execute the build nodes
-				auto runner = BuildRunner(packageRoot);
-				runner.Execute(
-					state.GetBuildNodes(),
-					objectDirectory,
-					arguments.ForceRebuild);
+				if (!arguments.SkipRun)
+				{
+					// Execute the build nodes
+					auto runner = BuildRunner(packageRoot);
+					runner.Execute(
+						state.GetBuildNodes(),
+						objectDirectory,
+						arguments.ForceRebuild);
+				}
 			}
 		}
 

@@ -30,7 +30,7 @@ namespace Soup::Client
 			Log::Diag("RunCommand::Run");
 
 			// Load the user config
-			auto config =  LocalUserConfigExtensions::LoadFromFile();
+			auto config = LocalUserConfigExtensions::LoadFromFile();
 
 			auto workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
 			auto recipePath = 

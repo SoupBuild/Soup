@@ -2,14 +2,14 @@ Name = "SoupCompilerCoreUnitTests"
 Version = "1.0.0"
 Type = "Executable"
 Dependencies = [
-  "../Core/",
-  "../../../Build/Runtime/",
-  "../../../TestUtilities/",
-  "SoupTest@0.1.0",
+	"../Core/",
+	"../../../Build/Runtime/",
+	"../../../TestUtilities/",
+	"SoupTest@0.1.0",
 ]
 Source = [
-  "gen/Main.cpp"
+	"gen/Main.cpp"
 ]
 IncludePaths = [
-  "./",
+	"./",
 ]

@@ -14,7 +14,7 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener =  ScopedTraceListenerRegister(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -57,7 +57,7 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener =  ScopedTraceListenerRegister(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -137,7 +137,7 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener =  ScopedTraceListenerRegister(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -272,7 +272,7 @@ namespace Soup::UnitTests
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener =  ScopedTraceListenerRegister(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -386,7 +386,7 @@ Dependencies = [
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener =  ScopedTraceListenerRegister(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -534,7 +534,7 @@ Dependencies = [
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener =  ScopedTraceListenerRegister(testListener);
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -964,7 +964,7 @@ Dependencies = [
 			// Name = "TheirPackage"
 			// Version = "2.2.2"
 			// Dependencies = [
-			//   "MyDependency@1.0.0",
+			//  "MyDependency@1.0.0",
 			// ]
 			auto archive = std::vector<unsigned char>(
 			{

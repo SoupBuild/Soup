@@ -90,7 +90,7 @@ namespace Soup
 			}
 
 			// if (_extractMode && _processedFileInfo.AttribDefined)
-			//     NWindows::NFile::NDir::SetFileAttrib_PosixHighDetect(_diskFilePath, _processedFileInfo.Attrib);
+			// 	NWindows::NFile::NDir::SetFileAttrib_PosixHighDetect(_diskFilePath, _processedFileInfo.Attrib);
 		}
 
 	private:

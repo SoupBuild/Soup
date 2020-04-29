@@ -52,6 +52,8 @@ namespace Soup::Client
 				}
 
 				options->Verbosity = CheckVerbosity(unusedArgs);
+
+				options->SkipRun = IsFlagSet("skipRun", unusedArgs);
 				options->Force = IsFlagSet("force", unusedArgs);
 
 				auto flavorValue = std::string();
