@@ -9,4 +9,8 @@ soup <command> [arguments]
 
 [Initialize](cli/initialize)
 
+[Install](cli/install)
+
+[Publish](cli/publish)
+
 [Version](cli/version)
