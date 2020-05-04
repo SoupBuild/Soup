@@ -1,11 +1,12 @@
-# Install packages
-
-## Synopsis
-
+# Publish
+## Overview
+Pack the current recipe folder and publish its contents to the official feed.
 ```
 soup publish
 ```
 
-## Description
-
-Package up the contents of the current recipe and publish its contents to the official feed.
+## Examples
+Publish the latest version of the package in the current folder.
+```
+soup publish
+```
