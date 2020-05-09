@@ -25,7 +25,9 @@ namespace Opal::Network
 				_client = std::make_unique<httplib::Client>(host, port);
 
 			// Enable proxy for fiddler
-			// _client->set_proxy("127.0.0.1", 8888);
+			#ifdef ENABLE_FIDDLER_PROXY
+			_client->set_proxy("127.0.0.1", 8888);
+			#endif
 		}
 
 		/// <summary>
