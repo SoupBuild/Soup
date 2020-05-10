@@ -9,3 +9,6 @@ This is a console application that uses a single module interface file used insi
 
 ## [Static Library Reference](Samples/StaticLibraryReference.md)
 This is a console application that has a single static library dependency.
+
+## [Parse Json File](Samples/ParseJsonFile.md)
+This is a console application that reads in a json file using the an external module and prints a single known property value.

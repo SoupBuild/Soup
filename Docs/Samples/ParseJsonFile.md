@@ -1,5 +1,5 @@
-#  Simple Console Application
-This is the smallest amount of code to get a console application building using Soup.
+#  Parse Json File
+A console application that reads in a json file using the an external module and prints a single known property value.
 
 [Source](https://github.com/mwasplund/Soup/tree/master/Samples/ParseJsonFile)
 
