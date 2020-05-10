@@ -1,6 +1,8 @@
 #  Simple Console Application
 This is the smallest amount of code to get a console application building using Soup.
 
+[Source](https://github.com/mwasplund/Soup/tree/master/Samples/SimpleConsoleApplication)
+
 ## Recipe.toml
 The Recipe file that sets the name, type, version and the single source file.
 ```
