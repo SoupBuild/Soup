@@ -209,7 +209,7 @@ namespace Soup
             // Add all of the direct dependencies as module references
             // and set their version defintions
 
-            // TODO: MSVC requires all transient modules also
+            // TODO: MSVC requires all trasnsitive modules also
             bool isRecursive = _compiler.Name == "MSVC";
             await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines, isRecursive);
 
@@ -276,7 +276,7 @@ namespace Soup
 
             // Add all of the direct dependencies as module references
             // and set their version defintions
-            // TODO: MSVC requires all transient modules also
+            // TODO: MSVC requires all trasnsitive modules also
             bool isRecursive = _compiler.Name == "MSVC";
             await BuildDependencyModuleReferences(path, binaryDirectory, recipe, modules, defines, isRecursive);
 

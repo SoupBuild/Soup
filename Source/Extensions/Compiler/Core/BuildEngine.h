@@ -262,7 +262,7 @@ namespace Soup::Compiler
 				{
 					linkArguments.TargetType = LinkTarget::StaticLibrary;
 					
-					// Add the library as a link dependency and all transient libraries
+					// Add the library as a link dependency and all transitive libraries
 					result.LinkDependencies = arguments.LinkDependencies;
 					result.LinkDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
 					break;

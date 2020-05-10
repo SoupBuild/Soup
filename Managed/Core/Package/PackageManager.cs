@@ -93,8 +93,8 @@ namespace Soup
                 result.Add(dependency);
                 var dependencyPackagePath = BuildKitchenPackagePath(config, dependency);
                 var dependencyRecipe = await RecipeManager.LoadFromFileAsync(dependencyPackagePath);
-                var transientDependencies = await BuildRecursiveDependeciesAsync(config, dependencyRecipe);
-                result.AddRange(transientDependencies);
+                var transsitiveDependencies = await BuildRecursiveDependeciesAsync(config, dependencyRecipe);
+                result.AddRange(transsitiveDependencies);
             }
 
             return result;

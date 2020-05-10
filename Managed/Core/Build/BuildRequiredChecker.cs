@@ -15,7 +15,7 @@ namespace Soup
             var sourceFiles = new List<string>();
             sourceFiles.Add(sourceFile);
 
-            // Copy the dependencies and add all transient dependencies to the collection
+            // Copy the dependencies and add all transitive dependencies to the collection
             var dependencyClosure = new List<string>();
             dependencyClosure.AddRange(dependencies);
             dependencyClosure.Add(sourceFile);
