@@ -1,0 +1,25 @@
+Name = "SoupCore"
+Version = "0.1.0"
+
+Dependencies = [
+	"../../../Dependencies/LzmaSdk/CPP/Library/",
+	# "../../../Dependencies/json11/",
+	"json11@1.0.0",
+	# "../../../Dependencies/toml11/",
+	"toml11@1.0.0",
+	"../OpalExtensions/",
+	"../../Build/Core/",
+	# "Soup.Build@0.2.0",
+	"../../Build/Extensions/",
+	# "Soup.Build.Extensions@0.2.0",
+	"../../Build/Runtime/",
+]
+Defines = [
+	# "LOCAL_DEBUG",
+]
+Public = "Module.cpp"
+IncludePaths = [
+	"./",
+	"Compiler/",
+	"Utils/",
+]

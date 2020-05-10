@@ -1,0 +1,14 @@
+Name = "Soup.Build.Extensions"
+Version = "0.2.0"
+Dependencies = [
+	# "../../../Dependencies/Opal/Source/",
+	"../Core/",
+	# "Soup.Build@0.2.0",
+	"Opal@0.1.1",
+]
+
+Public = "Module.cpp"
+Source = [
+	"GraphNodeListWrapper.cpp",
+	"ValueWrapper.cpp",
+]

@@ -1,7 +1,0 @@
-Name = "Opal"
-Version = "0.1.0"
-Public = "Module.cpp"
-
-Dependencies = [
-	"../../Dependencies/cpp-httplib/",
-]

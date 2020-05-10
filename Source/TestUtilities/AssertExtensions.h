@@ -10,8 +10,8 @@ namespace Soup
 	{
 	public:
 		static void AreEqual(
-			Build::GraphNodeWrapper& expected,
-			Build::GraphNodeWrapper& actual)
+			Build::Extensions::GraphNodeWrapper& expected,
+			Build::Extensions::GraphNodeWrapper& actual)
 		{
 			Assert::AreEqual(
 				expected.GetTitle(),
@@ -42,26 +42,26 @@ namespace Soup
 		}
 
 		static void AreEqual(
-			Memory::Reference<Build::BuildGraphNode>& expected,
-			Memory::Reference<Build::BuildGraphNode>& actual)
+			Memory::Reference<Build::Runtime::BuildGraphNode>& expected,
+			Memory::Reference<Build::Runtime::BuildGraphNode>& actual)
 		{
 			AreEqual(
-				Build::GraphNodeWrapper(expected), 
-				Build::GraphNodeWrapper(actual));
+				Build::Extensions::GraphNodeWrapper(expected), 
+				Build::Extensions::GraphNodeWrapper(actual));
 		}
 
 		static void AreEqual(
-			Memory::Reference<Build::BuildGraphNode>& expected,
-			Build::GraphNodeWrapper& actual)
+			Memory::Reference<Build::Runtime::BuildGraphNode>& expected,
+			Build::Extensions::GraphNodeWrapper& actual)
 		{
 			AreEqual(
-				Build::GraphNodeWrapper(expected), 
+				Build::Extensions::GraphNodeWrapper(expected), 
 				actual);
 		}
 
 		static void AreEqual(
-			Build::GraphNodeListWrapper& expected,
-			Build::GraphNodeListWrapper& actual)
+			Build::Extensions::GraphNodeListWrapper& expected,
+			Build::Extensions::GraphNodeListWrapper& actual)
 		{
 			Assert::AreEqual(
 				expected.GetSize(),
@@ -75,8 +75,8 @@ namespace Soup
 		}
 
 		static void AreEqual(
-			std::vector<Memory::Reference<Build::BuildGraphNode>>& expected,
-			std::vector<Build::GraphNodeWrapper>& actual)
+			std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>& expected,
+			std::vector<Build::Extensions::GraphNodeWrapper>& actual)
 		{
 			Assert::AreEqual(
 				expected.size(),
