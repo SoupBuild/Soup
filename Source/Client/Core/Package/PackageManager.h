@@ -233,6 +233,9 @@ namespace Soup
 						case Api::PublishPackageResult::AlreadyExists:
 							Log::HighPriority("A Package with this version already exists");
 							break;
+						case Api::PublishPackageResult::Forbidden:
+							Log::HighPriority("User account forbidden to create package. Make sure you have verified your email.");
+							break;
 						default:
 							throw std::runtime_error("Unknown PublishPackageResult");
 					}
@@ -247,28 +250,46 @@ namespace Soup
 							tokenResult.Result,
 							recipe.GetName(),
 							createModel);
-
-						// Retry
-						Log::HighPriority("Retry publish package");
-
-						// Reset the archive file
-						auto& archiveStream = archiveFile->GetInStream();
-						archiveStream.clear();
-						archiveStream.seekg(0, std::ios::beg);
-
-						publishResult = Api::SoupApi::PublishPackage(
-							tokenResult.Result,
-							recipe.GetName(),
-							recipe.GetVersion(),
-							archiveStream);
-						switch (publishResult)
+			
+						switch (createdPackage.first)
 						{
-							case Api::PublishPackageResult::Success:
-								// All Good
+							case Api::CreatePackageResult::Success:
+							{
 								Log::Info("Package version created");
+
+								// Retry
+								Log::HighPriority("Retry publish package");
+
+								// Reset the archive file
+								auto& archiveStream = archiveFile->GetInStream();
+								archiveStream.clear();
+								archiveStream.seekg(0, std::ios::beg);
+
+								publishResult = Api::SoupApi::PublishPackage(
+									tokenResult.Result,
+									recipe.GetName(),
+									recipe.GetVersion(),
+									archiveStream);
+								switch (publishResult)
+								{
+									case Api::PublishPackageResult::Success:
+										// All Good
+										Log::Info("Package version created");
+										break;
+									default:
+										throw std::runtime_error("Unknown PublishPackageResult");
+								}
 								break;
+							}
+							case Api::CreatePackageResult::Forbidden:
+							{
+								Log::HighPriority("User account forbidden to create package. Make sure you have verified your email.");
+								break;
+							}
 							default:
+							{
 								throw std::runtime_error("Unknown PublishPackageResult");
+							}
 						}
 					}
 				}

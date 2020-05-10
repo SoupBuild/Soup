@@ -12,6 +12,13 @@ namespace Soup::Api
 	export class PackageResultModel
 	{
 	public:
+		PackageResultModel() :
+			_name(),
+			_description(),
+			_latest()
+		{
+		}
+
 		PackageResultModel(
 			std::string name) :
 			_name(std::move(name)),

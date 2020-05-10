@@ -9,11 +9,18 @@
 
 namespace Soup::Api
 {
+	export enum class CreatePackageResult
+	{
+		Success,
+		Forbidden,
+	};
+
 	export enum class PublishPackageResult
 	{
 		Success,
 		PackageDoesNotExist,
 		AlreadyExists,
+		Forbidden,
 	};
 
 	/// <summary>
@@ -37,10 +44,10 @@ namespace Soup::Api
 
 			auto urlBuilder = std::stringstream();
 			urlBuilder << "/v1/packages/" << name << "/v" << version.ToString() << "/download";
-			auto url = urlBuilder.str();
+			auto localPath = urlBuilder.str();
 
-			Log::Diag(url);
-			auto response = client->Get(url);
+			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			auto response = client->Get(localPath);
 
 			// Verify that we got a success
 			if (response.StatusCode != Network::HttpStatusCode::Ok)
@@ -62,10 +69,10 @@ namespace Soup::Api
 
 			auto urlBuilder = std::stringstream();
 			urlBuilder << "/v1/packages/" << name;
-			auto url = urlBuilder.str();
+			auto localPath = urlBuilder.str();
 
-			Log::Diag(url);
-			auto response = client->Get(url);
+			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			auto response = client->Get(localPath);
 
 			// Verify that we got a success
 			if (response.StatusCode != Network::HttpStatusCode::Ok)
@@ -117,12 +124,12 @@ namespace Soup::Api
 
 			auto urlBuilder = std::stringstream();
 			urlBuilder << "/v1/packages/" << name << "/v" << version.ToString();
-			auto url = urlBuilder.str();
+			auto localPath = urlBuilder.str();
 
 			auto contentType = "application/x-7z-compressed";
 
-			Log::Diag(url);
-			auto response = client->Put(url, contentType, value);
+			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			auto response = client->Put(localPath, contentType, value);
 
 			// Verify that we got a success
 			switch (response.StatusCode)
@@ -133,6 +140,8 @@ namespace Soup::Api
 					return PublishPackageResult::PackageDoesNotExist;
 				case Network::HttpStatusCode::Conflict:
 					return PublishPackageResult::AlreadyExists;
+				case Network::HttpStatusCode::Forbidden:
+					return PublishPackageResult::Forbidden;
 				default:
 					throw Api::ApiException("PublishPackage", response.StatusCode);
 			}
@@ -141,7 +150,7 @@ namespace Soup::Api
 		/// <summary>
 		/// Create a package
 		/// </summary>
-		static PackageResultModel CreatePackage(
+		static std::pair<CreatePackageResult, PackageResultModel> CreatePackage(
 			const ClientCredentialsTokenModel& token,
 			std::string_view name,
 			const PackageCreateOrUpdateModel& model)
@@ -154,25 +163,38 @@ namespace Soup::Api
 
 			auto urlBuilder = std::stringstream();
 			urlBuilder << "/v1/packages/" << name;
-			auto url = urlBuilder.str();
+			auto localPath = urlBuilder.str();
 
 			std::stringstream content;
 			SoupApiJsonModels::SerializePackageCreateOrUpdate(model, content);
 
 			auto contentType = "application/json";
 
-			Log::Diag(url);
-			auto response = client->Put(url, contentType, content);
+			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			auto response = client->Put(localPath, contentType, content);
 
 			// Verify that we got a success
-			if (response.StatusCode != Network::HttpStatusCode::Created)
+			switch (response.StatusCode)
 			{
-				throw ApiException("CreatePackage", response.StatusCode);
+				case Network::HttpStatusCode::Created:
+				{
+					// Parse the return result
+					auto result = SoupApiJsonModels::ParsePackageResult(response.Body);
+					return std::make_pair(
+						CreatePackageResult::Success,
+						std::move(result));
+				}
+				case Network::HttpStatusCode::Forbidden:
+				{
+					return std::make_pair(
+						CreatePackageResult::Forbidden,
+						PackageResultModel());
+				}
+				default:
+				{
+					throw Api::ApiException("CreatePackage", response.StatusCode);
+				}
 			}
-
-			// Parse the return result
-			auto result = SoupApiJsonModels::ParsePackageResult(response.Body);
-			return result;
 		}
 
 		/// <summary>

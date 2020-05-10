@@ -36,10 +36,10 @@ namespace Soup::Api
 
 			auto urlBuilder = std::stringstream();
 			urlBuilder << "/.well-known/openid-configuration";
-			auto url = urlBuilder.str();
+			auto localPath = urlBuilder.str();
 
-			Log::Diag(url);
-			auto response = client->Get(url);
+			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			auto response = client->Get(localPath);
 
 			// Verify that we got a success
 			if (response.StatusCode != Network::HttpStatusCode::Ok)
@@ -97,7 +97,7 @@ namespace Soup::Api
 
 			auto urlBuilder = std::stringstream();
 			urlBuilder << path << query << fragment;
-			auto url = urlBuilder.str();
+			auto localPath = urlBuilder.str();
 
 			auto secret = "secret_for_client";
 			auto scope = "soup_api";
@@ -112,8 +112,8 @@ namespace Soup::Api
 
 			auto contentType = "application/x-www-form-urlencoded";
 
-			Log::Diag(url);
-			auto response = client->Post(url, contentType, content);
+			Log::Diag(endpoint + std::to_string(port) + localPath);
+			auto response = client->Post(localPath, contentType, content);
 
 			// Verify that we got a success
 			switch (response.StatusCode)
