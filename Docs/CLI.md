@@ -5,12 +5,12 @@ Soup is at its core a command line application. The CLI is designed to be as cle
 soup <command> [arguments]
 ```
 
-[Build](cli/build)
+[Build](CLI/Build.md)
 
-[Initialize](cli/initialize)
+[Initialize](CLI/Initialize.md)
 
-[Install](cli/install)
+[Install](CLI/Install.md)
 
-[Publish](cli/publish)
+[Publish](CLI/Publish.md)
 
-[Version](cli/version)
+[Version](CLI/Version.md)
