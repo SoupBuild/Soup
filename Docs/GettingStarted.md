@@ -25,7 +25,7 @@ Run Initialize command to create a new project!
 ```
 mkdir MyProject
 cd MyProject
-soup init
+soup initialize
 ```
 
 ## Build First Project

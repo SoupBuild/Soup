@@ -1,5 +1,7 @@
 # Module Console Application
-This is a console application that uses a single module interface file used inside the same projects.
+A console application that uses a single module interface file used inside the same projects.
+
+[Source](https://github.com/mwasplund/Soup/tree/master/Samples/ModuleConsoleApplication)
 
 ## Recipe.toml
 The Recipe file that sets the name, type, version, the public interface module and the single source file.
