@@ -19,27 +19,51 @@ Another approach to binary compatibility is to have no binaries at all. To work 
 A relatively new approach to consuming external dependencies is through package managers. A package manager distributes either the raw source along with the build definition required to integrate with your project and as long as your two systems are compatible it will automatically inject the child dependency into your build or pre-download the pre-built binaries that were carefully cataloged to have the same compiler, architecture and configurations. This approach works well, but does require that the package manager is able to generate the required build definitions to be used by consumers or be directly integrated within a build system.
 
 ### Preprocessor
-The preprocessor is, until now, a point of failure that could not be protected against by any build system when integrating with external source. Until C++ 20 the only way to share a symbol definition was to place it in a header file and have that header file be included by both the implementation and all of the translation units that wish to use it. This can lead to unforeseen compatibility issues when a header is included with a different set of preprocessor definitions defined from what were present when compiling the implementation. At best this will result in a compiler or linker error, and at worst you will have a fun [one definition rule](https://en.wikipedia.org/wiki/One_Definition_Rule) violation to track down! This is where Modules shine, and the primary driver behind why I believe we can finally make C++ the best open source, collaberitive language!
+The preprocessor is, until now, a point of failure that could not be protected against by any build system when integrating with external source. Until C++ 20 the only way to share a symbol definition was to place it in a header file and have that header file be included by both the implementation and all of the translation units that wish to use it. This can lead to unforeseen compatibility issues when a header is included with a different set of preprocessor definitions defined from what were present when compiling the implementation. At best this will result in a compiler or linker error, and at worst you will have a fun [one definition rule](https://en.wikipedia.org/wiki/One_Definition_Rule) violation to track down! This is where Modules shine, and the primary driver behind why I believe we can finally make C++ the best open source, collaborative language!
 
-# The New Build
+## Proposal
+It is not enough to say that Modules will solve all of our problems. We will also have to define clear priorities for a collaboration first build system. 
 
-## Requirements 
-It is not enough to say that Modules will solve all of our problems. We will also have to define clear priorities for a collaboration first build system.
+### Requirements
+The set of requirements cannot be compromised. They do not necessarily have a priority order since they cannot conflict with each other, if the concepts are incompatible then the final system would be deemed a failure.
 
-### Reproducible builds
-### Dead simple setup
-### Fully extensible
+1) Reproducible - Core to any build system is the requirement that builds be deterministic and reproducible. This design requirement is highest on the list because no matter how well a system is designed and implemented, teams will not be able to utilize it unless they can trust that it will always produce the same result no matter who builds it and when.
 
-## Overview
+2) Extensible - A build system should be able to support the requirements of all projects, to support this it must have an extensibility framework that allows build architects to write their own custom build logic.
 
-### ideal
+3) Isolation - This is a unique requirement as a result of the above overview of sharing C++ code today. Isolated builds means that one project cannot influence or be influenced by another build except through explicit structured channels.
 
-Ideally we should be able to resolve a dependency to three items
- 1) the public symbol definitions to compile against
- 2) the collection of symbol files to link against
- 3) the collection of runtime dependencies that are needed at runtime
- 
-## Epochs
+### Goals
+While the goals are not hard requirements they are always kept front of mind when making any design or implementation decision. These items are in priority order.
+
+1) Collaborative - Writing code is very rarely done in isolation. The largest goal for this build system is to be able to work seamlessly within a team and with external dependencies.
+
+2) Simple - When fulfilling the above requirements the highest priority is always simplicity and usability. This means that the standard user will get the best experience possibly. Some extra complexity is allowed in exchange for performance gains in the internal implementation and the extensibility framework.
+
+3) Fast - The inner developer loop is very important to the productivity of engineers. To this end the build system should focus heavily on the performance of an incremental build and to a lesser extend ensure the full build is as fast as possible.
+
+## Design
+The primary design consists five key components that work together to fulfill the requirements for a C++ build system centered around collaborating around our shared code. The Command Line interface (CLI), the build definition, the build engine, the operation evaluation engine and the package repository.
+
+### CLI
+The Command Line Interface is the first thing a user sees when they interact with the build system. The CLI is primarily there to take user input through a set of parameters and flags to pass temporary configuration values into the build execution. While important it is fairly straightforward to design and will be left to open to evolve through use. 
+
+### Definition
+The build definition, which will call a Recipe, is how the user will configure their project through a declarative configuration file. The Recipe file will utilize the [toml](https://github.com/toml-lang/toml) language as a clean, human readable configuration definition that supports a core set of data types. The file can be thought of as a simple property bag for getting shared parameters passed into the build system. There are a few "known" property values that will be used within the build engine itself, however the entire contents will be provided as initial input to the build engine.
+
+### Engine
+The build Engine has two jobs; to recursively build all transitive dependencies, and performing the registration and execution of build tasks that make up the core build functionality. All build functionality will be contained in Tasks. A Build Task will consist of a unique name, lists of other tasks that must be run before or after it, and a single Execute entry point. These build Tasks will be registered through Dynamic Libraries that expose a single predifined C method. The build Tasks will then communicate with the build Engine itself through a strict interface layer to provide a compatible ABI that will allow the CLI executable that contains the build Engine implementation to work with the source compiled development dependencies. This work can be broken down into five phases.
+
+1. **Parse Recipe** - The Recipe toml file is read from disk and parsed into a property bag.
+2. **Build Dependencies** - The Engine will use the known property lists "Dependencies" and "DevDependencies" to recursively builds all transitive runtime and development dependencies starting at phase one of the build. The Engine will perform the task of passing open a communication channel between parent and children project builds to allow for passing shared parameters down and output objects back up. 
+3. **Build Extensions** - The engine will then invoke the predefined C method that is exported from all Extension DLL. The engine will discover these DLLs from the Development Dependencies list as well as a single predefined Extension DLL that is distributed with the CLI executable and contains the Tasks that can take a standard Recipe definition and convert it into the required compile commands with the initial known set of Compiler implementations.
+4. **Run Tasks** - The build engine will invoke all registered build tasks in their defined order. The Tasks can influence each other by reading and setting properties on the active state. A build task should not actually perform any commands itself, it will instead generate build Commands which are self contained operation definitions with input/output files.
+5. **Run Commands** - The final stage of the build is to execute the build commands that were generated from the build tasks. These commands contain the input and output files that will be used to perform incremental builds. (Note: There is currently a very simple time-stamp based incremental build that relies on the compiler generated include list. There is an open question of which project will be used to replace this temporary solution. The current best choices are either [BuildXL](https://github.com/microsoft/BuildXL) or possibly [Ninja](https://github.com/ninja-build/ninja)).
+
+
+## Summary
+
+### Epochs
 Another major issue with sharing code between different projects is incompatible language standards. In general it is straightforward to pull source that targets an earlier versions of the language into a project with a newer version (i.e unless the `C++ 11` code uses a removed standard library feature it will compile fine with a `C++ 14` compiler). This means that header only libraries must have compile time checks for different language versions and pre-compiled libraries already stay away from the standard library.
 
 
