@@ -21,6 +21,8 @@ A relatively new approach to consuming external dependencies is through package 
 ### Preprocessor
 The preprocessor is, until now, a point of failure that could not be protected against by any build system when integrating with external source. Until C++ 20 the only way to share a symbol definition was to place it in a header file and have that header file be included by both the implementation and all of the translation units that wish to use it. This can lead to unforeseen compatibility issues when a header is included with a different set of preprocessor definitions defined from what were present when compiling the implementation. At best this will result in a compiler or linker error, and at worst you will have a fun [one definition rule](https://en.wikipedia.org/wiki/One_Definition_Rule) violation to track down! This is where Modules shine, and the primary driver behind why I believe we can finally make C++ the best open source, collaborative language!
 
+Another major issue with sharing code between different projects is incompatible language standards. In general it is straightforward to pull source that targets an earlier versions of the language into a project with a newer version (i.e unless the `C++ 11` code uses a removed standard library feature it will compile fine with a `C++ 14` compiler). This means that header only libraries must have compile time checks for different language versions and pre-compiled libraries already stay away from the standard library.
+
 ## Proposal
 It is not enough to say that Modules will solve all of our problems. We will also have to define clear priorities for a collaboration first build system. 
 
@@ -38,7 +40,7 @@ While the goals are not hard requirements they are always kept front of mind whe
 
 1) Collaborative - Writing code is very rarely done in isolation. The largest goal for this build system is to be able to work seamlessly within a team and with external dependencies.
 
-2) Simple - When fulfilling the above requirements the highest priority is always simplicity and usability. This means that the standard user will get the best experience possibly. Some extra complexity is allowed in exchange for performance gains in the internal implementation and the extensibility framework.
+2) Simple - When fulfilling the above requirements the highest priority is always simplicity and usability. This means that the standard user will get the best experience possibly for both setup and usage. Some extra complexity is allowed in exchange for performance gains in the internal implementation and the extensibility framework.
 
 3) Fast - The inner developer loop is very important to the productivity of engineers. To this end the build system should focus heavily on the performance of an incremental build and to a lesser extend ensure the full build is as fast as possible.
 
@@ -60,10 +62,9 @@ The build Engine has two jobs; to recursively build all transitive dependencies,
 4. **Run Tasks** - The build engine will invoke all registered build tasks in their defined order. The Tasks can influence each other by reading and setting properties on the active state. A build task should not actually perform any commands itself, it will instead generate build Commands which are self contained operation definitions with input/output files.
 5. **Run Commands** - The final stage of the build is to execute the build commands that were generated from the build tasks. These commands contain the input and output files that will be used to perform incremental builds. (Note: There is currently a very simple time-stamp based incremental build that relies on the compiler generated include list. There is an open question of which project will be used to replace this temporary solution. The current best choices are either [BuildXL](https://github.com/microsoft/BuildXL) or possibly [Ninja](https://github.com/ninja-build/ninja)).
 
+### Repository
+You may have noticed that nothing about the build explicitly knows about integrating with a public feed of packages. The key concept is that because each individual projects build is isolated and self contained a dependency reference can easily be migrated from a direct directory reference for local projects to a name/version pair that will be resolved to a published snapshot of a public project. The CLI application can then consume a rest API from a service that allows for users to install other projects and publish the code they would like to share with ease.
 
 ## Summary
-
-### Epochs
-Another major issue with sharing code between different projects is incompatible language standards. In general it is straightforward to pull source that targets an earlier versions of the language into a project with a newer version (i.e unless the `C++ 11` code uses a removed standard library feature it will compile fine with a `C++ 14` compiler). This means that header only libraries must have compile time checks for different language versions and pre-compiled libraries already stay away from the standard library.
-
+It would take a huge amount of time and effort to transition the entire C++ community to a new ecosystem of build tooling. However, C++ 20 presents a unique opportunity in that migrating to replace preprocessor includes with modules is a non-trivial breaking change. I believe that by transitioning at the same time to a build system that was designed explicitly for use in this new world we can lessen this work and finally get to a place where C++ is an amazing language for collaborating with others.
 
