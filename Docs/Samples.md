@@ -12,3 +12,6 @@ This is a console application that has a single static library dependency.
 
 ## [Parse Json File](Samples/ParseJsonFile.md)
 This is a console application that reads in a json file using the an external module and prints a single known property value.
+
+## [Simple Build Extensio](Samples/SimpleBuildExtension.md)
+This is a console application that uses a custom build extension to set a preprocessor definition to show how a user can easily author their own custom build logic that can be shared with others.
