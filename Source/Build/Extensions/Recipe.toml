@@ -1,10 +1,10 @@
 Name = "Soup.Build.Extensions"
-Version = "0.2.0"
+Version = "0.2.2"
 Dependencies = [
 	# "../../../Dependencies/Opal/Source/",
-	"../Core/",
-	# "Soup.Build@0.2.0",
 	"Opal@0.1.1",
+	# "../Core/",
+	"Soup.Build@0.2.0",
 ]
 
 Public = "Module.cpp"

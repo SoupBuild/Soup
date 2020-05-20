@@ -46,7 +46,7 @@ namespace Soup::Api
 			urlBuilder << "/v1/packages/" << name << "/v" << version.ToString() << "/download";
 			auto localPath = urlBuilder.str();
 
-			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			Log::Diag(localPath);
 			auto response = client->Get(localPath);
 
 			// Verify that we got a success
@@ -71,7 +71,7 @@ namespace Soup::Api
 			urlBuilder << "/v1/packages/" << name;
 			auto localPath = urlBuilder.str();
 
-			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			Log::Diag(localPath);
 			auto response = client->Get(localPath);
 
 			// Verify that we got a success
@@ -128,7 +128,7 @@ namespace Soup::Api
 
 			auto contentType = "application/x-7z-compressed";
 
-			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			Log::Diag(localPath);
 			auto response = client->Put(localPath, contentType, value);
 
 			// Verify that we got a success
@@ -170,7 +170,7 @@ namespace Soup::Api
 
 			auto contentType = "application/json";
 
-			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			Log::Diag(localPath);
 			auto response = client->Put(localPath, contentType, content);
 
 			// Verify that we got a success

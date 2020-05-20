@@ -38,7 +38,7 @@ namespace Soup::Api
 			urlBuilder << "/.well-known/openid-configuration";
 			auto localPath = urlBuilder.str();
 
-			Log::Diag(std::string(ServiceEndpoint) + std::to_string(ServicePort) + localPath);
+			Log::Diag(localPath);
 			auto response = client->Get(localPath);
 
 			// Verify that we got a success
@@ -112,7 +112,7 @@ namespace Soup::Api
 
 			auto contentType = "application/x-www-form-urlencoded";
 
-			Log::Diag(endpoint + std::to_string(port) + localPath);
+			Log::Diag(localPath);
 			auto response = client->Post(localPath, contentType, content);
 
 			// Verify that we got a success

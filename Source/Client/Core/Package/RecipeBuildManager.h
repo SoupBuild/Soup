@@ -186,9 +186,9 @@ namespace Soup::Build::Runtime
 				}
 			}
 
-			if (recipe.HasExtensions())
+			if (recipe.HasDevDependencies())
 			{
-				for (auto dependency : recipe.GetExtensions())
+				for (auto dependency : recipe.GetDevDependencies())
 				{
 					// Load this package recipe
 					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
@@ -351,9 +351,9 @@ namespace Soup::Build::Runtime
 				activeExtensionLibraries.push_back(std::move(recipeBuildLibrary));
 
 				// Run all build extensions
-				if (recipe.HasExtensions())
+				if (recipe.HasDevDependencies())
 				{
-					for (auto dependency : recipe.GetExtensions())
+					for (auto dependency : recipe.GetDevDependencies())
 					{
 						auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependency);
 						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(

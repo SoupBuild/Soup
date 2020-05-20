@@ -121,6 +121,18 @@ namespace Soup::Build::Extensions
 			}
 		}
 
+		void Append(const std::vector<Path>& values)
+		{
+			auto currentSize = static_cast<size_t>(GetSize());
+			auto finalSize = currentSize + values.size();
+			Resize(static_cast<uint64_t>(finalSize));
+			for (size_t i = currentSize; i < finalSize; i++)
+			{
+				auto& currentValue = values[i - currentSize];
+				GetValueAt(i).SetValueString(currentValue.ToString());
+			}
+		}
+
 		void Append(ValueListWrapper values)
 		{
 			// Append the intput list to the target

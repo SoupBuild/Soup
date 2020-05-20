@@ -482,6 +482,31 @@ namespace Soup
 					}
 				}
 			}
+
+			if (recipe.HasDevDependencies())
+			{
+				for (auto& dependency : recipe.GetDevDependencies())
+				{
+					// If local then check children for external package references
+					// Otherwise install the external package reference and its dependencies
+					if (dependency.IsLocal())
+					{
+						auto dependencyPath = recipeDirectory + dependency.GetPath();
+						InstallRecursiveDependencies(
+							dependencyPath,
+							packagesDirectory,
+							stagingDirectory);
+					}
+					else
+					{
+						EnsurePackageDownloaded(
+							dependency.GetName(),
+							dependency.GetVersion(),
+							packagesDirectory,
+							stagingDirectory);
+					}
+				}
+			}
 		}
 
 		/// <summary>

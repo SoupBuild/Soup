@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "StringList.h"
 #include "BuildGraphNodeList.h"
 
 namespace Soup::Build::Runtime
@@ -183,8 +182,8 @@ namespace Soup::Build::Runtime
 		std::string _program;
 		std::string _arguments;
 		std::string _workingDirectory;
-		StringList _inputFiles;
-		StringList _outputFiles;
+		Extensions::StringList _inputFiles;
+		Extensions::StringList _outputFiles;
 		BuildGraphNodeList _children;
 	};
 }

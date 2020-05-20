@@ -19,7 +19,7 @@ namespace Soup::Build::UnitTests
 			Assert::IsFalse(uut.HasType(), "Verify has no type.");
 			Assert::IsFalse(uut.HasLanguageVersion(), "Verify has no language version.");
 			Assert::IsFalse(uut.HasDependencies(), "Verify has no dependencies.");
-			Assert::IsFalse(uut.HasExtensions(), "Verify has no extensions.");
+			Assert::IsFalse(uut.HasDevDependencies(), "Verify has no dev dependencies.");
 			Assert::IsFalse(uut.HasPublic(), "Verify has no public.");
 			Assert::IsFalse(uut.HasSource(), "Verify has no source.");
 			Assert::IsFalse(uut.HasIncludePaths(), "Verify has no include paths.");
@@ -64,13 +64,13 @@ namespace Soup::Build::UnitTests
 				}),
 				uut.GetDependencies(),
 				"Verify dependencies are correct.");
-			Assert::IsTrue(uut.HasExtensions(), "Verify has extensions.");
+			Assert::IsTrue(uut.HasDevDependencies(), "Verify has dev dependencies.");
 			Assert::AreEqual(
 				std::vector<PackageReference>({
 					PackageReference(Path(Path("../DevTask"))),
 				}),
-				uut.GetExtensions(),
-				"Verify extensions are correct.");
+				uut.GetDevDependencies(),
+				"Verify dev dependencies are correct.");
 			Assert::IsTrue(uut.HasPublic(), "Verify has public.");
 			Assert::AreEqual<std::string_view>("Main.cpp", uut.GetPublic(), "Verify public is correct.");
 			Assert::IsTrue(uut.HasSource(), "Verify has source.");

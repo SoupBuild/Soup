@@ -198,14 +198,15 @@ namespace RecipeBuild
 			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory);
 			buildTable.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory);
 			buildTable.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile);
-			buildTable.EnsureValue("PlatformLibraries").SetValuePathList(platformLibraries);
-			buildTable.EnsureValue("LinkLibraries").SetValuePathList(linkLibraries);
-			buildTable.EnsureValue("PreprocessorDefinitions").SetValueStringList(preprocessorDefinitions);
-			buildTable.EnsureValue("IncludeDirectories").SetValuePathList(includePaths);
-			buildTable.EnsureValue("LibraryPaths").SetValuePathList(libraryPaths);
-			buildTable.EnsureValue("Source").SetValueStringList(sourceFiles);
 			buildTable.EnsureValue("OptimizationLevel").SetValueInteger(static_cast<int64_t>(optimizationLevel));
 			buildTable.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(generateSourceDebugInfo);
+
+			buildTable.EnsureValue("PlatformLibraries").EnsureList().Append(platformLibraries);
+			buildTable.EnsureValue("LinkLibraries").EnsureList().Append(linkLibraries);
+			buildTable.EnsureValue("PreprocessorDefinitions").EnsureList().Append(preprocessorDefinitions);
+			buildTable.EnsureValue("IncludeDirectories").EnsureList().Append(includePaths);
+			buildTable.EnsureValue("LibraryPaths").EnsureList().Append(libraryPaths);
+			buildTable.EnsureValue("Source").EnsureList().Append(sourceFiles);
 
 			// Convert the recipe type to the required build type
 			Soup::Compiler::BuildTargetType targetType;
@@ -265,7 +266,7 @@ namespace RecipeBuild
 		}
 
 	private:
-		Soup::Build::Runtime::StringList _runBeforeList;
-		Soup::Build::Runtime::StringList _runAfterList;
+		Soup::Build::Extensions::StringList _runBeforeList;
+		Soup::Build::Extensions::StringList _runAfterList;
 	};
 }

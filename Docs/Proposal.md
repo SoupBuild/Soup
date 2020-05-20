@@ -24,7 +24,7 @@ The preprocessor is, until now, a point of failure that could not be protected a
 Another major issue with sharing code between different projects is incompatible language standards. In general it is straightforward to pull source that targets an earlier versions of the language into a project with a newer version (unless the old code uses a removed standard library feature). Header only libraries can have preprocessor conditionals for different language versions and using a C layer can help alleviate this issue. However, this may be another instance where C++ Modules can utilize the Binary Interface layer to allow for inter-module libraries to maintain a compatible layer and still allow for different language versions to be used internally. (Epochs anyone?!)
 
 ## Proposal
-It is not enough to say that Modules will solve all of our problems. We will also have to define clear priorities for a collaboration first build system. The remainder of this document outlines the core Requirements and Goals for the proposed build system and gives a brief overview of the core design.
+It is not enough to say that Modules will solve all of our problems. We will also have to define clear set of priorities for a collaboration first build system. The remainder of this document outlines the core Requirements and Goals for the proposed build system and gives a brief overview of the core design.
 
 ### Requirements
 The set of requirements cannot be compromised. They do not necessarily have a priority order since they cannot conflict with each other, if the concepts are incompatible then the final system would be deemed a failure.

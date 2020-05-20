@@ -71,7 +71,7 @@ namespace Soup::Build::UnitTests
 					"Type": "Executable",
 					"Language": "C++17",
 					"Dependencies": [],
-					"Extensions": [],
+					"DevDependencies": [],
 					"Public": "Public.cpp",
 					"Source": [],
 					"IncludePaths": [],
@@ -135,7 +135,7 @@ namespace Soup::Build::UnitTests
 				R"({
 					"Defines": [],
 					"Dependencies": [],
-					"Extensions": [],
+					"DevDependencies": [],
 					"IncludePaths": [],
 					"Language": "C++17",
 					"Name": "MyPackage",
