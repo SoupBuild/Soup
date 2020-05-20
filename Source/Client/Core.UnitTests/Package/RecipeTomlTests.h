@@ -97,7 +97,7 @@ namespace Soup::Build::UnitTests
 					Type="Executable"
 					Language="C++17"
 					Dependencies=[]
-					Extensions=[]
+					DevDependencies=[]
 					Public="Public.cpp"
 					Source=[]
 					IncludePaths=[]
@@ -185,10 +185,10 @@ R"(Name = "MyPackage"
 Version = "1.2.3"
 Type = "Executable"
 Language = "C++17"
-Extensions = []
 Dependencies = []
 Public = "Public.cpp"
 Source = []
+DevDependencies = []
 IncludePaths = []
 Defines = []
 )";

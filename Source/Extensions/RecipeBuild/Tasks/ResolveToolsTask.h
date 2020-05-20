@@ -242,7 +242,7 @@ namespace RecipeBuild
 		}
 
 	private:
-		Soup::Build::Runtime::StringList _runBeforeList;
-		Soup::Build::Runtime::StringList _runAfterList;
+		Soup::Build::Extensions::StringList _runBeforeList;
+		Soup::Build::Extensions::StringList _runAfterList;
 	};
 }

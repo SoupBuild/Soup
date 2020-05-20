@@ -19,3 +19,5 @@ using namespace Opal;
 
 #include "RecipeLanguageVersion.h"
 #include "RecipeType.h"
+
+#include "StringList.h"

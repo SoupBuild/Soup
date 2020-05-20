@@ -868,6 +868,7 @@ Dependencies = [
 					"HIGH: The provided package name does not exist",
 					"HIGH: Create package",
 					"DIAG: /v1/packages/MyPackage",
+					"INFO: Package version created",
 					"HIGH: Retry publish package",
 					"DIAG: /v1/packages/MyPackage/v1.2.3",
 					"INFO: Package version created",

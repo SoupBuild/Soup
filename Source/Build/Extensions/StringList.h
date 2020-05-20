@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::Runtime
+namespace Soup::Build::Extensions
 {
 	export class StringList : public IList<const char*>
 	{

@@ -6,7 +6,7 @@ Dependencies = [
 	"../Core/",
 	# "Soup.Build@0.2.0",
 	"../Extensions/",
-	# "Soup.Build.Extensions@0.2.0",
+	# "Soup.Build.Extensions@0.2.2",
 	"Opal@0.1.1",
 ]
 

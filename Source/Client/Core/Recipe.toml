@@ -11,7 +11,7 @@ Dependencies = [
 	"../../Build/Core/",
 	# "Soup.Build@0.2.0",
 	"../../Build/Extensions/",
-	# "Soup.Build.Extensions@0.2.0",
+	# "Soup.Build.Extensions@0.2.2",
 	"../../Build/Runtime/",
 ]
 Defines = [

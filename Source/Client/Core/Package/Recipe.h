@@ -19,7 +19,7 @@ namespace Soup
 		static constexpr const char* Property_Type = "Type";
 		static constexpr const char* Property_Language = "Language";
 		static constexpr const char* Property_Dependencies = "Dependencies";
-		static constexpr const char* Property_Extensions = "Extensions";
+		static constexpr const char* Property_DevDependencies = "DevDependencies";
 		static constexpr const char* Property_Public = "Public";
 		static constexpr const char* Property_Source = "Source";
 		static constexpr const char* Property_IncludePaths = "IncludePaths";
@@ -57,7 +57,7 @@ namespace Soup
 			std::optional<Build::Extensions::RecipeType> type,
 			std::optional<Build::Extensions::RecipeLanguageVersion> languageVersion,
 			std::optional<std::vector<PackageReference>> dependencies,
-			std::optional<std::vector<PackageReference>> extensions,
+			std::optional<std::vector<PackageReference>> devDependencies,
 			std::optional<std::string> publicFile,
 			std::optional<std::vector<std::string>> source,
 			std::optional<std::vector<std::string>> includePaths,
@@ -76,8 +76,8 @@ namespace Soup
 			if (dependencies.has_value())
 				SetDependencies(dependencies.value());
 
-			if (extensions.has_value())
-				SetExtensions(extensions.value());
+			if (devDependencies.has_value())
+				SetDevDependencies(devDependencies.value());
 
 			if (publicFile.has_value())
 				SetPublic(publicFile.value());
@@ -215,20 +215,20 @@ namespace Soup
 		}
 
 		/// <summary>
-		/// Gets or sets the list of dextension packages
+		/// Gets or sets the list of dev dependency packages
 		/// TODO: Observable?
 		/// </summary>
-		bool HasExtensions()
+		bool HasDevDependencies()
 		{
-			return HasValue(Property_Extensions);
+			return HasValue(Property_DevDependencies);
 		}
 
-		std::vector<PackageReference> GetExtensions()
+		std::vector<PackageReference> GetDevDependencies()
 		{
-			if (!HasExtensions())
-				throw std::runtime_error("No extensions.");
+			if (!HasDevDependencies())
+				throw std::runtime_error("No dev dependencies.");
 
-			auto& values = GetValue(Property_Extensions).AsList();
+			auto& values = GetValue(Property_DevDependencies).AsList();
 			auto result = std::vector<PackageReference>();
 			for (auto& value : values)
 			{
@@ -238,7 +238,7 @@ namespace Soup
 			return result;
 		}
 
-		void SetExtensions(const std::vector<PackageReference>& values)
+		void SetDevDependencies(const std::vector<PackageReference>& values)
 		{
 			auto stringValues = RecipeList();
 			for (auto& value : values)
@@ -246,7 +246,7 @@ namespace Soup
 				stringValues.push_back(RecipeValue(value.ToString()));
 			}
 
-			EnsureValue(Property_Extensions).SetValueList(std::move(stringValues));
+			EnsureValue(Property_DevDependencies).SetValueList(std::move(stringValues));
 		}
 
 		/// <summary>
