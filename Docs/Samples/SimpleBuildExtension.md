@@ -10,13 +10,13 @@ Name = "SimpleBuildExtension"
 Type = "DynamicLibrary"
 Version = "1.0.0"
 Dependencies = [
-	"Opal@0.1.1",
-	"Soup.Build@0.2.0",
-	"Soup.Build.Extensions@0.2.2",
+    "Opal@0.1.1",
+    "Soup.Build@0.2.0",
+    "Soup.Build.Extensions@0.2.2",
 ]
 
 Source = [
-	"Register.cpp"
+    "Register.cpp"
 ]
 ```
 
@@ -27,78 +27,78 @@ A header file defining a custom build Task that will run after the build definit
 
 namespace SimpleBuildExtension
 {
-	/// <summary>
-	/// The simple build task that will run after the main build task
-	/// </summary>
-	class AfterBuildTask : public Opal::Memory::ReferenceCounted<Soup::Build::IBuildTask>
-	{
-	public:
-		/// <summary>
-		/// Get the task name
-		/// </summary>
-		const char* GetName() const noexcept override final
-		{
-			return "AfterBuild";
-		}
+    /// <summary>
+    /// The simple build task that will run after the main build task
+    /// </summary>
+    class AfterBuildTask : public Opal::Memory::ReferenceCounted<Soup::Build::IBuildTask>
+    {
+    public:
+        /// <summary>
+        /// Get the task name
+        /// </summary>
+        const char* GetName() const noexcept override final
+        {
+            return "AfterBuild";
+        }
 
-		/// <summary>
-		/// Get the run before list
-		/// </summary>
-		Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
-		{
-			return _runBeforeList;
-		}
+        /// <summary>
+        /// Get the run before list
+        /// </summary>
+        Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
+        {
+            return _runBeforeList;
+        }
 
-		/// <summary>
-		/// Get the run after list
-		/// </summary>
-		Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
-		{
-			return _runAfterList;
-		}
+        /// <summary>
+        /// Get the run after list
+        /// </summary>
+        Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
+        {
+            return _runAfterList;
+        }
 
-		/// <summary>
-		/// The Core Execute task
-		/// </summary>
-		Soup::Build::OperationResult Execute(
-			Soup::Build::IBuildState& buildState) noexcept override final
-		{
-			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+        /// <summary>
+        /// The Core Execute task
+        /// </summary>
+        Soup::Build::OperationResult Execute(
+            Soup::Build::IBuildState& buildState) noexcept override final
+        {
+            auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
 
-			try
-			{
-				// We cannot throw accross the DLL boundary for a build extension
-				// So all internal errors must be converted to error codes
-				Execute(buildStateWrapper);
-				return 0;
-			}
-			catch(...)
-			{
-				buildStateWrapper.LogError("Unknown Error!");
-				return -1;
-			}
-		}
+            try
+            {
+                // We cannot throw accross the DLL boundary for a build extension
+                // So all internal errors must be converted to error codes
+                Execute(buildStateWrapper);
+                return 0;
+            }
+            catch(...)
+            {
+                buildStateWrapper.LogError("Unknown Error!");
+                return -1;
+            }
+        }
 
-	private:
-		/// <summary>
-		/// The Core Execute task
-		/// </summary>
-		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
-		{
-			buildState.LogHighPriority("Running After Build!");
-		}
+    private:
+        /// <summary>
+        /// The Core Execute task
+        /// </summary>
+        void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
+        {
+            buildState.LogHighPriority("Running After Build!");
+        }
 
-	private:
-		static Soup::Build::Extensions::StringList _runBeforeList;
-		static Soup::Build::Extensions::StringList _runAfterList;
-	};
+    private:
+        static Soup::Build::Extensions::StringList _runBeforeList;
+        static Soup::Build::Extensions::StringList _runAfterList;
+    };
 
-	Soup::Build::Extensions::StringList AfterBuildTask::_runBeforeList =
-		Soup::Build::Extensions::StringList();
-	Soup::Build::Extensions::StringList AfterBuildTask::_runAfterList =
-		Soup::Build::Extensions::StringList({
-			"Build",
-		});
+    Soup::Build::Extensions::StringList AfterBuildTask::_runBeforeList =
+        Soup::Build::Extensions::StringList();
+    Soup::Build::Extensions::StringList AfterBuildTask::_runAfterList =
+        Soup::Build::Extensions::StringList({
+            "Build",
+        });
 }
 ```
 
@@ -109,87 +109,87 @@ A header file defining a custom build Task that will run before the build defini
 
 namespace SimpleBuildExtension
 {
-	/// <summary>
-	/// The simple build task that will run before the main build task
-	/// </summary>
-	class BeforeBuildTask : public Opal::Memory::ReferenceCounted<Soup::Build::IBuildTask>
-	{
-	public:
-		/// <summary>
-		/// Get the task name
-		/// </summary>
-		const char* GetName() const noexcept override final
-		{
-			return "BeforeBuild";
-		}
+    /// <summary>
+    /// The simple build task that will run before the main build task
+    /// </summary>
+    class BeforeBuildTask : public Opal::Memory::ReferenceCounted<Soup::Build::IBuildTask>
+    {
+    public:
+        /// <summary>
+        /// Get the task name
+        /// </summary>
+        const char* GetName() const noexcept override final
+        {
+            return "BeforeBuild";
+        }
 
-		/// <summary>
-		/// Get the run before list
-		/// </summary>
-		Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
-		{
-			return _runBeforeList;
-		}
+        /// <summary>
+        /// Get the run before list
+        /// </summary>
+        Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
+        {
+            return _runBeforeList;
+        }
 
-		/// <summary>
-		/// Get the run after list
-		/// </summary>
-		Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
-		{
-			return _runAfterList;
-		}
+        /// <summary>
+        /// Get the run after list
+        /// </summary>
+        Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
+        {
+            return _runAfterList;
+        }
 
-		/// <summary>
-		/// The Core Execute task
-		/// </summary>
-		Soup::Build::OperationResult Execute(
-			Soup::Build::IBuildState& buildState) noexcept override final
-		{
-			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+        /// <summary>
+        /// The Core Execute task
+        /// </summary>
+        Soup::Build::OperationResult Execute(
+            Soup::Build::IBuildState& buildState) noexcept override final
+        {
+            auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
 
-			try
-			{
-				// We cannot throw accross the DLL boundary for a build extension
-				// So all internal errors must be converted to error codes
-				Execute(buildStateWrapper);
-				return 0;
-			}
-			catch(...)
-			{
-				buildStateWrapper.LogError("Unknown Error!");
-				return -1;
-			}
-		}
+            try
+            {
+                // We cannot throw accross the DLL boundary for a build extension
+                // So all internal errors must be converted to error codes
+                Execute(buildStateWrapper);
+                return 0;
+            }
+            catch(...)
+            {
+                buildStateWrapper.LogError("Unknown Error!");
+                return -1;
+            }
+        }
 
-	private:
-		/// <summary>
-		/// The Core Execute task
-		/// </summary>
-		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
-		{
-			buildState.LogHighPriority("Running Before Build!");
-			auto rootTable = buildState.GetActiveState();
-			auto buildTable = rootTable.EnsureValue("Build").EnsureTable();
+    private:
+        /// <summary>
+        /// The Core Execute task
+        /// </summary>
+        void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
+        {
+            buildState.LogHighPriority("Running Before Build!");
+            auto rootTable = buildState.GetActiveState();
+            auto buildTable = rootTable.EnsureValue("Build").EnsureTable();
 
-			// As a sample of what a build extension can do we set a new
-			// preprocessor definition to influence the build
-			auto preprocessorDefinitions = std::vector<std::string>({
-				"SPECIAL_BUILD",
-			});
-			buildTable.EnsureValue("PreprocessorDefinitions").EnsureList().Append(preprocessorDefinitions);
-		}
+            // As a sample of what a build extension can do we set a new
+            // preprocessor definition to influence the build
+            auto preprocessorDefinitions = std::vector<std::string>({
+                "SPECIAL_BUILD",
+            });
+            buildTable.EnsureValue("PreprocessorDefinitions").EnsureList().Append(preprocessorDefinitions);
+        }
 
-	private:
-		static Soup::Build::Extensions::StringList _runBeforeList;
-		static Soup::Build::Extensions::StringList _runAfterList;
-	};
+    private:
+        static Soup::Build::Extensions::StringList _runBeforeList;
+        static Soup::Build::Extensions::StringList _runAfterList;
+    };
 
-	Soup::Build::Extensions::StringList BeforeBuildTask::_runBeforeList =
-		Soup::Build::Extensions::StringList({
-			"Build",
-		});
-	Soup::Build::Extensions::StringList BeforeBuildTask::_runAfterList =
-		Soup::Build::Extensions::StringList();
+    Soup::Build::Extensions::StringList BeforeBuildTask::_runBeforeList =
+        Soup::Build::Extensions::StringList({
+            "Build",
+        });
+    Soup::Build::Extensions::StringList BeforeBuildTask::_runAfterList =
+        Soup::Build::Extensions::StringList();
 }
 ```
 
@@ -208,20 +208,20 @@ import Soup.Build.Extensions;
 #define DllExport __declspec( dllexport )
 extern "C"
 {
-	DllExport int RegisterBuildExtension(Soup::Build::IBuildSystem& buildSystem)
-	{
-		// Register the before build task
-		auto beforeBuildtask = Opal::Memory::Reference<SimpleBuildExtension::BeforeBuildTask>(
-			new SimpleBuildExtension::BeforeBuildTask());
-		buildSystem.RegisterTask(beforeBuildtask.GetRaw());
+    DllExport int RegisterBuildExtension(Soup::Build::IBuildSystem& buildSystem)
+    {
+        // Register the before build task
+        auto beforeBuildtask = Opal::Memory::Reference<SimpleBuildExtension::BeforeBuildTask>(
+            new SimpleBuildExtension::BeforeBuildTask());
+        buildSystem.RegisterTask(beforeBuildtask.GetRaw());
 
-		// Register the after build task
-		auto afterBuildtask = Opal::Memory::Reference<SimpleBuildExtension::AfterBuildTask>(
-			new SimpleBuildExtension::AfterBuildTask());
-		buildSystem.RegisterTask(afterBuildtask.GetRaw());
+        // Register the after build task
+        auto afterBuildtask = Opal::Memory::Reference<SimpleBuildExtension::AfterBuildTask>(
+            new SimpleBuildExtension::AfterBuildTask());
+        buildSystem.RegisterTask(afterBuildtask.GetRaw());
 
-		return 0;
-	}
+        return 0;
+    }
 }
 ```
 
@@ -232,10 +232,10 @@ Name = "SimpleBuildExtension.Executable"
 Type = "Executable"
 Version = "1.0.0"
 DevDependencies = [
-	"../Extension"
+    "../Extension"
 ]
 Source = [
-	"Main.cpp"
+    "Main.cpp"
 ]
 
 ```
@@ -248,12 +248,12 @@ A simple main method that prints our "Hello World, Soup Style!" only if the buil
 int main()
 {
 #ifdef SPECIAL_BUILD
-	std::cout << "Hello World, Soup Style!" << std::endl;
+    std::cout << "Hello World, Soup Style!" << std::endl;
 #else
-	std::cout << "Hello World..." << std::endl;
+    std::cout << "Hello World..." << std::endl;
 #endif
 
-	return 0;
+    return 0;
 }
 
 ```
