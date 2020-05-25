@@ -2,7 +2,7 @@
 
 ## Quick Links
 * [Soup Build](https://www.soupbuild.com/)
-* [Getting Started](./Docs/GettingStarted.md)
+* [Getting Started](./Docs/Getting-Started.md)
 * [Command Line Interface (CLI)](./Docs/CLI.md)
 * [Samples](./Docs/Samples.md)
 * [Architecture](./Docs/Architecture.md)
@@ -26,5 +26,5 @@ A common problem with C++ builds today is the leaking of one individual componen
 
 ## Contributing
 Soup is currently in active prototyping and testing. If you are interested in contributing to the project feel free to submit a PR or file an issue with a suggestion/bug. Otherwise download the latest release to give it a try! We are always open to feedback, good or bad :smile:.
-* [Getting Started](./Docs/GettingStarted.md)
+* [Getting Started](./Docs/Getting-Started.md)
 * [Samples](./Docs/Samples.md)
