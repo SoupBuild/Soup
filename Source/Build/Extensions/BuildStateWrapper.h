@@ -86,9 +86,9 @@ namespace Soup::Build::Extensions
 		/// <summary>
 		/// Log a message to the build system
 		/// </summary>
-		void LogDiagnostic(std::string_view message)
+		void LogDebug(std::string_view message)
 		{
-			auto status = _value.TryLogTrace(TraceLevel::Diagnostic, message.data());
+			auto status = _value.TryLogTrace(TraceLevel::Debug, message.data());
 			if (status != 0)
 				throw std::runtime_error("TryLogTrace Failed");
 		}

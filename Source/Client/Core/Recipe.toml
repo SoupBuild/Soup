@@ -9,11 +9,15 @@ Dependencies = [
 	"toml11@1.0.0",
 	"../OpalExtensions/",
 	"../../Build/Core/",
-	# "Soup.Build@0.2.0",
+	# "Soup.Build@0.3.0",
 	"../../Build/Extensions/",
-	# "Soup.Build.Extensions@0.2.2",
+	# "Soup.Build.Extensions@0.3.0",
 	"../../Build/Runtime/",
 ]
+DevDependencies = [
+	"../../Extensions/TestBuild/",
+]
+
 Defines = [
 	# "LOCAL_DEBUG",
 ]
@@ -22,4 +26,12 @@ IncludePaths = [
 	"./",
 	"Compiler/",
 	"Utils/",
+]
+
+[Tests]
+Source = [
+	"../Core.UnitTests/gen/Main.cpp"
+]
+IncludePaths = [
+	"../Core.UnitTests/",
 ]

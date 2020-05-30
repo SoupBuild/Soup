@@ -11,8 +11,8 @@ Type = "DynamicLibrary"
 Version = "1.0.0"
 Dependencies = [
     "Opal@0.1.1",
-    "Soup.Build@0.2.0",
-    "Soup.Build.Extensions@0.2.2",
+    "Soup.Build@0.3.0",
+    "Soup.Build.Extensions@0.3.0",
 ]
 
 Source = [

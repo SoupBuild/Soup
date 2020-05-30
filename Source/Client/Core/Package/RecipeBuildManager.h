@@ -346,7 +346,7 @@ namespace Soup::Build::Runtime
 				// to ensure their memory is kept alive
 
 				// Run the RecipeBuild extension to inject core build tasks
-				auto recipeBuildExtensionPath = Path("RecipeBuildExtension.dll");
+				auto recipeBuildExtensionPath = Path("Soup.RecipeBuild.dll");
 				auto recipeBuildLibrary = RunBuildExtension(recipeBuildExtensionPath, buildSystem);
 				activeExtensionLibraries.push_back(std::move(recipeBuildLibrary));
 

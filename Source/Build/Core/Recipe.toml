@@ -1,5 +1,5 @@
 Name = "Soup.Build"
-Version = "0.2.0"
+Version = "0.3.0"
 Dependencies = [
 	# "../../../Dependencies/Opal/Source/",
 	"Opal@0.1.1",

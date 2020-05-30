@@ -1,31 +1,19 @@
-﻿// <copyright file="BuildTask.h" company="Soup">
-// Copyright (c) Soup. All rights reserved.
-// </copyright>
+﻿#pragma once
 
-#pragma once
-
-namespace RecipeBuild
+namespace Soup::Test
 {
-	export using CreateCompiler = std::function<std::shared_ptr<Soup::Compiler::ICompiler>(Soup::Build::Extensions::ValueTableWrapper&)>;
-	export using CompilerFactory = std::map<std::string, CreateCompiler>;
-
 	/// <summary>
-	/// The build task
+	/// The simple build task that will run after the main build task
 	/// </summary>
-	export class BuildTask : public Memory::ReferenceCounted<Soup::Build::IBuildTask>
+	class TestBuildTask : public Memory::ReferenceCounted<Soup::Build::IBuildTask>
 	{
 	public:
-		BuildTask(CompilerFactory compilerFactory) :
-			_compilerFactory(std::move(compilerFactory))
-		{
-		}
-
 		/// <summary>
 		/// Get the task name
 		/// </summary>
 		const char* GetName() const noexcept override final
 		{
-			return "Build";
+			return "TestBuild";
 		}
 
 		/// <summary>
@@ -45,7 +33,7 @@ namespace RecipeBuild
 		}
 
 		/// <summary>
-		/// The Core build task
+		/// The Core Execute task
 		/// </summary>
 		Soup::Build::OperationResult Execute(
 			Soup::Build::IBuildState& buildState) noexcept override final
@@ -54,53 +42,63 @@ namespace RecipeBuild
 
 			try
 			{
-				return Execute(buildStateWrapper);
-			}
-			catch (const std::exception& ex)
-			{
-				buildStateWrapper.LogError(ex.what());
-				return -3;
+				// We cannot throw accross the DLL boundary for a build extension
+				// So all internal errors must be converted to error codes
+				Execute(buildStateWrapper);
+				return 0;
 			}
 			catch(...)
 			{
-				// Unknown error
+				buildStateWrapper.LogError("Unknown Error");
 				return -1;
 			}
 		}
 
 	private:
 		/// <summary>
-		/// The Core build task
+		/// The Core Execute task
 		/// </summary>
-		Soup::Build::OperationResult Execute(
-			Soup::Build::Extensions::BuildStateWrapper& buildState)
+		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
 		{
-			auto activeState = buildState.GetActiveState();
-			auto parentState = buildState.GetParentState();
+			buildState.LogHighPriority("Building Tests");
 
-			auto buildTable = activeState.GetValue("Build").AsTable();
+			auto rootTable = buildState.GetActiveState();
+			auto recipeTable = rootTable.GetValue("Recipe").AsTable();
+
+			if (!recipeTable.HasValue("Tests"))
+			{
+				buildState.LogError("No Tests Specified");
+				throw std::runtime_error("");
+			}
+
+			auto testTable = recipeTable.GetValue("Tests").AsTable();
+			if (!testTable.HasValue("Source"))
+			{
+				buildState.LogError("No Test Source Files");
+				throw std::runtime_error("");
+			}
 
 			auto arguments = Soup::Compiler::BuildArguments();
-			arguments.TargetName = buildTable.GetValue("TargetName").AsString().GetValue();
-			arguments.TargetType = static_cast<Soup::Compiler::BuildTargetType>(
-				buildTable.GetValue("TargetType").AsInteger().GetValue());
+			arguments.SourceFiles =
+				testTable.GetValue("Source").AsList().CopyAsPathVector();
+
+			arguments.TargetName = "TestHarness";
+			arguments.TargetType = Soup::Compiler::BuildTargetType::Executable;
+
+			// Load up the common properties used from the generic build
+			auto buildTable = rootTable.GetValue("Build").AsTable();
+			LoadBuildProperties(buildTable, arguments);
+		}
+
+		void LoadBuildProperties(
+			Soup::Build::Extensions::ValueTableWrapper& buildTable,
+			Soup::Compiler::BuildArguments& arguments)
+		{
 			arguments.LanguageStandard = static_cast<Soup::Compiler::LanguageStandard>(
 				buildTable.GetValue("LanguageStandard").AsInteger().GetValue());
 			arguments.WorkingDirectory = Path(buildTable.GetValue("WorkingDirectory").AsString().GetValue());
 			arguments.ObjectDirectory = Path(buildTable.GetValue("ObjectDirectory").AsString().GetValue());
 			arguments.BinaryDirectory = Path(buildTable.GetValue("BinaryDirectory").AsString().GetValue());
-
-			if (buildTable.HasValue("ModuleInterfaceSourceFile"))
-			{
-				arguments.ModuleInterfaceSourceFile =
-					Path(buildTable.GetValue("ModuleInterfaceSourceFile").AsString().GetValue());
-			}
-
-			if (buildTable.HasValue("Source"))
-			{
-				arguments.SourceFiles =
-					buildTable.GetValue("Source").AsList().CopyAsPathVector();
-			}
 
 			if (buildTable.HasValue("IncludeDirectories"))
 			{
@@ -172,36 +170,6 @@ namespace RecipeBuild
 				arguments.ModuleDependencies = MakeUnique(
 					buildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector());
 			}
-
-			// Initialize the compiler to use
-			auto compilerName = std::string(activeState.GetValue("CompilerName").AsString().GetValue());
-			auto findCompilerFactory = _compilerFactory.find(compilerName);
-			if (findCompilerFactory == _compilerFactory.end())
-			{
-				buildState.LogError("Unknown compiler: " + compilerName);
-				return -2;
-			}
-
-			auto createCompiler = findCompilerFactory->second;
-			auto compiler = createCompiler(activeState);
-
-			auto buildEngine = Soup::Compiler::BuildEngine(compiler);
-			auto buildResult = buildEngine.Execute(buildState, arguments);
-
-			// Always pass along required input to parent build tasks
-			auto parentBuildTable = parentState.EnsureValue("Build").EnsureTable();
-			parentBuildTable.EnsureValue("ModuleDependencies").EnsureList().SetAll(buildResult.ModuleDependencies);
-			parentBuildTable.EnsureValue("RuntimeDependencies").EnsureList().SetAll(buildResult.RuntimeDependencies);
-			parentBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(buildResult.LinkDependencies);
-
-			// Register the root build tasks
-			for (auto& node : buildResult.BuildNodes)
-			{
-				buildState.RegisterRootNode(node);
-			}
-
-			buildState.LogInfo("Build Generate Done");
-			return 0;
 		}
 
 		static std::vector<Path> MakeUnique(const std::vector<Path>& collection)
@@ -218,8 +186,14 @@ namespace RecipeBuild
 		}
 
 	private:
-		CompilerFactory _compilerFactory;
-		Soup::Build::Extensions::StringList _runBeforeList;
-		Soup::Build::Extensions::StringList _runAfterList;
+		static Soup::Build::Extensions::StringList _runBeforeList;
+		static Soup::Build::Extensions::StringList _runAfterList;
 	};
+
+	Soup::Build::Extensions::StringList TestBuildTask::_runBeforeList =
+		Soup::Build::Extensions::StringList();
+	Soup::Build::Extensions::StringList TestBuildTask::_runAfterList =
+		Soup::Build::Extensions::StringList({
+			"Build",
+		});
 }

@@ -97,20 +97,20 @@ namespace Soup::Build::Runtime
 			{
 				switch (level)
 				{
-				case TraceLevel::Diagnostic:
-					Log::Diag(message);
-					break;
-				case TraceLevel::Information:
-					Log::Info(message);
-					break;
-				case TraceLevel::HighPriority:
-					Log::HighPriority(message);
+				case TraceLevel::Error:
+					Log::Error(message);
 					break;
 				case TraceLevel::Warning:
 					Log::Warning(message);
 					break;
-				case TraceLevel::Error:
-					Log::Error(message);
+				case TraceLevel::HighPriority:
+					Log::HighPriority(message);
+					break;
+				case TraceLevel::Information:
+					Log::Info(message);
+					break;
+				case TraceLevel::Debug:
+					Log::Diag(message);
 					break;
 				default:
 					return -2;
