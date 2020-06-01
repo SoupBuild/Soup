@@ -35,7 +35,7 @@ namespace SimpleBuildExtension
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		Soup::Build::OperationResult Execute(
+		Soup::Build::ApiCallResult Execute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
 			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);

@@ -23,7 +23,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Get the run before list
 		/// </summary>
-		Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
+		const Soup::Build::IList<const char*>& GetRunBeforeList() const noexcept override final
 		{
 			return _runBeforeList;
 		}
@@ -31,7 +31,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Get the run after list
 		/// </summary>
-		Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
+		const Soup::Build::IList<const char*>& GetRunAfterList() const noexcept override final
 		{
 			return _runAfterList;
 		}
@@ -39,24 +39,25 @@ namespace RecipeBuild
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		Soup::Build::OperationResult Execute(
+		Soup::Build::ApiCallResult TryExecute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
 			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
 
 			try
 			{
-				return Execute(buildStateWrapper);
+				Execute(buildStateWrapper);
+				return Soup::Build::ApiCallResult::Success;
 			}
 			catch (const std::exception& ex)
 			{
 				buildStateWrapper.LogError(ex.what());
-				return -3;
+				return Soup::Build::ApiCallResult::Error;
 			}
 			catch(...)
 			{
 				// Unknown error
-				return -1;
+				return Soup::Build::ApiCallResult::Error;
 			}
 		}
 
@@ -64,8 +65,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		Soup::Build::OperationResult Execute(
-			Soup::Build::Extensions::BuildStateWrapper& buildState)
+		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
 		{
 			auto state = buildState.GetActiveState();
 
@@ -115,8 +115,6 @@ namespace RecipeBuild
 
 			state.EnsureValue("PlatformIncludePaths").SetValuePathList(platformIncludePaths);
 			state.EnsureValue("PlatformLibraryPaths").SetValuePathList(platformLibraryPaths);
-
-			return 0;
 		}
 
 	private:

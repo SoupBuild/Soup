@@ -12,12 +12,14 @@ import Soup.Build;
 
 using namespace Opal;
 
-#include "BuildStateWrapper.h"
-#include "GraphNodeExtensions.h"
-#include "ValueListWrapper.h"
-#include "ValuePrimitiveWrapper.h"
+#include "Runtime/BuildOperation.h"
+#include "Runtime/StringList.h"
+
+#include "Wrapper/BuildStateWrapper.h"
+#include "Wrapper/ValueListWrapper.h"
+#include "Wrapper/ValuePrimitiveWrapper.h"
+
+#include "BuildOperationExtensions.h"
 
 #include "RecipeLanguageVersion.h"
 #include "RecipeType.h"
-
-#include "StringList.h"

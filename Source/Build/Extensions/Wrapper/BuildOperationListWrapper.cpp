@@ -1,4 +1,4 @@
-// <copyright file="GraphNodeListWrapper.cpp" company="Soup">
+// <copyright file="BuildOperationListWrapper.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -15,45 +15,45 @@ using namespace Opal;
 
 namespace Soup::Build::Extensions
 {
-	GraphNodeListWrapper::GraphNodeListWrapper(IList<IGraphNode*>& value) :
+	BuildOperationListWrapper::BuildOperationListWrapper(IList<IBuildOperation*>& value) :
 		_value(value)
 	{
 	}
 
-	uint64_t GraphNodeListWrapper::GetSize() const noexcept
+	uint64_t BuildOperationListWrapper::GetSize() const noexcept
 	{
 		return _value.GetSize();
 	}
 
-	void GraphNodeListWrapper::Resize(uint64_t size)
+	void BuildOperationListWrapper::Resize(uint64_t size)
 	{
-		auto status = _value.Resize(size);
-		if (status != 0)
+		auto status = _value.TryResize(size);
+		if (status != ApiCallResult::Success)
 			throw std::runtime_error("Resize Failed");
 	}
 
-	GraphNodeWrapper GraphNodeListWrapper::GetValueAt(uint64_t index) const
+	BuildOperationWrapper BuildOperationListWrapper::GetValueAt(uint64_t index) const
 	{
-		IGraphNode* result = nullptr;
+		IBuildOperation* result = nullptr;
 		auto status = _value.TryGetValueAt(index, result);
 
 		// Store the out result to ensure we do not leak it by accident
-		Memory::Reference<IGraphNode> resultReference = result;
+		Memory::Reference<IBuildOperation> resultReference = result;
 
-		if (status != 0)
+		if (status != ApiCallResult::Success)
 			throw std::runtime_error("TryGetValueAt Failed");
 
-		return GraphNodeWrapper(resultReference);
+		return BuildOperationWrapper(resultReference);
 	}
 
-	void GraphNodeListWrapper::SetValueAt(uint64_t index, GraphNodeWrapper& value)
+	void BuildOperationListWrapper::SetValueAt(uint64_t index, BuildOperationWrapper& value)
 	{
 		auto status = _value.TrySetValueAt(index, value.GetRaw());
-		if (status != 0)
+		if (status != ApiCallResult::Success)
 			throw std::runtime_error("TrySetValueAt Failed");
 	}
 
-	void GraphNodeListWrapper::Append(GraphNodeWrapper& value)
+	void BuildOperationListWrapper::Append(BuildOperationWrapper& value)
 	{
 		auto currentSize = static_cast<size_t>(GetSize());
 		auto finalSize = currentSize + 1;
@@ -61,7 +61,7 @@ namespace Soup::Build::Extensions
 		SetValueAt(currentSize, value);
 	}
 
-	void GraphNodeListWrapper::Append(const GraphNodeListWrapper& values)
+	void BuildOperationListWrapper::Append(const BuildOperationListWrapper& values)
 	{
 		auto currentSize = GetSize();
 		auto finalSize = currentSize + values.GetSize();
@@ -72,7 +72,7 @@ namespace Soup::Build::Extensions
 		}
 	}
 
-	void GraphNodeListWrapper::Append(std::vector<GraphNodeWrapper>& values)
+	void BuildOperationListWrapper::Append(std::vector<BuildOperationWrapper>& values)
 	{
 		auto currentSize = static_cast<size_t>(GetSize());
 		auto finalSize = currentSize + values.size();

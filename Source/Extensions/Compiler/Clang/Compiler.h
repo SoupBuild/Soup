@@ -68,7 +68,7 @@ namespace Soup::Compiler::Clang
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Extensions::GraphNodeWrapper CreateCompileNode(
+		Build::Extensions::BuildOperationWrapper CreateCompileNode(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
@@ -87,7 +87,7 @@ namespace Soup::Compiler::Clang
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Extensions::GraphNodeWrapper CreateLinkNode(
+		Build::Extensions::BuildOperationWrapper CreateLinkNode(
 			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
@@ -111,19 +111,20 @@ namespace Soup::Compiler::Clang
 			auto outputFiles = std::vector<Path>();
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
 
-			auto buildNode = state.CreateNode(
-				args.TargetFile.ToString(),
-				std::move(executablePath),
-				CombineArguments(commandArgs),
-				args.RootDirectory,
-				std::move(inputFiles),
-				std::move(outputFiles));
+			auto buildOperation = Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					args.TargetFile.ToString(),
+					executablePath,
+					CombineArguments(commandArgs),
+					args.RootDirectory,
+					inputFiles,
+					outputFiles));
 
-			return buildNode;
+			return buildOperation;
 		}
 
 	private:
-		Build::Extensions::GraphNodeWrapper CompileStandard(
+		Build::Extensions::BuildOperationWrapper CompileStandard(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
@@ -134,18 +135,19 @@ namespace Soup::Compiler::Clang
 			auto outputFiles = std::vector<Path>();
 			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, inputFiles, outputFiles);
 
-			auto buildNode = state.CreateNode(
-				args.SourceFile.ToString(),
-				std::move(executablePath),
-				CombineArguments(commandArgs),
-				args.RootDirectory,
-				std::move(inputFiles),
-				std::move(outputFiles));
+			auto buildOperation = Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					args.SourceFile.ToString(),
+					executablePath,
+					CombineArguments(commandArgs),
+					args.RootDirectory,
+					inputFiles,
+					outputFiles));
 
-			return buildNode;
+			return buildOperation;
 		}
 
-		Build::Extensions::GraphNodeWrapper CompileModuleInterfaceUnit(
+		Build::Extensions::BuildOperationWrapper CompileModuleInterfaceUnit(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
@@ -177,13 +179,14 @@ namespace Soup::Compiler::Clang
 					generatePrecompiledModuleInputFiles,
 					generatePrecompiledModuleOutputFiles);
 
-			auto precompiledModuleBuildNode = state.CreateNode(
-				generatePrecompiledModuleArgs.SourceFile.ToString(),
-				executablePath,
-				CombineArguments(generatePrecompiledModuleCommandArgs),
-				args.RootDirectory,
-				std::move(generatePrecompiledModuleInputFiles),
-				std::move(generatePrecompiledModuleOutputFiles));
+			auto precompiledModuleBuildOperation = Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					generatePrecompiledModuleArgs.SourceFile.ToString(),
+					executablePath,
+					CombineArguments(generatePrecompiledModuleCommandArgs),
+					args.RootDirectory,
+					generatePrecompiledModuleInputFiles,
+					generatePrecompiledModuleOutputFiles));
 
 			// Now we can compile the object file from the precompiled module
 			auto compileObjectArgs = CompileArguments();
@@ -202,18 +205,21 @@ namespace Soup::Compiler::Clang
 					compileObjectInputFiles,
 					compileObjectOutputFiles);
 
-			auto compileBuildNode = state.CreateNode(
-				compileObjectArgs.SourceFile.ToString(),
-				std::move(executablePath),
-				CombineArguments(compileObjectCommandArgs),
-				args.RootDirectory,
-				std::move(compileObjectInputFiles),
-				std::move(compileObjectOutputFiles));
+			auto compileBuildOperation = Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					compileObjectArgs.SourceFile.ToString(),
+					executablePath,
+					CombineArguments(compileObjectCommandArgs),
+					args.RootDirectory,
+					compileObjectInputFiles,
+					compileObjectOutputFiles));
 
 			// Ensure the compile node runs after the precompile
-			Build::Extensions::GraphNodeExtensions::AddLeafChild(precompiledModuleBuildNode, compileBuildNode);
+			Build::Extensions::BuildOperationExtensions::AddLeafChild(
+				precompiledModuleBuildOperation,
+				compileBuildOperation);
 
-			return precompiledModuleBuildNode;
+			return precompiledModuleBuildOperation;
 		}
 
 		static std::string CombineArguments(const std::vector<std::string>& args)

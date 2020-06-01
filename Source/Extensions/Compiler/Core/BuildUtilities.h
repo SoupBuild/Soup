@@ -15,7 +15,7 @@ namespace Soup::Compiler
 		/// <summary>
 		/// Create a build node that will copy a file
 		/// </summary>
-		static Soup::Build::Extensions::GraphNodeWrapper CreateCopyFileNode(
+		static Soup::Build::Extensions::BuildOperationWrapper CreateCopyFileNode(
 			Soup::Build::Extensions::BuildStateWrapper& state,
 			const Path& source,
 			const Path& destination)
@@ -36,19 +36,20 @@ namespace Soup::Compiler
 			std::stringstream arguments;
 			arguments << "/C copy /Y \"" << source.ToAlternateString() << "\" \"" << destination.ToAlternateString() << "\"";
 
-			return state.CreateNode(
+			return Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
 					titleStream.str(),
-					std::move(program),
+					program,
 					arguments.str(),
-					std::move(workingDirectory),
-					std::move(inputFiles),
-					std::move(outputFiles));
+					workingDirectory,
+					inputFiles,
+					outputFiles));
 		}
 
 		/// <summary>
 		/// Create a build node that will create a directory
 		/// </summary>
-		static Soup::Build::Extensions::GraphNodeWrapper CreateCreateDirectoryNode(
+		static Soup::Build::Extensions::BuildOperationWrapper CreateCreateDirectoryNode(
 			Soup::Build::Extensions::BuildStateWrapper& state,
 			const Path& directory)
 		{
@@ -66,13 +67,14 @@ namespace Soup::Compiler
 			std::stringstream arguments;
 			arguments << "/C if not exist \"" << directory.ToString() << "\" mkdir \"" << directory.ToString() << "\"";
 
-			return state.CreateNode(
-				titleStream.str(),
-				std::move(program),
-				arguments.str(),
-				std::move(workingDirectory),
-				std::move(inputFiles),
-				std::move(outputFiles));
+			return Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					titleStream.str(),
+					program,
+					arguments.str(),
+					workingDirectory,
+					inputFiles,
+					outputFiles));
 		}
 	};
 }

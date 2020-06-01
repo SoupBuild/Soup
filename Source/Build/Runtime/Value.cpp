@@ -53,32 +53,43 @@ Value::Value(ValueTable table) :
 {
 }
 
-OperationResult Value::TryGetType(uint64_t& type) const noexcept
+ValueType Value::GetType() const noexcept
 {
-	try
+	if (_value.has_value())
 	{
-		type = static_cast<uint64_t>(GetType());
-		return 0;
+		auto& valueType = _value.type();
+		if (valueType == typeid(ValueTable))
+			return ValueType::Table;
+		else if (valueType == typeid(ValueList))
+			return ValueType::List;
+		else if (valueType == typeid(ValuePrimitive<const char*>))
+			return ValueType::String;
+		else if (valueType == typeid(ValuePrimitive<int64_t>))
+			return ValueType::Integer;
+		else if (valueType == typeid(ValuePrimitive<double>))
+			return ValueType::Float;
+		else if (valueType == typeid(ValuePrimitive<bool>))
+			return ValueType::Boolean;
+		else
+			return ValueType::Empty;
 	}
-	catch (...)
+	else
 	{
-		// Unknown type
-		return -1;
+		return ValueType::Empty;
 	}
 }
 
-OperationResult Value::TrySetType(uint64_t type) noexcept
+ApiCallResult Value::TrySetType(ValueType type) noexcept
 {
 
 	try
 	{
-		auto updatedType = static_cast<ValueType>(type);
 		auto currentType = GetType();
 
 		// Ignore requests to set to same type
-		if (currentType != updatedType)
+		if (currentType != type)
 		{
-			switch (updatedType)
+			switch (type)
 			{
 				case ValueType::Table:
 					_value = ValueTable();
@@ -100,20 +111,20 @@ OperationResult Value::TrySetType(uint64_t type) noexcept
 					break;
 				default:
 					// Unknown type
-					return -2;
+					return ApiCallResult::Error;
 			}
 		}
 
-		return 0;
+		return ApiCallResult::Success;
 	}
 	catch (...)
 	{
 		// Unknown error
-		return -1;
+		return ApiCallResult::Error;
 	}
 }
 
-OperationResult Value::TryGetAsTable(IValueTable*& result) noexcept
+ApiCallResult Value::TryGetAsTable(IValueTable*& result) noexcept
 {
 	try
 	{
@@ -121,22 +132,22 @@ OperationResult Value::TryGetAsTable(IValueTable*& result) noexcept
 		if (_value.type() == typeid(ValueTable))
 		{
 			result = &std::any_cast<ValueTable&>(_value);
-			return 0;
+			return ApiCallResult::Success;
 		}
 		else
 		{
 			// Wrong type
-			return -2;
+			return ApiCallResult::Error;
 		}
 	}
 	catch (...)
 	{
 		// Unknown errors
-		return -1;
+		return ApiCallResult::Error;
 	}
 }
 
-OperationResult Value::TryGetAsList(IValueList*& result) noexcept
+ApiCallResult Value::TryGetAsList(IValueList*& result) noexcept
 {
 	try
 	{
@@ -144,22 +155,22 @@ OperationResult Value::TryGetAsList(IValueList*& result) noexcept
 		if (_value.type() == typeid(ValueList))
 		{
 			result = &std::any_cast<ValueList&>(_value);
-			return 0;
+			return ApiCallResult::Success;
 		}
 		else
 		{
 			// Wrong type
-			return -2;
+			return ApiCallResult::Error;
 		}
 	}
 	catch (...)
 	{
 		// Unknown errors
-		return -1;
+		return ApiCallResult::Error;
 	}
 }
 
-OperationResult Value::TryGetAsString(IValuePrimitive<const char*>*& result) noexcept
+ApiCallResult Value::TryGetAsString(IValuePrimitive<const char*>*& result) noexcept
 {
 	try
 	{
@@ -167,22 +178,22 @@ OperationResult Value::TryGetAsString(IValuePrimitive<const char*>*& result) noe
 		if (_value.type() == typeid(ValuePrimitive<const char*>))
 		{
 			result = &std::any_cast<ValuePrimitive<const char*>&>(_value);
-			return 0;
+			return ApiCallResult::Success;
 		}
 		else
 		{
 			// Wrong type
-			return -2;
+			return ApiCallResult::Error;
 		}
 	}
 	catch (...)
 	{
 		// Unknown errors
-		return -1;
+		return ApiCallResult::Error;
 	}
 }
 
-OperationResult Value::TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexcept
+ApiCallResult Value::TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexcept
 {
 	try
 	{
@@ -190,22 +201,22 @@ OperationResult Value::TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexce
 		if (_value.type() == typeid(ValuePrimitive<int64_t>))
 		{
 			result = &std::any_cast<ValuePrimitive<int64_t>&>(_value);
-			return 0;
+			return ApiCallResult::Success;
 		}
 		else
 		{
 			// Wrong type
-			return -2;
+			return ApiCallResult::Error;
 		}
 	}
 	catch (...)
 	{
 		// Unknown errors
-		return -1;
+		return ApiCallResult::Error;
 	}
 }
 
-OperationResult Value::TryGetAsFloat(IValuePrimitive<double>*& result) noexcept
+ApiCallResult Value::TryGetAsFloat(IValuePrimitive<double>*& result) noexcept
 {
 	try
 	{
@@ -213,22 +224,22 @@ OperationResult Value::TryGetAsFloat(IValuePrimitive<double>*& result) noexcept
 		if (_value.type() == typeid(ValuePrimitive<double>))
 		{
 			result = &std::any_cast<ValuePrimitive<double>&>(_value);
-			return 0;
+			return ApiCallResult::Success;
 		}
 		else
 		{
 			// Wrong type
-			return -2;
+			return ApiCallResult::Error;
 		}
 	}
 	catch (...)
 	{
 		// Unknown errors
-		return -1;
+		return ApiCallResult::Error;
 	}
 }
 
-OperationResult Value::TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept
+ApiCallResult Value::TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept
 {
 	try
 	{
@@ -236,44 +247,18 @@ OperationResult Value::TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept
 		if (_value.type() == typeid(ValuePrimitive<bool>))
 		{
 			result = &std::any_cast<ValuePrimitive<bool>&>(_value);
-			return 0;
+			return ApiCallResult::Success;
 		}
 		else
 		{
 			// Wrong type
-			return -2;
+			return ApiCallResult::Error;
 		}
 	}
 	catch (...)
 	{
 		// Unknown errors
-		return -1;
-	}
-}
-
-ValueType Value::GetType() const
-{
-	if (_value.has_value())
-	{
-		auto& valueType = _value.type();
-		if (valueType == typeid(ValueTable))
-			return ValueType::Table;
-		else if (valueType == typeid(ValueList))
-			return ValueType::List;
-		else if (valueType == typeid(ValuePrimitive<const char*>))
-			return ValueType::String;
-		else if (valueType == typeid(ValuePrimitive<int64_t>))
-			return ValueType::Integer;
-		else if (valueType == typeid(ValuePrimitive<double>))
-			return ValueType::Float;
-		else if (valueType == typeid(ValuePrimitive<bool>))
-			return ValueType::Boolean;
-		else
-			throw std::runtime_error("Unknown internal type.");
-	}
-	else
-	{
-		return ValueType::Empty;
+		return ApiCallResult::Error;
 	}
 }
 

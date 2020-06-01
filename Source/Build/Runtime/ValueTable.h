@@ -25,22 +25,22 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Property access methods
 		/// </summary>
-		OperationResult TryCheckHasValue(const char* name, bool& result) const noexcept override final
+		ApiCallResult TryHasValue(const char* name, bool& result) const noexcept override final
 		{
 			try
 			{
 				result = false;
 				result = _values.contains(name);
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 
-		OperationResult TryGetValue(const char* name, IValue*& result) noexcept override final
+		ApiCallResult TryGetValue(const char* name, IValue*& result) noexcept override final
 		{
 			try
 			{
@@ -49,33 +49,33 @@ namespace Soup::Build::Runtime
 				if (findResult != _values.end())
 				{
 					result = &findResult->second;
-					return 0;
+					return ApiCallResult::Success;
 				}
 				else
 				{
 					// The property does not exists
-					return -3;
+					return ApiCallResult::Error;
 				}
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 
-		OperationResult TryCreateValue(const char* name, IValue*& result) noexcept override final
+		ApiCallResult TryCreateValue(const char* name, IValue*& result) noexcept override final
 		{
 			try
 			{
 				result = nullptr;
 				result = &SetValue(name, Value());
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 

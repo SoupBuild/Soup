@@ -4,7 +4,7 @@
 
 #pragma once
 #include "IValue.h"
-#include "OperationResult.h"
+#include "ApiCallResult.h"
 
 namespace Soup::Build
 {
@@ -20,11 +20,11 @@ namespace Soup::Build
 		/// Size access methods
 		/// </summary>
 		virtual uint64_t GetSize() const noexcept = 0;
-		virtual OperationResult Resize(uint64_t size) noexcept = 0;
+		virtual ApiCallResult TryResize(uint64_t size) noexcept = 0;
 
 		/// <summary>
 		/// Value accessor methods
 		/// </summary>
-		virtual OperationResult TryGetValueAt(uint64_t index, IValue*& result) noexcept = 0;
+		virtual ApiCallResult TryGetValueAt(uint64_t index, IValue*& result) noexcept = 0;
 	};
 }

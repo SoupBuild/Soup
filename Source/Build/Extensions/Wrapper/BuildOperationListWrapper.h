@@ -1,4 +1,4 @@
-// <copyright file="GraphNodeListWrapper.h" company="Soup">
+// <copyright file="BuildOperationListWrapper.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,18 +6,18 @@
 
 namespace Soup::Build::Extensions
 {
-	export class GraphNodeWrapper;
+	export class BuildOperationWrapper;
 
 	/// <summary>
 	/// Build State property list implementation, string specialization
 	/// </summary>
-	export class GraphNodeListWrapper
+	export class BuildOperationListWrapper
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the GraphNodeListWrapper class
+		/// Initializes a new instance of the BuildOperationListWrapper class
 		/// </summary>
-		GraphNodeListWrapper(IList<IGraphNode*>& value);
+		BuildOperationListWrapper(IList<IBuildOperation*>& value);
 
 		/// <summary>
 		/// Size access methods
@@ -29,21 +29,21 @@ namespace Soup::Build::Extensions
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		GraphNodeWrapper GetValueAt(uint64_t index) const;
+		BuildOperationWrapper GetValueAt(uint64_t index) const;
 
 		/// <summary>
 		/// Property setter methods.
 		/// </summary>
-		void SetValueAt(uint64_t index, GraphNodeWrapper& value);
+		void SetValueAt(uint64_t index, BuildOperationWrapper& value);
 
 		/// <summary>
 		/// Extended helpers for easy updating of entire contents
 		/// </summary>
-		void Append(GraphNodeWrapper& value);
-		void Append(const GraphNodeListWrapper& values);
-		void Append(std::vector<GraphNodeWrapper>& values);
+		void Append(BuildOperationWrapper& value);
+		void Append(const BuildOperationListWrapper& values);
+		void Append(std::vector<BuildOperationWrapper>& values);
 
 	private:
-		IList<IGraphNode*>& _value;
+		IList<IBuildOperation*>& _value;
 	};
 }

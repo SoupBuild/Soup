@@ -3,19 +3,19 @@
 // </copyright>
 
 #pragma once
-#include "OperationResult.h"
+#include "ApiCallResult.h"
 
 namespace Soup::Build
 {
 	/// <summary>
 	/// The shared Build System Extension interface that is passed into a build extension 
-	/// registration method. This container allows for a build enxtension to register any number 
+	/// registration method. This container allows for a build extension to register any number 
 	/// of build tasks that will be executed during the generate phase.
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
 	export class IBuildSystem
 	{
 	public:
-		virtual OperationResult RegisterTask(IBuildTask* task) noexcept = 0;
+		virtual ApiCallResult TryRegisterTask(IBuildTask* task) noexcept = 0;
 	};
 }

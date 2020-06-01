@@ -10,7 +10,7 @@ Name = "SimpleBuildExtension"
 Type = "DynamicLibrary"
 Version = "1.0.0"
 Dependencies = [
-    "Opal@0.1.1",
+    "Opal@0.1.2",
     "Soup.Build@0.3.0",
     "Soup.Build.Extensions@0.3.0",
 ]
@@ -60,7 +60,7 @@ namespace SimpleBuildExtension
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        Soup::Build::OperationResult Execute(
+        Soup::Build::ApiCallResult Execute(
             Soup::Build::IBuildState& buildState) noexcept override final
         {
             auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
@@ -142,7 +142,7 @@ namespace SimpleBuildExtension
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        Soup::Build::OperationResult Execute(
+        Soup::Build::ApiCallResult Execute(
             Soup::Build::IBuildState& buildState) noexcept override final
         {
             auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);

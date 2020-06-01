@@ -12,9 +12,9 @@ namespace Soup::Compiler
 	export struct BuildResult
 	{
 		/// <summary>
-		/// Gets or sets the resulting root build nodes
+		/// Gets or sets the resulting root build operations
 		/// </summary>
-		std::vector<Soup::Build::Extensions::GraphNodeWrapper> BuildNodes;
+		std::vector<Soup::Build::Extensions::BuildOperationWrapper> BuildOperations;
 
 		/// <summary>
 		/// Gets or sets the list of module dependencies

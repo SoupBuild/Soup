@@ -128,7 +128,7 @@ namespace Soup
 			{
 				case RecipeValueType::Empty:
 					return json11::Json();
-				case Build::ValueType::Table:
+				case RecipeValueType::Table:
 					return BuildJson(value.AsTable());
 				case RecipeValueType::List:
 					return BuildJson(value.AsList());

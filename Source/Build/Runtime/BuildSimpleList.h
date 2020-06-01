@@ -29,7 +29,7 @@ namespace Soup::Build::Runtime
 			return _value.size();
 		}
 
-		OperationResult Resize(uint64_t size) noexcept override final
+		ApiCallResult TryResize(uint64_t size) noexcept override final
 		{
 			try
 			{
@@ -46,7 +46,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		OperationResult TryGetValueAt(uint64_t index, T& result) noexcept override final
+		ApiCallResult TryGetValueAt(uint64_t index, T& result) noexcept override final
 		{
 			try
 			{
@@ -63,7 +63,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Property setter methods.
 		/// </summary>
-		OperationResult TrySetValueAt(uint64_t index, T value) noexcept override final
+		ApiCallResult TrySetValueAt(uint64_t index, T value) noexcept override final
 		{
 			try
 			{

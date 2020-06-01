@@ -29,23 +29,22 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Type checker methods
 		/// </summary>
-		OperationResult TryGetType(uint64_t& type) const noexcept override final;
-		OperationResult TrySetType(uint64_t type) noexcept override final;
+		ValueType GetType() const noexcept override final;
+		ApiCallResult TrySetType(ValueType type) noexcept override final;
 
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		OperationResult TryGetAsTable(IValueTable*& result) noexcept override final;
-		OperationResult TryGetAsList(IValueList*& result) noexcept override final;
-		OperationResult TryGetAsString(IValuePrimitive<const char*>*& result) noexcept override final;
-		OperationResult TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexcept override final;
-		OperationResult TryGetAsFloat(IValuePrimitive<double>*& result) noexcept override final;
-		OperationResult TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept override final;
+		ApiCallResult TryGetAsTable(IValueTable*& result) noexcept override final;
+		ApiCallResult TryGetAsList(IValueList*& result) noexcept override final;
+		ApiCallResult TryGetAsString(IValuePrimitive<const char*>*& result) noexcept override final;
+		ApiCallResult TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexcept override final;
+		ApiCallResult TryGetAsFloat(IValuePrimitive<double>*& result) noexcept override final;
+		ApiCallResult TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept override final;
 
 		/// <summary>
 		/// Internal accessors
 		/// </summary>
-		ValueType GetType() const;
 		std::string ToString();
 
 		ValueTable& AsTable();

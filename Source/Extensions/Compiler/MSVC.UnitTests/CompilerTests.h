@@ -42,8 +42,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto result = uut.CreateCompileNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
-				new Build::Runtime::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Runtime::BuildOperation>(
+				new Build::Runtime::BuildOperation(
 					"File.cpp",
 					"bin/mock.cl.exe",
 					"/nologo /Zc:__cplusplus /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c File.cpp /Fo\"obj/File.obj\"",
@@ -86,8 +86,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto result = uut.CreateCompileNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
-				new Build::Runtime::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Runtime::BuildOperation>(
+				new Build::Runtime::BuildOperation(
 					"File.cpp",
 					"bin/mock.cl.exe",
 					"/nologo /Zc:__cplusplus /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MT /module:reference \"Module.pcm\" /module:interface /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
@@ -125,8 +125,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto result = uut.CreateLinkNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
-				new Build::Runtime::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Runtime::BuildOperation>(
+				new Build::Runtime::BuildOperation(
 					"Library.mock.a",
 					"bin/mock.lib.exe",
 					"/nologo /machine:X64 /out:\"Library.mock.a\" File.mock.obj",
@@ -165,8 +165,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto result = uut.CreateLinkNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
-				new Build::Runtime::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Runtime::BuildOperation>(
+				new Build::Runtime::BuildOperation(
 					"Something.exe",
 					"bin/mock.link.exe",
 					"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",

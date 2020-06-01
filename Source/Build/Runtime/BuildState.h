@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "BuildGraphNode.h"
 #include "ValueTable.h"
 
 namespace Soup::Build::Runtime
@@ -18,7 +17,7 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
 		BuildState() :
-			_nodes(),
+			_rootOperations(),
 			_activeState(),
 			_parentState()
 		{
@@ -28,7 +27,7 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
 		BuildState(ValueTable recipeState) :
-			_nodes(),
+			_rootOperations(),
 			_activeState(),
 			_parentState()
 		{
@@ -39,36 +38,9 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Build Graph Access Methods
 		/// </summary>
-		OperationResult TryRegisterRootNode(IGraphNode* node) noexcept override final
+		IList<IBuildOperation*>& GetRootOperationList() noexcept override final
 		{
-			try
-			{
-				auto internalNode = dynamic_cast<BuildGraphNode*>(node);
-				if (node == nullptr)
-					return -2;
-
-				_nodes.push_back(internalNode);
-				return 0;
-			}
-			catch (...)
-			{
-				// Unknown error
-				return -1;
-			}
-		}
-
-		OperationResult TryCreateNode(IGraphNode*& node) noexcept override final
-		{
-			try
-			{
-				node = new BuildGraphNode();
-				return 0;
-			}
-			catch (...)
-			{
-				// Unknown error
-				return -1;
-			}
+			return _rootOperations;
 		}
 
 		/// <summary>
@@ -80,10 +52,10 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
-		/// Get a reference to the child state. All of these properties will be 
+		/// Get a reference to the shared state. All of these properties will be 
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
-		IValueTable& GetParentState() noexcept override final
+		IValueTable& GetSharedState() noexcept override final
 		{
 			return _parentState;
 		}
@@ -91,7 +63,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Log a message to the build system
 		/// </summary>
-		OperationResult TryLogTrace(TraceLevel level, const char* message) noexcept override final
+		ApiCallResult TryLogTrace(TraceLevel level, const char* message) noexcept override final
 		{
 			try
 			{
@@ -113,29 +85,29 @@ namespace Soup::Build::Runtime
 					Log::Diag(message);
 					break;
 				default:
-					return -2;
+					return ApiCallResult::Error;
 				}
 
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 
 		/// <summary>
-		/// Internal access to build nodes
+		/// Internal access to build operations
 		/// </summary>
-		std::vector<Memory::Reference<BuildGraphNode>>& GetBuildNodes()
+		IList<IBuildOperation*>& GetBuildOperations()
 		{
-			return _nodes;
+			return _rootOperations;
 		}
 
-		const std::vector<Memory::Reference<BuildGraphNode>>& GetBuildNodes() const
+		const IList<IBuildOperation*>& GetBuildOperations() const
 		{
-			return _nodes;
+			return _rootOperations;
 		}
 
 		/// <summary>
@@ -187,7 +159,7 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		std::vector<Memory::Reference<BuildGraphNode>> _nodes;
+		Extensions::BuildOperationList _rootOperations;
 		ValueTable _activeState;
 		ValueTable _parentState;
 	};

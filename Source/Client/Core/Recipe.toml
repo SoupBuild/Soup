@@ -15,7 +15,7 @@ Dependencies = [
 	"../../Build/Runtime/",
 ]
 DevDependencies = [
-	"../../Extensions/TestBuild/",
+	# "../../Extensions/TestBuild/",
 ]
 
 Defines = [

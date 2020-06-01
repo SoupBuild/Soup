@@ -83,43 +83,45 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Extensions::GraphNodeWrapper CreateCompileNode(
+		Build::Extensions::BuildOperationWrapper CreateCompileNode(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
 			_compileRequests.push_back(args);
-			return state.CreateNode(
-				"MockCompile: " + std::to_string(_compileRequests.size()),
-				Path("MockCompiler.exe"),
-				"Arguments",
-				Path("MockWorkingDirectory"),
-				std::vector<Path>({
-					Path("InputFile.in"),
-				}),
-				std::vector<Path>({
-					Path("OutputFile.out"),
-				}));
+			return Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					"MockCompile: " + std::to_string(_compileRequests.size()),
+					Path("MockCompiler.exe"),
+					"Arguments",
+					Path("MockWorkingDirectory"),
+					std::vector<Path>({
+						Path("InputFile.in"),
+					}),
+					std::vector<Path>({
+						Path("OutputFile.out"),
+					})));
 		}
 
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Extensions::GraphNodeWrapper CreateLinkNode(
+		Build::Extensions::BuildOperationWrapper CreateLinkNode(
 			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
 			_linkRequests.push_back(args);
-			return state.CreateNode(
-				"MockLink: " + std::to_string(_linkRequests.size()),
-				Path("MockLinker.exe"),
-				"Arguments",
-				Path("MockWorkingDirectory"),
-				std::vector<Path>({
-					Path("InputFile.in"),
-				}),
-				std::vector<Path>({
-					Path("OutputFile.out"),
-				}));
+			return Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					"MockLink: " + std::to_string(_linkRequests.size()),
+					Path("MockLinker.exe"),
+					"Arguments",
+					Path("MockWorkingDirectory"),
+					std::vector<Path>({
+						Path("InputFile.in"),
+					}),
+					std::vector<Path>({
+						Path("OutputFile.out"),
+					})));
 		}
 
 	private:

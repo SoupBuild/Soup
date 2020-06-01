@@ -48,17 +48,20 @@ extern "C"
 		// Register the resolve tools task
 		auto resolveToolsTask = Memory::Reference<RecipeBuild::ResolveToolsTask>(
 			new RecipeBuild::ResolveToolsTask());
-		buildSystem.RegisterTask(resolveToolsTask.GetRaw());
+		if (buildSystem.TryRegisterTask(resolveToolsTask.GetRaw()) != Soup::Build::ApiCallResult::Success)
+			return -1;
 
 		// Register the standard library include task
 		auto standardLibraryIncludeTask = Memory::Reference<RecipeBuild::StandardLibraryIncludeTask>(
 			new RecipeBuild::StandardLibraryIncludeTask());
-		buildSystem.RegisterTask(standardLibraryIncludeTask.GetRaw());
+		if (buildSystem.TryRegisterTask(standardLibraryIncludeTask.GetRaw()) != Soup::Build::ApiCallResult::Success)
+			return -1;
 
 		// Register the recipe build task
 		auto recipeBuildTask = Memory::Reference<RecipeBuild::RecipeBuildTask>(
 			new RecipeBuild::RecipeBuildTask());
-		buildSystem.RegisterTask(recipeBuildTask.GetRaw());
+		if (buildSystem.TryRegisterTask(recipeBuildTask.GetRaw()) != Soup::Build::ApiCallResult::Success)
+			return -1;
 
 		// Register all known compilers
 		auto compilerFactory = RecipeBuild::CompilerFactory();
@@ -67,7 +70,8 @@ extern "C"
 		// Register the compile task
 		auto buildTask = Memory::Reference<RecipeBuild::BuildTask>(
 			new RecipeBuild::BuildTask(std::move(compilerFactory)));
-		buildSystem.RegisterTask(buildTask.GetRaw());
+		if (buildSystem.TryRegisterTask(buildTask.GetRaw()) != Soup::Build::ApiCallResult::Success)
+			return -1;
 
 		return 0;
 	}

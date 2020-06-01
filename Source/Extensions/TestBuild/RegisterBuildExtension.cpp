@@ -22,8 +22,10 @@ extern "C"
 		// Register the before build task
 		auto testBuildTask = Opal::Memory::Reference<Soup::Test::TestBuildTask>(
 			new Soup::Test::TestBuildTask());
-		buildSystem.RegisterTask(testBuildTask.GetRaw());
-
-		return 0;
+		auto registerResult = buildSystem.TryRegisterTask(testBuildTask.GetRaw());
+		if (registerResult != Soup::Build::ApiCallResult::Success)
+			return -1;
+		else
+			return 0;
 	}
 }

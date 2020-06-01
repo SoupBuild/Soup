@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "OperationResult.h"
+#include "ApiCallResult.h"
 #include "IValueTable.h"
 
 namespace Soup::Build
@@ -35,10 +35,9 @@ namespace Soup::Build
 	{
 	public:
 		/// <summary>
-		/// Build Graph Access Methods
+		/// Get the root Build Graph node list that can be used to add new build operations
 		/// </summary>
-		virtual OperationResult TryRegisterRootNode(IGraphNode* node) noexcept = 0;
-		virtual OperationResult TryCreateNode(IGraphNode*& node) noexcept = 0;
+		virtual IList<IBuildOperation*>& GetRootOperationList() noexcept = 0;
 
 		/// <summary>
 		/// Get a reference to the active state
@@ -46,14 +45,14 @@ namespace Soup::Build
 		virtual IValueTable& GetActiveState() noexcept = 0;
 
 		/// <summary>
-		/// Get a reference to the child state. All of these properties will be 
-		/// moved into the active state of any parent build that has a direct reference to this build.
+		/// Get a reference to the shared state. All of these properties will be 
+		/// moved into the active state of any parent build that has a direct reference to this build node.
 		/// </summary>
-		virtual IValueTable& GetParentState() noexcept = 0;
+		virtual IValueTable& GetSharedState() noexcept = 0;
 
 		/// <summary>
 		/// Log a message to the build system
 		/// </summary>
-		virtual OperationResult TryLogTrace(TraceLevel level, const char* message) noexcept = 0;
+		virtual ApiCallResult TryLogTrace(TraceLevel level, const char* message) noexcept = 0;
 	};
 }

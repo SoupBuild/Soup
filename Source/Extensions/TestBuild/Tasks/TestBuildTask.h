@@ -19,7 +19,7 @@ namespace Soup::Test
 		/// <summary>
 		/// Get the run before list
 		/// </summary>
-		Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
+		const Soup::Build::IList<const char*>& GetRunBeforeList() const noexcept override final
 		{
 			return _runBeforeList;
 		}
@@ -27,7 +27,7 @@ namespace Soup::Test
 		/// <summary>
 		/// Get the run after list
 		/// </summary>
-		Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
+		const Soup::Build::IList<const char*>& GetRunAfterList() const noexcept override final
 		{
 			return _runAfterList;
 		}
@@ -35,7 +35,7 @@ namespace Soup::Test
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		Soup::Build::OperationResult Execute(
+		Soup::Build::ApiCallResult TryExecute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
 			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
@@ -45,12 +45,12 @@ namespace Soup::Test
 				// We cannot throw accross the DLL boundary for a build extension
 				// So all internal errors must be converted to error codes
 				Execute(buildStateWrapper);
-				return 0;
+				return Soup::Build::ApiCallResult::Success;
 			}
 			catch(...)
 			{
 				buildStateWrapper.LogError("Unknown Error");
-				return -1;
+				return Soup::Build::ApiCallResult::Error;
 			}
 		}
 

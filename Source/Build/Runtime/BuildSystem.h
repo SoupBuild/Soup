@@ -45,7 +45,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Register task
 		/// </summary>
-		OperationResult RegisterTask(IBuildTask* task) noexcept override final
+		ApiCallResult TryRegisterTask(IBuildTask* task) noexcept override final
 		{
 			try
 			{
@@ -54,10 +54,15 @@ namespace Soup::Build::Runtime
 				std::string taskName = ourTask->GetName();
 				Log::Diag("RegisterTask: " + taskName);
 
+				// TODO: Remove const casts
+				auto runBeforeList = Extensions::StringListWrapper(
+					const_cast<IList<const char*>&>(ourTask->GetRunBeforeList()));
+				auto runAfterList = Extensions::StringListWrapper(
+					const_cast<IList<const char*>&>(ourTask->GetRunAfterList()));
 				auto taskContainer = BuildTaskContainer(
 					ourTask,
-					Extensions::StringListWrapper(ourTask->GetRunBeforeList()).CopyAsStringVector(),
-					Extensions::StringListWrapper(ourTask->GetRunAfterList()).CopyAsStringVector());
+					runBeforeList.CopyAsStringVector(),
+					runAfterList.CopyAsStringVector());
 
 				std::stringstream runBeforeMessage;
 				runBeforeMessage << "RunBefore [";
@@ -93,15 +98,15 @@ namespace Soup::Build::Runtime
 				if (!insertResult.second)
 				{
 					Log::HighPriority("A task with the provided name has already been registered: " + taskName);
-					return -2;
+					return ApiCallResult::Error;
 				}
 
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 
@@ -142,10 +147,10 @@ namespace Soup::Build::Runtime
 			while (currentTask != _tasks.end())
 			{
 				Log::Info("TaskStart: " + currentTask->first);
-				auto status = currentTask->second.Task->Execute(state);
-				if (status != 0)
+				auto status = currentTask->second.Task->TryExecute(state);
+				if (status != ApiCallResult::Success)
 				{
-					Log::Error("TaskFailed: " + std::to_string(status));
+					Log::Error("TaskFailed: " + std::to_string(static_cast<int64_t>(status)));
 					throw std::runtime_error("Task Failed");
 				}
 				else

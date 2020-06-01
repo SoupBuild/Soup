@@ -115,8 +115,8 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -129,8 +129,8 @@ namespace RecipeBuild::UnitTests
 						})));
 
 			auto expectedCompileNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
 						"MockCompiler.exe",
 						"Arguments",
@@ -141,29 +141,29 @@ namespace RecipeBuild::UnitTests
 						std::vector<std::string>({
 							"OutputFile.out",
 						}),
-						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 							expectedLinkNode,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
-				new Soup::Build::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileNode,
 					})),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileNode,
 					})),
 			});
@@ -269,8 +269,8 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -283,8 +283,8 @@ namespace RecipeBuild::UnitTests
 						})));
 
 			auto expectedCompileNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
 						"MockCompiler.exe",
 						"Arguments",
@@ -295,29 +295,29 @@ namespace RecipeBuild::UnitTests
 						std::vector<std::string>({
 							"OutputFile.out",
 						}),
-						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 							expectedLinkNode,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
-				new Soup::Build::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileNode,
 					})),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileNode,
 					})),
 			});
@@ -423,8 +423,8 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -437,8 +437,8 @@ namespace RecipeBuild::UnitTests
 						})));
 
 			auto expectedCompileNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
 						"MockCompiler.exe",
 						"Arguments",
@@ -449,29 +449,29 @@ namespace RecipeBuild::UnitTests
 						std::vector<std::string>({
 							"OutputFile.out",
 						}),
-						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 							expectedLinkNode,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
-				new Soup::Build::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileNode,
 					})),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileNode,
 					})),
 			});
@@ -623,8 +623,8 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -636,8 +636,8 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCompileNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
-				new Soup::Build::BuildGraphNode(
+			auto expectedCompileNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+				new Soup::Build::BuildOperation(
 					"MockCompile: 1",
 					"MockCompiler.exe",
 					"Arguments",
@@ -648,10 +648,10 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedLinkNode,
 					})),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MockCompile: 2",
 					"MockCompiler.exe",
 					"Arguments",
@@ -662,10 +662,10 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedLinkNode,
 					})),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MockCompile: 3",
 					"MockCompiler.exe",
 					"Arguments",
@@ -676,13 +676,13 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedLinkNode,
 					})),
 			});
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
-				new Soup::Build::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
@@ -690,7 +690,7 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					expectedCompileNodes),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
@@ -870,8 +870,8 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -883,8 +883,8 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCompileSourceNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
-				new Soup::Build::BuildGraphNode(
+			auto expectedCompileSourceNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+				new Soup::Build::BuildOperation(
 					"MockCompile: 2",
 					"MockCompiler.exe",
 					"Arguments",
@@ -895,10 +895,10 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedLinkNode,
 					})),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MockCompile: 3",
 					"MockCompiler.exe",
 					"Arguments",
@@ -909,10 +909,10 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedLinkNode,
 					})),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MockCompile: 4",
 					"MockCompiler.exe",
 					"Arguments",
@@ -923,14 +923,14 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({
 						"OutputFile.out",
 					}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedLinkNode,
 					})),
 			});
 
 			auto expectedCopyModuleInterfaceNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
 						"C:/Windows/System32/cmd.exe",
 						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
@@ -944,8 +944,8 @@ namespace RecipeBuild::UnitTests
 						expectedCompileSourceNodes));
 
 			auto expectedCompileModuleNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
 						"MockCompiler.exe",
 						"Arguments",
@@ -956,29 +956,29 @@ namespace RecipeBuild::UnitTests
 						std::vector<std::string>({
 							"OutputFile.out",
 						}),
-						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 							expectedCopyModuleInterfaceNode,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
-				new Soup::Build::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileModuleNode,
 					})),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileModuleNode,
 					})),
 			});
@@ -1114,8 +1114,8 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedLinkNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockLink: 1",
 						"MockLinker.exe",
 						"Arguments",
@@ -1128,8 +1128,8 @@ namespace RecipeBuild::UnitTests
 						})));
 
 			auto expectedCopyModuleInterfaceNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
 						"C:/Windows/System32/cmd.exe",
 						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
@@ -1140,13 +1140,13 @@ namespace RecipeBuild::UnitTests
 						std::vector<std::string>({
 							"C:/root/bin/Library.mock.bmi",
 						}),
-						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 							expectedLinkNode,
 						})));
 
 			auto expectedCompileModuleNode =
-				Memory::Reference<Soup::Build::BuildGraphNode>(
-					new Soup::Build::BuildGraphNode(
+				Memory::Reference<Soup::Build::BuildOperation>(
+					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
 						"MockCompiler.exe",
 						"Arguments",
@@ -1157,29 +1157,29 @@ namespace RecipeBuild::UnitTests
 						std::vector<std::string>({
 							"OutputFile.out",
 						}),
-						std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 							expectedCopyModuleInterfaceNode,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
-				new Soup::Build::BuildGraphNode(
+			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileModuleNode,
 					})),
-				new Soup::Build::BuildGraphNode(
+				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					std::vector<Memory::Reference<Soup::Build::BuildGraphNode>>({
+					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 						expectedCompileModuleNode,
 					})),
 			});

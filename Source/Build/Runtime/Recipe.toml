@@ -7,11 +7,10 @@ Dependencies = [
 	# "Soup.Build@0.3.0",
 	"../Extensions/",
 	# "Soup.Build.Extensions@0.3.0",
-	"Opal@0.1.1",
+	"Opal@0.1.2",
 ]
 
 Public = "Module.cpp"
 Source = [
-	"BuildGraphNodeList.cpp",
 	"Value.cpp",
 ]

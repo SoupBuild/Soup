@@ -374,10 +374,11 @@ namespace Soup::Build::Runtime
 
 				if (!arguments.SkipRun)
 				{
-					// Execute the build nodes
+					// Execute the build operations
 					auto runner = BuildRunner(packageRoot);
+					auto buildOperations = Extensions::BuildOperationListWrapper(state.GetBuildOperations());
 					runner.Execute(
-						state.GetBuildNodes(),
+						buildOperations,
 						objectDirectory,
 						arguments.ForceRebuild);
 				}
