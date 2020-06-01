@@ -313,7 +313,7 @@ namespace Soup::Compiler
 
 			// Perform the link
 			buildState.LogInfo("Generate Link Operation: " + linkArguments.TargetFile.ToString());
-			auto linkOperationOperation = _compiler->CreateLinkOperation(buildState, linkArguments);
+			auto linkOperation = _compiler->CreateLinkOperation(buildState, linkArguments);
 
 			// Run the link operation
 			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, linkOperation);
