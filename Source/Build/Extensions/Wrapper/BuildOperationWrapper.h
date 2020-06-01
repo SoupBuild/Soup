@@ -97,7 +97,7 @@ namespace Soup::Build::Extensions
 		void ThrowIfInvalid() const
 		{
 			if (!IsValid())
-				throw std::runtime_error("Tried to use invalid graph node.");
+				throw std::runtime_error("Tried to use invalid build operation.");
 		}
 
 		IBuildOperation* GetRaw()

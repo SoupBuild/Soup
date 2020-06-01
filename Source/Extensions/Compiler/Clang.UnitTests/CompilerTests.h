@@ -31,11 +31,11 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.RootDirectory = Path("Source");
 
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateCompileNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateCompileOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildOperation>(
-				new Build::Runtime::BuildOperation(
+			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
+				new Build::Extensions::BuildOperation(
 					"File.cpp",
 					"C:/Clang/bin/clang++.exe",
 					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
@@ -71,11 +71,11 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.ExportModule = true;
 
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateCompileNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateCompileOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildOperation>(
-				new Build::Runtime::BuildOperation(
+			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
+				new Build::Extensions::BuildOperation(
 					"File.cpp",
 					"C:/Clang/bin/clang++.exe",
 					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
@@ -87,8 +87,8 @@ namespace Soup::Compiler::Clang::UnitTests
 					std::vector<std::string>({
 						"obj/File.pcm",
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildOperation>>({
-						new Build::Runtime::BuildOperation(
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						new Build::Extensions::BuildOperation(
 							"obj/File.pcm",
 							"C:/Clang/bin/clang++.exe",
 							"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
@@ -118,11 +118,11 @@ namespace Soup::Compiler::Clang::UnitTests
 			});
 
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateLinkNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateLinkOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildOperation>(
-				new Build::Runtime::BuildOperation(
+			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
+				new Build::Extensions::BuildOperation(
 					"Library.mock.a",
 					"C:/Clang/bin/llvm-ar.exe",
 					"rc Library.mock.a File.mock.o",
@@ -154,11 +154,11 @@ namespace Soup::Compiler::Clang::UnitTests
 			});
 
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateLinkNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateLinkOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildOperation>(
-				new Build::Runtime::BuildOperation(
+			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
+				new Build::Extensions::BuildOperation(
 					"Something.exe",
 					"C:/Clang/bin/lld-link.exe",
 					"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",

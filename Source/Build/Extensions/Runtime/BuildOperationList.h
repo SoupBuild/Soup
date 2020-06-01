@@ -47,7 +47,7 @@ namespace Soup::Build::Extensions
 		const std::vector<Memory::Reference<BuildOperation>>& GetValues() const;
 
 #ifdef DEBUG
-		void CheckCycles(const std::set<int64_t>& rootNodes, const BuildOperation& node);
+		void CheckCycles(const std::set<int64_t>& rootOperations, const BuildOperation& operation);
 #endif
 
 	private:

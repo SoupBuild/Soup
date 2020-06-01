@@ -66,7 +66,7 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateCompileNode(
+		Build::Extensions::BuildOperationWrapper CreateCompileOperation(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
@@ -85,7 +85,7 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateLinkNode(
+		Build::Extensions::BuildOperationWrapper CreateLinkOperation(
 			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{

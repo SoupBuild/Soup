@@ -68,7 +68,7 @@ namespace Soup::Compiler::Clang
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateCompileNode(
+		Build::Extensions::BuildOperationWrapper CreateCompileOperation(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
@@ -87,7 +87,7 @@ namespace Soup::Compiler::Clang
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateLinkNode(
+		Build::Extensions::BuildOperationWrapper CreateLinkOperation(
 			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
@@ -214,7 +214,7 @@ namespace Soup::Compiler::Clang
 					compileObjectInputFiles,
 					compileObjectOutputFiles));
 
-			// Ensure the compile node runs after the precompile
+			// Ensure the compile operation runs after the precompile
 			Build::Extensions::BuildOperationExtensions::AddLeafChild(
 				precompiledModuleBuildOperation,
 				compileBuildOperation);

@@ -13,9 +13,9 @@ namespace Soup::Compiler
 	{
 	public:
 		/// <summary>
-		/// Create a build node that will copy a file
+		/// Create a build operation that will copy a file
 		/// </summary>
-		static Soup::Build::Extensions::BuildOperationWrapper CreateCopyFileNode(
+		static Soup::Build::Extensions::BuildOperationWrapper CreateCopyFileOperation(
 			Soup::Build::Extensions::BuildStateWrapper& state,
 			const Path& source,
 			const Path& destination)
@@ -23,6 +23,7 @@ namespace Soup::Compiler
 			auto titleStream = std::stringstream();
 			titleStream << "Copy [" << source.ToString() << "] -> [" << destination.ToString() << "]";
 
+			// TODO: Replace with platform specific implementation
 			auto program = Path("C:/Windows/System32/cmd.exe");
 			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({
@@ -47,15 +48,16 @@ namespace Soup::Compiler
 		}
 
 		/// <summary>
-		/// Create a build node that will create a directory
+		/// Create a build operation that will create a directory
 		/// </summary>
-		static Soup::Build::Extensions::BuildOperationWrapper CreateCreateDirectoryNode(
+		static Soup::Build::Extensions::BuildOperationWrapper CreateCreateDirectoryOperation(
 			Soup::Build::Extensions::BuildStateWrapper& state,
 			const Path& directory)
 		{
 			auto titleStream = std::stringstream();
 			titleStream << "MakeDir [" << directory.ToString() << "]";
 
+			// TODO: Replace with platform specific implementation
 			auto program = Path("C:/Windows/System32/cmd.exe");
 			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({});

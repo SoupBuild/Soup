@@ -9,7 +9,7 @@
 namespace Soup::Build::Extensions
 {
 	/// <summary>
-	/// A graph node that represents a single operation in the build
+	/// A build operation that represents a single operation in the build
 	/// </summary>
 	export class BuildOperation : public Memory::ReferenceCounted<IBuildOperation>
 	{

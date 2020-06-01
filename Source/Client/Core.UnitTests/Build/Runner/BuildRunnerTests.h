@@ -16,7 +16,7 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void Execute_NoNodes_ForceBuild()
+		void Execute_NoOperations_ForceBuild()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -33,10 +33,13 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<Runtime::BuildOperation>>();
+			auto operations = Extensions::BuildOperationList();
 			auto objectDirectory = Path("out/obj/release/");
 			auto forceBuild = true;
-			uut.Execute(nodes, objectDirectory, forceBuild);
+			uut.Execute(
+				Extensions::BuildOperationListWrapper(operations),
+				objectDirectory,
+				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -66,7 +69,7 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void Execute_NoNodes_Incremental()
+		void Execute_NoOperations_Incremental()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -83,10 +86,13 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<Runtime::BuildOperation>>();
+			auto operations = Extensions::BuildOperationList();
 			auto objectDirectory = Path("out/obj/release/");
 			auto forceBuild = false;
-			uut.Execute(nodes, objectDirectory, forceBuild);
+			uut.Execute(
+				Extensions::BuildOperationListWrapper(operations),
+				objectDirectory,
+				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -120,7 +126,7 @@ namespace Soup::Build::UnitTests
 		}
 		
 		[[Fact]]
-		void Execute_OneNode_ForceBuild()
+		void Execute_OneOperation_ForceBuild()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -137,22 +143,26 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<Runtime::BuildOperation>>({
-				new Runtime::BuildOperation(
-					"TestCommand: 1",
-					"Command.exe",
-					"Arguments",
-					"C:/TestWorkingDirectory/",
-					std::vector<std::string>({
-						"InputFile.in",
-					}),
-					std::vector<std::string>({
-						"OutputFile.out",
-					})),
-			});
+			auto operations = Extensions::BuildOperationList(
+				std::vector<Memory::Reference<Extensions::BuildOperation>>({
+					new Extensions::BuildOperation(
+						"TestCommand: 1",
+						Path("Command.exe"),
+						"Arguments",
+						Path("C:/TestWorkingDirectory/"),
+						std::vector<Path>({
+							Path("InputFile.in"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.out"),
+						})),
+				}));
 			auto objectDirectory = Path("out/obj/release/");
 			bool forceBuild = true;
-			uut.Execute(nodes, objectDirectory, forceBuild);
+			uut.Execute(
+				Extensions::BuildOperationListWrapper(operations),
+				objectDirectory,
+				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -186,7 +196,7 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void Execute_OneNode_Incremental_NoBuildHistory()
+		void Execute_OneOperation_Incremental_NoBuildHistory()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -203,22 +213,26 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<Runtime::BuildOperation>>({
-				new Runtime::BuildOperation(
-					"TestCommand: 1",
-					"Command.exe",
-					"Arguments",
-					"C:/TestWorkingDirectory/",
-					std::vector<std::string>({
-						"InputFile.in",
-					}),
-					std::vector<std::string>({
-						"OutputFile.out",
-					})),
-			});
+			auto operations = Extensions::BuildOperationList(
+				std::vector<Memory::Reference<Extensions::BuildOperation>>({
+					new Extensions::BuildOperation(
+						"TestCommand: 1",
+						Path("Command.exe"),
+						"Arguments",
+						Path("C:/TestWorkingDirectory/"),
+						std::vector<Path>({
+							Path("InputFile.in"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.out"),
+						})),
+				}));
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, objectDirectory, forceBuild);
+			uut.Execute(
+				Extensions::BuildOperationListWrapper(operations),
+				objectDirectory,
+				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -256,7 +270,7 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void Execute_OneNode_Incremental_MissingFileInfo()
+		void Execute_OneOperation_Incremental_MissingFileInfo()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -281,22 +295,26 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<Runtime::BuildOperation>>({
-				new Runtime::BuildOperation(
-					"TestCommand: 1",
-					"Command.exe",
-					"Arguments",
-					"C:/TestWorkingDirectory/",
-					std::vector<std::string>({
-						"InputFile.cpp",
-					}),
-					std::vector<std::string>({
-						"OutputFile.obj",
-					})),
-			});
+			auto operations = Extensions::BuildOperationList(
+				std::vector<Memory::Reference<Extensions::BuildOperation>>({
+					new Extensions::BuildOperation(
+						"TestCommand: 1",
+						Path("Command.exe"),
+						"Arguments",
+						Path("C:/TestWorkingDirectory/"),
+						std::vector<Path>({
+							Path("InputFile.cpp"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.obj"),
+						})),
+				}));
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, objectDirectory, forceBuild);
+			uut.Execute(
+				Extensions::BuildOperationListWrapper(operations),
+				objectDirectory,
+				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -327,7 +345,7 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void Execute_OneNode_Incremental_MissingTargetFile()
+		void Execute_OneOperation_Incremental_MissingTargetFile()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -360,22 +378,26 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<Runtime::BuildOperation>>({
-				new Runtime::BuildOperation(
-					"TestCommand: 1",
-					"Command.exe",
-					"Arguments",
-					"C:/TestWorkingDirectory/",
-					std::vector<std::string>({
-						"InputFile.in",
-					}),
-					std::vector<std::string>({
-						"OutputFile.out",
-					})),
-			});
+			auto operations = Extensions::BuildOperationList(
+				std::vector<Memory::Reference<Extensions::BuildOperation>>({
+					new Extensions::BuildOperation(
+						"TestCommand: 1",
+						Path("Command.exe"),
+						"Arguments",
+						Path("C:/TestWorkingDirectory/"),
+						std::vector<Path>({
+							Path("InputFile.in"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.out"),
+						})),
+				}));
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, objectDirectory, forceBuild);
+			uut.Execute(
+				Extensions::BuildOperationListWrapper(operations),
+				objectDirectory,
+				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -407,7 +429,7 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void Execute_OneNode_Incremental_OutOfDate()
+		void Execute_OneOperation_Incremental_OutOfDate()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -447,22 +469,26 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<Runtime::BuildOperation>>({
-				new Runtime::BuildOperation(
-					"TestCommand: 1",
-					"Command.exe",
-					"Arguments",
-					"C:/TestWorkingDirectory/",
-					std::vector<std::string>({
-						"InputFile.in",
-					}),
-					std::vector<std::string>({
-						"OutputFile.out",
-					})),
-			});
+			auto operations = Extensions::BuildOperationList(
+				std::vector<Memory::Reference<Extensions::BuildOperation>>({
+					new Extensions::BuildOperation(
+						"TestCommand: 1",
+						Path("Command.exe"),
+						"Arguments",
+						Path("C:/TestWorkingDirectory/"),
+						std::vector<Path>({
+							Path("InputFile.in"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.out"),
+						})),
+				}));
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, objectDirectory, forceBuild);
+			uut.Execute(
+				Extensions::BuildOperationListWrapper(operations),
+				objectDirectory,
+				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -499,7 +525,7 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void Execute_OneNode_Incremental_UpToDate()
+		void Execute_OneOperation_Incremental_UpToDate()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -539,22 +565,26 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto nodes = std::vector<Memory::Reference<Runtime::BuildOperation>>({
-				new Runtime::BuildOperation(
-					"TestCommand: 1",
-					"Command.exe",
-					"Arguments",
-					"C:/TestWorkingDirectory/",
-					std::vector<std::string>({
-						"InputFile.in",
-					}),
-					std::vector<std::string>({
-						"OutputFile.out",
-					})),
-			});
+			auto operations = Extensions::BuildOperationList(
+				std::vector<Memory::Reference<Extensions::BuildOperation>>({
+					new Extensions::BuildOperation(
+						"TestCommand: 1",
+						Path("Command.exe"),
+						"Arguments",
+						Path("C:/TestWorkingDirectory/"),
+						std::vector<Path>({
+							Path("InputFile.in"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.out"),
+						})),
+				}));
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
-			uut.Execute(nodes, objectDirectory, forceBuild);
+			uut.Execute(
+				Extensions::BuildOperationListWrapper(operations),
+				objectDirectory,
+				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(

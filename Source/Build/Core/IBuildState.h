@@ -35,7 +35,7 @@ namespace Soup::Build
 	{
 	public:
 		/// <summary>
-		/// Get the root Build Graph node list that can be used to add new build operations
+		/// Get the root build operation list that can be used to add new build operations
 		/// </summary>
 		virtual IList<IBuildOperation*>& GetRootOperationList() noexcept = 0;
 
@@ -46,7 +46,7 @@ namespace Soup::Build
 
 		/// <summary>
 		/// Get a reference to the shared state. All of these properties will be 
-		/// moved into the active state of any parent build that has a direct reference to this build node.
+		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
 		virtual IValueTable& GetSharedState() noexcept = 0;
 

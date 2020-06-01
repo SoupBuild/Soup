@@ -83,7 +83,7 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateCompileNode(
+		Build::Extensions::BuildOperationWrapper CreateCompileOperation(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
@@ -105,7 +105,7 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateLinkNode(
+		Build::Extensions::BuildOperationWrapper CreateLinkOperation(
 			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{

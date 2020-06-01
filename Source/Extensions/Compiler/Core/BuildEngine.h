@@ -22,7 +22,7 @@ namespace Soup::Compiler
 		}
 
 		/// <summary>
-		/// Generate the required build nodes for the requested build
+		/// Generate the required build operations for the requested build
 		/// </summary>
 		BuildResult Execute(
 			Soup::Build::Extensions::BuildStateWrapper& buildState,
@@ -42,9 +42,9 @@ namespace Soup::Compiler
 			auto objectDirectry = arguments.WorkingDirectory + arguments.ObjectDirectory;
 			auto binaryDirectry = arguments.WorkingDirectory + arguments.BinaryDirectory;
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryNode(buildState, objectDirectry));
+				BuildUtilities::CreateCreateDirectoryOperation(buildState, objectDirectry));
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryNode(buildState, binaryDirectry));
+				BuildUtilities::CreateCreateDirectoryOperation(buildState, binaryDirectry));
 
 			// Perform the core compilation of the source files
 			CoreCompile(buildState, arguments, result);
@@ -67,10 +67,10 @@ namespace Soup::Compiler
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
-			auto rootCompileNodes = std::vector<Soup::Build::Extensions::BuildOperationWrapper>();
+			auto rootCompileOperations = std::vector<Soup::Build::Extensions::BuildOperationWrapper>();
 
 			// Compile the module interface unit if present
-			auto moduleCompileNode = Soup::Build::Extensions::BuildOperationWrapper();
+			auto moduleCompileOperation = Soup::Build::Extensions::BuildOperationWrapper();
 			if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
 			{
 				CompileModuleInterfaceUnit(
@@ -88,11 +88,11 @@ namespace Soup::Compiler
 					arguments.WorkingDirectory +
 					arguments.BinaryDirectory +
 					Path(arguments.TargetName + "." + std::string(_compiler->GetModuleFileExtension()));
-				auto copyInterfaceNode = BuildUtilities::CreateCopyFileNode(
+				auto copyInterfaceOperation = BuildUtilities::CreateCopyFileOperation(
 					buildState,
 					objectModuleInterfaceFile,
 					binaryOutputModuleInterfaceFile);
-				Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, copyInterfaceNode);
+				Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, copyInterfaceOperation);
 
 				// Add output module interface to the parent set of modules
 				// This will allow the module implementation units access as well as downstream
@@ -140,13 +140,13 @@ namespace Soup::Compiler
 
 			// Compile the individual translation unit
 			const auto& file = arguments.ModuleInterfaceSourceFile;
-			buildState.LogInfo("Generate Compile Node: " + file.ToString());
+			buildState.LogInfo("Generate Compile Operation: " + file.ToString());
 			compileArguments.SourceFile = file;
 
-			auto compileNode = _compiler->CreateCompileNode(buildState, compileArguments);
+			auto compileOperation = _compiler->CreateCompileOperation(buildState, compileArguments);
 
 			// Run after the module interface unit compile
-			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, compileNode);
+			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, compileOperation);
 		}
 
 		/// <summary>
@@ -180,21 +180,21 @@ namespace Soup::Compiler
 				std::back_inserter(compileArguments.IncludeModules)); 
 
 			// Compile the individual translation units
-			auto buildNodes = std::vector<Soup::Build::Extensions::BuildOperationWrapper>();
+			auto buildOperations = std::vector<Soup::Build::Extensions::BuildOperationWrapper>();
 			for (auto& file : arguments.SourceFiles)
 			{
-				buildState.LogInfo("Generate Compile Node: " + file.ToString());
+				buildState.LogInfo("Generate Compile Operation: " + file.ToString());
 				compileArguments.SourceFile = file;
 				compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
 				compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
 
 				// Compile the file
-				auto node = _compiler->CreateCompileNode(buildState, compileArguments);
-				buildNodes.push_back(std::move(node));
+				auto operation = _compiler->CreateCompileOperation(buildState, compileArguments);
+				buildOperations.push_back(std::move(operation));
 			}
 
 			// Run the core compile next
-			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChildren(result.BuildOperations, buildNodes);
+			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChildren(result.BuildOperations, buildOperations);
 		}
 
 		/// <summary>
@@ -312,11 +312,11 @@ namespace Soup::Compiler
 			linkArguments.ObjectFiles = std::move(objectFiles);
 
 			// Perform the link
-			buildState.LogInfo("Generate Link Node: " + linkArguments.TargetFile.ToString());
-			auto linkNode = _compiler->CreateLinkNode(buildState, linkArguments);
+			buildState.LogInfo("Generate Link Operation: " + linkArguments.TargetFile.ToString());
+			auto linkOperationOperation = _compiler->CreateLinkOperation(buildState, linkArguments);
 
-			// Run the link node
-			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, linkNode);
+			// Run the link operation
+			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, linkOperation);
 		}
 
 		/// <summary>
@@ -330,17 +330,17 @@ namespace Soup::Compiler
 			if (arguments.TargetType == BuildTargetType::Executable ||
 				arguments.TargetType == BuildTargetType::DynamicLibrary)
 			{
-				auto copyNodes = std::vector<Soup::Build::Extensions::BuildOperationWrapper>();
+				auto copyOperations = std::vector<Soup::Build::Extensions::BuildOperationWrapper>();
 				for (auto source : arguments.RuntimeDependencies)
 				{
 					auto target = arguments.WorkingDirectory + arguments.BinaryDirectory + Path(source.GetFileName());
-					auto node = BuildUtilities::CreateCopyFileNode(buildState, source, target);
-					copyNodes.push_back(node);
+					auto operation = BuildUtilities::CreateCopyFileOperation(buildState, source, target);
+					copyOperations.push_back(operation);
 				}
 				
-				if (!copyNodes.empty())
+				if (!copyOperations.empty())
 				{
-					Soup::Build::Extensions::BuildOperationExtensions::AddLeafChildren(result.BuildOperations, copyNodes);
+					Soup::Build::Extensions::BuildOperationExtensions::AddLeafChildren(result.BuildOperations, copyOperations);
 				}
 			}
 		}

@@ -22,12 +22,12 @@ namespace Soup::Build::Extensions
 				// Check if this child was added through a different path
 				if (parent.GetRaw() == child.GetRaw())
 				{
-					// The node has been added through a different path
+					// The operation has been added through a different path
 					return;
 				}
 				else
 				{
-					// Add the new leaf node
+					// Add the new leaf operation
 					parent.GetChildList().Append(child);
 				}
 			}
@@ -66,7 +66,7 @@ namespace Soup::Build::Extensions
 			auto parentChildrenSize = parent.GetChildList().GetSize();
 			if (parentChildrenSize == 0)
 			{
-				// Add the new leaf nodes
+				// Add the new leaf operations
 				parent.GetChildList().Append(children);
 			}
 			else
@@ -83,7 +83,7 @@ namespace Soup::Build::Extensions
 			auto parentChildrenSize = parent.GetChildList().GetSize();
 			if (parentChildrenSize == 0)
 			{
-				// Add the new leaf nodes
+				// Add the new leaf operations
 				parent.GetChildList().Append(children);
 			}
 			else

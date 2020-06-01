@@ -74,10 +74,10 @@ namespace RecipeBuild::UnitTests
 					"DIAG: IncludeDirectories = ",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Node: TestFile.cpp",
+					"INFO: Generate Compile Operation: TestFile.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Program.exe",
+					"INFO: Generate Link Operation: bin/Program.exe",
 					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
@@ -114,7 +114,7 @@ namespace RecipeBuild::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
+			auto expectedLinkOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockLink: 1",
@@ -128,7 +128,7 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCompileNode =
+			auto expectedCompileOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
@@ -142,10 +142,10 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						}),
 						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-							expectedLinkNode,
+							expectedLinkOperation,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
@@ -154,7 +154,7 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileNode,
+						expectedCompileOperation,
 					})),
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
@@ -164,13 +164,13 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileNode,
+						expectedCompileOperation,
 					})),
 			});
 
 			Soup::AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				buildState.GetBuildNodes());
+				expectedBuildOperations,
+				buildState.GetBuildOperations());
 		}
 
 		[[Fact]]
@@ -228,10 +228,10 @@ namespace RecipeBuild::UnitTests
 					"DIAG: IncludeDirectories = ",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Node: TestFile.cpp",
+					"INFO: Generate Compile Operation: TestFile.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Program.exe",
+					"INFO: Generate Link Operation: bin/Program.exe",
 					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
@@ -268,7 +268,7 @@ namespace RecipeBuild::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
+			auto expectedLinkOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockLink: 1",
@@ -282,7 +282,7 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCompileNode =
+			auto expectedCompileOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
@@ -296,10 +296,10 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						}),
 						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-							expectedLinkNode,
+							expectedLinkOperation,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
@@ -308,7 +308,7 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileNode,
+						expectedCompileOperation,
 					})),
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
@@ -318,13 +318,13 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileNode,
+						expectedCompileOperation,
 					})),
 			});
 
 			Soup::AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				buildState.GetBuildNodes());
+				expectedBuildOperations,
+				buildState.GetBuildOperations());
 		}
 
 		[[Fact]]
@@ -382,10 +382,10 @@ namespace RecipeBuild::UnitTests
 					"DIAG: IncludeDirectories = ",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Node: TestFile.cpp",
+					"INFO: Generate Compile Operation: TestFile.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Program.exe",
+					"INFO: Generate Link Operation: bin/Program.exe",
 					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
@@ -422,7 +422,7 @@ namespace RecipeBuild::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
+			auto expectedLinkOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockLink: 1",
@@ -436,7 +436,7 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCompileNode =
+			auto expectedCompileOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
@@ -450,10 +450,10 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						}),
 						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-							expectedLinkNode,
+							expectedLinkOperation,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
@@ -462,7 +462,7 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileNode,
+						expectedCompileOperation,
 					})),
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
@@ -472,13 +472,13 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileNode,
+						expectedCompileOperation,
 					})),
 			});
 
 			Soup::AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				buildState.GetBuildNodes());
+				expectedBuildOperations,
+				buildState.GetBuildOperations());
 		}
 
 		[[Fact]]
@@ -555,12 +555,12 @@ namespace RecipeBuild::UnitTests
 					"DIAG: IncludeDirectories = Folder AnotherFolder/Sub",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Node: TestFile1.cpp",
-					"INFO: Generate Compile Node: TestFile2.cpp",
-					"INFO: Generate Compile Node: TestFile3.cpp",
+					"INFO: Generate Compile Operation: TestFile1.cpp",
+					"INFO: Generate Compile Operation: TestFile2.cpp",
+					"INFO: Generate Compile Operation: TestFile3.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Library.mock.lib",
+					"INFO: Generate Link Operation: bin/Library.mock.lib",
 					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
@@ -622,7 +622,7 @@ namespace RecipeBuild::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
+			auto expectedLinkOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockLink: 1",
@@ -636,7 +636,7 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCompileNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+			auto expectedCompileOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 				new Soup::Build::BuildOperation(
 					"MockCompile: 1",
 					"MockCompiler.exe",
@@ -649,7 +649,7 @@ namespace RecipeBuild::UnitTests
 						"OutputFile.out",
 					}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedLinkNode,
+						expectedLinkOperation,
 					})),
 				new Soup::Build::BuildOperation(
 					"MockCompile: 2",
@@ -663,7 +663,7 @@ namespace RecipeBuild::UnitTests
 						"OutputFile.out",
 					}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedLinkNode,
+						expectedLinkOperation,
 					})),
 				new Soup::Build::BuildOperation(
 					"MockCompile: 3",
@@ -677,11 +677,11 @@ namespace RecipeBuild::UnitTests
 						"OutputFile.out",
 					}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedLinkNode,
+						expectedLinkOperation,
 					})),
 			});
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
@@ -689,7 +689,7 @@ namespace RecipeBuild::UnitTests
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					expectedCompileNodes),
+					expectedCompileOperations),
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					"C:/Windows/System32/cmd.exe",
@@ -697,12 +697,12 @@ namespace RecipeBuild::UnitTests
 					"./",
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
-					expectedCompileNodes),
+					expectedCompileOperations),
 			});
 
 			Soup::AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				buildState.GetBuildNodes());
+				expectedBuildOperations,
+				buildState.GetBuildOperations());
 		}
 
 		[[Fact]]
@@ -786,14 +786,14 @@ namespace RecipeBuild::UnitTests
 					"DIAG: IncludeDirectories = Folder AnotherFolder/Sub",
 					"DIAG: PreprocessorDefinitions = DEBUG AWESOME",
 					"INFO: CompileModuleInterfaceUnit",
-					"INFO: Generate Compile Node: Public.cpp",
+					"INFO: Generate Compile Operation: Public.cpp",
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Node: TestFile1.cpp",
-					"INFO: Generate Compile Node: TestFile2.cpp",
-					"INFO: Generate Compile Node: TestFile3.cpp",
+					"INFO: Generate Compile Operation: TestFile1.cpp",
+					"INFO: Generate Compile Operation: TestFile2.cpp",
+					"INFO: Generate Compile Operation: TestFile3.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Library.mock.lib",
+					"INFO: Generate Link Operation: bin/Library.mock.lib",
 					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
@@ -869,7 +869,7 @@ namespace RecipeBuild::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
+			auto expectedLinkOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockLink: 1",
@@ -883,7 +883,7 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCompileSourceNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+			auto expectedCompileSourceOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 				new Soup::Build::BuildOperation(
 					"MockCompile: 2",
 					"MockCompiler.exe",
@@ -896,7 +896,7 @@ namespace RecipeBuild::UnitTests
 						"OutputFile.out",
 					}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedLinkNode,
+						expectedLinkOperation,
 					})),
 				new Soup::Build::BuildOperation(
 					"MockCompile: 3",
@@ -910,7 +910,7 @@ namespace RecipeBuild::UnitTests
 						"OutputFile.out",
 					}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedLinkNode,
+						expectedLinkOperation,
 					})),
 				new Soup::Build::BuildOperation(
 					"MockCompile: 4",
@@ -924,11 +924,11 @@ namespace RecipeBuild::UnitTests
 						"OutputFile.out",
 					}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedLinkNode,
+						expectedLinkOperation,
 					})),
 			});
 
-			auto expectedCopyModuleInterfaceNode =
+			auto expectedCopyModuleInterfaceOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
@@ -941,9 +941,9 @@ namespace RecipeBuild::UnitTests
 						std::vector<std::string>({
 							"C:/root/bin/Library.mock.bmi",
 						}),
-						expectedCompileSourceNodes));
+						expectedCompileSourceOperations));
 
-			auto expectedCompileModuleNode =
+			auto expectedCompileModuleOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
@@ -957,10 +957,10 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						}),
 						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-							expectedCopyModuleInterfaceNode,
+							expectedCopyModuleInterfaceOperation,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
@@ -969,7 +969,7 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileModuleNode,
+						expectedCompileModuleOperation,
 					})),
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
@@ -979,13 +979,13 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileModuleNode,
+						expectedCompileModuleOperation,
 					})),
 			});
 
 			Soup::AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				buildState.GetBuildNodes());
+				expectedBuildOperations,
+				buildState.GetBuildOperations());
 		}
 
 		[[Fact]]
@@ -1057,10 +1057,10 @@ namespace RecipeBuild::UnitTests
 					"DIAG: IncludeDirectories = Folder AnotherFolder/Sub",
 					"DIAG: PreprocessorDefinitions = ",
 					"INFO: CompileModuleInterfaceUnit",
-					"INFO: Generate Compile Node: Public.cpp",
+					"INFO: Generate Compile Operation: Public.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Library.mock.lib",
+					"INFO: Generate Link Operation: bin/Library.mock.lib",
 					"INFO: Build Generate Done",
 				}),
 				testListener->GetMessages(),
@@ -1113,7 +1113,7 @@ namespace RecipeBuild::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
+			auto expectedLinkOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockLink: 1",
@@ -1127,7 +1127,7 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						})));
 
-			auto expectedCopyModuleInterfaceNode =
+			auto expectedCopyModuleInterfaceOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
@@ -1141,10 +1141,10 @@ namespace RecipeBuild::UnitTests
 							"C:/root/bin/Library.mock.bmi",
 						}),
 						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-							expectedLinkNode,
+							expectedLinkOperation,
 						})));
 
-			auto expectedCompileModuleNode =
+			auto expectedCompileModuleOperation =
 				Memory::Reference<Soup::Build::BuildOperation>(
 					new Soup::Build::BuildOperation(
 						"MockCompile: 1",
@@ -1158,10 +1158,10 @@ namespace RecipeBuild::UnitTests
 							"OutputFile.out",
 						}),
 						std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-							expectedCopyModuleInterfaceNode,
+							expectedCopyModuleInterfaceOperation,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
+			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					"C:/Windows/System32/cmd.exe",
@@ -1170,7 +1170,7 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileModuleNode,
+						expectedCompileModuleOperation,
 					})),
 				new Soup::Build::BuildOperation(
 					"MakeDir [C:/root/bin]",
@@ -1180,13 +1180,13 @@ namespace RecipeBuild::UnitTests
 					std::vector<std::string>({}),
 					std::vector<std::string>({}),
 					std::vector<Memory::Reference<Soup::Build::BuildOperation>>({
-						expectedCompileModuleNode,
+						expectedCompileModuleOperation,
 					})),
 			});
 
 			Soup::AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				buildState.GetBuildNodes());
+				expectedBuildOperations,
+				buildState.GetBuildOperations());
 		}
 	};
 }

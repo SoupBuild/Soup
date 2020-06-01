@@ -61,10 +61,10 @@ namespace RecipeBuild::UnitTests
 				"Verify log messages match expected.");
 
 			// Verify build state
-			auto expectedBuildNodes = std::vector<Memory::Reference<Soup::Build::BuildOperation>>();
+			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>();
 			Soup::AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				buildState.GetBuildNodes());
+				expectedBuildOperations,
+				buildState.GetBuildOperations());
 
 			// Verify expected file system requests
 			Assert::AreEqual(
