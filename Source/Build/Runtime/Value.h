@@ -50,6 +50,8 @@ namespace Soup::Build::Runtime
 		ValueTable& AsTable();
 		ValueList& AsList();
 
+		ValueTable& EnsureTable();
+
 		/// <summary>
 		/// Equality operator
 		/// </summary>

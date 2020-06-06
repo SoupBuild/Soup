@@ -19,7 +19,7 @@ namespace Soup::Build::Runtime
 		BuildState() :
 			_rootOperations(),
 			_activeState(),
-			_parentState()
+			_sharedState()
 		{
 		}
 
@@ -29,7 +29,7 @@ namespace Soup::Build::Runtime
 		BuildState(ValueTable recipeState) :
 			_rootOperations(),
 			_activeState(),
-			_parentState()
+			_sharedState()
 		{
 			// Initialize the Recipe state
 			_activeState.SetValue("Recipe", Value(std::move(recipeState)));
@@ -57,7 +57,7 @@ namespace Soup::Build::Runtime
 		/// </summary>
 		IValueTable& GetSharedState() noexcept override final
 		{
-			return _parentState;
+			return _sharedState;
 		}
 
 		/// <summary>
@@ -105,18 +105,15 @@ namespace Soup::Build::Runtime
 			return _rootOperations;
 		}
 
-		const IList<IBuildOperation*>& GetBuildOperations() const
-		{
-			return _rootOperations;
-		}
-
 		/// <summary>
-		/// Get a reference to the child state. All of these properties will be 
-		/// moved into the active state of any parent build that has a direct reference to this build.
+		/// Copy the shared state from the child build into the correct dependencies table location.
 		/// </summary>
-		void CombineChildState(BuildState& childState)
+		void CombineSharedState(
+			const std::string& taskName,
+			BuildState& childState)
 		{
-			CombineListState(childState._parentState, Extensions::ValueTableWrapper(_activeState));
+			auto& dependenciesTable = _activeState.EnsureValue("Dependencies").EnsureTable();
+			dependenciesTable.SetValue(taskName, Value(childState._sharedState));
 		}
 
 		void LogActive()
@@ -125,42 +122,8 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		/// <summary>
-		/// Combine the table and list structure from the input state into the target
-		/// Note: Ignores primitive value properties on a table
-		/// </summary>
-		void CombineListState(ValueTable& input, Extensions::ValueTableWrapper target)
-		{
-			// Enumerate over all property values
-			// Recursively combine tables and concatenate lists
-			for (auto& valueIter : input.GetValues())
-			{
-				auto& name = valueIter.first;
-				auto& value = valueIter.second;
-				switch (value.GetType())
-				{
-					case ValueType::Table:
-						// Attempt to create the table in the target and recurse the merge
-						CombineListState(
-							value.AsTable(),
-							target.EnsureValue(name).EnsureTable());
-						break;
-					case ValueType::List:
-						// Attempt to create the list on the target and concatenate the input
-						target.EnsureValue(name).EnsureList().Append(
-							Extensions::ValueListWrapper(value.AsList()));
-						break;
-					default:
-						// Ignore all other types
-						break;
-				}
-
-			}
-		}
-
-	private:
 		Extensions::BuildOperationList _rootOperations;
 		ValueTable _activeState;
-		ValueTable _parentState;
+		ValueTable _sharedState;
 	};
 }

@@ -1,4 +1,4 @@
-// <copyright file="ITable.h" company="Soup">
+// <copyright file="IValueTable.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -29,5 +29,10 @@ namespace Soup::Build
 		/// Create a given property by name
 		/// </summary>
 		virtual ApiCallResult TryCreateValue(const char* name, IValue*& value) noexcept = 0;
+
+		/// <summary>
+		/// Get the list of available value keys
+		/// </summary>
+		virtual const IReadOnlyList<const char*>& GetValueKeyList() const noexcept = 0;
 	};
 }

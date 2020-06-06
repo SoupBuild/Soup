@@ -1,4 +1,4 @@
-// <copyright file="IList.h" company="Soup">
+// <copyright file="IReadOnlyList.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -14,27 +14,17 @@ namespace Soup::Build
 	/// Note: Has strict ABI requirements to prevent version incompatible
 	/// </summary>
 	export template<typename T>
-	class IList
+	class IReadOnlyList
 	{
 	public:
 		/// <summary>
-		/// Size access method
+		/// Size access methods
 		/// </summary>
 		virtual uint64_t GetSize() const noexcept = 0;
 
 		/// <summary>
-		/// Value getter method
+		/// Value accessor methods
 		/// </summary>
 		virtual ApiCallResult TryGetValueAt(uint64_t index, T& value) const noexcept = 0;
-
-		/// <summary>
-		/// Value setter method
-		/// </summary>
-		virtual ApiCallResult TrySetValueAt(uint64_t index, T value) noexcept = 0;
-
-		/// <summary>
-		/// Resize to the requested size
-		/// </summary>
-		virtual ApiCallResult TryResize(uint64_t size) noexcept = 0;
 	};
 }

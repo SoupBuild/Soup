@@ -18,6 +18,7 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the BuildPropertyBag class
 		/// </summary>
 		ValueTable() :
+			_keyList(),
 			_values()
 		{
 		}
@@ -29,8 +30,7 @@ namespace Soup::Build::Runtime
 		{
 			try
 			{
-				result = false;
-				result = _values.contains(name);
+				result = HasValue(name);
 				return ApiCallResult::Success;
 			}
 			catch (...)
@@ -79,14 +79,47 @@ namespace Soup::Build::Runtime
 			}
 		}
 
+		const IReadOnlyList<const char*>& GetValueKeyList() const noexcept override final
+		{
+			return _keyList;
+		}
+
+		/// <summary>
+		/// Helper methods to make our lives easier
+		/// </summary>
+		Value& EnsureValue(std::string_view name)
+		{
+			auto findResult = _values.find(name.data());
+			if (findResult != _values.end())
+			{
+				return findResult->second;
+			}
+			else
+			{
+				return SetValue(name, Value());
+			}
+		}
+
 		/// <summary>
 		/// Internal access to the state
 		/// </summary>
+		bool HasValue(std::string_view name) const
+		{
+			return _values.contains(name.data());
+		}
+
 		Value& SetValue(std::string_view name, Value value)
 		{
 			auto insertResult = _values.emplace(name, std::move(value));
 			if (insertResult.second)
 			{
+				// Keep the key list in sync
+				auto& keys = _keyList.GetValues();
+				keys.clear();
+				keys.reserve(_values.size());
+				for(auto& value : _values)
+					keys.push_back(value.first);
+
 				return insertResult.first->second;
 			}
 			else
@@ -155,6 +188,7 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
+		Extensions::StringList _keyList;
 		std::map<std::string, Value> _values;
 	};
 }

@@ -260,12 +260,12 @@ namespace Soup::Build::Runtime
 					Log::Diag("Recipe already built: " + recipe.GetName());
 
 					// Move the parent state from active into the parents active state :)
-					parentState.CombineChildState(findBuildState->second);
+					parentState.CombineSharedState(recipe.GetName(), findBuildState->second);
 				}
 				else
 				{
 					// Run the required builds in process
-					// This will break the circular requirments for the core build libraries
+					// This will break the circular requirements for the core build libraries
 					RunInProcessBuild(
 						projectId,
 						workingDirectory,
@@ -274,8 +274,8 @@ namespace Soup::Build::Runtime
 						isSystemBuild,
 						activeState);
 
-					// Move the parent state from active into the parents active state :)
-					parentState.CombineChildState(activeState);
+					// Move the parent state from active into the parents active state
+					parentState.CombineSharedState(recipe.GetName(), activeState);
 
 					// Keep track of the packages we have already built
 					// TODO: Verify unique names
@@ -284,7 +284,6 @@ namespace Soup::Build::Runtime
 					// Move to the next build project id
 					projectId++;
 				}
-
 
 				Log::SetActiveId(0);
 			}

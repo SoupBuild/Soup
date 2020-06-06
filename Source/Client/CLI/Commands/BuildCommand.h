@@ -67,7 +67,7 @@ namespace Soup::Client
 			if (!_options.Flavor.empty())
 				arguments.Flavor = _options.Flavor;
 			else
-				arguments.Flavor = "release";
+				arguments.Flavor = "debug";
 
 			if (!_options.Platform.empty())
 				arguments.Platform = _options.Platform;

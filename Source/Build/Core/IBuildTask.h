@@ -17,8 +17,8 @@ namespace Soup::Build
 	{
 	public:
 		virtual const char* GetName() const noexcept = 0;
-		virtual const IList<const char*>& GetRunBeforeList() const noexcept = 0;
-		virtual const IList<const char*>& GetRunAfterList() const noexcept = 0;
+		virtual const IReadOnlyList<const char*>& GetRunBeforeList() const noexcept = 0;
+		virtual const IReadOnlyList<const char*>& GetRunAfterList() const noexcept = 0;
 
 		virtual ApiCallResult TryExecute(IBuildState& state) noexcept = 0;
 	};

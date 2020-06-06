@@ -29,7 +29,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Get the run before list
 		/// </summary>
-		const Soup::Build::IList<const char*>& GetRunBeforeList() const noexcept override final
+		const Soup::Build::IReadOnlyList<const char*>& GetRunBeforeList() const noexcept override final
 		{
 			return _runBeforeList;
 		}
@@ -37,7 +37,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Get the run after list
 		/// </summary>
-		const Soup::Build::IList<const char*>& GetRunAfterList() const noexcept override final
+		const Soup::Build::IReadOnlyList<const char*>& GetRunAfterList() const noexcept override final
 		{
 			return _runAfterList;
 		}

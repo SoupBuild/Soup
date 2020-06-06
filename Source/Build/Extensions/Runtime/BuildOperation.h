@@ -70,12 +70,12 @@ namespace Soup::Build::Extensions
 			return _workingDirectory.c_str();
 		}
 
-		const IList<const char*>& GetInputFileList() const noexcept override final
+		const IReadOnlyList<const char*>& GetInputFileList() const noexcept override final
 		{
 			return _inputFiles;
 		}
 		
-		const IList<const char*>& GetOutputFileList() const noexcept override final
+		const IReadOnlyList<const char*>& GetOutputFileList() const noexcept override final
 		{
 			return _outputFiles;
 		}

@@ -60,6 +60,14 @@ namespace Soup::Build::Extensions
 		}
 
 		/// <summary>
+		/// Get the list of available value keys
+		/// </summary>
+		ReadOnlyStringListWrapper GetValueKeyList() const noexcept
+		{
+			return ReadOnlyStringListWrapper(_value.GetValueKeyList());
+		}
+
+		/// <summary>
 		/// Helper methods to make our lives easier
 		/// </summary>
 		ValueWrapper EnsureValue(std::string_view name)

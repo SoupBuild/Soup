@@ -57,6 +57,12 @@ extern "C"
 		if (buildSystem.TryRegisterTask(standardLibraryIncludeTask.GetRaw()) != Soup::Build::ApiCallResult::Success)
 			return -1;
 
+		// Register the standard library include task
+		auto resolveDependenciesTask = Memory::Reference<RecipeBuild::ResolveDependenciesTask>(
+			new RecipeBuild::ResolveDependenciesTask());
+		if (buildSystem.TryRegisterTask(resolveDependenciesTask.GetRaw()) != Soup::Build::ApiCallResult::Success)
+			return -1;
+
 		// Register the recipe build task
 		auto recipeBuildTask = Memory::Reference<RecipeBuild::RecipeBuildTask>(
 			new RecipeBuild::RecipeBuildTask());

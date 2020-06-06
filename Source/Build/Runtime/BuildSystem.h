@@ -55,10 +55,10 @@ namespace Soup::Build::Runtime
 				Log::Diag("RegisterTask: " + taskName);
 
 				// TODO: Remove const casts
-				auto runBeforeList = Extensions::StringListWrapper(
-					const_cast<IList<const char*>&>(ourTask->GetRunBeforeList()));
-				auto runAfterList = Extensions::StringListWrapper(
-					const_cast<IList<const char*>&>(ourTask->GetRunAfterList()));
+				auto runBeforeList = Extensions::ReadOnlyStringListWrapper(
+					ourTask->GetRunBeforeList());
+				auto runAfterList = Extensions::ReadOnlyStringListWrapper(
+					ourTask->GetRunAfterList());
 				auto taskContainer = BuildTaskContainer(
 					ourTask,
 					runBeforeList.CopyAsStringVector(),

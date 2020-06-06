@@ -311,6 +311,19 @@ ValueList& Value::AsList()
 	}
 }
 
+ValueTable& Value::EnsureTable()
+{
+	if (_value.type() == typeid(ValueTable))
+	{
+		return std::any_cast<ValueTable&>(_value);
+	}
+	else
+	{
+		_value = ValueTable();
+		return std::any_cast<ValueTable&>(_value);
+	}
+}
+
 bool Value::operator ==(const Value& rhs) const
 {
 	if (GetType() == rhs.GetType())

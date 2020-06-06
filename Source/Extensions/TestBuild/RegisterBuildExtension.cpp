@@ -1,4 +1,10 @@
-﻿#include <stdexcept>
+﻿// <copyright file="RegisterBuildExtension.cpp" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
+
+#include <functional>
+#include <map>
+#include <stdexcept>
 #include <string_view>
 #include <unordered_set>
 
@@ -15,17 +21,33 @@ using namespace Opal;
 
 #define DllExport __declspec(dllexport)
 
+std::shared_ptr<Soup::Compiler::ICompiler> CreateMSVCCompiler(Soup::Build::Extensions::ValueTableWrapper& activeState)
+{
+	auto visualCompilerToolsRoot = activeState.GetValue("MSVC.VCToolsRoot").AsString().GetValue();
+	std::shared_ptr<Soup::Compiler::ICompiler> compiler = std::make_shared<Soup::Compiler::MSVC::Compiler>(
+		Path(visualCompilerToolsRoot) + Path("bin/Hostx64/x64/"),
+		Path("cl.exe"),
+		Path("link.exe"),
+		Path("lib.exe"));
+
+	return compiler;
+}
+
 extern "C"
 {
 	DllExport int RegisterBuildExtension(Soup::Build::IBuildSystem& buildSystem)
 	{
+		// Register all known compilers
+		auto compilerFactory = Soup::Test::CompilerFactory();
+		compilerFactory.emplace("MSVC", CreateMSVCCompiler);
+
 		// Register the before build task
 		auto testBuildTask = Opal::Memory::Reference<Soup::Test::TestBuildTask>(
-			new Soup::Test::TestBuildTask());
+			new Soup::Test::TestBuildTask(std::move(compilerFactory)));
 		auto registerResult = buildSystem.TryRegisterTask(testBuildTask.GetRaw());
 		if (registerResult != Soup::Build::ApiCallResult::Success)
 			return -1;
-		else
-			return 0;
+
+		return 0;
 	}
 }

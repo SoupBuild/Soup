@@ -4,6 +4,7 @@
 
 #pragma once
 #include "IList.h"
+#include "IReadOnlyList.h"
 
 namespace Soup::Build
 {
@@ -18,8 +19,8 @@ namespace Soup::Build
 		virtual const char* GetArguments() const noexcept = 0;
 		virtual const char* GetWorkingDirectory() const noexcept = 0;
 
-		virtual const IList<const char*>& GetInputFileList() const noexcept = 0;
-		virtual const IList<const char*>& GetOutputFileList() const noexcept = 0;
+		virtual const IReadOnlyList<const char*>& GetInputFileList() const noexcept = 0;
+		virtual const IReadOnlyList<const char*>& GetOutputFileList() const noexcept = 0;
 
 		// Allow read write access to the child list to allow adding dependent operations
 		virtual IList<IBuildOperation*>& GetChildList() noexcept = 0;

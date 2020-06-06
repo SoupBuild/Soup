@@ -1,4 +1,4 @@
-Name = "SoupCore"
+Name = "Soup.Core"
 Version = "0.1.0"
 
 Dependencies = [

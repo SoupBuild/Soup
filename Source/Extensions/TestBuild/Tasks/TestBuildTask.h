@@ -2,12 +2,20 @@
 
 namespace Soup::Test
 {
+	using CreateCompiler = std::function<std::shared_ptr<Soup::Compiler::ICompiler>(Soup::Build::Extensions::ValueTableWrapper&)>;
+	using CompilerFactory = std::map<std::string, CreateCompiler>;
+
 	/// <summary>
 	/// The simple build task that will run after the main build task
 	/// </summary>
 	class TestBuildTask : public Memory::ReferenceCounted<Soup::Build::IBuildTask>
 	{
 	public:
+		TestBuildTask(CompilerFactory compilerFactory) :
+			_compilerFactory(std::move(compilerFactory))
+		{
+		}
+
 		/// <summary>
 		/// Get the task name
 		/// </summary>
@@ -60,10 +68,9 @@ namespace Soup::Test
 		/// </summary>
 		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
 		{
-			buildState.LogHighPriority("Building Tests");
-
-			auto rootTable = buildState.GetActiveState();
-			auto recipeTable = rootTable.GetValue("Recipe").AsTable();
+			auto activeState = buildState.GetActiveState();
+			auto sharedState = buildState.GetSharedState();
+			auto recipeTable = activeState.GetValue("Recipe").AsTable();
 
 			if (!recipeTable.HasValue("Tests"))
 			{
@@ -85,9 +92,31 @@ namespace Soup::Test
 			arguments.TargetName = "TestHarness";
 			arguments.TargetType = Soup::Compiler::BuildTargetType::Executable;
 
-			// Load up the common properties used from the generic build
-			auto buildTable = rootTable.GetValue("Build").AsTable();
-			LoadBuildProperties(buildTable, arguments);
+			// Load up the common build properties from the original Build table in the active state
+			auto activeBuildTable = activeState.GetValue("Build").AsTable();
+			LoadBuildProperties(activeBuildTable, arguments);
+
+			// Load up the input build parameters from the shared build state as if this is a dependency build
+			auto sharedBuildTable = sharedState.GetValue("Build").AsTable();
+			LoadBuildInput(sharedBuildTable, arguments);
+
+			// Initialize the compiler to use
+			auto compilerName = std::string(activeState.GetValue("CompilerName").AsString().GetValue());
+			auto findCompilerFactory = _compilerFactory.find(compilerName);
+			if (findCompilerFactory == _compilerFactory.end())
+			{
+				buildState.LogError("Unknown compiler: " + compilerName);
+				throw new std::runtime_error("");
+			}
+
+			auto createCompiler = findCompilerFactory->second;
+			auto compiler = createCompiler(activeState);
+
+			auto buildEngine = Soup::Compiler::BuildEngine(compiler);
+			auto buildResult = buildEngine.Execute(buildState, arguments);
+
+			// Register the root build tasks
+			buildState.GetRootOperationList().Append(buildResult.BuildOperations);
 		}
 
 		void LoadBuildProperties(
@@ -149,7 +178,12 @@ namespace Soup::Test
 			{
 				arguments.GenerateSourceDebugInfo = false;
 			}
+		}
 
+		void LoadBuildInput(
+			Soup::Build::Extensions::ValueTableWrapper& buildTable,
+			Soup::Compiler::BuildArguments& arguments)
+		{
 			// Load the runtime dependencies
 			if (buildTable.HasValue("RuntimeDependencies"))
 			{
@@ -186,6 +220,7 @@ namespace Soup::Test
 		}
 
 	private:
+		CompilerFactory _compilerFactory;
 		static Soup::Build::Extensions::StringList _runBeforeList;
 		static Soup::Build::Extensions::StringList _runAfterList;
 	};

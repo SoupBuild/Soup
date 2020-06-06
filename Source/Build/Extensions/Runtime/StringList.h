@@ -6,7 +6,7 @@
 
 namespace Soup::Build::Extensions
 {
-	export class StringList : public IList<const char*>
+	export class StringList : public IList<const char*>, public IReadOnlyList<const char*>
 	{
 	public:
 		/// <summary>
@@ -98,6 +98,11 @@ namespace Soup::Build::Extensions
 		/// Internal accessor
 		/// </summary>
 		const std::vector<std::string>& GetValues() const noexcept
+		{
+			return _values;
+		}
+
+		std::vector<std::string>& GetValues() noexcept
 		{
 			return _values;
 		}

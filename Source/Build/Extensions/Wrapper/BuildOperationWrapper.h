@@ -4,6 +4,7 @@
 
 #pragma once
 #include "StringListWrapper.h"
+#include "ReadOnlyStringListWrapper.h"
 #include "BuildOperationListWrapper.h"
 #include "ValuePrimitiveWrapper.h"
 
@@ -63,27 +64,22 @@ namespace Soup::Build::Extensions
 			return _value->GetWorkingDirectory();
 		}
 
-		const StringListWrapper GetInputFileList() const
+		ReadOnlyStringListWrapper GetInputFileList() const
 		{
 			ThrowIfInvalid();
-			auto& list = _value->GetInputFileList();
-			// TODO: Create const version of wrapper
-			return StringListWrapper(const_cast<IList<const char *>&>(list));
+			return ReadOnlyStringListWrapper(_value->GetInputFileList());
 		}
 
-		const StringListWrapper GetOutputFileList() const
+		ReadOnlyStringListWrapper GetOutputFileList() const
 		{
 			ThrowIfInvalid();
-			auto& list = _value->GetOutputFileList();
-			// TODO: Create const version of wrapper
-			return StringListWrapper(const_cast<IList<const char *>&>(list));
+			return ReadOnlyStringListWrapper( _value->GetOutputFileList());
 		}
 
 		BuildOperationListWrapper GetChildList()
 		{
 			ThrowIfInvalid();
-			auto& list = _value->GetChildList();
-			return BuildOperationListWrapper(const_cast<IList<IBuildOperation*>&>(list));
+			return BuildOperationListWrapper(_value->GetChildList());
 		}
 
 		/// <summary>
