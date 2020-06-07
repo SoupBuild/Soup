@@ -16,23 +16,11 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
-		BuildState() :
+		BuildState(ValueTable activeState) :
 			_rootOperations(),
-			_activeState(),
+			_activeState(std::move(activeState)),
 			_sharedState()
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the BuildState class
-		/// </summary>
-		BuildState(ValueTable recipeState) :
-			_rootOperations(),
-			_activeState(),
-			_sharedState()
-		{
-			// Initialize the Recipe state
-			_activeState.SetValue("Recipe", Value(std::move(recipeState)));
 		}
 
 		/// <summary>
@@ -106,14 +94,11 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
-		/// Copy the shared state from the child build into the correct dependencies table location.
+		/// Pull out the shared state
 		/// </summary>
-		void CombineSharedState(
-			const std::string& taskName,
-			BuildState& childState)
+		ValueTable RetrieveSharedState() noexcept
 		{
-			auto& dependenciesTable = _activeState.EnsureValue("Dependencies").EnsureTable();
-			dependenciesTable.SetValue(taskName, Value(childState._sharedState));
+			return std::move(_sharedState);
 		}
 
 		void LogActive()

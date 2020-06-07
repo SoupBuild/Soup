@@ -40,7 +40,6 @@ namespace RecipeBuild::UnitTests
 			auto buildState = Soup::Build::BuildState();
 			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
 			state.SetPropertyStringValue("PackageRoot", "C:/PackageRoot/");
-			state.SetPropertyBooleanValue("ForceRebuild", false);
 			state.SetPropertyStringValue("BuildFlavor", "debug");
 			state.SetPropertyStringList("PlatformLibraries", std::vector<std::string>());
 			state.SetPropertyStringList("PlatformIncludePaths", std::vector<std::string>());
