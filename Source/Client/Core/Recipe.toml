@@ -14,17 +14,6 @@ Dependencies = [
 	# "Soup.Build.Extensions@0.3.0",
 	"../../Build/Runtime/",
 ]
-
-DevDependencies = [
-	# "../../Extensions/TestBuild/",
-	# "../../../Dependencies/SoupTest/Assert/",
-	# "SoupTest@0.1.0",
-]
-
-Extensions = [
-	"TestBuild"
-]
-
 Defines = [
 	# "LOCAL_DEBUG",
 ]
@@ -35,13 +24,17 @@ IncludePaths = [
 	"Utils/",
 ]
 
+DevDependencies = [
+	"../../Extensions/TestBuild/",
+	# "../../../Dependencies/SoupTest/Assert/",
+	"SoupTest@0.1.0",
+	"../../TestUtilities/",
+]
+
 	[Tests]
 	Source = [
 		"../Core.UnitTests/gen/Main.cpp"
 	]
 	IncludePaths = [
 		"../Core.UnitTests/",
-	]
-	Dependencies = [
-		"SoupTest",
 	]

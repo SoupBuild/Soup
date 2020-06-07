@@ -24,7 +24,8 @@ namespace Soup::Build::Runtime
 			std::string runtimeCompiler) :
 			_systemCompiler(systemCompiler),
 			_runtimeCompiler(runtimeCompiler),
-			_buildSet()
+			_buildSet(),
+			_systemBuildSet()
 		{
 		}
 
@@ -38,10 +39,12 @@ namespace Soup::Build::Runtime
 		{
 			// Clear the build set so we check all dependencies
 			_buildSet.clear();
+			_systemBuildSet.clear();
 
 			// Enable log event ids to track individual builds
 			int projectId = 1;
 			bool isSystemBuild = false;
+			bool isDevBuild = false;
 			Log::EnsureListener().SetShowEventId(true);
 
 			// TODO: A scoped listener cleanup would be nice
@@ -55,6 +58,7 @@ namespace Soup::Build::Runtime
 					recipe,
 					arguments,
 					isSystemBuild,
+					isDevBuild,
 					rootParentSet,
 					rootState);
 
@@ -147,6 +151,7 @@ namespace Soup::Build::Runtime
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
+			bool isDevBuild,
 			const std::set<std::string>& parentSet,
 			ValueTable& sharedState)
 		{
@@ -196,6 +201,7 @@ namespace Soup::Build::Runtime
 						dependencyRecipe,
 						arguments,
 						isSystemBuild,
+						false,
 						activeParentSet,
 						activeState);
 				}
@@ -223,16 +229,15 @@ namespace Soup::Build::Runtime
 					}
 
 					// Build all recursive dependencies
-					// Note: Ignore all shared dependencies. They are not exposed past dev dependencies.
-					auto ignoredBuildState = ConvertToRootBuildState(dependencyRecipe.GetTable());
 					projectId = BuildRecipeAndDependencies(
 						projectId,
 						packagePath,
 						dependencyRecipe,
 						arguments,
 						true,
+						true,
 						activeParentSet,
-						ignoredBuildState);
+						activeState);
 				}
 			}
 
@@ -243,6 +248,7 @@ namespace Soup::Build::Runtime
 				recipe,
 				arguments,
 				isSystemBuild,
+				isDevBuild,
 				activeState,
 				sharedState);
 
@@ -252,7 +258,7 @@ namespace Soup::Build::Runtime
 
 		/// <summary>
 		/// The core build that will either invoke the recipe builder directly
-		/// or compile it into an executable and invoke it.
+		/// or load a previous state
 		/// </summary>
 		int BuildRecipe(
 			int projectId,
@@ -260,6 +266,7 @@ namespace Soup::Build::Runtime
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
+			bool isDevBuild,
 			ValueTable& activeState,
 			ValueTable& sharedState)
 		{
@@ -267,16 +274,15 @@ namespace Soup::Build::Runtime
 			try
 			{
 				Log::SetActiveId(projectId);
-				Log::Diag("Running InProcess Build");
+				Log::Diag("Running Build");
 
-				auto findBuildState = _buildSet.find(recipe.GetName());
-				if (findBuildState != _buildSet.end())
+				// Select the correct build set to ensure that the different build properties 
+				// required the same project to be build twice
+				auto& buildSet = isSystemBuild ? _systemBuildSet : _buildSet;
+				auto findBuildState = buildSet.find(recipe.GetName());
+				if (findBuildState != buildSet.end())
 				{
 					Log::Diag("Recipe already built: " + recipe.GetName());
-
-					// Move the parent state from active into the parents active state
-					auto& dependenciesTable = sharedState.EnsureValue("Dependencies").EnsureTable();
-					dependenciesTable.SetValue(recipe.GetName(), Value(findBuildState->second));
 				}
 				else
 				{
@@ -292,16 +298,30 @@ namespace Soup::Build::Runtime
 
 					// Keep track of the packages we have already built
 					// TODO: Verify unique names
-					auto insertBuildState = _buildSet.emplace(
+					auto insertBuildState = buildSet.emplace(
 						recipe.GetName(),
 						std::move(resultSharedState));
 
-					// Move the parent state from active into the parents active state
-					auto& dependenciesTable = sharedState.EnsureValue("Dependencies").EnsureTable();
-					dependenciesTable.SetValue(recipe.GetName(), Value(insertBuildState.first->second));
+					// Replace the find iterator so it can be used to update the shared table state
+					findBuildState = insertBuildState.first;
 
 					// Move to the next build project id
 					projectId++;
+				}
+
+				// Add the shared build state generated from this child build into the correct
+				// Table depending on if this is a normal dependency or a dev dependency
+				if (isDevBuild)
+				{
+					// Move the parent state from active into the parents active state
+					auto& devDependenciesTable = sharedState.EnsureValue("DevDependencies").EnsureTable();
+					devDependenciesTable.SetValue(recipe.GetName(), Value(findBuildState->second));
+				}
+				else
+				{
+					// Move the parent state from active into the parents active state
+					auto& dependenciesTable = sharedState.EnsureValue("Dependencies").EnsureTable();
+					dependenciesTable.SetValue(recipe.GetName(), Value(findBuildState->second));
 				}
 
 				Log::SetActiveId(0);
@@ -466,5 +486,6 @@ namespace Soup::Build::Runtime
 		std::string _systemCompiler;
 		std::string _runtimeCompiler;
 		std::map<std::string, ValueTable> _buildSet;
+		std::map<std::string, ValueTable> _systemBuildSet;
 	};
 }

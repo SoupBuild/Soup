@@ -78,27 +78,23 @@ namespace Soup::Test
 				throw std::runtime_error("");
 			}
 
-			auto testTable = recipeTable.GetValue("Tests").AsTable();
-			if (!testTable.HasValue("Source"))
-			{
-				buildState.LogError("No Test Source Files");
-				throw std::runtime_error("");
-			}
-
 			auto arguments = Soup::Compiler::BuildArguments();
-			arguments.SourceFiles =
-				testTable.GetValue("Source").AsList().CopyAsPathVector();
-
-			arguments.TargetName = "TestHarness";
-			arguments.TargetType = Soup::Compiler::BuildTargetType::Executable;
 
 			// Load up the common build properties from the original Build table in the active state
 			auto activeBuildTable = activeState.GetValue("Build").AsTable();
 			LoadBuildProperties(activeBuildTable, arguments);
 
-			// Load up the input build parameters from the shared build state as if this is a dependency build
+			// Load the test properties
+			auto testTable = recipeTable.GetValue("Tests").AsTable();
+			LoadTestBuildProperties(buildState, testTable, arguments);
+
+			// Load up the input build parameters from the shared build state as if
+			// this is a dependency build
 			auto sharedBuildTable = sharedState.GetValue("Build").AsTable();
-			LoadBuildInput(sharedBuildTable, arguments);
+			LoadDependencyBuildInput(sharedBuildTable, arguments);
+
+			// Load up the dev dependencies build input to add extra test runtime libraries
+			LoadDevDependencyBuildInput(buildState, activeState, arguments);
 
 			// Initialize the compiler to use
 			auto compilerName = std::string(activeState.GetValue("CompilerName").AsString().GetValue());
@@ -114,6 +110,31 @@ namespace Soup::Test
 
 			auto buildEngine = Soup::Compiler::BuildEngine(compiler);
 			auto buildResult = buildEngine.Execute(buildState, arguments);
+
+			// Create the operation to run tests during build
+			auto title = "Run Tests";
+			auto program = 
+				arguments.WorkingDirectory +
+				arguments.BinaryDirectory +
+				Path(arguments.TargetName);
+			program.SetFileExtension("exe");
+			auto workingDirectory = Path("");
+			auto runArguments = "";
+			auto inputFiles = std::vector<Path>({});
+			auto outputFiles = std::vector<Path>({});
+			auto runTestsOperation = Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					title,
+					program,
+					runArguments,
+					workingDirectory,
+					inputFiles,
+					outputFiles));
+
+			// Run the test harness
+			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(
+				buildResult.BuildOperations,
+				runTestsOperation);
 
 			// Register the root build tasks
 			buildState.GetRootOperationList().Append(buildResult.BuildOperations);
@@ -180,7 +201,33 @@ namespace Soup::Test
 			}
 		}
 
-		void LoadBuildInput(
+		void LoadTestBuildProperties(
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::ValueTableWrapper& testTable,
+			Soup::Compiler::BuildArguments& arguments)
+		{
+			if (!testTable.HasValue("Source"))
+			{
+				buildState.LogError("No Test Source Files");
+				throw std::runtime_error("");
+			}
+
+			arguments.SourceFiles =
+				testTable.GetValue("Source").AsList().CopyAsPathVector();
+
+			// Combine the include paths from the recipe and the system
+			if (testTable.HasValue("IncludePaths"))
+			{
+				arguments.IncludeDirectories = CombineUnique(
+					arguments.IncludeDirectories,
+					testTable.GetValue("IncludePaths").AsList().CopyAsPathVector());
+			}
+
+			arguments.TargetName = "TestHarness";
+			arguments.TargetType = Soup::Compiler::BuildTargetType::Executable;
+		}
+
+		void LoadDependencyBuildInput(
 			Soup::Build::Extensions::ValueTableWrapper& buildTable,
 			Soup::Compiler::BuildArguments& arguments)
 		{
@@ -204,6 +251,82 @@ namespace Soup::Test
 				arguments.ModuleDependencies = MakeUnique(
 					buildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector());
 			}
+		}
+
+		static void LoadDevDependencyBuildInput(
+			Soup::Build::Extensions::BuildStateWrapper& buildState,
+			Soup::Build::Extensions::ValueTableWrapper& activeState,
+			Soup::Compiler::BuildArguments& arguments)
+		{
+			if (activeState.HasValue("DevDependencies"))
+			{
+				auto dependenciesTable = activeState.GetValue("DevDependencies").AsTable();
+
+				for (auto& dependencyName : dependenciesTable.GetValueKeyList().CopyAsStringVector())
+				{
+					// Combine the core dependency build inputs for the core build task
+					buildState.LogInfo("Combine DevDependency: " + dependencyName);
+					auto dependencyTable = dependenciesTable.GetValue(dependencyName).AsTable();
+
+					if (dependencyTable.HasValue("Build"))
+					{
+						auto dependencyBuildTable = dependencyTable.GetValue("Build").AsTable();
+
+						if (dependencyBuildTable.HasValue("ModuleDependencies"))
+						{
+							auto moduleDependencies = dependencyBuildTable
+								.GetValue("ModuleDependencies")
+								.AsList()
+								.CopyAsStringVector();
+
+							arguments.ModuleDependencies = CombineUnique(
+								arguments.ModuleDependencies,
+								dependencyBuildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector());
+						}
+
+						if (dependencyBuildTable.HasValue("RuntimeDependencies"))
+						{
+							auto runtimeDependencies = dependencyBuildTable
+								.GetValue("RuntimeDependencies")
+								.AsList()
+								.CopyAsStringVector();
+
+							arguments.RuntimeDependencies = CombineUnique(
+								arguments.RuntimeDependencies,
+								dependencyBuildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector());
+						}
+
+						if (dependencyBuildTable.HasValue("LinkDependencies"))
+						{
+							auto linkDependencies = dependencyBuildTable
+								.GetValue("LinkDependencies")
+								.AsList()
+								.CopyAsStringVector();
+
+							arguments.LinkDependencies = CombineUnique(
+								arguments.LinkDependencies,
+								dependencyBuildTable.GetValue("LinkDependencies").AsList().CopyAsPathVector());
+						}
+					}
+				}
+			}
+		}
+
+		static std::vector<Path> CombineUnique(
+			const std::vector<Path>& collection1,
+			const std::vector<Path>& collection2)
+		{
+			std::unordered_set<std::string> valueSet;
+			for (auto& value : collection1)
+				valueSet.insert(value.ToString());
+			for (auto& value : collection2)
+				valueSet.insert(value.ToString());
+
+			std::vector<Path> result;
+			for (auto& value : valueSet)
+				result.push_back(Path(value));
+
+			return result;
 		}
 
 		static std::vector<Path> MakeUnique(const std::vector<Path>& collection)
