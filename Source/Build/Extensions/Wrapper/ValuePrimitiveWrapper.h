@@ -26,12 +26,7 @@ namespace Soup::Build::Extensions
 		/// </summary>
 		T GetValue() const
 		{
-			T result;
-			auto status = _value.TryGetValue(result);
-			if (status != 0)
-				throw std::runtime_error("TryGetValue Failed");
-
-			return result;
+			return _value.GetValue();
 		}
 
 		/// <summary>
@@ -40,7 +35,7 @@ namespace Soup::Build::Extensions
 		void SetValue(T value)
 		{
 			auto status = _value.TrySetValue(value);
-			if (status != 0)
+			if (status != ApiCallResult::Success)
 				throw std::runtime_error("TrySetValue Failed");
 		}
 

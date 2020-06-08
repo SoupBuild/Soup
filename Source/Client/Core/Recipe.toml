@@ -1,4 +1,4 @@
-Name = "SoupCore"
+Name = "Soup.Core"
 Version = "0.1.0"
 
 Dependencies = [
@@ -9,9 +9,9 @@ Dependencies = [
 	"toml11@1.0.0",
 	"../OpalExtensions/",
 	"../../Build/Core/",
-	# "Soup.Build@0.2.0",
+	# "Soup.Build@0.3.0",
 	"../../Build/Extensions/",
-	# "Soup.Build.Extensions@0.2.2",
+	# "Soup.Build.Extensions@0.3.0",
 	"../../Build/Runtime/",
 ]
 Defines = [
@@ -23,3 +23,18 @@ IncludePaths = [
 	"Compiler/",
 	"Utils/",
 ]
+
+DevDependencies = [
+	"../../Extensions/TestBuild/",
+	# "../../../Dependencies/SoupTest/Assert/",
+	"SoupTest@0.1.0",
+	"../../TestUtilities/",
+]
+
+	[Tests]
+	Source = [
+		"../Core.UnitTests/gen/Main.cpp"
+	]
+	IncludePaths = [
+		"../Core.UnitTests/",
+	]

@@ -3,18 +3,27 @@
 // </copyright>
 
 #pragma once
-#include "OperationResult.h"
+#include "ApiCallResult.h"
 #include "IValueTable.h"
 
 namespace Soup::Build
 {
 	export enum class TraceLevel : uint64_t
 	{
-		Diagnostic = 1,
-		Information = 2,
+		// Exceptional state that will fail the build
+		Error = 1,
+
+		// A possible issue in the build that may be fine to continue
+		Warning = 2,
+
+		// Highest level of logging that will be on in all but the quiet logs
 		HighPriority = 3,
-		Warning = 4,
-		Error = 5,
+
+		// Important information that will be on in verbose logs. May help users investigate what occurred during a build.
+		Information = 4,
+
+		// The most detailed of logs that will only be useful for detailed investigations into runtime issues for build engineers. Diagnostic log level.
+		Debug = 5,
 	};
 
 	/// <summary>
@@ -26,10 +35,9 @@ namespace Soup::Build
 	{
 	public:
 		/// <summary>
-		/// Build Graph Access Methods
+		/// Get the root build operation list that can be used to add new build operations
 		/// </summary>
-		virtual OperationResult TryRegisterRootNode(IGraphNode* node) noexcept = 0;
-		virtual OperationResult TryCreateNode(IGraphNode*& node) noexcept = 0;
+		virtual IList<IBuildOperation*>& GetRootOperationList() noexcept = 0;
 
 		/// <summary>
 		/// Get a reference to the active state
@@ -37,14 +45,14 @@ namespace Soup::Build
 		virtual IValueTable& GetActiveState() noexcept = 0;
 
 		/// <summary>
-		/// Get a reference to the child state. All of these properties will be 
+		/// Get a reference to the shared state. All of these properties will be 
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
-		virtual IValueTable& GetParentState() noexcept = 0;
+		virtual IValueTable& GetSharedState() noexcept = 0;
 
 		/// <summary>
 		/// Log a message to the build system
 		/// </summary>
-		virtual OperationResult TryLogTrace(TraceLevel level, const char* message) noexcept = 0;
+		virtual ApiCallResult TryLogTrace(TraceLevel level, const char* message) noexcept = 0;
 	};
 }

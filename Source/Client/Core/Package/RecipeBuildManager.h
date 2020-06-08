@@ -23,7 +23,9 @@ namespace Soup::Build::Runtime
 			std::string systemCompiler,
 			std::string runtimeCompiler) :
 			_systemCompiler(systemCompiler),
-			_runtimeCompiler(runtimeCompiler)
+			_runtimeCompiler(runtimeCompiler),
+			_buildSet(),
+			_systemBuildSet()
 		{
 		}
 
@@ -37,23 +39,26 @@ namespace Soup::Build::Runtime
 		{
 			// Clear the build set so we check all dependencies
 			_buildSet.clear();
+			_systemBuildSet.clear();
 
 			// Enable log event ids to track individual builds
 			int projectId = 1;
 			bool isSystemBuild = false;
+			bool isDevBuild = false;
 			Log::EnsureListener().SetShowEventId(true);
 
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
 				auto rootParentSet = std::set<std::string>();
-				auto rootState = BuildState(ConvertToBuildState(recipe.GetTable()));
+				auto rootState = ConvertToBuildState(recipe.GetTable());
 				projectId = BuildRecipeAndDependencies(
 					projectId,
 					workingDirectory,
 					recipe,
 					arguments,
 					isSystemBuild,
+					isDevBuild,
 					rootParentSet,
 					rootState);
 
@@ -67,6 +72,20 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
+		/// <summary>
+		/// Convert the root recipe table to a build Value Table entry
+		/// </summary>
+		ValueTable ConvertToRootBuildState(const RecipeTable& table)
+		{
+			// Convert teh root table
+			auto recipeState = ConvertToBuildState(table);
+			
+			// Initialize the Recipe state
+			auto state = ValueTable();
+			state.SetValue("Recipe", Value(std::move(recipeState)));
+			return state;
+		}
+
 		/// <summary>
 		/// Convert the recipe internal representation to initial build state
 		/// </summary>
@@ -132,15 +151,16 @@ namespace Soup::Build::Runtime
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
+			bool isDevBuild,
 			const std::set<std::string>& parentSet,
-			BuildState& parentState)
+			ValueTable& sharedState)
 		{
 			// Add current package to the parent set when building child dependencies
 			auto activeParentSet = parentSet;
 			activeParentSet.insert(std::string(recipe.GetName()));
 
 			// Start a new active state that is initialized to the recipe itself
-			auto activeState = BuildState(ConvertToBuildState(recipe.GetTable()));
+			auto activeState = ConvertToRootBuildState(recipe.GetTable());
 
 			if (recipe.HasDependencies())
 			{
@@ -181,6 +201,7 @@ namespace Soup::Build::Runtime
 						dependencyRecipe,
 						arguments,
 						isSystemBuild,
+						false,
 						activeParentSet,
 						activeState);
 				}
@@ -208,16 +229,15 @@ namespace Soup::Build::Runtime
 					}
 
 					// Build all recursive dependencies
-					// Note: Ignore all shared dependencies. They are not exposed past dev dependencies.
-					auto ignoredBuildState = BuildState(ConvertToBuildState(dependencyRecipe.GetTable()));
 					projectId = BuildRecipeAndDependencies(
 						projectId,
 						packagePath,
 						dependencyRecipe,
 						arguments,
 						true,
+						true,
 						activeParentSet,
-						ignoredBuildState);
+						activeState);
 				}
 			}
 
@@ -228,8 +248,9 @@ namespace Soup::Build::Runtime
 				recipe,
 				arguments,
 				isSystemBuild,
+				isDevBuild,
 				activeState,
-				parentState);
+				sharedState);
 
 			// Return the updated project id after building all dependencies
 			return projectId;
@@ -237,7 +258,7 @@ namespace Soup::Build::Runtime
 
 		/// <summary>
 		/// The core build that will either invoke the recipe builder directly
-		/// or compile it into an executable and invoke it.
+		/// or load a previous state
 		/// </summary>
 		int BuildRecipe(
 			int projectId,
@@ -245,28 +266,29 @@ namespace Soup::Build::Runtime
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
-			BuildState& activeState,
-			BuildState& parentState)
+			bool isDevBuild,
+			ValueTable& activeState,
+			ValueTable& sharedState)
 		{
 			// TODO: RAII for active id
 			try
 			{
 				Log::SetActiveId(projectId);
-				Log::Diag("Running InProcess Build");
+				Log::Diag("Running Build");
 
-				auto findBuildState = _buildSet.find(recipe.GetName());
-				if (findBuildState != _buildSet.end())
+				// Select the correct build set to ensure that the different build properties 
+				// required the same project to be build twice
+				auto& buildSet = isSystemBuild ? _systemBuildSet : _buildSet;
+				auto findBuildState = buildSet.find(recipe.GetName());
+				if (findBuildState != buildSet.end())
 				{
 					Log::Diag("Recipe already built: " + recipe.GetName());
-
-					// Move the parent state from active into the parents active state :)
-					parentState.CombineChildState(findBuildState->second);
 				}
 				else
 				{
 					// Run the required builds in process
-					// This will break the circular requirments for the core build libraries
-					RunInProcessBuild(
+					// This will break the circular requirements for the core build libraries
+					auto resultSharedState = RunInProcessBuild(
 						projectId,
 						workingDirectory,
 						recipe,
@@ -274,17 +296,33 @@ namespace Soup::Build::Runtime
 						isSystemBuild,
 						activeState);
 
-					// Move the parent state from active into the parents active state :)
-					parentState.CombineChildState(activeState);
-
 					// Keep track of the packages we have already built
 					// TODO: Verify unique names
-					_buildSet.emplace(recipe.GetName(), std::move(activeState));
+					auto insertBuildState = buildSet.emplace(
+						recipe.GetName(),
+						std::move(resultSharedState));
+
+					// Replace the find iterator so it can be used to update the shared table state
+					findBuildState = insertBuildState.first;
 
 					// Move to the next build project id
 					projectId++;
 				}
 
+				// Add the shared build state generated from this child build into the correct
+				// Table depending on if this is a normal dependency or a dev dependency
+				if (isDevBuild)
+				{
+					// Move the parent state from active into the parents active state
+					auto& devDependenciesTable = sharedState.EnsureValue("DevDependencies").EnsureTable();
+					devDependenciesTable.SetValue(recipe.GetName(), Value(findBuildState->second));
+				}
+				else
+				{
+					// Move the parent state from active into the parents active state
+					auto& dependenciesTable = sharedState.EnsureValue("Dependencies").EnsureTable();
+					dependenciesTable.SetValue(recipe.GetName(), Value(findBuildState->second));
+				}
 
 				Log::SetActiveId(0);
 			}
@@ -297,13 +335,13 @@ namespace Soup::Build::Runtime
 			return projectId;
 		}
 
-		void RunInProcessBuild(
+		ValueTable RunInProcessBuild(
 			int projectId,
 			const Path& packageRoot,
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
-			BuildState& state)
+			ValueTable& activeState)
 		{
 			// Ensure the external build extension libraries outlive all usage in the build system
 			auto activeExtensionLibraries = std::vector<System::Library>();
@@ -311,7 +349,8 @@ namespace Soup::Build::Runtime
 			{
 				// Create a new build system for the requested build
 				auto buildSystem = BuildSystem();
-				auto activeState = Extensions::ValueTableWrapper(state.GetActiveState());
+				auto buildState = BuildState(activeState);
+				auto activeStateWrapper = Extensions::ValueTableWrapper(buildState.GetActiveState());
 
 				// Select the correct compiler to use
 				std::string activeCompiler = "";
@@ -330,23 +369,22 @@ namespace Soup::Build::Runtime
 				auto objectDirectory = RecipeExtensions::GetObjectDirectory(_systemCompiler, arguments.Flavor);
 
 				// Set the input properties
-				activeState.EnsureValue("PackageRoot").SetValueString(packageRoot.ToString());
-				activeState.EnsureValue("ForceRebuild").SetValueBoolean(arguments.ForceRebuild); // TOOD: Remove?
-				activeState.EnsureValue("BuildFlavor").SetValueString(arguments.Flavor);
-				activeState.EnsureValue("CompilerName").SetValueString(activeCompiler);
-				activeState.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
-				activeState.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
-				activeState.EnsureValue("PlatformLibraries").SetValueStringList(arguments.PlatformLibraries);
-				activeState.EnsureValue("PlatformIncludePaths").SetValueStringList(arguments.PlatformIncludePaths);
-				activeState.EnsureValue("PlatformLibraryPaths").SetValueStringList(arguments.PlatformLibraryPaths);
-				activeState.EnsureValue("PlatformPreprocessorDefinitions").SetValueStringList(arguments.PlatformPreprocessorDefinitions);
+				activeStateWrapper.EnsureValue("PackageRoot").SetValueString(packageRoot.ToString());
+				activeStateWrapper.EnsureValue("BuildFlavor").SetValueString(arguments.Flavor);
+				activeStateWrapper.EnsureValue("CompilerName").SetValueString(activeCompiler);
+				activeStateWrapper.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
+				activeStateWrapper.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
+				activeStateWrapper.EnsureValue("PlatformLibraries").SetValueStringList(arguments.PlatformLibraries);
+				activeStateWrapper.EnsureValue("PlatformIncludePaths").SetValueStringList(arguments.PlatformIncludePaths);
+				activeStateWrapper.EnsureValue("PlatformLibraryPaths").SetValueStringList(arguments.PlatformLibraryPaths);
+				activeStateWrapper.EnsureValue("PlatformPreprocessorDefinitions").SetValueStringList(arguments.PlatformPreprocessorDefinitions);
 
 				// Run all build extensions
 				// Note: Keep the extension libraries open while running the build system
 				// to ensure their memory is kept alive
 
 				// Run the RecipeBuild extension to inject core build tasks
-				auto recipeBuildExtensionPath = Path("RecipeBuildExtension.dll");
+				auto recipeBuildExtensionPath = Path("Soup.RecipeBuild.dll");
 				auto recipeBuildLibrary = RunBuildExtension(recipeBuildExtensionPath, buildSystem);
 				activeExtensionLibraries.push_back(std::move(recipeBuildLibrary));
 
@@ -355,32 +393,40 @@ namespace Soup::Build::Runtime
 				{
 					for (auto dependency : recipe.GetDevDependencies())
 					{
-						auto packagePath = RecipeExtensions::GetPackageReferencePath(packageRoot, dependency);
+						auto packagePath = GetPackageReferencePath(packageRoot, dependency);
 						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 							packagePath,
 							binaryDirectory,
 							std::string("dll"));
-						
-						auto library = RunBuildExtension(libraryPath, buildSystem);
-						activeExtensionLibraries.push_back(std::move(library));
+
+						if (System::IFileSystem::Current().Exists(libraryPath))
+						{
+							auto library = RunBuildExtension(libraryPath, buildSystem);
+							activeExtensionLibraries.push_back(std::move(library));
+						}
 					}
 				}
 
 				// Run the build
-				buildSystem.Execute(state);
+				buildSystem.Execute(buildState);
 
 				// Find the output object directory so we can use it in the runner
-				auto buildTable = activeState.GetValue("Build").AsTable();
+				auto buildTable = activeStateWrapper.GetValue("Build").AsTable();
 
 				if (!arguments.SkipRun)
 				{
-					// Execute the build nodes
+					// Execute the build operations
 					auto runner = BuildRunner(packageRoot);
+					auto buildOperations = Extensions::BuildOperationListWrapper(buildState.GetBuildOperations());
 					runner.Execute(
-						state.GetBuildNodes(),
+						buildOperations,
 						objectDirectory,
 						arguments.ForceRebuild);
 				}
+
+				// Return only the build state that is to be passed to the downstream builds
+				// This allows the extension dlls to be released and the operations deleted
+				return buildState.RetrieveSharedState();
 			}
 		}
 
@@ -439,6 +485,7 @@ namespace Soup::Build::Runtime
 	private:
 		std::string _systemCompiler;
 		std::string _runtimeCompiler;
-		std::map<std::string, BuildState> _buildSet;
+		std::map<std::string, ValueTable> _buildSet;
+		std::map<std::string, ValueTable> _systemBuildSet;
 	};
 }

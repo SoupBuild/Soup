@@ -4,14 +4,13 @@ Version = "0.1.0"
 Dependencies = [
 	# "../../../Dependencies/Opal/Source/",
 	"../Core/",
-	# "Soup.Build@0.2.0",
+	# "Soup.Build@0.3.0",
 	"../Extensions/",
-	# "Soup.Build.Extensions@0.2.2",
-	"Opal@0.1.1",
+	# "Soup.Build.Extensions@0.3.0",
+	"Opal@0.1.2",
 ]
 
 Public = "Module.cpp"
 Source = [
-	"BuildGraphNodeList.cpp",
 	"Value.cpp",
 ]

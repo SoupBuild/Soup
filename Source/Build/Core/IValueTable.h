@@ -1,9 +1,9 @@
-// <copyright file="ITable.h" company="Soup">
+// <copyright file="IValueTable.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "OperationResult.h"
+#include "ApiCallResult.h"
 #include "IValue.h"
 
 namespace Soup::Build
@@ -18,16 +18,21 @@ namespace Soup::Build
 		/// <summary>
 		/// Check if a given property exists by name
 		/// </summary>
-		virtual OperationResult TryCheckHasValue(const char* name, bool& result) const noexcept = 0;
+		virtual ApiCallResult TryHasValue(const char* name, bool& result) const noexcept = 0;
 
 		/// <summary>
 		/// Get a given property by name
 		/// </summary>
-		virtual OperationResult TryGetValue(const char* name, IValue*& value) noexcept = 0;
+		virtual ApiCallResult TryGetValue(const char* name, IValue*& value) noexcept = 0;
 
 		/// <summary>
 		/// Create a given property by name
 		/// </summary>
-		virtual OperationResult TryCreateValue(const char* name, IValue*& value) noexcept = 0;
+		virtual ApiCallResult TryCreateValue(const char* name, IValue*& value) noexcept = 0;
+
+		/// <summary>
+		/// Get the list of available value keys
+		/// </summary>
+		virtual const IReadOnlyList<const char*>& GetValueKeyList() const noexcept = 0;
 	};
 }

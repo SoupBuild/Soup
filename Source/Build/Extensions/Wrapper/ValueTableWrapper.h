@@ -28,9 +28,9 @@ namespace Soup::Build::Extensions
 		bool HasValue(std::string_view name) const
 		{
 			bool result = false;
-			auto status = _value.TryCheckHasValue(name.data(), result);
-			if (status != 0)
-				throw std::runtime_error("TryCheckHasValue Failed");
+			auto status = _value.TryHasValue(name.data(), result);
+			if (status != ApiCallResult::Success)
+				throw std::runtime_error("TryHasValue Failed");
 
 			return result;
 		}
@@ -39,7 +39,7 @@ namespace Soup::Build::Extensions
 		{
 			IValue* result = nullptr;
 			auto status = _value.TryGetValue(name.data(), result);
-			if (status != 0)
+			if (status != ApiCallResult::Success)
 				throw std::runtime_error("TryGetValue(\"" + std::string(name) + "\") Failed");
 			if (result == nullptr)
 				throw std::runtime_error("TryGetValue(\"" + std::string(name) + "\") has no value.");
@@ -51,12 +51,20 @@ namespace Soup::Build::Extensions
 		{
 			IValue* result = nullptr;
 			auto status = _value.TryCreateValue(name.data(), result);
-			if (status != 0)
+			if (status != ApiCallResult::Success)
 				throw std::runtime_error("TryCreateValue(\"" + std::string(name) + "\") Failed");
 			if (result == nullptr)
 				throw std::runtime_error("TryCreateValue(\"" + std::string(name) + "\") has no value.");
 
 			return ValueWrapper(*result);
+		}
+
+		/// <summary>
+		/// Get the list of available value keys
+		/// </summary>
+		ReadOnlyStringListWrapper GetValueKeyList() const noexcept
+		{
+			return ReadOnlyStringListWrapper(_value.GetValueKeyList());
 		}
 
 		/// <summary>

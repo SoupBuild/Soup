@@ -31,8 +31,8 @@ namespace Soup::Build::Extensions
 
 		void Resize(uint64_t size)
 		{
-			auto status = _value.Resize(size);
-			if (status != 0)
+			auto status = _value.TryResize(size);
+			if (status != ApiCallResult::Success)
 				throw std::runtime_error("Resize Failed");
 		}
 
@@ -43,7 +43,7 @@ namespace Soup::Build::Extensions
 		{
 			IValue* result = nullptr;
 			auto status = _value.TryGetValueAt(index, result);
-			if (status != 0)
+			if (status != ApiCallResult::Success)
 				throw std::runtime_error("TryGetValueAt Failed");
 			if (result == nullptr)
 				throw std::runtime_error("TryGetValueAt result was null.");

@@ -31,7 +31,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Get the run before list
 		/// </summary>
-		Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
+		const Soup::Build::IReadOnlyList<const char*>& GetRunBeforeList() const noexcept override final
 		{
 			return _runBeforeList;
 		}
@@ -39,7 +39,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Get the run after list
 		/// </summary>
-		Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
+		const Soup::Build::IReadOnlyList<const char*>& GetRunAfterList() const noexcept override final
 		{
 			return _runAfterList;
 		}
@@ -47,7 +47,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// The Core build task
 		/// </summary>
-		Soup::Build::OperationResult Execute(
+		Soup::Build::ApiCallResult TryExecute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
 			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
@@ -59,12 +59,12 @@ namespace RecipeBuild
 			catch (const std::exception& ex)
 			{
 				buildStateWrapper.LogError(ex.what());
-				return -3;
+				return Soup::Build::ApiCallResult::Error;
 			}
 			catch(...)
 			{
 				// Unknown error
-				return -1;
+				return Soup::Build::ApiCallResult::Error;
 			}
 		}
 
@@ -72,11 +72,11 @@ namespace RecipeBuild
 		/// <summary>
 		/// The Core build task
 		/// </summary>
-		Soup::Build::OperationResult Execute(
+		Soup::Build::ApiCallResult Execute(
 			Soup::Build::Extensions::BuildStateWrapper& buildState)
 		{
 			auto activeState = buildState.GetActiveState();
-			auto parentState = buildState.GetParentState();
+			auto sharedState = buildState.GetSharedState();
 
 			auto buildTable = activeState.GetValue("Build").AsTable();
 
@@ -169,7 +169,6 @@ namespace RecipeBuild
 			// Load the module references
 			if (buildTable.HasValue("ModuleDependencies"))
 			{
-				
 				arguments.ModuleDependencies = MakeUnique(
 					buildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector());
 			}
@@ -180,7 +179,7 @@ namespace RecipeBuild
 			if (findCompilerFactory == _compilerFactory.end())
 			{
 				buildState.LogError("Unknown compiler: " + compilerName);
-				return -2;
+				return Soup::Build::ApiCallResult::Error;
 			}
 
 			auto createCompiler = findCompilerFactory->second;
@@ -189,20 +188,17 @@ namespace RecipeBuild
 			auto buildEngine = Soup::Compiler::BuildEngine(compiler);
 			auto buildResult = buildEngine.Execute(buildState, arguments);
 
-			// Always pass along required input to parent build tasks
-			auto parentBuildTable = parentState.EnsureValue("Build").EnsureTable();
-			parentBuildTable.EnsureValue("ModuleDependencies").EnsureList().SetAll(buildResult.ModuleDependencies);
-			parentBuildTable.EnsureValue("RuntimeDependencies").EnsureList().SetAll(buildResult.RuntimeDependencies);
-			parentBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(buildResult.LinkDependencies);
+			// Always pass along required input to shared build tasks
+			auto sharedBuildTable = sharedState.EnsureValue("Build").EnsureTable();
+			sharedBuildTable.EnsureValue("ModuleDependencies").EnsureList().SetAll(buildResult.ModuleDependencies);
+			sharedBuildTable.EnsureValue("RuntimeDependencies").EnsureList().SetAll(buildResult.RuntimeDependencies);
+			sharedBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(buildResult.LinkDependencies);
 
 			// Register the root build tasks
-			for (auto& node : buildResult.BuildNodes)
-			{
-				buildState.RegisterRootNode(node);
-			}
+			buildState.GetRootOperationList().Append(buildResult.BuildOperations);
 
 			buildState.LogInfo("Build Generate Done");
-			return 0;
+			return Soup::Build::ApiCallResult::Success;
 		}
 
 		static std::vector<Path> MakeUnique(const std::vector<Path>& collection)

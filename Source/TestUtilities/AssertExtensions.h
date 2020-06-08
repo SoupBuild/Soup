@@ -10,63 +10,63 @@ namespace Soup
 	{
 	public:
 		static void AreEqual(
-			Build::Extensions::GraphNodeWrapper& expected,
-			Build::Extensions::GraphNodeWrapper& actual)
+			Build::Extensions::BuildOperationWrapper& expected,
+			Build::Extensions::BuildOperationWrapper& actual)
 		{
 			Assert::AreEqual(
 				expected.GetTitle(),
 				actual.GetTitle(),
-				"Verify build node title match expected.");
+				"Verify build operation title match expected.");
 			Assert::AreEqual(
-				expected.GetProgram(),
-				actual.GetProgram(),
-				"Verify build node program match expected.");
+				expected.GetExecutable(),
+				actual.GetExecutable(),
+				"Verify build operation executable match expected.");
 			Assert::AreEqual(
 				expected.GetArguments(),
 				actual.GetArguments(),
-				"Verify build node arguments match expected.");
+				"Verify build operation arguments match expected.");
 			Assert::AreEqual(
 				expected.GetWorkingDirectory(),
 				actual.GetWorkingDirectory(),
-				"Verify build node working directory match expected.");
+				"Verify build operation working directory match expected.");
 			Assert::AreEqual(
 				expected.GetInputFileList().CopyAsStringVector(),
 				actual.GetInputFileList().CopyAsStringVector(),
-				"Verify build node input files match expected.");
+				"Verify build operation input files match expected.");
 			Assert::AreEqual(
 				expected.GetOutputFileList().CopyAsStringVector(),
 				actual.GetOutputFileList().CopyAsStringVector(),
-				"Verify build node output files match expected.");
+				"Verify build operation output files match expected.");
 			
 			AreEqual(expected.GetChildList(), actual.GetChildList());
 		}
 
 		static void AreEqual(
-			Memory::Reference<Build::Runtime::BuildGraphNode>& expected,
-			Memory::Reference<Build::Runtime::BuildGraphNode>& actual)
+			Memory::Reference<Build::Extensions::BuildOperation>& expected,
+			Memory::Reference<Build::Extensions::BuildOperation>& actual)
 		{
 			AreEqual(
-				Build::Extensions::GraphNodeWrapper(expected), 
-				Build::Extensions::GraphNodeWrapper(actual));
+				Build::Extensions::BuildOperationWrapper(expected), 
+				Build::Extensions::BuildOperationWrapper(actual));
 		}
 
 		static void AreEqual(
-			Memory::Reference<Build::Runtime::BuildGraphNode>& expected,
-			Build::Extensions::GraphNodeWrapper& actual)
+			Memory::Reference<Build::Extensions::BuildOperation>& expected,
+			Build::Extensions::BuildOperationWrapper& actual)
 		{
 			AreEqual(
-				Build::Extensions::GraphNodeWrapper(expected), 
+				Build::Extensions::BuildOperationWrapper(expected), 
 				actual);
 		}
 
 		static void AreEqual(
-			Build::Extensions::GraphNodeListWrapper& expected,
-			Build::Extensions::GraphNodeListWrapper& actual)
+			Build::Extensions::BuildOperationListWrapper& expected,
+			Build::Extensions::BuildOperationListWrapper& actual)
 		{
 			Assert::AreEqual(
 				expected.GetSize(),
 				actual.GetSize(),
-				"Verify build nodes size match expected.");
+				"Verify build operations size match expected.");
 
 			for (size_t i = 0; i < expected.GetSize(); i++)
 			{
@@ -75,13 +75,13 @@ namespace Soup
 		}
 
 		static void AreEqual(
-			std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>& expected,
-			std::vector<Build::Extensions::GraphNodeWrapper>& actual)
+			std::vector<Memory::Reference<Build::Extensions::BuildOperation>>& expected,
+			std::vector<Build::Extensions::BuildOperationWrapper>& actual)
 		{
 			Assert::AreEqual(
 				expected.size(),
 				actual.size(),
-				"Verify build nodes size match expected.");
+				"Verify build operations size match expected.");
 
 			for (size_t i = 0; i < expected.size(); i++)
 			{

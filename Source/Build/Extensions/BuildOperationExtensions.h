@@ -1,4 +1,4 @@
-// <copyright file="GraphNodeExtensions.h" company="Soup">
+// <copyright file="BuildOperationExtensions.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -7,27 +7,27 @@
 namespace Soup::Build::Extensions
 {
 	/// <summary>
-	/// Build graph node extension methods
+	/// Build operation extension methods
 	/// </summary>
-	export class GraphNodeExtensions
+	export class BuildOperationExtensions
 	{
 	public:
 		static void AddLeafChild(
-			GraphNodeWrapper parent,
-			GraphNodeWrapper child)
+			BuildOperationWrapper parent,
+			BuildOperationWrapper child)
 		{
 			auto parentChildrenSize = parent.GetChildList().GetSize();
 			if (parentChildrenSize == 0)
 			{
 				// Check if this child was added through a different path
-				if (parent.GetId() == child.GetId())
+				if (parent.GetRaw() == child.GetRaw())
 				{
-					// The node has been added through a different path
+					// The operation has been added through a different path
 					return;
 				}
 				else
 				{
-					// Add the new leaf node
+					// Add the new leaf operation
 					parent.GetChildList().Append(child);
 				}
 			}
@@ -39,8 +39,8 @@ namespace Soup::Build::Extensions
 		}
 
 		static void AddLeafChild(
-			GraphNodeListWrapper parents,
-			GraphNodeWrapper child)
+			BuildOperationListWrapper parents,
+			BuildOperationWrapper child)
 		{
 			auto size = parents.GetSize();
 			for (size_t i = 0; i < size; i++)
@@ -50,8 +50,8 @@ namespace Soup::Build::Extensions
 		}
 
 		static void AddLeafChild(
-			std::vector<GraphNodeWrapper>& parents,
-			GraphNodeWrapper child)
+			std::vector<BuildOperationWrapper>& parents,
+			BuildOperationWrapper child)
 		{
 			for (auto& parent : parents)
 			{
@@ -60,13 +60,13 @@ namespace Soup::Build::Extensions
 		}
 
 		static void AddLeafChildren(
-			GraphNodeWrapper parent,
-			GraphNodeListWrapper children)
+			BuildOperationWrapper parent,
+			BuildOperationListWrapper children)
 		{
 			auto parentChildrenSize = parent.GetChildList().GetSize();
 			if (parentChildrenSize == 0)
 			{
-				// Add the new leaf nodes
+				// Add the new leaf operations
 				parent.GetChildList().Append(children);
 			}
 			else
@@ -77,13 +77,13 @@ namespace Soup::Build::Extensions
 		}
 
 		static void AddLeafChildren(
-			GraphNodeWrapper parent,
-			std::vector<GraphNodeWrapper>& children)
+			BuildOperationWrapper parent,
+			std::vector<BuildOperationWrapper>& children)
 		{
 			auto parentChildrenSize = parent.GetChildList().GetSize();
 			if (parentChildrenSize == 0)
 			{
-				// Add the new leaf nodes
+				// Add the new leaf operations
 				parent.GetChildList().Append(children);
 			}
 			else
@@ -94,8 +94,8 @@ namespace Soup::Build::Extensions
 		}
 
 		static void AddLeafChildren(
-			GraphNodeListWrapper parents,
-			GraphNodeListWrapper children)
+			BuildOperationListWrapper parents,
+			BuildOperationListWrapper children)
 		{
 			auto size = parents.GetSize();
 			for (size_t i = 0; i < size; i++)
@@ -105,15 +105,15 @@ namespace Soup::Build::Extensions
 		}
 
 		static void AddLeafChildren(
-			GraphNodeListWrapper parents,
-			std::vector<GraphNodeWrapper>& children)
+			BuildOperationListWrapper parents,
+			std::vector<BuildOperationWrapper>& children)
 		{
 			auto size = parents.GetSize();
 			
 			// Check if this is the same set we trying to add, from a different path
 			if (size > 0 && size == children.size())
 			{
-				if (parents.GetValueAt(0).GetId() == children[0].GetId())
+				if (parents.GetValueAt(0).GetRaw() == children[0].GetRaw())
 				{
 					// The children match the parent set
 					return;
@@ -127,8 +127,8 @@ namespace Soup::Build::Extensions
 		}
 
 		static void AddLeafChildren(
-			std::vector<GraphNodeWrapper>& parents,
-			std::vector<GraphNodeWrapper>& children)
+			std::vector<BuildOperationWrapper>& parents,
+			std::vector<BuildOperationWrapper>& children)
 		{
 			for (auto& parent : parents)
 			{

@@ -7,7 +7,7 @@ import Opal;
 
 using namespace Opal;
 
-#include "IGraphNode.h"
+#include "IBuildOperation.h"
 #include "IBuildTask.h"
 #include "IBuildSystem.h"
 #include "IValueTable.h"

@@ -23,7 +23,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Get the run before list
 		/// </summary>
-		Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
+		const Soup::Build::IReadOnlyList<const char*>& GetRunBeforeList() const noexcept override final
 		{
 			return _runBeforeList;
 		}
@@ -31,7 +31,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Get the run after list
 		/// </summary>
-		Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
+		const Soup::Build::IReadOnlyList<const char*>& GetRunAfterList() const noexcept override final
 		{
 			return _runAfterList;
 		}
@@ -39,19 +39,19 @@ namespace RecipeBuild
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		Soup::Build::OperationResult Execute(
+		Soup::Build::ApiCallResult TryExecute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
 			try
 			{
 				auto state = Soup::Build::Extensions::BuildStateWrapper(buildState);
 
-				return 0;
+				return Soup::Build::ApiCallResult::Success;
 			}
 			catch(...)
 			{
 				// Unknown error
-				return -1;
+				return Soup::Build::ApiCallResult::Error;;
 			}
 		}
 

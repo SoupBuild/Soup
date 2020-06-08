@@ -28,34 +28,34 @@ namespace Soup::Build::Runtime
 			return _values.size();
 		}
 
-		OperationResult Resize(uint64_t size) noexcept override final
+		ApiCallResult TryResize(uint64_t size) noexcept override final
 		{
 			try
 			{
 				_values.resize(size);
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		OperationResult TryGetValueAt(uint64_t index, IValue*& result) noexcept override final
+		ApiCallResult TryGetValueAt(uint64_t index, IValue*& result) noexcept override final
 		{
 			try
 			{
 				result = &_values.at(index);
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 

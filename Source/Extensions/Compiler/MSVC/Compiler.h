@@ -66,7 +66,7 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Extensions::GraphNodeWrapper CreateCompileNode(
+		Build::Extensions::BuildOperationWrapper CreateCompileOperation(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
@@ -85,7 +85,7 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Extensions::GraphNodeWrapper CreateLinkNode(
+		Build::Extensions::BuildOperationWrapper CreateLinkOperation(
 			Build::Extensions::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
@@ -109,19 +109,20 @@ namespace Soup::Compiler::MSVC
 			auto outputFiles = std::vector<Path>();
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
 
-			auto buildNode = state.CreateNode(
-				args.TargetFile.ToString(),
-				std::move(executablePath),
-				CombineArguments(commandArgs),
-				args.RootDirectory,
-				std::move(inputFiles),
-				std::move(outputFiles));
+			auto buildOperation = Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					args.TargetFile.ToString(),
+					executablePath,
+					CombineArguments(commandArgs),
+					args.RootDirectory,
+					inputFiles,
+					outputFiles));
 
-			return buildNode;
+			return buildOperation;
 		}
 
 	private:
-		Build::Extensions::GraphNodeWrapper CompileStandard(
+		Build::Extensions::BuildOperationWrapper CompileStandard(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
@@ -130,21 +131,25 @@ namespace Soup::Compiler::MSVC
 			// Build the set of input/output files along with the arguments
 			auto inputFiles = std::vector<Path>();
 			auto outputFiles = std::vector<Path>();
-			auto commandArgs = 
-				ArgumentBuilder::BuildCompilerArguments(args, _toolsPath, inputFiles, outputFiles);
+			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(
+				args,
+				_toolsPath,
+				inputFiles,
+				outputFiles);
 
-			auto buildNode = state.CreateNode(
-				args.SourceFile.ToString(),
-				std::move(executablePath),
-				CombineArguments(commandArgs),
-				args.RootDirectory,
-				std::move(inputFiles),
-				std::move(outputFiles));
+			auto buildOperation = Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					args.SourceFile.ToString(),
+					executablePath,
+					CombineArguments(commandArgs),
+					args.RootDirectory,
+					inputFiles,
+					outputFiles));
 
-			return buildNode;
+			return buildOperation;
 		}
 
-		Build::Extensions::GraphNodeWrapper CompileModuleInterfaceUnit(
+		Build::Extensions::BuildOperationWrapper CompileModuleInterfaceUnit(
 			Build::Extensions::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
@@ -175,15 +180,16 @@ namespace Soup::Compiler::MSVC
 				inputFiles,
 				outputFiles);
 
-			auto buildNode = state.CreateNode(
-				args.SourceFile.ToString(),
-				std::move(executablePath),
-				CombineArguments(compiledModuleCommandArgs),
-				args.RootDirectory,
-				std::move(inputFiles),
-				std::move(outputFiles));
+			auto buildOperation = Build::Extensions::BuildOperationWrapper(
+				new Build::Extensions::BuildOperation(
+					args.SourceFile.ToString(),
+					executablePath,
+					CombineArguments(compiledModuleCommandArgs),
+					args.RootDirectory,
+					inputFiles,
+					outputFiles));
 
-			return buildNode;
+			return buildOperation;
 		}
 
 		static std::string CombineArguments(const std::vector<std::string>& args)

@@ -3,19 +3,19 @@
 // </copyright>
 
 #pragma once
-#include "OperationResult.h"
+#include "ApiCallResult.h"
 
 namespace Soup::Build
 {
-	export enum class ValueType
+	export enum class ValueType : uint64_t
 	{
-		Empty,
-		Table,
-		List,
-		String,
-		Integer,
-		Float,
-		Boolean,
+		Empty = 1,
+		Table = 2,
+		List = 3,
+		String = 4,
+		Integer = 5,
+		Float = 6,
+		Boolean = 7,
 	};
 
 	class IValueTable;
@@ -34,14 +34,14 @@ namespace Soup::Build
 		/// <summary>
 		/// Type checker methods
 		/// </summary>
-		virtual OperationResult TryGetType(uint64_t& type) const noexcept = 0;
-		virtual OperationResult TrySetType(uint64_t type) noexcept = 0;
+		virtual ValueType GetType() const noexcept = 0;
+		virtual ApiCallResult TrySetType(ValueType type) noexcept = 0;
 
-		virtual OperationResult TryGetAsTable(IValueTable*& result) noexcept = 0;
-		virtual OperationResult TryGetAsList(IValueList*& result) noexcept = 0;
-		virtual OperationResult TryGetAsString(IValuePrimitive<const char*>*& result) noexcept = 0;
-		virtual OperationResult TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexcept = 0;
-		virtual OperationResult TryGetAsFloat(IValuePrimitive<double>*& result) noexcept = 0;
-		virtual OperationResult TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept = 0;
+		virtual ApiCallResult TryGetAsTable(IValueTable*& result) noexcept = 0;
+		virtual ApiCallResult TryGetAsList(IValueList*& result) noexcept = 0;
+		virtual ApiCallResult TryGetAsString(IValuePrimitive<const char*>*& result) noexcept = 0;
+		virtual ApiCallResult TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexcept = 0;
+		virtual ApiCallResult TryGetAsFloat(IValuePrimitive<double>*& result) noexcept = 0;
+		virtual ApiCallResult TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept = 0;
 	};
 }

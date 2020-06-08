@@ -51,10 +51,10 @@ namespace Soup::Compiler::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Node: TestFile.cpp",
+					"INFO: Generate Compile Operation: TestFile.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Program.exe",
+					"INFO: Generate Link Operation: bin/Program.exe",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -94,67 +94,67 @@ namespace Soup::Compiler::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
-				Memory::Reference<Build::Runtime::BuildGraphNode>(
-					new Build::Runtime::BuildGraphNode(
+			auto expectedLinkOperation =
+				Memory::Reference<Build::Extensions::BuildOperation>(
+					new Build::Extensions::BuildOperation(
 						"MockLink: 1",
-						"MockLinker.exe",
+						Path("MockLinker.exe"),
 						"Arguments",
-						"MockWorkingDirectory",
-						std::vector<std::string>({
-							"InputFile.in",
+						Path("MockWorkingDirectory"),
+						std::vector<Path>({
+							Path("InputFile.in"),
 						}),
-						std::vector<std::string>({
-							"OutputFile.out",
+						std::vector<Path>({
+							Path("OutputFile.out"),
 						})));
 
-			auto expectedCompileNode =
-				Memory::Reference<Build::Runtime::BuildGraphNode>(
-					new Build::Runtime::BuildGraphNode(
+			auto expectedCompileOperation =
+				Memory::Reference<Build::Extensions::BuildOperation>(
+					new Build::Extensions::BuildOperation(
 						"MockCompile: 1",
-						"MockCompiler.exe",
+						Path("MockCompiler.exe"),
 						"Arguments",
-						"MockWorkingDirectory",
-						std::vector<std::string>({
-							"InputFile.in",
+						Path("MockWorkingDirectory"),
+						std::vector<Path>({
+							Path("InputFile.in"),
 						}),
-						std::vector<std::string>({
-							"OutputFile.out",
+						std::vector<Path>({
+							Path("OutputFile.out"),
 						}),
-						std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-							expectedLinkNode,
+						std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+							expectedLinkOperation,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-				new Build::Runtime::BuildGraphNode(
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+				new Build::Extensions::BuildOperation(
 					"MakeDir [C:/root/obj]",
-					"C:/Windows/System32/cmd.exe",
+					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					"./",
-					std::vector<std::string>({}),
-					std::vector<std::string>({
-						"C:/root/obj",
+					Path("./"),
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("C:/root/obj"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedCompileNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedCompileOperation,
 					})),
-				new Build::Runtime::BuildGraphNode(
+				new Build::Extensions::BuildOperation(
 					"MakeDir [C:/root/bin]",
-					"C:/Windows/System32/cmd.exe",
+					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					"./",
-					std::vector<std::string>({}),
-					std::vector<std::string>({
-						"C:/root/bin",
+					Path("./"),
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("C:/root/bin"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedCompileNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedCompileOperation,
 					})),
 			});
 
 			AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				result.BuildNodes);
+				expectedBuildOperations,
+				result.BuildOperations);
 
 			Assert::AreEqual(
 				std::vector<Path>({}),
@@ -217,12 +217,12 @@ namespace Soup::Compiler::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Node: TestFile1.cpp",
-					"INFO: Generate Compile Node: TestFile2.cpp",
-					"INFO: Generate Compile Node: TestFile3.cpp",
+					"INFO: Generate Compile Operation: TestFile1.cpp",
+					"INFO: Generate Compile Operation: TestFile2.cpp",
+					"INFO: Generate Compile Operation: TestFile3.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Library.mock.lib",
+					"INFO: Generate Link Operation: bin/Library.mock.lib",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -282,91 +282,91 @@ namespace Soup::Compiler::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
-				Memory::Reference<Build::Runtime::BuildGraphNode>(
-					new Build::Runtime::BuildGraphNode(
+			auto expectedLinkOperation =
+				Memory::Reference<Build::Extensions::BuildOperation>(
+					new Build::Extensions::BuildOperation(
 						"MockLink: 1",
-						"MockLinker.exe",
+						Path("MockLinker.exe"),
 						"Arguments",
-						"MockWorkingDirectory",
-						std::vector<std::string>({
-							"InputFile.in",
+						Path("MockWorkingDirectory"),
+						std::vector<Path>({
+							Path("InputFile.in"),
 						}),
-						std::vector<std::string>({
-							"OutputFile.out",
+						std::vector<Path>({
+							Path("OutputFile.out"),
 						})));
 
-			auto expectedCompileNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-				new Build::Runtime::BuildGraphNode(
+			auto expectedCompileOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+				new Build::Extensions::BuildOperation(
 					"MockCompile: 1",
-					"MockCompiler.exe",
+					Path("MockCompiler.exe"),
 					"Arguments",
-					"MockWorkingDirectory",
-					std::vector<std::string>({
-						"InputFile.in",
+					Path("MockWorkingDirectory"),
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<std::string>({
-						"OutputFile.out",
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedLinkNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedLinkOperation,
 					})),
-				new Build::Runtime::BuildGraphNode(
+				new Build::Extensions::BuildOperation(
 					"MockCompile: 2",
-					"MockCompiler.exe",
+					Path("MockCompiler.exe"),
 					"Arguments",
-					"MockWorkingDirectory",
-					std::vector<std::string>({
-						"InputFile.in",
+					Path("MockWorkingDirectory"),
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<std::string>({
-						"OutputFile.out",
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedLinkNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedLinkOperation,
 					})),
-				new Build::Runtime::BuildGraphNode(
+				new Build::Extensions::BuildOperation(
 					"MockCompile: 3",
-					"MockCompiler.exe",
+					Path("MockCompiler.exe"),
 					"Arguments",
-					"MockWorkingDirectory",
-					std::vector<std::string>({
-						"InputFile.in",
+					Path("MockWorkingDirectory"),
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<std::string>({
-						"OutputFile.out",
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedLinkNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedLinkOperation,
 					})),
 			});
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-				new Build::Runtime::BuildGraphNode(
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+				new Build::Extensions::BuildOperation(
 					"MakeDir [C:/root/obj]",
-					"C:/Windows/System32/cmd.exe",
+					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					"./",
-					std::vector<std::string>({}),
-					std::vector<std::string>({
-						"C:/root/obj",
+					Path("./"),
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("C:/root/obj"),
 					}),
-					expectedCompileNodes),
-				new Build::Runtime::BuildGraphNode(
+					expectedCompileOperations),
+				new Build::Extensions::BuildOperation(
 					"MakeDir [C:/root/bin]",
-					"C:/Windows/System32/cmd.exe",
+					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					"./",
-					std::vector<std::string>({}),
-					std::vector<std::string>({
-						"C:/root/bin",
+					Path("./"),
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("C:/root/bin"),
 					}),
-					expectedCompileNodes),
+					expectedCompileOperations),
 			});
 
 			AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				result.BuildNodes);
+				expectedBuildOperations,
+				result.BuildOperations);
 
 			Assert::AreEqual(
 				std::vector<Path>({}),
@@ -438,14 +438,14 @@ namespace Soup::Compiler::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: CompileModuleInterfaceUnit",
-					"INFO: Generate Compile Node: Public.cpp",
+					"INFO: Generate Compile Operation: Public.cpp",
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Node: TestFile1.cpp",
-					"INFO: Generate Compile Node: TestFile2.cpp",
-					"INFO: Generate Compile Node: TestFile3.cpp",
+					"INFO: Generate Compile Operation: TestFile1.cpp",
+					"INFO: Generate Compile Operation: TestFile2.cpp",
+					"INFO: Generate Compile Operation: TestFile3.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Library.mock.lib",
+					"INFO: Generate Link Operation: bin/Library.mock.lib",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -517,127 +517,127 @@ namespace Soup::Compiler::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
-				Memory::Reference<Build::Runtime::BuildGraphNode>(
-					new Build::Runtime::BuildGraphNode(
+			auto expectedLinkOperation =
+				Memory::Reference<Build::Extensions::BuildOperation>(
+					new Build::Extensions::BuildOperation(
 						"MockLink: 1",
-						"MockLinker.exe",
+						Path("MockLinker.exe"),
 						"Arguments",
-						"MockWorkingDirectory",
-						std::vector<std::string>({
-							"InputFile.in",
+						Path("MockWorkingDirectory"),
+						std::vector<Path>({
+							Path("InputFile.in"),
 						}),
-						std::vector<std::string>({
-							"OutputFile.out",
+						std::vector<Path>({
+							Path("OutputFile.out"),
 						})));
 
-			auto expectedCompileSourceNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-				new Build::Runtime::BuildGraphNode(
+			auto expectedCompileSourceOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+				new Build::Extensions::BuildOperation(
 					"MockCompile: 2",
-					"MockCompiler.exe",
+					Path("MockCompiler.exe"),
 					"Arguments",
-					"MockWorkingDirectory",
-					std::vector<std::string>({
-						"InputFile.in",
+					Path("MockWorkingDirectory"),
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<std::string>({
-						"OutputFile.out",
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedLinkNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedLinkOperation,
 					})),
-				new Build::Runtime::BuildGraphNode(
+				new Build::Extensions::BuildOperation(
 					"MockCompile: 3",
-					"MockCompiler.exe",
+					Path("MockCompiler.exe"),
 					"Arguments",
-					"MockWorkingDirectory",
-					std::vector<std::string>({
-						"InputFile.in",
+					Path("MockWorkingDirectory"),
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<std::string>({
-						"OutputFile.out",
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedLinkNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedLinkOperation,
 					})),
-				new Build::Runtime::BuildGraphNode(
+				new Build::Extensions::BuildOperation(
 					"MockCompile: 4",
-					"MockCompiler.exe",
+					Path("MockCompiler.exe"),
 					"Arguments",
-					"MockWorkingDirectory",
-					std::vector<std::string>({
-						"InputFile.in",
+					Path("MockWorkingDirectory"),
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<std::string>({
-						"OutputFile.out",
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedLinkNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedLinkOperation,
 					})),
 			});
 
-			auto expectedCopyModuleInterfaceNode =
-				Memory::Reference<Build::Runtime::BuildGraphNode>(
-					new Build::Runtime::BuildGraphNode(
+			auto expectedCopyModuleInterfaceOperation =
+				Memory::Reference<Build::Extensions::BuildOperation>(
+					new Build::Extensions::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
-						"C:/Windows/System32/cmd.exe",
+						Path("C:/Windows/System32/cmd.exe"),
 						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
-						"./",
-						std::vector<std::string>({
-							"C:/root/obj/Public.mock.bmi",
+						Path("./"),
+						std::vector<Path>({
+							Path("C:/root/obj/Public.mock.bmi"),
 						}),
-						std::vector<std::string>({
-							"C:/root/bin/Library.mock.bmi",
+						std::vector<Path>({
+							Path("C:/root/bin/Library.mock.bmi"),
 						}),
-						expectedCompileSourceNodes));
+						expectedCompileSourceOperations));
 
-			auto expectedCompileModuleNode =
-				Memory::Reference<Build::Runtime::BuildGraphNode>(
-					new Build::Runtime::BuildGraphNode(
+			auto expectedCompileModuleOperation =
+				Memory::Reference<Build::Extensions::BuildOperation>(
+					new Build::Extensions::BuildOperation(
 						"MockCompile: 1",
-						"MockCompiler.exe",
+						Path("MockCompiler.exe"),
 						"Arguments",
-						"MockWorkingDirectory",
-						std::vector<std::string>({
-							"InputFile.in",
+						Path("MockWorkingDirectory"),
+						std::vector<Path>({
+							Path("InputFile.in"),
 						}),
-						std::vector<std::string>({
-							"OutputFile.out",
+						std::vector<Path>({
+							Path("OutputFile.out"),
 						}),
-						std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-							expectedCopyModuleInterfaceNode,
+						std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+							expectedCopyModuleInterfaceOperation,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-				new Build::Runtime::BuildGraphNode(
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+				new Build::Extensions::BuildOperation(
 					"MakeDir [C:/root/obj]",
-					"C:/Windows/System32/cmd.exe",
+					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					"./",
-					std::vector<std::string>({}),
-					std::vector<std::string>({
-						"C:/root/obj",
+					Path("./"),
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("C:/root/obj"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedCompileModuleNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedCompileModuleOperation,
 					})),
-				new Build::Runtime::BuildGraphNode(
+				new Build::Extensions::BuildOperation(
 					"MakeDir [C:/root/bin]",
-					"C:/Windows/System32/cmd.exe",
+					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					"./",
-					std::vector<std::string>({}),
-					std::vector<std::string>({
-						"C:/root/bin",
+					Path("./"),
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("C:/root/bin"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedCompileModuleNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedCompileModuleOperation,
 					})),
 			});
 
 			AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				result.BuildNodes);
+				expectedBuildOperations,
+				result.BuildOperations);
 
 			Assert::AreEqual(
 				std::vector<Path>({
@@ -703,10 +703,10 @@ namespace Soup::Compiler::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: CompileModuleInterfaceUnit",
-					"INFO: Generate Compile Node: Public.cpp",
+					"INFO: Generate Compile Operation: Public.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Node: bin/Library.mock.lib",
+					"INFO: Generate Link Operation: bin/Library.mock.lib",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -755,84 +755,84 @@ namespace Soup::Compiler::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkNode =
-				Memory::Reference<Build::Runtime::BuildGraphNode>(
-					new Build::Runtime::BuildGraphNode(
+			auto expectedLinkOperation =
+				Memory::Reference<Build::Extensions::BuildOperation>(
+					new Build::Extensions::BuildOperation(
 						"MockLink: 1",
-						"MockLinker.exe",
+						Path("MockLinker.exe"),
 						"Arguments",
-						"MockWorkingDirectory",
-						std::vector<std::string>({
-							"InputFile.in",
+						Path("MockWorkingDirectory"),
+						std::vector<Path>({
+							Path("InputFile.in"),
 						}),
-						std::vector<std::string>({
-							"OutputFile.out",
+						std::vector<Path>({
+							Path("OutputFile.out"),
 						})));
 
-			auto expectedCopyModuleInterfaceNode =
-				Memory::Reference<Build::Runtime::BuildGraphNode>(
-					new Build::Runtime::BuildGraphNode(
+			auto expectedCopyModuleInterfaceOperation =
+				Memory::Reference<Build::Extensions::BuildOperation>(
+					new Build::Extensions::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
-						"C:/Windows/System32/cmd.exe",
+						Path("C:/Windows/System32/cmd.exe"),
 						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
-						"./",
-						std::vector<std::string>({
-							"C:/root/obj/Public.mock.bmi",
+						Path("./"),
+						std::vector<Path>({
+							Path("C:/root/obj/Public.mock.bmi"),
 						}),
-						std::vector<std::string>({
-							"C:/root/bin/Library.mock.bmi",
+						std::vector<Path>({
+							Path("C:/root/bin/Library.mock.bmi"),
 						}),
-						std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-							expectedLinkNode,
+						std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+							expectedLinkOperation,
 						})));
 
-			auto expectedCompileModuleNode =
-				Memory::Reference<Build::Runtime::BuildGraphNode>(
-					new Build::Runtime::BuildGraphNode(
+			auto expectedCompileModuleOperation =
+				Memory::Reference<Build::Extensions::BuildOperation>(
+					new Build::Extensions::BuildOperation(
 						"MockCompile: 1",
-						"MockCompiler.exe",
+						Path("MockCompiler.exe"),
 						"Arguments",
-						"MockWorkingDirectory",
-						std::vector<std::string>({
-							"InputFile.in",
+						Path("MockWorkingDirectory"),
+						std::vector<Path>({
+							Path("InputFile.in"),
 						}),
-						std::vector<std::string>({
-							"OutputFile.out",
+						std::vector<Path>({
+							Path("OutputFile.out"),
 						}),
-						std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-							expectedCopyModuleInterfaceNode,
+						std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+							expectedCopyModuleInterfaceOperation,
 						})));
 
-			auto expectedBuildNodes = std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-				new Build::Runtime::BuildGraphNode(
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+				new Build::Extensions::BuildOperation(
 					"MakeDir [C:/root/obj]",
-					"C:/Windows/System32/cmd.exe",
+					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
-					"./",
-					std::vector<std::string>({}),
-					std::vector<std::string>({
-						"C:/root/obj",
+					Path("./"),
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("C:/root/obj"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedCompileModuleNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedCompileModuleOperation,
 					})),
-				new Build::Runtime::BuildGraphNode(
+				new Build::Extensions::BuildOperation(
 					"MakeDir [C:/root/bin]",
-					"C:/Windows/System32/cmd.exe",
+					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
-					"./",
-					std::vector<std::string>({}),
-					std::vector<std::string>({
-						"C:/root/bin",
+					Path("./"),
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("C:/root/bin"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						expectedCompileModuleNode,
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						expectedCompileModuleOperation,
 					})),
 			});
 
 			AssertExtensions::AreEqual(
-				expectedBuildNodes,
-				result.BuildNodes);
+				expectedBuildOperations,
+				result.BuildOperations);
 
 			Assert::AreEqual(
 				std::vector<Path>({

@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "OperationResult.h"
+#include "ApiCallResult.h"
 #include "IBuildState.h"
 
 namespace Soup::Build
@@ -17,9 +17,9 @@ namespace Soup::Build
 	{
 	public:
 		virtual const char* GetName() const noexcept = 0;
-		virtual IList<const char*>& GetRunBeforeList() noexcept = 0;
-		virtual IList<const char*>& GetRunAfterList() noexcept = 0;
+		virtual const IReadOnlyList<const char*>& GetRunBeforeList() const noexcept = 0;
+		virtual const IReadOnlyList<const char*>& GetRunAfterList() const noexcept = 0;
 
-		virtual OperationResult Execute(IBuildState& state) noexcept = 0;
+		virtual ApiCallResult TryExecute(IBuildState& state) noexcept = 0;
 	};
 }

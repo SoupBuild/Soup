@@ -2,9 +2,9 @@ Name = "SoupCompilerCore"
 Version = "0.1.0"
 Dependencies = [
 	# "../../../Dependencies/Opal/Source/",
-	"Opal@0.1.1",
+	"Opal@0.1.2",
 	"../../../Build/Extensions/",
-	# "Soup.Build.Extensions@0.2.2",
+	# "Soup.Build.Extensions@0.3.0",
 ]
 
 Public = "Module.cpp"

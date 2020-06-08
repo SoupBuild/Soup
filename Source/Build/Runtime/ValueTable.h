@@ -18,6 +18,7 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the BuildPropertyBag class
 		/// </summary>
 		ValueTable() :
+			_keyList(),
 			_values()
 		{
 		}
@@ -25,22 +26,21 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Property access methods
 		/// </summary>
-		OperationResult TryCheckHasValue(const char* name, bool& result) const noexcept override final
+		ApiCallResult TryHasValue(const char* name, bool& result) const noexcept override final
 		{
 			try
 			{
-				result = false;
-				result = _values.contains(name);
-				return 0;
+				result = HasValue(name);
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 
-		OperationResult TryGetValue(const char* name, IValue*& result) noexcept override final
+		ApiCallResult TryGetValue(const char* name, IValue*& result) noexcept override final
 		{
 			try
 			{
@@ -49,44 +49,77 @@ namespace Soup::Build::Runtime
 				if (findResult != _values.end())
 				{
 					result = &findResult->second;
-					return 0;
+					return ApiCallResult::Success;
 				}
 				else
 				{
 					// The property does not exists
-					return -3;
+					return ApiCallResult::Error;
 				}
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 
-		OperationResult TryCreateValue(const char* name, IValue*& result) noexcept override final
+		ApiCallResult TryCreateValue(const char* name, IValue*& result) noexcept override final
 		{
 			try
 			{
 				result = nullptr;
 				result = &SetValue(name, Value());
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
+			}
+		}
+
+		const IReadOnlyList<const char*>& GetValueKeyList() const noexcept override final
+		{
+			return _keyList;
+		}
+
+		/// <summary>
+		/// Helper methods to make our lives easier
+		/// </summary>
+		Value& EnsureValue(std::string_view name)
+		{
+			auto findResult = _values.find(name.data());
+			if (findResult != _values.end())
+			{
+				return findResult->second;
+			}
+			else
+			{
+				return SetValue(name, Value());
 			}
 		}
 
 		/// <summary>
 		/// Internal access to the state
 		/// </summary>
+		bool HasValue(std::string_view name) const
+		{
+			return _values.contains(name.data());
+		}
+
 		Value& SetValue(std::string_view name, Value value)
 		{
 			auto insertResult = _values.emplace(name, std::move(value));
 			if (insertResult.second)
 			{
+				// Keep the key list in sync
+				auto& keys = _keyList.GetValues();
+				keys.clear();
+				keys.reserve(_values.size());
+				for(auto& value : _values)
+					keys.push_back(value.first);
+
 				return insertResult.first->second;
 			}
 			else
@@ -155,6 +188,7 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
+		Extensions::StringList _keyList;
 		std::map<std::string, Value> _values;
 	};
 }

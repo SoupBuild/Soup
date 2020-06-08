@@ -6,7 +6,7 @@
 
 namespace Soup::Build::Extensions
 {
-	export class StringList : public IList<const char*>
+	export class StringList : public IList<const char*>, public IReadOnlyList<const char*>
 	{
 	public:
 		/// <summary>
@@ -44,51 +44,53 @@ namespace Soup::Build::Extensions
 			return _values.size();
 		}
 
-		OperationResult Resize(uint64_t size) noexcept override final
+		ApiCallResult TryResize(uint64_t size) noexcept override final
 		{
 			try
 			{
 				_values.resize(size);
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		OperationResult TryGetValueAt(uint64_t index, const char*& result) noexcept override final
+		ApiCallResult TryGetValueAt(
+			uint64_t index,
+			const char*& result) const noexcept override final
 		{
 			try
 			{
 				result = _values.at(index).c_str();
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 
 		/// <summary>
 		/// Property setter methods.
 		/// </summary>
-		OperationResult TrySetValueAt(uint64_t index, const char* value) noexcept override final
+		ApiCallResult TrySetValueAt(uint64_t index, const char* value) noexcept override final
 		{
 			try
 			{
 				_values.at(index) = value;
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch (...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 		
@@ -96,6 +98,11 @@ namespace Soup::Build::Extensions
 		/// Internal accessor
 		/// </summary>
 		const std::vector<std::string>& GetValues() const noexcept
+		{
+			return _values;
+		}
+
+		std::vector<std::string>& GetValues() noexcept
 		{
 			return _values;
 		}

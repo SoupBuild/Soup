@@ -34,16 +34,15 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Type checker methods
 		/// </summary>
-		OperationResult TryGetValue(T& value) const noexcept override final
+		T GetValue() const noexcept override final
 		{
-			value = _value;
-			return 0;
+			return _value;
 		}
 
-		OperationResult TrySetValue(T value) noexcept override final
+		ApiCallResult TrySetValue(T value) noexcept override final
 		{
 			_value = value;
-			return 0;
+			return ApiCallResult::Success;
 		}
 
 		/// <summary>
@@ -97,24 +96,23 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Type checker methods
 		/// </summary>
-		OperationResult TryGetValue(const char*& value) const noexcept override final
+		const char* GetValue() const noexcept override final
 		{
-			value = _value.c_str();
-			return 0;
+			return _value.c_str();
 		}
 
-		OperationResult TrySetValue(const char* value) noexcept override final
+		ApiCallResult TrySetValue(const char* value) noexcept override final
 		{
 			try
 			{
 				// String assign can fail
 				_value = value;
-				return 0;
+				return ApiCallResult::Success;
 			}
 			catch(...)
 			{
 				// Unknown error
-				return -1;
+				return ApiCallResult::Error;
 			}
 		}
 

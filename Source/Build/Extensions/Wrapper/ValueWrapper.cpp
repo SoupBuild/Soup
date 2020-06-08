@@ -23,18 +23,13 @@ ValueWrapper::ValueWrapper(IValue& value) :
 
 ValueType ValueWrapper::GetType() const
 {
-	uint64_t result = false;
-	auto status = _value.TryGetType(result);
-	if (status != 0)
-		throw std::runtime_error("TryGetType Failed");
-
-	return static_cast<ValueType>(result);
+	return _value.GetType();
 }
 
 void ValueWrapper::SetType(ValueType type)
 {
-	auto status = _value.TrySetType(static_cast<uint64_t>(type));
-	if (status != 0)
+	auto status = _value.TrySetType(type);
+	if (status != ApiCallResult::Success)
 		throw std::runtime_error("TrySetType Failed");
 }
 
@@ -42,7 +37,7 @@ ValueTableWrapper ValueWrapper::AsTable()
 {
 	IValueTable* result = nullptr;
 	auto status = _value.TryGetAsTable(result);
-	if (status != 0)
+	if (status != ApiCallResult::Success)
 		throw std::runtime_error("TryGetAsTable Failed");
 	if (result == nullptr)
 		throw std::runtime_error("TryGetAsTable result was null.");
@@ -54,7 +49,7 @@ ValueListWrapper ValueWrapper::AsList()
 {
 	IValueList* result = nullptr;
 	auto status = _value.TryGetAsList(result);
-	if (status != 0)
+	if (status != ApiCallResult::Success)
 		throw std::runtime_error("TryGetAsList Failed");
 	if (result == nullptr)
 		throw std::runtime_error("TryGetAsList result was null.");
@@ -66,7 +61,7 @@ ValuePrimitiveWrapper<const char*> ValueWrapper::AsString()
 {
 	IValuePrimitive<const char*>* result = nullptr;
 	auto status = _value.TryGetAsString(result);
-	if (status != 0)
+	if (status != ApiCallResult::Success)
 		throw std::runtime_error("TryGetAsString Failed");
 
 	return ValuePrimitiveWrapper<const char*>(*result);
@@ -76,7 +71,7 @@ ValuePrimitiveWrapper<int64_t> ValueWrapper::AsInteger()
 {
 	IValuePrimitive<int64_t>* result = nullptr;
 	auto status = _value.TryGetAsInteger(result);
-	if (status != 0)
+	if (status != ApiCallResult::Success)
 		throw std::runtime_error("TryGetAsInteger Failed");
 
 	return ValuePrimitiveWrapper<int64_t>(*result);
@@ -86,7 +81,7 @@ ValuePrimitiveWrapper<double> ValueWrapper::AsFloat()
 {
 	IValuePrimitive<double>* result = nullptr;
 	auto status = _value.TryGetAsFloat(result);
-	if (status != 0)
+	if (status != ApiCallResult::Success)
 		throw std::runtime_error("TryGetAsFloat Failed");
 
 	return ValuePrimitiveWrapper<double>(*result);
@@ -96,7 +91,7 @@ ValuePrimitiveWrapper<bool> ValueWrapper::AsBoolean()
 {
 	IValuePrimitive<bool>* result = nullptr;
 	auto status = _value.TryGetAsBoolean(result);
-	if (status != 0)
+	if (status != ApiCallResult::Success)
 		throw std::runtime_error("TryGetAsBoolean Failed");
 
 	return ValuePrimitiveWrapper<bool>(*result);

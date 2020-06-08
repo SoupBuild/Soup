@@ -31,20 +31,20 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.RootDirectory = Path("Source");
 
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateCompileNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateCompileOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
-				new Build::Runtime::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
+				new Build::Extensions::BuildOperation(
 					"File.cpp",
-					"C:/Clang/bin/clang++.exe",
+					Path("C:/Clang/bin/clang++.exe"),
 					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
-					"Source",
-					std::vector<std::string>({
-						"File.cpp",
+					Path("Source"),
+					std::vector<Path>({
+						Path("File.cpp"),
 					}),
-					std::vector<std::string>({
-						"obj/File.o",
+					std::vector<Path>({
+						Path("obj/File.o"),
 					})));
 
 			AssertExtensions::AreEqual(expected, result);
@@ -71,33 +71,33 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.ExportModule = true;
 
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateCompileNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateCompileOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
-				new Build::Runtime::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
+				new Build::Extensions::BuildOperation(
 					"File.cpp",
-					"C:/Clang/bin/clang++.exe",
+					Path("C:/Clang/bin/clang++.exe"),
 					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
-					"Source",
-					std::vector<std::string>({
-						"Module.pcm",
-						"File.cpp",
+					Path("Source"),
+					std::vector<Path>({
+						Path("Module.pcm"),
+						Path("File.cpp"),
 					}),
-					std::vector<std::string>({
-						"obj/File.pcm",
+					std::vector<Path>({
+						Path("obj/File.pcm"),
 					}),
-					std::vector<Memory::Reference<Build::Runtime::BuildGraphNode>>({
-						new Build::Runtime::BuildGraphNode(
+					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						new Build::Extensions::BuildOperation(
 							"obj/File.pcm",
-							"C:/Clang/bin/clang++.exe",
+							Path("C:/Clang/bin/clang++.exe"),
 							"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
-							"Source",
-							std::vector<std::string>({
-								"obj/File.pcm",
+							Path("Source"),
+							std::vector<Path>({
+								Path("obj/File.pcm"),
 							}),
-							std::vector<std::string>({
-								"obj/File.obj",
+							std::vector<Path>({
+								Path("obj/File.obj"),
 							})),
 					})));
 
@@ -118,20 +118,20 @@ namespace Soup::Compiler::Clang::UnitTests
 			});
 
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateLinkNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateLinkOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
-				new Build::Runtime::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
+				new Build::Extensions::BuildOperation(
 					"Library.mock.a",
-					"C:/Clang/bin/llvm-ar.exe",
+					Path("C:/Clang/bin/llvm-ar.exe"),
 					"rc Library.mock.a File.mock.o",
-					"Source",
-					std::vector<std::string>({
-						"File.mock.o",
+					Path("Source"),
+					std::vector<Path>({
+						Path("File.mock.o"),
 					}),
-					std::vector<std::string>({
-						"Library.mock.a",
+					std::vector<Path>({
+						Path("Library.mock.a"),
 					})));
 
 			AssertExtensions::AreEqual(expected, result);
@@ -154,21 +154,21 @@ namespace Soup::Compiler::Clang::UnitTests
 			});
 
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateLinkNode(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateLinkOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Runtime::BuildGraphNode>(
-				new Build::Runtime::BuildGraphNode(
+			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
+				new Build::Extensions::BuildOperation(
 					"Something.exe",
-					"C:/Clang/bin/lld-link.exe",
+					Path("C:/Clang/bin/lld-link.exe"),
 					"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
-					"Source",
-					std::vector<std::string>({
-						"Library.mock.a",
-						"File.mock.o",
+					Path("Source"),
+					std::vector<Path>({
+						Path("Library.mock.a"),
+						Path("File.mock.o"),
 					}),
-					std::vector<std::string>({
-						"Something.exe",
+					std::vector<Path>({
+						Path("Something.exe"),
 					})));
 
 			AssertExtensions::AreEqual(expected, result);

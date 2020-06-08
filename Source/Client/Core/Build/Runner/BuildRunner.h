@@ -24,8 +24,9 @@ namespace Soup::Build
 		{
 		}
 
+		// TODO: Convert vector to const when we have a const version of the operation wrapper.
 		void Execute(
-			const std::vector<Memory::Reference<Runtime::BuildGraphNode>>& nodes,
+			Extensions::BuildOperationListWrapper& operations,
 			const Path& objectDirectory,
 			bool forceBuild)
 		{
@@ -42,14 +43,14 @@ namespace Soup::Build
 				}
 			}
 
-			// Build the initial node dependency set to
-			// ensure nodes are built in the correct order 
+			// Build the initial operation dependency set to
+			// ensure operations are built in the correct order 
 			// and that there are no cycles
-			auto emptyParentSet = std::set<int>();
-			BuildDependencies(nodes, emptyParentSet);
+			auto emptyParentSet = std::set<uint64_t>();
+			BuildDependencies(operations, emptyParentSet);
 
-			// Run all build nodes in the correct order with incremental build checks
-			CheckExecuteNodes(nodes, forceBuild);
+			// Run all build operations in the correct order with incremental build checks
+			CheckExecuteOperations(operations, forceBuild);
 
 			Log::Info("Saving updated build state");
 			BuildHistoryManager::SaveState(targetDirectory, _buildHistory);
@@ -62,70 +63,75 @@ namespace Soup::Build
 		/// Build dependencies
 		/// </summary>
 		void BuildDependencies(
-			const std::vector<Memory::Reference<Runtime::BuildGraphNode>>& nodes,
-			const std::set<int>& parentSet)
+			Extensions::BuildOperationListWrapper& operations,
+			const std::set<uint64_t>& parentSet)
 		{
-			for (auto& node : nodes)
+			for (auto i = 0; i < operations.GetSize(); i++)
 			{
-				// Make sure there are no cycles
-				if (parentSet.contains(node->GetId()))
-					throw std::runtime_error("A build node graph must be acyclic.");
+				// Make sure there are no cycles using the address as a unique id
+				auto operation = operations.GetValueAt(i);
+				auto operationId = reinterpret_cast<uint64_t>(operation.GetRaw());
+				if (parentSet.contains(operationId))
+					throw std::runtime_error("A build operation graph must be acyclic.");
 				
-				// Check if the node was already a child from a different path
-				auto currentNodeSearch = _dependencyCounts.find(node->GetId());
-				if (currentNodeSearch != _dependencyCounts.end())
+				// Check if the operation was already a child from a different path
+				auto currentOperationSearch = _dependencyCounts.find(operationId);
+				if (currentOperationSearch != _dependencyCounts.end())
 				{
 					// Increment the dependency count
-					currentNodeSearch->second++;
+					currentOperationSearch->second++;
 				}
 				else
 				{
 					// Insert a new entry with a single count
-					_dependencyCounts.emplace(node->GetId(), 1);
+					_dependencyCounts.emplace(operationId, 1);
 					
-					// Recurse to children only the first time we see a node
+					// Recurse to children only the first time we see an operation
 					auto updatedParentSet = parentSet;
-					updatedParentSet.insert(node->GetId());
-					BuildDependencies(node->GetChildren(), updatedParentSet);
+					updatedParentSet.insert(operationId);
+					BuildDependencies(operation.GetChildList(), updatedParentSet);
 				}
 			}
 		}
 
 		/// <summary>
-		/// Execute the collection of build nodes
+		/// Execute the collection of build operations
 		/// </summary>
-		void CheckExecuteNodes(
-			const std::vector<Memory::Reference<Runtime::BuildGraphNode>>& nodes,
+		void CheckExecuteOperations(
+			Extensions::BuildOperationListWrapper& operations,
 			bool forceBuild)
 		{
-			for (auto& node : nodes)
+			for (auto i = 0; i < operations.GetSize(); i++)
 			{
-				// Check if the node was already a child from a different path
-				auto currentNodeSearch = _dependencyCounts.find(node->GetId());
-				if (currentNodeSearch != _dependencyCounts.end())
+				// Check if the operation was already a child from a different path
+				// Make sure there are no cycles using the address as a unique id
+				auto operation = operations.GetValueAt(i);
+				auto operationId = reinterpret_cast<uint64_t>(operation.GetRaw());
+				auto currentOperationSearch = _dependencyCounts.find(operationId);
+				if (currentOperationSearch != _dependencyCounts.end())
 				{
-					auto remainingCount = --currentNodeSearch->second;
+					auto remainingCount = --currentOperationSearch->second;
 					if (remainingCount == 0)
 					{
-						ExecuteNode(*node, forceBuild);
+						ExecuteOperation(operation, forceBuild);
 					}
 					else
 					{
-						// This node will be executed from a different path
+						// This operation will be executed from a different path
 					}
 				}
 				else
 				{
-					throw std::runtime_error("A node id was missing from the dependency collection.");
+					throw std::runtime_error("A operation id was missing from the dependency collection.");
 				}
 			}
 		}
 
 		/// <summary>
-		/// Execute a single build node and all of its children
+		/// Execute a single build operation and all of its children
 		/// </summary>
-		void ExecuteNode(
-			const Runtime::BuildGraphNode& node,
+		void ExecuteOperation(
+			Extensions::BuildOperationWrapper& operation,
 			bool forceBuild)
 		{
 			bool buildRequired = forceBuild;
@@ -135,20 +141,19 @@ namespace Soup::Build
 				Log::Diag("Check for updated source");
 				
 				// Try to build up the closure of include dependencies
-				const auto& inputFiles = node.GetInputFiles();
+				auto inputFiles = operation.GetInputFileList().CopyAsPathVector();
 				if (!inputFiles.empty())
 				{
 					auto inputClosure = std::vector<Path>();
 
-					// TODO: Is this how we want to handle no input nodes?
-					// If there are source files to the node check their build state
+					// TODO: Is this how we want to handle no input operations?
+					// If there are source files to the operation check their build state
 					for (auto& inputFile : inputFiles)
 					{
 						// Build the input closure for all source files
-						auto inputFilePath = Path(inputFile);
-						if (inputFilePath.GetFileExtension() == ".cpp")
+						if (inputFile.GetFileExtension() == ".cpp")
 						{
-							if (!_buildHistory.TryBuildIncludeClosure(inputFilePath, inputClosure))
+							if (!_buildHistory.TryBuildIncludeClosure(inputFile, inputClosure))
 							{
 								// Could not determine the set of input files, not enough info to perform incremental build
 								buildRequired = true;
@@ -164,15 +169,13 @@ namespace Soup::Build
 						inputClosure.insert(inputClosure.end(), inputFiles.begin(), inputFiles.end());
 
 						// Load the output files
-						auto outputFiles = std::vector<Path>();
-						for (auto& file : node.GetOutputFiles())
-							outputFiles.push_back(Path(file));
+						auto outputFiles = operation.GetOutputFileList().CopyAsPathVector();
 
 						// Check if any of the input files have changed since last build
 						if (_stateChecker.IsOutdated(
 							outputFiles,
 							inputClosure,
-							Path(node.GetWorkingDirectory())))
+							Path(operation.GetWorkingDirectory())))
 						{
 							// The file or a dependency has changed
 							buildRequired = true;
@@ -187,10 +190,9 @@ namespace Soup::Build
 				{
 					// Since there are no input files, the best we can do for an
 					// incremental build is check that the output exists
-					for (auto& file : node.GetOutputFiles())
+					for (auto& file : operation.GetOutputFileList().CopyAsPathVector())
 					{
-						auto filePath = Path(file);
-						auto relativeOutputFile = filePath.HasRoot() ? filePath : Path(node.GetWorkingDirectory()) + filePath;
+						auto relativeOutputFile = file.HasRoot() ? file : Path(operation.GetWorkingDirectory()) + file;
 						if (!System::IFileSystem::Current().Exists(relativeOutputFile))
 						{
 							Log::Info("Output target does not exist: " + relativeOutputFile.ToString());
@@ -203,19 +205,21 @@ namespace Soup::Build
 
 			if (buildRequired)
 			{
-				Log::HighPriority(node.GetTitle());
-				auto program = Path(node.GetProgram());
-				auto message = "Execute: " + program.ToString() + " " + node.GetArguments();
+				Log::HighPriority(operation.GetTitle());
+				auto executable = Path(operation.GetExecutable());
+				auto arguments = std::string(operation.GetArguments());
+				auto workingDirectory = Path(operation.GetWorkingDirectory());
+				auto message = "Execute: " + executable.ToString() + " " + arguments;
 				Log::Diag(message);
 				auto result = System::IProcessManager::Current().Execute(
-					program,
-					node.GetArguments(),
-					Path(node.GetWorkingDirectory()));
+					executable,
+					arguments,
+					workingDirectory);
 
 				// Try parse includes if available
 				auto cleanOutput = std::stringstream();
 				auto headerIncludes = std::vector<HeaderInclude>();
-				if (TryParsesHeaderIncludes(node, result.StdOut, headerIncludes, cleanOutput))
+				if (TryParsesHeaderIncludes(operation, result.StdOut, headerIncludes, cleanOutput))
 				{
 					// Save off the build history for future builds
 					_buildHistory.UpdateIncludeTree(headerIncludes);
@@ -247,36 +251,35 @@ namespace Soup::Build
 			}
 			else
 			{
-				Log::Info(node.GetTitle());
+				Log::Info(operation.GetTitle());
 			}
 
-			// Recursively build all of the node chilren
-			// Note: Force build if this node was built
-			CheckExecuteNodes(node.GetChildren(), buildRequired);
+			// Recursively build all of the operation children
+			// Note: Force build if this operation was built
+			CheckExecuteOperations(operation.GetChildList(), buildRequired);
 		}
 
 		bool TryParsesHeaderIncludes(
-			const Runtime::BuildGraphNode& node,
+			Extensions::BuildOperationWrapper& operation,
 			const std::string& output,
 			std::vector<HeaderInclude>& headerIncludes,
 			std::stringstream& cleanOutput)
 		{
 			// Check for any cpp input files
-			auto program = Path(node.GetProgram());
-			for (auto& inputFile : node.GetInputFiles())
+			auto executable = Path(operation.GetExecutable());
+			for (auto& inputFile : operation.GetInputFileList().CopyAsPathVector())
 			{
-				auto inputFilePath = Path(inputFile);
-				if (inputFilePath.GetFileExtension() == ".cpp")
+				if (inputFile.GetFileExtension() == ".cpp")
 				{
 					// Parse known compiler output
-					if (program.GetFileName() == "cl.exe")
+					if (executable.GetFileName() == "cl.exe")
 					{
-						headerIncludes = ParseMSVCIncludes(inputFilePath, output, cleanOutput);
+						headerIncludes = ParseMSVCIncludes(inputFile, output, cleanOutput);
 						return true;
 					}
-					else if (program.GetFileName() == "clang++.exe")
+					else if (executable.GetFileName() == "clang++.exe")
 					{
-						headerIncludes = ParseMSVCIncludes(inputFilePath, output, cleanOutput);
+						headerIncludes = ParseMSVCIncludes(inputFile, output, cleanOutput);
 						return true;
 					}
 				}

@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "OperationResult.h"
+#include "ApiCallResult.h"
 
 namespace Soup::Build
 {
@@ -19,7 +19,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Type checker methods
 		/// </summary>
-		virtual OperationResult TryGetValue(T& value) const noexcept = 0;
-		virtual OperationResult TrySetValue(T value) noexcept = 0;
+		virtual T GetValue() const noexcept = 0;
+		virtual ApiCallResult TrySetValue(T value) noexcept = 0;
 	};
 }
