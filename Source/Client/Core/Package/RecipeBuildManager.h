@@ -344,7 +344,7 @@ namespace Soup::Build::Runtime
 			ValueTable& activeState)
 		{
 			// Ensure the external build extension libraries outlive all usage in the build system
-			auto activeExtensionLibraries = std::vector<System::Library>();
+			auto activeExtensionLibraries = std::vector<System::WindowsLibrary>();
 
 			{
 				// Create a new build system for the requested build
@@ -444,21 +444,22 @@ namespace Soup::Build::Runtime
 			}
 			else
 			{
-				auto packageStore = Path("C:/users/mwasp/.soup/packages/");
+				auto packageStore = System::IFileSystem::Current().GetUserProfileDirectory() +
+					Path(".soup/packages/");
 				packagePath = packageStore + Path(reference.GetName()) + Path(reference.GetVersion().ToString());
 			}
 
 			return packagePath;
 		}
 
-		System::Library RunBuildExtension(
+		System::WindowsLibrary RunBuildExtension(
 			Path& libraryPath,
 			IBuildSystem& buildSystem)
 		{
 			try
 			{
 				Log::Diag("Running Build Extension: " + libraryPath.ToString());
-				auto library = System::DynamicLibraryManager::LoadDynamicLibrary(
+				auto library = System::WindowsDynamicLibraryManager::LoadDynamicLibrary(
 					libraryPath.ToString().c_str());
 				auto function = (int(*)(IBuildSystem&))library.GetFunction(
 					"RegisterBuildExtension");

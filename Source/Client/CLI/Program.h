@@ -52,7 +52,7 @@ namespace Soup::Client
 				// Setup the real services
 				Network::INetworkManager::Register(std::make_shared<Network::HttpLibNetworkManager>());
 				System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
-				System::IProcessManager::Register(std::make_shared<System::PlatformProcessManager>());
+				System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
 				IO::IConsoleManager::Register(std::make_shared<IO::SystemConsoleManager>());
 
 				// Attempt to parse the provided arguments

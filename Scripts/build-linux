@@ -1,0 +1,28 @@
+#!/bin/bash
+echo "Linux Build!"
+
+BINDIR=/mnt/d/Repos/llvm-project/build-linux/bin
+CXX=clang++
+CXX_FLAGS="-DSOUP_BUILD -std=c++20"
+CXX_COMPILE_FLAGS="-DSOUP_BUILD -std=c++20 -stdlib=libstdc++"
+
+echo Build Json11
+JSON11_DIR=$PWD/Dependencies/Json11
+JSON11_OUT_DIR=$JSON11_DIR/out/obj/Clang
+mkdir -p $JSON11_OUT_DIR
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS --precompile $JSON11_DIR/json11.cppm -o $JSON11_OUT_DIR/json11.pcm
+eval $BINDIR/$CXX $CXX_FLAGS -c $JSON11_OUT_DIR/json11.pcm -o $JSON11_OUT_DIR/json11.o
+
+echo Build Toml11
+TOML11_DIR=$PWD/Dependencies/toml11
+TOML11_OUT_DIR=$TOML11_DIR/out/obj/Clang
+mkdir -p $TOML11_OUT_DIR
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS --precompile $TOML11_DIR/toml.cppm -o $TOML11_OUT_DIR/toml11.pcm
+eval $BINDIR/$CXX $CXX_FLAGS -c $TOML11_OUT_DIR/toml11.pcm -o $TOML11_OUT_DIR/toml11.o
+
+echo Build Opal
+OPAL_DIR=$PWD/Dependencies/Opal/Source
+OPAL_OUT_DIR=$OPAL_DIR/out/obj/Clang
+mkdir -p $OPAL_OUT_DIR
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS --precompile $OPAL_DIR/Module.cppm -o $OPAL_OUT_DIR/Opal.pcm
+eval $BINDIR/$CXX $CXX_FLAGS -c $OPAL_OUT_DIR/Opal.pcm -o $OPAL_OUT_DIR/Opal.o
