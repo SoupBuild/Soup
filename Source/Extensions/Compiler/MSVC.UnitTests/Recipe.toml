@@ -5,6 +5,7 @@ Dependencies = [
 	# "../../../Dependencies/SoupTest/Assert/",
 	"../MSVC/",
 	"../../../TestUtilities/",
+	"../../../Build/Runtime/",
 	"SoupTest@0.1.0",
 ]
 Source = [

@@ -4,6 +4,7 @@ Type = "Executable"
 Dependencies = [
 	# "../../../Dependencies/SoupTest/Assert/",
 	"../Clang/",
+	"../../../Build/Runtime/",
 	"../../../TestUtilities/",
 	"SoupTest@0.1.0",
 ]

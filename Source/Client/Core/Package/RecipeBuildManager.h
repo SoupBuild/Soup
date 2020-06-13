@@ -24,6 +24,7 @@ namespace Soup::Build::Runtime
 			std::string runtimeCompiler) :
 			_systemCompiler(systemCompiler),
 			_runtimeCompiler(runtimeCompiler),
+			_knownRecipes(),
 			_buildSet(),
 			_systemBuildSet()
 		{
@@ -38,6 +39,7 @@ namespace Soup::Build::Runtime
 			const RecipeBuildArguments& arguments)
 		{
 			// Clear the build set so we check all dependencies
+			_knownRecipes.clear();
 			_buildSet.clear();
 			_systemBuildSet.clear();
 
@@ -170,7 +172,7 @@ namespace Soup::Build::Runtime
 					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
 					auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
 					Recipe dependencyRecipe = {};
-					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependencyRecipe))
+					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
 					{
 						if (dependency.IsLocal())
 						{
@@ -215,7 +217,7 @@ namespace Soup::Build::Runtime
 					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
 					auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
 					Recipe dependencyRecipe = {};
-					if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependencyRecipe))
+					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
 					{
 						Log::Error("Failed to load the extension package: " + packageRecipePath.ToString());
 						throw std::runtime_error("BuildRecipeAndDependencies: Failed to load dependency.");
@@ -483,9 +485,42 @@ namespace Soup::Build::Runtime
 			}
 		}
 
+		bool TryGetRecipe(
+			const Path& recipeFile,
+			Recipe& result)
+		{
+			// Check if the recipe was already loaded
+			auto findRecipe = _knownRecipes.find(recipeFile.ToString());
+			if (findRecipe != _knownRecipes.end())
+			{
+				result = findRecipe->second;
+				return true;
+			}
+			else
+			{
+				Recipe loadRecipe;
+				if (RecipeExtensions::TryLoadFromFile(recipeFile, loadRecipe))
+				{
+					// Save the recipe for later
+					auto insertRecipe = _knownRecipes.emplace(
+						recipeFile.ToString(),
+						std::move(loadRecipe));
+
+					result = insertRecipe.first->second;
+					return true;
+				}
+				else
+				{
+					// Failed to load this recipe
+					return false;
+				}
+			}
+		}
+
 	private:
 		std::string _systemCompiler;
 		std::string _runtimeCompiler;
+		std::map<std::string, Recipe> _knownRecipes;
 		std::map<std::string, ValueTable> _buildSet;
 		std::map<std::string, ValueTable> _systemBuildSet;
 	};
