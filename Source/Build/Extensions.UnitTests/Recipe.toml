@@ -5,6 +5,7 @@ Dependencies = [
 	"../Extensions/",
 	"../../TestUtilities/",
 	"SoupTest@0.1.0",
+	"json11@1.0.0",
 ]
 Source = [
 	"gen/Main.cpp"
