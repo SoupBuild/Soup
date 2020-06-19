@@ -28,3 +28,6 @@
 [submodule "Dependencies/Opal"]
 	path = Dependencies/Opal
 	url = https://github.com/mwasplund/Opal.git
+[submodule "Dependencies/Detours"]
+	path = Dependencies/Detours
+	url = https://github.com/mwasplund/Detours.git
