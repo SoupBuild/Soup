@@ -391,7 +391,7 @@ namespace Soup
 			Log::HighPriority("Install Package: " + packageName + "@" + packageVersion.ToString());
 
 			auto packageRootFolder = packagesDirectory + Path(packageName);
-			auto packageVersionFolder = packageRootFolder + Path(packageVersion.ToString());
+			auto packageVersionFolder = packageRootFolder + Path(packageVersion.ToString()) + Path("/");
 
 			// Check if the package version already exists
 			if (System::IFileSystem::Current().Exists(packageVersionFolder))
@@ -411,7 +411,7 @@ namespace Soup
 				archiveWriteFile->Close();
 
 				// Create the package folder to extract to
-				auto stagingVersionFolder = stagingDirectory + Path(packageName) + Path(packageVersion.ToString());
+				auto stagingVersionFolder = stagingDirectory + Path(packageName) + Path(packageVersion.ToString()) + Path("/");
 				System::IFileSystem::Current().CreateDirectory2(stagingVersionFolder);
 
 				// Unpack the contents of the archive

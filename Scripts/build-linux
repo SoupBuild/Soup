@@ -3,26 +3,103 @@ echo "Linux Build!"
 
 BINDIR=/mnt/d/Repos/llvm-project/build-linux/bin
 CXX=clang++
-CXX_FLAGS="-DSOUP_BUILD -std=c++20"
-CXX_COMPILE_FLAGS="-DSOUP_BUILD -std=c++20 -stdlib=libstdc++"
+CXX_FLAGS="-std=c++20 -fmodules-ts"
+CXX_COMPILE_FLAGS="$CXX_FLAGS -stdlib=libstdc++ -Wno-inconsistent-missing-override"
+CXX_COMPILE_INTERFACE_FLAGS="$CXX_COMPILE_FLAGS -Xclang -emit-module-interface"
+
+echo Build LzmaSDK
+LZMASDK_DIR=$PWD/Dependencies/LzmaSdk/CPP/Library
+LZMASDK_OUT_DIR=$LZMASDK_DIR/out/obj/Clang
+mkdir -p $LZMASDK_OUT_DIR
+eval $BINDIR/$CXX $CXX_COMPILE_INTERFACE_FLAGS -c $LZMASDK_DIR/Module.cpp -o $LZMASDK_OUT_DIR/LzmaSdk.pcm
+eval $BINDIR/$CXX $CXX_FLAGS -c $LZMASDK_OUT_DIR/LzmaSdk.pcm -o $LZMASDK_OUT_DIR/LzmaSdk.o
+CXX_COMPILE_FLAGS_LZMASDK="$CXX_COMPILE_FLAGS -fmodule-file=$LZMASDK_OUT_DIR/LzmaSdk.pcm"
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/ArchiveReader.cpp -o $LZMASDK_OUT_DIR/ArchiveReader.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/ArchiveWriter.cpp -o $LZMASDK_OUT_DIR/ArchiveWriter.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/7zCrc.c -o $LZMASDK_OUT_DIR/7zCrc.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/7zCrcOpt.c -o $LZMASDK_OUT_DIR/7zCrcOpt.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/Alloc.c -o $LZMASDK_OUT_DIR/Alloc.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/CpuArch.c -o $LZMASDK_OUT_DIR/CpuArch.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/LzFind.c -o $LZMASDK_OUT_DIR/LzFind.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/LzFindMt.c -o $LZMASDK_OUT_DIR/LzFindMt.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/Lzma2Dec.c -o $LZMASDK_OUT_DIR/Lzma2Dec.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/Lzma2DecMt.c -o $LZMASDK_OUT_DIR/Lzma2DecMt.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/Lzma2Enc.c -o $LZMASDK_OUT_DIR/Lzma2Enc.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/LzmaDec.c -o $LZMASDK_OUT_DIR/LzmaDec.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/LzmaEnc.c -o $LZMASDK_OUT_DIR/LzmaEnc.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/MtCoder.c -o $LZMASDK_OUT_DIR/MtCoder.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/MtDec.c -o $LZMASDK_OUT_DIR/MtDec.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../../C/Threads.c -o $LZMASDK_OUT_DIR/Threads.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zDecode.cpp -o $LZMASDK_OUT_DIR/7zDecode.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zEncode.cpp -o $LZMASDK_OUT_DIR/7zEncode.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zExtract.cpp -o $LZMASDK_OUT_DIR/7zExtract.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zFolderInStream.cpp -o $LZMASDK_OUT_DIR/7zFolderInStream.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zHandler.cpp -o $LZMASDK_OUT_DIR/7zHandler.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zHandlerOut.cpp -o $LZMASDK_OUT_DIR/7zHandlerOut.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zHeader.cpp -o $LZMASDK_OUT_DIR/7zHeader.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zIn.cpp -o $LZMASDK_OUT_DIR/7zIn.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zOut.cpp -o $LZMASDK_OUT_DIR/7zOut.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zProperties.cpp -o $LZMASDK_OUT_DIR/7zProperties.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zSpecStream.cpp -o $LZMASDK_OUT_DIR/7zSpecStream.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/7z/7zUpdate.cpp -o $LZMASDK_OUT_DIR/7zUpdate.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/Common/CoderMixer2.cpp -o $LZMASDK_OUT_DIR/CoderMixer2.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/Common/HandlerOut.cpp -o $LZMASDK_OUT_DIR/HandlerOut.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Archive/Common/ItemNameUtils.c -o $LZMASDK_OUT_DIR/ItemNameUtils.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/CreateCoder.cpp -o $LZMASDK_OUT_DIR/CreateCoder.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/CWrappers.cpp -o $LZMASDK_OUT_DIR/CWrappers.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/FilePathAutoRename.cpp -o $LZMASDK_OUT_DIR/FilePathAutoRename.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/FileStreams.cpp -o $LZMASDK_OUT_DIR/FileStreams.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/FilterCoder.cpp -o $LZMASDK_OUT_DIR/FilterCoder.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/InOutTempBuffer.cpp -o $LZMASDK_OUT_DIR/InOutTempBuffer.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/LimitedStreams.cpp -o $LZMASDK_OUT_DIR/LimitedStreams.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/MethodProps.cpp -o $LZMASDK_OUT_DIR/MethodProps.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/OutBuffer.cpp -o $LZMASDK_OUT_DIR/OutBuffer.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/ProgressUtils.cpp -o $LZMASDK_OUT_DIR/ProgressUtils.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/PropId.cpp -o $LZMASDK_OUT_DIR/PropId.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/StreamBinder.cpp -o $LZMASDK_OUT_DIR/StreamBinder.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/StreamObjects.cpp -o $LZMASDK_OUT_DIR/StreamObjects.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/StreamUtils.cpp -o $LZMASDK_OUT_DIR/StreamUtils.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/UniqBlocks.cpp -o $LZMASDK_OUT_DIR/UniqBlocks.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Common/VirtThread.cpp -o $LZMASDK_OUT_DIR/VirtThread.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Compress/CopyCoder.cpp -o $LZMASDK_OUT_DIR/CopyCoder.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Compress/Lzma2Decoder.cpp -o $LZMASDK_OUT_DIR/Lzma2Decoder.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Compress/Lzma2Encoder.cpp -o $LZMASDK_OUT_DIR/Lzma2Encoder.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Compress/Lzma2Register.cpp -o $LZMASDK_OUT_DIR/Lzma2Register.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Compress/LzmaDecoder.cpp -o $LZMASDK_OUT_DIR/LzmaDecoder.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Compress/LzmaEncoder.cpp -o $LZMASDK_OUT_DIR/LzmaEncoder.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../7zip/Compress/LzmaRegister.cpp -o $LZMASDK_OUT_DIR/LzmaRegister.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Common/IntToString.cpp -o $LZMASDK_OUT_DIR/IntToString.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Common/MyString.cpp -o $LZMASDK_OUT_DIR/MyString.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Common/StringConvert.cpp -o $LZMASDK_OUT_DIR/StringConvert.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Common/StringToInt.cpp -o $LZMASDK_OUT_DIR/StringToInt.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Common/Wildcard.cpp -o $LZMASDK_OUT_DIR/Wildcard.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Windows/ErrorMsg.cpp -o $LZMASDK_OUT_DIR/ErrorMsg.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Windows/FileDir.cpp -o $LZMASDK_OUT_DIR/FileDir.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Windows/FileIO.cpp -o $LZMASDK_OUT_DIR/FileIO.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Windows/FileLink.cpp -o $LZMASDK_OUT_DIR/FileLink.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Windows/FileFind.cpp -o $LZMASDK_OUT_DIR/FileFind.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Windows/FileName.cpp -o $LZMASDK_OUT_DIR/FileName.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Windows/PropVariant.cpp -o $LZMASDK_OUT_DIR/PropVariant.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Windows/PropVariantConv.cpp -o $LZMASDK_OUT_DIR/PropVariantConv.o
+eval $BINDIR/$CXX $CXX_COMPILE_FLAGS_LZMASDK -c $LZMASDK_DIR/../Windows/System.cpp -o $LZMASDK_OUT_DIR/System.o
 
 echo Build Json11
 JSON11_DIR=$PWD/Dependencies/Json11
 JSON11_OUT_DIR=$JSON11_DIR/out/obj/Clang
 mkdir -p $JSON11_OUT_DIR
-eval $BINDIR/$CXX $CXX_COMPILE_FLAGS --precompile $JSON11_DIR/json11.cppm -o $JSON11_OUT_DIR/json11.pcm
+eval $BINDIR/$CXX $CXX_COMPILE_INTERFACE_FLAGS -c $JSON11_DIR/json11.cpp -o $JSON11_OUT_DIR/json11.pcm
 eval $BINDIR/$CXX $CXX_FLAGS -c $JSON11_OUT_DIR/json11.pcm -o $JSON11_OUT_DIR/json11.o
 
 echo Build Toml11
 TOML11_DIR=$PWD/Dependencies/toml11
 TOML11_OUT_DIR=$TOML11_DIR/out/obj/Clang
 mkdir -p $TOML11_OUT_DIR
-eval $BINDIR/$CXX $CXX_COMPILE_FLAGS --precompile $TOML11_DIR/toml.cppm -o $TOML11_OUT_DIR/toml11.pcm
+eval $BINDIR/$CXX $CXX_COMPILE_INTERFACE_FLAGS -c $TOML11_DIR/toml.cpp -o $TOML11_OUT_DIR/toml11.pcm
 eval $BINDIR/$CXX $CXX_FLAGS -c $TOML11_OUT_DIR/toml11.pcm -o $TOML11_OUT_DIR/toml11.o
 
 echo Build Opal
 OPAL_DIR=$PWD/Dependencies/Opal/Source
 OPAL_OUT_DIR=$OPAL_DIR/out/obj/Clang
 mkdir -p $OPAL_OUT_DIR
-eval $BINDIR/$CXX $CXX_COMPILE_FLAGS --precompile $OPAL_DIR/Module.cppm -o $OPAL_OUT_DIR/Opal.pcm
+eval $BINDIR/$CXX $CXX_COMPILE_INTERFACE_FLAGS -c $OPAL_DIR/Module.cpp -o $OPAL_OUT_DIR/Opal.pcm
 eval $BINDIR/$CXX $CXX_FLAGS -c $OPAL_OUT_DIR/Opal.pcm -o $OPAL_OUT_DIR/Opal.o

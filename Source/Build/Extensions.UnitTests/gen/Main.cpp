@@ -8,7 +8,6 @@
 
 import Opal;
 import Soup.Build.Extensions;
-import json11;
 import SoupTest;
 import SoupTestUtilities;
 

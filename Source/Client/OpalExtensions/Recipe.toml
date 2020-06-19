@@ -3,8 +3,8 @@ Version = "0.1.0"
 Public = "Module.cpp"
 Dependencies = [
 	"../../../Dependencies/cpp-httplib/",
-	# "../../../Dependencies/Opal/Source/",
-	"Opal@0.1.2",
+	"../../../Dependencies/Opal/Source/",
+	# "Opal@0.1.2",
 	# "httplib@1.0.0",
 ]
 Defines = [
