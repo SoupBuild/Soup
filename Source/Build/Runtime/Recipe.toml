@@ -2,12 +2,12 @@ Name = "Soup.Build.Runtime"
 Version = "0.1.0"
 
 Dependencies = [
-	# "../../../Dependencies/Opal/Source/",
 	"../Core/",
 	# "Soup.Build@0.3.0",
 	"../Extensions/",
 	# "Soup.Build.Extensions@0.3.0",
-	"Opal@0.1.2",
+	"../../../Dependencies/Opal/Source/",
+	# "Opal@0.1.2",
 ]
 
 Public = "Module.cpp"

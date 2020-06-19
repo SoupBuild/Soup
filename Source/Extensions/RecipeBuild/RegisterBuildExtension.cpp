@@ -43,7 +43,7 @@ extern "C"
 	{
 		// Setup the real services
 		System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
-		System::IProcessManager::Register(std::make_shared<System::PlatformProcessManager>());
+		System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
 
 		// Register the resolve tools task
 		auto resolveToolsTask = Memory::Reference<RecipeBuild::ResolveToolsTask>(
