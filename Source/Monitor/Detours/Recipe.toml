@@ -3,5 +3,6 @@ Version = "1.0.0"
 Type = "DynamicLibrary"
 Dependencies = [
     "../../../Dependencies/Detours/src/",
+    "../Shared/",
 ]
 Public = "Module.cpp"

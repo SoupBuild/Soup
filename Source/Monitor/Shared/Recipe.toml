@@ -1,0 +1,5 @@
+Name = "Monitor.Shared"
+Version = "1.0.0"
+Dependencies = [
+]
+Public = "Module.cpp"

@@ -4,6 +4,7 @@ Type = "Executable"
 Dependencies = [
     "../../../Dependencies/Detours/src/",
     "../Detours/",
+    "../Shared/",
 ]
 Source = [
     "Main.cpp",
