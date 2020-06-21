@@ -3743,54 +3743,54 @@ DWORD CDECL Mine_wdupenv_s(PWCHAR *ppBuffer, DWORD *pcBuffer, PCWSTR varname)
 /////////////////////////////////////////////////////////////
 // AttachDetours
 //
-LONG AttachDetours(VOID)
+void AttachDetours()
 {
-    DetourTransactionBegin();
-    DetourUpdateThread(GetCurrentThread());
+    ThrowIfFailed(DetourTransactionBegin(), "AttachDetours DetourTransactionBegin Failed");
+    ThrowIfFailed(DetourUpdateThread(GetCurrentThread()), "AttachDetours DetourUpdateThread Failed");
 
-    DetourAttach(&(PVOID&)Real_EntryPoint, Mine_EntryPoint);
-    DetourAttach(&(PVOID&)Real_ExitProcess, Mine_ExitProcess);
-    DetourAttach(&(PVOID&)Real_CopyFileExA, Mine_CopyFileExA);
-    DetourAttach(&(PVOID&)Real_CopyFileExW, Mine_CopyFileExW);
-    DetourAttach(&(PVOID&)Real_PrivCopyFileExW, Mine_PrivCopyFileExW);
-    DetourAttach(&(PVOID&)Real_CreateHardLinkA, Mine_CreateHardLinkA);
-    DetourAttach(&(PVOID&)Real_CreateHardLinkW, Mine_CreateHardLinkW);
-    DetourAttach(&(PVOID&)Real_CreateDirectoryW, Mine_CreateDirectoryW);
-    DetourAttach(&(PVOID&)Real_CreateDirectoryExW, Mine_CreateDirectoryExW);
-    DetourAttach(&(PVOID&)Real_CreateFileW, Mine_CreateFileW);
-    DetourAttach(&(PVOID&)Real_CreatePipe, Mine_CreatePipe);
-    DetourAttach(&(PVOID&)Real_CreateFileMappingW, Mine_CreateFileMappingW);
-    DetourAttach(&(PVOID&)Real_CloseHandle, Mine_CloseHandle);
-    DetourAttach(&(PVOID&)Real_DuplicateHandle, Mine_DuplicateHandle);
-    DetourAttach(&(PVOID&)Real_CreateProcessW, Mine_CreateProcessW);
-    DetourAttach(&(PVOID&)Real_CreateProcessA, Mine_CreateProcessA);
-    DetourAttach(&(PVOID&)Real_DeleteFileW, Mine_DeleteFileW);
-    DetourAttach(&(PVOID&)Real_DeviceIoControl, Mine_DeviceIoControl);
-    DetourAttach(&(PVOID&)Real_GetFileAttributesW, Mine_GetFileAttributesW);
-    DetourAttach(&(PVOID&)Real_MoveFileA, Mine_MoveFileA);
-    DetourAttach(&(PVOID&)Real_MoveFileW, Mine_MoveFileW);
-    DetourAttach(&(PVOID&)Real_MoveFileExA, Mine_MoveFileExA);
-    DetourAttach(&(PVOID&)Real_MoveFileExW, Mine_MoveFileExW);
-    DetourAttach(&(PVOID&)Real_MoveFileWithProgressW, Mine_MoveFileWithProgressW);
-    DetourAttach(&(PVOID&)Real_SetStdHandle, Mine_SetStdHandle);
-    DetourAttach(&(PVOID&)Real_LoadLibraryA, Mine_LoadLibraryA);
-    DetourAttach(&(PVOID&)Real_LoadLibraryW, Mine_LoadLibraryW);
-    DetourAttach(&(PVOID&)Real_LoadLibraryExA, Mine_LoadLibraryExA);
-    DetourAttach(&(PVOID&)Real_LoadLibraryExW, Mine_LoadLibraryExW);
-    DetourAttach(&(PVOID&)Real_SetFilePointer, Mine_SetFilePointer);
-    DetourAttach(&(PVOID&)Real_SetFilePointerEx, Mine_SetFilePointerEx);
-    DetourAttach(&(PVOID&)Real_ReadFile, Mine_ReadFile);
-    DetourAttach(&(PVOID&)Real_ReadFileEx, Mine_ReadFileEx);
-    DetourAttach(&(PVOID&)Real_WriteFile, Mine_WriteFile);
-    DetourAttach(&(PVOID&)Real_WriteFileEx, Mine_WriteFileEx);
-    DetourAttach(&(PVOID&)Real_WriteConsoleA, Mine_WriteConsoleA);
-    DetourAttach(&(PVOID&)Real_WriteConsoleW, Mine_WriteConsoleW);
-    DetourAttach(&(PVOID&)Real_ExpandEnvironmentStringsA, Mine_ExpandEnvironmentStringsA);
-    DetourAttach(&(PVOID&)Real_ExpandEnvironmentStringsW, Mine_ExpandEnvironmentStringsW);
-    DetourAttach(&(PVOID&)Real_GetEnvironmentVariableA, Mine_GetEnvironmentVariableA);
-    DetourAttach(&(PVOID&)Real_GetEnvironmentVariableW, Mine_GetEnvironmentVariableW);
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_EntryPoint, Mine_EntryPoint), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ExitProcess, Mine_ExitProcess), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CopyFileExA, Mine_CopyFileExA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CopyFileExW, Mine_CopyFileExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_PrivCopyFileExW, Mine_PrivCopyFileExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateHardLinkA, Mine_CreateHardLinkA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateHardLinkW, Mine_CreateHardLinkW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateDirectoryW, Mine_CreateDirectoryW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateDirectoryExW, Mine_CreateDirectoryExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateFileW, Mine_CreateFileW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreatePipe, Mine_CreatePipe), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateFileMappingW, Mine_CreateFileMappingW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CloseHandle, Mine_CloseHandle), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_DuplicateHandle, Mine_DuplicateHandle), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateProcessW, Mine_CreateProcessW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateProcessA, Mine_CreateProcessA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_DeleteFileW, Mine_DeleteFileW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_DeviceIoControl, Mine_DeviceIoControl), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_GetFileAttributesW, Mine_GetFileAttributesW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileA, Mine_MoveFileA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileW, Mine_MoveFileW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileExA, Mine_MoveFileExA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileExW, Mine_MoveFileExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileWithProgressW, Mine_MoveFileWithProgressW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_SetStdHandle, Mine_SetStdHandle), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_LoadLibraryA, Mine_LoadLibraryA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_LoadLibraryW, Mine_LoadLibraryW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_LoadLibraryExA, Mine_LoadLibraryExA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_LoadLibraryExW, Mine_LoadLibraryExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_SetFilePointer, Mine_SetFilePointer), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_SetFilePointerEx, Mine_SetFilePointerEx), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ReadFile, Mine_ReadFile), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ReadFileEx, Mine_ReadFileEx), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_WriteFile, Mine_WriteFile), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_WriteFileEx, Mine_WriteFileEx), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_WriteConsoleA, Mine_WriteConsoleA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_WriteConsoleW, Mine_WriteConsoleW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ExpandEnvironmentStringsA, Mine_ExpandEnvironmentStringsA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ExpandEnvironmentStringsW, Mine_ExpandEnvironmentStringsW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_GetEnvironmentVariableA, Mine_GetEnvironmentVariableA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Real_GetEnvironmentVariableW, Mine_GetEnvironmentVariableW), "AttachDetours DetourAttach Failed");
 
-    return DetourTransactionCommit();
+    ThrowIfFailed(DetourTransactionCommit(), "AttachDetours DetourTransactionCommit Failed");
 }
 
 LONG DetachDetours(VOID)
@@ -3799,7 +3799,7 @@ LONG DetachDetours(VOID)
     DetourUpdateThread(GetCurrentThread());
 
     DetourDetach(&(PVOID&)Real_EntryPoint, Mine_EntryPoint);
-    DetourAttach(&(PVOID&)Real_ExitProcess, Mine_ExitProcess);
+    DetourDetach(&(PVOID&)Real_ExitProcess, Mine_ExitProcess);
     DetourDetach(&(PVOID&)Real_CopyFileExA, Mine_CopyFileExA);
     DetourDetach(&(PVOID&)Real_CopyFileExW, Mine_CopyFileExW);
     DetourDetach(&(PVOID&)Real_PrivCopyFileExW, Mine_PrivCopyFileExW);
@@ -4076,10 +4076,19 @@ BOOL ProcessAttach(HMODULE hDll)
         DEBUG_BREAK();
     }
 
-    LONG error = AttachDetours();
-    if (error != NO_ERROR) {
+    try
+    {
+        AttachDetours();
+    }
+    catch (const std::exception& ex)
+    {
         DEBUG_BREAK();
-        Tblog("<!-- Error attaching detours: %d -->\n", error);
+        Tblog("<!-- Error attaching detours: %s -->\n", ex.what());
+    }
+    catch (...)
+    {
+        DEBUG_BREAK();
+        Tblog("<!-- Error attaching detours -->\n");
     }
 
     ThreadAttach(hDll);
