@@ -51,62 +51,62 @@ import Monitor.Shared;
 
 #define UNUSED(c)       (c) = (c)
 
-//////////////////////////////////////////////////////////////////////////////
+// TODO: This exported method forces a lib to be generated to allow for linking...
+// Soup should allow runtime references to dlls that have no external symbols
 DllExport int ForceLib()
 {
-    return 1;
+	return 1;
 }
 
-static HMODULE s_hInst = NULL;
-static HMODULE s_hKernel32 = NULL;
+static HMODULE s_hInst = nullptr;
+static HMODULE s_hKernel32 = nullptr;
 static CHAR s_szDllPath[MAX_PATH];
 static TBLOG_PAYLOAD s_Payload;
 static TBLOG_PAYLOAD s_ChildPayload;
 static CRITICAL_SECTION s_csChildPayload;
 static DWORD s_nTraceProcessId = 0;
 static LONG s_nChildCnt = 0;
-static PWCHAR s_pwEnvironment = NULL;
-static DWORD s_cwEnvironment = NULL;
-static PCHAR s_pbEnvironment = NULL;
-static DWORD s_cbEnvironment = NULL;
+static PWCHAR s_pwEnvironment = nullptr;
+static DWORD s_cwEnvironment = 0;
+static PCHAR s_pbEnvironment = nullptr;
+static DWORD s_cbEnvironment = 0;
 
-static CRITICAL_SECTION s_csPipe;                       // Guards access to hPipe.
-static HANDLE           s_hPipe = INVALID_HANDLE_VALUE;
-static TBLOG_MESSAGE    s_rMessage;
+static CRITICAL_SECTION s_csPipe; // Guards access to hPipe.
+static HANDLE s_hPipe = INVALID_HANDLE_VALUE;
+static TBLOG_MESSAGE s_rMessage;
 
 // Logging Functions.
 //
-VOID Tblog(PCSTR pszMsgf, ...);
-VOID TblogV(PCSTR pszMsgf, va_list args);
+void Tblog(PCSTR pszMsgf, ...);
+void TblogV(PCSTR pszMsgf, va_list args);
 
-VOID VSafePrintf(PCSTR pszMsg, va_list args, PCHAR pszBuffer, LONG cbBuffer);
+void VSafePrintf(PCSTR pszMsg, va_list args, PCHAR pszBuffer, LONG cbBuffer);
 PCHAR SafePrintf(PCHAR pszBuffer, LONG cbBuffer, PCSTR pszMsg, ...);
 
 LONG EnterFunc();
-VOID ExitFunc();
-VOID Print(PCSTR psz, ...);
-VOID NoteRead(PCSTR psz);
-VOID NoteRead(PCWSTR pwz);
-VOID NoteWrite(PCSTR psz);
-VOID NoteWrite(PCWSTR pwz);
-VOID NoteDelete(PCSTR psz);
-VOID NoteDelete(PCWSTR pwz);
-VOID NoteCleanup(PCSTR psz);
-VOID NoteCleanup(PCWSTR pwz);
+void ExitFunc();
+void Print(PCSTR psz, ...);
+void NoteRead(PCSTR psz);
+void NoteRead(PCWSTR pwz);
+void NoteWrite(PCSTR psz);
+void NoteWrite(PCWSTR pwz);
+void NoteDelete(PCSTR psz);
+void NoteDelete(PCWSTR pwz);
+void NoteCleanup(PCSTR psz);
+void NoteCleanup(PCWSTR pwz);
 
 PBYTE LoadFile(HANDLE hFile, DWORD cbFile);
 static PCHAR RemoveReturns(PCHAR pszBuffer);
 static PWCHAR RemoveReturns(PWCHAR pwzBuffer);
 
-VOID AssertFailed(CONST PCHAR pszMsg, CONST PCHAR pszFile, ULONG nLine);
+void AssertFailed(CONST PCHAR pszMsg, CONST PCHAR pszFile, ULONG nLine);
 
-int WINAPI Mine_EntryPoint(VOID);
-VOID WINAPI Mine_ExitProcess(UINT a0);
+int WINAPI Mine_EntryPoint(void);
+void WINAPI Mine_ExitProcess(UINT a0);
 
 //////////////////////////////////////////////////////////////////////////////
 //
-int (WINAPI * Real_EntryPoint)(VOID)
-    = NULL;
+int (WINAPI * Real_EntryPoint)(void) = nullptr;
 
 BOOL (WINAPI * Real_CreateDirectoryW)(LPCWSTR a0,
                                       LPSECURITY_ATTRIBUTES a1)
@@ -239,7 +239,7 @@ BOOL (WINAPI * Real_PrivCopyFileExW)(LPCWSTR  lpExistingFileName,
                                      LPVOID  lpData,
                                      LPBOOL  pbCancel,
                                      DWORD  dwCopyFlags)
-    = NULL;
+    = nullptr;
 
 BOOL (WINAPI * Real_CreateHardLinkA)(LPCSTR a0,
                                      LPCSTR a1,
@@ -312,20 +312,20 @@ BOOL (WINAPI * Real_WriteFileEx)(HANDLE a0,
     = WriteFileEx;
 
 BOOL (WINAPI * Real_WriteConsoleA)(HANDLE a0,
-                                      const VOID* a1,
+                                      const void* a1,
                                       DWORD a2,
                                       LPDWORD a3,
                                       LPVOID a4)
     = WriteConsoleA;
 
 BOOL (WINAPI * Real_WriteConsoleW)(HANDLE a0,
-                                      const VOID* a1,
+                                      const void* a1,
                                       DWORD a2,
                                       LPDWORD a3,
                                       LPVOID a4)
     = WriteConsoleW;
 
-VOID (WINAPI * Real_ExitProcess)(UINT a0)
+void (WINAPI * Real_ExitProcess)(UINT a0)
     = ExitProcess;
 
 DWORD (WINAPI * Real_ExpandEnvironmentStringsA)(PCSTR lpSrc, PCHAR lpDst, DWORD nSize)
@@ -340,1154 +340,1341 @@ DWORD (WINAPI * Real_GetEnvironmentVariableA)(PCSTR lpName, PCHAR lpBuffer, DWOR
 DWORD (WINAPI * Real_GetEnvironmentVariableW)(PCWSTR lpName, PWCHAR lpBuffer, DWORD nSize)
     = GetEnvironmentVariableW;
 
-PCWSTR (CDECL * Real_wgetenv)(PCWSTR var) = NULL;
-PCSTR (CDECL * Real_getenv)(PCSTR var) = NULL;
-DWORD (CDECL * Real_getenv_s)(DWORD *pValue, PCHAR pBuffer, DWORD cBuffer, PCSTR varname) = NULL;
-DWORD (CDECL * Real_wgetenv_s)(DWORD *pValue, PWCHAR pBuffer, DWORD cBuffer, PCWSTR varname) = NULL;
-DWORD (CDECL * Real_dupenv_s)(PCHAR *ppBuffer, DWORD *pcBuffer, PCSTR varname) = NULL;
-DWORD (CDECL * Real_wdupenv_s)(PWCHAR *ppBuffer, DWORD *pcBuffer, PCWSTR varname) = NULL;
+PCWSTR (CDECL * Real_wgetenv)(PCWSTR var) = nullptr;
+PCSTR (CDECL * Real_getenv)(PCSTR var) = nullptr;
+DWORD (CDECL * Real_getenv_s)(DWORD *pValue, PCHAR pBuffer, DWORD cBuffer, PCSTR varname) = nullptr;
+DWORD (CDECL * Real_wgetenv_s)(DWORD *pValue, PWCHAR pBuffer, DWORD cBuffer, PCWSTR varname) = nullptr;
+DWORD (CDECL * Real_dupenv_s)(PCHAR *ppBuffer, DWORD *pcBuffer, PCSTR varname) = nullptr;
+DWORD (CDECL * Real_wdupenv_s)(PWCHAR *ppBuffer, DWORD *pcBuffer, PCWSTR varname) = nullptr;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-static VOID Copy(PWCHAR pwzDst, PCWSTR pwzSrc)
+static void Copy(PWCHAR pwzDst, PCWSTR pwzSrc)
 {
-    while (*pwzSrc) {
-        *pwzDst++ = *pwzSrc++;
-    }
-    *pwzDst = '\0';
+	while (*pwzSrc)
+	{
+		*pwzDst++ = *pwzSrc++;
+	}
+
+	*pwzDst = '\0';
 }
 
 static DWORD Size(PCWSTR pwzSrc)
 {
-    DWORD c = 0;
-    while (pwzSrc[c]) {
-        c++;
-    }
-    return c;
+	DWORD c = 0;
+	while (pwzSrc[c])
+	{
+		c++;
+	}
+
+	return c;
 }
 
 static PCWSTR Save(PCWSTR pwzSrc)
 {
-    DWORD c = (Size(pwzSrc) + 1) * sizeof(WCHAR);
-    PWCHAR pwzDst = (PWCHAR)GlobalAlloc(GPTR, c);
-    CopyMemory(pwzDst, pwzSrc, c);
+	DWORD c = (Size(pwzSrc) + 1) * sizeof(WCHAR);
+	PWCHAR pwzDst = (PWCHAR)GlobalAlloc(GPTR, c);
+	CopyMemory(pwzDst, pwzSrc, c);
 
-    return pwzDst;
+	return pwzDst;
 }
 
-static BOOL HasSpace(PCWSTR pwz)
+static bool HasSpace(PCWSTR pwz)
 {
-    for (; *pwz; pwz++) {
-        if (*pwz == ' ' || *pwz == '\t' || *pwz == '\r' || *pwz == '\n') {
-            return TRUE;
-        }
-    }
-    return FALSE;
+	for (; *pwz; pwz++)
+	{
+		if (*pwz == ' ' || *pwz == '\t' || *pwz == '\r' || *pwz == '\n')
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
-static BOOL HasChar(PCWSTR pwz, WCHAR w)
+static bool HasChar(PCWSTR pwz, WCHAR w)
 {
-    for (; *pwz; pwz++) {
-        if (*pwz == w) {
-            return TRUE;
-        }
-    }
-    return FALSE;
+	for (; *pwz; pwz++)
+	{
+		if (*pwz == w)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 static DWORD Compare(PCWSTR pwzA, PCWSTR pwzB)
 {
-    for (;;) {
-        WCHAR cA = *pwzA++;
-        WCHAR cB = *pwzB++;
+	for (;;)
+	{
+		WCHAR cA = *pwzA++;
+		WCHAR cB = *pwzB++;
 
-        if (cA >= 'A' && cA <= 'Z') {
-            cA += ('a' - 'A');
-        }
-        if (cB >= 'A' && cB <= 'Z') {
-            cB += ('a' - 'A');
-        }
+		if (cA >= 'A' && cA <= 'Z')
+		{
+			cA += ('a' - 'A');
+		}
 
-        if (cA == 0 && cB == 0) {
-            return 0;
-        }
-        if (cA != cB) {
-            return cA - cB;
-        }
-    }
+		if (cB >= 'A' && cB <= 'Z')
+		{
+			cB += ('a' - 'A');
+		}
+
+		if (cA == 0 && cB == 0)
+		{
+			return 0;
+		}
+
+		if (cA != cB)
+		{
+			return cA - cB;
+		}
+	}
 }
 
 static DWORD Compare(PCWSTR pwzA, PCSTR pszB)
 {
-    for (;;) {
-        WCHAR cA = *pwzA++;
-        WCHAR cB = *pszB++;
+	for (;;)
+	{
+		WCHAR cA = *pwzA++;
+		WCHAR cB = *pszB++;
 
-        if (cA >= 'A' && cA <= 'Z') {
-            cA += ('a' - 'A');
-        }
-        if (cB >= 'A' && cB <= 'Z') {
-            cB += ('a' - 'A');
-        }
+		if (cA >= 'A' && cA <= 'Z')
+		{
+			cA += ('a' - 'A');
+		}
 
-        if (cA == 0 && cB == 0) {
-            return 0;
-        }
-        if (cA != cB) {
-            return cA - cB;
-        }
-    }
+		if (cB >= 'A' && cB <= 'Z')
+		{
+			cB += ('a' - 'A');
+		}
+
+		if (cA == 0 && cB == 0)
+		{
+			return 0;
+		}
+
+		if (cA != cB)
+		{
+			return cA - cB;
+		}
+	}
 }
 
 static DWORD Compare(PCSTR pszA, PCSTR pszB)
 {
-    for (;;) {
-        CHAR cA = *pszA++;
-        CHAR cB = *pszB++;
+	for (;;)
+	{
+		CHAR cA = *pszA++;
+		CHAR cB = *pszB++;
 
-        if (cA >= 'A' && cA <= 'Z') {
-            cA += ('a' - 'A');
-        }
-        if (cB >= 'A' && cB <= 'Z') {
-            cB += ('a' - 'A');
-        }
+		if (cA >= 'A' && cA <= 'Z')
+		{
+			cA += ('a' - 'A');
+		}
 
-        if (cA == 0 && cB == 0) {
-            return 0;
-        }
-        if (cA != cB) {
-            return cA - cB;
-        }
-    }
+		if (cB >= 'A' && cB <= 'Z')
+		{
+			cB += ('a' - 'A');
+		}
+
+		if (cA == 0 && cB == 0)
+		{
+			return 0;
+		}
+
+		if (cA != cB)
+		{
+			return cA - cB;
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 static PCSTR s_rpszMsvcrNames[] = {
-    "msvcr80.dll",
-    "msvcr80d.dll",
-    "msvcr71.dll",
-    "msvcr71d.dll",
-    "msvcr70.dll",
-    "msvcr70d.dll",
-    NULL
+	"msvcr80.dll",
+	"msvcr80d.dll",
+	"msvcr71.dll",
+	"msvcr71d.dll",
+	"msvcr70.dll",
+	"msvcr70d.dll",
+	nullptr,
 };
 
-HMODULE s_hMsvcr = NULL;
-PCSTR s_pszMsvcr = NULL;
+HMODULE s_hMsvcr = nullptr;
+PCSTR s_pszMsvcr = nullptr;
 
 static BOOL WINAPI ImportFileCallback(PVOID pContext, HMODULE hFile, PCSTR pszFile)
 {
-    UNUSED(pContext);
+	UNUSED(pContext);
 
-    if (pszFile != NULL) {
-        for (int i = 0; s_rpszMsvcrNames[i]; i++) {
-            if (Compare(pszFile, s_rpszMsvcrNames[i]) == 0) {
-                s_hMsvcr = hFile;
-                s_pszMsvcr = s_rpszMsvcrNames[i];
-                return FALSE;
-            }
-        }
-    }
-    return TRUE;
+	if (pszFile != nullptr)
+	{
+		for (int i = 0; s_rpszMsvcrNames[i]; i++)
+		{
+			if (Compare(pszFile, s_rpszMsvcrNames[i]) == 0)
+			{
+				s_hMsvcr = hFile;
+				s_pszMsvcr = s_rpszMsvcrNames[i];
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
-BOOL FindMsvcr()
+bool FindMsvcr()
 {
-    DetourEnumerateImports(NULL, NULL, ImportFileCallback, NULL);
+	DetourEnumerateImports(nullptr, nullptr, ImportFileCallback, nullptr);
 
-    if (s_hMsvcr != NULL) {
-        return TRUE;
-    }
+	if (s_hMsvcr != nullptr)
+	{
+		return true;
+	}
 
-    return FALSE;
+	return false;
 }
 
-BOOL FindProc(PVOID * ppvCode, PCSTR pwzFunc)
+bool FindProc(PVOID * ppvCode, PCSTR pwzFunc)
 {
-    PVOID pv = GetProcAddress(s_hMsvcr, pwzFunc);
-    if (pv != NULL) {
-        *ppvCode = pv;
-        return TRUE;
-    }
-    else {
-        *ppvCode = NULL;
-        return FALSE;
-    }
+	PVOID pv = GetProcAddress(s_hMsvcr, pwzFunc);
+	if (pv != nullptr)
+	{
+		*ppvCode = pv;
+		return true;
+	}
+	else
+	{
+		*ppvCode = nullptr;
+		return false;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////
 //
 struct EnvInfo
 {
-    DWORD   m_nHash;
-    DWORD   m_nIndex;
-    PCWSTR  m_pwzVar;
-    PCWSTR  m_pwzVal;
-    BOOL    m_fDefined;
-    BOOL    m_fUsed;
-    BOOL    m_fOriginal;
+	DWORD m_nHash;
+	DWORD m_nIndex;
+	PCWSTR m_pwzVar;
+	PCWSTR m_pwzVal;
+	bool m_fDefined;
+	bool m_fUsed;
+	bool m_fOriginal;
 };
 
 //////////////////////////////////////////////////////////////////////////////
 //
 class EnvVars
 {
-  private:
-    static CRITICAL_SECTION s_csLock;
-    static DWORD            s_nVars;
-    static DWORD            s_nCapacity;
-    static EnvInfo **       s_pVars;
+private:
+	static CRITICAL_SECTION s_csLock;
+	static DWORD s_nVars;
+	static DWORD s_nCapacity;
+	static EnvInfo** s_pVars;
 
-  private:
-    static DWORD Hash(PCWSTR pwzVar)
-    {
-        DWORD hash = 5381;
-        while (*pwzVar != 0) {
-            WCHAR c = *pwzVar++;
-            if (c >= 'A' && c <= 'Z') {
-                c += ('a' - 'A');
-            }
-            hash = ((hash << 5) + hash) + c;
-        }
-        return hash;
-    }
+private:
+	static DWORD Hash(PCWSTR pwzVar)
+	{
+		DWORD hash = 5381;
+		while (*pwzVar != 0)
+		{
+			WCHAR c = *pwzVar++;
+			if (c >= 'A' && c <= 'Z')
+			{
+				c += ('a' - 'A');
+			}
 
-    static VOID LockAcquire()
-    {
-        EnterCriticalSection(&s_csLock);
-    }
+			hash = ((hash << 5) + hash) + c;
+		}
 
-    static VOID LockRelease()
-    {
-        LeaveCriticalSection(&s_csLock);
-    }
+		return hash;
+	}
 
-    static VOID Resize(DWORD nCapacity);
-    static VOID Set(EnvInfo *info);
-    static EnvInfo * Find(PCWSTR pwzVar);
+	static void LockAcquire()
+	{
+		EnterCriticalSection(&s_csLock);
+	}
 
-  public:
-    static BOOL Equal(PCWSTR pwzA, PCWSTR pwzB)
-    {
-        return (Compare(pwzA, pwzB) == 0);
-    }
+	static void LockRelease()
+	{
+		LeaveCriticalSection(&s_csLock);
+	}
 
-  public:
-    static VOID Initialize();
-    static VOID Dump();
+	static void Resize(DWORD nCapacity);
+	static void Set(EnvInfo *info);
+	static EnvInfo * Find(PCWSTR pwzVar);
 
-    static VOID Add(PCWSTR pwzVar, PCWSTR pwzVal);
+public:
+	static bool Equal(PCWSTR pwzA, PCWSTR pwzB)
+	{
+		return (Compare(pwzA, pwzB) == 0);
+	}
 
-    static VOID Used(PCWSTR pwzVar);
-    static VOID Used(PCSTR pszVar);
+public:
+	static void Initialize();
+	static void Dump();
+
+	static void Add(PCWSTR pwzVar, PCWSTR pwzVal);
+
+	static void Used(PCWSTR pwzVar);
+	static void Used(PCSTR pszVar);
 };
 
-CRITICAL_SECTION    EnvVars::s_csLock;
-DWORD               EnvVars::s_nVars = 0;
-DWORD               EnvVars::s_nCapacity = 0;
-EnvInfo **          EnvVars::s_pVars = NULL;
+CRITICAL_SECTION EnvVars::s_csLock;
+DWORD EnvVars::s_nVars = 0;
+DWORD EnvVars::s_nCapacity = 0;
+EnvInfo ** EnvVars::s_pVars = nullptr;
 
-VOID EnvVars::Initialize()
+void EnvVars::Initialize()
 {
-    InitializeCriticalSection(&s_csLock);
+	InitializeCriticalSection(&s_csLock);
 
-    Resize(919);
+	Resize(919);
 }
 
-VOID EnvVars::Resize(DWORD nCapacity)
+void EnvVars::Resize(DWORD nCapacity)
 {
-    if (nCapacity > s_nCapacity) {
-        DWORD nOld = s_nCapacity;
-        EnvInfo ** pOld = s_pVars;
+	if (nCapacity > s_nCapacity)
+	{
+		DWORD nOld = s_nCapacity;
+		EnvInfo ** pOld = s_pVars;
 
-        // DEBUG_BREAK();
+		// DEBUG_BREAK();
 
-        s_pVars = (EnvInfo **)GlobalAlloc(GPTR, nCapacity * sizeof(EnvInfo *));
-        s_nCapacity = nCapacity;
+		s_pVars = (EnvInfo **)GlobalAlloc(GPTR, nCapacity * sizeof(EnvInfo *));
+		s_nCapacity = nCapacity;
 
-        if (pOld != NULL) {
-            for (DWORD n = 0; n < nOld; n++) {
-                if (pOld[n] != NULL) {
-                    Set(pOld[n]);
-                }
-            }
-            GlobalFree((HGLOBAL)pOld);
-            pOld = NULL;
-        }
-    }
+		if (pOld != nullptr)
+		{
+			for (DWORD n = 0; n < nOld; n++)
+			{
+				if (pOld[n] != nullptr)
+				{
+					Set(pOld[n]);
+				}
+			}
+
+			GlobalFree((HGLOBAL)pOld);
+			pOld = nullptr;
+		}
+	}
 }
 
-VOID EnvVars::Set(EnvInfo *info)
+void EnvVars::Set(EnvInfo *info)
 {
-    DWORD hash = info->m_nHash;
-    DWORD slot = hash % s_nCapacity;
-    DWORD death = 0;
+	DWORD hash = info->m_nHash;
+	DWORD slot = hash % s_nCapacity;
+	DWORD death = 0;
 
-    // Find an empty slot.
-    for (; s_pVars[slot] != NULL; slot = (slot + 1) % s_nCapacity) {
-        if (++death > s_nCapacity) {
-            // We should have dropped out at some point...
-            DEBUG_BREAK();
-        }
-    }
+	// Find an empty slot.
+	for (; s_pVars[slot] != nullptr; slot = (slot + 1) % s_nCapacity)
+	{
+		if (++death > s_nCapacity)
+		{
+			// We should have dropped out at some point...
+			DEBUG_BREAK();
+		}
+	}
 
-    s_pVars[slot] = info;
+	s_pVars[slot] = info;
 }
 
 EnvInfo * EnvVars::Find(PCWSTR pwzVar)
 {
-    DWORD hash = Hash(pwzVar);
-    DWORD slot = hash % s_nCapacity;
+	DWORD hash = Hash(pwzVar);
+	DWORD slot = hash % s_nCapacity;
 
-    LockAcquire();
+	LockAcquire();
 
-    // Find the the matching slot, or an empty one.
-    for (; s_pVars[slot] != NULL; slot = (slot + 1) % s_nCapacity) {
-        if (Equal(s_pVars[slot]->m_pwzVar, pwzVar)) {
-            LockRelease();
-            return s_pVars[slot];
-        }
-    }
-    LockRelease();
-    return NULL;
+	// Find the the matching slot, or an empty one.
+	for (; s_pVars[slot] != nullptr; slot = (slot + 1) % s_nCapacity)
+	{
+		if (Equal(s_pVars[slot]->m_pwzVar, pwzVar))
+		{
+			LockRelease();
+			return s_pVars[slot];
+		}
+	}
+
+	LockRelease();
+	return nullptr;
 }
 
-VOID EnvVars::Add(PCWSTR pwzVar, PCWSTR pwzVal)
+void EnvVars::Add(PCWSTR pwzVar, PCWSTR pwzVal)
 {
-    if (pwzVar == NULL) {
-        return;
-    }
+	if (pwzVar == nullptr)
+	{
+		return;
+	}
 
-    WCHAR wzVar[MAX_PATH];
-    PWCHAR pwzDst = wzVar;
-    while (*pwzVar) {
-        if (*pwzVar >= 'a' && *pwzVar <= 'z') {
-            *pwzDst++ = *pwzVar - ('a' - 'A');
-        }
-        else {
-            *pwzDst++ = *pwzVar;
-        }
-        pwzVar++;
-    }
-    *pwzDst = '\0';
-    pwzVar = wzVar;
+	WCHAR wzVar[MAX_PATH];
+	PWCHAR pwzDst = wzVar;
+	while (*pwzVar)
+	{
+		if (*pwzVar >= 'a' && *pwzVar <= 'z') {
+			*pwzDst++ = *pwzVar - ('a' - 'A');
+		}
+		else {
+			*pwzDst++ = *pwzVar;
+		}
+		pwzVar++;
+	}
 
-    WCHAR wzVal[] = L"";
-    if (pwzVal != NULL) {
-        while (*pwzVal == ' ' || *pwzVal == '\t') {
-            *pwzVal++;
-        }
-    }
-    else {
-        pwzVal = wzVal;
-    }
+	*pwzDst = '\0';
+	pwzVar = wzVar;
 
-    // Tblog("<!-- ::Add var=[%le] val=[%le] -->\n", pwzVar, pwzVal);
-    LockAcquire();
+	WCHAR wzVal[] = L"";
+	if (pwzVal != nullptr)
+	{
+		while (*pwzVal == ' ' || *pwzVal == '\t')
+		{
+			*pwzVal++;
+		}
+	}
+	else
+	{
+		pwzVal = wzVal;
+	}
 
-    // DEBUG_BREAK();
+	// Tblog("<!-- ::Add var=[%le] val=[%le] -->\n", pwzVar, pwzVal);
+	LockAcquire();
 
-    DWORD hash = Hash(pwzVar);
-    DWORD slot = hash % s_nCapacity;
-    EnvInfo *info = NULL;
-    DWORD death = 0;
+	// DEBUG_BREAK();
 
-    // Find the the matching slot, or an empty one.
-    for (; s_pVars[slot] != NULL; slot = (slot + 1) % s_nCapacity) {
-        if (Equal(s_pVars[slot]->m_pwzVar, pwzVar)) {
-            LockRelease();
-            return;
-        }
-        if (++death > s_nCapacity) {
-            // We should have dropped out at some point...
-            DEBUG_BREAK();
-        }
-    }
+	DWORD hash = Hash(pwzVar);
+	DWORD slot = hash % s_nCapacity;
+	EnvInfo *info = nullptr;
+	DWORD death = 0;
 
-    // Add the var to list of known vars.
-    info = (EnvInfo *)GlobalAlloc(GPTR, sizeof(EnvInfo));
-    info->m_nHash = hash;
-    info->m_nIndex = s_nVars++;
-    info->m_pwzVar = Save(pwzVar);
-    info->m_pwzVal = Save(pwzVal);
-    if (pwzVal[0] == '\0') {
-        info->m_fDefined = FALSE;
-        info->m_fUsed = TRUE;
-    }
-    else {
-        info->m_fDefined = TRUE;
-    }
-    s_pVars[slot] = info;
+	// Find the the matching slot, or an empty one.
+	for (; s_pVars[slot] != nullptr; slot = (slot + 1) % s_nCapacity)
+	{
+		if (Equal(s_pVars[slot]->m_pwzVar, pwzVar))
+		{
+			LockRelease();
+			return;
+		}
+		if (++death > s_nCapacity)
+		{
+			// We should have dropped out at some point...
+			DEBUG_BREAK();
+		}
+	}
 
-    // Check if we should grow the table.
-    if (s_nVars > (s_nCapacity / 2)) {
-        Resize(s_nCapacity * 2 - 1);
-    }
+	// Add the var to list of known vars.
+	info = (EnvInfo *)GlobalAlloc(GPTR, sizeof(EnvInfo));
+	info->m_nHash = hash;
+	info->m_nIndex = s_nVars++;
+	info->m_pwzVar = Save(pwzVar);
+	info->m_pwzVal = Save(pwzVal);
+	if (pwzVal[0] == '\0')
+	{
+		info->m_fDefined = false;
+		info->m_fUsed = true;
+	}
+	else
+	{
+		info->m_fDefined = true;
+	}
 
-    LockRelease();
+	s_pVars[slot] = info;
+
+	// Check if we should grow the table.
+	if (s_nVars > (s_nCapacity / 2))
+	{
+		Resize(s_nCapacity * 2 - 1);
+	}
+
+	LockRelease();
 }
 
-VOID EnvVars::Used(PCWSTR pwzVar)
+void EnvVars::Used(PCWSTR pwzVar)
 {
-    if (pwzVar != NULL) {
-        // Tblog("<!-- Used [%le] -->\n", pwzVar);
-        EnvInfo *pInfo = Find(pwzVar);
-        if (pInfo) {
-            pInfo->m_fUsed = TRUE;
-        }
+	if (pwzVar != nullptr)
+	{
+		// Tblog("<!-- Used [%le] -->\n", pwzVar);
+		EnvInfo *pInfo = Find(pwzVar);
+		if (pInfo)
+		{
+			pInfo->m_fUsed = true;
+		}
 #if 0
-        else {
-            Add(pwzVar, NULL);
-        }
+		else
+		{
+			Add(pwzVar, nullptr);
+		}
 #endif
-    }
+	}
 }
 
-VOID EnvVars::Used(PCSTR pszVar)
+void EnvVars::Used(PCSTR pszVar)
 {
-    if (pszVar != NULL) {
-        WCHAR wzVar[MAX_PATH];
-        PWCHAR pwzVar = wzVar;
-        while (*pszVar) {
-            *pwzVar++ = *pszVar++;
-        }
-        *pwzVar = '\0';
+	if (pszVar != nullptr)
+	{
+		WCHAR wzVar[MAX_PATH];
+		PWCHAR pwzVar = wzVar;
+		while (*pszVar)
+		{
+			*pwzVar++ = *pszVar++;
+		}
 
-        Used(wzVar);
-    }
+		*pwzVar = '\0';
+
+		Used(wzVar);
+	}
 }
 
-VOID EnvVars::Dump()
+void EnvVars::Dump()
 {
-    if (s_nVars == 0) {
-        return;
-    }
+	if (s_nVars == 0)
+	{
+		return;
+	}
 
-    LockAcquire();
+	LockAcquire();
 
-    Tblog("<t:Vars>\n");
+	Tblog("<t:Vars>\n");
 
-    // Remove any variables that match the original environment.
-    PCWSTR pwzz = s_Payload.wzzEnvironment;
-    while (*pwzz) {
-        WCHAR wzVar[MAX_PATH];
-        PWCHAR pwzVar = wzVar;
+	// Remove any variables that match the original environment.
+	PCWSTR pwzz = s_Payload.wzzEnvironment;
+	while (*pwzz)
+	{
+		WCHAR wzVar[MAX_PATH];
+		PWCHAR pwzVar = wzVar;
 
-        while (*pwzz && *pwzz != '=') {
-            *pwzVar++ = *pwzz++;
-        }
-        *pwzVar = '\0';
-        if (*pwzz == '=') {
-            pwzz++;
-        }
+		while (*pwzz && *pwzz != '=')
+		{
+			*pwzVar++ = *pwzz++;
+		}
 
-        EnvInfo *pInfo = Find(wzVar);
-        if (pInfo) {
-            if (Compare(pwzz, pInfo->m_pwzVal) == 0) {
-                pInfo->m_fUsed = FALSE;
-            }
-        }
-        pwzz += Size(pwzz) + 1;
-    }
+		*pwzVar = '\0';
+		if (*pwzz == '=')
+		{
+			pwzz++;
+		}
 
+		EnvInfo *pInfo = Find(wzVar);
+		if (pInfo)
+		{
+			if (Compare(pwzz, pInfo->m_pwzVal) == 0)
+			{
+				pInfo->m_fUsed = false;
+			}
+		}
 
-    EnvInfo ** pSorted = (EnvInfo **)GlobalAlloc(GPTR, s_nVars * sizeof(EnvInfo *));
+		pwzz += Size(pwzz) + 1;
+	}
 
-    for (DWORD n = 0; n < s_nCapacity; n++) {
-        if (s_pVars[n] != NULL) {
-            if (s_pVars[n]->m_nIndex > s_nVars) {
-                DEBUG_BREAK();
-            }
-            pSorted[s_pVars[n]->m_nIndex] = s_pVars[n];
-        }
-    }
+	EnvInfo ** pSorted = (EnvInfo **)GlobalAlloc(GPTR, s_nVars * sizeof(EnvInfo *));
 
-    for (DWORD n = 0; n < s_nVars; n++) {
-        EnvInfo *pInfo = pSorted[n];
+	for (DWORD n = 0; n < s_nCapacity; n++)
+	{
+		if (s_pVars[n] != nullptr) {
+			if (s_pVars[n]->m_nIndex > s_nVars) {
+				DEBUG_BREAK();
+			}
+			pSorted[s_pVars[n]->m_nIndex] = s_pVars[n];
+		}
+	}
 
-        if (pInfo == NULL) {
-            Print("<!-- Warning: Missing %d of %d -->\n", n, s_nVars);
-            continue;
-        }
+	for (DWORD n = 0; n < s_nVars; n++)
+	{
+		EnvInfo *pInfo = pSorted[n];
 
-        if (pInfo->m_fUsed && pInfo->m_pwzVal[0]) {
-            Print("<t:Var var=\"%le\">%le</t:Var>\n", pInfo->m_pwzVar, pInfo->m_pwzVal);
-        }
-    }
-    GlobalFree((HGLOBAL)pSorted);
+		if (pInfo == nullptr)
+		{
+			Print("<!-- Warning: Missing %d of %d -->\n", n, s_nVars);
+			continue;
+		}
 
-    Tblog("</t:Vars>\n");
+		if (pInfo->m_fUsed && pInfo->m_pwzVal[0])
+		{
+			Print("<t:Var var=\"%le\">%le</t:Var>\n", pInfo->m_pwzVar, pInfo->m_pwzVal);
+		}
+	}
 
-    LockRelease();
+	GlobalFree((HGLOBAL)pSorted);
+
+	Tblog("</t:Vars>\n");
+
+	LockRelease();
 }
 
 void SaveEnvironment()
 {
-    LPWCH pwStrings = GetEnvironmentStringsW();
-    PCWSTR pwEnv = (PCWSTR)pwStrings;
+	LPWCH pwStrings = GetEnvironmentStringsW();
+	PCWSTR pwEnv = (PCWSTR)pwStrings;
 
-    while (*pwEnv != '\0') {
-        WCHAR wzVar[MAX_PATH];
-        PWCHAR pwzDst = wzVar;
-        PCWSTR pwzVal = NULL;
+	while (*pwEnv != '\0')
+	{
+		WCHAR wzVar[MAX_PATH];
+		PWCHAR pwzDst = wzVar;
+		PCWSTR pwzVal = nullptr;
 
-        if (*pwEnv == '=') {
-            *pwzDst++ = *pwEnv++;
-        }
-        while (*pwEnv != '\0' && *pwEnv != '=') {
-            *pwzDst++ = *pwEnv++;
-        }
-        *pwzDst++ = '\0';
+		if (*pwEnv == '=')
+		{
+			*pwzDst++ = *pwEnv++;
+		}
 
-        if (*pwEnv == '=') {
-            pwEnv++;
-        }
+		while (*pwEnv != '\0' && *pwEnv != '=')
+		{
+			*pwzDst++ = *pwEnv++;
+		}
 
-        pwzVal = pwEnv;
-        while (*pwEnv != '\0') {
-            pwEnv++;
-        }
-        if (*pwEnv == '\0') {
-            pwEnv++;
-        }
-        if (wzVar[0] != '=') {
-            EnvVars::Add(wzVar, pwzVal);
-        }
-    }
-    FreeEnvironmentStringsW(pwStrings);
+		*pwzDst++ = '\0';
+
+		if (*pwEnv == '=')
+		{
+			pwEnv++;
+		}
+
+		pwzVal = pwEnv;
+		while (*pwEnv != '\0')
+		{
+			pwEnv++;
+		}
+
+		if (*pwEnv == '\0')
+		{
+			pwEnv++;
+		}
+
+		if (wzVar[0] != '=')
+		{
+			EnvVars::Add(wzVar, pwzVal);
+		}
+	}
+
+	FreeEnvironmentStringsW(pwStrings);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 //
 struct ProcInfo
 {
-    HANDLE  m_hProc;
-    DWORD   m_nProcId;
-    DWORD   m_nProc;
+	HANDLE m_hProc;
+	DWORD m_nProcId;
+	DWORD m_nProc;
 };
 
 class Procs
 {
-  private:
-    static CRITICAL_SECTION s_csLock;
-    static DWORD            s_nProcs;
-    static ProcInfo         s_rProcs[4049];
+private:
+	static CRITICAL_SECTION s_csLock;
+	static DWORD s_nProcs;
+	static ProcInfo s_rProcs[4049];
 
-  private:
-    static ProcInfo& HashToSlot(HANDLE handle)
-    {
-        return s_rProcs[((DWORD_PTR)handle) % ARRAYSIZE(s_rProcs)];
-    }
+private:
+	static ProcInfo& HashToSlot(HANDLE handle)
+	{
+		return s_rProcs[((DWORD_PTR)handle) % ARRAYSIZE(s_rProcs)];
+	}
 
-    static VOID LockAcquire()
-    {
-        EnterCriticalSection(&s_csLock);
-    }
+	static void LockAcquire()
+	{
+		EnterCriticalSection(&s_csLock);
+	}
 
-    static VOID LockRelease()
-    {
-        LeaveCriticalSection(&s_csLock);
-    }
+	static void LockRelease()
+	{
+		LeaveCriticalSection(&s_csLock);
+	}
 
-  public:
-    static VOID Initialize();
-    static ProcInfo * Create(HANDLE hProc, DWORD nProcId);
-    static BOOL Close(HANDLE hProc);
+public:
+	static void Initialize();
+	static ProcInfo * Create(HANDLE hProc, DWORD nProcId);
+	static bool Close(HANDLE hProc);
 };
 
-CRITICAL_SECTION    Procs::s_csLock;
-DWORD               Procs::s_nProcs = 0;
-ProcInfo            Procs::s_rProcs[4049];
+CRITICAL_SECTION Procs::s_csLock;
+DWORD Procs::s_nProcs = 0;
+ProcInfo Procs::s_rProcs[4049];
 
-VOID Procs::Initialize()
+void Procs::Initialize()
 {
-    InitializeCriticalSection(&s_csLock);
-    for (DWORD i = 0; i < ARRAYSIZE(s_rProcs); i++) {
-        s_rProcs[i].m_hProc = INVALID_HANDLE_VALUE;
-    }
+	InitializeCriticalSection(&s_csLock);
+	for (DWORD i = 0; i < ARRAYSIZE(s_rProcs); i++)
+	{
+		s_rProcs[i].m_hProc = INVALID_HANDLE_VALUE;
+	}
 }
 
 ProcInfo * Procs::Create(HANDLE hProc, DWORD nProcId)
 {
-    LockAcquire();
-    s_nProcs++;
-    ProcInfo& slot = HashToSlot(hProc);
-    slot.m_hProc = hProc;
-    slot.m_nProcId = nProcId;
-    slot.m_nProc = s_nProcs;
-    Print("<!-- CreateProcess (%d)-->\n", slot.m_nProc);
-    LockRelease();
+	LockAcquire();
+	s_nProcs++;
+	ProcInfo& slot = HashToSlot(hProc);
+	slot.m_hProc = hProc;
+	slot.m_nProcId = nProcId;
+	slot.m_nProc = s_nProcs;
+	Print("<!-- CreateProcess (%d)-->\n", slot.m_nProc);
+	LockRelease();
 
-    return &slot;
+	return &slot;
 }
 
-BOOL Procs::Close(HANDLE hProc)
+bool Procs::Close(HANDLE hProc)
 {
-    BOOL first = false;
+	bool first = false;
 
-    LockAcquire();
-    ProcInfo& slot = HashToSlot(hProc);
-    if (slot.m_hProc == hProc) {
-        first = true;
-        Print("<!-- CloseProcess (%d)-->\n", slot.m_nProc);
-        slot.m_hProc = INVALID_HANDLE_VALUE;
-        slot.m_nProcId = 0;
-        slot.m_nProc = 0;
-        s_nProcs--;
-    }
-    LockRelease();
+	LockAcquire();
+	ProcInfo& slot = HashToSlot(hProc);
+	if (slot.m_hProc == hProc)
+	{
+		first = true;
+		Print("<!-- CloseProcess (%d)-->\n", slot.m_nProc);
+		slot.m_hProc = INVALID_HANDLE_VALUE;
+		slot.m_nProcId = 0;
+		slot.m_nProc = 0;
+		s_nProcs--;
+	}
 
-    return first;
+	LockRelease();
+
+	return first;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 //
 struct FileInfo
 {
-    DWORD   m_nHash;
-    DWORD   m_nIndex;
+	DWORD m_nHash;
+	DWORD m_nIndex;
 
-    BOOL    m_fCantRead;        // Set for file that are opened Create
-    BOOL    m_fRead;
-    BOOL    m_fWrite;
+	bool m_fCantRead; // Set for file that are opened Create
+	bool m_fRead;
+	bool m_fWrite;
 
-    BOOL    m_fDelete;
-    BOOL    m_fCleanup;
-    BOOL    m_fSystemPath;
-    BOOL    m_fTemporaryPath;
-    BOOL    m_fTemporaryFile;
+	bool m_fDelete;
+	bool m_fCleanup;
+	bool m_fSystemPath;
+	bool m_fTemporaryPath;
+	bool m_fTemporaryFile;
 
-    DWORD   m_cbRead;
-    DWORD   m_cbWrite;
+	DWORD m_cbRead;
+	DWORD m_cbWrite;
 
-    BOOL    m_fAppend;
-    BOOL    m_fAbsorbed;        // Absorbed by TraceBld.
-    BOOL    m_fDirectory;
+	bool m_fAppend;
+	bool m_fAbsorbed; // Absorbed by TraceBld.
+	bool m_fDirectory;
 
-    PCWSTR  m_pwzPath;
-    PBYTE   m_pbContent;
-    DWORD   m_cbContent;
-
+	PCWSTR m_pwzPath;
+	PBYTE m_pbContent;
+	DWORD m_cbContent;
 };
 
 //////////////////////////////////////////////////////////////////////////////
 //
 class FileNames
 {
-  private:
-    static CRITICAL_SECTION s_csLock;
-    static DWORD            s_nFiles;
-    static DWORD            s_nCapacity;
-    static FileInfo **      s_pFiles;
+private:
+	static CRITICAL_SECTION s_csLock;
+	static DWORD s_nFiles;
+	static DWORD s_nCapacity;
+	static FileInfo ** s_pFiles;
 
-  public:
-    static WCHAR            s_wzSysPath[MAX_PATH];
-    static WCHAR            s_wzS64Path[MAX_PATH];
-    static WCHAR            s_wzTmpPath[MAX_PATH];
-    static WCHAR            s_wzExePath[MAX_PATH];
-    static DWORD            s_wcSysPath;
-    static DWORD            s_wcS64Path;
-    static DWORD            s_wcTmpPath;
-    static DWORD            s_wcExePath;
+public:
+	static WCHAR s_wzSysPath[MAX_PATH];
+	static WCHAR s_wzS64Path[MAX_PATH];
+	static WCHAR s_wzTmpPath[MAX_PATH];
+	static WCHAR s_wzExePath[MAX_PATH];
+	static DWORD s_wcSysPath;
+	static DWORD s_wcS64Path;
+	static DWORD s_wcTmpPath;
+	static DWORD s_wcExePath;
 
-  private:
-    static DWORD Hash(PCWSTR pwzFile)
-    {
-        DWORD hash = 5381;
-        while (*pwzFile != 0) {
-            WCHAR c = *pwzFile++;
-            if (c >= 'A' && c <= 'Z') {
-                c += ('a' - 'A');
-            }
-            hash = ((hash << 5) + hash) + c;
-        }
-        return hash;
-    }
+private:
+	static DWORD Hash(PCWSTR pwzFile)
+	{
+		DWORD hash = 5381;
+		while (*pwzFile != 0)
+		{
+			WCHAR c = *pwzFile++;
+			if (c >= 'A' && c <= 'Z')
+			{
+				c += ('a' - 'A');
+			}
 
-    static VOID LockAcquire()
-    {
-        EnterCriticalSection(&s_csLock);
-    }
+			hash = ((hash << 5) + hash) + c;
+		}
 
-    static VOID LockRelease()
-    {
-        LeaveCriticalSection(&s_csLock);
-    }
+		return hash;
+	}
 
-    static VOID Resize(DWORD nCapacity);
-    static VOID Set(FileInfo *info);
-    static VOID Replace(PWCHAR pwzBuffer, PWCHAR pwzDstEnd, DWORD cwOld, PCWSTR pwzNew);
+	static void LockAcquire()
+	{
+		EnterCriticalSection(&s_csLock);
+	}
 
-  public:
-    static BOOL Equal(PCWSTR pwzA, PCWSTR pwzB)
-    {
-        return (Compare(pwzA, pwzB) == 0);
-    }
+	static void LockRelease()
+	{
+		LeaveCriticalSection(&s_csLock);
+	}
 
-    static BOOL PrefixMatch(PCWSTR pwzFile, PCWSTR pwzPrefix)
-    {
-        for (;;) {
-            WCHAR cFile = *pwzFile++;
-            WCHAR cPrefix = *pwzPrefix++;
+	static void Resize(DWORD nCapacity);
+	static void Set(FileInfo *info);
+	static void Replace(PWCHAR pwzBuffer, PWCHAR pwzDstEnd, DWORD cwOld, PCWSTR pwzNew);
 
-            if (cFile >= 'A' && cFile <= 'Z') {
-                cFile += ('a' - 'A');
-            }
-            if (cPrefix >= 'A' && cPrefix <= 'Z') {
-                cPrefix += ('a' - 'A');
-            }
+public:
+	static bool Equal(PCWSTR pwzA, PCWSTR pwzB)
+	{
+		return (Compare(pwzA, pwzB) == 0);
+	}
 
-            if (cPrefix == 0) {
-                return TRUE;
-            }
-            if (cFile != cPrefix) {
-                return FALSE;
-            }
-        }
-    }
+	static bool PrefixMatch(PCWSTR pwzFile, PCWSTR pwzPrefix)
+	{
+		for (;;)
+		{
+			WCHAR cFile = *pwzFile++;
+			WCHAR cPrefix = *pwzPrefix++;
 
-    static BOOL SuffixMatch(PCWSTR pwzFile, PCWSTR pwzSuffix)
-    {
-        // Move both pointers to the end of the strings.
-        PCWSTR pwzFileBeg = pwzFile;
-        while (*pwzFile) {
-            pwzFile++;
-        }
+			if (cFile >= 'A' && cFile <= 'Z')
+			{
+				cFile += ('a' - 'A');
+			}
 
-        PCWSTR pwzSuffixBeg = pwzSuffix;
-        while (*pwzSuffix) {
-            pwzSuffix++;
-        }
+			if (cPrefix >= 'A' && cPrefix <= 'Z')
+			{
+				cPrefix += ('a' - 'A');
+			}
 
-        // Now walk backwards comparing strings.
-        for (;;) {
-            WCHAR cFile = (pwzFile > pwzFileBeg) ? *--pwzFile : 0;
-            WCHAR cSuffix = (pwzSuffix > pwzSuffixBeg) ? *--pwzSuffix : 0;
+			if (cPrefix == 0)
+			{
+				return true;
+			}
 
-            if (cFile >= 'A' && cFile <= 'Z') {
-                cFile += ('a' - 'A');
-            }
-            if (cSuffix >= 'A' && cSuffix <= 'Z') {
-                cSuffix += ('a' - 'A');
-            }
+			if (cFile != cPrefix)
+			{
+				return false;
+			}
+		}
+	}
 
-            if (cSuffix == 0) {
-                return TRUE;
-            }
-            if (cFile != cSuffix) {
-                return FALSE;
-            }
-        }
-    }
+	static bool SuffixMatch(PCWSTR pwzFile, PCWSTR pwzSuffix)
+	{
+		// Move both pointers to the end of the strings.
+		PCWSTR pwzFileBeg = pwzFile;
+		while (*pwzFile)
+		{
+			pwzFile++;
+		}
 
-    static VOID EndInSlash(PWCHAR pwzPath)
-    {
-        if (*pwzPath) {
-            while (*pwzPath) {
-                pwzPath++;
-            }
-            if (pwzPath[-1] != '\\') {
-                *pwzPath++ = '\\';
-                *pwzPath = '\0';
-            }
-        }
-    }
+		PCWSTR pwzSuffixBeg = pwzSuffix;
+		while (*pwzSuffix)
+		{
+			pwzSuffix++;
+		}
 
-  public:
-    static VOID Initialize();
-    static VOID Dump();
-    static FileInfo * FindPartial(PCWSTR pwzPath);
-    static FileInfo * FindPartial(PCSTR pszPath);
-    static FileInfo * FindFull(PCWSTR pwzPath);
-    static PCWSTR ParameterizeName(PWCHAR pwzDst, DWORD cMaxDst, PCWSTR pwzPath);
-    static PCWSTR ParameterizeName(PWCHAR pwzDst, DWORD cMaxDst, FileInfo *pInfo);
-    static VOID ParameterizeLine(PWCHAR pwzDst, PWCHAR pwzDstEnd);
+		// Now walk backwards comparing strings.
+		for (;;)
+		{
+			WCHAR cFile = (pwzFile > pwzFileBeg) ? *--pwzFile : 0;
+			WCHAR cSuffix = (pwzSuffix > pwzSuffixBeg) ? *--pwzSuffix : 0;
+
+			if (cFile >= 'A' && cFile <= 'Z')
+			{
+				cFile += ('a' - 'A');
+			}
+
+			if (cSuffix >= 'A' && cSuffix <= 'Z')
+			{
+				cSuffix += ('a' - 'A');
+			}
+
+			if (cSuffix == 0)
+			{
+				return true;
+			}
+
+			if (cFile != cSuffix)
+			{
+				return false;
+			}
+		}
+	}
+
+	static void EndInSlash(PWCHAR pwzPath)
+	{
+		if (*pwzPath)
+		{
+			while (*pwzPath)
+			{
+				pwzPath++;
+			}
+
+			if (pwzPath[-1] != '\\')
+			{
+				*pwzPath++ = '\\';
+				*pwzPath = '\0';
+			}
+		}
+	}
+
+public:
+	static void Initialize();
+	static void Dump();
+	static FileInfo * FindPartial(PCWSTR pwzPath);
+	static FileInfo * FindPartial(PCSTR pszPath);
+	static FileInfo * FindFull(PCWSTR pwzPath);
+	static PCWSTR ParameterizeName(PWCHAR pwzDst, DWORD cMaxDst, PCWSTR pwzPath);
+	static PCWSTR ParameterizeName(PWCHAR pwzDst, DWORD cMaxDst, FileInfo *pInfo);
+	static void ParameterizeLine(PWCHAR pwzDst, PWCHAR pwzDstEnd);
 };
 
-CRITICAL_SECTION    FileNames::s_csLock;
-DWORD               FileNames::s_nFiles = 0;
-DWORD               FileNames::s_nCapacity = 0;
-FileInfo **         FileNames::s_pFiles;
-WCHAR               FileNames::s_wzSysPath[MAX_PATH];
-WCHAR               FileNames::s_wzS64Path[MAX_PATH];
-WCHAR               FileNames::s_wzTmpPath[MAX_PATH];
-WCHAR               FileNames::s_wzExePath[MAX_PATH];
-DWORD               FileNames::s_wcSysPath;
-DWORD               FileNames::s_wcS64Path;
-DWORD               FileNames::s_wcTmpPath;
-DWORD               FileNames::s_wcExePath;
+CRITICAL_SECTION FileNames::s_csLock;
+DWORD FileNames::s_nFiles = 0;
+DWORD FileNames::s_nCapacity = 0;
+FileInfo** FileNames::s_pFiles;
+WCHAR FileNames::s_wzSysPath[MAX_PATH];
+WCHAR FileNames::s_wzS64Path[MAX_PATH];
+WCHAR FileNames::s_wzTmpPath[MAX_PATH];
+WCHAR FileNames::s_wzExePath[MAX_PATH];
+DWORD FileNames::s_wcSysPath;
+DWORD FileNames::s_wcS64Path;
+DWORD FileNames::s_wcTmpPath;
+DWORD FileNames::s_wcExePath;
 
-VOID FileNames::Initialize()
+void FileNames::Initialize()
 {
-    InitializeCriticalSection(&s_csLock);
+	InitializeCriticalSection(&s_csLock);
 
-    s_wzSysPath[0] = '\0';
-    GetSystemDirectoryW(s_wzSysPath, ARRAYSIZE(s_wzSysPath));
-    EndInSlash(s_wzSysPath);
+	s_wzSysPath[0] = '\0';
+	GetSystemDirectoryW(s_wzSysPath, ARRAYSIZE(s_wzSysPath));
+	EndInSlash(s_wzSysPath);
 
-    s_wzS64Path[0] = '\0';
-    GetWindowsDirectoryW(s_wzS64Path, ARRAYSIZE(s_wzS64Path));
-    EndInSlash(s_wzS64Path);
-    Copy(s_wzS64Path + Size(s_wzS64Path), L"SysWOW64\\");
+	s_wzS64Path[0] = '\0';
+	GetWindowsDirectoryW(s_wzS64Path, ARRAYSIZE(s_wzS64Path));
+	EndInSlash(s_wzS64Path);
+	Copy(s_wzS64Path + Size(s_wzS64Path), L"SysWOW64\\");
 
-    s_wzTmpPath[0] = '\0';
-    GetTempPathW(ARRAYSIZE(s_wzTmpPath), s_wzTmpPath);
-    EndInSlash(s_wzTmpPath);
+	s_wzTmpPath[0] = '\0';
+	GetTempPathW(ARRAYSIZE(s_wzTmpPath), s_wzTmpPath);
+	EndInSlash(s_wzTmpPath);
 
-    s_wzExePath[0] = '\0';
-    GetModuleFileNameW(NULL, s_wzExePath, ARRAYSIZE(s_wzExePath));
-    PWCHAR pwzLast = s_wzExePath;
-    for (PWCHAR pwz = s_wzExePath; *pwz; pwz++) {
-        if (*pwz == '\\') {
-            pwzLast = pwz;
-        }
-    }
-    if (*pwzLast == '\\') {
-        *++pwzLast = '\0';
-    }
+	s_wzExePath[0] = '\0';
+	GetModuleFileNameW(nullptr, s_wzExePath, ARRAYSIZE(s_wzExePath));
+	PWCHAR pwzLast = s_wzExePath;
+	for (PWCHAR pwz = s_wzExePath; *pwz; pwz++)
+	{
+		if (*pwz == '\\')
+		{
+			pwzLast = pwz;
+		}
+	}
 
-    s_wcSysPath = Size(s_wzSysPath);
-    s_wcS64Path = Size(s_wzS64Path);
-    s_wcTmpPath = Size(s_wzTmpPath);
-    s_wcExePath = Size(s_wzExePath);
+	if (*pwzLast == '\\')
+	{
+		*++pwzLast = '\0';
+	}
 
-    Resize(4049);
+	s_wcSysPath = Size(s_wzSysPath);
+	s_wcS64Path = Size(s_wzS64Path);
+	s_wcTmpPath = Size(s_wzTmpPath);
+	s_wcExePath = Size(s_wzExePath);
+
+	Resize(4049);
 }
 
-VOID FileNames::Resize(DWORD nCapacity)
+void FileNames::Resize(DWORD nCapacity)
 {
-    if (nCapacity > s_nCapacity) {
-        DWORD nOld = s_nCapacity;
-        FileInfo ** pOld = s_pFiles;
+	if (nCapacity > s_nCapacity)
+	{
+		DWORD nOld = s_nCapacity;
+		FileInfo ** pOld = s_pFiles;
 
-        s_pFiles = (FileInfo **)GlobalAlloc(GPTR, nCapacity * sizeof(FileInfo *));
-        s_nCapacity = nCapacity;
+		s_pFiles = (FileInfo **)GlobalAlloc(GPTR, nCapacity * sizeof(FileInfo *));
+		s_nCapacity = nCapacity;
 
-        if (pOld != NULL) {
-            for (DWORD n = 0; n < nOld; n++) {
-                if (pOld[n] != NULL) {
-                    Set(pOld[n]);
-                }
-            }
-            GlobalFree((HGLOBAL)pOld);
-            pOld = NULL;
-        }
-        s_nCapacity = nCapacity;
-    }
+		if (pOld != nullptr)
+		{
+			for (DWORD n = 0; n < nOld; n++)
+			{
+				if (pOld[n] != nullptr)
+				{
+					Set(pOld[n]);
+				}
+			}
+
+			GlobalFree((HGLOBAL)pOld);
+			pOld = nullptr;
+		}
+
+		s_nCapacity = nCapacity;
+	}
 }
 
-VOID FileNames::Set(FileInfo *info)
+void FileNames::Set(FileInfo *info)
 {
-    DWORD hash = info->m_nHash;
-    DWORD slot = hash % s_nCapacity;
-    DWORD death = 0;
+	DWORD hash = info->m_nHash;
+	DWORD slot = hash % s_nCapacity;
+	DWORD death = 0;
 
-    // Find an empty slot.
-    for (; s_pFiles[slot] != NULL; slot = (slot + 1) % s_nCapacity) {
-        if (++death > s_nCapacity) {
-            // We should have dropped out at some point...
-            DEBUG_BREAK();
-        }
-    }
+	// Find an empty slot.
+	for (; s_pFiles[slot] != nullptr; slot = (slot + 1) % s_nCapacity)
+	{
+		if (++death > s_nCapacity)
+		{
+			// We should have dropped out at some point...
+			DEBUG_BREAK();
+		}
+	}
 
-    s_pFiles[slot] = info;
+	s_pFiles[slot] = info;
 }
 
-FileInfo * FileNames::FindFull(PCWSTR pwzPath)
+FileInfo* FileNames::FindFull(PCWSTR pwzPath)
 {
-    if (pwzPath == NULL) {
-        return NULL;
-    }
+	if (pwzPath == nullptr)
+	{
+		return nullptr;
+	}
 
-    LockAcquire();
+	LockAcquire();
 
-    DWORD hash = Hash(pwzPath);
-    DWORD slot = hash % s_nCapacity;
-    FileInfo *info = NULL;
-    DWORD death = 0;
+	DWORD hash = Hash(pwzPath);
+	DWORD slot = hash % s_nCapacity;
+	FileInfo *info = nullptr;
+	DWORD death = 0;
 
-    // Find the the matching slot, or an empty one.
-    for (; s_pFiles[slot] != NULL; slot = (slot + 1) % s_nCapacity) {
-        if (Equal(s_pFiles[slot]->m_pwzPath, pwzPath)) {
-            info = s_pFiles[slot];
-            goto succeed;
-        }
-        if (++death > s_nCapacity) {
-            // We should have dropped out at some point...
-            DEBUG_BREAK();
-        }
-    }
+	// Find the the matching slot, or an empty one.
+	for (; s_pFiles[slot] != nullptr; slot = (slot + 1) % s_nCapacity)
+	{
+		if (Equal(s_pFiles[slot]->m_pwzPath, pwzPath))
+		{
+			info = s_pFiles[slot];
+			goto succeed;
+		}
 
-    // Add the file to list of known files.
-    info = (FileInfo *)GlobalAlloc(GPTR, sizeof(FileInfo));
-    info->m_nHash = hash;
-    info->m_nIndex = s_nFiles++;
-    info->m_pwzPath = Save(pwzPath);
-    info->m_fSystemPath = (PrefixMatch(info->m_pwzPath, s_wzSysPath) ||
-                           PrefixMatch(info->m_pwzPath, s_wzS64Path));
-    info->m_fTemporaryPath = PrefixMatch(info->m_pwzPath, s_wzTmpPath);
-    info->m_fTemporaryFile = SuffixMatch(info->m_pwzPath, L".tmp");
+		if (++death > s_nCapacity)
+		{
+			// We should have dropped out at some point...
+			DEBUG_BREAK();
+		}
+	}
 
-    s_pFiles[slot] = info;
+	// Add the file to list of known files.
+	info = (FileInfo *)GlobalAlloc(GPTR, sizeof(FileInfo));
+	info->m_nHash = hash;
+	info->m_nIndex = s_nFiles++;
+	info->m_pwzPath = Save(pwzPath);
+	info->m_fSystemPath = (PrefixMatch(info->m_pwzPath, s_wzSysPath) ||
+							PrefixMatch(info->m_pwzPath, s_wzS64Path));
+	info->m_fTemporaryPath = PrefixMatch(info->m_pwzPath, s_wzTmpPath);
+	info->m_fTemporaryFile = SuffixMatch(info->m_pwzPath, L".tmp");
 
-    // Check if we should grow the table.
-    if (s_nFiles > (s_nCapacity / 2)) {
-        Resize(s_nCapacity * 2 - 1);
-    }
+	s_pFiles[slot] = info;
 
-  succeed:
-    LockRelease();
+	// Check if we should grow the table.
+	if (s_nFiles > (s_nCapacity / 2))
+	{
+		Resize(s_nCapacity * 2 - 1);
+	}
 
-    return info;
+succeed:
+	LockRelease();
+
+	return info;
 }
 
 FileInfo * FileNames::FindPartial(PCWSTR pwzPath)
 {
-    WCHAR wzPath[MAX_PATH];
-    PWCHAR pwzFile = NULL;
+	WCHAR wzPath[MAX_PATH];
+	PWCHAR pwzFile = nullptr;
 
-    if (!GetFullPathNameW(pwzPath, ARRAYSIZE(wzPath), wzPath, &pwzFile)) {
-        return FindFull(pwzPath);
-    }
-    else {
-        return FindFull(wzPath);
-    }
+	if (!GetFullPathNameW(pwzPath, ARRAYSIZE(wzPath), wzPath, &pwzFile))
+	{
+		return FindFull(pwzPath);
+	}
+	else
+	{
+		return FindFull(wzPath);
+	}
 }
 
 FileInfo * FileNames::FindPartial(PCSTR pwzPath)
 {
-    WCHAR wzPath[MAX_PATH];
-    PWCHAR pwzFile = wzPath;
+	WCHAR wzPath[MAX_PATH];
+	PWCHAR pwzFile = wzPath;
 
-    while (*pwzPath) {
-        *pwzFile++ = *pwzPath++;
-    }
-    *pwzFile = '\0';
+	while (*pwzPath)
+	{
+		*pwzFile++ = *pwzPath++;
+	}
 
-    return FindPartial(wzPath);
+	*pwzFile = '\0';
+
+	return FindPartial(wzPath);
 }
 
 PCWSTR FileNames::ParameterizeName(PWCHAR pwzDst, DWORD cMaxDst, FileInfo *pInfo)
 {
-    return ParameterizeName(pwzDst, cMaxDst, pInfo->m_pwzPath);
+	return ParameterizeName(pwzDst, cMaxDst, pInfo->m_pwzPath);
 }
 
 PCWSTR FileNames::ParameterizeName(PWCHAR pwzDst, DWORD cMaxDst, PCWSTR pwzPath)
 {
-    if (PrefixMatch(pwzPath, s_wzSysPath)) {
-        Copy(pwzDst, L"%SYSDIR%\\");
-        Copy(pwzDst + Size(pwzDst), pwzPath + s_wcSysPath);
-        goto finish;
-    }
-    else if (PrefixMatch(pwzPath, s_wzS64Path)) {
-        Copy(pwzDst, L"%SYSDIR%\\");
-        Copy(pwzDst + Size(pwzDst), pwzPath + s_wcS64Path);
-        goto finish;
-    }
-    else if (PrefixMatch(pwzPath, s_wzTmpPath)) {
-        Copy(pwzDst, L"%TMPDIR%\\");
-        Copy(pwzDst + Size(pwzDst), pwzPath + s_wcTmpPath);
-        goto finish;
-    }
-    else {
-        Copy(pwzDst, pwzPath);
+	if (PrefixMatch(pwzPath, s_wzSysPath))
+	{
+		Copy(pwzDst, L"%SYSDIR%\\");
+		Copy(pwzDst + Size(pwzDst), pwzPath + s_wcSysPath);
+		goto finish;
+	}
+	else if (PrefixMatch(pwzPath, s_wzS64Path))
+	{
+		Copy(pwzDst, L"%SYSDIR%\\");
+		Copy(pwzDst + Size(pwzDst), pwzPath + s_wcS64Path);
+		goto finish;
+	}
+	else if (PrefixMatch(pwzPath, s_wzTmpPath))
+	{
+		Copy(pwzDst, L"%TMPDIR%\\");
+		Copy(pwzDst + Size(pwzDst), pwzPath + s_wcTmpPath);
+		goto finish;
+	}
+	else
+	{
+		Copy(pwzDst, pwzPath);
 
-      finish:
+		finish:
 #if 0 // to convert to all lower case.
-        for (PWCHAR pwz = pwzDst; *pwz && pwz < pwzDst + cMaxDst; pwz++) {
-            if (*pwz >= 'A' && *pwz <= 'Z') {
-                *pwz = 'a' + (*pwz - 'A');
-            }
-        }
+		for (PWCHAR pwz = pwzDst; *pwz && pwz < pwzDst + cMaxDst; pwz++)
+		{
+			if (*pwz >= 'A' && *pwz <= 'Z')
+			{
+				*pwz = 'a' + (*pwz - 'A');
+			}
+		}
 #else
-        (void)cMaxDst;
+		(void)cMaxDst;
 #endif
-        return pwzDst;
-    }
+		return pwzDst;
+	}
 }
 
-VOID FileNames::Replace(PWCHAR pwzDst, PWCHAR pwzDstEnd, DWORD cwOld, PCWSTR pwzNew)
+void FileNames::Replace(PWCHAR pwzDst, PWCHAR pwzDstEnd, DWORD cwOld, PCWSTR pwzNew)
 {
-    DWORD cwNew = Size(pwzNew);
-    DWORD cwDst = Size(pwzDst);
+	DWORD cwNew = Size(pwzNew);
+	DWORD cwDst = Size(pwzDst);
 
-    if (cwOld < cwNew) {        // We have to insert.
-        if ((cwDst + cwNew - cwOld) >= (DWORD)(pwzDstEnd - pwzDst)) {
-            // Won't fit, so abort.
-            return;
-        }
+	if (cwOld < cwNew)
+	{
+		// We have to insert.
+		if ((cwDst + cwNew - cwOld) >= (DWORD)(pwzDstEnd - pwzDst))
+		{
+			// Won't fit, so abort.
+			return;
+		}
 
-        PWCHAR pwzTo = pwzDst + cwDst + (cwNew - cwOld);
-        PWCHAR pwzFm = pwzDst + cwDst;
+		PWCHAR pwzTo = pwzDst + cwDst + (cwNew - cwOld);
+		PWCHAR pwzFm = pwzDst + cwDst;
 
-        while (pwzTo >= pwzDst) {
-            *pwzTo-- = *pwzFm--;
-        }
-    }
-    else if (cwOld > cwNew) {  // We have to remove.
-        PWCHAR pwzTo = pwzDst + cwNew;
-        PWCHAR pwzFm = pwzDst + cwOld;
+		while (pwzTo >= pwzDst)
+		{
+			*pwzTo-- = *pwzFm--;
+		}
+	}
+	else if (cwOld > cwNew)
+	{
+		// We have to remove.
+		PWCHAR pwzTo = pwzDst + cwNew;
+		PWCHAR pwzFm = pwzDst + cwOld;
 
-        while (*pwzFm) {
-            *pwzTo++ = *pwzFm++;
-        }
-        *pwzTo = '\0';
-    }
+		while (*pwzFm)
+		{
+			*pwzTo++ = *pwzFm++;
+		}
 
-    // Now write the new string.
-    while (*pwzNew) {
-        *pwzDst++ = *pwzNew++;
-    }
+		*pwzTo = '\0';
+	}
+
+	// Now write the new string.
+	while (*pwzNew)
+	{
+		*pwzDst++ = *pwzNew++;
+	}
 }
 
-VOID FileNames::ParameterizeLine(PWCHAR pwzDst, PWCHAR pwzDstEnd)
+void FileNames::ParameterizeLine(PWCHAR pwzDst, PWCHAR pwzDstEnd)
 {
-    for (; *pwzDst != '\0'; pwzDst++) {
-        if (PrefixMatch(pwzDst, s_wzSysPath)) {
-            Replace(pwzDst, pwzDstEnd, s_wcSysPath, L"%SYSDIR%\\");
-        }
-        else if (PrefixMatch(pwzDst, s_wzS64Path)) {
-            Replace(pwzDst, pwzDstEnd, s_wcS64Path, L"%SYSDIR%\\");
-        }
-        else if (PrefixMatch(pwzDst, s_wzTmpPath)) {
-            Replace(pwzDst, pwzDstEnd, s_wcTmpPath, L"%TMPDIR%\\");
-        }
-    }
+	for (; *pwzDst != '\0'; pwzDst++)
+	{
+		if (PrefixMatch(pwzDst, s_wzSysPath))
+		{
+			Replace(pwzDst, pwzDstEnd, s_wcSysPath, L"%SYSDIR%\\");
+		}
+		else if (PrefixMatch(pwzDst, s_wzS64Path))
+		{
+			Replace(pwzDst, pwzDstEnd, s_wcS64Path, L"%SYSDIR%\\");
+		}
+		else if (PrefixMatch(pwzDst, s_wzTmpPath))
+		{
+			Replace(pwzDst, pwzDstEnd, s_wcTmpPath, L"%TMPDIR%\\");
+		}
+	}
 }
 
-VOID FileNames::Dump()
+void FileNames::Dump()
 {
-    WCHAR wzPath[MAX_PATH];
+	WCHAR wzPath[MAX_PATH];
 
-    if (s_nFiles == 0) {
-        return;
-    }
+	if (s_nFiles == 0)
+	{
+		return;
+	}
 
-    LockAcquire();
+	LockAcquire();
 
-    Tblog("<t:Files>\n");
+	Tblog("<t:Files>\n");
 
-    FileInfo ** pSorted = (FileInfo **)GlobalAlloc(GPTR, s_nFiles * sizeof(FileInfo *));
+	FileInfo ** pSorted = (FileInfo **)GlobalAlloc(GPTR, s_nFiles * sizeof(FileInfo *));
 
-    for (DWORD n = 0; n < s_nCapacity; n++) {
-        if (s_pFiles[n] != NULL) {
-            if (s_pFiles[n]->m_nIndex > s_nFiles) {
-                DEBUG_BREAK();
-            }
-            pSorted[s_pFiles[n]->m_nIndex] = s_pFiles[n];
-        }
-    }
+	for (DWORD n = 0; n < s_nCapacity; n++)
+	{
+		if (s_pFiles[n] != nullptr)
+		{
+			if (s_pFiles[n]->m_nIndex > s_nFiles)
+			{
+				DEBUG_BREAK();
+			}
 
-    for (DWORD n = 0; n < s_nFiles; n++) {
-        FileInfo *pInfo = pSorted[n];
+			pSorted[s_pFiles[n]->m_nIndex] = s_pFiles[n];
+		}
+	}
 
-        if (pInfo == NULL) {
-            Print("<!-- Warning: Missing %d of %d -->\n", n, s_nFiles);
-            continue;
-        }
+	for (DWORD n = 0; n < s_nFiles; n++)
+	{
+		FileInfo *pInfo = pSorted[n];
 
-        BOOL fRead = pInfo->m_fRead;
-        BOOL fWrite = pInfo->m_fWrite;
-        BOOL fDelete = (pInfo->m_fDelete);
-        BOOL fCleanup = (pInfo->m_fCleanup);
-        BOOL fAppend = (pInfo->m_fAppend);
+		if (pInfo == nullptr)
+		{
+			Print("<!-- Warning: Missing %d of %d -->\n", n, s_nFiles);
+			continue;
+		}
 
-#if 0
-        if (fDelete && !fRead && !fWrite) {
-            Print("<!-- Discarding: %ls -->\n", pInfo->m_pwzPath);
-            // Discard pipe files only passed to children.
-            continue;
-        }
-#endif
-        if (pInfo->m_fAbsorbed) {
-            // Discard response fles
-            continue;
-        }
+		bool fRead = pInfo->m_fRead;
+		bool fWrite = pInfo->m_fWrite;
+		bool fDelete = (pInfo->m_fDelete);
+		bool fCleanup = (pInfo->m_fCleanup);
+		bool fAppend = (pInfo->m_fAppend);
 
-        if (PrefixMatch(pInfo->m_pwzPath, s_wzExePath) ||
-            PrefixMatch(pInfo->m_pwzPath, s_wzSysPath) ||
-            PrefixMatch(pInfo->m_pwzPath, s_wzS64Path)) {
-            // Discard files from exec directory (because considered internal to code).
-            continue;
-        }
+	#if 0
+		if (fDelete && !fRead && !fWrite)
+		{
+			Print("<!-- Discarding: %ls -->\n", pInfo->m_pwzPath);
+			// Discard pipe files only passed to children.
+			continue;
+		}
+	#endif
+		if (pInfo->m_fAbsorbed)
+		{
+			// Discard response fles
+			continue;
+		}
 
-#if 1 // Ignore PIPEs.
-        if (FileNames::PrefixMatch(pInfo->m_pwzPath, L"\\\\.\\PIPE\\")) {
-            continue;
-        }
-#endif
-        if (FileNames::SuffixMatch(pInfo->m_pwzPath, L"\\conout$")) {
-            continue;
-        }
-        if (FileNames::SuffixMatch(pInfo->m_pwzPath, L"\\conin$")) {
-            continue;
-        }
-        if (FileNames::SuffixMatch(pInfo->m_pwzPath, L"\\nul")) {
-            continue;
-        }
+		if (PrefixMatch(pInfo->m_pwzPath, s_wzExePath) ||
+			PrefixMatch(pInfo->m_pwzPath, s_wzSysPath) ||
+			PrefixMatch(pInfo->m_pwzPath, s_wzS64Path))
+		{
+			// Discard files from exec directory (because considered internal to code).
+			continue;
+		}
 
-        ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo);
+	#if 1 // Ignore PIPEs.
+		if (FileNames::PrefixMatch(pInfo->m_pwzPath, L"\\\\.\\PIPE\\"))
+		{
+			continue;
+		}
+	#endif
+		if (FileNames::SuffixMatch(pInfo->m_pwzPath, L"\\conout$"))
+		{
+			continue;
+		}
 
-        if (pInfo->m_fDirectory) {
-            Print("<t:File mkdir=\"true\">%ls</t:File>\n", wzPath);
-            continue;
-        }
+		if (FileNames::SuffixMatch(pInfo->m_pwzPath, L"\\conin$"))
+		{
+			continue;
+		}
 
-        if (!fRead && !fWrite && !fDelete && !fCleanup) {
-            // Discard do "none" files.
-            continue;
-        }
+		if (FileNames::SuffixMatch(pInfo->m_pwzPath, L"\\nul"))
+		{
+			continue;
+		}
 
-        if (pInfo->m_pbContent == NULL ||
-            pInfo->m_fDelete ||
-            pInfo->m_fCleanup ||
-            pInfo->m_fWrite) {
+		ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo);
 
-            Print("<t:File%s%s%s%s%s>%ls</t:File>\n",
-                  fRead ? " read=\"true\"" : "",
-                  fWrite ? " write=\"true\"" : "",
-                  fDelete ? " delete=\"true\"" : "",
-                  fCleanup ? " cleanup=\"true\"" : "",
-                  fAppend ? " append=\"true\"" : "",
-                  // size=\"%d\" pInfo->m_cbContent,
-                  wzPath);
-        }
-        else if ((pInfo->m_pbContent)[0] == 0xff && (pInfo->m_pbContent)[1] == 0xfe) {
-            // Unicode
-            Print("<t:File%s%s%s%s%s>%ls<t:Data>%le</t:Data></t:File>\n",
-                  fRead ? " read=\"true\"" : "",
-                  fWrite ? " write=\"true\"" : "",
-                  fDelete ? " delete=\"true\"" : "",
-                  fCleanup ? " cleanup=\"true\"" : "",
-                  fAppend ? " append=\"true\"" : "",
-                  //  size=\"%d\" pInfo->m_cbContent,
-                  wzPath,
-                  RemoveReturns((PWCHAR)pInfo->m_pbContent));
-        }
-        else {
-            // Ascii
-            Print("<t:File%s%s%s%s%s>%ls<t:Data>%he</t:Data></t:File>\n",
-                  fRead ? " read=\"true\"" : "",
-                  fWrite ? " write=\"true\"" : "",
-                  fDelete ? " delete=\"true\"" : "",
-                  fCleanup ? " cleanup=\"true\"" : "",
-                  fAppend ? " append=\"true\"" : "",
-                  //  size=\"%d\" pInfo->m_cbContent,
-                  wzPath,
-                  RemoveReturns((PCHAR)pInfo->m_pbContent));
-        }
+		if (pInfo->m_fDirectory)
+		{
+			Print("<t:File mkdir=\"true\">%ls</t:File>\n", wzPath);
+			continue;
+		}
 
-        if (pInfo->m_pbContent != NULL) {
-            GlobalFree((HGLOBAL)pInfo->m_pbContent);
-            pInfo->m_pbContent = NULL;
-        }
-    }
-    GlobalFree((HGLOBAL)pSorted);
+		if (!fRead && !fWrite && !fDelete && !fCleanup)
+		{
+			// Discard do "none" files.
+			continue;
+		}
 
-    Tblog("</t:Files>\n");
+		if (pInfo->m_pbContent == nullptr ||
+			pInfo->m_fDelete ||
+			pInfo->m_fCleanup ||
+			pInfo->m_fWrite)
+		{
+			Print(
+				"<t:File%s%s%s%s%s>%ls</t:File>\n",
+				fRead ? " read=\"true\"" : "",
+				fWrite ? " write=\"true\"" : "",
+				fDelete ? " delete=\"true\"" : "",
+				fCleanup ? " cleanup=\"true\"" : "",
+				fAppend ? " append=\"true\"" : "",
+				// size=\"%d\" pInfo->m_cbContent,
+				wzPath);
+		}
+		else if ((pInfo->m_pbContent)[0] == 0xff && (pInfo->m_pbContent)[1] == 0xfe)
+		{
+			// Unicode
+			Print(
+				"<t:File%s%s%s%s%s>%ls<t:Data>%le</t:Data></t:File>\n",
+				fRead ? " read=\"true\"" : "",
+				fWrite ? " write=\"true\"" : "",
+				fDelete ? " delete=\"true\"" : "",
+				fCleanup ? " cleanup=\"true\"" : "",
+				fAppend ? " append=\"true\"" : "",
+				//  size=\"%d\" pInfo->m_cbContent,
+				wzPath,
+				RemoveReturns((PWCHAR)pInfo->m_pbContent));
+		}
+		else
+		{
+			// Ascii
+			Print(
+				"<t:File%s%s%s%s%s>%ls<t:Data>%he</t:Data></t:File>\n",
+				fRead ? " read=\"true\"" : "",
+				fWrite ? " write=\"true\"" : "",
+				fDelete ? " delete=\"true\"" : "",
+				fCleanup ? " cleanup=\"true\"" : "",
+				fAppend ? " append=\"true\"" : "",
+				//  size=\"%d\" pInfo->m_cbContent,
+				wzPath,
+				RemoveReturns((PCHAR)pInfo->m_pbContent));
+		}
 
-    LockRelease();
+		if (pInfo->m_pbContent != nullptr)
+		{
+			GlobalFree((HGLOBAL)pInfo->m_pbContent);
+			pInfo->m_pbContent = nullptr;
+		}
+	}
+
+	GlobalFree((HGLOBAL)pSorted);
+
+	Tblog("</t:Files>\n");
+
+	LockRelease();
 }
 
 
@@ -1495,158 +1682,169 @@ VOID FileNames::Dump()
 //
 class OpenFiles
 {
-  private:
-    struct SLOT
-    {
-        HANDLE      m_hHandle;
-        FileInfo *  m_pFile;
-        ProcInfo *  m_pProc;
-    };
+private:
+	struct SLOT
+	{
+		HANDLE m_hHandle;
+		FileInfo* m_pFile;
+		ProcInfo* m_pProc;
+	};
 
-  private:
-    static CRITICAL_SECTION s_csLock;
-    static DWORD            s_nHandles;
-    static SLOT             s_rHandles[4049];
+private:
+	static CRITICAL_SECTION s_csLock;
+	static DWORD s_nHandles;
+	static SLOT s_rHandles[4049];
 
-  private:
-    static SLOT& HashToSlot(HANDLE handle)
-    {
-        return s_rHandles[((DWORD_PTR)handle) % ARRAYSIZE(s_rHandles)];
-    }
+private:
+	static SLOT& HashToSlot(HANDLE handle)
+	{
+		return s_rHandles[((DWORD_PTR)handle) % ARRAYSIZE(s_rHandles)];
+	}
 
-    static VOID LockAcquire()
-    {
-        EnterCriticalSection(&s_csLock);
-    }
+	static void LockAcquire()
+	{
+		EnterCriticalSection(&s_csLock);
+	}
 
-    static VOID LockRelease()
-    {
-        LeaveCriticalSection(&s_csLock);
-    }
+	static void LockRelease()
+	{
+		LeaveCriticalSection(&s_csLock);
+	}
 
-  public:
-    static VOID Initialize();
+public:
+	static void Initialize();
 
-    static VOID SetWrite(HANDLE hFile, DWORD cbData)
-    {
-        SLOT& slot = HashToSlot(hFile);
-        if (slot.m_hHandle == hFile) {
-            slot.m_pFile->m_fWrite = TRUE;
-            slot.m_pFile->m_cbWrite += cbData;
-        }
-    }
+	static void SetWrite(HANDLE hFile, DWORD cbData)
+	{
+		SLOT& slot = HashToSlot(hFile);
+		if (slot.m_hHandle == hFile)
+		{
+			slot.m_pFile->m_fWrite = true;
+			slot.m_pFile->m_cbWrite += cbData;
+		}
+	}
 
-    static VOID SetRead(HANDLE hFile, DWORD cbData)
-    {
-        SLOT& slot = HashToSlot(hFile);
-        if (slot.m_hHandle == hFile) {
-            slot.m_pFile->m_fRead = TRUE;
-            slot.m_pFile->m_cbRead += cbData;
-        }
-    }
+	static void SetRead(HANDLE hFile, DWORD cbData)
+	{
+		SLOT& slot = HashToSlot(hFile);
+		if (slot.m_hHandle == hFile)
+		{
+			slot.m_pFile->m_fRead = true;
+			slot.m_pFile->m_cbRead += cbData;
+		}
+	}
 
-    static BOOL Forget(HANDLE handle);
-    static BOOL Remember(HANDLE hFile, FileInfo *pInfo);
-    static BOOL Remember(HANDLE hProc, ProcInfo *pInfo);
-    static FileInfo * RecallFile(HANDLE hFile);
-    static ProcInfo * RecallProc(HANDLE hProc);
+	static bool Forget(HANDLE handle);
+	static bool Remember(HANDLE hFile, FileInfo *pInfo);
+	static bool Remember(HANDLE hProc, ProcInfo *pInfo);
+	static FileInfo* RecallFile(HANDLE hFile);
+	static ProcInfo* RecallProc(HANDLE hProc);
 };
 
-CRITICAL_SECTION    OpenFiles::s_csLock;  // Guards access to OpenFile stuctures.
-DWORD               OpenFiles::s_nHandles = 0;
-OpenFiles::SLOT     OpenFiles::s_rHandles[4049];
+CRITICAL_SECTION OpenFiles::s_csLock; // Guards access to OpenFile stuctures.
+DWORD OpenFiles::s_nHandles = 0;
+OpenFiles::SLOT OpenFiles::s_rHandles[4049];
 
-VOID OpenFiles::Initialize()
+void OpenFiles::Initialize()
 {
-    InitializeCriticalSection(&s_csLock);
-    for (DWORD n = 0; n < ARRAYSIZE(s_rHandles); n++) {
-        s_rHandles[n].m_hHandle = INVALID_HANDLE_VALUE;
-        s_rHandles[n].m_pFile = NULL;
-        s_rHandles[n].m_pProc = NULL;
-    }
+	InitializeCriticalSection(&s_csLock);
+	for (DWORD n = 0; n < ARRAYSIZE(s_rHandles); n++)
+	{
+		s_rHandles[n].m_hHandle = INVALID_HANDLE_VALUE;
+		s_rHandles[n].m_pFile = nullptr;
+		s_rHandles[n].m_pProc = nullptr;
+	}
 }
 
-BOOL OpenFiles::Forget(HANDLE handle)
+bool OpenFiles::Forget(HANDLE handle)
 {
-    LockAcquire();
-    OpenFiles::SLOT& slot = HashToSlot(handle);
+	LockAcquire();
+	OpenFiles::SLOT& slot = HashToSlot(handle);
 
-    if (slot.m_hHandle == handle    ) {
-        slot.m_hHandle = INVALID_HANDLE_VALUE;
-        slot.m_pFile = NULL;
-        slot.m_pProc = NULL;
-        s_nHandles--;
-    }
-    LockRelease();
-    return FALSE;
+	if (slot.m_hHandle == handle)
+	{
+		slot.m_hHandle = INVALID_HANDLE_VALUE;
+		slot.m_pFile = nullptr;
+		slot.m_pProc = nullptr;
+		s_nHandles--;
+	}
+
+	LockRelease();
+	return false;
 }
 
-BOOL OpenFiles::Remember(HANDLE hFile, FileInfo *pFile)
+bool OpenFiles::Remember(HANDLE hFile, FileInfo *pFile)
 {
-    LockAcquire();
+	LockAcquire();
 
-    OpenFiles::SLOT& slot = HashToSlot(hFile);
-    if (slot.m_hHandle != hFile && slot.m_hHandle != INVALID_HANDLE_VALUE) {
-        // hash collision
-        DEBUG_BREAK();
-    }
+	OpenFiles::SLOT& slot = HashToSlot(hFile);
+	if (slot.m_hHandle != hFile && slot.m_hHandle != INVALID_HANDLE_VALUE)
+	{
+		// hash collision
+		DEBUG_BREAK();
+	}
 
-    slot.m_hHandle = hFile;
-    slot.m_pFile = pFile;
-    slot.m_pProc = NULL;
-    s_nHandles++;
+	slot.m_hHandle = hFile;
+	slot.m_pFile = pFile;
+	slot.m_pProc = nullptr;
+	s_nHandles++;
 
-    LockRelease();
+	LockRelease();
 
-    return TRUE;
+	return true;
 }
 
-BOOL OpenFiles::Remember(HANDLE hProc, ProcInfo *pProc)
+bool OpenFiles::Remember(HANDLE hProc, ProcInfo *pProc)
 {
-    LockAcquire();
+	LockAcquire();
 
-    OpenFiles::SLOT& slot = HashToSlot(hProc);
-    if (slot.m_hHandle != hProc && slot.m_hHandle != INVALID_HANDLE_VALUE) {
-        // hash collision
-        DEBUG_BREAK();
-    }
+	OpenFiles::SLOT& slot = HashToSlot(hProc);
+	if (slot.m_hHandle != hProc && slot.m_hHandle != INVALID_HANDLE_VALUE)
+	{
+		// hash collision
+		DEBUG_BREAK();
+	}
 
-    slot.m_hHandle = hProc;
-    slot.m_pProc = pProc;
-    slot.m_pFile = NULL;
-    s_nHandles++;
+	slot.m_hHandle = hProc;
+	slot.m_pProc = pProc;
+	slot.m_pFile = nullptr;
+	s_nHandles++;
 
-    LockRelease();
+	LockRelease();
 
-    return TRUE;
+	return true;
 }
 
 FileInfo * OpenFiles::RecallFile(HANDLE hFile)
 {
-    LockAcquire();
+	LockAcquire();
 
-    OpenFiles::SLOT& slot = HashToSlot(hFile);
+	OpenFiles::SLOT& slot = HashToSlot(hFile);
 
-    if (slot.m_hHandle == hFile) {
-        LockRelease();
-        return slot.m_pFile;
-    }
-    LockRelease();
-    return NULL;
+	if (slot.m_hHandle == hFile)
+	{
+		LockRelease();
+		return slot.m_pFile;
+	}
+
+	LockRelease();
+	return nullptr;
 }
 
 ProcInfo * OpenFiles::RecallProc(HANDLE hProc)
 {
-    LockAcquire();
+	LockAcquire();
 
-    OpenFiles::SLOT& slot = HashToSlot(hProc);
+	OpenFiles::SLOT& slot = HashToSlot(hProc);
 
-    if (slot.m_hHandle == hProc) {
-        LockRelease();
-        return slot.m_pProc;
-    }
-    LockRelease();
-    return NULL;
+	if (slot.m_hHandle == hProc)
+	{
+		LockRelease();
+		return slot.m_pProc;
+	}
+
+	LockRelease();
+	return nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////// VPrintf.
@@ -1655,224 +1853,280 @@ ProcInfo * OpenFiles::RecallProc(HANDLE hProc)
 //
 static PCHAR do_base(PCHAR pszOut, UINT64 nValue, UINT nBase, PCSTR pszDigits)
 {
-    CHAR szTmp[96];
-    int nDigit = sizeof(szTmp)-2;
-    for (; nDigit >= 0; nDigit--) {
-        szTmp[nDigit] = pszDigits[nValue % nBase];
-        nValue /= nBase;
-    }
-    for (nDigit = 0; nDigit < sizeof(szTmp) - 2 && szTmp[nDigit] == '0'; nDigit++) {
-        // skip leading zeros.
-    }
-    for (; nDigit < sizeof(szTmp) - 1; nDigit++) {
-        *pszOut++ = szTmp[nDigit];
-    }
-    *pszOut = '\0';
-    return pszOut;
+	CHAR szTmp[96];
+	int nDigit = sizeof(szTmp)-2;
+	for (; nDigit >= 0; nDigit--)
+	{
+		szTmp[nDigit] = pszDigits[nValue % nBase];
+		nValue /= nBase;
+	}
+
+	for (nDigit = 0; nDigit < sizeof(szTmp) - 2 && szTmp[nDigit] == '0'; nDigit++)
+	{
+		// skip leading zeros.
+	}
+
+	for (; nDigit < sizeof(szTmp) - 1; nDigit++)
+	{
+		*pszOut++ = szTmp[nDigit];
+	}
+
+	*pszOut = '\0';
+	return pszOut;
 }
 
 static PCHAR do_str(PCHAR pszOut, PCHAR pszEnd, PCSTR pszIn)
 {
-    while (*pszIn && pszOut < pszEnd) {
-        *pszOut++ = *pszIn++;
-    }
-    *pszOut = '\0';
-    return pszOut;
+	while (*pszIn && pszOut < pszEnd)
+	{
+		*pszOut++ = *pszIn++;
+	}
+
+	*pszOut = '\0';
+	return pszOut;
 }
 
 static PCHAR do_wstr(PCHAR pszOut, PCHAR pszEnd, PCWSTR pszIn)
 {
-    while (*pszIn && pszOut < pszEnd) {
-        *pszOut++ = (CHAR)*pszIn++;
-    }
-    *pszOut = '\0';
-    return pszOut;
+	while (*pszIn && pszOut < pszEnd)
+	{
+		*pszOut++ = (CHAR)*pszIn++;
+	}
+
+	*pszOut = '\0';
+	return pszOut;
 }
 
 static PCHAR do_estr(PCHAR pszOut, PCHAR pszEnd, PCSTR pszIn)
 {
-    while (*pszIn && pszOut < pszEnd) {
-        if (*pszIn == '<') {
-            if (pszOut + 4 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'l';
-            *pszOut++ = 't';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn == '>') {
-            if (pszOut + 4 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'g';
-            *pszOut++ = 't';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn == '&') {
-            if (pszOut + 5 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'a';
-            *pszOut++ = 'm';
-            *pszOut++ = 'p';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn == '\"') {
-            if (pszOut + 6 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'q';
-            *pszOut++ = 'u';
-            *pszOut++ = 'o';
-            *pszOut++ = 't';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn == '\'') {
-            if (pszOut + 6 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'a';
-            *pszOut++ = 'p';
-            *pszOut++ = 'o';
-            *pszOut++ = 's';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn  < ' ') {
-            BYTE c = (BYTE)(*pszIn++);
-            if (c < 10 && pszOut + 4 <= pszEnd) {
-                *pszOut++ = '&';
-                *pszOut++ = '#';
-                *pszOut++ = '0' + (c % 10);
-                *pszOut++ = ';';
-            }
-            else if (c < 100 && pszOut + 5 <= pszEnd) {
-                *pszOut++ = '&';
-                *pszOut++ = '#';
-                *pszOut++ = '0' + ((c / 10) % 10);
-                *pszOut++ = '0' + (c % 10);
-                *pszOut++ = ';';
-            }
-            else if (c < 1000 && pszOut + 6 <= pszEnd) {
-                *pszOut++ = '&';
-                *pszOut++ = '#';
-                *pszOut++ = '0' + ((c / 100) % 10);
-                *pszOut++ = '0' + ((c / 10) % 10);
-                *pszOut++ = '0' + (c % 10);
-                *pszOut++ = ';';
-            }
-            else {
-                break;
-            }
-        }
-        else {
-            *pszOut++ = *pszIn++;
-        }
-    }
-    *pszOut = '\0';
-    return pszOut;
+	while (*pszIn && pszOut < pszEnd)
+	{
+		if (*pszIn == '<')
+		{
+			if (pszOut + 4 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'l';
+			*pszOut++ = 't';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn == '>')
+		{
+			if (pszOut + 4 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'g';
+			*pszOut++ = 't';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn == '&')
+		{
+			if (pszOut + 5 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'a';
+			*pszOut++ = 'm';
+			*pszOut++ = 'p';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn == '\"')
+		{
+			if (pszOut + 6 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'q';
+			*pszOut++ = 'u';
+			*pszOut++ = 'o';
+			*pszOut++ = 't';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn == '\'')
+		{
+			if (pszOut + 6 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'a';
+			*pszOut++ = 'p';
+			*pszOut++ = 'o';
+			*pszOut++ = 's';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn  < ' ')
+		{
+			BYTE c = (BYTE)(*pszIn++);
+			if (c < 10 && pszOut + 4 <= pszEnd)
+			{
+				*pszOut++ = '&';
+				*pszOut++ = '#';
+				*pszOut++ = '0' + (c % 10);
+				*pszOut++ = ';';
+			}
+			else if (c < 100 && pszOut + 5 <= pszEnd)
+			{
+				*pszOut++ = '&';
+				*pszOut++ = '#';
+				*pszOut++ = '0' + ((c / 10) % 10);
+				*pszOut++ = '0' + (c % 10);
+				*pszOut++ = ';';
+			}
+			else if (c < 1000 && pszOut + 6 <= pszEnd)
+			{
+				*pszOut++ = '&';
+				*pszOut++ = '#';
+				*pszOut++ = '0' + ((c / 100) % 10);
+				*pszOut++ = '0' + ((c / 10) % 10);
+				*pszOut++ = '0' + (c % 10);
+				*pszOut++ = ';';
+			}
+			else
+			{
+				break;
+			}
+		}
+		else
+		{
+			*pszOut++ = *pszIn++;
+		}
+	}
+
+	*pszOut = '\0';
+	return pszOut;
 }
 
 static PCHAR do_ewstr(PCHAR pszOut, PCHAR pszEnd, PCWSTR pszIn)
 {
-    while (*pszIn && pszOut < pszEnd) {
-        if (*pszIn == '<') {
-            if (pszOut + 4 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'l';
-            *pszOut++ = 't';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn == '>') {
-            if (pszOut + 4 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'g';
-            *pszOut++ = 't';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn == '&') {
-            if (pszOut + 5 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'a';
-            *pszOut++ = 'm';
-            *pszOut++ = 'p';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn == '\"') {
-            if (pszOut + 6 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'q';
-            *pszOut++ = 'u';
-            *pszOut++ = 'o';
-            *pszOut++ = 't';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn == '\'') {
-            if (pszOut + 6 > pszEnd) {
-                break;
-            }
-            pszIn++;
-            *pszOut++ = '&';
-            *pszOut++ = 'a';
-            *pszOut++ = 'p';
-            *pszOut++ = 'o';
-            *pszOut++ = 's';
-            *pszOut++ = ';';
-        }
-        else if (*pszIn  < ' ' || *pszIn > 127) {
-            WCHAR c = *pszIn++;
-            if (c < 10 && pszOut + 4 <= pszEnd) {
-                *pszOut++ = '&';
-                *pszOut++ = '#';
-                *pszOut++ = '0' + (CHAR)(c % 10);
-                *pszOut++ = ';';
-            }
-            else if (c < 100 && pszOut + 5 <= pszEnd) {
-                *pszOut++ = '&';
-                *pszOut++ = '#';
-                *pszOut++ = '0' + (CHAR)((c / 10) % 10);
-                *pszOut++ = '0' + (CHAR)(c % 10);
-                *pszOut++ = ';';
-            }
-            else if (c < 1000 && pszOut + 6 <= pszEnd) {
-                *pszOut++ = '&';
-                *pszOut++ = '#';
-                *pszOut++ = '0' + (CHAR)((c / 100) % 10);
-                *pszOut++ = '0' + (CHAR)((c / 10) % 10);
-                *pszOut++ = '0' + (CHAR)(c % 10);
-                *pszOut++ = ';';
-            }
-            else {
-                break;
-            }
-        }
-        else {
-            *pszOut++ = (CHAR)*pszIn++;
-        }
-    }
-    *pszOut = '\0';
-    return pszOut;
+	while (*pszIn && pszOut < pszEnd)
+	{
+		if (*pszIn == '<')
+		{
+			if (pszOut + 4 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'l';
+			*pszOut++ = 't';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn == '>')
+		{
+			if (pszOut + 4 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'g';
+			*pszOut++ = 't';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn == '&')
+		{
+			if (pszOut + 5 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'a';
+			*pszOut++ = 'm';
+			*pszOut++ = 'p';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn == '\"')
+		{
+			if (pszOut + 6 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'q';
+			*pszOut++ = 'u';
+			*pszOut++ = 'o';
+			*pszOut++ = 't';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn == '\'')
+		{
+			if (pszOut + 6 > pszEnd)
+			{
+				break;
+			}
+
+			pszIn++;
+			*pszOut++ = '&';
+			*pszOut++ = 'a';
+			*pszOut++ = 'p';
+			*pszOut++ = 'o';
+			*pszOut++ = 's';
+			*pszOut++ = ';';
+		}
+		else if (*pszIn  < ' ' || *pszIn > 127)
+		{
+			WCHAR c = *pszIn++;
+			if (c < 10 && pszOut + 4 <= pszEnd)
+			{
+				*pszOut++ = '&';
+				*pszOut++ = '#';
+				*pszOut++ = '0' + (CHAR)(c % 10);
+				*pszOut++ = ';';
+			}
+			else if (c < 100 && pszOut + 5 <= pszEnd)
+			{
+				*pszOut++ = '&';
+				*pszOut++ = '#';
+				*pszOut++ = '0' + (CHAR)((c / 10) % 10);
+				*pszOut++ = '0' + (CHAR)(c % 10);
+				*pszOut++ = ';';
+			}
+			else if (c < 1000 && pszOut + 6 <= pszEnd)
+			{
+				*pszOut++ = '&';
+				*pszOut++ = '#';
+				*pszOut++ = '0' + (CHAR)((c / 100) % 10);
+				*pszOut++ = '0' + (CHAR)((c / 10) % 10);
+				*pszOut++ = '0' + (CHAR)(c % 10);
+				*pszOut++ = ';';
+			}
+			else
+			{
+				break;
+			}
+		}
+		else
+		{
+			*pszOut++ = (CHAR)*pszIn++;
+		}
+	}
+
+	*pszOut = '\0';
+	return pszOut;
 }
 
 #if _MSC_VER >= 1900
@@ -1880,329 +2134,429 @@ static PCHAR do_ewstr(PCHAR pszOut, PCHAR pszEnd, PCWSTR pszIn)
 #pragma warning(disable:4456) // declaration hides previous local declaration
 #endif
 
-VOID VSafePrintf(PCSTR pszMsg, va_list args, PCHAR pszBuffer, LONG cbBuffer)
+void VSafePrintf(PCSTR pszMsg, va_list args, PCHAR pszBuffer, LONG cbBuffer)
 {
-    PCHAR pszOut = pszBuffer;
-    PCHAR pszEnd = pszBuffer + cbBuffer - 1;
-    pszBuffer[0] = '\0';
+	PCHAR pszOut = pszBuffer;
+	PCHAR pszEnd = pszBuffer + cbBuffer - 1;
+	pszBuffer[0] = '\0';
 
-    __try {
-        while (*pszMsg && pszOut < pszEnd) {
-            if (*pszMsg == '%') {
-                CHAR szHead[4] = "";
-                INT nLen;
-                INT nWidth = 0;
-                INT nPrecision = 0;
-                BOOL fLeft = FALSE;
-                BOOL fPositive = FALSE;
-                BOOL fPound = FALSE;
-                BOOL fBlank = FALSE;
-                BOOL fZero = FALSE;
-                BOOL fDigit = FALSE;
-                BOOL fSmall = FALSE;
-                BOOL fLarge = FALSE;
-                BOOL f64Bit = FALSE;
-                PCSTR pszArg = pszMsg;
+	__try
+	{
+		while (*pszMsg && pszOut < pszEnd)
+		{
+			if (*pszMsg == '%')
+			{
+				CHAR szHead[4] = "";
+				INT nLen;
+				INT nWidth = 0;
+				INT nPrecision = 0;
+				bool fLeft = false;
+				bool fPositive = false;
+				bool fPound = false;
+				bool fBlank = false;
+				bool fZero = false;
+				bool fDigit = false;
+				bool fSmall = false;
+				bool fLarge = false;
+				bool f64Bit = false;
+				PCSTR pszArg = pszMsg;
 
-                pszMsg++;
+				pszMsg++;
 
-                for (; (*pszMsg == '-' ||
-                        *pszMsg == '+' ||
-                        *pszMsg == '#' ||
-                        *pszMsg == ' ' ||
-                        *pszMsg == '0'); pszMsg++) {
-                    switch (*pszMsg) {
-                      case '-': fLeft = TRUE; break;
-                      case '+': fPositive = TRUE; break;
-                      case '#': fPound = TRUE; break;
-                      case ' ': fBlank = TRUE; break;
-                      case '0': fZero = TRUE; break;
-                    }
-                }
+				for (; (*pszMsg == '-' ||
+						*pszMsg == '+' ||
+						*pszMsg == '#' ||
+						*pszMsg == ' ' ||
+						*pszMsg == '0'); pszMsg++)
+				{
+					switch (*pszMsg)
+					{
+						case '-': fLeft = true; break;
+						case '+': fPositive = true; break;
+						case '#': fPound = true; break;
+						case ' ': fBlank = true; break;
+						case '0': fZero = true; break;
+					}
+				}
 
-                if (*pszMsg == '*') {
-                    nWidth = va_arg(args, INT);
-                    pszMsg++;
-                }
-                else {
-                    while (*pszMsg >= '0' && *pszMsg <= '9') {
-                        nWidth = nWidth * 10 + (*pszMsg++ - '0');
-                    }
-                }
-                if (*pszMsg == '.') {
-                    pszMsg++;
-                    fDigit = TRUE;
-                    if (*pszMsg == '*') {
-                        nPrecision = va_arg(args, INT);
-                        pszMsg++;
-                    }
-                    else {
-                        while (*pszMsg >= '0' && *pszMsg <= '9') {
-                            nPrecision = nPrecision * 10 + (*pszMsg++ - '0');
-                        }
-                    }
-                }
+				if (*pszMsg == '*')
+				{
+					nWidth = va_arg(args, INT);
+					pszMsg++;
+				}
+				else
+				{
+					while (*pszMsg >= '0' && *pszMsg <= '9')
+					{
+						nWidth = nWidth * 10 + (*pszMsg++ - '0');
+					}
+				}
+				if (*pszMsg == '.')
+				{
+					pszMsg++;
+					fDigit = true;
+					if (*pszMsg == '*')
+					{
+						nPrecision = va_arg(args, INT);
+						pszMsg++;
+					}
+					else
+					{
+						while (*pszMsg >= '0' && *pszMsg <= '9')
+						{
+							nPrecision = nPrecision * 10 + (*pszMsg++ - '0');
+						}
+					}
+				}
 
-                if (*pszMsg == 'h') {
-                    fSmall = TRUE;
-                    pszMsg++;
-                }
-                else if (*pszMsg == 'l') {
-                    fLarge = TRUE;
-                    pszMsg++;
-                }
-                else if (*pszMsg == 'I' && pszMsg[1] == '6' && pszMsg[2] == '4') {
-                    f64Bit = TRUE;
-                    pszMsg += 3;
-                }
+				if (*pszMsg == 'h')
+				{
+					fSmall = true;
+					pszMsg++;
+				}
+				else if (*pszMsg == 'l')
+				{
+					fLarge = true;
+					pszMsg++;
+				}
+				else if (*pszMsg == 'I' && pszMsg[1] == '6' && pszMsg[2] == '4')
+				{
+					f64Bit = true;
+					pszMsg += 3;
+				}
 
-                if (*pszMsg == 's' || *pszMsg == 'e' || *pszMsg == 'c') {
-                    // We ignore the length, precision, and alignment
-                    // to avoid using a temporary buffer.
+				if (*pszMsg == 's' || *pszMsg == 'e' || *pszMsg == 'c')
+				{
+					// We ignore the length, precision, and alignment
+					// to avoid using a temporary buffer.
 
-                    if (*pszMsg == 's') { // [GalenH] need to not use temp.
-                        PVOID pvData = va_arg(args, PVOID);
+					if (*pszMsg == 's')
+					{
+						// [GalenH] need to not use temp.
+						PVOID pvData = va_arg(args, PVOID);
 
-                        pszMsg++;
+						pszMsg++;
 
-                        if (fSmall) {
-                            fLarge = FALSE;
-                        }
+						if (fSmall)
+						{
+							fLarge = false;
+						}
 
-                        __try {
-                            if (pvData == NULL) {
-                                pszOut = do_str(pszOut, pszEnd, "-NULL-");
-                            }
-                            else if (fLarge) {
-                                pszOut = do_wstr(pszOut, pszEnd, (PWCHAR)pvData);
-                            }
-                            else {
-                                pszOut = do_str(pszOut, pszEnd, (PCHAR)pvData);
-                            }
-                        } __except(EXCEPTION_EXECUTE_HANDLER) {
-                            pszOut = do_str(pszOut, pszEnd, "-");
-                            pszOut = do_base(pszOut, (UINT64)pvData, 16,
-                                             "0123456789ABCDEF");
-                            pszOut = do_str(pszOut, pszEnd, "-");
-                        }
-                    }
-                    else if (*pszMsg == 'e')    {   // Escape the string.
-                        PVOID pvData = va_arg(args, PVOID);
+						__try
+						{
+							if (pvData == nullptr)
+							{
+								pszOut = do_str(pszOut, pszEnd, "-nullptr-");
+							}
+							else if (fLarge)
+							{
+								pszOut = do_wstr(pszOut, pszEnd, (PWCHAR)pvData);
+							}
+							else
+							{
+								pszOut = do_str(pszOut, pszEnd, (PCHAR)pvData);
+							}
+						}
+						__except(EXCEPTION_EXECUTE_HANDLER)
+						{
+							pszOut = do_str(pszOut, pszEnd, "-");
+							pszOut = do_base(
+								pszOut,
+								(UINT64)pvData,
+								16,
+								"0123456789ABCDEF");
+							pszOut = do_str(pszOut, pszEnd, "-");
+						}
+					}
+					else if (*pszMsg == 'e')
+					{
+						// Escape the string.
+						PVOID pvData = va_arg(args, PVOID);
 
-                        pszMsg++;
+						pszMsg++;
 
-                        if (fSmall) {
-                            fLarge = FALSE;
-                        }
+						if (fSmall)
+						{
+							fLarge = false;
+						}
 
-                        __try {
-                            if (pvData == NULL) {
-                                pszOut = do_str(pszOut, pszEnd, "-NULL-");
-                            }
-                            else if (fLarge) {
-                                pszOut = do_ewstr(pszOut, pszEnd, (PWCHAR)pvData);
-                            }
-                            else {
-                                pszOut = do_estr(pszOut, pszEnd, (PCHAR)pvData);
-                            }
-                        } __except(EXCEPTION_EXECUTE_HANDLER) {
-                            pszOut = do_str(pszOut, pszEnd, "-");
-                            pszOut = do_base(pszOut, (UINT64)pvData, 16,
-                                             "0123456789ABCDEF");
-                            pszOut = do_str(pszOut, pszEnd, "-");
-                        }
-                    }
-                    else {
-                        CHAR szTemp[2];
-                        pszMsg++;
+						__try
+						{
+							if (pvData == nullptr)
+							{
+								pszOut = do_str(pszOut, pszEnd, "-nullptr-");
+							}
+							else if (fLarge)
+							{
+								pszOut = do_ewstr(pszOut, pszEnd, (PWCHAR)pvData);
+							}
+							else
+							{
+								pszOut = do_estr(pszOut, pszEnd, (PCHAR)pvData);
+							}
+						}
+						__except(EXCEPTION_EXECUTE_HANDLER)
+						{
+							pszOut = do_str(pszOut, pszEnd, "-");
+							pszOut = do_base(
+								pszOut,
+								(UINT64)pvData,
+								16,
+								"0123456789ABCDEF");
+							pszOut = do_str(pszOut, pszEnd, "-");
+						}
+					}
+					else
+					{
+						CHAR szTemp[2];
+						pszMsg++;
 
-                        szTemp[0] = (CHAR)va_arg(args, INT);
-                        szTemp[1] = '\0';
-                        pszOut = do_str(pszOut, pszEnd, szTemp);
-                    }
-                }
-                else if (*pszMsg == 'd' || *pszMsg == 'i' || *pszMsg == 'o' ||
-                         *pszMsg == 'x' || *pszMsg == 'X' || *pszMsg == 'b' ||
-                         *pszMsg == 'u') {
-                    CHAR szTemp[128];
-                    UINT64 value;
-                    if (f64Bit) {
-                        value = va_arg(args, UINT64);
-                    }
-                    else {
-                        value = va_arg(args, UINT);
-                    }
+						szTemp[0] = (CHAR)va_arg(args, INT);
+						szTemp[1] = '\0';
+						pszOut = do_str(pszOut, pszEnd, szTemp);
+					}
+				}
+				else if (*pszMsg == 'd' || *pszMsg == 'i' || *pszMsg == 'o' ||
+							*pszMsg == 'x' || *pszMsg == 'X' || *pszMsg == 'b' ||
+							*pszMsg == 'u')
+				{
+					CHAR szTemp[128];
+					UINT64 value;
+					if (f64Bit)
+					{
+						value = va_arg(args, UINT64);
+					}
+					else
+					{
+						value = va_arg(args, UINT);
+					}
 
-                    if (*pszMsg == 'x') {
-                        pszMsg++;
-                        nLen = (int)(do_base(szTemp, value, 16, "0123456789abcdef") - szTemp);
-                        if (fPound && value) {
-                            do_str(szHead, szHead + sizeof(szHead) - 1, "0x");
-                        }
-                    }
-                    else if (*pszMsg == 'X') {
-                        pszMsg++;
-                        nLen = (int)(do_base(szTemp, value, 16, "0123456789ABCDEF") - szTemp);
-                        if (fPound && value) {
-                            do_str(szHead, szHead + sizeof(szHead) - 1, "0X");
-                        }
-                    }
-                    else if (*pszMsg == 'd') {
-                        pszMsg++;
-                        if ((INT64)value < 0) {
-                            value = -(INT64)value;
-                            do_str(szHead, szHead + sizeof(szHead) - 1, "-");
-                        }
-                        else if (fPositive) {
-                            if (value > 0) {
-                                do_str(szHead, szHead + sizeof(szHead) - 1, "+");
-                            }
-                        }
-                        else if (fBlank) {
-                            if (value > 0) {
-                                do_str(szHead, szHead + sizeof(szHead) - 1, " ");
-                            }
-                        }
-                        nLen = (int)(do_base(szTemp, value, 10, "0123456789") - szTemp);
-                        nPrecision = 0;
-                    }
-                    else if (*pszMsg == 'u') {
-                        pszMsg++;
-                        nLen = (int)(do_base(szTemp, value, 10, "0123456789") - szTemp);
-                        nPrecision = 0;
-                    }
-                    else if (*pszMsg == 'o') {
-                        pszMsg++;
-                        nLen = (int)(do_base(szTemp, value, 8, "01234567") - szTemp);
-                        nPrecision = 0;
+					if (*pszMsg == 'x')
+					{
+						pszMsg++;
+						nLen = (int)(do_base(szTemp, value, 16, "0123456789abcdef") - szTemp);
+						if (fPound && value)
+						{
+							do_str(szHead, szHead + sizeof(szHead) - 1, "0x");
+						}
+					}
+					else if (*pszMsg == 'X')
+					{
+						pszMsg++;
+						nLen = (int)(do_base(szTemp, value, 16, "0123456789ABCDEF") - szTemp);
+						if (fPound && value)
+						{
+							do_str(szHead, szHead + sizeof(szHead) - 1, "0X");
+						}
+					}
+					else if (*pszMsg == 'd')
+					{
+						pszMsg++;
+						if ((INT64)value < 0)
+						{
+							value = -(INT64)value;
+							do_str(szHead, szHead + sizeof(szHead) - 1, "-");
+						}
+						else if (fPositive)
+						{
+							if (value > 0)
+							{
+								do_str(szHead, szHead + sizeof(szHead) - 1, "+");
+							}
+						}
+						else if (fBlank)
+						{
+							if (value > 0)
+							{
+								do_str(szHead, szHead + sizeof(szHead) - 1, " ");
+							}
+						}
+						nLen = (int)(do_base(szTemp, value, 10, "0123456789") - szTemp);
+						nPrecision = 0;
+					}
+					else if (*pszMsg == 'u')
+					{
+						pszMsg++;
+						nLen = (int)(do_base(szTemp, value, 10, "0123456789") - szTemp);
+						nPrecision = 0;
+					}
+					else if (*pszMsg == 'o')
+					{
+						pszMsg++;
+						nLen = (int)(do_base(szTemp, value, 8, "01234567") - szTemp);
+						nPrecision = 0;
 
-                        if (fPound && value) {
-                            do_str(szHead, szHead + sizeof(szHead) - 1, "0");
-                        }
-                    }
-                    else if (*pszMsg == 'b') {
-                        pszMsg++;
-                        nLen = (int)(do_base(szTemp, value, 2, "01") - szTemp);
-                        nPrecision = 0;
+						if (fPound && value)
+						{
+							do_str(szHead, szHead + sizeof(szHead) - 1, "0");
+						}
+					}
+					else if (*pszMsg == 'b')
+					{
+						pszMsg++;
+						nLen = (int)(do_base(szTemp, value, 2, "01") - szTemp);
+						nPrecision = 0;
 
-                        if (fPound && value) {
-                            do_str(szHead, szHead + sizeof(szHead) - 1, "0b");
-                        }
-                    }
-                    else {
-                        pszMsg++;
-                        if ((INT64)value < 0) {
-                            value = -(INT64)value;
-                            do_str(szHead, szHead + sizeof(szHead) - 1, "-");
-                        }
-                        else if (fPositive) {
-                            if (value > 0) {
-                                do_str(szHead, szHead + sizeof(szHead) - 1, "+");
-                            }
-                        }
-                        else if (fBlank) {
-                            if (value > 0) {
-                                do_str(szHead, szHead + sizeof(szHead) - 1, " ");
-                            }
-                        }
-                        nLen = (int)(do_base(szTemp, value, 10, "0123456789") - szTemp);
-                        nPrecision = 0;
-                    }
+						if (fPound && value)
+						{
+							do_str(szHead, szHead + sizeof(szHead) - 1, "0b");
+						}
+					}
+					else
+					{
+						pszMsg++;
+						if ((INT64)value < 0)
+						{
+							value = -(INT64)value;
+							do_str(szHead, szHead + sizeof(szHead) - 1, "-");
+						}
+						else if (fPositive)
+						{
+							if (value > 0)
+							{
+								do_str(szHead, szHead + sizeof(szHead) - 1, "+");
+							}
+						}
+						else if (fBlank)
+						{
+							if (value > 0)
+							{
+								do_str(szHead, szHead + sizeof(szHead) - 1, " ");
+							}
+						}
 
-                    INT nHead = 0;
-                    for (; szHead[nHead]; nHead++) {
-                        // Count characters in head string.
-                    }
+						nLen = (int)(do_base(szTemp, value, 10, "0123456789") - szTemp);
+						nPrecision = 0;
+					}
 
-                    if (fLeft) {
-                        if (nHead) {
-                            pszOut = do_str(pszOut, pszEnd, szHead);
-                            nLen += nHead;
-                        }
-                        pszOut = do_str(pszOut, pszEnd, szTemp);
-                        for (; nLen < nWidth && pszOut < pszEnd; nLen++) {
-                            *pszOut++ = ' ';
-                        }
-                    }
-                    else if (fZero) {
-                        if (nHead) {
-                            pszOut = do_str(pszOut, pszEnd, szHead);
-                            nLen += nHead;
-                        }
-                        for (; nLen < nWidth && pszOut < pszEnd; nLen++) {
-                            *pszOut++ = '0';
-                        }
-                        pszOut = do_str(pszOut, pszEnd, szTemp);
-                    }
-                    else {
-                        if (nHead) {
-                            nLen += nHead;
-                        }
-                        for (; nLen < nWidth && pszOut < pszEnd; nLen++) {
-                            *pszOut++ = ' ';
-                        }
-                        if (nHead) {
-                            pszOut = do_str(pszOut, pszEnd, szHead);
-                        }
-                        pszOut = do_str(pszOut, pszEnd, szTemp);
-                    }
-                }
-                else if (*pszMsg == 'p') {
-                    CHAR szTemp[64];
-                    ULONG_PTR value;
-                    value = va_arg(args, ULONG_PTR);
+					INT nHead = 0;
+					for (; szHead[nHead]; nHead++)
+					{
+						// Count characters in head string.
+					}
 
-                    if (*pszMsg == 'p') {
-                        pszMsg++;
-                        nLen = (int)(do_base(szTemp, (UINT64)value, 16, "0123456789abcdef") - szTemp);
-                        if (fPound && value) {
-                            do_str(szHead, szHead + sizeof(szHead) - 1, "0x");
-                        }
-                    }
-                    else {
-                        pszMsg++;
-                        nLen = (int)(do_base(szTemp, (UINT64)value, 16, "0123456789ABCDEF") - szTemp);
-                        if (fPound && value) {
-                            do_str(szHead, szHead + sizeof(szHead) - 1, "0x");
-                        }
-                    }
+					if (fLeft)
+					{
+						if (nHead)
+						{
+							pszOut = do_str(pszOut, pszEnd, szHead);
+							nLen += nHead;
+						}
 
-                    INT nHead = 0;
-                    for (; szHead[nHead]; nHead++) {
-                        // Count characters in head string.
-                    }
+						pszOut = do_str(pszOut, pszEnd, szTemp);
+						for (; nLen < nWidth && pszOut < pszEnd; nLen++)
+						{
+							*pszOut++ = ' ';
+						}
+					}
+					else if (fZero)
+					{
+						if (nHead)
+						{
+							pszOut = do_str(pszOut, pszEnd, szHead);
+							nLen += nHead;
+						}
 
-                    if (nHead) {
-                        pszOut = do_str(pszOut, pszEnd, szHead);
-                        nLen += nHead;
-                    }
-                    for (; nLen < nWidth && pszOut < pszEnd; nLen++) {
-                        *pszOut++ = '0';
-                    }
-                    pszOut = do_str(pszOut, pszEnd, szTemp);
-                }
-                else {
-                    pszMsg++;
-                    while (pszArg < pszMsg && pszOut < pszEnd) {
-                        *pszOut++ = *pszArg++;
-                    }
-                }
-            }
-            else {
-                if (pszOut < pszEnd) {
-                    *pszOut++ = *pszMsg++;
-                }
-            }
-        }
-        *pszOut = '\0';
-        pszBuffer[cbBuffer - 1] = '\0';
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
-        PCHAR pszOut = pszBuffer;
-        *pszOut = '\0';
-        pszOut = do_str(pszOut, pszEnd, "-exception:");
-        pszOut = do_base(pszOut, (UINT64)GetExceptionCode(), 10, "0123456789");
-        pszOut = do_str(pszOut, pszEnd, "-");
-    }
+						for (; nLen < nWidth && pszOut < pszEnd; nLen++)
+						{
+							*pszOut++ = '0';
+						}
+
+						pszOut = do_str(pszOut, pszEnd, szTemp);
+					}
+					else
+					{
+						if (nHead)
+						{
+							nLen += nHead;
+						}
+
+						for (; nLen < nWidth && pszOut < pszEnd; nLen++)
+						{
+							*pszOut++ = ' ';
+						}
+
+						if (nHead)
+						{
+							pszOut = do_str(pszOut, pszEnd, szHead);
+						}
+
+						pszOut = do_str(pszOut, pszEnd, szTemp);
+					}
+				}
+				else if (*pszMsg == 'p')
+				{
+					CHAR szTemp[64];
+					ULONG_PTR value;
+					value = va_arg(args, ULONG_PTR);
+
+					if (*pszMsg == 'p')
+					{
+						pszMsg++;
+						nLen = (int)(do_base(szTemp, (UINT64)value, 16, "0123456789abcdef") - szTemp);
+						if (fPound && value)
+						{
+							do_str(szHead, szHead + sizeof(szHead) - 1, "0x");
+						}
+					}
+					else
+					{
+						pszMsg++;
+						nLen = (int)(do_base(szTemp, (UINT64)value, 16, "0123456789ABCDEF") - szTemp);
+						if (fPound && value)
+						{
+							do_str(szHead, szHead + sizeof(szHead) - 1, "0x");
+						}
+					}
+
+					INT nHead = 0;
+					for (; szHead[nHead]; nHead++)
+					{
+						// Count characters in head string.
+					}
+
+					if (nHead)
+					{
+						pszOut = do_str(pszOut, pszEnd, szHead);
+						nLen += nHead;
+					}
+
+					for (; nLen < nWidth && pszOut < pszEnd; nLen++)
+					{
+						*pszOut++ = '0';
+					}
+
+					pszOut = do_str(pszOut, pszEnd, szTemp);
+				}
+				else
+				{
+					pszMsg++;
+					while (pszArg < pszMsg && pszOut < pszEnd)
+					{
+						*pszOut++ = *pszArg++;
+					}
+				}
+			}
+			else
+			{
+				if (pszOut < pszEnd)
+				{
+					*pszOut++ = *pszMsg++;
+				}
+			}
+		}
+
+		*pszOut = '\0';
+		pszBuffer[cbBuffer - 1] = '\0';
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+	{
+		PCHAR pszOut = pszBuffer;
+		*pszOut = '\0';
+		pszOut = do_str(pszOut, pszEnd, "-exception:");
+		pszOut = do_base(pszOut, (UINT64)GetExceptionCode(), 10, "0123456789");
+		pszOut = do_str(pszOut, pszEnd, "-");
+	}
 }
 
 #if _MSC_VER >= 1900
@@ -2211,1073 +2565,1352 @@ VOID VSafePrintf(PCSTR pszMsg, va_list args, PCHAR pszBuffer, LONG cbBuffer)
 
 PCHAR SafePrintf(PCHAR pszBuffer, LONG cbBuffer, PCSTR pszMsg, ...)
 {
-    va_list args;
-    va_start(args, pszMsg);
-    VSafePrintf(pszMsg, args, pszBuffer, cbBuffer);
-    va_end(args);
+	va_list args;
+	va_start(args, pszMsg);
+	VSafePrintf(pszMsg, args, pszBuffer, cbBuffer);
+	va_end(args);
 
-    while (*pszBuffer) {
-        pszBuffer++;
-    }
-    return pszBuffer;
+	while (*pszBuffer)
+	{
+		pszBuffer++;
+	}
+
+	return pszBuffer;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 //
-BOOL TblogOpen()
+bool TblogOpen()
 {
-    EnterCriticalSection(&s_csPipe);
+	EnterCriticalSection(&s_csPipe);
 
-    WCHAR wzPipe[256];
-    StringCchPrintfW(wzPipe, ARRAYSIZE(wzPipe), L"%ls.%d", TBLOG_PIPE_NAMEW, s_nTraceProcessId);
+	WCHAR wzPipe[256];
+	StringCchPrintfW(wzPipe, ARRAYSIZE(wzPipe), L"%ls.%d", TBLOG_PIPE_NAMEW, s_nTraceProcessId);
 
-    for (int retries = 0; retries < 10; retries++) {
-        WaitNamedPipeW(wzPipe, 10000); // Wait up to 10 seconds for a pipe to appear.
+	for (int retries = 0; retries < 10; retries++)
+	{
+		WaitNamedPipeW(wzPipe, 10000); // Wait up to 10 seconds for a pipe to appear.
 
-        s_hPipe = Real_CreateFileW(wzPipe, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-        if (s_hPipe != INVALID_HANDLE_VALUE) {
-            DWORD dwMode = PIPE_READMODE_MESSAGE;
-            if (SetNamedPipeHandleState(s_hPipe, &dwMode, NULL, NULL)) {
-                LeaveCriticalSection(&s_csPipe);
-                return TRUE;
-            }
-        }
-    }
+		s_hPipe = Real_CreateFileW(wzPipe, GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
+		if (s_hPipe != INVALID_HANDLE_VALUE)
+		{
+			DWORD dwMode = PIPE_READMODE_MESSAGE;
+			if (SetNamedPipeHandleState(s_hPipe, &dwMode, nullptr, nullptr))
+			{
+				LeaveCriticalSection(&s_csPipe);
+				return true;
+			}
+		}
+	}
 
-    LeaveCriticalSection(&s_csPipe);
+	LeaveCriticalSection(&s_csPipe);
 
-    // Couldn't open pipe.
-    DEBUG_BREAK();
-    Real_ExitProcess(9990);
-    return FALSE;
+	// Couldn't open pipe.
+	DEBUG_BREAK();
+	Real_ExitProcess(9990);
+	return false;
 }
 
-VOID TblogV(PCSTR pszMsgf, va_list args)
+void TblogV(PCSTR pszMsgf, va_list args)
 {
-    if (s_hPipe == INVALID_HANDLE_VALUE) {
-        return;
-    }
+	if (s_hPipe == INVALID_HANDLE_VALUE) {
+		return;
+	}
 
-    EnterCriticalSection(&s_csPipe);
+	EnterCriticalSection(&s_csPipe);
 
-    DWORD cbWritten = 0;
+	DWORD cbWritten = 0;
 
-    PCHAR pszBuf = s_rMessage.szMessage;
-    VSafePrintf(pszMsgf, args,
-                pszBuf, (int)(s_rMessage.szMessage + sizeof(s_rMessage.szMessage) - pszBuf));
+	PCHAR pszBuf = s_rMessage.szMessage;
+	VSafePrintf(
+		pszMsgf,
+		args,
+		pszBuf,
+		(int)(s_rMessage.szMessage + sizeof(s_rMessage.szMessage) - pszBuf));
 
-    PCHAR pszEnd = s_rMessage.szMessage;
-    for (; *pszEnd; pszEnd++) {
-        // no internal contents.
-    }
-    s_rMessage.nBytes = (DWORD)(pszEnd - ((PCSTR)&s_rMessage));
+	PCHAR pszEnd = s_rMessage.szMessage;
+	for (; *pszEnd; pszEnd++)
+	{
+		// no internal contents.
+	}
 
-    // If the write fails, then we abort
-    if (s_hPipe != INVALID_HANDLE_VALUE) {
-        if (!Real_WriteFile(s_hPipe, &s_rMessage, s_rMessage.nBytes, &cbWritten, NULL)) {
-            Real_ExitProcess(9991);
-        }
-    }
+	s_rMessage.nBytes = (DWORD)(pszEnd - ((PCSTR)&s_rMessage));
 
-    LeaveCriticalSection(&s_csPipe);
+	// If the write fails, then we abort
+	if (s_hPipe != INVALID_HANDLE_VALUE)
+	{
+		if (!Real_WriteFile(s_hPipe, &s_rMessage, s_rMessage.nBytes, &cbWritten, nullptr))
+		{
+			Real_ExitProcess(9991);
+		}
+	}
+
+	LeaveCriticalSection(&s_csPipe);
 }
 
-VOID Tblog(PCSTR pszMsgf, ...)
+void Tblog(PCSTR pszMsgf, ...)
 {
-    if (s_hPipe == INVALID_HANDLE_VALUE) {
-        return;
-    }
+	if (s_hPipe == INVALID_HANDLE_VALUE)
+	{
+		return;
+	}
 
-    va_list args;
-    va_start(args, pszMsgf);
-    TblogV(pszMsgf, args);
-    va_end(args);
+	va_list args;
+	va_start(args, pszMsgf);
+	TblogV(pszMsgf, args);
+	va_end(args);
 }
 
-VOID TblogClose()
+void TblogClose()
 {
-    EnterCriticalSection(&s_csPipe);
+	EnterCriticalSection(&s_csPipe);
 
-    if (s_hPipe != INVALID_HANDLE_VALUE) {
-        DWORD cbWritten = 0;
+	if (s_hPipe != INVALID_HANDLE_VALUE)
+	{
+		DWORD cbWritten = 0;
 
-        s_rMessage.nBytes = 0;
+		s_rMessage.nBytes = 0;
 
-        Real_WriteFile(s_hPipe, &s_rMessage, 4, &cbWritten, NULL);
-        FlushFileBuffers(s_hPipe);
-        Real_CloseHandle(s_hPipe);
-        s_hPipe = INVALID_HANDLE_VALUE;
-    }
+		Real_WriteFile(s_hPipe, &s_rMessage, 4, &cbWritten, nullptr);
+		FlushFileBuffers(s_hPipe);
+		Real_CloseHandle(s_hPipe);
+		s_hPipe = INVALID_HANDLE_VALUE;
+	}
 
-    LeaveCriticalSection(&s_csPipe);
+	LeaveCriticalSection(&s_csPipe);
 }
 
 /////////////////////////////////////////////////////////////
 // Detours
 //
-static BOOL IsInherited(HANDLE hHandle)
+static bool IsInherited(HANDLE hHandle)
 {
-    DWORD dwFlags;
+	DWORD dwFlags;
 
-    if (GetHandleInformation(hHandle, &dwFlags)) {
-        return (dwFlags & HANDLE_FLAG_INHERIT) ? TRUE : FALSE;
-    }
-    return FALSE;
+	if (GetHandleInformation(hHandle, &dwFlags))
+	{
+		return (dwFlags & HANDLE_FLAG_INHERIT) ? true : false;
+	}
+
+	return false;
 }
 
-static void SaveStdHandleName(HANDLE hFile, PWCHAR pwzBuffer, BOOL *fAppend)
+static void SaveStdHandleName(HANDLE hFile, PWCHAR pwzBuffer, BOOL* fAppend)
 {
-    pwzBuffer[0] = '\0';
+	pwzBuffer[0] = '\0';
 
-    if ((hFile != INVALID_HANDLE_VALUE) && IsInherited(hFile)) {
-        FileInfo * pInfo = OpenFiles::RecallFile(hFile);
-        if (pInfo) {
-            Copy(pwzBuffer, pInfo->m_pwzPath);
-            if (pInfo->m_fAppend && fAppend != NULL) {
-                *fAppend = TRUE;
-            }
-        }
-    }
+	if ((hFile != INVALID_HANDLE_VALUE) && IsInherited(hFile))
+	{
+		FileInfo * pInfo = OpenFiles::RecallFile(hFile);
+		if (pInfo)
+		{
+			Copy(pwzBuffer, pInfo->m_pwzPath);
+			if (pInfo->m_fAppend && fAppend != nullptr)
+			{
+				*fAppend = true;
+			}
+		}
+	}
 }
 
-static void LoadStdHandleName(DWORD id, PCWSTR pwzBuffer, BOOL fAppend)
+static void LoadStdHandleName(DWORD id, PCWSTR pwzBuffer, bool fAppend)
 {
-    HANDLE hFile = GetStdHandle(id);
+	HANDLE hFile = GetStdHandle(id);
 
-    if ((hFile != INVALID_HANDLE_VALUE) && pwzBuffer[0] != '\0') {
-        FileInfo *pInfo = FileNames::FindPartial(pwzBuffer);
-        if (fAppend) {
-            pInfo->m_fAppend = TRUE;
-        }
-        OpenFiles::Remember(hFile, pInfo);
-    }
+	if ((hFile != INVALID_HANDLE_VALUE) && pwzBuffer[0] != '\0')
+	{
+		FileInfo *pInfo = FileNames::FindPartial(pwzBuffer);
+		if (fAppend)
+		{
+			pInfo->m_fAppend = true;
+		}
+
+		OpenFiles::Remember(hFile, pInfo);
+	}
 }
 
-BOOL CreateProcessInternals(HANDLE hProcess, DWORD nProcessId, PCHAR pszId,
-                            HANDLE hStdin, HANDLE hStdout, HANDLE hStderr)
+bool CreateProcessInternals(
+	HANDLE hProcess,
+	DWORD nProcessId,
+	PCHAR pszId,
+	HANDLE hStdin,
+	HANDLE hStdout,
+	HANDLE hStderr)
 {
-    EnterCriticalSection(&s_csChildPayload);
+	EnterCriticalSection(&s_csChildPayload);
 
-    ProcInfo *proc = Procs::Create(hProcess, nProcessId);
-    OpenFiles::Remember(hProcess, proc);
+	ProcInfo *proc = Procs::Create(hProcess, nProcessId);
+	OpenFiles::Remember(hProcess, proc);
 
-    ZeroMemory(&s_ChildPayload, sizeof(s_ChildPayload));
-    CopyMemory(&s_ChildPayload, &s_Payload, sizeof(s_ChildPayload));
+	ZeroMemory(&s_ChildPayload, sizeof(s_ChildPayload));
+	CopyMemory(&s_ChildPayload, &s_Payload, sizeof(s_ChildPayload));
 
-    s_ChildPayload.nParentProcessId = GetCurrentProcessId();
-    s_ChildPayload.rGeneology[s_ChildPayload.nGeneology]
-        = (DWORD)InterlockedIncrement(&s_nChildCnt);
-    s_ChildPayload.nGeneology++;
+	s_ChildPayload.nParentProcessId = GetCurrentProcessId();
+	s_ChildPayload.rGeneology[s_ChildPayload.nGeneology]
+		= (DWORD)InterlockedIncrement(&s_nChildCnt);
+	s_ChildPayload.nGeneology++;
 
-    SaveStdHandleName(hStdin, s_ChildPayload.wzStdin, NULL);
-    SaveStdHandleName(hStdout, s_ChildPayload.wzStdout, &s_ChildPayload.fStdoutAppend);
-    SaveStdHandleName(hStderr, s_ChildPayload.wzStderr, &s_ChildPayload.fStderrAppend);
+	SaveStdHandleName(hStdin, s_ChildPayload.wzStdin, nullptr);
+	SaveStdHandleName(hStdout, s_ChildPayload.wzStdout, &s_ChildPayload.fStdoutAppend);
+	SaveStdHandleName(hStderr, s_ChildPayload.wzStderr, &s_ChildPayload.fStderrAppend);
 
-    DetourCopyPayloadToProcess(hProcess, s_guidTrace, &s_ChildPayload, sizeof(s_ChildPayload));
+	DetourCopyPayloadToProcess(hProcess, s_guidTrace, &s_ChildPayload, sizeof(s_ChildPayload));
 
-    for (DWORD i = 0; i < s_ChildPayload.nGeneology; i++) {
-        pszId = SafePrintf(pszId, 16, "%d.", s_ChildPayload.rGeneology[i]);
-    }
-    *pszId = '\0';
+	for (DWORD i = 0; i < s_ChildPayload.nGeneology; i++)
+	{
+		pszId = SafePrintf(pszId, 16, "%d.", s_ChildPayload.rGeneology[i]);
+	}
 
-    LeaveCriticalSection(&s_csChildPayload);
+	*pszId = '\0';
 
-    return TRUE;
+	LeaveCriticalSection(&s_csChildPayload);
+
+	return true;
 }
 
-BOOL WINAPI Mine_CreateProcessW(LPCWSTR lpApplicationName,
-                                LPWSTR lpCommandLine,
-                                LPSECURITY_ATTRIBUTES lpProcessAttributes,
-                                LPSECURITY_ATTRIBUTES lpThreadAttributes,
-                                BOOL bInheritHandles,
-                                DWORD dwCreationFlags,
-                                LPVOID lpEnvironment,
-                                LPCWSTR lpCurrentDirectory,
-                                LPSTARTUPINFOW lpStartupInfo,
-                                LPPROCESS_INFORMATION lpProcessInformation)
+bool WINAPI Mine_CreateProcessW(
+	LPCWSTR lpApplicationName,
+	LPWSTR lpCommandLine,
+	LPSECURITY_ATTRIBUTES lpProcessAttributes,
+	LPSECURITY_ATTRIBUTES lpThreadAttributes,
+	bool bInheritHandles,
+	DWORD dwCreationFlags,
+	LPVOID lpEnvironment,
+	LPCWSTR lpCurrentDirectory,
+	LPSTARTUPINFOW lpStartupInfo,
+	LPPROCESS_INFORMATION lpProcessInformation)
 {
-    EnterFunc();
+	EnterFunc();
 
-    if (lpCommandLine == NULL) {
-        lpCommandLine = (LPWSTR)lpApplicationName;
-    }
+	if (lpCommandLine == nullptr)
+	{
+		lpCommandLine = (LPWSTR)lpApplicationName;
+	}
 
-    CHAR szProc[MAX_PATH];
-    BOOL rv = 0;
-    __try {
-        LPPROCESS_INFORMATION ppi = lpProcessInformation;
-        PROCESS_INFORMATION pi;
-        if (ppi == NULL) {
-            ppi = &pi;
-        }
+	CHAR szProc[MAX_PATH];
+	bool rv = 0;
+	__try
+	{
+		LPPROCESS_INFORMATION ppi = lpProcessInformation;
+		PROCESS_INFORMATION pi;
+		if (ppi == nullptr)
+		{
+			ppi = &pi;
+		}
 
-        rv = DetourCreateProcessWithDllExW(lpApplicationName,
-                                           lpCommandLine,
-                                           lpProcessAttributes,
-                                           lpThreadAttributes,
-                                           bInheritHandles,
-                                           dwCreationFlags | CREATE_SUSPENDED,
-                                           lpEnvironment,
-                                           lpCurrentDirectory,
-                                           lpStartupInfo,
-                                           ppi,
-                                           s_szDllPath,
-                                           Real_CreateProcessW);
+		rv = DetourCreateProcessWithDllExW(
+			lpApplicationName,
+			lpCommandLine,
+			lpProcessAttributes,
+			lpThreadAttributes,
+			bInheritHandles,
+			dwCreationFlags | CREATE_SUSPENDED,
+			lpEnvironment,
+			lpCurrentDirectory,
+			lpStartupInfo,
+			ppi,
+			s_szDllPath,
+			Real_CreateProcessW);
 
-        if (rv) {
-            HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-            HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-            HANDLE hStderr = GetStdHandle(STD_ERROR_HANDLE);
+		if (rv)
+		{
+			HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+			HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+			HANDLE hStderr = GetStdHandle(STD_ERROR_HANDLE);
 
-            if (lpStartupInfo != NULL && (lpStartupInfo->dwFlags & STARTF_USESTDHANDLES) != 0) {
-                hStdin = lpStartupInfo->hStdInput;
-                hStdout = lpStartupInfo->hStdOutput;
-                hStderr = lpStartupInfo->hStdError;
-            }
-            CreateProcessInternals(ppi->hProcess, ppi->dwProcessId,
-                                   szProc, hStdin, hStdout, hStderr);
+			if (lpStartupInfo != nullptr && (lpStartupInfo->dwFlags & STARTF_USESTDHANDLES) != 0)
+			{
+				hStdin = lpStartupInfo->hStdInput;
+				hStdout = lpStartupInfo->hStdOutput;
+				hStderr = lpStartupInfo->hStdError;
+			}
 
-            Print("<t:Child id=\"::%hs::\">\n", szProc);
+			CreateProcessInternals(
+				ppi->hProcess,
+				ppi->dwProcessId,
+				szProc,
+				hStdin,
+				hStdout,
+				hStderr);
 
-            WCHAR wzPath[MAX_PATH];
-            FileInfo *pInfo = NULL;
-            if (lpApplicationName == NULL) {
-                PWCHAR pwzDst = wzPath;
-                PWCHAR pwzSrc = lpCommandLine;
+			Print("<t:Child id=\"::%hs::\">\n", szProc);
 
-                if (*pwzSrc == '\"') {
-                    WCHAR cQuote = *pwzSrc++;
+			WCHAR wzPath[MAX_PATH];
+			FileInfo *pInfo = nullptr;
+			if (lpApplicationName == nullptr)
+			{
+				PWCHAR pwzDst = wzPath;
+				PWCHAR pwzSrc = lpCommandLine;
 
-                    while (*pwzSrc && *pwzSrc != cQuote) {
-                        *pwzDst++ = *pwzSrc++;
-                    }
-                    *pwzDst++ = '\0';
-                }
-                else {
-                    while (*pwzSrc && *pwzSrc != ' ' && *pwzSrc != '\t') {
-                        if (*pwzSrc == '\t') {
-                            *pwzSrc = ' ';
-                        }
-                        *pwzDst++ = *pwzSrc++;
-                    }
-                    *pwzDst++ = '\0';
-                }
-                pInfo = FileNames::FindPartial(wzPath);
-            }
-            else {
-                pInfo = FileNames::FindPartial(lpApplicationName);
-            }
+				if (*pwzSrc == '\"')
+				{
+					WCHAR cQuote = *pwzSrc++;
 
-            Print("<t:Executable>%ls</t:Executable>\n",
-                  FileNames::ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo));
-            Print("<t:Line>%le</t:Line>\n", lpCommandLine);
-            Print("</t:Child>\n");
+					while (*pwzSrc && *pwzSrc != cQuote)
+					{
+						*pwzDst++ = *pwzSrc++;
+					}
 
-            if (pInfo) {
-                pInfo->m_fAbsorbed = true;
-            }
+					*pwzDst++ = '\0';
+				}
+				else
+				{
+					while (*pwzSrc && *pwzSrc != ' ' && *pwzSrc != '\t')
+					{
+						if (*pwzSrc == '\t')
+						{
+							*pwzSrc = ' ';
+						}
 
-            if (!(dwCreationFlags & CREATE_SUSPENDED)) {
-                ResumeThread(ppi->hThread);
-            }
+						*pwzDst++ = *pwzSrc++;
+					}
 
-            if (ppi == &pi) {
-                Real_CloseHandle(ppi->hThread);
-                Real_CloseHandle(ppi->hProcess);
-            }
-        }
-    } __finally {
-        ExitFunc();
-        if (!rv) {
-            Print("<!-- Warning: CreateProcessW failed %d: %ls; %ls -->\n",
-                  GetLastError(), lpApplicationName, lpCommandLine);
-        }
-    }
-    return rv;
+					*pwzDst++ = '\0';
+				}
+
+				pInfo = FileNames::FindPartial(wzPath);
+			}
+			else
+			{
+				pInfo = FileNames::FindPartial(lpApplicationName);
+			}
+
+			Print(
+				"<t:Executable>%ls</t:Executable>\n",
+				FileNames::ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo));
+			Print("<t:Line>%le</t:Line>\n", lpCommandLine);
+			Print("</t:Child>\n");
+
+			if (pInfo)
+			{
+				pInfo->m_fAbsorbed = true;
+			}
+
+			if (!(dwCreationFlags & CREATE_SUSPENDED))
+			{
+				ResumeThread(ppi->hThread);
+			}
+
+			if (ppi == &pi)
+			{
+				Real_CloseHandle(ppi->hThread);
+				Real_CloseHandle(ppi->hProcess);
+			}
+		}
+	}
+	__finally
+	{
+		ExitFunc();
+		if (!rv)
+		{
+			Print(
+				"<!-- Warning: CreateProcessW failed %d: %ls; %ls -->\n",
+				GetLastError(),
+				lpApplicationName,
+				lpCommandLine);
+		}
+	}
+
+	return rv;
 }
 
-BOOL WINAPI Mine_CreateProcessA(LPCSTR lpApplicationName,
-                                LPSTR lpCommandLine,
-                                LPSECURITY_ATTRIBUTES lpProcessAttributes,
-                                LPSECURITY_ATTRIBUTES lpThreadAttributes,
-                                BOOL bInheritHandles,
-                                DWORD dwCreationFlags,
-                                LPVOID lpEnvironment,
-                                LPCSTR lpCurrentDirectory,
-                                LPSTARTUPINFOA lpStartupInfo,
-                                LPPROCESS_INFORMATION lpProcessInformation)
+bool WINAPI Mine_CreateProcessA(
+	LPCSTR lpApplicationName,
+	LPSTR lpCommandLine,
+	LPSECURITY_ATTRIBUTES lpProcessAttributes,
+	LPSECURITY_ATTRIBUTES lpThreadAttributes,
+	bool bInheritHandles,
+	DWORD dwCreationFlags,
+	LPVOID lpEnvironment,
+	LPCSTR lpCurrentDirectory,
+	LPSTARTUPINFOA lpStartupInfo,
+	LPPROCESS_INFORMATION lpProcessInformation)
 {
-    EnterFunc();
+	EnterFunc();
 
-    if (lpCommandLine == NULL) {
-        lpCommandLine = (LPSTR)lpApplicationName;
-    }
+	if (lpCommandLine == nullptr)
+	{
+		lpCommandLine = (LPSTR)lpApplicationName;
+	}
 
-    CHAR szProc[MAX_PATH];
-    BOOL rv = 0;
-    __try {
-        LPPROCESS_INFORMATION ppi = lpProcessInformation;
-        PROCESS_INFORMATION pi;
-        if (ppi == NULL) {
-            ppi = &pi;
-        }
+	CHAR szProc[MAX_PATH];
+	bool rv = 0;
+	__try
+	{
+		LPPROCESS_INFORMATION ppi = lpProcessInformation;
+		PROCESS_INFORMATION pi;
+		if (ppi == nullptr)
+		{
+			ppi = &pi;
+		}
 
-        rv = DetourCreateProcessWithDllExA(lpApplicationName,
-                                           lpCommandLine,
-                                           lpProcessAttributes,
-                                           lpThreadAttributes,
-                                           bInheritHandles,
-                                           dwCreationFlags | CREATE_SUSPENDED,
-                                           lpEnvironment,
-                                           lpCurrentDirectory,
-                                           lpStartupInfo,
-                                           ppi,
-                                           s_szDllPath,
-                                           Real_CreateProcessA);
+		rv = DetourCreateProcessWithDllExA(
+			lpApplicationName,
+			lpCommandLine,
+			lpProcessAttributes,
+			lpThreadAttributes,
+			bInheritHandles,
+			dwCreationFlags | CREATE_SUSPENDED,
+			lpEnvironment,
+			lpCurrentDirectory,
+			lpStartupInfo,
+			ppi,
+			s_szDllPath,
+			Real_CreateProcessA);
 
-        if (rv) {
-            HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-            HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-            HANDLE hStderr = GetStdHandle(STD_ERROR_HANDLE);
+		if (rv)
+		{
+			HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+			HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+			HANDLE hStderr = GetStdHandle(STD_ERROR_HANDLE);
 
-            if (lpStartupInfo != NULL && (lpStartupInfo->dwFlags & STARTF_USESTDHANDLES) != 0) {
-                hStdin = lpStartupInfo->hStdInput;
-                hStdout = lpStartupInfo->hStdOutput;
-                hStderr = lpStartupInfo->hStdError;
-            }
-            CreateProcessInternals(ppi->hProcess, ppi->dwProcessId,
-                                   szProc, hStdin, hStdout, hStderr);
+			if (lpStartupInfo != nullptr && (lpStartupInfo->dwFlags & STARTF_USESTDHANDLES) != 0)
+			{
+				hStdin = lpStartupInfo->hStdInput;
+				hStdout = lpStartupInfo->hStdOutput;
+				hStderr = lpStartupInfo->hStdError;
+			}
 
-            Print("<t:Child id=\"::%hs::\">\n", szProc);
+			CreateProcessInternals(
+				ppi->hProcess,
+				ppi->dwProcessId,
+				szProc,
+				hStdin,
+				hStdout,
+				hStderr);
 
-            WCHAR wzPath[MAX_PATH];
-            FileInfo *pInfo = NULL;
-            if (lpApplicationName == NULL) {
-                PCHAR pszDst = szProc;
-                PCHAR pszSrc = lpCommandLine;
+			Print("<t:Child id=\"::%hs::\">\n", szProc);
 
-                if (*pszSrc == '\"') {
-                    CHAR cQuote = *pszSrc++;
+			WCHAR wzPath[MAX_PATH];
+			FileInfo *pInfo = nullptr;
+			if (lpApplicationName == nullptr)
+			{
+				PCHAR pszDst = szProc;
+				PCHAR pszSrc = lpCommandLine;
 
-                    while (*pszSrc && *pszSrc != cQuote) {
-                        *pszDst++ = *pszSrc++;
-                    }
-                    *pszDst++ = '\0';
-                }
-                else {
-                    while (*pszSrc && *pszSrc != ' ' && *pszSrc != '\t') {
-                        if (*pszSrc == '\t') {
-                            *pszSrc = ' ';
-                        }
-                        *pszDst++ = *pszSrc++;
-                    }
-                    *pszDst++ = '\0';
-                }
-                pInfo = FileNames::FindPartial(szProc);
-            }
-            else {
-                pInfo = FileNames::FindPartial(lpApplicationName);
-            }
+				if (*pszSrc == '\"')
+				{
+					CHAR cQuote = *pszSrc++;
 
-            Print("<t:Executable>%ls</t:Executable>\n",
-                  FileNames::ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo));
-            Print("<t:Line>%he</t:Line>\n", lpCommandLine);
-            Print("</t:Child>\n");
+					while (*pszSrc && *pszSrc != cQuote)
+					{
+						*pszDst++ = *pszSrc++;
+					}
 
-            if (pInfo) {
-                pInfo->m_fAbsorbed = true;
-            }
+					*pszDst++ = '\0';
+				}
+				else
+				{
+					while (*pszSrc && *pszSrc != ' ' && *pszSrc != '\t')
+					{
+						if (*pszSrc == '\t')
+						{
+							*pszSrc = ' ';
+						}
 
-            if (!(dwCreationFlags & CREATE_SUSPENDED)) {
-                ResumeThread(ppi->hThread);
-            }
-            if (ppi == &pi) {
-                Real_CloseHandle(ppi->hThread);
-                Real_CloseHandle(ppi->hProcess);
-            }
-        }
-    } __finally {
-        ExitFunc();
-        if (!rv) {
-            Print("<!-- Warning: CreateProcessA failed %d: %hs; %hs -->\n",
-                  GetLastError(), lpApplicationName, lpCommandLine);
-        }
-    }
-    return rv;
+						*pszDst++ = *pszSrc++;
+					}
+
+					*pszDst++ = '\0';
+				}
+
+				pInfo = FileNames::FindPartial(szProc);
+			}
+			else
+			{
+				pInfo = FileNames::FindPartial(lpApplicationName);
+			}
+
+			Print(
+				"<t:Executable>%ls</t:Executable>\n",
+				FileNames::ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo));
+			Print("<t:Line>%he</t:Line>\n", lpCommandLine);
+			Print("</t:Child>\n");
+
+			if (pInfo)
+			{
+				pInfo->m_fAbsorbed = true;
+			}
+
+			if (!(dwCreationFlags & CREATE_SUSPENDED))
+			{
+				ResumeThread(ppi->hThread);
+			}
+
+			if (ppi == &pi)
+			{
+				Real_CloseHandle(ppi->hThread);
+				Real_CloseHandle(ppi->hProcess);
+			}
+		}
+	}
+	__finally
+	{
+		ExitFunc();
+		if (!rv)
+		{
+			Print(
+				"<!-- Warning: CreateProcessA failed %d: %hs; %hs -->\n",
+				GetLastError(),
+				lpApplicationName,
+				lpCommandLine);
+		}
+	}
+
+	return rv;
 }
 
 //
 //////////////////////////////////////////////////////////////////////////////
 
-BOOL WINAPI Mine_CopyFileExA(LPCSTR a0,
-                             LPCSTR a1,
-                             LPPROGRESS_ROUTINE a2,
-                             LPVOID a3,
-                             LPBOOL a4,
-                             DWORD a5)
+bool WINAPI Mine_CopyFileExA(
+	LPCSTR a0,
+	LPCSTR a1,
+	LPPROGRESS_ROUTINE a2,
+	LPVOID a3,
+	LPBOOL a4,
+	DWORD a5)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_CopyFileExA(a0, a1, a2, a3, a4, a5);
-    } __finally {
-        ExitFunc();
-        if (rv) {
+	bool rv = 0;
+	__try
+	{
+		rv = Real_CopyFileExA(a0, a1, a2, a3, a4, a5);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
 #if 0
-            Print("<!-- CopyFileExA %he to %he -->\n", a0, a1);
+			Print("<!-- CopyFileExA %he to %he -->\n", a0, a1);
 #endif
-            NoteRead(a0);
-            NoteWrite(a1);
-        }
-    };
-    return rv;
+			NoteRead(a0);
+			NoteWrite(a1);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_CopyFileExW(LPCWSTR a0,
-                             LPCWSTR a1,
-                             LPPROGRESS_ROUTINE a2,
-                             LPVOID a3,
-                             LPBOOL a4,
-                             DWORD a5)
+bool WINAPI Mine_CopyFileExW(
+	LPCWSTR a0,
+	LPCWSTR a1,
+	LPPROGRESS_ROUTINE a2,
+	LPVOID a3,
+	LPBOOL a4,
+	DWORD a5)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
+	bool rv = 0;
+	__try
+	{
 #if 0
-        Print("\n");
-        Print("<!-- CopyFileExW %le to %le before -->\n", a0, a1);
+		Print("\n");
+		Print("<!-- CopyFileExW %le to %le before -->\n", a0, a1);
 #endif
-        rv = Real_CopyFileExW(a0, a1, a2, a3, a4, a5);
-    } __finally {
-        ExitFunc();
-        if (rv) {
+		rv = Real_CopyFileExW(a0, a1, a2, a3, a4, a5);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
 #if 0
-            Print("<!-- CopyFileExW %le to %le -->\n", a0, a1);
+			Print("<!-- CopyFileExW %le to %le -->\n", a0, a1);
 #endif
-            NoteRead(a0);
-            NoteWrite(a1);
-        }
-    };
-    return rv;
+			NoteRead(a0);
+			NoteWrite(a1);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_PrivCopyFileExW(LPCWSTR a0,
-                                 LPCWSTR a1,
-                                 LPPROGRESS_ROUTINE a2,
-                                 LPVOID a3,
-                                 LPBOOL a4,
-                                 DWORD a5)
+bool WINAPI Mine_PrivCopyFileExW(
+	LPCWSTR a0,
+	LPCWSTR a1,
+	LPPROGRESS_ROUTINE a2,
+	LPVOID a3,
+	LPBOOL a4,
+	DWORD a5)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_PrivCopyFileExW(a0, a1, a2, a3, a4, a5);
-    } __finally {
-        ExitFunc();
-        if (rv) {
+	bool rv = 0;
+	__try
+	{
+		rv = Real_PrivCopyFileExW(a0, a1, a2, a3, a4, a5);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
 #if 0
-            Print("<!-- PrivCopyFileExW %le to %le -->\n", a0, a1);
+			Print("<!-- PrivCopyFileExW %le to %le -->\n", a0, a1);
 #endif
-            NoteRead(a0);
-            NoteWrite(a1);
-        }
-    };
-    return rv;
+			NoteRead(a0);
+			NoteWrite(a1);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_CreateHardLinkA(LPCSTR a0,
-                                 LPCSTR a1,
-                                 LPSECURITY_ATTRIBUTES a2)
+bool WINAPI Mine_CreateHardLinkA(
+	LPCSTR a0,
+	LPCSTR a1,
+	LPSECURITY_ATTRIBUTES a2)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_CreateHardLinkA(a0, a1, a2);
-    } __finally {
-        ExitFunc();
-        if (rv) {
-#if 0
-            Print("<!-- CreateHardLinkA %he to %he -->\n", a0, a1);
-#endif
-            NoteRead(a1);
-            NoteWrite(a0);
-        }
-    };
-    return rv;
+	bool rv = 0;
+	__try
+	{
+		rv = Real_CreateHardLinkA(a0, a1, a2);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
+	#if 0
+			Print("<!-- CreateHardLinkA %he to %he -->\n", a0, a1);
+	#endif
+			NoteRead(a1);
+			NoteWrite(a0);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_CreateHardLinkW(LPCWSTR a0,
-                                 LPCWSTR a1,
-                                 LPSECURITY_ATTRIBUTES a2)
+bool WINAPI Mine_CreateHardLinkW(
+	LPCWSTR a0,
+	LPCWSTR a1,
+	LPSECURITY_ATTRIBUTES a2)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_CreateHardLinkW(a0, a1, a2);
-    } __finally {
-        ExitFunc();
-        if (rv) {
+	bool rv = 0;
+	__try
+	{
+		rv = Real_CreateHardLinkW(a0, a1, a2);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
 #if 0
-            Print("<!-- CreateHardLinkW %le to %le -->\n", a0, a1);
+			Print("<!-- CreateHardLinkW %le to %le -->\n", a0, a1);
 #endif
-            NoteRead(a1);
-            NoteWrite(a0);
-        }
-    };
-    return rv;
+			NoteRead(a1);
+			NoteWrite(a0);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_CloseHandle(HANDLE a0)
+bool WINAPI Mine_CloseHandle(HANDLE a0)
 {
-    /*int nIndent =*/ EnterFunc();
+	/*int nIndent =*/ EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        ProcInfo * pProc = OpenFiles::RecallProc(a0);
-        if (pProc != NULL) {
-            Procs::Close(pProc->m_hProc);
-        }
+	bool rv = 0;
+	__try
+	{
+		ProcInfo * pProc = OpenFiles::RecallProc(a0);
+		if (pProc != nullptr)
+		{
+			Procs::Close(pProc->m_hProc);
+		}
 
-        FileInfo * pFile = OpenFiles::RecallFile(a0);
-        if (pFile != NULL) {
-            DWORD dwErr = GetLastError();
-            pFile->m_cbContent = GetFileSize(a0, NULL);
-            if (pFile->m_cbContent == INVALID_FILE_SIZE) {
-                pFile->m_cbContent = 0;
-            }
+		FileInfo * pFile = OpenFiles::RecallFile(a0);
+		if (pFile != nullptr)
+		{
+			DWORD dwErr = GetLastError();
+			pFile->m_cbContent = GetFileSize(a0, nullptr);
+			if (pFile->m_cbContent == INVALID_FILE_SIZE)
+			{
+				pFile->m_cbContent = 0;
+			}
 
-            if (pFile->m_fCantRead) {
-                if (pFile->m_fRead) {
-#if 0
-                    Print("<!-- Warning: Removing read from %le -->\n", pFile->m_pwzPath);
-#endif
-                    pFile->m_fRead = FALSE;
-                }
-            }
+			if (pFile->m_fCantRead)
+			{
+				if (pFile->m_fRead)
+				{
+	#if 0
+					Print("<!-- Warning: Removing read from %le -->\n", pFile->m_pwzPath);
+	#endif
+					pFile->m_fRead = false;
+				}
+			}
 
-            // Here we should think about reading the file contents as appropriate.
-            if (pFile->m_fTemporaryPath && pFile->m_fRead && !pFile->m_fAbsorbed &&
-                !pFile->m_fDelete && !pFile->m_fCleanup && !pFile->m_fWrite &&
-                pFile->m_pbContent == NULL &&
-                pFile->m_cbContent < 16384) {
+			// Here we should think about reading the file contents as appropriate.
+			if (pFile->m_fTemporaryPath && pFile->m_fRead && !pFile->m_fAbsorbed &&
+				!pFile->m_fDelete && !pFile->m_fCleanup && !pFile->m_fWrite &&
+				pFile->m_pbContent == nullptr &&
+				pFile->m_cbContent < 16384)
+			{
+				pFile->m_pbContent = LoadFile(a0, pFile->m_cbContent);
+			}
 
-                pFile->m_pbContent = LoadFile(a0, pFile->m_cbContent);
-            }
+			SetLastError(dwErr);
+		}
 
-            SetLastError(dwErr);
-        }
-        rv = Real_CloseHandle(a0);
-    } __finally {
-        ExitFunc();
-        if (rv /* && nIndent == 0*/) {
-            OpenFiles::Forget(a0);
-        }
-    };
-    return rv;
+		rv = Real_CloseHandle(a0);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv /* && nIndent == 0*/)
+		{
+			OpenFiles::Forget(a0);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_DuplicateHandle(HANDLE hSourceProcessHandle,
-                                 HANDLE hSourceHandle,
-                                 HANDLE hTargetProcessHandle,
-                                 LPHANDLE lpTargetHandle,
-                                 DWORD dwDesiredAccess,
-                                 BOOL bInheritHandle,
-                                 DWORD dwOptions)
+bool WINAPI Mine_DuplicateHandle(
+	HANDLE hSourceProcessHandle,
+	HANDLE hSourceHandle,
+	HANDLE hTargetProcessHandle,
+	LPHANDLE lpTargetHandle,
+	DWORD dwDesiredAccess,
+	bool bInheritHandle,
+	DWORD dwOptions)
 {
-    HANDLE hTemp = INVALID_HANDLE_VALUE;
-    EnterFunc();
+	HANDLE hTemp = INVALID_HANDLE_VALUE;
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        if (lpTargetHandle == NULL) {
-            lpTargetHandle = &hTemp;
-        }
-        *lpTargetHandle = INVALID_HANDLE_VALUE;
+	bool rv = 0;
+	__try
+	{
+		if (lpTargetHandle == nullptr)
+		{
+			lpTargetHandle = &hTemp;
+		}
 
-        rv = Real_DuplicateHandle(hSourceProcessHandle,
-                                  hSourceHandle,
-                                  hTargetProcessHandle,
-                                  lpTargetHandle,
-                                  dwDesiredAccess,
-                                  bInheritHandle,
-                                  dwOptions);
-    } __finally {
-        ExitFunc();
-        if (*lpTargetHandle != INVALID_HANDLE_VALUE) {
-            FileInfo *pInfo = OpenFiles::RecallFile(hSourceHandle);
-            if (pInfo) {
-                OpenFiles::Remember(*lpTargetHandle, pInfo);
-            }
-        }
-    };
-    return rv;
+		*lpTargetHandle = INVALID_HANDLE_VALUE;
+
+		rv = Real_DuplicateHandle(
+			hSourceProcessHandle,
+			hSourceHandle,
+			hTargetProcessHandle,
+			lpTargetHandle,
+			dwDesiredAccess,
+			bInheritHandle,
+			dwOptions);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (*lpTargetHandle != INVALID_HANDLE_VALUE)
+		{
+			FileInfo *pInfo = OpenFiles::RecallFile(hSourceHandle);
+			if (pInfo)
+			{
+				OpenFiles::Remember(*lpTargetHandle, pInfo);
+			}
+		}
+	};
+
+	return rv;
 }
 
 static LONG s_nPipeCnt = 0;
 
-BOOL WINAPI Mine_CreatePipe(PHANDLE hReadPipe,
-                            PHANDLE hWritePipe,
-                            LPSECURITY_ATTRIBUTES lpPipeAttributes,
-                            DWORD nSize)
+bool WINAPI Mine_CreatePipe(
+	PHANDLE hReadPipe,
+	PHANDLE hWritePipe,
+	LPSECURITY_ATTRIBUTES lpPipeAttributes,
+	DWORD nSize)
 {
-    HANDLE hRead = INVALID_HANDLE_VALUE;
-    HANDLE hWrite = INVALID_HANDLE_VALUE;
+	HANDLE hRead = INVALID_HANDLE_VALUE;
+	HANDLE hWrite = INVALID_HANDLE_VALUE;
 
-    if (hReadPipe == NULL) {
-        hReadPipe = &hRead;
-    }
-    if (hWritePipe == NULL) {
-        hWritePipe = &hWrite;
-    }
+	if (hReadPipe == nullptr)
+	{
+		hReadPipe = &hRead;
+	}
 
-    /*int nIndent = */ EnterFunc();
-    BOOL rv = 0;
-    __try {
-        rv = Real_CreatePipe(hReadPipe, hWritePipe, lpPipeAttributes, nSize);
-    } __finally {
-        ExitFunc();
-        if (rv) {
-            CHAR szPipe[128];
+	if (hWritePipe == nullptr)
+	{
+		hWritePipe = &hWrite;
+	}
 
-            SafePrintf(szPipe, ARRAYSIZE(szPipe), "\\\\.\\PIPE\\Temp.%d.%d",
-                       GetCurrentProcessId(),
-                       InterlockedIncrement(&s_nPipeCnt));
+	/*int nIndent = */ EnterFunc();
+	bool rv = 0;
+	__try
+	{
+		rv = Real_CreatePipe(hReadPipe, hWritePipe, lpPipeAttributes, nSize);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
+			CHAR szPipe[128];
 
-            FileInfo *pInfo = FileNames::FindPartial(szPipe);
+			SafePrintf(
+				szPipe,
+				ARRAYSIZE(szPipe),
+				"\\\\.\\PIPE\\Temp.%d.%d",
+				GetCurrentProcessId(),
+				InterlockedIncrement(&s_nPipeCnt));
 
-            pInfo->m_fCleanup = TRUE;
-            OpenFiles::Remember(*hReadPipe, pInfo);
-            OpenFiles::Remember(*hWritePipe, pInfo);
-        }
-    };
-    return rv;
+			FileInfo *pInfo = FileNames::FindPartial(szPipe);
+
+			pInfo->m_fCleanup = true;
+			OpenFiles::Remember(*hReadPipe, pInfo);
+			OpenFiles::Remember(*hWritePipe, pInfo);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_CreateDirectoryW(LPCWSTR a0,
-                                  LPSECURITY_ATTRIBUTES a1)
+bool WINAPI Mine_CreateDirectoryW(
+	LPCWSTR a0,
+	LPSECURITY_ATTRIBUTES a1)
 {
-    /* int nIndent = */ EnterFunc();
-    BOOL rv = 0;
-    __try {
-        rv = Real_CreateDirectoryW(a0, a1);
-    } __finally {
-        ExitFunc();
-        if (rv) {
-            FileInfo *pInfo = FileNames::FindPartial(a0);
-            pInfo->m_fDirectory = TRUE;
-        }
-    };
-    return rv;
+	/* int nIndent = */ EnterFunc();
+	bool rv = 0;
+	__try
+	{
+		rv = Real_CreateDirectoryW(a0, a1);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
+			FileInfo *pInfo = FileNames::FindPartial(a0);
+			pInfo->m_fDirectory = true;
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_CreateDirectoryExW(LPCWSTR a0,
-                                    LPCWSTR a1,
-                                    LPSECURITY_ATTRIBUTES a2)
+bool WINAPI Mine_CreateDirectoryExW(
+	LPCWSTR a0,
+	LPCWSTR a1,
+	LPSECURITY_ATTRIBUTES a2)
 {
-    /* int nIndent = */ EnterFunc();
-    BOOL rv = 0;
-    __try {
-        rv = Real_CreateDirectoryExW(a0, a1, a2);
-    } __finally {
-        ExitFunc();
-        if (rv) {
-            FileInfo *pInfo = FileNames::FindPartial(a1);
-            pInfo->m_fDirectory = TRUE;
-        }
-    };
-    return rv;
+	/* int nIndent = */ EnterFunc();
+	bool rv = 0;
+	__try
+	{
+		rv = Real_CreateDirectoryExW(a0, a1, a2);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
+			FileInfo *pInfo = FileNames::FindPartial(a1);
+			pInfo->m_fDirectory = true;
+		}
+	};
+
+	return rv;
 }
 
-HANDLE WINAPI Mine_CreateFileW(LPCWSTR a0,
-                               DWORD access,
-                               DWORD share,
-                               LPSECURITY_ATTRIBUTES a3,
-                               DWORD create,
-                               DWORD flags,
-                               HANDLE a6)
+HANDLE WINAPI Mine_CreateFileW(
+	LPCWSTR a0,
+	DWORD access,
+	DWORD share,
+	LPSECURITY_ATTRIBUTES a3,
+	DWORD create,
+	DWORD flags,
+	HANDLE a6)
 {
-    /* int nIndent = */ EnterFunc();
-    HANDLE rv = 0;
-    __try {
-        rv = Real_CreateFileW(a0, access, share, a3, create, flags, a6);
-    } __finally {
-        ExitFunc();
+	/* int nIndent = */ EnterFunc();
+	HANDLE rv = 0;
+	__try
+	{
+		rv = Real_CreateFileW(a0, access, share, a3, create, flags, a6);
+	}
+	__finally
+	{
+		ExitFunc();
 #if 0
-            Print("<!-- CreateFileW(%le, ac=%08x, cr=%08x, fl=%08x -->\n",
-                  a0,
-                  access,
-                  create,
-                  flags);
+			Print("<!-- CreateFileW(%le, ac=%08x, cr=%08x, fl=%08x -->\n",
+					a0,
+					access,
+					create,
+					flags);
 #endif
+		if (access != 0 && /* nIndent == 0 && */ rv != INVALID_HANDLE_VALUE)
+		{
 
-        if (access != 0 && /* nIndent == 0 && */ rv != INVALID_HANDLE_VALUE) {
+			FileInfo *pInfo = FileNames::FindPartial(a0);
 
-            FileInfo *pInfo = FileNames::FindPartial(a0);
+			// FILE_FLAG_WRITE_THROUGH              0x80000000
+			// FILE_FLAG_OVERLAPPED                 0x40000000
+			// FILE_FLAG_NO_BUFFERING               0x20000000
+			// FILE_FLAG_RANDOM_ACCESS              0x10000000
+			// FILE_FLAG_SEQUENTIAL_SCAN            0x08000000
+			// FILE_FLAG_DELETE_ON_CLOSE            0x04000000
+			// FILE_FLAG_BACKUP_SEMANTICS           0x02000000
+			// FILE_FLAG_POSIX_SEMANTICS            0x01000000
+			// FILE_FLAG_OPEN_REPARSE_POINT         0x00200000
+			// FILE_FLAG_OPEN_NO_RECALL             0x00100000
+			// FILE_FLAG_FIRST_PIPE_INSTANCE        0x00080000
+			// FILE_ATTRIBUTE_ENCRYPTED             0x00004000
+			// FILE_ATTRIBUTE_NOT_CONTENT_INDEXED   0x00002000
+			// FILE_ATTRIBUTE_OFFLINE               0x00001000
+			// FILE_ATTRIBUTE_COMPRESSED            0x00000800
+			// FILE_ATTRIBUTE_REPARSE_POINT         0x00000400
+			// FILE_ATTRIBUTE_SPARSE_FILE           0x00000200
+			// FILE_ATTRIBUTE_TEMPORARY             0x00000100
+			// FILE_ATTRIBUTE_NORMAL                0x00000080
+			// FILE_ATTRIBUTE_DEVICE                0x00000040
+			// FILE_ATTRIBUTE_ARCHIVE               0x00000020
+			// FILE_ATTRIBUTE_DIRECTORY             0x00000010
+			// FILE_ATTRIBUTE_SYSTEM                0x00000004
+			// FILE_ATTRIBUTE_HIDDEN                0x00000002
+			// FILE_ATTRIBUTE_READONLY              0x00000001
 
-            // FILE_FLAG_WRITE_THROUGH              0x80000000
-            // FILE_FLAG_OVERLAPPED                 0x40000000
-            // FILE_FLAG_NO_BUFFERING               0x20000000
-            // FILE_FLAG_RANDOM_ACCESS              0x10000000
-            // FILE_FLAG_SEQUENTIAL_SCAN            0x08000000
-            // FILE_FLAG_DELETE_ON_CLOSE            0x04000000
-            // FILE_FLAG_BACKUP_SEMANTICS           0x02000000
-            // FILE_FLAG_POSIX_SEMANTICS            0x01000000
-            // FILE_FLAG_OPEN_REPARSE_POINT         0x00200000
-            // FILE_FLAG_OPEN_NO_RECALL             0x00100000
-            // FILE_FLAG_FIRST_PIPE_INSTANCE        0x00080000
-            // FILE_ATTRIBUTE_ENCRYPTED             0x00004000
-            // FILE_ATTRIBUTE_NOT_CONTENT_INDEXED   0x00002000
-            // FILE_ATTRIBUTE_OFFLINE               0x00001000
-            // FILE_ATTRIBUTE_COMPRESSED            0x00000800
-            // FILE_ATTRIBUTE_REPARSE_POINT         0x00000400
-            // FILE_ATTRIBUTE_SPARSE_FILE           0x00000200
-            // FILE_ATTRIBUTE_TEMPORARY             0x00000100
-            // FILE_ATTRIBUTE_NORMAL                0x00000080
-            // FILE_ATTRIBUTE_DEVICE                0x00000040
-            // FILE_ATTRIBUTE_ARCHIVE               0x00000020
-            // FILE_ATTRIBUTE_DIRECTORY             0x00000010
-            // FILE_ATTRIBUTE_SYSTEM                0x00000004
-            // FILE_ATTRIBUTE_HIDDEN                0x00000002
-            // FILE_ATTRIBUTE_READONLY              0x00000001
+			// CREATE_NEW          1
+			// CREATE_ALWAYS       2
+			// OPEN_EXISTING       3
+			// OPEN_ALWAYS         4
+			// TRUNCATE_EXISTING   5
 
-            // CREATE_NEW          1
-            // CREATE_ALWAYS       2
-            // OPEN_EXISTING       3
-            // OPEN_ALWAYS         4
-            // TRUNCATE_EXISTING   5
+			if (create == CREATE_NEW ||
+				create == CREATE_ALWAYS ||
+				create == TRUNCATE_EXISTING)
+			{
+				if (!pInfo->m_fRead)
+				{
+					pInfo->m_fCantRead = true;
+				}
+			}
+			else if (create == OPEN_EXISTING)
+			{
+			}
+			else if (create == OPEN_ALWAYS)
+			{
+				// pInfo->m_fAppend = true;    // !!!
+			}
 
-            if (create == CREATE_NEW ||
-                create == CREATE_ALWAYS ||
-                create == TRUNCATE_EXISTING) {
+			if ((flags & FILE_FLAG_DELETE_ON_CLOSE))
+			{
+				pInfo->m_fCleanup = true;
+			}
 
-                if (!pInfo->m_fRead) {
-                    pInfo->m_fCantRead = TRUE;
-                }
-            }
-            else if (create == OPEN_EXISTING) {
-            }
-            else if (create == OPEN_ALWAYS) {
-                // pInfo->m_fAppend = TRUE;    // !!!
-            }
+			OpenFiles::Remember(rv, pInfo);
+		}
+	};
 
-            if ((flags & FILE_FLAG_DELETE_ON_CLOSE)) {
-                pInfo->m_fCleanup = TRUE;
-            }
-
-            OpenFiles::Remember(rv, pInfo);
-        }
-    };
-    return rv;
+	return rv;
 }
 
-HANDLE WINAPI Mine_CreateFileMappingW(HANDLE hFile,
-                                      LPSECURITY_ATTRIBUTES a1,
-                                      DWORD flProtect,
-                                      DWORD a3,
-                                      DWORD a4,
-                                      LPCWSTR a5)
+HANDLE WINAPI Mine_CreateFileMappingW(
+	HANDLE hFile,
+	LPSECURITY_ATTRIBUTES a1,
+	DWORD flProtect,
+	DWORD a3,
+	DWORD a4,
+	LPCWSTR a5)
 {
-    /* int nIndent = */ EnterFunc();
-    HANDLE rv = 0;
-    __try {
-        rv = Real_CreateFileMappingW(hFile, a1, flProtect, a3, a4, a5);
-    } __finally {
-        ExitFunc();
-        if (rv != INVALID_HANDLE_VALUE) {
+	/* int nIndent = */ EnterFunc();
+	HANDLE rv = 0;
+	__try
+	{
+		rv = Real_CreateFileMappingW(hFile, a1, flProtect, a3, a4, a5);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv != INVALID_HANDLE_VALUE)
+		{
+			FileInfo *pInfo = OpenFiles::RecallFile(hFile);
 
-            FileInfo *pInfo = OpenFiles::RecallFile(hFile);
+			if (pInfo != nullptr)
+			{
+				switch (flProtect)
+				{
+					case PAGE_READONLY:
+						pInfo->m_fRead = true;
+						break;
+					case PAGE_READWRITE:
+						pInfo->m_fRead = true;
+						pInfo->m_fWrite = true;
+						break;
+					case PAGE_WRITECOPY:
+						pInfo->m_fRead = true;
+						break;
+					case PAGE_EXECUTE_READ:
+						pInfo->m_fRead = true;
+						break;
+					case PAGE_EXECUTE_READWRITE:
+						pInfo->m_fRead = true;
+						pInfo->m_fWrite = true;
+						break;
+				}
+			}
+		}
+	};
 
-            if (pInfo != NULL) {
-                switch (flProtect) {
-                  case PAGE_READONLY:
-                    pInfo->m_fRead = TRUE;
-                    break;
-                  case PAGE_READWRITE:
-                    pInfo->m_fRead = TRUE;
-                    pInfo->m_fWrite = TRUE;
-                    break;
-                  case PAGE_WRITECOPY:
-                    pInfo->m_fRead = TRUE;
-                    break;
-                  case PAGE_EXECUTE_READ:
-                    pInfo->m_fRead = TRUE;
-                    break;
-                  case PAGE_EXECUTE_READWRITE:
-                    pInfo->m_fRead = TRUE;
-                    pInfo->m_fWrite = TRUE;
-                    break;
-                }
-            }
-        }
-    };
-    return rv;
+	return rv;
 }
 
-BOOL WINAPI Mine_DeleteFileW(LPCWSTR a0)
+bool WINAPI Mine_DeleteFileW(LPCWSTR a0)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_DeleteFileW(a0);
-    } __finally {
-        ExitFunc();
+	bool rv = 0;
+	__try
+	{
+		rv = Real_DeleteFileW(a0);
+	}
+	__finally
+	{
+		ExitFunc();
 #if 0
-        Print("<!-- DeleteFileW(%le -->\n", a0);
+		Print("<!-- DeleteFileW(%le -->\n", a0);
 #endif
-        NoteDelete(a0);
-    };
-    return rv;
+		NoteDelete(a0);
+	};
+
+	return rv;
 }
 
-static VOID Dump(LPVOID pvData, DWORD cbData)
+static void Dump(LPVOID pvData, DWORD cbData)
 {
-    CHAR szBuffer[128];
-    PBYTE pbData = (PBYTE)pvData;
+	CHAR szBuffer[128];
+	PBYTE pbData = (PBYTE)pvData;
 
-    for (DWORD i = 0; i < cbData; i += 16) {
-        PCHAR psz = szBuffer;
-        psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), "%4d: ", i);
+	for (DWORD i = 0; i < cbData; i += 16)
+	{
+		PCHAR psz = szBuffer;
+		psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), "%4d: ", i);
 
-        for (DWORD j = i; j < i + 16; j++) {
-            if (j < cbData) {
-                psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz),
-                                 "%02x", pbData[j]);
-            }
-            else {
-                psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), "  ");
-            }
-        }
+		for (DWORD j = i; j < i + 16; j++)
+		{
+			if (j < cbData)
+			{
+				psz = SafePrintf(
+					psz,
+					(LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz),
+					"%02x",
+					pbData[j]);
+			}
+			else
+			{
+				psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), "  ");
+			}
+		}
 
-        for (DWORD j = i; j < i + 16; j++) {
-            if (j < cbData) {
-                if (pbData[j] >= ' ' && pbData[j] <= 127) {
-                    psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz),
-                                     "%c", pbData[j]);
-                }
-                else {
-                    psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), ".");
-                }
-            }
-            else {
-                psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), " ");
-            }
-        }
-        Print("%s\n", szBuffer);
-    }
+		for (DWORD j = i; j < i + 16; j++)
+		{
+			if (j < cbData)
+			{
+				if (pbData[j] >= ' ' && pbData[j] <= 127)
+				{
+					psz = SafePrintf(
+						psz,
+						(LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz),
+						"%c",
+						pbData[j]);
+				}
+				else
+				{
+					psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), ".");
+				}
+			}
+			else
+			{
+				psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), " ");
+			}
+		}
+
+		Print("%s\n", szBuffer);
+	}
 }
 
-BOOL WINAPI Mine_DeviceIoControl(HANDLE a0,
-                                 DWORD a1,
-                                 LPVOID a2,
-                                 DWORD a3,
-                                 LPVOID a4,
-                                 DWORD a5,
-                                 LPDWORD a6,
-                                 LPOVERLAPPED a7)
+bool WINAPI Mine_DeviceIoControl(
+	HANDLE a0,
+	DWORD a1,
+	LPVOID a2,
+	DWORD a3,
+	LPVOID a4,
+	DWORD a5,
+	LPDWORD a6,
+	LPOVERLAPPED a7)
 {
-    EnterFunc();
-    DWORD d6 = 0;
-    if (a6 == NULL) {
-        a6 = &d6;
+	EnterFunc();
+	DWORD d6 = 0;
+	if (a6 == nullptr)
+	{
+		a6 = &d6;
+	}
 
-    }
+	bool rv = 0;
+	__try
+	{
+		rv = Real_DeviceIoControl(a0, a1, a2, a3, a4, a5, a6, a7);
+	}
+	__finally
+	{
+		ExitFunc();
+		OpenFiles::SetRead(a0, 0);
+		OpenFiles::SetWrite(a0, 0);
+		if (rv && a1 != 0x390008 && a1 != 0x4d0008 && a1 != 0x6d0008)
+		{
+			FileInfo *pInfo = OpenFiles::RecallFile(a0);
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_DeviceIoControl(a0, a1, a2, a3, a4, a5, a6, a7);
-    } __finally {
-        ExitFunc();
-        OpenFiles::SetRead(a0, 0);
-        OpenFiles::SetWrite(a0, 0);
-        if (rv && a1 != 0x390008 && a1 != 0x4d0008 && a1 != 0x6d0008) {
-            FileInfo *pInfo = OpenFiles::RecallFile(a0);
+			DWORD DeviceType = (a1 & 0xffff0000) >> 16;
+			DWORD Access = (a1 & 0x0000c000) >> 14;
+			DWORD Function = (a1 & 0x00003ffc) >> 2;
+			DWORD Method = (a1 & 0x00000003) >> 0;
 
-            DWORD DeviceType    = (a1 & 0xffff0000) >> 16;
-            DWORD Access        = (a1 & 0x0000c000) >> 14;
-            DWORD Function      = (a1 & 0x00003ffc) >> 2;
-            DWORD Method        = (a1 & 0x00000003) >> 0;
+			if (pInfo)
+			{
+				Print(
+					"<!-- DeviceIoControl %x [dev=%x,acc=%x,fun=%x,mth=%x] on %ls! -->\n",
+					a1,
+					DeviceType,
+					Access,
+					Function,
+					Method,
+					pInfo->m_pwzPath);
+			}
+			else
+			{
+				Print(
+					"<!-- DeviceIoControl %x [dev=%x,acc=%x,fun=%x,mth=%x,in=%d,out=%d/%d] on (%x)! -->\n",
+					a1,
+					DeviceType,
+					Access,
+					Function,
+					Method,
+					a3,
+					*a6,
+					a5,
+					a0);
 
-            if (pInfo) {
-                Print("<!-- DeviceIoControl %x [dev=%x,acc=%x,fun=%x,mth=%x] on %ls! -->\n",
-                      a1, DeviceType, Access, Function, Method, pInfo->m_pwzPath);
-            }
-            else {
-                Print("<!-- DeviceIoControl %x [dev=%x,acc=%x,fun=%x,mth=%x,in=%d,out=%d/%d] on (%x)! -->\n",
-                      a1, DeviceType, Access, Function, Method, a3, *a6, a5, a0);
+				if (a3 > 0)
+				{
+					Dump(a2, a3);
+				}
 
-                if (a3 > 0) {
-                    Dump(a2, a3);
-                }
-                if (a5 > 0) {
-                    Dump(a4, (*a6 < a5) ? *a6 : a5);
-                }
-            }
-        }
-    };
-    return rv;
+				if (a5 > 0)
+				{
+					Dump(a4, (*a6 < a5) ? *a6 : a5);
+				}
+			}
+		}
+	};
+
+	return rv;
 }
 
 DWORD WINAPI Mine_GetFileAttributesW(LPCWSTR a0)
 {
-    EnterFunc();
+	EnterFunc();
 
-    DWORD rv = 0;
-    __try {
-        rv = Real_GetFileAttributesW(a0);
-    } __finally {
-        ExitFunc();
-    };
-    return rv;
+	DWORD rv = 0;
+	__try
+	{
+		rv = Real_GetFileAttributesW(a0);
+	}
+	__finally
+	{
+		ExitFunc();
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_MoveFileWithProgressW(LPCWSTR a0,
-                                       LPCWSTR a1,
-                                       LPPROGRESS_ROUTINE a2,
-                                       LPVOID a3,
-                                       DWORD a4)
+bool WINAPI Mine_MoveFileWithProgressW(
+	LPCWSTR a0,
+	LPCWSTR a1,
+	LPPROGRESS_ROUTINE a2,
+	LPVOID a3,
+	DWORD a4)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_MoveFileWithProgressW(a0, a1, a2, a3, a4);
-    } __finally {
-        ExitFunc();
-        if (rv) {
-            NoteRead(a0);
-            NoteWrite(a1);
-        }
-    };
-    return rv;
+	bool rv = 0;
+	__try
+	{
+		rv = Real_MoveFileWithProgressW(a0, a1, a2, a3, a4);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
+			NoteRead(a0);
+			NoteWrite(a1);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_MoveFileA(LPCSTR a0,
-                           LPCSTR a1)
+bool WINAPI Mine_MoveFileA(
+	LPCSTR a0,
+	LPCSTR a1)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_MoveFileA(a0, a1);
-    } __finally {
-        ExitFunc();
-        if (rv) {
-            NoteRead(a0);
-            NoteCleanup(a0);
-            NoteWrite(a1);
-        }
-    };
-    return rv;
+	bool rv = 0;
+	__try
+	{
+		rv = Real_MoveFileA(a0, a1);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
+			NoteRead(a0);
+			NoteCleanup(a0);
+			NoteWrite(a1);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_MoveFileW(LPCWSTR a0,
-                           LPCWSTR a1)
+bool WINAPI Mine_MoveFileW(
+	LPCWSTR a0,
+	LPCWSTR a1)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_MoveFileW(a0, a1);
-    } __finally {
-        ExitFunc();
-        if (rv) {
-            NoteRead(a0);
-            NoteCleanup(a0);
-            NoteWrite(a1);
-        }
-    };
-    return rv;
+	bool rv = 0;
+	__try
+	{
+		rv = Real_MoveFileW(a0, a1);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
+			NoteRead(a0);
+			NoteCleanup(a0);
+			NoteWrite(a1);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_MoveFileExA(LPCSTR a0,
-                             LPCSTR a1,
-                             DWORD a2)
+bool WINAPI Mine_MoveFileExA(
+	LPCSTR a0,
+	LPCSTR a1,
+	DWORD a2)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_MoveFileExA(a0, a1, a2);
-    } __finally {
-        ExitFunc();
-        if (rv) {
-            NoteRead(a0);
-            NoteCleanup(a0);
-            NoteWrite(a1);
-        }
-    };
-    return rv;
+	bool rv = 0;
+	__try
+	{
+		rv = Real_MoveFileExA(a0, a1, a2);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
+			NoteRead(a0);
+			NoteCleanup(a0);
+			NoteWrite(a1);
+		}
+	};
+
+	return rv;
 }
 
-BOOL WINAPI Mine_MoveFileExW(LPCWSTR a0,
-                             LPCWSTR a1,
-                             DWORD a2)
+bool WINAPI Mine_MoveFileExW(
+	LPCWSTR a0,
+	LPCWSTR a1,
+	DWORD a2)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_MoveFileExW(a0, a1, a2);
-    } __finally {
-        ExitFunc();
-        if (rv) {
-            NoteRead(a0);
-            NoteCleanup(a0);
-            NoteWrite(a1);
-        }
-    };
-    return rv;
+	bool rv = 0;
+	__try
+	{
+		rv = Real_MoveFileExW(a0, a1, a2);
+	}
+	__finally
+	{
+		ExitFunc();
+		if (rv)
+		{
+			NoteRead(a0);
+			NoteCleanup(a0);
+			NoteWrite(a1);
+		}
+	};
+
+	return rv;
 }
 
 void SetHandle(PCSTR pszName, HANDLE h)
 {
 #if 0
-    FileInfo *pInfo = OpenFiles::RecallFile(h);
+	FileInfo *pInfo = OpenFiles::RecallFile(h);
 
-    if (pInfo != NULL) {
-        Tblog("<!-- hset: %hs (%x) %ls -->\n", pszName, h, pInfo->m_pwzPath);
-    }
-    else {
-        Tblog("<!-- hset: %hs (%x) ***Unknown*** -->\n", pszName, h);
-    }
+	if (pInfo != nullptr)
+	{
+		Tblog("<!-- hset: %hs (%x) %ls -->\n", pszName, h, pInfo->m_pwzPath);
+	}
+	else
+	{
+		Tblog("<!-- hset: %hs (%x) ***Unknown*** -->\n", pszName, h);
+	}
 #else
-    (void)pszName;
-    (void)h;
+	(void)pszName;
+	(void)h;
 #endif
 }
 
-
-BOOL WINAPI Mine_SetStdHandle(DWORD a0,
-                              HANDLE a1)
+bool WINAPI Mine_SetStdHandle(
+	DWORD a0,
+	HANDLE a1)
 {
-    EnterFunc();
+	EnterFunc();
 
-    BOOL rv = 0;
-    __try {
-        rv = Real_SetStdHandle(a0, a1);
-        if (rv && a1 != 0) {
-            switch (a0) {
-              case STD_INPUT_HANDLE:
-                SetHandle("stdin", a1);
-                break;
-              case STD_OUTPUT_HANDLE:
-                SetHandle("stdout", a1);
-                break;
-              case STD_ERROR_HANDLE:
-                SetHandle("stderr", a1);
-                break;
-            }
-        }
-    } __finally {
-        ExitFunc();
-    };
-    return rv;
+	bool rv = 0;
+	__try
+	{
+		rv = Real_SetStdHandle(a0, a1);
+		if (rv && a1 != 0)
+		{
+			switch (a0)
+			{
+				case STD_INPUT_HANDLE:
+					SetHandle("stdin", a1);
+					break;
+				case STD_OUTPUT_HANDLE:
+					SetHandle("stdout", a1);
+					break;
+				case STD_ERROR_HANDLE:
+					SetHandle("stderr", a1);
+					break;
+			}
+		}
+	}
+	__finally
+	{
+		ExitFunc();
+	};
+
+	return rv;
 }
 
 HMODULE WINAPI Mine_LoadLibraryA(LPCSTR a0)
@@ -3351,18 +3984,18 @@ DWORD WINAPI Mine_SetFilePointer(HANDLE hFile,
                                  dwMoveMethod);
     } __finally {
         LONG high = 0;
-        if (lpDistanceToMoveHigh == NULL) {
+        if (lpDistanceToMoveHigh == nullptr) {
             lpDistanceToMoveHigh = &high;
         }
 
         FileInfo * pInfo = OpenFiles::RecallFile(hFile);
-        if (pInfo != NULL) {
+        if (pInfo != nullptr) {
             if (dwMoveMethod == FILE_END && lDistanceToMove == 0xffffffff) {
 #if 0
                 Print("<!-- SetFilePointer(APPEND, %le) -->\n",
                       pInfo->m_pwzPath);
 #endif
-                pInfo->m_fAppend = TRUE;
+                pInfo->m_fAppend = true;
             }
 #if 0
             else if (dwMoveMethod == FILE_END) {
@@ -3390,14 +4023,14 @@ DWORD WINAPI Mine_SetFilePointer(HANDLE hFile,
     return rv;
 }
 
-BOOL WINAPI Mine_SetFilePointerEx(HANDLE hFile,
+bool WINAPI Mine_SetFilePointerEx(HANDLE hFile,
                                   LARGE_INTEGER liDistanceToMove,
                                   PLARGE_INTEGER lpNewFilePointer,
                                   DWORD dwMoveMethod)
 {
     EnterFunc();
 
-    BOOL rv = 0;
+    bool rv = 0;
     __try {
         rv = Real_SetFilePointerEx(hFile,
                                    liDistanceToMove,
@@ -3406,7 +4039,7 @@ BOOL WINAPI Mine_SetFilePointerEx(HANDLE hFile,
     } __finally {
 #if 0
         FileInfo * pInfo = OpenFiles::RecallFile(hFile);
-        if (pInfo != NULL) {
+        if (pInfo != nullptr) {
             if (dwMoveMethod == FILE_END) {
                 Print("<!-- SetFilePointerEx(END:%I64d, %le) -->\n",
                       liDistanceToMove.QuadPart,
@@ -3429,7 +4062,7 @@ BOOL WINAPI Mine_SetFilePointerEx(HANDLE hFile,
     return rv;
 }
 
-BOOL WINAPI Mine_ReadFile(HANDLE a0,
+bool WINAPI Mine_ReadFile(HANDLE a0,
                           LPVOID a1,
                           DWORD a2,
                           LPDWORD a3,
@@ -3437,7 +4070,7 @@ BOOL WINAPI Mine_ReadFile(HANDLE a0,
 {
     EnterFunc();
 
-    BOOL rv = 0;
+    bool rv = 0;
     __try {
         rv = Real_ReadFile(a0, a1, a2, a3, a4);
     } __finally {
@@ -3449,7 +4082,7 @@ BOOL WINAPI Mine_ReadFile(HANDLE a0,
     return rv;
 }
 
-BOOL WINAPI Mine_ReadFileEx(HANDLE a0,
+bool WINAPI Mine_ReadFileEx(HANDLE a0,
                             LPVOID a1,
                             DWORD a2,
                             LPOVERLAPPED a3,
@@ -3457,7 +4090,7 @@ BOOL WINAPI Mine_ReadFileEx(HANDLE a0,
 {
     EnterFunc();
 
-    BOOL rv = 0;
+    bool rv = 0;
     __try {
         rv = Real_ReadFileEx(a0, a1, a2, a3, a4);
     } __finally {
@@ -3469,7 +4102,7 @@ BOOL WINAPI Mine_ReadFileEx(HANDLE a0,
     return rv;
 }
 
-BOOL WINAPI Mine_WriteFile(HANDLE a0,
+bool WINAPI Mine_WriteFile(HANDLE a0,
                            LPCVOID a1,
                            DWORD a2,
                            LPDWORD a3,
@@ -3477,7 +4110,7 @@ BOOL WINAPI Mine_WriteFile(HANDLE a0,
 {
     EnterFunc();
 
-    BOOL rv = 0;
+    bool rv = 0;
     __try {
         rv = Real_WriteFile(a0, a1, a2, a3, a4);
     } __finally {
@@ -3487,7 +4120,7 @@ BOOL WINAPI Mine_WriteFile(HANDLE a0,
     return rv;
 }
 
-BOOL WINAPI Mine_WriteFileEx(HANDLE a0,
+bool WINAPI Mine_WriteFileEx(HANDLE a0,
                              LPCVOID a1,
                              DWORD a2,
                              LPOVERLAPPED a3,
@@ -3495,7 +4128,7 @@ BOOL WINAPI Mine_WriteFileEx(HANDLE a0,
 {
     EnterFunc();
 
-    BOOL rv = 0;
+    bool rv = 0;
     __try {
         rv = Real_WriteFileEx(a0, a1, a2, a3, a4);
     } __finally {
@@ -3505,15 +4138,15 @@ BOOL WINAPI Mine_WriteFileEx(HANDLE a0,
     return rv;
 }
 
-BOOL WINAPI Mine_WriteConsoleA(HANDLE a0,
-                                  const VOID* a1,
+bool WINAPI Mine_WriteConsoleA(HANDLE a0,
+                                  const void* a1,
                                   DWORD a2,
                                   LPDWORD a3,
                                   LPVOID a4)
 {
     EnterFunc();
 
-    BOOL rv = 0;
+    bool rv = 0;
     __try {
         rv = Real_WriteConsoleA(a0, a1, a2, a3, a4);
     } __finally {
@@ -3523,15 +4156,15 @@ BOOL WINAPI Mine_WriteConsoleA(HANDLE a0,
     return rv;
 }
 
-BOOL WINAPI Mine_WriteConsoleW(HANDLE a0,
-                                  const VOID* a1,
+bool WINAPI Mine_WriteConsoleW(HANDLE a0,
+                                  const void* a1,
                                   DWORD a2,
                                   LPDWORD a3,
                                   LPVOID a4)
 {
     EnterFunc();
 
-    BOOL rv = 0;
+    bool rv = 0;
     __try {
         rv = Real_WriteConsoleW(a0, a1, a2, a3, a4);
     } __finally {
@@ -3585,7 +4218,7 @@ DWORD WINAPI Mine_GetEnvironmentVariableA(PCSTR lpName, PCHAR lpBuffer, DWORD nS
     DWORD rv = 0;
     __try {
         rv = Real_GetEnvironmentVariableA(lpName, lpBuffer, nSize);
-        //        if (rv > 0 && rv < nSize && lpBuffer != NULL) {
+        //        if (rv > 0 && rv < nSize && lpBuffer != nullptr) {
         //            EnvVars::Used(lpName);
         //        }
     }
@@ -3602,7 +4235,7 @@ DWORD WINAPI Mine_GetEnvironmentVariableW(PCWSTR lpName, PWCHAR lpBuffer, DWORD 
     DWORD rv = 0;
     __try {
         rv = Real_GetEnvironmentVariableW(lpName, lpBuffer, nSize);
-        //        if (rv > 0 && rv < nSize && lpBuffer != NULL) {
+        //        if (rv > 0 && rv < nSize && lpBuffer != nullptr) {
         //            EnvVars::Used(lpName);
         //        }
     }
@@ -3619,7 +4252,7 @@ PCWSTR CDECL Mine_wgetenv(PCWSTR var)
     PCWSTR rv = 0;
     __try {
         rv = Real_wgetenv(var);
-        //        if (rv != NULL) {
+        //        if (rv != nullptr) {
         //            EnvVars::Used(var);
         //        }
     }
@@ -3653,7 +4286,7 @@ DWORD CDECL Mine_getenv_s(DWORD *pValue, PCHAR pBuffer, DWORD cBuffer, PCSTR var
     DWORD rv = 0;
     __try {
         DWORD value;
-        if (pValue == NULL) {
+        if (pValue == nullptr) {
             pValue = &value;
         }
         rv = Real_getenv_s(pValue, pBuffer, cBuffer, varname);
@@ -3674,7 +4307,7 @@ DWORD CDECL Mine_wgetenv_s(DWORD *pValue, PWCHAR pBuffer, DWORD cBuffer, PCWSTR 
     DWORD rv = 0;
     __try {
         DWORD value;
-        if (pValue == NULL) {
+        if (pValue == nullptr) {
             pValue = &value;
         }
         rv = Real_wgetenv_s(pValue, pBuffer, cBuffer, varname);
@@ -3696,14 +4329,14 @@ DWORD CDECL Mine_dupenv_s(PCHAR *ppBuffer, DWORD *pcBuffer, PCSTR varname)
     __try {
         PCHAR pb;
         DWORD cb;
-        if (ppBuffer == NULL) {
+        if (ppBuffer == nullptr) {
             ppBuffer = &pb;
         }
-        if (pcBuffer == NULL) {
+        if (pcBuffer == nullptr) {
             pcBuffer = &cb;
         }
         rv = Real_dupenv_s(ppBuffer, pcBuffer, varname);
-        //        if (rv == 0 && *pcBuffer > 0 && *ppBuffer != NULL) {
+        //        if (rv == 0 && *pcBuffer > 0 && *ppBuffer != nullptr) {
         //            EnvVars::Used(varname);
         //        }
     }
@@ -3721,14 +4354,14 @@ DWORD CDECL Mine_wdupenv_s(PWCHAR *ppBuffer, DWORD *pcBuffer, PCWSTR varname)
     __try {
         PWCHAR pb;
         DWORD cb;
-        if (ppBuffer == NULL) {
+        if (ppBuffer == nullptr) {
             ppBuffer = &pb;
         }
-        if (pcBuffer == NULL) {
+        if (pcBuffer == nullptr) {
             pcBuffer = &cb;
         }
         rv = Real_wdupenv_s(ppBuffer, pcBuffer, varname);
-        //        if (rv == 0 && *pcBuffer > 0 && *ppBuffer != NULL) {
+        //        if (rv == 0 && *pcBuffer > 0 && *ppBuffer != nullptr) {
         //            EnvVars::Used(varname);
         //        }
     }
@@ -3793,7 +4426,7 @@ void AttachDetours()
     ThrowIfFailed(DetourTransactionCommit(), "AttachDetours DetourTransactionCommit Failed");
 }
 
-LONG DetachDetours(VOID)
+LONG DetachDetours(void)
 {
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
@@ -3852,79 +4485,79 @@ LONG DetachDetours(VOID)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-VOID NoteRead(PCSTR psz)
+void NoteRead(PCSTR psz)
 {
     FileInfo *pInfo = FileNames::FindPartial(psz);
-    pInfo->m_fRead = TRUE;
+    pInfo->m_fRead = true;
 }
 
-VOID NoteRead(PCWSTR pwz)
+void NoteRead(PCWSTR pwz)
 {
     FileInfo *pInfo = FileNames::FindPartial(pwz);
-    pInfo->m_fRead = TRUE;
+    pInfo->m_fRead = true;
 }
 
-VOID NoteWrite(PCSTR psz)
+void NoteWrite(PCSTR psz)
 {
     FileInfo *pInfo = FileNames::FindPartial(psz);
-    pInfo->m_fWrite = TRUE;
+    pInfo->m_fWrite = true;
     if (!pInfo->m_fRead) {
-        pInfo->m_fCantRead = TRUE;
+        pInfo->m_fCantRead = true;
     }
 }
 
-VOID NoteWrite(PCWSTR pwz)
+void NoteWrite(PCWSTR pwz)
 {
     FileInfo *pInfo = FileNames::FindPartial(pwz);
-    pInfo->m_fWrite = TRUE;
+    pInfo->m_fWrite = true;
     if (!pInfo->m_fRead) {
-        pInfo->m_fCantRead = TRUE;
+        pInfo->m_fCantRead = true;
     }
 }
 
-VOID NoteDelete(PCSTR psz)
+void NoteDelete(PCSTR psz)
 {
     FileInfo *pInfo = FileNames::FindPartial(psz);
     if (pInfo->m_fWrite || pInfo->m_fRead) {
-        pInfo->m_fCleanup = TRUE;
+        pInfo->m_fCleanup = true;
     }
     else {
-        pInfo->m_fDelete = TRUE;
+        pInfo->m_fDelete = true;
     }
     if (!pInfo->m_fRead) {
-        pInfo->m_fCantRead = TRUE;
+        pInfo->m_fCantRead = true;
     }
 }
 
-VOID NoteDelete(PCWSTR pwz)
+void NoteDelete(PCWSTR pwz)
 {
     FileInfo *pInfo = FileNames::FindPartial(pwz);
     if (pInfo->m_fWrite || pInfo->m_fRead) {
-        pInfo->m_fCleanup = TRUE;
+        pInfo->m_fCleanup = true;
     }
     else {
-        pInfo->m_fDelete = TRUE;
+        pInfo->m_fDelete = true;
     }
     if (!pInfo->m_fRead) {
-        pInfo->m_fCantRead = TRUE;
+        pInfo->m_fCantRead = true;
     }
 }
 
-VOID NoteCleanup(PCSTR psz)
+void NoteCleanup(PCSTR psz)
 {
     FileInfo *pInfo = FileNames::FindPartial(psz);
-    pInfo->m_fCleanup = TRUE;
+    pInfo->m_fCleanup = true;
 }
 
-VOID NoteCleanup(PCWSTR pwz)
+void NoteCleanup(PCWSTR pwz)
 {
     FileInfo *pInfo = FileNames::FindPartial(pwz);
-    pInfo->m_fCleanup = TRUE;
+    pInfo->m_fCleanup = true;
 }
 
 ////////////////////////////////////////////////////////////// Logging System.
 //
-static BOOL s_bLog = 1;
+static bool s_bLog = 1;
 static LONG s_nTlsIndent = -1;
 static LONG s_nTlsThread = -1;
 static LONG s_nThreadCnt = 0;
@@ -3948,7 +4581,7 @@ LONG EnterFunc()
     return nIndent;
 }
 
-VOID ExitFunc()
+void ExitFunc()
 {
     DWORD dwErr = GetLastError();
 
@@ -3966,7 +4599,7 @@ VOID ExitFunc()
     SetLastError(dwErr);
 }
 
-VOID Print(const CHAR *psz, ...)
+void Print(const CHAR *psz, ...)
 {
     DWORD dwErr = GetLastError();
 
@@ -3982,7 +4615,7 @@ VOID Print(const CHAR *psz, ...)
     SetLastError(dwErr);
 }
 
-VOID AssertFailed(CONST PCHAR pszMsg, CONST PCHAR pszFile, ULONG nLine)
+void AssertFailed(CONST PCHAR pszMsg, CONST PCHAR pszFile, ULONG nLine)
 {
     Tblog("ASSERT(%hs) failed in %s, line %d.\n", pszMsg, pszFile, nLine);
 }
@@ -3991,7 +4624,7 @@ VOID AssertFailed(CONST PCHAR pszMsg, CONST PCHAR pszFile, ULONG nLine)
 //
 // DLL module information
 //
-BOOL ThreadAttach(HMODULE hDll)
+bool ThreadAttach(HMODULE hDll)
 {
     (void)hDll;
 
@@ -4002,10 +4635,10 @@ BOOL ThreadAttach(HMODULE hDll)
         LONG nThread = InterlockedIncrement(&s_nThreadCnt);
         TlsSetValue(s_nTlsThread, (PVOID)(LONG_PTR)nThread);
     }
-    return TRUE;
+    return true;
 }
 
-BOOL ThreadDetach(HMODULE hDll)
+bool ThreadDetach(HMODULE hDll)
 {
     (void)hDll;
 
@@ -4015,10 +4648,10 @@ BOOL ThreadDetach(HMODULE hDll)
     if (s_nTlsThread >= 0) {
         TlsSetValue(s_nTlsThread, (PVOID)0);
     }
-    return TRUE;
+    return true;
 }
 
-BOOL ProcessAttach(HMODULE hDll)
+bool ProcessAttach(HMODULE hDll)
 {
     InitializeCriticalSection(&s_csPipe);
     InitializeCriticalSection(&s_csChildPayload);
@@ -4028,21 +4661,21 @@ BOOL ProcessAttach(HMODULE hDll)
     FileNames::Initialize();
     OpenFiles::Initialize();
 
-    s_bLog = FALSE;
+    s_bLog = false;
     s_nTlsIndent = TlsAlloc();
     s_nTlsThread = TlsAlloc();
 
     s_hInst = hDll;
-    s_hKernel32 = NULL;
+    s_hKernel32 = nullptr;
 
-    PBYTE xCreate = (PBYTE)DetourCodeFromPointer((PVOID)Real_CreateProcessW, NULL);
-    TBLOG_PAYLOAD* pPayload = NULL;
+    PBYTE xCreate = (PBYTE)DetourCodeFromPointer((PVOID)Real_CreateProcessW, nullptr);
+    TBLOG_PAYLOAD* pPayload = nullptr;
 
-    for (HMODULE hMod = NULL; (hMod = DetourEnumerateModules(hMod)) != NULL;) {
+    for (HMODULE hMod = nullptr; (hMod = DetourEnumerateModules(hMod)) != nullptr;) {
         ULONG cbData;
         PVOID pvData = DetourFindPayload(hMod, s_guidTrace, &cbData);
 
-        if (pvData != NULL && pPayload == NULL) {
+        if (pvData != nullptr && pPayload == nullptr) {
             pPayload = (TBLOG_PAYLOAD*)pvData;
         }
 
@@ -4055,13 +4688,13 @@ BOOL ProcessAttach(HMODULE hDll)
 
     ZeroMemory(&s_Payload, sizeof(s_Payload));
 
-    if (pPayload == NULL) {
-        return FALSE;
+    if (pPayload == nullptr) {
+        return false;
     }
 
     CopyMemory(&s_Payload, pPayload, sizeof(s_Payload));
 
-    LoadStdHandleName(STD_INPUT_HANDLE, s_Payload.wzStdin, FALSE);
+    LoadStdHandleName(STD_INPUT_HANDLE, s_Payload.wzStdin, false);
     LoadStdHandleName(STD_OUTPUT_HANDLE, s_Payload.wzStdout, s_Payload.fStdoutAppend);
     LoadStdHandleName(STD_ERROR_HANDLE, s_Payload.wzStderr, s_Payload.fStderrAppend);
     s_nTraceProcessId = s_Payload.nTraceProcessId;
@@ -4072,7 +4705,7 @@ BOOL ProcessAttach(HMODULE hDll)
     Real_PrivCopyFileExW =
         (BOOL (WINAPI *)(LPCWSTR, LPCWSTR, LPPROGRESS_ROUTINE, LPVOID, LPBOOL, DWORD))
         GetProcAddress(s_hKernel32, "PrivCopyFileExW");
-    if (Real_PrivCopyFileExW == NULL) {
+    if (Real_PrivCopyFileExW == nullptr) {
         DEBUG_BREAK();
     }
 
@@ -4093,14 +4726,14 @@ BOOL ProcessAttach(HMODULE hDll)
 
     ThreadAttach(hDll);
 
-    s_bLog = TRUE;
-    return TRUE;
+    s_bLog = true;
+    return true;
 }
 
-BOOL ProcessDetach(HMODULE hDll)
+bool ProcessDetach(HMODULE hDll)
 {
     ThreadDetach(hDll);
-    s_bLog = FALSE;
+    s_bLog = false;
 
     LONG error = DetachDetours();
     if (error != NO_ERROR) {
@@ -4115,10 +4748,10 @@ BOOL ProcessDetach(HMODULE hDll)
     if (s_nTlsThread >= 0) {
         TlsFree(s_nTlsThread);
     }
-    return TRUE;
+    return true;
 }
 
-inline VOID UpdateIfRoom(PWCHAR& pwzDst, PWCHAR pwzDstEnd, WCHAR c)
+inline void UpdateIfRoom(PWCHAR& pwzDst, PWCHAR pwzDstEnd, WCHAR c)
 {
     if (pwzDst < pwzDstEnd) {
         *pwzDst++ = c;  // Write character if room in buffer.
@@ -4165,13 +4798,13 @@ static PWCHAR RemoveReturns(PWCHAR pwzBuffer)
 PBYTE LoadFile(HANDLE hFile, DWORD cbFile)
 {
     PBYTE pbFile = (PBYTE)GlobalAlloc(GPTR, cbFile + 3);
-    if (pbFile == NULL) {
-        return NULL;
+    if (pbFile == nullptr) {
+        return nullptr;
     }
 
     DWORD cbRead = 0;
-    Real_SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
-    Real_ReadFile(hFile, pbFile, cbFile, &cbRead, NULL);
+    Real_SetFilePointer(hFile, 0, nullptr, FILE_BEGIN);
+    Real_ReadFile(hFile, pbFile, cbFile, &cbRead, nullptr);
 
     // Make sure the file is zero terminated.
     pbFile[cbRead + 0] = 0;
@@ -4183,21 +4816,21 @@ PBYTE LoadFile(HANDLE hFile, DWORD cbFile)
 
 PWCHAR More(PCWSTR pwzPath, PWCHAR pwzDst, PWCHAR pwzDstEnd)
 {
-    HANDLE hFile = Real_CreateFileW(pwzPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+    HANDLE hFile = Real_CreateFileW(pwzPath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
-        return NULL;
+        return nullptr;
     }
 
     FileInfo *pInfo = FileNames::FindPartial(pwzPath);
     pInfo->m_fAbsorbed = true;
 
-    DWORD cbFile = Real_SetFilePointer(hFile, 0, NULL, FILE_END);
+    DWORD cbFile = Real_SetFilePointer(hFile, 0, nullptr, FILE_END);
     DWORD cbRead = 0;
 
     PCHAR pszFile = (PCHAR)GlobalAlloc(GPTR, cbFile + 2);   // 2 bytes null for Unicode or Ascii.
-    if (pszFile != NULL) {
-        Real_SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
-        Real_ReadFile(hFile, pszFile, cbFile, &cbRead, NULL);
+    if (pszFile != nullptr) {
+        Real_SetFilePointer(hFile, 0, nullptr, FILE_BEGIN);
+        Real_ReadFile(hFile, pszFile, cbFile, &cbRead, nullptr);
 
         if (((PUCHAR)pszFile)[0] == 0xff && ((PUCHAR)pszFile)[1] == 0xfe) {
             // Unicode
@@ -4246,10 +4879,10 @@ PWCHAR More(PCWSTR pwzPath, PWCHAR pwzDst, PWCHAR pwzDstEnd)
 PWCHAR LoadCommandLine(PCWSTR pwz, PWCHAR pwzDst, PWCHAR pwzDstEnd)
 {
     while (*pwz) {
-        PCWSTR pwzArgBeg = NULL;
-        PCWSTR pwzArgEnd = NULL;
+        PCWSTR pwzArgBeg = nullptr;
+        PCWSTR pwzArgEnd = nullptr;
         WCHAR cQuote = '\0';
-        BOOL fMore = false;
+        bool fMore = false;
 
         if (*pwz == '@') {
             fMore = true;
@@ -4288,7 +4921,7 @@ PWCHAR LoadCommandLine(PCWSTR pwz, PWCHAR pwzDst, PWCHAR pwzDstEnd)
             *pwzPath = '\0';
 
             PWCHAR pwzOut = More(wzPath, pwzDst, pwzDstEnd);
-            if (pwzOut != NULL) {
+            if (pwzOut != nullptr) {
                 pwzDst = pwzOut;
 
                 cQuote = 0;
@@ -4322,7 +4955,7 @@ void TestHandle(PCSTR pszName, HANDLE h)
 {
     FileInfo *pInfo = OpenFiles::RecallFile(h);
 
-    if (pInfo != NULL) {
+    if (pInfo != nullptr) {
 #if 1 // Ignore PIPEs.
         if (FileNames::PrefixMatch(pInfo->m_pwzPath, L"\\\\.\\PIPE\\")) {
             // Ignore;
@@ -4350,7 +4983,7 @@ void TestHandle(PCSTR pszName, HANDLE h)
 
 LONG WINAPI DetourAttachIf(PVOID *ppPointer, PVOID pDetour)
 {
-    if (*ppPointer == NULL) {
+    if (*ppPointer == nullptr) {
         Tblog("<!-- DetourAttachIf failed: %p -->\n", pDetour);
         return NO_ERROR;
     }
@@ -4367,227 +5000,269 @@ LONG WINAPI DetourAttachIf(PVOID *ppPointer, PVOID pDetour)
     return err;
 }
 
-int WINAPI Mine_EntryPoint(VOID)
+int WINAPI Mine_EntryPoint(void)
 {
-    // This function is invoked instead of the process EntryPoint (Real_EntryPoint).
+	// This function is invoked instead of the process EntryPoint (Real_EntryPoint).
 
-    TblogOpen();
+	TblogOpen();
 
-    SaveEnvironment();
+	SaveEnvironment();
 
-    {
-        CHAR szExeName[MAX_PATH];
-        CHAR szId[128];
-        CHAR szParent[128];
-        WCHAR wzPath[MAX_PATH];
-        PCHAR pszExeName = szExeName;
+	{
+		CHAR szExeName[MAX_PATH];
+		CHAR szId[128];
+		CHAR szParent[128];
+		WCHAR wzPath[MAX_PATH];
+		PCHAR pszExeName = szExeName;
 
-        // Get the base command line (skipping over the executable name)
-        PCWSTR pwzLine = GetCommandLineW();
-        if (*pwzLine == '\"') {
-            pwzLine++;
-            while (*pwzLine && *pwzLine != '\"') {
-                pwzLine++;
-            }
-            if (*pwzLine == '\"') {
-                pwzLine++;
-            }
-        }
-        else {
-            while (*pwzLine && *pwzLine != ' ' && *pwzLine != '\t') {
-                pwzLine++;
-            }
-        }
-        while (*pwzLine && (*pwzLine == ' ' || *pwzLine == '\t')) {
-            pwzLine++;
-        }
+		// Get the base command line (skipping over the executable name)
+		PCWSTR pwzLine = GetCommandLineW();
+		if (*pwzLine == '\"')
+		{
+			pwzLine++;
+			while (*pwzLine && *pwzLine != '\"')
+			{
+				pwzLine++;
+			}
 
-        // Get the root executable name.
-        if (GetModuleFileNameA(0, szExeName, ARRAYSIZE(szExeName))) {
-            PCHAR psz = szExeName;
+			if (*pwzLine == '\"')
+			{
+				pwzLine++;
+			}
+		}
+		else
+		{
+			while (*pwzLine && *pwzLine != ' ' && *pwzLine != '\t')
+			{
+				pwzLine++;
+			}
+		}
 
-            while (*psz) {
-                psz++;
-            }
+		while (*pwzLine && (*pwzLine == ' ' || *pwzLine == '\t'))
+		{
+			pwzLine++;
+		}
 
-            while (psz > szExeName && psz[-1] != ':' && psz[-1] != '\\' && psz[-1] != '/') {
-                psz--;
-            }
-            pszExeName = psz;
-            while (*psz && *psz != '.') {
-                psz++;
-            }
-            *psz = '\0';
-        }
-        else {
-            szExeName[0] = '\0';
-        }
+		// Get the root executable name.
+		if (GetModuleFileNameA(0, szExeName, ARRAYSIZE(szExeName)))
+		{
+			PCHAR psz = szExeName;
 
-        // Start the XML process node.
-        Tblog("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-        {
-            PCHAR pszId = szId;
-            PCHAR pszParent = szParent;
-            for (DWORD i = 0; i < s_Payload.nGeneology; i++) {
-                pszId = SafePrintf(pszId, 16, "%d.", s_Payload.rGeneology[i]);
-                if (i < s_Payload.nGeneology - 1) {
-                    pszParent = SafePrintf(pszParent, 16, "%d.", s_Payload.rGeneology[i]);
-                }
-            }
-            *pszId = '\0';
-            *pszParent = '\0';
+			while (*psz)
+			{
+				psz++;
+			}
 
-            if (szParent[0] == '\0') {
-                Tblog("<t:Process id=\"::%hs::\"", szId);
-            }
-            else {
-                Tblog("<t:Process id=\"::%hs::\" parentId=\"::%hs::\"", szId, szParent);
-            }
+			while (psz > szExeName && psz[-1] != ':' && psz[-1] != '\\' && psz[-1] != '/')
+			{
+				psz--;
+			}
 
-            Tblog(" par=\"%ls\" exe=\"%hs\"", s_Payload.wzParents, pszExeName);
+			pszExeName = psz;
+			while (*psz && *psz != '.')
+			{
+				psz++;
+			}
 
-            BOOL drop = false;
-            PCWSTR pwzz = s_Payload.wzzDrop;
-            while (*pwzz) {
-                if (Compare(pwzz, pszExeName) == 0) {
-                    // match
-                    drop = true;
-                    break;
-                }
-                pwzz += Size(pwzz) + 1;
-            }
-            if (drop) {
-                Tblog(" drop=\"true\"");
-            }
-        }
+			*psz = '\0';
+		}
+		else
+		{
+			szExeName[0] = '\0';
+		}
 
-        {
-            PWCHAR pwz = s_Payload.wzParents;
-            while (*pwz) {
-                pwz++;
-            }
-            *pwz++ = '/';
-            PCSTR psz = pszExeName;
-            while (*psz) {
-                *pwz++ = *psz++;
-            }
-            *pwz = '\0';
-        }
+		// Start the XML process node.
+		Tblog("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		{
+			PCHAR pszId = szId;
+			PCHAR pszParent = szParent;
+			for (DWORD i = 0; i < s_Payload.nGeneology; i++)
+			{
+				pszId = SafePrintf(pszId, 16, "%d.", s_Payload.rGeneology[i]);
+				if (i < s_Payload.nGeneology - 1)
+				{
+					pszParent = SafePrintf(pszParent, 16, "%d.", s_Payload.rGeneology[i]);
+				}
+			}
+
+			*pszId = '\0';
+			*pszParent = '\0';
+
+			if (szParent[0] == '\0')
+			{
+				Tblog("<t:Process id=\"::%hs::\"", szId);
+			}
+			else
+			{
+				Tblog("<t:Process id=\"::%hs::\" parentId=\"::%hs::\"", szId, szParent);
+			}
+
+			Tblog(" par=\"%ls\" exe=\"%hs\"", s_Payload.wzParents, pszExeName);
+
+			bool drop = false;
+			PCWSTR pwzz = s_Payload.wzzDrop;
+			while (*pwzz)
+			{
+				if (Compare(pwzz, pszExeName) == 0)
+				{
+					// match
+					drop = true;
+					break;
+				}
+
+				pwzz += Size(pwzz) + 1;
+			}
+
+			if (drop)
+			{
+				Tblog(" drop=\"true\"");
+			}
+		}
+
+		{
+			PWCHAR pwz = s_Payload.wzParents;
+			while (*pwz)
+			{
+				pwz++;
+			}
+
+			*pwz++ = '/';
+			PCSTR psz = pszExeName;
+			while (*psz)
+			{
+				*pwz++ = *psz++;
+			}
+
+			*pwz = '\0';
+		}
 
 
-        if (HasChar(pwzLine, '|')) {
-            Tblog(" pipes=\"true\"");
-        }
-        if (HasChar(pwzLine, '>')) {
-            Tblog(" redirects=\"true\"");
-        }
+		if (HasChar(pwzLine, '|'))
+		{
+			Tblog(" pipes=\"true\"");
+		}
 
-        Tblog(" xmlns:t=\"http://schemas.microsoft.com/research/tracebld/2008\">\n");
+		if (HasChar(pwzLine, '>'))
+		{
+			Tblog(" redirects=\"true\"");
+		}
 
-        // Get the directory.
-        DWORD dwSize = GetCurrentDirectoryA(ARRAYSIZE(szExeName), szExeName);
-        if (dwSize > 0 && dwSize < ARRAYSIZE(szExeName)) {
-            Tblog("<t:Directory>%hs</t:Directory>\n", szExeName);
-        }
+		Tblog(" xmlns:t=\"http://schemas.microsoft.com/research/tracebld/2008\">\n");
 
-        // Get the real executable name.
-        wzPath[0] = '\0';
-        if (GetModuleFileNameA(0, szExeName, ARRAYSIZE(szExeName))) {
-            FileInfo *pInfo = FileNames::FindPartial(szExeName);
-            Tblog("<t:Executable>%ls</t:Executable>\n",
-                  FileNames::ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo));
-        }
+		// Get the directory.
+		DWORD dwSize = GetCurrentDirectoryA(ARRAYSIZE(szExeName), szExeName);
+		if (dwSize > 0 && dwSize < ARRAYSIZE(szExeName))
+		{
+			Tblog("<t:Directory>%hs</t:Directory>\n", szExeName);
+		}
 
-        // Construct the processed command line.
-        PWCHAR pwzDstEnd = (PWCHAR)pwzLine;
-        PWCHAR pwzDst = pwzDstEnd;
-        pwzDst = LoadCommandLine(pwzLine, pwzDst, pwzDstEnd);
-        DWORD wcNew = (DWORD)((pwzDst - pwzDstEnd) + 1);
-        PWCHAR pwzFin = (PWCHAR)GlobalAlloc(GPTR, wcNew * sizeof(WCHAR));
-        pwzDst = pwzFin;
-        pwzDstEnd = pwzFin + wcNew;
-        pwzDst = LoadCommandLine(pwzLine, pwzDst, pwzDstEnd);
-        *pwzDst = '\0';
+		// Get the real executable name.
+		wzPath[0] = '\0';
+		if (GetModuleFileNameA(0, szExeName, ARRAYSIZE(szExeName)))
+		{
+			FileInfo *pInfo = FileNames::FindPartial(szExeName);
+			Tblog("<t:Executable>%ls</t:Executable>\n",
+					FileNames::ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo));
+		}
 
-        FileNames::ParameterizeLine(pwzFin, pwzFin + wcNew);
-        if (HasSpace(wzPath)) {
-            Tblog("<t:Line>&quot;%le&quot; %le</t:Line>\n", wzPath, pwzFin);
-        }
-        else {
-            Tblog("<t:Line>%le %le</t:Line>\n", wzPath, pwzFin);
-        }
+		// Construct the processed command line.
+		PWCHAR pwzDstEnd = (PWCHAR)pwzLine;
+		PWCHAR pwzDst = pwzDstEnd;
+		pwzDst = LoadCommandLine(pwzLine, pwzDst, pwzDstEnd);
+		DWORD wcNew = (DWORD)((pwzDst - pwzDstEnd) + 1);
+		PWCHAR pwzFin = (PWCHAR)GlobalAlloc(GPTR, wcNew * sizeof(WCHAR));
+		pwzDst = pwzFin;
+		pwzDstEnd = pwzFin + wcNew;
+		pwzDst = LoadCommandLine(pwzLine, pwzDst, pwzDstEnd);
+		*pwzDst = '\0';
 
-        TestHandle("t:StdIn", GetStdHandle(STD_INPUT_HANDLE));
-        TestHandle("t:StdOut", GetStdHandle(STD_OUTPUT_HANDLE));
-        TestHandle("t:StdErr", GetStdHandle(STD_ERROR_HANDLE));
-    }
+		FileNames::ParameterizeLine(pwzFin, pwzFin + wcNew);
+		if (HasSpace(wzPath))
+		{
+			Tblog("<t:Line>&quot;%le&quot; %le</t:Line>\n", wzPath, pwzFin);
+		}
+		else
+		{
+			Tblog("<t:Line>%le %le</t:Line>\n", wzPath, pwzFin);
+		}
 
-    if (FindMsvcr()) {
-        FindProc(&(PVOID&)Real_getenv, "getenv");
-        FindProc(&(PVOID&)Real_wgetenv, "_wgetenv");
-        FindProc(&(PVOID&)Real_getenv_s, "getenv_s");
-        FindProc(&(PVOID&)Real_wgetenv_s, "_wgetenv_s");
-        FindProc(&(PVOID&)Real_dupenv_s, "_dupenv_s");
-        FindProc(&(PVOID&)Real_wdupenv_s, "_wdupenv_s");
+		TestHandle("t:StdIn", GetStdHandle(STD_INPUT_HANDLE));
+		TestHandle("t:StdOut", GetStdHandle(STD_OUTPUT_HANDLE));
+		TestHandle("t:StdErr", GetStdHandle(STD_ERROR_HANDLE));
+	}
 
-        DetourTransactionBegin();
-        DetourUpdateThread(GetCurrentThread());
+	if (FindMsvcr())
+	{
+		FindProc(&(PVOID&)Real_getenv, "getenv");
+		FindProc(&(PVOID&)Real_wgetenv, "_wgetenv");
+		FindProc(&(PVOID&)Real_getenv_s, "getenv_s");
+		FindProc(&(PVOID&)Real_wgetenv_s, "_wgetenv_s");
+		FindProc(&(PVOID&)Real_dupenv_s, "_dupenv_s");
+		FindProc(&(PVOID&)Real_wdupenv_s, "_wdupenv_s");
 
-        DetourAttachIf(&(PVOID&)Real_getenv, Mine_getenv);
-        DetourAttachIf(&(PVOID&)Real_getenv_s, Mine_getenv_s);
-        DetourAttachIf(&(PVOID&)Real_wgetenv, Mine_wgetenv);
-        DetourAttachIf(&(PVOID&)Real_wgetenv, Mine_wgetenv_s);
-        DetourAttachIf(&(PVOID&)Real_dupenv_s, Mine_dupenv_s);
-        DetourAttachIf(&(PVOID&)Real_wdupenv_s, Mine_wdupenv_s);
+		DetourTransactionBegin();
+		DetourUpdateThread(GetCurrentThread());
 
-        DetourTransactionCommit();
-    }
+		DetourAttachIf(&(PVOID&)Real_getenv, Mine_getenv);
+		DetourAttachIf(&(PVOID&)Real_getenv_s, Mine_getenv_s);
+		DetourAttachIf(&(PVOID&)Real_wgetenv, Mine_wgetenv);
+		DetourAttachIf(&(PVOID&)Real_wgetenv, Mine_wgetenv_s);
+		DetourAttachIf(&(PVOID&)Real_dupenv_s, Mine_dupenv_s);
+		DetourAttachIf(&(PVOID&)Real_wdupenv_s, Mine_wdupenv_s);
 
-    return Real_EntryPoint();
+		DetourTransactionCommit();
+	}
+
+	return Real_EntryPoint();
 }
 
-VOID WINAPI Mine_ExitProcess(UINT a0)
+void WINAPI Mine_ExitProcess(UINT a0)
 {
-    if (a0 & 0x80000000) {
-        Tblog("<t:Return>%d</t:Return>\n", -(int)a0);
-    }
-    else {
-        Tblog("<t:Return>%d</t:Return>\n", a0);
-    }
+	if (a0 & 0x80000000)
+	{
+		Tblog("<t:Return>%d</t:Return>\n", -(int)a0);
+	}
+	else {
+		Tblog("<t:Return>%d</t:Return>\n", a0);
+	}
 
-    FileNames::Dump();
-    EnvVars::Dump();
+	FileNames::Dump();
+	EnvVars::Dump();
 
-    TblogClose();
+	TblogClose();
 
-    Real_ExitProcess(a0);
+	Real_ExitProcess(a0);
 }
 
-BOOL APIENTRY DllMain(HINSTANCE hModule, DWORD dwReason, PVOID lpReserved)
+bool APIENTRY DllMain(HINSTANCE hModule, DWORD dwReason, PVOID lpReserved)
 {
-    (void)hModule;
-    (void)lpReserved;
+	(void)hModule;
+	(void)lpReserved;
 
-    if (DetourIsHelperProcess()) {
-        return TRUE;
-    }
+	if (DetourIsHelperProcess())
+	{
+		return true;
+	}
 
-    if (dwReason == DLL_PROCESS_ATTACH) {
-        DetourRestoreAfterWith();
-        Real_EntryPoint = (int (WINAPI *)(VOID))DetourGetEntryPoint(NULL);
-        return ProcessAttach(hModule);
-    }
-    else if (dwReason == DLL_PROCESS_DETACH) {
-        return ProcessDetach(hModule);
-    }
-    else if (dwReason == DLL_THREAD_ATTACH) {
-        return ThreadAttach(hModule);
-    }
-    else if (dwReason == DLL_THREAD_DETACH) {
-        return ThreadDetach(hModule);
-    }
-    return TRUE;
+	if (dwReason == DLL_PROCESS_ATTACH)
+	{
+		DetourRestoreAfterWith();
+		Real_EntryPoint = (int (WINAPI *)(void))DetourGetEntryPoint(nullptr);
+		return ProcessAttach(hModule);
+	}
+	else if (dwReason == DLL_PROCESS_DETACH)
+	{
+		return ProcessDetach(hModule);
+	}
+	else if (dwReason == DLL_THREAD_ATTACH)
+	{
+		return ThreadAttach(hModule);
+	}
+	else if (dwReason == DLL_THREAD_DETACH)
+	{
+		return ThreadDetach(hModule);
+	}
+
+	return true;
 }
-//
-///////////////////////////////////////////////////////////////// End of File.
 

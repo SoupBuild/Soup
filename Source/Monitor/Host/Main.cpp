@@ -52,10 +52,8 @@ TBLOG_PAYLOAD s_Payload;
 //
 VOID MyErrExit(PCSTR pszMsg)
 {
-	DWORD error = GetLastError();
-
-	fprintf(stderr, "TRACEBLD: Error %d in %s.\n", error, pszMsg);
-	fflush(stderr);
+	auto error = GetLastError();
+	std::cerr << "TRACEBLD: Error " << error << " in " << pszMsg << "." << std::endl;
 	exit(1);
 }
 
@@ -71,19 +69,29 @@ BOOL CLIENT::LogMessageV(PCHAR pszMsg, ...)
 
 	va_list args;
 	va_start(args, pszMsg);
-	hr = StringCchVPrintfExA(pcchCur, pcchEnd - pcchCur,
-								&pcchCur, nullptr, STRSAFE_NULL_ON_FAILURE,
-								pszMsg, args);
+	hr = StringCchVPrintfExA(
+		pcchCur,
+		pcchEnd - pcchCur,
+		&pcchCur,
+		nullptr,
+		STRSAFE_NULL_ON_FAILURE,
+		pszMsg,
+		args);
 	va_end(args);
-	if (FAILED(hr)) {
+	if (FAILED(hr))
+	{
 		goto cleanup;
 	}
 
-	hr = StringCchPrintfExA(pcchCur, szBuf + (ARRAYSIZE(szBuf)) - pcchCur,
-							&pcchCur, nullptr, STRSAFE_NULL_ON_FAILURE,
-							"\n");
+	hr = StringCchPrintfExA(
+		pcchCur,
+		szBuf + (ARRAYSIZE(szBuf)) - pcchCur,
+		&pcchCur,
+		nullptr,
+		STRSAFE_NULL_ON_FAILURE,
+		"\n");
 
-	cleanup:
+cleanup:
 	WriteFile(hFile, szBuf, (DWORD)(pcchCur - szBuf), &cbWritten, nullptr);
 	return true;
 }
@@ -436,80 +444,6 @@ DWORD main(int argc, char **argv)
 		GetCurrentProcessId());
 
 	int arg = 1;
-	for (; arg < argc && (argv[arg][0] == '-' || argv[arg][0] == '/'); arg++)
-	{
-		CHAR *argn = argv[arg] + 1;
-		CHAR *argp = argn;
-		while (*argp && *argp != ':' && *argp != '=')
-		{
-			argp++;
-		}
-
-		if (*argp == ':' || *argp == '=')
-		{
-			*argp++ = '\0';
-		}
-
-		switch (argn[0])
-		{
-			case 'd':                                     // Drop Processes
-			case 'D':
-				if (*argp)
-				{
-					PWCHAR pwz = wzzDrop;
-					while (*argp)
-					{
-						if (*argp == ';')
-						{
-							*pwz++ = '\0';
-						}
-						else
-						{
-							*pwz++ = *argp++;
-						}
-					}
-
-					*pwz++ = '\0';
-					*pwz = '\0';
-				}
-			case 'o':                                 // Output file.
-			case 'O':
-				StringCchCopyA(s_szLogFile, ARRAYSIZE(s_szLogFile), argp);
-				break;
-
-			case 'v':                                     // Verbose
-			case 'V':
-				s_fVerbose = true;
-				break;
-
-			case '?':                                 // Help.
-				fNeedHelp = true;
-				break;
-
-			default:
-				fNeedHelp = true;
-				printf("TRACEBLD: Bad argument: %s:%s\n", argn, argp);
-				break;
-		}
-	}
-
-	if (arg >= argc)
-	{
-		fNeedHelp = true;
-	}
-
-	if (fNeedHelp)
-	{
-		printf("Usage:\n"
-				"    tracebld [options] command {command arguments}\n"
-				"Options:\n"
-				"    /o:file    Log all events to the output files.\n"
-				"    /?         Display this help message.\n"
-				"Summary:\n"
-				"    Runs the build commands and figures out which files have dependencies..\n"
-				"\n");
-		exit(9001);
-	}
 
 	// Create the completion port.
 	hCompletionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, NULL, 0);
@@ -593,9 +527,6 @@ DWORD main(int argc, char **argv)
 
 	SetLastError(0);
 	SearchPathA(nullptr, szExe, ".exe", ARRAYSIZE(szFullExe), szFullExe, &pszFileExe);
-
-	/*DetouredProcess process;
-	process.RunProcess(szFullExe, {});*/
 
 	// TODO: Use DetourCreateProcessWithDllExA with 32 vs 64 support
 	if (!DetourCreateProcessWithDllExA(
