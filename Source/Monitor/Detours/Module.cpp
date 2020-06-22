@@ -4,11 +4,11 @@ module;
 #include <iostream>
 #include <vector>
 
-#define _WIN32_WINNT        0x0500
+#define _WIN32_WINNT 0x0500
 #define WIN32
 #define NT
 
-#define DBG_TRACE   0
+#define DBG_TRACE 0
 
 #include <windows.h>
 #include <stdio.h>
@@ -20,36 +20,16 @@ module;
 #pragma warning(pop)
 
 #define DllExport __declspec( dllexport )
+#define PULONG_PTR PVOID
+#define PLONG_PTR PVOID
+#define ULONG_PTR PVOID
+#define DEBUG_BREAK() DebugBreak()
 
 export module Monitor.Detours;
 import Detours;
 import Monitor.Shared;
 
-#define PULONG_PTR          PVOID
-#define PLONG_PTR           PVOID
-#define ULONG_PTR           PVOID
-
-//////////////////////////////////////////////////////////////////////////////
-
-#pragma warning(disable:4127)   // Many of our asserts are constants.
-
-#define DEBUG_BREAK() DebugBreak()
-
-#define ASSERT_ALWAYS(x)   \
-    do {                                                        \
-        if (!(x)) {                                             \
-            AssertFailed(#x, __FILE__, __LINE__);               \
-            DebugBreak();                                       \
-        }                                                       \
-    } while (0)
-
-#ifndef NDEBUG
-#define ASSERT(x)           ASSERT_ALWAYS(x)
-#else
-#define ASSERT(x)
-#endif
-
-#define UNUSED(c)       (c) = (c)
+#include "OriginalFunctions.h"
 
 // TODO: This exported method forces a lib to be generated to allow for linking...
 // Soup should allow runtime references to dlls that have no external symbols
@@ -104,251 +84,6 @@ void AssertFailed(CONST PCHAR pszMsg, CONST PCHAR pszFile, ULONG nLine);
 int WINAPI Mine_EntryPoint(void);
 void WINAPI Mine_ExitProcess(UINT a0);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-int (WINAPI * Real_EntryPoint)(void) = nullptr;
-
-BOOL (WINAPI * Real_CreateDirectoryW)(LPCWSTR a0,
-                                      LPSECURITY_ATTRIBUTES a1)
-    = CreateDirectoryW;
-
-BOOL (WINAPI * Real_CreateDirectoryExW)(LPCWSTR a0,
-                                        LPCWSTR a1,
-                                        LPSECURITY_ATTRIBUTES a2)
-    = CreateDirectoryExW;
-
-HANDLE (WINAPI * Real_CreateFileW)(LPCWSTR a0,
-                                   DWORD a1,
-                                   DWORD a2,
-                                   LPSECURITY_ATTRIBUTES a3,
-                                   DWORD a4,
-                                   DWORD a5,
-                                   HANDLE a6)
-    = CreateFileW;
-
-HANDLE (WINAPI * Real_CreateFileMappingW)(HANDLE hFile,
-                                         LPSECURITY_ATTRIBUTES lpAttributes,
-                                         DWORD flProtect,
-                                         DWORD dwMaximumSizeHigh,
-                                         DWORD dwMaximumSizeLow,
-                                         LPCWSTR lpName
-                                        )
-    = CreateFileMappingW;
-
-BOOL (WINAPI * Real_CreatePipe)(PHANDLE hReadPipe,
-                                PHANDLE hWritePipe,
-                                LPSECURITY_ATTRIBUTES lpPipeAttributes,
-                                DWORD nSize)
-    = CreatePipe;
-
-BOOL (WINAPI * Real_CloseHandle)(HANDLE a0)
-    = CloseHandle;
-
-BOOL (WINAPI * Real_DuplicateHandle)(HANDLE hSourceProcessHandle,
-                                     HANDLE hSourceHandle,
-                                     HANDLE hTargetProcessHandle,
-                                     LPHANDLE lpTargetHandle,
-                                     DWORD dwDesiredAccess,
-                                     BOOL bInheritHandle,
-                                     DWORD dwOptions)
-    = DuplicateHandle;
-
-BOOL (WINAPI * Real_CreateProcessW)(LPCWSTR lpApplicationName,
-                                    LPWSTR lpCommandLine,
-                                    LPSECURITY_ATTRIBUTES lpProcessAttributes,
-                                    LPSECURITY_ATTRIBUTES lpThreadAttributes,
-                                    BOOL bInheritHandles,
-                                    DWORD dwCreationFlags,
-                                    LPVOID lpEnvironment,
-                                    LPCWSTR lpCurrentDirectory,
-                                    LPSTARTUPINFOW lpStartupInfo,
-                                    LPPROCESS_INFORMATION lpProcessInformation)
-    = CreateProcessW;
-
-BOOL (WINAPI * Real_CreateProcessA)(LPCSTR lpApplicationName,
-                                    LPSTR lpCommandLine,
-                                    LPSECURITY_ATTRIBUTES lpProcessAttributes,
-                                    LPSECURITY_ATTRIBUTES lpThreadAttributes,
-                                    BOOL bInheritHandles,
-                                    DWORD dwCreationFlags,
-                                    LPVOID lpEnvironment,
-                                    LPCSTR lpCurrentDirectory,
-                                    LPSTARTUPINFOA lpStartupInfo,
-                                    LPPROCESS_INFORMATION lpProcessInformation)
-    = CreateProcessA;
-
-BOOL (WINAPI * Real_DeleteFileW)(LPCWSTR a0)
-    = DeleteFileW;
-BOOL (WINAPI * Real_DeviceIoControl)(HANDLE a0,
-                                     DWORD dwIoControlCode,
-                                     LPVOID lpInBuffer,
-                                     DWORD nInBufferSize,
-                                     LPVOID lpOutBuffer,
-                                     DWORD nOutBufferSize,
-                                     LPDWORD lpBytesReturned,
-                                     LPOVERLAPPED lpOverlapped)
-    = DeviceIoControl;
-
-DWORD (WINAPI * Real_GetFileAttributesW)(LPCWSTR a0)
-    = GetFileAttributesW;
-
-BOOL (WINAPI * Real_MoveFileWithProgressW)(LPCWSTR lpExistingFileName,
-                                           LPCWSTR lpNewFileName,
-                                           LPPROGRESS_ROUTINE lpProgressRoutine,
-                                           LPVOID lpData,
-                                           DWORD dwFlags)
-    = MoveFileWithProgressW;
-
-BOOL (WINAPI * Real_MoveFileA)(LPCSTR a0,
-                               LPCSTR a1)
-    = MoveFileA;
-
-BOOL (WINAPI * Real_MoveFileW)(LPCWSTR a0,
-                               LPCWSTR a12)
-    = MoveFileW;
-
-BOOL (WINAPI * Real_MoveFileExA)(LPCSTR a0,
-                                 LPCSTR a1,
-                                 DWORD a2)
-    = MoveFileExA;
-
-BOOL (WINAPI * Real_MoveFileExW)(LPCWSTR a0,
-                                 LPCWSTR a1,
-                                 DWORD a2)
-    = MoveFileExW;
-
-BOOL (WINAPI * Real_CopyFileExA)(LPCSTR a0,
-                                 LPCSTR a1,
-                                 LPPROGRESS_ROUTINE a2,
-                                 LPVOID a4,
-                                 LPBOOL a5,
-                                 DWORD a6)
-    = CopyFileExA;
-
-BOOL (WINAPI * Real_CopyFileExW)(LPCWSTR a0,
-                                 LPCWSTR a1,
-                                 LPPROGRESS_ROUTINE a2,
-                                 LPVOID a4,
-                                 LPBOOL a5,
-                                 DWORD a6)
-    = CopyFileExW;
-
-BOOL (WINAPI * Real_PrivCopyFileExW)(LPCWSTR  lpExistingFileName,
-                                     LPCWSTR  lpNewFileName,
-                                     LPPROGRESS_ROUTINE  lpProgressRoutine,
-                                     LPVOID  lpData,
-                                     LPBOOL  pbCancel,
-                                     DWORD  dwCopyFlags)
-    = nullptr;
-
-BOOL (WINAPI * Real_CreateHardLinkA)(LPCSTR a0,
-                                     LPCSTR a1,
-                                     LPSECURITY_ATTRIBUTES a2)
-    = CreateHardLinkA;
-
-BOOL (WINAPI * Real_CreateHardLinkW)(LPCWSTR a0,
-                                     LPCWSTR a1,
-                                     LPSECURITY_ATTRIBUTES a2)
-    = CreateHardLinkW;
-
-BOOL (WINAPI * Real_SetStdHandle)(DWORD a0,
-                                  HANDLE a1)
-    = SetStdHandle;
-
-HMODULE (WINAPI * Real_LoadLibraryA)(LPCSTR a0)
-    = LoadLibraryA;
-
-HMODULE (WINAPI * Real_LoadLibraryW)(LPCWSTR a0)
-    = LoadLibraryW;
-
-HMODULE (WINAPI * Real_LoadLibraryExA)(LPCSTR a0,
-                                       HANDLE a1,
-                                       DWORD a2)
-    = LoadLibraryExA;
-
-HMODULE (WINAPI * Real_LoadLibraryExW)(LPCWSTR a0,
-                                       HANDLE a1,
-                                       DWORD a2)
-    = LoadLibraryExW;
-
-DWORD (WINAPI * Real_SetFilePointer)(HANDLE hFile,
-                                     LONG lDistanceToMove,
-                                     PLONG lpDistanceToMoveHigh,
-                                     DWORD dwMoveMethod)
-    = SetFilePointer;
-
-BOOL (WINAPI * Real_SetFilePointerEx)(HANDLE hFile,
-                                      LARGE_INTEGER liDistanceToMove,
-                                      PLARGE_INTEGER lpNewFilePointer,
-                                      DWORD dwMoveMethod)
-    = SetFilePointerEx;
-
-BOOL (WINAPI * Real_ReadFile)(HANDLE a0,
-                                 LPVOID a1,
-                                 DWORD a2,
-                                 LPDWORD a3,
-                                 LPOVERLAPPED a4)
-    = ReadFile;
-
-BOOL (WINAPI * Real_ReadFileEx)(HANDLE a0,
-                                   LPVOID a1,
-                                   DWORD a2,
-                                   LPOVERLAPPED a3,
-                                   LPOVERLAPPED_COMPLETION_ROUTINE a4)
-    = ReadFileEx;
-
-BOOL (WINAPI * Real_WriteFile)(HANDLE a0,
-                                  LPCVOID a1,
-                                  DWORD a2,
-                                  LPDWORD a3,
-                                  LPOVERLAPPED a4)
-    = WriteFile;
-
-BOOL (WINAPI * Real_WriteFileEx)(HANDLE a0,
-                                    LPCVOID a1,
-                                    DWORD a2,
-                                    LPOVERLAPPED a3,
-                                    LPOVERLAPPED_COMPLETION_ROUTINE a4)
-    = WriteFileEx;
-
-BOOL (WINAPI * Real_WriteConsoleA)(HANDLE a0,
-                                      const void* a1,
-                                      DWORD a2,
-                                      LPDWORD a3,
-                                      LPVOID a4)
-    = WriteConsoleA;
-
-BOOL (WINAPI * Real_WriteConsoleW)(HANDLE a0,
-                                      const void* a1,
-                                      DWORD a2,
-                                      LPDWORD a3,
-                                      LPVOID a4)
-    = WriteConsoleW;
-
-void (WINAPI * Real_ExitProcess)(UINT a0)
-    = ExitProcess;
-
-DWORD (WINAPI * Real_ExpandEnvironmentStringsA)(PCSTR lpSrc, PCHAR lpDst, DWORD nSize)
-    = ExpandEnvironmentStringsA;
-
-DWORD (WINAPI * Real_ExpandEnvironmentStringsW)(PCWSTR lpSrc, PWCHAR lpDst, DWORD nSize)
-    = ExpandEnvironmentStringsW;
-
-DWORD (WINAPI * Real_GetEnvironmentVariableA)(PCSTR lpName, PCHAR lpBuffer, DWORD nSize)
-    = GetEnvironmentVariableA;
-
-DWORD (WINAPI * Real_GetEnvironmentVariableW)(PCWSTR lpName, PWCHAR lpBuffer, DWORD nSize)
-    = GetEnvironmentVariableW;
-
-PCWSTR (CDECL * Real_wgetenv)(PCWSTR var) = nullptr;
-PCSTR (CDECL * Real_getenv)(PCSTR var) = nullptr;
-DWORD (CDECL * Real_getenv_s)(DWORD *pValue, PCHAR pBuffer, DWORD cBuffer, PCSTR varname) = nullptr;
-DWORD (CDECL * Real_wgetenv_s)(DWORD *pValue, PWCHAR pBuffer, DWORD cBuffer, PCWSTR varname) = nullptr;
-DWORD (CDECL * Real_dupenv_s)(PCHAR *ppBuffer, DWORD *pcBuffer, PCSTR varname) = nullptr;
-DWORD (CDECL * Real_wdupenv_s)(PWCHAR *ppBuffer, DWORD *pcBuffer, PCWSTR varname) = nullptr;
-
-//////////////////////////////////////////////////////////////////////////////
-//
 static void Copy(PWCHAR pwzDst, PCWSTR pwzSrc)
 {
 	while (*pwzSrc)
@@ -509,8 +244,6 @@ PCSTR s_pszMsvcr = nullptr;
 
 static BOOL WINAPI ImportFileCallback(PVOID pContext, HMODULE hFile, PCSTR pszFile)
 {
-	UNUSED(pContext);
-
 	if (pszFile != nullptr)
 	{
 		for (int i = 0; s_rpszMsvcrNames[i]; i++)
@@ -2591,7 +2324,7 @@ bool TblogOpen()
 	{
 		WaitNamedPipeW(wzPipe, 10000); // Wait up to 10 seconds for a pipe to appear.
 
-		s_hPipe = Real_CreateFileW(wzPipe, GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
+		s_hPipe = Functions::Original::CreateFileW(wzPipe, GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
 		if (s_hPipe != INVALID_HANDLE_VALUE)
 		{
 			DWORD dwMode = PIPE_READMODE_MESSAGE;
@@ -2607,7 +2340,7 @@ bool TblogOpen()
 
 	// Couldn't open pipe.
 	DEBUG_BREAK();
-	Real_ExitProcess(9990);
+	Functions::Original::ExitProcess(9990);
 	return false;
 }
 
@@ -2639,9 +2372,9 @@ void TblogV(PCSTR pszMsgf, va_list args)
 	// If the write fails, then we abort
 	if (s_hPipe != INVALID_HANDLE_VALUE)
 	{
-		if (!Real_WriteFile(s_hPipe, &s_rMessage, s_rMessage.nBytes, &cbWritten, nullptr))
+		if (!Functions::Original::WriteFile(s_hPipe, &s_rMessage, s_rMessage.nBytes, &cbWritten, nullptr))
 		{
-			Real_ExitProcess(9991);
+			Functions::Original::ExitProcess(9991);
 		}
 	}
 
@@ -2671,9 +2404,9 @@ void TblogClose()
 
 		s_rMessage.nBytes = 0;
 
-		Real_WriteFile(s_hPipe, &s_rMessage, 4, &cbWritten, nullptr);
+		Functions::Original::WriteFile(s_hPipe, &s_rMessage, 4, &cbWritten, nullptr);
 		FlushFileBuffers(s_hPipe);
-		Real_CloseHandle(s_hPipe);
+		Functions::Original::CloseHandle(s_hPipe);
 		s_hPipe = INVALID_HANDLE_VALUE;
 	}
 
@@ -2768,12 +2501,12 @@ bool CreateProcessInternals(
 	return true;
 }
 
-bool WINAPI Mine_CreateProcessW(
+BOOL WINAPI Mine_CreateProcessW(
 	LPCWSTR lpApplicationName,
 	LPWSTR lpCommandLine,
 	LPSECURITY_ATTRIBUTES lpProcessAttributes,
 	LPSECURITY_ATTRIBUTES lpThreadAttributes,
-	bool bInheritHandles,
+	BOOL bInheritHandles,
 	DWORD dwCreationFlags,
 	LPVOID lpEnvironment,
 	LPCWSTR lpCurrentDirectory,
@@ -2810,7 +2543,7 @@ bool WINAPI Mine_CreateProcessW(
 			lpStartupInfo,
 			ppi,
 			s_szDllPath,
-			Real_CreateProcessW);
+			Functions::Original::CreateProcessW);
 
 		if (rv)
 		{
@@ -2893,8 +2626,8 @@ bool WINAPI Mine_CreateProcessW(
 
 			if (ppi == &pi)
 			{
-				Real_CloseHandle(ppi->hThread);
-				Real_CloseHandle(ppi->hProcess);
+				Functions::Original::CloseHandle(ppi->hThread);
+				Functions::Original::CloseHandle(ppi->hProcess);
 			}
 		}
 	}
@@ -2914,12 +2647,12 @@ bool WINAPI Mine_CreateProcessW(
 	return rv;
 }
 
-bool WINAPI Mine_CreateProcessA(
+BOOL WINAPI Mine_CreateProcessA(
 	LPCSTR lpApplicationName,
 	LPSTR lpCommandLine,
 	LPSECURITY_ATTRIBUTES lpProcessAttributes,
 	LPSECURITY_ATTRIBUTES lpThreadAttributes,
-	bool bInheritHandles,
+	BOOL bInheritHandles,
 	DWORD dwCreationFlags,
 	LPVOID lpEnvironment,
 	LPCSTR lpCurrentDirectory,
@@ -2956,7 +2689,7 @@ bool WINAPI Mine_CreateProcessA(
 			lpStartupInfo,
 			ppi,
 			s_szDllPath,
-			Real_CreateProcessA);
+			Functions::Original::CreateProcessA);
 
 		if (rv)
 		{
@@ -3039,8 +2772,8 @@ bool WINAPI Mine_CreateProcessA(
 
 			if (ppi == &pi)
 			{
-				Real_CloseHandle(ppi->hThread);
-				Real_CloseHandle(ppi->hProcess);
+				Functions::Original::CloseHandle(ppi->hThread);
+				Functions::Original::CloseHandle(ppi->hProcess);
 			}
 		}
 	}
@@ -3063,7 +2796,7 @@ bool WINAPI Mine_CreateProcessA(
 //
 //////////////////////////////////////////////////////////////////////////////
 
-bool WINAPI Mine_CopyFileExA(
+BOOL WINAPI Mine_CopyFileExA(
 	LPCSTR a0,
 	LPCSTR a1,
 	LPPROGRESS_ROUTINE a2,
@@ -3076,7 +2809,7 @@ bool WINAPI Mine_CopyFileExA(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_CopyFileExA(a0, a1, a2, a3, a4, a5);
+		rv = Functions::Original::CopyFileExA(a0, a1, a2, a3, a4, a5);
 	}
 	__finally
 	{
@@ -3094,7 +2827,7 @@ bool WINAPI Mine_CopyFileExA(
 	return rv;
 }
 
-bool WINAPI Mine_CopyFileExW(
+BOOL WINAPI Mine_CopyFileExW(
 	LPCWSTR a0,
 	LPCWSTR a1,
 	LPPROGRESS_ROUTINE a2,
@@ -3111,7 +2844,7 @@ bool WINAPI Mine_CopyFileExW(
 		Print("\n");
 		Print("<!-- CopyFileExW %le to %le before -->\n", a0, a1);
 #endif
-		rv = Real_CopyFileExW(a0, a1, a2, a3, a4, a5);
+		rv = Functions::Original::CopyFileExW(a0, a1, a2, a3, a4, a5);
 	}
 	__finally
 	{
@@ -3129,7 +2862,7 @@ bool WINAPI Mine_CopyFileExW(
 	return rv;
 }
 
-bool WINAPI Mine_PrivCopyFileExW(
+BOOL WINAPI Mine_PrivCopyFileExW(
 	LPCWSTR a0,
 	LPCWSTR a1,
 	LPPROGRESS_ROUTINE a2,
@@ -3142,7 +2875,7 @@ bool WINAPI Mine_PrivCopyFileExW(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_PrivCopyFileExW(a0, a1, a2, a3, a4, a5);
+		rv = Functions::Original::PrivCopyFileExW(a0, a1, a2, a3, a4, a5);
 	}
 	__finally
 	{
@@ -3160,7 +2893,7 @@ bool WINAPI Mine_PrivCopyFileExW(
 	return rv;
 }
 
-bool WINAPI Mine_CreateHardLinkA(
+BOOL WINAPI Mine_CreateHardLinkA(
 	LPCSTR a0,
 	LPCSTR a1,
 	LPSECURITY_ATTRIBUTES a2)
@@ -3170,7 +2903,7 @@ bool WINAPI Mine_CreateHardLinkA(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_CreateHardLinkA(a0, a1, a2);
+		rv = Functions::Original::CreateHardLinkA(a0, a1, a2);
 	}
 	__finally
 	{
@@ -3188,7 +2921,7 @@ bool WINAPI Mine_CreateHardLinkA(
 	return rv;
 }
 
-bool WINAPI Mine_CreateHardLinkW(
+BOOL WINAPI Mine_CreateHardLinkW(
 	LPCWSTR a0,
 	LPCWSTR a1,
 	LPSECURITY_ATTRIBUTES a2)
@@ -3198,7 +2931,7 @@ bool WINAPI Mine_CreateHardLinkW(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_CreateHardLinkW(a0, a1, a2);
+		rv = Functions::Original::CreateHardLinkW(a0, a1, a2);
 	}
 	__finally
 	{
@@ -3216,7 +2949,7 @@ bool WINAPI Mine_CreateHardLinkW(
 	return rv;
 }
 
-bool WINAPI Mine_CloseHandle(HANDLE a0)
+BOOL WINAPI Mine_CloseHandle(HANDLE a0)
 {
 	/*int nIndent =*/ EnterFunc();
 
@@ -3262,7 +2995,7 @@ bool WINAPI Mine_CloseHandle(HANDLE a0)
 			SetLastError(dwErr);
 		}
 
-		rv = Real_CloseHandle(a0);
+		rv = Functions::Original::CloseHandle(a0);
 	}
 	__finally
 	{
@@ -3276,7 +3009,7 @@ bool WINAPI Mine_CloseHandle(HANDLE a0)
 	return rv;
 }
 
-bool WINAPI Mine_DuplicateHandle(
+BOOL WINAPI Mine_DuplicateHandle(
 	HANDLE hSourceProcessHandle,
 	HANDLE hSourceHandle,
 	HANDLE hTargetProcessHandle,
@@ -3298,7 +3031,7 @@ bool WINAPI Mine_DuplicateHandle(
 
 		*lpTargetHandle = INVALID_HANDLE_VALUE;
 
-		rv = Real_DuplicateHandle(
+		rv = Functions::Original::DuplicateHandle(
 			hSourceProcessHandle,
 			hSourceHandle,
 			hTargetProcessHandle,
@@ -3325,7 +3058,7 @@ bool WINAPI Mine_DuplicateHandle(
 
 static LONG s_nPipeCnt = 0;
 
-bool WINAPI Mine_CreatePipe(
+BOOL WINAPI Mine_CreatePipe(
 	PHANDLE hReadPipe,
 	PHANDLE hWritePipe,
 	LPSECURITY_ATTRIBUTES lpPipeAttributes,
@@ -3348,7 +3081,7 @@ bool WINAPI Mine_CreatePipe(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_CreatePipe(hReadPipe, hWritePipe, lpPipeAttributes, nSize);
+		rv = Functions::Original::CreatePipe(hReadPipe, hWritePipe, lpPipeAttributes, nSize);
 	}
 	__finally
 	{
@@ -3375,7 +3108,7 @@ bool WINAPI Mine_CreatePipe(
 	return rv;
 }
 
-bool WINAPI Mine_CreateDirectoryW(
+BOOL WINAPI Mine_CreateDirectoryW(
 	LPCWSTR a0,
 	LPSECURITY_ATTRIBUTES a1)
 {
@@ -3383,7 +3116,7 @@ bool WINAPI Mine_CreateDirectoryW(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_CreateDirectoryW(a0, a1);
+		rv = Functions::Original::CreateDirectoryW(a0, a1);
 	}
 	__finally
 	{
@@ -3398,7 +3131,7 @@ bool WINAPI Mine_CreateDirectoryW(
 	return rv;
 }
 
-bool WINAPI Mine_CreateDirectoryExW(
+BOOL WINAPI Mine_CreateDirectoryExW(
 	LPCWSTR a0,
 	LPCWSTR a1,
 	LPSECURITY_ATTRIBUTES a2)
@@ -3407,7 +3140,7 @@ bool WINAPI Mine_CreateDirectoryExW(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_CreateDirectoryExW(a0, a1, a2);
+		rv = Functions::Original::CreateDirectoryExW(a0, a1, a2);
 	}
 	__finally
 	{
@@ -3435,7 +3168,7 @@ HANDLE WINAPI Mine_CreateFileW(
 	HANDLE rv = 0;
 	__try
 	{
-		rv = Real_CreateFileW(a0, access, share, a3, create, flags, a6);
+		rv = Functions::Original::CreateFileW(a0, access, share, a3, create, flags, a6);
 	}
 	__finally
 	{
@@ -3525,7 +3258,7 @@ HANDLE WINAPI Mine_CreateFileMappingW(
 	HANDLE rv = 0;
 	__try
 	{
-		rv = Real_CreateFileMappingW(hFile, a1, flProtect, a3, a4, a5);
+		rv = Functions::Original::CreateFileMappingW(hFile, a1, flProtect, a3, a4, a5);
 	}
 	__finally
 	{
@@ -3563,14 +3296,14 @@ HANDLE WINAPI Mine_CreateFileMappingW(
 	return rv;
 }
 
-bool WINAPI Mine_DeleteFileW(LPCWSTR a0)
+BOOL WINAPI Mine_DeleteFileW(LPCWSTR a0)
 {
 	EnterFunc();
 
 	bool rv = 0;
 	__try
 	{
-		rv = Real_DeleteFileW(a0);
+		rv = Functions::Original::DeleteFileW(a0);
 	}
 	__finally
 	{
@@ -3637,7 +3370,7 @@ static void Dump(LPVOID pvData, DWORD cbData)
 	}
 }
 
-bool WINAPI Mine_DeviceIoControl(
+BOOL WINAPI Mine_DeviceIoControl(
 	HANDLE a0,
 	DWORD a1,
 	LPVOID a2,
@@ -3657,7 +3390,7 @@ bool WINAPI Mine_DeviceIoControl(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_DeviceIoControl(a0, a1, a2, a3, a4, a5, a6, a7);
+		rv = Functions::Original::DeviceIoControl(a0, a1, a2, a3, a4, a5, a6, a7);
 	}
 	__finally
 	{
@@ -3721,7 +3454,7 @@ DWORD WINAPI Mine_GetFileAttributesW(LPCWSTR a0)
 	DWORD rv = 0;
 	__try
 	{
-		rv = Real_GetFileAttributesW(a0);
+		rv = Functions::Original::GetFileAttributesW(a0);
 	}
 	__finally
 	{
@@ -3731,7 +3464,7 @@ DWORD WINAPI Mine_GetFileAttributesW(LPCWSTR a0)
 	return rv;
 }
 
-bool WINAPI Mine_MoveFileWithProgressW(
+BOOL WINAPI Mine_MoveFileWithProgressW(
 	LPCWSTR a0,
 	LPCWSTR a1,
 	LPPROGRESS_ROUTINE a2,
@@ -3743,7 +3476,7 @@ bool WINAPI Mine_MoveFileWithProgressW(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_MoveFileWithProgressW(a0, a1, a2, a3, a4);
+		rv = Functions::Original::MoveFileWithProgressW(a0, a1, a2, a3, a4);
 	}
 	__finally
 	{
@@ -3758,7 +3491,7 @@ bool WINAPI Mine_MoveFileWithProgressW(
 	return rv;
 }
 
-bool WINAPI Mine_MoveFileA(
+BOOL WINAPI Mine_MoveFileA(
 	LPCSTR a0,
 	LPCSTR a1)
 {
@@ -3767,7 +3500,7 @@ bool WINAPI Mine_MoveFileA(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_MoveFileA(a0, a1);
+		rv = Functions::Original::MoveFileA(a0, a1);
 	}
 	__finally
 	{
@@ -3783,7 +3516,7 @@ bool WINAPI Mine_MoveFileA(
 	return rv;
 }
 
-bool WINAPI Mine_MoveFileW(
+BOOL WINAPI Mine_MoveFileW(
 	LPCWSTR a0,
 	LPCWSTR a1)
 {
@@ -3792,7 +3525,7 @@ bool WINAPI Mine_MoveFileW(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_MoveFileW(a0, a1);
+		rv = Functions::Original::MoveFileW(a0, a1);
 	}
 	__finally
 	{
@@ -3808,7 +3541,7 @@ bool WINAPI Mine_MoveFileW(
 	return rv;
 }
 
-bool WINAPI Mine_MoveFileExA(
+BOOL WINAPI Mine_MoveFileExA(
 	LPCSTR a0,
 	LPCSTR a1,
 	DWORD a2)
@@ -3818,7 +3551,7 @@ bool WINAPI Mine_MoveFileExA(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_MoveFileExA(a0, a1, a2);
+		rv = Functions::Original::MoveFileExA(a0, a1, a2);
 	}
 	__finally
 	{
@@ -3834,7 +3567,7 @@ bool WINAPI Mine_MoveFileExA(
 	return rv;
 }
 
-bool WINAPI Mine_MoveFileExW(
+BOOL WINAPI Mine_MoveFileExW(
 	LPCWSTR a0,
 	LPCWSTR a1,
 	DWORD a2)
@@ -3844,7 +3577,7 @@ bool WINAPI Mine_MoveFileExW(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_MoveFileExW(a0, a1, a2);
+		rv = Functions::Original::MoveFileExW(a0, a1, a2);
 	}
 	__finally
 	{
@@ -3879,7 +3612,7 @@ void SetHandle(PCSTR pszName, HANDLE h)
 #endif
 }
 
-bool WINAPI Mine_SetStdHandle(
+BOOL WINAPI Mine_SetStdHandle(
 	DWORD a0,
 	HANDLE a1)
 {
@@ -3888,7 +3621,7 @@ bool WINAPI Mine_SetStdHandle(
 	bool rv = 0;
 	__try
 	{
-		rv = Real_SetStdHandle(a0, a1);
+		rv = Functions::Original::SetStdHandle(a0, a1);
 		if (rv && a1 != 0)
 		{
 			switch (a0)
@@ -3919,7 +3652,7 @@ HMODULE WINAPI Mine_LoadLibraryA(LPCSTR a0)
 
     HMODULE rv = 0;
     __try {
-        rv = Real_LoadLibraryA(a0);
+        rv = Functions::Original::LoadLibraryA(a0);
     } __finally {
         ExitFunc();
     };
@@ -3932,7 +3665,7 @@ HMODULE WINAPI Mine_LoadLibraryW(LPCWSTR a0)
 
     HMODULE rv = 0;
     __try {
-        rv = Real_LoadLibraryW(a0);
+        rv = Functions::Original::LoadLibraryW(a0);
     } __finally {
         ExitFunc();
     };
@@ -3947,7 +3680,7 @@ HMODULE WINAPI Mine_LoadLibraryExA(LPCSTR a0,
 
     HMODULE rv = 0;
     __try {
-        rv = Real_LoadLibraryExA(a0, a1, a2);
+        rv = Functions::Original::LoadLibraryExA(a0, a1, a2);
     } __finally {
         ExitFunc();
     };
@@ -3962,7 +3695,7 @@ HMODULE WINAPI Mine_LoadLibraryExW(LPCWSTR a0,
 
     HMODULE rv = 0;
     __try {
-        rv = Real_LoadLibraryExW(a0, a1, a2);
+        rv = Functions::Original::LoadLibraryExW(a0, a1, a2);
     } __finally {
         ExitFunc();
     };
@@ -3978,7 +3711,7 @@ DWORD WINAPI Mine_SetFilePointer(HANDLE hFile,
 
     DWORD rv = 0;
     __try {
-        rv = Real_SetFilePointer(hFile,
+        rv = Functions::Original::SetFilePointer(hFile,
                                  lDistanceToMove,
                                  lpDistanceToMoveHigh,
                                  dwMoveMethod);
@@ -4023,7 +3756,7 @@ DWORD WINAPI Mine_SetFilePointer(HANDLE hFile,
     return rv;
 }
 
-bool WINAPI Mine_SetFilePointerEx(HANDLE hFile,
+BOOL WINAPI Mine_SetFilePointerEx(HANDLE hFile,
                                   LARGE_INTEGER liDistanceToMove,
                                   PLARGE_INTEGER lpNewFilePointer,
                                   DWORD dwMoveMethod)
@@ -4032,7 +3765,7 @@ bool WINAPI Mine_SetFilePointerEx(HANDLE hFile,
 
     bool rv = 0;
     __try {
-        rv = Real_SetFilePointerEx(hFile,
+        rv = Functions::Original::SetFilePointerEx(hFile,
                                    liDistanceToMove,
                                    lpNewFilePointer,
                                    dwMoveMethod);
@@ -4062,7 +3795,7 @@ bool WINAPI Mine_SetFilePointerEx(HANDLE hFile,
     return rv;
 }
 
-bool WINAPI Mine_ReadFile(HANDLE a0,
+BOOL WINAPI Mine_ReadFile(HANDLE a0,
                           LPVOID a1,
                           DWORD a2,
                           LPDWORD a3,
@@ -4072,7 +3805,7 @@ bool WINAPI Mine_ReadFile(HANDLE a0,
 
     bool rv = 0;
     __try {
-        rv = Real_ReadFile(a0, a1, a2, a3, a4);
+        rv = Functions::Original::ReadFile(a0, a1, a2, a3, a4);
     } __finally {
         if (rv) {
             OpenFiles::SetRead(a0, a2);
@@ -4082,7 +3815,7 @@ bool WINAPI Mine_ReadFile(HANDLE a0,
     return rv;
 }
 
-bool WINAPI Mine_ReadFileEx(HANDLE a0,
+BOOL WINAPI Mine_ReadFileEx(HANDLE a0,
                             LPVOID a1,
                             DWORD a2,
                             LPOVERLAPPED a3,
@@ -4092,7 +3825,7 @@ bool WINAPI Mine_ReadFileEx(HANDLE a0,
 
     bool rv = 0;
     __try {
-        rv = Real_ReadFileEx(a0, a1, a2, a3, a4);
+        rv = Functions::Original::ReadFileEx(a0, a1, a2, a3, a4);
     } __finally {
         if (rv) {
             OpenFiles::SetRead(a0, a2);
@@ -4102,7 +3835,7 @@ bool WINAPI Mine_ReadFileEx(HANDLE a0,
     return rv;
 }
 
-bool WINAPI Mine_WriteFile(HANDLE a0,
+BOOL WINAPI Mine_WriteFile(HANDLE a0,
                            LPCVOID a1,
                            DWORD a2,
                            LPDWORD a3,
@@ -4112,7 +3845,7 @@ bool WINAPI Mine_WriteFile(HANDLE a0,
 
     bool rv = 0;
     __try {
-        rv = Real_WriteFile(a0, a1, a2, a3, a4);
+        rv = Functions::Original::WriteFile(a0, a1, a2, a3, a4);
     } __finally {
         OpenFiles::SetWrite(a0, a2);
         ExitFunc();
@@ -4120,7 +3853,7 @@ bool WINAPI Mine_WriteFile(HANDLE a0,
     return rv;
 }
 
-bool WINAPI Mine_WriteFileEx(HANDLE a0,
+BOOL WINAPI Mine_WriteFileEx(HANDLE a0,
                              LPCVOID a1,
                              DWORD a2,
                              LPOVERLAPPED a3,
@@ -4130,7 +3863,7 @@ bool WINAPI Mine_WriteFileEx(HANDLE a0,
 
     bool rv = 0;
     __try {
-        rv = Real_WriteFileEx(a0, a1, a2, a3, a4);
+        rv = Functions::Original::WriteFileEx(a0, a1, a2, a3, a4);
     } __finally {
         OpenFiles::SetWrite(a0, a2);
         ExitFunc();
@@ -4138,7 +3871,7 @@ bool WINAPI Mine_WriteFileEx(HANDLE a0,
     return rv;
 }
 
-bool WINAPI Mine_WriteConsoleA(HANDLE a0,
+BOOL WINAPI Mine_WriteConsoleA(HANDLE a0,
                                   const void* a1,
                                   DWORD a2,
                                   LPDWORD a3,
@@ -4148,7 +3881,7 @@ bool WINAPI Mine_WriteConsoleA(HANDLE a0,
 
     bool rv = 0;
     __try {
-        rv = Real_WriteConsoleA(a0, a1, a2, a3, a4);
+        rv = Functions::Original::WriteConsoleA(a0, a1, a2, a3, a4);
     } __finally {
         OpenFiles::SetWrite(a0, a2);
         ExitFunc();
@@ -4156,7 +3889,7 @@ bool WINAPI Mine_WriteConsoleA(HANDLE a0,
     return rv;
 }
 
-bool WINAPI Mine_WriteConsoleW(HANDLE a0,
+BOOL WINAPI Mine_WriteConsoleW(HANDLE a0,
                                   const void* a1,
                                   DWORD a2,
                                   LPDWORD a3,
@@ -4166,7 +3899,7 @@ bool WINAPI Mine_WriteConsoleW(HANDLE a0,
 
     bool rv = 0;
     __try {
-        rv = Real_WriteConsoleW(a0, a1, a2, a3, a4);
+        rv = Functions::Original::WriteConsoleW(a0, a1, a2, a3, a4);
     } __finally {
         OpenFiles::SetWrite(a0, a2);
         ExitFunc();
@@ -4181,7 +3914,7 @@ DWORD WINAPI Mine_ExpandEnvironmentStringsA(PCSTR lpSrc, PCHAR lpDst, DWORD nSiz
     EnterFunc();
     DWORD rv = 0;
     __try {
-        rv = Real_ExpandEnvironmentStringsA(lpSrc, lpDst, nSize);
+        rv = Functions::Original::ExpandEnvironmentStringsA(lpSrc, lpDst, nSize);
     }
     __finally {
         if (rv > 0) {
@@ -4199,7 +3932,7 @@ DWORD WINAPI Mine_ExpandEnvironmentStringsW(PCWSTR lpSrc, PWCHAR lpDst, DWORD nS
     EnterFunc();
     DWORD rv = 0;
     __try {
-        rv = Real_ExpandEnvironmentStringsW(lpSrc, lpDst, nSize);
+        rv = Functions::Original::ExpandEnvironmentStringsW(lpSrc, lpDst, nSize);
     }
     __finally {
         if (rv > 0) {
@@ -4217,7 +3950,7 @@ DWORD WINAPI Mine_GetEnvironmentVariableA(PCSTR lpName, PCHAR lpBuffer, DWORD nS
     EnterFunc();
     DWORD rv = 0;
     __try {
-        rv = Real_GetEnvironmentVariableA(lpName, lpBuffer, nSize);
+        rv = Functions::Original::GetEnvironmentVariableA(lpName, lpBuffer, nSize);
         //        if (rv > 0 && rv < nSize && lpBuffer != nullptr) {
         //            EnvVars::Used(lpName);
         //        }
@@ -4234,7 +3967,7 @@ DWORD WINAPI Mine_GetEnvironmentVariableW(PCWSTR lpName, PWCHAR lpBuffer, DWORD 
     EnterFunc();
     DWORD rv = 0;
     __try {
-        rv = Real_GetEnvironmentVariableW(lpName, lpBuffer, nSize);
+        rv = Functions::Original::GetEnvironmentVariableW(lpName, lpBuffer, nSize);
         //        if (rv > 0 && rv < nSize && lpBuffer != nullptr) {
         //            EnvVars::Used(lpName);
         //        }
@@ -4251,7 +3984,7 @@ PCWSTR CDECL Mine_wgetenv(PCWSTR var)
     EnterFunc();
     PCWSTR rv = 0;
     __try {
-        rv = Real_wgetenv(var);
+        rv = Functions::Original::wgetenv(var);
         //        if (rv != nullptr) {
         //            EnvVars::Used(var);
         //        }
@@ -4265,19 +3998,22 @@ PCWSTR CDECL Mine_wgetenv(PCWSTR var)
 
 PCSTR CDECL Mine_getenv(PCSTR var)
 {
-    EnterFunc();
-    PCSTR rv = 0;
-    __try {
-        rv = Real_getenv(var);
-        //        if (rv) {
-        //            EnvVars::Used(var);
-        //        }
-    }
-    __finally {
-        EnvVars::Used(var);
-        ExitFunc();
-    }
-    return rv;
+	EnterFunc();
+	PCSTR rv = 0;
+	__try
+	{
+		rv = Functions::Original::getenv(var);
+		//        if (rv) {
+		//            EnvVars::Used(var);
+		//        }
+	}
+	__finally
+	{
+		EnvVars::Used(var);
+		ExitFunc();
+	}
+
+	return rv;
 }
 
 DWORD CDECL Mine_getenv_s(DWORD *pValue, PCHAR pBuffer, DWORD cBuffer, PCSTR varname)
@@ -4289,7 +4025,7 @@ DWORD CDECL Mine_getenv_s(DWORD *pValue, PCHAR pBuffer, DWORD cBuffer, PCSTR var
         if (pValue == nullptr) {
             pValue = &value;
         }
-        rv = Real_getenv_s(pValue, pBuffer, cBuffer, varname);
+        rv = Functions::Original::getenv_s(pValue, pBuffer, cBuffer, varname);
         //        if (rv == 0 && *pValue > 0) {
         //            EnvVars::Used(varname);
         //        }
@@ -4310,7 +4046,7 @@ DWORD CDECL Mine_wgetenv_s(DWORD *pValue, PWCHAR pBuffer, DWORD cBuffer, PCWSTR 
         if (pValue == nullptr) {
             pValue = &value;
         }
-        rv = Real_wgetenv_s(pValue, pBuffer, cBuffer, varname);
+        rv = Functions::Original::wgetenv_s(pValue, pBuffer, cBuffer, varname);
         //        if (rv == 0 && *pValue > 0) {
         //            EnvVars::Used(varname);
         //        }
@@ -4335,7 +4071,7 @@ DWORD CDECL Mine_dupenv_s(PCHAR *ppBuffer, DWORD *pcBuffer, PCSTR varname)
         if (pcBuffer == nullptr) {
             pcBuffer = &cb;
         }
-        rv = Real_dupenv_s(ppBuffer, pcBuffer, varname);
+        rv = Functions::Original::dupenv_s(ppBuffer, pcBuffer, varname);
         //        if (rv == 0 && *pcBuffer > 0 && *ppBuffer != nullptr) {
         //            EnvVars::Used(varname);
         //        }
@@ -4360,7 +4096,7 @@ DWORD CDECL Mine_wdupenv_s(PWCHAR *ppBuffer, DWORD *pcBuffer, PCWSTR varname)
         if (pcBuffer == nullptr) {
             pcBuffer = &cb;
         }
-        rv = Real_wdupenv_s(ppBuffer, pcBuffer, varname);
+        rv = Functions::Original::wdupenv_s(ppBuffer, pcBuffer, varname);
         //        if (rv == 0 && *pcBuffer > 0 && *ppBuffer != nullptr) {
         //            EnvVars::Used(varname);
         //        }
@@ -4381,47 +4117,47 @@ void AttachDetours()
     ThrowIfFailed(DetourTransactionBegin(), "AttachDetours DetourTransactionBegin Failed");
     ThrowIfFailed(DetourUpdateThread(GetCurrentThread()), "AttachDetours DetourUpdateThread Failed");
 
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_EntryPoint, Mine_EntryPoint), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ExitProcess, Mine_ExitProcess), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CopyFileExA, Mine_CopyFileExA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CopyFileExW, Mine_CopyFileExW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_PrivCopyFileExW, Mine_PrivCopyFileExW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateHardLinkA, Mine_CreateHardLinkA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateHardLinkW, Mine_CreateHardLinkW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateDirectoryW, Mine_CreateDirectoryW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateDirectoryExW, Mine_CreateDirectoryExW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateFileW, Mine_CreateFileW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreatePipe, Mine_CreatePipe), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateFileMappingW, Mine_CreateFileMappingW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CloseHandle, Mine_CloseHandle), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_DuplicateHandle, Mine_DuplicateHandle), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateProcessW, Mine_CreateProcessW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_CreateProcessA, Mine_CreateProcessA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_DeleteFileW, Mine_DeleteFileW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_DeviceIoControl, Mine_DeviceIoControl), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_GetFileAttributesW, Mine_GetFileAttributesW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileA, Mine_MoveFileA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileW, Mine_MoveFileW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileExA, Mine_MoveFileExA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileExW, Mine_MoveFileExW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_MoveFileWithProgressW, Mine_MoveFileWithProgressW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_SetStdHandle, Mine_SetStdHandle), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_LoadLibraryA, Mine_LoadLibraryA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_LoadLibraryW, Mine_LoadLibraryW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_LoadLibraryExA, Mine_LoadLibraryExA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_LoadLibraryExW, Mine_LoadLibraryExW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_SetFilePointer, Mine_SetFilePointer), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_SetFilePointerEx, Mine_SetFilePointerEx), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ReadFile, Mine_ReadFile), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ReadFileEx, Mine_ReadFileEx), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_WriteFile, Mine_WriteFile), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_WriteFileEx, Mine_WriteFileEx), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_WriteConsoleA, Mine_WriteConsoleA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_WriteConsoleW, Mine_WriteConsoleW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ExpandEnvironmentStringsA, Mine_ExpandEnvironmentStringsA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_ExpandEnvironmentStringsW, Mine_ExpandEnvironmentStringsW), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_GetEnvironmentVariableA, Mine_GetEnvironmentVariableA), "AttachDetours DetourAttach Failed");
-    ThrowIfFailed(DetourAttach(&(PVOID&)Real_GetEnvironmentVariableW, Mine_GetEnvironmentVariableW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::EntryPoint, Mine_EntryPoint), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::ExitProcess, Mine_ExitProcess), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CopyFileExA, Mine_CopyFileExA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CopyFileExW, Mine_CopyFileExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::PrivCopyFileExW, Mine_PrivCopyFileExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CreateHardLinkA, Mine_CreateHardLinkA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CreateHardLinkW, Mine_CreateHardLinkW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CreateDirectoryW, Mine_CreateDirectoryW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CreateDirectoryExW, Mine_CreateDirectoryExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CreateFileW, Mine_CreateFileW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CreatePipe, Mine_CreatePipe), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CreateFileMappingW, Mine_CreateFileMappingW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CloseHandle, Mine_CloseHandle), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::DuplicateHandle, Mine_DuplicateHandle), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CreateProcessW, Mine_CreateProcessW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::CreateProcessA, Mine_CreateProcessA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::DeleteFileW, Mine_DeleteFileW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::DeviceIoControl, Mine_DeviceIoControl), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::GetFileAttributesW, Mine_GetFileAttributesW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::MoveFileA, Mine_MoveFileA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::MoveFileW, Mine_MoveFileW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::MoveFileExA, Mine_MoveFileExA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::MoveFileExW, Mine_MoveFileExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::MoveFileWithProgressW, Mine_MoveFileWithProgressW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::SetStdHandle, Mine_SetStdHandle), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::LoadLibraryA, Mine_LoadLibraryA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::LoadLibraryW, Mine_LoadLibraryW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::LoadLibraryExA, Mine_LoadLibraryExA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::LoadLibraryExW, Mine_LoadLibraryExW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::SetFilePointer, Mine_SetFilePointer), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::SetFilePointerEx, Mine_SetFilePointerEx), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::ReadFile, Mine_ReadFile), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::ReadFileEx, Mine_ReadFileEx), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::WriteFile, Mine_WriteFile), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::WriteFileEx, Mine_WriteFileEx), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::WriteConsoleA, Mine_WriteConsoleA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::WriteConsoleW, Mine_WriteConsoleW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::ExpandEnvironmentStringsA, Mine_ExpandEnvironmentStringsA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::ExpandEnvironmentStringsW, Mine_ExpandEnvironmentStringsW), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::GetEnvironmentVariableA, Mine_GetEnvironmentVariableA), "AttachDetours DetourAttach Failed");
+    ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Original::GetEnvironmentVariableW, Mine_GetEnvironmentVariableW), "AttachDetours DetourAttach Failed");
 
     ThrowIfFailed(DetourTransactionCommit(), "AttachDetours DetourTransactionCommit Failed");
 }
@@ -4431,54 +4167,54 @@ LONG DetachDetours(void)
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
 
-    DetourDetach(&(PVOID&)Real_EntryPoint, Mine_EntryPoint);
-    DetourDetach(&(PVOID&)Real_ExitProcess, Mine_ExitProcess);
-    DetourDetach(&(PVOID&)Real_CopyFileExA, Mine_CopyFileExA);
-    DetourDetach(&(PVOID&)Real_CopyFileExW, Mine_CopyFileExW);
-    DetourDetach(&(PVOID&)Real_PrivCopyFileExW, Mine_PrivCopyFileExW);
-    DetourDetach(&(PVOID&)Real_CreateHardLinkA, Mine_CreateHardLinkA);
-    DetourDetach(&(PVOID&)Real_CreateHardLinkW, Mine_CreateHardLinkW);
-    DetourDetach(&(PVOID&)Real_CreateDirectoryW, Mine_CreateDirectoryW);
-    DetourDetach(&(PVOID&)Real_CreateDirectoryExW, Mine_CreateDirectoryExW);
-    DetourDetach(&(PVOID&)Real_CreateFileW, Mine_CreateFileW);
-    DetourDetach(&(PVOID&)Real_CreatePipe, Mine_CreatePipe);
-    DetourDetach(&(PVOID&)Real_CreateFileMappingW, Mine_CreateFileMappingW);
-    DetourDetach(&(PVOID&)Real_CloseHandle, Mine_CloseHandle);
-    DetourDetach(&(PVOID&)Real_DuplicateHandle, Mine_DuplicateHandle);
-    DetourDetach(&(PVOID&)Real_CreateProcessW, Mine_CreateProcessW);
-    DetourDetach(&(PVOID&)Real_CreateProcessA, Mine_CreateProcessA);
-    DetourDetach(&(PVOID&)Real_DeleteFileW, Mine_DeleteFileW);
-    DetourDetach(&(PVOID&)Real_DeviceIoControl, Mine_DeviceIoControl);
-    DetourDetach(&(PVOID&)Real_GetFileAttributesW, Mine_GetFileAttributesW);
-    DetourDetach(&(PVOID&)Real_MoveFileA, Mine_MoveFileA);
-    DetourDetach(&(PVOID&)Real_MoveFileW, Mine_MoveFileW);
-    DetourDetach(&(PVOID&)Real_MoveFileExA, Mine_MoveFileExA);
-    DetourDetach(&(PVOID&)Real_MoveFileExW, Mine_MoveFileExW);
-    DetourDetach(&(PVOID&)Real_MoveFileWithProgressW, Mine_MoveFileWithProgressW);
-    DetourDetach(&(PVOID&)Real_SetStdHandle, Mine_SetStdHandle);
-    DetourDetach(&(PVOID&)Real_LoadLibraryA, Mine_LoadLibraryA);
-    DetourDetach(&(PVOID&)Real_LoadLibraryW, Mine_LoadLibraryW);
-    DetourDetach(&(PVOID&)Real_LoadLibraryExA, Mine_LoadLibraryExA);
-    DetourDetach(&(PVOID&)Real_LoadLibraryExW, Mine_LoadLibraryExW);
-    DetourDetach(&(PVOID&)Real_SetFilePointer, Mine_SetFilePointer);
-    DetourDetach(&(PVOID&)Real_SetFilePointerEx, Mine_SetFilePointerEx);
-    DetourDetach(&(PVOID&)Real_ReadFile, Mine_ReadFile);
-    DetourDetach(&(PVOID&)Real_ReadFileEx, Mine_ReadFileEx);
-    DetourDetach(&(PVOID&)Real_WriteFile, Mine_WriteFile);
-    DetourDetach(&(PVOID&)Real_WriteFileEx, Mine_WriteFileEx);
-    DetourDetach(&(PVOID&)Real_WriteConsoleA, Mine_WriteConsoleA);
-    DetourDetach(&(PVOID&)Real_WriteConsoleW, Mine_WriteConsoleW);
-    DetourDetach(&(PVOID&)Real_ExpandEnvironmentStringsA, Mine_ExpandEnvironmentStringsA);
-    DetourDetach(&(PVOID&)Real_ExpandEnvironmentStringsW, Mine_ExpandEnvironmentStringsW);
-    DetourDetach(&(PVOID&)Real_GetEnvironmentVariableA, Mine_GetEnvironmentVariableA);
-    DetourDetach(&(PVOID&)Real_GetEnvironmentVariableW, Mine_GetEnvironmentVariableW);
+    DetourDetach(&(PVOID&)Functions::Original::EntryPoint, Mine_EntryPoint);
+    DetourDetach(&(PVOID&)Functions::Original::ExitProcess, Mine_ExitProcess);
+    DetourDetach(&(PVOID&)Functions::Original::CopyFileExA, Mine_CopyFileExA);
+    DetourDetach(&(PVOID&)Functions::Original::CopyFileExW, Mine_CopyFileExW);
+    DetourDetach(&(PVOID&)Functions::Original::PrivCopyFileExW, Mine_PrivCopyFileExW);
+    DetourDetach(&(PVOID&)Functions::Original::CreateHardLinkA, Mine_CreateHardLinkA);
+    DetourDetach(&(PVOID&)Functions::Original::CreateHardLinkW, Mine_CreateHardLinkW);
+    DetourDetach(&(PVOID&)Functions::Original::CreateDirectoryW, Mine_CreateDirectoryW);
+    DetourDetach(&(PVOID&)Functions::Original::CreateDirectoryExW, Mine_CreateDirectoryExW);
+    DetourDetach(&(PVOID&)Functions::Original::CreateFileW, Mine_CreateFileW);
+    DetourDetach(&(PVOID&)Functions::Original::CreatePipe, Mine_CreatePipe);
+    DetourDetach(&(PVOID&)Functions::Original::CreateFileMappingW, Mine_CreateFileMappingW);
+    DetourDetach(&(PVOID&)Functions::Original::CloseHandle, Mine_CloseHandle);
+    DetourDetach(&(PVOID&)Functions::Original::DuplicateHandle, Mine_DuplicateHandle);
+    DetourDetach(&(PVOID&)Functions::Original::CreateProcessW, Mine_CreateProcessW);
+    DetourDetach(&(PVOID&)Functions::Original::CreateProcessA, Mine_CreateProcessA);
+    DetourDetach(&(PVOID&)Functions::Original::DeleteFileW, Mine_DeleteFileW);
+    DetourDetach(&(PVOID&)Functions::Original::DeviceIoControl, Mine_DeviceIoControl);
+    DetourDetach(&(PVOID&)Functions::Original::GetFileAttributesW, Mine_GetFileAttributesW);
+    DetourDetach(&(PVOID&)Functions::Original::MoveFileA, Mine_MoveFileA);
+    DetourDetach(&(PVOID&)Functions::Original::MoveFileW, Mine_MoveFileW);
+    DetourDetach(&(PVOID&)Functions::Original::MoveFileExA, Mine_MoveFileExA);
+    DetourDetach(&(PVOID&)Functions::Original::MoveFileExW, Mine_MoveFileExW);
+    DetourDetach(&(PVOID&)Functions::Original::MoveFileWithProgressW, Mine_MoveFileWithProgressW);
+    DetourDetach(&(PVOID&)Functions::Original::SetStdHandle, Mine_SetStdHandle);
+    DetourDetach(&(PVOID&)Functions::Original::LoadLibraryA, Mine_LoadLibraryA);
+    DetourDetach(&(PVOID&)Functions::Original::LoadLibraryW, Mine_LoadLibraryW);
+    DetourDetach(&(PVOID&)Functions::Original::LoadLibraryExA, Mine_LoadLibraryExA);
+    DetourDetach(&(PVOID&)Functions::Original::LoadLibraryExW, Mine_LoadLibraryExW);
+    DetourDetach(&(PVOID&)Functions::Original::SetFilePointer, Mine_SetFilePointer);
+    DetourDetach(&(PVOID&)Functions::Original::SetFilePointerEx, Mine_SetFilePointerEx);
+    DetourDetach(&(PVOID&)Functions::Original::ReadFile, Mine_ReadFile);
+    DetourDetach(&(PVOID&)Functions::Original::ReadFileEx, Mine_ReadFileEx);
+    DetourDetach(&(PVOID&)Functions::Original::WriteFile, Mine_WriteFile);
+    DetourDetach(&(PVOID&)Functions::Original::WriteFileEx, Mine_WriteFileEx);
+    DetourDetach(&(PVOID&)Functions::Original::WriteConsoleA, Mine_WriteConsoleA);
+    DetourDetach(&(PVOID&)Functions::Original::WriteConsoleW, Mine_WriteConsoleW);
+    DetourDetach(&(PVOID&)Functions::Original::ExpandEnvironmentStringsA, Mine_ExpandEnvironmentStringsA);
+    DetourDetach(&(PVOID&)Functions::Original::ExpandEnvironmentStringsW, Mine_ExpandEnvironmentStringsW);
+    DetourDetach(&(PVOID&)Functions::Original::GetEnvironmentVariableA, Mine_GetEnvironmentVariableA);
+    DetourDetach(&(PVOID&)Functions::Original::GetEnvironmentVariableW, Mine_GetEnvironmentVariableW);
 
-    if (Real_getenv) { DetourDetach(&(PVOID&)Real_getenv, Mine_getenv); }
-    if (Real_getenv_s) { DetourDetach(&(PVOID&)Real_getenv_s, Mine_getenv_s); }
-    if (Real_wgetenv) { DetourDetach(&(PVOID&)Real_wgetenv, Mine_wgetenv); }
-    if (Real_wgetenv_s) { DetourDetach(&(PVOID&)Real_wgetenv, Mine_wgetenv_s); }
-    if (Real_dupenv_s) { DetourDetach(&(PVOID&)Real_dupenv_s, Mine_dupenv_s); }
-    if (Real_wdupenv_s) { DetourDetach(&(PVOID&)Real_wdupenv_s, Mine_wdupenv_s); }
+    if (Functions::Original::getenv) { DetourDetach(&(PVOID&)Functions::Original::getenv, Mine_getenv); }
+    if (Functions::Original::getenv_s) { DetourDetach(&(PVOID&)Functions::Original::getenv_s, Mine_getenv_s); }
+    if (Functions::Original::wgetenv) { DetourDetach(&(PVOID&)Functions::Original::wgetenv, Mine_wgetenv); }
+    if (Functions::Original::wgetenv_s) { DetourDetach(&(PVOID&)Functions::Original::wgetenv, Mine_wgetenv_s); }
+    if (Functions::Original::dupenv_s) { DetourDetach(&(PVOID&)Functions::Original::dupenv_s, Mine_dupenv_s); }
+    if (Functions::Original::wdupenv_s) { DetourDetach(&(PVOID&)Functions::Original::wdupenv_s, Mine_wdupenv_s); }
 
     return DetourTransactionCommit();
 }
@@ -4564,39 +4300,45 @@ static LONG s_nThreadCnt = 0;
 
 LONG EnterFunc()
 {
-    DWORD dwErr = GetLastError();
+	DWORD dwErr = GetLastError();
 
-    LONG nIndent = 0;
-    LONG nThread = 0;
-    if (s_nTlsIndent >= 0) {
-        nIndent = (LONG)(LONG_PTR)TlsGetValue(s_nTlsIndent);
-        TlsSetValue(s_nTlsIndent, (PVOID)(LONG_PTR)(nIndent + 1));
-    }
-    if (s_nTlsThread >= 0) {
-        nThread = (LONG)(LONG_PTR)TlsGetValue(s_nTlsThread);
-    }
+	LONG nIndent = 0;
+	LONG nThread = 0;
+	if (s_nTlsIndent >= 0)
+	{
+		nIndent = (LONG)(LONG_PTR)TlsGetValue(s_nTlsIndent);
+		TlsSetValue(s_nTlsIndent, (PVOID)(LONG_PTR)(nIndent + 1));
+	}
 
-    SetLastError(dwErr);
+	if (s_nTlsThread >= 0)
+	{
+		nThread = (LONG)(LONG_PTR)TlsGetValue(s_nTlsThread);
+	}
 
-    return nIndent;
+	SetLastError(dwErr);
+
+	return nIndent;
 }
 
 void ExitFunc()
 {
-    DWORD dwErr = GetLastError();
+	DWORD dwErr = GetLastError();
 
-    LONG nIndent = 0;
-    LONG nThread = 0;
-    if (s_nTlsIndent >= 0) {
-        nIndent = (LONG)(LONG_PTR)TlsGetValue(s_nTlsIndent) - 1;
-        ASSERT(nIndent >= 0);
-        TlsSetValue(s_nTlsIndent, (PVOID)(LONG_PTR)nIndent);
-    }
-    if (s_nTlsThread >= 0) {
-        nThread = (LONG)(LONG_PTR)TlsGetValue(s_nTlsThread);
-    }
+	LONG nIndent = 0;
+	LONG nThread = 0;
+	if (s_nTlsIndent >= 0)
+	{
+		nIndent = (LONG)(LONG_PTR)TlsGetValue(s_nTlsIndent) - 1;
+		// TODO: ASSERT(nIndent >= 0);
+		TlsSetValue(s_nTlsIndent, (PVOID)(LONG_PTR)nIndent);
+	}
 
-    SetLastError(dwErr);
+	if (s_nTlsThread >= 0)
+	{
+		nThread = (LONG)(LONG_PTR)TlsGetValue(s_nTlsThread);
+	}
+
+	SetLastError(dwErr);
 }
 
 void Print(const CHAR *psz, ...)
@@ -4668,7 +4410,7 @@ bool ProcessAttach(HMODULE hDll)
     s_hInst = hDll;
     s_hKernel32 = nullptr;
 
-    PBYTE xCreate = (PBYTE)DetourCodeFromPointer((PVOID)Real_CreateProcessW, nullptr);
+    PBYTE xCreate = (PBYTE)DetourCodeFromPointer((PVOID)Functions::Original::CreateProcessW, nullptr);
     TBLOG_PAYLOAD* pPayload = nullptr;
 
     for (HMODULE hMod = nullptr; (hMod = DetourEnumerateModules(hMod)) != nullptr;) {
@@ -4702,10 +4444,10 @@ bool ProcessAttach(HMODULE hDll)
     GetModuleFileNameA(s_hInst, s_szDllPath, ARRAYSIZE(s_szDllPath));
 
     // Find hidden functions.
-    Real_PrivCopyFileExW =
+    Functions::Original::PrivCopyFileExW =
         (BOOL (WINAPI *)(LPCWSTR, LPCWSTR, LPPROGRESS_ROUTINE, LPVOID, LPBOOL, DWORD))
         GetProcAddress(s_hKernel32, "PrivCopyFileExW");
-    if (Real_PrivCopyFileExW == nullptr) {
+    if (Functions::Original::PrivCopyFileExW == nullptr) {
         DEBUG_BREAK();
     }
 
@@ -4803,8 +4545,8 @@ PBYTE LoadFile(HANDLE hFile, DWORD cbFile)
     }
 
     DWORD cbRead = 0;
-    Real_SetFilePointer(hFile, 0, nullptr, FILE_BEGIN);
-    Real_ReadFile(hFile, pbFile, cbFile, &cbRead, nullptr);
+    Functions::Original::SetFilePointer(hFile, 0, nullptr, FILE_BEGIN);
+    Functions::Original::ReadFile(hFile, pbFile, cbFile, &cbRead, nullptr);
 
     // Make sure the file is zero terminated.
     pbFile[cbRead + 0] = 0;
@@ -4816,7 +4558,7 @@ PBYTE LoadFile(HANDLE hFile, DWORD cbFile)
 
 PWCHAR More(PCWSTR pwzPath, PWCHAR pwzDst, PWCHAR pwzDstEnd)
 {
-    HANDLE hFile = Real_CreateFileW(pwzPath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr);
+    HANDLE hFile = Functions::Original::CreateFileW(pwzPath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return nullptr;
     }
@@ -4824,13 +4566,13 @@ PWCHAR More(PCWSTR pwzPath, PWCHAR pwzDst, PWCHAR pwzDstEnd)
     FileInfo *pInfo = FileNames::FindPartial(pwzPath);
     pInfo->m_fAbsorbed = true;
 
-    DWORD cbFile = Real_SetFilePointer(hFile, 0, nullptr, FILE_END);
+    DWORD cbFile = Functions::Original::SetFilePointer(hFile, 0, nullptr, FILE_END);
     DWORD cbRead = 0;
 
     PCHAR pszFile = (PCHAR)GlobalAlloc(GPTR, cbFile + 2);   // 2 bytes null for Unicode or Ascii.
     if (pszFile != nullptr) {
-        Real_SetFilePointer(hFile, 0, nullptr, FILE_BEGIN);
-        Real_ReadFile(hFile, pszFile, cbFile, &cbRead, nullptr);
+        Functions::Original::SetFilePointer(hFile, 0, nullptr, FILE_BEGIN);
+        Functions::Original::ReadFile(hFile, pszFile, cbFile, &cbRead, nullptr);
 
         if (((PUCHAR)pszFile)[0] == 0xff && ((PUCHAR)pszFile)[1] == 0xfe) {
             // Unicode
@@ -4866,7 +4608,7 @@ PWCHAR More(PCWSTR pwzPath, PWCHAR pwzDst, PWCHAR pwzDstEnd)
         GlobalFree(pszFile);
     }
 
-    Real_CloseHandle(hFile);
+    Functions::Original::CloseHandle(hFile);
 
     return pwzDst;
 }
@@ -5002,7 +4744,7 @@ LONG WINAPI DetourAttachIf(PVOID *ppPointer, PVOID pDetour)
 
 int WINAPI Mine_EntryPoint(void)
 {
-	// This function is invoked instead of the process EntryPoint (Real_EntryPoint).
+	// This function is invoked instead of the process EntryPoint (Functions::Original::EntryPoint).
 
 	TblogOpen();
 
@@ -5193,27 +4935,27 @@ int WINAPI Mine_EntryPoint(void)
 
 	if (FindMsvcr())
 	{
-		FindProc(&(PVOID&)Real_getenv, "getenv");
-		FindProc(&(PVOID&)Real_wgetenv, "_wgetenv");
-		FindProc(&(PVOID&)Real_getenv_s, "getenv_s");
-		FindProc(&(PVOID&)Real_wgetenv_s, "_wgetenv_s");
-		FindProc(&(PVOID&)Real_dupenv_s, "_dupenv_s");
-		FindProc(&(PVOID&)Real_wdupenv_s, "_wdupenv_s");
+		FindProc(&(PVOID&)Functions::Original::getenv, "getenv");
+		FindProc(&(PVOID&)Functions::Original::wgetenv, "_wgetenv");
+		FindProc(&(PVOID&)Functions::Original::getenv_s, "getenv_s");
+		FindProc(&(PVOID&)Functions::Original::wgetenv_s, "_wgetenv_s");
+		FindProc(&(PVOID&)Functions::Original::dupenv_s, "_dupenv_s");
+		FindProc(&(PVOID&)Functions::Original::wdupenv_s, "_wdupenv_s");
 
 		DetourTransactionBegin();
 		DetourUpdateThread(GetCurrentThread());
 
-		DetourAttachIf(&(PVOID&)Real_getenv, Mine_getenv);
-		DetourAttachIf(&(PVOID&)Real_getenv_s, Mine_getenv_s);
-		DetourAttachIf(&(PVOID&)Real_wgetenv, Mine_wgetenv);
-		DetourAttachIf(&(PVOID&)Real_wgetenv, Mine_wgetenv_s);
-		DetourAttachIf(&(PVOID&)Real_dupenv_s, Mine_dupenv_s);
-		DetourAttachIf(&(PVOID&)Real_wdupenv_s, Mine_wdupenv_s);
+		DetourAttachIf(&(PVOID&)Functions::Original::getenv, Mine_getenv);
+		DetourAttachIf(&(PVOID&)Functions::Original::getenv_s, Mine_getenv_s);
+		DetourAttachIf(&(PVOID&)Functions::Original::wgetenv, Mine_wgetenv);
+		DetourAttachIf(&(PVOID&)Functions::Original::wgetenv, Mine_wgetenv_s);
+		DetourAttachIf(&(PVOID&)Functions::Original::dupenv_s, Mine_dupenv_s);
+		DetourAttachIf(&(PVOID&)Functions::Original::wdupenv_s, Mine_wdupenv_s);
 
 		DetourTransactionCommit();
 	}
 
-	return Real_EntryPoint();
+	return Functions::Original::EntryPoint();
 }
 
 void WINAPI Mine_ExitProcess(UINT a0)
@@ -5231,7 +4973,7 @@ void WINAPI Mine_ExitProcess(UINT a0)
 
 	TblogClose();
 
-	Real_ExitProcess(a0);
+	Functions::Original::ExitProcess(a0);
 }
 
 bool APIENTRY DllMain(HINSTANCE hModule, DWORD dwReason, PVOID lpReserved)
@@ -5247,7 +4989,7 @@ bool APIENTRY DllMain(HINSTANCE hModule, DWORD dwReason, PVOID lpReserved)
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
 		DetourRestoreAfterWith();
-		Real_EntryPoint = (int (WINAPI *)(void))DetourGetEntryPoint(nullptr);
+		Functions::Original::EntryPoint = (int (WINAPI *)(void))DetourGetEntryPoint(nullptr);
 		return ProcessAttach(hModule);
 	}
 	else if (dwReason == DLL_PROCESS_DETACH)
@@ -5265,4 +5007,3 @@ bool APIENTRY DllMain(HINSTANCE hModule, DWORD dwReason, PVOID lpReserved)
 
 	return true;
 }
-
