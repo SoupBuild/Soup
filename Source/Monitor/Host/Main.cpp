@@ -29,7 +29,6 @@ typedef struct _CLIENT : OVERLAPPED
 {
 	HANDLE hPipe;
 	LONG nClient;
-	HANDLE hFile;
 	BOOL fAwaitingAccept;
 	PVOID Zero;
 	TBLOG_MESSAGE Message;
@@ -45,7 +44,6 @@ CHAR s_szPipe[MAX_PATH];
 LONG s_nActiveClients = 0;
 LONG s_nTotalClients = 0;
 LONGLONG s_llStartTime;
-bool s_fVerbose = true;
 TBLOG_PAYLOAD s_Payload;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -61,45 +59,49 @@ VOID MyErrExit(PCSTR pszMsg)
 //
 BOOL CLIENT::LogMessageV(PCHAR pszMsg, ...)
 {
-	DWORD cbWritten = 0;
-	CHAR szBuf[1024];
-	PCHAR pcchEnd = szBuf + ARRAYSIZE(szBuf) - 2;
-	PCHAR pcchCur = szBuf;
-	HRESULT hr;
-
-	va_list args;
-	va_start(args, pszMsg);
-	hr = StringCchVPrintfExA(
-		pcchCur,
-		pcchEnd - pcchCur,
-		&pcchCur,
-		nullptr,
-		STRSAFE_NULL_ON_FAILURE,
-		pszMsg,
-		args);
-	va_end(args);
-	if (FAILED(hr))
+	try
 	{
-		goto cleanup;
+		DWORD cbWritten = 0;
+		CHAR szBuf[1024];
+		PCHAR pcchEnd = szBuf + ARRAYSIZE(szBuf) - 2;
+		PCHAR pcchCur = szBuf;
+		HRESULT hr;
+
+		va_list args;
+		va_start(args, pszMsg);
+		hr = StringCchVPrintfExA(
+			pcchCur,
+			pcchEnd - pcchCur,
+			&pcchCur,
+			nullptr,
+			STRSAFE_NULL_ON_FAILURE,
+			pszMsg,
+			args);
+		va_end(args);
+		if (FAILED(hr))
+		{
+			throw std::runtime_error("StringCchVPrintfExA failed.");
+		}
+
+		hr = StringCchPrintfExA(
+			pcchCur,
+			szBuf + (ARRAYSIZE(szBuf)) - pcchCur,
+			&pcchCur,
+			nullptr,
+			STRSAFE_NULL_ON_FAILURE,
+			"\n");
+
+		return true;
 	}
-
-	hr = StringCchPrintfExA(
-		pcchCur,
-		szBuf + (ARRAYSIZE(szBuf)) - pcchCur,
-		&pcchCur,
-		nullptr,
-		STRSAFE_NULL_ON_FAILURE,
-		"\n");
-
-cleanup:
-	WriteFile(hFile, szBuf, (DWORD)(pcchCur - szBuf), &cbWritten, nullptr);
-	return true;
+	catch(...)
+	{
+		return false;
+	}
 }
 
 BOOL CLIENT::LogMessage(TBLOG_MESSAGE* pMessage, DWORD nBytes)
 {
 	// Sanity check the size of the message.
-	//
 	if (nBytes > pMessage->nBytes)
 	{
 		nBytes = pMessage->nBytes;
@@ -111,20 +113,16 @@ BOOL CLIENT::LogMessage(TBLOG_MESSAGE* pMessage, DWORD nBytes)
 	}
 
 	// Don't log message if there isn't and message text.
-	//
 	DWORD cbWrite = nBytes - offsetof(TBLOG_MESSAGE, szMessage);
-	if (cbWrite <= 0 )
+	if (cbWrite <= 0)
 	{
 		return true;
 	}
 
-	if (s_fVerbose)
-	{
-		printf("[%s]", pMessage->szMessage);
-	}
+	// Null terminate the string
+	pMessage->szMessage[nBytes] = 0;
+	std::cout << pMessage->szMessage;
 
-	DWORD cbWritten = 0;
-	WriteFile(hFile, pMessage->szMessage, cbWrite, &cbWritten, nullptr);
 	return true;
 }
 
@@ -144,12 +142,6 @@ BOOL CloseConnection(PCLIENT pClient)
 
 			CloseHandle(pClient->hPipe);
 			pClient->hPipe = INVALID_HANDLE_VALUE;
-		}
-
-		if (pClient->hFile != INVALID_HANDLE_VALUE)
-		{
-			CloseHandle(pClient->hFile);
-			pClient->hFile = INVALID_HANDLE_VALUE;
 		}
 
 		GlobalFree(pClient);
@@ -182,43 +174,16 @@ PCLIENT CreatePipeConnection(HANDLE hCompletionPort, LONG nClient)
 
 	// Allocate the client data structure.
 	//
-	PCLIENT pClient = (PCLIENT) GlobalAlloc(GPTR, sizeof(CLIENT));
+	PCLIENT pClient = (PCLIENT)GlobalAlloc(GPTR, sizeof(CLIENT));
 	if (pClient == nullptr)
 	{
 		MyErrExit("GlobalAlloc pClient");
 	}
 
-	CHAR szLogFile[MAX_PATH];
-	StringCchPrintfA(
-		szLogFile,
-		ARRAYSIZE(szLogFile),
-		"%s.%08d.xml",
-		s_szLogFile,
-		nClient);
-
 	ZeroMemory(pClient, sizeof(*pClient));
 	pClient->hPipe = hPipe;
 	pClient->nClient = nClient;
 	pClient->fAwaitingAccept = true;
-	pClient->hFile = CreateFileA(
-		szLogFile,
-		GENERIC_WRITE,
-		FILE_SHARE_READ,
-		nullptr,
-		CREATE_ALWAYS,
-		FILE_ATTRIBUTE_NORMAL |
-		FILE_FLAG_SEQUENTIAL_SCAN,
-		nullptr);
-	if (pClient->hFile == INVALID_HANDLE_VALUE)
-	{
-		fprintf(
-			stderr,
-			"TRACEBLD: Error opening output file: %s: %d\n\n",
-			szLogFile,
-			GetLastError());
-		fflush(stderr);
-		MyErrExit("CreateFile");
-	}
 
 	// Associate file with our complietion port.
 	//
@@ -371,14 +336,15 @@ DWORD WINAPI WorkerThread(LPVOID pvVoid)
 		}
 		else
 		{
-			if (nBytes <= offsetof(TBLOG_MESSAGE, szMessage))
+			auto offset = offsetof(TBLOG_MESSAGE, szMessage);
+			if (nBytes <= offset)
 			{
 				pClient->LogMessageV("</t:Process>\n");
 				CloseConnection(pClient);
 				continue;
 			}
 
-			pClient->LogMessage(&pClient->Message, nBytes);
+			pClient->LogMessage(&pClient->Message, nBytes - offset);
 		}
 
 		DoRead(pClient);
@@ -519,9 +485,8 @@ DWORD main(int argc, char **argv)
 		}
 	}
 
-	printf("TRACEBLD: Starting: `%s'\n", szCommand);
-	printf("TRACEBLD:   with `%s'\n", szDllPath);
-	fflush(stdout);
+	std::cout << "TRACEBLD: Starting: '" << szCommand << "'" << std::endl;
+	std::cout << "TRACEBLD:   with '" << szDllPath << "'" << std::endl;
 
 	DWORD dwFlags = CREATE_DEFAULT_ERROR_MODE | CREATE_SUSPENDED;
 
@@ -543,8 +508,8 @@ DWORD main(int argc, char **argv)
 		szDllPath,
 		nullptr))
 	{
-		printf("TRACEBLD: DetourCreateProcessWithDllEx failed: %d\n", GetLastError());
-		ExitProcess(9007);
+		std::cout << "TRACEBLD: DetourCreateProcessWithDllEx failed: " << GetLastError() << std::endl;
+		return 9007;
 	}
 
 	ZeroMemory(&s_Payload, sizeof(s_Payload));
@@ -567,8 +532,8 @@ DWORD main(int argc, char **argv)
 		&s_Payload,
 		sizeof(s_Payload)))
 	{
-		printf("TRACEBLD: DetourCopyPayloadToProcess failed: %d\n", GetLastError());
-		ExitProcess(9008);
+		std::cout << "TRACEBLD: DetourCopyPayloadToProcess failed: " << GetLastError() << std::endl;
+		return 9008;
 	}
 
 	DWORD dwResult = 0;

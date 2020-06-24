@@ -1,5 +1,6 @@
+#pragma once
 
-namespace Functions::Original
+namespace Functions::Cache
 {
 	int (WINAPI* EntryPoint)() = nullptr;
 
