@@ -13,14 +13,23 @@ namespace Functions::Cache
 		LPCWSTR a1,
 		LPSECURITY_ATTRIBUTES a2) = ::CreateDirectoryExW;
 
+	HANDLE (WINAPI* CreateFileA)(
+		LPCSTR lpFileName,
+		DWORD dwDesiredAccess,
+		DWORD dwShareMode,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+		DWORD dwCreationDisposition,
+		DWORD dwFlagsAndAttributes,
+		HANDLE hTemplateFile) = ::CreateFileA;
+
 	HANDLE (WINAPI* CreateFileW)(
-		LPCWSTR a0,
-		DWORD a1,
-		DWORD a2,
-		LPSECURITY_ATTRIBUTES a3,
-		DWORD a4,
-		DWORD a5,
-		HANDLE a6) = ::CreateFileW;
+		LPCWSTR lpFileName,
+		DWORD dwDesiredAccess,
+		DWORD dwShareMode,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+		DWORD dwCreationDisposition,
+		DWORD dwFlagsAndAttributes,
+		HANDLE hTemplateFile) = ::CreateFileW;
 
 	HANDLE (WINAPI* CreateFileMappingW)(
 		HANDLE hFile,
@@ -243,11 +252,4 @@ namespace Functions::Cache
 		PCWSTR lpName,
 		PWCHAR lpBuffer,
 		DWORD nSize) = ::GetEnvironmentVariableW;
-
-	PCWSTR (CDECL* wgetenv)(PCWSTR var) = nullptr;
-	PCSTR (CDECL* getenv)(PCSTR var) = nullptr;
-	DWORD (CDECL* getenv_s)(DWORD *pValue, PCHAR pBuffer, DWORD cBuffer, PCSTR varname) = nullptr;
-	DWORD (CDECL* wgetenv_s)(DWORD *pValue, PWCHAR pBuffer, DWORD cBuffer, PCWSTR varname) = nullptr;
-	DWORD (CDECL* dupenv_s)(PCHAR *ppBuffer, DWORD *pcBuffer, PCSTR varname) = nullptr;
-	DWORD (CDECL* wdupenv_s)(PWCHAR *ppBuffer, DWORD *pcBuffer, PCWSTR varname) = nullptr;
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EventLogger.h"
+
 static HMODULE s_hInst = nullptr;
 static HMODULE s_hKernel32 = nullptr;
 static CHAR s_szDllPath[MAX_PATH];
@@ -12,6 +14,8 @@ static PWCHAR s_pwEnvironment = nullptr;
 static DWORD s_cwEnvironment = 0;
 static PCHAR s_pbEnvironment = nullptr;
 static DWORD s_cbEnvironment = 0;
+
+static EventLogger s_eventLogger;
 
 static CRITICAL_SECTION s_csPipe; // Guards access to hPipe.
 static HANDLE s_hPipe = INVALID_HANDLE_VALUE;
@@ -183,66 +187,6 @@ static DWORD Compare(PCSTR pszA, PCSTR pszB)
 		{
 			return cA - cB;
 		}
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////////
-
-static PCSTR s_rpszMsvcrNames[] = {
-	"msvcr80.dll",
-	"msvcr80d.dll",
-	"msvcr71.dll",
-	"msvcr71d.dll",
-	"msvcr70.dll",
-	"msvcr70d.dll",
-	nullptr,
-};
-
-HMODULE s_hMsvcr = nullptr;
-PCSTR s_pszMsvcr = nullptr;
-
-static BOOL WINAPI ImportFileCallback(PVOID pContext, HMODULE hFile, PCSTR pszFile)
-{
-	if (pszFile != nullptr)
-	{
-		for (int i = 0; s_rpszMsvcrNames[i]; i++)
-		{
-			if (Compare(pszFile, s_rpszMsvcrNames[i]) == 0)
-			{
-				s_hMsvcr = hFile;
-				s_pszMsvcr = s_rpszMsvcrNames[i];
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
-bool FindMsvcr()
-{
-	DetourEnumerateImports(nullptr, nullptr, ImportFileCallback, nullptr);
-
-	if (s_hMsvcr != nullptr)
-	{
-		return true;
-	}
-
-	return false;
-}
-
-bool FindProc(PVOID * ppvCode, PCSTR pwzFunc)
-{
-	PVOID pv = GetProcAddress(s_hMsvcr, pwzFunc);
-	if (pv != nullptr)
-	{
-		*ppvCode = pv;
-		return true;
-	}
-	else
-	{
-		*ppvCode = nullptr;
-		return false;
 	}
 }
 
@@ -1507,7 +1451,7 @@ bool OpenFiles::Remember(HANDLE hProc, ProcInfo *pProc)
 	return true;
 }
 
-FileInfo * OpenFiles::RecallFile(HANDLE hFile)
+FileInfo* OpenFiles::RecallFile(HANDLE hFile)
 {
 	LockAcquire();
 
@@ -1523,7 +1467,7 @@ FileInfo * OpenFiles::RecallFile(HANDLE hFile)
 	return nullptr;
 }
 
-ProcInfo * OpenFiles::RecallProc(HANDLE hProc)
+ProcInfo* OpenFiles::RecallProc(HANDLE hProc)
 {
 	LockAcquire();
 

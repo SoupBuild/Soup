@@ -301,31 +301,29 @@ namespace Functions::Override
 	//////////////////////////////////////////////////////////////////////////////
 
 	BOOL WINAPI CopyFileExA(
-		LPCSTR a0,
-		LPCSTR a1,
-		LPPROGRESS_ROUTINE a2,
-		LPVOID a3,
-		LPBOOL a4,
-		DWORD a5)
+		LPCSTR lpExistingFileName,
+		LPCSTR lpNewFileName,
+		LPPROGRESS_ROUTINE lpProgressRoutine,
+		LPVOID lpData,
+		LPBOOL pbCancel,
+		DWORD dwCopyFlags)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::CopyFileExA(a0, a1, a2, a3, a4, a5);
+			rv = Functions::Cache::CopyFileExA(
+				lpExistingFileName,
+				lpNewFileName,
+				lpProgressRoutine,
+				lpData,
+				pbCancel,
+				dwCopyFlags);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-	#if 0
-				Print("<!-- CopyFileExA %he to %he -->\n", a0, a1);
-	#endif
-				NoteRead(a0);
-				NoteWrite(a1);
-			}
+			s_eventLogger.LogCopyFile(
+				lpExistingFileName,
+				lpNewFileName);
 		};
 
 		return rv;
@@ -660,91 +658,29 @@ namespace Functions::Override
 	}
 
 	HANDLE WINAPI CreateFileW(
-		LPCWSTR a0,
-		DWORD access,
-		DWORD share,
-		LPSECURITY_ATTRIBUTES a3,
-		DWORD create,
-		DWORD flags,
-		HANDLE a6)
+		LPCWSTR lpFileName,
+		DWORD dwDesiredAccess,
+		DWORD dwShareMode,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+		DWORD dwCreationDisposition,
+		DWORD dwFlagsAndAttributes,
+		HANDLE hTemplateFile)
 	{
-		/* int nIndent = */ EnterFunc();
 		HANDLE rv = 0;
 		__try
 		{
-			rv = Functions::Cache::CreateFileW(a0, access, share, a3, create, flags, a6);
+			rv = Functions::Cache::CreateFileW(
+				lpFileName,
+				dwDesiredAccess,
+				dwShareMode,
+				lpSecurityAttributes,
+				dwCreationDisposition,
+				dwFlagsAndAttributes,
+				hTemplateFile);
 		}
 		__finally
 		{
-			ExitFunc();
-	#if 0
-				Print("<!-- CreateFileW(%le, ac=%08x, cr=%08x, fl=%08x -->\n",
-						a0,
-						access,
-						create,
-						flags);
-	#endif
-			if (access != 0 && /* nIndent == 0 && */ rv != INVALID_HANDLE_VALUE)
-			{
-
-				FileInfo *pInfo = FileNames::FindPartial(a0);
-
-				// FILE_FLAG_WRITE_THROUGH              0x80000000
-				// FILE_FLAG_OVERLAPPED                 0x40000000
-				// FILE_FLAG_NO_BUFFERING               0x20000000
-				// FILE_FLAG_RANDOM_ACCESS              0x10000000
-				// FILE_FLAG_SEQUENTIAL_SCAN            0x08000000
-				// FILE_FLAG_DELETE_ON_CLOSE            0x04000000
-				// FILE_FLAG_BACKUP_SEMANTICS           0x02000000
-				// FILE_FLAG_POSIX_SEMANTICS            0x01000000
-				// FILE_FLAG_OPEN_REPARSE_POINT         0x00200000
-				// FILE_FLAG_OPEN_NO_RECALL             0x00100000
-				// FILE_FLAG_FIRST_PIPE_INSTANCE        0x00080000
-				// FILE_ATTRIBUTE_ENCRYPTED             0x00004000
-				// FILE_ATTRIBUTE_NOT_CONTENT_INDEXED   0x00002000
-				// FILE_ATTRIBUTE_OFFLINE               0x00001000
-				// FILE_ATTRIBUTE_COMPRESSED            0x00000800
-				// FILE_ATTRIBUTE_REPARSE_POINT         0x00000400
-				// FILE_ATTRIBUTE_SPARSE_FILE           0x00000200
-				// FILE_ATTRIBUTE_TEMPORARY             0x00000100
-				// FILE_ATTRIBUTE_NORMAL                0x00000080
-				// FILE_ATTRIBUTE_DEVICE                0x00000040
-				// FILE_ATTRIBUTE_ARCHIVE               0x00000020
-				// FILE_ATTRIBUTE_DIRECTORY             0x00000010
-				// FILE_ATTRIBUTE_SYSTEM                0x00000004
-				// FILE_ATTRIBUTE_HIDDEN                0x00000002
-				// FILE_ATTRIBUTE_READONLY              0x00000001
-
-				// CREATE_NEW          1
-				// CREATE_ALWAYS       2
-				// OPEN_EXISTING       3
-				// OPEN_ALWAYS         4
-				// TRUNCATE_EXISTING   5
-
-				if (create == CREATE_NEW ||
-					create == CREATE_ALWAYS ||
-					create == TRUNCATE_EXISTING)
-				{
-					if (!pInfo->m_fRead)
-					{
-						pInfo->m_fCantRead = true;
-					}
-				}
-				else if (create == OPEN_EXISTING)
-				{
-				}
-				else if (create == OPEN_ALWAYS)
-				{
-					// pInfo->m_fAppend = true;    // !!!
-				}
-
-				if ((flags & FILE_FLAG_DELETE_ON_CLOSE))
-				{
-					pInfo->m_fCleanup = true;
-				}
-
-				OpenFiles::Remember(rv, pInfo);
-			}
+			s_eventLogger.LogCreateFile(lpFileName);
 		};
 
 		return rv;
@@ -1483,139 +1419,12 @@ namespace Functions::Override
 		return rv;
 	}
 
-	PCWSTR CDECL wgetenv(PCWSTR var)
-	{
-		EnterFunc();
-		PCWSTR rv = 0;
-		__try {
-			rv = Functions::Cache::wgetenv(var);
-			//        if (rv != nullptr) {
-			//            EnvVars::Used(var);
-			//        }
-		}
-		__finally {
-			EnvVars::Used(var);
-			ExitFunc();
-		}
-		return rv;
-	}
-
-	PCSTR CDECL getenv(PCSTR var)
-	{
-		EnterFunc();
-		PCSTR rv = 0;
-		__try
-		{
-			rv = Functions::Cache::getenv(var);
-			//        if (rv) {
-			//            EnvVars::Used(var);
-			//        }
-		}
-		__finally
-		{
-			EnvVars::Used(var);
-			ExitFunc();
-		}
-
-		return rv;
-	}
-
-	DWORD CDECL getenv_s(DWORD *pValue, PCHAR pBuffer, DWORD cBuffer, PCSTR varname)
-	{
-		EnterFunc();
-		DWORD rv = 0;
-		__try {
-			DWORD value;
-			if (pValue == nullptr) {
-				pValue = &value;
-			}
-			rv = Functions::Cache::getenv_s(pValue, pBuffer, cBuffer, varname);
-			//        if (rv == 0 && *pValue > 0) {
-			//            EnvVars::Used(varname);
-			//        }
-		}
-		__finally {
-			EnvVars::Used(varname);
-			ExitFunc();
-		}
-		return rv;
-	}
-
-	DWORD CDECL wgetenv_s(DWORD *pValue, PWCHAR pBuffer, DWORD cBuffer, PCWSTR varname)
-	{
-		EnterFunc();
-		DWORD rv = 0;
-		__try {
-			DWORD value;
-			if (pValue == nullptr) {
-				pValue = &value;
-			}
-			rv = Functions::Cache::wgetenv_s(pValue, pBuffer, cBuffer, varname);
-			//        if (rv == 0 && *pValue > 0) {
-			//            EnvVars::Used(varname);
-			//        }
-		}
-		__finally {
-			EnvVars::Used(varname);
-			ExitFunc();
-		}
-		return rv;
-	}
-
-	DWORD CDECL dupenv_s(PCHAR *ppBuffer, DWORD *pcBuffer, PCSTR varname)
-	{
-		EnterFunc();
-		DWORD rv = 0;
-		__try {
-			PCHAR pb;
-			DWORD cb;
-			if (ppBuffer == nullptr) {
-				ppBuffer = &pb;
-			}
-			if (pcBuffer == nullptr) {
-				pcBuffer = &cb;
-			}
-			rv = Functions::Cache::dupenv_s(ppBuffer, pcBuffer, varname);
-			//        if (rv == 0 && *pcBuffer > 0 && *ppBuffer != nullptr) {
-			//            EnvVars::Used(varname);
-			//        }
-		}
-		__finally {
-			EnvVars::Used(varname);
-			ExitFunc();
-		}
-		return rv;
-	}
-
-	DWORD CDECL wdupenv_s(PWCHAR *ppBuffer, DWORD *pcBuffer, PCWSTR varname)
-	{
-		EnterFunc();
-		DWORD rv = 0;
-		__try {
-			PWCHAR pb;
-			DWORD cb;
-			if (ppBuffer == nullptr) {
-				ppBuffer = &pb;
-			}
-			if (pcBuffer == nullptr) {
-				pcBuffer = &cb;
-			}
-			rv = Functions::Cache::wdupenv_s(ppBuffer, pcBuffer, varname);
-			//        if (rv == 0 && *pcBuffer > 0 && *ppBuffer != nullptr) {
-			//            EnvVars::Used(varname);
-			//        }
-		}
-		__finally {
-			EnvVars::Used(varname);
-			ExitFunc();
-		}
-		return rv;
-	}
-
 	int WINAPI EntryPoint(void)
 	{
 		// This function is invoked instead of the process EntryPoint (Functions::Cache::EntryPoint).
-
+		std::stringstream pipeName;
+		pipeName << TBLOG_PIPE_NAMEA << "." << s_nTraceProcessId;
+		s_eventLogger.Intialize(pipeName.str());
 		TblogOpen();
 
 		SaveEnvironment();
@@ -1801,28 +1610,6 @@ namespace Functions::Override
 			TestHandle("t:StdIn", GetStdHandle(STD_INPUT_HANDLE));
 			TestHandle("t:StdOut", GetStdHandle(STD_OUTPUT_HANDLE));
 			TestHandle("t:StdErr", GetStdHandle(STD_ERROR_HANDLE));
-		}
-
-		if (FindMsvcr())
-		{
-			FindProc(&(PVOID&)Functions::Cache::getenv, "getenv");
-			FindProc(&(PVOID&)Functions::Cache::wgetenv, "_wgetenv");
-			FindProc(&(PVOID&)Functions::Cache::getenv_s, "getenv_s");
-			FindProc(&(PVOID&)Functions::Cache::wgetenv_s, "_wgetenv_s");
-			FindProc(&(PVOID&)Functions::Cache::dupenv_s, "_dupenv_s");
-			FindProc(&(PVOID&)Functions::Cache::wdupenv_s, "_wdupenv_s");
-
-			DetourTransactionBegin();
-			DetourUpdateThread(GetCurrentThread());
-
-			DetourAttachIf(&(PVOID&)Functions::Cache::getenv, Functions::Override::getenv);
-			DetourAttachIf(&(PVOID&)Functions::Cache::getenv_s, Functions::Override::getenv_s);
-			DetourAttachIf(&(PVOID&)Functions::Cache::wgetenv, Functions::Override::wgetenv);
-			DetourAttachIf(&(PVOID&)Functions::Cache::wgetenv, Functions::Override::wgetenv_s);
-			DetourAttachIf(&(PVOID&)Functions::Cache::dupenv_s, Functions::Override::dupenv_s);
-			DetourAttachIf(&(PVOID&)Functions::Cache::wdupenv_s, Functions::Override::wdupenv_s);
-
-			DetourTransactionCommit();
 		}
 
 		return Functions::Cache::EntryPoint();

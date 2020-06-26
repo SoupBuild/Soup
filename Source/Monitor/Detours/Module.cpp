@@ -1,7 +1,12 @@
 module;
 
+#include <locale>
+#include <codecvt>
 #include <fstream>
 #include <iostream>
+#include <mutex>
+#include <string>
+#include <sstream>
 #include <vector>
 
 #define _WIN32_WINNT 0x0500
@@ -108,8 +113,14 @@ LONG DetachDetours(void)
 	DetourDetach(&(PVOID&)Functions::Cache::CreateFileMappingW, Functions::Override::CreateFileMappingW);
 	DetourDetach(&(PVOID&)Functions::Cache::CloseHandle, Functions::Override::CloseHandle);
 	DetourDetach(&(PVOID&)Functions::Cache::DuplicateHandle, Functions::Override::DuplicateHandle);
-	DetourDetach(&(PVOID&)Functions::Cache::CreateProcessW, Functions::Override::CreateProcessW);
-	DetourDetach(&(PVOID&)Functions::Cache::CreateProcessA, Functions::Override::CreateProcessA);
+
+	// TODO: Why can't I replace create process when debugger is attached in VS?
+	// if (!IsDebuggerPresent())
+	{
+		DetourDetach(&(PVOID&)Functions::Cache::CreateProcessW, Functions::Override::CreateProcessW);
+		DetourDetach(&(PVOID&)Functions::Cache::CreateProcessA, Functions::Override::CreateProcessA);
+	}
+
 	DetourDetach(&(PVOID&)Functions::Cache::DeleteFileW, Functions::Override::DeleteFileW);
 	DetourDetach(&(PVOID&)Functions::Cache::DeviceIoControl, Functions::Override::DeviceIoControl);
 	DetourDetach(&(PVOID&)Functions::Cache::GetFileAttributesW, Functions::Override::GetFileAttributesW);
@@ -136,127 +147,130 @@ LONG DetachDetours(void)
 	DetourDetach(&(PVOID&)Functions::Cache::GetEnvironmentVariableA, Functions::Override::GetEnvironmentVariableA);
 	DetourDetach(&(PVOID&)Functions::Cache::GetEnvironmentVariableW, Functions::Override::GetEnvironmentVariableW);
 
-	if (Functions::Cache::getenv)
-		DetourDetach(&(PVOID&)Functions::Cache::getenv, Functions::Override::getenv);
-	if (Functions::Cache::getenv_s)
-		DetourDetach(&(PVOID&)Functions::Cache::getenv_s, Functions::Override::getenv_s);
-	if (Functions::Cache::wgetenv)
-		DetourDetach(&(PVOID&)Functions::Cache::wgetenv, Functions::Override::wgetenv);
-	if (Functions::Cache::wgetenv_s)
-		DetourDetach(&(PVOID&)Functions::Cache::wgetenv, Functions::Override::wgetenv_s);
-	if (Functions::Cache::dupenv_s)
-		DetourDetach(&(PVOID&)Functions::Cache::dupenv_s, Functions::Override::dupenv_s);
-	if (Functions::Cache::wdupenv_s)
-		DetourDetach(&(PVOID&)Functions::Cache::wdupenv_s, Functions::Override::wdupenv_s);
-
 	return DetourTransactionCommit();
 }
 
-
 bool ProcessAttach(HMODULE hDll)
 {
-    InitializeCriticalSection(&s_csPipe);
-    InitializeCriticalSection(&s_csChildPayload);
+	InitializeCriticalSection(&s_csPipe);
+	InitializeCriticalSection(&s_csChildPayload);
 
-    Procs::Initialize();
-    EnvVars::Initialize();
-    FileNames::Initialize();
-    OpenFiles::Initialize();
+	Procs::Initialize();
+	EnvVars::Initialize();
+	FileNames::Initialize();
+	OpenFiles::Initialize();
 
-    s_bLog = false;
-    s_nTlsIndent = TlsAlloc();
-    s_nTlsThread = TlsAlloc();
+	s_bLog = false;
+	s_nTlsIndent = TlsAlloc();
+	s_nTlsThread = TlsAlloc();
 
-    s_hInst = hDll;
-    s_hKernel32 = nullptr;
+	s_hInst = hDll;
+	s_hKernel32 = nullptr;
 
-    PBYTE xCreate = (PBYTE)DetourCodeFromPointer((PVOID)Functions::Cache::CreateProcessW, nullptr);
-    TBLOG_PAYLOAD* pPayload = nullptr;
+	PBYTE xCreate = (PBYTE)DetourCodeFromPointer((PVOID)Functions::Cache::CreateProcessW, nullptr);
+	TBLOG_PAYLOAD* pPayload = nullptr;
 
-    for (HMODULE hMod = nullptr; (hMod = DetourEnumerateModules(hMod)) != nullptr;) {
-        ULONG cbData;
-        PVOID pvData = DetourFindPayload(hMod, s_guidTrace, &cbData);
+	for (HMODULE hMod = nullptr; (hMod = DetourEnumerateModules(hMod)) != nullptr;)
+	{
+		ULONG cbData;
+		PVOID pvData = DetourFindPayload(hMod, s_guidTrace, &cbData);
 
-        if (pvData != nullptr && pPayload == nullptr) {
-            pPayload = (TBLOG_PAYLOAD*)pvData;
-        }
+		if (pvData != nullptr && pPayload == nullptr)
+		{
+			pPayload = (TBLOG_PAYLOAD*)pvData;
+		}
 
-        ULONG cbMod = DetourGetModuleSize(hMod);
+		ULONG cbMod = DetourGetModuleSize(hMod);
 
-        if (((PBYTE)hMod) < xCreate && ((PBYTE)hMod + cbMod) > xCreate) {
-            s_hKernel32 = hMod;
-        }
-    }
+		if (((PBYTE)hMod) < xCreate && ((PBYTE)hMod + cbMod) > xCreate)
+		{
+			s_hKernel32 = hMod;
+		}
+	}
 
-    ZeroMemory(&s_Payload, sizeof(s_Payload));
+	ZeroMemory(&s_Payload, sizeof(s_Payload));
 
-    if (pPayload == nullptr) {
-        return false;
-    }
+	if (pPayload == nullptr)
+	{
+		return false;
+	}
 
-    CopyMemory(&s_Payload, pPayload, sizeof(s_Payload));
+	CopyMemory(&s_Payload, pPayload, sizeof(s_Payload));
 
-    LoadStdHandleName(STD_INPUT_HANDLE, s_Payload.wzStdin, false);
-    LoadStdHandleName(STD_OUTPUT_HANDLE, s_Payload.wzStdout, s_Payload.fStdoutAppend);
-    LoadStdHandleName(STD_ERROR_HANDLE, s_Payload.wzStderr, s_Payload.fStderrAppend);
-    s_nTraceProcessId = s_Payload.nTraceProcessId;
+	LoadStdHandleName(STD_INPUT_HANDLE, s_Payload.wzStdin, false);
+	LoadStdHandleName(STD_OUTPUT_HANDLE, s_Payload.wzStdout, s_Payload.fStdoutAppend);
+	LoadStdHandleName(STD_ERROR_HANDLE, s_Payload.wzStderr, s_Payload.fStderrAppend);
+	s_nTraceProcessId = s_Payload.nTraceProcessId;
 
-    GetModuleFileNameA(s_hInst, s_szDllPath, ARRAYSIZE(s_szDllPath));
+	GetModuleFileNameA(s_hInst, s_szDllPath, ARRAYSIZE(s_szDllPath));
 
-    // Find hidden functions.
-    Functions::Cache::PrivCopyFileExW =
-        (BOOL (WINAPI *)(LPCWSTR, LPCWSTR, LPPROGRESS_ROUTINE, LPVOID, LPBOOL, DWORD))
-        GetProcAddress(s_hKernel32, "PrivCopyFileExW");
-    if (Functions::Cache::PrivCopyFileExW == nullptr) {
-        DEBUG_BREAK();
-    }
+	// Find hidden functions.
+	Functions::Cache::PrivCopyFileExW =
+		(BOOL (WINAPI *)(LPCWSTR, LPCWSTR, LPPROGRESS_ROUTINE, LPVOID, LPBOOL, DWORD))
+		GetProcAddress(s_hKernel32, "PrivCopyFileExW");
+	if (Functions::Cache::PrivCopyFileExW == nullptr)
+	{
+		DEBUG_BREAK();
+	}
 
-    try
-    {
-        AttachDetours();
-    }
-    catch (const std::exception& ex)
-    {
-        DEBUG_BREAK();
-        Tblog("<!-- Error attaching detours: %s -->\n", ex.what());
-    }
-    catch (...)
-    {
-        DEBUG_BREAK();
-        Tblog("<!-- Error attaching detours -->\n");
-    }
+	try
+	{
+		AttachDetours();
+	}
+	catch (const std::exception& ex)
+	{
+		DEBUG_BREAK();
+		Tblog("<!-- Error attaching detours: %s -->\n", ex.what());
+	}
+	catch (...)
+	{
+		DEBUG_BREAK();
+		Tblog("<!-- Error attaching detours -->\n");
+	}
 
-    ThreadAttach(hDll);
+	ThreadAttach(hDll);
 
-    s_bLog = true;
-    return true;
+	s_bLog = true;
+	return true;
 }
 
 bool ProcessDetach(HMODULE hDll)
 {
-    ThreadDetach(hDll);
-    s_bLog = false;
+	ThreadDetach(hDll);
+	s_bLog = false;
 
-    LONG error = DetachDetours();
-    if (error != NO_ERROR) {
-        Tblog("<!-- Error detaching detours: %d -->\n", error);
-    }
+	LONG error = DetachDetours();
+	if (error != NO_ERROR)
+	{
+		Tblog("<!-- Error detaching detours: %d -->\n", error);
+	}
 
-    TblogClose();
+	TblogClose();
 
-    if (s_nTlsIndent >= 0) {
-        TlsFree(s_nTlsIndent);
-    }
-    if (s_nTlsThread >= 0) {
-        TlsFree(s_nTlsThread);
-    }
-    return true;
+	if (s_nTlsIndent >= 0)
+	{
+		TlsFree(s_nTlsIndent);
+	}
+
+	if (s_nTlsThread >= 0)
+	{
+		TlsFree(s_nTlsThread);
+	}
+
+	return true;
 }
 
 bool APIENTRY DllMain(HINSTANCE hModule, DWORD dwReason, PVOID lpReserved)
 {
 	(void)hModule;
 	(void)lpReserved;
+
+#ifdef ENABLE_MONITOR_DEBUG
+	while (!IsDebuggerPresent())
+	{
+		Sleep(0);
+	}
+#endif
 
 	if (DetourIsHelperProcess())
 	{
