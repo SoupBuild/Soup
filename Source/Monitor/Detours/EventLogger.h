@@ -44,6 +44,14 @@ public:
 		throw std::runtime_error("Failed to open pipe for event logger.");
 	}
 
+	void LogCopyFile(std::wstring_view existingFileName, std::wstring_view newFileName)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortExistingFileName = converter.to_bytes(existingFileName.data());
+		auto shortNewFileName = converter.to_bytes(newFileName.data());
+		LogCopyFile(shortExistingFileName, shortNewFileName);
+	}
+
 	void LogCopyFile(std::string_view existingFileName, std::string_view newFileName)
 	{
 		std::stringstream messageBuilder;
@@ -53,11 +61,75 @@ public:
 		WriteMessage(content);
 	}
 
+	void LogCreateHardLink(std::wstring_view fileName, std::wstring_view existingFileName)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortFileName = converter.to_bytes(fileName.data());
+		auto shortExistingFileName = converter.to_bytes(existingFileName.data());
+		LogCopyFile(shortFileName, shortExistingFileName);
+	}
+
+	void LogCreateHardLink(std::string_view fileName, std::string_view existingFileName)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "CreateHardLink: " << fileName << " -> " << existingFileName << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
 	void LogCreateFile(std::wstring_view fileName)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortFileName = converter.to_bytes(fileName.data());
+		LogCreateFile(shortFileName);
+	}
+
+	void LogCreateFile(std::string_view fileName)
+	{
 		std::stringstream messageBuilder;
-		messageBuilder << "CreateFile: " << converter.to_bytes(fileName.data()) << "\n";
+		messageBuilder << "CreateFile: " << fileName << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
+	void LogGetEnvironmentVariable(std::wstring_view name)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortName = converter.to_bytes(name.data());
+		LogCreateFile(shortName);
+	}
+
+	void LogGetEnvironmentVariable(std::string_view name)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "GetEnvironmentVariable: " << name << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
+	void LogOpenFile(std::wstring_view fileName)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortFileName = converter.to_bytes(fileName.data());
+		LogCreateFile(shortFileName);
+	}
+
+	void LogOpenFile(std::string_view fileName)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "OpenFile: " << fileName << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
+	void LogError(std::string_view fileName)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "Error: " << fileName << "\n";
 		auto content = messageBuilder.str();
 
 		WriteMessage(content);

@@ -297,9 +297,6 @@ namespace Functions::Override
 		return rv;
 	}
 
-	//
-	//////////////////////////////////////////////////////////////////////////////
-
 	BOOL WINAPI CopyFileExA(
 		LPCSTR lpExistingFileName,
 		LPCSTR lpNewFileName,
@@ -330,122 +327,106 @@ namespace Functions::Override
 	}
 
 	BOOL WINAPI CopyFileExW(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		LPPROGRESS_ROUTINE a2,
-		LPVOID a3,
-		LPBOOL a4,
-		DWORD a5)
+		LPCWSTR lpExistingFileName,
+		LPCWSTR lpNewFileName,
+		LPPROGRESS_ROUTINE lpProgressRoutine,
+		LPVOID lpData,
+		LPBOOL pbCancel,
+		DWORD dwCopyFlags)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-	#if 0
-			Print("\n");
-			Print("<!-- CopyFileExW %le to %le before -->\n", a0, a1);
-	#endif
-			rv = Functions::Cache::CopyFileExW(a0, a1, a2, a3, a4, a5);
+			rv = Functions::Cache::CopyFileExW(
+				lpExistingFileName,
+				lpNewFileName,
+				lpProgressRoutine,
+				lpData,
+				pbCancel,
+				dwCopyFlags);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-	#if 0
-				Print("<!-- CopyFileExW %le to %le -->\n", a0, a1);
-	#endif
-				NoteRead(a0);
-				NoteWrite(a1);
-			}
+			s_eventLogger.LogCopyFile(
+				lpExistingFileName,
+				lpNewFileName);
 		};
 
 		return rv;
 	}
 
 	BOOL WINAPI PrivCopyFileExW(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		LPPROGRESS_ROUTINE a2,
-		LPVOID a3,
-		LPBOOL a4,
-		DWORD a5)
+		LPCWSTR lpExistingFileName,
+		LPCWSTR lpNewFileName,
+		LPPROGRESS_ROUTINE lpProgressRoutine,
+		LPVOID lpData,
+		LPBOOL pbCancel,
+		DWORD dwCopyFlags)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::PrivCopyFileExW(a0, a1, a2, a3, a4, a5);
+			rv = Functions::Cache::PrivCopyFileExW(
+				lpExistingFileName,
+				lpNewFileName,
+				lpProgressRoutine,
+				lpData,
+				pbCancel,
+				dwCopyFlags);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-	#if 0
-				Print("<!-- PrivCopyFileExW %le to %le -->\n", a0, a1);
-	#endif
-				NoteRead(a0);
-				NoteWrite(a1);
-			}
+			s_eventLogger.LogCopyFile(
+				lpExistingFileName,
+				lpNewFileName);
 		};
 
 		return rv;
 	}
 
 	BOOL WINAPI CreateHardLinkA(
-		LPCSTR a0,
-		LPCSTR a1,
-		LPSECURITY_ATTRIBUTES a2)
+		LPCSTR lpFileName,
+		LPCSTR lpExistingFileName,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::CreateHardLinkA(a0, a1, a2);
+			rv = Functions::Cache::CreateHardLinkA(
+				lpFileName,
+				lpExistingFileName,
+				lpSecurityAttributes);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-		#if 0
-				Print("<!-- CreateHardLinkA %he to %he -->\n", a0, a1);
-		#endif
-				NoteRead(a1);
-				NoteWrite(a0);
-			}
+			s_eventLogger.LogCreateHardLink(
+				lpFileName,
+				lpExistingFileName);
 		};
 
 		return rv;
 	}
 
 	BOOL WINAPI CreateHardLinkW(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		LPSECURITY_ATTRIBUTES a2)
+		LPCWSTR lpFileName,
+		LPCWSTR lpExistingFileName,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
 		EnterFunc();
 
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::CreateHardLinkW(a0, a1, a2);
+			rv = Functions::Cache::CreateHardLinkW(
+				lpFileName,
+				lpExistingFileName,
+				lpSecurityAttributes);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-	#if 0
-				Print("<!-- CreateHardLinkW %le to %le -->\n", a0, a1);
-	#endif
-				NoteRead(a1);
-				NoteWrite(a0);
-			}
+			s_eventLogger.LogCreateHardLink(
+				lpFileName,
+				lpExistingFileName);
 		};
 
 		return rv;
@@ -680,7 +661,21 @@ namespace Functions::Override
 		}
 		__finally
 		{
-			s_eventLogger.LogCreateFile(lpFileName);
+			switch (dwCreationDisposition)
+			{
+				case CREATE_NEW:
+				case CREATE_ALWAYS:
+					s_eventLogger.LogCreateFile(lpFileName);
+					break;
+				case OPEN_EXISTING:
+				case OPEN_ALWAYS:
+				case TRUNCATE_EXISTING:
+					s_eventLogger.LogOpenFile(lpFileName);
+					break;
+				default:
+					s_eventLogger.LogError("Unknown dwCreationDisposition: CreateFileW");
+					break;
+			}
 		};
 
 		return rv;
@@ -1385,37 +1380,47 @@ namespace Functions::Override
 		return rv;
 	}
 
-	DWORD WINAPI GetEnvironmentVariableA(PCSTR lpName, PCHAR lpBuffer, DWORD nSize)
+	DWORD WINAPI GetEnvironmentVariableA(
+		PCSTR lpName,
+		PCHAR lpBuffer,
+		DWORD nSize)
 	{
-		EnterFunc();
 		DWORD rv = 0;
-		__try {
-			rv = Functions::Cache::GetEnvironmentVariableA(lpName, lpBuffer, nSize);
-			//        if (rv > 0 && rv < nSize && lpBuffer != nullptr) {
-			//            EnvVars::Used(lpName);
-			//        }
+		__try
+		{
+			rv = Functions::Cache::GetEnvironmentVariableA(
+				lpName,
+				lpBuffer,
+				nSize);
 		}
-		__finally {
-			EnvVars::Used(lpName);
-			ExitFunc();
+		__finally
+		{
+			s_eventLogger.LogGetEnvironmentVariable(
+				lpName);
 		};
+
 		return rv;
 	}
 
-	DWORD WINAPI GetEnvironmentVariableW(PCWSTR lpName, PWCHAR lpBuffer, DWORD nSize)
+	DWORD WINAPI GetEnvironmentVariableW(
+		PCWSTR lpName,
+		PWCHAR lpBuffer,
+		DWORD nSize)
 	{
-		EnterFunc();
 		DWORD rv = 0;
-		__try {
-			rv = Functions::Cache::GetEnvironmentVariableW(lpName, lpBuffer, nSize);
-			//        if (rv > 0 && rv < nSize && lpBuffer != nullptr) {
-			//            EnvVars::Used(lpName);
-			//        }
+		__try
+		{
+			rv = Functions::Cache::GetEnvironmentVariableW(
+				lpName,
+				lpBuffer,
+				nSize);
 		}
-		__finally {
-			EnvVars::Used(lpName);
-			ExitFunc();
+		__finally
+		{
+			s_eventLogger.LogGetEnvironmentVariable(
+				lpName);
 		};
+
 		return rv;
 	}
 
@@ -1429,207 +1434,15 @@ namespace Functions::Override
 
 		SaveEnvironment();
 
-		{
-			CHAR szExeName[MAX_PATH];
-			CHAR szId[128];
-			CHAR szParent[128];
-			WCHAR wzPath[MAX_PATH];
-			PCHAR pszExeName = szExeName;
-
-			// Get the base command line (skipping over the executable name)
-			PCWSTR pwzLine = GetCommandLineW();
-			if (*pwzLine == '\"')
-			{
-				pwzLine++;
-				while (*pwzLine && *pwzLine != '\"')
-				{
-					pwzLine++;
-				}
-
-				if (*pwzLine == '\"')
-				{
-					pwzLine++;
-				}
-			}
-			else
-			{
-				while (*pwzLine && *pwzLine != ' ' && *pwzLine != '\t')
-				{
-					pwzLine++;
-				}
-			}
-
-			while (*pwzLine && (*pwzLine == ' ' || *pwzLine == '\t'))
-			{
-				pwzLine++;
-			}
-
-			// Get the root executable name.
-			if (GetModuleFileNameA(0, szExeName, ARRAYSIZE(szExeName)))
-			{
-				PCHAR psz = szExeName;
-
-				while (*psz)
-				{
-					psz++;
-				}
-
-				while (psz > szExeName && psz[-1] != ':' && psz[-1] != '\\' && psz[-1] != '/')
-				{
-					psz--;
-				}
-
-				pszExeName = psz;
-				while (*psz && *psz != '.')
-				{
-					psz++;
-				}
-
-				*psz = '\0';
-			}
-			else
-			{
-				szExeName[0] = '\0';
-			}
-
-			// Start the XML process node.
-			Tblog("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-			{
-				PCHAR pszId = szId;
-				PCHAR pszParent = szParent;
-				for (DWORD i = 0; i < s_Payload.nGeneology; i++)
-				{
-					pszId = SafePrintf(pszId, 16, "%d.", s_Payload.rGeneology[i]);
-					if (i < s_Payload.nGeneology - 1)
-					{
-						pszParent = SafePrintf(pszParent, 16, "%d.", s_Payload.rGeneology[i]);
-					}
-				}
-
-				*pszId = '\0';
-				*pszParent = '\0';
-
-				if (szParent[0] == '\0')
-				{
-					Tblog("<t:Process id=\"::%hs::\"", szId);
-				}
-				else
-				{
-					Tblog("<t:Process id=\"::%hs::\" parentId=\"::%hs::\"", szId, szParent);
-				}
-
-				Tblog(" par=\"%ls\" exe=\"%hs\"", s_Payload.wzParents, pszExeName);
-
-				bool drop = false;
-				PCWSTR pwzz = s_Payload.wzzDrop;
-				while (*pwzz)
-				{
-					if (Compare(pwzz, pszExeName) == 0)
-					{
-						// match
-						drop = true;
-						break;
-					}
-
-					pwzz += Size(pwzz) + 1;
-				}
-
-				if (drop)
-				{
-					Tblog(" drop=\"true\"");
-				}
-			}
-
-			{
-				PWCHAR pwz = s_Payload.wzParents;
-				while (*pwz)
-				{
-					pwz++;
-				}
-
-				*pwz++ = '/';
-				PCSTR psz = pszExeName;
-				while (*psz)
-				{
-					*pwz++ = *psz++;
-				}
-
-				*pwz = '\0';
-			}
-
-
-			if (HasChar(pwzLine, '|'))
-			{
-				Tblog(" pipes=\"true\"");
-			}
-
-			if (HasChar(pwzLine, '>'))
-			{
-				Tblog(" redirects=\"true\"");
-			}
-
-			Tblog(" xmlns:t=\"http://schemas.microsoft.com/research/tracebld/2008\">\n");
-
-			// Get the directory.
-			DWORD dwSize = GetCurrentDirectoryA(ARRAYSIZE(szExeName), szExeName);
-			if (dwSize > 0 && dwSize < ARRAYSIZE(szExeName))
-			{
-				Tblog("<t:Directory>%hs</t:Directory>\n", szExeName);
-			}
-
-			// Get the real executable name.
-			wzPath[0] = '\0';
-			if (GetModuleFileNameA(0, szExeName, ARRAYSIZE(szExeName)))
-			{
-				FileInfo *pInfo = FileNames::FindPartial(szExeName);
-				Tblog("<t:Executable>%ls</t:Executable>\n",
-						FileNames::ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo));
-			}
-
-			// Construct the processed command line.
-			PWCHAR pwzDstEnd = (PWCHAR)pwzLine;
-			PWCHAR pwzDst = pwzDstEnd;
-			pwzDst = LoadCommandLine(pwzLine, pwzDst, pwzDstEnd);
-			DWORD wcNew = (DWORD)((pwzDst - pwzDstEnd) + 1);
-			PWCHAR pwzFin = (PWCHAR)GlobalAlloc(GPTR, wcNew * sizeof(WCHAR));
-			pwzDst = pwzFin;
-			pwzDstEnd = pwzFin + wcNew;
-			pwzDst = LoadCommandLine(pwzLine, pwzDst, pwzDstEnd);
-			*pwzDst = '\0';
-
-			FileNames::ParameterizeLine(pwzFin, pwzFin + wcNew);
-			if (HasSpace(wzPath))
-			{
-				Tblog("<t:Line>&quot;%le&quot; %le</t:Line>\n", wzPath, pwzFin);
-			}
-			else
-			{
-				Tblog("<t:Line>%le %le</t:Line>\n", wzPath, pwzFin);
-			}
-
-			TestHandle("t:StdIn", GetStdHandle(STD_INPUT_HANDLE));
-			TestHandle("t:StdOut", GetStdHandle(STD_OUTPUT_HANDLE));
-			TestHandle("t:StdErr", GetStdHandle(STD_ERROR_HANDLE));
-		}
+		TestHandle("t:StdIn", GetStdHandle(STD_INPUT_HANDLE));
+		TestHandle("t:StdOut", GetStdHandle(STD_OUTPUT_HANDLE));
+		TestHandle("t:StdErr", GetStdHandle(STD_ERROR_HANDLE));
 
 		return Functions::Cache::EntryPoint();
 	}
 
-	void WINAPI ExitProcess(UINT a0)
+	void WINAPI ExitProcess(UINT uExitCode)
 	{
-		if (a0 & 0x80000000)
-		{
-			Tblog("<t:Return>%d</t:Return>\n", -(int)a0);
-		}
-		else {
-			Tblog("<t:Return>%d</t:Return>\n", a0);
-		}
-
-		FileNames::Dump();
-		EnvVars::Dump();
-
-		TblogClose();
-
-		Functions::Cache::ExitProcess(a0);
+		Functions::Cache::ExitProcess(uExitCode);
 	}
 }

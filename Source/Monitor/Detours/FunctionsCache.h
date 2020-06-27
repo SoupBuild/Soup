@@ -5,251 +5,251 @@ namespace Functions::Cache
 	int (WINAPI* EntryPoint)() = nullptr;
 
 	BOOL (WINAPI* CreateDirectoryW)(
-		LPCWSTR a0,
-		LPSECURITY_ATTRIBUTES a1) = ::CreateDirectoryW;
+		LPCWSTR,
+		LPSECURITY_ATTRIBUTES) = ::CreateDirectoryW;
 
 	BOOL (WINAPI* CreateDirectoryExW)(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		LPSECURITY_ATTRIBUTES a2) = ::CreateDirectoryExW;
+		LPCWSTR,
+		LPCWSTR,
+		LPSECURITY_ATTRIBUTES) = ::CreateDirectoryExW;
 
 	HANDLE (WINAPI* CreateFileA)(
-		LPCSTR lpFileName,
-		DWORD dwDesiredAccess,
-		DWORD dwShareMode,
-		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-		DWORD dwCreationDisposition,
-		DWORD dwFlagsAndAttributes,
-		HANDLE hTemplateFile) = ::CreateFileA;
+		LPCSTR,
+		DWORD,
+		DWORD,
+		LPSECURITY_ATTRIBUTES,
+		DWORD,
+		DWORD,
+		HANDLE) = ::CreateFileA;
 
 	HANDLE (WINAPI* CreateFileW)(
-		LPCWSTR lpFileName,
-		DWORD dwDesiredAccess,
-		DWORD dwShareMode,
-		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-		DWORD dwCreationDisposition,
-		DWORD dwFlagsAndAttributes,
-		HANDLE hTemplateFile) = ::CreateFileW;
+		LPCWSTR,
+		DWORD,
+		DWORD,
+		LPSECURITY_ATTRIBUTES,
+		DWORD,
+		DWORD,
+		HANDLE) = ::CreateFileW;
 
 	HANDLE (WINAPI* CreateFileMappingW)(
-		HANDLE hFile,
-		LPSECURITY_ATTRIBUTES lpAttributes,
-		DWORD flProtect,
-		DWORD dwMaximumSizeHigh,
-		DWORD dwMaximumSizeLow,
-		LPCWSTR lpName) = ::CreateFileMappingW;
+		HANDLE,
+		LPSECURITY_ATTRIBUTES,
+		DWORD,
+		DWORD,
+		DWORD,
+		LPCWSTR) = ::CreateFileMappingW;
 
 	BOOL (WINAPI* CreatePipe)(
-		PHANDLE hReadPipe,
-		PHANDLE hWritePipe,
-		LPSECURITY_ATTRIBUTES lpPipeAttributes,
-		DWORD nSize) = ::CreatePipe;
+		PHANDLE,
+		PHANDLE,
+		LPSECURITY_ATTRIBUTES,
+		DWORD) = ::CreatePipe;
 
 	BOOL (WINAPI* CloseHandle)(
-		HANDLE a0) = ::CloseHandle;
+		HANDLE) = ::CloseHandle;
 
 	BOOL (WINAPI* DuplicateHandle)(
-		HANDLE hSourceProcessHandle,
-		HANDLE hSourceHandle,
-		HANDLE hTargetProcessHandle,
-		LPHANDLE lpTargetHandle,
-		DWORD dwDesiredAccess,
-		BOOL bInheritHandle,
-		DWORD dwOptions) = ::DuplicateHandle;
+		HANDLE,
+		HANDLE,
+		HANDLE,
+		LPHANDLE,
+		DWORD,
+		BOOL,
+		DWORD) = ::DuplicateHandle;
 
 	BOOL (WINAPI* CreateProcessW)(
-		LPCWSTR lpApplicationName,
-		LPWSTR lpCommandLine,
-		LPSECURITY_ATTRIBUTES lpProcessAttributes,
-		LPSECURITY_ATTRIBUTES lpThreadAttributes,
-		BOOL bInheritHandles,
-		DWORD dwCreationFlags,
-		LPVOID lpEnvironment,
-		LPCWSTR lpCurrentDirectory,
-		LPSTARTUPINFOW lpStartupInfo,
-		LPPROCESS_INFORMATION lpProcessInformation) = ::CreateProcessW;
+		LPCWSTR,
+		LPWSTR,
+		LPSECURITY_ATTRIBUTES,
+		LPSECURITY_ATTRIBUTES,
+		BOOL,
+		DWORD,
+		LPVOID,
+		LPCWSTR,
+		LPSTARTUPINFOW,
+		LPPROCESS_INFORMATION) = ::CreateProcessW;
 
 	BOOL (WINAPI* CreateProcessA)(
-		LPCSTR lpApplicationName,
-		LPSTR lpCommandLine,
-		LPSECURITY_ATTRIBUTES lpProcessAttributes,
-		LPSECURITY_ATTRIBUTES lpThreadAttributes,
-		BOOL bInheritHandles,
-		DWORD dwCreationFlags,
-		LPVOID lpEnvironment,
-		LPCSTR lpCurrentDirectory,
-		LPSTARTUPINFOA lpStartupInfo,
-		LPPROCESS_INFORMATION lpProcessInformation) = ::CreateProcessA;
+		LPCSTR,
+		LPSTR,
+		LPSECURITY_ATTRIBUTES,
+		LPSECURITY_ATTRIBUTES,
+		BOOL,
+		DWORD,
+		LPVOID,
+		LPCSTR,
+		LPSTARTUPINFOA,
+		LPPROCESS_INFORMATION) = ::CreateProcessA;
 
 	BOOL (WINAPI* DeleteFileW)(
-		LPCWSTR a0) = ::DeleteFileW;
+		LPCWSTR) = ::DeleteFileW;
 
 	BOOL (WINAPI* DeviceIoControl)(
-		HANDLE a0,
-		DWORD dwIoControlCode,
-		LPVOID lpInBuffer,
-		DWORD nInBufferSize,
-		LPVOID lpOutBuffer,
-		DWORD nOutBufferSize,
-		LPDWORD lpBytesReturned,
-		LPOVERLAPPED lpOverlapped) = ::DeviceIoControl;
+		HANDLE,
+		DWORD,
+		LPVOID,
+		DWORD,
+		LPVOID,
+		DWORD,
+		LPDWORD,
+		LPOVERLAPPED) = ::DeviceIoControl;
 
 	DWORD (WINAPI* GetFileAttributesW)(
-		LPCWSTR a0) = ::GetFileAttributesW;
+		LPCWSTR) = ::GetFileAttributesW;
 
 	BOOL (WINAPI* MoveFileWithProgressW)(
-		LPCWSTR lpExistingFileName,
-		LPCWSTR lpNewFileName,
-		LPPROGRESS_ROUTINE lpProgressRoutine,
-		LPVOID lpData,
-		DWORD dwFlags) = ::MoveFileWithProgressW;
+		LPCWSTR,
+		LPCWSTR,
+		LPPROGRESS_ROUTINE,
+		LPVOID,
+		DWORD) = ::MoveFileWithProgressW;
 
 	BOOL (WINAPI* MoveFileA)(
-		LPCSTR a0,
-		LPCSTR a1) = ::MoveFileA;
+		LPCSTR,
+		LPCSTR) = ::MoveFileA;
 
 	BOOL (WINAPI* MoveFileW)(
-		LPCWSTR a0,
-		LPCWSTR a12) = ::MoveFileW;
+		LPCWSTR,
+		LPCWSTR) = ::MoveFileW;
 
 	BOOL (WINAPI* MoveFileExA)(
-		LPCSTR a0,
-		LPCSTR a1,
-		DWORD a2) = ::MoveFileExA;
+		LPCSTR,
+		LPCSTR,
+		DWORD) = ::MoveFileExA;
 
 	BOOL (WINAPI* MoveFileExW)(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		DWORD a2) = ::MoveFileExW;
+		LPCWSTR,
+		LPCWSTR,
+		DWORD) = ::MoveFileExW;
 
 	BOOL (WINAPI* CopyFileExA)(
-		LPCSTR a0,
-		LPCSTR a1,
-		LPPROGRESS_ROUTINE a2,
-		LPVOID a4,
-		LPBOOL a5,
-		DWORD a6) = ::CopyFileExA;
+		LPCSTR,
+		LPCSTR,
+		LPPROGRESS_ROUTINE,
+		LPVOID,
+		LPBOOL,
+		DWORD) = ::CopyFileExA;
 
 	BOOL (WINAPI* CopyFileExW)(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		LPPROGRESS_ROUTINE a2,
-		LPVOID a4,
-		LPBOOL a5,
-		DWORD a6) = ::CopyFileExW;
+		LPCWSTR,
+		LPCWSTR,
+		LPPROGRESS_ROUTINE,
+		LPVOID,
+		LPBOOL,
+		DWORD) = ::CopyFileExW;
 
 	BOOL (WINAPI* PrivCopyFileExW)(
-		LPCWSTR lpExistingFileName,
-		LPCWSTR lpNewFileName,
-		LPPROGRESS_ROUTINE lpProgressRoutine,
-		LPVOID lpData,
-		LPBOOL pbCancel,
-		DWORD  dwCopyFlags) = nullptr;
+		LPCWSTR,
+		LPCWSTR,
+		LPPROGRESS_ROUTINE,
+		LPVOID,
+		LPBOOL,
+		DWORD) = nullptr;
 
 	BOOL (WINAPI* CreateHardLinkA)(
-		LPCSTR a0,
-		LPCSTR a1,
-		LPSECURITY_ATTRIBUTES a2) = ::CreateHardLinkA;
+		LPCSTR,
+		LPCSTR,
+		LPSECURITY_ATTRIBUTES) = ::CreateHardLinkA;
 
 	BOOL (WINAPI* CreateHardLinkW)(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		LPSECURITY_ATTRIBUTES a2) = ::CreateHardLinkW;
+		LPCWSTR,
+		LPCWSTR,
+		LPSECURITY_ATTRIBUTES) = ::CreateHardLinkW;
 
 	BOOL (WINAPI* SetStdHandle)(
-		DWORD a0,
-		HANDLE a1) = ::SetStdHandle;
+		DWORD,
+		HANDLE) = ::SetStdHandle;
 
 	HMODULE (WINAPI* LoadLibraryA)(
-		LPCSTR a0) = ::LoadLibraryA;
+		LPCSTR) = ::LoadLibraryA;
 
 	HMODULE (WINAPI* LoadLibraryW)(
-		LPCWSTR a0) = ::LoadLibraryW;
+		LPCWSTR) = ::LoadLibraryW;
 
 	HMODULE (WINAPI* LoadLibraryExA)(
-		LPCSTR a0,
-		HANDLE a1,
-		DWORD a2) = ::LoadLibraryExA;
+		LPCSTR,
+		HANDLE,
+		DWORD) = ::LoadLibraryExA;
 
 	HMODULE (WINAPI* LoadLibraryExW)(
-		LPCWSTR a0,
-		HANDLE a1,
-		DWORD a2) = ::LoadLibraryExW;
+		LPCWSTR,
+		HANDLE,
+		DWORD) = ::LoadLibraryExW;
 
 	DWORD (WINAPI* SetFilePointer)(
-		HANDLE hFile,
-		LONG lDistanceToMove,
-		PLONG lpDistanceToMoveHigh,
-		DWORD dwMoveMethod) = ::SetFilePointer;
+		HANDLE,
+		LONG,
+		PLONG,
+		DWORD) = ::SetFilePointer;
 
 	BOOL (WINAPI* SetFilePointerEx)(
-		HANDLE hFile,
-		LARGE_INTEGER liDistanceToMove,
-		PLARGE_INTEGER lpNewFilePointer,
-		DWORD dwMoveMethod) = ::SetFilePointerEx;
+		HANDLE,
+		LARGE_INTEGER,
+		PLARGE_INTEGER,
+		DWORD) = ::SetFilePointerEx;
 
 	BOOL (WINAPI* ReadFile)(
-		HANDLE a0,
-		LPVOID a1,
-		DWORD a2,
-		LPDWORD a3,
-		LPOVERLAPPED a4) = ::ReadFile;
+		HANDLE,
+		LPVOID,
+		DWORD,
+		LPDWORD,
+		LPOVERLAPPED) = ::ReadFile;
 
 	BOOL (WINAPI* ReadFileEx)(
-		HANDLE a0,
-		LPVOID a1,
-		DWORD a2,
-		LPOVERLAPPED a3,
-		LPOVERLAPPED_COMPLETION_ROUTINE a4) = ::ReadFileEx;
+		HANDLE,
+		LPVOID,
+		DWORD,
+		LPOVERLAPPED,
+		LPOVERLAPPED_COMPLETION_ROUTINE) = ::ReadFileEx;
 
 	BOOL (WINAPI* WriteFile)(
-		HANDLE a0,
-		LPCVOID a1,
-		DWORD a2,
-		LPDWORD a3,
-		LPOVERLAPPED a4) = ::WriteFile;
+		HANDLE,
+		LPCVOID,
+		DWORD,
+		LPDWORD,
+		LPOVERLAPPED) = ::WriteFile;
 
 	BOOL (WINAPI* WriteFileEx)(
-		HANDLE a0,
-		LPCVOID a1,
-		DWORD a2,
-		LPOVERLAPPED a3,
-		LPOVERLAPPED_COMPLETION_ROUTINE a4) = ::WriteFileEx;
+		HANDLE,
+		LPCVOID,
+		DWORD,
+		LPOVERLAPPED,
+		LPOVERLAPPED_COMPLETION_ROUTINE) = ::WriteFileEx;
 
 	BOOL (WINAPI* WriteConsoleA)(
-		HANDLE a0,
-		const void* a1,
-		DWORD a2,
-		LPDWORD a3,
-		LPVOID a4) = ::WriteConsoleA;
+		HANDLE,
+		const void*,
+		DWORD,
+		LPDWORD,
+		LPVOID) = ::WriteConsoleA;
 
 	BOOL (WINAPI* WriteConsoleW)(
-		HANDLE a0,
-		const void* a1,
-		DWORD a2,
-		LPDWORD a3,
-		LPVOID a4) = ::WriteConsoleW;
+		HANDLE,
+		const void*,
+		DWORD,
+		LPDWORD,
+		LPVOID) = ::WriteConsoleW;
 
 	void (WINAPI* ExitProcess)(
-		UINT a0) = ::ExitProcess;
+		UINT) = ::ExitProcess;
 
 	DWORD (WINAPI* ExpandEnvironmentStringsA)(
-		PCSTR lpSrc,
-		PCHAR lpDst,
-		DWORD nSize) = ::ExpandEnvironmentStringsA;
+		PCSTR,
+		PCHAR,
+		DWORD) = ::ExpandEnvironmentStringsA;
 
 	DWORD (WINAPI* ExpandEnvironmentStringsW)(
-		PCWSTR lpSrc,
-		PWCHAR lpDst,
-		DWORD nSize) = ::ExpandEnvironmentStringsW;
+		PCWSTR,
+		PWCHAR,
+		DWORD) = ::ExpandEnvironmentStringsW;
 
 	DWORD (WINAPI* GetEnvironmentVariableA)(
-		PCSTR lpName,
-		PCHAR lpBuffer,
-		DWORD nSize) = ::GetEnvironmentVariableA;
+		PCSTR,
+		PCHAR,
+		DWORD) = ::GetEnvironmentVariableA;
 
 	DWORD (WINAPI* GetEnvironmentVariableW)(
-		PCWSTR lpName,
-		PWCHAR lpBuffer,
-		DWORD nSize) = ::GetEnvironmentVariableW;
+		PCWSTR,
+		PWCHAR,
+		DWORD) = ::GetEnvironmentVariableW;
 }
