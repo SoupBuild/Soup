@@ -56,8 +56,11 @@ void AttachDetours()
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::PrivCopyFileExW, Functions::Override::PrivCopyFileExW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateHardLinkA, Functions::Override::CreateHardLinkA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateHardLinkW, Functions::Override::CreateHardLinkW), "AttachDetours DetourAttach Failed");
+	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateDirectoryA, Functions::Override::CreateDirectoryA), "AttachDetours DetourAttach Failed");
+	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateDirectoryExA, Functions::Override::CreateDirectoryExA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateDirectoryW, Functions::Override::CreateDirectoryW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateDirectoryExW, Functions::Override::CreateDirectoryExW), "AttachDetours DetourAttach Failed");
+	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateFileA, Functions::Override::CreateFileA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateFileW, Functions::Override::CreateFileW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreatePipe, Functions::Override::CreatePipe), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateFileMappingW, Functions::Override::CreateFileMappingW), "AttachDetours DetourAttach Failed");
@@ -65,15 +68,18 @@ void AttachDetours()
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::DuplicateHandle, Functions::Override::DuplicateHandle), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateProcessW, Functions::Override::CreateProcessW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateProcessA, Functions::Override::CreateProcessA), "AttachDetours DetourAttach Failed");
+	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::DeleteFileA, Functions::Override::DeleteFileA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::DeleteFileW, Functions::Override::DeleteFileW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::DeviceIoControl, Functions::Override::DeviceIoControl), "AttachDetours DetourAttach Failed");
+	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::GetFileAttributesA, Functions::Override::GetFileAttributesA), "AttachDetours DetourAttach Failed");
+	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::GetFileAttributesExA, Functions::Override::GetFileAttributesExA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::GetFileAttributesW, Functions::Override::GetFileAttributesW), "AttachDetours DetourAttach Failed");
+	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::GetFileAttributesExW, Functions::Override::GetFileAttributesExW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::MoveFileA, Functions::Override::MoveFileA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::MoveFileW, Functions::Override::MoveFileW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::MoveFileExA, Functions::Override::MoveFileExA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::MoveFileExW, Functions::Override::MoveFileExW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::MoveFileWithProgressW, Functions::Override::MoveFileWithProgressW), "AttachDetours DetourAttach Failed");
-	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::SetStdHandle, Functions::Override::SetStdHandle), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::LoadLibraryA, Functions::Override::LoadLibraryA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::LoadLibraryW, Functions::Override::LoadLibraryW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::LoadLibraryExA, Functions::Override::LoadLibraryExA), "AttachDetours DetourAttach Failed");
@@ -94,60 +100,60 @@ void AttachDetours()
 	ThrowIfFailed(DetourTransactionCommit(), "AttachDetours DetourTransactionCommit Failed");
 }
 
-LONG DetachDetours(void)
+void DetachDetours()
 {
-	DetourTransactionBegin();
-	DetourUpdateThread(GetCurrentThread());
+	ThrowIfFailed(DetourTransactionBegin(), "DetachDetours DetourTransactionBegin Failed");
+	ThrowIfFailed(DetourUpdateThread(GetCurrentThread()), "DetachDetours DetourUpdateThread Failed");
 
-	DetourDetach(&(PVOID&)Functions::Cache::EntryPoint, Functions::Override::EntryPoint);
-	DetourDetach(&(PVOID&)Functions::Cache::ExitProcess, Functions::Override::ExitProcess);
-	DetourDetach(&(PVOID&)Functions::Cache::CopyFileExA, Functions::Override::CopyFileExA);
-	DetourDetach(&(PVOID&)Functions::Cache::CopyFileExW, Functions::Override::CopyFileExW);
-	DetourDetach(&(PVOID&)Functions::Cache::PrivCopyFileExW, Functions::Override::PrivCopyFileExW);
-	DetourDetach(&(PVOID&)Functions::Cache::CreateHardLinkA, Functions::Override::CreateHardLinkA);
-	DetourDetach(&(PVOID&)Functions::Cache::CreateHardLinkW, Functions::Override::CreateHardLinkW);
-	DetourDetach(&(PVOID&)Functions::Cache::CreateDirectoryW, Functions::Override::CreateDirectoryW);
-	DetourDetach(&(PVOID&)Functions::Cache::CreateDirectoryExW, Functions::Override::CreateDirectoryExW);
-	DetourDetach(&(PVOID&)Functions::Cache::CreateFileW, Functions::Override::CreateFileW);
-	DetourDetach(&(PVOID&)Functions::Cache::CreatePipe, Functions::Override::CreatePipe);
-	DetourDetach(&(PVOID&)Functions::Cache::CreateFileMappingW, Functions::Override::CreateFileMappingW);
-	DetourDetach(&(PVOID&)Functions::Cache::CloseHandle, Functions::Override::CloseHandle);
-	DetourDetach(&(PVOID&)Functions::Cache::DuplicateHandle, Functions::Override::DuplicateHandle);
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::EntryPoint, Functions::Override::EntryPoint), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::ExitProcess, Functions::Override::ExitProcess), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CopyFileExA, Functions::Override::CopyFileExA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CopyFileExW, Functions::Override::CopyFileExW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::PrivCopyFileExW, Functions::Override::PrivCopyFileExW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateHardLinkA, Functions::Override::CreateHardLinkA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateHardLinkW, Functions::Override::CreateHardLinkW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateDirectoryA, Functions::Override::CreateDirectoryA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateDirectoryExA, Functions::Override::CreateDirectoryExA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateDirectoryW, Functions::Override::CreateDirectoryW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateDirectoryExW, Functions::Override::CreateDirectoryExW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateFileA, Functions::Override::CreateFileA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateFileW, Functions::Override::CreateFileW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreatePipe, Functions::Override::CreatePipe), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateFileMappingW, Functions::Override::CreateFileMappingW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CloseHandle, Functions::Override::CloseHandle), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::DuplicateHandle, Functions::Override::DuplicateHandle), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateProcessW, Functions::Override::CreateProcessW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateProcessA, Functions::Override::CreateProcessA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::DeleteFileA, Functions::Override::DeleteFileA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::DeleteFileW, Functions::Override::DeleteFileW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::DeviceIoControl, Functions::Override::DeviceIoControl), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::GetFileAttributesA, Functions::Override::GetFileAttributesA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::GetFileAttributesExA, Functions::Override::GetFileAttributesExA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::GetFileAttributesW, Functions::Override::GetFileAttributesW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::GetFileAttributesExW, Functions::Override::GetFileAttributesExW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::MoveFileA, Functions::Override::MoveFileA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::MoveFileW, Functions::Override::MoveFileW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::MoveFileExA, Functions::Override::MoveFileExA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::MoveFileExW, Functions::Override::MoveFileExW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::MoveFileWithProgressW, Functions::Override::MoveFileWithProgressW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::LoadLibraryA, Functions::Override::LoadLibraryA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::LoadLibraryW, Functions::Override::LoadLibraryW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::LoadLibraryExA, Functions::Override::LoadLibraryExA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::LoadLibraryExW, Functions::Override::LoadLibraryExW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::SetFilePointer, Functions::Override::SetFilePointer), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::SetFilePointerEx, Functions::Override::SetFilePointerEx), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::ReadFile, Functions::Override::ReadFile), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::ReadFileEx, Functions::Override::ReadFileEx), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::WriteFile, Functions::Override::WriteFile), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::WriteFileEx, Functions::Override::WriteFileEx), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::WriteConsoleA, Functions::Override::WriteConsoleA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::WriteConsoleW, Functions::Override::WriteConsoleW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::ExpandEnvironmentStringsA, Functions::Override::ExpandEnvironmentStringsA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::ExpandEnvironmentStringsW, Functions::Override::ExpandEnvironmentStringsW), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::GetEnvironmentVariableA, Functions::Override::GetEnvironmentVariableA), "DetachDetours DetourDetach Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::GetEnvironmentVariableW, Functions::Override::GetEnvironmentVariableW), "DetachDetours DetourDetach Failed");
 
-	// TODO: Why can't I replace create process when debugger is attached in VS?
-	// if (!IsDebuggerPresent())
-	{
-		DetourDetach(&(PVOID&)Functions::Cache::CreateProcessW, Functions::Override::CreateProcessW);
-		DetourDetach(&(PVOID&)Functions::Cache::CreateProcessA, Functions::Override::CreateProcessA);
-	}
-
-	DetourDetach(&(PVOID&)Functions::Cache::DeleteFileW, Functions::Override::DeleteFileW);
-	DetourDetach(&(PVOID&)Functions::Cache::DeviceIoControl, Functions::Override::DeviceIoControl);
-	DetourDetach(&(PVOID&)Functions::Cache::GetFileAttributesW, Functions::Override::GetFileAttributesW);
-	DetourDetach(&(PVOID&)Functions::Cache::MoveFileA, Functions::Override::MoveFileA);
-	DetourDetach(&(PVOID&)Functions::Cache::MoveFileW, Functions::Override::MoveFileW);
-	DetourDetach(&(PVOID&)Functions::Cache::MoveFileExA, Functions::Override::MoveFileExA);
-	DetourDetach(&(PVOID&)Functions::Cache::MoveFileExW, Functions::Override::MoveFileExW);
-	DetourDetach(&(PVOID&)Functions::Cache::MoveFileWithProgressW, Functions::Override::MoveFileWithProgressW);
-	DetourDetach(&(PVOID&)Functions::Cache::SetStdHandle, Functions::Override::SetStdHandle);
-	DetourDetach(&(PVOID&)Functions::Cache::LoadLibraryA, Functions::Override::LoadLibraryA);
-	DetourDetach(&(PVOID&)Functions::Cache::LoadLibraryW, Functions::Override::LoadLibraryW);
-	DetourDetach(&(PVOID&)Functions::Cache::LoadLibraryExA, Functions::Override::LoadLibraryExA);
-	DetourDetach(&(PVOID&)Functions::Cache::LoadLibraryExW, Functions::Override::LoadLibraryExW);
-	DetourDetach(&(PVOID&)Functions::Cache::SetFilePointer, Functions::Override::SetFilePointer);
-	DetourDetach(&(PVOID&)Functions::Cache::SetFilePointerEx, Functions::Override::SetFilePointerEx);
-	DetourDetach(&(PVOID&)Functions::Cache::ReadFile, Functions::Override::ReadFile);
-	DetourDetach(&(PVOID&)Functions::Cache::ReadFileEx, Functions::Override::ReadFileEx);
-	DetourDetach(&(PVOID&)Functions::Cache::WriteFile, Functions::Override::WriteFile);
-	DetourDetach(&(PVOID&)Functions::Cache::WriteFileEx, Functions::Override::WriteFileEx);
-	DetourDetach(&(PVOID&)Functions::Cache::WriteConsoleA, Functions::Override::WriteConsoleA);
-	DetourDetach(&(PVOID&)Functions::Cache::WriteConsoleW, Functions::Override::WriteConsoleW);
-	DetourDetach(&(PVOID&)Functions::Cache::ExpandEnvironmentStringsA, Functions::Override::ExpandEnvironmentStringsA);
-	DetourDetach(&(PVOID&)Functions::Cache::ExpandEnvironmentStringsW, Functions::Override::ExpandEnvironmentStringsW);
-	DetourDetach(&(PVOID&)Functions::Cache::GetEnvironmentVariableA, Functions::Override::GetEnvironmentVariableA);
-	DetourDetach(&(PVOID&)Functions::Cache::GetEnvironmentVariableW, Functions::Override::GetEnvironmentVariableW);
-
-	return DetourTransactionCommit();
+	ThrowIfFailed(DetourTransactionCommit(), "DetachDetours DetourTransactionCommit Failed");
 }
 
 bool ProcessAttach(HMODULE hDll)
@@ -239,10 +245,19 @@ bool ProcessDetach(HMODULE hDll)
 	ThreadDetach(hDll);
 	s_bLog = false;
 
-	LONG error = DetachDetours();
-	if (error != NO_ERROR)
+	try
 	{
-		Tblog("<!-- Error detaching detours: %d -->\n", error);
+		DetachDetours();
+	}
+	catch (const std::exception& ex)
+	{
+		DEBUG_BREAK();
+		Tblog("<!-- Error detaching detours: %s -->\n", ex.what());
+	}
+	catch (...)
+	{
+		DEBUG_BREAK();
+		Tblog("<!-- Error detaching detours -->\n");
 	}
 
 	TblogClose();

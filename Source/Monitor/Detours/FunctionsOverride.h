@@ -17,8 +17,6 @@ namespace Functions::Override
 		LPSTARTUPINFOW lpStartupInfo,
 		LPPROCESS_INFORMATION lpProcessInformation)
 	{
-		EnterFunc();
-
 		if (lpCommandLine == nullptr)
 		{
 			lpCommandLine = (LPWSTR)lpApplicationName;
@@ -70,59 +68,6 @@ namespace Functions::Override
 					hStdout,
 					hStderr);
 
-				Print("<t:Child id=\"::%hs::\">\n", szProc);
-
-				WCHAR wzPath[MAX_PATH];
-				FileInfo *pInfo = nullptr;
-				if (lpApplicationName == nullptr)
-				{
-					PWCHAR pwzDst = wzPath;
-					PWCHAR pwzSrc = lpCommandLine;
-
-					if (*pwzSrc == '\"')
-					{
-						WCHAR cQuote = *pwzSrc++;
-
-						while (*pwzSrc && *pwzSrc != cQuote)
-						{
-							*pwzDst++ = *pwzSrc++;
-						}
-
-						*pwzDst++ = '\0';
-					}
-					else
-					{
-						while (*pwzSrc && *pwzSrc != ' ' && *pwzSrc != '\t')
-						{
-							if (*pwzSrc == '\t')
-							{
-								*pwzSrc = ' ';
-							}
-
-							*pwzDst++ = *pwzSrc++;
-						}
-
-						*pwzDst++ = '\0';
-					}
-
-					pInfo = FileNames::FindPartial(wzPath);
-				}
-				else
-				{
-					pInfo = FileNames::FindPartial(lpApplicationName);
-				}
-
-				Print(
-					"<t:Executable>%ls</t:Executable>\n",
-					FileNames::ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo));
-				Print("<t:Line>%le</t:Line>\n", lpCommandLine);
-				Print("</t:Child>\n");
-
-				if (pInfo)
-				{
-					pInfo->m_fAbsorbed = true;
-				}
-
 				if (!(dwCreationFlags & CREATE_SUSPENDED))
 				{
 					ResumeThread(ppi->hThread);
@@ -137,15 +82,8 @@ namespace Functions::Override
 		}
 		__finally
 		{
-			ExitFunc();
-			if (!rv)
-			{
-				Print(
-					"<!-- Warning: CreateProcessW failed %d: %ls; %ls -->\n",
-					GetLastError(),
-					lpApplicationName,
-					lpCommandLine);
-			}
+			s_eventLogger.LogCreateProcess(
+				lpApplicationName);
 		}
 
 		return rv;
@@ -163,8 +101,6 @@ namespace Functions::Override
 		LPSTARTUPINFOA lpStartupInfo,
 		LPPROCESS_INFORMATION lpProcessInformation)
 	{
-		EnterFunc();
-
 		if (lpCommandLine == nullptr)
 		{
 			lpCommandLine = (LPSTR)lpApplicationName;
@@ -216,59 +152,6 @@ namespace Functions::Override
 					hStdout,
 					hStderr);
 
-				Print("<t:Child id=\"::%hs::\">\n", szProc);
-
-				WCHAR wzPath[MAX_PATH];
-				FileInfo *pInfo = nullptr;
-				if (lpApplicationName == nullptr)
-				{
-					PCHAR pszDst = szProc;
-					PCHAR pszSrc = lpCommandLine;
-
-					if (*pszSrc == '\"')
-					{
-						CHAR cQuote = *pszSrc++;
-
-						while (*pszSrc && *pszSrc != cQuote)
-						{
-							*pszDst++ = *pszSrc++;
-						}
-
-						*pszDst++ = '\0';
-					}
-					else
-					{
-						while (*pszSrc && *pszSrc != ' ' && *pszSrc != '\t')
-						{
-							if (*pszSrc == '\t')
-							{
-								*pszSrc = ' ';
-							}
-
-							*pszDst++ = *pszSrc++;
-						}
-
-						*pszDst++ = '\0';
-					}
-
-					pInfo = FileNames::FindPartial(szProc);
-				}
-				else
-				{
-					pInfo = FileNames::FindPartial(lpApplicationName);
-				}
-
-				Print(
-					"<t:Executable>%ls</t:Executable>\n",
-					FileNames::ParameterizeName(wzPath, ARRAYSIZE(wzPath), pInfo));
-				Print("<t:Line>%he</t:Line>\n", lpCommandLine);
-				Print("</t:Child>\n");
-
-				if (pInfo)
-				{
-					pInfo->m_fAbsorbed = true;
-				}
-
 				if (!(dwCreationFlags & CREATE_SUSPENDED))
 				{
 					ResumeThread(ppi->hThread);
@@ -283,15 +166,8 @@ namespace Functions::Override
 		}
 		__finally
 		{
-			ExitFunc();
-			if (!rv)
-			{
-				Print(
-					"<!-- Warning: CreateProcessA failed %d: %hs; %hs -->\n",
-					GetLastError(),
-					lpApplicationName,
-					lpCommandLine);
-			}
+			s_eventLogger.LogCreateProcess(
+				lpApplicationName);
 		}
 
 		return rv;
@@ -321,7 +197,7 @@ namespace Functions::Override
 			s_eventLogger.LogCopyFile(
 				lpExistingFileName,
 				lpNewFileName);
-		};
+		}
 
 		return rv;
 	}
@@ -350,7 +226,7 @@ namespace Functions::Override
 			s_eventLogger.LogCopyFile(
 				lpExistingFileName,
 				lpNewFileName);
-		};
+		}
 
 		return rv;
 	}
@@ -379,7 +255,7 @@ namespace Functions::Override
 			s_eventLogger.LogCopyFile(
 				lpExistingFileName,
 				lpNewFileName);
-		};
+		}
 
 		return rv;
 	}
@@ -402,7 +278,7 @@ namespace Functions::Override
 			s_eventLogger.LogCreateHardLink(
 				lpFileName,
 				lpExistingFileName);
-		};
+		}
 
 		return rv;
 	}
@@ -412,8 +288,6 @@ namespace Functions::Override
 		LPCWSTR lpExistingFileName,
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
@@ -427,7 +301,7 @@ namespace Functions::Override
 			s_eventLogger.LogCreateHardLink(
 				lpFileName,
 				lpExistingFileName);
-		};
+		}
 
 		return rv;
 	}
@@ -487,7 +361,7 @@ namespace Functions::Override
 			{
 				OpenFiles::Forget(a0);
 			}
-		};
+		}
 
 		return rv;
 	}
@@ -534,7 +408,7 @@ namespace Functions::Override
 					OpenFiles::Remember(*lpTargetHandle, pInfo);
 				}
 			}
-		};
+		}
 
 		return rv;
 	}
@@ -586,54 +460,134 @@ namespace Functions::Override
 				OpenFiles::Remember(*hReadPipe, pInfo);
 				OpenFiles::Remember(*hWritePipe, pInfo);
 			}
-		};
+		}
+
+		return rv;
+	}
+
+	BOOL WINAPI CreateDirectoryA(
+		LPCSTR lpPathName,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
+	{
+		bool rv = 0;
+		__try
+		{
+			rv = Functions::Cache::CreateDirectoryA(
+				lpPathName,
+				lpSecurityAttributes);
+		}
+		__finally
+		{
+			s_eventLogger.LogCreateDirectory(
+				lpPathName);
+		}
+
+		return rv;
+	}
+
+	BOOL WINAPI CreateDirectoryExA(
+		LPCSTR lpTemplateDirectory,
+		LPCSTR lpNewDirectory,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
+	{
+		bool rv = 0;
+		__try
+		{
+			rv = Functions::Cache::CreateDirectoryExA(
+				lpTemplateDirectory,
+				lpNewDirectory,
+				lpSecurityAttributes);
+		}
+		__finally
+		{
+			s_eventLogger.LogCreateDirectory(
+				lpNewDirectory);
+		}
 
 		return rv;
 	}
 
 	BOOL WINAPI CreateDirectoryW(
-		LPCWSTR a0,
-		LPSECURITY_ATTRIBUTES a1)
+		LPCWSTR lpPathName,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
-		/* int nIndent = */ EnterFunc();
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::CreateDirectoryW(a0, a1);
+			rv = Functions::Cache::CreateDirectoryW(
+				lpPathName,
+				lpSecurityAttributes);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-				FileInfo *pInfo = FileNames::FindPartial(a0);
-				pInfo->m_fDirectory = true;
-			}
-		};
+			s_eventLogger.LogCreateDirectory(
+				lpPathName);
+		}
 
 		return rv;
 	}
 
 	BOOL WINAPI CreateDirectoryExW(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		LPSECURITY_ATTRIBUTES a2)
+		LPCWSTR lpTemplateDirectory,
+		LPCWSTR lpNewDirectory,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
-		/* int nIndent = */ EnterFunc();
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::CreateDirectoryExW(a0, a1, a2);
+			rv = Functions::Cache::CreateDirectoryExW(
+				lpTemplateDirectory,
+				lpNewDirectory,
+				lpSecurityAttributes);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
+			s_eventLogger.LogCreateDirectory(
+				lpNewDirectory);
+		}
+
+		return rv;
+	}
+
+	HANDLE WINAPI CreateFileA(
+		LPCSTR lpFileName,
+		DWORD dwDesiredAccess,
+		DWORD dwShareMode,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+		DWORD dwCreationDisposition,
+		DWORD dwFlagsAndAttributes,
+		HANDLE hTemplateFile)
+	{
+		HANDLE rv = 0;
+		__try
+		{
+			rv = Functions::Cache::CreateFileA(
+				lpFileName,
+				dwDesiredAccess,
+				dwShareMode,
+				lpSecurityAttributes,
+				dwCreationDisposition,
+				dwFlagsAndAttributes,
+				hTemplateFile);
+		}
+		__finally
+		{
+			switch (dwCreationDisposition)
 			{
-				FileInfo *pInfo = FileNames::FindPartial(a1);
-				pInfo->m_fDirectory = true;
+				case CREATE_NEW:
+				case CREATE_ALWAYS:
+					s_eventLogger.LogCreateFile(lpFileName);
+					break;
+				case OPEN_EXISTING:
+				case OPEN_ALWAYS:
+				case TRUNCATE_EXISTING:
+					s_eventLogger.LogOpenFile(lpFileName);
+					break;
+				default:
+					s_eventLogger.LogError("Unknown dwCreationDisposition: CreateFileA");
+					break;
 			}
-		};
+		}
 
 		return rv;
 	}
@@ -676,7 +630,7 @@ namespace Functions::Override
 					s_eventLogger.LogError("Unknown dwCreationDisposition: CreateFileW");
 					break;
 			}
-		};
+		}
 
 		return rv;
 	}
@@ -726,28 +680,39 @@ namespace Functions::Override
 					}
 				}
 			}
-		};
+		}
 
 		return rv;
 	}
 
-	BOOL WINAPI DeleteFileW(LPCWSTR a0)
+	BOOL WINAPI DeleteFileA(
+		LPCSTR lpFileName)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::DeleteFileW(a0);
+			rv = Functions::Cache::DeleteFileA(lpFileName);
 		}
 		__finally
 		{
-			ExitFunc();
-	#if 0
-			Print("<!-- DeleteFileW(%le -->\n", a0);
-	#endif
-			NoteDelete(a0);
-		};
+			s_eventLogger.LogDeleteFile(lpFileName);
+		}
+
+		return rv;
+	}
+
+	BOOL WINAPI DeleteFileW(
+		LPCWSTR lpFileName)
+	{
+		bool rv = 0;
+		__try
+		{
+			rv = Functions::Cache::DeleteFileW(lpFileName);
+		}
+		__finally
+		{
+			s_eventLogger.LogDeleteFile(lpFileName);
+		}
 
 		return rv;
 	}
@@ -877,506 +842,446 @@ namespace Functions::Override
 					}
 				}
 			}
-		};
+		}
 
 		return rv;
 	}
 
-	DWORD WINAPI GetFileAttributesW(LPCWSTR a0)
+	DWORD WINAPI GetFileAttributesA(
+		LPCSTR lpFileName)
 	{
-		EnterFunc();
-
 		DWORD rv = 0;
 		__try
 		{
-			rv = Functions::Cache::GetFileAttributesW(a0);
+			rv = Functions::Cache::GetFileAttributesA(
+				lpFileName);
 		}
 		__finally
 		{
-			ExitFunc();
-		};
+			s_eventLogger.LogGetFileAttributes(
+				lpFileName);
+		}
+
+		return rv;
+	}
+
+	BOOL WINAPI GetFileAttributesExA(
+		LPCSTR lpFileName,
+		GET_FILEEX_INFO_LEVELS fInfoLevelId,
+		LPVOID lpFileInformation)
+	{
+		BOOL rv = 0;
+		__try
+		{
+			rv = Functions::Cache::GetFileAttributesExA(
+				lpFileName,
+				fInfoLevelId,
+				lpFileInformation);
+		}
+		__finally
+		{
+			s_eventLogger.LogGetFileAttributes(
+				lpFileName);
+		}
+
+		return rv;
+	}
+
+	DWORD WINAPI GetFileAttributesW(
+		LPCWSTR lpFileName)
+	{
+		DWORD rv = 0;
+		__try
+		{
+			rv = Functions::Cache::GetFileAttributesW(
+				lpFileName);
+		}
+		__finally
+		{
+			s_eventLogger.LogGetFileAttributes(
+				lpFileName);
+		}
+
+		return rv;
+	}
+
+	BOOL WINAPI GetFileAttributesExW(
+		LPCWSTR lpFileName,
+		GET_FILEEX_INFO_LEVELS fInfoLevelId,
+		LPVOID lpFileInformation)
+	{
+		BOOL rv = 0;
+		__try
+		{
+			rv = Functions::Cache::GetFileAttributesExW(
+				lpFileName,
+				fInfoLevelId,
+				lpFileInformation);
+		}
+		__finally
+		{
+			s_eventLogger.LogGetFileAttributes(
+				lpFileName);
+		}
 
 		return rv;
 	}
 
 	BOOL WINAPI MoveFileWithProgressW(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		LPPROGRESS_ROUTINE a2,
-		LPVOID a3,
-		DWORD a4)
+		LPCWSTR lpExistingFileName,
+		LPCWSTR lpNewFileName,
+		LPPROGRESS_ROUTINE lpProgressRoutine,
+		LPVOID lpData,
+		DWORD dwFlags)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::MoveFileWithProgressW(a0, a1, a2, a3, a4);
+			rv = Functions::Cache::MoveFileWithProgressW(
+				lpExistingFileName,
+				lpNewFileName,
+				lpProgressRoutine,
+				lpData,
+				dwFlags);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-				NoteRead(a0);
-				NoteWrite(a1);
-			}
-		};
+			s_eventLogger.LogMoveFile(
+				lpExistingFileName,
+				lpNewFileName);
+		}
 
 		return rv;
 	}
 
 	BOOL WINAPI MoveFileA(
-		LPCSTR a0,
-		LPCSTR a1)
+		LPCSTR lpExistingFileName,
+		LPCSTR lpNewFileName)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::MoveFileA(a0, a1);
+			rv = Functions::Cache::MoveFileA(
+				lpExistingFileName,
+				lpNewFileName);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-				NoteRead(a0);
-				NoteCleanup(a0);
-				NoteWrite(a1);
-			}
-		};
+			s_eventLogger.LogMoveFile(
+				lpExistingFileName,
+				lpNewFileName);
+		}
 
 		return rv;
 	}
 
 	BOOL WINAPI MoveFileW(
-		LPCWSTR a0,
-		LPCWSTR a1)
+		LPCWSTR lpExistingFileName,
+		LPCWSTR lpNewFileName)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::MoveFileW(a0, a1);
+			rv = Functions::Cache::MoveFileW(
+				lpExistingFileName,
+				lpNewFileName);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-				NoteRead(a0);
-				NoteCleanup(a0);
-				NoteWrite(a1);
-			}
-		};
+			s_eventLogger.LogMoveFile(
+				lpExistingFileName,
+				lpNewFileName);
+		}
 
 		return rv;
 	}
 
 	BOOL WINAPI MoveFileExA(
-		LPCSTR a0,
-		LPCSTR a1,
-		DWORD a2)
+		LPCSTR lpExistingFileName,
+		LPCSTR lpNewFileName,
+		DWORD dwFlags)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::MoveFileExA(a0, a1, a2);
+			rv = Functions::Cache::MoveFileExA(
+				lpExistingFileName,
+				lpNewFileName,
+				dwFlags);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-				NoteRead(a0);
-				NoteCleanup(a0);
-				NoteWrite(a1);
-			}
-		};
+			s_eventLogger.LogMoveFile(
+				lpExistingFileName,
+				lpNewFileName);
+		}
 
 		return rv;
 	}
 
 	BOOL WINAPI MoveFileExW(
-		LPCWSTR a0,
-		LPCWSTR a1,
-		DWORD a2)
+		LPCWSTR lpExistingFileName,
+		LPCWSTR lpNewFileName,
+		DWORD dwFlags)
 	{
-		EnterFunc();
-
 		bool rv = 0;
 		__try
 		{
-			rv = Functions::Cache::MoveFileExW(a0, a1, a2);
+			rv = Functions::Cache::MoveFileExW(
+				lpExistingFileName,
+				lpNewFileName,
+				dwFlags);
 		}
 		__finally
 		{
-			ExitFunc();
-			if (rv)
-			{
-				NoteRead(a0);
-				NoteCleanup(a0);
-				NoteWrite(a1);
-			}
-		};
+			s_eventLogger.LogMoveFile(
+				lpExistingFileName,
+				lpNewFileName);
+		}
 
 		return rv;
 	}
 
-	void SetHandle(PCSTR pszName, HANDLE h)
+	HMODULE WINAPI LoadLibraryA(
+		LPCSTR lpLibFileName)
 	{
-	#if 0
-		FileInfo *pInfo = OpenFiles::RecallFile(h);
-
-		if (pInfo != nullptr)
-		{
-			Tblog("<!-- hset: %hs (%x) %ls -->\n", pszName, h, pInfo->m_pwzPath);
-		}
-		else
-		{
-			Tblog("<!-- hset: %hs (%x) ***Unknown*** -->\n", pszName, h);
-		}
-	#else
-		(void)pszName;
-		(void)h;
-	#endif
-	}
-
-	BOOL WINAPI SetStdHandle(
-		DWORD a0,
-		HANDLE a1)
-	{
-		EnterFunc();
-
-		bool rv = 0;
+		HMODULE rv = 0;
 		__try
 		{
-			rv = Functions::Cache::SetStdHandle(a0, a1);
-			if (rv && a1 != 0)
-			{
-				switch (a0)
-				{
-					case STD_INPUT_HANDLE:
-						SetHandle("stdin", a1);
-						break;
-					case STD_OUTPUT_HANDLE:
-						SetHandle("stdout", a1);
-						break;
-					case STD_ERROR_HANDLE:
-						SetHandle("stderr", a1);
-						break;
-				}
-			}
+			rv = Functions::Cache::LoadLibraryA(
+				lpLibFileName);
 		}
 		__finally
 		{
-			ExitFunc();
-		};
-
-		return rv;
-	}
-
-	HMODULE WINAPI LoadLibraryA(LPCSTR a0)
-	{
-		EnterFunc();
-
-		HMODULE rv = 0;
-		__try {
-			rv = Functions::Cache::LoadLibraryA(a0);
-		} __finally {
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	HMODULE WINAPI LoadLibraryW(LPCWSTR a0)
-	{
-		EnterFunc();
-
-		HMODULE rv = 0;
-		__try {
-			rv = Functions::Cache::LoadLibraryW(a0);
-		} __finally {
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	HMODULE WINAPI LoadLibraryExA(LPCSTR a0,
-									HANDLE a1,
-									DWORD a2)
-	{
-		EnterFunc();
-
-		HMODULE rv = 0;
-		__try {
-			rv = Functions::Cache::LoadLibraryExA(a0, a1, a2);
-		} __finally {
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	HMODULE WINAPI LoadLibraryExW(LPCWSTR a0,
-									HANDLE a1,
-									DWORD a2)
-	{
-		EnterFunc();
-
-		HMODULE rv = 0;
-		__try {
-			rv = Functions::Cache::LoadLibraryExW(a0, a1, a2);
-		} __finally {
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	DWORD WINAPI SetFilePointer(HANDLE hFile,
-									LONG lDistanceToMove,
-									PLONG lpDistanceToMoveHigh,
-									DWORD dwMoveMethod)
-	{
-		EnterFunc();
-
-		DWORD rv = 0;
-		__try {
-			rv = Functions::Cache::SetFilePointer(hFile,
-									lDistanceToMove,
-									lpDistanceToMoveHigh,
-									dwMoveMethod);
-		} __finally {
-			LONG high = 0;
-			if (lpDistanceToMoveHigh == nullptr) {
-				lpDistanceToMoveHigh = &high;
-			}
-
-			FileInfo * pInfo = OpenFiles::RecallFile(hFile);
-			if (pInfo != nullptr) {
-				if (dwMoveMethod == FILE_END && lDistanceToMove == 0xffffffff) {
-	#if 0
-					Print("<!-- SetFilePointer(APPEND, %le) -->\n",
-						pInfo->m_pwzPath);
-	#endif
-					pInfo->m_fAppend = true;
-				}
-	#if 0
-				else if (dwMoveMethod == FILE_END) {
-					Print("<!-- SetFilePointer(END:%08x:%08x, %le) -->\n",
-						(int)lDistanceToMove,
-						*lpDistanceToMoveHigh,
-						pInfo->m_pwzPath);
-				}
-				else if (dwMoveMethod == FILE_BEGIN) {
-					Print("<!-- SetFilePointer(BEG:%08x:%08x, %le) -->\n",
-						(int)lDistanceToMove,
-						*lpDistanceToMoveHigh,
-						pInfo->m_pwzPath);
-				}
-				else if (dwMoveMethod == FILE_CURRENT) {
-					Print("<!-- SetFilePointer(CUR:%08x:%08x, %le) -->\n",
-						(int)lDistanceToMove,
-						*lpDistanceToMoveHigh,
-						pInfo->m_pwzPath);
-				}
-	#endif
-			}
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	BOOL WINAPI SetFilePointerEx(HANDLE hFile,
-									LARGE_INTEGER liDistanceToMove,
-									PLARGE_INTEGER lpNewFilePointer,
-									DWORD dwMoveMethod)
-	{
-		EnterFunc();
-
-		bool rv = 0;
-		__try {
-			rv = Functions::Cache::SetFilePointerEx(hFile,
-									liDistanceToMove,
-									lpNewFilePointer,
-									dwMoveMethod);
-		} __finally {
-	#if 0
-			FileInfo * pInfo = OpenFiles::RecallFile(hFile);
-			if (pInfo != nullptr) {
-				if (dwMoveMethod == FILE_END) {
-					Print("<!-- SetFilePointerEx(END:%I64d, %le) -->\n",
-						liDistanceToMove.QuadPart,
-						pInfo->m_pwzPath);
-				}
-				else if (dwMoveMethod == FILE_BEGIN) {
-					Print("<!-- SetFilePointerEx(BEG:%I64d, %le) -->\n",
-						liDistanceToMove.QuadPart,
-						pInfo->m_pwzPath);
-				}
-				else if (dwMoveMethod == FILE_CURRENT) {
-					Print("<!-- SetFilePointerEx(CUR:%I64d, %le) -->\n",
-						liDistanceToMove.QuadPart,
-						pInfo->m_pwzPath);
-				}
-			}
-	#endif
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	BOOL WINAPI ReadFile(HANDLE a0,
-							LPVOID a1,
-							DWORD a2,
-							LPDWORD a3,
-							LPOVERLAPPED a4)
-	{
-		EnterFunc();
-
-		bool rv = 0;
-		__try {
-			rv = Functions::Cache::ReadFile(a0, a1, a2, a3, a4);
-		} __finally {
-			if (rv) {
-				OpenFiles::SetRead(a0, a2);
-			}
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	BOOL WINAPI ReadFileEx(HANDLE a0,
-								LPVOID a1,
-								DWORD a2,
-								LPOVERLAPPED a3,
-								LPOVERLAPPED_COMPLETION_ROUTINE a4)
-	{
-		EnterFunc();
-
-		bool rv = 0;
-		__try {
-			rv = Functions::Cache::ReadFileEx(a0, a1, a2, a3, a4);
-		} __finally {
-			if (rv) {
-				OpenFiles::SetRead(a0, a2);
-			}
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	BOOL WINAPI WriteFile(HANDLE a0,
-							LPCVOID a1,
-							DWORD a2,
-							LPDWORD a3,
-							LPOVERLAPPED a4)
-	{
-		EnterFunc();
-
-		bool rv = 0;
-		__try {
-			rv = Functions::Cache::WriteFile(a0, a1, a2, a3, a4);
-		} __finally {
-			OpenFiles::SetWrite(a0, a2);
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	BOOL WINAPI WriteFileEx(HANDLE a0,
-								LPCVOID a1,
-								DWORD a2,
-								LPOVERLAPPED a3,
-								LPOVERLAPPED_COMPLETION_ROUTINE a4)
-	{
-		EnterFunc();
-
-		bool rv = 0;
-		__try {
-			rv = Functions::Cache::WriteFileEx(a0, a1, a2, a3, a4);
-		} __finally {
-			OpenFiles::SetWrite(a0, a2);
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	BOOL WINAPI WriteConsoleA(HANDLE a0,
-									const void* a1,
-									DWORD a2,
-									LPDWORD a3,
-									LPVOID a4)
-	{
-		EnterFunc();
-
-		bool rv = 0;
-		__try {
-			rv = Functions::Cache::WriteConsoleA(a0, a1, a2, a3, a4);
-		} __finally {
-			OpenFiles::SetWrite(a0, a2);
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	BOOL WINAPI WriteConsoleW(HANDLE a0,
-									const void* a1,
-									DWORD a2,
-									LPDWORD a3,
-									LPVOID a4)
-	{
-		EnterFunc();
-
-		bool rv = 0;
-		__try {
-			rv = Functions::Cache::WriteConsoleW(a0, a1, a2, a3, a4);
-		} __finally {
-			OpenFiles::SetWrite(a0, a2);
-			ExitFunc();
-		};
-		return rv;
-	}
-
-	//////////////////////////////////////////////////////////////////////////////
-	//
-	DWORD WINAPI ExpandEnvironmentStringsA(PCSTR lpSrc, PCHAR lpDst, DWORD nSize)
-	{
-		EnterFunc();
-		DWORD rv = 0;
-		__try {
-			rv = Functions::Cache::ExpandEnvironmentStringsA(lpSrc, lpDst, nSize);
+			s_eventLogger.LogLoadLibrary(
+				lpLibFileName);
 		}
-		__finally {
-			if (rv > 0) {
-	#if 0
-				Print("<!-- ExpandEnvironmentStringsA(%he) -->\n", lpSrc);
-	#endif
-			}
-			ExitFunc();
-		};
+
 		return rv;
 	}
 
-	DWORD WINAPI ExpandEnvironmentStringsW(PCWSTR lpSrc, PWCHAR lpDst, DWORD nSize)
+	HMODULE WINAPI LoadLibraryW(
+		LPCWSTR lpLibFileName)
+	{
+		HMODULE rv = 0;
+		__try
+		{
+			rv = Functions::Cache::LoadLibraryW(
+				lpLibFileName);
+		}
+		__finally
+		{
+			s_eventLogger.LogLoadLibrary(
+				lpLibFileName);
+		}
+
+		return rv;
+	}
+
+	HMODULE WINAPI LoadLibraryExA(
+		LPCSTR lpLibFileName,
+		HANDLE hFile,
+		DWORD dwFlags)
 	{
 		EnterFunc();
-		DWORD rv = 0;
-		__try {
-			rv = Functions::Cache::ExpandEnvironmentStringsW(lpSrc, lpDst, nSize);
+
+		HMODULE rv = 0;
+		__try
+		{
+			rv = Functions::Cache::LoadLibraryExA(
+				lpLibFileName,
+				hFile,
+				dwFlags);
 		}
-		__finally {
-			if (rv > 0) {
-	#if 0
-				Print("<!-- ExpandEnvironmentStringsW(%le) -->\n", lpSrc);
-	#endif
-			}
-			ExitFunc();
-		};
+		__finally
+		{
+			s_eventLogger.LogLoadLibrary(
+				lpLibFileName);
+		}
+
+		return rv;
+	}
+
+	HMODULE WINAPI LoadLibraryExW(
+		LPCWSTR lpLibFileName,
+		HANDLE hFile,
+		DWORD dwFlags)
+	{
+		HMODULE rv = 0;
+		__try
+		{
+			rv = Functions::Cache::LoadLibraryExW(
+				lpLibFileName,
+				hFile,
+				dwFlags);
+		}
+		__finally
+		{
+			// TODO: stuck
+			//s_eventLogger.LogLoadLibrary(
+			//	lpLibFileName);
+		}
+
+		return rv;
+	}
+
+	DWORD WINAPI SetFilePointer(
+		HANDLE hFile,
+		LONG lDistanceToMove,
+		PLONG lpDistanceToMoveHigh,
+		DWORD dwMoveMethod)
+	{
+		return Functions::Cache::SetFilePointer(
+			hFile,
+			lDistanceToMove,
+			lpDistanceToMoveHigh,
+			dwMoveMethod);
+	}
+
+	BOOL WINAPI SetFilePointerEx(
+		HANDLE hFile,
+		LARGE_INTEGER liDistanceToMove,
+		PLARGE_INTEGER lpNewFilePointer,
+		DWORD dwMoveMethod)
+	{
+		return Functions::Cache::SetFilePointerEx(
+			hFile,
+			liDistanceToMove,
+			lpNewFilePointer,
+			dwMoveMethod);
+	}
+
+	BOOL WINAPI ReadFile(
+		HANDLE hFile,
+		LPVOID lpBuffer,
+		DWORD nNumberOfBytesToRead,
+		LPDWORD lpNumberOfBytesRead,
+		LPOVERLAPPED lpOverlapped)
+	{
+		return Functions::Cache::ReadFile(
+			hFile,
+			lpBuffer,
+			nNumberOfBytesToRead,
+			lpNumberOfBytesRead,
+			lpOverlapped);
+	}
+
+	BOOL WINAPI ReadFileEx(
+		HANDLE hFile,
+		LPVOID lpBuffer,
+		DWORD nNumberOfBytesToRead,
+		LPOVERLAPPED lpOverlapped,
+		LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
+	{
+		return Functions::Cache::ReadFileEx(
+			hFile,
+			lpBuffer,
+			nNumberOfBytesToRead,
+			lpOverlapped,
+			lpCompletionRoutine);
+	}
+
+	BOOL WINAPI WriteFile(
+		HANDLE hFile,
+		LPCVOID lpBuffer,
+		DWORD nNumberOfBytesToWrite,
+		LPDWORD lpNumberOfBytesWritten,
+		LPOVERLAPPED lpOverlapped)
+	{
+		return Functions::Cache::WriteFile(
+			hFile,
+			lpBuffer,
+			nNumberOfBytesToWrite,
+			lpNumberOfBytesWritten,
+			lpOverlapped);
+	}
+
+	BOOL WINAPI WriteFileEx(
+		HANDLE hFile,
+		LPCVOID lpBuffer,
+		DWORD nNumberOfBytesToWrite,
+		LPOVERLAPPED lpOverlapped,
+		LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
+	{
+		return Functions::Cache::WriteFileEx(
+			hFile,
+			lpBuffer,
+			nNumberOfBytesToWrite,
+			lpOverlapped,
+			lpCompletionRoutine);
+	}
+
+	BOOL WINAPI WriteConsoleA(
+		HANDLE hConsoleOutput,
+		const VOID *lpBuffer,
+		DWORD nNumberOfCharsToWrite,
+		LPDWORD lpNumberOfCharsWritten,
+		LPVOID lpReserved)
+	{
+		return Functions::Cache::WriteConsoleA(
+			hConsoleOutput,
+			lpBuffer,
+			nNumberOfCharsToWrite,
+			lpNumberOfCharsWritten,
+			lpReserved);
+	}
+
+	BOOL WINAPI WriteConsoleW(
+		HANDLE hConsoleOutput,
+		const VOID *lpBuffer,
+		DWORD nNumberOfCharsToWrite,
+		LPDWORD lpNumberOfCharsWritten,
+		LPVOID lpReserved)
+	{
+		return Functions::Cache::WriteConsoleW(
+			hConsoleOutput,
+			lpBuffer,
+			nNumberOfCharsToWrite,
+			lpNumberOfCharsWritten,
+			lpReserved);
+	}
+
+	DWORD WINAPI ExpandEnvironmentStringsA(
+		PCSTR lpSrc,
+		PCHAR lpDst,
+		DWORD nSize)
+	{
+		DWORD rv = 0;
+		__try
+		{
+			rv = Functions::Cache::ExpandEnvironmentStringsA(
+				lpSrc,
+				lpDst,
+				nSize);
+		}
+		__finally
+		{
+			s_eventLogger.LogGetEnvironmentVariable(
+				lpSrc);
+		}
+
+		return rv;
+	}
+
+	DWORD WINAPI ExpandEnvironmentStringsW(
+		PCWSTR lpSrc,
+		PWCHAR lpDst,
+		DWORD nSize)
+	{
+		DWORD rv = 0;
+		__try
+		{
+			rv = Functions::Cache::ExpandEnvironmentStringsW(
+				lpSrc,
+				lpDst,
+				nSize);
+		}
+		__finally
+		{
+			s_eventLogger.LogGetEnvironmentVariable(
+				lpSrc);
+		}
+
 		return rv;
 	}
 
@@ -1397,7 +1302,7 @@ namespace Functions::Override
 		{
 			s_eventLogger.LogGetEnvironmentVariable(
 				lpName);
-		};
+		}
 
 		return rv;
 	}
@@ -1419,7 +1324,7 @@ namespace Functions::Override
 		{
 			s_eventLogger.LogGetEnvironmentVariable(
 				lpName);
-		};
+		}
 
 		return rv;
 	}

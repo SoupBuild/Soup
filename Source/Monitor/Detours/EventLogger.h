@@ -61,12 +61,28 @@ public:
 		WriteMessage(content);
 	}
 
+	void LogCreateDirectory(std::wstring_view fileName)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortFileName = converter.to_bytes(fileName.data());
+		LogCreateDirectory(shortFileName);
+	}
+
+	void LogCreateDirectory(std::string_view fileName)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "CreateDirectory: " << fileName << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
 	void LogCreateHardLink(std::wstring_view fileName, std::wstring_view existingFileName)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 		auto shortFileName = converter.to_bytes(fileName.data());
 		auto shortExistingFileName = converter.to_bytes(existingFileName.data());
-		LogCopyFile(shortFileName, shortExistingFileName);
+		LogCreateHardLink(shortFileName, shortExistingFileName);
 	}
 
 	void LogCreateHardLink(std::string_view fileName, std::string_view existingFileName)
@@ -94,11 +110,43 @@ public:
 		WriteMessage(content);
 	}
 
+	void LogCreateProcess(std::wstring_view fileName)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortFileName = converter.to_bytes(fileName.data());
+		LogCreateProcess(shortFileName);
+	}
+
+	void LogCreateProcess(std::string_view fileName)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "CreateProcess: " << fileName << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
+	void LogDeleteFile(std::wstring_view fileName)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortFileName = converter.to_bytes(fileName.data());
+		LogDeleteFile(shortFileName);
+	}
+
+	void LogDeleteFile(std::string_view fileName)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "DeleteFile: " << fileName << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
 	void LogGetEnvironmentVariable(std::wstring_view name)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 		auto shortName = converter.to_bytes(name.data());
-		LogCreateFile(shortName);
+		LogGetEnvironmentVariable(shortName);
 	}
 
 	void LogGetEnvironmentVariable(std::string_view name)
@@ -110,11 +158,60 @@ public:
 		WriteMessage(content);
 	}
 
+	void LogGetFileAttributes(std::wstring_view fileName)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortFileName = converter.to_bytes(fileName.data());
+		LogGetFileAttributes(shortFileName);
+	}
+
+	void LogGetFileAttributes(std::string_view fileName)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "GetFileAttributes: " << fileName << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
+	void LogLoadLibrary(std::wstring_view fileName)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortFileName = converter.to_bytes(fileName.data());
+		LogLoadLibrary(shortFileName);
+	}
+
+	void LogLoadLibrary(std::string_view fileName)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "LoadLibrary: " << fileName << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
+	void LogMoveFile(std::wstring_view existingFileName, std::wstring_view newFileName)
+	{
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		auto shortExistingFileName = converter.to_bytes(existingFileName.data());
+		auto shortNewFileName = converter.to_bytes(newFileName.data());
+		LogMoveFile(shortExistingFileName, shortNewFileName);
+	}
+
+	void LogMoveFile(std::string_view existingFileName, std::string_view newFileName)
+	{
+		std::stringstream messageBuilder;
+		messageBuilder << "MoveFile: " << existingFileName << " -> " << newFileName << "\n";
+		auto content = messageBuilder.str();
+
+		WriteMessage(content);
+	}
+
 	void LogOpenFile(std::wstring_view fileName)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 		auto shortFileName = converter.to_bytes(fileName.data());
-		LogCreateFile(shortFileName);
+		LogOpenFile(shortFileName);
 	}
 
 	void LogOpenFile(std::string_view fileName)

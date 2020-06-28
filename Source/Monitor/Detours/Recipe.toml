@@ -5,4 +5,7 @@ Dependencies = [
     "../../../Dependencies/Detours/src/",
     "../Shared/",
 ]
+Defines = [
+    # "ENABLE_MONITOR_DEBUG",
+]
 Public = "Module.cpp"

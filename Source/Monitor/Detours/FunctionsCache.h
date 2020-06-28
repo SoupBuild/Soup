@@ -4,6 +4,15 @@ namespace Functions::Cache
 {
 	int (WINAPI* EntryPoint)() = nullptr;
 
+	BOOL (WINAPI* CreateDirectoryA)(
+		LPCSTR,
+		LPSECURITY_ATTRIBUTES) = ::CreateDirectoryA;
+
+	BOOL (WINAPI* CreateDirectoryExA)(
+		LPCSTR,
+		LPCSTR,
+		LPSECURITY_ATTRIBUTES) = ::CreateDirectoryExA;
+
 	BOOL (WINAPI* CreateDirectoryW)(
 		LPCWSTR,
 		LPSECURITY_ATTRIBUTES) = ::CreateDirectoryW;
@@ -81,6 +90,9 @@ namespace Functions::Cache
 		LPSTARTUPINFOA,
 		LPPROCESS_INFORMATION) = ::CreateProcessA;
 
+	BOOL (WINAPI* DeleteFileA)(
+		LPCSTR) = ::DeleteFileA;
+
 	BOOL (WINAPI* DeleteFileW)(
 		LPCWSTR) = ::DeleteFileW;
 
@@ -94,8 +106,21 @@ namespace Functions::Cache
 		LPDWORD,
 		LPOVERLAPPED) = ::DeviceIoControl;
 
+	DWORD (WINAPI* GetFileAttributesA)(
+		LPCSTR) = ::GetFileAttributesA;
+
+	BOOL (WINAPI* GetFileAttributesExA)(
+		LPCSTR,
+		GET_FILEEX_INFO_LEVELS,
+		LPVOID) = ::GetFileAttributesExA;
+
 	DWORD (WINAPI* GetFileAttributesW)(
 		LPCWSTR) = ::GetFileAttributesW;
+
+	BOOL (WINAPI* GetFileAttributesExW)(
+		LPCWSTR,
+		GET_FILEEX_INFO_LEVELS,
+		LPVOID) = ::GetFileAttributesExW;
 
 	BOOL (WINAPI* MoveFileWithProgressW)(
 		LPCWSTR,
@@ -155,10 +180,6 @@ namespace Functions::Cache
 		LPCWSTR,
 		LPCWSTR,
 		LPSECURITY_ATTRIBUTES) = ::CreateHardLinkW;
-
-	BOOL (WINAPI* SetStdHandle)(
-		DWORD,
-		HANDLE) = ::SetStdHandle;
 
 	HMODULE (WINAPI* LoadLibraryA)(
 		LPCSTR) = ::LoadLibraryA;
