@@ -31,9 +31,9 @@ typedef struct _CLIENT : OVERLAPPED
 	LONG nClient;
 	BOOL fAwaitingAccept;
 	PVOID Zero;
-	TBLOG_MESSAGE Message;
+	Monitor::DetourMessage Message;
 
-	BOOL LogMessage(TBLOG_MESSAGE* pMessage, DWORD nBytes);
+	BOOL LogMessage(Monitor::DetourMessage* pMessage, DWORD nBytes);
 	BOOL LogMessageV(PCHAR pszMsg, ...);
 } CLIENT, *PCLIENT;
 
@@ -44,14 +44,14 @@ CHAR s_szPipe[MAX_PATH];
 LONG s_nActiveClients = 0;
 LONG s_nTotalClients = 0;
 LONGLONG s_llStartTime;
-TBLOG_PAYLOAD s_Payload;
+Monitor::DetourPayload s_Payload;
 
 //////////////////////////////////////////////////////////////////////////////
 //
 VOID MyErrExit(PCSTR pszMsg)
 {
 	auto error = GetLastError();
-	std::cerr << "TRACEBLD: Error " << error << " in " << pszMsg << "." << std::endl;
+	std::cerr << "Error " << error << " in " << pszMsg << "." << std::endl;
 	exit(1);
 }
 
@@ -99,7 +99,7 @@ BOOL CLIENT::LogMessageV(PCHAR pszMsg, ...)
 	}
 }
 
-BOOL CLIENT::LogMessage(TBLOG_MESSAGE* pMessage, DWORD nBytes)
+BOOL CLIENT::LogMessage(Monitor::DetourMessage* pMessage, DWORD nBytes)
 {
 	// Sanity check the size of the message.
 	if (nBytes > pMessage->nBytes)
@@ -113,7 +113,7 @@ BOOL CLIENT::LogMessage(TBLOG_MESSAGE* pMessage, DWORD nBytes)
 	}
 
 	// Don't log message if there isn't and message text.
-	DWORD cbWrite = nBytes - offsetof(TBLOG_MESSAGE, szMessage);
+	DWORD cbWrite = nBytes - offsetof(Monitor::DetourMessage, szMessage);
 	if (cbWrite <= 0)
 	{
 		return true;
@@ -336,7 +336,7 @@ DWORD WINAPI WorkerThread(LPVOID pvVoid)
 		}
 		else
 		{
-			auto offset = offsetof(TBLOG_MESSAGE, szMessage);
+			auto offset = offsetof(Monitor::DetourMessage, szMessage);
 			if (nBytes <= offset)
 			{
 				pClient->LogMessageV("</t:Process>\n");
@@ -399,7 +399,6 @@ DWORD main(int argc, char **argv)
 {
 	HANDLE hCompletionPort;
 	BOOL fNeedHelp = FALSE;
-	WCHAR wzzDrop[1024] = L"build\0nmake\0";
 
 	GetSystemTimeAsFileTime((FILETIME *)&s_llStartTime);
 	StringCchPrintfA(
@@ -423,7 +422,7 @@ DWORD main(int argc, char **argv)
 	CreateWorkers(hCompletionPort);
 	CreatePipeConnection(hCompletionPort, 0);
 
-	printf("TRACEBLD: Ready for clients.  Press Ctrl-C to stop.\n");
+	printf("Ready for clients.  Press Ctrl-C to stop.\n");
 
 	/////////////////////////////////////////////////////////// Validate DLLs.
 	//
@@ -434,14 +433,14 @@ DWORD main(int argc, char **argv)
 
 	if (!GetModuleFileNameA(nullptr, szTmpPath, ARRAYSIZE(szTmpPath)))
 	{
-		printf("TRACEBLD: Couldn't retreive exe name.\n");
+		printf("Couldn't retreive exe name.\n");
 		return 9002;
 	}
 
 	if (!GetFullPathNameA(szTmpPath, ARRAYSIZE(szExePath), szExePath, &pszFilePart) ||
 		pszFilePart == nullptr)
 	{
-		printf("TRACEBLD: Error: %s is not a valid path name..\n", szTmpPath);
+		printf("Error: %s is not a valid path name..\n", szTmpPath);
 		return 9002;
 	}
 
@@ -485,8 +484,8 @@ DWORD main(int argc, char **argv)
 		}
 	}
 
-	std::cout << "TRACEBLD: Starting: '" << szCommand << "'" << std::endl;
-	std::cout << "TRACEBLD:   with '" << szDllPath << "'" << std::endl;
+	std::cout << "Starting: '" << szCommand << "'" << std::endl;
+	std::cout << "  with '" << szDllPath << "'" << std::endl;
 
 	DWORD dwFlags = CREATE_DEFAULT_ERROR_MODE | CREATE_SUSPENDED;
 
@@ -508,7 +507,7 @@ DWORD main(int argc, char **argv)
 		szDllPath,
 		nullptr))
 	{
-		std::cout << "TRACEBLD: DetourCreateProcessWithDllEx failed: " << GetLastError() << std::endl;
+		std::cout << "DetourCreateProcessWithDllEx failed: " << GetLastError() << std::endl;
 		return 9007;
 	}
 
@@ -518,18 +517,14 @@ DWORD main(int argc, char **argv)
 	s_Payload.nGeneology = 1;
 	s_Payload.rGeneology[0] = 0;
 	StringCchCopyW(s_Payload.wzParents, ARRAYSIZE(s_Payload.wzParents), L"");
-	CopyEnvironment(s_Payload.wzzDrop, wzzDrop);
-	LPWCH pwStrings = GetEnvironmentStringsW();
-	CopyEnvironment(s_Payload.wzzEnvironment, pwStrings);
-	FreeEnvironmentStringsW(pwStrings);
 
 	if (!DetourCopyPayloadToProcess(
 		pi.hProcess,
-		s_guidTrace,
+		Monitor::GuidTrace,
 		&s_Payload,
 		sizeof(s_Payload)))
 	{
-		std::cout << "TRACEBLD: DetourCopyPayloadToProcess failed: " << GetLastError() << std::endl;
+		std::cout << "DetourCopyPayloadToProcess failed: " << GetLastError() << std::endl;
 		return 9008;
 	}
 
@@ -541,11 +536,11 @@ DWORD main(int argc, char **argv)
 
 	if (!GetExitCodeProcess(pi.hProcess, &dwResult))
 	{
-		printf("TRACEBLD: GetExitCodeProcess failed: %d\n", GetLastError());
+		printf("GetExitCodeProcess failed: %d\n", GetLastError());
 		return 9008;
 	}
 
-	printf("TRACEBLD: %d processes.\n", s_nTotalClients);
+	printf("%d processes.\n", s_nTotalClients);
 
 	return dwResult;
 }

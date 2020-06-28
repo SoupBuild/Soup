@@ -3,6 +3,8 @@
 #include "Helpers.h"
 #include "LoggingSystem.h"
 
+static EventLogger s_eventLogger;
+
 namespace Functions::Override
 {
 	BOOL WINAPI CreateProcessW(
@@ -710,8 +712,6 @@ namespace Functions::Override
 		HANDLE hFile,
 		DWORD dwFlags)
 	{
-		EnterFunc();
-
 		HMODULE rv = 0;
 		__try
 		{

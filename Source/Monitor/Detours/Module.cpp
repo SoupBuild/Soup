@@ -28,7 +28,6 @@ module;
 #define PULONG_PTR PVOID
 #define PLONG_PTR PVOID
 #define ULONG_PTR PVOID
-#define DEBUG_BREAK() DebugBreak()
 
 export module Monitor.Detours;
 import Detours;
@@ -148,7 +147,6 @@ void DetachDetours()
 
 bool ProcessAttach(HMODULE hDll)
 {
-	InitializeCriticalSection(&s_csPipe);
 	InitializeCriticalSection(&s_csChildPayload);
 
 	s_bLog = false;
@@ -159,16 +157,16 @@ bool ProcessAttach(HMODULE hDll)
 	s_hKernel32 = nullptr;
 
 	PBYTE xCreate = (PBYTE)DetourCodeFromPointer((PVOID)Functions::Cache::CreateProcessW, nullptr);
-	TBLOG_PAYLOAD* pPayload = nullptr;
+	Monitor::DetourPayload* pPayload = nullptr;
 
 	for (HMODULE hMod = nullptr; (hMod = DetourEnumerateModules(hMod)) != nullptr;)
 	{
 		ULONG cbData;
-		PVOID pvData = DetourFindPayload(hMod, s_guidTrace, &cbData);
+		PVOID pvData = DetourFindPayload(hMod, Monitor::GuidTrace, &cbData);
 
 		if (pvData != nullptr && pPayload == nullptr)
 		{
-			pPayload = (TBLOG_PAYLOAD*)pvData;
+			pPayload = (Monitor::DetourPayload*)pvData;
 		}
 
 		ULONG cbMod = DetourGetModuleSize(hMod);
@@ -198,7 +196,7 @@ bool ProcessAttach(HMODULE hDll)
 		GetProcAddress(s_hKernel32, "PrivCopyFileExW");
 	if (Functions::Cache::PrivCopyFileExW == nullptr)
 	{
-		DEBUG_BREAK();
+		s_eventLogger.LogError("Failed to GetProcAddress PrivCopyFileExW");
 	}
 
 	try

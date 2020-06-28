@@ -253,7 +253,7 @@ private:
 		if (m_pipeHandle == INVALID_HANDLE_VALUE)
 			throw std::runtime_error("Pipe not initialized.");
 			
-		TBLOG_MESSAGE message;
+		Monitor::DetourMessage message;
 		message.nBytes = content.size() + sizeof(DWORD);
 		std::copy(content.begin(), content.end(), message.szMessage);
 		message.szMessage[content.size()] = 0;
