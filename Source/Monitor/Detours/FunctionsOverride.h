@@ -51,7 +51,6 @@ namespace Functions::Override
 			{
 				CreateProcessInternals(
 					ppi->hProcess,
-					ppi->dwProcessId,
 					szProc);
 
 				if (!(dwCreationFlags & CREATE_SUSPENDED))
@@ -121,7 +120,6 @@ namespace Functions::Override
 			{
 				CreateProcessInternals(
 					ppi->hProcess,
-					ppi->dwProcessId,
 					szProc);
 
 				if (!(dwCreationFlags & CREATE_SUSPENDED))
@@ -322,8 +320,6 @@ namespace Functions::Override
 				FileInfo *pInfo = FileNames::FindPartial(szPipe);
 
 				pInfo->m_fCleanup = true;
-				OpenFiles::Remember(*hReadPipe, pInfo);
-				OpenFiles::Remember(*hWritePipe, pInfo);
 			}
 		}
 
@@ -500,56 +496,6 @@ namespace Functions::Override
 		return rv;
 	}
 
-	HANDLE WINAPI CreateFileMappingW(
-		HANDLE hFile,
-		LPSECURITY_ATTRIBUTES a1,
-		DWORD flProtect,
-		DWORD a3,
-		DWORD a4,
-		LPCWSTR a5)
-	{
-		/* int nIndent = */ EnterFunc();
-		HANDLE rv = 0;
-		__try
-		{
-			rv = Functions::Cache::CreateFileMappingW(hFile, a1, flProtect, a3, a4, a5);
-		}
-		__finally
-		{
-			ExitFunc();
-			if (rv != INVALID_HANDLE_VALUE)
-			{
-				FileInfo *pInfo = OpenFiles::RecallFile(hFile);
-
-				if (pInfo != nullptr)
-				{
-					switch (flProtect)
-					{
-						case PAGE_READONLY:
-							pInfo->m_fRead = true;
-							break;
-						case PAGE_READWRITE:
-							pInfo->m_fRead = true;
-							pInfo->m_fWrite = true;
-							break;
-						case PAGE_WRITECOPY:
-							pInfo->m_fRead = true;
-							break;
-						case PAGE_EXECUTE_READ:
-							pInfo->m_fRead = true;
-							break;
-						case PAGE_EXECUTE_READWRITE:
-							pInfo->m_fRead = true;
-							pInfo->m_fWrite = true;
-							break;
-					}
-				}
-			}
-		}
-
-		return rv;
-	}
-
 	BOOL WINAPI DeleteFileA(
 		LPCSTR lpFileName)
 	{
@@ -633,83 +579,6 @@ namespace Functions::Override
 
 			Print("%s\n", szBuffer);
 		}
-	}
-
-	BOOL WINAPI DeviceIoControl(
-		HANDLE a0,
-		DWORD a1,
-		LPVOID a2,
-		DWORD a3,
-		LPVOID a4,
-		DWORD a5,
-		LPDWORD a6,
-		LPOVERLAPPED a7)
-	{
-		EnterFunc();
-		DWORD d6 = 0;
-		if (a6 == nullptr)
-		{
-			a6 = &d6;
-		}
-
-		bool rv = 0;
-		__try
-		{
-			rv = Functions::Cache::DeviceIoControl(a0, a1, a2, a3, a4, a5, a6, a7);
-		}
-		__finally
-		{
-			ExitFunc();
-			OpenFiles::SetRead(a0, 0);
-			OpenFiles::SetWrite(a0, 0);
-			if (rv && a1 != 0x390008 && a1 != 0x4d0008 && a1 != 0x6d0008)
-			{
-				FileInfo *pInfo = OpenFiles::RecallFile(a0);
-
-				DWORD DeviceType = (a1 & 0xffff0000) >> 16;
-				DWORD Access = (a1 & 0x0000c000) >> 14;
-				DWORD Function = (a1 & 0x00003ffc) >> 2;
-				DWORD Method = (a1 & 0x00000003) >> 0;
-
-				if (pInfo)
-				{
-					Print(
-						"<!-- DeviceIoControl %x [dev=%x,acc=%x,fun=%x,mth=%x] on %ls! -->\n",
-						a1,
-						DeviceType,
-						Access,
-						Function,
-						Method,
-						pInfo->m_pwzPath);
-				}
-				else
-				{
-					Print(
-						"<!-- DeviceIoControl %x [dev=%x,acc=%x,fun=%x,mth=%x,in=%d,out=%d/%d] on (%x)! -->\n",
-						a1,
-						DeviceType,
-						Access,
-						Function,
-						Method,
-						a3,
-						*a6,
-						a5,
-						a0);
-
-					if (a3 > 0)
-					{
-						Dump(a2, a3);
-					}
-
-					if (a5 > 0)
-					{
-						Dump(a4, (*a6 < a5) ? *a6 : a5);
-					}
-				}
-			}
-		}
-
-		return rv;
 	}
 
 	DWORD WINAPI GetFileAttributesA(

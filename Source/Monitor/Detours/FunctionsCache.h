@@ -40,14 +40,6 @@ namespace Functions::Cache
 		DWORD,
 		HANDLE) = ::CreateFileW;
 
-	HANDLE (WINAPI* CreateFileMappingW)(
-		HANDLE,
-		LPSECURITY_ATTRIBUTES,
-		DWORD,
-		DWORD,
-		DWORD,
-		LPCWSTR) = ::CreateFileMappingW;
-
 	BOOL (WINAPI* CreatePipe)(
 		PHANDLE,
 		PHANDLE,
@@ -83,16 +75,6 @@ namespace Functions::Cache
 
 	BOOL (WINAPI* DeleteFileW)(
 		LPCWSTR) = ::DeleteFileW;
-
-	BOOL (WINAPI* DeviceIoControl)(
-		HANDLE,
-		DWORD,
-		LPVOID,
-		DWORD,
-		LPVOID,
-		DWORD,
-		LPDWORD,
-		LPOVERLAPPED) = ::DeviceIoControl;
 
 	DWORD (WINAPI* GetFileAttributesA)(
 		LPCSTR) = ::GetFileAttributesA;
