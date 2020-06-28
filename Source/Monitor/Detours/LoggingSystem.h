@@ -373,36 +373,6 @@ PWCHAR LoadCommandLine(PCWSTR pwz, PWCHAR pwzDst, PWCHAR pwzDstEnd)
     return pwzDst;
 }
 
-void TestHandle(PCSTR pszName, HANDLE h)
-{
-    FileInfo *pInfo = OpenFiles::RecallFile(h);
-
-    if (pInfo != nullptr) {
-#if 1 // Ignore PIPEs.
-        if (FileNames::PrefixMatch(pInfo->m_pwzPath, L"\\\\.\\PIPE\\")) {
-            // Ignore;
-        }
-        else
-#endif
-            if (FileNames::SuffixMatch(pInfo->m_pwzPath, L"\\conout$")) {
-            // Ignore;
-        }
-        else if (FileNames::SuffixMatch(pInfo->m_pwzPath, L"\\conin$")) {
-            // Ignore;
-        }
-        else if (FileNames::SuffixMatch(pInfo->m_pwzPath, L"\\nul")) {
-            // Ignore;
-        }
-        else {
-            Tblog("<%hs%hs>%le</%hs>\n",
-                  pszName, pInfo->m_fAppend ? " append=\"true\"" : "", pInfo->m_pwzPath, pszName);
-        }
-    }
-    else {
-        Tblog("<!-- hand: %hs (%x) ***Unknown*** -->\n", pszName, h);
-    }
-}
-
 LONG WINAPI DetourAttachIf(PVOID *ppPointer, PVOID pDetour)
 {
     if (*ppPointer == nullptr) {

@@ -49,24 +49,10 @@ namespace Functions::Override
 
 			if (rv)
 			{
-				HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-				HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-				HANDLE hStderr = GetStdHandle(STD_ERROR_HANDLE);
-
-				if (lpStartupInfo != nullptr && (lpStartupInfo->dwFlags & STARTF_USESTDHANDLES) != 0)
-				{
-					hStdin = lpStartupInfo->hStdInput;
-					hStdout = lpStartupInfo->hStdOutput;
-					hStderr = lpStartupInfo->hStdError;
-				}
-
 				CreateProcessInternals(
 					ppi->hProcess,
 					ppi->dwProcessId,
-					szProc,
-					hStdin,
-					hStdout,
-					hStderr);
+					szProc);
 
 				if (!(dwCreationFlags & CREATE_SUSPENDED))
 				{
@@ -133,24 +119,10 @@ namespace Functions::Override
 
 			if (rv)
 			{
-				HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-				HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-				HANDLE hStderr = GetStdHandle(STD_ERROR_HANDLE);
-
-				if (lpStartupInfo != nullptr && (lpStartupInfo->dwFlags & STARTF_USESTDHANDLES) != 0)
-				{
-					hStdin = lpStartupInfo->hStdInput;
-					hStdout = lpStartupInfo->hStdOutput;
-					hStderr = lpStartupInfo->hStdError;
-				}
-
 				CreateProcessInternals(
 					ppi->hProcess,
 					ppi->dwProcessId,
-					szProc,
-					hStdin,
-					hStdout,
-					hStderr);
+					szProc);
 
 				if (!(dwCreationFlags & CREATE_SUSPENDED))
 				{
@@ -1231,10 +1203,6 @@ namespace Functions::Override
 		TblogOpen();
 
 		SaveEnvironment();
-
-		TestHandle("t:StdIn", GetStdHandle(STD_INPUT_HANDLE));
-		TestHandle("t:StdOut", GetStdHandle(STD_OUTPUT_HANDLE));
-		TestHandle("t:StdErr", GetStdHandle(STD_ERROR_HANDLE));
 
 		return Functions::Cache::EntryPoint();
 	}

@@ -28,11 +28,6 @@ export struct TBLOG_PAYLOAD
 	DWORD nGeneology;
 	DWORD rGeneology[64];
 	WCHAR wzParents[256];
-	WCHAR wzStdin[256];
-	WCHAR wzStdout[256];
-	WCHAR wzStderr[256];
-	BOOL fStdoutAppend;
-	BOOL fStderrAppend;
 	WCHAR wzzDrop[1024];  // Like an environment: zero terminated strings with a last zero.
 	WCHAR wzzEnvironment[32768];
 };

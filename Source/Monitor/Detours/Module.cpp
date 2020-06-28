@@ -64,8 +64,6 @@ void AttachDetours()
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateFileW, Functions::Override::CreateFileW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreatePipe, Functions::Override::CreatePipe), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateFileMappingW, Functions::Override::CreateFileMappingW), "AttachDetours DetourAttach Failed");
-	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CloseHandle, Functions::Override::CloseHandle), "AttachDetours DetourAttach Failed");
-	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::DuplicateHandle, Functions::Override::DuplicateHandle), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateProcessW, Functions::Override::CreateProcessW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateProcessA, Functions::Override::CreateProcessA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::DeleteFileA, Functions::Override::DeleteFileA), "AttachDetours DetourAttach Failed");
@@ -120,8 +118,6 @@ void DetachDetours()
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateFileW, Functions::Override::CreateFileW), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreatePipe, Functions::Override::CreatePipe), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateFileMappingW, Functions::Override::CreateFileMappingW), "DetachDetours DetourDetach Failed");
-	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CloseHandle, Functions::Override::CloseHandle), "DetachDetours DetourDetach Failed");
-	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::DuplicateHandle, Functions::Override::DuplicateHandle), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateProcessW, Functions::Override::CreateProcessW), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateProcessA, Functions::Override::CreateProcessA), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::DeleteFileA, Functions::Override::DeleteFileA), "DetachDetours DetourDetach Failed");
@@ -203,9 +199,6 @@ bool ProcessAttach(HMODULE hDll)
 
 	CopyMemory(&s_Payload, pPayload, sizeof(s_Payload));
 
-	LoadStdHandleName(STD_INPUT_HANDLE, s_Payload.wzStdin, false);
-	LoadStdHandleName(STD_OUTPUT_HANDLE, s_Payload.wzStdout, s_Payload.fStdoutAppend);
-	LoadStdHandleName(STD_ERROR_HANDLE, s_Payload.wzStderr, s_Payload.fStderrAppend);
 	s_nTraceProcessId = s_Payload.nTraceProcessId;
 
 	GetModuleFileNameA(s_hInst, s_szDllPath, ARRAYSIZE(s_szDllPath));

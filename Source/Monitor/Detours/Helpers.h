@@ -2331,47 +2331,10 @@ static bool IsInherited(HANDLE hHandle)
 	return false;
 }
 
-static void SaveStdHandleName(HANDLE hFile, PWCHAR pwzBuffer, BOOL* fAppend)
-{
-	pwzBuffer[0] = '\0';
-
-	if ((hFile != INVALID_HANDLE_VALUE) && IsInherited(hFile))
-	{
-		FileInfo * pInfo = OpenFiles::RecallFile(hFile);
-		if (pInfo)
-		{
-			Copy(pwzBuffer, pInfo->m_pwzPath);
-			if (pInfo->m_fAppend && fAppend != nullptr)
-			{
-				*fAppend = true;
-			}
-		}
-	}
-}
-
-static void LoadStdHandleName(DWORD id, PCWSTR pwzBuffer, bool fAppend)
-{
-	HANDLE hFile = GetStdHandle(id);
-
-	if ((hFile != INVALID_HANDLE_VALUE) && pwzBuffer[0] != '\0')
-	{
-		FileInfo *pInfo = FileNames::FindPartial(pwzBuffer);
-		if (fAppend)
-		{
-			pInfo->m_fAppend = true;
-		}
-
-		OpenFiles::Remember(hFile, pInfo);
-	}
-}
-
 bool CreateProcessInternals(
 	HANDLE hProcess,
 	DWORD nProcessId,
-	PCHAR pszId,
-	HANDLE hStdin,
-	HANDLE hStdout,
-	HANDLE hStderr)
+	PCHAR pszId)
 {
 	EnterCriticalSection(&s_csChildPayload);
 
@@ -2385,10 +2348,6 @@ bool CreateProcessInternals(
 	s_ChildPayload.rGeneology[s_ChildPayload.nGeneology]
 		= (DWORD)InterlockedIncrement(&s_nChildCnt);
 	s_ChildPayload.nGeneology++;
-
-	SaveStdHandleName(hStdin, s_ChildPayload.wzStdin, nullptr);
-	SaveStdHandleName(hStdout, s_ChildPayload.wzStdout, &s_ChildPayload.fStdoutAppend);
-	SaveStdHandleName(hStderr, s_ChildPayload.wzStderr, &s_ChildPayload.fStderrAppend);
 
 	DetourCopyPayloadToProcess(hProcess, s_guidTrace, &s_ChildPayload, sizeof(s_ChildPayload));
 

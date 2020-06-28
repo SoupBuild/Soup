@@ -517,9 +517,6 @@ DWORD main(int argc, char **argv)
 	s_Payload.nTraceProcessId = GetCurrentProcessId();
 	s_Payload.nGeneology = 1;
 	s_Payload.rGeneology[0] = 0;
-	StringCchCopyW(s_Payload.wzStdin, ARRAYSIZE(s_Payload.wzStdin), L"\\\\.\\CONIN$");
-	StringCchCopyW(s_Payload.wzStdout, ARRAYSIZE(s_Payload.wzStdout), L"\\\\.\\CONOUT$");
-	StringCchCopyW(s_Payload.wzStderr, ARRAYSIZE(s_Payload.wzStderr), L"\\\\.\\CONOUT$");
 	StringCchCopyW(s_Payload.wzParents, ARRAYSIZE(s_Payload.wzParents), L"");
 	CopyEnvironment(s_Payload.wzzDrop, wzzDrop);
 	LPWCH pwStrings = GetEnvironmentStringsW();
