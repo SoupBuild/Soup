@@ -17,10 +17,28 @@ export constexpr const char* TBLOG_PIPE_NAME = TBLOG_PIPE_NAMEA;
 
 namespace Monitor
 {
+	export enum class DetourMessageType : uint64_t
+	{
+		Exit,
+		Error,
+		CopyFile,
+		CreateDirectory,
+		CreateFile,
+		CreateHardLink,
+		CreateProcess,
+		DeleteFile,
+		GetEnvironmentVariable,
+		GetFileAttributes,
+		LoadLibrary,
+		MoveFile,
+		OpenFile,
+	};
+
 	export struct DetourMessage
 	{
-		DWORD nBytes;
-		CHAR szMessage[32764]; // 32768 - sizeof(nBytes)
+		DetourMessageType Type;
+		uint64_t ContentSize;
+		byte Content[2048 - sizeof(Type) - sizeof(ContentSize)];
 	};
 
 	export struct DetourPayload

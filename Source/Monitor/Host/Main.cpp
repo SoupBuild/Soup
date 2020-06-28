@@ -19,13 +19,7 @@ import Detours;
 
 #include "DetouredProcess.h"
 
-enum
-{
-	CLIENT_AWAITING_PIPE_ACCEPT = 0x21,
-	CLIENT_AWAITING_PIPE_DATA   = 0x22,
-};
-
-typedef struct _CLIENT : OVERLAPPED
+struct CLIENT : OVERLAPPED
 {
 	HANDLE hPipe;
 	LONG nClient;
@@ -35,7 +29,7 @@ typedef struct _CLIENT : OVERLAPPED
 
 	BOOL LogMessage(Monitor::DetourMessage* pMessage, DWORD nBytes);
 	BOOL LogMessageV(PCHAR pszMsg, ...);
-} CLIENT, *PCLIENT;
+};
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -102,9 +96,9 @@ BOOL CLIENT::LogMessageV(PCHAR pszMsg, ...)
 BOOL CLIENT::LogMessage(Monitor::DetourMessage* pMessage, DWORD nBytes)
 {
 	// Sanity check the size of the message.
-	if (nBytes > pMessage->nBytes)
+	if (nBytes > pMessage->ContentSize)
 	{
-		nBytes = pMessage->nBytes;
+		nBytes = pMessage->ContentSize;
 	}
 
 	if (nBytes >= sizeof(*pMessage))
@@ -113,20 +107,63 @@ BOOL CLIENT::LogMessage(Monitor::DetourMessage* pMessage, DWORD nBytes)
 	}
 
 	// Don't log message if there isn't and message text.
-	DWORD cbWrite = nBytes - offsetof(Monitor::DetourMessage, szMessage);
+	DWORD cbWrite = nBytes - offsetof(Monitor::DetourMessage, Content);
 	if (cbWrite <= 0)
 	{
 		return true;
 	}
 
+	switch (pMessage->Type)
+	{
+		case Monitor::DetourMessageType::Exit:
+			std::cout << "Exit: ";
+			break;
+		case Monitor::DetourMessageType::Error:
+			std::cout << "Error: ";
+			break;
+		case Monitor::DetourMessageType::CopyFile:
+			std::cout << "CopyFile: ";
+			break;
+		case Monitor::DetourMessageType::CreateDirectory:
+			std::cout << "CreateDirectory: ";
+			break;
+		case Monitor::DetourMessageType::CreateFile:
+			std::cout << "CreateFile: ";
+			break;
+		case Monitor::DetourMessageType::CreateHardLink:
+			std::cout << "CreateHardLink: ";
+			break;
+		case Monitor::DetourMessageType::CreateProcess:
+			std::cout << "CreateProcess: ";
+			break;
+		case Monitor::DetourMessageType::DeleteFile:
+			std::cout << "DeleteFile: ";
+			break;
+		case Monitor::DetourMessageType::GetEnvironmentVariable:
+			std::cout << "GetEnvironmentVariable: ";
+			break;
+		case Monitor::DetourMessageType::GetFileAttributes:
+			std::cout << "GetFileAttributes: ";
+			break;
+		case Monitor::DetourMessageType::LoadLibrary:
+			std::cout << "LoadLibrary: ";
+			break;
+		case Monitor::DetourMessageType::MoveFile:
+			std::cout << "MoveFile: ";
+			break;
+		case Monitor::DetourMessageType::OpenFile:
+			std::cout << "OpenFile: ";
+			break;
+	}
+
 	// Null terminate the string
-	pMessage->szMessage[nBytes] = 0;
-	std::cout << pMessage->szMessage;
+	pMessage->Content[nBytes] = 0;
+	std::cout << pMessage->Content << std::endl;
 
 	return true;
 }
 
-BOOL CloseConnection(PCLIENT pClient)
+BOOL CloseConnection(CLIENT* pClient)
 {
 	InterlockedDecrement(&s_nActiveClients);
 	if (pClient != nullptr)
@@ -153,7 +190,7 @@ BOOL CloseConnection(PCLIENT pClient)
 
 // Creates a pipe instance and initiate an accept request.
 //
-PCLIENT CreatePipeConnection(HANDLE hCompletionPort, LONG nClient)
+CLIENT* CreatePipeConnection(HANDLE hCompletionPort, LONG nClient)
 {
 	HANDLE hPipe = CreateNamedPipeA(
 		s_szPipe,                   // pipe name
@@ -174,7 +211,7 @@ PCLIENT CreatePipeConnection(HANDLE hCompletionPort, LONG nClient)
 
 	// Allocate the client data structure.
 	//
-	PCLIENT pClient = (PCLIENT)GlobalAlloc(GPTR, sizeof(CLIENT));
+	auto pClient = (CLIENT*)GlobalAlloc(GPTR, sizeof(CLIENT));
 	if (pClient == nullptr)
 	{
 		MyErrExit("GlobalAlloc pClient");
@@ -227,7 +264,7 @@ PCLIENT CreatePipeConnection(HANDLE hCompletionPort, LONG nClient)
 	return pClient;
 }
 
-BOOL DoRead(PCLIENT pClient)
+BOOL DoRead(CLIENT* pClient)
 {
 	SetLastError(NO_ERROR);
 	DWORD nBytes = 0;
@@ -276,7 +313,7 @@ BOOL DoRead(PCLIENT pClient)
 
 DWORD WINAPI WorkerThread(LPVOID pvVoid)
 {
-	PCLIENT pClient;
+	CLIENT* pClient;
 	BOOL b;
 	LPOVERLAPPED lpo;
 	DWORD nBytes;
@@ -324,7 +361,7 @@ DWORD WINAPI WorkerThread(LPVOID pvVoid)
 				InterlockedIncrement(&s_nActiveClients);
 				pClient->fAwaitingAccept = FALSE;
 
-				PCLIENT pNew = CreatePipeConnection(hCompletionPort, nClient);
+				CLIENT* pNew = CreatePipeConnection(hCompletionPort, nClient);
 
 				fAgain = FALSE;
 				if (pNew != nullptr)
@@ -336,7 +373,7 @@ DWORD WINAPI WorkerThread(LPVOID pvVoid)
 		}
 		else
 		{
-			auto offset = offsetof(Monitor::DetourMessage, szMessage);
+			auto offset = offsetof(Monitor::DetourMessage, Content);
 			if (nBytes <= offset)
 			{
 				pClient->LogMessageV("</t:Process>\n");
@@ -418,14 +455,9 @@ DWORD main(int argc, char **argv)
 	}
 
 	// Create completion port worker threads.
-	//
 	CreateWorkers(hCompletionPort);
 	CreatePipeConnection(hCompletionPort, 0);
 
-	printf("Ready for clients.  Press Ctrl-C to stop.\n");
-
-	/////////////////////////////////////////////////////////// Validate DLLs.
-	//
 	CHAR szTmpPath[MAX_PATH];
 	CHAR szExePath[MAX_PATH];
 	CHAR szDllPath[MAX_PATH];

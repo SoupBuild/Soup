@@ -68,11 +68,11 @@ public:
 
 	void LogCopyFile(std::string_view existingFileName, std::string_view newFileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "CopyFile: " << existingFileName << " -> " << newFileName << "\n";
-		auto content = messageBuilder.str();
+		std::stringstream contentBuilder;
+		contentBuilder << existingFileName << "&" << newFileName;
+		auto content = contentBuilder.str();
 
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::CopyFile, content);
 	}
 
 	void LogCreateDirectory(std::wstring_view fileName)
@@ -84,11 +84,7 @@ public:
 
 	void LogCreateDirectory(std::string_view fileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "CreateDirectory: " << fileName << "\n";
-		auto content = messageBuilder.str();
-
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::CreateDirectory, fileName);
 	}
 
 	void LogCreateHardLink(std::wstring_view fileName, std::wstring_view existingFileName)
@@ -101,11 +97,11 @@ public:
 
 	void LogCreateHardLink(std::string_view fileName, std::string_view existingFileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "CreateHardLink: " << fileName << " -> " << existingFileName << "\n";
-		auto content = messageBuilder.str();
+		std::stringstream contentBuilder;
+		contentBuilder << fileName << "&" << existingFileName;
+		auto content = contentBuilder.str();
 
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::CreateHardLink, content);
 	}
 
 	void LogCreateFile(std::wstring_view fileName)
@@ -117,11 +113,7 @@ public:
 
 	void LogCreateFile(std::string_view fileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "CreateFile: " << fileName << "\n";
-		auto content = messageBuilder.str();
-
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::CreateFile, fileName);
 	}
 
 	void LogCreateProcess(std::wstring_view fileName)
@@ -133,11 +125,7 @@ public:
 
 	void LogCreateProcess(std::string_view fileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "CreateProcess: " << fileName << "\n";
-		auto content = messageBuilder.str();
-
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::CreateProcess, fileName);
 	}
 
 	void LogDeleteFile(std::wstring_view fileName)
@@ -149,11 +137,7 @@ public:
 
 	void LogDeleteFile(std::string_view fileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "DeleteFile: " << fileName << "\n";
-		auto content = messageBuilder.str();
-
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::DeleteFile, fileName);
 	}
 
 	void LogGetEnvironmentVariable(std::wstring_view name)
@@ -165,11 +149,7 @@ public:
 
 	void LogGetEnvironmentVariable(std::string_view name)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "GetEnvironmentVariable: " << name << "\n";
-		auto content = messageBuilder.str();
-
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::GetEnvironmentVariable, name);
 	}
 
 	void LogGetFileAttributes(std::wstring_view fileName)
@@ -181,11 +161,7 @@ public:
 
 	void LogGetFileAttributes(std::string_view fileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "GetFileAttributes: " << fileName << "\n";
-		auto content = messageBuilder.str();
-
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::GetFileAttributes, fileName);
 	}
 
 	void LogLoadLibrary(std::wstring_view fileName)
@@ -197,11 +173,7 @@ public:
 
 	void LogLoadLibrary(std::string_view fileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "LoadLibrary: " << fileName << "\n";
-		auto content = messageBuilder.str();
-
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::LoadLibrary, fileName);
 	}
 
 	void LogMoveFile(std::wstring_view existingFileName, std::wstring_view newFileName)
@@ -214,11 +186,11 @@ public:
 
 	void LogMoveFile(std::string_view existingFileName, std::string_view newFileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "MoveFile: " << existingFileName << " -> " << newFileName << "\n";
-		auto content = messageBuilder.str();
+		std::stringstream contentBuilder;
+		contentBuilder << existingFileName << "&" << newFileName;
+		auto content = contentBuilder.str();
 
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::MoveFile, content);
 	}
 
 	void LogOpenFile(std::wstring_view fileName)
@@ -230,40 +202,35 @@ public:
 
 	void LogOpenFile(std::string_view fileName)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "OpenFile: " << fileName << "\n";
-		auto content = messageBuilder.str();
-
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::OpenFile, fileName);
 	}
 
-	void LogError(std::string_view fileName)
+	void LogError(std::string_view message)
 	{
-		std::stringstream messageBuilder;
-		messageBuilder << "Error: " << fileName << "\n";
-		auto content = messageBuilder.str();
-
-		WriteMessage(content);
+		WriteMessage(Monitor::DetourMessageType::Error, message);
 	}
 
 private:
-	void WriteMessage(std::string_view content)
+	void WriteMessage(Monitor::DetourMessageType type, std::string_view content)
 	{
 		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
 		if (m_pipeHandle == INVALID_HANDLE_VALUE)
 			throw std::runtime_error("Pipe not initialized.");
-			
+		if (content.size() > sizeof(Monitor::DetourMessage::Content))
+			throw std::runtime_error("Message content too long");
+
 		Monitor::DetourMessage message;
-		message.nBytes = content.size() + sizeof(DWORD);
-		std::copy(content.begin(), content.end(), message.szMessage);
-		message.szMessage[content.size()] = 0;
+		message.Type = type;
+		message.ContentSize = content.size() + sizeof(Monitor::DetourMessage::Type) + sizeof(Monitor::DetourMessage::ContentSize);
+		std::copy(content.begin(), content.end(), message.Content);
+		message.Content[content.size()] = 0;
 
 		// Write the message
 		DWORD countBytesWritten = 0;
 		if (!Functions::Cache::WriteFile(
 			m_pipeHandle,
 			&message,
-			message.nBytes,
+			message.ContentSize,
 			&countBytesWritten,
 			nullptr))
 		{
