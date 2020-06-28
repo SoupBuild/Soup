@@ -44,6 +44,20 @@ public:
 		throw std::runtime_error("Failed to open pipe for event logger.");
 	}
 
+	void Shutdown()
+	{
+		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
+		if (m_pipeHandle != INVALID_HANDLE_VALUE)
+		{
+			DWORD cbWritten = 0;
+			DWORD emptyMessage = 0;
+			Functions::Cache::WriteFile(m_pipeHandle, &emptyMessage, 4, &cbWritten, nullptr);
+			FlushFileBuffers(m_pipeHandle);
+			CloseHandle(m_pipeHandle);
+			m_pipeHandle = INVALID_HANDLE_VALUE;
+		}
+	}
+
 	void LogCopyFile(std::wstring_view existingFileName, std::wstring_view newFileName)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;

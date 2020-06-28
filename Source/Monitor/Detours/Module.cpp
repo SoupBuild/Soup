@@ -207,13 +207,11 @@ bool ProcessAttach(HMODULE hDll)
 	}
 	catch (const std::exception& ex)
 	{
-		DEBUG_BREAK();
-		Tblog("<!-- Error attaching detours: %s -->\n", ex.what());
+		s_eventLogger.LogError(ex.what());
 	}
 	catch (...)
 	{
-		DEBUG_BREAK();
-		Tblog("<!-- Error attaching detours -->\n");
+		s_eventLogger.LogError("Unknown error attaching detours");
 	}
 
 	ThreadAttach(hDll);
@@ -233,16 +231,14 @@ bool ProcessDetach(HMODULE hDll)
 	}
 	catch (const std::exception& ex)
 	{
-		DEBUG_BREAK();
-		Tblog("<!-- Error detaching detours: %s -->\n", ex.what());
+		s_eventLogger.LogError(ex.what());
 	}
 	catch (...)
 	{
-		DEBUG_BREAK();
-		Tblog("<!-- Error detaching detours -->\n");
+		s_eventLogger.LogError("Unknown error detaching detours");
 	}
 
-	TblogClose();
+	s_eventLogger.Shutdown();
 
 	if (s_nTlsIndent >= 0)
 	{

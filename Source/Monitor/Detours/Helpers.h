@@ -21,11 +21,6 @@ static CRITICAL_SECTION s_csPipe; // Guards access to hPipe.
 static HANDLE s_hPipe = INVALID_HANDLE_VALUE;
 static TBLOG_MESSAGE s_rMessage;
 
-// Logging Functions.
-//
-void Tblog(PCSTR pszMsgf, ...);
-void TblogV(PCSTR pszMsgf, va_list args);
-
 void VSafePrintf(PCSTR pszMsg, va_list args, PCHAR pszBuffer, LONG cbBuffer);
 PCHAR SafePrintf(PCHAR pszBuffer, LONG cbBuffer, PCSTR pszMsg, ...);
 
@@ -921,122 +916,9 @@ PCHAR SafePrintf(PCHAR pszBuffer, LONG cbBuffer, PCSTR pszMsg, ...)
 	return pszBuffer;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//
-bool TblogOpen()
-{
-	EnterCriticalSection(&s_csPipe);
-
-	WCHAR wzPipe[256];
-	StringCchPrintfW(wzPipe, ARRAYSIZE(wzPipe), L"%ls.%d", TBLOG_PIPE_NAMEW, s_nTraceProcessId);
-
-	for (int retries = 0; retries < 10; retries++)
-	{
-		WaitNamedPipeW(wzPipe, 10000); // Wait up to 10 seconds for a pipe to appear.
-
-		s_hPipe = Functions::Cache::CreateFileW(wzPipe, GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
-		if (s_hPipe != INVALID_HANDLE_VALUE)
-		{
-			DWORD dwMode = PIPE_READMODE_MESSAGE;
-			if (SetNamedPipeHandleState(s_hPipe, &dwMode, nullptr, nullptr))
-			{
-				LeaveCriticalSection(&s_csPipe);
-				return true;
-			}
-		}
-	}
-
-	LeaveCriticalSection(&s_csPipe);
-
-	// Couldn't open pipe.
-	DEBUG_BREAK();
-	Functions::Cache::ExitProcess(9990);
-	return false;
-}
-
-void TblogV(PCSTR pszMsgf, va_list args)
-{
-	if (s_hPipe == INVALID_HANDLE_VALUE) {
-		return;
-	}
-
-	EnterCriticalSection(&s_csPipe);
-
-	DWORD cbWritten = 0;
-
-	PCHAR pszBuf = s_rMessage.szMessage;
-	VSafePrintf(
-		pszMsgf,
-		args,
-		pszBuf,
-		(int)(s_rMessage.szMessage + sizeof(s_rMessage.szMessage) - pszBuf));
-
-	PCHAR pszEnd = s_rMessage.szMessage;
-	for (; *pszEnd; pszEnd++)
-	{
-		// no internal contents.
-	}
-
-	s_rMessage.nBytes = (DWORD)(pszEnd - ((PCSTR)&s_rMessage));
-
-	// If the write fails, then we abort
-	if (s_hPipe != INVALID_HANDLE_VALUE)
-	{
-		if (!Functions::Cache::WriteFile(s_hPipe, &s_rMessage, s_rMessage.nBytes, &cbWritten, nullptr))
-		{
-			Functions::Cache::ExitProcess(9991);
-		}
-	}
-
-	LeaveCriticalSection(&s_csPipe);
-}
-
-void Tblog(PCSTR pszMsgf, ...)
-{
-	if (s_hPipe == INVALID_HANDLE_VALUE)
-	{
-		return;
-	}
-
-	va_list args;
-	va_start(args, pszMsgf);
-	TblogV(pszMsgf, args);
-	va_end(args);
-}
-
-void TblogClose()
-{
-	EnterCriticalSection(&s_csPipe);
-
-	if (s_hPipe != INVALID_HANDLE_VALUE)
-	{
-		DWORD cbWritten = 0;
-
-		s_rMessage.nBytes = 0;
-
-		Functions::Cache::WriteFile(s_hPipe, &s_rMessage, 4, &cbWritten, nullptr);
-		FlushFileBuffers(s_hPipe);
-		CloseHandle(s_hPipe);
-		s_hPipe = INVALID_HANDLE_VALUE;
-	}
-
-	LeaveCriticalSection(&s_csPipe);
-}
-
 /////////////////////////////////////////////////////////////
 // Detours
 //
-static bool IsInherited(HANDLE hHandle)
-{
-	DWORD dwFlags;
-
-	if (GetHandleInformation(hHandle, &dwFlags))
-	{
-		return (dwFlags & HANDLE_FLAG_INHERIT) ? true : false;
-	}
-
-	return false;
-}
 
 bool CreateProcessInternals(
 	HANDLE hProcess,

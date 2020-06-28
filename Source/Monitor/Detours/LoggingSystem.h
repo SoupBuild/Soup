@@ -48,27 +48,6 @@ void ExitFunc()
 	SetLastError(dwErr);
 }
 
-void Print(const CHAR *psz, ...)
-{
-    DWORD dwErr = GetLastError();
-
-    if (s_bLog && psz) {
-        va_list  args;
-        va_start(args, psz);
-
-        TblogV(psz, args);
-
-        va_end(args);
-    }
-
-    SetLastError(dwErr);
-}
-
-void AssertFailed(CONST PCHAR pszMsg, CONST PCHAR pszFile, ULONG nLine)
-{
-    Tblog("ASSERT(%hs) failed in %s, line %d.\n", pszMsg, pszFile, nLine);
-}
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // DLL module information

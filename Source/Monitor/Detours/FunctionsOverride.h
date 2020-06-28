@@ -478,59 +478,6 @@ namespace Functions::Override
 		return rv;
 	}
 
-	static void Dump(LPVOID pvData, DWORD cbData)
-	{
-		CHAR szBuffer[128];
-		PBYTE pbData = (PBYTE)pvData;
-
-		for (DWORD i = 0; i < cbData; i += 16)
-		{
-			PCHAR psz = szBuffer;
-			psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), "%4d: ", i);
-
-			for (DWORD j = i; j < i + 16; j++)
-			{
-				if (j < cbData)
-				{
-					psz = SafePrintf(
-						psz,
-						(LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz),
-						"%02x",
-						pbData[j]);
-				}
-				else
-				{
-					psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), "  ");
-				}
-			}
-
-			for (DWORD j = i; j < i + 16; j++)
-			{
-				if (j < cbData)
-				{
-					if (pbData[j] >= ' ' && pbData[j] <= 127)
-					{
-						psz = SafePrintf(
-							psz,
-							(LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz),
-							"%c",
-							pbData[j]);
-					}
-					else
-					{
-						psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), ".");
-					}
-				}
-				else
-				{
-					psz = SafePrintf(psz, (LONG)(szBuffer + ARRAYSIZE(szBuffer) - psz), " ");
-				}
-			}
-
-			Print("%s\n", szBuffer);
-		}
-	}
-
 	DWORD WINAPI GetFileAttributesA(
 		LPCSTR lpFileName)
 	{
@@ -1019,7 +966,6 @@ namespace Functions::Override
 		std::stringstream pipeName;
 		pipeName << TBLOG_PIPE_NAMEA << "." << s_nTraceProcessId;
 		s_eventLogger.Intialize(pipeName.str());
-		TblogOpen();
 
 		return Functions::Cache::EntryPoint();
 	}
