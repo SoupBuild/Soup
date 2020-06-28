@@ -40,12 +40,6 @@ namespace Functions::Cache
 		DWORD,
 		HANDLE) = ::CreateFileW;
 
-	BOOL (WINAPI* CreatePipe)(
-		PHANDLE,
-		PHANDLE,
-		LPSECURITY_ATTRIBUTES,
-		DWORD) = ::CreatePipe;
-
 	BOOL (WINAPI* CreateProcessW)(
 		LPCWSTR,
 		LPWSTR,

@@ -276,56 +276,6 @@ namespace Functions::Override
 		return rv;
 	}
 
-	static LONG s_nPipeCnt = 0;
-
-	BOOL WINAPI CreatePipe(
-		PHANDLE hReadPipe,
-		PHANDLE hWritePipe,
-		LPSECURITY_ATTRIBUTES lpPipeAttributes,
-		DWORD nSize)
-	{
-		HANDLE hRead = INVALID_HANDLE_VALUE;
-		HANDLE hWrite = INVALID_HANDLE_VALUE;
-
-		if (hReadPipe == nullptr)
-		{
-			hReadPipe = &hRead;
-		}
-
-		if (hWritePipe == nullptr)
-		{
-			hWritePipe = &hWrite;
-		}
-
-		/*int nIndent = */ EnterFunc();
-		bool rv = 0;
-		__try
-		{
-			rv = Functions::Cache::CreatePipe(hReadPipe, hWritePipe, lpPipeAttributes, nSize);
-		}
-		__finally
-		{
-			ExitFunc();
-			if (rv)
-			{
-				CHAR szPipe[128];
-
-				SafePrintf(
-					szPipe,
-					ARRAYSIZE(szPipe),
-					"\\\\.\\PIPE\\Temp.%d.%d",
-					GetCurrentProcessId(),
-					InterlockedIncrement(&s_nPipeCnt));
-
-				FileInfo *pInfo = FileNames::FindPartial(szPipe);
-
-				pInfo->m_fCleanup = true;
-			}
-		}
-
-		return rv;
-	}
-
 	BOOL WINAPI CreateDirectoryA(
 		LPCSTR lpPathName,
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)

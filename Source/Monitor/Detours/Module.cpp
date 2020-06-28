@@ -62,7 +62,6 @@ void AttachDetours()
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateDirectoryExW, Functions::Override::CreateDirectoryExW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateFileA, Functions::Override::CreateFileA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateFileW, Functions::Override::CreateFileW), "AttachDetours DetourAttach Failed");
-	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreatePipe, Functions::Override::CreatePipe), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateProcessW, Functions::Override::CreateProcessW), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::CreateProcessA, Functions::Override::CreateProcessA), "AttachDetours DetourAttach Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::Cache::DeleteFileA, Functions::Override::DeleteFileA), "AttachDetours DetourAttach Failed");
@@ -114,7 +113,6 @@ void DetachDetours()
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateDirectoryExW, Functions::Override::CreateDirectoryExW), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateFileA, Functions::Override::CreateFileA), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateFileW, Functions::Override::CreateFileW), "DetachDetours DetourDetach Failed");
-	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreatePipe, Functions::Override::CreatePipe), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateProcessW, Functions::Override::CreateProcessW), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::CreateProcessA, Functions::Override::CreateProcessA), "DetachDetours DetourDetach Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::Cache::DeleteFileA, Functions::Override::DeleteFileA), "DetachDetours DetourDetach Failed");
@@ -155,7 +153,6 @@ bool ProcessAttach(HMODULE hDll)
 
 	Procs::Initialize();
 	EnvVars::Initialize();
-	FileNames::Initialize();
 
 	s_bLog = false;
 	s_nTlsIndent = TlsAlloc();
