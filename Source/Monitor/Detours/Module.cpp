@@ -151,9 +151,6 @@ bool ProcessAttach(HMODULE hDll)
 	InitializeCriticalSection(&s_csPipe);
 	InitializeCriticalSection(&s_csChildPayload);
 
-	Procs::Initialize();
-	EnvVars::Initialize();
-
 	s_bLog = false;
 	s_nTlsIndent = TlsAlloc();
 	s_nTlsThread = TlsAlloc();

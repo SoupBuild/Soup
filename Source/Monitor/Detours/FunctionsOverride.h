@@ -1021,8 +1021,6 @@ namespace Functions::Override
 		s_eventLogger.Intialize(pipeName.str());
 		TblogOpen();
 
-		SaveEnvironment();
-
 		return Functions::Cache::EntryPoint();
 	}
 
