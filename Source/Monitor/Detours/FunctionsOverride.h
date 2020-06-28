@@ -22,7 +22,6 @@ namespace Functions::Override
 			lpCommandLine = (LPWSTR)lpApplicationName;
 		}
 
-		CHAR szProc[MAX_PATH];
 		bool rv = 0;
 		__try
 		{
@@ -50,8 +49,7 @@ namespace Functions::Override
 			if (rv)
 			{
 				CreateProcessInternals(
-					ppi->hProcess,
-					szProc);
+					ppi->hProcess);
 
 				if (!(dwCreationFlags & CREATE_SUSPENDED))
 				{
@@ -91,7 +89,6 @@ namespace Functions::Override
 			lpCommandLine = (LPSTR)lpApplicationName;
 		}
 
-		CHAR szProc[MAX_PATH];
 		bool rv = 0;
 		__try
 		{
@@ -119,8 +116,7 @@ namespace Functions::Override
 			if (rv)
 			{
 				CreateProcessInternals(
-					ppi->hProcess,
-					szProc);
+					ppi->hProcess);
 
 				if (!(dwCreationFlags & CREATE_SUSPENDED))
 				{
