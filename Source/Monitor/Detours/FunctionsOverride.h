@@ -75,8 +75,8 @@ namespace Functions::Override
 
 				if (ppi == &pi)
 				{
-					Functions::Cache::CloseHandle(ppi->hThread);
-					Functions::Cache::CloseHandle(ppi->hProcess);
+					CloseHandle(ppi->hThread);
+					CloseHandle(ppi->hProcess);
 				}
 			}
 		}
@@ -159,8 +159,8 @@ namespace Functions::Override
 
 				if (ppi == &pi)
 				{
-					Functions::Cache::CloseHandle(ppi->hThread);
-					Functions::Cache::CloseHandle(ppi->hProcess);
+					CloseHandle(ppi->hThread);
+					CloseHandle(ppi->hProcess);
 				}
 			}
 		}
@@ -301,113 +301,6 @@ namespace Functions::Override
 			s_eventLogger.LogCreateHardLink(
 				lpFileName,
 				lpExistingFileName);
-		}
-
-		return rv;
-	}
-
-	BOOL WINAPI CloseHandle(HANDLE a0)
-	{
-		/*int nIndent =*/ EnterFunc();
-
-		bool rv = 0;
-		__try
-		{
-			ProcInfo * pProc = OpenFiles::RecallProc(a0);
-			if (pProc != nullptr)
-			{
-				Procs::Close(pProc->m_hProc);
-			}
-
-			FileInfo * pFile = OpenFiles::RecallFile(a0);
-			if (pFile != nullptr)
-			{
-				DWORD dwErr = GetLastError();
-				pFile->m_cbContent = GetFileSize(a0, nullptr);
-				if (pFile->m_cbContent == INVALID_FILE_SIZE)
-				{
-					pFile->m_cbContent = 0;
-				}
-
-				if (pFile->m_fCantRead)
-				{
-					if (pFile->m_fRead)
-					{
-		#if 0
-						Print("<!-- Warning: Removing read from %le -->\n", pFile->m_pwzPath);
-		#endif
-						pFile->m_fRead = false;
-					}
-				}
-
-				// Here we should think about reading the file contents as appropriate.
-				if (pFile->m_fTemporaryPath && pFile->m_fRead && !pFile->m_fAbsorbed &&
-					!pFile->m_fDelete && !pFile->m_fCleanup && !pFile->m_fWrite &&
-					pFile->m_pbContent == nullptr &&
-					pFile->m_cbContent < 16384)
-				{
-					pFile->m_pbContent = LoadFile(a0, pFile->m_cbContent);
-				}
-
-				SetLastError(dwErr);
-			}
-
-			rv = Functions::Cache::CloseHandle(a0);
-		}
-		__finally
-		{
-			ExitFunc();
-			if (rv /* && nIndent == 0*/)
-			{
-				OpenFiles::Forget(a0);
-			}
-		}
-
-		return rv;
-	}
-
-	BOOL WINAPI DuplicateHandle(
-		HANDLE hSourceProcessHandle,
-		HANDLE hSourceHandle,
-		HANDLE hTargetProcessHandle,
-		LPHANDLE lpTargetHandle,
-		DWORD dwDesiredAccess,
-		bool bInheritHandle,
-		DWORD dwOptions)
-	{
-		HANDLE hTemp = INVALID_HANDLE_VALUE;
-		EnterFunc();
-
-		bool rv = 0;
-		__try
-		{
-			if (lpTargetHandle == nullptr)
-			{
-				lpTargetHandle = &hTemp;
-			}
-
-			*lpTargetHandle = INVALID_HANDLE_VALUE;
-
-			rv = Functions::Cache::DuplicateHandle(
-				hSourceProcessHandle,
-				hSourceHandle,
-				hTargetProcessHandle,
-				lpTargetHandle,
-				dwDesiredAccess,
-				bInheritHandle,
-				dwOptions);
-		}
-		__finally
-		{
-			ExitFunc();
-			if (*lpTargetHandle != INVALID_HANDLE_VALUE)
-			{
-				FileInfo *pInfo = OpenFiles::RecallFile(hSourceHandle);
-				if (pInfo)
-				{
-					OpenFiles::Remember(*lpTargetHandle, pInfo);
-				}
-			}
 		}
 
 		return rv;

@@ -2309,7 +2309,7 @@ void TblogClose()
 
 		Functions::Cache::WriteFile(s_hPipe, &s_rMessage, 4, &cbWritten, nullptr);
 		FlushFileBuffers(s_hPipe);
-		Functions::Cache::CloseHandle(s_hPipe);
+		CloseHandle(s_hPipe);
 		s_hPipe = INVALID_HANDLE_VALUE;
 	}
 

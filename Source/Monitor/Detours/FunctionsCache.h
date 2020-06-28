@@ -54,18 +54,6 @@ namespace Functions::Cache
 		LPSECURITY_ATTRIBUTES,
 		DWORD) = ::CreatePipe;
 
-	BOOL (WINAPI* CloseHandle)(
-		HANDLE) = ::CloseHandle;
-
-	BOOL (WINAPI* DuplicateHandle)(
-		HANDLE,
-		HANDLE,
-		HANDLE,
-		LPHANDLE,
-		DWORD,
-		BOOL,
-		DWORD) = ::DuplicateHandle;
-
 	BOOL (WINAPI* CreateProcessW)(
 		LPCWSTR,
 		LPWSTR,

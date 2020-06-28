@@ -288,7 +288,7 @@ PWCHAR More(PCWSTR pwzPath, PWCHAR pwzDst, PWCHAR pwzDstEnd)
         GlobalFree(pszFile);
     }
 
-    Functions::Cache::CloseHandle(hFile);
+    CloseHandle(hFile);
 
     return pwzDst;
 }
