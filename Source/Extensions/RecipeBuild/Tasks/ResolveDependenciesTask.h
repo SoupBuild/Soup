@@ -7,7 +7,8 @@
 namespace RecipeBuild
 {
 	/// <summary>
-	/// The resolve dependencies build task that knows how to combine all previous state into the active state.
+	/// The resolve dependencies build task that knows how to combine all previous state
+	/// into the active state.
 	/// </summary>
 	export class ResolveDependenciesTask : public Memory::ReferenceCounted<Soup::Build::IBuildTask>
 	{

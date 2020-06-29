@@ -113,8 +113,53 @@ namespace RecipeBuild
 				visualCompilerVersionFolder + Path("/lib/x64/"),
 			});
 
+			// Set the platform definitions
+			auto platformPreprocessorDefinitions = std::vector<std::string>({
+				// "_DLL", // Link against the dynamic runtime dll
+				// "_MT", // Use multithreaded runtime
+			});
+
+			// Set the platform libraries
+			auto platformLibraries = std::vector<Path>({
+				// Path("kernel32.lib"),
+				Path("user32.lib"),
+				// Path("gdi32.lib"),
+				// Path("winspool.lib"),
+				// Path("comdlg32.lib"),
+				Path("advapi32.lib"),
+				Path("shell32.lib"),
+				// Path("ole32.lib"),
+				Path("oleaut32.lib"),
+				// Path("uuid.lib"),
+				// Path("odbc32.lib"),
+				// Path("odbccp32.lib"),
+				Path("crypt32.lib"),
+			});
+
+			// if (_options.Configuration == "debug")
+			// {
+			// 	// arguments.PlatformPreprocessorDefinitions.push_back("_DEBUG");
+			// 	arguments.PlatformLibraries = std::vector<Path>({
+			// 		Path("msvcprtd.lib"),
+			// 		Path("msvcrtd.lib"),
+			// 		Path("ucrtd.lib"),
+			// 		Path("vcruntimed.lib"),
+			// 	});
+			// }
+			// else
+			// {
+			// 	arguments.PlatformLibraries = std::vector<Path>({
+			// 		Path("msvcprt.lib"),
+			// 		Path("msvcrt.lib"),
+			// 		Path("ucrt.lib"),
+			// 		Path("vcruntime.lib"),
+			// 	});
+			// }
+	
 			state.EnsureValue("PlatformIncludePaths").SetValuePathList(platformIncludePaths);
 			state.EnsureValue("PlatformLibraryPaths").SetValuePathList(platformLibraryPaths);
+			state.EnsureValue("PlatformLibraries").SetValuePathList(platformLibraries);
+			state.EnsureValue("PlatformPreprocessorDefinitions").SetValueStringList(platformPreprocessorDefinitions);
 		}
 
 	private:

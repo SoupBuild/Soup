@@ -74,60 +74,6 @@ namespace Soup::Client
 			else
 				arguments.Platform = "Windows"; // TODO: Pull current platform
 
-			// TODO: Hard coded to windows MSVC runtime libraries
-			// And we only trust the config today
-			arguments.PlatformIncludePaths = std::vector<std::string>({});
-			for (auto& path : config.GetWindowsSDKIncludePaths())
-			{
-				arguments.PlatformIncludePaths.push_back(path);
-			}
-
-			arguments.PlatformLibraryPaths = std::vector<std::string>({});
-			for (auto& path : config.GetWindowsSDKLibraryPaths())
-			{
-				arguments.PlatformLibraryPaths.push_back(path);
-			}
-
-			arguments.PlatformPreprocessorDefinitions = std::vector<std::string>({
-				// "_DLL", // Link against the dynamic runtime dll
-				// "_MT", // Use multithreaded runtime
-			});
-
-			// if (_options.Configuration == "debug")
-			// {
-			// 	// arguments.PlatformPreprocessorDefinitions.push_back("_DEBUG");
-			// 	arguments.PlatformLibraries = std::vector<Path>({
-			// 		Path("msvcprtd.lib"),
-			// 		Path("msvcrtd.lib"),
-			// 		Path("ucrtd.lib"),
-			// 		Path("vcruntimed.lib"),
-			// 	});
-			// }
-			// else
-			// {
-			// 	arguments.PlatformLibraries = std::vector<Path>({
-			// 		Path("msvcprt.lib"),
-			// 		Path("msvcrt.lib"),
-			// 		Path("ucrt.lib"),
-			// 		Path("vcruntime.lib"),
-			// 	});
-			// }
-
-			// arguments.PlatformLibraries.push_back(Path("kernel32.lib"));
-			arguments.PlatformLibraries.push_back("user32.lib");
-			// arguments.PlatformLibraries.push_back(Path("gdi32.lib"));
-			// arguments.PlatformLibraries.push_back(Path("winspool.lib"));
-			// arguments.PlatformLibraries.push_back(Path("comdlg32.lib"));
-			arguments.PlatformLibraries.push_back("advapi32.lib");
-			arguments.PlatformLibraries.push_back("shell32.lib");
-			// arguments.PlatformLibraries.push_back(Path("ole32.lib"));
-			arguments.PlatformLibraries.push_back("oleaut32.lib");
-			// arguments.PlatformLibraries.push_back(Path("uuid.lib"));
-			// arguments.PlatformLibraries.push_back(Path("odbc32.lib"));
-			// arguments.PlatformLibraries.push_back(Path("odbccp32.lib"));
-
-			arguments.PlatformLibraries.push_back("crypt32.lib");
-
 			std::string runtimeCompiler = config.GetRuntimeCompiler();
 			std::string systemCompiler = runtimeCompiler;
 
