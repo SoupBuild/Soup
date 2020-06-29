@@ -23,9 +23,9 @@ using namespace Opal;
 
 std::shared_ptr<Soup::Compiler::ICompiler> CreateMSVCCompiler(Soup::Build::Extensions::ValueTableWrapper& activeState)
 {
-	auto visualCompilerToolsRoot = activeState.GetValue("MSVC.VCToolsRoot").AsString().GetValue();
+	auto visualCompilerToolsRoot = activeState.GetValue("MSVC.VCToolsBinRoot").AsString().GetValue();
 	std::shared_ptr<Soup::Compiler::ICompiler> compiler = std::make_shared<Soup::Compiler::MSVC::Compiler>(
-		Path(visualCompilerToolsRoot) + Path("bin/Hostx64/x64/"),
+		Path(visualCompilerToolsRoot),
 		Path("cl.exe"),
 		Path("link.exe"),
 		Path("lib.exe"));

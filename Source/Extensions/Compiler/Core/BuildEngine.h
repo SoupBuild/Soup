@@ -238,6 +238,7 @@ namespace Soup::Compiler
 			auto linkArguments = LinkArguments();
 
 			linkArguments.TargetFile = std::move(targetFile);
+			linkArguments.TargetArchitecture = arguments.TargetArchitecture;
 			linkArguments.ImplementationFile = std::move(implementationFile);
 			linkArguments.RootDirectory = arguments.WorkingDirectory;
 			linkArguments.LibraryPaths = arguments.LibraryPaths;

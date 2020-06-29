@@ -69,6 +69,12 @@ namespace RecipeBuild
 		{
 			auto state = buildState.GetActiveState();
 
+			auto systemName = std::string(state.GetValue("BuildSystem").AsString().GetValue());
+			auto architectureName = std::string(state.GetValue("BuildArchitecture").AsString().GetValue());
+
+			if (systemName != "win32")
+				throw std::runtime_error("Win32 is the only supported system... so far.");
+
 			// Find the location of the Windows SDK
 			auto visualStudioInstallRoot = FindVSInstallRoot(buildState);
 			buildState.LogInfo("Using VS Installation: " + visualStudioInstallRoot.ToString());
@@ -81,17 +87,27 @@ namespace RecipeBuild
 			auto visualCompilerVersionFolder =
 				visualStudioInstallRoot + Path("/VC/Tools/MSVC/") + Path(visualCompilerVersion);
 
+			// Sey the VC tools binary folder
+			Path vcToolsBinaryFolder;
+			if (architectureName == "x64")
+				vcToolsBinaryFolder = visualCompilerVersionFolder + Path("/bin/Hostx64/x64/");
+			else if (architectureName == "x86")
+				vcToolsBinaryFolder = visualCompilerVersionFolder + Path("/bin/Hostx64/x86/");
+			else
+				throw std::runtime_error("Unknown architecture.");
+
 			// Save the build properties
 			state.EnsureValue("MSVS.InstallRoot").SetValueString(visualStudioInstallRoot.ToString());
 			state.EnsureValue("MSVC.Version").SetValueString(visualCompilerVersion);
 			state.EnsureValue("MSVC.VCToolsRoot").SetValueString(visualCompilerVersionFolder.ToString());
+			state.EnsureValue("MSVC.VCToolsBinaryRoot").SetValueString(vcToolsBinaryFolder.ToString());
 
 			// Calculate the windows kits directory
 			auto windows10KitPath = Path("C:/Program Files (x86)/Windows Kits/10/");
 			auto windows10KitIncludePath = windows10KitPath + Path("/include/");
 			auto windows10KitLibPath = windows10KitPath + Path("/Lib/");
 
-			auto windowsKitVersion = FindNewestWindows10KitVersion(buildState, windows10KitIncludePath);
+			auto windowsKitVersion = FindNewestWindows10KitVersion(windows10KitIncludePath);
 
 			buildState.LogInfo("Using Windows Kit Version: " + windowsKitVersion);
 			auto windows10KitVersionIncludePath = windows10KitIncludePath + Path(windowsKitVersion);
@@ -106,18 +122,30 @@ namespace RecipeBuild
 			});
 
 			// Set the include paths
-			auto platformLibraryPaths = std::vector<Path>({
-				windows10KitVersionLibPath + Path("/ucrt/x64/"),
-				windows10KitVersionLibPath + Path("/um/x64/"),
-				visualCompilerVersionFolder + Path("/atlmfc/lib/x64/"),
-				visualCompilerVersionFolder + Path("/lib/x64/"),
-			});
+			auto platformLibraryPaths = std::vector<Path>();
+			if (architectureName == "x64")
+			{
+				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x64/"));
+				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x64/"));
+				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x64/"));
+				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x64/"));
+			}
+			else if (architectureName == "x86")
+			{
+				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x86/"));
+				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x86/"));
+				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x86/"));
+				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x86/"));
+			}
 
 			// Set the platform definitions
 			auto platformPreprocessorDefinitions = std::vector<std::string>({
 				// "_DLL", // Link against the dynamic runtime dll
 				// "_MT", // Use multithreaded runtime
 			});
+
+			if (architectureName == "x86")
+				platformPreprocessorDefinitions.push_back("WIN32");
 
 			// Set the platform libraries
 			auto platformLibraries = std::vector<Path>({
@@ -168,7 +196,7 @@ namespace RecipeBuild
 			// Find a copy of visual studio that has the required VisualCompiler
 			auto executablePath = Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
 			auto workingDirectory = Path("");
-			auto arguments = std::vector<std::string>({
+			auto argumentList = std::vector<std::string>({
 				"-latest",
 				"-products",
 				"*",
@@ -182,13 +210,15 @@ namespace RecipeBuild
 			bool includePrerelease = true;
 			if (includePrerelease)
 			{
-				arguments.push_back("-prerelease");
+				argumentList.push_back("-prerelease");
 			}
 
 			// Execute the requested target
+			auto arguments = CombineArguments(argumentList);
+			buildState.LogDebug(executablePath.ToString() + " " + arguments);
 			auto result = System::IProcessManager::Current().Execute(
 				executablePath,
-				CombineArguments(arguments),
+				arguments,
 				workingDirectory);
 
 			if (!result.StdErr.empty())
@@ -245,7 +275,6 @@ namespace RecipeBuild
 		}
 
 		std::string FindNewestWindows10KitVersion(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
 			const Path& windows10KitIncludePath)
 		{
 			// Check the default tools version

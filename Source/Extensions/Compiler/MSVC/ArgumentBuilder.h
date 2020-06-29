@@ -44,6 +44,7 @@ namespace Soup::Compiler::MSVC
 		static constexpr std::string_view Linker_ArgumentParameter_Machine = "machine";
 		static constexpr std::string_view Linker_ArgumentParameter_DefaultLibrary = "defaultlib";
 		static constexpr std::string_view Linker_ArgumentValue_X64 = "X64";
+		static constexpr std::string_view Linker_ArgumentValue_X86 = "X86";
 
 	public:
 		static std::vector<std::string> BuildCompilerArguments(
@@ -258,7 +259,12 @@ namespace Soup::Compiler::MSVC
 			}
 
 			// Add the machine target
-			AddParameter(commandArgs, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X64);
+			if (args.TargetArchitecture == "x64")
+				AddParameter(commandArgs, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X64);
+			else if (args.TargetArchitecture == "x86")
+				AddParameter(commandArgs, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X86);
+			else
+				throw std::runtime_error("Unknown target architecture.");
 
 			// Set the library paths
 			for (auto directory : args.LibraryPaths)

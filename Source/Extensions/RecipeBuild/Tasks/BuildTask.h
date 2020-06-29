@@ -81,6 +81,7 @@ namespace RecipeBuild
 			auto buildTable = activeState.GetValue("Build").AsTable();
 
 			auto arguments = Soup::Compiler::BuildArguments();
+			arguments.TargetArchitecture = activeState.GetValue("BuildArchitecture").AsString().GetValue();
 			arguments.TargetName = buildTable.GetValue("TargetName").AsString().GetValue();
 			arguments.TargetType = static_cast<Soup::Compiler::BuildTargetType>(
 				buildTable.GetValue("TargetType").AsInteger().GetValue());
