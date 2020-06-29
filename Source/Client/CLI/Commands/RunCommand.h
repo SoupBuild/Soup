@@ -51,9 +51,15 @@ namespace Soup::Client
 			}
 
 			// Ensure the executable exists
-			auto configuration = "debug";
+			auto flavor = "debug";
+			auto system = "win32";
+			auto architecture = "x64";
 			auto compilerName = config.GetRuntimeCompiler();
-			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(compilerName, configuration);
+			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(
+				compilerName,
+				flavor,
+				system,
+				architecture);
 			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
 			Log::Info(executablePath.ToString());
 			if (!System::IFileSystem::Current().Exists(executablePath))

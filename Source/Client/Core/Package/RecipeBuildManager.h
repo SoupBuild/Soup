@@ -367,19 +367,25 @@ namespace Soup::Build::Runtime
 					activeCompiler = _runtimeCompiler;
 				}
 
-				auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(_systemCompiler, arguments.Flavor);
-				auto objectDirectory = RecipeExtensions::GetObjectDirectory(_systemCompiler, arguments.Flavor);
+				auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(
+					_systemCompiler,
+					arguments.Flavor,
+					arguments.System,
+					arguments.Architecture);
+				auto objectDirectory = RecipeExtensions::GetObjectDirectory(
+					_systemCompiler,
+					arguments.Flavor,
+					arguments.System,
+					arguments.Architecture);
 
 				// Set the input properties
 				activeStateWrapper.EnsureValue("PackageRoot").SetValueString(packageRoot.ToString());
 				activeStateWrapper.EnsureValue("BuildFlavor").SetValueString(arguments.Flavor);
+				activeStateWrapper.EnsureValue("BuildSystem").SetValueString(arguments.System);
+				activeStateWrapper.EnsureValue("BuildArchitecture").SetValueString(arguments.Architecture);
 				activeStateWrapper.EnsureValue("CompilerName").SetValueString(activeCompiler);
 				activeStateWrapper.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
 				activeStateWrapper.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
-				activeStateWrapper.EnsureValue("PlatformLibraries").SetValueStringList(arguments.PlatformLibraries);
-				activeStateWrapper.EnsureValue("PlatformIncludePaths").SetValueStringList(arguments.PlatformIncludePaths);
-				activeStateWrapper.EnsureValue("PlatformLibraryPaths").SetValueStringList(arguments.PlatformLibraryPaths);
-				activeStateWrapper.EnsureValue("PlatformPreprocessorDefinitions").SetValueStringList(arguments.PlatformPreprocessorDefinitions);
 
 				// Run all build extensions
 				// Note: Keep the extension libraries open while running the build system

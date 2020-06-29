@@ -69,10 +69,15 @@ namespace Soup::Client
 			else
 				arguments.Flavor = "debug";
 
-			if (!_options.Platform.empty())
-				arguments.Platform = _options.Platform;
+			if (!_options.System.empty())
+				arguments.System = _options.System;
 			else
-				arguments.Platform = "Windows"; // TODO: Pull current platform
+				arguments.System = "win32";
+
+			if (!_options.Architecture.empty())
+				arguments.Architecture = _options.Architecture;
+			else
+				arguments.Architecture = "x64";
 
 			std::string runtimeCompiler = config.GetRuntimeCompiler();
 			std::string systemCompiler = runtimeCompiler;

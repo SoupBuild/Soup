@@ -1,8 +1,0 @@
-#!/bin/bash
-
-CONFIG=Debug
-ScriptsDir="$(dirname "${BASH_SOURCE[0]}")"
-RootDir="$(dirname "$ScriptsDir")"
-
-dotnet $RootDir/bin/Soup.Client/$CONFIG/netcoreapp2.1/Soup.dll "$@"
-#dotnet run -no-build -p $RootDir/Source/Client "$@"
