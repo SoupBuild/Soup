@@ -51,7 +51,7 @@ public:
             workingDirectory.c_str(),
             &startupInfo,
             &processInfo,
-            "D:\\Repos\\Soup\\Source\\Monitor\\Host\\out\\bin\\MSVC\\debug\\Monitor.Detours.dll",
+            "D:\\Repos\\Soup\\Source\\Monitor\\Host\\out\\bin\\MSVC\\debug\\Monitor.Detours.64.dll",
             nullptr))
         {
             auto error = GetLastError();

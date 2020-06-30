@@ -961,7 +961,7 @@ namespace Functions::Override
 		// This function is invoked instead of the process EntryPoint (Functions::Cache::EntryPoint).
 		std::stringstream pipeName;
 		pipeName << TBLOG_PIPE_NAMEA << "." << s_nTraceProcessId;
-		s_eventLogger.Intialize(pipeName.str());
+		s_eventLogger.Initialize(pipeName.str());
 
 		return Functions::Cache::EntryPoint();
 	}

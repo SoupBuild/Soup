@@ -10,7 +10,7 @@ public:
 	{
 	}
 
-	void Intialize(std::string_view pipeName)
+	void Initialize(std::string_view pipeName)
 	{
 		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
 		for (int retries = 0; retries < 10; retries++)
@@ -215,7 +215,7 @@ private:
 	{
 		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
 		if (m_pipeHandle == INVALID_HANDLE_VALUE)
-			throw std::runtime_error("Pipe not initialized.");
+			return; // TODO: A static dll init may do bad things before the main entry initialize
 		if (content.size() > sizeof(Monitor::DetourMessage::Content))
 			throw std::runtime_error("Message content too long");
 
