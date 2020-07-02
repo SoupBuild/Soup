@@ -27,11 +27,13 @@ namespace Monitor
 		}
 
 		int RunProcess(
-			const std::string& application,
+			const Path& application,
 			const std::vector<std::string>& arguments)
 		{
+			auto applicationString = application.ToAlternateString();
+
 			std::stringstream argumentsValue;
-			argumentsValue << "\"" << application << "\"";
+			argumentsValue << "\"" << applicationString << "\"";
 			for (auto& arg : arguments)
 			{
 				argumentsValue << " " << arg;
@@ -62,7 +64,7 @@ namespace Monitor
 			si.cb = sizeof(si);
 			DWORD dwFlags = CREATE_DEFAULT_ERROR_MODE | CREATE_SUSPENDED;
 			if (!DetourCreateProcessWithDllExA(
-				application.c_str(),
+				applicationString.c_str(),
 				argumentsString.data(),
 				nullptr,
 				nullptr,

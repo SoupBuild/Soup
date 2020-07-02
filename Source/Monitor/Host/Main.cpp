@@ -34,7 +34,7 @@ DWORD main(int argc, char **argv)
 	System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
 	System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
 
-	std::string application = argv[1];
+	auto application = Path(argv[1]);
 	std::vector<std::string> args;
 	for (int i = 2; i < argc; i++)
 	{
