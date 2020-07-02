@@ -6,18 +6,6 @@ void ThrowIfFailed(HRESULT hr, std::string_view message)
 		throw std::runtime_error(message.data());
 }
 
-struct CLIENT : OVERLAPPED
-{
-	HANDLE hPipe;
-	LONG nClient;
-	BOOL fAwaitingAccept;
-	PVOID Zero;
-	Monitor::DetourMessage Message;
-
-	BOOL LogMessage(Monitor::DetourMessage* pMessage, DWORD nBytes);
-	BOOL LogMessageV(PCHAR pszMsg, ...);
-};
-
 std::string s_szPipe;
 LONG s_nActiveClients = 0;
 LONG s_nTotalClients = 0;
@@ -29,453 +17,267 @@ VOID MyErrExit(PCSTR pszMsg)
 	exit(1);
 }
 
-BOOL CLIENT::LogMessageV(PCHAR pszMsg, ...)
+namespace Monitor
 {
-	try
+	class DetouredProcess
 	{
-		DWORD cbWritten = 0;
-		CHAR szBuf[1024];
-		PCHAR pcchEnd = szBuf + ARRAYSIZE(szBuf) - 2;
-		PCHAR pcchCur = szBuf;
-		HRESULT hr;
-
-		va_list args;
-		va_start(args, pszMsg);
-		hr = StringCchVPrintfExA(
-			pcchCur,
-			pcchEnd - pcchCur,
-			&pcchCur,
-			nullptr,
-			STRSAFE_NULL_ON_FAILURE,
-			pszMsg,
-			args);
-		va_end(args);
-		if (FAILED(hr))
+	public:
+		DetouredProcess()
 		{
-			throw std::runtime_error("StringCchVPrintfExA failed.");
 		}
 
-		hr = StringCchPrintfExA(
-			pcchCur,
-			szBuf + (ARRAYSIZE(szBuf)) - pcchCur,
-			&pcchCur,
-			nullptr,
-			STRSAFE_NULL_ON_FAILURE,
-			"\n");
-
-		return true;
-	}
-	catch(...)
-	{
-		return false;
-	}
-}
-
-BOOL CLIENT::LogMessage(Monitor::DetourMessage* pMessage, DWORD nBytes)
-{
-	// Sanity check the size of the message.
-	if (nBytes > pMessage->ContentSize)
-	{
-		nBytes = pMessage->ContentSize;
-	}
-
-	if (nBytes >= sizeof(*pMessage))
-	{
-		nBytes = sizeof(*pMessage) - 1;
-	}
-
-	// Don't log message if there isn't and message text.
-	DWORD cbWrite = nBytes - offsetof(Monitor::DetourMessage, Content);
-	if (cbWrite <= 0)
-	{
-		return true;
-	}
-
-	switch (pMessage->Type)
-	{
-		case Monitor::DetourMessageType::Exit:
-			std::cout << "Exit: ";
-			break;
-		case Monitor::DetourMessageType::Error:
-			std::cout << "Error: ";
-			break;
-		case Monitor::DetourMessageType::CopyFile:
-			std::cout << "CopyFile: ";
-			break;
-		case Monitor::DetourMessageType::CreateDirectory:
-			std::cout << "CreateDirectory: ";
-			break;
-		case Monitor::DetourMessageType::CreateFile:
-			std::cout << "CreateFile: ";
-			break;
-		case Monitor::DetourMessageType::CreateHardLink:
-			std::cout << "CreateHardLink: ";
-			break;
-		case Monitor::DetourMessageType::CreateProcess:
-			std::cout << "CreateProcess: ";
-			break;
-		case Monitor::DetourMessageType::DeleteFile:
-			std::cout << "DeleteFile: ";
-			break;
-		case Monitor::DetourMessageType::GetEnvironmentVariable:
-			std::cout << "GetEnvironmentVariable: ";
-			break;
-		case Monitor::DetourMessageType::GetFileAttributes:
-			std::cout << "GetFileAttributes: ";
-			break;
-		case Monitor::DetourMessageType::LoadLibrary:
-			std::cout << "LoadLibrary: ";
-			break;
-		case Monitor::DetourMessageType::MoveFile:
-			std::cout << "MoveFile: ";
-			break;
-		case Monitor::DetourMessageType::OpenFile:
-			std::cout << "OpenFile: ";
-			break;
-	}
-
-	// Null terminate the string
-	pMessage->Content[nBytes] = 0;
-	std::cout << pMessage->Content << std::endl;
-
-	return true;
-}
-
-BOOL CloseConnection(CLIENT* pClient)
-{
-	InterlockedDecrement(&s_nActiveClients);
-	if (pClient != nullptr)
-	{
-		if (pClient->hPipe != INVALID_HANDLE_VALUE)
+		int RunProcess(
+			const std::string& application,
+			const std::vector<std::string>& arguments)
 		{
-			//FlushFileBuffers(pClient->hPipe);
-			if (!DisconnectNamedPipe(pClient->hPipe))
+			std::stringstream argumentsValue;
+			argumentsValue << "\"" << application << "\"";
+			for (auto& arg : arguments)
+			{
+				argumentsValue << " " << arg;
+			}
+
+			std::string argumentsString = argumentsValue.str();
+
+			// Create a name for the pipe
+			std::stringstream pipeName;
+			pipeName << TBLOG_PIPE_NAMEA << "." << GetCurrentProcessId();
+			s_szPipe = pipeName.str();
+
+			// Create completion port worker threads.
+			CreatePipeConnection();
+			auto workerThread = std::thread(&DetouredProcess::WorkerThread, *this);
+
+			// Build up the detour dlls absolute path
+			auto moduleName = System::IProcessManager::Current().GetProcessFileName();
+			auto moduleFolder = moduleName.GetParent();
+			auto dllPath = moduleFolder + Path("Monitor.Detours.64.dll");
+			auto dllPathString = dllPath.ToAlternateString();
+
+			// Create the requested process with our detour dll loaded
+			STARTUPINFOA si;
+			PROCESS_INFORMATION pi;
+			ZeroMemory(&si, sizeof(si));
+			ZeroMemory(&pi, sizeof(pi));
+			si.cb = sizeof(si);
+			DWORD dwFlags = CREATE_DEFAULT_ERROR_MODE | CREATE_SUSPENDED;
+			if (!DetourCreateProcessWithDllExA(
+				application.c_str(),
+				argumentsString.data(),
+				nullptr,
+				nullptr,
+				true,
+				dwFlags,
+				nullptr,
+				nullptr,
+				&si,
+				&pi,
+				dllPathString.c_str(),
+				nullptr))
+			{
+				auto error = GetLastError();
+				throw std::runtime_error("DetourCreateProcessWithDllEx failed: " + std::to_string(error));
+			}
+
+			// Set the detoured process payload
+			DetourPayload payload;
+			ZeroMemory(&payload, sizeof(payload));
+			payload.nParentProcessId = GetCurrentProcessId();
+			payload.nTraceProcessId = GetCurrentProcessId();
+			payload.nGeneology = 1;
+			payload.rGeneology[0] = 0;
+			StringCchCopyW(payload.wzParents, ARRAYSIZE(payload.wzParents), L"");
+			if (!DetourCopyPayloadToProcess(
+				pi.hProcess,
+				GuidTrace,
+				&payload,
+				sizeof(payload)))
+			{
+				throw std::runtime_error("DetourCopyPayloadToProcess failed: " + std::to_string(GetLastError()));
+			}
+
+			// Restert the process
+			auto hr = ResumeThread(pi.hThread);
+
+			// Wait for the process to finish
+			WaitForSingleObject(pi.hProcess, INFINITE);
+
+			// Get the output result
+			DWORD result = 0;
+			if (!GetExitCodeProcess(pi.hProcess, &result))
+			{
+				throw std::runtime_error("GetExitCodeProcess failed: " + std::to_string(GetLastError()));
+			}
+
+			// Wait for the worker thread to exit
+			workerThread.join();
+			return result;
+		}
+
+	private:
+		void LogMessage(DetourMessage* pMessage, DWORD nBytes)
+		{
+			// Sanity check the size of the message.
+			if (nBytes > pMessage->ContentSize)
+			{
+				nBytes = pMessage->ContentSize;
+			}
+
+			if (nBytes >= sizeof(*pMessage))
+			{
+				nBytes = sizeof(*pMessage) - 1;
+			}
+
+			// Don't log message if there isn't and message text.
+			DWORD cbWrite = nBytes - offsetof(DetourMessage, Content);
+			if (cbWrite <= 0)
+			{
+				throw std::runtime_error("Not enough data.");
+			}
+
+			switch (pMessage->Type)
+			{
+				case DetourMessageType::Exit:
+					std::cout << "Exit: ";
+					break;
+				case DetourMessageType::Error:
+					std::cout << "Error: ";
+					break;
+				case DetourMessageType::CopyFile:
+					std::cout << "CopyFile: ";
+					break;
+				case DetourMessageType::CreateDirectory:
+					std::cout << "CreateDirectory: ";
+					break;
+				case DetourMessageType::CreateFile:
+					std::cout << "CreateFile: ";
+					break;
+				case DetourMessageType::CreateHardLink:
+					std::cout << "CreateHardLink: ";
+					break;
+				case DetourMessageType::CreateProcess:
+					std::cout << "CreateProcess: ";
+					break;
+				case DetourMessageType::DeleteFile:
+					std::cout << "DeleteFile: ";
+					break;
+				case DetourMessageType::GetEnvironmentVariable:
+					std::cout << "GetEnvironmentVariable: ";
+					break;
+				case DetourMessageType::GetFileAttributes:
+					std::cout << "GetFileAttributes: ";
+					break;
+				case DetourMessageType::LoadLibrary:
+					std::cout << "LoadLibrary: ";
+					break;
+				case DetourMessageType::MoveFile:
+					std::cout << "MoveFile: ";
+					break;
+				case DetourMessageType::OpenFile:
+					std::cout << "OpenFile: ";
+					break;
+			}
+
+			// Null terminate the string
+			pMessage->Content[nBytes] = 0;
+			std::cout << pMessage->Content << std::endl;
+		}
+
+		void CloseConnection()
+		{
+			InterlockedDecrement(&s_nActiveClients);
+			if (m_hPipe != INVALID_HANDLE_VALUE)
+			{
+				//FlushFileBuffers(m_hPipe);
+				if (!DisconnectNamedPipe(m_hPipe))
+				{
+					DWORD error = GetLastError();
+					throw std::runtime_error("DisconnectNamedPipe Failed: " + std::to_string(error));
+				}
+
+				CloseHandle(m_hPipe);
+				m_hPipe = INVALID_HANDLE_VALUE;
+			}
+		}
+
+		void CreatePipeConnection()
+		{
+			// Open in Read-Only mode with synchronous operations enabled
+			// Turn on message type pipe in read mode with blocking waits
+			DWORD openMode = PIPE_ACCESS_INBOUND;
+			DWORD pipeMode = PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT;
+			DWORD maxInstances = PIPE_UNLIMITED_INSTANCES;
+			DWORD outBufferSize = 0;
+			DWORD inBufferSize = 0;
+			DWORD defaultTimeOut = 20000;
+			HANDLE hPipe = CreateNamedPipeA(
+				s_szPipe.c_str(),
+				openMode,
+				pipeMode,
+				maxInstances,
+				outBufferSize,
+				inBufferSize,
+				defaultTimeOut,
+				nullptr);
+			if (hPipe == INVALID_HANDLE_VALUE)
 			{
 				DWORD error = GetLastError();
-				pClient->LogMessageV("<!-- Error %d in DisconnectNamedPipe. -->\n", error);
+				throw std::runtime_error("CreateNamedPipeA failed: " + std::to_string(error));
 			}
 
-			CloseHandle(pClient->hPipe);
-			pClient->hPipe = INVALID_HANDLE_VALUE;
+			m_hPipe = hPipe;
 		}
 
-		GlobalFree(pClient);
-		pClient = nullptr;
-	}
-
-	return true;
-}
-
-// Creates a pipe instance and initiate an accept request.
-//
-CLIENT* CreatePipeConnection(HANDLE hCompletionPort, LONG nClient)
-{
-	HANDLE hPipe = CreateNamedPipeA(
-		s_szPipe.c_str(),                   // pipe name
-		PIPE_ACCESS_INBOUND |       // read-only access
-		FILE_FLAG_OVERLAPPED,       // overlapped mode
-		PIPE_TYPE_MESSAGE |         // message-type pipe
-		PIPE_READMODE_MESSAGE |     // message read mode
-		PIPE_WAIT,                  // blocking mode
-		PIPE_UNLIMITED_INSTANCES,   // unlimited instances
-		0,                          // output buffer size
-		0,                          // input buffer size
-		20000,                      // client time-out
-		nullptr);                   // no security attributes
-	if (hPipe == INVALID_HANDLE_VALUE)
-	{
-		MyErrExit("CreateNamedPipe");
-	}
-
-	// Allocate the client data structure.
-	//
-	auto pClient = (CLIENT*)GlobalAlloc(GPTR, sizeof(CLIENT));
-	if (pClient == nullptr)
-	{
-		MyErrExit("GlobalAlloc pClient");
-	}
-
-	ZeroMemory(pClient, sizeof(*pClient));
-	pClient->hPipe = hPipe;
-	pClient->nClient = nClient;
-	pClient->fAwaitingAccept = true;
-
-	// Associate file with our complietion port.
-	//
-	if (!CreateIoCompletionPort(pClient->hPipe, hCompletionPort, (ULONG_PTR)pClient, 0))
-	{
-		MyErrExit("CreateIoComplietionPort pClient");
-	}
-
-	if (!ConnectNamedPipe(hPipe, pClient))
-	{
-		DWORD error = GetLastError();
-
-		if (error == ERROR_IO_PENDING)
+		void WorkerThread()
 		{
-			return nullptr;
-		}
-
-		if (error == ERROR_PIPE_CONNECTED)
-		{
-#if 0
-			pClient->LogMessageV("<!-- ConnectNamedPipe client already connected. -->");
-#endif
-			pClient->fAwaitingAccept = false;
-		}
-		else if (error != ERROR_IO_PENDING &&
-				error != ERROR_PIPE_LISTENING)
-		{
-
-			MyErrExit("ConnectNamedPipe");
-		}
-	}
-	else
-	{
-		fprintf(stderr, "*** ConnectNamedPipe accepted immediately.\n");
-		pClient->fAwaitingAccept = FALSE;
-	}
-
-	return pClient;
-}
-
-BOOL DoRead(CLIENT* pClient)
-{
-	SetLastError(NO_ERROR);
-	DWORD nBytes = 0;
-	BOOL b = ReadFile(
-		pClient->hPipe,
-		&pClient->Message,
-		sizeof(pClient->Message),
-		&nBytes,
-		pClient);
-
-	DWORD error = GetLastError();
-	if (b && error == NO_ERROR)
-	{
-		return true;
-	}
-	else if (error == ERROR_BROKEN_PIPE)
-	{
-		pClient->LogMessageV("<!-- **** ReadFile 002 *** ERROR_BROKEN_PIPE [%d] -->\n", nBytes);
-		CloseConnection(pClient);
-		return true;
-	}
-	else if (error == ERROR_INVALID_HANDLE)
-	{
-		// ?
-		pClient->LogMessageV("<!-- **** ReadFile 002 *** ERROR_INVALID_HANDLE -->\n");
-		// I have no idea why this happens.  Our remedy is to drop the connection.
-		return true;
-	}
-	else if (error != ERROR_IO_PENDING)
-	{
-		if (b)
-		{
-			pClient->LogMessageV("<!-- **** ReadFile 002 succeeded: %d -->\n", error);
-		}
-		else
-		{
-			pClient->LogMessageV("<!-- **** ReadFile 002 failed: %d -->\n", error);
-		}
-
-		CloseConnection(pClient);
-	}
-
-	return true;
-}
-
-DWORD WINAPI WorkerThread(LPVOID pvVoid)
-{
-	CLIENT* pClient;
-	LPOVERLAPPED lpo;
-	DWORD nBytes;
-	HANDLE hCompletionPort = (HANDLE)pvVoid;
-
-	bool isDone = false;
-	while (!isDone)
-	{
-		// Wait for the next async write event on the pipeline
-		pClient = nullptr;
-		lpo = nullptr;
-		nBytes = 0;
-		if (GetQueuedCompletionStatus(
-			hCompletionPort,
-			&nBytes,
-			(PULONG_PTR)&pClient,
-			&lpo,
-			INFINITE))
-		{
-			if (pClient->fAwaitingAccept)
+			// Connect to the pipe
+			if (!ConnectNamedPipe(m_hPipe, nullptr))
 			{
-				std::cout << "Here1" << std::endl;
-				bool fAgain = true;
-				while (fAgain)
+				// If completed then check the actual error
+				DWORD error = GetLastError();
+				switch (error)
 				{
-					LONG nClient = InterlockedIncrement(&s_nTotalClients);
-					InterlockedIncrement(&s_nActiveClients);
-					pClient->fAwaitingAccept = false;
-
-					CLIENT* pNew = CreatePipeConnection(hCompletionPort, nClient);
-
-					fAgain = false;
-					if (pNew != nullptr)
-					{
-						fAgain = !pNew->fAwaitingAccept;
-						DoRead(pNew);
-					}
+				case ERROR_PIPE_CONNECTED:
+					// All good
+					break;
+				default:
+					throw std::runtime_error("ConnectNamedPipe failed: " + std::to_string(error));
 				}
 			}
-			else
+
+			// Read until we run out of messages
+			bool isDone = false;
+			while (!isDone)
 			{
-				std::cout << "Here2" << std::endl;
+				// Read the next message
+				DWORD bytesRead = 0;
+				if (!ReadFile(
+					m_hPipe,
+					&m_Message,
+					sizeof(m_Message),
+					&bytesRead,
+					nullptr))
+				{
+					DWORD error = GetLastError();
+					throw std::runtime_error("ReadFile failed: " + std::to_string(error));
+				}
+
 				auto offset = offsetof(Monitor::DetourMessage, Content);
-				if (nBytes <= offset)
+				if (bytesRead <= offset)
 				{
-					pClient->LogMessageV("</t:Process>\n");
-					CloseConnection(pClient);
-					continue;
-				}
-
-				pClient->LogMessage(&pClient->Message, nBytes - offset);
-			}
-
-			DoRead(pClient);
-		}
-		else
-		{
-			if (pClient)
-			{
-				std::cout << "Here3" << std::endl;
-				if (GetLastError() == ERROR_BROKEN_PIPE)
-				{
-					pClient->LogMessageV("<!-- Client closed pipe. -->");
+					isDone = true;
 				}
 				else
 				{
-					pClient->LogMessageV(
-						"<!-- *** GetQueuedCompletionStatus failed %d -->",
-						GetLastError());
+					LogMessage(&m_Message, bytesRead - offset);
 				}
-
-				CloseConnection(pClient);
 			}
-		}
-	}
 
-	std::cout << "Here4" << std::endl;
-	return 0;
+			CloseConnection();
+		}
+
+	private:
+		HANDLE m_hPipe;
+		DetourMessage m_Message;
+	};
 }
-
-BOOL CreateWorkers(HANDLE hCompletionPort)
-{
-	for (int i = 0; i < 1; i++)
-	{
-		DWORD dwThread;
-		auto threadHandle = CreateThread(nullptr, 0, WorkerThread, hCompletionPort, 0, &dwThread);
-		if (!threadHandle)
-		{
-			throw std::runtime_error("Failed CreateThread WorkerThread");
-		}
-
-		CloseHandle(threadHandle);
-	}
-
-	return true;
-}
-
-class DetouredProcess
-{
-public:
-	DetouredProcess()
-	{
-	}
-
-	int RunProcess(
-		const std::string& application,
-		const std::vector<std::string>& arguments)
-	{
-		std::stringstream argumentsValue;
-		argumentsValue << "\"" << application << "\"";
-		for (auto& arg : arguments)
-		{
-			argumentsValue << " " << arg;
-		}
-
-		std::string argumentsString = argumentsValue.str();
-
-		// Create a name for the pipe
-		std::stringstream pipeName;
-		pipeName << TBLOG_PIPE_NAMEA << "." << GetCurrentProcessId();
-		s_szPipe = pipeName.str();
-
-		// Create the completion port.
-		HANDLE hCompletionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, NULL, 0);
-		if (hCompletionPort == nullptr)
-		{
-			MyErrExit("CreateIoCompletionPort");
-		}
-
-		// Create completion port worker threads.
-		CreateWorkers(hCompletionPort);
-		CreatePipeConnection(hCompletionPort, 0);
-
-		auto moduleName = System::IProcessManager::Current().GetProcessFileName();
-		auto moduleFolder = moduleName.GetParent();
-		auto dllPath = moduleFolder + Path("Monitor.Detours.64.dll");
-		auto dllPathString = dllPath.ToString();
-
-		STARTUPINFOA si;
-		PROCESS_INFORMATION pi;
-		ZeroMemory(&si, sizeof(si));
-		ZeroMemory(&pi, sizeof(pi));
-		si.cb = sizeof(si);
-
-		// Create the requested process with our detour dll loaded
-		DWORD dwFlags = CREATE_DEFAULT_ERROR_MODE | CREATE_SUSPENDED;
-		if (!DetourCreateProcessWithDllExA(
-			application.c_str(),
-			argumentsString.data(),
-			nullptr,
-			nullptr,
-			true,
-			dwFlags,
-			nullptr,
-			nullptr,
-			&si,
-			&pi,
-			dllPathString.c_str(),
-			nullptr))
-		{
-			throw std::runtime_error("DetourCreateProcessWithDllEx failed: " + std::to_string(GetLastError()));
-		}
-
-		Monitor::DetourPayload payload;
-		ZeroMemory(&payload, sizeof(payload));
-		payload.nParentProcessId = GetCurrentProcessId();
-		payload.nTraceProcessId = GetCurrentProcessId();
-		payload.nGeneology = 1;
-		payload.rGeneology[0] = 0;
-		StringCchCopyW(payload.wzParents, ARRAYSIZE(payload.wzParents), L"");
-		if (!DetourCopyPayloadToProcess(
-			pi.hProcess,
-			Monitor::GuidTrace,
-			&payload,
-			sizeof(payload)))
-		{
-			throw std::runtime_error("DetourCopyPayloadToProcess failed: " + std::to_string(GetLastError()));
-		}
-
-		DWORD result = 0;
-		auto hr = ResumeThread(pi.hThread);
-		auto error = GetLastError();
-
-		WaitForSingleObject(pi.hProcess, INFINITE);
-		if (!GetExitCodeProcess(pi.hProcess, &result))
-		{
-			throw std::runtime_error("GetExitCodeProcess failed: " + std::to_string(GetLastError()));
-		}
-
-		return result;
-	}
-};

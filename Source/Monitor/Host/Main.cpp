@@ -18,6 +18,7 @@ using namespace Opal;
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <thread>
 #include <vector>
 
 #include "DetouredProcess.h"
@@ -40,10 +41,8 @@ DWORD main(int argc, char **argv)
 		args.push_back(argv[i]);
 	}
 
-	auto process = DetouredProcess(); 
+	auto process = Monitor::DetouredProcess(); 
 	auto result = process.RunProcess(application, args);
-
-	std::cout << s_nTotalClients << " processes" << std::endl;
 
 	return result;
 }
