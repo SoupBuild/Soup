@@ -38,7 +38,11 @@ import Monitor.Shared;
 
 // TODO: This exported method forces a lib to be generated to allow for linking...
 // Soup should allow runtime references to dlls that have no external symbols
-DllExport void AttachDetours()
+DllExport void Noop()
+{
+}
+
+void AttachDetours()
 {
 	ThrowIfFailed(DetourTransactionBegin(), "AttachDetours DetourTransactionBegin Failed");
 	ThrowIfFailed(DetourUpdateThread(GetCurrentThread()), "AttachDetours DetourUpdateThread Failed");
