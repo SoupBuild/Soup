@@ -21,7 +21,7 @@ using namespace Opal;
 #include <thread>
 #include <vector>
 
-#include "DetouredProcess.h"
+#include "DetourCallbackLogger.h"
 
 DWORD main(int argc, char **argv)
 {
@@ -41,7 +41,8 @@ DWORD main(int argc, char **argv)
 		args.push_back(argv[i]);
 	}
 
-	auto process = Monitor::DetouredProcess(); 
+	auto callback = Monitor::DetourCallbackLogger();
+	auto process = Monitor::DetouredProcess(callback); 
 	auto result = process.RunProcess(application, args);
 
 	return result;

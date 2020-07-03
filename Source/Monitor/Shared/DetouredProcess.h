@@ -1,28 +1,14 @@
 ﻿#pragma once 
-
-void ThrowIfFailed(HRESULT hr, std::string_view message)
-{
-	if (hr != S_OK)
-		throw std::runtime_error(message.data());
-}
-
-std::string s_szPipe;
-LONG s_nActiveClients = 0;
-LONG s_nTotalClients = 0;
-
-VOID MyErrExit(PCSTR pszMsg)
-{
-	auto error = GetLastError();
-	std::cerr << "Error " << error << " in " << pszMsg << "." << std::endl;
-	exit(1);
-}
+#include "IDetourCallback.h"
 
 namespace Monitor
 {
-	class DetouredProcess
+	// TODO: May want to create a project that is not shared but only contains consumer code
+	export class DetouredProcess
 	{
 	public:
-		DetouredProcess()
+		DetouredProcess(IDetourCallback& callback) :
+			m_callback(callback)
 		{
 		}
 
@@ -44,11 +30,13 @@ namespace Monitor
 			// Create a name for the pipe
 			std::stringstream pipeName;
 			pipeName << TBLOG_PIPE_NAMEA << "." << GetCurrentProcessId();
-			s_szPipe = pipeName.str();
+			std::string pipeNameString = pipeName.str();
 
 			// Create completion port worker threads.
-			CreatePipeConnection();
-			auto workerThread = std::thread(&DetouredProcess::WorkerThread, *this);
+			CreatePipeConnection(pipeNameString);
+
+			m_workerFailed = false;
+			auto workerThread = std::thread(&DetouredProcess::WorkerThread, std::ref(*this));
 
 			// Build up the detour dlls absolute path
 			auto moduleName = System::IProcessManager::Current().GetProcessFileName();
@@ -88,7 +76,7 @@ namespace Monitor
 			payload.nTraceProcessId = GetCurrentProcessId();
 			payload.nGeneology = 1;
 			payload.rGeneology[0] = 0;
-			StringCchCopyW(payload.wzParents, ARRAYSIZE(payload.wzParents), L"");
+			payload.wzParents[0] = 0;
 			if (!DetourCopyPayloadToProcess(
 				pi.hProcess,
 				GuidTrace,
@@ -113,6 +101,10 @@ namespace Monitor
 
 			// Wait for the worker thread to exit
 			workerThread.join();
+
+			if (m_workerFailed)
+				throw std::runtime_error("Worker failed");
+
 			return result;
 		}
 
@@ -140,43 +132,43 @@ namespace Monitor
 			switch (pMessage->Type)
 			{
 				case DetourMessageType::Exit:
-					std::cout << "Exit: ";
+					m_callback.OnExit();
 					break;
 				case DetourMessageType::Error:
-					std::cout << "Error: ";
+					m_callback.OnError();
 					break;
 				case DetourMessageType::CopyFile:
-					std::cout << "CopyFile: ";
+					m_callback.OnCopyFile();
 					break;
 				case DetourMessageType::CreateDirectory:
-					std::cout << "CreateDirectory: ";
+					m_callback.OnCreateDirectory();
 					break;
 				case DetourMessageType::CreateFile:
-					std::cout << "CreateFile: ";
+					m_callback.OnCreateFile();
 					break;
 				case DetourMessageType::CreateHardLink:
-					std::cout << "CreateHardLink: ";
+					m_callback.OnCreateHardLink();
 					break;
 				case DetourMessageType::CreateProcess:
-					std::cout << "CreateProcess: ";
+					m_callback.OnCreateProcess();
 					break;
 				case DetourMessageType::DeleteFile:
-					std::cout << "DeleteFile: ";
+					m_callback.OnDeleteFile();
 					break;
 				case DetourMessageType::GetEnvironmentVariable:
-					std::cout << "GetEnvironmentVariable: ";
+					m_callback.OnGetEnvironmentVariable();
 					break;
 				case DetourMessageType::GetFileAttributes:
-					std::cout << "GetFileAttributes: ";
+					m_callback.OnGetFileAttributes();
 					break;
 				case DetourMessageType::LoadLibrary:
-					std::cout << "LoadLibrary: ";
+					m_callback.OnLoadLibrary();
 					break;
 				case DetourMessageType::MoveFile:
-					std::cout << "MoveFile: ";
+					m_callback.OnMoveFile();
 					break;
 				case DetourMessageType::OpenFile:
-					std::cout << "OpenFile: ";
+					m_callback.OnOpenFile();
 					break;
 			}
 
@@ -187,22 +179,21 @@ namespace Monitor
 
 		void CloseConnection()
 		{
-			InterlockedDecrement(&s_nActiveClients);
-			if (m_hPipe != INVALID_HANDLE_VALUE)
+			if (m_pipeHandle != INVALID_HANDLE_VALUE)
 			{
-				//FlushFileBuffers(m_hPipe);
-				if (!DisconnectNamedPipe(m_hPipe))
+				//FlushFileBuffers(m_pipeHandle);
+				if (!DisconnectNamedPipe(m_pipeHandle))
 				{
 					DWORD error = GetLastError();
 					throw std::runtime_error("DisconnectNamedPipe Failed: " + std::to_string(error));
 				}
 
-				CloseHandle(m_hPipe);
-				m_hPipe = INVALID_HANDLE_VALUE;
+				CloseHandle(m_pipeHandle);
+				m_pipeHandle = INVALID_HANDLE_VALUE;
 			}
 		}
 
-		void CreatePipeConnection()
+		void CreatePipeConnection(const std::string& pipeName)
 		{
 			// Open in Read-Only mode with synchronous operations enabled
 			// Turn on message type pipe in read mode with blocking waits
@@ -213,7 +204,7 @@ namespace Monitor
 			DWORD inBufferSize = 0;
 			DWORD defaultTimeOut = 20000;
 			HANDLE hPipe = CreateNamedPipeA(
-				s_szPipe.c_str(),
+				pipeName.c_str(),
 				openMode,
 				pipeMode,
 				maxInstances,
@@ -227,59 +218,69 @@ namespace Monitor
 				throw std::runtime_error("CreateNamedPipeA failed: " + std::to_string(error));
 			}
 
-			m_hPipe = hPipe;
+			m_pipeHandle = hPipe;
 		}
 
 		void WorkerThread()
 		{
-			// Connect to the pipe
-			if (!ConnectNamedPipe(m_hPipe, nullptr))
+			try
 			{
-				// If completed then check the actual error
-				DWORD error = GetLastError();
-				switch (error)
+				// Connect to the pipe
+				if (!ConnectNamedPipe(m_pipeHandle, nullptr))
 				{
-				case ERROR_PIPE_CONNECTED:
-					// All good
-					break;
-				default:
-					throw std::runtime_error("ConnectNamedPipe failed: " + std::to_string(error));
-				}
-			}
-
-			// Read until we run out of messages
-			bool isDone = false;
-			while (!isDone)
-			{
-				// Read the next message
-				DWORD bytesRead = 0;
-				if (!ReadFile(
-					m_hPipe,
-					&m_Message,
-					sizeof(m_Message),
-					&bytesRead,
-					nullptr))
-				{
+					// If completed then check the actual error
 					DWORD error = GetLastError();
-					throw std::runtime_error("ReadFile failed: " + std::to_string(error));
+					switch (error)
+					{
+					case ERROR_PIPE_CONNECTED:
+						// All good
+						break;
+					default:
+						throw std::runtime_error("ConnectNamedPipe failed: " + std::to_string(error));
+					}
 				}
 
-				auto offset = offsetof(Monitor::DetourMessage, Content);
-				if (bytesRead <= offset)
+				// Read until we run out of messages
+				bool isDone = false;
+				DetourMessage message;
+				while (!isDone || m_processExited)
 				{
-					isDone = true;
+					// Read the next message
+					DWORD bytesRead = 0;
+					if (!ReadFile(
+						m_pipeHandle,
+						&message,
+						sizeof(message),
+						&bytesRead,
+						nullptr))
+					{
+						DWORD error = GetLastError();
+						throw std::runtime_error("ReadFile failed: " + std::to_string(error));
+					}
+
+					auto offset = offsetof(Monitor::DetourMessage, Content);
+					if (bytesRead <= offset)
+					{
+						isDone = true;
+					}
+					else
+					{
+						LogMessage(&message, bytesRead - offset);
+					}
 				}
-				else
-				{
-					LogMessage(&m_Message, bytesRead - offset);
-				}
+
+				CloseConnection();
 			}
-
-			CloseConnection();
+			catch (...)
+			{
+				m_workerFailed = true;
+			}
 		}
 
 	private:
-		HANDLE m_hPipe;
-		DetourMessage m_Message;
+		IDetourCallback& m_callback;
+		HANDLE m_pipeHandle;
+		std::atomic<bool> m_processExited;
+		std::atomic<bool> m_workerFailed;
 	};
 }

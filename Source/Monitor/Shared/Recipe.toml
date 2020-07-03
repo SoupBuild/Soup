@@ -1,5 +1,7 @@
 Name = "Monitor.Shared"
 Version = "1.0.0"
 Dependencies = [
+    "../../../Dependencies/Detours/src/",
+    "../../../Dependencies/Opal/Source/",
 ]
 Public = "Module.cpp"

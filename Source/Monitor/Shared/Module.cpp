@@ -1,11 +1,27 @@
 module;
-#include <cstdint>
-#include <stdarg.h>
-#include <stdexcept>
-#include <string_view>
-#include <Windows.h>
+
+#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#pragma warning(push)
+#if _MSC_VER > 1400
+#pragma warning(disable:6102 6103)
+#endif
+#include <strsafe.h>
+#pragma warning(pop)
+
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <thread>
+#include <vector>
 
 export module Monitor.Shared;
+import Detours;
+import Opal;
+
+using namespace Opal;
 
 export constexpr const char* TBLOG_PIPE_NAMEA = "\\\\.\\pipe\\tracebuild";
 export constexpr const wchar_t* TBLOG_PIPE_NAMEW = L"\\\\.\\pipe\\tracebuild";
@@ -62,3 +78,5 @@ export void ThrowIfFailed(int32_t result, std::string_view message)
 		throw std::runtime_error(message.data());
 	}
 }
+
+#include "DetouredProcess.h"
