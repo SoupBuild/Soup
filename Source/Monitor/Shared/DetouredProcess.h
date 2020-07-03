@@ -141,11 +141,21 @@ namespace Monitor
 					m_callback.OnCopyFile();
 					break;
 				case DetourMessageType::CreateDirectory:
-					m_callback.OnCreateDirectory();
+				{
+					// Null terminate the string
+					pMessage->Content[nBytes] = 0;
+					auto directory = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					m_callback.OnCreateDirectory(directory);
 					break;
+				}
 				case DetourMessageType::CreateFile:
-					m_callback.OnCreateFile();
+				{
+					// Null terminate the string
+					pMessage->Content[nBytes] = 0;
+					auto file = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					m_callback.OnCreateFile(file);
 					break;
+				}
 				case DetourMessageType::CreateHardLink:
 					m_callback.OnCreateHardLink();
 					break;
@@ -153,14 +163,24 @@ namespace Monitor
 					m_callback.OnCreateProcess();
 					break;
 				case DetourMessageType::DeleteFile:
-					m_callback.OnDeleteFile();
+				{
+					// Null terminate the string
+					pMessage->Content[nBytes] = 0;
+					auto file = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					m_callback.OnDeleteFile(file);
 					break;
+				}
 				case DetourMessageType::GetEnvironmentVariable:
 					m_callback.OnGetEnvironmentVariable();
 					break;
 				case DetourMessageType::GetFileAttributes:
-					m_callback.OnGetFileAttributes();
+				{
+					// Null terminate the string
+					pMessage->Content[nBytes] = 0;
+					auto directory = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					m_callback.OnGetFileAttributes(directory);
 					break;
+				}
 				case DetourMessageType::LoadLibrary:
 					m_callback.OnLoadLibrary();
 					break;
@@ -168,13 +188,18 @@ namespace Monitor
 					m_callback.OnMoveFile();
 					break;
 				case DetourMessageType::OpenFile:
-					m_callback.OnOpenFile();
+				{
+					// Null terminate the string
+					pMessage->Content[nBytes] = 0;
+					auto file = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					m_callback.OnOpenFile(file);
 					break;
+				}
+				default:
+				{
+					throw std::runtime_error("Unknown message type");
+				}
 			}
-
-			// Null terminate the string
-			pMessage->Content[nBytes] = 0;
-			std::cout << pMessage->Content << std::endl;
 		}
 
 		void CloseConnection()

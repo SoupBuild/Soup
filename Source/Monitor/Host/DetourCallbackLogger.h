@@ -20,14 +20,14 @@ namespace Monitor
 			std::cout<< "CopyFile: " << std::endl;
 		}
 
-		void OnCreateDirectory() override final
+		void OnCreateDirectory(const std::string_view directory) override final
 		{
-			std::cout<< "CreateDirectory: " << std::endl;
+			std::cout<< "CreateDirectory: " << directory << std::endl;
 		}
 
-		void OnCreateFile() override final
+		void OnCreateFile(const std::string_view filename) override final
 		{
-			std::cout<< "CreateFile: " << std::endl;
+			std::cout<< "CreateFile: " << filename << std::endl;
 		}
 
 		void OnCreateHardLink() override final
@@ -40,9 +40,9 @@ namespace Monitor
 			std::cout<< "CreateProcess: " << std::endl;
 		}
 
-		void OnDeleteFile() override final
+		void OnDeleteFile(const std::string_view filename) override final
 		{
-			std::cout<< "DeleteFile: " << std::endl;
+			std::cout<< "DeleteFile: " << filename << std::endl;
 		}
 
 		void OnGetEnvironmentVariable() override final
@@ -50,9 +50,9 @@ namespace Monitor
 			std::cout<< "GetEnvironmentVariable: " << std::endl;
 		}
 
-		void OnGetFileAttributes() override final
+		void OnGetFileAttributes(const std::string_view filename) override final
 		{
-			std::cout<< "GetFileAttributes: " << std::endl;
+			std::cout<< "GetFileAttributes: " << filename << std::endl;
 		}
 
 		void OnLoadLibrary() override final
@@ -65,10 +65,9 @@ namespace Monitor
 			std::cout<< "MoveFile: " << std::endl;
 		}
 
-		void OnOpenFile() override final
+		void OnOpenFile(const std::string_view filename) override final
 		{
-			std::cout<< "OpenFile: " << std::endl;
+			std::cout<< "OpenFile: " << filename << std::endl;
 		}
-
 	};
 }
