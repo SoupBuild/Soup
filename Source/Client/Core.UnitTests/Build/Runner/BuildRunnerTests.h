@@ -33,11 +33,11 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto operations = Extensions::BuildOperationList();
+			auto operations = Utilities::BuildOperationList();
 			auto objectDirectory = Path("out/obj/release/");
 			auto forceBuild = true;
 			uut.Execute(
-				Extensions::BuildOperationListWrapper(operations),
+				Utilities::BuildOperationListWrapper(operations),
 				objectDirectory,
 				forceBuild);
 
@@ -86,11 +86,11 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto operations = Extensions::BuildOperationList();
+			auto operations = Utilities::BuildOperationList();
 			auto objectDirectory = Path("out/obj/release/");
 			auto forceBuild = false;
 			uut.Execute(
-				Extensions::BuildOperationListWrapper(operations),
+				Utilities::BuildOperationListWrapper(operations),
 				objectDirectory,
 				forceBuild);
 
@@ -143,9 +143,9 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto operations = Extensions::BuildOperationList(
-				std::vector<Memory::Reference<Extensions::BuildOperation>>({
-					new Extensions::BuildOperation(
+			auto operations = Utilities::BuildOperationList(
+				std::vector<Memory::Reference<Utilities::BuildOperation>>({
+					new Utilities::BuildOperation(
 						"TestCommand: 1",
 						Path("Command.exe"),
 						"Arguments",
@@ -160,7 +160,7 @@ namespace Soup::Build::UnitTests
 			auto objectDirectory = Path("out/obj/release/");
 			bool forceBuild = true;
 			uut.Execute(
-				Extensions::BuildOperationListWrapper(operations),
+				Utilities::BuildOperationListWrapper(operations),
 				objectDirectory,
 				forceBuild);
 
@@ -213,9 +213,9 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto operations = Extensions::BuildOperationList(
-				std::vector<Memory::Reference<Extensions::BuildOperation>>({
-					new Extensions::BuildOperation(
+			auto operations = Utilities::BuildOperationList(
+				std::vector<Memory::Reference<Utilities::BuildOperation>>({
+					new Utilities::BuildOperation(
 						"TestCommand: 1",
 						Path("Command.exe"),
 						"Arguments",
@@ -230,7 +230,7 @@ namespace Soup::Build::UnitTests
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
 			uut.Execute(
-				Extensions::BuildOperationListWrapper(operations),
+				Utilities::BuildOperationListWrapper(operations),
 				objectDirectory,
 				forceBuild);
 
@@ -295,9 +295,9 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto operations = Extensions::BuildOperationList(
-				std::vector<Memory::Reference<Extensions::BuildOperation>>({
-					new Extensions::BuildOperation(
+			auto operations = Utilities::BuildOperationList(
+				std::vector<Memory::Reference<Utilities::BuildOperation>>({
+					new Utilities::BuildOperation(
 						"TestCommand: 1",
 						Path("Command.exe"),
 						"Arguments",
@@ -312,7 +312,7 @@ namespace Soup::Build::UnitTests
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
 			uut.Execute(
-				Extensions::BuildOperationListWrapper(operations),
+				Utilities::BuildOperationListWrapper(operations),
 				objectDirectory,
 				forceBuild);
 
@@ -378,9 +378,9 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto operations = Extensions::BuildOperationList(
-				std::vector<Memory::Reference<Extensions::BuildOperation>>({
-					new Extensions::BuildOperation(
+			auto operations = Utilities::BuildOperationList(
+				std::vector<Memory::Reference<Utilities::BuildOperation>>({
+					new Utilities::BuildOperation(
 						"TestCommand: 1",
 						Path("Command.exe"),
 						"Arguments",
@@ -395,7 +395,7 @@ namespace Soup::Build::UnitTests
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
 			uut.Execute(
-				Extensions::BuildOperationListWrapper(operations),
+				Utilities::BuildOperationListWrapper(operations),
 				objectDirectory,
 				forceBuild);
 
@@ -469,9 +469,9 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto operations = Extensions::BuildOperationList(
-				std::vector<Memory::Reference<Extensions::BuildOperation>>({
-					new Extensions::BuildOperation(
+			auto operations = Utilities::BuildOperationList(
+				std::vector<Memory::Reference<Utilities::BuildOperation>>({
+					new Utilities::BuildOperation(
 						"TestCommand: 1",
 						Path("Command.exe"),
 						"Arguments",
@@ -486,7 +486,7 @@ namespace Soup::Build::UnitTests
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
 			uut.Execute(
-				Extensions::BuildOperationListWrapper(operations),
+				Utilities::BuildOperationListWrapper(operations),
 				objectDirectory,
 				forceBuild);
 
@@ -565,9 +565,9 @@ namespace Soup::Build::UnitTests
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
 			// Setup the input build state
-			auto operations = Extensions::BuildOperationList(
-				std::vector<Memory::Reference<Extensions::BuildOperation>>({
-					new Extensions::BuildOperation(
+			auto operations = Utilities::BuildOperationList(
+				std::vector<Memory::Reference<Utilities::BuildOperation>>({
+					new Utilities::BuildOperation(
 						"TestCommand: 1",
 						Path("Command.exe"),
 						"Arguments",
@@ -582,7 +582,7 @@ namespace Soup::Build::UnitTests
 			auto objectDirectory = Path("out/obj/debug/");
 			auto forceBuild = false;
 			uut.Execute(
-				Extensions::BuildOperationListWrapper(operations),
+				Utilities::BuildOperationListWrapper(operations),
 				objectDirectory,
 				forceBuild);
 

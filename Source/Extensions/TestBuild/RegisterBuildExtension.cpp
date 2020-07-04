@@ -10,7 +10,7 @@
 
 import Opal;
 import Soup.Build;
-import Soup.Build.Extensions;
+import Soup.Build.Utilities;
 import SoupCompiler;
 import SoupCompilerClang;
 import SoupCompilerMSVC;
@@ -21,7 +21,7 @@ using namespace Opal;
 
 #define DllExport __declspec(dllexport)
 
-std::shared_ptr<Soup::Compiler::ICompiler> CreateMSVCCompiler(Soup::Build::Extensions::ValueTableWrapper& activeState)
+std::shared_ptr<Soup::Compiler::ICompiler> CreateMSVCCompiler(Soup::Build::Utilities::ValueTableWrapper& activeState)
 {
 	auto visualCompilerToolsRoot = activeState.GetValue("MSVC.VCToolsBinRoot").AsString().GetValue();
 	std::shared_ptr<Soup::Compiler::ICompiler> compiler = std::make_shared<Soup::Compiler::MSVC::Compiler>(

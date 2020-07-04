@@ -44,8 +44,8 @@ namespace Soup::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.Execute(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Evaluation::BuildState(Build::Evaluation::ValueTable());
+			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -95,8 +95,8 @@ namespace Soup::Compiler::UnitTests
 
 			// Verify build state
 			auto expectedLinkOperation =
-				Memory::Reference<Build::Extensions::BuildOperation>(
-					new Build::Extensions::BuildOperation(
+				Memory::Reference<Build::Utilities::BuildOperation>(
+					new Build::Utilities::BuildOperation(
 						"MockLink: 1",
 						Path("MockLinker.exe"),
 						"Arguments",
@@ -109,8 +109,8 @@ namespace Soup::Compiler::UnitTests
 						})));
 
 			auto expectedCompileOperation =
-				Memory::Reference<Build::Extensions::BuildOperation>(
-					new Build::Extensions::BuildOperation(
+				Memory::Reference<Build::Utilities::BuildOperation>(
+					new Build::Utilities::BuildOperation(
 						"MockCompile: 1",
 						Path("MockCompiler.exe"),
 						"Arguments",
@@ -121,12 +121,12 @@ namespace Soup::Compiler::UnitTests
 						std::vector<Path>({
 							Path("OutputFile.out"),
 						}),
-						std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 							expectedLinkOperation,
 						})));
 
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
-				new Build::Extensions::BuildOperation(
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
+				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
@@ -135,10 +135,10 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("C:/root/obj"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedCompileOperation,
 					})),
-				new Build::Extensions::BuildOperation(
+				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
@@ -147,12 +147,12 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("C:/root/bin"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedCompileOperation,
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			AssertUtilities::AreEqual(
 				expectedBuildOperations,
 				result.BuildOperations);
 
@@ -210,8 +210,8 @@ namespace Soup::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.Execute(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Evaluation::BuildState(Build::Evaluation::ValueTable());
+			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -283,8 +283,8 @@ namespace Soup::Compiler::UnitTests
 
 			// Verify build state
 			auto expectedLinkOperation =
-				Memory::Reference<Build::Extensions::BuildOperation>(
-					new Build::Extensions::BuildOperation(
+				Memory::Reference<Build::Utilities::BuildOperation>(
+					new Build::Utilities::BuildOperation(
 						"MockLink: 1",
 						Path("MockLinker.exe"),
 						"Arguments",
@@ -296,8 +296,8 @@ namespace Soup::Compiler::UnitTests
 							Path("OutputFile.out"),
 						})));
 
-			auto expectedCompileOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
-				new Build::Extensions::BuildOperation(
+			auto expectedCompileOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
+				new Build::Utilities::BuildOperation(
 					"MockCompile: 1",
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -308,10 +308,10 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedLinkOperation,
 					})),
-				new Build::Extensions::BuildOperation(
+				new Build::Utilities::BuildOperation(
 					"MockCompile: 2",
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -322,10 +322,10 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedLinkOperation,
 					})),
-				new Build::Extensions::BuildOperation(
+				new Build::Utilities::BuildOperation(
 					"MockCompile: 3",
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -336,13 +336,13 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedLinkOperation,
 					})),
 			});
 
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
-				new Build::Extensions::BuildOperation(
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
+				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
@@ -352,7 +352,7 @@ namespace Soup::Compiler::UnitTests
 						Path("C:/root/obj"),
 					}),
 					expectedCompileOperations),
-				new Build::Extensions::BuildOperation(
+				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
@@ -364,7 +364,7 @@ namespace Soup::Compiler::UnitTests
 					expectedCompileOperations),
 			});
 
-			AssertExtensions::AreEqual(
+			AssertUtilities::AreEqual(
 				expectedBuildOperations,
 				result.BuildOperations);
 
@@ -431,8 +431,8 @@ namespace Soup::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.Execute(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Evaluation::BuildState(Build::Evaluation::ValueTable());
+			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -518,8 +518,8 @@ namespace Soup::Compiler::UnitTests
 
 			// Verify build state
 			auto expectedLinkOperation =
-				Memory::Reference<Build::Extensions::BuildOperation>(
-					new Build::Extensions::BuildOperation(
+				Memory::Reference<Build::Utilities::BuildOperation>(
+					new Build::Utilities::BuildOperation(
 						"MockLink: 1",
 						Path("MockLinker.exe"),
 						"Arguments",
@@ -531,8 +531,8 @@ namespace Soup::Compiler::UnitTests
 							Path("OutputFile.out"),
 						})));
 
-			auto expectedCompileSourceOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
-				new Build::Extensions::BuildOperation(
+			auto expectedCompileSourceOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
+				new Build::Utilities::BuildOperation(
 					"MockCompile: 2",
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -543,10 +543,10 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedLinkOperation,
 					})),
-				new Build::Extensions::BuildOperation(
+				new Build::Utilities::BuildOperation(
 					"MockCompile: 3",
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -557,10 +557,10 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedLinkOperation,
 					})),
-				new Build::Extensions::BuildOperation(
+				new Build::Utilities::BuildOperation(
 					"MockCompile: 4",
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -571,14 +571,14 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("OutputFile.out"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedLinkOperation,
 					})),
 			});
 
 			auto expectedCopyModuleInterfaceOperation =
-				Memory::Reference<Build::Extensions::BuildOperation>(
-					new Build::Extensions::BuildOperation(
+				Memory::Reference<Build::Utilities::BuildOperation>(
+					new Build::Utilities::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
 						Path("C:/Windows/System32/cmd.exe"),
 						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
@@ -592,8 +592,8 @@ namespace Soup::Compiler::UnitTests
 						expectedCompileSourceOperations));
 
 			auto expectedCompileModuleOperation =
-				Memory::Reference<Build::Extensions::BuildOperation>(
-					new Build::Extensions::BuildOperation(
+				Memory::Reference<Build::Utilities::BuildOperation>(
+					new Build::Utilities::BuildOperation(
 						"MockCompile: 1",
 						Path("MockCompiler.exe"),
 						"Arguments",
@@ -604,12 +604,12 @@ namespace Soup::Compiler::UnitTests
 						std::vector<Path>({
 							Path("OutputFile.out"),
 						}),
-						std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 							expectedCopyModuleInterfaceOperation,
 						})));
 
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
-				new Build::Extensions::BuildOperation(
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
+				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
@@ -618,10 +618,10 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("C:/root/obj"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedCompileModuleOperation,
 					})),
-				new Build::Extensions::BuildOperation(
+				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
@@ -630,12 +630,12 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("C:/root/bin"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedCompileModuleOperation,
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			AssertUtilities::AreEqual(
 				expectedBuildOperations,
 				result.BuildOperations);
 
@@ -696,8 +696,8 @@ namespace Soup::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.Execute(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Evaluation::BuildState(Build::Evaluation::ValueTable());
+			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -756,8 +756,8 @@ namespace Soup::Compiler::UnitTests
 
 			// Verify build state
 			auto expectedLinkOperation =
-				Memory::Reference<Build::Extensions::BuildOperation>(
-					new Build::Extensions::BuildOperation(
+				Memory::Reference<Build::Utilities::BuildOperation>(
+					new Build::Utilities::BuildOperation(
 						"MockLink: 1",
 						Path("MockLinker.exe"),
 						"Arguments",
@@ -770,8 +770,8 @@ namespace Soup::Compiler::UnitTests
 						})));
 
 			auto expectedCopyModuleInterfaceOperation =
-				Memory::Reference<Build::Extensions::BuildOperation>(
-					new Build::Extensions::BuildOperation(
+				Memory::Reference<Build::Utilities::BuildOperation>(
+					new Build::Utilities::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
 						Path("C:/Windows/System32/cmd.exe"),
 						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
@@ -782,13 +782,13 @@ namespace Soup::Compiler::UnitTests
 						std::vector<Path>({
 							Path("C:/root/bin/Library.mock.bmi"),
 						}),
-						std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 							expectedLinkOperation,
 						})));
 
 			auto expectedCompileModuleOperation =
-				Memory::Reference<Build::Extensions::BuildOperation>(
-					new Build::Extensions::BuildOperation(
+				Memory::Reference<Build::Utilities::BuildOperation>(
+					new Build::Utilities::BuildOperation(
 						"MockCompile: 1",
 						Path("MockCompiler.exe"),
 						"Arguments",
@@ -799,12 +799,12 @@ namespace Soup::Compiler::UnitTests
 						std::vector<Path>({
 							Path("OutputFile.out"),
 						}),
-						std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+						std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 							expectedCopyModuleInterfaceOperation,
 						})));
 
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
-				new Build::Extensions::BuildOperation(
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
+				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/obj]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
@@ -813,10 +813,10 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("C:/root/obj"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedCompileModuleOperation,
 					})),
-				new Build::Extensions::BuildOperation(
+				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/bin]",
 					Path("C:/Windows/System32/cmd.exe"),
 					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
@@ -825,12 +825,12 @@ namespace Soup::Compiler::UnitTests
 					std::vector<Path>({
 						Path("C:/root/bin"),
 					}),
-					std::vector<Memory::Reference<Build::Extensions::BuildOperation>>({
+					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						expectedCompileModuleOperation,
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			AssertUtilities::AreEqual(
 				expectedBuildOperations,
 				result.BuildOperations);
 

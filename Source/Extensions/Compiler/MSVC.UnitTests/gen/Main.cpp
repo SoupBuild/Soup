@@ -9,8 +9,8 @@ import Opal;
 import SoupCompiler;
 import SoupCompilerMSVC;
 import Soup.Build;
-import Soup.Build.Extensions;
-import Soup.Build.Runtime;
+import Soup.Build.Utilities;
+import Soup.Build.Evaluation;
 import SoupTest;
 import SoupTestUtilities;
 

@@ -44,7 +44,7 @@ namespace Soup::Client
 			}
 
 			// Ensure that this is an executable
-			if (recipe.GetType() != Build::Extensions::RecipeType::Executable)
+			if (recipe.GetType() != Build::Utilities::RecipeType::Executable)
 			{
 				Log::Error("Cannot run a project not of type executable");
 				return;

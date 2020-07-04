@@ -11,8 +11,8 @@ import SoupCompilerClang;
 import SoupTest;
 import SoupTestUtilities;
 import Soup.Build;
-import Soup.Build.Extensions;
-import Soup.Build.Runtime;
+import Soup.Build.Utilities;
+import Soup.Build.Evaluation;
 
 using namespace Opal;
 using namespace Opal::System;

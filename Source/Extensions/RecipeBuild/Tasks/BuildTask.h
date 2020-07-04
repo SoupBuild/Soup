@@ -6,7 +6,7 @@
 
 namespace RecipeBuild
 {
-	export using CreateCompiler = std::function<std::shared_ptr<Soup::Compiler::ICompiler>(Soup::Build::Extensions::ValueTableWrapper&)>;
+	export using CreateCompiler = std::function<std::shared_ptr<Soup::Compiler::ICompiler>(Soup::Build::Utilities::ValueTableWrapper&)>;
 	export using CompilerFactory = std::map<std::string, CreateCompiler>;
 
 	/// <summary>
@@ -50,7 +50,7 @@ namespace RecipeBuild
 		Soup::Build::ApiCallResult TryExecute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
 
 			try
 			{
@@ -73,7 +73,7 @@ namespace RecipeBuild
 		/// The Core build task
 		/// </summary>
 		Soup::Build::ApiCallResult Execute(
-			Soup::Build::Extensions::BuildStateWrapper& buildState)
+			Soup::Build::Utilities::BuildStateWrapper& buildState)
 		{
 			auto activeState = buildState.GetActiveState();
 			auto sharedState = buildState.GetSharedState();
@@ -217,7 +217,7 @@ namespace RecipeBuild
 
 	private:
 		CompilerFactory _compilerFactory;
-		Soup::Build::Extensions::StringList _runBeforeList;
-		Soup::Build::Extensions::StringList _runAfterList;
+		Soup::Build::Utilities::StringList _runBeforeList;
+		Soup::Build::Utilities::StringList _runAfterList;
 	};
 }

@@ -3,8 +3,8 @@ Version = "0.1.0"
 Dependencies = [
 	"../../../../Dependencies/Opal/Source/",
 	# "Opal@0.1.2",
-	"../../../Build/Extensions/",
-	# "Soup.Build.Extensions@0.3.0",
+	"../../../Build/Utilities/",
+	# "Soup.Build.Utilities@0.3.0",
 ]
 
 Public = "Module.cpp"

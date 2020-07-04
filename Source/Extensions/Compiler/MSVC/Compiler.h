@@ -66,8 +66,8 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateCompileOperation(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
+			Build::Utilities::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
 			// Clang decided to do their module compilation in two stages
@@ -85,8 +85,8 @@ namespace Soup::Compiler::MSVC
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateLinkOperation(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CreateLinkOperation(
+			Build::Utilities::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
 			// Select the correct executable for linking libraries or executables
@@ -109,8 +109,8 @@ namespace Soup::Compiler::MSVC
 			auto outputFiles = std::vector<Path>();
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
 
-			auto buildOperation = Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			auto buildOperation = Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					args.TargetFile.ToString(),
 					executablePath,
 					CombineArguments(commandArgs),
@@ -122,8 +122,8 @@ namespace Soup::Compiler::MSVC
 		}
 
 	private:
-		Build::Extensions::BuildOperationWrapper CompileStandard(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CompileStandard(
+			Build::Utilities::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
@@ -137,8 +137,8 @@ namespace Soup::Compiler::MSVC
 				inputFiles,
 				outputFiles);
 
-			auto buildOperation = Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			auto buildOperation = Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					args.SourceFile.ToString(),
 					executablePath,
 					CombineArguments(commandArgs),
@@ -149,8 +149,8 @@ namespace Soup::Compiler::MSVC
 			return buildOperation;
 		}
 
-		Build::Extensions::BuildOperationWrapper CompileModuleInterfaceUnit(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CompileModuleInterfaceUnit(
+			Build::Utilities::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
@@ -180,8 +180,8 @@ namespace Soup::Compiler::MSVC
 				inputFiles,
 				outputFiles);
 
-			auto buildOperation = Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			auto buildOperation = Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					args.SourceFile.ToString(),
 					executablePath,
 					CombineArguments(compiledModuleCommandArgs),

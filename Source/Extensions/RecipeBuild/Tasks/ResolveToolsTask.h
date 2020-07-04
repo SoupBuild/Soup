@@ -42,7 +42,7 @@ namespace RecipeBuild
 		Soup::Build::ApiCallResult TryExecute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
 
 			try
 			{
@@ -65,7 +65,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
+		void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
 		{
 			auto state = buildState.GetActiveState();
 
@@ -191,7 +191,7 @@ namespace RecipeBuild
 		}
 
 	private:
-		Path FindVSInstallRoot(Soup::Build::Extensions::BuildStateWrapper& buildState)
+		Path FindVSInstallRoot(Soup::Build::Utilities::BuildStateWrapper& buildState)
 		{
 			// Find a copy of visual studio that has the required VisualCompiler
 			auto executablePath = Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
@@ -248,7 +248,7 @@ namespace RecipeBuild
 		}
 
 		std::string FindDefaultVCToolsVersion(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
 			const Path& visualStudioInstallRoot)
 		{
 			// Check the default tools version
@@ -314,7 +314,7 @@ namespace RecipeBuild
 		}
 
 	private:
-		Soup::Build::Extensions::StringList _runBeforeList;
-		Soup::Build::Extensions::StringList _runAfterList;
+		Soup::Build::Utilities::StringList _runBeforeList;
+		Soup::Build::Utilities::StringList _runAfterList;
 	};
 }

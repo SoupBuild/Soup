@@ -4,7 +4,7 @@ Version = "1.0.0"
 Dependencies = [
 	"../../../Dependencies/Opal/Source/",
 	# "Opal@0.1.2",
-	"../../Build/Runtime/",
+	"../../Build/Evaluation/",
 	"../Compiler/Core/",
 	"../Compiler/Clang/",
 	"../Compiler/MSVC/",

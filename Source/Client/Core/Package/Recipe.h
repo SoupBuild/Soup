@@ -54,8 +54,8 @@ namespace Soup
 		Recipe(
 			std::string_view name,
 			SemanticVersion version,
-			std::optional<Build::Extensions::RecipeType> type,
-			std::optional<Build::Extensions::RecipeLanguageVersion> languageVersion,
+			std::optional<Build::Utilities::RecipeType> type,
+			std::optional<Build::Utilities::RecipeLanguageVersion> languageVersion,
 			std::optional<std::vector<PackageReference>> dependencies,
 			std::optional<std::vector<PackageReference>> devDependencies,
 			std::optional<std::string> publicFile,
@@ -144,15 +144,15 @@ namespace Soup
 			return HasValue(Property_Type);
 		}
 
-		Build::Extensions::RecipeType GetType()
+		Build::Utilities::RecipeType GetType()
 		{
 			if (!HasType())
 				throw std::runtime_error("No type.");
 
-			return Build::Extensions::ParseRecipeType(GetValue(Property_Type).AsString());
+			return Build::Utilities::ParseRecipeType(GetValue(Property_Type).AsString());
 		}
 
-		void SetType(Build::Extensions::RecipeType value)
+		void SetType(Build::Utilities::RecipeType value)
 		{
 			return EnsureValue(Property_Type).SetValueString(ToString(value));
 		}
@@ -165,16 +165,16 @@ namespace Soup
 			return HasValue(Property_Language);
 		}
 
-		Build::Extensions::RecipeLanguageVersion GetLanguageVersion()
+		Build::Utilities::RecipeLanguageVersion GetLanguageVersion()
 		{
 			if (!HasLanguageVersion())
 				throw std::runtime_error("No language version.");
 
-			return Build::Extensions::ParseRecipeLanguageVersion(
+			return Build::Utilities::ParseRecipeLanguageVersion(
 				GetValue(Property_Language).AsString());
 		}
 
-		void SetLanguageVersion(Build::Extensions::RecipeLanguageVersion value)
+		void SetLanguageVersion(Build::Utilities::RecipeLanguageVersion value)
 		{
 			return EnsureValue(Property_Language).SetValueString(ToString(value));
 		}

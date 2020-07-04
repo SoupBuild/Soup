@@ -1,0 +1,17 @@
+Name = "Soup.Build.Evaluation"
+Description = """The primary implementation of the contract classes that are 
+used inside the primary Build Evaluation Engine."""
+Version = "0.1.0"
+Dependencies = [
+	"../Contracts/",
+	# "Soup.Build@0.3.0",
+	"../Utilities/",
+	# "Soup.Build.Utilities@0.3.0",
+	"../../../Dependencies/Opal/Source/",
+	# "Opal@0.1.2",
+]
+
+Public = "Module.cpp"
+Source = [
+	"Value.cpp",
+]

@@ -7,7 +7,7 @@
 #include <vector>
 
 import Opal;
-import Soup.Build.Runtime;
+import Soup.Build.Evaluation;
 import SoupCompiler;
 import SoupTest;
 import SoupTestUtilities;

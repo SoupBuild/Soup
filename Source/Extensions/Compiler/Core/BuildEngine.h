@@ -25,7 +25,7 @@ namespace Soup::Compiler
 		/// Generate the required build operations for the requested build
 		/// </summary>
 		BuildResult Execute(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
 			const BuildArguments& arguments)
 		{
 			auto result = BuildResult();
@@ -63,14 +63,14 @@ namespace Soup::Compiler
 		/// Compile the module and source files
 		/// </summary>
 		void CoreCompile(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
-			auto rootCompileOperations = std::vector<Soup::Build::Extensions::BuildOperationWrapper>();
+			auto rootCompileOperations = std::vector<Soup::Build::Utilities::BuildOperationWrapper>();
 
 			// Compile the module interface unit if present
-			auto moduleCompileOperation = Soup::Build::Extensions::BuildOperationWrapper();
+			auto moduleCompileOperation = Soup::Build::Utilities::BuildOperationWrapper();
 			if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
 			{
 				CompileModuleInterfaceUnit(
@@ -92,7 +92,7 @@ namespace Soup::Compiler
 					buildState,
 					objectModuleInterfaceFile,
 					binaryOutputModuleInterfaceFile);
-				Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, copyInterfaceOperation);
+				Soup::Build::Utilities::BuildOperationExtensions::AddLeafChild(result.BuildOperations, copyInterfaceOperation);
 
 				// Add output module interface to the parent set of modules
 				// This will allow the module implementation units access as well as downstream
@@ -114,7 +114,7 @@ namespace Soup::Compiler
 		/// Returns true if the file was compiled
 		/// </summary>
 		void CompileModuleInterfaceUnit(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
@@ -146,14 +146,14 @@ namespace Soup::Compiler
 			auto compileOperation = _compiler->CreateCompileOperation(buildState, compileArguments);
 
 			// Run after the module interface unit compile
-			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, compileOperation);
+			Soup::Build::Utilities::BuildOperationExtensions::AddLeafChild(result.BuildOperations, compileOperation);
 		}
 
 		/// <summary>
 		/// Compile the supporting source files
 		/// </summary>
 		void CompileSourceFiles(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
@@ -180,7 +180,7 @@ namespace Soup::Compiler
 				std::back_inserter(compileArguments.IncludeModules)); 
 
 			// Compile the individual translation units
-			auto buildOperations = std::vector<Soup::Build::Extensions::BuildOperationWrapper>();
+			auto buildOperations = std::vector<Soup::Build::Utilities::BuildOperationWrapper>();
 			for (auto& file : arguments.SourceFiles)
 			{
 				buildState.LogInfo("Generate Compile Operation: " + file.ToString());
@@ -194,14 +194,14 @@ namespace Soup::Compiler
 			}
 
 			// Run the core compile next
-			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChildren(result.BuildOperations, buildOperations);
+			Soup::Build::Utilities::BuildOperationExtensions::AddLeafChildren(result.BuildOperations, buildOperations);
 		}
 
 		/// <summary>
 		/// Link the library
 		/// </summary>
 		void CoreLink(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
@@ -317,21 +317,21 @@ namespace Soup::Compiler
 			auto linkOperation = _compiler->CreateLinkOperation(buildState, linkArguments);
 
 			// Run the link operation
-			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(result.BuildOperations, linkOperation);
+			Soup::Build::Utilities::BuildOperationExtensions::AddLeafChild(result.BuildOperations, linkOperation);
 		}
 
 		/// <summary>
 		/// Copy runtime dependencies
 		/// </summary>
 		void CopyRuntimeDependencies(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
 			if (arguments.TargetType == BuildTargetType::Executable ||
 				arguments.TargetType == BuildTargetType::DynamicLibrary)
 			{
-				auto copyOperations = std::vector<Soup::Build::Extensions::BuildOperationWrapper>();
+				auto copyOperations = std::vector<Soup::Build::Utilities::BuildOperationWrapper>();
 				for (auto source : arguments.RuntimeDependencies)
 				{
 					auto target = arguments.WorkingDirectory + arguments.BinaryDirectory + Path(source.GetFileName());
@@ -341,7 +341,7 @@ namespace Soup::Compiler
 				
 				if (!copyOperations.empty())
 				{
-					Soup::Build::Extensions::BuildOperationExtensions::AddLeafChildren(result.BuildOperations, copyOperations);
+					Soup::Build::Utilities::BuildOperationExtensions::AddLeafChildren(result.BuildOperations, copyOperations);
 				}
 			}
 		}

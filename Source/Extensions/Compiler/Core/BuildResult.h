@@ -14,7 +14,7 @@ namespace Soup::Compiler
 		/// <summary>
 		/// Gets or sets the resulting root build operations
 		/// </summary>
-		std::vector<Soup::Build::Extensions::BuildOperationWrapper> BuildOperations;
+		std::vector<Soup::Build::Utilities::BuildOperationWrapper> BuildOperations;
 
 		/// <summary>
 		/// Gets or sets the list of module dependencies

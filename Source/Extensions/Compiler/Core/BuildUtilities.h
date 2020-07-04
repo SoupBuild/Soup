@@ -15,8 +15,8 @@ namespace Soup::Compiler
 		/// <summary>
 		/// Create a build operation that will copy a file
 		/// </summary>
-		static Soup::Build::Extensions::BuildOperationWrapper CreateCopyFileOperation(
-			Soup::Build::Extensions::BuildStateWrapper& state,
+		static Soup::Build::Utilities::BuildOperationWrapper CreateCopyFileOperation(
+			Soup::Build::Utilities::BuildStateWrapper& state,
 			const Path& source,
 			const Path& destination)
 		{
@@ -37,8 +37,8 @@ namespace Soup::Compiler
 			std::stringstream arguments;
 			arguments << "/C copy /Y \"" << source.ToAlternateString() << "\" \"" << destination.ToAlternateString() << "\"";
 
-			return Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			return Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					titleStream.str(),
 					program,
 					arguments.str(),
@@ -50,8 +50,8 @@ namespace Soup::Compiler
 		/// <summary>
 		/// Create a build operation that will create a directory
 		/// </summary>
-		static Soup::Build::Extensions::BuildOperationWrapper CreateCreateDirectoryOperation(
-			Soup::Build::Extensions::BuildStateWrapper& state,
+		static Soup::Build::Utilities::BuildOperationWrapper CreateCreateDirectoryOperation(
+			Soup::Build::Utilities::BuildStateWrapper& state,
 			const Path& directory)
 		{
 			auto titleStream = std::stringstream();
@@ -69,8 +69,8 @@ namespace Soup::Compiler
 			std::stringstream arguments;
 			arguments << "/C if not exist \"" << directory.ToString() << "\" mkdir \"" << directory.ToString() << "\"";
 
-			return Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			return Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					titleStream.str(),
 					program,
 					arguments.str(),

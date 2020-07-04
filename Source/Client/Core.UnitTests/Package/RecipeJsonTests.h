@@ -82,8 +82,8 @@ namespace Soup::Build::UnitTests
 			auto expected = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				Build::Extensions::RecipeType::Executable,
-				Build::Extensions::RecipeLanguageVersion::CPP17,
+				Build::Utilities::RecipeType::Executable,
+				Build::Utilities::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>(),
 				std::vector<PackageReference>(),
 				"Public.cpp",
@@ -119,8 +119,8 @@ namespace Soup::Build::UnitTests
 			auto recipe = Recipe(
 				"MyPackage",
 				SemanticVersion(1, 2, 3),
-				Build::Extensions::RecipeType::Executable,
-				Build::Extensions::RecipeLanguageVersion::CPP17,
+				Build::Utilities::RecipeType::Executable,
+				Build::Utilities::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>(),
 				std::vector<PackageReference>(),
 				"Public.cpp",

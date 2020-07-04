@@ -44,7 +44,7 @@ namespace RecipeBuild
 		{
 			try
 			{
-				auto state = Soup::Build::Extensions::BuildStateWrapper(buildState);
+				auto state = Soup::Build::Utilities::BuildStateWrapper(buildState);
 
 				return Soup::Build::ApiCallResult::Success;
 			}
@@ -56,7 +56,7 @@ namespace RecipeBuild
 		}
 
 	private:
-		Soup::Build::Extensions::StringList _runBeforeList;
-		Soup::Build::Extensions::StringList _runAfterList;
+		Soup::Build::Utilities::StringList _runBeforeList;
+		Soup::Build::Utilities::StringList _runAfterList;
 	};
 }

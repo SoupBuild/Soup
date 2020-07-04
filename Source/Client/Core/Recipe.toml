@@ -8,11 +8,12 @@ Dependencies = [
 	# "../../../Dependencies/toml11/",
 	"toml11@1.0.0",
 	"../OpalExtensions/",
-	"../../Build/Core/",
+	"../../Build/Contracts/",
 	# "Soup.Build@0.3.0",
-	"../../Build/Extensions/",
-	# "Soup.Build.Extensions@0.3.0",
-	"../../Build/Runtime/",
+	"../../Build/Utilities/",
+	# "Soup.Build.Utilities@0.3.0",
+	"../../Build/Execution/",
+	"../../Build/Evaluation/",
 ]
 Defines = [
 	# "LOCAL_DEBUG",
