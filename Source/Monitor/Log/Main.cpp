@@ -16,6 +16,7 @@ using namespace Opal;
 #pragma warning(pop)
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
 #include <thread>
@@ -41,7 +42,9 @@ DWORD main(int argc, char **argv)
 		args.push_back(argv[i]);
 	}
 
-	auto callback = Monitor::DetourCallbackLogger();
+	auto file = std::fstream("Access.txt", std::fstream::out);
+
+	auto callback = Monitor::DetourCallbackLogger(file);
 	auto process = Monitor::DetouredProcess(callback); 
 	auto result = process.RunProcess(application, args);
 

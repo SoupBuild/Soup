@@ -5,69 +5,77 @@ namespace Monitor
 	class DetourCallbackLogger : public IDetourCallback
 	{
 	public:
+		DetourCallbackLogger(std::ostream& stream) :
+			m_stream(stream)
+		{
+		}
+
 		void OnExit() override final
 		{
-			std::cout<< "Exit: " << std::endl;
+			m_stream << "Exit: " << std::endl;
 		}
 
 		void OnError() override final
 		{
-			std::cout<< "Error: " << std::endl;
+			m_stream << "Error: " << std::endl;
 		}
 
 		void OnCopyFile() override final
 		{
-			std::cout<< "CopyFile: " << std::endl;
+			m_stream << "CopyFile: " << std::endl;
 		}
 
 		void OnCreateDirectory(const std::string_view directory) override final
 		{
-			std::cout<< "CreateDirectory: " << directory << std::endl;
+			m_stream << "CreateDirectory: " << directory << std::endl;
 		}
 
 		void OnCreateFile(const std::string_view filename) override final
 		{
-			std::cout<< "CreateFile: " << filename << std::endl;
+			m_stream << "CreateFile: " << filename << std::endl;
 		}
 
 		void OnCreateHardLink() override final
 		{
-			std::cout<< "CreateHardLink: " << std::endl;
+			m_stream << "CreateHardLink: " << std::endl;
 		}
 
 		void OnCreateProcess() override final
 		{
-			std::cout<< "CreateProcess: " << std::endl;
+			m_stream << "CreateProcess: " << std::endl;
 		}
 
 		void OnDeleteFile(const std::string_view filename) override final
 		{
-			std::cout<< "DeleteFile: " << filename << std::endl;
+			m_stream << "DeleteFile: " << filename << std::endl;
 		}
 
 		void OnGetEnvironmentVariable() override final
 		{
-			std::cout<< "GetEnvironmentVariable: " << std::endl;
+			m_stream << "GetEnvironmentVariable: " << std::endl;
 		}
 
 		void OnGetFileAttributes(const std::string_view filename) override final
 		{
-			std::cout<< "GetFileAttributes: " << filename << std::endl;
+			m_stream << "GetFileAttributes: " << filename << std::endl;
 		}
 
 		void OnLoadLibrary() override final
 		{
-			std::cout<< "LoadLibrary: " << std::endl;
+			m_stream << "LoadLibrary: " << std::endl;
 		}
 
 		void OnMoveFile() override final
 		{
-			std::cout<< "MoveFile: " << std::endl;
+			m_stream << "MoveFile: " << std::endl;
 		}
 
 		void OnOpenFile(const std::string_view filename) override final
 		{
-			std::cout<< "OpenFile: " << filename << std::endl;
+			m_stream << "OpenFile: " << filename << std::endl;
 		}
+
+	private:
+		std::ostream& m_stream;
 	};
 }
