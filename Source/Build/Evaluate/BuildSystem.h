@@ -5,7 +5,7 @@
 #pragma once
 #include "BuildState.h"
 
-namespace Soup::Build::Evaluation
+namespace Soup::Build::Evaluate
 {
 	class BuildTaskContainer
 	{

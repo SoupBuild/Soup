@@ -11,11 +11,11 @@ module;
 #include <string>
 #include <vector>
 
-module Soup.Build.Evaluation;
+module Soup.Build.Evaluate;
 
 using namespace Opal;
 
-namespace Soup::Build::Evaluation
+namespace Soup::Build::Evaluate
 {
 
 Value::Value() :

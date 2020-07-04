@@ -8,7 +8,7 @@
 #include <sstream>
 #include <vector>
 
-export module Soup.Build.Evaluation;
+export module Soup.Build.Evaluate;
 
 import Opal;
 import Soup.Build;

@@ -5,7 +5,7 @@
 #pragma once
 #include "CompileResult.h"
 
-namespace Soup::Build::Execution
+namespace Soup::Build::Execute
 {
 	export class FileInfo
 	{

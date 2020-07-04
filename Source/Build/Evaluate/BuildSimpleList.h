@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::Evaluation
+namespace Soup::Build::Evaluate
 {
 	/// <summary>
 	/// Build list implementation for simple objects

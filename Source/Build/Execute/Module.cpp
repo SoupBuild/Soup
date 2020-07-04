@@ -13,7 +13,7 @@
 #include <sstream>
 #include <vector>
 
-export module Soup.Build.Execution;
+export module Soup.Build.Execute;
 
 import json11;
 import Opal;

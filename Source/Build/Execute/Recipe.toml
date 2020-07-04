@@ -1,4 +1,4 @@
-Name = "Soup.Build.Execution"
+Name = "Soup.Build.Execute"
 Description = """The Build Execution engine that is responsible for Execution of the minumum
 set of Build Operations for a fully consistent build."""
 Version = "0.1.0"

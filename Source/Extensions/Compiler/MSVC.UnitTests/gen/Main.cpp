@@ -10,7 +10,7 @@ import SoupCompiler;
 import SoupCompilerMSVC;
 import Soup.Build;
 import Soup.Build.Utilities;
-import Soup.Build.Evaluation;
+import Soup.Build.Evaluate;
 import SoupTest;
 import SoupTestUtilities;
 

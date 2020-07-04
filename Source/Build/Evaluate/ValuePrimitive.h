@@ -6,7 +6,7 @@
 #include "Value.h"
 #include "ValueList.h"
 
-namespace Soup::Build::Evaluation
+namespace Soup::Build::Evaluate
 {
 	/// <summary>
 	/// Build State Extension interface

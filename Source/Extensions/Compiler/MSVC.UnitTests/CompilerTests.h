@@ -38,7 +38,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("obj/File.obj");
 			arguments.RootDirectory = Path("Source");
 
-			auto buildState = Build::Evaluation::BuildState(Build::Evaluation::ValueTable());
+			auto buildState = Build::Evaluate::BuildState(Build::Evaluate::ValueTable());
 			auto result = uut.CreateCompileOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
@@ -82,7 +82,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			});
 			arguments.ExportModule = true;
 
-			auto buildState = Build::Evaluation::BuildState(Build::Evaluation::ValueTable());
+			auto buildState = Build::Evaluate::BuildState(Build::Evaluate::ValueTable());
 			auto result = uut.CreateCompileOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
@@ -121,7 +121,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("File.mock.obj"),
 			});
 
-			auto buildState = Build::Evaluation::BuildState(Build::Evaluation::ValueTable());
+			auto buildState = Build::Evaluate::BuildState(Build::Evaluate::ValueTable());
 			auto result = uut.CreateLinkOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
@@ -161,7 +161,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("Library.mock.a"),
 			});
 
-			auto buildState = Build::Evaluation::BuildState(Build::Evaluation::ValueTable());
+			auto buildState = Build::Evaluate::BuildState(Build::Evaluate::ValueTable());
 			auto result = uut.CreateLinkOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result

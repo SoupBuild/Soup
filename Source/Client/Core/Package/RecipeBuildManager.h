@@ -76,23 +76,23 @@ namespace Soup::Build
 		/// <summary>
 		/// Convert the root recipe table to a build Value Table entry
 		/// </summary>
-		Evaluation::ValueTable ConvertToRootBuildState(const RecipeTable& table)
+		Evaluate::ValueTable ConvertToRootBuildState(const RecipeTable& table)
 		{
 			// Convert teh root table
 			auto recipeState = ConvertToBuildState(table);
 			
 			// Initialize the Recipe state
-			auto state = Evaluation::ValueTable();
-			state.SetValue("Recipe", Evaluation::Value(std::move(recipeState)));
+			auto state = Evaluate::ValueTable();
+			state.SetValue("Recipe", Evaluate::Value(std::move(recipeState)));
 			return state;
 		}
 
 		/// <summary>
 		/// Convert the recipe internal representation to initial build state
 		/// </summary>
-		Evaluation::ValueTable ConvertToBuildState(const RecipeTable& table)
+		Evaluate::ValueTable ConvertToBuildState(const RecipeTable& table)
 		{
-			auto result = Evaluation::ValueTable();
+			auto result = Evaluate::ValueTable();
 			for (auto& value : table)
 			{
 				auto buildValue = ConvertToBuildState(value.second);
@@ -105,9 +105,9 @@ namespace Soup::Build
 		/// <summary>
 		/// Convert the recipe internal representation to initial build state
 		/// </summary>
-		Evaluation::ValueList ConvertToBuildState(const RecipeList& list)
+		Evaluate::ValueList ConvertToBuildState(const RecipeList& list)
 		{
-			auto result = Evaluation::ValueList();
+			auto result = Evaluate::ValueList();
 			for (auto& value : list)
 			{
 				auto buildValue = ConvertToBuildState(value);
@@ -120,24 +120,24 @@ namespace Soup::Build
 		/// <summary>
 		/// Convert the recipe internal representation to initial build state
 		/// </summary>
-		Evaluation::Value ConvertToBuildState(const RecipeValue& value)
+		Evaluate::Value ConvertToBuildState(const RecipeValue& value)
 		{
 			switch (value.GetType())
 			{
 				case RecipeValueType::Empty:
-					return Evaluation::Value();
+					return Evaluate::Value();
 				case RecipeValueType::Table:
-					return Evaluation::Value(ConvertToBuildState(value.AsTable()));
+					return Evaluate::Value(ConvertToBuildState(value.AsTable()));
 				case RecipeValueType::List:
-					return Evaluation::Value(ConvertToBuildState(value.AsList()));
+					return Evaluate::Value(ConvertToBuildState(value.AsList()));
 				case RecipeValueType::String:
-					return Evaluation::Value(value.AsString());
+					return Evaluate::Value(value.AsString());
 				case RecipeValueType::Integer:
-					return Evaluation::Value(value.AsInteger());
+					return Evaluate::Value(value.AsInteger());
 				case RecipeValueType::Float:
-					return Evaluation::Value(value.AsFloat());
+					return Evaluate::Value(value.AsFloat());
 				case RecipeValueType::Boolean:
-					return Evaluation::Value(value.AsBoolean());
+					return Evaluate::Value(value.AsBoolean());
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}
@@ -154,7 +154,7 @@ namespace Soup::Build
 			bool isSystemBuild,
 			bool isDevBuild,
 			const std::set<std::string>& parentSet,
-			Evaluation::ValueTable& sharedState)
+			Evaluate::ValueTable& sharedState)
 		{
 			// Add current package to the parent set when building child dependencies
 			auto activeParentSet = parentSet;
@@ -268,8 +268,8 @@ namespace Soup::Build
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
 			bool isDevBuild,
-			Evaluation::ValueTable& activeState,
-			Evaluation::ValueTable& sharedState)
+			Evaluate::ValueTable& activeState,
+			Evaluate::ValueTable& sharedState)
 		{
 			// TODO: RAII for active id
 			try
@@ -318,7 +318,7 @@ namespace Soup::Build
 					auto& devDependenciesTable = sharedState.EnsureValue("DevDependencies").EnsureTable();
 					devDependenciesTable.SetValue(
 						recipe.GetName(),
-						Evaluation::Value(findBuildState->second));
+						Evaluate::Value(findBuildState->second));
 				}
 				else
 				{
@@ -326,7 +326,7 @@ namespace Soup::Build
 					auto& dependenciesTable = sharedState.EnsureValue("Dependencies").EnsureTable();
 					dependenciesTable.SetValue(
 						recipe.GetName(),
-						Evaluation::Value(findBuildState->second));
+						Evaluate::Value(findBuildState->second));
 				}
 
 				Log::SetActiveId(0);
@@ -340,21 +340,21 @@ namespace Soup::Build
 			return projectId;
 		}
 
-		Evaluation::ValueTable RunInProcessBuild(
+		Evaluate::ValueTable RunInProcessBuild(
 			int projectId,
 			const Path& packageRoot,
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
-			Evaluation::ValueTable& activeState)
+			Evaluate::ValueTable& activeState)
 		{
 			// Ensure the external build extension libraries outlive all usage in the build system
 			auto activeExtensionLibraries = std::vector<System::WindowsLibrary>();
 
 			{
 				// Create a new build system for the requested build
-				auto buildSystem = Evaluation::BuildSystem();
-				auto buildState = Evaluation::BuildState(activeState);
+				auto buildSystem = Evaluate::BuildSystem();
+				auto buildState = Evaluate::BuildState(activeState);
 				auto activeStateWrapper = Utilities::ValueTableWrapper(buildState.GetActiveState());
 
 				// Select the correct compiler to use
@@ -427,7 +427,7 @@ namespace Soup::Build
 				if (!arguments.SkipRun)
 				{
 					// Execute the build operations
-					auto runner = Execution::BuildRunner(packageRoot);
+					auto runner = Execute::BuildRunner(packageRoot);
 					auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetBuildOperations());
 					runner.Execute(
 						buildOperations,
@@ -530,7 +530,7 @@ namespace Soup::Build
 		std::string _systemCompiler;
 		std::string _runtimeCompiler;
 		std::map<std::string, Recipe> _knownRecipes;
-		std::map<std::string, Evaluation::ValueTable> _buildSet;
-		std::map<std::string, Evaluation::ValueTable> _systemBuildSet;
+		std::map<std::string, Evaluate::ValueTable> _buildSet;
+		std::map<std::string, Evaluate::ValueTable> _systemBuildSet;
 	};
 }

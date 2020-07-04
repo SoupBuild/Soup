@@ -1,5 +1,5 @@
-Name = "Soup.Build.Evaluation"
-Description = """The primary implementation of the contract classes that are 
+Name = "Soup.Build.Evaluate"
+Description = """The Build Evaluation implementation of the contract classes that are 
 used inside the primary Build Evaluation Engine."""
 Version = "0.1.0"
 Dependencies = [

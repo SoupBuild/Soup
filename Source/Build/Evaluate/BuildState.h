@@ -5,7 +5,7 @@
 #pragma once
 #include "ValueTable.h"
 
-namespace Soup::Build::Evaluation
+namespace Soup::Build::Evaluate
 {
 	/// <summary>
 	/// Build State Extension interface

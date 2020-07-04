@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::Evaluation
+namespace Soup::Build::Evaluate
 {
 	export class ValueTable;
 	export class ValueList;

@@ -24,7 +24,7 @@ export module RecipeBuild;
 import Opal;
 import Soup.Build;
 import Soup.Build.Utilities;
-import Soup.Build.Evaluation;
+import Soup.Build.Evaluate;
 import SoupCompiler;
 import SoupCompilerClang;
 import SoupCompilerMSVC;

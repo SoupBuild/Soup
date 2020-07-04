@@ -6,7 +6,7 @@
 #include "BuildHistory.h"
 #include "BuildHistoryJson.h"
 
-namespace Soup::Build::Execution
+namespace Soup::Build::Execute
 {
 	/// <summary>
 	/// The build state manager

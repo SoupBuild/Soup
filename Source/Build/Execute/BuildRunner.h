@@ -5,7 +5,7 @@
 #pragma once
 #include "BuildHistory.h"
 
-namespace Soup::Build::Execution
+namespace Soup::Build::Execute
 {
 	/// <summary>
 	/// The build task
