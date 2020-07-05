@@ -4,11 +4,12 @@
 
 #pragma once
 #include "BuildHistory.h"
+#include "SystemAccessTracker.h"
 
 namespace Soup::Build::Execute
 {
 	/// <summary>
-	/// The build task
+	/// The build runner
 	/// </summary>
 	export class BuildRunner
 	{
@@ -211,42 +212,60 @@ namespace Soup::Build::Execute
 				auto workingDirectory = Path(operation.GetWorkingDirectory());
 				auto message = "Execute: " + executable.ToString() + " " + arguments;
 				Log::Diag(message);
-				auto result = System::IProcessManager::Current().Execute(
+
+				auto process = System::IProcessManager::Current().CreateProcess(
 					executable,
 					arguments,
 					workingDirectory);
+				process->Start();
+				process->WaitForExit();
+
+				// auto callback = SystemAccessTracker(std::cout);
+				// auto process = Monitor::DetouredProcess(callback);
+				// auto result = process.RunProcess(
+				// 	executable,
+				// 	arguments,
+				// 	workingDirectory);
+
+				auto stdOut = process->GetStandardOutput();
+				auto stdErr = process->GetStandardError();
+				auto exitCode = process->GetExitCode();
 
 				// Try parse includes if available
 				auto cleanOutput = std::stringstream();
 				auto headerIncludes = std::vector<HeaderInclude>();
-				if (TryParsesHeaderIncludes(operation, result.StdOut, headerIncludes, cleanOutput))
+				if (TryParsesHeaderIncludes(
+					operation,
+					stdOut,
+					headerIncludes,
+					cleanOutput))
 				{
 					// Save off the build history for future builds
 					_buildHistory.UpdateIncludeTree(headerIncludes);
 
 					// Replace the output string with the clean version
-					result.StdOut = cleanOutput.str();
+					stdOut = cleanOutput.str();
 				}
 
-				if (!result.StdOut.empty())
+				if (!stdOut.empty())
 				{
 					// Upgrade output to a warning if the command fails
-					if (result.ExitCode != 0)
-						Log::Warning(result.StdOut);
+					if (exitCode != 0)
+						Log::Warning(stdOut);
 					else
-						Log::Info(result.StdOut);
+						Log::Info(stdOut);
 				}
 
 				// If there was any error output then the build failed
 				// TODO: Find warnings + errors
-				if (!result.StdErr.empty())
+				if (!stdErr.empty())
 				{
-					Log::Error(result.StdErr);
+					Log::Error(stdErr);
 				}
 
-				if (result.ExitCode != 0)
+				if (exitCode != 0)
 				{
-					throw std::runtime_error("Compiler Object Error: " + std::to_string(result.ExitCode));
+					throw std::runtime_error("Compiler Object Error: " + std::to_string(exitCode));
 				}
 			}
 			else

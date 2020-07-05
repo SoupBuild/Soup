@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::UnitTests
+namespace Soup::Build::Execute::UnitTests
 {
 	class BuildRunnerTests
 	{
@@ -189,7 +189,12 @@ namespace Soup::Build::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"CreateProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"ProcessStart: 1",
+					"WaitForExit: 1",
+					"GetStandardOutput: 1",
+					"GetStandardError: 1",
+					"GetExitCode: 1",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -263,7 +268,12 @@ namespace Soup::Build::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Execute: [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"CreateProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"ProcessStart: 1",
+					"WaitForExit: 1",
+					"GetStandardOutput: 1",
+					"GetStandardError: 1",
+					"GetExitCode: 1",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");

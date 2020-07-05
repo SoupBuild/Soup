@@ -47,7 +47,7 @@ namespace Soup::Compiler::Clang::UnitTests
 						Path("obj/File.o"),
 					})));
 
-			AssertUtilities::AreEqual(expected, result);
+			AssertExtensions::AreEqual(expected, result);
 		}
 
 		[[Fact]]
@@ -101,7 +101,7 @@ namespace Soup::Compiler::Clang::UnitTests
 							})),
 					})));
 
-			AssertUtilities::AreEqual(expected, result);
+			AssertExtensions::AreEqual(expected, result);
 		}
 
 		[[Fact]]
@@ -134,7 +134,7 @@ namespace Soup::Compiler::Clang::UnitTests
 						Path("Library.mock.a"),
 					})));
 
-			AssertUtilities::AreEqual(expected, result);
+			AssertExtensions::AreEqual(expected, result);
 		}
 
 		[[Fact]]
@@ -144,6 +144,7 @@ namespace Soup::Compiler::Clang::UnitTests
 
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::Executable;
+			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = Path("Something.exe");
 			arguments.RootDirectory = Path("Source");
 			arguments.ObjectFiles = std::vector<Path>({
@@ -171,7 +172,7 @@ namespace Soup::Compiler::Clang::UnitTests
 						Path("Something.exe"),
 					})));
 
-			AssertUtilities::AreEqual(expected, result);
+			AssertExtensions::AreEqual(expected, result);
 		}
 	};
 }

@@ -29,5 +29,8 @@ int main()
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;
 
-	return 0;
+	if (state.FailCount > 0)
+		return 1;
+	else
+		return 0;
 }

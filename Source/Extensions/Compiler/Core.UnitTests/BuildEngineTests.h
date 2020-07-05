@@ -152,7 +152,7 @@ namespace Soup::Compiler::UnitTests
 					})),
 			});
 
-			AssertUtilities::AreEqual(
+			AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				result.BuildOperations);
 
@@ -364,7 +364,7 @@ namespace Soup::Compiler::UnitTests
 					expectedCompileOperations),
 			});
 
-			AssertUtilities::AreEqual(
+			AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				result.BuildOperations);
 
@@ -635,7 +635,7 @@ namespace Soup::Compiler::UnitTests
 					})),
 			});
 
-			AssertUtilities::AreEqual(
+			AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				result.BuildOperations);
 
@@ -830,7 +830,7 @@ namespace Soup::Compiler::UnitTests
 					})),
 			});
 
-			AssertUtilities::AreEqual(
+			AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				result.BuildOperations);
 

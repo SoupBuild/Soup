@@ -22,12 +22,6 @@ using namespace SoupTest;
 #include "Api/SoupApiTests.gen.h"
 #include "Api/SoupApiJsonModelsTests.gen.h"
 
-#include "Build/Runner/BuildHistoryCheckerTests.gen.h"
-#include "Build/Runner/BuildHistoryJsonTests.gen.h"
-#include "Build/Runner/BuildHistoryTests.gen.h"
-#include "Build/Runner/BuildHistoryManagerTests.gen.h"
-#include "Build/Runner/BuildRunnerTests.gen.h"
-
 #include "Config/LocalUserConfigExtensionsTests.gen.h"
 #include "Config/LocalUserConfigJsonTests.gen.h"
 #include "Config/LocalUserConfigTests.gen.h"
@@ -53,12 +47,6 @@ int main()
 	state += RunSoupApiTests();
 	state += RunSoupApiJsonModelsTests();
 
-	state += RunBuildHistoryCheckerTests();
-	state += RunBuildHistoryJsonTests();
-	state += RunBuildHistoryTests();
-	state += RunBuildHistoryManagerTests();
-	state += RunBuildRunnerTests();
-
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigJsonTests();
 	state += RunLocalUserConfigTests();
@@ -79,7 +67,7 @@ int main()
 	std::cout << state.FailCount << " FAILED." << std::endl;
 
 	if (state.FailCount > 0)
-		return -1;
+		return 1;
 	else
 		return 0;
 }

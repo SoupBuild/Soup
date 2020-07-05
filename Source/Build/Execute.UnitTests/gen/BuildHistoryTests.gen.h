@@ -1,10 +1,10 @@
 #pragma once
-#include "Build/Runner/BuildHistoryTests.h"
+#include "BuildHistoryTests.h"
 
 TestState RunBuildHistoryTests() 
  {
 	auto className = "BuildHistoryTests";
-	auto testClass = std::make_shared<Soup::Build::UnitTests::BuildHistoryTests>();
+	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::BuildHistoryTests>();
 	TestState state = { 0, 0 };
 	state += SoupTest::RunTest(className, "TryBuildIncludeClosure_SourceFileMissingFails", [&testClass]() { testClass->TryBuildIncludeClosure_SourceFileMissingFails(); });
 	state += SoupTest::RunTest(className, "TryBuildIncludeClosure_DependencyFileMissingFails", [&testClass]() { testClass->TryBuildIncludeClosure_DependencyFileMissingFails(); });

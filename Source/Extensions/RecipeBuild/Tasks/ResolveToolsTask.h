@@ -216,25 +216,31 @@ namespace RecipeBuild
 			// Execute the requested target
 			auto arguments = CombineArguments(argumentList);
 			buildState.LogDebug(executablePath.ToString() + " " + arguments);
-			auto result = System::IProcessManager::Current().Execute(
+			auto process = System::IProcessManager::Current().CreateProcess(
 				executablePath,
 				arguments,
 				workingDirectory);
+			process->Start();
+			process->WaitForExit();
 
-			if (!result.StdErr.empty())
+			auto stdOut = process->GetStandardOutput();
+			auto stdErr = process->GetStandardError();
+			auto exitCode = process->GetExitCode();
+
+			if (!stdErr.empty())
 			{
-				buildState.LogError(result.StdErr);
+				buildState.LogError(stdErr);
 				throw std::runtime_error("VSWhere failed.");
 			}
 
-			if (result.ExitCode != 0)
+			if (exitCode != 0)
 			{
 				// TODO: Return error code
 				buildState.LogError("FAILED");
 				throw std::runtime_error("VSWhere failed.");
 			}
 
-			auto stream = std::istringstream(result.StdOut);
+			auto stream = std::istringstream(stdOut);
 
 			// The first line is the path
 			auto path = std::string();

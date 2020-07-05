@@ -1,5 +1,4 @@
 import Monitor.Shared;
-import Detours;
 import Opal;
 
 using namespace Opal;
@@ -42,11 +41,18 @@ DWORD main(int argc, char **argv)
 		args.push_back(argv[i]);
 	}
 
-	auto file = std::fstream("Access.txt", std::fstream::out);
+	std::stringstream argumentsValue;
+	for (auto& arg : arguments)
+	{
+		argumentsValue << " " << arg;
+	}
+
+	std::string argumentsString = argumentsValue.str();
+	auto workingDirectory = Path();
 
 	auto callback = Monitor::DetourCallbackLogger(file);
 	auto process = Monitor::DetouredProcess(callback); 
-	auto result = process.RunProcess(application, args);
+	auto result = process.RunProcess(application, argumentsString, workingDirectory);
 
 	return result;
 }

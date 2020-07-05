@@ -1,10 +1,10 @@
 #pragma once
-#include "Build/Runner/BuildRunnerTests.h"
+#include "BuildRunnerTests.h"
 
 TestState RunBuildRunnerTests() 
  {
 	auto className = "BuildRunnerTests";
-	auto testClass = std::make_shared<Soup::Build::UnitTests::BuildRunnerTests>();
+	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::BuildRunnerTests>();
 	TestState state = { 0, 0 };
 	state += SoupTest::RunTest(className, "Initialize", [&testClass]() { testClass->Initialize(); });
 	state += SoupTest::RunTest(className, "Execute_NoOperations_ForceBuild", [&testClass]() { testClass->Execute_NoOperations_ForceBuild(); });

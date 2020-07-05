@@ -75,29 +75,30 @@ namespace Soup::Client
 			}
 
 			// Execute the requested target
-			auto result = System::IProcessManager::Current().Execute(
+			auto process = System::IProcessManager::Current().CreateProcess(
 				executablePath,
 				arguments.str(),
 				workingDirectory);
+			process->Start();
+			process->WaitForExit();
+
+			auto stdOut = process->GetStandardOutput();
+			auto stdErr = process->GetStandardError();
+			auto exitCode = process->GetExitCode();
 
 			// TODO: Directly pipe to output and make sure there is no extra newline
-			if (!result.StdOut.empty())
+			if (!stdOut.empty())
 			{
-				Log::HighPriority(result.StdOut);
+				Log::HighPriority(stdOut);
 			}
 
-			if (!result.StdErr.empty())
+			if (!stdErr.empty())
 			{
-				Log::Error(result.StdErr);
+				Log::Error(stdErr);
 			}
 
-			if (result.ExitCode != 0)
-			{
-				// TODO: Return error code
-				Log::Error("FAILED");
-			}
-
-			Log::Info("Done");
+			if (exitCode != 0)
+				throw HandledException(exitCode);
 		}
 
 	private:

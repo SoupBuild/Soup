@@ -62,7 +62,7 @@ namespace RecipeBuild::UnitTests
 
 			// Verify build state
 			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>();
-			Soup::AssertUtilities::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				buildState.GetBuildOperations());
 

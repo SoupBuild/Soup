@@ -168,7 +168,7 @@ namespace RecipeBuild::UnitTests
 					})),
 			});
 
-			Soup::AssertUtilities::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				buildState.GetBuildOperations());
 		}
@@ -322,7 +322,7 @@ namespace RecipeBuild::UnitTests
 					})),
 			});
 
-			Soup::AssertUtilities::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				buildState.GetBuildOperations());
 		}
@@ -476,7 +476,7 @@ namespace RecipeBuild::UnitTests
 					})),
 			});
 
-			Soup::AssertUtilities::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				buildState.GetBuildOperations());
 		}
@@ -700,7 +700,7 @@ namespace RecipeBuild::UnitTests
 					expectedCompileOperations),
 			});
 
-			Soup::AssertUtilities::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				buildState.GetBuildOperations());
 		}
@@ -983,7 +983,7 @@ namespace RecipeBuild::UnitTests
 					})),
 			});
 
-			Soup::AssertUtilities::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				buildState.GetBuildOperations());
 		}
@@ -1184,7 +1184,7 @@ namespace RecipeBuild::UnitTests
 					})),
 			});
 
-			Soup::AssertUtilities::AreEqual(
+			Soup::AssertExtensions::AreEqual(
 				expectedBuildOperations,
 				buildState.GetBuildOperations());
 		}

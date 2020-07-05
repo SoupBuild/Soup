@@ -3,6 +3,7 @@
 #include <any>
 #include <ctime>
 #include <map>
+#include <iostream>
 #include <unordered_map>
 #include <unordered_set>
 #include <memory>
@@ -16,6 +17,7 @@
 export module Soup.Build.Execute;
 
 import json11;
+import Monitor.Shared;
 import Opal;
 import Soup.Build;
 import Soup.Build.Utilities;

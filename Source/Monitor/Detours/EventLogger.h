@@ -49,9 +49,7 @@ public:
 		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
 		if (m_pipeHandle != INVALID_HANDLE_VALUE)
 		{
-			DWORD cbWritten = 0;
-			DWORD emptyMessage = 0;
-			Functions::Cache::WriteFile(m_pipeHandle, &emptyMessage, 4, &cbWritten, nullptr);
+			UnsafeWriteMessage(Monitor::DetourMessageType::Exit, "");
 			FlushFileBuffers(m_pipeHandle);
 			CloseHandle(m_pipeHandle);
 			m_pipeHandle = INVALID_HANDLE_VALUE;
@@ -214,14 +212,22 @@ private:
 	void WriteMessage(Monitor::DetourMessageType type, std::string_view content)
 	{
 		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
+		UnsafeWriteMessage(type, content);
+	}
+
+	void UnsafeWriteMessage(Monitor::DetourMessageType type, std::string_view content)
+	{
 		if (m_pipeHandle == INVALID_HANDLE_VALUE)
 			return; // TODO: A static dll init may do bad things before the main entry initialize
-		if (content.size() > sizeof(Monitor::DetourMessage::Content))
+		
+		// Include null terminator in the length
+		auto size = content.size() + 1;
+		if (size > sizeof(Monitor::DetourMessage::Content))
 			throw std::runtime_error("Message content too long");
 
 		Monitor::DetourMessage message;
 		message.Type = type;
-		message.ContentSize = content.size() + sizeof(Monitor::DetourMessage::Type) + sizeof(Monitor::DetourMessage::ContentSize);
+		message.ContentSize = size + sizeof(Monitor::DetourMessage::Type) + sizeof(Monitor::DetourMessage::ContentSize);
 		std::copy(content.begin(), content.end(), message.Content);
 		message.Content[content.size()] = 0;
 

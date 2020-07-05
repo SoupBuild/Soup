@@ -5,12 +5,13 @@ Version = "0.1.0"
 Dependencies = [
 	# "../../../Dependencies/json11/",
 	"json11@1.0.0",
+	"../../../Dependencies/Opal/Source/",
+	# "Opal@0.1.2",
 	"../Contracts/",
 	# "Soup.Build@0.3.0",
 	"../Utilities/",
 	# "Soup.Build.Utilities@0.3.0",
-	"../../../Dependencies/Opal/Source/",
-	# "Opal@0.1.2",
+	"../../Monitor/Shared/",
 ]
 Public = "Module.cpp"
 Source = [

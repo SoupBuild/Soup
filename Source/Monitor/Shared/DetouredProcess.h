@@ -4,27 +4,25 @@
 namespace Monitor
 {
 	// TODO: May want to create a project that is not shared but only contains consumer code
-	export class DetouredProcess
+	export class DetouredProcess : Opal::System::IProcess
 	{
 	public:
-		DetouredProcess(IDetourCallback& callback) :
+		DetouredProcess(
+			IDetourCallback& callback) :
 			m_callback(callback)
 		{
 		}
 
-		int RunProcess(
+		void Start(
 			const Path& application,
-			const std::vector<std::string>& arguments)
+			const std::string& arguments,
+			const Path& workingDirectory)
 		{
 			auto applicationString = application.ToAlternateString();
+			auto workingDirectoryString = workingDirectory.ToAlternateString();
 
 			std::stringstream argumentsValue;
-			argumentsValue << "\"" << applicationString << "\"";
-			for (auto& arg : arguments)
-			{
-				argumentsValue << " " << arg;
-			}
-
+			argumentsValue << "\"" << applicationString << "\"" << " " << arguments;
 			std::string argumentsString = argumentsValue.str();
 
 			// Create a name for the pipe
@@ -39,7 +37,7 @@ namespace Monitor
 			auto workerThread = std::thread(&DetouredProcess::WorkerThread, std::ref(*this));
 
 			// Build up the detour dlls absolute path
-			auto moduleName = System::IProcessManager::Current().GetProcessFileName();
+			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
 			auto dllPath = moduleFolder + Path("Monitor.Detours.64.dll");
 			auto dllPathString = dllPath.ToAlternateString();
@@ -59,7 +57,7 @@ namespace Monitor
 				true,
 				dwFlags,
 				nullptr,
-				nullptr,
+				workingDirectoryString.c_str(),
 				&si,
 				&pi,
 				dllPathString.c_str(),
@@ -104,32 +102,12 @@ namespace Monitor
 
 			if (m_workerFailed)
 				throw std::runtime_error("Worker failed");
-
-			return result;
 		}
 
 	private:
-		void LogMessage(DetourMessage* pMessage, DWORD nBytes)
+		void LogMessage(DetourMessage& message)
 		{
-			// Sanity check the size of the message.
-			if (nBytes > pMessage->ContentSize)
-			{
-				nBytes = pMessage->ContentSize;
-			}
-
-			if (nBytes >= sizeof(*pMessage))
-			{
-				nBytes = sizeof(*pMessage) - 1;
-			}
-
-			// Don't log message if there isn't and message text.
-			DWORD cbWrite = nBytes - offsetof(DetourMessage, Content);
-			if (cbWrite <= 0)
-			{
-				throw std::runtime_error("Not enough data.");
-			}
-
-			switch (pMessage->Type)
+			switch (message.Type)
 			{
 				case DetourMessageType::Exit:
 					m_callback.OnExit();
@@ -143,16 +121,14 @@ namespace Monitor
 				case DetourMessageType::CreateDirectory:
 				{
 					// Null terminate the string
-					pMessage->Content[nBytes] = 0;
-					auto directory = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					auto directory = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback.OnCreateDirectory(directory);
 					break;
 				}
 				case DetourMessageType::CreateFile:
 				{
 					// Null terminate the string
-					pMessage->Content[nBytes] = 0;
-					auto file = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					auto file = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback.OnCreateFile(file);
 					break;
 				}
@@ -165,8 +141,7 @@ namespace Monitor
 				case DetourMessageType::DeleteFile:
 				{
 					// Null terminate the string
-					pMessage->Content[nBytes] = 0;
-					auto file = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					auto file = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback.OnDeleteFile(file);
 					break;
 				}
@@ -176,8 +151,7 @@ namespace Monitor
 				case DetourMessageType::GetFileAttributes:
 				{
 					// Null terminate the string
-					pMessage->Content[nBytes] = 0;
-					auto directory = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					auto directory = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback.OnGetFileAttributes(directory);
 					break;
 				}
@@ -190,8 +164,7 @@ namespace Monitor
 				case DetourMessageType::OpenFile:
 				{
 					// Null terminate the string
-					pMessage->Content[nBytes] = 0;
-					auto file = std::string_view(reinterpret_cast<char*>(pMessage->Content));
+					auto file = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback.OnOpenFile(file);
 					break;
 				}
@@ -283,23 +256,23 @@ namespace Monitor
 						throw std::runtime_error("ReadFile failed: " + std::to_string(error));
 					}
 
-					auto offset = offsetof(Monitor::DetourMessage, Content);
-					if (bytesRead <= offset)
+					if (bytesRead != message.ContentSize)
 					{
-						isDone = true;
+						throw std::runtime_error("Bytes read did not match content size");
 					}
-					else
-					{
-						LogMessage(&message, bytesRead - offset);
-					}
-				}
 
-				CloseConnection();
+					LogMessage(message);
+					if (message.Type == DetourMessageType::Exit)
+						isDone = true;
+				}
 			}
 			catch (...)
 			{
 				m_workerFailed = true;
 			}
+
+			// Close the connection
+			CloseConnection();
 		}
 
 	private:

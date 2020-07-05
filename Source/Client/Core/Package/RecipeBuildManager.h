@@ -185,7 +185,7 @@ namespace Soup::Build
 						}
 
 						// Nothing we can do, exit
-						throw HandledException();
+						throw HandledException(1234);
 					}
 
 					// Ensure we do not have any circular dependencies
