@@ -1,6 +1,11 @@
 module;
 
 #include <windows.h>
+
+#ifdef CreateProcess
+#undef CreateProcess
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -11,7 +16,9 @@ module;
 #include <strsafe.h>
 #pragma warning(pop)
 
+#include <array>
 #include <iostream>
+#include <map>
 #include <string>
 #include <sstream>
 #include <thread>
@@ -79,4 +86,5 @@ export void ThrowIfFailed(int32_t result, std::string_view message)
 	}
 }
 
-#include "DetouredProcess.h"
+#include "MockDetourProcessManager.h"
+#include "WindowsDetourProcessManager.h"

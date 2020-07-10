@@ -16,6 +16,11 @@ module;
 #define DBG_TRACE 0
 
 #include <windows.h>
+
+#ifdef CreateProcess
+#undef CreateProcess
+#endif
+
 #include <stdio.h>
 #pragma warning(push)
 #if _MSC_VER > 1400

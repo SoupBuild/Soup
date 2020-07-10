@@ -20,8 +20,8 @@ bool CreateProcessInternals(
 	CopyMemory(&s_ChildPayload, &s_Payload, sizeof(s_ChildPayload));
 
 	s_ChildPayload.nParentProcessId = GetCurrentProcessId();
-	s_ChildPayload.rGeneology[s_ChildPayload.nGeneology]
-		= (DWORD)InterlockedIncrement(&s_nChildCnt);
+	s_ChildPayload.rGeneology[s_ChildPayload.nGeneology] =
+		(DWORD)InterlockedIncrement(&s_nChildCnt);
 	s_ChildPayload.nGeneology++;
 
 	DetourCopyPayloadToProcess(hProcess, Monitor::GuidTrace, &s_ChildPayload, sizeof(s_ChildPayload));

@@ -219,7 +219,7 @@ private:
 	{
 		if (m_pipeHandle == INVALID_HANDLE_VALUE)
 			return; // TODO: A static dll init may do bad things before the main entry initialize
-		
+
 		// Include null terminator in the length
 		auto size = content.size() + 1;
 		if (size > sizeof(Monitor::DetourMessage::Content))

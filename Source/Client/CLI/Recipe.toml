@@ -6,6 +6,7 @@ Type = "Executable"
 Dependencies = [
 	"../Core/",
 	"../../Extensions/RecipeBuild/",
+	"../../Monitor/Shared/",
 ]
 RuntimeDependencies = [
 	"LocalUserConfig.json",

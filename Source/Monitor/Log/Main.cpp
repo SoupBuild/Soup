@@ -3,17 +3,6 @@ import Opal;
 
 using namespace Opal;
 
-#include <windows.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
-#pragma warning(push)
-#if _MSC_VER > 1400
-#pragma warning(disable:6102 6103)
-#endif
-#include <strsafe.h>
-#pragma warning(pop)
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -23,7 +12,7 @@ using namespace Opal;
 
 #include "DetourCallbackLogger.h"
 
-DWORD main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	if (argc <= 1)
 	{
@@ -32,27 +21,32 @@ DWORD main(int argc, char **argv)
 	}
 
 	System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
+	Monitor::IDetourProcessManager::Register(std::make_shared<Monitor::WindowsDetourProcessManager>());
 	System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
 
 	auto application = Path(argv[1]);
-	std::vector<std::string> args;
+	std::stringstream argumentsValue;
 	for (int i = 2; i < argc; i++)
 	{
-		args.push_back(argv[i]);
-	}
-
-	std::stringstream argumentsValue;
-	for (auto& arg : arguments)
-	{
-		argumentsValue << " " << arg;
+		argumentsValue << " " << argv[i];
 	}
 
 	std::string argumentsString = argumentsValue.str();
 	auto workingDirectory = Path();
 
-	auto callback = Monitor::DetourCallbackLogger(file);
-	auto process = Monitor::DetouredProcess(callback); 
-	auto result = process.RunProcess(application, argumentsString, workingDirectory);
+	auto file = std::fstream("Access.txt", std::fstream::out);
+
+	auto callback = std::make_shared<Monitor::DetourCallbackLogger>(file);
+	auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
+		application,
+		argumentsString,
+		workingDirectory,
+		callback);
+	process->Start();
+	process->WaitForExit();
+	auto result = process->GetExitCode();
+
+	file.close();
 
 	return result;
 }
