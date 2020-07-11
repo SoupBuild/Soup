@@ -179,12 +179,7 @@ namespace Soup::Build::Execute
 				auto message = "Execute: " + executable.ToString() + " " + arguments;
 				Log::Diag(message);
 
-				// auto process = System::IProcessManager::Current().CreateProcess(
-				// 	executable,
-				// 	arguments,
-				// 	workingDirectory);
-
-				auto callback = std::make_shared<SystemAccessTracker>(std::cout);
+				auto callback = std::make_shared<SystemAccessTracker>();
 				auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
 					executable,
 					arguments,

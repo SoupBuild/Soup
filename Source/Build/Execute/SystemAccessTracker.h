@@ -5,77 +5,94 @@ namespace Soup::Build
 	class SystemAccessTracker : public Monitor::IDetourCallback
 	{
 	public:
-		SystemAccessTracker(std::ostream& stream) :
-			m_stream(stream)
+		SystemAccessTracker() :
+			m_input(),
+			m_output()
 		{
 		}
 
 		void OnExit() override final
 		{
-			// m_stream << "Exit: " << std::endl;
 		}
 
 		void OnError() override final
 		{
-			// m_stream << "Error: " << std::endl;
+			Log::Error("SystemAccessTracker Error");
 		}
 
-		void OnCopyFile() override final
+		void OnCopyFile(
+			const std::string_view source,
+			const std::string_view destination) override final
 		{
-			// m_stream << "CopyFile: " << std::endl;
+			auto normalizeSource = Path(source).ToString();
+			auto normalizeDestination = Path(destination).ToString();
+			Log::HighPriority("OnCopyFile: " + normalizeSource + " -> " + normalizeDestination);
+			m_input.insert(normalizeSource);
+			m_output.insert(normalizeDestination);
 		}
 
-		void OnCreateDirectory(const std::string_view directory) override final
+		void OnCreateDirectory(
+			const std::string_view directory) override final
 		{
-			// m_stream << "CreateDirectory: " << directory << std::endl;
+			auto normalizeDirectory = Path(directory).ToString();
+			Log::HighPriority("OnCreateDirectory: " + normalizeDirectory);
+			m_output.insert(normalizeDirectory);
 		}
 
 		void OnCreateFile(const std::string_view filename) override final
 		{
-			// m_stream << "CreateFile: " << filename << std::endl;
+			throw std::runtime_error("Not implemented");
 		}
 
 		void OnCreateHardLink() override final
 		{
-			// m_stream << "CreateHardLink: " << std::endl;
+			throw std::runtime_error("Not implemented");
 		}
 
 		void OnCreateProcess() override final
 		{
-			// m_stream << "CreateProcess: " << std::endl;
+			throw std::runtime_error("Not implemented");
 		}
 
 		void OnDeleteFile(const std::string_view filename) override final
 		{
-			// m_stream << "DeleteFile: " << filename << std::endl;
+			throw std::runtime_error("Not implemented");
 		}
 
 		void OnGetEnvironmentVariable() override final
 		{
-			// m_stream << "GetEnvironmentVariable: " << std::endl;
 		}
 
 		void OnGetFileAttributes(const std::string_view filename) override final
 		{
-			// m_stream << "GetFileAttributes: " << filename << std::endl;
+			auto normalizeFilename = Path(filename).ToString();
+			Log::HighPriority("OnGetFileAttributes: " + normalizeFilename);
+			m_input.insert(normalizeFilename);
 		}
 
 		void OnLoadLibrary() override final
 		{
-			// m_stream << "LoadLibrary: " << std::endl;
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnMoveFile() override final
+		void OnMoveFile(
+			const std::string_view source,
+			const std::string_view destination) override final
 		{
-			// m_stream << "MoveFile: " << std::endl;
+			auto normalizeSource = Path(source).ToString();
+			auto normalizeDestination = Path(destination).ToString();
+			Log::HighPriority("OnMoveFile: " + normalizeSource + " -> " + normalizeDestination);
+			m_input.insert(normalizeSource);
+			m_output.insert(normalizeDestination);
 		}
 
 		void OnOpenFile(const std::string_view filename) override final
 		{
-			// m_stream << "OpenFile: " << filename << std::endl;
+			throw std::runtime_error("Not implemented");
 		}
 
 	private:
-		std::ostream& m_stream;
+		std::set<std::string> m_input;
+		std::set<std::string> m_output;
 	};
 }

@@ -577,60 +577,77 @@ namespace Monitor
 			switch (message.Type)
 			{
 				case DetourMessageType::Exit:
+				{
 					m_callback->OnExit();
 					break;
+				}
 				case DetourMessageType::Error:
+				{
 					m_callback->OnError();
 					break;
+				}
 				case DetourMessageType::CopyFile:
-					m_callback->OnCopyFile();
+				{
+					auto source = std::string_view(reinterpret_cast<char*>(message.Content));
+					auto destination = std::string_view(
+						reinterpret_cast<char*>(message.Content + source.size()));
+					m_callback->OnCopyFile(source, destination);
 					break;
+				}
 				case DetourMessageType::CreateDirectory:
 				{
-					// Null terminate the string
 					auto directory = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback->OnCreateDirectory(directory);
 					break;
 				}
 				case DetourMessageType::CreateFile:
 				{
-					// Null terminate the string
 					auto file = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback->OnCreateFile(file);
 					break;
 				}
 				case DetourMessageType::CreateHardLink:
+				{
 					m_callback->OnCreateHardLink();
 					break;
+				}
 				case DetourMessageType::CreateProcess:
+				{
 					m_callback->OnCreateProcess();
 					break;
+				}
 				case DetourMessageType::DeleteFile:
 				{
-					// Null terminate the string
 					auto file = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback->OnDeleteFile(file);
 					break;
 				}
 				case DetourMessageType::GetEnvironmentVariable:
+				{
 					m_callback->OnGetEnvironmentVariable();
 					break;
+				}
 				case DetourMessageType::GetFileAttributes:
 				{
-					// Null terminate the string
 					auto directory = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback->OnGetFileAttributes(directory);
 					break;
 				}
 				case DetourMessageType::LoadLibrary:
+				{
 					m_callback->OnLoadLibrary();
 					break;
+				}
 				case DetourMessageType::MoveFile:
-					m_callback->OnMoveFile();
+				{
+					auto source = std::string_view(reinterpret_cast<char*>(message.Content));
+					auto destination = std::string_view(
+						reinterpret_cast<char*>(message.Content + source.size()));
+					m_callback->OnMoveFile(source, destination);
 					break;
+				}
 				case DetourMessageType::OpenFile:
 				{
-					// Null terminate the string
 					auto file = std::string_view(reinterpret_cast<char*>(message.Content));
 					m_callback->OnOpenFile(file);
 					break;

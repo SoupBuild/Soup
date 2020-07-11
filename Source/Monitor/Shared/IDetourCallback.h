@@ -7,7 +7,10 @@ namespace Monitor
 	public:
 		virtual void OnExit() = 0;
 		virtual void OnError() = 0;
-		virtual void OnCopyFile() = 0;
+
+		virtual void OnCopyFile(
+			const std::string_view source,
+			const std::string_view destination) = 0;
 		virtual void OnCreateDirectory(const std::string_view directory) = 0;
 		virtual void OnCreateFile(const std::string_view filename) = 0;
 		virtual void OnCreateHardLink() = 0;
@@ -16,7 +19,9 @@ namespace Monitor
 		virtual void OnGetEnvironmentVariable() = 0;
 		virtual void OnGetFileAttributes(const std::string_view filename) = 0;
 		virtual void OnLoadLibrary() = 0;
-		virtual void OnMoveFile() = 0;
+		virtual void OnMoveFile(
+			const std::string_view source,
+			const std::string_view destination) = 0;
 		virtual void OnOpenFile(const std::string_view filename) = 0;
 	};
 }
