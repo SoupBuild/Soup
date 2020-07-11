@@ -24,8 +24,9 @@ namespace Soup::Build::Execute
 			const std::vector<Path>& inputFiles,
 			const Path& rootPath)
 		{
+			// If there are no input files then the output can never be outdated
 			if (inputFiles.empty())
-				throw std::runtime_error("Cannot check outdated with no input files.");
+				return false;
 
 			for (auto& targetFile : targetFiles)
 			{

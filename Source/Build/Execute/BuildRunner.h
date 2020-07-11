@@ -135,72 +135,38 @@ namespace Soup::Build::Execute
 			Utilities::BuildOperationWrapper& operation,
 			bool forceBuild)
 		{
+			// Build up the operation unique command
+			std::stringstream commandBuilder;
+			commandBuilder << operation.GetWorkingDirectory() << " : " << operation.GetExecutable() << " " << operation.GetArguments();
+			auto command = commandBuilder.str();
+
 			bool buildRequired = forceBuild;
 			if (!forceBuild)
 			{
 				// Check if each source file is out of date and requires a rebuild
 				Log::Diag("Check for updated source");
 				
-				// Try to build up the closure of include dependencies
-				auto inputFiles = operation.GetInputFileList().CopyAsPathVector();
-				if (!inputFiles.empty())
+				// Check if this operation is in the build history
+				const OperationInfo* operationInfo;
+				if (_buildHistory.TryFindOperationInfo(command, operationInfo))
 				{
-					auto inputClosure = std::vector<Path>();
-
-					// TODO: Is this how we want to handle no input operations?
-					// If there are source files to the operation check their build state
-					for (auto& inputFile : inputFiles)
+					// Check if any of the input files have changed since last build
+					if (_stateChecker.IsOutdated(
+						operationInfo->Output,
+						operationInfo->Input,
+						Path(operation.GetWorkingDirectory())))
 					{
-						// Build the input closure for all source files
-						if (inputFile.GetFileExtension() == ".cpp")
-						{
-							if (!_buildHistory.TryBuildIncludeClosure(inputFile, inputClosure))
-							{
-								// Could not determine the set of input files, not enough info to perform incremental build
-								buildRequired = true;
-								break;
-							}
-						}
+						buildRequired = true;
 					}
-
-					// If we were able to load all of the build history then perform the timestamp checks
-					if (!buildRequired)
+					else
 					{
-						// Include the source files itself
-						inputClosure.insert(inputClosure.end(), inputFiles.begin(), inputFiles.end());
-
-						// Load the output files
-						auto outputFiles = operation.GetOutputFileList().CopyAsPathVector();
-
-						// Check if any of the input files have changed since last build
-						if (_stateChecker.IsOutdated(
-							outputFiles,
-							inputClosure,
-							Path(operation.GetWorkingDirectory())))
-						{
-							// The file or a dependency has changed
-							buildRequired = true;
-						}
-						else
-						{
-							Log::Info("Up to date");
-						}
+						Log::Info("Up to date");
 					}
 				}
 				else
 				{
-					// Since there are no input files, the best we can do for an
-					// incremental build is check that the output exists
-					for (auto& file : operation.GetOutputFileList().CopyAsPathVector())
-					{
-						auto relativeOutputFile = file.HasRoot() ? file : Path(operation.GetWorkingDirectory()) + file;
-						if (!System::IFileSystem::Current().Exists(relativeOutputFile))
-						{
-							Log::Info("Output target does not exist: " + relativeOutputFile.ToString());
-							buildRequired = true;
-							break;
-						}
-					}
+					// The build command has not been run before
+					buildRequired = true;
 				}
 			}
 
@@ -232,21 +198,31 @@ namespace Soup::Build::Execute
 				auto stdErr = process->GetStandardError();
 				auto exitCode = process->GetExitCode();
 
+				// Save off the build history for future builds
+				auto operationInfo = OperationInfo(
+					command,
+					operation.GetInputFileList().CopyAsPathVector(),
+					operation.GetOutputFileList().CopyAsPathVector());
+
 				// Try parse includes if available
 				auto cleanOutput = std::stringstream();
-				auto headerIncludes = std::vector<HeaderInclude>();
+				auto headerIncludes = std::vector<Path>();
 				if (TryParsesHeaderIncludes(
 					operation,
 					stdOut,
 					headerIncludes,
 					cleanOutput))
 				{
-					// Save off the build history for future builds
-					_buildHistory.UpdateIncludeTree(headerIncludes);
+					operationInfo.Input.insert(
+						operationInfo.Input.end(),
+						headerIncludes.begin(),
+						headerIncludes.end());
 
 					// Replace the output string with the clean version
 					stdOut = cleanOutput.str();
 				}
+
+				_buildHistory.AddOperationInfo(std::move(operationInfo));
 
 				if (!stdOut.empty())
 				{
@@ -282,7 +258,7 @@ namespace Soup::Build::Execute
 		bool TryParsesHeaderIncludes(
 			Utilities::BuildOperationWrapper& operation,
 			const std::string& output,
-			std::vector<HeaderInclude>& headerIncludes,
+			std::vector<Path>& headerIncludes,
 			std::stringstream& cleanOutput)
 		{
 			// Check for any cpp input files
@@ -305,18 +281,18 @@ namespace Soup::Build::Execute
 				}
 			}
 
-			headerIncludes = std::vector<HeaderInclude>();
+			headerIncludes = std::vector<Path>();
 			return false;
 		}
 
-		std::vector<HeaderInclude> ParseClangIncludes(
+		std::vector<Path> ParseClangIncludes(
 			const Path& file,
 			const std::string& output,
 			std::stringstream& cleanOutput)
 		{
 			// Add the root file
-			std::stack<HeaderInclude> current;
-			current.push(HeaderInclude(file));
+			std::set<std::string> input;
+			input.insert(file.ToString());
 
 			std::stringstream content(output);
 			std::string line;
@@ -333,21 +309,7 @@ namespace Soup::Build::Execute
 				{
 					// Parse the file reference
 					auto includeFile = Path(line.substr(includeDepth + 1));
-
-					// Ensure we are at the correct depth
-					while (includeDepth < current.size())
-					{
-						// Remove the top file and push it onto its parent
-						auto previous = std::move(current.top());
-						current.pop();
-						current.top().Includes.push_back(std::move(previous));
-					}
-
-					// Ensure we do not try to go up more than one level at a time
-					if (includeDepth > current.size() + 1)
-						throw std::runtime_error("Missing an include level.");
-
-					current.push(HeaderInclude(includeFile));
+					input.insert(includeFile.ToString());
 				}
 				else
 				{
@@ -356,16 +318,13 @@ namespace Soup::Build::Execute
 				}
 			}
 
-			// Ensure we are at the top level
-			while (1 < current.size())
+			auto result = std::vector<Path>();
+			for (auto& value : input)
 			{
-				// Remove the top file and push it onto its parent
-				auto previous = std::move(current.top());
-				current.pop();
-				current.top().Includes.push_back(std::move(previous));
+				result.push_back(Path(value));
 			}
 
-			return std::vector<HeaderInclude>({ std::move(current.top()) });
+			return result;
 		}
 
 		int GetClangIncludeDepth(const std::string& line)
@@ -388,14 +347,14 @@ namespace Soup::Build::Execute
 			return depth;
 		}
 
-		std::vector<HeaderInclude> ParseMSVCIncludes(
+		std::vector<Path> ParseMSVCIncludes(
 			const Path& file,
 			const std::string& output,
 			std::stringstream& cleanOutput)
 		{
 			// Add the root file
-			std::stack<HeaderInclude> current;
-			current.push(HeaderInclude(file));
+			std::set<std::string> input;
+			input.insert(file.ToString());
 
 			std::stringstream content(output);
 			std::string line;
@@ -415,20 +374,7 @@ namespace Soup::Build::Execute
 					auto offset = includePrefix.size() + includeDepth;
 					auto includeFile = Path(line.substr(offset));
 
-					// Ensure we are at the correct depth
-					while (includeDepth < current.size())
-					{
-						// Remove the top file and push it onto its parent
-						auto previous = std::move(current.top());
-						current.pop();
-						current.top().Includes.push_back(std::move(previous));
-					}
-
-					// Ensure we do not try to go up more than one level at a time
-					if (includeDepth > current.size() + 1)
-						throw std::runtime_error("Missing an include level.");
-
-					current.push(HeaderInclude(includeFile));
+					input.insert(includeFile.ToString());
 				}
 				else
 				{
@@ -437,16 +383,13 @@ namespace Soup::Build::Execute
 				}
 			}
 
-			// Ensure we are at the top level
-			while (1 < current.size())
+			auto result = std::vector<Path>();
+			for (auto& value : input)
 			{
-				// Remove the top file and push it onto its parent
-				auto previous = std::move(current.top());
-				current.pop();
-				current.top().Includes.push_back(std::move(previous));
+				result.push_back(Path(value));
 			}
 
-			return std::vector<HeaderInclude>({ std::move(current.top()) });
+			return result;
 		}
 
 		int GetMSVCIncludeDepth(const std::string& line)

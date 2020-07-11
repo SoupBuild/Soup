@@ -15,8 +15,8 @@ public:
 		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
 		for (int retries = 0; retries < 10; retries++)
 		{
-			// Wait up to 10 seconds for a pipe to appear.
-			auto timoutMilliseconds = 10000;
+			// Wait up to 1 seconds for a pipe to appear.
+			auto timoutMilliseconds = 1000;
 			if (WaitNamedPipeA(pipeName.data(), timoutMilliseconds) != 0)
 			{
 				// Attempt to open the pipe

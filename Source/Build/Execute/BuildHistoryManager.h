@@ -22,7 +22,8 @@ namespace Soup::Build::Execute
 		/// Load the build state from the provided directory
 		/// </summary>
 		static bool TryLoadState(
-			const Path& directory, BuildHistory& result)
+			const Path& directory,
+			BuildHistory& result)
 		{
 			// Verify the requested file exists
 			auto BuildHistoryFile = directory +

@@ -13,9 +13,10 @@ namespace Soup::Build::Execute
 	export class BuildHistoryJson
 	{
 	private:
-		static constexpr const char* Property_File = "file";
-		static constexpr const char* Property_KnownFiles = "knownFiles";
-		static constexpr const char* Property_Includes = "includes";
+		static constexpr const char* Property_Operations = "operations";
+		static constexpr const char* Property_Command = "command";
+		static constexpr const char* Property_Input = "input";
+		static constexpr const char* Property_Output = "output";
 
 	public:
 		/// <summary>
@@ -56,18 +57,15 @@ namespace Soup::Build::Execute
 	private:
 		static BuildHistory LoadJsonBuildHistory(const json11::Json& value)
 		{
-			std::vector<FileInfo> knownFiles;
+			auto operations = std::vector<OperationInfo>();
 
-			if (!value[Property_KnownFiles].is_null())
+			if (!value[Property_Operations].is_null())
 			{
-				auto values = std::vector<FileInfo>();
-				for (auto& value : value[Property_KnownFiles].array_items())
+				for (auto& value : value[Property_Operations].array_items())
 				{
-					auto fileInfo = LoadJsonFileInfo(value);
-					values.push_back(std::move(fileInfo));
+					auto operationInfo = LoadJsonOperationInfo(value);
+					operations.push_back(std::move(operationInfo));
 				}
-
-				knownFiles = std::move(values);
 			}
 			else
 			{
@@ -75,41 +73,58 @@ namespace Soup::Build::Execute
 			}
 
 			return BuildHistory(
-				std::move(knownFiles));
+				std::move(operations));
 		}
 
-		static FileInfo LoadJsonFileInfo(const json11::Json& value)
+		static OperationInfo LoadJsonOperationInfo(const json11::Json& value)
 		{
-			Path file;
-			std::vector<Path> includes;
+			std::string command;
+			std::vector<Path> input;
+			std::vector<Path> output;
 
-			if (!value[Property_File].is_null())
+			if (!value[Property_Command].is_null())
 			{
-				file = Path(value[Property_File].string_value());
+				command = value[Property_Command].string_value();
 			}
 			else
 			{
 				throw std::runtime_error("Missing Required field: file.");
 			}
 
-			if (!value[Property_Includes].is_null())
+			if (!value[Property_Input].is_null())
 			{
 				auto values = std::vector<Path>();
-				for (auto& value : value[Property_Includes].array_items())
+				for (auto& value : value[Property_Input].array_items())
 				{
 					values.push_back(Path(value.string_value()));
 				}
 
-				includes = std::move(values);
+				input = std::move(values);
 			}
 			else
 			{
-				throw std::runtime_error("Missing Required field: includes.");
+				throw std::runtime_error("Missing Required field: input.");
 			}
 
-			return FileInfo(
-				std::move(file),
-				std::move(includes));
+			if (!value[Property_Output].is_null())
+			{
+				auto values = std::vector<Path>();
+				for (auto& value : value[Property_Output].array_items())
+				{
+					values.push_back(Path(value.string_value()));
+				}
+
+				output = std::move(values);
+			}
+			else
+			{
+				throw std::runtime_error("Missing Required field: output.");
+			}
+
+			return OperationInfo(
+				std::move(command),
+				std::move(input),
+				std::move(output));
 		}
 
 		static json11::Json BuildJsonBuildHistory(const BuildHistory& state)
@@ -117,31 +132,39 @@ namespace Soup::Build::Execute
 			json11::Json::object result = {};
 
 			// Add required fields
-			json11::Json::array knownFiles;
-			for (auto& value : state.GetKnownFiles())
+			json11::Json::array operations;
+			for (auto& value : state.GetOperations())
 			{
-				knownFiles.push_back(BuildJsonFileInfo(value));
+				operations.push_back(BuildJsonOperationInfo(value.second));
 			}
 
-			result[Property_KnownFiles] = std::move(knownFiles);
+			result[Property_Operations] = std::move(operations);
 
 			return result;
 		}
 
-		static json11::Json BuildJsonFileInfo(const FileInfo& info)
+		static json11::Json BuildJsonOperationInfo(const OperationInfo& info)
 		{
 			json11::Json::object result = {};
 
 			// Add required fields
-			result[Property_File] = info.File.ToString();
+			result[Property_Command] = info.Command;
 
-			json11::Json::array includes;
-			for (auto& value : info.Includes)
+			json11::Json::array input;
+			for (auto& value : info.Input)
 			{
-				includes.push_back(value.ToString());
+				input.push_back(value.ToString());
 			}
 
-			result[Property_Includes] = std::move(includes);
+			result[Property_Input] = std::move(input);
+
+			json11::Json::array output;
+			for (auto& value : info.Output)
+			{
+				output.push_back(value.ToString());
+			}
+
+			result[Property_Output] = std::move(output);
 
 			return result;
 		}
