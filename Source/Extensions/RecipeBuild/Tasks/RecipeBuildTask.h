@@ -93,7 +93,18 @@ namespace RecipeBuild
 			std::vector<Path> linkLibraries = std::vector<Path>();
 			if (recipeTable.HasValue("LinkLibraries"))
 			{
-				linkLibraries = recipeTable.GetValue("LinkLibraries").AsList().CopyAsPathVector();
+				for (auto value : recipeTable.GetValue("LinkLibraries").AsList().CopyAsPathVector())
+				{
+					// If relative then resolve to working directory
+					if (value.HasRoot())
+					{
+						linkLibraries.push_back(std::move(value));
+					}
+					else
+					{
+						linkLibraries.push_back(packageRoot + value);
+					}
+				}
 			}
 
 			// Add the dependency runtime dependencies closure if present
@@ -102,7 +113,18 @@ namespace RecipeBuild
 				std::vector<Path> runtimeDependencies = std::vector<Path>();
 				if (buildTable.HasValue("RuntimeDependencies"))
 				{
-					runtimeDependencies = buildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();
+					for (auto value : recipeTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector())
+					{
+						// If relative then resolve to working directory
+						if (value.HasRoot())
+						{
+							runtimeDependencies.push_back(std::move(value));
+						}
+						else
+						{
+							runtimeDependencies.push_back(packageRoot + value);
+						}
+					}
 				}
 
 				auto recipeRuntimeDependencies = recipeTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();

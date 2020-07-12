@@ -26,7 +26,7 @@ namespace Soup::Build
 		{
 			auto normalizeSource = Path(source).ToString();
 			auto normalizeDestination = Path(destination).ToString();
-			Log::HighPriority("OnCopyFile: " + normalizeSource + " -> " + normalizeDestination);
+			Log::Diag("OnCopyFile: " + normalizeSource + " -> " + normalizeDestination);
 			m_input.insert(normalizeSource);
 			m_output.insert(normalizeDestination);
 		}
@@ -35,28 +35,28 @@ namespace Soup::Build
 			const std::string_view directory) override final
 		{
 			auto normalizeDirectory = Path(directory).ToString();
-			Log::HighPriority("OnCreateDirectory: " + normalizeDirectory);
+			Log::Diag("OnCreateDirectory: " + normalizeDirectory);
 			m_output.insert(normalizeDirectory);
 		}
 
 		void OnCreateFile(const std::string_view filename) override final
 		{
-			throw std::runtime_error("Not implemented");
+			// throw std::runtime_error("Not implemented");
 		}
 
 		void OnCreateHardLink() override final
 		{
-			throw std::runtime_error("Not implemented");
+			// throw std::runtime_error("Not implemented");
 		}
 
 		void OnCreateProcess() override final
 		{
-			throw std::runtime_error("Not implemented");
+			// throw std::runtime_error("Not implemented");
 		}
 
 		void OnDeleteFile(const std::string_view filename) override final
 		{
-			throw std::runtime_error("Not implemented");
+			// throw std::runtime_error("Not implemented");
 		}
 
 		void OnGetEnvironmentVariable() override final
@@ -66,13 +66,13 @@ namespace Soup::Build
 		void OnGetFileAttributes(const std::string_view filename) override final
 		{
 			auto normalizeFilename = Path(filename).ToString();
-			Log::HighPriority("OnGetFileAttributes: " + normalizeFilename);
+			Log::Diag("OnGetFileAttributes: " + normalizeFilename);
 			m_input.insert(normalizeFilename);
 		}
 
 		void OnLoadLibrary() override final
 		{
-			throw std::runtime_error("Not implemented");
+			// throw std::runtime_error("Not implemented");
 		}
 
 		void OnMoveFile(
@@ -81,14 +81,14 @@ namespace Soup::Build
 		{
 			auto normalizeSource = Path(source).ToString();
 			auto normalizeDestination = Path(destination).ToString();
-			Log::HighPriority("OnMoveFile: " + normalizeSource + " -> " + normalizeDestination);
+			Log::Diag("OnMoveFile: " + normalizeSource + " -> " + normalizeDestination);
 			m_input.insert(normalizeSource);
 			m_output.insert(normalizeDestination);
 		}
 
 		void OnOpenFile(const std::string_view filename) override final
 		{
-			throw std::runtime_error("Not implemented");
+			// throw std::runtime_error("Not implemented");
 		}
 
 	private:
