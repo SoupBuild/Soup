@@ -16,6 +16,7 @@ module;
 #include <strsafe.h>
 #pragma warning(pop)
 
+#include <atomic>
 #include <array>
 #include <iostream>
 #include <map>
