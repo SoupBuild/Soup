@@ -1,4 +1,4 @@
-﻿// <copyright file="WindowsProcess.h" company="Soup">
+﻿// <copyright file="WindowsDetourProcess.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -114,6 +114,7 @@ namespace Monitor
 				throw std::runtime_error("Execute SetHandleInformation Failed");
 
 			// Create the worker thread that will act as the pipe server
+			m_processRunning = true;
 			m_workerFailed = false;
 			m_workerThread = std::thread(&WindowsDetourProcess::WorkerThread, std::ref(*this));
 
@@ -194,6 +195,7 @@ namespace Monitor
 			DebugTrace("WaitForExit");
 			auto waitResult = WaitForSingleObject(m_processHandle.Get(), INFINITE);
 			DebugTrace("WaitForExit Signal");
+			m_processRunning = false;
 			switch (waitResult)
 			{
 				case WAIT_OBJECT_0:
@@ -315,20 +317,38 @@ namespace Monitor
 					// Wait for any of the pipe instances to signal
 					// This indicates that either a client connected to wrote to
 					// and open connection.
+					// Check every 5 seconds if the process has terminated unexpectedly
 					bool waitForAll = false;
-					DWORD timoutMilliseconds = INFINITE;
+					DWORD timoutMilliseconds = 5000;
 					DebugTrace("WorkerThread WaitForMultipleObjects");
 					auto waitResult = WaitForMultipleObjects(
 						m_rawEventHandles.size(),
 						m_rawEventHandles.data(),
 						waitForAll,
 						timoutMilliseconds);
+					switch (waitResult)
+					{
+						case WAIT_TIMEOUT:
+							if (!m_processRunning)
+							{
+								throw std::runtime_error("The child process exited unexpectedly");
+							}
+							else
+							{
+								// The process hasn't done anything for awhile.
+								// Continue waiting...
+								continue;
+							}
+
+						case WAIT_FAILED:
+							throw std::runtime_error("WaitForMultipleObjects failed: " +  std::to_string(GetLastError()));
+					}
 
 					// Determine which pipe completed the operation.
-					auto pipeIndex = waitResult - WAIT_OBJECT_0;  // determines which pipe
+					auto pipeIndex = waitResult - WAIT_OBJECT_0;
 					if (pipeIndex < 0 || pipeIndex > (m_rawEventHandles.size() - 1))
 					{
-						throw std::runtime_error("The event signaled outside the range of pipes.");
+						throw std::runtime_error("The event signaled outside the range of pipes");
 					}
 
 					// Handle the event
@@ -339,8 +359,8 @@ namespace Monitor
 			catch (...)
 			{
 				DebugTrace("WorkerThread Failed");
-				m_workerFailed = true;
 				m_workerException = std::current_exception();
+				m_workerFailed = true;
 			}
 
 			// Cleanup
@@ -520,9 +540,19 @@ namespace Monitor
 				{
 					// Check if the client is gone
 					DebugTrace("HandlePipeEvent - GetOverlappedResult - Read Finished");
-					if (!overlappedResult || bytesTransferred == 0 || bytesTransferred != pipe.Message.ContentSize)
+					if (!overlappedResult || bytesTransferred == 0)
 					{
-						DebugTrace("HandlePipeEvent - GetOverlappedResult - Error");
+						DebugTrace("HandlePipeEvent - GetOverlappedResult - Error: " + std::to_string(GetLastError()));
+						DisconnectAndReconnect(pipe);
+						return;
+					}
+
+					DWORD expectedSize = pipe.Message.ContentSize +
+						sizeof(Monitor::DetourMessage::Type) +
+						sizeof(Monitor::DetourMessage::ContentSize);
+					if (bytesTransferred != expectedSize)
+					{
+						DebugTrace("HandlePipeEvent - GetOverlappedResult - Size Mismatched");
 						DisconnectAndReconnect(pipe);
 						return;
 					}
@@ -546,24 +576,38 @@ namespace Monitor
 					&pipe.Overlap))
 				{
 					DWORD error = GetLastError();
-					if (error == ERROR_IO_PENDING)
+					switch (error)
 					{
-						DebugTrace("HandlePipeEvent - ReadFile - Pending");
-						pipe.HasPendingIO = true;
-					}
-					else
-					{
-						// The client is gone
-						DebugTrace("HandlePipeEvent - ReadFile - Error");
-						DisconnectAndReconnect(pipe);
+						case ERROR_IO_PENDING:
+							DebugTrace("HandlePipeEvent - ReadFile - Pending");
+							pipe.HasPendingIO = true;
+							break;
+						case ERROR_BROKEN_PIPE:
+							// The client is gone
+							DebugTrace("HandlePipeEvent - ReadFile - Pipe Ended");
+							DisconnectAndReconnect(pipe);
+							break;
+						default:
+							// Unknown error
+							DebugTrace("HandlePipeEvent - ReadFile - Error: " + std::to_string(GetLastError()));
+							DisconnectAndReconnect(pipe);
+							break;
 					}
 
 					return;
 				}
 
-				if (bytesRead == 0 || bytesRead != pipe.Message.ContentSize)
+				if (bytesRead == 0)
 				{
 					throw std::runtime_error("Bytes read did not match expected");
+				}
+
+				DWORD expectedSize = pipe.Message.ContentSize +
+					sizeof(Monitor::DetourMessage::Type) +
+					sizeof(Monitor::DetourMessage::ContentSize);
+				if (bytesRead != expectedSize)
+				{
+					throw std::runtime_error("HandlePipeEvent - GetOverlappedResult - Size Mismatched");
 				}
 
 				LogMessage(pipe.Message);
@@ -576,80 +620,982 @@ namespace Monitor
 			DebugTrace("LogMessage");
 			switch (message.Type)
 			{
-				case DetourMessageType::Exit:
+				// Info
+				case DetourMessageType::Info_Shutdown:
 				{
-					m_callback->OnExit();
+					m_callback->OnShutdown();
 					break;
 				}
-				case DetourMessageType::Error:
+				case DetourMessageType::Info_Error:
 				{
-					m_callback->OnError();
+					m_callback->OnError("");
 					break;
 				}
-				case DetourMessageType::CopyFile:
+
+				// FileApi
+				case DetourMessageType::AreFileApisANSI:
 				{
-					auto source = std::string_view(reinterpret_cast<char*>(message.Content));
-					auto destination = std::string_view(
-						reinterpret_cast<char*>(message.Content + source.size()));
-					m_callback->OnCopyFile(source, destination);
+					m_callback->OnAreFileApisANSI();
 					break;
 				}
-				case DetourMessageType::CreateDirectory:
+				case DetourMessageType::CompareFileTime:
 				{
-					auto directory = std::string_view(reinterpret_cast<char*>(message.Content));
-					m_callback->OnCreateDirectory(directory);
+					m_callback->OnCompareFileTime();
 					break;
 				}
-				case DetourMessageType::CreateFile:
+				case DetourMessageType::CreateDirectoryA:
 				{
-					auto file = std::string_view(reinterpret_cast<char*>(message.Content));
-					m_callback->OnCreateFile(file);
+					m_callback->OnCreateDirectoryA();
 					break;
 				}
-				case DetourMessageType::CreateHardLink:
+				case DetourMessageType::CreateDirectoryW:
 				{
-					m_callback->OnCreateHardLink();
+					m_callback->OnCreateDirectoryW();
 					break;
 				}
-				case DetourMessageType::CreateProcess:
+				case DetourMessageType::CreateFile2:
 				{
-					m_callback->OnCreateProcess();
+					m_callback->OnCreateFile2();
 					break;
 				}
-				case DetourMessageType::DeleteFile:
+				case DetourMessageType::CreateFileA:
 				{
-					auto file = std::string_view(reinterpret_cast<char*>(message.Content));
-					m_callback->OnDeleteFile(file);
+					m_callback->OnCreateFileA();
 					break;
 				}
-				case DetourMessageType::GetEnvironmentVariable:
+				case DetourMessageType::CreateFileW:
 				{
-					m_callback->OnGetEnvironmentVariable();
+					m_callback->OnCreateFileW();
 					break;
 				}
-				case DetourMessageType::GetFileAttributes:
+				case DetourMessageType::DefineDosDeviceW:
 				{
-					auto directory = std::string_view(reinterpret_cast<char*>(message.Content));
-					m_callback->OnGetFileAttributes(directory);
+					m_callback->OnDefineDosDeviceW();
 					break;
 				}
-				case DetourMessageType::LoadLibrary:
+				case DetourMessageType::DeleteFileA:
 				{
-					m_callback->OnLoadLibrary();
+					m_callback->OnDeleteFileA();
 					break;
 				}
-				case DetourMessageType::MoveFile:
+				case DetourMessageType::DeleteFileW:
 				{
-					auto source = std::string_view(reinterpret_cast<char*>(message.Content));
-					auto destination = std::string_view(
-						reinterpret_cast<char*>(message.Content + source.size()));
-					m_callback->OnMoveFile(source, destination);
+					m_callback->OnDeleteFileW();
+					break;
+				}
+				case DetourMessageType::DeleteVolumeMountPointW:
+				{
+					m_callback->OnDeleteVolumeMountPointW();
+					break;
+				}
+				case DetourMessageType::FileTimeToLocalFileTime:
+				{
+					m_callback->OnFileTimeToLocalFileTime();
+					break;
+				}
+				case DetourMessageType::FindClose:
+				{
+					m_callback->OnFindClose();
+					break;
+				}
+				case DetourMessageType::FindCloseChangeNotification:
+				{
+					m_callback->OnFindCloseChangeNotification();
+					break;
+				}
+				case DetourMessageType::FindFirstChangeNotificationA:
+				{
+					m_callback->OnFindFirstChangeNotificationA();
+					break;
+				}
+				case DetourMessageType::FindFirstChangeNotificationW:
+				{
+					m_callback->OnFindFirstChangeNotificationW();
+					break;
+				}
+				case DetourMessageType::FindFirstFileA:
+				{
+					m_callback->OnFindFirstFileA();
+					break;
+				}
+				case DetourMessageType::FindFirstFileW:
+				{
+					m_callback->OnFindFirstFileW();
+					break;
+				}
+				case DetourMessageType::FindFirstFileExA:
+				{
+					m_callback->OnFindFirstFileExA();
+					break;
+				}
+				case DetourMessageType::FindFirstFileExW:
+				{
+					m_callback->OnFindFirstFileExW();
+					break;
+				}
+				case DetourMessageType::FindFirstFileNameW:
+				{
+					m_callback->OnFindFirstFileNameW();
+					break;
+				}
+				case DetourMessageType::FindFirstStreamW:
+				{
+					m_callback->OnFindFirstStreamW();
+					break;
+				}
+				case DetourMessageType::FindFirstVolumeW:
+				{
+					m_callback->OnFindFirstVolumeW();
+					break;
+				}
+				case DetourMessageType::FindNextChangeNotification:
+				{
+					m_callback->OnFindNextChangeNotification();
+					break;
+				}
+				case DetourMessageType::FindNextFileA:
+				{
+					m_callback->OnFindNextFileA();
+					break;
+				}
+				case DetourMessageType::FindNextFileW:
+				{
+					m_callback->OnFindNextFileW();
+					break;
+				}
+				case DetourMessageType::FindNextFileNameW:
+				{
+					m_callback->OnFindNextFileNameW();
+					break;
+				}
+				case DetourMessageType::FindNextStreamW:
+				{
+					m_callback->OnFindNextStreamW();
+					break;
+				}
+				case DetourMessageType::FindNextVolumeW:
+				{
+					m_callback->OnFindNextVolumeW();
+					break;
+				}
+				case DetourMessageType::FindVolumeClose:
+				{
+					m_callback->OnFindVolumeClose();
+					break;
+				}
+				case DetourMessageType::FlushFileBuffers:
+				{
+					m_callback->OnFlushFileBuffers();
+					break;
+				}
+				case DetourMessageType::GetCompressedFileSizeA:
+				{
+					m_callback->OnGetCompressedFileSizeA();
+					break;
+				}
+				case DetourMessageType::GetCompressedFileSizeW:
+				{
+					m_callback->OnGetCompressedFileSizeW();
+					break;
+				}
+				case DetourMessageType::GetDiskFreeSpaceA:
+				{
+					m_callback->OnGetDiskFreeSpaceA();
+					break;
+				}
+				case DetourMessageType::GetDiskFreeSpaceW:
+				{
+					m_callback->OnGetDiskFreeSpaceW();
+					break;
+				}
+				case DetourMessageType::GetDiskFreeSpaceExA:
+				{
+					m_callback->OnGetDiskFreeSpaceExA();
+					break;
+				}
+				case DetourMessageType::GetDiskFreeSpaceExW:
+				{
+					m_callback->OnGetDiskFreeSpaceExW();
+					break;
+				}
+				case DetourMessageType::GetDriveTypeA:
+				{
+					m_callback->OnGetDriveTypeA();
+					break;
+				}
+				case DetourMessageType::GetDriveTypeW:
+				{
+					m_callback->OnGetDriveTypeW();
+					break;
+				}
+				case DetourMessageType::GetFileAttributesA:
+				{
+					m_callback->OnGetFileAttributesA();
+					break;
+				}
+				case DetourMessageType::GetFileAttributesW:
+				{
+					m_callback->OnGetFileAttributesW();
+					break;
+				}
+				case DetourMessageType::GetFileAttributesExA:
+				{
+					m_callback->OnGetFileAttributesExA();
+					break;
+				}
+				case DetourMessageType::GetFileAttributesExW:
+				{
+					m_callback->OnGetFileAttributesExW();
+					break;
+				}
+				case DetourMessageType::GetFileInformationByHandle:
+				{
+					m_callback->OnGetFileInformationByHandle();
+					break;
+				}
+				case DetourMessageType::GetFileSize:
+				{
+					m_callback->OnGetFileSize();
+					break;
+				}
+				case DetourMessageType::GetFileSizeEx:
+				{
+					m_callback->OnGetFileSizeEx();
+					break;
+				}
+				case DetourMessageType::GetFileTime:
+				{
+					m_callback->OnGetFileTime();
+					break;
+				}
+				case DetourMessageType::GetFileType:
+				{
+					m_callback->OnGetFileType();
+					break;
+				}
+				case DetourMessageType::GetFinalPathNameByHandleA:
+				{
+					m_callback->OnGetFinalPathNameByHandleA();
+					break;
+				}
+				case DetourMessageType::GetFinalPathNameByHandleW:
+				{
+					m_callback->OnGetFinalPathNameByHandleW();
+					break;
+				}
+				case DetourMessageType::GetFullPathNameA:
+				{
+					m_callback->OnGetFullPathNameA();
+					break;
+				}
+				case DetourMessageType::GetFullPathNameW:
+				{
+					m_callback->OnGetFullPathNameW();
+					break;
+				}
+				case DetourMessageType::GetLogicalDrives:
+				{
+					m_callback->OnGetLogicalDrives();
+					break;
+				}
+				case DetourMessageType::GetLogicalDriveStringsW:
+				{
+					m_callback->OnGetLogicalDriveStringsW();
+					break;
+				}
+				case DetourMessageType::GetLongPathNameA:
+				{
+					m_callback->OnGetLongPathNameA();
+					break;
+				}
+				case DetourMessageType::GetLongPathNameW:
+				{
+					m_callback->OnGetLongPathNameW();
+					break;
+				}
+				case DetourMessageType::GetShortPathNameW:
+				{
+					m_callback->OnGetShortPathNameW();
+					break;
+				}
+				case DetourMessageType::GetTempFileNameA:
+				{
+					m_callback->OnGetTempFileNameA();
+					break;
+				}
+				case DetourMessageType::GetTempFileNameW:
+				{
+					m_callback->OnGetTempFileNameW();
+					break;
+				}
+				case DetourMessageType::GetTempPathA:
+				{
+					m_callback->OnGetTempPathA();
+					break;
+				}
+				case DetourMessageType::GetTempPathW:
+				{
+					m_callback->OnGetTempPathW();
+					break;
+				}
+				case DetourMessageType::GetVolumeInformationA:
+				{
+					m_callback->OnGetVolumeInformationA();
+					break;
+				}
+				case DetourMessageType::GetVolumeInformationW:
+				{
+					m_callback->OnGetVolumeInformationW();
+					break;
+				}
+				case DetourMessageType::GetVolumeInformationByHandleW:
+				{
+					m_callback->OnGetVolumeInformationByHandleW();
+					break;
+				}
+				case DetourMessageType::GetVolumeNameForVolumeMountPointW:
+				{
+					m_callback->OnGetVolumeNameForVolumeMountPointW();
+					break;
+				}
+				case DetourMessageType::GetVolumePathNamesForVolumeNameW:
+				{
+					m_callback->OnGetVolumePathNamesForVolumeNameW();
+					break;
+				}
+				case DetourMessageType::GetVolumePathNameW:
+				{
+					m_callback->OnGetVolumePathNameW();
+					break;
+				}
+				case DetourMessageType::LocalFileTimeToFileTime:
+				{
+					m_callback->OnLocalFileTimeToFileTime();
+					break;
+				}
+				case DetourMessageType::LockFile:
+				{
+					m_callback->OnLockFile();
+					break;
+				}
+				case DetourMessageType::LockFileEx:
+				{
+					m_callback->OnLockFileEx();
+					break;
+				}
+				case DetourMessageType::QueryDosDeviceW:
+				{
+					m_callback->OnQueryDosDeviceW();
+					break;
+				}
+				case DetourMessageType::ReadFile:
+				{
+					m_callback->OnReadFile();
+					break;
+				}
+				case DetourMessageType::ReadFileEx:
+				{
+					m_callback->OnReadFileEx();
+					break;
+				}
+				case DetourMessageType::ReadFileScatter:
+				{
+					m_callback->OnReadFileScatter();
+					break;
+				}
+				case DetourMessageType::RemoveDirectoryA:
+				{
+					m_callback->OnRemoveDirectoryA();
+					break;
+				}
+				case DetourMessageType::RemoveDirectoryW:
+				{
+					m_callback->OnRemoveDirectoryW();
+					break;
+				}
+				case DetourMessageType::SetEndOfFile:
+				{
+					m_callback->OnSetEndOfFile();
+					break;
+				}
+				case DetourMessageType::SetFileApisToANSI:
+				{
+					m_callback->OnSetFileApisToANSI();
+					break;
+				}
+				case DetourMessageType::SetFileApisToOEM:
+				{
+					m_callback->OnSetFileApisToOEM();
+					break;
+				}
+				case DetourMessageType::SetFileAttributesA:
+				{
+					m_callback->OnSetFileAttributesA();
+					break;
+				}
+				case DetourMessageType::SetFileAttributesW:
+				{
+					m_callback->OnSetFileAttributesW();
+					break;
+				}
+				case DetourMessageType::SetFileInformationByHandle:
+				{
+					m_callback->OnSetFileInformationByHandle();
+					break;
+				}
+				case DetourMessageType::SetFileIoOverlappedRange:
+				{
+					m_callback->OnSetFileIoOverlappedRange();
+					break;
+				}
+				case DetourMessageType::SetFilePointer:
+				{
+					m_callback->OnSetFilePointer();
+					break;
+				}
+				case DetourMessageType::SetFilePointerEx:
+				{
+					m_callback->OnSetFilePointerEx();
+					break;
+				}
+				case DetourMessageType::SetFileTime:
+				{
+					m_callback->OnSetFileTime();
+					break;
+				}
+				case DetourMessageType::SetFileValidData:
+				{
+					m_callback->OnSetFileValidData();
+					break;
+				}
+				case DetourMessageType::UnlockFile:
+				{
+					m_callback->OnUnlockFile();
+					break;
+				}
+				case DetourMessageType::UnlockFileEx:
+				{
+					m_callback->OnUnlockFileEx();
+					break;
+				}
+				case DetourMessageType::WriteFile:
+				{
+					m_callback->OnWriteFile();
+					break;
+				}
+				case DetourMessageType::WriteFileEx:
+				{
+					m_callback->OnWriteFileEx();
+					break;
+				}
+				case DetourMessageType::WriteFileGather:
+				{
+					m_callback->OnWriteFileGather();
+					break;
+				}
+				
+				// LibLoaderApi
+				case DetourMessageType::LoadLibraryA:
+				{
+					m_callback->OnLoadLibraryA();
+					break;
+				}
+				case DetourMessageType::LoadLibraryW:
+				{
+					m_callback->OnLoadLibraryW();
+					break;
+				}
+				case DetourMessageType::LoadLibraryExA:
+				{
+					m_callback->OnLoadLibraryExA();
+					break;
+				}
+				case DetourMessageType::LoadLibraryExW:
+				{
+					m_callback->OnLoadLibraryExW();
+					break;
+				}
+
+				// ProcessEnv
+				case DetourMessageType::SearchPathA:
+				{
+					m_callback->OnSearchPathA();
+					break;
+				}
+				case DetourMessageType::SearchPathW:
+				{
+					m_callback->OnSearchPathW();
+					break;
+				}
+
+				// ProcessThreadsApi
+				case DetourMessageType::CreateProcessA:
+				{
+					m_callback->OnCreateProcessA();
+					break;
+				}
+				case DetourMessageType::CreateProcessW:
+				{
+					m_callback->OnCreateProcessW();
+					break;
+				}
+				case DetourMessageType::CreateProcessAsUserA:
+				{
+					m_callback->OnCreateProcessAsUserA();
+					break;
+				}
+				case DetourMessageType::CreateProcessAsUserW:
+				{
+					m_callback->OnCreateProcessAsUserW();
+					break;
+				}
+				case DetourMessageType::ExitProcess:
+				{
+					m_callback->OnExitProcess();
+					break;
+				}
+
+				// UndocumentedApi
+				case DetourMessageType::PrivCopyFileExA:
+				{
+					m_callback->OnPrivCopyFileExA();
+					break;
+				}
+				case DetourMessageType::PrivCopyFileExW:
+				{
+					m_callback->OnPrivCopyFileExW();
+					break;
+				}
+				
+				// WinBase
+				case DetourMessageType::CopyFileA:
+				{
+					m_callback->OnCopyFileA();
+					break;
+				}
+				case DetourMessageType::CopyFileW:
+				{
+					m_callback->OnCopyFileW();
+					break;
+				}
+				case DetourMessageType::CopyFile2:
+				{
+					m_callback->OnCopyFile2();
+					break;
+				}
+				case DetourMessageType::CopyFileExA:
+				{
+					m_callback->OnCopyFileExA();
+					break;
+				}
+				case DetourMessageType::CopyFileExW:
+				{
+					m_callback->OnCopyFileExW();
+					break;
+				}
+				case DetourMessageType::CopyFileTransactedA:
+				{
+					m_callback->OnCopyFileTransactedA();
+					break;
+				}
+				case DetourMessageType::CopyFileTransactedW:
+				{
+					m_callback->OnCopyFileTransactedW();
+					break;
+				}
+				case DetourMessageType::CreateDirectoryExA:
+				{
+					m_callback->OnCreateDirectoryExA();
+					break;
+				}
+				case DetourMessageType::CreateDirectoryExW:
+				{
+					m_callback->OnCreateDirectoryExW();
+					break;
+				}
+				case DetourMessageType::CreateDirectoryTransactedA:
+				{
+					m_callback->OnCreateDirectoryTransactedA();
+					break;
+				}
+				case DetourMessageType::CreateDirectoryTransactedW:
+				{
+					m_callback->OnCreateDirectoryTransactedW();
+					break;
+				}
+				case DetourMessageType::CreateFileTransactedA:
+				{
+					m_callback->OnCreateFileTransactedA();
+					break;
+				}
+				case DetourMessageType::CreateFileTransactedW:
+				{
+					m_callback->OnCreateFileTransactedW();
+					break;
+				}
+				case DetourMessageType::CreateHardLinkA:
+				{
+					m_callback->OnCreateHardLinkA();
+					break;
+				}
+				case DetourMessageType::CreateHardLinkW:
+				{
+					m_callback->OnCreateHardLinkW();
+					break;
+				}
+				case DetourMessageType::CreateHardLinkTransactedA:
+				{
+					m_callback->OnCreateHardLinkTransactedA();
+					break;
+				}
+				case DetourMessageType::CreateHardLinkTransactedW:
+				{
+					m_callback->OnCreateHardLinkTransactedW();
+					break;
+				}
+				case DetourMessageType::CreateProcessWithLogonW:
+				{
+					m_callback->OnCreateProcessWithLogonW();
+					break;
+				}
+				case DetourMessageType::CreateProcessWithTokenW:
+				{
+					m_callback->OnCreateProcessWithTokenW();
+					break;
+				}
+				case DetourMessageType::CreateSymbolicLinkA:
+				{
+					m_callback->OnCreateSymbolicLinkA();
+					break;
+				}
+				case DetourMessageType::CreateSymbolicLinkW:
+				{
+					m_callback->OnCreateSymbolicLinkW();
+					break;
+				}
+				case DetourMessageType::CreateSymbolicLinkTransactedA:
+				{
+					m_callback->OnCreateSymbolicLinkTransactedA();
+					break;
+				}
+				case DetourMessageType::CreateSymbolicLinkTransactedW:
+				{
+					m_callback->OnCreateSymbolicLinkTransactedW();
+					break;
+				}
+				case DetourMessageType::DecryptFileA:
+				{
+					m_callback->OnDecryptFileA();
+					break;
+				}
+				case DetourMessageType::DecryptFileW:
+				{
+					m_callback->OnDecryptFileW();
+					break;
+				}
+				case DetourMessageType::DeleteFileTransactedA:
+				{
+					m_callback->OnDeleteFileTransactedA();
+					break;
+				}
+				case DetourMessageType::DeleteFileTransactedW:
+				{
+					m_callback->OnDeleteFileTransactedW();
+					break;
+				}
+				case DetourMessageType::EncryptFileA:
+				{
+					m_callback->OnEncryptFileA();
+					break;
+				}
+				case DetourMessageType::EncryptFileW:
+				{
+					m_callback->OnEncryptFileW();
+					break;
+				}
+				case DetourMessageType::FileEncryptionStatusA:
+				{
+					m_callback->OnFileEncryptionStatusA();
+					break;
+				}
+				case DetourMessageType::FileEncryptionStatusW:
+				{
+					m_callback->OnFileEncryptionStatusW();
+					break;
+				}
+				case DetourMessageType::FindFirstFileNameTransactedW:
+				{
+					m_callback->OnFindFirstFileNameTransactedW();
+					break;
+				}
+				case DetourMessageType::FindFirstFileTransactedA:
+				{
+					m_callback->OnFindFirstFileTransactedA();
+					break;
+				}
+				case DetourMessageType::FindFirstFileTransactedW:
+				{
+					m_callback->OnFindFirstFileTransactedW();
+					break;
+				}
+				case DetourMessageType::FindFirstStreamTransactedW:
+				{
+					m_callback->OnFindFirstStreamTransactedW();
+					break;
+				}
+				case DetourMessageType::GetBinaryTypeA:
+				{
+					m_callback->OnGetBinaryTypeA();
+					break;
+				}
+				case DetourMessageType::GetBinaryTypeW:
+				{
+					m_callback->OnGetBinaryTypeW();
+					break;
+				}
+				case DetourMessageType::GetCompressedFileSizeTransactedA:
+				{
+					m_callback->OnGetCompressedFileSizeTransactedA();
+					break;
+				}
+				case DetourMessageType::GetCompressedFileSizeTransactedW:
+				{
+					m_callback->OnGetCompressedFileSizeTransactedW();
+					break;
+				}
+				case DetourMessageType::GetDllDirectoryA:
+				{
+					m_callback->OnGetDllDirectoryA();
+					break;
+				}
+				case DetourMessageType::GetDllDirectoryW:
+				{
+					m_callback->OnGetDllDirectoryW();
+					break;
+				}
+				case DetourMessageType::GetFileAttributesTransactedA:
+				{
+					m_callback->OnGetFileAttributesTransactedA();
+					break;
+				}
+				case DetourMessageType::GetFileAttributesTransactedW:
+				{
+					m_callback->OnGetFileAttributesTransactedW();
+					break;
+				}
+				case DetourMessageType::GetFileBandwidthReservation:
+				{
+					m_callback->OnGetFileBandwidthReservation();
+					break;
+				}
+				case DetourMessageType::GetFileInformationByHandleEx:
+				{
+					m_callback->OnGetFileInformationByHandleEx();
+					break;
+				}
+				case DetourMessageType::GetFileSecurityA:
+				{
+					m_callback->OnGetFileSecurityA();
+					break;
+				}
+				case DetourMessageType::GetFullPathNameTransactedA:
+				{
+					m_callback->OnGetFullPathNameTransactedA();
+					break;
+				}
+				case DetourMessageType::GetFullPathNameTransactedW:
+				{
+					m_callback->OnGetFullPathNameTransactedW();
+					break;
+				}
+				case DetourMessageType::GetLongPathNameTransactedA:
+				{
+					m_callback->OnGetLongPathNameTransactedA();
+					break;
+				}
+				case DetourMessageType::GetLongPathNameTransactedW:
+				{
+					m_callback->OnGetLongPathNameTransactedW();
+					break;
+				}
+				case DetourMessageType::GetQueuedCompletionStatus:
+				{
+					m_callback->OnGetQueuedCompletionStatus();
+					break;
+				}
+				case DetourMessageType::GetQueuedCompletionStatusEx:
+				{
+					m_callback->OnGetQueuedCompletionStatusEx();
+					break;
+				}
+				case DetourMessageType::GetShortPathNameA:
+				{
+					m_callback->OnGetShortPathNameA();
+					break;
+				}
+				case DetourMessageType::LoadModule:
+				{
+					m_callback->OnLoadModule();
+					break;
+				}
+				case DetourMessageType::LoadPackagedLibrary:
+				{
+					m_callback->OnLoadPackagedLibrary();
+					break;
+				}
+				case DetourMessageType::MoveFileA:
+				{
+					m_callback->OnMoveFileA();
+					break;
+				}
+				case DetourMessageType::MoveFileW:
+				{
+					m_callback->OnMoveFileW();
+					break;
+				}
+				case DetourMessageType::MoveFileExA:
+				{
+					m_callback->OnMoveFileExA();
+					break;
+				}
+				case DetourMessageType::MoveFileExW:
+				{
+					m_callback->OnMoveFileExW();
+					break;
+				}
+				case DetourMessageType::MoveFileTransactedA:
+				{
+					m_callback->OnMoveFileTransactedA();
+					break;
+				}
+				case DetourMessageType::MoveFileTransactedW:
+				{
+					m_callback->OnMoveFileTransactedW();
+					break;
+				}
+				case DetourMessageType::MoveFileWithProgressA:
+				{
+					m_callback->OnMoveFileWithProgressA();
+					break;
+				}
+				case DetourMessageType::MoveFileWithProgressW:
+				{
+					m_callback->OnMoveFileWithProgressW();
+					break;
+				}
+				case DetourMessageType::OpenEncryptedFileRawA:
+				{
+					m_callback->OnOpenEncryptedFileRawA();
+					break;
+				}
+				case DetourMessageType::OpenEncryptedFileRawW:
+				{
+					m_callback->OnOpenEncryptedFileRawW();
 					break;
 				}
 				case DetourMessageType::OpenFile:
 				{
-					auto file = std::string_view(reinterpret_cast<char*>(message.Content));
-					m_callback->OnOpenFile(file);
+					m_callback->OnOpenFile();
+					break;
+				}
+				case DetourMessageType::OpenFileById:
+				{
+					m_callback->OnOpenFileById();
+					break;
+				}
+				case DetourMessageType::ReadEncryptedFileRaw:
+				{
+					m_callback->OnReadEncryptedFileRaw();
+					break;
+				}
+				case DetourMessageType::RemoveDirectoryTransactedA:
+				{
+					m_callback->OnRemoveDirectoryTransactedA();
+					break;
+				}
+				case DetourMessageType::RemoveDirectoryTransactedW:
+				{
+					m_callback->OnRemoveDirectoryTransactedW();
+					break;
+				}
+				case DetourMessageType::ReOpenFile:
+				{
+					m_callback->OnReOpenFile();
+					break;
+				}
+				case DetourMessageType::ReplaceFileA:
+				{
+					m_callback->OnReplaceFileA();
+					break;
+				}
+				case DetourMessageType::ReplaceFileW:
+				{
+					m_callback->OnReplaceFileW();
+					break;
+				}
+				case DetourMessageType::SetCurrentDirectoryA:
+				{
+					m_callback->OnSetCurrentDirectoryA();
+					break;
+				}
+				case DetourMessageType::SetCurrentDirectoryW:
+				{
+					m_callback->OnSetCurrentDirectoryW();
+					break;
+				}
+				case DetourMessageType::SetDllDirectoryA:
+				{
+					m_callback->OnSetDllDirectoryA();
+					break;
+				}
+				case DetourMessageType::SetDllDirectoryW:
+				{
+					m_callback->OnSetDllDirectoryW();
+					break;
+				}
+				case DetourMessageType::SetFileAttributesTransactedA:
+				{
+					m_callback->OnSetFileAttributesTransactedA();
+					break;
+				}
+				case DetourMessageType::SetFileAttributesTransactedW:
+				{
+					m_callback->OnSetFileAttributesTransactedW();
+					break;
+				}
+				case DetourMessageType::SetFileBandwidthReservation:
+				{
+					m_callback->OnSetFileBandwidthReservation();
+					break;
+				}
+				case DetourMessageType::SetFileCompletionNotificationModes:
+				{
+					m_callback->OnSetFileCompletionNotificationModes();
+					break;
+				}
+				case DetourMessageType::SetFileSecurityA:
+				{
+					m_callback->OnSetFileSecurityA();
+					break;
+				}
+				case DetourMessageType::SetFileShortNameA:
+				{
+					m_callback->OnSetFileShortNameA();
+					break;
+				}
+				case DetourMessageType::SetFileShortNameW:
+				{
+					m_callback->OnSetFileShortNameW();
+					break;
+				}
+				case DetourMessageType::SetSearchPathMode:
+				{
+					m_callback->OnSetSearchPathMode();
+					break;
+				}
+				case DetourMessageType::WriteEncryptedFileRaw:
+				{
+					m_callback->OnWriteEncryptedFileRaw();
 					break;
 				}
 				default:
@@ -673,6 +1619,7 @@ namespace Monitor
 
 		void DebugTrace(std::string_view message)
 		{
+// #define TRACE_DETOUR_SERVER
 #ifdef TRACE_DETOUR_SERVER
 			std::cout << message << std::endl;
 #endif
@@ -692,6 +1639,7 @@ namespace Monitor
 		bool m_hasAnyClients;
 		int m_activeClientCount;
 
+		std::atomic<bool> m_processRunning;
 		std::atomic<bool> m_workerFailed;
 		std::exception_ptr m_workerException = nullptr;
 

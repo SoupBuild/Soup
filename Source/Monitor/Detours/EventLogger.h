@@ -1,37 +1,37 @@
 
 #pragma once
+#include "Helpers.h"
+#include "Functions/FileApiCache.h"
 
 class EventLogger
 {
 public:
-	EventLogger() :
-		m_pipeMutex(),
-		m_pipeHandle(INVALID_HANDLE_VALUE)
+	static void Initialize()
 	{
-	}
+		std::stringstream pipeNameBuilder;
+		pipeNameBuilder << TBLOG_PIPE_NAMEA << "." << s_nTraceProcessId;
+		auto pipeName = pipeNameBuilder.str();
 
-	void Initialize(std::string_view pipeName)
-	{
-		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
+		auto lock = std::lock_guard<std::mutex>(s_pipeMutex);
 		for (int retries = 0; retries < 10; retries++)
 		{
 			// Wait up to 1 seconds for a pipe to appear.
 			auto timoutMilliseconds = 1000;
-			if (WaitNamedPipeA(pipeName.data(), timoutMilliseconds) != 0)
+			if (WaitNamedPipeA(pipeName.c_str(), timoutMilliseconds) != 0)
 			{
 				// Attempt to open the pipe
-				m_pipeHandle = Functions::Cache::CreateFileA(
-					pipeName.data(),
+				s_pipeHandle = Functions::FileApi::Cache::CreateFileA(
+					pipeName.c_str(),
 					GENERIC_WRITE,
 					0,
 					nullptr,
 					OPEN_EXISTING,
 					0,
 					nullptr);
-				if (m_pipeHandle != INVALID_HANDLE_VALUE)
+				if (s_pipeHandle != INVALID_HANDLE_VALUE)
 				{
 					DWORD pipeMode = PIPE_READMODE_MESSAGE;
-					if (SetNamedPipeHandleState(m_pipeHandle, &pipeMode, nullptr, nullptr))
+					if (SetNamedPipeHandleState(s_pipeHandle, &pipeMode, nullptr, nullptr))
 					{
 						// All good!
 						return;
@@ -44,207 +44,86 @@ public:
 		throw std::runtime_error("Failed to open pipe for event logger.");
 	}
 
-	void Shutdown()
+	static void Shutdown()
 	{
-		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
-		if (m_pipeHandle != INVALID_HANDLE_VALUE)
+		auto lock = std::lock_guard<std::mutex>(s_pipeMutex);
+		if (s_pipeHandle != INVALID_HANDLE_VALUE)
 		{
-			UnsafeWriteMessage(Monitor::DetourMessageType::Exit, "");
-			FlushFileBuffers(m_pipeHandle);
-			CloseHandle(m_pipeHandle);
-			m_pipeHandle = INVALID_HANDLE_VALUE;
+			Monitor::DetourMessage message;
+			message.Type = Monitor::DetourMessageType::Info_Shutdown;
+			message.ContentSize = 0;
+			UnsafeWriteMessage(message);
+			FlushFileBuffers(s_pipeHandle);
+			CloseHandle(s_pipeHandle);
+			s_pipeHandle = INVALID_HANDLE_VALUE;
 		}
 	}
 
-	void LogCopyFile(std::wstring_view existingFileName, std::wstring_view newFileName)
+	static void AppendValue(Monitor::DetourMessage& message, std::string_view value)
 	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortExistingFileName = converter.to_bytes(existingFileName.data());
-		auto shortNewFileName = converter.to_bytes(newFileName.data());
-		LogCopyFile(shortExistingFileName, shortNewFileName);
+		auto startIndex = message.ContentSize;
+		message.ContentSize += value.size() + 1;
+		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+			throw std::runtime_error("Message content too long for string value");
+
+		std::copy(value.begin(), value.end(), message.Content + startIndex);
+		message.Content[startIndex + value.size()] = 0;
 	}
 
-	void LogCopyFile(std::string_view existingFileName, std::string_view newFileName)
+	static void AppendValue(Monitor::DetourMessage& message, bool value)
 	{
-		std::stringstream contentBuilder;
-		contentBuilder << existingFileName << "&" << newFileName;
-		auto content = contentBuilder.str();
+		auto startIndex = message.ContentSize;
+		message.ContentSize += 1;
+		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+			throw std::runtime_error("Message content too long for bool value");
 
-		WriteMessage(Monitor::DetourMessageType::CopyFile, content);
+		message.Content[startIndex] = value ? 1 : 0;
 	}
 
-	void LogCreateDirectory(std::wstring_view fileName)
+	static void WriteError(std::string_view value)
 	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortFileName = converter.to_bytes(fileName.data());
-		LogCreateDirectory(shortFileName);
+		Monitor::DetourMessage message;
+		message.Type = Monitor::DetourMessageType::Info_Error;
+		message.ContentSize = 0;
+		AppendValue(message, value);
+		UnsafeWriteMessage(message);
 	}
 
-	void LogCreateDirectory(std::string_view fileName)
+	static void WriteMessage(const Monitor::DetourMessage& message)
 	{
-		WriteMessage(Monitor::DetourMessageType::CreateDirectory, fileName);
-	}
-
-	void LogCreateHardLink(std::wstring_view fileName, std::wstring_view existingFileName)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortFileName = converter.to_bytes(fileName.data());
-		auto shortExistingFileName = converter.to_bytes(existingFileName.data());
-		LogCreateHardLink(shortFileName, shortExistingFileName);
-	}
-
-	void LogCreateHardLink(std::string_view fileName, std::string_view existingFileName)
-	{
-		std::stringstream contentBuilder;
-		contentBuilder << fileName << "&" << existingFileName;
-		auto content = contentBuilder.str();
-
-		WriteMessage(Monitor::DetourMessageType::CreateHardLink, content);
-	}
-
-	void LogCreateFile(std::wstring_view fileName)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortFileName = converter.to_bytes(fileName.data());
-		LogCreateFile(shortFileName);
-	}
-
-	void LogCreateFile(std::string_view fileName)
-	{
-		WriteMessage(Monitor::DetourMessageType::CreateFile, fileName);
-	}
-
-	void LogCreateProcess(std::wstring_view fileName)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortFileName = converter.to_bytes(fileName.data());
-		LogCreateProcess(shortFileName);
-	}
-
-	void LogCreateProcess(std::string_view fileName)
-	{
-		WriteMessage(Monitor::DetourMessageType::CreateProcess, fileName);
-	}
-
-	void LogDeleteFile(std::wstring_view fileName)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortFileName = converter.to_bytes(fileName.data());
-		LogDeleteFile(shortFileName);
-	}
-
-	void LogDeleteFile(std::string_view fileName)
-	{
-		WriteMessage(Monitor::DetourMessageType::DeleteFile, fileName);
-	}
-
-	void LogGetEnvironmentVariable(std::wstring_view name)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortName = converter.to_bytes(name.data());
-		LogGetEnvironmentVariable(shortName);
-	}
-
-	void LogGetEnvironmentVariable(std::string_view name)
-	{
-		WriteMessage(Monitor::DetourMessageType::GetEnvironmentVariable, name);
-	}
-
-	void LogGetFileAttributes(std::wstring_view fileName)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortFileName = converter.to_bytes(fileName.data());
-		LogGetFileAttributes(shortFileName);
-	}
-
-	void LogGetFileAttributes(std::string_view fileName)
-	{
-		WriteMessage(Monitor::DetourMessageType::GetFileAttributes, fileName);
-	}
-
-	void LogLoadLibrary(std::wstring_view fileName)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortFileName = converter.to_bytes(fileName.data());
-		LogLoadLibrary(shortFileName);
-	}
-
-	void LogLoadLibrary(std::string_view fileName)
-	{
-		WriteMessage(Monitor::DetourMessageType::LoadLibrary, fileName);
-	}
-
-	void LogMoveFile(std::wstring_view existingFileName, std::wstring_view newFileName)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortExistingFileName = converter.to_bytes(existingFileName.data());
-		auto shortNewFileName = converter.to_bytes(newFileName.data());
-		LogMoveFile(shortExistingFileName, shortNewFileName);
-	}
-
-	void LogMoveFile(std::string_view existingFileName, std::string_view newFileName)
-	{
-		std::stringstream contentBuilder;
-		contentBuilder << existingFileName << "&" << newFileName;
-		auto content = contentBuilder.str();
-
-		WriteMessage(Monitor::DetourMessageType::MoveFile, content);
-	}
-
-	void LogOpenFile(std::wstring_view fileName)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		auto shortFileName = converter.to_bytes(fileName.data());
-		LogOpenFile(shortFileName);
-	}
-
-	void LogOpenFile(std::string_view fileName)
-	{
-		WriteMessage(Monitor::DetourMessageType::OpenFile, fileName);
-	}
-
-	void LogError(std::string_view message)
-	{
-		WriteMessage(Monitor::DetourMessageType::Error, message);
+		auto lock = std::lock_guard<std::mutex>(s_pipeMutex);
+		UnsafeWriteMessage(message);
 	}
 
 private:
-	void WriteMessage(Monitor::DetourMessageType type, std::string_view content)
+	static void UnsafeWriteMessage(const Monitor::DetourMessage& message)
 	{
-		auto lock = std::lock_guard<std::mutex>(m_pipeMutex);
-		UnsafeWriteMessage(type, content);
-	}
-
-	void UnsafeWriteMessage(Monitor::DetourMessageType type, std::string_view content)
-	{
-		if (m_pipeHandle == INVALID_HANDLE_VALUE)
+		if (s_pipeHandle == INVALID_HANDLE_VALUE)
 			return; // TODO: A static dll init may do bad things before the main entry initialize
 
-		// Include null terminator in the length
-		auto size = content.size() + 1;
-		if (size > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long");
-
-		Monitor::DetourMessage message;
-		message.Type = type;
-		message.ContentSize = size + sizeof(Monitor::DetourMessage::Type) + sizeof(Monitor::DetourMessage::ContentSize);
-		std::copy(content.begin(), content.end(), message.Content);
-		message.Content[content.size()] = 0;
-
 		// Write the message
+		DWORD countBytesToWrite = message.ContentSize +
+			sizeof(Monitor::DetourMessage::Type) +
+			sizeof(Monitor::DetourMessage::ContentSize);
 		DWORD countBytesWritten = 0;
-		if (!Functions::Cache::WriteFile(
-			m_pipeHandle,
+		if (!Functions::FileApi::Cache::WriteFile(
+			s_pipeHandle,
 			&message,
-			message.ContentSize,
+			countBytesToWrite,
 			&countBytesWritten,
 			nullptr))
 		{
-			throw std::runtime_error("Failed write event logger.");
+			throw std::runtime_error("Failed write event logger");
 		}
+
+		if (countBytesWritten != countBytesToWrite)
+			throw std::runtime_error("Did not write the expected number of bytes");
 	}
 
 private:
-	std::mutex m_pipeMutex;
-	HANDLE m_pipeHandle;
+	static std::mutex s_pipeMutex;
+	static HANDLE s_pipeHandle;
 };
+
+/*static*/ std::mutex EventLogger::s_pipeMutex = std::mutex();
+/*static*/ HANDLE EventLogger::s_pipeHandle = INVALID_HANDLE_VALUE;

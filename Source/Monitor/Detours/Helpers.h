@@ -1,7 +1,5 @@
 #pragma once
 
-#include "EventLogger.h"
-
 static HMODULE s_hInst = nullptr;
 static HMODULE s_hKernel32 = nullptr;
 static CHAR s_szDllPath[MAX_PATH];
