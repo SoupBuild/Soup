@@ -21,387 +21,396 @@ namespace Monitor
 		}
 
 		// FileApi
-		void OnAreFileApisANSI() override final
+		void OnAreFileApisANSI(bool result) override final
 		{
 			m_stream << "AreFileApisANSI: " << std::endl;
 		}
 
-		void OnCompareFileTime() override final
+		void OnCompareFileTime(int32_t result) override final
 		{
 			m_stream << "CompareFileTime: " << std::endl;
 		}
 
-		void OnCreateDirectoryA() override final
+		void OnCreateDirectoryA(std::string_view pathName, bool result) override final
 		{
-			m_stream << "CreateDirectoryA: " << std::endl;
+			m_stream << "CreateDirectoryA: " << pathName << std::endl;
 		}
 
-		void OnCreateDirectoryW() override final
+		void OnCreateDirectoryW(std::wstring_view pathName, bool result) override final
 		{
-			m_stream << "CreateDirectoryW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateDirectoryW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
-		void OnCreateFile2() override final
+		void OnCreateFile2(std::wstring_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition) override final
 		{
-			m_stream << "CreateFile2: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateFile2: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnCreateFileA() override final
+		void OnCreateFileA(std::string_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition, uint32_t flagsAndAttributes) override final
 		{
-			m_stream << "CreateFileA: " << std::endl;
+			m_stream << "CreateFileA: " << fileName << std::endl;
 		}
 
-		void OnCreateFileW() override final
+		void OnCreateFileW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition, uint32_t flagsAndAttributes) override final
 		{
-			m_stream << "CreateFileW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateFileW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnDefineDosDeviceW() override final
+		void OnDefineDosDeviceW(uint32_t flags, std::wstring_view deviceName, std::wstring_view targetPath, bool result) override final
 		{
 			m_stream << "DefineDosDeviceW: " << std::endl;
 		}
 
-		void OnDeleteFileA() override final
+		void OnDeleteFileA(std::string_view fileName, bool result) override final
 		{
-			m_stream << "DeleteFileA: " << std::endl;
+			m_stream << "DeleteFileA: " << fileName << std::endl;
 		}
 
-		void OnDeleteFileW() override final
+		void OnDeleteFileW(std::wstring_view fileName, bool result) override final
 		{
-			m_stream << "DeleteFileW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "DeleteFileW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnDeleteVolumeMountPointW() override final
+		void OnDeleteVolumeMountPointW(std::wstring_view volumeMountPoint, bool result) override final
 		{
 			m_stream << "DeleteVolumeMountPointW: " << std::endl;
 		}
 
-		void OnFileTimeToLocalFileTime() override final
+		void OnFileTimeToLocalFileTime(bool result) override final
 		{
 			m_stream << "FileTimeToLocalFileTime: " << std::endl;
 		}
 
-		void OnFindClose() override final
+		void OnFindClose(bool result) override final
 		{
 			m_stream << "FindClose: " << std::endl;
 		}
 
-		void OnFindCloseChangeNotification() override final
+		void OnFindCloseChangeNotification(bool result) override final
 		{
 			m_stream << "FindCloseChangeNotification: " << std::endl;
 		}
 
-		void OnFindFirstChangeNotificationA() override final
+		void OnFindFirstChangeNotificationA(std::string_view pathName, bool watchSubtree, uint32_t notifyFilter) override final
 		{
 			m_stream << "FindFirstChangeNotificationA: " << std::endl;
 		}
 
-		void OnFindFirstChangeNotificationW() override final
+		void OnFindFirstChangeNotificationW(std::wstring_view pathName, bool watchSubtree, uint32_t notifyFilter) override final
 		{
 			m_stream << "FindFirstChangeNotificationW: " << std::endl;
 		}
 
-		void OnFindFirstFileA() override final
+		void OnFindFirstFileA(std::string_view fileName) override final
 		{
 			m_stream << "FindFirstFileA: " << std::endl;
 		}
 
-		void OnFindFirstFileW() override final
+		void OnFindFirstFileW(std::wstring_view fileName) override final
 		{
 			m_stream << "FindFirstFileW: " << std::endl;
 		}
 
-		void OnFindFirstFileExA() override final
+		void OnFindFirstFileExA(std::string_view fileName) override final
 		{
 			m_stream << "FindFirstFileExA: " << std::endl;
 		}
 
-		void OnFindFirstFileExW() override final
+		void OnFindFirstFileExW(std::wstring_view fileName) override final
 		{
 			m_stream << "FindFirstFileExW: " << std::endl;
 		}
 
-		void OnFindFirstFileNameW() override final
+		void OnFindFirstFileNameW(std::wstring_view fileName, uint32_t flags) override final
 		{
 			m_stream << "FindFirstFileNameW: " << std::endl;
 		}
 
-		void OnFindFirstStreamW() override final
+		void OnFindFirstStreamW(std::wstring_view fileName) override final
 		{
 			m_stream << "FindFirstStreamW: " << std::endl;
 		}
 
-		void OnFindFirstVolumeW() override final
+		void OnFindFirstVolumeW(std::wstring_view fileName) override final
 		{
 			m_stream << "FindFirstVolumeW: " << std::endl;
 		}
 
-		void OnFindNextChangeNotification() override final
+		void OnFindNextChangeNotification(bool result) override final
 		{
 			m_stream << "FindNextChangeNotification: " << std::endl;
 		}
 
-		void OnFindNextFileA() override final
+		void OnFindNextFileA(bool result) override final
 		{
 			m_stream << "FindNextFileA: " << std::endl;
 		}
 
-		void OnFindNextFileW() override final
+		void OnFindNextFileW(bool result) override final
 		{
 			m_stream << "FindNextFileW: " << std::endl;
 		}
 
-		void OnFindNextFileNameW() override final
+		void OnFindNextFileNameW(bool result) override final
 		{
 			m_stream << "FindNextFileNameW: " << std::endl;
 		}
 
-		void OnFindNextStreamW() override final
+		void OnFindNextStreamW(bool result) override final
 		{
 			m_stream << "FindNextStreamW: " << std::endl;
 		}
 
-		void OnFindNextVolumeW() override final
+		void OnFindNextVolumeW(bool result) override final
 		{
 			m_stream << "FindNextVolumeW: " << std::endl;
 		}
 
-		void OnFindVolumeClose() override final
+		void OnFindVolumeClose(bool result) override final
 		{
 			m_stream << "FindVolumeClose: " << std::endl;
 		}
 
-		void OnFlushFileBuffers() override final
+		void OnFlushFileBuffers(bool result) override final
 		{
 			m_stream << "FlushFileBuffers: " << std::endl;
 		}
 
-		void OnGetCompressedFileSizeA() override final
+		void OnGetCompressedFileSizeA(std::string_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetCompressedFileSizeA: " << std::endl;
+			m_stream << "GetCompressedFileSizeA: " << fileName << std::endl;
 		}
 
-		void OnGetCompressedFileSizeW() override final
+		void OnGetCompressedFileSizeW(std::wstring_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetCompressedFileSizeW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetCompressedFileSizeW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnGetDiskFreeSpaceA() override final
+		void OnGetDiskFreeSpaceA(std::string_view rootPathName, bool result) override final
 		{
 			m_stream << "GetDiskFreeSpaceA: " << std::endl;
 		}
 
-		void OnGetDiskFreeSpaceW() override final
+		void OnGetDiskFreeSpaceW(std::wstring_view rootPathName, bool result) override final
 		{
 			m_stream << "GetDiskFreeSpaceW: " << std::endl;
 		}
 
-		void OnGetDiskFreeSpaceExA() override final
+		void OnGetDiskFreeSpaceExA(std::string_view directoryName, bool result) override final
 		{
 			m_stream << "GetDiskFreeSpaceExA: " << std::endl;
 		}
 
-		void OnGetDiskFreeSpaceExW() override final
+		void OnGetDiskFreeSpaceExW(std::wstring_view directoryName, bool result) override final
 		{
 			m_stream << "GetDiskFreeSpaceExW: " << std::endl;
 		}
 
-		void OnGetDriveTypeA() override final
+		void OnGetDriveTypeA(std::string_view rootPathName, uint32_t result) override final
 		{
 			m_stream << "GetDriveTypeA: " << std::endl;
 		}
 
-		void OnGetDriveTypeW() override final
+		void OnGetDriveTypeW(std::wstring_view rootPathName, uint32_t result) override final
 		{
 			m_stream << "GetDriveTypeW: " << std::endl;
 		}
 
-		void OnGetFileAttributesA() override final
+		void OnGetFileAttributesA(std::string_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetFileAttributesA: " << std::endl;
+			m_stream << "GetFileAttributesA: " << fileName << std::endl;
 		}
 
-		void OnGetFileAttributesW() override final
+		void OnGetFileAttributesW(std::wstring_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetFileAttributesW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetFileAttributesW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnGetFileAttributesExA() override final
+		void OnGetFileAttributesExA(std::string_view fileName, bool result) override final
 		{
-			m_stream << "GetFileAttributesExA: " << std::endl;
+			m_stream << "GetFileAttributesExA: " << fileName << std::endl;
 		}
 
-		void OnGetFileAttributesExW() override final
+		void OnGetFileAttributesExW(std::wstring_view fileName, bool result) override final
 		{
-			m_stream << "GetFileAttributesExW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetFileAttributesExW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnGetFileInformationByHandle() override final
+		void OnGetFileInformationByHandle(bool result) override final
 		{
 			m_stream << "GetFileInformationByHandle: " << std::endl;
 		}
 
-		void OnGetFileSize() override final
+		void OnGetFileSize(uint32_t result) override final
 		{
 			m_stream << "GetFileSize: " << std::endl;
 		}
 
-		void OnGetFileSizeEx() override final
+		void OnGetFileSizeEx(uint32_t result) override final
 		{
 			m_stream << "GetFileSizeEx: " << std::endl;
 		}
 
-		void OnGetFileTime() override final
+		void OnGetFileTime(bool result) override final
 		{
 			m_stream << "GetFileTime: " << std::endl;
 		}
 
-		void OnGetFileType() override final
+		void OnGetFileType(uint32_t result) override final
 		{
 			m_stream << "GetFileType: " << std::endl;
 		}
 
-		void OnGetFinalPathNameByHandleA() override final
+		void OnGetFinalPathNameByHandleA(uint32_t result) override final
 		{
 			m_stream << "GetFinalPathNameByHandleA: " << std::endl;
 		}
 
-		void OnGetFinalPathNameByHandleW() override final
+		void OnGetFinalPathNameByHandleW(uint32_t result) override final
 		{
 			m_stream << "GetFinalPathNameByHandleW: " << std::endl;
 		}
 
-		void OnGetFullPathNameA() override final
+		void OnGetFullPathNameA(std::string_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetFullPathNameA: " << std::endl;
+			m_stream << "GetFullPathNameA: " << fileName << std::endl;
 		}
 
-		void OnGetFullPathNameW() override final
+		void OnGetFullPathNameW(std::wstring_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetFullPathNameW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetFullPathNameW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnGetLogicalDrives() override final
+		void OnGetLogicalDrives(uint32_t result) override final
 		{
 			m_stream << "GetLogicalDrives: " << std::endl;
 		}
 
-		void OnGetLogicalDriveStringsW() override final
+		void OnGetLogicalDriveStringsW(std::wstring_view buffer, uint32_t result) override final
 		{
 			m_stream << "GetLogicalDriveStringsW: " << std::endl;
 		}
 
-		void OnGetLongPathNameA() override final
+		void OnGetLongPathNameA(std::string_view shortPath, std::string_view longPath, uint32_t result) override final
 		{
 			m_stream << "GetLongPathNameA: " << std::endl;
 		}
 
-		void OnGetLongPathNameW() override final
+		void OnGetLongPathNameW(std::wstring_view shortPath, std::wstring_view longPath, uint32_t result) override final
 		{
 			m_stream << "GetLongPathNameW: " << std::endl;
 		}
 
-		void OnGetShortPathNameW() override final
+		void OnGetShortPathNameW(std::wstring_view longPath, std::wstring_view shortPath, uint32_t result) override final
 		{
 			m_stream << "GetShortPathNameW: " << std::endl;
 		}
 
-		void OnGetTempFileNameA() override final
+		void OnGetTempFileNameA(std::string_view pathName, std::string_view prefixString, uint32_t unique, std::string_view tempFileName, uint32_t result) override final
 		{
 			m_stream << "GetTempFileNameA: " << std::endl;
 		}
 
-		void OnGetTempFileNameW() override final
+		void OnGetTempFileNameW(std::wstring_view pathName, std::wstring_view prefixString, uint32_t unique, std::wstring_view tempFileName, uint32_t result) override final
 		{
 			m_stream << "GetTempFileNameW: " << std::endl;
 		}
 
-		void OnGetTempPathA() override final
+		void OnGetTempPathA(std::string_view buffer, uint32_t result) override final
 		{
 			m_stream << "GetTempPathA: " << std::endl;
 		}
 
-		void OnGetTempPathW() override final
+		void OnGetTempPathW(std::wstring_view buffer, uint32_t result) override final
 		{
 			m_stream << "GetTempPathW: " << std::endl;
 		}
 
-		void OnGetVolumeInformationA() override final
+		void OnGetVolumeInformationA(bool result) override final
 		{
 			m_stream << "GetVolumeInformationA: " << std::endl;
 		}
 
-		void OnGetVolumeInformationW() override final
+		void OnGetVolumeInformationW(bool result) override final
 		{
 			m_stream << "GetVolumeInformationW: " << std::endl;
 		}
 
-		void OnGetVolumeInformationByHandleW() override final
+		void OnGetVolumeInformationByHandleW(bool result) override final
 		{
 			m_stream << "GetVolumeInformationByHandleW: " << std::endl;
 		}
 
-		void OnGetVolumeNameForVolumeMountPointW() override final
+		void OnGetVolumeNameForVolumeMountPointW(bool result) override final
 		{
 			m_stream << "GetVolumeNameForVolumeMountPointW: " << std::endl;
 		}
 
-		void OnGetVolumePathNamesForVolumeNameW() override final
+		void OnGetVolumePathNamesForVolumeNameW(bool result) override final
 		{
 			m_stream << "GetVolumePathNamesForVolumeNameW: " << std::endl;
 		}
 
-		void OnGetVolumePathNameW() override final
+		void OnGetVolumePathNameW(std::wstring_view filename, bool result) override final
 		{
 			m_stream << "GetVolumePathNameW: " << std::endl;
 		}
 
-		void OnLocalFileTimeToFileTime() override final
+		void OnLocalFileTimeToFileTime(bool result) override final
 		{
 			m_stream << "LocalFileTimeToFileTime: " << std::endl;
 		}
 
-		void OnLockFile() override final
+		void OnLockFile(bool result) override final
 		{
 			m_stream << "LockFile: " << std::endl;
 		}
 
-		void OnLockFileEx() override final
+		void OnLockFileEx(bool result) override final
 		{
 			m_stream << "LockFileEx: " << std::endl;
 		}
 
-		void OnQueryDosDeviceW() override final
+		void OnQueryDosDeviceW(std::wstring_view deviceName, uint32_t result) override final
 		{
 			m_stream << "QueryDosDeviceW: " << std::endl;
 		}
 
-		void OnReadFile() override final
+		void OnReadFile(bool result) override final
 		{
 			m_stream << "ReadFile: " << std::endl;
 		}
 
-		void OnReadFileEx() override final
+		void OnReadFileEx(bool result) override final
 		{
 			m_stream << "ReadFileEx: " << std::endl;
 		}
 
-		void OnReadFileScatter() override final
+		void OnReadFileScatter(bool result) override final
 		{
 			m_stream << "ReadFileScatter: " << std::endl;
 		}
 
-		void OnRemoveDirectoryA() override final
+		void OnRemoveDirectoryA(std::string_view pathName, bool result) override final
 		{
-			m_stream << "RemoveDirectoryA: " << std::endl;
+			m_stream << "RemoveDirectoryA: " << pathName << std::endl;
 		}
 
-		void OnRemoveDirectoryW() override final
+		void OnRemoveDirectoryW(std::wstring_view pathName, bool result) override final
 		{
-			m_stream << "RemoveDirectoryW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "RemoveDirectoryW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
-		void OnSetEndOfFile() override final
+		void OnSetEndOfFile(bool result) override final
 		{
 			m_stream << "SetEndOfFile: " << std::endl;
 		}
@@ -416,67 +425,68 @@ namespace Monitor
 			m_stream << "SetFileApisToOEM: " << std::endl;
 		}
 
-		void OnSetFileAttributesA() override final
+		void OnSetFileAttributesA(std::string_view fileName, bool result) override final
 		{
-			m_stream << "SetFileAttributesA: " << std::endl;
+			m_stream << "SetFileAttributesA: " << fileName << std::endl;
 		}
 		
-		void OnSetFileAttributesW() override final
+		void OnSetFileAttributesW(std::wstring_view fileName, bool result) override final
 		{
-			m_stream << "SetFileAttributesW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "SetFileAttributesW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnSetFileInformationByHandle() override final
+		void OnSetFileInformationByHandle(bool result) override final
 		{
 			m_stream << "SetFileInformationByHandle: " << std::endl;
 		}
 
-		void OnSetFileIoOverlappedRange() override final
+		void OnSetFileIoOverlappedRange(bool result) override final
 		{
 			m_stream << "SetFileIoOverlappedRange: " << std::endl;
 		}
 
-		void OnSetFilePointer() override final
+		void OnSetFilePointer(uint32_t result) override final
 		{
 			m_stream << "SetFilePointer: " << std::endl;
 		}
 		
-		void OnSetFilePointerEx() override final
+		void OnSetFilePointerEx(bool result) override final
 		{
 			m_stream << "SetFilePointerEx: " << std::endl;
 		}
 
-		void OnSetFileTime() override final
+		void OnSetFileTime(bool result) override final
 		{
 			m_stream << "SetFileTime: " << std::endl;
 		}
 
-		void OnSetFileValidData() override final
+		void OnSetFileValidData(bool result) override final
 		{
 			m_stream << "SetFileValidData: " << std::endl;
 		}
 
-		void OnUnlockFile() override final
+		void OnUnlockFile(bool result) override final
 		{
 			m_stream << "UnlockFile: " << std::endl;
 		}
 
-		void OnUnlockFileEx() override final
+		void OnUnlockFileEx(bool result) override final
 		{
 			m_stream << "UnlockFileEx: " << std::endl;
 		}
 
-		void OnWriteFile() override final
+		void OnWriteFile(bool result) override final
 		{
 			m_stream << "WriteFile: " << std::endl;
 		}
 
-		void OnWriteFileEx() override final
+		void OnWriteFileEx(bool result) override final
 		{
 			m_stream << "WriteFileEx: " << std::endl;
 		}
 
-		void OnWriteFileGather() override final
+		void OnWriteFileGather(bool result) override final
 		{
 			m_stream << "WriteFileGather: " << std::endl;
 		}
@@ -497,9 +507,10 @@ namespace Monitor
 			m_stream << "LoadLibraryExA: " << std::endl;
 		}
 
-		void OnLoadLibraryExW() override final
+		void OnLoadLibraryExW(std::wstring_view libFileName) override final
 		{
-			m_stream << "LoadLibraryExW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "LoadLibraryExW: " << converter.to_bytes(libFileName.data()) << std::endl;
 		}
 
 		// ProcessEnv

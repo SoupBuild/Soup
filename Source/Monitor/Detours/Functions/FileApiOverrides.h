@@ -116,7 +116,6 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, dwDesiredAccess);
 			EventLogger::AppendValue(message, dwShareMode);
 			EventLogger::AppendValue(message, dwCreationDisposition);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -153,7 +152,6 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, dwShareMode);
 			EventLogger::AppendValue(message, dwCreationDisposition);
 			EventLogger::AppendValue(message, dwFlagsAndAttributes);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -190,7 +188,6 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, dwShareMode);
 			EventLogger::AppendValue(message, dwCreationDisposition);
 			EventLogger::AppendValue(message, dwFlagsAndAttributes);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -370,7 +367,6 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, lpPathName);
 			EventLogger::AppendValue(message, bWatchSubtree);
 			EventLogger::AppendValue(message, dwNotifyFilter);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -397,7 +393,6 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, lpPathName);
 			EventLogger::AppendValue(message, bWatchSubtree);
 			EventLogger::AppendValue(message, dwNotifyFilter);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -420,7 +415,6 @@ namespace Functions::FileApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindFirstFileA;
 			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -443,7 +437,6 @@ namespace Functions::FileApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindFirstFileW;
 			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -474,7 +467,6 @@ namespace Functions::FileApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindFirstFileExA;
 			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -505,7 +497,6 @@ namespace Functions::FileApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindFirstFileExW;
 			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -533,7 +524,6 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::FindFirstFileNameW;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -560,7 +550,6 @@ namespace Functions::FileApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindFirstStreamW;
 			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -583,7 +572,6 @@ namespace Functions::FileApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindFirstVolumeW;
 			EventLogger::AppendValue(message, lpszVolumeName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -671,7 +659,6 @@ namespace Functions::FileApi::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindNextFileNameW;
-			EventLogger::AppendValue(message, LinkName);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
@@ -718,7 +705,6 @@ namespace Functions::FileApi::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindNextVolumeW;
-			EventLogger::AppendValue(message, lpszVolumeName);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}

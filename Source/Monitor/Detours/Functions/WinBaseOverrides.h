@@ -357,7 +357,6 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, dwDesiredAccess);
 			EventLogger::AppendValue(message, dwShareMode);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -398,7 +397,6 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, dwDesiredAccess);
 			EventLogger::AppendValue(message, dwShareMode);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -932,7 +930,6 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::FindFirstFileNameTransactedW;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -965,7 +962,6 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindFirstFileTransactedA;
 			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -998,7 +994,6 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindFirstFileTransactedW;
 			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1027,7 +1022,6 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::FindFirstStreamTransactedW;
 			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1576,7 +1570,6 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::LoadPackagedLibrary;
 			EventLogger::AppendValue(message, lpwLibFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1913,7 +1906,6 @@ namespace Functions::WinBase::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::OpenFileById;
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -2009,7 +2001,6 @@ namespace Functions::WinBase::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::ReOpenFile;
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -2312,7 +2303,6 @@ namespace Functions::WinBase::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::SetFileShortNameA;
-			EventLogger::AppendValue(message, hFile);
 			EventLogger::AppendValue(message, lpShortName);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
@@ -2336,7 +2326,6 @@ namespace Functions::WinBase::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::SetFileShortNameW;
-			EventLogger::AppendValue(message, hFile);
 			EventLogger::AppendValue(message, lpShortName);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);

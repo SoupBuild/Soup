@@ -17,7 +17,6 @@ namespace Functions::LibLoaderApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::LoadLibraryA;
 			EventLogger::AppendValue(message, lpLibFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -38,7 +37,6 @@ namespace Functions::LibLoaderApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::LoadLibraryW;
 			EventLogger::AppendValue(message, lpLibFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -63,7 +61,6 @@ namespace Functions::LibLoaderApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::LoadLibraryExA;
 			EventLogger::AppendValue(message, lpLibFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -87,8 +84,7 @@ namespace Functions::LibLoaderApi::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::LoadLibraryExW;
-			EventLogger::AppendValue(message, lpLibFileName);
-			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, std::wstring_view(lpLibFileName));
 			EventLogger::WriteMessage(message);
 		}
 

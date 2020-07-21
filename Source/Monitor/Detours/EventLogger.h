@@ -62,22 +62,33 @@ public:
 	static void AppendValue(Monitor::DetourMessage& message, std::string_view value)
 	{
 		auto startIndex = message.ContentSize;
-		message.ContentSize += value.size() + 1;
+		auto size = value.size() + 1;
+		message.ContentSize += size;
 		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
 			throw std::runtime_error("Message content too long for string value");
 
-		std::copy(value.begin(), value.end(), message.Content + startIndex);
-		message.Content[startIndex + value.size()] = 0;
+		value.copy(reinterpret_cast<char*>(message.Content + startIndex), size);
 	}
 
-	static void AppendValue(Monitor::DetourMessage& message, bool value)
+	static void AppendValue(Monitor::DetourMessage& message, std::wstring_view value)
 	{
 		auto startIndex = message.ContentSize;
-		message.ContentSize += 1;
+		auto size = 2 * (value.size() + 1);
+		message.ContentSize += size;
 		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long for bool value");
+			throw std::runtime_error("Message content too long for string value");
 
-		message.Content[startIndex] = value ? 1 : 0;
+		value.copy(reinterpret_cast<wchar_t*>(message.Content + startIndex), size);
+	}
+
+	static void AppendValue(Monitor::DetourMessage& message, uint32_t value)
+	{
+		auto startIndex = message.ContentSize;
+		message.ContentSize += sizeof(uint32_t);
+		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+			throw std::runtime_error("Message content too long for int 32 value");
+
+		*reinterpret_cast<uint32_t*>(message.Content + startIndex) = value;
 	}
 
 	static void WriteError(std::string_view value)
