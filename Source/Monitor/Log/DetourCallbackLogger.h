@@ -492,19 +492,20 @@ namespace Monitor
 		}
 
 		// LibLoaderApi
-		void OnLoadLibraryA() override final
+		void OnLoadLibraryA(std::string_view libFileName) override final
 		{
-			m_stream << "LoadLibraryA: " << std::endl;
+			m_stream << "LoadLibraryA: " << libFileName << std::endl;
 		}
 
-		void OnLoadLibraryW() override final
+		void OnLoadLibraryW(std::wstring_view libFileName) override final
 		{
-			m_stream << "LoadLibraryW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "LoadLibraryW: " << converter.to_bytes(libFileName.data()) << std::endl;
 		}
 
-		void OnLoadLibraryExA() override final
+		void OnLoadLibraryExA(std::string_view libFileName) override final
 		{
-			m_stream << "LoadLibraryExA: " << std::endl;
+			m_stream << "LoadLibraryExA: " << libFileName << std::endl;
 		}
 
 		void OnLoadLibraryExW(std::wstring_view libFileName) override final
@@ -514,380 +515,380 @@ namespace Monitor
 		}
 
 		// ProcessEnv
-		void OnSearchPathA() override final
+		void OnSearchPathA(std::string_view path, std::string_view fileName, std::string_view extension, uint32_t result) override final
 		{
 			m_stream << "SearchPathA: " << std::endl;
 		}
 
-		void OnSearchPathW() override final
+		void OnSearchPathW(std::wstring_view path, std::wstring_view fileName, std::wstring_view extension, uint32_t result) override final
 		{
 			m_stream << "SearchPathW: " << std::endl;
 		}
 
 		// ProcessThreadsApi
-		void OnCreateProcessA() override final
+		void OnCreateProcessA(std::string_view applicationName, bool result) override final
 		{
 			m_stream << "CreateProcessA: " << std::endl;
 		}
 
-		void OnCreateProcessW() override final
+		void OnCreateProcessW(std::wstring_view applicationName, bool result) override final
 		{
 			m_stream << "CreateProcessW: " << std::endl;
 		}
 
-		void OnCreateProcessAsUserA() override final
+		void OnCreateProcessAsUserA(std::string_view applicationName, bool result) override final
 		{
 			m_stream << "CreateProcessAsUserA: " << std::endl;
 		}
 
-		void OnCreateProcessAsUserW() override final
+		void OnCreateProcessAsUserW(std::wstring_view applicationName, bool result) override final
 		{
 			m_stream << "CreateProcessAsUserW: " << std::endl;
 		}
 
-		void OnExitProcess() override final
+		void OnExitProcess(uint32_t exitCode) override final
 		{
 			m_stream << "ExitProcess: " << std::endl;
 		}
 
 		// UndocumentedApi
-		void OnPrivCopyFileExA() override final
+		void OnPrivCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
 			m_stream << "PrivCopyFileExA: " << std::endl;
 		}
 
-		void OnPrivCopyFileExW() override final
+		void OnPrivCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
 			m_stream << "PrivCopyFileExW: " << std::endl;
 		}
 
 		// WinBase
-		void OnCopyFileA() override final
+		void OnCopyFileA(std::string_view existingFileName, std::string_view newFileName, bool failIfExists, bool result) override final
 		{
 			m_stream << "CopyFileA: " << std::endl;
 		}
 
-		void OnCopyFileW() override final
+		void OnCopyFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool failIfExists, bool result) override final
 		{
 			m_stream << "CopyFileW: " << std::endl;
 		}
 
-		void OnCopyFile2() override final
+		void OnCopyFile2(std::wstring_view existingFileName, std::wstring_view newFileName) override final
 		{
 			m_stream << "CopyFile2: " << std::endl;
 		}
 
-		void OnCopyFileExA() override final
+		void OnCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
 			m_stream << "CopyFileExA: " << std::endl;
 		}
 
-		void OnCopyFileExW() override final
+		void OnCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
 			m_stream << "CopyFileExW: " << std::endl;
 		}
 
-		void OnCopyFileTransactedA() override final
+		void OnCopyFileTransactedA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
 			m_stream << "CopyFileTransactedA: " << std::endl;
 		}
 
-		void OnCopyFileTransactedW() override final
+		void OnCopyFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
 			m_stream << "CopyFileTransactedW: " << std::endl;
 		}
 
-		void OnCreateDirectoryExA() override final
+		void OnCreateDirectoryExA(std::string_view templateDirectory, std::string_view newDirectory, bool result) override final
 		{
 			m_stream << "CreateDirectoryExA: " << std::endl;
 		}
 
-		void OnCreateDirectoryExW() override final
+		void OnCreateDirectoryExW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) override final
 		{
 			m_stream << "CreateDirectoryExW: " << std::endl;
 		}
 
-		void OnCreateDirectoryTransactedA() override final
+		void OnCreateDirectoryTransactedA(std::string_view templateDirectory, std::string_view newDirectory, bool result) override final
 		{
 			m_stream << "CreateDirectoryTransactedA: " << std::endl;
 		}
 
-		void OnCreateDirectoryTransactedW() override final
+		void OnCreateDirectoryTransactedW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) override final
 		{
 			m_stream << "CreateDirectoryTransactedW: " << std::endl;
 		}
 
-		void OnCreateFileTransactedA() override final
+		void OnCreateFileTransactedA(std::string_view fileName, uint32_t desiredAccess, uint32_t shareMode) override final
 		{
 			m_stream << "CreateFileTransactedA: " << std::endl;
 		}
 
-		void OnCreateFileTransactedW() override final
+		void OnCreateFileTransactedW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t shareMode) override final
 		{
 			m_stream << "CreateFileTransactedW: " << std::endl;
 		}
 
-		void OnCreateHardLinkA() override final
+		void OnCreateHardLinkA(std::string_view fileName, std::string_view existingFileName, bool result) override final
 		{
 			m_stream << "CreateHardLinkA: " << std::endl;
 		}
 
-		void OnCreateHardLinkW() override final
+		void OnCreateHardLinkW(std::wstring_view fileName, std::wstring_view existingFileName, bool result) override final
 		{
 			m_stream << "CreateHardLinkW: " << std::endl;
 		}
 
-		void OnCreateHardLinkTransactedA() override final
+		void OnCreateHardLinkTransactedA(std::string_view fileName, std::string_view existingFileName, bool result) override final
 		{
 			m_stream << "CreateHardLinkTransactedA: " << std::endl;
 		}
 
-		void OnCreateHardLinkTransactedW() override final
+		void OnCreateHardLinkTransactedW(std::wstring_view fileName, std::wstring_view existingFileName, bool result) override final
 		{
 			m_stream << "CreateHardLinkTransactedW: " << std::endl;
 		}
 
-		void OnCreateProcessWithLogonW() override final
+		void OnCreateProcessWithLogonW(std::wstring_view applicationName, bool result) override final
 		{
 			m_stream << "CreateProcessWithLogonW: " << std::endl;
 		}
 
-		void OnCreateProcessWithTokenW() override final
+		void OnCreateProcessWithTokenW(std::wstring_view applicationName, bool result) override final
 		{
 			m_stream << "CreateProcessWithTokenW: " << std::endl;
 		}
 
-		void OnCreateSymbolicLinkA() override final
+		void OnCreateSymbolicLinkA(std::string_view symlinkFileName, std::string_view targetFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "CreateSymbolicLinkA: " << std::endl;
 		}
 
-		void OnCreateSymbolicLinkW() override final
+		void OnCreateSymbolicLinkW(std::wstring_view symlinkFileName, std::wstring_view targetFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "CreateSymbolicLinkW: " << std::endl;
 		}
 
-		void OnCreateSymbolicLinkTransactedA() override final
+		void OnCreateSymbolicLinkTransactedA(std::string_view symlinkFileName, std::string_view targetFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "CreateSymbolicLinkTransactedA: " << std::endl;
 		}
 
-		void OnCreateSymbolicLinkTransactedW() override final
+		void OnCreateSymbolicLinkTransactedW(std::wstring_view symlinkFileName, std::wstring_view targetFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "CreateSymbolicLinkTransactedW: " << std::endl;
 		}
 
-		void OnDecryptFileA() override final
+		void OnDecryptFileA(std::string_view fileName, bool result) override final
 		{
 			m_stream << "DecryptFileA: " << std::endl;
 		}
 		
-		void OnDecryptFileW() override final
+		void OnDecryptFileW(std::wstring_view fileName, bool result) override final
 		{
 			m_stream << "DecryptFileW: " << std::endl;
 		}
 
-		void OnDeleteFileTransactedA() override final
+		void OnDeleteFileTransactedA(std::string_view fileName, bool result) override final
 		{
 			m_stream << "DeleteFileTransactedA: " << std::endl;
 		}
 
-		void OnDeleteFileTransactedW() override final
+		void OnDeleteFileTransactedW(std::wstring_view fileName, bool result) override final
 		{
 			m_stream << "DeleteFileTransactedW: " << std::endl;
 		}
 
-		void OnEncryptFileA() override final
+		void OnEncryptFileA(std::string_view fileName, bool result) override final
 		{
 			m_stream << "EncryptFileA: " << std::endl;
 		}
 
-		void OnEncryptFileW() override final
+		void OnEncryptFileW(std::wstring_view fileName, bool result) override final
 		{
 			m_stream << "EncryptFileW: " << std::endl;
 		}
 
-		void OnFileEncryptionStatusA() override final
+		void OnFileEncryptionStatusA(std::string_view fileName, bool result) override final
 		{
 			m_stream << "FileEncryptionStatusA: " << std::endl;
 		}
 
-		void OnFileEncryptionStatusW() override final
+		void OnFileEncryptionStatusW(std::wstring_view fileName, bool result) override final
 		{
 			m_stream << "FileEncryptionStatusW: " << std::endl;
 		}
 
-		void OnFindFirstFileNameTransactedW() override final
+		void OnFindFirstFileNameTransactedW(std::wstring_view fileName, bool result) override final
 		{
 			m_stream << "FindFirstFileNameTransactedW: " << std::endl;
 		}
 
-		void OnFindFirstFileTransactedA() override final
+		void OnFindFirstFileTransactedA(std::string_view fileName) override final
 		{
 			m_stream << "FindFirstFileTransactedA: " << std::endl;
 		}
 
-		void OnFindFirstFileTransactedW() override final
+		void OnFindFirstFileTransactedW(std::wstring_view fileName) override final
 		{
 			m_stream << "FindFirstFileTransactedW: " << std::endl;
 		}
 
-		void OnFindFirstStreamTransactedW() override final
+		void OnFindFirstStreamTransactedW(std::wstring_view fileName) override final
 		{
 			m_stream << "FindFirstStreamTransactedW: " << std::endl;
 		}
 
-		void OnGetBinaryTypeA() override final
+		void OnGetBinaryTypeA(std::string_view applicationName, bool result) override final
 		{
 			m_stream << "GetBinaryTypeA: " << std::endl;
 		}
 
-		void OnGetBinaryTypeW() override final
+		void OnGetBinaryTypeW(std::wstring_view applicationName, bool result) override final
 		{
 			m_stream << "GetBinaryTypeW: " << std::endl;
 		}
 
-		void OnGetCompressedFileSizeTransactedA() override final
+		void OnGetCompressedFileSizeTransactedA(std::string_view fileName, uint32_t result) override final
 		{
 			m_stream << "GetCompressedFileSizeTransactedA: " << std::endl;
 		}
 
-		void OnGetCompressedFileSizeTransactedW() override final
+		void OnGetCompressedFileSizeTransactedW(std::wstring_view fileName, uint32_t result) override final
 		{
 			m_stream << "GetCompressedFileSizeTransactedW: " << std::endl;
 		}
 
-		void OnGetDllDirectoryA() override final
+		void OnGetDllDirectoryA(uint32_t result) override final
 		{
 			m_stream << "GetDllDirectoryA: " << std::endl;
 		}
 
-		void OnGetDllDirectoryW() override final
+		void OnGetDllDirectoryW(uint32_t result) override final
 		{
 			m_stream << "GetDllDirectoryW: " << std::endl;
 		}
 
-		void OnGetFileAttributesTransactedA() override final
+		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t result) override final
 		{
 			m_stream << "GetFileAttributesTransactedA: " << std::endl;
 		}
 
-		void OnGetFileAttributesTransactedW() override final
+		void OnGetFileAttributesTransactedW(std::wstring_view fileName, uint32_t result) override final
 		{
 			m_stream << "GetFileAttributesTransactedW: " << std::endl;
 		}
 
-		void OnGetFileBandwidthReservation() override final
+		void OnGetFileBandwidthReservation(bool result) override final
 		{
 			m_stream << "GetFileBandwidthReservation: " << std::endl;
 		}
 		
-		void OnGetFileInformationByHandleEx() override final
+		void OnGetFileInformationByHandleEx(bool result) override final
 		{
 			m_stream << "GetFileInformationByHandleEx: " << std::endl;
 		}
 
-		void OnGetFileSecurityA() override final
+		void OnGetFileSecurityA(std::string_view fileName, bool result) override final
 		{
 			m_stream << "GetFileSecurityA: " << std::endl;
 		}
 
-		void OnGetFullPathNameTransactedA() override final
+		void OnGetFullPathNameTransactedA(std::string_view fileName, uint32_t result) override final
 		{
 			m_stream << "GetFullPathNameTransactedA: " << std::endl;
 		}
 
-		void OnGetFullPathNameTransactedW() override final
+		void OnGetFullPathNameTransactedW(std::wstring_view fileName, uint32_t result) override final
 		{
 			m_stream << "GetFullPathNameTransactedW: " << std::endl;
 		}
 
-		void OnGetLongPathNameTransactedA() override final
+		void OnGetLongPathNameTransactedA(std::string_view shortPath, std::string_view longPath, uint32_t result) override final
 		{
 			m_stream << "GetLongPathNameTransactedA: " << std::endl;
 		}
 
-		void OnGetLongPathNameTransactedW() override final
+		void OnGetLongPathNameTransactedW(std::wstring_view shortPath, std::wstring_view longPath, uint32_t result) override final
 		{
 			m_stream << "GetLongPathNameTransactedW: " << std::endl;
 		}
 
-		void OnGetQueuedCompletionStatus() override final
+		void OnGetQueuedCompletionStatus(bool result) override final
 		{
 			m_stream << "GetQueuedCompletionStatus: " << std::endl;
 		}
 
-		void OnGetQueuedCompletionStatusEx() override final
+		void OnGetQueuedCompletionStatusEx(bool result) override final
 		{
 			m_stream << "GetQueuedCompletionStatusEx: " << std::endl;
 		}
 
-		void OnGetShortPathNameA() override final
+		void OnGetShortPathNameA(std::string_view longPath, std::string_view shortPath, uint32_t result) override final
 		{
 			m_stream << "GetShortPathNameA: " << std::endl;
 		}
 
-		void OnLoadModule() override final
+		void OnLoadModule(std::string_view moduleName, uint32_t result) override final
 		{
 			m_stream << "LoadModule: " << std::endl;
 		}
 
-		void OnLoadPackagedLibrary() override final
+		void OnLoadPackagedLibrary(std::string_view libFileName) override final
 		{
 			m_stream << "LoadPackagedLibrary: " << std::endl;
 		}
 
-		void OnMoveFileA() override final
+		void OnMoveFileA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
 			m_stream << "MoveFileA: " << std::endl;
 		}
 
-		void OnMoveFileW() override final
+		void OnMoveFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
 			m_stream << "MoveFileW: " << std::endl;
 		}
 
-		void OnMoveFileExA() override final
+		void OnMoveFileExA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "MoveFileExA: " << std::endl;
 		}
 
-		void OnMoveFileExW() override final
+		void OnMoveFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "MoveFileExW: " << std::endl;
 		}
 
-		void OnMoveFileTransactedA() override final
+		void OnMoveFileTransactedA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "MoveFileTransactedA: " << std::endl;
 		}
 
-		void OnMoveFileTransactedW() override final
+		void OnMoveFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "MoveFileTransactedW: " << std::endl;
 		}
 
-		void OnMoveFileWithProgressA() override final
+		void OnMoveFileWithProgressA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "MoveFileWithProgressA: " << std::endl;
 		}
 
-		void OnMoveFileWithProgressW() override final
+		void OnMoveFileWithProgressW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
 		{
 			m_stream << "MoveFileWithProgressW: " << std::endl;
 		}
 
-		void OnOpenEncryptedFileRawA() override final
+		void OnOpenEncryptedFileRawA(std::string_view fileName, uint32_t flags, uint32_t result) override final
 		{
 			m_stream << "OpenEncryptedFileRawA: " << std::endl;
 		}
 
-		void OnOpenEncryptedFileRawW() override final
+		void OnOpenEncryptedFileRawW(std::wstring_view fileName, uint32_t flags, uint32_t result) override final
 		{
 			m_stream << "OpenEncryptedFileRawW: " << std::endl;
 		}
 
-		void OnOpenFile() override final
+		void OnOpenFile(std::string_view fileName) override final
 		{
 			m_stream << "OpenFile: " << std::endl;
 		}
@@ -897,17 +898,17 @@ namespace Monitor
 			m_stream << "OpenFileById: " << std::endl;
 		}
 
-		void OnReadEncryptedFileRaw() override final
+		void OnReadEncryptedFileRaw(uint32_t result) override final
 		{
 			m_stream << "ReadEncryptedFileRaw: " << std::endl;
 		}
 
-		void OnRemoveDirectoryTransactedA() override final
+		void OnRemoveDirectoryTransactedA(std::string_view pathName, bool result) override final
 		{
 			m_stream << "RemoveDirectoryTransactedA: " << std::endl;
 		}
 
-		void OnRemoveDirectoryTransactedW() override final
+		void OnRemoveDirectoryTransactedW(std::wstring_view pathName, bool result) override final
 		{
 			m_stream << "RemoveDirectoryTransactedW: " << std::endl;
 		}
@@ -917,77 +918,77 @@ namespace Monitor
 			m_stream << "ReOpenFile: " << std::endl;
 		}
 
-		void OnReplaceFileA() override final
+		void OnReplaceFileA(std::string_view replacedFileName, std::string_view replacementFileName, std::string_view backupFileName, uint32_t replaceFlags, bool result) override final
 		{
 			m_stream << "ReplaceFileA: " << std::endl;
 		}
 
-		void OnReplaceFileW() override final
+		void OnReplaceFileW(std::wstring_view replacedFileName, std::wstring_view replacementFileName, std::wstring_view backupFileName, uint32_t replaceFlags, bool result) override final
 		{
 			m_stream << "ReplaceFileW: " << std::endl;
 		}
 
-		void OnSetCurrentDirectoryA() override final
+		void OnSetCurrentDirectoryA(std::string_view pathName, bool result) override final
 		{
 			m_stream << "SetCurrentDirectoryA: " << std::endl;
 		}
 
-		void OnSetCurrentDirectoryW() override final
+		void OnSetCurrentDirectoryW(std::wstring_view pathName, bool result) override final
 		{
 			m_stream << "SetCurrentDirectoryW: " << std::endl;
 		}
 
-		void OnSetDllDirectoryA() override final
+		void OnSetDllDirectoryA(std::string_view pathName, bool result) override final
 		{
 			m_stream << "SetDllDirectoryA: " << std::endl;
 		}
 
-		void OnSetDllDirectoryW() override final
+		void OnSetDllDirectoryW(std::wstring_view pathName, bool result) override final
 		{
 			m_stream << "SetDllDirectoryW: " << std::endl;
 		}
 
-		void OnSetFileAttributesTransactedA() override final
+		void OnSetFileAttributesTransactedA(std::string_view pathName, uint32_t fileAttributes, bool result) override final
 		{
 			m_stream << "SetFileAttributesTransactedA: " << std::endl;
 		}
 
-		void OnSetFileAttributesTransactedW() override final
+		void OnSetFileAttributesTransactedW(std::wstring_view pathName, uint32_t fileAttributes, bool result) override final
 		{
 			m_stream << "SetFileAttributesTransactedW: " << std::endl;
 		}
 
-		void OnSetFileBandwidthReservation() override final
+		void OnSetFileBandwidthReservation(bool result) override final
 		{
 			m_stream << "SetFileBandwidthReservation: " << std::endl;
 		}
 
-		void OnSetFileCompletionNotificationModes() override final
+		void OnSetFileCompletionNotificationModes(bool result) override final
 		{
 			m_stream << "SetFileCompletionNotificationModes: " << std::endl;
 		}
 
-		void OnSetFileSecurityA() override final
+		void OnSetFileSecurityA(std::string_view fileName, bool result) override final
 		{
 			m_stream << "SetFileSecurityA: " << std::endl;
 		}
 
-		void OnSetFileShortNameA() override final
+		void OnSetFileShortNameA(std::string_view shortName, bool result) override final
 		{
 			m_stream << "SetFileShortNameA: " << std::endl;
 		}
 
-		void OnSetFileShortNameW() override final
+		void OnSetFileShortNameW(std::wstring_view shortName, bool result) override final
 		{
 			m_stream << "SetFileShortNameW: " << std::endl;
 		}
 
-		void OnSetSearchPathMode() override final
+		void OnSetSearchPathMode(uint32_t flags, bool result) override final
 		{
 			m_stream << "SetSearchPathMode: " << std::endl;
 		}
 
-		void OnWriteEncryptedFileRaw() override final
+		void OnWriteEncryptedFileRaw(uint32_t result) override final
 		{
 			m_stream << "WriteEncryptedFileRaw: " << std::endl;
 		}

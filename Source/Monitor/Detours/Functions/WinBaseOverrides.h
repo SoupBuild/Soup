@@ -76,7 +76,6 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::CopyFile2;
 			EventLogger::AppendValue(message, pwszExistingFileName);
 			EventLogger::AppendValue(message, pwszNewFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1385,6 +1384,7 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::GetLongPathNameTransactedA;
 			EventLogger::AppendValue(message, lpszShortPath);
+			EventLogger::AppendValue(message, lpszLongPath);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
@@ -1412,6 +1412,7 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::GetLongPathNameTransactedW;
 			EventLogger::AppendValue(message, lpszShortPath);
+			EventLogger::AppendValue(message, lpszLongPath);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
@@ -1495,35 +1496,7 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::GetShortPathNameA;
 			EventLogger::AppendValue(message, lpszLongPath);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
-		}
-
-		return result;
-	}
-
-	UINT WINAPI GetTempFileName(
-		LPCSTR lpPathName,
-		LPCSTR lpPrefixString,
-		UINT uUnique,
-		LPSTR lpTempFileName)
-	{
-		UINT result = 0;
-		__try
-		{
-			result = Cache::GetTempFileName(
-				lpPathName,
-				lpPrefixString,
-				uUnique,
-				lpTempFileName);
-		}
-		__finally
-		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetTempFileName;
-			EventLogger::AppendValue(message, lpPathName);
-			EventLogger::AppendValue(message, lpPrefixString);
-			EventLogger::AppendValue(message, uUnique);
+			EventLogger::AppendValue(message, lpszShortPath);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
@@ -1876,7 +1849,6 @@ namespace Functions::WinBase::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::OpenFile;
 			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 

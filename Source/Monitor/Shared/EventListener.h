@@ -656,17 +656,20 @@ namespace Monitor
 				// LibLoaderApi
 				case DetourMessageType::LoadLibraryA:
 				{
-					m_callback->OnLoadLibraryA();
+					auto libFileName = ReadStringValue(message, offset);
+					m_callback->OnLoadLibraryA(libFileName);
 					break;
 				}
 				case DetourMessageType::LoadLibraryW:
 				{
-					m_callback->OnLoadLibraryW();
+					auto libFileName = ReadWStringValue(message, offset);
+					m_callback->OnLoadLibraryW(libFileName);
 					break;
 				}
 				case DetourMessageType::LoadLibraryExA:
 				{
-					m_callback->OnLoadLibraryExA();
+					auto libFileName = ReadStringValue(message, offset);
+					m_callback->OnLoadLibraryExA(libFileName);
 					break;
 				}
 				case DetourMessageType::LoadLibraryExW:
@@ -679,383 +682,572 @@ namespace Monitor
 				// ProcessEnv
 				case DetourMessageType::SearchPathA:
 				{
-					m_callback->OnSearchPathA();
+					auto path = ReadStringValue(message, offset);
+					auto fileName = ReadStringValue(message, offset);
+					auto extension = ReadStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnSearchPathA(path, fileName, extension, result);
 					break;
 				}
 				case DetourMessageType::SearchPathW:
 				{
-					m_callback->OnSearchPathW();
+					auto path = ReadWStringValue(message, offset);
+					auto fileName = ReadWStringValue(message, offset);
+					auto extension = ReadWStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnSearchPathW(path, fileName, extension, result);
 					break;
 				}
 
 				// ProcessThreadsApi
 				case DetourMessageType::CreateProcessA:
 				{
-					m_callback->OnCreateProcessA();
+					auto applicationName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateProcessA(applicationName, result);
 					break;
 				}
 				case DetourMessageType::CreateProcessW:
 				{
-					m_callback->OnCreateProcessW();
+					auto applicationName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateProcessW(applicationName, result);
 					break;
 				}
 				case DetourMessageType::CreateProcessAsUserA:
 				{
-					m_callback->OnCreateProcessAsUserA();
+					auto applicationName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateProcessAsUserA(applicationName, result);
 					break;
 				}
 				case DetourMessageType::CreateProcessAsUserW:
 				{
-					m_callback->OnCreateProcessAsUserW();
+					auto applicationName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateProcessAsUserW(applicationName, result);
 					break;
 				}
 				case DetourMessageType::ExitProcess:
 				{
-					m_callback->OnExitProcess();
+					auto exitCode = ReadUInt32Value(message, offset);
+					m_callback->OnExitProcess(exitCode);
 					break;
 				}
 
 				// UndocumentedApi
 				case DetourMessageType::PrivCopyFileExA:
 				{
-					m_callback->OnPrivCopyFileExA();
+					auto existingFileName = ReadStringValue(message, offset);
+					auto newFileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnPrivCopyFileExA(existingFileName, newFileName, result);
 					break;
 				}
 				case DetourMessageType::PrivCopyFileExW:
 				{
-					m_callback->OnPrivCopyFileExW();
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto newFileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnPrivCopyFileExW(existingFileName, newFileName, result);
 					break;
 				}
 				
 				// WinBase
 				case DetourMessageType::CopyFileA:
 				{
-					m_callback->OnCopyFileA();
+					auto existingFileName = ReadStringValue(message, offset);
+					auto newFileName = ReadStringValue(message, offset);
+					auto failIfExists = ReadBoolValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileA(existingFileName, newFileName, failIfExists, result);
 					break;
 				}
 				case DetourMessageType::CopyFileW:
 				{
-					m_callback->OnCopyFileW();
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto newFileName = ReadWStringValue(message, offset);
+					auto failIfExists = ReadBoolValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileW(existingFileName, newFileName, failIfExists, result);
 					break;
 				}
 				case DetourMessageType::CopyFile2:
 				{
-					m_callback->OnCopyFile2();
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto newFileName = ReadWStringValue(message, offset);
+					m_callback->OnCopyFile2(existingFileName, newFileName);
 					break;
 				}
 				case DetourMessageType::CopyFileExA:
 				{
-					m_callback->OnCopyFileExA();
+					auto existingFileName = ReadStringValue(message, offset);
+					auto newFileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileExA(existingFileName, newFileName, result);
 					break;
 				}
 				case DetourMessageType::CopyFileExW:
 				{
-					m_callback->OnCopyFileExW();
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto newFileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileExW(existingFileName, newFileName, result);
 					break;
 				}
 				case DetourMessageType::CopyFileTransactedA:
 				{
-					m_callback->OnCopyFileTransactedA();
+					auto existingFileName = ReadStringValue(message, offset);
+					auto newFileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileTransactedA(existingFileName, newFileName, result);
 					break;
 				}
 				case DetourMessageType::CopyFileTransactedW:
 				{
-					m_callback->OnCopyFileTransactedW();
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto newFileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileTransactedW(existingFileName, newFileName, result);
 					break;
 				}
 				case DetourMessageType::CreateDirectoryExA:
 				{
-					m_callback->OnCreateDirectoryExA();
+					auto templateDirectory = ReadStringValue(message, offset);
+					auto newDirectory = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryExA(templateDirectory, newDirectory, result);
 					break;
 				}
 				case DetourMessageType::CreateDirectoryExW:
 				{
-					m_callback->OnCreateDirectoryExW();
+					auto templateDirectory = ReadWStringValue(message, offset);
+					auto newDirectory = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryExW(templateDirectory, newDirectory, result);
 					break;
 				}
 				case DetourMessageType::CreateDirectoryTransactedA:
 				{
-					m_callback->OnCreateDirectoryTransactedA();
+					auto templateDirectory = ReadStringValue(message, offset);
+					auto newDirectory = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryTransactedA(templateDirectory, newDirectory, result);
 					break;
 				}
 				case DetourMessageType::CreateDirectoryTransactedW:
 				{
-					m_callback->OnCreateDirectoryTransactedW();
+					auto templateDirectory = ReadWStringValue(message, offset);
+					auto newDirectory = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryTransactedW(templateDirectory, newDirectory, result);
 					break;
 				}
 				case DetourMessageType::CreateFileTransactedA:
 				{
-					m_callback->OnCreateFileTransactedA();
+					auto fileName = ReadStringValue(message, offset);
+					auto desiredAccess = ReadUInt32Value(message, offset);
+					auto shareMode = ReadUInt32Value(message, offset);
+					m_callback->OnCreateFileTransactedA(fileName, desiredAccess, shareMode);
 					break;
 				}
 				case DetourMessageType::CreateFileTransactedW:
 				{
-					m_callback->OnCreateFileTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto desiredAccess = ReadUInt32Value(message, offset);
+					auto shareMode = ReadUInt32Value(message, offset);
+					m_callback->OnCreateFileTransactedW(fileName, desiredAccess, shareMode);
 					break;
 				}
 				case DetourMessageType::CreateHardLinkA:
 				{
-					m_callback->OnCreateHardLinkA();
+					auto fileName = ReadStringValue(message, offset);
+					auto existingFileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateHardLinkA(fileName, existingFileName, result);
 					break;
 				}
 				case DetourMessageType::CreateHardLinkW:
 				{
-					m_callback->OnCreateHardLinkW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateHardLinkW(fileName, existingFileName, result);
 					break;
 				}
 				case DetourMessageType::CreateHardLinkTransactedA:
 				{
-					m_callback->OnCreateHardLinkTransactedA();
+					auto fileName = ReadStringValue(message, offset);
+					auto existingFileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateHardLinkTransactedA(fileName, existingFileName, result);
 					break;
 				}
 				case DetourMessageType::CreateHardLinkTransactedW:
 				{
-					m_callback->OnCreateHardLinkTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateHardLinkTransactedW(fileName, existingFileName, result);
 					break;
 				}
 				case DetourMessageType::CreateProcessWithLogonW:
 				{
-					m_callback->OnCreateProcessWithLogonW();
+					auto applicationName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateProcessWithLogonW(applicationName, result);
 					break;
 				}
 				case DetourMessageType::CreateProcessWithTokenW:
 				{
-					m_callback->OnCreateProcessWithTokenW();
+					auto applicationName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateProcessWithTokenW(applicationName, result);
 					break;
 				}
 				case DetourMessageType::CreateSymbolicLinkA:
 				{
-					m_callback->OnCreateSymbolicLinkA();
+					auto symlinkFileName = ReadStringValue(message, offset);
+					auto targetFileName = ReadStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateSymbolicLinkA(symlinkFileName, targetFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::CreateSymbolicLinkW:
 				{
-					m_callback->OnCreateSymbolicLinkW();
+					auto symlinkFileName = ReadWStringValue(message, offset);
+					auto targetFileName = ReadWStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateSymbolicLinkW(symlinkFileName, targetFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::CreateSymbolicLinkTransactedA:
 				{
-					m_callback->OnCreateSymbolicLinkTransactedA();
+					auto symlinkFileName = ReadStringValue(message, offset);
+					auto targetFileName = ReadStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateSymbolicLinkTransactedA(symlinkFileName, targetFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::CreateSymbolicLinkTransactedW:
 				{
-					m_callback->OnCreateSymbolicLinkTransactedW();
+					auto symlinkFileName = ReadWStringValue(message, offset);
+					auto targetFileName = ReadWStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnCreateSymbolicLinkTransactedW(symlinkFileName, targetFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::DecryptFileA:
 				{
-					m_callback->OnDecryptFileA();
+					auto fileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnDecryptFileA(fileName, result);
 					break;
 				}
 				case DetourMessageType::DecryptFileW:
 				{
-					m_callback->OnDecryptFileW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnDecryptFileW(fileName, result);
 					break;
 				}
 				case DetourMessageType::DeleteFileTransactedA:
 				{
-					m_callback->OnDeleteFileTransactedA();
+					auto fileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnDeleteFileTransactedA(fileName, result);
 					break;
 				}
 				case DetourMessageType::DeleteFileTransactedW:
 				{
-					m_callback->OnDeleteFileTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnDeleteFileTransactedW(fileName, result);
 					break;
 				}
 				case DetourMessageType::EncryptFileA:
 				{
-					m_callback->OnEncryptFileA();
+					auto fileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnEncryptFileA(fileName, result);
 					break;
 				}
 				case DetourMessageType::EncryptFileW:
 				{
-					m_callback->OnEncryptFileW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnEncryptFileW(fileName, result);
 					break;
 				}
 				case DetourMessageType::FileEncryptionStatusA:
 				{
-					m_callback->OnFileEncryptionStatusA();
+					auto fileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnFileEncryptionStatusA(fileName, result);
 					break;
 				}
 				case DetourMessageType::FileEncryptionStatusW:
 				{
-					m_callback->OnFileEncryptionStatusW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnFileEncryptionStatusW(fileName, result);
 					break;
 				}
 				case DetourMessageType::FindFirstFileNameTransactedW:
 				{
-					m_callback->OnFindFirstFileNameTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnFindFirstFileNameTransactedW(fileName, result);
 					break;
 				}
 				case DetourMessageType::FindFirstFileTransactedA:
 				{
-					m_callback->OnFindFirstFileTransactedA();
+					auto fileName = ReadStringValue(message, offset);
+					m_callback->OnFindFirstFileTransactedA(fileName);
 					break;
 				}
 				case DetourMessageType::FindFirstFileTransactedW:
 				{
-					m_callback->OnFindFirstFileTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					m_callback->OnFindFirstFileTransactedW(fileName);
 					break;
 				}
 				case DetourMessageType::FindFirstStreamTransactedW:
 				{
-					m_callback->OnFindFirstStreamTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					m_callback->OnFindFirstStreamTransactedW(fileName);
 					break;
 				}
 				case DetourMessageType::GetBinaryTypeA:
 				{
-					m_callback->OnGetBinaryTypeA();
+					auto applicationName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetBinaryTypeA(applicationName, result);
 					break;
 				}
 				case DetourMessageType::GetBinaryTypeW:
 				{
-					m_callback->OnGetBinaryTypeW();
+					auto applicationName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetBinaryTypeW(applicationName, result);
 					break;
 				}
 				case DetourMessageType::GetCompressedFileSizeTransactedA:
 				{
-					m_callback->OnGetCompressedFileSizeTransactedA();
+					auto fileName = ReadStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnGetCompressedFileSizeTransactedA(fileName, result);
 					break;
 				}
 				case DetourMessageType::GetCompressedFileSizeTransactedW:
 				{
-					m_callback->OnGetCompressedFileSizeTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnGetCompressedFileSizeTransactedW(fileName, result);
 					break;
 				}
 				case DetourMessageType::GetDllDirectoryA:
 				{
-					m_callback->OnGetDllDirectoryA();
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnGetDllDirectoryA(result);
 					break;
 				}
 				case DetourMessageType::GetDllDirectoryW:
 				{
-					m_callback->OnGetDllDirectoryW();
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnGetDllDirectoryW(result);
 					break;
 				}
 				case DetourMessageType::GetFileAttributesTransactedA:
 				{
-					m_callback->OnGetFileAttributesTransactedA();
+					auto fileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetFileAttributesTransactedA(fileName, result);
 					break;
 				}
 				case DetourMessageType::GetFileAttributesTransactedW:
 				{
-					m_callback->OnGetFileAttributesTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetFileAttributesTransactedW(fileName, result);
 					break;
 				}
 				case DetourMessageType::GetFileBandwidthReservation:
 				{
-					m_callback->OnGetFileBandwidthReservation();
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetFileBandwidthReservation(result);
 					break;
 				}
 				case DetourMessageType::GetFileInformationByHandleEx:
 				{
-					m_callback->OnGetFileInformationByHandleEx();
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetFileInformationByHandleEx(result);
 					break;
 				}
 				case DetourMessageType::GetFileSecurityA:
 				{
-					m_callback->OnGetFileSecurityA();
+					auto fileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetFileSecurityA(fileName, result);
 					break;
 				}
 				case DetourMessageType::GetFullPathNameTransactedA:
 				{
-					m_callback->OnGetFullPathNameTransactedA();
+					auto fileName = ReadStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnGetFullPathNameTransactedA(fileName, result);
 					break;
 				}
 				case DetourMessageType::GetFullPathNameTransactedW:
 				{
-					m_callback->OnGetFullPathNameTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnGetFullPathNameTransactedW(fileName, result);
 					break;
 				}
 				case DetourMessageType::GetLongPathNameTransactedA:
 				{
-					m_callback->OnGetLongPathNameTransactedA();
+					auto shortPath = ReadStringValue(message, offset);
+					auto longPath = ReadStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnGetLongPathNameTransactedA(shortPath, longPath, result);
 					break;
 				}
 				case DetourMessageType::GetLongPathNameTransactedW:
 				{
-					m_callback->OnGetLongPathNameTransactedW();
+					auto shortPath = ReadWStringValue(message, offset);
+					auto longPath = ReadWStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnGetLongPathNameTransactedW(shortPath, longPath, result);
 					break;
 				}
 				case DetourMessageType::GetQueuedCompletionStatus:
 				{
-					m_callback->OnGetQueuedCompletionStatus();
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetQueuedCompletionStatus(result);
 					break;
 				}
 				case DetourMessageType::GetQueuedCompletionStatusEx:
 				{
-					m_callback->OnGetQueuedCompletionStatusEx();
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetQueuedCompletionStatusEx(result);
 					break;
 				}
 				case DetourMessageType::GetShortPathNameA:
 				{
-					m_callback->OnGetShortPathNameA();
+					auto longPath = ReadStringValue(message, offset);
+					auto shortPath = ReadStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnGetShortPathNameA(longPath, shortPath, result);
 					break;
 				}
 				case DetourMessageType::LoadModule:
 				{
-					m_callback->OnLoadModule();
+					auto moduleName = ReadStringValue(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnLoadModule(moduleName, result);
 					break;
 				}
 				case DetourMessageType::LoadPackagedLibrary:
 				{
-					m_callback->OnLoadPackagedLibrary();
+					auto libFileName = ReadStringValue(message, offset);
+					m_callback->OnLoadPackagedLibrary(libFileName);
 					break;
 				}
 				case DetourMessageType::MoveFileA:
 				{
-					m_callback->OnMoveFileA();
+					auto existingFileName = ReadStringValue(message, offset);
+					auto newFileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileA(existingFileName, newFileName, result);
 					break;
 				}
 				case DetourMessageType::MoveFileW:
 				{
-					m_callback->OnMoveFileW();
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto newFileName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileW(existingFileName, newFileName, result);
 					break;
 				}
 				case DetourMessageType::MoveFileExA:
 				{
-					m_callback->OnMoveFileExA();
+					auto existingFileName = ReadStringValue(message, offset);
+					auto newFileName = ReadStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileExA(existingFileName, newFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::MoveFileExW:
 				{
-					m_callback->OnMoveFileExW();
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto newFileName = ReadWStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileExW(existingFileName, newFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::MoveFileTransactedA:
 				{
-					m_callback->OnMoveFileTransactedA();
+					auto existingFileName = ReadStringValue(message, offset);
+					auto newFileName = ReadStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileTransactedA(existingFileName, newFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::MoveFileTransactedW:
 				{
-					m_callback->OnMoveFileTransactedW();
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto newFileName = ReadWStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileTransactedW(existingFileName, newFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::MoveFileWithProgressA:
 				{
-					m_callback->OnMoveFileWithProgressA();
+					auto existingFileName = ReadStringValue(message, offset);
+					auto newFileName = ReadStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileWithProgressA(existingFileName, newFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::MoveFileWithProgressW:
 				{
-					m_callback->OnMoveFileWithProgressW();
+					auto existingFileName = ReadWStringValue(message, offset);
+					auto newFileName = ReadWStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileWithProgressW(existingFileName, newFileName, flags, result);
 					break;
 				}
 				case DetourMessageType::OpenEncryptedFileRawA:
 				{
-					m_callback->OnOpenEncryptedFileRawA();
+					auto fileName = ReadStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnOpenEncryptedFileRawA(fileName, flags, result);
 					break;
 				}
 				case DetourMessageType::OpenEncryptedFileRawW:
 				{
-					m_callback->OnOpenEncryptedFileRawW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnOpenEncryptedFileRawW(fileName, flags, result);
 					break;
 				}
 				case DetourMessageType::OpenFile:
 				{
-					m_callback->OnOpenFile();
+					auto fileName = ReadStringValue(message, offset);
+					m_callback->OnOpenFile(fileName);
 					break;
 				}
 				case DetourMessageType::OpenFileById:
@@ -1065,17 +1257,22 @@ namespace Monitor
 				}
 				case DetourMessageType::ReadEncryptedFileRaw:
 				{
-					m_callback->OnReadEncryptedFileRaw();
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnReadEncryptedFileRaw(result);
 					break;
 				}
 				case DetourMessageType::RemoveDirectoryTransactedA:
 				{
-					m_callback->OnRemoveDirectoryTransactedA();
+					auto pathName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnRemoveDirectoryTransactedA(pathName, result);
 					break;
 				}
 				case DetourMessageType::RemoveDirectoryTransactedW:
 				{
-					m_callback->OnRemoveDirectoryTransactedW();
+					auto pathName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnRemoveDirectoryTransactedW(pathName, result);
 					break;
 				}
 				case DetourMessageType::ReOpenFile:
@@ -1085,77 +1282,112 @@ namespace Monitor
 				}
 				case DetourMessageType::ReplaceFileA:
 				{
-					m_callback->OnReplaceFileA();
+					auto replacedFileName = ReadStringValue(message, offset);
+					auto replacementFileName = ReadStringValue(message, offset);
+					auto backupFileName = ReadStringValue(message, offset);
+					auto replaceFlags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnReplaceFileA(replacedFileName, replacementFileName, backupFileName, replaceFlags, result);
 					break;
 				}
 				case DetourMessageType::ReplaceFileW:
 				{
-					m_callback->OnReplaceFileW();
+					auto replacedFileName = ReadWStringValue(message, offset);
+					auto replacementFileName = ReadWStringValue(message, offset);
+					auto backupFileName = ReadWStringValue(message, offset);
+					auto replaceFlags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnReplaceFileW(replacedFileName, replacementFileName, backupFileName, replaceFlags, result);
 					break;
 				}
 				case DetourMessageType::SetCurrentDirectoryA:
 				{
-					m_callback->OnSetCurrentDirectoryA();
+					auto pathName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetCurrentDirectoryA(pathName, result);
 					break;
 				}
 				case DetourMessageType::SetCurrentDirectoryW:
 				{
-					m_callback->OnSetCurrentDirectoryW();
+					auto pathName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetCurrentDirectoryW(pathName, result);
 					break;
 				}
 				case DetourMessageType::SetDllDirectoryA:
 				{
-					m_callback->OnSetDllDirectoryA();
+					auto pathName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetDllDirectoryA(pathName, result);
 					break;
 				}
 				case DetourMessageType::SetDllDirectoryW:
 				{
-					m_callback->OnSetDllDirectoryW();
+					auto pathName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetDllDirectoryW(pathName, result);
 					break;
 				}
 				case DetourMessageType::SetFileAttributesTransactedA:
 				{
-					m_callback->OnSetFileAttributesTransactedA();
+					auto fileName = ReadStringValue(message, offset);
+					auto fileAttributes = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetFileAttributesTransactedA(fileName, fileAttributes, result);
 					break;
 				}
 				case DetourMessageType::SetFileAttributesTransactedW:
 				{
-					m_callback->OnSetFileAttributesTransactedW();
+					auto fileName = ReadWStringValue(message, offset);
+					auto fileAttributes = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetFileAttributesTransactedW(fileName, fileAttributes, result);
 					break;
 				}
 				case DetourMessageType::SetFileBandwidthReservation:
 				{
-					m_callback->OnSetFileBandwidthReservation();
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetFileBandwidthReservation(result);
 					break;
 				}
 				case DetourMessageType::SetFileCompletionNotificationModes:
 				{
-					m_callback->OnSetFileCompletionNotificationModes();
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetFileCompletionNotificationModes(result);
 					break;
 				}
 				case DetourMessageType::SetFileSecurityA:
 				{
-					m_callback->OnSetFileSecurityA();
+					auto fileName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetFileSecurityA(fileName, result);
 					break;
 				}
 				case DetourMessageType::SetFileShortNameA:
 				{
-					m_callback->OnSetFileShortNameA();
+					auto shortName = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetFileShortNameA(shortName, result);
 					break;
 				}
 				case DetourMessageType::SetFileShortNameW:
 				{
-					m_callback->OnSetFileShortNameW();
+					auto shortName = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetFileShortNameW(shortName, result);
 					break;
 				}
 				case DetourMessageType::SetSearchPathMode:
 				{
-					m_callback->OnSetSearchPathMode();
+					auto flags = ReadUInt32Value(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnSetSearchPathMode(flags, result);
 					break;
 				}
 				case DetourMessageType::WriteEncryptedFileRaw:
 				{
-					m_callback->OnWriteEncryptedFileRaw();
+					auto result = ReadUInt32Value(message, offset);
+					m_callback->OnWriteEncryptedFileRaw(result);
 					break;
 				}
 				default:
