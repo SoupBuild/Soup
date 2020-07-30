@@ -11,978 +11,1013 @@ namespace Soup::Build
 		{
 		}
 
+		void GetInputFiles()
+		{
+			for (auto& file : m_input)
+			{
+				Log::HighPriority("Input: " + file);
+			}
+		}
+
+		void GetOutputFiles()
+		{
+			for (auto& file : m_output)
+			{
+				Log::HighPriority("Output: " + file);
+			}
+		}
+
 		void OnShutdown() override final
 		{
-
 		}
 
 		void OnError(std::string_view message) override final
 		{
-			Log::Error("SystemAccessTracker Error");
+			Log::Error("SystemAccessTracker Error: " + std::string(message));
 		}
 
 		// FileApi
-		void OnAreFileApisANSI() override final
+		void OnAreFileApisANSI(bool result) override final
 		{
-
 		}
 
-		void OnCompareFileTime() override final
+		void OnCompareFileTime(int32_t result) override final
 		{
-
 		}
 
-		void OnCreateDirectoryA() override final
+		void OnCreateDirectoryA(std::string_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateDirectoryW() override final
+		void OnCreateDirectoryW(std::wstring_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateFile2() override final
+		void OnCreateFile2(
+			std::wstring_view fileName,
+			uint32_t desiredAccess,
+			uint32_t sharedMode,
+			uint32_t creationDisposition) override final
 		{
-
+			bool isRead = (desiredAccess & GENERIC_READ) != 0;
+			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
+			if (isWrite)
+			{
+				TouchFileWrite(fileName);
+			}
+			else
+			{
+				TouchFileRead(fileName);
+			}
 		}
 
-		void OnCreateFileA() override final
+		void OnCreateFileA(
+			std::string_view fileName,
+			uint32_t desiredAccess,
+			uint32_t sharedMode,
+			uint32_t creationDisposition,
+			uint32_t flagsAndAttributes) override final
 		{
-
+			bool isRead = (desiredAccess & GENERIC_READ) != 0;
+			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
+			if (isWrite)
+			{
+				TouchFileWrite(fileName);
+			}
+			else
+			{
+				TouchFileRead(fileName);
+			}
 		}
 
-		void OnCreateFileW() override final
+		void OnCreateFileW(
+			std::wstring_view fileName,
+			uint32_t desiredAccess,
+			uint32_t sharedMode,
+			uint32_t creationDisposition,
+			uint32_t flagsAndAttributes) override final
 		{
-
+			bool isRead = (desiredAccess & GENERIC_READ) != 0;
+			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
+			if (isWrite)
+			{
+				TouchFileWrite(fileName);
+			}
+			else
+			{
+				TouchFileRead(fileName);
+			}
 		}
 
-		void OnDefineDosDeviceW() override final
+		void OnDefineDosDeviceW(uint32_t flags, std::wstring_view deviceName, std::wstring_view targetPath, bool result) override final
 		{
-
 		}
 
-		void OnDeleteFileA() override final
+		void OnDeleteFileA(std::string_view fileName, bool result) override final
 		{
-
+			TouchFileDelete(fileName);
 		}
 
-		void OnDeleteFileW() override final
+		void OnDeleteFileW(std::wstring_view fileName, bool result) override final
 		{
-
+			TouchFileDelete(fileName);
 		}
 
-		void OnDeleteVolumeMountPointW() override final
+		void OnDeleteVolumeMountPointW(std::wstring_view volumeMountPoint, bool result) override final
 		{
-
 		}
 
-		void OnFileTimeToLocalFileTime() override final
+		void OnFileTimeToLocalFileTime(bool result) override final
 		{
-
 		}
 
-		void OnFindClose() override final
+		void OnFindClose(bool result) override final
 		{
-
 		}
 
-		void OnFindCloseChangeNotification() override final
+		void OnFindCloseChangeNotification(bool result) override final
 		{
-
 		}
 
-		void OnFindFirstChangeNotificationA() override final
+		void OnFindFirstChangeNotificationA(std::string_view pathName, bool watchSubtree, uint32_t notifyFilter) override final
 		{
-
+			// TODO: Track search paths
 		}
 
-		void OnFindFirstChangeNotificationW() override final
+		void OnFindFirstChangeNotificationW(std::wstring_view pathName, bool watchSubtree, uint32_t notifyFilter) override final
 		{
-
+			// TODO: Track search paths
 		}
 
-		void OnFindFirstFileA() override final
+		void OnFindFirstFileA(std::string_view fileName) override final
 		{
-
+			// TODO: Track search paths
 		}
 
-		void OnFindFirstFileW() override final
+		void OnFindFirstFileW(std::wstring_view fileName) override final
 		{
-
+			// TODO: Track search paths
 		}
 
-		void OnFindFirstFileExA() override final
+		void OnFindFirstFileExA(std::string_view fileName) override final
 		{
-
+			// TODO: Track search paths
 		}
 
-		void OnFindFirstFileExW() override final
+		void OnFindFirstFileExW(std::wstring_view fileName) override final
 		{
-
+			// TODO: Track search paths
 		}
 
-		void OnFindFirstFileNameW() override final
+		void OnFindFirstFileNameW(std::wstring_view fileName, uint32_t flags) override final
 		{
-
+			// TODO: Track search paths
 		}
 
-		void OnFindFirstStreamW() override final
+		void OnFindFirstStreamW(std::wstring_view fileName) override final
 		{
-
+			// TODO: Track search paths
 		}
 
-		void OnFindFirstVolumeW() override final
+		void OnFindFirstVolumeW(std::wstring_view fileName) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnFindNextChangeNotification() override final
+		void OnFindNextChangeNotification(bool result) override final
 		{
-
 		}
 
-		void OnFindNextFileA() override final
+		void OnFindNextFileA(bool result) override final
 		{
-
 		}
 
-		void OnFindNextFileW() override final
+		void OnFindNextFileW(bool result) override final
 		{
-
 		}
 
-		void OnFindNextFileNameW() override final
+		void OnFindNextFileNameW(bool result) override final
 		{
-
 		}
 
-		void OnFindNextStreamW() override final
+		void OnFindNextStreamW(bool result) override final
 		{
-
 		}
 
-		void OnFindNextVolumeW() override final
+		void OnFindNextVolumeW(bool result) override final
 		{
-
 		}
 
-		void OnFindVolumeClose() override final
+		void OnFindVolumeClose(bool result) override final
 		{
-
 		}
 
-		void OnFlushFileBuffers() override final
+		void OnFlushFileBuffers(bool result) override final
 		{
-
 		}
 
-		void OnGetCompressedFileSizeA() override final
+		void OnGetCompressedFileSizeA(std::string_view fileName, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetCompressedFileSizeW() override final
+		void OnGetCompressedFileSizeW(std::wstring_view fileName, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetDiskFreeSpaceA() override final
+		void OnGetDiskFreeSpaceA(std::string_view rootPathName, bool result) override final
 		{
-
 		}
 
-		void OnGetDiskFreeSpaceW() override final
+		void OnGetDiskFreeSpaceW(std::wstring_view rootPathName, bool result) override final
 		{
-
 		}
 
-		void OnGetDiskFreeSpaceExA() override final
+		void OnGetDiskFreeSpaceExA(std::string_view directoryName, bool result) override final
 		{
-
 		}
 
-		void OnGetDiskFreeSpaceExW() override final
+		void OnGetDiskFreeSpaceExW(std::wstring_view directoryName, bool result) override final
 		{
-
 		}
 
-		void OnGetDriveTypeA() override final
+		void OnGetDriveTypeA(std::string_view rootPathName, uint32_t result) override final
 		{
-
 		}
 
-		void OnGetDriveTypeW() override final
+		void OnGetDriveTypeW(std::wstring_view rootPathName, uint32_t result) override final
 		{
-
 		}
 
-		void OnGetFileAttributesA() override final
+		void OnGetFileAttributesA(std::string_view fileName, uint32_t result) override final
 		{
-
+			TouchFileRead(fileName);
 		}
 
-		void OnGetFileAttributesW() override final
+		void OnGetFileAttributesW(std::wstring_view fileName, uint32_t result) override final
 		{
-
+			TouchFileRead(fileName);
 		}
 
-		void OnGetFileAttributesExA() override final
+		void OnGetFileAttributesExA(std::string_view fileName, bool result) override final
 		{
-
+			TouchFileRead(fileName);
 		}
 
-		void OnGetFileAttributesExW() override final
+		void OnGetFileAttributesExW(std::wstring_view fileName, bool result) override final
 		{
-
+			TouchFileRead(fileName);
 		}
 
-		void OnGetFileInformationByHandle() override final
+		void OnGetFileInformationByHandle(bool result) override final
 		{
-
 		}
 
-		void OnGetFileSize() override final
+		void OnGetFileSize(uint32_t result) override final
 		{
-
 		}
 
-		void OnGetFileSizeEx() override final
+		void OnGetFileSizeEx(uint32_t result) override final
 		{
-
 		}
 
-		void OnGetFileTime() override final
+		void OnGetFileTime(bool result) override final
 		{
-
 		}
 
-		void OnGetFileType() override final
+		void OnGetFileType(uint32_t result) override final
 		{
-
 		}
 
-		void OnGetFinalPathNameByHandleA() override final
+		void OnGetFinalPathNameByHandleA(uint32_t result) override final
 		{
-
 		}
 
-		void OnGetFinalPathNameByHandleW() override final
+		void OnGetFinalPathNameByHandleW(uint32_t result) override final
 		{
-
 		}
 
-		void OnGetFullPathNameA() override final
+		void OnGetFullPathNameA(std::string_view fileName, uint32_t result) override final
 		{
-
 		}
 
-		void OnGetFullPathNameW() override final
+		void OnGetFullPathNameW(std::wstring_view fileName, std::wstring_view buffer, uint32_t result) override final
 		{
-
 		}
 
-		void OnGetLogicalDrives() override final
+		void OnGetLogicalDrives(uint32_t result) override final
 		{
-
 		}
 
-		void OnGetLogicalDriveStringsW() override final
+		void OnGetLogicalDriveStringsW(std::wstring_view buffer, uint32_t result) override final
 		{
-
 		}
 
-		void OnGetLongPathNameA() override final
+		void OnGetLongPathNameA(std::string_view shortPath, std::string_view longPath, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetLongPathNameW() override final
+		void OnGetLongPathNameW(std::wstring_view shortPath, std::wstring_view longPath, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetShortPathNameW() override final
+		void OnGetShortPathNameW(std::wstring_view longPath, std::wstring_view shortPath, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetTempFileNameA() override final
+		void OnGetTempFileNameA(std::string_view pathName, std::string_view prefixString, uint32_t unique, std::string_view tempFileName, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetTempFileNameW() override final
+		void OnGetTempFileNameW(std::wstring_view pathName, std::wstring_view prefixString, uint32_t unique, std::wstring_view tempFileName, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetTempPathA() override final
+		void OnGetTempPathA(std::string_view buffer, uint32_t result) override final
 		{
-
 		}
 
-		void OnGetTempPathW() override final
+		void OnGetTempPathW(std::wstring_view buffer, uint32_t result) override final
 		{
-
 		}
 
-		void OnGetVolumeInformationA() override final
+		void OnGetVolumeInformationA(bool result) override final
 		{
-
 		}
 
-		void OnGetVolumeInformationW() override final
+		void OnGetVolumeInformationW(bool result) override final
 		{
-
 		}
 
-		void OnGetVolumeInformationByHandleW() override final
+		void OnGetVolumeInformationByHandleW(bool result) override final
 		{
-
 		}
 
-		void OnGetVolumeNameForVolumeMountPointW() override final
+		void OnGetVolumeNameForVolumeMountPointW(bool result) override final
 		{
-
 		}
 
-		void OnGetVolumePathNamesForVolumeNameW() override final
+		void OnGetVolumePathNamesForVolumeNameW(bool result) override final
 		{
-
 		}
 
-		void OnGetVolumePathNameW() override final
+		void OnGetVolumePathNameW(std::wstring_view filename, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnLocalFileTimeToFileTime() override final
+		void OnLocalFileTimeToFileTime(bool result) override final
 		{
-
 		}
 
-		void OnLockFile() override final
+		void OnLockFile(bool result) override final
 		{
-
 		}
 
-		void OnLockFileEx() override final
+		void OnLockFileEx(bool result) override final
 		{
-
 		}
 
-		void OnQueryDosDeviceW() override final
+		void OnQueryDosDeviceW(std::wstring_view deviceName, uint32_t result) override final
 		{
-
 		}
 
-		void OnReadFile() override final
+		void OnReadFile(bool result) override final
 		{
-
 		}
 
-		void OnReadFileEx() override final
+		void OnReadFileEx(bool result) override final
 		{
-
 		}
 
-		void OnReadFileScatter() override final
+		void OnReadFileScatter(bool result) override final
 		{
-
 		}
 
-		void OnRemoveDirectoryA() override final
+		void OnRemoveDirectoryA(std::string_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnRemoveDirectoryW() override final
+		void OnRemoveDirectoryW(std::wstring_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetEndOfFile() override final
+		void OnSetEndOfFile(bool result) override final
 		{
-
 		}
 		
 		void OnSetFileApisToANSI() override final
 		{
-
 		}
 
 		void OnSetFileApisToOEM() override final
 		{
-
 		}
 
-		void OnSetFileAttributesA() override final
+		void OnSetFileAttributesA(std::string_view fileName, bool result) override final
 		{
-
-		}
-		
-		void OnSetFileAttributesW() override final
-		{
-
-		}
-
-		void OnSetFileInformationByHandle() override final
-		{
-
-		}
-
-		void OnSetFileIoOverlappedRange() override final
-		{
-
-		}
-
-		void OnSetFilePointer() override final
-		{
-
+			TouchFileWrite(fileName);
 		}
 		
-		void OnSetFilePointerEx() override final
+		void OnSetFileAttributesW(std::wstring_view fileName, bool result) override final
 		{
-
+			TouchFileWrite(fileName);
 		}
 
-		void OnSetFileTime() override final
+		void OnSetFileInformationByHandle(bool result) override final
 		{
-
 		}
 
-		void OnSetFileValidData() override final
+		void OnSetFileIoOverlappedRange(bool result) override final
 		{
-
 		}
 
-		void OnUnlockFile() override final
+		void OnSetFilePointer(uint32_t result) override final
 		{
-
+		}
+		
+		void OnSetFilePointerEx(bool result) override final
+		{
 		}
 
-		void OnUnlockFileEx() override final
+		void OnSetFileTime(bool result) override final
 		{
-
 		}
 
-		void OnWriteFile() override final
+		void OnSetFileValidData(bool result) override final
 		{
-
 		}
 
-		void OnWriteFileEx() override final
+		void OnUnlockFile(bool result) override final
 		{
-
 		}
 
-		void OnWriteFileGather() override final
+		void OnUnlockFileEx(bool result) override final
 		{
+		}
 
+		void OnWriteFile(bool result) override final
+		{
+		}
+
+		void OnWriteFileEx(bool result) override final
+		{
+		}
+
+		void OnWriteFileGather(bool result) override final
+		{
 		}
 
 		// LibLoaderApi
-		void OnLoadLibraryA() override final
+		void OnLoadLibraryA(std::string_view libFileName) override final
 		{
-
 		}
 
-		void OnLoadLibraryW() override final
+		void OnLoadLibraryW(std::wstring_view libFileName) override final
 		{
-
 		}
 
-		void OnLoadLibraryExA() override final
+		void OnLoadLibraryExA(std::string_view libFileName) override final
 		{
-
 		}
 
-		void OnLoadLibraryExW() override final
+		void OnLoadLibraryExW(std::wstring_view libFileName) override final
 		{
-
 		}
 
 		// ProcessEnv
-		void OnSearchPathA() override final
+		void OnSearchPathA(std::string_view path, std::string_view fileName, std::string_view extension, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSearchPathW() override final
+		void OnSearchPathW(std::wstring_view path, std::wstring_view fileName, std::wstring_view extension, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
 		// ProcessThreadsApi
-		void OnCreateProcessA() override final
+		void OnCreateProcessA(std::string_view applicationName, bool result) override final
 		{
-
 		}
 
-		void OnCreateProcessW() override final
+		void OnCreateProcessW(std::wstring_view applicationName, bool result) override final
 		{
-
 		}
 
-		void OnCreateProcessAsUserA() override final
+		void OnCreateProcessAsUserA(std::string_view applicationName, bool result) override final
 		{
-
 		}
 
-		void OnCreateProcessAsUserW() override final
+		void OnCreateProcessAsUserW(std::wstring_view applicationName, bool result) override final
 		{
-
 		}
 
-		void OnExitProcess() override final
+		void OnExitProcess(uint32_t exitCode) override final
 		{
-
 		}
 
 		// UndocumentedApi
-		void OnPrivCopyFileExA() override final
+		void OnPrivCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnPrivCopyFileExW() override final
+		void OnPrivCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
 		// WinBase
-		void OnCopyFileA() override final
+		void OnCopyFileA(std::string_view existingFileName, std::string_view newFileName, bool failIfExists, bool result) override final
 		{
-
+			TouchFileRead(existingFileName);
+			TouchFileWrite(newFileName);
 		}
 
-		void OnCopyFileW() override final
+		void OnCopyFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool failIfExists, bool result) override final
 		{
-
+			TouchFileRead(existingFileName);
+			TouchFileWrite(newFileName);
 		}
 
-		void OnCopyFile2() override final
+		void OnCopyFile2(std::wstring_view existingFileName, std::wstring_view newFileName) override final
 		{
-
+			TouchFileRead(existingFileName);
+			TouchFileWrite(newFileName);
 		}
 
-		void OnCopyFileExA() override final
+		void OnCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
-
+			TouchFileRead(existingFileName);
+			TouchFileWrite(newFileName);
 		}
 
-		void OnCopyFileExW() override final
+		void OnCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
-
+			TouchFileRead(existingFileName);
+			TouchFileWrite(newFileName);
 		}
 
-		void OnCopyFileTransactedA() override final
+		void OnCopyFileTransactedA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
-
+			TouchFileRead(existingFileName);
+			TouchFileWrite(newFileName);
 		}
 
-		void OnCopyFileTransactedW() override final
+		void OnCopyFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
-
+			TouchFileRead(existingFileName);
+			TouchFileWrite(newFileName);
 		}
 
-		void OnCreateDirectoryExA() override final
+		void OnCreateDirectoryExA(std::string_view templateDirectory, std::string_view newDirectory, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateDirectoryExW() override final
+		void OnCreateDirectoryExW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateDirectoryTransactedA() override final
+		void OnCreateDirectoryTransactedA(std::string_view templateDirectory, std::string_view newDirectory, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateDirectoryTransactedW() override final
+		void OnCreateDirectoryTransactedW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateFileTransactedA() override final
+		void OnCreateFileTransactedA(std::string_view fileName, uint32_t desiredAccess, uint32_t shareMode) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateFileTransactedW() override final
+		void OnCreateFileTransactedW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t shareMode) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateHardLinkA() override final
+		void OnCreateHardLinkA(std::string_view fileName, std::string_view existingFileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateHardLinkW() override final
+		void OnCreateHardLinkW(std::wstring_view fileName, std::wstring_view existingFileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateHardLinkTransactedA() override final
+		void OnCreateHardLinkTransactedA(std::string_view fileName, std::string_view existingFileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateHardLinkTransactedW() override final
+		void OnCreateHardLinkTransactedW(std::wstring_view fileName, std::wstring_view existingFileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateProcessWithLogonW() override final
+		void OnCreateProcessWithLogonW(std::wstring_view applicationName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateProcessWithTokenW() override final
+		void OnCreateProcessWithTokenW(std::wstring_view applicationName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateSymbolicLinkA() override final
+		void OnCreateSymbolicLinkA(std::string_view symlinkFileName, std::string_view targetFileName, uint32_t flags, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateSymbolicLinkW() override final
+		void OnCreateSymbolicLinkW(std::wstring_view symlinkFileName, std::wstring_view targetFileName, uint32_t flags, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateSymbolicLinkTransactedA() override final
+		void OnCreateSymbolicLinkTransactedA(std::string_view symlinkFileName, std::string_view targetFileName, uint32_t flags, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnCreateSymbolicLinkTransactedW() override final
+		void OnCreateSymbolicLinkTransactedW(std::wstring_view symlinkFileName, std::wstring_view targetFileName, uint32_t flags, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnDecryptFileA() override final
+		void OnDecryptFileA(std::string_view fileName, bool result) override final
 		{
-
-		}
-		
-		void OnDecryptFileW() override final
-		{
-
-		}
-
-		void OnDeleteFileTransactedA() override final
-		{
-
-		}
-
-		void OnDeleteFileTransactedW() override final
-		{
-
-		}
-
-		void OnEncryptFileA() override final
-		{
-
-		}
-
-		void OnEncryptFileW() override final
-		{
-
-		}
-
-		void OnFileEncryptionStatusA() override final
-		{
-
-		}
-
-		void OnFileEncryptionStatusW() override final
-		{
-
-		}
-
-		void OnFindFirstFileNameTransactedW() override final
-		{
-
-		}
-
-		void OnFindFirstFileTransactedA() override final
-		{
-
-		}
-
-		void OnFindFirstFileTransactedW() override final
-		{
-
-		}
-
-		void OnFindFirstStreamTransactedW() override final
-		{
-
-		}
-
-		void OnGetBinaryTypeA() override final
-		{
-
-		}
-
-		void OnGetBinaryTypeW() override final
-		{
-
-		}
-
-		void OnGetCompressedFileSizeTransactedA() override final
-		{
-
-		}
-
-		void OnGetCompressedFileSizeTransactedW() override final
-		{
-
-		}
-
-		void OnGetDllDirectoryA() override final
-		{
-
-		}
-
-		void OnGetDllDirectoryW() override final
-		{
-
-		}
-
-		void OnGetFileAttributesTransactedA() override final
-		{
-
-		}
-
-		void OnGetFileAttributesTransactedW() override final
-		{
-
-		}
-
-		void OnGetFileBandwidthReservation() override final
-		{
-
+			throw std::runtime_error("Not implemented");
 		}
 		
-		void OnGetFileInformationByHandleEx() override final
+		void OnDecryptFileW(std::wstring_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetFileSecurityA() override final
+		void OnDeleteFileTransactedA(std::string_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetFullPathNameTransactedA() override final
+		void OnDeleteFileTransactedW(std::wstring_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetFullPathNameTransactedW() override final
+		void OnEncryptFileA(std::string_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetLongPathNameTransactedA() override final
+		void OnEncryptFileW(std::wstring_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetLongPathNameTransactedW() override final
+		void OnFileEncryptionStatusA(std::string_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetQueuedCompletionStatus() override final
+		void OnFileEncryptionStatusW(std::wstring_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetQueuedCompletionStatusEx() override final
+		void OnFindFirstFileNameTransactedW(std::wstring_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnGetShortPathNameA() override final
+		void OnFindFirstFileTransactedA(std::string_view fileName) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnLoadModule() override final
+		void OnFindFirstFileTransactedW(std::wstring_view fileName) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnLoadPackagedLibrary() override final
+		void OnFindFirstStreamTransactedW(std::wstring_view fileName) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnMoveFileA() override final
+		void OnGetBinaryTypeA(std::string_view applicationName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnMoveFileW() override final
+		void OnGetBinaryTypeW(std::wstring_view applicationName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnMoveFileExA() override final
+		void OnGetCompressedFileSizeTransactedA(std::string_view fileName, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnMoveFileExW() override final
+		void OnGetCompressedFileSizeTransactedW(std::wstring_view fileName, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnMoveFileTransactedA() override final
+		void OnGetDllDirectoryA(uint32_t result) override final
 		{
-
 		}
 
-		void OnMoveFileTransactedW() override final
+		void OnGetDllDirectoryW(uint32_t result) override final
 		{
-
 		}
 
-		void OnMoveFileWithProgressA() override final
+		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnMoveFileWithProgressW() override final
+		void OnGetFileAttributesTransactedW(std::wstring_view fileName, uint32_t result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnOpenEncryptedFileRawA() override final
+		void OnGetFileBandwidthReservation(bool result) override final
 		{
-
+		}
+		
+		void OnGetFileInformationByHandleEx(bool result) override final
+		{
 		}
 
-		void OnOpenEncryptedFileRawW() override final
+		void OnGetFileSecurityA(std::string_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnOpenFile() override final
+		void OnGetFullPathNameTransactedA(std::string_view fileName, uint32_t result) override final
 		{
+			throw std::runtime_error("Not implemented");
+		}
 
+		void OnGetFullPathNameTransactedW(std::wstring_view fileName, uint32_t result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnGetLongPathNameTransactedA(std::string_view shortPath, std::string_view longPath, uint32_t result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnGetLongPathNameTransactedW(std::wstring_view shortPath, std::wstring_view longPath, uint32_t result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnGetQueuedCompletionStatus(bool result) override final
+		{
+		}
+
+		void OnGetQueuedCompletionStatusEx(bool result) override final
+		{
+		}
+
+		void OnGetShortPathNameA(std::string_view longPath, std::string_view shortPath, uint32_t result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnLoadModule(std::string_view moduleName, uint32_t result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnLoadPackagedLibrary(std::string_view libFileName) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnMoveFileA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnMoveFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnMoveFileExA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnMoveFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnMoveFileTransactedA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnMoveFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnMoveFileWithProgressA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnMoveFileWithProgressW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnOpenEncryptedFileRawA(std::string_view fileName, uint32_t flags, uint32_t result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnOpenEncryptedFileRawW(std::wstring_view fileName, uint32_t flags, uint32_t result) override final
+		{
+			throw std::runtime_error("Not implemented");
+		}
+
+		void OnOpenFile(std::string_view fileName) override final
+		{
+			throw std::runtime_error("Not implemented");
 		}
 
 		void OnOpenFileById() override final
 		{
-
 		}
 
-		void OnReadEncryptedFileRaw() override final
+		void OnReadEncryptedFileRaw(uint32_t result) override final
 		{
-
 		}
 
-		void OnRemoveDirectoryTransactedA() override final
+		void OnRemoveDirectoryTransactedA(std::string_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnRemoveDirectoryTransactedW() override final
+		void OnRemoveDirectoryTransactedW(std::wstring_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
 		void OnReOpenFile() override final
 		{
-
 		}
 
-		void OnReplaceFileA() override final
+		void OnReplaceFileA(std::string_view replacedFileName, std::string_view replacementFileName, std::string_view backupFileName, uint32_t replaceFlags, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnReplaceFileW() override final
+		void OnReplaceFileW(std::wstring_view replacedFileName, std::wstring_view replacementFileName, std::wstring_view backupFileName, uint32_t replaceFlags, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetCurrentDirectoryA() override final
+		void OnSetCurrentDirectoryA(std::string_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetCurrentDirectoryW() override final
+		void OnSetCurrentDirectoryW(std::wstring_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetDllDirectoryA() override final
+		void OnSetDllDirectoryA(std::string_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetDllDirectoryW() override final
+		void OnSetDllDirectoryW(std::wstring_view pathName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetFileAttributesTransactedA() override final
+		void OnSetFileAttributesTransactedA(std::string_view pathName, uint32_t fileAttributes, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetFileAttributesTransactedW() override final
+		void OnSetFileAttributesTransactedW(std::wstring_view pathName, uint32_t fileAttributes, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetFileBandwidthReservation() override final
+		void OnSetFileBandwidthReservation(bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetFileCompletionNotificationModes() override final
+		void OnSetFileCompletionNotificationModes(bool result) override final
 		{
-
 		}
 
-		void OnSetFileSecurityA() override final
+		void OnSetFileSecurityA(std::string_view fileName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetFileShortNameA() override final
+		void OnSetFileShortNameA(std::string_view shortName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetFileShortNameW() override final
+		void OnSetFileShortNameW(std::wstring_view shortName, bool result) override final
 		{
-
+			throw std::runtime_error("Not implemented");
 		}
 
-		void OnSetSearchPathMode() override final
+		void OnSetSearchPathMode(uint32_t flags, bool result) override final
 		{
-
 		}
 
-		void OnWriteEncryptedFileRaw() override final
+		void OnWriteEncryptedFileRaw(uint32_t result) override final
 		{
-
 		}
 
 	private:
+		void TouchFileRead(std::wstring_view fileName)
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			TouchFileRead(converter.to_bytes(fileName.data()));
+		}
+
+		void TouchFileRead(std::string_view fileName)
+		{
+			// Verify not a pipe name
+			if (!fileName.starts_with("\\\\.\\pipe\\"))
+			{
+				auto filePath = Path(fileName);
+				m_input.insert(filePath.ToString());
+			}
+		}
+
+		void TouchFileWrite(std::wstring_view fileName)
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			TouchFileWrite(converter.to_bytes(fileName.data()));
+		}
+
+		void TouchFileWrite(std::string_view fileName)
+		{
+			// Verify not a pipe name
+			if (!fileName.starts_with("\\\\.\\pipe\\"))
+			{
+				auto filePath = Path(fileName);
+				m_output.insert(filePath.ToString());
+			}
+		}
+
+		void TouchFileDelete(std::string_view fileName)
+		{
+			auto filePath = Path(fileName);
+			TouchFileDelete(filePath);
+		}
+
+		void TouchFileDelete(std::wstring_view fileName)
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			auto filePath = Path(converter.to_bytes(fileName.data()));
+			TouchFileDelete(filePath);
+		}
+
+		void TouchFileDelete(Path& filePath)
+		{
+			// If this was an output file extract it as it was a transient file
+			// TODO: May want to track if we created the file
+			auto extractOutputResult = m_output.extract(filePath.ToString());
+			auto extractInputResult = m_input.extract(filePath.ToString());
+		}
+
 		std::set<std::string> m_input;
 		std::set<std::string> m_output;
 	};

@@ -199,6 +199,10 @@ namespace Soup::Build::Execute
 					operation.GetInputFileList().CopyAsPathVector(),
 					operation.GetOutputFileList().CopyAsPathVector());
 
+				// Retrieve the input/output files
+				//callback->GetInputFiles();
+				//callback->GetOutputFiles();
+
 				// Try parse includes if available
 				auto cleanOutput = std::stringstream();
 				auto headerIncludes = std::vector<Path>();

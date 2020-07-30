@@ -387,8 +387,9 @@ namespace Monitor
 				case DetourMessageType::GetFullPathNameW:
 				{
 					auto fileName = ReadWStringValue(message, offset);
+					auto buffer = ReadWStringValue(message, offset);
 					auto result = ReadUInt32Value(message, offset);
-					m_callback->OnGetFullPathNameW(fileName, result);
+					m_callback->OnGetFullPathNameW(fileName, buffer, result);
 					break;
 				}
 				case DetourMessageType::GetLogicalDrives:

@@ -1,7 +1,9 @@
 ﻿module;
 
 #include <any>
+#include <codecvt>
 #include <ctime>
+#include <locale>
 #include <map>
 #include <iostream>
 #include <unordered_map>
@@ -13,6 +15,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
+
+#include <Windows.h>
 
 export module Soup.Build.Execute;
 

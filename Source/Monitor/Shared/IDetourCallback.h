@@ -60,7 +60,7 @@ namespace Monitor
 		virtual void OnGetFinalPathNameByHandleA(uint32_t result) = 0;
 		virtual void OnGetFinalPathNameByHandleW(uint32_t result) = 0;
 		virtual void OnGetFullPathNameA(std::string_view fileName, uint32_t result) = 0;
-		virtual void OnGetFullPathNameW(std::wstring_view fileName, uint32_t result) = 0;
+		virtual void OnGetFullPathNameW(std::wstring_view fileName, std::wstring_view buffer, uint32_t result) = 0;
 		virtual void OnGetLogicalDrives(uint32_t result) = 0;
 		virtual void OnGetLogicalDriveStringsW(std::wstring_view buffer, uint32_t result) = 0;
 		virtual void OnGetLongPathNameA(std::string_view shortPath, std::string_view longPath, uint32_t result) = 0;

@@ -84,7 +84,7 @@ namespace Functions::LibLoaderApi::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::LoadLibraryExW;
-			EventLogger::AppendValue(message, std::wstring_view(lpLibFileName));
+			EventLogger::AppendValue(message, lpLibFileName);
 			EventLogger::WriteMessage(message);
 		}
 

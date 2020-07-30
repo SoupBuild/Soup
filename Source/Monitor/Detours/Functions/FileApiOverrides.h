@@ -1255,6 +1255,7 @@ namespace Functions::FileApi::Overrides
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::GetFullPathNameW;
 			EventLogger::AppendValue(message, lpFileName);
+			EventLogger::AppendValue(message, lpBuffer);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}

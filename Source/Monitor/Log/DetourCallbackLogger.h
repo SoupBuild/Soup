@@ -283,7 +283,7 @@ namespace Monitor
 			m_stream << "GetFullPathNameA: " << fileName << std::endl;
 		}
 
-		void OnGetFullPathNameW(std::wstring_view fileName, uint32_t result) override final
+		void OnGetFullPathNameW(std::wstring_view fileName, std::wstring_view buffer, uint32_t result) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 			m_stream << "GetFullPathNameW: " << converter.to_bytes(fileName.data()) << std::endl;

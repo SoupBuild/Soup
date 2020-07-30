@@ -59,26 +59,42 @@ public:
 		}
 	}
 
-	static void AppendValue(Monitor::DetourMessage& message, std::string_view value)
+	static void AppendValue(Monitor::DetourMessage& message, const char* value)
 	{
-		auto startIndex = message.ContentSize;
-		auto size = value.size() + 1;
-		message.ContentSize += size;
-		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long for string value");
+		if (value != nullptr)
+		{
+			auto stringValue = std::string_view(value);
+			auto startIndex = message.ContentSize;
+			auto size = stringValue.size() + 1;
+			message.ContentSize += size;
+			if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+				throw std::runtime_error("Message content too long for string value");
 
-		value.copy(reinterpret_cast<char*>(message.Content + startIndex), size);
+			stringValue.copy(reinterpret_cast<char*>(message.Content + startIndex), size);
+		}
+		else
+		{
+			AppendValue(message, "");
+		}
 	}
 
-	static void AppendValue(Monitor::DetourMessage& message, std::wstring_view value)
+	static void AppendValue(Monitor::DetourMessage& message, const wchar_t* value)
 	{
-		auto startIndex = message.ContentSize;
-		auto size = 2 * (value.size() + 1);
-		message.ContentSize += size;
-		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long for string value");
+		if (value != nullptr)
+		{
+			auto stringValue = std::wstring_view(value);
+			auto startIndex = message.ContentSize;
+			auto size = 2 * (stringValue.size() + 1);
+			message.ContentSize += size;
+			if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+				throw std::runtime_error("Message content too long for string value");
 
-		value.copy(reinterpret_cast<wchar_t*>(message.Content + startIndex), size);
+			stringValue.copy(reinterpret_cast<wchar_t*>(message.Content + startIndex), size);
+		}
+		else
+		{
+			AppendValue(message, L"");
+		}
 	}
 
 	static void AppendValue(Monitor::DetourMessage& message, uint32_t value)
@@ -96,7 +112,7 @@ public:
 		Monitor::DetourMessage message;
 		message.Type = Monitor::DetourMessageType::Info_Error;
 		message.ContentSize = 0;
-		AppendValue(message, value);
+		AppendValue(message, value.data());
 		UnsafeWriteMessage(message);
 	}
 
