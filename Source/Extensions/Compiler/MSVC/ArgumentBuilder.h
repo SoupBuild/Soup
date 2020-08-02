@@ -17,7 +17,6 @@ namespace Soup::Compiler::MSVC
 
 		static constexpr std::string_view Compiler_ArgumentFlag_GenerateDebugInformation = "Z7";
 		static constexpr std::string_view Compiler_ArgumentFlag_GenerateDebugInformationExternal = "Zi";
-		static constexpr std::string_view Compiler_ArgumentFlag_ShowIncludes = "showIncludes";
 		static constexpr std::string_view Compiler_ArgumentFlag_CompileOnly = "c";
 		static constexpr std::string_view Compiler_ArgumentFlag_IgnoreStandardIncludePaths = "X";
 		static constexpr std::string_view Compiler_ArgumentFlag_Optimization_Disable = "Od";
@@ -67,12 +66,6 @@ namespace Soup::Compiler::MSVC
 
 			// Get better support for _cplusplus macro version
 			AddParameter(commandArgs, "Zc", "__cplusplus");
-
-			// Enable Header includes if needed
-			if (args.GenerateIncludeTree)
-			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_ShowIncludes);
-			}
 
 			// Generate source debug information
 			if (args.GenerateSourceDebugInfo)

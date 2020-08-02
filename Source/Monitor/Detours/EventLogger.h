@@ -97,14 +97,54 @@ public:
 		}
 	}
 
-	static void AppendValue(Monitor::DetourMessage& message, uint32_t value)
+	static void AppendValue(Monitor::DetourMessage& message, void* value)
 	{
 		auto startIndex = message.ContentSize;
-		message.ContentSize += sizeof(uint32_t);
+		message.ContentSize += sizeof(void*);
 		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long for int 32 value");
+			throw std::runtime_error("Message content too long for int value");
 
-		*reinterpret_cast<uint32_t*>(message.Content + startIndex) = value;
+		*reinterpret_cast<void**>(message.Content + startIndex) = value;
+	}
+
+	static void AppendValue(Monitor::DetourMessage& message, int value)
+	{
+		auto startIndex = message.ContentSize;
+		message.ContentSize += sizeof(int);
+		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+			throw std::runtime_error("Message content too long for int value");
+
+		*reinterpret_cast<int*>(message.Content + startIndex) = value;
+	}
+
+	static void AppendValue(Monitor::DetourMessage& message, unsigned int value)
+	{
+		auto startIndex = message.ContentSize;
+		message.ContentSize += sizeof(unsigned int);
+		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+			throw std::runtime_error("Message content too long for unsigned int value");
+
+		*reinterpret_cast<unsigned int*>(message.Content + startIndex) = value;
+	}
+
+	static void AppendValue(Monitor::DetourMessage& message, unsigned long value)
+	{
+		auto startIndex = message.ContentSize;
+		message.ContentSize += sizeof(unsigned long);
+		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+			throw std::runtime_error("Message content too long for unsigned long value");
+
+		*reinterpret_cast<unsigned long*>(message.Content + startIndex) = value;
+	}
+
+	static void AppendValue(Monitor::DetourMessage& message, unsigned long long value)
+	{
+		auto startIndex = message.ContentSize;
+		message.ContentSize += sizeof(unsigned long long);
+		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+			throw std::runtime_error("Message content too long for unsigned long long value");
+
+		*reinterpret_cast<unsigned long long*>(message.Content + startIndex) = value;
 	}
 
 	static void WriteError(std::string_view value)

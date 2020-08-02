@@ -23,8 +23,10 @@ namespace Soup::Compiler
 			auto titleStream = std::stringstream();
 			titleStream << "Copy [" << source.ToString() << "] -> [" << destination.ToString() << "]";
 
-			// TODO: Replace with platform specific implementation
-			auto program = Path("C:/Windows/System32/cmd.exe");
+			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
+			auto moduleFolder = moduleName.GetParent();
+
+			auto program = moduleFolder + Path("copy.exe");
 			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({
 				source,
@@ -35,7 +37,7 @@ namespace Soup::Compiler
 
 			// Build the arguments
 			std::stringstream arguments;
-			arguments << "/C copy /Y \"" << source.ToAlternateString() << "\" \"" << destination.ToAlternateString() << "\"";
+			arguments << "\"" << source.ToAlternateString() << "\" \"" << destination.ToAlternateString() << "\"";
 
 			return Build::Utilities::BuildOperationWrapper(
 				new Build::Utilities::BuildOperation(
@@ -57,8 +59,10 @@ namespace Soup::Compiler
 			auto titleStream = std::stringstream();
 			titleStream << "MakeDir [" << directory.ToString() << "]";
 
-			// TODO: Replace with platform specific implementation
-			auto program = Path("C:/Windows/System32/cmd.exe");
+			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
+			auto moduleFolder = moduleName.GetParent();
+
+			auto program = moduleFolder + Path("mkdir.exe");
 			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({});
 			auto outputFiles = std::vector<Path>({
@@ -67,7 +71,7 @@ namespace Soup::Compiler
 
 			// Build the arguments
 			std::stringstream arguments;
-			arguments << "/C if not exist \"" << directory.ToString() << "\" mkdir \"" << directory.ToString() << "\"";
+			arguments << "\"" << directory.ToString() << "\"";
 
 			return Build::Utilities::BuildOperationWrapper(
 				new Build::Utilities::BuildOperation(

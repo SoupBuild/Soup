@@ -116,6 +116,7 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, dwDesiredAccess);
 			EventLogger::AppendValue(message, dwShareMode);
 			EventLogger::AppendValue(message, dwCreationDisposition);
+			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -152,6 +153,7 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, dwShareMode);
 			EventLogger::AppendValue(message, dwCreationDisposition);
 			EventLogger::AppendValue(message, dwFlagsAndAttributes);
+			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -188,6 +190,7 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, dwShareMode);
 			EventLogger::AppendValue(message, dwCreationDisposition);
 			EventLogger::AppendValue(message, dwFlagsAndAttributes);
+			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 

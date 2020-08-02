@@ -13,9 +13,9 @@ namespace Monitor
 		virtual void OnCompareFileTime(int32_t result) = 0;
 		virtual void OnCreateDirectoryA(std::string_view pathName, bool result) = 0;
 		virtual void OnCreateDirectoryW(std::wstring_view pathName, bool result) = 0;
-		virtual void OnCreateFile2(std::wstring_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition) = 0;
-		virtual void OnCreateFileA(std::string_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition, uint32_t flagsAndAttributes) = 0;
-		virtual void OnCreateFileW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition, uint32_t flagsAndAttributes) = 0;
+		virtual void OnCreateFile2(std::wstring_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition, uint64_t result) = 0;
+		virtual void OnCreateFileA(std::string_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition, uint32_t flagsAndAttributes, uint64_t result) = 0;
+		virtual void OnCreateFileW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition, uint32_t flagsAndAttributes, uint64_t result) = 0;
 		virtual void OnDefineDosDeviceW(uint32_t flags, std::wstring_view deviceName, std::wstring_view targetPath, bool result) = 0;
 		virtual void OnDeleteFileA(std::string_view fileName, bool result) = 0;
 		virtual void OnDeleteFileW(std::wstring_view fileName, bool result) = 0;
@@ -126,7 +126,7 @@ namespace Monitor
 		// WinBase
 		virtual void OnCopyFileA(std::string_view existingFileName, std::string_view newFileName, bool failIfExists, bool result) = 0;
 		virtual void OnCopyFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool failIfExists, bool result) = 0;
-		virtual void OnCopyFile2(std::wstring_view existingFileName, std::wstring_view newFileName) = 0;
+		virtual void OnCopyFile2(std::wstring_view existingFileName, std::wstring_view newFileName, uint64_t result) = 0;
 		virtual void OnCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) = 0;
 		virtual void OnCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) = 0;
 		virtual void OnCopyFileTransactedA(std::string_view existingFileName, std::string_view newFileName, bool result) = 0;
@@ -135,8 +135,8 @@ namespace Monitor
 		virtual void OnCreateDirectoryExW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) = 0;
 		virtual void OnCreateDirectoryTransactedA(std::string_view templateDirectory, std::string_view newDirectory, bool result) = 0;
 		virtual void OnCreateDirectoryTransactedW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) = 0;
-		virtual void OnCreateFileTransactedA(std::string_view fileName, uint32_t desiredAccess, uint32_t shareMode) = 0;
-		virtual void OnCreateFileTransactedW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t shareMode) = 0;
+		virtual void OnCreateFileTransactedA(std::string_view fileName, uint32_t desiredAccess, uint32_t shareMode, uint64_t result) = 0;
+		virtual void OnCreateFileTransactedW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t shareMode, uint64_t result) = 0;
 		virtual void OnCreateHardLinkA(std::string_view fileName, std::string_view existingFileName, bool result) = 0;
 		virtual void OnCreateHardLinkW(std::wstring_view fileName, std::wstring_view existingFileName, bool result) = 0;
 		virtual void OnCreateHardLinkTransactedA(std::string_view fileName, std::string_view existingFileName, bool result) = 0;

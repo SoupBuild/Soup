@@ -73,7 +73,8 @@ namespace Monitor
 					auto desiredAccess = ReadUInt32Value(message, offset);
 					auto sharedMode = ReadUInt32Value(message, offset);
 					auto creationDisposition = ReadUInt32Value(message, offset);
-					m_callback->OnCreateFile2(fileName, desiredAccess, sharedMode, creationDisposition);
+					auto result = ReadUInt64Value(message, offset);
+					m_callback->OnCreateFile2(fileName, desiredAccess, sharedMode, creationDisposition, result);
 					break;
 				}
 				case DetourMessageType::CreateFileA:
@@ -83,7 +84,8 @@ namespace Monitor
 					auto sharedMode = ReadUInt32Value(message, offset);
 					auto creationDisposition = ReadUInt32Value(message, offset);
 					auto flagsAndAttributes = ReadUInt32Value(message, offset);
-					m_callback->OnCreateFileA(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes);
+					auto result = ReadUInt64Value(message, offset);
+					m_callback->OnCreateFileA(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result);
 					break;
 				}
 				case DetourMessageType::CreateFileW:
@@ -93,7 +95,8 @@ namespace Monitor
 					auto sharedMode = ReadUInt32Value(message, offset);
 					auto creationDisposition = ReadUInt32Value(message, offset);
 					auto flagsAndAttributes = ReadUInt32Value(message, offset);
-					m_callback->OnCreateFileW(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes);
+					auto result = ReadUInt64Value(message, offset);
+					m_callback->OnCreateFileW(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result);
 					break;
 				}
 				case DetourMessageType::DefineDosDeviceW:
@@ -777,7 +780,8 @@ namespace Monitor
 				{
 					auto existingFileName = ReadWStringValue(message, offset);
 					auto newFileName = ReadWStringValue(message, offset);
-					m_callback->OnCopyFile2(existingFileName, newFileName);
+					auto result = ReadUInt64Value(message, offset);
+					m_callback->OnCopyFile2(existingFileName, newFileName, result);
 					break;
 				}
 				case DetourMessageType::CopyFileExA:
@@ -849,7 +853,8 @@ namespace Monitor
 					auto fileName = ReadStringValue(message, offset);
 					auto desiredAccess = ReadUInt32Value(message, offset);
 					auto shareMode = ReadUInt32Value(message, offset);
-					m_callback->OnCreateFileTransactedA(fileName, desiredAccess, shareMode);
+					auto result = ReadUInt64Value(message, offset);
+					m_callback->OnCreateFileTransactedA(fileName, desiredAccess, shareMode, result);
 					break;
 				}
 				case DetourMessageType::CreateFileTransactedW:
@@ -857,7 +862,8 @@ namespace Monitor
 					auto fileName = ReadWStringValue(message, offset);
 					auto desiredAccess = ReadUInt32Value(message, offset);
 					auto shareMode = ReadUInt32Value(message, offset);
-					m_callback->OnCreateFileTransactedW(fileName, desiredAccess, shareMode);
+					auto result = ReadUInt64Value(message, offset);
+					m_callback->OnCreateFileTransactedW(fileName, desiredAccess, shareMode, result);
 					break;
 				}
 				case DetourMessageType::CreateHardLinkA:
@@ -1428,7 +1434,16 @@ namespace Monitor
 			auto result = *reinterpret_cast<uint32_t*>(message.Content + offset);
 			offset += sizeof(uint32_t);
 			if (offset > message.ContentSize)
-				throw std::runtime_error("ReadInt32Value past end of content");
+				throw std::runtime_error("ReadUInt32Value past end of content");
+			return result;
+		}
+
+		uint64_t ReadUInt64Value(DetourMessage& message, int32_t& offset)
+		{
+			auto result = *reinterpret_cast<uint64_t*>(message.Content + offset);
+			offset += sizeof(uint64_t);
+			if (offset > message.ContentSize)
+				throw std::runtime_error("ReadUInt64Value past end of content");
 			return result;
 		}
 

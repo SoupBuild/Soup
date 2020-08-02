@@ -162,7 +162,6 @@ namespace Soup::Compiler::Clang
 			generatePrecompiledModuleArgs.IncludeModules = args.IncludeModules;
 			generatePrecompiledModuleArgs.ExportModule = true;
 			generatePrecompiledModuleArgs.PreprocessorDefinitions = args.PreprocessorDefinitions;
-			generatePrecompiledModuleArgs.GenerateIncludeTree = args.GenerateIncludeTree;
 			generatePrecompiledModuleArgs.GenerateSourceDebugInfo = args.GenerateSourceDebugInfo;
 
 			// Use the target file as input to the build and generate an object with the same name

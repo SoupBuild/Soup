@@ -164,7 +164,6 @@ namespace Soup::Compiler::MSVC
 			compiledModuleArgs.IncludeModules = args.IncludeModules;
 			compiledModuleArgs.ExportModule = true;
 			compiledModuleArgs.PreprocessorDefinitions = args.PreprocessorDefinitions;
-			compiledModuleArgs.GenerateIncludeTree = args.GenerateIncludeTree;
 			compiledModuleArgs.GenerateSourceDebugInfo = args.GenerateSourceDebugInfo;
 
 			// Use the target file as input to the build and generate an object with the same name

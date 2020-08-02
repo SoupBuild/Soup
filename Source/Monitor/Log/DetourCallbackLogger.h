@@ -42,7 +42,12 @@ namespace Monitor
 			m_stream << "CreateDirectoryW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
-		void OnCreateFile2(std::wstring_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition) override final
+		void OnCreateFile2(
+			std::wstring_view fileName,
+			uint32_t desiredAccess,
+			uint32_t sharedMode,
+			uint32_t creationDisposition,
+			uint64_t result) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 			m_stream << "CreateFile2: " << converter.to_bytes(fileName.data()) << std::endl;

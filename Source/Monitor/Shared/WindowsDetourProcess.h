@@ -159,7 +159,13 @@ namespace Monitor
 				nullptr))
 			{
 				auto error = GetLastError();
-				throw std::runtime_error("Execute DetourCreateProcessWithDllExA Failed: " + std::to_string(error));
+				switch (error)
+				{
+				case ERROR_FILE_NOT_FOUND:
+					throw std::runtime_error("Execute DetourCreateProcessWithDllExA the requested executable does not exist");
+				default:
+					throw std::runtime_error("Execute DetourCreateProcessWithDllExA Failed: " + std::to_string(error));
+				}
 			}
 
 			// Store the runtime handles

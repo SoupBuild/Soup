@@ -65,7 +65,6 @@ namespace Soup::Compiler::UnitTests
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
 			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
 			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
-			expectedCompileArguments.GenerateIncludeTree = true;
 
 			auto expectedLinkArguments = LinkArguments();
 			expectedLinkArguments.TargetType = LinkTarget::Executable;
@@ -240,7 +239,6 @@ namespace Soup::Compiler::UnitTests
 				Path("../Other/bin/OtherModule1.mock.bmi"),
 				Path("../OtherModule2.mock.bmi"),
 			});
-			expectedCompileArguments.GenerateIncludeTree = true;
 
 			auto expectedCompile1Arguments = expectedCompileArguments;
 			expectedCompile1Arguments.SourceFile = Path("TestFile1.cpp");
@@ -463,7 +461,6 @@ namespace Soup::Compiler::UnitTests
 				Path("../Other/bin/OtherModule1.mock.bmi"),
 				Path("../OtherModule2.mock.bmi"),
 			});
-			expectedCompileArguments.GenerateIncludeTree = true;
 			expectedCompileArguments.PreprocessorDefinitions = std::vector<std::string>({ 
 				"DEBUG",
 				"AWESOME",
@@ -724,7 +721,6 @@ namespace Soup::Compiler::UnitTests
 				Path("../Other/bin/OtherModule1.mock.bmi"),
 				Path("../OtherModule2.mock.bmi"),
 			});
-			expectedCompileArguments.GenerateIncludeTree = true;
 
 			auto expectedCompileModuleArguments = expectedCompileArguments;
 			expectedCompileModuleArguments.SourceFile = Path("Public.cpp");

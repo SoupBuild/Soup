@@ -32,7 +32,7 @@ namespace Functions::UndocumentedApi::Overrides
 		__finally
 		{
 			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::PrivCopyFileExW;
+			message.Type = Monitor::DetourMessageType::PrivCopyFileExA;
 			EventLogger::AppendValue(message, lpExistingFileName);
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, result);

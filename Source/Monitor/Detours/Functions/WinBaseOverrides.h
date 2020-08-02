@@ -76,6 +76,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::CopyFile2;
 			EventLogger::AppendValue(message, pwszExistingFileName);
 			EventLogger::AppendValue(message, pwszNewFileName);
+			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -356,6 +357,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, dwDesiredAccess);
 			EventLogger::AppendValue(message, dwShareMode);
+			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -396,6 +398,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, dwDesiredAccess);
 			EventLogger::AppendValue(message, dwShareMode);
+			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
 		}
 

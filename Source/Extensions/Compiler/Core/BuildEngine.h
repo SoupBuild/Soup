@@ -132,7 +132,6 @@ namespace Soup::Compiler
 			compileArguments.PreprocessorDefinitions = {};
 			compileArguments.IncludeDirectories = arguments.IncludeDirectories;
 			compileArguments.IncludeModules = arguments.ModuleDependencies;
-			compileArguments.GenerateIncludeTree = true;
 			compileArguments.ExportModule = true;
 			compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 			compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
@@ -168,7 +167,6 @@ namespace Soup::Compiler
 			compileArguments.PreprocessorDefinitions = {};
 			compileArguments.IncludeDirectories = arguments.IncludeDirectories;
 			compileArguments.IncludeModules = arguments.ModuleDependencies;
-			compileArguments.GenerateIncludeTree = true;
 			compileArguments.ExportModule = false;
 			compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 			compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;

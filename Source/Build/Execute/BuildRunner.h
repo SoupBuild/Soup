@@ -193,34 +193,37 @@ namespace Soup::Build::Execute
 				auto stdErr = process->GetStandardError();
 				auto exitCode = process->GetExitCode();
 
+				// Retrieve the input/output files
+				// TODO: Verify opertation output matches input
+				auto runtimeInput = callback->GetInput();
+				for (auto& value : operation.GetInputFileList().CopyAsStringVector())
+				{
+					runtimeInput.insert(value);
+				}
+
+				auto input = std::vector<Path>();
+				for (auto& value : runtimeInput)
+				{
+					input.push_back(Path(value));
+				}
+
+				auto runtimeOutput = callback->GetOutput();
+				for (auto& value : operation.GetOutputFileList().CopyAsStringVector())
+				{
+					runtimeOutput.insert(value);
+				}
+
+				auto output = std::vector<Path>();
+				for (auto& value : runtimeOutput)
+				{
+					output.push_back(Path(value));
+				}
+
 				// Save off the build history for future builds
 				auto operationInfo = OperationInfo(
 					command,
-					operation.GetInputFileList().CopyAsPathVector(),
-					operation.GetOutputFileList().CopyAsPathVector());
-
-				// Retrieve the input/output files
-				//callback->GetInputFiles();
-				//callback->GetOutputFiles();
-
-				// Try parse includes if available
-				auto cleanOutput = std::stringstream();
-				auto headerIncludes = std::vector<Path>();
-				if (TryParsesHeaderIncludes(
-					operation,
-					stdOut,
-					headerIncludes,
-					cleanOutput))
-				{
-					operationInfo.Input.insert(
-						operationInfo.Input.end(),
-						headerIncludes.begin(),
-						headerIncludes.end());
-
-					// Replace the output string with the clean version
-					stdOut = cleanOutput.str();
-				}
-
+					std::move(input),
+					std::move(output));
 				_buildHistory.AddOperationInfo(std::move(operationInfo));
 
 				if (!stdOut.empty())
@@ -252,171 +255,6 @@ namespace Soup::Build::Execute
 			// Recursively build all of the operation children
 			// Note: Force build if this operation was built
 			CheckExecuteOperations(operation.GetChildList(), buildRequired);
-		}
-
-		bool TryParsesHeaderIncludes(
-			Utilities::BuildOperationWrapper& operation,
-			const std::string& output,
-			std::vector<Path>& headerIncludes,
-			std::stringstream& cleanOutput)
-		{
-			// Check for any cpp input files
-			auto executable = Path(operation.GetExecutable());
-			for (auto& inputFile : operation.GetInputFileList().CopyAsPathVector())
-			{
-				if (inputFile.GetFileExtension() == ".cpp")
-				{
-					// Parse known compiler output
-					if (executable.GetFileName() == "cl.exe")
-					{
-						headerIncludes = ParseMSVCIncludes(inputFile, output, cleanOutput);
-						return true;
-					}
-					else if (executable.GetFileName() == "clang++.exe")
-					{
-						headerIncludes = ParseMSVCIncludes(inputFile, output, cleanOutput);
-						return true;
-					}
-				}
-			}
-
-			headerIncludes = std::vector<Path>();
-			return false;
-		}
-
-		std::vector<Path> ParseClangIncludes(
-			const Path& file,
-			const std::string& output,
-			std::stringstream& cleanOutput)
-		{
-			// Add the root file
-			std::set<std::string> input;
-			input.insert(file.ToString());
-
-			std::stringstream content(output);
-			std::string line;
-			while (std::getline(content, line))
-			{
-				// TODO: Getline is dumb and uses newline on windows
-				if (line[line.size() - 1] == '\r')
-				{
-					line.resize(line.size() - 1);
-				}
-
-				auto includeDepth = GetClangIncludeDepth(line);
-				if (includeDepth > 0)
-				{
-					// Parse the file reference
-					auto includeFile = Path(line.substr(includeDepth + 1));
-					input.insert(includeFile.ToString());
-				}
-				else
-				{
-					// Not an include, pass along
-					cleanOutput << line << "\n";
-				}
-			}
-
-			auto result = std::vector<Path>();
-			for (auto& value : input)
-			{
-				result.push_back(Path(value));
-			}
-
-			return result;
-		}
-
-		int GetClangIncludeDepth(const std::string& line)
-		{
-			int depth = 0;
-			for (depth = 0; depth < line.size(); depth++)
-			{
-				if (line[depth] != '.')
-				{
-					break;
-				}
-			}
-
-			// Verify the next character is a space, otherwise reset the depth to zero
-			if (depth < line.size() && line[depth] != ' ')
-			{
-				depth = 0;
-			}
-
-			return depth;
-		}
-
-		std::vector<Path> ParseMSVCIncludes(
-			const Path& file,
-			const std::string& output,
-			std::stringstream& cleanOutput)
-		{
-			// Add the root file
-			std::set<std::string> input;
-			input.insert(file.ToString());
-
-			std::stringstream content(output);
-			std::string line;
-			while (std::getline(content, line))
-			{
-				// TODO: Getline is dumb and uses newline on windows
-				if (line[line.size() - 1] == '\r')
-				{
-					line.resize(line.size() - 1);
-				}
-
-				auto includeDepth = GetMSVCIncludeDepth(line);
-				if (includeDepth > 0)
-				{
-					// Parse the file reference
-					auto includePrefix = GetMSVCIncludePrefix();
-					auto offset = includePrefix.size() + includeDepth;
-					auto includeFile = Path(line.substr(offset));
-
-					input.insert(includeFile.ToString());
-				}
-				else
-				{
-					// Not an include, pass along
-					cleanOutput << line << "\n";
-				}
-			}
-
-			auto result = std::vector<Path>();
-			for (auto& value : input)
-			{
-				result.push_back(Path(value));
-			}
-
-			return result;
-		}
-
-		int GetMSVCIncludeDepth(const std::string& line)
-		{
-			int depth = 0;
-			auto includePrefix = GetMSVCIncludePrefix();
-			if (line.rfind(includePrefix, 0) == 0)
-			{
-				// Find the end of the whitespace
-				int offset = includePrefix.size();
-				for (; offset < line.size(); offset++)
-				{
-					if (line[offset] != ' ')
-					{
-						break;
-					}
-				}
-
-				// The depth is the number of whitespaces past the prefix
-				depth = offset - includePrefix.size();
-			}
-
-			return depth;
-		}
-
-		std::string_view GetMSVCIncludePrefix()
-		{
-			return std::string_view("Note: including file:");
 		}
 
 	private:
