@@ -43,6 +43,7 @@ namespace Monitor
 {
 	export enum class DetourMessageType : uint32_t
 	{
+		Info_Initialize,
 		Info_Shutdown,
 		Info_Error,
 

@@ -8,40 +8,13 @@ class EventLogger
 public:
 	static void Initialize()
 	{
-		std::stringstream pipeNameBuilder;
-		pipeNameBuilder << TBLOG_PIPE_NAMEA << "." << s_nTraceProcessId;
-		auto pipeName = pipeNameBuilder.str();
+		Connect();
 
-		auto lock = std::lock_guard<std::mutex>(s_pipeMutex);
-		for (int retries = 0; retries < 10; retries++)
-		{
-			// Wait up to 1 seconds for a pipe to appear.
-			auto timoutMilliseconds = 1000;
-			if (WaitNamedPipeA(pipeName.c_str(), timoutMilliseconds) != 0)
-			{
-				// Attempt to open the pipe
-				s_pipeHandle = Functions::FileApi::Cache::CreateFileA(
-					pipeName.c_str(),
-					GENERIC_WRITE,
-					0,
-					nullptr,
-					OPEN_EXISTING,
-					0,
-					nullptr);
-				if (s_pipeHandle != INVALID_HANDLE_VALUE)
-				{
-					DWORD pipeMode = PIPE_READMODE_MESSAGE;
-					if (SetNamedPipeHandleState(s_pipeHandle, &pipeMode, nullptr, nullptr))
-					{
-						// All good!
-						return;
-					}
-				}
-			}
-		}
-
-		// Couldn't open pipe.
-		throw std::runtime_error("Failed to open pipe for event logger.");
+		// Notify that we are connected
+		Monitor::DetourMessage message;
+		message.Type = Monitor::DetourMessageType::Info_Initialize;
+		message.ContentSize = 0;
+		WriteMessage(message);
 	}
 
 	static void Shutdown()
@@ -163,6 +136,44 @@ public:
 	}
 
 private:
+	static void Connect()
+	{
+		std::stringstream pipeNameBuilder;
+		pipeNameBuilder << TBLOG_PIPE_NAMEA << "." << s_nTraceProcessId;
+		auto pipeName = pipeNameBuilder.str();
+
+		auto lock = std::lock_guard<std::mutex>(s_pipeMutex);
+		for (int retries = 0; retries < 10; retries++)
+		{
+			// Wait up to 1 seconds for a pipe to appear.
+			auto timoutMilliseconds = 1000;
+			if (WaitNamedPipeA(pipeName.c_str(), timoutMilliseconds) != 0)
+			{
+				// Attempt to open the pipe
+				s_pipeHandle = Functions::FileApi::Cache::CreateFileA(
+					pipeName.c_str(),
+					GENERIC_WRITE,
+					0,
+					nullptr,
+					OPEN_EXISTING,
+					0,
+					nullptr);
+				if (s_pipeHandle != INVALID_HANDLE_VALUE)
+				{
+					DWORD pipeMode = PIPE_READMODE_MESSAGE;
+					if (SetNamedPipeHandleState(s_pipeHandle, &pipeMode, nullptr, nullptr))
+					{
+						// All good!
+						return;
+					}
+				}
+			}
+		}
+
+		// Couldn't open pipe.
+		throw std::runtime_error("Failed to open pipe for event logger.");
+	}
+
 	static void UnsafeWriteMessage(const Monitor::DetourMessage& message)
 	{
 		if (s_pipeHandle == INVALID_HANDLE_VALUE)

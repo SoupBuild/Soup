@@ -21,13 +21,19 @@ namespace Soup::Build
 			return m_output;
 		}
 
+		void OnInitialize() override final
+		{
+			Log::Diag("SystemAccessTracker::OnInitialize");
+		}
+
 		void OnShutdown() override final
 		{
+			Log::Diag("SystemAccessTracker::OnShutdown");
 		}
 
 		void OnError(std::string_view message) override final
 		{
-			Log::Error("SystemAccessTracker Error: " + std::string(message));
+			Log::Error("SystemAccessTracker::Error - " + std::string(message));
 		}
 
 		// FileApi
