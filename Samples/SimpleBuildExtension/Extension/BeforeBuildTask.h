@@ -38,7 +38,7 @@ namespace SimpleBuildExtension
 		Soup::Build::ApiCallResult Execute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
 
 			try
 			{
@@ -58,7 +58,7 @@ namespace SimpleBuildExtension
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
+		void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
 		{
 			buildState.LogHighPriority("Running Before Build!");
 			auto rootTable = buildState.GetActiveState();
@@ -73,14 +73,14 @@ namespace SimpleBuildExtension
 		}
 
 	private:
-		static Soup::Build::Extensions::StringList _runBeforeList;
-		static Soup::Build::Extensions::StringList _runAfterList;
+		static Soup::Build::Utilities::StringList _runBeforeList;
+		static Soup::Build::Utilities::StringList _runAfterList;
 	};
 
-	Soup::Build::Extensions::StringList BeforeBuildTask::_runBeforeList =
-		Soup::Build::Extensions::StringList({
+	Soup::Build::Utilities::StringList BeforeBuildTask::_runBeforeList =
+		Soup::Build::Utilities::StringList({
 			"Build",
 		});
-	Soup::Build::Extensions::StringList BeforeBuildTask::_runAfterList =
-		Soup::Build::Extensions::StringList();
+	Soup::Build::Utilities::StringList BeforeBuildTask::_runAfterList =
+		Soup::Build::Utilities::StringList();
 }

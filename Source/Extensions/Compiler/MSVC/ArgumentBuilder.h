@@ -17,7 +17,6 @@ namespace Soup::Compiler::MSVC
 
 		static constexpr std::string_view Compiler_ArgumentFlag_GenerateDebugInformation = "Z7";
 		static constexpr std::string_view Compiler_ArgumentFlag_GenerateDebugInformationExternal = "Zi";
-		static constexpr std::string_view Compiler_ArgumentFlag_ShowIncludes = "showIncludes";
 		static constexpr std::string_view Compiler_ArgumentFlag_CompileOnly = "c";
 		static constexpr std::string_view Compiler_ArgumentFlag_IgnoreStandardIncludePaths = "X";
 		static constexpr std::string_view Compiler_ArgumentFlag_Optimization_Disable = "Od";
@@ -44,6 +43,7 @@ namespace Soup::Compiler::MSVC
 		static constexpr std::string_view Linker_ArgumentParameter_Machine = "machine";
 		static constexpr std::string_view Linker_ArgumentParameter_DefaultLibrary = "defaultlib";
 		static constexpr std::string_view Linker_ArgumentValue_X64 = "X64";
+		static constexpr std::string_view Linker_ArgumentValue_X86 = "X86";
 
 	public:
 		static std::vector<std::string> BuildCompilerArguments(
@@ -66,12 +66,6 @@ namespace Soup::Compiler::MSVC
 
 			// Get better support for _cplusplus macro version
 			AddParameter(commandArgs, "Zc", "__cplusplus");
-
-			// Enable Header includes if needed
-			if (args.GenerateIncludeTree)
-			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_ShowIncludes);
-			}
 
 			// Generate source debug information
 			if (args.GenerateSourceDebugInfo)
@@ -258,7 +252,12 @@ namespace Soup::Compiler::MSVC
 			}
 
 			// Add the machine target
-			AddParameter(commandArgs, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X64);
+			if (args.TargetArchitecture == "x64")
+				AddParameter(commandArgs, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X64);
+			else if (args.TargetArchitecture == "x86")
+				AddParameter(commandArgs, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X86);
+			else
+				throw std::runtime_error("Unknown target architecture.");
 
 			// Set the library paths
 			for (auto directory : args.LibraryPaths)

@@ -1,0 +1,11 @@
+Name = "Monitor.Detours"
+Version = "1.0.0"
+Type = "DynamicLibrary"
+Dependencies = [
+    "../../../Dependencies/Detours/src/",
+    "../Shared/",
+]
+Defines = [
+    # "ENABLE_MONITOR_DEBUG",
+]
+Public = "Module.cpp"

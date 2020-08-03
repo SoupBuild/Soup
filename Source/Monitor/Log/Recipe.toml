@@ -1,0 +1,12 @@
+# A sample Monitor that logs all access to disk
+Name = "LogMonitor"
+Version = "1.0.0"
+Type = "Executable"
+Dependencies = [
+    "../../../Dependencies/Detours/src/",
+    "../../../Dependencies/Opal/Source/",
+    "../Shared/",
+]
+Source = [
+    "Main.cpp",
+]

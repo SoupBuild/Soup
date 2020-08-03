@@ -9,8 +9,8 @@ import Opal;
 import SoupCompiler;
 import SoupCompilerMSVC;
 import Soup.Build;
-import Soup.Build.Extensions;
-import Soup.Build.Runtime;
+import Soup.Build.Utilities;
+import Soup.Build.Evaluate;
 import SoupTest;
 import SoupTestUtilities;
 
@@ -35,5 +35,8 @@ int main()
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;
 
-	return 0;
+	if (state.FailCount > 0)
+		return 1;
+	else
+		return 0;
 }

@@ -9,7 +9,6 @@ TestState RunCompilerArgumentBuilderTests()
 	state += SoupTest::RunTest(className, "EmptySourceFile_Throws", [&testClass]() { testClass->EmptySourceFile_Throws(); });
 	state += SoupTest::RunTest(className, "EmptyTargetFile_Throws", [&testClass]() { testClass->EmptyTargetFile_Throws(); });
 	state += SoupTest::RunTest(className, "DefaultParameters", [&testClass]() { testClass->DefaultParameters(); });
-	state += SoupTest::RunTest(className, "SingleArgument_GenerateIncludeTree", [&testClass]() { testClass->SingleArgument_GenerateIncludeTree(); });
 	state += SoupTest::RunTest(className, "SingleArgument_LanguageStandard(Soup::LanguageStandard::CPP11, \"-std=c++11\")", [&testClass]() { testClass->SingleArgument_LanguageStandard(Soup::Compiler::LanguageStandard::CPP11, "-std=c++11"); });
 	state += SoupTest::RunTest(className, "SingleArgument_LanguageStandard(Soup::LanguageStandard::CPP14, \"-std=c++14\")", [&testClass]() { testClass->SingleArgument_LanguageStandard(Soup::Compiler::LanguageStandard::CPP14, "-std=c++14"); });
 	state += SoupTest::RunTest(className, "SingleArgument_LanguageStandard(Soup::LanguageStandard::CPP17, \"-std=c++17\")", [&testClass]() { testClass->SingleArgument_LanguageStandard(Soup::Compiler::LanguageStandard::CPP17, "-std=c++17"); });

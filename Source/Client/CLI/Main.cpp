@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+import Monitor.Shared;
 import Opal;
 import Opal.Extensions;
 import SoupCore;

@@ -83,13 +83,13 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateCompileOperation(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
+			Build::Utilities::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
 			_compileRequests.push_back(args);
-			return Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			return Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					"MockCompile: " + std::to_string(_compileRequests.size()),
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -105,13 +105,13 @@ namespace Soup::Compiler::Mock
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateLinkOperation(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CreateLinkOperation(
+			Build::Utilities::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
 			_linkRequests.push_back(args);
-			return Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			return Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					"MockLink: " + std::to_string(_linkRequests.size()),
 					Path("MockLinker.exe"),
 					"Arguments",

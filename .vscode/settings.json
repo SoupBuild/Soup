@@ -89,6 +89,7 @@
     "string_view": "cpp",
     "complex": "cpp",
     "*.inc": "cpp",
-    "compare": "cpp"
+    "compare": "cpp",
+    "cwctype": "cpp"
   }
 }

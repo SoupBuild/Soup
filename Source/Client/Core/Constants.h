@@ -69,11 +69,6 @@ namespace Soup
 		static constexpr std::string_view StoreLibraryFolderName = "Library";
 
 		/// <summary>
-		/// Gets the project generation folder name
-		/// </summary>
-		static constexpr std::string_view ProjectGenerateFolderName = ".soup";
-
-		/// <summary>
 		/// Gets the project generation build folder name
 		/// </summary>
 		static constexpr std::string_view ProjectGenerateBuildFolderName = "Build";

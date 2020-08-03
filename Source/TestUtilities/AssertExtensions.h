@@ -10,8 +10,8 @@ namespace Soup
 	{
 	public:
 		static void AreEqual(
-			Build::Extensions::BuildOperationWrapper& expected,
-			Build::Extensions::BuildOperationWrapper& actual)
+			Build::Utilities::BuildOperationWrapper& expected,
+			Build::Utilities::BuildOperationWrapper& actual)
 		{
 			Assert::AreEqual(
 				expected.GetTitle(),
@@ -42,26 +42,26 @@ namespace Soup
 		}
 
 		static void AreEqual(
-			Memory::Reference<Build::Extensions::BuildOperation>& expected,
-			Memory::Reference<Build::Extensions::BuildOperation>& actual)
+			Memory::Reference<Build::Utilities::BuildOperation>& expected,
+			Memory::Reference<Build::Utilities::BuildOperation>& actual)
 		{
 			AreEqual(
-				Build::Extensions::BuildOperationWrapper(expected), 
-				Build::Extensions::BuildOperationWrapper(actual));
+				Build::Utilities::BuildOperationWrapper(expected), 
+				Build::Utilities::BuildOperationWrapper(actual));
 		}
 
 		static void AreEqual(
-			Memory::Reference<Build::Extensions::BuildOperation>& expected,
-			Build::Extensions::BuildOperationWrapper& actual)
+			Memory::Reference<Build::Utilities::BuildOperation>& expected,
+			Build::Utilities::BuildOperationWrapper& actual)
 		{
 			AreEqual(
-				Build::Extensions::BuildOperationWrapper(expected), 
+				Build::Utilities::BuildOperationWrapper(expected), 
 				actual);
 		}
 
 		static void AreEqual(
-			Build::Extensions::BuildOperationListWrapper& expected,
-			Build::Extensions::BuildOperationListWrapper& actual)
+			Build::Utilities::BuildOperationListWrapper& expected,
+			Build::Utilities::BuildOperationListWrapper& actual)
 		{
 			Assert::AreEqual(
 				expected.GetSize(),
@@ -75,8 +75,8 @@ namespace Soup
 		}
 
 		static void AreEqual(
-			std::vector<Memory::Reference<Build::Extensions::BuildOperation>>& expected,
-			std::vector<Build::Extensions::BuildOperationWrapper>& actual)
+			std::vector<Memory::Reference<Build::Utilities::BuildOperation>>& expected,
+			std::vector<Build::Utilities::BuildOperationWrapper>& actual)
 		{
 			Assert::AreEqual(
 				expected.size(),

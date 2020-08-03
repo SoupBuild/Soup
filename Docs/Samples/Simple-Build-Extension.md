@@ -12,7 +12,7 @@ Version = "1.0.0"
 Dependencies = [
     "Opal@0.1.2",
     "Soup.Build@0.3.0",
-    "Soup.Build.Extensions@0.3.0",
+    "Soup.Build.Utilities@0.3.0",
 ]
 
 Source = [
@@ -63,7 +63,7 @@ namespace SimpleBuildExtension
         Soup::Build::ApiCallResult Execute(
             Soup::Build::IBuildState& buildState) noexcept override final
         {
-            auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+            auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
 
             try
             {
@@ -83,20 +83,20 @@ namespace SimpleBuildExtension
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
+        void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
         {
             buildState.LogHighPriority("Running After Build!");
         }
 
     private:
-        static Soup::Build::Extensions::StringList _runBeforeList;
-        static Soup::Build::Extensions::StringList _runAfterList;
+        static Soup::Build::Utilities::StringList _runBeforeList;
+        static Soup::Build::Utilities::StringList _runAfterList;
     };
 
-    Soup::Build::Extensions::StringList AfterBuildTask::_runBeforeList =
-        Soup::Build::Extensions::StringList();
-    Soup::Build::Extensions::StringList AfterBuildTask::_runAfterList =
-        Soup::Build::Extensions::StringList({
+    Soup::Build::Utilities::StringList AfterBuildTask::_runBeforeList =
+        Soup::Build::Utilities::StringList();
+    Soup::Build::Utilities::StringList AfterBuildTask::_runAfterList =
+        Soup::Build::Utilities::StringList({
             "Build",
         });
 }
@@ -145,7 +145,7 @@ namespace SimpleBuildExtension
         Soup::Build::ApiCallResult Execute(
             Soup::Build::IBuildState& buildState) noexcept override final
         {
-            auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+            auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
 
             try
             {
@@ -165,7 +165,7 @@ namespace SimpleBuildExtension
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
+        void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
         {
             buildState.LogHighPriority("Running Before Build!");
             auto rootTable = buildState.GetActiveState();
@@ -180,16 +180,16 @@ namespace SimpleBuildExtension
         }
 
     private:
-        static Soup::Build::Extensions::StringList _runBeforeList;
-        static Soup::Build::Extensions::StringList _runAfterList;
+        static Soup::Build::Utilities::StringList _runBeforeList;
+        static Soup::Build::Utilities::StringList _runAfterList;
     };
 
-    Soup::Build::Extensions::StringList BeforeBuildTask::_runBeforeList =
-        Soup::Build::Extensions::StringList({
+    Soup::Build::Utilities::StringList BeforeBuildTask::_runBeforeList =
+        Soup::Build::Utilities::StringList({
             "Build",
         });
-    Soup::Build::Extensions::StringList BeforeBuildTask::_runAfterList =
-        Soup::Build::Extensions::StringList();
+    Soup::Build::Utilities::StringList BeforeBuildTask::_runAfterList =
+        Soup::Build::Utilities::StringList();
 }
 ```
 
@@ -200,7 +200,7 @@ The Cpp file that implements the predefined `RegisterBuildExtension` C method to
 
 import Opal;
 import Soup.Build;
-import Soup.Build.Extensions;
+import Soup.Build.Utilities;
 
 #include "AfterBuildTask.h"
 #include "BeforeBuildTask.h"

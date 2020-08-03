@@ -44,12 +44,6 @@ namespace Soup::Compiler::Clang
 			commandArgs.push_back("-Xclang");
 			commandArgs.push_back("-flto-visibility-public-std");
 
-			// Enable Header includes if needed
-			if (args.GenerateIncludeTree)
-			{
-				commandArgs.push_back("-H");
-			}
-
 			// Generate source debug information
 			if (args.GenerateSourceDebugInfo)
 			{

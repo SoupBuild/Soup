@@ -7,7 +7,8 @@
 namespace RecipeBuild
 {
 	/// <summary>
-	/// The resolve dependencies build task that knows how to combine all previous state into the active state.
+	/// The resolve dependencies build task that knows how to combine all previous state
+	/// into the active state.
 	/// </summary>
 	export class ResolveDependenciesTask : public Memory::ReferenceCounted<Soup::Build::IBuildTask>
 	{
@@ -48,7 +49,7 @@ namespace RecipeBuild
 		Soup::Build::ApiCallResult TryExecute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
 
 			try
 			{
@@ -71,7 +72,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
+		void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
 		{
 			auto activeState = buildState.GetActiveState();
 
@@ -122,7 +123,7 @@ namespace RecipeBuild
 		}
 
 	private:
-		Soup::Build::Extensions::StringList _runBeforeList;
-		Soup::Build::Extensions::StringList _runAfterList;
+		Soup::Build::Utilities::StringList _runBeforeList;
+		Soup::Build::Utilities::StringList _runAfterList;
 	};
 }

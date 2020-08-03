@@ -15,9 +15,18 @@ namespace Soup
 		/// <summary>
 		/// Initialize a new instance of the HandledException class
 		/// </summary>
-		HandledException() :
-			std::exception()
+		HandledException(int exitCode) :
+			std::exception(),
+			m_exitCode(exitCode)
 		{
 		}
+
+		int GetExitCode() const
+		{
+			return m_exitCode;
+		}
+
+	private:
+		int m_exitCode;
 	};
 }

@@ -136,11 +136,6 @@ namespace Soup::Compiler
 		bool ExportModule;
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to generate the include set for each file
-		/// </summary>
-		bool GenerateIncludeTree;
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to generate source debug information
 		/// </summary>
 		bool GenerateSourceDebugInfo;
@@ -159,7 +154,6 @@ namespace Soup::Compiler
 				IncludeDirectories == rhs.IncludeDirectories &&
 				IncludeModules == rhs.IncludeModules &&
 				ExportModule == rhs.ExportModule &&
-				GenerateIncludeTree == rhs.GenerateIncludeTree &&
 				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
 		}
 
@@ -192,8 +186,7 @@ namespace Soup::Compiler
 				stringBuilder << value.ToString() << ", ";
 
 			stringBuilder << "], " <<
-				std::to_string(ExportModule) << ", " <<
-				std::to_string(GenerateIncludeTree) << "]";
+				std::to_string(ExportModule) << "]";
 
 			return stringBuilder.str();
 		}

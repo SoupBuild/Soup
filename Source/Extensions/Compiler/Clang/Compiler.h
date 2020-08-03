@@ -68,8 +68,8 @@ namespace Soup::Compiler::Clang
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateCompileOperation(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
+			Build::Utilities::BuildStateWrapper& state,
 			const CompileArguments& args) const override final
 		{
 			// Clang decided to do their module compilation in two stages
@@ -87,8 +87,8 @@ namespace Soup::Compiler::Clang
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Extensions::BuildOperationWrapper CreateLinkOperation(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CreateLinkOperation(
+			Build::Utilities::BuildStateWrapper& state,
 			const LinkArguments& args) const override final
 		{
 			// Select the correct executable for linking libraries or executables
@@ -111,8 +111,8 @@ namespace Soup::Compiler::Clang
 			auto outputFiles = std::vector<Path>();
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
 
-			auto buildOperation = Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			auto buildOperation = Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					args.TargetFile.ToString(),
 					executablePath,
 					CombineArguments(commandArgs),
@@ -124,8 +124,8 @@ namespace Soup::Compiler::Clang
 		}
 
 	private:
-		Build::Extensions::BuildOperationWrapper CompileStandard(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CompileStandard(
+			Build::Utilities::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolPath + Path(CompilerExecutable);
@@ -135,8 +135,8 @@ namespace Soup::Compiler::Clang
 			auto outputFiles = std::vector<Path>();
 			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, inputFiles, outputFiles);
 
-			auto buildOperation = Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			auto buildOperation = Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					args.SourceFile.ToString(),
 					executablePath,
 					CombineArguments(commandArgs),
@@ -147,8 +147,8 @@ namespace Soup::Compiler::Clang
 			return buildOperation;
 		}
 
-		Build::Extensions::BuildOperationWrapper CompileModuleInterfaceUnit(
-			Build::Extensions::BuildStateWrapper& state,
+		Build::Utilities::BuildOperationWrapper CompileModuleInterfaceUnit(
+			Build::Utilities::BuildStateWrapper& state,
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolPath + Path(CompilerExecutable);
@@ -162,7 +162,6 @@ namespace Soup::Compiler::Clang
 			generatePrecompiledModuleArgs.IncludeModules = args.IncludeModules;
 			generatePrecompiledModuleArgs.ExportModule = true;
 			generatePrecompiledModuleArgs.PreprocessorDefinitions = args.PreprocessorDefinitions;
-			generatePrecompiledModuleArgs.GenerateIncludeTree = args.GenerateIncludeTree;
 			generatePrecompiledModuleArgs.GenerateSourceDebugInfo = args.GenerateSourceDebugInfo;
 
 			// Use the target file as input to the build and generate an object with the same name
@@ -179,8 +178,8 @@ namespace Soup::Compiler::Clang
 					generatePrecompiledModuleInputFiles,
 					generatePrecompiledModuleOutputFiles);
 
-			auto precompiledModuleBuildOperation = Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			auto precompiledModuleBuildOperation = Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					generatePrecompiledModuleArgs.SourceFile.ToString(),
 					executablePath,
 					CombineArguments(generatePrecompiledModuleCommandArgs),
@@ -205,8 +204,8 @@ namespace Soup::Compiler::Clang
 					compileObjectInputFiles,
 					compileObjectOutputFiles);
 
-			auto compileBuildOperation = Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			auto compileBuildOperation = Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					compileObjectArgs.SourceFile.ToString(),
 					executablePath,
 					CombineArguments(compileObjectCommandArgs),
@@ -215,7 +214,7 @@ namespace Soup::Compiler::Clang
 					compileObjectOutputFiles));
 
 			// Ensure the compile operation runs after the precompile
-			Build::Extensions::BuildOperationExtensions::AddLeafChild(
+			Build::Utilities::BuildOperationExtensions::AddLeafChild(
 				precompiledModuleBuildOperation,
 				compileBuildOperation);
 
