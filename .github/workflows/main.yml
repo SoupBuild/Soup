@@ -13,7 +13,7 @@ jobs:
     - name: Setup Soup
       uses: SoupBuild/Setup-Soup@v1
       with:
-        version: v0.8.0-alpha
+        version: v0.8.1-alpha
     - name: Build Client
       run: soup build Source/Client/CLI/ -v:d
     - name: Run Tests
