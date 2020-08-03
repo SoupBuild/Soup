@@ -8,13 +8,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Download GitHub Release
-      uses: i3h/download-release-asset@v1
+    - name: Setup Soup
+      uses: SoupBuild/Setup-Soup@v1
       with:
-        owner: mwasplund
-        repo: Soup
-        tag: v0.6.3-alpha
-        file: Soup.zip
+        version: v0.6.3-alpha
+    - name: Run a one-line script
+      run: dir
     - name: Decompress
       uses: TonyBogdanov/zip@1.0
       with:
