@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Setup Soup
-      uses: SoupBuild/Setup-Soup
+      uses: SoupBuild/Setup-Soup@v1
       with:
         version: v0.6.3-alpha
     - name: Run a one-line script
