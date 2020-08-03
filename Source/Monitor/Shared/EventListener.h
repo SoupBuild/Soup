@@ -28,6 +28,11 @@ namespace Monitor
 			switch (message.Type)
 			{
 				// Info
+				case DetourMessageType::Info_Initialize:
+				{
+					m_callback->OnInitialize();
+					break;
+				}
 				case DetourMessageType::Info_Shutdown:
 				{
 					m_callback->OnShutdown();

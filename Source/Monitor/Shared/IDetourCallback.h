@@ -5,6 +5,7 @@ namespace Monitor
 	export class IDetourCallback
 	{
 	public:
+		virtual void OnInitialize() = 0;
 		virtual void OnShutdown() = 0;
 		virtual void OnError(std::string_view message) = 0;
 
