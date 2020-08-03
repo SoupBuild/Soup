@@ -13,7 +13,7 @@ jobs:
       with:
         version: v0.6.3-alpha
     - name: Run a one-line script
-      run: dir
+      run: dir bin
     - name: Build Client
       run: soup build Source/Client/CLI/
     - name: Run Tests
