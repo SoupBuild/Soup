@@ -40,7 +40,7 @@ namespace Soup::Client
 				workingDirectory.GetFileName(),
 				SemanticVersion(1, 0, 0));
 
-			recipe.SetType(Build::Extensions::RecipeType::Executable);
+			recipe.SetType(Build::Utilities::RecipeType::Executable);
 			recipe.SetSource(std::vector<std::string>({
 				"Main.cpp",
 			}));

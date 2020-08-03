@@ -2,7 +2,7 @@
 
 namespace Soup::Test
 {
-	using CreateCompiler = std::function<std::shared_ptr<Soup::Compiler::ICompiler>(Soup::Build::Extensions::ValueTableWrapper&)>;
+	using CreateCompiler = std::function<std::shared_ptr<Soup::Compiler::ICompiler>(Soup::Build::Utilities::ValueTableWrapper&)>;
 	using CompilerFactory = std::map<std::string, CreateCompiler>;
 
 	/// <summary>
@@ -46,7 +46,7 @@ namespace Soup::Test
 		Soup::Build::ApiCallResult TryExecute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
 
 			try
 			{
@@ -66,7 +66,7 @@ namespace Soup::Test
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
+		void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
 		{
 			auto activeState = buildState.GetActiveState();
 			auto sharedState = buildState.GetSharedState();
@@ -122,8 +122,8 @@ namespace Soup::Test
 			auto runArguments = "";
 			auto inputFiles = std::vector<Path>({});
 			auto outputFiles = std::vector<Path>({});
-			auto runTestsOperation = Build::Extensions::BuildOperationWrapper(
-				new Build::Extensions::BuildOperation(
+			auto runTestsOperation = Build::Utilities::BuildOperationWrapper(
+				new Build::Utilities::BuildOperation(
 					title,
 					program,
 					runArguments,
@@ -132,7 +132,7 @@ namespace Soup::Test
 					outputFiles));
 
 			// Run the test harness
-			Soup::Build::Extensions::BuildOperationExtensions::AddLeafChild(
+			Soup::Build::Utilities::BuildOperationExtensions::AddLeafChild(
 				buildResult.BuildOperations,
 				runTestsOperation);
 
@@ -141,7 +141,7 @@ namespace Soup::Test
 		}
 
 		void LoadBuildProperties(
-			Soup::Build::Extensions::ValueTableWrapper& buildTable,
+			Soup::Build::Utilities::ValueTableWrapper& buildTable,
 			Soup::Compiler::BuildArguments& arguments)
 		{
 			arguments.LanguageStandard = static_cast<Soup::Compiler::LanguageStandard>(
@@ -202,8 +202,8 @@ namespace Soup::Test
 		}
 
 		void LoadTestBuildProperties(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
-			Soup::Build::Extensions::ValueTableWrapper& testTable,
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::ValueTableWrapper& testTable,
 			Soup::Compiler::BuildArguments& arguments)
 		{
 			if (!testTable.HasValue("Source"))
@@ -228,7 +228,7 @@ namespace Soup::Test
 		}
 
 		void LoadDependencyBuildInput(
-			Soup::Build::Extensions::ValueTableWrapper& buildTable,
+			Soup::Build::Utilities::ValueTableWrapper& buildTable,
 			Soup::Compiler::BuildArguments& arguments)
 		{
 			// Load the runtime dependencies
@@ -254,8 +254,8 @@ namespace Soup::Test
 		}
 
 		static void LoadDevDependencyBuildInput(
-			Soup::Build::Extensions::BuildStateWrapper& buildState,
-			Soup::Build::Extensions::ValueTableWrapper& activeState,
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::ValueTableWrapper& activeState,
 			Soup::Compiler::BuildArguments& arguments)
 		{
 			if (activeState.HasValue("DevDependencies"))
@@ -344,14 +344,14 @@ namespace Soup::Test
 
 	private:
 		CompilerFactory _compilerFactory;
-		static Soup::Build::Extensions::StringList _runBeforeList;
-		static Soup::Build::Extensions::StringList _runAfterList;
+		static Soup::Build::Utilities::StringList _runBeforeList;
+		static Soup::Build::Utilities::StringList _runAfterList;
 	};
 
-	Soup::Build::Extensions::StringList TestBuildTask::_runBeforeList =
-		Soup::Build::Extensions::StringList();
-	Soup::Build::Extensions::StringList TestBuildTask::_runAfterList =
-		Soup::Build::Extensions::StringList({
+	Soup::Build::Utilities::StringList TestBuildTask::_runBeforeList =
+		Soup::Build::Utilities::StringList();
+	Soup::Build::Utilities::StringList TestBuildTask::_runAfterList =
+		Soup::Build::Utilities::StringList({
 			"Build",
 		});
 }

@@ -62,10 +62,16 @@ namespace Soup::Client
 					options->Flavor = std::move(flavorValue);
 				}
 
-				auto platformValue = std::string();
-				if (TryGetValueArgument("platform", unusedArgs, platformValue))
+				auto systemValue = std::string();
+				if (TryGetValueArgument("system", unusedArgs, systemValue))
 				{
-					options->Platform = std::move(platformValue);
+					options->System = std::move(systemValue);
+				}
+
+				auto architectureValue = std::string();
+				if (TryGetValueArgument("architecture", unusedArgs, architectureValue))
+				{
+					options->Architecture = std::move(architectureValue);
 				}
 
 				result = std::move(options);

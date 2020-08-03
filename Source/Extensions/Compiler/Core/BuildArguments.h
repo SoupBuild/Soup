@@ -100,6 +100,11 @@ namespace Soup::Compiler
 		std::string TargetName;
 
 		/// <summary>
+		/// Gets or sets the target architecture
+		/// </summary>
+		std::string TargetArchitecture;
+
+		/// <summary>
 		/// Gets or sets the target type
 		/// </summary>
 		BuildTargetType TargetType;
@@ -189,6 +194,7 @@ namespace Soup::Compiler
 		bool operator ==(const BuildArguments& rhs) const
 		{
 			return TargetName == rhs.TargetName &&
+				TargetArchitecture == rhs.TargetArchitecture &&
 				TargetType == rhs.TargetType &&
 				LanguageStandard == rhs.LanguageStandard &&
 				WorkingDirectory == rhs.WorkingDirectory &&

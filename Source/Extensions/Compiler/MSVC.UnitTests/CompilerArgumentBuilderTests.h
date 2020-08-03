@@ -89,50 +89,6 @@ namespace Soup::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
-		[[Fact]]
-		void SingleArgument_GenerateIncludeTree()
-		{
-			CompileArguments arguments = {};
-			arguments.SourceFile = Path("File.cpp");
-			arguments.TargetFile = Path("File.obj");
-			arguments.GenerateIncludeTree = true;
-			auto toolsPath = Path("tools/");
-
-			auto actualInput = std::vector<Path>();
-			auto actualOutput = std::vector<Path>();
-			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
-				arguments,
-				toolsPath,
-				actualInput,
-				actualOutput);
-
-			auto expectedArguments = std::vector<std::string>({
-				"/nologo",
-				"/Zc:__cplusplus",
-				"/showIncludes",
-				"/std:c++11",
-				"/Od",
-				"/X",
-				"/RTC1",
-				"/EHsc",
-				"/MT",
-				"/bigobj",
-				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
-			});
-			auto expectedInput = std::vector<Path>({
-				Path("File.cpp"),
-			});
-			auto expectedOutput = std::vector<Path>({
-				Path("File.obj"),
-			});
-
-			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
-			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
-			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
-		}
-
 		[[Theory]]
 		[[InlineData(Soup::Compiler::LanguageStandard::CPP11, "/std:c++11")]]
 		[[InlineData(Soup::Compiler::LanguageStandard::CPP14, "/std:c++14")]]

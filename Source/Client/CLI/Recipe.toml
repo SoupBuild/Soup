@@ -1,11 +1,12 @@
 Name = "Soup"
-Version = "0.7.0"
+Version = "0.8.0"
 Type = "Executable"
 
 # Ensure the core build extensions are runtime dependencies
 Dependencies = [
 	"../Core/",
 	"../../Extensions/RecipeBuild/",
+	"../../Monitor/Shared/",
 ]
 RuntimeDependencies = [
 	"LocalUserConfig.json",

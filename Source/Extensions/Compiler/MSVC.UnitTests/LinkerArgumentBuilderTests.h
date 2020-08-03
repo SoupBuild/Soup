@@ -14,6 +14,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 		{
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
+			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = Path("Library.mock.lib");
 			arguments.ObjectFiles = std::vector<Path>({});
 
@@ -58,6 +59,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 		{
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
+			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = Path("Library.mock.lib");
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.o"),
@@ -90,6 +92,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 		{
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
+			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = Path("Library.mock.lib");
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.o"),
@@ -126,6 +129,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 		{
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::DynamicLibrary;
+			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = Path("Library.mock.dll");
 			arguments.ImplementationFile = Path("Library.mock.lib");
 			arguments.ObjectFiles = std::vector<Path>({
@@ -163,6 +167,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 		{
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::Executable;
+			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = Path("out/Something.exe");
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.obj"),

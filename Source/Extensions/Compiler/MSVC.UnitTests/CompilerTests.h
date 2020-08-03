@@ -38,12 +38,12 @@ namespace Soup::Compiler::MSVC::UnitTests
 			arguments.TargetFile = Path("obj/File.obj");
 			arguments.RootDirectory = Path("Source");
 
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateCompileOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Evaluate::BuildState(Build::Evaluate::ValueTable());
+			auto result = uut.CreateCompileOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
-				new Build::Extensions::BuildOperation(
+			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
+				new Build::Utilities::BuildOperation(
 					"File.cpp",
 					Path("bin/mock.cl.exe"),
 					"/nologo /Zc:__cplusplus /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c File.cpp /Fo\"obj/File.obj\"",
@@ -82,12 +82,12 @@ namespace Soup::Compiler::MSVC::UnitTests
 			});
 			arguments.ExportModule = true;
 
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateCompileOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Evaluate::BuildState(Build::Evaluate::ValueTable());
+			auto result = uut.CreateCompileOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
-				new Build::Extensions::BuildOperation(
+			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
+				new Build::Utilities::BuildOperation(
 					"File.cpp",
 					Path("bin/mock.cl.exe"),
 					"/nologo /Zc:__cplusplus /std:c++11 /Od /I\"Includes\" /DDEBUG /X /RTC1 /EHsc /MT /module:reference \"Module.pcm\" /module:interface /module:output \"obj/File.ifc\" /bigobj /c File.cpp /Fo\"obj/File.obj\"",
@@ -115,18 +115,19 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
+			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = Path("Library.mock.a");
 			arguments.RootDirectory = Path("Source");
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.obj"),
 			});
 
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateLinkOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Evaluate::BuildState(Build::Evaluate::ValueTable());
+			auto result = uut.CreateLinkOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
-				new Build::Extensions::BuildOperation(
+			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
+				new Build::Utilities::BuildOperation(
 					"Library.mock.a",
 					Path("bin/mock.lib.exe"),
 					"/nologo /machine:X64 /out:\"Library.mock.a\" File.mock.obj",
@@ -152,6 +153,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::Executable;
+			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = Path("Something.exe");
 			arguments.RootDirectory = Path("Source");
 			arguments.ObjectFiles = std::vector<Path>({
@@ -161,12 +163,12 @@ namespace Soup::Compiler::MSVC::UnitTests
 				Path("Library.mock.a"),
 			});
 
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateLinkOperation(Build::Extensions::BuildStateWrapper(buildState), arguments);
+			auto buildState = Build::Evaluate::BuildState(Build::Evaluate::ValueTable());
+			auto result = uut.CreateLinkOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Extensions::BuildOperation>(
-				new Build::Extensions::BuildOperation(
+			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
+				new Build::Utilities::BuildOperation(
 					"Something.exe",
 					Path("bin/mock.link.exe"),
 					"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.obj",

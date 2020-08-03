@@ -10,7 +10,7 @@
 export module SoupCompiler;
 
 import Opal;
-import Soup.Build.Extensions;
+import Soup.Build.Utilities;
 
 using namespace Opal;
 

@@ -10,7 +10,7 @@ export module SoupTestUtilities;
 import Opal;
 import SoupTest;
 import Soup.Build;
-import Soup.Build.Extensions;
+import Soup.Build.Utilities;
 
 using namespace Opal;
 using namespace SoupTest;

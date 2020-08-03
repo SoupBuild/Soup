@@ -48,7 +48,7 @@ namespace RecipeBuild
 		Soup::Build::ApiCallResult TryExecute(
 			Soup::Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::Extensions::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
 
 			try
 			{
@@ -71,7 +71,7 @@ namespace RecipeBuild
 		/// <summary>
 		/// Internal implementation that can throw
 		/// </summary>
-		void Execute(Soup::Build::Extensions::BuildStateWrapper& buildState)
+		void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
 		{
 			auto rootTable = buildState.GetActiveState();
 			auto recipeTable = rootTable.GetValue("Recipe").AsTable();
@@ -93,7 +93,18 @@ namespace RecipeBuild
 			std::vector<Path> linkLibraries = std::vector<Path>();
 			if (recipeTable.HasValue("LinkLibraries"))
 			{
-				linkLibraries = recipeTable.GetValue("LinkLibraries").AsList().CopyAsPathVector();
+				for (auto value : recipeTable.GetValue("LinkLibraries").AsList().CopyAsPathVector())
+				{
+					// If relative then resolve to working directory
+					if (value.HasRoot())
+					{
+						linkLibraries.push_back(std::move(value));
+					}
+					else
+					{
+						linkLibraries.push_back(packageRoot + value);
+					}
+				}
 			}
 
 			// Add the dependency runtime dependencies closure if present
@@ -105,11 +116,18 @@ namespace RecipeBuild
 					runtimeDependencies = buildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();
 				}
 
-				auto recipeRuntimeDependencies = recipeTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector();
-				std::copy(
-					recipeRuntimeDependencies.begin(),
-					recipeRuntimeDependencies.end(),
-					std::back_inserter(runtimeDependencies)); 
+				for (auto value : recipeTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector())
+				{
+					// If relative then resolve to working directory
+					if (value.HasRoot())
+					{
+						runtimeDependencies.push_back(std::move(value));
+					}
+					else
+					{
+						runtimeDependencies.push_back(packageRoot + value);
+					}
+				}
 
 				buildTable.EnsureValue("RuntimeDependencies").SetValuePathList(runtimeDependencies);
 			}
@@ -210,21 +228,21 @@ namespace RecipeBuild
 
 			// Convert the recipe type to the required build type
 			Soup::Compiler::BuildTargetType targetType;
-			auto recipeType = Soup::Build::Extensions::RecipeType::StaticLibrary;
+			auto recipeType = Soup::Build::Utilities::RecipeType::StaticLibrary;
 			if (recipeTable.HasValue("Type"))
 			{
-				recipeType = Soup::Build::Extensions::ParseRecipeType(recipeTable.GetValue("Type").AsString().GetValue());
+				recipeType = Soup::Build::Utilities::ParseRecipeType(recipeTable.GetValue("Type").AsString().GetValue());
 			}
 
 			switch (recipeType)
 			{
-				case Soup::Build::Extensions::RecipeType::StaticLibrary:
+				case Soup::Build::Utilities::RecipeType::StaticLibrary:
 					targetType = Soup::Compiler::BuildTargetType::StaticLibrary;
 					break;
-				case Soup::Build::Extensions::RecipeType::DynamicLibrary:
+				case Soup::Build::Utilities::RecipeType::DynamicLibrary:
 					targetType = Soup::Compiler::BuildTargetType::DynamicLibrary;
 					break;
-				case Soup::Build::Extensions::RecipeType::Executable:
+				case Soup::Build::Utilities::RecipeType::Executable:
 					targetType = Soup::Compiler::BuildTargetType::Executable;
 					break;
 				default:
@@ -234,26 +252,26 @@ namespace RecipeBuild
 			buildTable.EnsureValue("TargetType").SetValueInteger(static_cast<int64_t>(targetType));
 
 			// Convert the recipe language version to the required build language
-			auto recipeLanguageVersion = Soup::Build::Extensions::RecipeLanguageVersion::CPP20;
+			auto recipeLanguageVersion = Soup::Build::Utilities::RecipeLanguageVersion::CPP20;
 			if (recipeTable.HasValue("Language"))
 			{
-				recipeLanguageVersion = Soup::Build::Extensions::ParseRecipeLanguageVersion(
+				recipeLanguageVersion = Soup::Build::Utilities::ParseRecipeLanguageVersion(
 					recipeTable.GetValue("Language").AsString().GetValue());
 			}
 
 			Soup::Compiler::LanguageStandard languageStandard;
 			switch (recipeLanguageVersion)
 			{
-				case Soup::Build::Extensions::RecipeLanguageVersion::CPP11:
+				case Soup::Build::Utilities::RecipeLanguageVersion::CPP11:
 					languageStandard = Soup::Compiler::LanguageStandard::CPP11;
 					break;
-				case Soup::Build::Extensions::RecipeLanguageVersion::CPP14:
+				case Soup::Build::Utilities::RecipeLanguageVersion::CPP14:
 					languageStandard = Soup::Compiler::LanguageStandard::CPP14;
 					break;
-				case Soup::Build::Extensions::RecipeLanguageVersion::CPP17:
+				case Soup::Build::Utilities::RecipeLanguageVersion::CPP17:
 					languageStandard = Soup::Compiler::LanguageStandard::CPP17;
 					break;
-				case Soup::Build::Extensions::RecipeLanguageVersion::CPP20:
+				case Soup::Build::Utilities::RecipeLanguageVersion::CPP20:
 					languageStandard = Soup::Compiler::LanguageStandard::CPP20;
 					break;
 				default:
@@ -264,7 +282,7 @@ namespace RecipeBuild
 		}
 
 	private:
-		Soup::Build::Extensions::StringList _runBeforeList;
-		Soup::Build::Extensions::StringList _runAfterList;
+		Soup::Build::Utilities::StringList _runBeforeList;
+		Soup::Build::Utilities::StringList _runAfterList;
 	};
 }

@@ -1,0 +1,17 @@
+Name = "Soup.Build.Utilities"
+Description = """A set of utility classes that are commonly needed to help 
+make writting a Build Extension easier."""
+Version = "0.3.0"
+Dependencies = [
+	"../../../Dependencies/Opal/Source/",
+	# "Opal@0.1.2",
+	"../Contracts/",
+	# "Soup.Build@0.3.0",
+]
+
+Public = "Module.cpp"
+Source = [
+	"Runtime/BuildOperationList.cpp",
+	"Wrapper/BuildOperationListWrapper.cpp",
+	"Wrapper/ValueWrapper.cpp",
+]

@@ -1,0 +1,18 @@
+Name = "Soup.Build.Execute"
+Description = """The Build Execution engine that is responsible for Execution of the minumum
+set of Build Operations for a fully consistent build."""
+Version = "0.1.0"
+Dependencies = [
+	# "../../../Dependencies/json11/",
+	"json11@1.0.0",
+	"../../../Dependencies/Opal/Source/",
+	# "Opal@0.1.2",
+	"../Contracts/",
+	# "Soup.Build@0.3.0",
+	"../Utilities/",
+	# "Soup.Build.Utilities@0.3.0",
+	"../../Monitor/Shared/",
+]
+Public = "Module.cpp"
+Source = [
+]

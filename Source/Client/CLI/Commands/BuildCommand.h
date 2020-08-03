@@ -69,64 +69,15 @@ namespace Soup::Client
 			else
 				arguments.Flavor = "debug";
 
-			if (!_options.Platform.empty())
-				arguments.Platform = _options.Platform;
+			if (!_options.System.empty())
+				arguments.System = _options.System;
 			else
-				arguments.Platform = "Windows"; // TODO: Pull current platform
+				arguments.System = "win32";
 
-			// TODO: Hard coded to windows MSVC runtime libraries
-			// And we only trust the config today
-			arguments.PlatformIncludePaths = std::vector<std::string>({});
-			for (auto& path : config.GetWindowsSDKIncludePaths())
-			{
-				arguments.PlatformIncludePaths.push_back(path);
-			}
-
-			arguments.PlatformLibraryPaths = std::vector<std::string>({});
-			for (auto& path : config.GetWindowsSDKLibraryPaths())
-			{
-				arguments.PlatformLibraryPaths.push_back(path);
-			}
-
-			arguments.PlatformPreprocessorDefinitions = std::vector<std::string>({
-				// "_DLL", // Link against the dynamic runtime dll
-				// "_MT", // Use multithreaded runtime
-			});
-
-			// if (_options.Configuration == "debug")
-			// {
-			// 	// arguments.PlatformPreprocessorDefinitions.push_back("_DEBUG");
-			// 	arguments.PlatformLibraries = std::vector<Path>({
-			// 		Path("msvcprtd.lib"),
-			// 		Path("msvcrtd.lib"),
-			// 		Path("ucrtd.lib"),
-			// 		Path("vcruntimed.lib"),
-			// 	});
-			// }
-			// else
-			// {
-			// 	arguments.PlatformLibraries = std::vector<Path>({
-			// 		Path("msvcprt.lib"),
-			// 		Path("msvcrt.lib"),
-			// 		Path("ucrt.lib"),
-			// 		Path("vcruntime.lib"),
-			// 	});
-			// }
-
-			// arguments.PlatformLibraries.push_back(Path("kernel32.lib"));
-			arguments.PlatformLibraries.push_back("user32.lib");
-			// arguments.PlatformLibraries.push_back(Path("gdi32.lib"));
-			// arguments.PlatformLibraries.push_back(Path("winspool.lib"));
-			// arguments.PlatformLibraries.push_back(Path("comdlg32.lib"));
-			arguments.PlatformLibraries.push_back("advapi32.lib");
-			arguments.PlatformLibraries.push_back("shell32.lib");
-			// arguments.PlatformLibraries.push_back(Path("ole32.lib"));
-			arguments.PlatformLibraries.push_back("oleaut32.lib");
-			// arguments.PlatformLibraries.push_back(Path("uuid.lib"));
-			// arguments.PlatformLibraries.push_back(Path("odbc32.lib"));
-			// arguments.PlatformLibraries.push_back(Path("odbccp32.lib"));
-
-			arguments.PlatformLibraries.push_back("crypt32.lib");
+			if (!_options.Architecture.empty())
+				arguments.Architecture = _options.Architecture;
+			else
+				arguments.Architecture = "x64";
 
 			std::string runtimeCompiler = config.GetRuntimeCompiler();
 			std::string systemCompiler = runtimeCompiler;
@@ -135,7 +86,7 @@ namespace Soup::Client
 			Log::Info("Begin Build:");
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			auto buildManager = Build::Runtime::RecipeBuildManager(systemCompiler, runtimeCompiler);
+			auto buildManager = Build::RecipeBuildManager(systemCompiler, runtimeCompiler);
 			buildManager.Execute(workingDirectory, recipe, arguments);
 
 			auto endTime = std::chrono::high_resolution_clock::now();

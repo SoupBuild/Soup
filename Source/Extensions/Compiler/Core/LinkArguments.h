@@ -67,6 +67,11 @@ namespace Soup::Compiler
 		Path RootDirectory;
 
 		/// <summary>
+		/// Gets or sets the target architecture
+		/// </summary>
+		std::string TargetArchitecture;
+
+		/// <summary>
 		/// Gets or sets the list of object files
 		/// </summary>
 		std::vector<Path> ObjectFiles;
@@ -101,6 +106,7 @@ namespace Soup::Compiler
 				ImplementationFile == rhs.ImplementationFile &&
 				RootDirectory == rhs.RootDirectory &&
 				ObjectFiles == rhs.ObjectFiles &&
+				TargetArchitecture == rhs.TargetArchitecture &&
 				LibraryFiles == rhs.LibraryFiles &&
 				ExternalLibraryFiles == rhs.ExternalLibraryFiles &&
 				LibraryPaths == rhs.LibraryPaths &&

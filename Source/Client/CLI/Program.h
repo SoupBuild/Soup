@@ -53,6 +53,7 @@ namespace Soup::Client
 				Network::INetworkManager::Register(std::make_shared<Network::HttpLibNetworkManager>());
 				System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
 				System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
+				Monitor::IDetourProcessManager::Register(std::make_shared<Monitor::WindowsDetourProcessManager>());
 				IO::IConsoleManager::Register(std::make_shared<IO::SystemConsoleManager>());
 
 				// Attempt to parse the provided arguments
@@ -100,10 +101,10 @@ namespace Soup::Client
 
 				return 0;
 			}
-			catch (const HandledException&)
+			catch (const HandledException& ex)
 			{
-				Log::Info("Exception Handled: Exiting");
-				return -1;
+				Log::Diag("Exception Handled: Exiting");
+				return ex.GetExitCode();
 			}
 			catch (const std::exception& ex)
 			{

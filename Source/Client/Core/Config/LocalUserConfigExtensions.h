@@ -19,7 +19,7 @@ namespace Soup
 		/// </summary>
 		static Path GetLocalUserConfigFilePath()
 		{
-			auto result = System::IProcessManager::Current().GetProcessFileName();
+			auto result = System::IProcessManager::Current().GetCurrentProcessFileName();
 			result.SetFilename(Constants::LocalUserConfigFileName);
 			return result;
 		}

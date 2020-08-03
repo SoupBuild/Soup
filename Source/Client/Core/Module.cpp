@@ -21,8 +21,9 @@ export module SoupCore;
 import Opal;
 import Opal.Extensions;
 import Soup.Build;
-import Soup.Build.Extensions;
-import Soup.Build.Runtime;
+import Soup.Build.Utilities;
+import Soup.Build.Evaluate;
+import Soup.Build.Execute;
 import LzmaSdk;
 import json11;
 import toml11;
@@ -33,12 +34,6 @@ using namespace Opal;
 #include "Utils/HandledException.h"
 
 #include "Api/SoupApi.h"
-
-#include "Build/Runner/BuildHistory.h"
-#include "Build/Runner/BuildHistoryChecker.h"
-#include "Build/Runner/BuildHistoryJson.h"
-#include "Build/Runner/BuildHistoryManager.h"
-#include "Build/Runner/BuildRunner.h"
 
 #include "Config/LocalUserConfigExtensions.h"
 

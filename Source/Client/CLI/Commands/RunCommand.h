@@ -44,16 +44,22 @@ namespace Soup::Client
 			}
 
 			// Ensure that this is an executable
-			if (recipe.GetType() != Build::Extensions::RecipeType::Executable)
+			if (recipe.GetType() != Build::Utilities::RecipeType::Executable)
 			{
 				Log::Error("Cannot run a project not of type executable");
 				return;
 			}
 
 			// Ensure the executable exists
-			auto configuration = "debug";
+			auto flavor = "debug";
+			auto system = "win32";
+			auto architecture = "x64";
 			auto compilerName = config.GetRuntimeCompiler();
-			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(compilerName, configuration);
+			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(
+				compilerName,
+				flavor,
+				system,
+				architecture);
 			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
 			Log::Info(executablePath.ToString());
 			if (!System::IFileSystem::Current().Exists(executablePath))
@@ -69,29 +75,30 @@ namespace Soup::Client
 			}
 
 			// Execute the requested target
-			auto result = System::IProcessManager::Current().Execute(
+			auto process = System::IProcessManager::Current().CreateProcess(
 				executablePath,
 				arguments.str(),
 				workingDirectory);
+			process->Start();
+			process->WaitForExit();
+
+			auto stdOut = process->GetStandardOutput();
+			auto stdErr = process->GetStandardError();
+			auto exitCode = process->GetExitCode();
 
 			// TODO: Directly pipe to output and make sure there is no extra newline
-			if (!result.StdOut.empty())
+			if (!stdOut.empty())
 			{
-				Log::HighPriority(result.StdOut);
+				Log::HighPriority(stdOut);
 			}
 
-			if (!result.StdErr.empty())
+			if (!stdErr.empty())
 			{
-				Log::Error(result.StdErr);
+				Log::Error(stdErr);
 			}
 
-			if (result.ExitCode != 0)
-			{
-				// TODO: Return error code
-				Log::Error("FAILED");
-			}
-
-			Log::Info("Done");
+			if (exitCode != 0)
+				throw HandledException(exitCode);
 		}
 
 	private:

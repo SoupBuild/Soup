@@ -74,19 +74,4 @@ namespace Soup
 	{
 		return value ? "true" : "false";
 	}
-
-	export std::time_t CreateDateTime(int year, int month, int day, int hour, int minutes)
-	{
-		std::tm timeInfo = std::tm();
-
-		// Year is offset from 1900
-		timeInfo.tm_year = year - 1900;
-		timeInfo.tm_mon = month;
-		timeInfo.tm_mday = day;
-		timeInfo.tm_hour = hour;
-		timeInfo.tm_min = minutes;
-
-		std::time_t time = std::mktime(&timeInfo);
-		return time;
-	}
 }

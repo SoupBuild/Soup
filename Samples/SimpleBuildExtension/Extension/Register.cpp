@@ -2,7 +2,7 @@
 
 import Opal;
 import Soup.Build;
-import Soup.Build.Extensions;
+import Soup.Build.Utilities;
 
 #include "AfterBuildTask.h"
 #include "BeforeBuildTask.h"

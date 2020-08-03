@@ -80,45 +80,6 @@ namespace Soup::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
 		}
 
-		[[Fact]]
-		void SingleArgument_GenerateIncludeTree()
-		{
-			CompileArguments arguments = {};
-			arguments.SourceFile = Path("File.cpp");
-			arguments.TargetFile = Path("File.o");
-			arguments.GenerateIncludeTree = true;
-
-			auto actualInput = std::vector<Path>();
-			auto actualOutput = std::vector<Path>();
-			auto actualArguments = ArgumentBuilder::BuildCompilerArguments(
-				arguments,
-				actualInput,
-				actualOutput);
-
-			auto expectedArguments = std::vector<std::string>({
-				"-nostdinc",
-				"-Wno-unknown-attributes",
-				"-Xclang",
-				"-flto-visibility-public-std",
-				"-H",
-				"-std=c++11",
-				"-c",
-				"File.cpp",
-				"-o",
-				"File.o",
-			});
-			auto expectedInput = std::vector<Path>({
-				Path("File.cpp"),
-			});
-			auto expectedOutput = std::vector<Path>({
-				Path("File.o"),
-			});
-
-			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
-			Assert::AreEqual(expectedInput, actualInput, "Verify generated input match expected.");
-			Assert::AreEqual(expectedOutput, actualOutput, "Verify generated output match expected.");
-		}
-
 		[[Theory]]
 		[[InlineData(Soup::LanguageStandard::CPP11, "-std=c++11")]]
 		[[InlineData(Soup::LanguageStandard::CPP14, "-std=c++14")]]
