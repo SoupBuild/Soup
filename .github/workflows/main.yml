@@ -4,14 +4,17 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v1
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+      with:
+        submodules: true
+    - name: Setup Soup
+      uses: SoupBuild/Setup-Soup@v1
+      with:
+        version: v0.8.0-alpha
+    - name: Build Client
+      run: soup build Source/Client/CLI/ -v:d
+    - name: Run Tests
+      run: Scripts/InPath/AllTest.bat

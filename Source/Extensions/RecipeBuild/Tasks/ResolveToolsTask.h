@@ -107,7 +107,7 @@ namespace RecipeBuild
 			auto windows10KitIncludePath = windows10KitPath + Path("/include/");
 			auto windows10KitLibPath = windows10KitPath + Path("/Lib/");
 
-			auto windowsKitVersion = FindNewestWindows10KitVersion(windows10KitIncludePath);
+			auto windowsKitVersion = FindNewestWindows10KitVersion(buildState, windows10KitIncludePath);
 
 			buildState.LogInfo("Using Windows Kit Version: " + windowsKitVersion);
 			auto windows10KitVersionIncludePath = windows10KitIncludePath + Path(windowsKitVersion);
@@ -281,22 +281,32 @@ namespace RecipeBuild
 		}
 
 		std::string FindNewestWindows10KitVersion(
+			Soup::Build::Utilities::BuildStateWrapper& buildState,
 			const Path& windows10KitIncludePath)
 		{
 			// Check the default tools version
+			buildState.LogDebug("FindNewestWindows10KitVersion: " + windows10KitIncludePath.ToString());
 			auto currentVersion = SemanticVersion(0, 0, 0);
 			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(windows10KitIncludePath))
 			{
 				auto name = child.Path.GetFileName();
+				buildState.LogDebug("CheckFile: " + name);
 				auto platformVersion = name.substr(0, 3);
-				if (platformVersion != "10.")
-					throw std::runtime_error("Unexpected Kit Version: " + name);
-
-				// Parse the version string
-				auto version = SemanticVersion::Parse(name.substr(3));
-				if (version > currentVersion)
-					currentVersion = version;
+				if (platformVersion == "10.")
+				{
+					// Parse the version string
+					auto version = SemanticVersion::Parse(name.substr(3));
+					if (version > currentVersion)
+						currentVersion = version;
+				}
+				else
+				{
+					buildState.LogWarning("Unexpected Kit Version: " + name);
+				}
 			}
+
+			if (currentVersion == SemanticVersion(0, 0, 0))
+				throw std::runtime_error("Could not find a minimum Windows 10 Kit Version");
 
 			// The first line is the version
 			auto version = "10." + currentVersion.ToString();
