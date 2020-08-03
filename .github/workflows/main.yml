@@ -9,12 +9,11 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Download GitHub Release
-      uses: Legion2/download-release-action@v2.1.0
+      uses: i3h/download-release-asset@v1
       with:
         repository: mwasplund/Soup
-        tag: v0.6.3-alpha
+        tag: latest
         file: Soup.zip
-        path: ./staging
     - name: Decompress
       uses: TonyBogdanov/zip@1.0
       with:
