@@ -177,7 +177,10 @@ private:
 	static void UnsafeWriteMessage(const Monitor::DetourMessage& message)
 	{
 		if (s_pipeHandle == INVALID_HANDLE_VALUE)
-			return; // TODO: A static dll init may do bad things before the main entry initialize
+		{
+			printf("DETOURS-ERROR: Handle not ready!! %u\n", (uint32_t)message.Type);
+			exit(-1234);
+		}
 
 		// Write the message
 		DWORD countBytesToWrite = message.ContentSize +

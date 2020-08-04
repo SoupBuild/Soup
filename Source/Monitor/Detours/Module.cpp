@@ -518,6 +518,9 @@ bool ProcessAttach(HMODULE hDll)
 
 	try
 	{
+		// Initialize the event pipe
+		EventLogger::Initialize();
+
 		// Find hidden functions.
 		Functions::UndocumentedApi::Cache::PrivCopyFileExA =
 			(BOOL (WINAPI *)(LPCSTR, LPCSTR, LPPROGRESS_ROUTINE, LPVOID, LPBOOL, DWORD))
