@@ -510,22 +510,27 @@ namespace Soup::Build
 		// ProcessThreadsApi
 		void OnCreateProcessA(std::string_view applicationName, bool result) override final
 		{
+			OnCreateProcess(applicationName);
 		}
 
 		void OnCreateProcessW(std::wstring_view applicationName, bool result) override final
 		{
+			OnCreateProcess(applicationName);
 		}
 
 		void OnCreateProcessAsUserA(std::string_view applicationName, bool result) override final
 		{
+			OnCreateProcess(applicationName);
 		}
 
 		void OnCreateProcessAsUserW(std::wstring_view applicationName, bool result) override final
 		{
+			OnCreateProcess(applicationName);
 		}
 
 		void OnExitProcess(uint32_t exitCode) override final
 		{
+			Log::Diag("SystemAccessTracker::OnExitProcess - " + std::to_string(exitCode));
 		}
 
 		// UndocumentedApi
@@ -673,10 +678,12 @@ namespace Soup::Build
 
 		void OnCreateProcessWithLogonW(std::wstring_view applicationName, bool result) override final
 		{
+			OnCreateProcess(applicationName);
 		}
 
 		void OnCreateProcessWithTokenW(std::wstring_view applicationName, bool result) override final
 		{
+			OnCreateProcess(applicationName);
 		}
 
 		void OnCreateSymbolicLinkA(std::string_view symlinkFileName, std::string_view targetFileName, uint32_t flags, bool result) override final
@@ -1018,6 +1025,17 @@ namespace Soup::Build
 		}
 
 	private:
+		void OnCreateProcess(std::wstring_view applicationName)
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			OnCreateProcess(converter.to_bytes(applicationName.data()));
+		}
+
+		void OnCreateProcess(std::string_view applicationName)
+		{
+			Log::Diag("SystemAccessTracker::OnCreateProcess - " + std::string(applicationName));
+		}
+
 		void TouchFileRead(std::wstring_view fileName, bool exists)
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;

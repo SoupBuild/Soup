@@ -5,8 +5,6 @@ namespace Functions::UndocumentedApi::Overrides
 {
 	int WINAPI EntryPoint(void)
 	{
-		EventLogger::Initialize();
-
 		return Cache::EntryPoint();
 	}
 
