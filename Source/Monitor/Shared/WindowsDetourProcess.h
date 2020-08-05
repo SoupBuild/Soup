@@ -319,7 +319,7 @@ namespace Monitor
 				// Read until we get a client and then all clients disconnect
 				m_hasAnyClients = false;
 				m_activeClientCount = 0;
-				while (!m_hasAnyClients || m_activeClientCount > 0)
+				while ((!m_hasAnyClients || m_activeClientCount > 0) && m_processRunning)
 				{
 					// Wait for any of the pipe instances to signal
 					// This indicates that either a client connected to wrote to
@@ -338,7 +338,8 @@ namespace Monitor
 						case WAIT_TIMEOUT:
 							if (!m_processRunning)
 							{
-								throw std::runtime_error("The child process exited unexpectedly");
+								DebugTrace("Main process exited while children still running");
+								continue;
 							}
 							else
 							{
