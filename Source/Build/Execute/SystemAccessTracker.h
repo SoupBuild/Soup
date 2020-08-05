@@ -6,9 +6,18 @@ namespace Soup::Build
 	{
 	public:
 		SystemAccessTracker() :
+			m_activeProcessCount(0),
 			m_input(),
 			m_output()
 		{
+		}
+
+		void VerifyResult()
+		{
+			if (m_activeProcessCount != 0)
+			{
+				Log::Warning("A child process is still running in the background");
+			}
 		}
 
 		std::set<std::string> GetInput()
@@ -24,11 +33,13 @@ namespace Soup::Build
 		void OnInitialize() override final
 		{
 			Log::Diag("SystemAccessTracker::OnInitialize");
+			m_activeProcessCount++;
 		}
 
 		void OnShutdown() override final
 		{
 			Log::Diag("SystemAccessTracker::OnShutdown");
+			m_activeProcessCount--;
 		}
 
 		void OnError(std::string_view message) override final
@@ -1107,6 +1118,7 @@ namespace Soup::Build
 				fileName == "CONOUT$";
 		}
 
+		int m_activeProcessCount;
 		std::set<std::string> m_input;
 		std::set<std::string> m_inputMissing;
 		std::set<std::string> m_output;
