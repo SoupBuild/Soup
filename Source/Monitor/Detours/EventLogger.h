@@ -20,12 +20,13 @@ public:
 	static void Shutdown()
 	{
 		auto lock = std::lock_guard<std::mutex>(s_pipeMutex);
+		Monitor::DetourMessage message;
+		message.Type = Monitor::DetourMessageType::Info_Shutdown;
+		message.ContentSize = 0;
+		UnsafeWriteMessage(message);
+
 		if (s_pipeHandle != INVALID_HANDLE_VALUE)
 		{
-			Monitor::DetourMessage message;
-			message.Type = Monitor::DetourMessageType::Info_Shutdown;
-			message.ContentSize = 0;
-			UnsafeWriteMessage(message);
 			FlushFileBuffers(s_pipeHandle);
 			CloseHandle(s_pipeHandle);
 			s_pipeHandle = INVALID_HANDLE_VALUE;
@@ -122,11 +123,13 @@ public:
 
 	static void WriteError(std::string_view value)
 	{
+		printf("DETOURS-ERROR: %s\n", value.data());
+
 		Monitor::DetourMessage message;
 		message.Type = Monitor::DetourMessageType::Info_Error;
 		message.ContentSize = 0;
 		AppendValue(message, value.data());
-		UnsafeWriteMessage(message);
+		WriteMessage(message);
 	}
 
 	static void WriteMessage(const Monitor::DetourMessage& message)
@@ -194,11 +197,15 @@ private:
 			&countBytesWritten,
 			nullptr))
 		{
-			throw std::runtime_error("Failed write event logger");
+			printf("DETOURS-ERROR: Failed write event logger\n", (uint32_t)message.Type);
+			exit(-1234);
 		}
 
 		if (countBytesWritten != countBytesToWrite)
-			throw std::runtime_error("Did not write the expected number of bytes");
+		{
+			printf("Did not write the expected number of bytes\n", (uint32_t)message.Type);
+			exit(-1234);
+		}
 	}
 
 private:
