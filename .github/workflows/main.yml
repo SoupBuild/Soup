@@ -13,9 +13,7 @@ jobs:
       uses: SoupBuild/Setup-Soup@v1
       with:
         version: v0.8.5-alpha
-    - name: Initialize Environment
-      run: init.cmd
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
     - name: Run Tests
-      run: alltest.cmd
+      run: ./scripts/alltest.cmd
