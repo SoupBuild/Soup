@@ -114,6 +114,9 @@ namespace Monitor
 			if (!SetHandleInformation(m_stdInWriteHandle.Get(), HANDLE_FLAG_INHERIT, 0))
 				throw std::runtime_error("Execute SetHandleInformation Failed");
 
+			// Initialize the pipes so they are ready for the process and the worker thread
+			InitializePipes();
+
 			// Create the worker thread that will act as the pipe server
 			m_processRunning = true;
 			m_workerFailed = false;
@@ -314,7 +317,6 @@ namespace Monitor
 			try
 			{
 				DebugTrace("WorkerThread Start");
-				InitializePipes();
 
 				// Read until we get a client and then all clients disconnect
 				m_hasAnyClients = false;
@@ -360,7 +362,7 @@ namespace Monitor
 					}
 
 					// Handle the event
-					DebugTrace(std::to_string(pipeIndex));
+					DebugTrace("Handle Event ", pipeIndex);
 					HandlePipeEvent(m_pipes[pipeIndex]);
 				}
 			}
@@ -641,11 +643,18 @@ namespace Monitor
 			}
 		}
 
+
+		void DebugTrace(std::string_view message, uint32_t value)
+		{
+#ifdef TRACE_DETOUR_SERVER
+			std::cout << "DETOUR-SERVER: " << message << " " << value << std::endl;
+#endif
+		}
+
 		void DebugTrace(std::string_view message)
 		{
-// #define TRACE_DETOUR_SERVER
 #ifdef TRACE_DETOUR_SERVER
-			std::cout << message << std::endl;
+			std::cout << "DETOUR-SERVER: " << message << std::endl;
 #endif
 		}
 
