@@ -15,5 +15,7 @@ jobs:
         version: v0.8.5-alpha
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
-    - name: Run Tests
-      run: ./scripts/alltest.cmd
+    - name: Build Execute UnitTests
+      run: soup build Source/Build/Execute.UnitTests/
+    - name: Run Execute UnitTests
+      run: Source/Build/Execute.UnitTests/out/bin/MSVC/debug/win32/x64/Execute.UnitTests.exe
