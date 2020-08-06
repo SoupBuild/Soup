@@ -1,5 +1,4 @@
 name: CI
-
 on: [push]
 
 jobs:
@@ -13,8 +12,8 @@ jobs:
     - name: Setup Soup
       uses: SoupBuild/Setup-Soup@v1
       with:
-        version: v0.8.1-alpha
-    - name: Build Client
-      run: soup build Source/Client/CLI/ -v:d
+        version: v0.8.5-alpha
+    - name: Soup Install
+      run: soup install Source/Client/CLI/ -v:d
     - name: Run Tests
-      run: Scripts/InPath/AllTest.bat
+      run: ./scripts/alltest.cmd
