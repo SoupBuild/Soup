@@ -15,7 +15,5 @@ jobs:
         version: v0.8.5-alpha
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
-    - name: Build Client
-      run: soup build Source/Client/CLI/ -v:d
     - name: Run Tests
-      run: Scripts/InPath/AllTest.bat
+      run: Scripts/InPath/alltest.bat
