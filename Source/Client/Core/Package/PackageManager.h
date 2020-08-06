@@ -29,9 +29,8 @@ namespace Soup
 		/// <summary>
 		/// Install packages
 		/// </summary>
-		static void InstallPackages()
+		static void InstallPackages(const Path& workingDirectory)
 		{
-			auto workingDirectory = Path();
 			auto packageStore = System::IFileSystem::Current().GetUserProfileDirectory() +
 				Path(".soup/packages/");
 			Log::Info("Using Package Store: " + packageStore.ToString());
@@ -61,9 +60,8 @@ namespace Soup
 		/// <summary>
 		/// Install a package
 		/// </summary>
-		static void InstallPackageReference(const std::string& packageReference)
+		static void InstallPackageReference(const Path& workingDirectory, const std::string& packageReference)
 		{
-			auto workingDirectory = Path();
 			auto recipePath =
 				workingDirectory +
 				Path(Constants::RecipeFileName);

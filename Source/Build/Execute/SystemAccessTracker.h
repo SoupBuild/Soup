@@ -1113,7 +1113,7 @@ namespace Soup::Build
 		bool IsSpecialFile(std::string_view fileName)
 		{
 			// Check if the file name is a pipe or the standard input/output streams
-			return fileName.starts_with("\\\\.\\pipe\\") ||
+			return fileName.starts_with("\\\\.\\") ||
 				fileName == "CONIN$" ||
 				fileName == "CONOUT$";
 		}

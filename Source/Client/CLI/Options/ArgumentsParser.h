@@ -95,7 +95,13 @@ namespace Soup::Client
 				auto argument = std::string();
 				if (TryGetIndexArgument(unusedArgs, argument))
 				{
-					options->Package = std::move(argument);
+					options->Path = std::move(argument);
+				}
+
+				auto PackageReference = std::string();
+				if (TryGetValueArgument("p", unusedArgs, PackageReference))
+				{
+					options->PackageReference = std::move(PackageReference);
 				}
 
 				options->Verbosity = CheckVerbosity(unusedArgs);
