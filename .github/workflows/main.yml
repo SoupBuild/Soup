@@ -16,4 +16,4 @@ jobs:
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
     - name: Run Tests
-      run: Scripts/InPath/alltest.bat
+      run: Scripts/alltest.bat
