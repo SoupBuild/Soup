@@ -31,8 +31,8 @@ import Opal;
 
 using namespace Opal;
 
-export constexpr const char* TBLOG_PIPE_NAMEA = "\\\\.\\pipe\\tracebuild";
-export constexpr const wchar_t* TBLOG_PIPE_NAMEW = L"\\\\.\\pipe\\tracebuild";
+export constexpr const char* TBLOG_PIPE_NAMEA = "\\\\.\\pipe\\monitor";
+export constexpr const wchar_t* TBLOG_PIPE_NAMEW = L"\\\\.\\pipe\\monitor";
 #ifdef UNICODE
 export constexpr const char* TBLOG_PIPE_NAME = TBLOG_PIPE_NAMEW;
 #else
@@ -282,3 +282,4 @@ export void ThrowIfFailed(int32_t result, std::string_view message)
 
 #include "MockDetourProcessManager.h"
 #include "WindowsDetourProcessManager.h"
+#include "ScopedDetourProcessManagerRegister.h"

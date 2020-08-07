@@ -32,7 +32,23 @@ namespace Soup::Client
 			// Load the user config
 			auto config = LocalUserConfigExtensions::LoadFromFile();
 
-			auto workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
+			auto workingDirectory = Path();
+			if (_options.Path.empty())
+			{
+				// Buildin the current directory
+				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
+			}
+			else
+			{
+				workingDirectory = Path(_options.Path);
+
+				// Check if this is relative to current directory
+				if (!workingDirectory.HasRoot())
+				{
+					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2() + workingDirectory;
+				}
+			}
+
 			auto recipePath = 
 				workingDirectory +
 				Path(Constants::RecipeFileName);

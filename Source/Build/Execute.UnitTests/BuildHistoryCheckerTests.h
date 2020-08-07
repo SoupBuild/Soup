@@ -11,7 +11,7 @@ namespace Soup::Build::Execute::UnitTests
 	{
 	public:
 		[[Fact]]
-		void IsOutdated_ZeroInput_Throws()
+		void IsOutdated_ZeroInput()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -30,9 +30,10 @@ namespace Soup::Build::Execute::UnitTests
 
 			// Perform the check
 			auto uut = BuildHistoryChecker();
-			Assert::ThrowsRuntimeError([&uut, &targetFiles, &inputFiles, &rootPath]() {
-				bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
-			});
+			bool result = uut.IsOutdated(targetFiles, inputFiles, rootPath);
+
+			// Verify the results
+			Assert::IsFalse(result, "Verify the result is false.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(

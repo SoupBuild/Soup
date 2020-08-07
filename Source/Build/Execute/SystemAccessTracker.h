@@ -519,24 +519,24 @@ namespace Soup::Build
 		}
 
 		// ProcessThreadsApi
-		void OnCreateProcessA(std::string_view applicationName, bool result) override final
+		void OnCreateProcessA(bool wasDetoured, std::string_view applicationName, bool result) override final
 		{
-			OnCreateProcess(applicationName);
+			OnCreateProcess(wasDetoured, applicationName);
 		}
 
-		void OnCreateProcessW(std::wstring_view applicationName, bool result) override final
+		void OnCreateProcessW(bool wasDetoured, std::wstring_view applicationName, bool result) override final
 		{
-			OnCreateProcess(applicationName);
+			OnCreateProcess(wasDetoured, applicationName);
 		}
 
 		void OnCreateProcessAsUserA(std::string_view applicationName, bool result) override final
 		{
-			OnCreateProcess(applicationName);
+			OnCreateProcess(false, applicationName);
 		}
 
 		void OnCreateProcessAsUserW(std::wstring_view applicationName, bool result) override final
 		{
-			OnCreateProcess(applicationName);
+			OnCreateProcess(false, applicationName);
 		}
 
 		void OnExitProcess(uint32_t exitCode) override final
@@ -689,12 +689,12 @@ namespace Soup::Build
 
 		void OnCreateProcessWithLogonW(std::wstring_view applicationName, bool result) override final
 		{
-			OnCreateProcess(applicationName);
+			OnCreateProcess(false, applicationName);
 		}
 
 		void OnCreateProcessWithTokenW(std::wstring_view applicationName, bool result) override final
 		{
-			OnCreateProcess(applicationName);
+			OnCreateProcess(false, applicationName);
 		}
 
 		void OnCreateSymbolicLinkA(std::string_view symlinkFileName, std::string_view targetFileName, uint32_t flags, bool result) override final
@@ -1036,15 +1036,18 @@ namespace Soup::Build
 		}
 
 	private:
-		void OnCreateProcess(std::wstring_view applicationName)
+		void OnCreateProcess(bool wasDetoured, std::wstring_view applicationName)
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			OnCreateProcess(converter.to_bytes(applicationName.data()));
+			OnCreateProcess(wasDetoured, converter.to_bytes(applicationName.data()));
 		}
 
-		void OnCreateProcess(std::string_view applicationName)
+		void OnCreateProcess(bool wasDetoured, std::string_view applicationName)
 		{
-			Log::Diag("SystemAccessTracker::OnCreateProcess - " + std::string(applicationName));
+			if (wasDetoured)
+				Log::Diag("SystemAccessTracker::OnCreateDetouredProcess - " + std::string(applicationName));
+			else
+				Log::Diag("SystemAccessTracker::OnCreateProcess - " + std::string(applicationName));
 		}
 
 		void TouchFileRead(std::wstring_view fileName, bool exists)
