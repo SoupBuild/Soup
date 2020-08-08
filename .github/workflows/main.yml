@@ -41,7 +41,8 @@ jobs:
     - name: Run Extensions Compiler MSVC UnitTests
       run: soup run Source/Extensions/Compiler/MSVC.UnitTests/
 
-    - name: Build Client Core UnitTests
-      run: soup build Source/Client/Core.UnitTests/
-    - name: Run Client Core UnitTests
-      run: soup run Source/Client/Core.UnitTests/
+    # openssl not available on CI build
+    # - name: Build Client Core UnitTests
+    #   run: soup build Source/Client/Core.UnitTests/
+    # - name: Run Client Core UnitTests
+    #   run: soup run Source/Client/Core.UnitTests/
