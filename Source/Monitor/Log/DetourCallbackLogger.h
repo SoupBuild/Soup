@@ -531,12 +531,12 @@ namespace Monitor
 		}
 
 		// ProcessThreadsApi
-		void OnCreateProcessA(std::string_view applicationName, bool result) override final
+		void OnCreateProcessA(bool wasDetoured, std::string_view applicationName, bool result) override final
 		{
 			m_stream << "CreateProcessA: " << std::endl;
 		}
 
-		void OnCreateProcessW(std::wstring_view applicationName, bool result) override final
+		void OnCreateProcessW(bool wasDetoured, std::wstring_view applicationName, bool result) override final
 		{
 			m_stream << "CreateProcessW: " << std::endl;
 		}

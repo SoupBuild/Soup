@@ -137,8 +137,8 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
+			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
@@ -189,15 +189,15 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				detourProcessManager->GetRequests(),
+				"Verify detour process manager requests match expected.");
 		}
 
 		[[Fact]]
@@ -212,8 +212,8 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
+			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
@@ -268,15 +268,15 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
+				detourProcessManager->GetRequests(),
+				"Verify detour process manager requests match expected.");
 		}
 
 		[[Fact]]
@@ -291,8 +291,8 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
+			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Create the initial build state
 			auto initialBuildHistory = BuildHistory();
@@ -331,7 +331,6 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
 					"DIAG: Check for updated source",
-					"INFO: Missing file info: InputFile.cpp",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: Command.exe Arguments",
 					"INFO: Saving updated build state",
@@ -352,6 +351,19 @@ namespace Soup::Build::Execute::UnitTests
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"ProcessStart: 1",
+					"WaitForExit: 1",
+					"GetStandardOutput: 1",
+					"GetStandardError: 1",
+					"GetExitCode: 1",
+				}),
+				detourProcessManager->GetRequests(),
+				"Verify detour process manager requests match expected.");
 		}
 
 		[[Fact]]
@@ -366,12 +378,15 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
+			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Create the initial build state
 			auto initialBuildHistory = BuildHistory({
-				FileInfo(Path("InputFile.in"), { }),
+					OperationInfo(
+						"C:/TestWorkingDirectory/ : Command.exe Arguments",
+						{ Path("InputFile.in") },
+						{ Path("OutputFile.out") }),
 			});
 			std::stringstream initialBuildHistoryJson;
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
@@ -436,6 +451,19 @@ namespace Soup::Build::Execute::UnitTests
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"ProcessStart: 1",
+					"WaitForExit: 1",
+					"GetStandardOutput: 1",
+					"GetStandardError: 1",
+					"GetExitCode: 1",
+				}),
+				detourProcessManager->GetRequests(),
+				"Verify detour process manager requests match expected.");
 		}
 
 		[[Fact]]
@@ -450,12 +478,15 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
+			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Create the initial build state
 			auto initialBuildHistory = BuildHistory({
-				FileInfo(Path("InputFile.in"), { }),
+					OperationInfo(
+						"C:/TestWorkingDirectory/ : Command.exe Arguments",
+						{ Path("InputFile.in") },
+						{ Path("OutputFile.out") }),
 			});
 			std::stringstream initialBuildHistoryJson;
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
@@ -532,6 +563,19 @@ namespace Soup::Build::Execute::UnitTests
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"ProcessStart: 1",
+					"WaitForExit: 1",
+					"GetStandardOutput: 1",
+					"GetStandardError: 1",
+					"GetExitCode: 1",
+				}),
+				detourProcessManager->GetRequests(),
+				"Verify detour process manager requests match expected.");
 		}
 
 		[[Fact]]
@@ -551,7 +595,10 @@ namespace Soup::Build::Execute::UnitTests
 
 			// Create the initial build state
 			auto initialBuildHistory = BuildHistory({
-				FileInfo(Path("InputFile.in"), { }),
+					OperationInfo(
+						"C:/TestWorkingDirectory/ : Command.exe Arguments",
+						{ Path("InputFile.in") },
+						{ Path("OutputFile.out") }),
 			});
 			std::stringstream initialBuildHistoryJson;
 			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);

@@ -6,9 +6,18 @@ namespace Soup::Build
 	{
 	public:
 		SystemAccessTracker() :
+			m_activeProcessCount(0),
 			m_input(),
 			m_output()
 		{
+		}
+
+		void VerifyResult()
+		{
+			if (m_activeProcessCount != 0)
+			{
+				Log::Warning("A child process is still running in the background");
+			}
 		}
 
 		std::set<std::string> GetInput()
@@ -21,13 +30,21 @@ namespace Soup::Build
 			return m_output;
 		}
 
+		void OnInitialize() override final
+		{
+			Log::Diag("SystemAccessTracker::OnInitialize");
+			m_activeProcessCount++;
+		}
+
 		void OnShutdown() override final
 		{
+			Log::Diag("SystemAccessTracker::OnShutdown");
+			m_activeProcessCount--;
 		}
 
 		void OnError(std::string_view message) override final
 		{
-			Log::Error("SystemAccessTracker Error: " + std::string(message));
+			Log::Error("SystemAccessTracker::Error - " + std::string(message));
 		}
 
 		// FileApi
@@ -502,24 +519,29 @@ namespace Soup::Build
 		}
 
 		// ProcessThreadsApi
-		void OnCreateProcessA(std::string_view applicationName, bool result) override final
+		void OnCreateProcessA(bool wasDetoured, std::string_view applicationName, bool result) override final
 		{
+			OnCreateProcess(wasDetoured, applicationName);
 		}
 
-		void OnCreateProcessW(std::wstring_view applicationName, bool result) override final
+		void OnCreateProcessW(bool wasDetoured, std::wstring_view applicationName, bool result) override final
 		{
+			OnCreateProcess(wasDetoured, applicationName);
 		}
 
 		void OnCreateProcessAsUserA(std::string_view applicationName, bool result) override final
 		{
+			OnCreateProcess(false, applicationName);
 		}
 
 		void OnCreateProcessAsUserW(std::wstring_view applicationName, bool result) override final
 		{
+			OnCreateProcess(false, applicationName);
 		}
 
 		void OnExitProcess(uint32_t exitCode) override final
 		{
+			Log::Diag("SystemAccessTracker::OnExitProcess - " + std::to_string(exitCode));
 		}
 
 		// UndocumentedApi
@@ -667,10 +689,12 @@ namespace Soup::Build
 
 		void OnCreateProcessWithLogonW(std::wstring_view applicationName, bool result) override final
 		{
+			OnCreateProcess(false, applicationName);
 		}
 
 		void OnCreateProcessWithTokenW(std::wstring_view applicationName, bool result) override final
 		{
+			OnCreateProcess(false, applicationName);
 		}
 
 		void OnCreateSymbolicLinkA(std::string_view symlinkFileName, std::string_view targetFileName, uint32_t flags, bool result) override final
@@ -1012,6 +1036,20 @@ namespace Soup::Build
 		}
 
 	private:
+		void OnCreateProcess(bool wasDetoured, std::wstring_view applicationName)
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			OnCreateProcess(wasDetoured, converter.to_bytes(applicationName.data()));
+		}
+
+		void OnCreateProcess(bool wasDetoured, std::string_view applicationName)
+		{
+			if (wasDetoured)
+				Log::Diag("SystemAccessTracker::OnCreateDetouredProcess - " + std::string(applicationName));
+			else
+				Log::Diag("SystemAccessTracker::OnCreateProcess - " + std::string(applicationName));
+		}
+
 		void TouchFileRead(std::wstring_view fileName, bool exists)
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -1078,11 +1116,12 @@ namespace Soup::Build
 		bool IsSpecialFile(std::string_view fileName)
 		{
 			// Check if the file name is a pipe or the standard input/output streams
-			return fileName.starts_with("\\\\.\\pipe\\") ||
+			return fileName.starts_with("\\\\.\\") ||
 				fileName == "CONIN$" ||
 				fileName == "CONOUT$";
 		}
 
+		int m_activeProcessCount;
 		std::set<std::string> m_input;
 		std::set<std::string> m_inputMissing;
 		std::set<std::string> m_output;

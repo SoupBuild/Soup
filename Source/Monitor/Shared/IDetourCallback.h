@@ -5,6 +5,7 @@ namespace Monitor
 	export class IDetourCallback
 	{
 	public:
+		virtual void OnInitialize() = 0;
 		virtual void OnShutdown() = 0;
 		virtual void OnError(std::string_view message) = 0;
 
@@ -113,8 +114,8 @@ namespace Monitor
 		virtual void OnSearchPathW(std::wstring_view path, std::wstring_view fileName, std::wstring_view extension, uint32_t result) = 0;
 
 		// ProcessThreadsApi
-		virtual void OnCreateProcessA(std::string_view applicationName, bool result) = 0;
-		virtual void OnCreateProcessW(std::wstring_view applicationName, bool result) = 0;
+		virtual void OnCreateProcessA(bool wasDetoured, std::string_view applicationName, bool result) = 0;
+		virtual void OnCreateProcessW(bool wasDetoured, std::wstring_view applicationName, bool result) = 0;
 		virtual void OnCreateProcessAsUserA(std::string_view applicationName, bool result) = 0;
 		virtual void OnCreateProcessAsUserW(std::wstring_view applicationName, bool result) = 0;
 		virtual void OnExitProcess(uint32_t exitCode) = 0;

@@ -518,6 +518,9 @@ bool ProcessAttach(HMODULE hDll)
 
 	try
 	{
+		// Initialize the event pipe
+		EventLogger::Initialize();
+
 		// Find hidden functions.
 		Functions::UndocumentedApi::Cache::PrivCopyFileExA =
 			(BOOL (WINAPI *)(LPCSTR, LPCSTR, LPPROGRESS_ROUTINE, LPVOID, LPBOOL, DWORD))
@@ -541,10 +544,12 @@ bool ProcessAttach(HMODULE hDll)
 	catch (const std::exception& ex)
 	{
 		EventLogger::WriteError(ex.what());
+		exit(-1234);
 	}
 	catch (...)
 	{
 		EventLogger::WriteError("Unknown error attaching detours");
+		exit(-1234);
 	}
 
 	ThreadAttach(hDll);
@@ -563,10 +568,12 @@ bool ProcessDetach(HMODULE hDll)
 	catch (const std::exception& ex)
 	{
 		EventLogger::WriteError(ex.what());
+		exit(-1234);
 	}
 	catch (...)
 	{
 		EventLogger::WriteError("Unknown error detaching detours");
+		exit(-1234);
 	}
 
 	EventLogger::Shutdown();

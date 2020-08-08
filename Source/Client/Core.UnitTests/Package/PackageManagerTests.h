@@ -22,18 +22,19 @@ namespace Soup::UnitTests
 
 			// Create the Recipe
 			fileSystem->CreateMockFile(
-				Path("Recipe.toml"),
+				Path("C:/TestLocation/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
 				)")));
 
-			PackageManager::InstallPackages();
+			auto workingDirectory = Path("C:/TestLocation");
+			PackageManager::InstallPackages(workingDirectory);
 
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
-					"DIAG: Load Recipe: Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/Recipe.toml",
 					"INFO: Deleting staging directory",
 				}),
 				testListener->GetMessages(),
@@ -44,8 +45,8 @@ namespace Soup::UnitTests
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
-					"Exists: Recipe.toml",
-					"OpenReadBinary: Recipe.toml",
+					"Exists: C:/TestLocation/Recipe.toml",
+					"OpenReadBinary: C:/TestLocation/Recipe.toml",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
 				}),
 				fileSystem->GetRequests(),
@@ -65,7 +66,7 @@ namespace Soup::UnitTests
 
 			// Create the Recipe
 			fileSystem->CreateMockFile(
-				Path("Recipe.toml"),
+				Path("C:/TestLocation/SubFolder/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
@@ -76,14 +77,14 @@ namespace Soup::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("../MyProject1/Recipe.toml"),
+				Path("C:/TestLocation/MyProject1/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyProject1"
 					Version = "1.2.3"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("../../MyProject2/Recipe.toml"),
+				Path("C:/MyProject2/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyProject2"
 					Version = "1.2.3"
@@ -93,21 +94,22 @@ namespace Soup::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("../../MyProject3/Recipe.toml"),
+				Path("C:/MyProject3/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyProject3"
 					Version = "1.2.3"
 				)")));
 
-			PackageManager::InstallPackages();
+			auto workingDirectory = Path("C:/TestLocation/SubFolder/");
+			PackageManager::InstallPackages(workingDirectory);
 
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
-					"DIAG: Load Recipe: Recipe.toml",
-					"DIAG: Load Recipe: ../MyProject1/Recipe.toml",
-					"DIAG: Load Recipe: ../../MyProject2/Recipe.toml",
-					"DIAG: Load Recipe: ../../MyProject3/Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/SubFolder/Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/MyProject1/Recipe.toml",
+					"DIAG: Load Recipe: C:/MyProject2/Recipe.toml",
+					"DIAG: Load Recipe: C:/MyProject3/Recipe.toml",
 					"INFO: Deleting staging directory",
 				}),
 				testListener->GetMessages(),
@@ -118,14 +120,14 @@ namespace Soup::UnitTests
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
-					"Exists: Recipe.toml",
-					"OpenReadBinary: Recipe.toml",
-					"Exists: ../MyProject1/Recipe.toml",
-					"OpenReadBinary: ../MyProject1/Recipe.toml",
-					"Exists: ../../MyProject2/Recipe.toml",
-					"OpenReadBinary: ../../MyProject2/Recipe.toml",
-					"Exists: ../../MyProject3/Recipe.toml",
-					"OpenReadBinary: ../../MyProject3/Recipe.toml",
+					"Exists: C:/TestLocation/SubFolder/Recipe.toml",
+					"OpenReadBinary: C:/TestLocation/SubFolder/Recipe.toml",
+					"Exists: C:/TestLocation/MyProject1/Recipe.toml",
+					"OpenReadBinary: C:/TestLocation/MyProject1/Recipe.toml",
+					"Exists: C:/MyProject2/Recipe.toml",
+					"OpenReadBinary: C:/MyProject2/Recipe.toml",
+					"Exists: C:/MyProject3/Recipe.toml",
+					"OpenReadBinary: C:/MyProject3/Recipe.toml",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
 				}),
 				fileSystem->GetRequests(),
@@ -149,7 +151,7 @@ namespace Soup::UnitTests
 
 			// Create the Recipe
 			fileSystem->CreateMockFile(
-				Path("Recipe.toml"),
+				Path("C:/TestLocation/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
@@ -170,12 +172,13 @@ namespace Soup::UnitTests
 				GetTheirPackageArchive());
 			testHttpClient->AddGetResponse("/v1/packages/TheirPackage/v2.2.2/download", packageContentResponse);
 
-			PackageManager::InstallPackages();
+			auto workingDirectory = Path("C:/TestLocation");
+			PackageManager::InstallPackages(workingDirectory);
 
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
-					"DIAG: Load Recipe: Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/Recipe.toml",
 					"HIGH: Install Package: TheirPackage@2.2.2",
 					"HIGH: Downloading package",
 					"DIAG: /v1/packages/TheirPackage/v2.2.2/download",
@@ -200,8 +203,8 @@ namespace Soup::UnitTests
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
-					"Exists: Recipe.toml",
-					"OpenReadBinary: Recipe.toml",
+					"Exists: C:/TestLocation/Recipe.toml",
+					"OpenReadBinary: C:/TestLocation/Recipe.toml",
 					"Exists: C:/Users/Me/.soup/packages/TheirPackage/2.2.2/",
 					"OpenWriteBinary: C:/Users/Me/.soup/packages/.staging/TheirPackage.7z",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/",
@@ -246,14 +249,15 @@ namespace Soup::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
+			auto workingDirectory = Path("C:/TestLocation");
 			auto packageName = "TheirPackage";
-			Assert::ThrowsRuntimeError([&packageName]() {
-				PackageManager::InstallPackageReference(packageName);
+			Assert::ThrowsRuntimeError([&workingDirectory, &packageName]() {
+				PackageManager::InstallPackageReference(workingDirectory, packageName);
 			});
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Recipe: Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/Recipe.toml",
 					"INFO: Recipe file does not exist.",
 				}),
 				testListener->GetMessages(),
@@ -261,7 +265,7 @@ namespace Soup::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Recipe.toml",
+					"Exists: C:/TestLocation/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -284,7 +288,7 @@ namespace Soup::UnitTests
 
 			// Create the Recipe
 			fileSystem->CreateMockFile(
-				Path("Recipe.toml"),
+				Path("C:/TestLocation/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
@@ -302,12 +306,13 @@ namespace Soup::UnitTests
 				GetTheirPackageArchive());
 			testHttpClient->AddGetResponse("/v1/packages/TheirPackage/v2.2.2/download", packageContentResponse);
 
+			auto workingDirectory = Path("C:/TestLocation");
 			auto packageName = "TheirPackage@2.2.2";
-			PackageManager::InstallPackageReference(packageName);
+			PackageManager::InstallPackageReference(workingDirectory, packageName);
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Recipe: Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/Recipe.toml",
 					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
 					"HIGH: Install Package: TheirPackage@2.2.2",
 					"HIGH: Downloading package",
@@ -331,8 +336,8 @@ namespace Soup::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Recipe.toml",
-					"OpenReadBinary: Recipe.toml",
+					"Exists: C:/TestLocation/Recipe.toml",
+					"OpenReadBinary: C:/TestLocation/Recipe.toml",
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
@@ -350,7 +355,7 @@ namespace Soup::UnitTests
 					"CreateDirectory: C:/Users/Me/.soup/packages/TheirPackage",
 					"Rename: [C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/] -> [C:/Users/Me/.soup/packages/TheirPackage/2.2.2/]",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
-					"OpenWrite: Recipe.toml",
+					"OpenWrite: C:/TestLocation/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -377,7 +382,7 @@ Dependencies = [
 "TheirPackage@2.2.2",
 ]
 )";
-			auto& mockRecipeFile = fileSystem->GetMockFile(Path("Recipe.toml"));
+			auto& mockRecipeFile = fileSystem->GetMockFile(Path("C:/TestLocation/Recipe.toml"));
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 
@@ -398,7 +403,7 @@ Dependencies = [
 
 			// Create the Recipe
 			fileSystem->CreateMockFile(
-				Path("Recipe.toml"),
+				Path("C:/TestLocation/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
@@ -421,12 +426,13 @@ Dependencies = [
 				GetMyDependencyArchive());
 			testHttpClient->AddGetResponse("/v1/packages/MyDependency/v1.0.0/download", packageTwoContentResponse);
 
+			auto workingDirectory = Path("C:/TestLocation");
 			auto packageName = "TheirPackage@2.2.2";
-			PackageManager::InstallPackageReference(packageName);
+			PackageManager::InstallPackageReference(workingDirectory, packageName);
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Recipe: Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/Recipe.toml",
 					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
 					"HIGH: Install Package: TheirPackage@2.2.2",
 					"HIGH: Downloading package",
@@ -464,8 +470,8 @@ Dependencies = [
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Recipe.toml",
-					"OpenReadBinary: Recipe.toml",
+					"Exists: C:/TestLocation/Recipe.toml",
+					"OpenReadBinary: C:/TestLocation/Recipe.toml",
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
@@ -496,7 +502,7 @@ Dependencies = [
 					"CreateDirectory: C:/Users/Me/.soup/packages/TheirPackage",
 					"Rename: [C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/] -> [C:/Users/Me/.soup/packages/TheirPackage/2.2.2/]",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
-					"OpenWrite: Recipe.toml",
+					"OpenWrite: C:/TestLocation/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -525,7 +531,7 @@ Dependencies = [
 "TheirPackage@2.2.2",
 ]
 )";
-			auto& mockRecipeFile = fileSystem->GetMockFile(Path("Recipe.toml"));
+			auto& mockRecipeFile = fileSystem->GetMockFile(Path("C:/TestLocation/Recipe.toml"));
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 
@@ -546,7 +552,7 @@ Dependencies = [
 
 			// Create the Recipe
 			fileSystem->CreateMockFile(
-				Path("Recipe.toml"),
+				Path("C:/TestLocation/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
@@ -572,12 +578,13 @@ Dependencies = [
 				GetTheirPackageArchive());
 			testHttpClient->AddGetResponse("/v1/packages/TheirPackage/v2.2.2/download", packageContentResponse);
 
+			auto workingDirectory = Path("C:/TestLocation");
 			auto packageName = "TheirPackage";
-			PackageManager::InstallPackageReference(packageName);
+			PackageManager::InstallPackageReference(workingDirectory, packageName);
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Recipe: Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/Recipe.toml",
 					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
 					"DIAG: /v1/packages/TheirPackage",
 					"HIGH: Latest Version: 2.2.2",
@@ -603,8 +610,8 @@ Dependencies = [
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Recipe.toml",
-					"OpenReadBinary: Recipe.toml",
+					"Exists: C:/TestLocation/Recipe.toml",
+					"OpenReadBinary: C:/TestLocation/Recipe.toml",
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
@@ -622,7 +629,7 @@ Dependencies = [
 					"CreateDirectory: C:/Users/Me/.soup/packages/TheirPackage",
 					"Rename: [C:/Users/Me/.soup/packages/.staging/TheirPackage/2.2.2/] -> [C:/Users/Me/.soup/packages/TheirPackage/2.2.2/]",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
-					"OpenWrite: Recipe.toml",
+					"OpenWrite: C:/TestLocation/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -651,7 +658,7 @@ Dependencies = [
 "TheirPackage@2.2.2",
 ]
 )";
-			auto& mockRecipeFile = fileSystem->GetMockFile(Path("Recipe.toml"));
+			auto& mockRecipeFile = fileSystem->GetMockFile(Path("C:/TestLocation/Recipe.toml"));
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 

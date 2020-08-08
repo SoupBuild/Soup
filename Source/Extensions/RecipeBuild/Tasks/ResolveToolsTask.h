@@ -207,7 +207,7 @@ namespace RecipeBuild
 			});
 
 			// Check if we should include pre-release versions
-			bool includePrerelease = true;
+			bool includePrerelease = false;
 			if (includePrerelease)
 			{
 				argumentList.push_back("-prerelease");

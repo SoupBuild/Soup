@@ -7,5 +7,6 @@ Dependencies = [
 ]
 Defines = [
     # "ENABLE_MONITOR_DEBUG",
+    "TRACE_DETOUR_CLIENT",
 ]
 Public = "Module.cpp"

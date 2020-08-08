@@ -1,4 +1,4 @@
-Name = "Soup.Build.Utlities.UnitTests"
+Name = "Soup.Build.Utilities.UnitTests"
 Version = "1.0.0"
 Type = "Executable"
 Dependencies = [

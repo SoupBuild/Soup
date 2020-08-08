@@ -4,4 +4,7 @@ Dependencies = [
     "../../../Dependencies/Detours/src/",
     "../../../Dependencies/Opal/Source/",
 ]
+Defines = [
+    # "TRACE_DETOUR_SERVER",
+]
 Public = "Module.cpp"

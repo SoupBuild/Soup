@@ -193,6 +193,9 @@ namespace Soup::Build::Execute
 				auto stdErr = process->GetStandardError();
 				auto exitCode = process->GetExitCode();
 
+				// Check the result of the monitor
+				callback->VerifyResult();
+
 				// Retrieve the input/output files
 				// TODO: Verify opertation output matches input
 				auto runtimeInput = callback->GetInput();

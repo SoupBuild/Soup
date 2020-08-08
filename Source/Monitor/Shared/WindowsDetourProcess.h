@@ -114,6 +114,9 @@ namespace Monitor
 			if (!SetHandleInformation(m_stdInWriteHandle.Get(), HANDLE_FLAG_INHERIT, 0))
 				throw std::runtime_error("Execute SetHandleInformation Failed");
 
+			// Initialize the pipes so they are ready for the process and the worker thread
+			InitializePipes();
+
 			// Create the worker thread that will act as the pipe server
 			m_processRunning = true;
 			m_workerFailed = false;
@@ -314,12 +317,11 @@ namespace Monitor
 			try
 			{
 				DebugTrace("WorkerThread Start");
-				InitializePipes();
 
 				// Read until we get a client and then all clients disconnect
 				m_hasAnyClients = false;
 				m_activeClientCount = 0;
-				while (!m_hasAnyClients || m_activeClientCount > 0)
+				while ((!m_hasAnyClients || m_activeClientCount > 0) && m_processRunning)
 				{
 					// Wait for any of the pipe instances to signal
 					// This indicates that either a client connected to wrote to
@@ -338,7 +340,8 @@ namespace Monitor
 						case WAIT_TIMEOUT:
 							if (!m_processRunning)
 							{
-								throw std::runtime_error("The child process exited unexpectedly");
+								DebugTrace("Main process exited while children still running");
+								continue;
 							}
 							else
 							{
@@ -359,7 +362,7 @@ namespace Monitor
 					}
 
 					// Handle the event
-					DebugTrace(std::to_string(pipeIndex));
+					DebugTrace("Handle Event ", pipeIndex);
 					HandlePipeEvent(m_pipes[pipeIndex]);
 				}
 			}
@@ -640,11 +643,18 @@ namespace Monitor
 			}
 		}
 
+
+		void DebugTrace(std::string_view message, uint32_t value)
+		{
+#ifdef TRACE_DETOUR_SERVER
+			std::cout << "DETOUR-SERVER: " << message << " " << value << std::endl;
+#endif
+		}
+
 		void DebugTrace(std::string_view message)
 		{
-// #define TRACE_DETOUR_SERVER
 #ifdef TRACE_DETOUR_SERVER
-			std::cout << message << std::endl;
+			std::cout << "DETOUR-SERVER: " << message << std::endl;
 #endif
 		}
 

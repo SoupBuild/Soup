@@ -28,6 +28,11 @@ namespace Monitor
 			switch (message.Type)
 			{
 				// Info
+				case DetourMessageType::Info_Initialize:
+				{
+					m_callback->OnInitialize();
+					break;
+				}
 				case DetourMessageType::Info_Shutdown:
 				{
 					m_callback->OnShutdown();
@@ -706,16 +711,18 @@ namespace Monitor
 				// ProcessThreadsApi
 				case DetourMessageType::CreateProcessA:
 				{
+					auto wasDetoured = ReadBoolValue(message, offset);
 					auto applicationName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCreateProcessA(applicationName, result);
+					m_callback->OnCreateProcessA(wasDetoured, applicationName, result);
 					break;
 				}
 				case DetourMessageType::CreateProcessW:
 				{
+					auto wasDetoured = ReadBoolValue(message, offset);
 					auto applicationName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCreateProcessW(applicationName, result);
+					m_callback->OnCreateProcessW(wasDetoured, applicationName, result);
 					break;
 				}
 				case DetourMessageType::CreateProcessAsUserA:

@@ -16,48 +16,68 @@ namespace Functions::ProcessThreadsApi::Overrides
 		LPPROCESS_INFORMATION lpProcessInformation)
 	{
 		BOOL result = 0;
+		bool wasDetoured = false;
 		__try
 		{
-			// If the caller did not request the process information then create a temporary
-			// one for ourselves
-			LPPROCESS_INFORMATION lpInternalProcessInformation = lpProcessInformation;
-			PROCESS_INFORMATION privateProcessInformation;
-			if (lpInternalProcessInformation == nullptr)
+			if (IsWhiteListProcess(lpApplicationName))
 			{
-				lpInternalProcessInformation = &privateProcessInformation;
+				result = Cache::CreateProcessA(
+					lpApplicationName,
+					lpCommandLine,
+					lpProcessAttributes,
+					lpThreadAttributes,
+					bInheritHandles,
+					dwCreationFlags,
+					lpEnvironment,
+					lpCurrentDirectory,
+					lpStartupInfo,
+					lpProcessInformation);
 			}
-
-			// Pass along the request with an initially suspended process
-			result = DetourCreateProcessWithDllExA(
-				lpApplicationName,
-				lpCommandLine,
-				lpProcessAttributes,
-				lpThreadAttributes,
-				bInheritHandles,
-				dwCreationFlags | CREATE_SUSPENDED,
-				lpEnvironment,
-				lpCurrentDirectory,
-				lpStartupInfo,
-				lpInternalProcessInformation,
-				s_szDllPath,
-				Cache::CreateProcessA);
-
-			if (result)
+			else
 			{
-				// Perform the detour setup
-				CreateProcessInternals(lpInternalProcessInformation->hProcess);
+				wasDetoured = true;
 
-				// If the caller did not create the process suspended then undo our override
-				if (!(dwCreationFlags & CREATE_SUSPENDED))
+				// If the caller did not request the process information then create a temporary
+				// one for ourselves
+				LPPROCESS_INFORMATION lpInternalProcessInformation = lpProcessInformation;
+				PROCESS_INFORMATION privateProcessInformation;
+				if (lpInternalProcessInformation == nullptr)
 				{
-					ResumeThread(lpInternalProcessInformation->hThread);
+					lpInternalProcessInformation = &privateProcessInformation;
 				}
 
-				// Cleanup if we used the private information store
-				if (lpInternalProcessInformation == &privateProcessInformation)
+				// Pass along the request with an initially suspended process
+				result = DetourCreateProcessWithDllExA(
+					lpApplicationName,
+					lpCommandLine,
+					lpProcessAttributes,
+					lpThreadAttributes,
+					bInheritHandles,
+					dwCreationFlags | CREATE_SUSPENDED,
+					lpEnvironment,
+					lpCurrentDirectory,
+					lpStartupInfo,
+					lpInternalProcessInformation,
+					s_szDllPath,
+					Cache::CreateProcessA);
+
+				if (result)
 				{
-					CloseHandle(privateProcessInformation.hThread);
-					CloseHandle(privateProcessInformation.hProcess);
+					// Perform the detour setup
+					CreateProcessInternals(lpInternalProcessInformation->hProcess);
+
+					// If the caller did not create the process suspended then undo our override
+					if (!(dwCreationFlags & CREATE_SUSPENDED))
+					{
+						ResumeThread(lpInternalProcessInformation->hThread);
+					}
+
+					// Cleanup if we used the private information store
+					if (lpInternalProcessInformation == &privateProcessInformation)
+					{
+						CloseHandle(privateProcessInformation.hThread);
+						CloseHandle(privateProcessInformation.hProcess);
+					}
 				}
 			}
 		}
@@ -65,6 +85,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::CreateProcessA;
+			EventLogger::AppendValue(message, wasDetoured);
 			EventLogger::AppendValue(message, lpApplicationName);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);
@@ -86,48 +107,68 @@ namespace Functions::ProcessThreadsApi::Overrides
 		LPPROCESS_INFORMATION lpProcessInformation)
 	{
 		BOOL result = 0;
+		bool wasDetoured = false;
 		__try
 		{
-			// If the caller did not request the process information then create a temporary
-			// one for ourselves
-			LPPROCESS_INFORMATION lpInternalProcessInformation = lpProcessInformation;
-			PROCESS_INFORMATION privateProcessInformation;
-			if (lpInternalProcessInformation == nullptr)
+			if (IsWhiteListProcess(lpApplicationName))
 			{
-				lpInternalProcessInformation = &privateProcessInformation;
+				result = Cache::CreateProcessW(
+					lpApplicationName,
+					lpCommandLine,
+					lpProcessAttributes,
+					lpThreadAttributes,
+					bInheritHandles,
+					dwCreationFlags,
+					lpEnvironment,
+					lpCurrentDirectory,
+					lpStartupInfo,
+					lpProcessInformation);
 			}
-
-			// Pass along the request with an initially suspended process
-			result = DetourCreateProcessWithDllExW(
-				lpApplicationName,
-				lpCommandLine,
-				lpProcessAttributes,
-				lpThreadAttributes,
-				bInheritHandles,
-				dwCreationFlags | CREATE_SUSPENDED,
-				lpEnvironment,
-				lpCurrentDirectory,
-				lpStartupInfo,
-				lpInternalProcessInformation,
-				s_szDllPath,
-				Cache::CreateProcessW);
-
-			if (result)
+			else
 			{
-				// Perform the detour setup
-				CreateProcessInternals(lpInternalProcessInformation->hProcess);
+				wasDetoured = true;
 
-				// If the caller did not create the process suspended then undo our override
-				if (!(dwCreationFlags & CREATE_SUSPENDED))
+				// If the caller did not request the process information then create a temporary
+				// one for ourselves
+				LPPROCESS_INFORMATION lpInternalProcessInformation = lpProcessInformation;
+				PROCESS_INFORMATION privateProcessInformation;
+				if (lpInternalProcessInformation == nullptr)
 				{
-					ResumeThread(lpInternalProcessInformation->hThread);
+					lpInternalProcessInformation = &privateProcessInformation;
 				}
 
-				// Cleanup if we used the private information store
-				if (lpInternalProcessInformation == &privateProcessInformation)
+				// Pass along the request with an initially suspended process
+				result = DetourCreateProcessWithDllExW(
+					lpApplicationName,
+					lpCommandLine,
+					lpProcessAttributes,
+					lpThreadAttributes,
+					bInheritHandles,
+					dwCreationFlags | CREATE_SUSPENDED,
+					lpEnvironment,
+					lpCurrentDirectory,
+					lpStartupInfo,
+					lpInternalProcessInformation,
+					s_szDllPath,
+					Cache::CreateProcessW);
+
+				if (result)
 				{
-					CloseHandle(privateProcessInformation.hThread);
-					CloseHandle(privateProcessInformation.hProcess);
+					// Perform the detour setup
+					CreateProcessInternals(lpInternalProcessInformation->hProcess);
+
+					// If the caller did not create the process suspended then undo our override
+					if (!(dwCreationFlags & CREATE_SUSPENDED))
+					{
+						ResumeThread(lpInternalProcessInformation->hThread);
+					}
+
+					// Cleanup if we used the private information store
+					if (lpInternalProcessInformation == &privateProcessInformation)
+					{
+						CloseHandle(privateProcessInformation.hThread);
+						CloseHandle(privateProcessInformation.hProcess);
+					}
 				}
 			}
 		}
@@ -135,6 +176,7 @@ namespace Functions::ProcessThreadsApi::Overrides
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::CreateProcessW;
+			EventLogger::AppendValue(message, wasDetoured);
 			EventLogger::AppendValue(message, lpApplicationName);
 			EventLogger::AppendValue(message, result);
 			EventLogger::WriteMessage(message);

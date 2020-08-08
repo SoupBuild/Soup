@@ -29,6 +29,26 @@ namespace Soup::Build::Execute
 		{
 		}
 
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator ==(const OperationInfo& rhs) const
+		{
+			return Command == rhs.Command &&
+				Input == rhs.Input &&
+				Output == rhs.Output;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const OperationInfo& rhs) const
+		{
+			return Command != rhs.Command ||
+				Input != rhs.Input ||
+				Output != rhs.Output;
+		}
+
 		std::string Command;
 		std::vector<Path> Input;
 		std::vector<Path> Output;
@@ -88,6 +108,14 @@ namespace Soup::Build::Execute
 		void AddOperationInfo(OperationInfo operation)
 		{
 			_operations.emplace(operation.Command, std::move(operation));
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const BuildHistory& rhs) const
+		{
+			return _operations != rhs._operations;
 		}
 
 	private:

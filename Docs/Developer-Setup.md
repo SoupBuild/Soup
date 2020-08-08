@@ -9,7 +9,7 @@
 * [Latest Release](https://github.com/mwasplund/Soup/releases)
 
 ### OpenSSL Requirements
-* Perl. We recommend ActiveState Perl, available from https://www.activestate.com/ActivePerl
+* Perl. We recommend Strawberry http://strawberryperl.com/
 * Netwide Assembler, a.k.a. NASM, available from https://www.nasm.us
 
 ## Setup

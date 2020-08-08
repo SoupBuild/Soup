@@ -28,14 +28,34 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Diag("InstallCommand::Run");
-			
-			if (_options.Package.empty())
+
+			auto workingDirectory = Path();
+			if (_options.Path.empty())
 			{
-				PackageManager::InstallPackages();
+				// Buildin the current directory
+				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
 			}
 			else
 			{
-				PackageManager::InstallPackageReference(_options.Package);
+				workingDirectory = Path(_options.Path);
+
+				// Check if this is relative to current directory
+				if (!workingDirectory.HasRoot())
+				{
+					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2() + workingDirectory;
+				}
+			}
+
+			if (_options.PackageReference.empty())
+			{
+				PackageManager::InstallPackages(
+					workingDirectory);
+			}
+			else
+			{
+				PackageManager::InstallPackageReference(
+					workingDirectory,
+					_options.PackageReference);
 			}
 		}
 
