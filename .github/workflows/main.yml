@@ -12,7 +12,7 @@ jobs:
     - name: Setup Soup
       uses: SoupBuild/Setup-Soup@v1
       with:
-        version: latest
+        version: v0.8.5-alpha
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
 
