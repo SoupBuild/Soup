@@ -18,6 +18,10 @@ namespace Soup::Build::Execute::UnitTests
 		timeInfo.tm_min = minutes;
 
 		std::time_t time = std::mktime(&timeInfo);
-		return time;
+		
+		long timezone;
+		_get_timezone(&timezone);
+
+		return time - timezone;
 	}
 }

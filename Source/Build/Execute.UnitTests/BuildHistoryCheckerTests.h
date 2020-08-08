@@ -136,7 +136,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: IsOutdated: C:/Root/Output.bin [1434993120]",
+					"DIAG: IsOutdated: C:/Root/Output.bin [1434964320]",
 					"ERRO:   C:/Root/Input.cpp [MISSING]",
 				}),
 				testListener->GetMessages(),
@@ -194,8 +194,8 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: IsOutdated: C:/Root/Output.bin [1434993120]",
-					"DIAG:   C:/Root/Input.cpp [1434993180]",
+					"DIAG: IsOutdated: C:/Root/Output.bin [1434964320]",
+					"DIAG:   C:/Root/Input.cpp [1434964380]",
 					"INFO: Input altered after target [C:/Root/Input.cpp] -> [C:/Root/Output.bin]",
 				}),
 				testListener->GetMessages(),
@@ -253,8 +253,8 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: IsOutdated: C:/Root/Output.bin [1434993120]",
-					"DIAG:   C:/Root/Input.cpp [1434993060]",
+					"DIAG: IsOutdated: C:/Root/Output.bin [1434964320]",
+					"DIAG:   C:/Root/Input.cpp [1434964260]",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -317,9 +317,9 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: IsOutdated: C:/Root/Output.bin [1434993120]",
-					"DIAG:   C:/Root/Input.cpp [1434993060]",
-					"DIAG:   C:/Input.h [1434993060]",
+					"DIAG: IsOutdated: C:/Root/Output.bin [1434964320]",
+					"DIAG:   C:/Root/Input.cpp [1434964260]",
+					"DIAG:   C:/Input.h [1434964260]",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
