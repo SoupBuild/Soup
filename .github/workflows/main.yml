@@ -15,7 +15,33 @@ jobs:
         version: v0.8.5-alpha
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
+
     - name: Build Execute UnitTests
       run: soup build Source/Build/Execute.UnitTests/
     - name: Run Execute UnitTests
-      run: Source/Build/Execute.UnitTests/out/bin/MSVC/debug/win32/x64/Execute.UnitTests.exe
+      run: soup run Source/Build/Execute.UnitTests/
+
+    - name: Build Utilities UnitTests
+      run: soup build Source/Build/Utilities.UnitTests/
+    - name: Run Utilities UnitTests
+      run: soup run Source/Build/Utilities.UnitTests/
+
+    - name: Build Extensions Compiler Core UnitTests
+      run: soup build Source/Extensions/Compiler/Core.UnitTests/
+    - name: Run Extensions Compiler Core UnitTests
+      run: soup run Source/Extensions/Compiler/Core.UnitTests/
+
+    - name: Build Extensions Compiler Clang UnitTests
+      run: soup build Source/Extensions/Compiler/Clang.UnitTests/
+    - name: Run Extensions Compiler Clang UnitTests
+      run: soup run Source/Extensions/Compiler/Clang.UnitTests/
+
+    - name: Build Extensions Compiler MSVC UnitTests
+      run: soup build Source/Extensions/Compiler/MSVC.UnitTests/
+    - name: Run Extensions Compiler MSVC UnitTests
+      run: soup run Source/Extensions/Compiler/MSVC.UnitTests/
+
+    - name: Build Client Core UnitTests
+      run: soup build Source/Client/Core.UnitTests/
+    - name: Run Client Core UnitTests
+      run: soup run Source/Client/Core.UnitTests/
