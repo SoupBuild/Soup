@@ -11,6 +11,7 @@
 
 import Opal;
 import Soup.Build.Execute;
+import Monitor.Shared;
 import json11;
 import SoupTest;
 import SoupTestUtilities;

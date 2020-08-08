@@ -272,7 +272,7 @@ namespace Soup::Compiler
 
 					// Add the DLL as a runtime dependency
 					result.RuntimeDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
-					
+
 					// Clear out all previous link dependencies and replace with the 
 					// single implementation library for the DLL
 					result.LinkDependencies.push_back(linkArguments.RootDirectory + linkArguments.ImplementationFile);
@@ -281,6 +281,9 @@ namespace Soup::Compiler
 				case BuildTargetType::Executable:
 				{
 					linkArguments.TargetType = LinkTarget::Executable;
+
+					// Add the Executable as a runtime dependency
+					result.RuntimeDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
 
 					// All link dependencies stop here.
 					break;

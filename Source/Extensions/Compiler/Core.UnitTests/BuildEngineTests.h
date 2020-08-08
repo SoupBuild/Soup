@@ -26,6 +26,10 @@ namespace Soup::Compiler::UnitTests
 			// Register the mock compiler
 			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
 
+			// Register the test process manager
+			auto processManager = std::make_shared<MockProcessManager>();
+			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+
 			// Setup the build arguments
 			auto arguments = BuildArguments();
 			arguments.TargetName = "Program";
@@ -58,6 +62,15 @@ namespace Soup::Compiler::UnitTests
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+				}),
+				processManager->GetRequests(),
+				"Verify process manager requests match expected.");
 
 			auto expectedCompileArguments = CompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
@@ -127,8 +140,8 @@ namespace Soup::Compiler::UnitTests
 			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
+					Path("C:/testlocation/mkdir.exe"),
+					"\"C:/root/obj\"",
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({
@@ -139,8 +152,8 @@ namespace Soup::Compiler::UnitTests
 					})),
 				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
+					Path("C:/testlocation/mkdir.exe"),
+					"\"C:/root/bin\"",
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({
@@ -166,7 +179,9 @@ namespace Soup::Compiler::UnitTests
 				"Verify Link Dependencies Result");
 
 			Assert::AreEqual(
-				std::vector<Path>({}),
+				std::vector<Path>({
+					Path("C:/root/bin/Program.exe"),
+				}),
 				result.RuntimeDependencies,
 				"Verify Runtime Dependencies Result");
 		}
@@ -177,6 +192,10 @@ namespace Soup::Compiler::UnitTests
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test process manager
+			auto processManager = std::make_shared<MockProcessManager>();
+			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
 			// Register the mock compiler
 			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
@@ -225,6 +244,15 @@ namespace Soup::Compiler::UnitTests
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+				}),
+				processManager->GetRequests(),
+				"Verify process manager requests match expected.");
 
 			// Setup the shared arguments
 			auto expectedCompileArguments = CompileArguments();
@@ -342,8 +370,8 @@ namespace Soup::Compiler::UnitTests
 			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
+					Path("C:/testlocation/mkdir.exe"),
+					"\"C:/root/obj\"",
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({
@@ -352,8 +380,8 @@ namespace Soup::Compiler::UnitTests
 					expectedCompileOperations),
 				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
+					Path("C:/testlocation/mkdir.exe"),
+					"\"C:/root/bin\"",
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({
@@ -392,6 +420,10 @@ namespace Soup::Compiler::UnitTests
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test process manager
+			auto processManager = std::make_shared<MockProcessManager>();
+			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
 			// Register the mock compiler
 			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
@@ -447,6 +479,16 @@ namespace Soup::Compiler::UnitTests
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+				}),
+				processManager->GetRequests(),
+				"Verify process manager requests match expected.");
 
 			// Setup the shared arguments
 			auto expectedCompileArguments = CompileArguments();
@@ -577,8 +619,8 @@ namespace Soup::Compiler::UnitTests
 				Memory::Reference<Build::Utilities::BuildOperation>(
 					new Build::Utilities::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
-						Path("C:/Windows/System32/cmd.exe"),
-						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
+						Path("C:/testlocation/copy.exe"),
+						"\"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
 						Path("./"),
 						std::vector<Path>({
 							Path("C:/root/obj/Public.mock.bmi"),
@@ -608,8 +650,8 @@ namespace Soup::Compiler::UnitTests
 			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
+					Path("C:/testlocation/mkdir.exe"),
+					"\"C:/root/obj\"",
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({
@@ -620,8 +662,8 @@ namespace Soup::Compiler::UnitTests
 					})),
 				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
+					Path("C:/testlocation/mkdir.exe"),
+					"\"C:/root/bin\"",
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({
@@ -665,6 +707,10 @@ namespace Soup::Compiler::UnitTests
 			auto testListener = std::make_shared<TestTraceListener>();
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
+			// Register the test process manager
+			auto processManager = std::make_shared<MockProcessManager>();
+			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+
 			// Register the mock compiler
 			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
 
@@ -707,6 +753,16 @@ namespace Soup::Compiler::UnitTests
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+				}),
+				processManager->GetRequests(),
+				"Verify process manager requests match expected.");
 
 			// Setup the shared arguments
 			auto expectedCompileArguments = CompileArguments();
@@ -769,8 +825,8 @@ namespace Soup::Compiler::UnitTests
 				Memory::Reference<Build::Utilities::BuildOperation>(
 					new Build::Utilities::BuildOperation(
 						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
-						Path("C:/Windows/System32/cmd.exe"),
-						"/C copy /Y \"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
+						Path("C:/testlocation/copy.exe"),
+						"\"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
 						Path("./"),
 						std::vector<Path>({
 							Path("C:/root/obj/Public.mock.bmi"),
@@ -802,8 +858,8 @@ namespace Soup::Compiler::UnitTests
 			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/obj]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C if not exist \"C:/root/obj\" mkdir \"C:/root/obj\"",
+					Path("C:/testlocation/mkdir.exe"),
+					"\"C:/root/obj\"",
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({
@@ -814,8 +870,8 @@ namespace Soup::Compiler::UnitTests
 					})),
 				new Build::Utilities::BuildOperation(
 					"MakeDir [C:/root/bin]",
-					Path("C:/Windows/System32/cmd.exe"),
-					"/C if not exist \"C:/root/bin\" mkdir \"C:/root/bin\"",
+					Path("C:/testlocation/mkdir.exe"),
+					"\"C:/root/bin\"",
 					Path("./"),
 					std::vector<Path>({}),
 					std::vector<Path>({

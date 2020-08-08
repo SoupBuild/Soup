@@ -94,10 +94,15 @@ namespace Soup::Build::Execute::UnitTests
 			fileSystem->CreateMockFile(
 				Path("TestFiles/SimpleBuildHistory/.soup/BuildHistory.json"),
 				std::make_shared<MockFile>(std::stringstream(R"({
-					"knownFiles": [
+					"operations": [
 						{
-							"file": "File.h",
-							"includes": [ "Other.h" ]
+							"command": "./ : dostuff.exe arg1 arg2",
+							"input": [
+								"inputfile.txt"
+							],
+							"output": [
+								"outputfile.txt"
+							]
 						}
 					]
 				})")));
@@ -108,8 +113,12 @@ namespace Soup::Build::Execute::UnitTests
 
 			Assert::IsTrue(result, "Verify result is false.");
 
-			auto expected = BuildHistory({
-					FileInfo(Path("File.h"), { Path("Other.h") }),
+			auto expected = BuildHistory(
+				{
+					OperationInfo(
+						"./ : dostuff.exe arg1 arg2",
+						{ Path("inputfile.txt") },
+						{ Path("outputfile.txt") }),
 				});
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");

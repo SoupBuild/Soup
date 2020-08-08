@@ -19,7 +19,7 @@ namespace Soup::Build::Execute::UnitTests
 		}
 
 		[[Fact]]
-		void Deserialize_MissingKnownFiles()
+		void Deserialize_MissingOperationsThrows()
 		{
 			auto content = std::stringstream(
 				R"({
@@ -31,13 +31,18 @@ namespace Soup::Build::Execute::UnitTests
 		}
 
 		[[Fact]]
-		void Deserialize_MissingFileThrows()
+		void Deserialize_MissingCommandThrows()
 		{
 			auto content = std::stringstream(
 				R"({
-					"knownFiles": [
+					"operations": [
 						{
-							"includes": []
+							"input": [
+								"inputfile.txt"
+							],
+							"output": [
+								"outputfile.txt"
+							]
 						}
 					]
 				})");
@@ -48,13 +53,36 @@ namespace Soup::Build::Execute::UnitTests
 		}
 
 		[[Fact]]
-		void Deserialize_MissingIncludesThrows()
+		void Deserialize_MissingInputThrows()
 		{
 			auto content = std::stringstream(
 				R"({
-					"knownFiles": [
+					"operations": [
 						{
-							"file": "File.h"
+							"command": "./ : dostuff.exe arg1 arg2",
+							"output": [
+								"outputfile.txt"
+							]
+						}
+					]
+				})");
+
+			Assert::ThrowsRuntimeError([&content]() {
+				auto actual = BuildHistoryJson::Deserialize(content);
+			});
+		}
+
+		[[Fact]]
+		void Deserialize_MissingOutputThrows()
+		{
+			auto content = std::stringstream(
+				R"({
+					"operations": [
+						{
+							"command": "./ : dostuff.exe arg1 arg2",
+							"input": [
+								"inputfile.txt"
+							],
 						}
 					]
 				})");
@@ -69,10 +97,15 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto content = std::stringstream(
 				R"({
-					"knownFiles": [
+					"operations": [
 						{
-							"file": "File.h",
-							"includes": [ "Other.h" ]
+							"command": "./ : dostuff.exe arg1 arg2",
+							"input": [
+								"inputfile.txt"
+							],
+							"output": [
+								"outputfile.txt"
+							]
 						}
 					]
 				})");
@@ -80,7 +113,10 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto expected = BuildHistory(
 				{
-					FileInfo(Path("File.h"), { Path("Other.h") }),
+					OperationInfo(
+						"./ : dostuff.exe arg1 arg2",
+						{ Path("inputfile.txt") },
+						{ Path("outputfile.txt") }),
 				});
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -91,14 +127,24 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto content = std::stringstream(
 				R"({
-					"knownFiles": [
+					"operations": [
 						{
-							"file": "File1.h",
-							"includes": [ "Other1.h" ]
+							"command": "./ : dostuff1.exe arg1 arg2",
+							"input": [
+								"inputfile1.txt"
+							],
+							"output": [
+								"outputfile1.txt"
+							]
 						},
 						{
-							"file": "File2.h",
-							"includes": [ "Other2.h" ]
+							"command": "./ : dostuff2.exe arg1 arg2",
+							"input": [
+								"inputfile2.txt"
+							],
+							"output": [
+								"outputfile2.txt"
+							]
 						}
 					]
 				})");
@@ -106,8 +152,14 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto expected = BuildHistory(
 				{
-					FileInfo(Path("File1.h"), { Path("Other1.h") }),
-					FileInfo(Path("File2.h"), { Path("Other2.h") }),
+					OperationInfo(
+						"./ : dostuff1.exe arg1 arg2",
+						{ Path("inputfile1.txt") },
+						{ Path("outputfile1.txt") }),
+					OperationInfo(
+						"./ : dostuff2.exe arg1 arg2",
+						{ Path("inputfile2.txt") },
+						{ Path("outputfile2.txt") }),
 				});
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -116,19 +168,28 @@ namespace Soup::Build::Execute::UnitTests
 		[[Fact]]
 		void Serialize_Simple()
 		{
-			auto state = BuildHistory({
-				FileInfo(Path("File.h"), { Path("Other.h") }),
-			});
+			auto state = BuildHistory(
+				{
+					OperationInfo(
+						"./ : dostuff.exe arg1 arg2",
+						{ Path("inputfile.txt") },
+						{ Path("outputfile.txt") }),
+				});
 
 			std::stringstream actual;
 			BuildHistoryJson::Serialize(state, actual);
 
 			auto expected = 
 				R"({
-					"knownFiles": [
+					"operations": [
 						{
-							"file": "File.h",
-							"includes": [ "Other.h" ]
+							"command": "./ : dostuff.exe arg1 arg2",
+							"input": [
+								"inputfile.txt"
+							],
+							"output": [
+								"outputfile.txt"
+							]
 						}
 					]
 				})";
@@ -139,24 +200,41 @@ namespace Soup::Build::Execute::UnitTests
 		[[Fact]]
 		void Serialize_Multipl()
 		{
-			auto state = BuildHistory({
-				FileInfo(Path("File1.h"), { Path("Other1.h") }),
-				FileInfo(Path("File2.h"), { Path("Other2.h") }),
-			});
+			auto state = BuildHistory(
+				{
+					OperationInfo(
+						"./ : dostuff1.exe arg1 arg2",
+						{ Path("inputfile1.txt") },
+						{ Path("outputfile1.txt") }),
+					OperationInfo(
+						"./ : dostuff2.exe arg1 arg2",
+						{ Path("inputfile2.txt") },
+						{ Path("outputfile2.txt") }),
+				});
 
 			std::stringstream actual;
 			BuildHistoryJson::Serialize(state, actual);
 
 			auto expected = 
 				R"({
-					"knownFiles": [
+					"operations": [
 						{
-							"file": "File1.h",
-							"includes": [ "Other1.h" ]
+							"command": "./ : dostuff1.exe arg1 arg2",
+							"input": [
+								"inputfile1.txt"
+							],
+							"output": [
+								"outputfile1.txt"
+							]
 						},
 						{
-							"file": "File2.h",
-							"includes": [ "Other2.h" ]
+							"command": "./ : dostuff2.exe arg1 arg2",
+							"input": [
+								"inputfile2.txt"
+							],
+							"output": [
+								"outputfile2.txt"
+							]
 						}
 					]
 				})";

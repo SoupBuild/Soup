@@ -8,6 +8,7 @@ class EventLogger
 public:
 	static void Initialize()
 	{
+		DebugTrace("EventLogger::Initialize");
 		Connect();
 
 		// Notify that we are connected
@@ -19,6 +20,7 @@ public:
 
 	static void Shutdown()
 	{
+		DebugTrace("EventLogger::Shutdown");
 		auto lock = std::lock_guard<std::mutex>(s_pipeMutex);
 		Monitor::DetourMessage message;
 		message.Type = Monitor::DetourMessageType::Info_Shutdown;
@@ -42,7 +44,10 @@ public:
 			auto size = stringValue.size() + 1;
 			message.ContentSize += size;
 			if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-				throw std::runtime_error("Message content too long for string value");
+			{
+				WriteError("Message content too long for const char* value");
+				exit(-1234);
+			}
 
 			stringValue.copy(reinterpret_cast<char*>(message.Content + startIndex), size);
 		}
@@ -61,7 +66,10 @@ public:
 			auto size = 2 * (stringValue.size() + 1);
 			message.ContentSize += size;
 			if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-				throw std::runtime_error("Message content too long for string value");
+			{
+				WriteError("Message content too long for const wchar_t* value");
+				exit(-1234);
+			}
 
 			stringValue.copy(reinterpret_cast<wchar_t*>(message.Content + startIndex), size);
 		}
@@ -76,7 +84,10 @@ public:
 		auto startIndex = message.ContentSize;
 		message.ContentSize += sizeof(void*);
 		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long for int value");
+		{
+			WriteError("Message content too long for void* value");
+			exit(-1234);
+		}
 
 		*reinterpret_cast<void**>(message.Content + startIndex) = value;
 	}
@@ -86,7 +97,10 @@ public:
 		auto startIndex = message.ContentSize;
 		message.ContentSize += sizeof(int);
 		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long for int value");
+		{
+			WriteError("Message content too long for int value");
+			exit(-1234);
+		}
 
 		*reinterpret_cast<int*>(message.Content + startIndex) = value;
 	}
@@ -96,7 +110,10 @@ public:
 		auto startIndex = message.ContentSize;
 		message.ContentSize += sizeof(unsigned int);
 		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long for unsigned int value");
+		{
+			WriteError("Message content too long for unsigned int value");
+			exit(-1234);
+		}
 
 		*reinterpret_cast<unsigned int*>(message.Content + startIndex) = value;
 	}
@@ -106,7 +123,10 @@ public:
 		auto startIndex = message.ContentSize;
 		message.ContentSize += sizeof(unsigned long);
 		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long for unsigned long value");
+		{
+			WriteError("Message content too long for unsigned long value");
+			exit(-1234);
+		}
 
 		*reinterpret_cast<unsigned long*>(message.Content + startIndex) = value;
 	}
@@ -116,14 +136,17 @@ public:
 		auto startIndex = message.ContentSize;
 		message.ContentSize += sizeof(unsigned long long);
 		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
-			throw std::runtime_error("Message content too long for unsigned long long value");
+		{
+			WriteError("Message content too long for unsigned long long value");
+			exit(-1234);
+		}
 
 		*reinterpret_cast<unsigned long long*>(message.Content + startIndex) = value;
 	}
 
 	static void WriteError(std::string_view value)
 	{
-		printf("DETOURS-ERROR: %s\n", value.data());
+		DebugError(value.data());
 
 		Monitor::DetourMessage message;
 		message.Type = Monitor::DetourMessageType::Info_Error;
@@ -141,6 +164,7 @@ public:
 private:
 	static void Connect()
 	{
+		DebugTrace("EventLogger::Connect");
 		std::stringstream pipeNameBuilder;
 		pipeNameBuilder << TBLOG_PIPE_NAMEA << "." << s_nTraceProcessId;
 		auto pipeName = pipeNameBuilder.str();
@@ -150,9 +174,11 @@ private:
 		{
 			// Wait up to 1 seconds for a pipe to appear.
 			auto timoutMilliseconds = 1000;
+			DebugTrace("EventLogger::Connect WaitNamedPipeA");
 			if (WaitNamedPipeA(pipeName.c_str(), timoutMilliseconds) != 0)
 			{
 				// Attempt to open the pipe
+				DebugTrace("EventLogger::Connect CreateFileA");
 				s_pipeHandle = Functions::FileApi::Cache::CreateFileA(
 					pipeName.c_str(),
 					GENERIC_WRITE,
@@ -164,16 +190,38 @@ private:
 				if (s_pipeHandle != INVALID_HANDLE_VALUE)
 				{
 					DWORD pipeMode = PIPE_READMODE_MESSAGE;
+					DebugTrace("EventLogger::Connect SetNamedPipeHandleState");
 					if (SetNamedPipeHandleState(s_pipeHandle, &pipeMode, nullptr, nullptr))
 					{
 						// All good!
 						return;
 					}
+					else
+					{
+						auto error = GetLastError();
+						DebugTrace("EventLogger::Connect SetNamedPipeHandleState failed" + std::to_string(error));
+						throw std::runtime_error("SetNamedPipeHandleState failed with unknown error.");
+					}
+				}
+			}
+			else
+			{
+				auto error = GetLastError();
+				switch (error)
+				{
+					case ERROR_SEM_TIMEOUT:
+						// Keep waiting
+						DebugTrace("EventLogger::Connect WaitNamedPipeA ERROR_SEM_TIMEOUT");
+						break;
+					default:
+						DebugTrace("EventLogger::Connect WaitNamedPipeA Unknown error " + std::to_string(error));
+						throw std::runtime_error("WaitNamedPipeA failed with unknown error.");
 				}
 			}
 		}
 
 		// Couldn't open pipe.
+		DebugTrace("EventLogger::Connect failed");
 		throw std::runtime_error("Failed to open pipe for event logger.");
 	}
 
@@ -181,7 +229,7 @@ private:
 	{
 		if (s_pipeHandle == INVALID_HANDLE_VALUE)
 		{
-			printf("DETOURS-ERROR: Handle not ready!! %u\n", (uint32_t)message.Type);
+			DebugError("Handle not ready", (uint32_t)message.Type);
 			exit(-1234);
 		}
 
@@ -197,15 +245,32 @@ private:
 			&countBytesWritten,
 			nullptr))
 		{
-			printf("DETOURS-ERROR: Failed write event logger\n", (uint32_t)message.Type);
+			DebugError("DETOURS-CLIENT-ERROR: Failed write event logger");
 			exit(-1234);
 		}
 
 		if (countBytesWritten != countBytesToWrite)
 		{
-			printf("Did not write the expected number of bytes\n", (uint32_t)message.Type);
+			DebugError("Did not write the expected number of bytes");
 			exit(-1234);
 		}
+	}
+
+	static void DebugError(std::string_view message, uint32_t value)
+	{
+		printf("DETOUR-CLIENT: ERROR %s %u", message.data(), value);
+	}
+
+	static void DebugError(std::string_view message)
+	{
+		printf("DETOUR-CLIENT: ERROR %s", message.data());
+	}
+
+	static void DebugTrace(std::string_view message)
+	{
+#ifdef TRACE_DETOUR_CLIENT
+		printf("DETOUR-CLIENT: %s", message.data());
+#endif
 	}
 
 private:

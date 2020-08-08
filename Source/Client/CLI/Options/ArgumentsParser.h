@@ -95,7 +95,13 @@ namespace Soup::Client
 				auto argument = std::string();
 				if (TryGetIndexArgument(unusedArgs, argument))
 				{
-					options->Package = std::move(argument);
+					options->Path = std::move(argument);
+				}
+
+				auto PackageReference = std::string();
+				if (TryGetValueArgument("p", unusedArgs, PackageReference))
+				{
+					options->PackageReference = std::move(PackageReference);
 				}
 
 				options->Verbosity = CheckVerbosity(unusedArgs);
@@ -130,8 +136,19 @@ namespace Soup::Client
 				auto syntheticParams = std::vector<std::string>();
 				options->Verbosity = CheckVerbosity(syntheticParams);
 
+				// Split all parameters after the args flag to pass into the run command
+				std::vector<std::string> runArgs;
+				SplitArguments("args", unusedArgs, runArgs);
+
+				// Check for required index argument
+				auto argument = std::string();
+				if (TryGetIndexArgument(unusedArgs, argument))
+				{
+					options->Path = std::move(argument);
+				}
+
 				// All remaining arguments are passed to the executable
-				options->Arguments = std::move(unusedArgs);
+				options->Arguments = std::move(runArgs);
 
 				result = std::move(options);
 			}
@@ -233,6 +250,20 @@ namespace Soup::Client
 			else
 			{
 				return false;
+			}
+		}
+
+		static void SplitArguments(const char* name, std::vector<std::string>& unusedArgs, std::vector<std::string>& splitArgs)
+		{
+			auto flagValue = std::string("-") + name;
+			Log::Diag("IsFlagSet: " + flagValue);
+			auto flagLocation = std::find(unusedArgs.begin(), unusedArgs.end(), flagValue);
+			if (flagLocation != unusedArgs.end())
+			{
+				// Consume the flag value
+				auto argsStart = std::next(flagLocation);
+				std::move(argsStart, unusedArgs.end(), std::back_inserter(splitArgs));
+				unusedArgs.erase(flagLocation, unusedArgs.end());
 			}
 		}
 
