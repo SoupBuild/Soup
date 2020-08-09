@@ -536,8 +536,8 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
 					"DIAG: Check for updated source",
-					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434993000]",
-					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
+					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434964200]",
+					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434964260]",
 					"INFO: Input altered after target [C:/TestWorkingDirectory/InputFile.in] -> [C:/TestWorkingDirectory/OutputFile.out]",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: Command.exe Arguments",
@@ -648,8 +648,8 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
 					"DIAG: Check for updated source",
-					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434993120]",
-					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434993060]",
+					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434964320]",
+					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434964260]",
 					"INFO: Up to date",
 					"INFO: TestCommand: 1",
 					"INFO: Saving updated build state",
