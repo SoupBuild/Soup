@@ -2,8 +2,13 @@
 .vs/
 *.user
 .vscode/ipch/
+packages/
 
 # Build
 out/
 bin/
 obj/
+
+# Wix
+msi/
+wix/
