@@ -27,7 +27,7 @@ class Script
 			});
 
 		project.Platform = Platform.x64;
-		project.Version = new Version(0, 8, 5);
+		project.Version = new Version(0, 8, 6);
 		project.GUID = new Guid("2CF2A792-A266-416D-ACF9-B81781DC2B76");
 		project.BackgroundImage = @"Images\DialogBackground.bmp";
 		project.BannerImage = @"Images\DialogBanner.bmp";
