@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "Executable",
   "dependencies": [
-    "../../../Dependencies/json11/",
+    "json11@1.0.0",
     "../../../Dependencies/SoupTest/Assert/",
     "../RecipeBuildExtension/",
     "../../TestUtilities/"

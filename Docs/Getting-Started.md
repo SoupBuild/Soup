@@ -9,10 +9,17 @@ Note: While Clang will work, there is still work to auto-detect an installation 
   * [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/) with "Desktop development with c++" workload.
   * OR
   * [Build Tools For Visual Studio 2019](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) with "c++ build tools" workload.
-* [Latest Release](https://github.com/mwasplund/Soup/releases)
+* [Latest Release](https://github.com/mwasplund/Soup/releases/latest)
 
 ## Setup
-Place the Soup release somewhere safe and add it to your path in a command prompt.
+
+### Run Installer
+Download and run the Soup.msi installer. 
+
+Note: The installer is not yet signed and you will have to ignore some scary warnings. We will start paying for the cerfiticate when it is no longer in Alpha.
+
+### Download Archive
+Unzip the Soup release somewhere safe and add it to your path in a command prompt.
 
 ```
 set PATH=%PATH%;C:\Soup\bin\
@@ -20,7 +27,6 @@ set PATH=%PATH%;C:\Soup\bin\
 Or add it to the "Path" System Environment Variable to always have it available!
 
 ## Create First Project
-
 Run Initialize command to create a new project!
 ```
 mkdir MyProject
@@ -29,17 +35,14 @@ soup initialize
 ```
 
 ## Build First Project
-
 ```
 soup build
 ```
 
 ## Run First Project
-
 ```
 soup run
 ```
 
 ## Enjoy!
-
 Check out the other [Samples](./Samples.md).

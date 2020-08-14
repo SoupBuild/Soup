@@ -3,9 +3,7 @@ Version = "0.1.0"
 
 Dependencies = [
 	"../../../Dependencies/LzmaSdk/CPP/Library/",
-	# "../../../Dependencies/json11/",
 	"json11@1.0.0",
-	# "../../../Dependencies/toml11/",
 	"toml11@1.0.0",
 	"../OpalExtensions/",
 	"../../Build/Contracts/",

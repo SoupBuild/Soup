@@ -2,7 +2,7 @@ Name = "Monitor.Shared"
 Version = "1.0.0"
 Dependencies = [
     "../../../Dependencies/Detours/src/",
-    "../../../Dependencies/Opal/Source/",
+    "Opal@0.1.3",
 ]
 Defines = [
     # "TRACE_DETOUR_SERVER",

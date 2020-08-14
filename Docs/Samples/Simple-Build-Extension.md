@@ -10,7 +10,7 @@ Name = "SimpleBuildExtension"
 Type = "DynamicLibrary"
 Version = "1.0.0"
 Dependencies = [
-    "Opal@0.1.2",
+    "Opal@0.1.3",
     "Soup.Build@0.3.0",
     "Soup.Build.Utilities@0.3.0",
 ]
@@ -44,7 +44,7 @@ namespace SimpleBuildExtension
         /// <summary>
         /// Get the run before list
         /// </summary>
-        Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
+        const Soup::Build::IReadOnlyList<const char*>& GetRunBeforeList() const noexcept override final
         {
             return _runBeforeList;
         }
@@ -52,7 +52,7 @@ namespace SimpleBuildExtension
         /// <summary>
         /// Get the run after list
         /// </summary>
-        Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
+        const Soup::Build::IReadOnlyList<const char*>& GetRunAfterList() const noexcept override final
         {
             return _runAfterList;
         }
@@ -60,7 +60,7 @@ namespace SimpleBuildExtension
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        Soup::Build::ApiCallResult Execute(
+        Soup::Build::ApiCallResult TryExecute(
             Soup::Build::IBuildState& buildState) noexcept override final
         {
             auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
@@ -70,12 +70,12 @@ namespace SimpleBuildExtension
                 // We cannot throw accross the DLL boundary for a build extension
                 // So all internal errors must be converted to error codes
                 Execute(buildStateWrapper);
-                return 0;
+                return Soup::Build::ApiCallResult::Success;
             }
             catch(...)
             {
                 buildStateWrapper.LogError("Unknown Error!");
-                return -1;
+                return Soup::Build::ApiCallResult::Error;
             }
         }
 
@@ -126,7 +126,7 @@ namespace SimpleBuildExtension
         /// <summary>
         /// Get the run before list
         /// </summary>
-        Soup::Build::IList<const char*>& GetRunBeforeList() noexcept override final
+        const Soup::Build::IReadOnlyList<const char*>& GetRunBeforeList() const noexcept override final
         {
             return _runBeforeList;
         }
@@ -134,7 +134,7 @@ namespace SimpleBuildExtension
         /// <summary>
         /// Get the run after list
         /// </summary>
-        Soup::Build::IList<const char*>& GetRunAfterList() noexcept override final
+        const Soup::Build::IReadOnlyList<const char*>& GetRunAfterList() const noexcept override final
         {
             return _runAfterList;
         }
@@ -142,7 +142,7 @@ namespace SimpleBuildExtension
         /// <summary>
         /// The Core Execute task
         /// </summary>
-        Soup::Build::ApiCallResult Execute(
+        Soup::Build::ApiCallResult TryExecute(
             Soup::Build::IBuildState& buildState) noexcept override final
         {
             auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
@@ -152,12 +152,12 @@ namespace SimpleBuildExtension
                 // We cannot throw accross the DLL boundary for a build extension
                 // So all internal errors must be converted to error codes
                 Execute(buildStateWrapper);
-                return 0;
+                return Soup::Build::ApiCallResult::Success;
             }
             catch(...)
             {
                 buildStateWrapper.LogError("Unknown Error!");
-                return -1;
+                return Soup::Build::ApiCallResult::Error;
             }
         }
 
@@ -205,7 +205,7 @@ import Soup.Build.Utilities;
 #include "AfterBuildTask.h"
 #include "BeforeBuildTask.h"
 
-#define DllExport __declspec( dllexport )
+#define DllExport __declspec(dllexport)
 extern "C"
 {
     DllExport int RegisterBuildExtension(Soup::Build::IBuildSystem& buildSystem)
@@ -213,12 +213,14 @@ extern "C"
         // Register the before build task
         auto beforeBuildtask = Opal::Memory::Reference<SimpleBuildExtension::BeforeBuildTask>(
             new SimpleBuildExtension::BeforeBuildTask());
-        buildSystem.RegisterTask(beforeBuildtask.GetRaw());
+        if (buildSystem.TryRegisterTask(beforeBuildtask.GetRaw()) != Soup::Build::ApiCallResult::Success)
+            return -1;
 
         // Register the after build task
         auto afterBuildtask = Opal::Memory::Reference<SimpleBuildExtension::AfterBuildTask>(
             new SimpleBuildExtension::AfterBuildTask());
-        buildSystem.RegisterTask(afterBuildtask.GetRaw());
+        if (buildSystem.TryRegisterTask(afterBuildtask.GetRaw()) != Soup::Build::ApiCallResult::Success)
+            return -1;
 
         return 0;
     }
