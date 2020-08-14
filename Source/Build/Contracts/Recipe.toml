@@ -4,8 +4,7 @@ the stable Binary Interface layer between the Build Evaluation
 engine and the Extensions."""
 Version = "0.3.0"
 Dependencies = [
-	"../../../Dependencies/Opal/Source/",
-	# "Opal@0.1.2",
+	"Opal@0.1.3",
 ]
 
 Public = "Module.cpp"
