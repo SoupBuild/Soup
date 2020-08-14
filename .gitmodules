@@ -7,9 +7,6 @@
 [submodule "Dependencies/Antlr4"]
 	path = Dependencies/Antlr4
 	url = https://github.com/mwasplund/Antlr4.git
-[submodule "Dependencies/toml11"]
-	path = Dependencies/toml11
-	url = https://github.com/mwasplund/toml11.git
 [submodule "Dependencies/cpp-httplib"]
 	path = Dependencies/cpp-httplib
 	url = https://github.com/mwasplund/cpp-httplib.git
