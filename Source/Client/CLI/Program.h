@@ -7,11 +7,9 @@
 #include "BuildCommand.h"
 #include "InitializeCommand.h"
 #include "InstallCommand.h"
-#include "PackCommand.h"
 #include "PublishCommand.h"
 #include "RunCommand.h"
 #include "VersionCommand.h"
-#include "ViewCommand.h"
 
 namespace Soup::Client
 {
@@ -170,14 +168,6 @@ namespace Soup::Client
 				std::move(options));
 		}
 
-		std::shared_ptr<ICommand> Setup(PackOptions options)
-		{
-			Log::Diag("Setup PackCommand");
-			SetupShared(options);
-			return std::make_shared<PackCommand>(
-				std::move(options));
-		}
-
 		std::shared_ptr<ICommand> Setup(PublishOptions options)
 		{
 			Log::Diag("Setup PublishCommand");
@@ -191,14 +181,6 @@ namespace Soup::Client
 			Log::Diag("Setup VersionCommand");
 			SetupShared(options);
 			return std::make_shared<VersionCommand>(
-				std::move(options));
-		}
-
-		std::shared_ptr<ICommand> Setup(ViewOptions options)
-		{
-			Log::Diag("Setup ViewCommand");
-			SetupShared(options);
-			return std::make_shared<ViewCommand>(
 				std::move(options));
 		}
 

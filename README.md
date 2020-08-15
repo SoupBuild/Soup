@@ -1,30 +1,32 @@
 # Soup Build
 
 ## Quick Links
-* [Soup Build](https://www.soupbuild.com/)
+* [Soup Build Website](https://www.soupbuild.com/)
 * [Getting Started](./Docs/Getting-Started.md)
 * [Command Line Interface (CLI)](./Docs/CLI.md)
 * [Samples](./Docs/Samples.md)
 * [Architecture](./Docs/Architecture.md)
+* [C++ Modules Posts of Interest](./Docs/Posts-Of-Interest.md)
 
 ## Overview
-Soup is a build system that was created to simplify many aspects of developing C++. Soup was built from the ground up with C++20 Modules as a core principle for inter-project references. By only sharing a single module interface between the individual packages we can ensure that the internals of one project will not "leak" into other downstream dependencies. Soup also uses "just in time" compiled binaries to implement build extensions. These two aspects together allows for easy authoring of a project with custom build steps that can be shared with other teams or organizations (Package Manager!) and will allow for the ability to introduce breaking syntax changes in future versions of C++ while maintaining interface level compatibility (Epochs!).
+Soup is a build system that was created with the primary goal of simplifying the development and sharing of C++ code. Soup was built from the ground up with C++20 Modules as a core principal to support inter-project references. By sharing a single module interface between the individual packages the build system can ensure that the internals of one project will not "leak" into and out of external dependencies.
 
-## Design Goals
+Soup utilizes a combination of a declarative frontend Recipe along with the ability to write native C++ Extensions to inject custom logic into the build runtime. Most developers will work entirely within the declarative Recipe that allows for a simple to understand and author build definition, however the full power of C++ is available to the build system engineers that need it.
 
-### Reproducible
-Core to any build system is the requirement that a build be deterministic and reproducible. By integrating the entire build system as extensions of a simple core build authoring engine a Soup build will easily be able to recreate the exact environment that was used to compile past versions of any project. (Note: While Soup holds this requirement for it's own Build Extensions, it will fall on the community to ensure that we keep this goal top of mind when writing custom builds).
+The clean isolation of individual projects and the ability to write custom build logic that will be integrated into the shared runtime work together to allow for easy authoring of a package that can be shared with other teams or organizations through a public source based [Package Manager](https://www.soupbuild.com/).
 
-### Shareable
-Because C++ is a fully compiled language with ABI compatibility issues, sharing libraries has always been painful. By writing the entire build system in an integrated extension mechanism that relies on the ability to compile C++ extensions at build time all packages can be shared through **sou**rce **p**ackages. This will allow for seamless integration with the package manager.
+More Information:
+* [Design Proposal](./Docs/Proposal.md) - An in depth writeup of the original justification for the project.
+* [Architecture](./Docs/Architecture.md) - An up to date breakdown of the Build Runtime and Design.
+* [Design Requirements and Goals](./Docs/Design-Requirements-Goals.md) - An up to date set of design goals taken from the original design proposal.
+* [Command Line Interface (CLI)](./Docs/CLI.md) - The help documentation for the Soup Command line application.
 
-### Simplicity
-Soups primary goal is to make building C++ simple. It strives to have the smallest number of steps to get a new project up and running, while having an extensibility framework to support the complexity of large projects with unique requirements.
-
-### Isolation
-A common problem with C++ builds today is the leaking of one individual components internals into downstream dependencies through header includes. Soup natively supports binary module interfaces as the default mechanism for sharing public symbols between components. This alleviates the need to match preprocessor definitions between a project and it's dependencies. The isolation also allows for better compartmentalization of components which leads to better architected code with a clean separation between public and internal symbols.
+## Release Status
+Soup is currently in an `Alpha` stage. This means that anyone is welcome to play around with the source code or the releases on GitHub, however there may be breaking changes in the internal structures and definitions as work is completed and therefor it should not be used in any production capacity. The design is stabilizing over time and will enter a [Beta](https://github.com/mwasplund/Soup/milestone/1) when we believe there will be no more breaking changes or security concerns that would block a first release.
 
 ## Contributing
-Soup is currently in active prototyping and testing. If you are interested in contributing to the project feel free to submit a PR or file an issue with a suggestion/bug. Otherwise download the latest release to give it a try! We are always open to feedback, good or bad :smile:.
+Soup is currently in active prototyping and testing. If you are interested in contributing to the project feel free to submit a PR or download the latest release and file an issue with suggestions or bugs. :smile:.
 * [Getting Started](./Docs/Getting-Started.md)
 * [Samples](./Docs/Samples.md)
+* [Developer Setup](./Docs/Developer-Setup.md)
+* [Create Release](./Docs/Create-Release.md)
