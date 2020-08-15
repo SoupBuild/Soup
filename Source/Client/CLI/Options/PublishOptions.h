@@ -13,6 +13,7 @@ namespace Soup::Client
 	// TODO: [Verb("publish")]
 	class PublishOptions : public SharedOptions
 	{
+	public:
 		/// <summary>
 		/// Gets or sets the path to publish
 		/// </summary>

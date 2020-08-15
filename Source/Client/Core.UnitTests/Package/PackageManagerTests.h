@@ -683,7 +683,7 @@ Dependencies = [
 
 			// Create the Recipe
 			fileSystem->CreateMockFile(
-				Path("Recipe.toml"),
+				Path("C:/TestLocation/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
@@ -716,13 +716,13 @@ Dependencies = [
 				"");
 			testApiHttpClient->AddPutResponse("/v1/packages/MyPackage/v1.2.3", packageResult);
 
-			auto packageName = "TheirPackage";
-			PackageManager::PublishPackage();
+			auto workingDirectory = Path("C:/TestLocation");
+			PackageManager::PublishPackage(workingDirectory);
 
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Publish Project: {recipe.Name}@{recipe.Version}",
-					"DIAG: Load Recipe: Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/Recipe.toml",
 					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
 					"INFO: UpdateStart: 0",
 					"INFO: UpdateProgress: 0.000000",
@@ -751,12 +751,12 @@ Dependencies = [
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Recipe.toml",
-					"OpenReadBinary: Recipe.toml",
+					"Exists: C:/TestLocation/Recipe.toml",
+					"OpenReadBinary: C:/TestLocation/Recipe.toml",
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
-					"GetDirectoryChildren: ./",
+					"GetDirectoryChildren: C:/TestLocation",
 					"OpenWriteBinary: C:/Users/Me/.soup/packages/.staging/MyPackage.7z",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/.staging/MyPackage.7z",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",
@@ -811,7 +811,7 @@ Dependencies = [
 
 			// Create the Recipe
 			fileSystem->CreateMockFile(
-				Path("Recipe.toml"),
+				Path("C:/TestLocation/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Version = "1.2.3"
@@ -854,13 +854,13 @@ Dependencies = [
 				"");
 			testApiHttpClient->AddPutResponse("/v1/packages/MyPackage/v1.2.3", publishPackageResultSuccess);
 
-			auto packageName = "TheirPackage";
-			PackageManager::PublishPackage();
+			auto workingDirectory = Path("C:/TestLocation");
+			PackageManager::PublishPackage(workingDirectory);
 
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Publish Project: {recipe.Name}@{recipe.Version}",
-					"DIAG: Load Recipe: Recipe.toml",
+					"DIAG: Load Recipe: C:/TestLocation/Recipe.toml",
 					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
 					"INFO: UpdateStart: 0",
 					"INFO: UpdateProgress: 0.000000",
@@ -895,12 +895,12 @@ Dependencies = [
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Recipe.toml",
-					"OpenReadBinary: Recipe.toml",
+					"Exists: C:/TestLocation/Recipe.toml",
+					"OpenReadBinary: C:/TestLocation/Recipe.toml",
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging",
-					"GetDirectoryChildren: ./",
+					"GetDirectoryChildren: C:/TestLocation",
 					"OpenWriteBinary: C:/Users/Me/.soup/packages/.staging/MyPackage.7z",
 					"OpenReadBinary: C:/Users/Me/.soup/packages/.staging/MyPackage.7z",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging",

@@ -6,11 +6,9 @@
 #include "BuildOptions.h"
 #include "InitializeOptions.h"
 #include "InstallOptions.h"
-#include "PackOptions.h"
 #include "PublishOptions.h"
 #include "RunOptions.h"
 #include "VersionOptions.h"
-#include "ViewOptions.h"
 
 namespace Soup::Client
 {

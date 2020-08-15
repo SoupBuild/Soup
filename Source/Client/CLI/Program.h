@@ -82,14 +82,10 @@ namespace Soup::Client
 					command = Setup(arguments.ExtractResult<InitializeOptions>());
 				else if (arguments.IsA<InstallOptions>())
 					command = Setup(arguments.ExtractResult<InstallOptions>());
-				else if (arguments.IsA<PackOptions>())
-					command = Setup(arguments.ExtractResult<PackOptions>());
 				else if (arguments.IsA<PublishOptions>())
 					command = Setup(arguments.ExtractResult<PublishOptions>());
 				else if (arguments.IsA<VersionOptions>())
 					command = Setup(arguments.ExtractResult<VersionOptions>());
-				else if (arguments.IsA<ViewOptions>())
-					command = Setup(arguments.ExtractResult<ViewOptions>());
 				else
 					throw std::runtime_error("Unknown arguments");
 
