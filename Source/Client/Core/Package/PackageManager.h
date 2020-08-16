@@ -148,11 +148,10 @@ namespace Soup
 		/// <summary>
 		/// Publish a package
 		/// </summary>
-		static void PublishPackage()
+		static void PublishPackage(const Path& workingDirectory)
 		{
 			Log::Info("Publish Project: {recipe.Name}@{recipe.Version}");
 
-			auto workingDirectory = Path();
 			auto recipePath =
 				workingDirectory +
 				Path(Constants::RecipeFileName);

@@ -6,11 +6,9 @@
 #include "BuildOptions.h"
 #include "InitializeOptions.h"
 #include "InstallOptions.h"
-#include "PackOptions.h"
 #include "PublishOptions.h"
 #include "RunOptions.h"
 #include "VersionOptions.h"
-#include "ViewOptions.h"
 
 namespace Soup::Client
 {
@@ -108,20 +106,19 @@ namespace Soup::Client
 
 				result = std::move(options);
 			}
-			else if (commandType == "pack")
-			{
-				Log::Diag("Parse pack");
-
-				auto options = std::make_unique<PackOptions>();
-				options->Verbosity = CheckVerbosity(unusedArgs);
-
-				result = std::move(options);
-			}
 			else if (commandType == "publish")
 			{
 				Log::Diag("Parse publish");
 
 				auto options = std::make_unique<PublishOptions>();
+
+				// Check for required index argument
+				auto argument = std::string();
+				if (TryGetIndexArgument(unusedArgs, argument))
+				{
+					options->Path = std::move(argument);
+				}
+				
 				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
@@ -157,15 +154,6 @@ namespace Soup::Client
 				Log::Diag("Parse version");
 
 				auto options = std::make_unique<VersionOptions>();
-				options->Verbosity = CheckVerbosity(unusedArgs);
-
-				result = std::move(options);
-			}
-			else if (commandType == "view")
-			{
-				Log::Diag("Parse view");
-
-				auto options = std::make_unique<ViewOptions>();
 				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);

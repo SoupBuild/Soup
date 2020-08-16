@@ -13,7 +13,7 @@ namespace Soup::Client::UnitTests
 		[[Fact]]
 		void Initialize()
 		{
-			auto uut = PackCommand();
+			auto uut = InstallCommand();
 		}
 	};
 }

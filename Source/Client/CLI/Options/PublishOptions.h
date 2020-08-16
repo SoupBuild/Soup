@@ -13,5 +13,11 @@ namespace Soup::Client
 	// TODO: [Verb("publish")]
 	class PublishOptions : public SharedOptions
 	{
+	public:
+		/// <summary>
+		/// Gets or sets the path to publish
+		/// </summary>
+		[[Args::Option("path", Index = 0, HelpText = "Path to the package to publish.")]]
+		std::string Path;
 	};
 }

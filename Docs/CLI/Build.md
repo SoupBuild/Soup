@@ -2,10 +2,10 @@
 ## Overview
 Build a recipe and all transitive dependencies.
 ```
-soup build <directory> [-flavor <name>|-force]
+soup build <path> [-flavor <name>|-force]
 ```
 
-`directory` - An optional parameter that directly follows the build command. If present this specifies the directory to look for a recipe file to build. If not present then the build command will use the current active directory.
+`path` - An optional parameter that directly follows the build command. If present this specifies the directory to look for a Recipe file to build. If not present then the command will use the current active directory.
 
 `-flavor <name>` - An optional parameter to specify the build flavor. Common values include `debug` or `release`. If not present the build will default to `release`.
 
