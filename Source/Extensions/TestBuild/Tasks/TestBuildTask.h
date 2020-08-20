@@ -55,6 +55,11 @@ namespace Soup::Test
 				Execute(buildStateWrapper);
 				return Soup::Build::ApiCallResult::Success;
 			}
+			catch(const std::exception& ex)
+			{
+				buildStateWrapper.LogError(ex.what());
+				return Soup::Build::ApiCallResult::Error;
+			}
 			catch(...)
 			{
 				buildStateWrapper.LogError("Unknown Error");
@@ -79,6 +84,7 @@ namespace Soup::Test
 			}
 
 			auto arguments = Soup::Compiler::BuildArguments();
+			arguments.TargetArchitecture = activeState.GetValue("BuildArchitecture").AsString().GetValue();
 
 			// Load up the common build properties from the original Build table in the active state
 			auto activeBuildTable = activeState.GetValue("Build").AsTable();
