@@ -4,7 +4,7 @@ Version = "1.0.0"
 Type = "Executable"
 Dependencies = [
     "../../../Dependencies/Detours/src/",
-    "Opal@0.1.3",
+    "Opal@0.1.4",
     "../Shared/",
 ]
 Source = [

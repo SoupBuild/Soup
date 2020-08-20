@@ -23,7 +23,7 @@ using namespace Opal;
 
 std::shared_ptr<Soup::Compiler::ICompiler> CreateMSVCCompiler(Soup::Build::Utilities::ValueTableWrapper& activeState)
 {
-	auto visualCompilerToolsRoot = activeState.GetValue("MSVC.VCToolsBinRoot").AsString().GetValue();
+	auto visualCompilerToolsRoot = activeState.GetValue("MSVC.VCToolsBinaryRoot").AsString().GetValue();
 	std::shared_ptr<Soup::Compiler::ICompiler> compiler = std::make_shared<Soup::Compiler::MSVC::Compiler>(
 		Path(visualCompilerToolsRoot),
 		Path("cl.exe"),
@@ -37,6 +37,9 @@ extern "C"
 {
 	DllExport int RegisterBuildExtension(Soup::Build::IBuildSystem& buildSystem)
 	{
+		// Setup the real services
+		System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
+
 		// Register all known compilers
 		auto compilerFactory = Soup::Test::CompilerFactory();
 		compilerFactory.emplace("MSVC", CreateMSVCCompiler);

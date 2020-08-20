@@ -7,7 +7,7 @@ Dependencies = [
 	# "Soup.Build@0.3.0",
 	"../Utilities/",
 	# "Soup.Build.Utilities@0.3.0",
-	"Opal@0.1.3",
+	"Opal@0.1.4",
 ]
 
 Public = "Module.cpp"

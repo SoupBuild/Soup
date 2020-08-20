@@ -17,7 +17,8 @@ namespace Soup
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LzmaUpdateCallback"/> class.
 		/// </summary>
-		LzmaUpdateCallback()
+		LzmaUpdateCallback(Path workingDirectory) :
+			_workingDirectory(std::move(workingDirectory))
 		{
 		}
 
@@ -46,16 +47,18 @@ namespace Soup
 		std::shared_ptr<LzmaSdk::ISequentialInStream> GetStream(
 			std::string_view path) override final
 		{
-			auto currentFilePath = Path(path);
-			Log::Info("UpdateGetStream: " + currentFilePath.ToString());
+			auto currentFile = Path(path);
+			Log::Info("UpdateGetStream: " + currentFile.ToString());
 
-			auto currentFile = System::IFileSystem::Current().OpenRead(currentFilePath, true);
-			auto outStream = std::make_shared<LzmaInStream>(currentFile);
+			auto currentFilePath = _workingDirectory + currentFile;
+			auto currentFileStream = System::IFileSystem::Current().OpenRead(currentFilePath, true);
+			auto outStream = std::make_shared<LzmaInStream>(currentFileStream);
 
 			return outStream;
 		}
 
 	private:
+		Path _workingDirectory;
 		uint64_t _size;
 	};
 }

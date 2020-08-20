@@ -180,7 +180,7 @@ namespace Soup
 					auto archive = LzmaSdk::ArchiveWriter(outStream);
 					archive.AddFiles(files);
 
-					auto callback = std::make_shared<LzmaUpdateCallback>();
+					auto callback = std::make_shared<LzmaUpdateCallback>(workingDirectory);
 					archive.Save(callback);
 				}
 
@@ -326,9 +326,9 @@ namespace Soup
 			return package;
 		}
 
-		static std::vector<std::string> GetPackageFiles(const Path& workingDirectory)
+		static std::vector<LzmaSdk::FileProperties> GetPackageFiles(const Path& workingDirectory)
 		{
-			auto result = std::vector<std::string>();
+			auto result = std::vector<LzmaSdk::FileProperties>();
 
 			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(workingDirectory))
 			{
@@ -337,7 +337,7 @@ namespace Soup
 					// Ignore output folder
 					if (child.Path.GetFileName() != "out")
 					{
-						auto directoryFiles = GetAllFilesRecursive(child.Path);
+						auto directoryFiles = GetAllFilesRecursive(child.Path, workingDirectory);
 						result.insert(
 							result.end(),
 							directoryFiles.begin(),
@@ -346,22 +346,30 @@ namespace Soup
 				}
 				else
 				{
-					result.push_back(child.Path.ToString());
+					auto relativePath = child.Path.GetRelativeTo(workingDirectory);
+					auto fileProperties = LzmaSdk::FileProperties();
+					fileProperties.Name = relativePath.ToString();
+					fileProperties.Size = child.Size;
+					fileProperties.CreateTime = child.CreateTime;
+					fileProperties.AccessTime = child.AccessTime;
+					fileProperties.ModifiedTime = child.ModifiedTime;
+					fileProperties.Attributes = child.Attributes;
+					result.push_back(std::move(fileProperties));
 				}
 			}
 
 			return result;
 		}
 
-		static std::vector<std::string> GetAllFilesRecursive(const Path& directory)
+		static std::vector<LzmaSdk::FileProperties> GetAllFilesRecursive(const Path& directory, const Path& workingDirectory)
 		{
-			auto result = std::vector<std::string>();
+			auto result = std::vector<LzmaSdk::FileProperties>();
 
 			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(directory))
 			{
 				if (child.IsDirectory)
 				{
-					auto directoryFiles = GetAllFilesRecursive(child.Path);
+					auto directoryFiles = GetAllFilesRecursive(child.Path, workingDirectory);
 					result.insert(
 						result.end(),
 						directoryFiles.begin(),
@@ -369,7 +377,15 @@ namespace Soup
 				}
 				else
 				{
-					result.push_back(child.Path.ToString());
+					auto relativePath = child.Path.GetRelativeTo(workingDirectory);
+					auto fileProperties = LzmaSdk::FileProperties();
+					fileProperties.Name = relativePath.ToString();
+					fileProperties.Size = child.Size;
+					fileProperties.CreateTime = child.CreateTime;
+					fileProperties.AccessTime = child.AccessTime;
+					fileProperties.ModifiedTime = child.ModifiedTime;
+					fileProperties.Attributes = child.Attributes;
+					result.push_back(std::move(fileProperties));
 				}
 			}
 

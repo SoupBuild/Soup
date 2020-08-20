@@ -1,9 +1,7 @@
-Name = "SoupCompilerCore"
-Version = "0.1.0"
+Name = "Soup.Build.Compiler"
+Version = "0.3.0"
 Dependencies = [
-	"../../../Tools/Copy/",
-	"../../../Tools/Mkdir/",
-	"Opal@0.1.3",
+	"Opal@0.1.4",
 	"../../../Build/Utilities/",
 	# "Soup.Build.Utilities@0.3.0",
 ]

@@ -2,7 +2,7 @@ Name = "Soup.RecipeBuild"
 Type = "DynamicLibrary"
 Version = "1.0.0"
 Dependencies = [
-	"Opal@0.1.3",
+	"Opal@0.1.4",
 	"../../Build/Evaluate/",
 	"../Compiler/Core/",
 	"../Compiler/Clang/",
