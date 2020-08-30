@@ -13,4 +13,6 @@ soup <command> [arguments]
 
 [Publish](CLI/Publish.md)
 
+[Run](CLI/Run.md)
+
 [Version](CLI/Version.md)
