@@ -10,6 +10,11 @@ namespace Monitor
 		{
 		}
 
+		void OnInitialize() override final
+		{
+			m_stream << "Initialize: " << std::endl;
+		}
+
 		void OnShutdown() override final
 		{
 			m_stream << "Shutdown: " << std::endl;
@@ -53,12 +58,24 @@ namespace Monitor
 			m_stream << "CreateFile2: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnCreateFileA(std::string_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition, uint32_t flagsAndAttributes) override final
+		void OnCreateFileA(
+			std::string_view fileName,
+			uint32_t desiredAccess,
+			uint32_t sharedMode,
+			uint32_t creationDisposition,
+			uint32_t flagsAndAttributes,
+			uint64_t result) override final
 		{
 			m_stream << "CreateFileA: " << fileName << std::endl;
 		}
 
-		void OnCreateFileW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t sharedMode, uint32_t creationDisposition, uint32_t flagsAndAttributes) override final
+		void OnCreateFileW(
+			std::wstring_view fileName,
+			uint32_t desiredAccess,
+			uint32_t sharedMode,
+			uint32_t creationDisposition,
+			uint32_t flagsAndAttributes,
+			uint64_t result) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 			m_stream << "CreateFileW: " << converter.to_bytes(fileName.data()) << std::endl;
@@ -578,7 +595,10 @@ namespace Monitor
 			m_stream << "CopyFileW: " << std::endl;
 		}
 
-		void OnCopyFile2(std::wstring_view existingFileName, std::wstring_view newFileName) override final
+		void OnCopyFile2(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			uint64_t result) override final
 		{
 			m_stream << "CopyFile2: " << std::endl;
 		}
@@ -623,12 +643,20 @@ namespace Monitor
 			m_stream << "CreateDirectoryTransactedW: " << std::endl;
 		}
 
-		void OnCreateFileTransactedA(std::string_view fileName, uint32_t desiredAccess, uint32_t shareMode) override final
+		void OnCreateFileTransactedA(
+			std::string_view fileName,
+			uint32_t desiredAccess, 
+			uint32_t shareMode,
+			uint64_t result) override final
 		{
 			m_stream << "CreateFileTransactedA: " << std::endl;
 		}
 
-		void OnCreateFileTransactedW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t shareMode) override final
+		void OnCreateFileTransactedW(
+			std::wstring_view fileName,
+			uint32_t desiredAccess,
+			uint32_t shareMode,
+			uint64_t result) override final
 		{
 			m_stream << "CreateFileTransactedW: " << std::endl;
 		}

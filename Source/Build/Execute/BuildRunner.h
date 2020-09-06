@@ -20,7 +20,8 @@ namespace Soup::Build::Execute
 		BuildRunner(Path workingDirectory) :
 			_workingDirectory(std::move(workingDirectory)),
 			_dependencyCounts(),
-			_buildHistory(),
+			_previousBuildHistory(),
+			_activeBuildHistory(),
 			_stateChecker()
 		{
 		}
@@ -36,10 +37,10 @@ namespace Soup::Build::Execute
 			if (!forceBuild)
 			{
 				Log::Diag("Loading previous build state");
-				if (!BuildHistoryManager::TryLoadState(targetDirectory, _buildHistory))
+				if (!BuildHistoryManager::TryLoadState(targetDirectory, _previousBuildHistory))
 				{
 					Log::Info("No previous state found, full rebuild required");
-					_buildHistory = BuildHistory();
+					_previousBuildHistory = BuildHistory();
 					forceBuild = true;
 				}
 			}
@@ -54,7 +55,7 @@ namespace Soup::Build::Execute
 			CheckExecuteOperations(operations, forceBuild);
 
 			Log::Info("Saving updated build state");
-			BuildHistoryManager::SaveState(targetDirectory, _buildHistory);
+			BuildHistoryManager::SaveState(targetDirectory, _activeBuildHistory);
 
 			Log::HighPriority("Done");
 		}
@@ -145,10 +146,10 @@ namespace Soup::Build::Execute
 			{
 				// Check if each source file is out of date and requires a rebuild
 				Log::Diag("Check for updated source");
-				
+
 				// Check if this operation is in the build history
 				const OperationInfo* operationInfo;
-				if (_buildHistory.TryFindOperationInfo(command, operationInfo))
+				if (_previousBuildHistory.TryFindOperationInfo(command, operationInfo))
 				{
 					// Check if any of the input files have changed since last build
 					if (_stateChecker.IsOutdated(
@@ -161,6 +162,9 @@ namespace Soup::Build::Execute
 					else
 					{
 						Log::Info("Up to date");
+
+						// Move over the completed operation information to the new history since nothing has changed
+						_activeBuildHistory.AddOperationInfo(*operationInfo);
 					}
 				}
 				else
@@ -227,7 +231,7 @@ namespace Soup::Build::Execute
 					command,
 					std::move(input),
 					std::move(output));
-				_buildHistory.AddOperationInfo(std::move(operationInfo));
+				_activeBuildHistory.AddOperationInfo(std::move(operationInfo));
 
 				if (!stdOut.empty())
 				{
@@ -263,7 +267,8 @@ namespace Soup::Build::Execute
 	private:
 		Path _workingDirectory;
 		std::map<int64_t, int64_t> _dependencyCounts;
-		BuildHistory _buildHistory;
+		BuildHistory _previousBuildHistory;
+		BuildHistory _activeBuildHistory;
 		BuildHistoryChecker _stateChecker;
 	};
 }
