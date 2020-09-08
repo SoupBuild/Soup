@@ -155,7 +155,7 @@ namespace Monitor
 				inheritHandles,
 				creationFlags,
 				environment,
-				m_workingDirectory.ToString().c_str(),
+				m_workingDirectory.IsEmpty() ? nullptr : m_workingDirectory.ToString().c_str(),
 				&startupInfo,
 				&processInfo,
 				dllPathString.c_str(),

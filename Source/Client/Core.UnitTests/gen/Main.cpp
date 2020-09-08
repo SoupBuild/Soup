@@ -35,9 +35,6 @@ using namespace SoupTest;
 #include "Package/RecipeTests.gen.h"
 #include "Package/RecipeTomlTests.gen.h"
 
-#include "Utils/PathTests.gen.h"
-#include "Utils/SemanticVersionTests.gen.h"
-
 int main()
 {
 	std::cout << "Running Tests..." << std::endl;
@@ -59,9 +56,6 @@ int main()
 	state += RunRecipeJsonTests();
 	state += RunRecipeTests();
 	state += RunRecipeTomlTests();
-
-	state += RunPathTests();
-	state += RunSemanticVersionTests();
 
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;

@@ -168,7 +168,7 @@ namespace Soup::Build::Execute::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"HIGH: TestCommand: 1",
-					"DIAG: Execute: Command.exe Arguments",
+					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: C:/BuildDirectory/out/obj/release/.soup",
 					"HIGH: Done",
@@ -189,7 +189,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -246,7 +246,7 @@ namespace Soup::Build::Execute::UnitTests
 					"INFO: BuildHistory file does not exist",
 					"INFO: No previous state found, full rebuild required",
 					"HIGH: TestCommand: 1",
-					"DIAG: Execute: Command.exe Arguments",
+					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
 					"HIGH: Done",
@@ -268,7 +268,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -332,7 +332,7 @@ namespace Soup::Build::Execute::UnitTests
 					"DIAG: Loading previous build state",
 					"DIAG: Check for updated source",
 					"HIGH: TestCommand: 1",
-					"DIAG: Execute: Command.exe Arguments",
+					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
 					"HIGH: Done",
@@ -355,7 +355,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -384,7 +384,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Create the initial build state
 			auto initialBuildHistory = BuildHistory({
 					OperationInfo(
-						"C:/TestWorkingDirectory/ : Command.exe Arguments",
+						"C:/TestWorkingDirectory/ : ./Command.exe Arguments",
 						{ Path("InputFile.in") },
 						{ Path("OutputFile.out") }),
 			});
@@ -431,7 +431,7 @@ namespace Soup::Build::Execute::UnitTests
 					"DIAG: Check for updated source",
 					"INFO: Output target does not exist: C:/TestWorkingDirectory/OutputFile.out",
 					"HIGH: TestCommand: 1",
-					"DIAG: Execute: Command.exe Arguments",
+					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
 					"HIGH: Done",
@@ -455,7 +455,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -484,7 +484,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Create the initial build state
 			auto initialBuildHistory = BuildHistory({
 					OperationInfo(
-						"C:/TestWorkingDirectory/ : Command.exe Arguments",
+						"C:/TestWorkingDirectory/ : ./Command.exe Arguments",
 						{ Path("InputFile.in") },
 						{ Path("OutputFile.out") }),
 			});
@@ -540,7 +540,7 @@ namespace Soup::Build::Execute::UnitTests
 					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434964260]",
 					"INFO: Input altered after target [C:/TestWorkingDirectory/InputFile.in] -> [C:/TestWorkingDirectory/OutputFile.out]",
 					"HIGH: TestCommand: 1",
-					"DIAG: Execute: Command.exe Arguments",
+					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
 					"HIGH: Done",
@@ -567,7 +567,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -596,7 +596,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Create the initial build state
 			auto initialBuildHistory = BuildHistory({
 					OperationInfo(
-						"C:/TestWorkingDirectory/ : Command.exe Arguments",
+						"C:/TestWorkingDirectory/ : ./Command.exe Arguments",
 						{ Path("InputFile.in") },
 						{ Path("OutputFile.out") }),
 			});

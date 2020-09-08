@@ -3,7 +3,7 @@ Type = "DynamicLibrary"
 Version = "0.1.1"
 
 Dependencies = [
-	"Opal@0.1.4",
+	"Opal@0.1.5",
 	"../Compiler/Core/",
 	# "Soup.Build.Compiler@0.3.0",
 	"../Compiler/Clang/",

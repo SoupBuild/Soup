@@ -1,7 +1,7 @@
 Name = "Soup.Build.Compiler"
 Version = "0.3.0"
 Dependencies = [
-	"Opal@0.1.4",
+	"Opal@0.1.5",
 	"../../../Build/Utilities/",
 	# "Soup.Build.Utilities@0.3.0",
 ]

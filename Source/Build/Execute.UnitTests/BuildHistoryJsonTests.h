@@ -185,10 +185,10 @@ namespace Soup::Build::Execute::UnitTests
 						{
 							"command": "./ : dostuff.exe arg1 arg2",
 							"input": [
-								"inputfile.txt"
+								"./inputfile.txt"
 							],
 							"output": [
-								"outputfile.txt"
+								"./outputfile.txt"
 							]
 						}
 					]
@@ -221,19 +221,19 @@ namespace Soup::Build::Execute::UnitTests
 						{
 							"command": "./ : dostuff1.exe arg1 arg2",
 							"input": [
-								"inputfile1.txt"
+								"./inputfile1.txt"
 							],
 							"output": [
-								"outputfile1.txt"
+								"./outputfile1.txt"
 							]
 						},
 						{
 							"command": "./ : dostuff2.exe arg1 arg2",
 							"input": [
-								"inputfile2.txt"
+								"./inputfile2.txt"
 							],
 							"output": [
-								"outputfile2.txt"
+								"./outputfile2.txt"
 							]
 						}
 					]

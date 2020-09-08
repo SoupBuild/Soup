@@ -25,7 +25,7 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/machine:X64",
-				"/out:\"Library.mock.lib\"",
+				"/out:\"./Library.mock.lib\"",
 			});
 			auto expectedInput = std::vector<Path>({
 			});
@@ -72,8 +72,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
 				"/machine:X64",
-				"/out:\"Library.mock.lib\"",
-				"File.mock.o",
+				"/out:\"./Library.mock.lib\"",
+				"./File.mock.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.mock.o"),
@@ -109,8 +109,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/nologo",
 				"/machine:X64",
 				"/libpath:\"../libraries/\"",
-				"/out:\"Library.mock.lib\"",
-				"File.mock.o",
+				"/out:\"./Library.mock.lib\"",
+				"./File.mock.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.mock.o"),
@@ -144,10 +144,10 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/nologo",
 				"/subsystem:console",
 				"/dll",
-				"/implib:\"Library.mock.lib\"",
+				"/implib:\"./Library.mock.lib\"",
 				"/machine:X64",
-				"/out:\"Library.mock.dll\"",
-				"File.mock.obj",
+				"/out:\"./Library.mock.dll\"",
+				"./File.mock.obj",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.mock.obj"),
@@ -184,9 +184,9 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/nologo",
 				"/subsystem:console",
 				"/machine:X64",
-				"/out:\"out/Something.exe\"",
-				"Library.mock.lib",
-				"File.mock.obj",
+				"/out:\"./out/Something.exe\"",
+				"./Library.mock.lib",
+				"./File.mock.obj",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("Library.mock.lib"),

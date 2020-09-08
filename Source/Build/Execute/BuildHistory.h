@@ -107,7 +107,10 @@ namespace Soup::Build::Execute
 		/// </summary>
 		void AddOperationInfo(OperationInfo operation)
 		{
-			_operations.emplace(operation.Command, std::move(operation));
+			auto result = _operations.emplace(operation.Command, std::move(operation));
+			// TODO: Verify unique when operations are required to be unique
+			/*if (!result.second)
+				throw std::runtime_error("The provided command already exists in the build history.");*/
 		}
 
 		/// <summary>

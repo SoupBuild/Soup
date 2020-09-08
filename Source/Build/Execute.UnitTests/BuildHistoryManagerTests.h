@@ -29,7 +29,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/NoFile/.soup/BuildHistory.json",
+					"Exists: ./TestFiles/NoFile/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -66,8 +66,8 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/GarbageBuildHistory/.soup/BuildHistory.json",
-					"OpenRead: TestFiles/GarbageBuildHistory/.soup/BuildHistory.json",
+					"Exists: ./TestFiles/GarbageBuildHistory/.soup/BuildHistory.json",
+					"OpenRead: ./TestFiles/GarbageBuildHistory/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -126,8 +126,8 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/SimpleBuildHistory/.soup/BuildHistory.json",
-					"OpenRead: TestFiles/SimpleBuildHistory/.soup/BuildHistory.json",
+					"Exists: ./TestFiles/SimpleBuildHistory/.soup/BuildHistory.json",
+					"OpenRead: ./TestFiles/SimpleBuildHistory/.soup/BuildHistory.json",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
