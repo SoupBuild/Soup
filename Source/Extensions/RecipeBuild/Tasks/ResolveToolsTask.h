@@ -195,7 +195,7 @@ namespace RecipeBuild
 		{
 			// Find a copy of visual studio that has the required VisualCompiler
 			auto executablePath = Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
-			auto workingDirectory = Path("");
+			auto workingDirectory = Path("./");
 			auto argumentList = std::vector<std::string>({
 				"-latest",
 				"-products",
@@ -290,7 +290,7 @@ namespace RecipeBuild
 			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(windows10KitIncludePath))
 			{
 				auto name = child.Path.GetFileName();
-				buildState.LogDebug("CheckFile: " + name);
+				buildState.LogDebug("CheckFile: " + std::string(name));
 				auto platformVersion = name.substr(0, 3);
 				if (platformVersion == "10.")
 				{
@@ -301,7 +301,7 @@ namespace RecipeBuild
 				}
 				else
 				{
-					buildState.LogWarning("Unexpected Kit Version: " + name);
+					buildState.LogWarning("Unexpected Kit Version: " + std::string(name));
 				}
 			}
 

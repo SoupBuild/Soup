@@ -74,8 +74,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/MT",
 				"/bigobj",
 				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
+				"./File.cpp",
+				"/Fo\"./File.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -120,8 +120,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/MT",
 				"/bigobj",
 				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
+				"./File.cpp",
+				"/Fo\"./File.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -164,8 +164,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/MT",
 				"/bigobj",
 				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
+				"./File.cpp",
+				"/Fo\"./File.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -208,8 +208,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/MT",
 				"/bigobj",
 				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
+				"./File.cpp",
+				"/Fo\"./File.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -254,8 +254,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/MT",
 				"/bigobj",
 				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
+				"./File.cpp",
+				"/Fo\"./File.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -300,8 +300,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/MTd",
 				"/bigobj",
 				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
+				"./File.cpp",
+				"/Fo\"./File.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -341,15 +341,15 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/std:c++11",
 				"/Od",
 				"/I\"C:/Files/SDK/\"",
-				"/I\"my files/\"",
+				"/I\"./my files/\"",
 				"/X",
 				"/RTC1",
 				"/EHsc",
 				"/MT",
 				"/bigobj",
 				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
+				"./File.cpp",
+				"/Fo\"./File.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -396,8 +396,8 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/MT",
 				"/bigobj",
 				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
+				"./File.cpp",
+				"/Fo\"./File.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -441,13 +441,13 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/EHsc",
 				"/MT",
 				"/module:reference",
-				"\"Module.pcm\"",
+				"\"./Module.pcm\"",
 				"/module:reference",
-				"\"Std.pcm\"",
+				"\"./Std.pcm\"",
 				"/bigobj",
 				"/c",
-				"File.cpp",
-				"/Fo\"File.obj\"",
+				"./File.cpp",
+				"/Fo\"./File.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("Module.pcm"),
@@ -491,11 +491,11 @@ namespace Soup::Compiler::MSVC::UnitTests
 				"/MT",
 				"/module:interface",
 				"/module:output",
-				"\"module.ifc\"",
+				"\"./module.ifc\"",
 				"/bigobj",
 				"/c",
-				"module.cpp",
-				"/Fo\"module.obj\"",
+				"./module.cpp",
+				"/Fo\"./module.obj\"",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("module.cpp"),

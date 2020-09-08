@@ -23,7 +23,7 @@ namespace Soup::Compiler::Clang::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"rc",
-				"Library.mock.a",
+				"./Library.mock.a",
 			});
 			auto expectedInput = std::vector<Path>({
 			});
@@ -69,8 +69,8 @@ namespace Soup::Compiler::Clang::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"rc",
-				"Library.mock.a",
-				"File.mock.o",
+				"./Library.mock.a",
+				"./File.mock.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.mock.o"),
@@ -104,10 +104,10 @@ namespace Soup::Compiler::Clang::UnitTests
 				"/nologo",
 				"/subsystem:console",
 				"/dll",
-				"/implib:\"Library.mock.lib\"",
+				"/implib:\"./Library.mock.lib\"",
 				"/machine:X64",
-				"/out:\"Library.mock.so\"",
-				"File.mock.o",
+				"/out:\"./Library.mock.so\"",
+				"./File.mock.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.mock.o"),
@@ -144,9 +144,9 @@ namespace Soup::Compiler::Clang::UnitTests
 				"/nologo",
 				"/subsystem:console",
 				"/machine:X64",
-				"/out:\"out/Something.exe\"",
-				"Library.mock.a",
-				"File.mock.o",
+				"/out:\"./out/Something.exe\"",
+				"./Library.mock.a",
+				"./File.mock.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("Library.mock.a"),

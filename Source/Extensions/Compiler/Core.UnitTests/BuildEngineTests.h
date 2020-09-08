@@ -55,10 +55,10 @@ namespace Soup::Compiler::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Operation: TestFile.cpp",
+					"INFO: Generate Compile Operation: ./TestFile.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Operation: bin/Program.exe",
+					"INFO: Generate Link Operation: ./bin/Program.exe",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -235,12 +235,12 @@ namespace Soup::Compiler::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Operation: TestFile1.cpp",
-					"INFO: Generate Compile Operation: TestFile2.cpp",
-					"INFO: Generate Compile Operation: TestFile3.cpp",
+					"INFO: Generate Compile Operation: ./TestFile1.cpp",
+					"INFO: Generate Compile Operation: ./TestFile2.cpp",
+					"INFO: Generate Compile Operation: ./TestFile3.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Operation: bin/Library.mock.lib",
+					"INFO: Generate Link Operation: ./bin/Library.mock.lib",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -468,14 +468,14 @@ namespace Soup::Compiler::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: CompileModuleInterfaceUnit",
-					"INFO: Generate Compile Operation: Public.cpp",
+					"INFO: Generate Compile Operation: ./Public.cpp",
 					"INFO: Compiling source files",
-					"INFO: Generate Compile Operation: TestFile1.cpp",
-					"INFO: Generate Compile Operation: TestFile2.cpp",
-					"INFO: Generate Compile Operation: TestFile3.cpp",
+					"INFO: Generate Compile Operation: ./TestFile1.cpp",
+					"INFO: Generate Compile Operation: ./TestFile2.cpp",
+					"INFO: Generate Compile Operation: ./TestFile3.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Operation: bin/Library.mock.lib",
+					"INFO: Generate Link Operation: ./bin/Library.mock.lib",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -746,10 +746,10 @@ namespace Soup::Compiler::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: CompileModuleInterfaceUnit",
-					"INFO: Generate Compile Operation: Public.cpp",
+					"INFO: Generate Compile Operation: ./Public.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
-					"INFO: Generate Link Operation: bin/Library.mock.lib",
+					"INFO: Generate Link Operation: ./bin/Library.mock.lib",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");

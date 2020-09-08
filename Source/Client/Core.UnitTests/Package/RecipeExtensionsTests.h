@@ -29,7 +29,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/NoFile/Recipe.toml",
+					"Exists: ./TestFiles/NoFile/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -37,7 +37,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Recipe: TestFiles/NoFile/Recipe.toml",
+					"DIAG: Load Recipe: ./TestFiles/NoFile/Recipe.toml",
 					"INFO: Recipe file does not exist.",
 				}), 
 				testListener->GetMessages(),
@@ -67,8 +67,8 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/GarbageRecipe/Recipe.toml",
-					"OpenReadBinary: TestFiles/GarbageRecipe/Recipe.toml",
+					"Exists: ./TestFiles/GarbageRecipe/Recipe.toml",
+					"OpenReadBinary: ./TestFiles/GarbageRecipe/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -76,8 +76,8 @@ namespace Soup::Build::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Recipe: TestFiles/GarbageRecipe/Recipe.toml",
-					"ERRO: Deserialize Threw: Parsing the Recipe Toml failed: [error] toml::parse_key_value_pair: missing key-value separator `=`\n --> TestFiles/GarbageRecipe/Recipe.toml\n   | \n 1 | garbage\n   |        ^ should be `=`",
+					"DIAG: Load Recipe: ./TestFiles/GarbageRecipe/Recipe.toml",
+					"ERRO: Deserialize Threw: Parsing the Recipe Toml failed: [error] toml::parse_key_value_pair: missing key-value separator `=`\n --> ./TestFiles/GarbageRecipe/Recipe.toml\n   | \n 1 | garbage\n   |        ^ should be `=`",
 					"INFO: Failed to parse Recipe.",
 				}), 
 				testListener->GetMessages(),
@@ -116,8 +116,8 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: TestFiles/SimpleRecipe/Recipe.toml",
-					"OpenReadBinary: TestFiles/SimpleRecipe/Recipe.toml",
+					"Exists: ./TestFiles/SimpleRecipe/Recipe.toml",
+					"OpenReadBinary: ./TestFiles/SimpleRecipe/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -125,7 +125,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Recipe: TestFiles/SimpleRecipe/Recipe.toml",
+					"DIAG: Load Recipe: ./TestFiles/SimpleRecipe/Recipe.toml",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -151,7 +151,7 @@ namespace Soup::Build::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"OpenWrite: TestFiles/SimpleRecipe/Recipe.toml",
+					"OpenWrite: ./TestFiles/SimpleRecipe/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -193,7 +193,7 @@ Version = "1.2.3"
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Root/Recipe.toml",
+					"Exists: ./Root/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -201,9 +201,9 @@ Version = "1.2.3"
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Recipe: Root/Recipe.toml",
+					"DIAG: Load Recipe: ./Root/Recipe.toml",
 					"INFO: Recipe file does not exist.",
-					"ERRO: Failed to load the package: Root/Recipe.toml",
+					"ERRO: Failed to load the package: ./Root/Recipe.toml",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -236,8 +236,8 @@ Version = "1.2.3"
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: Root/Recipe.toml",
-					"OpenReadBinary: Root/Recipe.toml",
+					"Exists: ./Root/Recipe.toml",
+					"OpenReadBinary: ./Root/Recipe.toml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -245,7 +245,7 @@ Version = "1.2.3"
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Recipe: Root/Recipe.toml",
+					"DIAG: Load Recipe: ./Root/Recipe.toml",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");

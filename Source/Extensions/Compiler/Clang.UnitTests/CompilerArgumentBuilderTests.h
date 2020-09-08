@@ -64,9 +64,9 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-flto-visibility-public-std",
 				"-std=c++11",
 				"-c",
-				"File.cpp",
+				"./File.cpp",
 				"-o",
-				"File.o",
+				"./File.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -105,9 +105,9 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-flto-visibility-public-std",
 				expectedFlag,
 				"-c",
-				"File.cpp",
+				"./File.cpp",
 				"-o",
-				"File.o",
+				"./File.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -143,9 +143,9 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-flto-visibility-public-std",
 				"-std=c++2a",
 				"-c",
-				"File.cpp",
+				"./File.cpp",
 				"-o",
-				"File.o",
+				"./File.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -182,9 +182,9 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-flto-visibility-public-std",
 				"-std=c++17",
 				"-c",
-				"File.cpp",
+				"./File.cpp",
 				"-o",
-				"File.o",
+				"./File.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -224,9 +224,9 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-std=c++17",
 				expectedFlag,
 				"-c",
-				"File.cpp",
+				"./File.cpp",
 				"-o",
-				"File.o",
+				"./File.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -265,9 +265,9 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-g",
 				"-std=c++17",
 				"-c",
-				"File.cpp",
+				"./File.cpp",
 				"-o",
-				"File.o",
+				"./File.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -306,11 +306,11 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-flto-visibility-public-std",
 				"-std=c++11",
 				"-isystem \"C:/Files/SDK/\"",
-				"-I\"my files/\"",
+				"-I\"./my files/\"",
 				"-c",
-				"File.cpp",
+				"./File.cpp",
 				"-o",
-				"File.o",
+				"./File.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -351,9 +351,9 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-DDEBUG",
 				"-DVERSION=1",
 				"-c",
-				"File.cpp",
+				"./File.cpp",
 				"-o",
-				"File.o",
+				"./File.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("File.cpp"),
@@ -391,12 +391,12 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-Xclang",
 				"-flto-visibility-public-std",
 				"-std=c++11",
-				"-fmodule-file=\"Module.pcm\"",
-				"-fmodule-file=\"Std.pcm\"",
+				"-fmodule-file=\"./Module.pcm\"",
+				"-fmodule-file=\"./Std.pcm\"",
 				"-c",
-				"File.cpp",
+				"./File.cpp",
 				"-o",
-				"File.o",
+				"./File.o",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("Module.pcm"),
@@ -434,9 +434,9 @@ namespace Soup::Compiler::Clang::UnitTests
 				"-flto-visibility-public-std",
 				"-std=c++11",
 				"--precompile",
-				"module.cpp",
+				"./module.cpp",
 				"-o",
-				"module.pcm",
+				"./module.pcm",
 			});
 			auto expectedInput = std::vector<Path>({
 				Path("module.cpp"),

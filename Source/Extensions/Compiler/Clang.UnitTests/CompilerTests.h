@@ -36,9 +36,9 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify result
 			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
 				new Build::Utilities::BuildOperation(
-					"File.cpp",
+					"./File.cpp",
 					Path("C:/Clang/bin/clang++.exe"),
-					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c File.cpp -o obj/File.o",
+					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c ./File.cpp -o ./obj/File.o",
 					Path("Source"),
 					std::vector<Path>({
 						Path("File.cpp"),
@@ -76,9 +76,9 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify result
 			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
 				new Build::Utilities::BuildOperation(
-					"File.cpp",
+					"./File.cpp",
 					Path("C:/Clang/bin/clang++.exe"),
-					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"Includes\" -DDEBUG -fmodule-file=\"Module.pcm\" --precompile File.cpp -o obj/File.pcm",
+					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"./Includes\" -DDEBUG -fmodule-file=\"./Module.pcm\" --precompile ./File.cpp -o ./obj/File.pcm",
 					Path("Source"),
 					std::vector<Path>({
 						Path("Module.pcm"),
@@ -89,9 +89,9 @@ namespace Soup::Compiler::Clang::UnitTests
 					}),
 					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 						new Build::Utilities::BuildOperation(
-							"obj/File.pcm",
+							"./obj/File.pcm",
 							Path("C:/Clang/bin/clang++.exe"),
-							"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c obj/File.pcm -o obj/File.obj",
+							"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c ./obj/File.pcm -o ./obj/File.obj",
 							Path("Source"),
 							std::vector<Path>({
 								Path("obj/File.pcm"),
@@ -123,9 +123,9 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify result
 			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
 				new Build::Utilities::BuildOperation(
-					"Library.mock.a",
+					"./Library.mock.a",
 					Path("C:/Clang/bin/llvm-ar.exe"),
-					"rc Library.mock.a File.mock.o",
+					"rc ./Library.mock.a ./File.mock.o",
 					Path("Source"),
 					std::vector<Path>({
 						Path("File.mock.o"),
@@ -160,9 +160,9 @@ namespace Soup::Compiler::Clang::UnitTests
 			// Verify result
 			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
 				new Build::Utilities::BuildOperation(
-					"Something.exe",
+					"./Something.exe",
 					Path("C:/Clang/bin/lld-link.exe"),
-					"/nologo /subsystem:console /machine:X64 /out:\"Something.exe\" Library.mock.a File.mock.o",
+					"/nologo /subsystem:console /machine:X64 /out:\"./Something.exe\" ./Library.mock.a ./File.mock.o",
 					Path("Source"),
 					std::vector<Path>({
 						Path("Library.mock.a"),
