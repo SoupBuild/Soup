@@ -25,7 +25,8 @@ namespace Soup::Build
 			_runtimeCompiler(runtimeCompiler),
 			_knownRecipes(),
 			_buildSet(),
-			_systemBuildSet()
+			_systemBuildSet(),
+			_fileSystemState()
 		{
 		}
 
@@ -41,6 +42,29 @@ namespace Soup::Build
 			_knownRecipes.clear();
 			_buildSet.clear();
 			_systemBuildSet.clear();
+
+			auto userDataDirectory = GetSoupUserDataPath();
+
+			// Load up the known file system state
+			if (!arguments.ForceRebuild)
+			{
+				Log::Info("Loading previous file system state");
+				if (!Execute::FileSystemStateManager::TryLoadState(userDataDirectory, _fileSystemState))
+				{
+					Log::Info("No previous file system state found");
+					_fileSystemState = Execute::FileSystemState();
+				}
+				else
+				{
+					// Load the current state of the known files
+					Log::Info("Loading current file system state");
+					_fileSystemState.LoadCurrentFileSystemState();
+				}
+			}
+			else
+			{
+				Log::Info("Skipping file system state checks for forced rebuild");
+			}
 
 			// Enable log event ids to track individual builds
 			int projectId = 1;
@@ -64,6 +88,9 @@ namespace Soup::Build
 					rootState);
 
 				Log::EnsureListener().SetShowEventId(false);
+
+				Log::Info("Saving updated file system state");
+				Execute::FileSystemStateManager::SaveState(userDataDirectory, _fileSystemState);
 			}
 			catch(...)
 			{
@@ -370,6 +397,11 @@ namespace Soup::Build
 					activeCompiler = _runtimeCompiler;
 				}
 
+				auto outputDirectory = RecipeExtensions::GetOutputDirectory(
+					_systemCompiler,
+					arguments.Flavor,
+					arguments.System,
+					arguments.Architecture);
 				auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(
 					_systemCompiler,
 					arguments.Flavor,
@@ -387,6 +419,7 @@ namespace Soup::Build
 				activeStateWrapper.EnsureValue("BuildSystem").SetValueString(arguments.System);
 				activeStateWrapper.EnsureValue("BuildArchitecture").SetValueString(arguments.Architecture);
 				activeStateWrapper.EnsureValue("CompilerName").SetValueString(activeCompiler);
+				activeStateWrapper.EnsureValue("OutputDirectory").SetValueString(outputDirectory.ToString());
 				activeStateWrapper.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
 				activeStateWrapper.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
 
@@ -427,11 +460,11 @@ namespace Soup::Build
 				if (!arguments.SkipRun)
 				{
 					// Execute the build operations
-					auto runner = Execute::BuildRunner(packageRoot);
+					auto runner = Execute::BuildRunner(packageRoot, _fileSystemState);
 					auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetBuildOperations());
 					runner.Execute(
 						buildOperations,
-						objectDirectory,
+						outputDirectory,
 						arguments.ForceRebuild);
 				}
 
@@ -439,6 +472,13 @@ namespace Soup::Build
 				// This allows the extension dlls to be released and the operations deleted
 				return buildState.RetrieveSharedState();
 			}
+		}
+
+		Path GetSoupUserDataPath() const
+		{
+			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
+					Path(".soup/");
+			return result;
 		}
 
 		Path GetPackageReferencePath(const Path& workingDirectory, const PackageReference& reference) const
@@ -455,8 +495,8 @@ namespace Soup::Build
 			}
 			else
 			{
-				auto packageStore = System::IFileSystem::Current().GetUserProfileDirectory() +
-					Path(".soup/packages/");
+				auto packageStore = GetSoupUserDataPath() +
+					Path("packages/");
 				packagePath = packageStore + Path(reference.GetName()) + Path(reference.GetVersion().ToString());
 			}
 
@@ -529,8 +569,11 @@ namespace Soup::Build
 	private:
 		std::string _systemCompiler;
 		std::string _runtimeCompiler;
+
 		std::map<std::string, Recipe> _knownRecipes;
 		std::map<std::string, Evaluate::ValueTable> _buildSet;
 		std::map<std::string, Evaluate::ValueTable> _systemBuildSet;
+
+		Execute::FileSystemState _fileSystemState;
 	};
 }

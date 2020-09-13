@@ -3,7 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "BuildHistory.h"
+#include "FileSystemState.h"
+#include "OperationHistoryManager.h"
 #include "SystemAccessTracker.h"
 
 namespace Soup::Build::Execute
@@ -17,30 +18,33 @@ namespace Soup::Build::Execute
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BuildRunner"/> class.
 		/// </summary>
-		BuildRunner(Path workingDirectory) :
+		BuildRunner(
+			Path workingDirectory,
+			FileSystemState& fileSystemState) :
 			_workingDirectory(std::move(workingDirectory)),
+			_fileSystemState(fileSystemState),
 			_dependencyCounts(),
-			_previousBuildHistory(),
-			_activeBuildHistory(),
-			_stateChecker()
+			_previousOperationHistory(),
+			_activeOperationHistory(),
+			_stateChecker(fileSystemState)
 		{
 		}
 
 		// TODO: Convert vector to const when we have a const version of the operation wrapper.
 		void Execute(
 			Utilities::BuildOperationListWrapper& operations,
-			const Path& objectDirectory,
+			const Path& outputDirectory,
 			bool forceBuild)
 		{
 			// Load the previous build state if performing an incremental build
-			auto targetDirectory = _workingDirectory + objectDirectory;
+			auto targetDirectory = _workingDirectory + outputDirectory;
 			if (!forceBuild)
 			{
 				Log::Diag("Loading previous build state");
-				if (!BuildHistoryManager::TryLoadState(targetDirectory, _previousBuildHistory))
+				if (!OperationHistoryManager::TryLoadState(targetDirectory, _previousOperationHistory))
 				{
-					Log::Info("No previous state found, full rebuild required");
-					_previousBuildHistory = BuildHistory();
+					Log::Info("No previous operation state found, full rebuild required");
+					_previousOperationHistory = OperationHistory();
 					forceBuild = true;
 				}
 			}
@@ -55,7 +59,7 @@ namespace Soup::Build::Execute
 			CheckExecuteOperations(operations, forceBuild);
 
 			Log::Info("Saving updated build state");
-			BuildHistoryManager::SaveState(targetDirectory, _activeBuildHistory);
+			OperationHistoryManager::SaveState(targetDirectory, _activeOperationHistory);
 
 			Log::HighPriority("Done");
 		}
@@ -137,9 +141,10 @@ namespace Soup::Build::Execute
 			bool forceBuild)
 		{
 			// Build up the operation unique command
-			std::stringstream commandBuilder;
-			commandBuilder << operation.GetWorkingDirectory() << " : " << operation.GetExecutable() << " " << operation.GetArguments();
-			auto command = commandBuilder.str();
+			auto command = CommandInfo(
+				Path(operation.GetWorkingDirectory()),
+				Path(operation.GetExecutable()),
+				std::string(operation.GetArguments()));
 
 			bool buildRequired = forceBuild;
 			if (!forceBuild)
@@ -149,13 +154,12 @@ namespace Soup::Build::Execute
 
 				// Check if this operation is in the build history
 				const OperationInfo* operationInfo;
-				if (_previousBuildHistory.TryFindOperationInfo(command, operationInfo))
+				if (_previousOperationHistory.TryFindOperationInfo(command, operationInfo))
 				{
 					// Check if any of the input files have changed since last build
 					if (_stateChecker.IsOutdated(
 						operationInfo->Output,
-						operationInfo->Input,
-						Path(operation.GetWorkingDirectory())))
+						operationInfo->Input))
 					{
 						buildRequired = true;
 					}
@@ -164,7 +168,7 @@ namespace Soup::Build::Execute
 						Log::Info("Up to date");
 
 						// Move over the completed operation information to the new history since nothing has changed
-						_activeBuildHistory.AddOperationInfo(*operationInfo);
+						_activeOperationHistory.AddOperationInfo(*operationInfo);
 					}
 				}
 				else
@@ -177,17 +181,14 @@ namespace Soup::Build::Execute
 			if (buildRequired)
 			{
 				Log::HighPriority(operation.GetTitle());
-				auto executable = Path(operation.GetExecutable());
-				auto arguments = std::string(operation.GetArguments());
-				auto workingDirectory = Path(operation.GetWorkingDirectory());
-				auto message = "Execute: " + executable.ToString() + " " + arguments;
+				auto message = "Execute: " + command.Executable.ToString() + " " + command.Arguments;
 				Log::Diag(message);
 
 				auto callback = std::make_shared<SystemAccessTracker>();
 				auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
-					executable,
-					arguments,
-					workingDirectory,
+					command.Executable,
+					command.Arguments,
+					command.WorkingDirectory,
 					callback);
 
 				process->Start();
@@ -201,7 +202,7 @@ namespace Soup::Build::Execute
 				callback->VerifyResult();
 
 				// Retrieve the input/output files
-				// TODO: Verify opertation output matches input
+				// TODO: Verify operation output matches input
 				auto runtimeInput = callback->GetInput();
 				for (auto& value : operation.GetInputFileList().CopyAsStringVector())
 				{
@@ -229,9 +230,9 @@ namespace Soup::Build::Execute
 				// Save off the build history for future builds
 				auto operationInfo = OperationInfo(
 					command,
-					std::move(input),
-					std::move(output));
-				_activeBuildHistory.AddOperationInfo(std::move(operationInfo));
+					_fileSystemState.ToFileIds(input, command.WorkingDirectory),
+					_fileSystemState.ToFileIds(output, command.WorkingDirectory));
+				_activeOperationHistory.AddOperationInfo(std::move(operationInfo));
 
 				if (!stdOut.empty())
 				{
@@ -266,9 +267,10 @@ namespace Soup::Build::Execute
 
 	private:
 		Path _workingDirectory;
+		FileSystemState& _fileSystemState;
 		std::map<int64_t, int64_t> _dependencyCounts;
-		BuildHistory _previousBuildHistory;
-		BuildHistory _activeBuildHistory;
+		OperationHistory _previousOperationHistory;
+		OperationHistory _activeOperationHistory;
 		BuildHistoryChecker _stateChecker;
 	};
 }

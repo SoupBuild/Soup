@@ -296,11 +296,11 @@ namespace Soup::Build::Execute::UnitTests
 
 			// Create the initial build state
 			auto initialBuildHistory = BuildHistory();
-			std::stringstream initialBuildHistoryJson;
-			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
+			std::stringstream initialBinaryBuildHistory;
+			BuildHistoryManager::Serialize(initialBuildHistory, initialBinaryBuildHistory);
 			fileSystem->CreateMockFile(
 				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				std::make_shared<MockFile>(std::move(initialBuildHistoryJson)));
+				std::make_shared<MockFile>(std::move(initialBinaryBuildHistory)));
 
 			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
 
@@ -388,11 +388,11 @@ namespace Soup::Build::Execute::UnitTests
 						{ Path("InputFile.in") },
 						{ Path("OutputFile.out") }),
 			});
-			std::stringstream initialBuildHistoryJson;
-			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
+			std::stringstream initialBinaryBuildHistory;
+			BuildHistoryManager::Serialize(initialBuildHistory, initialBinaryBuildHistory);
 			fileSystem->CreateMockFile(
 				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				std::make_shared<MockFile>(std::move(initialBuildHistoryJson)));
+				std::make_shared<MockFile>(std::move(initialBinaryBuildHistory)));
 
 			// Setup the input file only
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
@@ -488,11 +488,11 @@ namespace Soup::Build::Execute::UnitTests
 						{ Path("InputFile.in") },
 						{ Path("OutputFile.out") }),
 			});
-			std::stringstream initialBuildHistoryJson;
-			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
+			std::stringstream initialBinaryBuildHistory;
+			BuildHistoryManager::Serialize(initialBuildHistory, initialBinaryBuildHistory);
 			fileSystem->CreateMockFile(
 				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				std::make_shared<MockFile>(std::move(initialBuildHistoryJson)));
+				std::make_shared<MockFile>(std::move(initialBinaryBuildHistory)));
 
 			// Setup the input/output files to be out of date
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 10);
@@ -600,11 +600,11 @@ namespace Soup::Build::Execute::UnitTests
 						{ Path("InputFile.in") },
 						{ Path("OutputFile.out") }),
 			});
-			std::stringstream initialBuildHistoryJson;
-			BuildHistoryJson::Serialize(initialBuildHistory, initialBuildHistoryJson);
+			std::stringstream initialBinaryBuildHistory;
+			BuildHistoryManager::Serialize(initialBuildHistory, initialBinaryBuildHistory);
 			fileSystem->CreateMockFile(
 				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				std::make_shared<MockFile>(std::move(initialBuildHistoryJson)));
+				std::make_shared<MockFile>(std::move(initialBinaryBuildHistory)));
 
 			// Setup the input/output files to be up to date
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);

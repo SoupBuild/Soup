@@ -21,7 +21,6 @@ using namespace Opal::System;
 using namespace SoupTest;
 
 #include "BuildHistoryCheckerTests.gen.h"
-#include "BuildHistoryJsonTests.gen.h"
 #include "BuildHistoryTests.gen.h"
 #include "BuildHistoryManagerTests.gen.h"
 #include "BuildRunnerTests.gen.h"
@@ -33,7 +32,6 @@ int main()
 	TestState state = { 0, 0 };
 
 	state += RunBuildHistoryCheckerTests();
-	state += RunBuildHistoryJsonTests();
 	state += RunBuildHistoryTests();
 	state += RunBuildHistoryManagerTests();
 	state += RunBuildRunnerTests();
