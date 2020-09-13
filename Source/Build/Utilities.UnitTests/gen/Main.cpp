@@ -8,7 +8,7 @@
 
 import Opal;
 import Soup.Build.Utilities;
-import SoupTest;
+import Soup.Test.Assert;
 import SoupTestUtilities;
 
 using namespace Opal;

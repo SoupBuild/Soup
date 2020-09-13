@@ -8,11 +8,11 @@
 export module SoupTestUtilities;
 
 import Opal;
-import SoupTest;
+import Soup.Test.Assert;
 import Soup.Build;
 import Soup.Build.Utilities;
 
 using namespace Opal;
-using namespace SoupTest;
+using namespace Soup::Test;
 
 #include "AssertExtensions.h"

@@ -11,7 +11,7 @@ import SoupCompilerMSVC;
 import Soup.Build;
 import Soup.Build.Utilities;
 import Soup.Build.Evaluate;
-import SoupTest;
+import Soup.Test.Assert;
 import SoupTestUtilities;
 
 using namespace Opal;

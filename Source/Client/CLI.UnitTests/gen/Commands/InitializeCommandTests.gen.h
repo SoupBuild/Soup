@@ -6,7 +6,7 @@ TestState RunInitializeCommandTests()
 	auto className = "InitializeCommandTests";
 	auto testClass = std::make_shared<Soup::Client::UnitTests::InitializeCommandTests>();
 	TestState state = { 0, 0 };
-	state += SoupTest::RunTest(className, "NameIsCorrect", [&testClass]() { testClass->NameIsCorrect(); });
+	state += Soup::Test::RunTest(className, "NameIsCorrect", [&testClass]() { testClass->NameIsCorrect(); });
 
 	return state;
 }

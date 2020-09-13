@@ -8,7 +8,7 @@
 import Opal;
 import SoupCompiler;
 import SoupCompilerClang;
-import SoupTest;
+import Soup.Test.Assert;
 import SoupTestUtilities;
 import Soup.Build;
 import Soup.Build.Utilities;

@@ -12,7 +12,7 @@ import Opal;
 import Opal.Extensions;
 import SoupCore;
 import json11;
-import SoupTest;
+import Soup.Test.Assert;
 import SoupTestUtilities;
 
 using namespace Opal;
