@@ -40,7 +40,7 @@ namespace Soup::Build::Execute
 			stream.read(headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'F' ||
 				headerBuffer[1] != 'I' ||
-				headerBuffer[2] != 'L' ||
+				headerBuffer[2] != 'S' ||
 				headerBuffer[3] != '\0')
 			{
 				throw std::runtime_error("Invalid file system state files header");

@@ -4,7 +4,7 @@ Type = "Executable"
 Dependencies = [
 	"../Utilities/",
 	"../../TestUtilities/",
-	"Soup.Test.Assert@0.1.5",
+	"C:/Users/mwasp/source/repos/Soup/Dependencies/SoupTest/Assert/",
 ]
 Source = [
 	"gen/Main.cpp"

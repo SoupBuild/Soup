@@ -5,7 +5,7 @@ Dependencies = [
 	"../MSVC/",
 	"../../../TestUtilities/",
 	"../../../Build/Evaluate/",
-	"Soup.Test.Assert@0.1.5",
+	"Soup.Test.Assert@0.1.6",
 ]
 Source = [
 	"gen/Main.cpp",

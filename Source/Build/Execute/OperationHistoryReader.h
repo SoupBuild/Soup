@@ -40,7 +40,7 @@ namespace Soup::Build::Execute
 			stream.read(headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'O' ||
 				headerBuffer[1] != 'P' ||
-				headerBuffer[2] != 'E' ||
+				headerBuffer[2] != 'S' ||
 				headerBuffer[3] != '\0')
 			{
 				throw std::runtime_error("Invalid operation history operations header");

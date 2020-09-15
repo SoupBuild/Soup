@@ -5,7 +5,7 @@ Dependencies = [
 	"../Clang/",
 	"../../../Build/Evaluate/",
 	"../../../TestUtilities/",
-	"Soup.Test.Assert@0.1.5",
+	"Soup.Test.Assert@0.1.6",
 ]
 
 Source = [

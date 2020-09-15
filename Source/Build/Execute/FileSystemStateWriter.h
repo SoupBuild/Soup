@@ -25,7 +25,7 @@ namespace Soup::Build::Execute
 
 			// Write out the set of files
 			auto& files = state.GetFiles();
-			stream.write("FIL\0", 4);
+			stream.write("FIS\0", 4);
 			WriteValue(stream, static_cast<uint32_t>(files.size()));
 			for (auto& file : files)
 			{

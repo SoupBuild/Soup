@@ -25,7 +25,7 @@ namespace Soup::Build::Execute
 
 			// Write out the set of operations
 			auto& operations = state.GetOperations();
-			stream.write("OPE\0", 4);
+			stream.write("OPS\0", 4);
 			WriteValue(stream, static_cast<uint32_t>(operations.size()));
 			for (auto& operationValue : state.GetOperations())
 			{

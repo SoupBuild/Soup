@@ -17,7 +17,7 @@ namespace Soup::Build::Execute
 	private:
 		// Binary Build History file format
 		static constexpr std::string_view FileName = "OperationHistory.bin";
-		static constexpr std::string_view FolderName = ".soup";
+		static constexpr std::string_view FolderName = ".soup/";
 
 	public:
 		/// <summary>

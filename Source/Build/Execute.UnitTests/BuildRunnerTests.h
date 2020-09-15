@@ -12,7 +12,9 @@ namespace Soup::Build::Execute::UnitTests
 		[[Fact]]
 		void Initialize()
 		{
-			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
+			auto workingDirectory = Path("C:/BuildDirectory/");
+			auto fileSystemState = FileSystemState();
+			auto uut = BuildRunner(workingDirectory, fileSystemState);
 		}
 
 		[[Fact]]
@@ -25,27 +27,29 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState();
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
-			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
+			auto workingDirectory = Path("C:/BuildDirectory/");
+			auto uut = BuildRunner(workingDirectory, fileSystemState);
 
 			// Setup the input build state
 			auto operations = Utilities::BuildOperationList();
-			auto objectDirectory = Path("out/obj/release/");
+			auto outputDirectory = Path("out/release/");
 			auto forceBuild = true;
 			uut.Execute(
 				Utilities::BuildOperationListWrapper(operations),
-				objectDirectory,
+				outputDirectory,
 				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: C:/BuildDirectory/out/obj/release/.soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/release/.soup/",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -54,9 +58,9 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/obj/release/.soup",
-					"CreateDirectory: C:/BuildDirectory/out/obj/release/.soup",
-					"OpenWrite: C:/BuildDirectory/out/obj/release/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/release/.soup/",
+					"CreateDirectory: C:/BuildDirectory/out/release/.soup/",
+					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationHistory.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -78,30 +82,32 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState();
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
-			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
+			auto workingDirectory = Path("C:/BuildDirectory/");
+			auto uut = BuildRunner(workingDirectory, fileSystemState);
 
 			// Setup the input build state
 			auto operations = Utilities::BuildOperationList();
-			auto objectDirectory = Path("out/obj/release/");
+			auto outputDirectory = Path("out/release/");
 			auto forceBuild = false;
 			uut.Execute(
 				Utilities::BuildOperationListWrapper(operations),
-				objectDirectory,
+				outputDirectory,
 				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
-					"INFO: BuildHistory file does not exist",
-					"INFO: No previous state found, full rebuild required",
+					"HIGH: Operation History file does not exist",
+					"INFO: No previous operation state found, full rebuild required",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: C:/BuildDirectory/out/obj/release/.soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/release/.soup/",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -110,10 +116,10 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/obj/release/.soup/BuildHistory.json",
-					"Exists: C:/BuildDirectory/out/obj/release/.soup",
-					"CreateDirectory: C:/BuildDirectory/out/obj/release/.soup",
-					"OpenWrite: C:/BuildDirectory/out/obj/release/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/release/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/release/.soup/",
+					"CreateDirectory: C:/BuildDirectory/out/release/.soup/",
+					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationHistory.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -135,12 +141,14 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState();
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
-			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
+			auto workingDirectory = Path("C:/BuildDirectory/");
+			auto uut = BuildRunner(workingDirectory, fileSystemState);
 
 			// Setup the input build state
 			auto operations = Utilities::BuildOperationList(
@@ -157,11 +165,11 @@ namespace Soup::Build::Execute::UnitTests
 							Path("OutputFile.out"),
 						})),
 				}));
-			auto objectDirectory = Path("out/obj/release/");
+			auto outputDirectory = Path("out/release/");
 			bool forceBuild = true;
 			uut.Execute(
 				Utilities::BuildOperationListWrapper(operations),
-				objectDirectory,
+				outputDirectory,
 				forceBuild);
 
 			// Verify expected logs
@@ -170,7 +178,7 @@ namespace Soup::Build::Execute::UnitTests
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: C:/BuildDirectory/out/obj/release/.soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/release/.soup/",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -179,9 +187,9 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/obj/release/.soup",
-					"CreateDirectory: C:/BuildDirectory/out/obj/release/.soup",
-					"OpenWrite: C:/BuildDirectory/out/obj/release/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/release/.soup/",
+					"CreateDirectory: C:/BuildDirectory/out/release/.soup/",
+					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationHistory.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -201,7 +209,7 @@ namespace Soup::Build::Execute::UnitTests
 		}
 
 		[[Fact]]
-		void Execute_OneOperation_Incremental_NoBuildHistory()
+		void Execute_OneOperation_Incremental_NoOperationHistory()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -210,12 +218,14 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState();
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
-			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
+			auto workingDirectory = Path("C:/BuildDirectory/");
+			auto uut = BuildRunner(workingDirectory, fileSystemState);
 
 			// Setup the input build state
 			auto operations = Utilities::BuildOperationList(
@@ -232,23 +242,23 @@ namespace Soup::Build::Execute::UnitTests
 							Path("OutputFile.out"),
 						})),
 				}));
-			auto objectDirectory = Path("out/obj/debug/");
+			auto outputDirectory = Path("out/debug/");
 			auto forceBuild = false;
 			uut.Execute(
 				Utilities::BuildOperationListWrapper(operations),
-				objectDirectory,
+				outputDirectory,
 				forceBuild);
 
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
-					"INFO: BuildHistory file does not exist",
-					"INFO: No previous state found, full rebuild required",
+					"HIGH: Operation History file does not exist",
+					"INFO: No previous operation state found, full rebuild required",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/debug/.soup/",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -257,10 +267,10 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
-					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
-					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/",
+					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -289,20 +299,22 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState();
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
-			// Create the initial build state
-			auto initialBuildHistory = BuildHistory();
-			std::stringstream initialBinaryBuildHistory;
-			BuildHistoryManager::Serialize(initialBuildHistory, initialBinaryBuildHistory);
+			// Create the initial operation history state
+			auto initialOperationHistory = OperationHistory();
+			std::stringstream initialBinaryOperationHistory;
+			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
 			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				std::make_shared<MockFile>(std::move(initialBinaryBuildHistory)));
+				Path("C:/BuildDirectory/out/debug/.soup/OperationHistory.bin"),
+				std::make_shared<MockFile>(std::move(initialBinaryOperationHistory)));
 
-			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
+			auto workingDirectory = Path("C:/BuildDirectory/");
+			auto uut = BuildRunner(workingDirectory, fileSystemState);
 
 			// Setup the input build state
 			auto operations = Utilities::BuildOperationList(
@@ -319,11 +331,11 @@ namespace Soup::Build::Execute::UnitTests
 							Path("OutputFile.obj"),
 						})),
 				}));
-			auto objectDirectory = Path("out/obj/debug/");
+			auto outputDirectory = Path("out/debug/");
 			auto forceBuild = false;
 			uut.Execute(
 				Utilities::BuildOperationListWrapper(operations),
-				objectDirectory,
+				outputDirectory,
 				forceBuild);
 
 			// Verify expected logs
@@ -334,7 +346,7 @@ namespace Soup::Build::Execute::UnitTests
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/debug/.soup/",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -343,11 +355,11 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
-					"OpenRead: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
-					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
-					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/",
+					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -376,31 +388,38 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState();
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
-			// Create the initial build state
-			auto initialBuildHistory = BuildHistory({
-					OperationInfo(
-						"C:/TestWorkingDirectory/ : ./Command.exe Arguments",
-						{ Path("InputFile.in") },
-						{ Path("OutputFile.out") }),
-			});
-			std::stringstream initialBinaryBuildHistory;
-			BuildHistoryManager::Serialize(initialBuildHistory, initialBinaryBuildHistory);
-			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				std::make_shared<MockFile>(std::move(initialBinaryBuildHistory)));
-
 			// Setup the input file only
-			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystem->CreateMockFile(
-				Path("C:/TestWorkingDirectory/InputFile.in"),
-				std::make_shared<MockFile>(inputTime));
+			auto inputFileId = fileSystemState.ToFileId(Path("/InputFile.in"), Path("C:/TestWorkingDirectory/"));
+			auto outputFileId = fileSystemState.ToFileId(Path("/OutputFile.out"), Path("C:/TestWorkingDirectory/"));
 
-			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
+			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+			fileSystemState.SetLastWriteTime(inputFileId, inputTime);
+			fileSystemState.SetLastWriteTime(outputFileId, std::nullopt);
+
+			// Create the initial build state
+			auto initialOperationHistory = OperationHistory({
+				OperationInfo(
+					CommandInfo(
+						Path("C:/TestWorkingDirectory/"),
+						Path("./Command.exe"),
+						"Arguments"),
+					{ inputFileId, },
+					{ outputFileId, }),
+			});
+			std::stringstream initialBinaryOperationHistory;
+			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
+			fileSystem->CreateMockFile(
+				Path("C:/BuildDirectory/out/debug/.soup/OperationHistory.bin"),
+				std::make_shared<MockFile>(std::move(initialBinaryOperationHistory)));
+
+			auto workingDirectory = Path("C:/BuildDirectory/");
+			auto uut = BuildRunner(workingDirectory, fileSystemState);
 
 			// Setup the input build state
 			auto operations = Utilities::BuildOperationList(
@@ -417,11 +436,11 @@ namespace Soup::Build::Execute::UnitTests
 							Path("OutputFile.out"),
 						})),
 				}));
-			auto objectDirectory = Path("out/obj/debug/");
+			auto outputDirectory = Path("out/debug/");
 			auto forceBuild = false;
 			uut.Execute(
 				Utilities::BuildOperationListWrapper(operations),
-				objectDirectory,
+				outputDirectory,
 				forceBuild);
 
 			// Verify expected logs
@@ -433,7 +452,7 @@ namespace Soup::Build::Execute::UnitTests
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/debug/.soup/",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -442,12 +461,11 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
-					"OpenRead: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
-					"Exists: C:/TestWorkingDirectory/OutputFile.out",
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
-					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
-					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/",
+					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -476,38 +494,39 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState();
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
-			// Create the initial build state
-			auto initialBuildHistory = BuildHistory({
-					OperationInfo(
-						"C:/TestWorkingDirectory/ : ./Command.exe Arguments",
-						{ Path("InputFile.in") },
-						{ Path("OutputFile.out") }),
-			});
-			std::stringstream initialBinaryBuildHistory;
-			BuildHistoryManager::Serialize(initialBuildHistory, initialBinaryBuildHistory);
-			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				std::make_shared<MockFile>(std::move(initialBinaryBuildHistory)));
-
 			// Setup the input/output files to be out of date
+			auto inputFileId = fileSystemState.ToFileId(Path("/InputFile.in"), Path("C:/TestWorkingDirectory/"));
+			auto outputFileId = fileSystemState.ToFileId(Path("/OutputFile.out"), Path("C:/TestWorkingDirectory/"));
+
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 10);
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystem->CreateMockFile(
-				Path("Command.exe"),
-				std::make_shared<MockFile>(outputTime));
-			fileSystem->CreateMockFile(
-				Path("C:/TestWorkingDirectory/OutputFile.out"),
-				std::make_shared<MockFile>(outputTime));
-			fileSystem->CreateMockFile(
-				Path("C:/TestWorkingDirectory/InputFile.in"),
-				std::make_shared<MockFile>(inputTime));
+			fileSystemState.SetLastWriteTime(inputFileId, inputTime);
+			fileSystemState.SetLastWriteTime(outputFileId, outputTime);
 
-			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
+			// Create the initial build state
+			auto initialOperationHistory = OperationHistory({
+					OperationInfo(
+					CommandInfo(
+						Path("C:/TestWorkingDirectory/"),
+						Path("./Command.exe"),
+						"Arguments"),
+						{ inputFileId, },
+						{ outputFileId, }),
+			});
+			std::stringstream initialBinaryOperationHistory;
+			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
+			fileSystem->CreateMockFile(
+				Path("C:/BuildDirectory/out/debug/.soup/OperationHistory.bin"),
+				std::make_shared<MockFile>(std::move(initialBinaryOperationHistory)));
+
+			auto workingDirectory = Path("C:/BuildDirectory/");
+			auto uut = BuildRunner(workingDirectory, fileSystemState);
 
 			// Setup the input build state
 			auto operations = Utilities::BuildOperationList(
@@ -524,11 +543,11 @@ namespace Soup::Build::Execute::UnitTests
 							Path("OutputFile.out"),
 						})),
 				}));
-			auto objectDirectory = Path("out/obj/debug/");
+			auto outputDirectory = Path("out/debug/");
 			auto forceBuild = false;
 			uut.Execute(
 				Utilities::BuildOperationListWrapper(operations),
-				objectDirectory,
+				outputDirectory,
 				forceBuild);
 
 			// Verify expected logs
@@ -536,13 +555,11 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
 					"DIAG: Check for updated source",
-					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434964200]",
-					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434964260]",
 					"INFO: Input altered after target [C:/TestWorkingDirectory/InputFile.in] -> [C:/TestWorkingDirectory/OutputFile.out]",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/debug/.soup/",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -551,15 +568,11 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
-					"OpenRead: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
-					"Exists: C:/TestWorkingDirectory/OutputFile.out",
-					"GetLastWriteTime: C:/TestWorkingDirectory/OutputFile.out",
-					"Exists: C:/TestWorkingDirectory/InputFile.in",
-					"GetLastWriteTime: C:/TestWorkingDirectory/InputFile.in",
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
-					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
-					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/",
+					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -588,38 +601,39 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState();
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
-			// Create the initial build state
-			auto initialBuildHistory = BuildHistory({
-					OperationInfo(
-						"C:/TestWorkingDirectory/ : ./Command.exe Arguments",
-						{ Path("InputFile.in") },
-						{ Path("OutputFile.out") }),
-			});
-			std::stringstream initialBinaryBuildHistory;
-			BuildHistoryManager::Serialize(initialBuildHistory, initialBinaryBuildHistory);
-			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json"),
-				std::make_shared<MockFile>(std::move(initialBinaryBuildHistory)));
-
 			// Setup the input/output files to be up to date
+			auto inputFileId = fileSystemState.ToFileId(Path("/InputFile.in"), Path("C:/TestWorkingDirectory/"));
+			auto outputFileId = fileSystemState.ToFileId(Path("/OutputFile.out"), Path("C:/TestWorkingDirectory/"));
+
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystem->CreateMockFile(
-				Path("Command.exe"),
-				std::make_shared<MockFile>(outputTime));
-			fileSystem->CreateMockFile(
-				Path("C:/TestWorkingDirectory/OutputFile.out"),
-				std::make_shared<MockFile>(outputTime));
-			fileSystem->CreateMockFile(
-				Path("C:/TestWorkingDirectory/InputFile.in"),
-				std::make_shared<MockFile>(inputTime));
+			fileSystemState.SetLastWriteTime(inputFileId, inputTime);
+			fileSystemState.SetLastWriteTime(outputFileId, outputTime);
 
-			auto uut = BuildRunner(Path("C:/BuildDirectory/"));
+			// Create the initial build state
+			auto initialOperationHistory = OperationHistory({
+				OperationInfo(
+					CommandInfo(
+						Path("C:/TestWorkingDirectory/"),
+						Path("./Command.exe"),
+						"Arguments"),
+					{ inputFileId, },
+					{ outputFileId, }),
+			});
+			std::stringstream initialBinaryOperationHistory;
+			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
+			fileSystem->CreateMockFile(
+				Path("C:/BuildDirectory/out/debug/.soup/OperationHistory.bin"),
+				std::make_shared<MockFile>(std::move(initialBinaryOperationHistory)));
+
+			auto workingDirectory = Path("C:/BuildDirectory/");
+			auto uut = BuildRunner(workingDirectory, fileSystemState);
 
 			// Setup the input build state
 			auto operations = Utilities::BuildOperationList(
@@ -636,11 +650,11 @@ namespace Soup::Build::Execute::UnitTests
 							Path("OutputFile.out"),
 						})),
 				}));
-			auto objectDirectory = Path("out/obj/debug/");
+			auto outputDirectory = Path("out/debug/");
 			auto forceBuild = false;
 			uut.Execute(
 				Utilities::BuildOperationListWrapper(operations),
-				objectDirectory,
+				outputDirectory,
 				forceBuild);
 
 			// Verify expected logs
@@ -648,12 +662,10 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
 					"DIAG: Check for updated source",
-					"DIAG: IsOutdated: C:/TestWorkingDirectory/OutputFile.out [1434964320]",
-					"DIAG:   C:/TestWorkingDirectory/InputFile.in [1434964260]",
 					"INFO: Up to date",
 					"INFO: TestCommand: 1",
 					"INFO: Saving updated build state",
-					"INFO: Create Directory: C:/BuildDirectory/out/obj/debug/.soup",
+					"INFO: Create Directory: C:/BuildDirectory/out/debug/.soup/",
 					"HIGH: Done",
 				}),
 				testListener->GetMessages(),
@@ -662,15 +674,11 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
-					"OpenRead: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
-					"Exists: C:/TestWorkingDirectory/OutputFile.out",
-					"GetLastWriteTime: C:/TestWorkingDirectory/OutputFile.out",
-					"Exists: C:/TestWorkingDirectory/InputFile.in",
-					"GetLastWriteTime: C:/TestWorkingDirectory/InputFile.in",
-					"Exists: C:/BuildDirectory/out/obj/debug/.soup",
-					"CreateDirectory: C:/BuildDirectory/out/obj/debug/.soup",
-					"OpenWrite: C:/BuildDirectory/out/obj/debug/.soup/BuildHistory.json",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/",
+					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
