@@ -14,7 +14,7 @@ import SoupTestUtilities;
 
 using namespace Opal;
 using namespace Opal::System;
-using namespace SoupTest;
+using namespace Soup::Test;
 
 #include "BuildEngineTests.gen.h"
 

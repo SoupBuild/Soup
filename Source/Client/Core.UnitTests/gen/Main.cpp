@@ -17,7 +17,7 @@ import SoupTestUtilities;
 
 using namespace Opal;
 using namespace Opal::System;
-using namespace SoupTest;
+using namespace Soup::Test;
 
 #include "Api/SoupApiTests.gen.h"
 #include "Api/SoupApiJsonModelsTests.gen.h"

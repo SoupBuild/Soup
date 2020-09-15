@@ -16,7 +16,7 @@ import Soup.Test.Assert;
 
 using namespace Opal;
 using namespace Opal::System;
-using namespace SoupTest;
+using namespace Soup::Test;
 import SoupTestUtilities;
 
 #include "Tasks/BuildTaskTests.gen.h"
