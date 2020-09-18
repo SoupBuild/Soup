@@ -25,7 +25,8 @@ namespace Soup::Build::Execute
 		/// </summary>
 		static bool TryLoadState(
 			const Path& directory,
-			OperationHistory& result)
+			OperationHistory& result,
+			FileSystemStateId activeStateId)
 		{
 			// Verify the requested file exists
 			auto operationHistoryFile = directory +
@@ -43,8 +44,17 @@ namespace Soup::Build::Execute
 			// Read the contents of the build state file
 			try
 			{
-				result = OperationHistoryReader::Deserialize(file->GetInStream());
-				return true;
+				auto loadedResult = OperationHistoryReader::Deserialize(file->GetInStream());
+				if (loadedResult.GetStateId() != activeStateId)
+				{
+					Log::Warning("Operation History uses an out of date state Id.");
+					return false;
+				}
+				else
+				{
+					result = loadedResult;
+					return true;
+				}
 			}
 			catch(std::runtime_error& ex)
 			{

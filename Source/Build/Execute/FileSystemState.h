@@ -6,6 +6,7 @@
 
 namespace Soup::Build::Execute
 {
+	export using FileSystemStateId = uint32_t;
 	export using FileId = uint32_t;
 
 	/// <summary>
@@ -18,8 +19,10 @@ namespace Soup::Build::Execute
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FileSystemState"/> class.
 		/// </summary>
-		FileSystemState() :
-			_uniqueId(0),
+		FileSystemState(
+			FileSystemStateId id) :
+			_id(id),
+			_maxFileId(0),
 			_files(),
 			_fileLookup(),
 			_writeCache()
@@ -30,8 +33,11 @@ namespace Soup::Build::Execute
 		/// Initializes a new instance of the <see cref="FileSystemState"/> class.
 		/// </summary>
 		FileSystemState(
+			FileSystemStateId id,
+			FileId maxFileId,
 			std::unordered_map<FileId, Path> files) :
-			_uniqueId(0),
+			_id(id),
+			_maxFileId(maxFileId),
 			_files(std::move(files)),
 			_fileLookup(),
 			_writeCache()
@@ -42,9 +48,6 @@ namespace Soup::Build::Execute
 				auto insertResult = _fileLookup.emplace(file.second.ToString(), file.first);
 				if (!insertResult.second)
 					throw std::runtime_error("The file was not unique in the provided set.");
-
-				// Track the maximum id in use to ensure unique ids
-				_uniqueId = std::max(_uniqueId, file.first);
 			}
 		}
 
@@ -54,6 +57,22 @@ namespace Soup::Build::Execute
 		const std::unordered_map<FileId, Path>& GetFiles() const
 		{
 			return _files;
+		}
+
+		/// <summary>
+		/// Get the max unique file id
+		/// </summary>
+		FileSystemStateId GetId() const
+		{
+			return _id;
+		}
+
+		/// <summary>
+		/// Get the max unique file id
+		/// </summary>
+		FileId GetMaxFileId() const
+		{
+			return _maxFileId;
 		}
 
 		/// <summary>
@@ -153,7 +172,7 @@ namespace Soup::Build::Execute
 			if (!TryFindFileId(absolutePath, result))
 			{
 				// Insert the new file
-				result = ++_uniqueId;
+				result = ++_maxFileId;
 				auto insertResult = _files.emplace(result, absolutePath);
 				if (!insertResult.second)
 					throw std::runtime_error("The provided file id already exists in the file system state");
@@ -175,7 +194,13 @@ namespace Soup::Build::Execute
 		}
 
 	private:
-		FileId _uniqueId;
+		// The unique id for this file system state
+		// Used to track if a file system cache was corrupted and re-generated
+		FileSystemStateId _id;
+
+		// The maximum id that has been used for files
+		// Used to ensure unique ids are generated accross the entire system
+		FileId _maxFileId;
 
 		std::unordered_map<FileId, Path> _files;
 		std::unordered_map<std::string, FileId> _fileLookup;

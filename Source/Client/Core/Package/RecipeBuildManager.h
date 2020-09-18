@@ -26,7 +26,7 @@ namespace Soup::Build
 			_knownRecipes(),
 			_buildSet(),
 			_systemBuildSet(),
-			_fileSystemState()
+			_fileSystemState(0)
 		{
 		}
 
@@ -49,16 +49,22 @@ namespace Soup::Build
 			if (!arguments.ForceRebuild)
 			{
 				Log::Info("Loading previous file system state");
-				if (!Execute::FileSystemStateManager::TryLoadState(userDataDirectory, _fileSystemState))
-				{
-					Log::Info("No previous file system state found");
-					_fileSystemState = Execute::FileSystemState();
-				}
-				else
+				if (Execute::FileSystemStateManager::TryLoadState(userDataDirectory, _fileSystemState))
 				{
 					// Load the current state of the known files
 					Log::Info("Loading current file system state");
 					_fileSystemState.LoadCurrentFileSystemState();
+				}
+				else
+				{
+					Log::Info("No previous file system state found");
+					
+					// Create a unique id using the lower range of the milliseconds since the epoch
+					auto currentTime = std::chrono::system_clock::now();
+					auto currentTimeMilliseconds = std::chrono::time_point_cast<std::chrono::milliseconds>(currentTime);
+					auto offsetFromEpoch = currentTimeMilliseconds.time_since_epoch();
+					auto uniqueId = static_cast<uint32_t>(offsetFromEpoch.count());
+					_fileSystemState = Execute::FileSystemState(uniqueId);
 				}
 			}
 			else

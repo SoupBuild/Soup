@@ -17,7 +17,8 @@ namespace Soup::Build::Execute
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OperationHistory"/> class.
 		/// </summary>
-		OperationHistory() :
+		OperationHistory(FileSystemStateId stateId) :
+			_stateId(stateId),
 			_operations()
 		{
 		}
@@ -26,7 +27,9 @@ namespace Soup::Build::Execute
 		/// Initializes a new instance of the <see cref="OperationHistory"/> class.
 		/// </summary>
 		OperationHistory(
+			FileSystemStateId stateId,
 			std::vector<OperationInfo> operations) :
+			_stateId(stateId),
 			_operations()
 		{
 			// Store the incoming vector of operations as a lookup for fast checks
@@ -34,6 +37,14 @@ namespace Soup::Build::Execute
 			{
 				_operations.emplace(info.Command, std::move(info));
 			}
+		}
+
+		/// <summary>
+		/// Get the file system state id used for this operation history
+		/// </summary>
+		FileSystemStateId GetStateId() const
+		{
+			return _stateId;
 		}
 
 		/// <summary>
@@ -73,6 +84,7 @@ namespace Soup::Build::Execute
 		}
 
 	private:
+		FileSystemStateId _stateId;
 		std::unordered_map<CommandInfo, OperationInfo> _operations;
 	};
 }

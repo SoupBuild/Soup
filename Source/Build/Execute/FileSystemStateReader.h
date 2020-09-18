@@ -36,6 +36,12 @@ namespace Soup::Build::Execute
 				throw std::runtime_error("File System state file version does not match expected");
 			}
 
+			// Read the id of this file system state
+			auto id = ReadUInt32(stream);
+
+			// Read the maximum file id that has been used
+			auto maxFileId = ReadUInt32(stream);
+
 			// Read the set of files
 			stream.read(headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'F' ||
@@ -64,7 +70,10 @@ namespace Soup::Build::Execute
 				throw std::runtime_error("File System State file corrupted - Did not read the entire file");
 			}
 
-			return FileSystemState(std::move(files));
+			return FileSystemState(
+				id,
+				maxFileId,
+				std::move(files));
 		}
 
 	private:

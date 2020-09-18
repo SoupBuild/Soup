@@ -24,8 +24,8 @@ namespace Soup::Build::Execute
 			_workingDirectory(std::move(workingDirectory)),
 			_fileSystemState(fileSystemState),
 			_dependencyCounts(),
-			_previousOperationHistory(),
-			_activeOperationHistory(),
+			_previousOperationHistory(0),
+			_activeOperationHistory(_fileSystemState.GetId()),
 			_stateChecker(fileSystemState)
 		{
 		}
@@ -41,10 +41,13 @@ namespace Soup::Build::Execute
 			if (!forceBuild)
 			{
 				Log::Diag("Loading previous build state");
-				if (!OperationHistoryManager::TryLoadState(targetDirectory, _previousOperationHistory))
+				if (!OperationHistoryManager::TryLoadState(
+					targetDirectory,
+					_previousOperationHistory,
+					_fileSystemState.GetId()))
 				{
 					Log::Info("No previous operation state found, full rebuild required");
-					_previousOperationHistory = OperationHistory();
+					_previousOperationHistory = OperationHistory(_fileSystemState.GetId());
 					forceBuild = true;
 				}
 			}
@@ -174,6 +177,7 @@ namespace Soup::Build::Execute
 				else
 				{
 					// The build command has not been run before
+					Log::Info("Unknown operation");
 					buildRequired = true;
 				}
 			}

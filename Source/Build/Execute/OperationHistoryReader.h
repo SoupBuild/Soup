@@ -36,6 +36,9 @@ namespace Soup::Build::Execute
 				throw std::runtime_error("Operation History file version does not match expected");
 			}
 
+			// Read in the file system state that was used for this operation history
+			auto stateId = ReadUInt32(stream);
+
 			// Read the set of operations
 			stream.read(headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'O' ||
@@ -79,7 +82,9 @@ namespace Soup::Build::Execute
 				throw std::runtime_error("Operation History file corrupted - Did not read the entire file");
 			}
 
-			return OperationHistory(std::move(operations));
+			return OperationHistory(
+				stateId,
+				std::move(operations));
 		}
 
 	private:

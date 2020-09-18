@@ -23,6 +23,9 @@ namespace Soup::Build::Execute
 			stream.write("BOH\0", 4);
 			WriteValue(stream, FileVersion);
 
+			// Write out the file system state that was used for this operation history
+			WriteValue(stream, state.GetStateId());
+
 			// Write out the set of operations
 			auto& operations = state.GetOperations();
 			stream.write("OPS\0", 4);

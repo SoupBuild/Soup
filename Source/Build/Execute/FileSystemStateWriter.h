@@ -23,6 +23,12 @@ namespace Soup::Build::Execute
 			stream.write("BFS\0", 4);
 			WriteValue(stream, FileVersion);
 
+			// Write the id of this file system state
+			WriteValue(stream, state.GetId());
+
+			// Write the maximum file id that has been used
+			WriteValue(stream, state.GetMaxFileId());
+
 			// Write out the set of files
 			auto& files = state.GetFiles();
 			stream.write("FIS\0", 4);
