@@ -47,7 +47,7 @@ namespace Soup::Build::Execute
 				auto loadedResult = OperationHistoryReader::Deserialize(file->GetInStream());
 				if (loadedResult.GetStateId() != activeStateId)
 				{
-					Log::Warning("Operation History uses an out of date state Id.");
+					Log::Warning("Operation History uses an out of date state Id");
 					return false;
 				}
 				else

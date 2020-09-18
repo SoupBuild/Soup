@@ -12,8 +12,12 @@ namespace Soup::Build::Execute::UnitTests
 		[[Fact]]
 		void Initialize_Default()
 		{
-			auto uut = OperationHistory();
+			auto uut = OperationHistory(1234);
 
+			Assert::AreEqual(
+				1234u,
+				uut.GetStateId(),
+				"Verify state id match expected.");
 			Assert::AreEqual(
 				std::unordered_map<CommandInfo, OperationInfo>(),
 				uut.GetOperations(),
@@ -24,6 +28,7 @@ namespace Soup::Build::Execute::UnitTests
 		void Initialize_ListOperations_Single()
 		{
 			auto uut = OperationHistory(
+				1234,
 				std::vector<OperationInfo>({
 					OperationInfo(
 						CommandInfo(
@@ -38,6 +43,10 @@ namespace Soup::Build::Execute::UnitTests
 						})),
 				}));
 
+			Assert::AreEqual(
+				1234u,
+				uut.GetStateId(),
+				"Verify state id match expected.");
 			Assert::AreEqual(
 				std::unordered_map<CommandInfo, OperationInfo>({
 					{
@@ -66,6 +75,7 @@ namespace Soup::Build::Execute::UnitTests
 		void TryFindOperationInfo_Missing()
 		{
 			auto uut = OperationHistory(
+				1234,
 				std::vector<OperationInfo>({}));
 
 			const OperationInfo* operationInfo = nullptr;
@@ -84,6 +94,7 @@ namespace Soup::Build::Execute::UnitTests
 		void TryFindOperationInfo_Found()
 		{
 			auto uut = OperationHistory(
+				1234,
 				std::vector<OperationInfo>({
 					OperationInfo(
 						CommandInfo(
@@ -128,6 +139,7 @@ namespace Soup::Build::Execute::UnitTests
 		void AddOperationInfo()
 		{
 			auto uut = OperationHistory(
+				1234,
 				std::vector<OperationInfo>({}));
 
 			uut.AddOperationInfo(

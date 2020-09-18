@@ -18,7 +18,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Setup the input parameters
 			auto rootPath = Path("C:/Root/");
@@ -53,7 +53,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Setup the input parameters
 			auto rootPath = Path("C:/Root/");
@@ -93,7 +93,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Setup the input parameters
 			auto rootPath = Path("C:/Root/");
@@ -137,7 +137,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Setup the input parameters
 			auto rootPath = Path("C:/Root/");
@@ -178,7 +178,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Setup the input parameters
 			auto rootPath = Path("C:/Root/");
@@ -221,7 +221,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 13);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Setup the input parameters
 			auto rootPath = Path("C:/Root/");
@@ -266,7 +266,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Setup the input parameters
 			auto rootPath = Path("C:/Root/");
@@ -309,7 +309,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Setup the input parameters
 			auto rootPath = Path("C:/Root/");

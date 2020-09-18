@@ -21,7 +21,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto directory = Path("TestFiles/NoFile");
-			FileSystemState actual;
+			auto actual = FileSystemState(0);
 			auto result = FileSystemStateManager::TryLoadState(directory, actual);
 
 			Assert::IsFalse(result, "Verify result is false.");
@@ -58,7 +58,7 @@ namespace Soup::Build::Execute::UnitTests
 				std::make_shared<MockFile>());
 
 			auto directory = Path("TestFiles/GarbageFileSystemState");
-			FileSystemState actual;
+			auto actual = FileSystemState(0);
 			auto result = FileSystemStateManager::TryLoadState(directory, actual);
 
 			Assert::IsFalse(result, "Verify result is false.");
@@ -94,7 +94,8 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 'F', 'I', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x0A, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 			});
 			fileSystem->CreateMockFile(
@@ -102,11 +103,13 @@ namespace Soup::Build::Execute::UnitTests
 				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
 
 			auto directory = Path("TestFiles/SimpleFileSystemState");
-			FileSystemState actual;
+			auto actual = FileSystemState(0);
 			auto result = FileSystemStateManager::TryLoadState(directory, actual);
 
 			Assert::IsTrue(result, "Verify result is true.");
 
+			Assert::AreEqual(12345u, actual.GetId(), "Verify id matches expected.");
+			Assert::AreEqual(10u, actual.GetMaxFileId(), "Verify max file id matches expected.");
 			auto expected = std::unordered_map<FileId, Path>({
 				{
 					8,
@@ -144,6 +147,8 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto directory = Path("TestFiles/");
 			auto fileSystemState = FileSystemState(
+				12345,
+				10,
 				std::unordered_map<FileId, Path>({
 					{
 						8,
@@ -173,7 +178,8 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify the file content
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 'F', 'I', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x0A, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 			});
 			auto& mockFile = fileSystem->GetMockFile(Path("./TestFiles/State/FileSystemState.bin"));

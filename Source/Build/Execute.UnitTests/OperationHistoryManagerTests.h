@@ -21,8 +21,8 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto directory = Path("TestFiles/NoFile");
-			OperationHistory actual;
-			auto result = OperationHistoryManager::TryLoadState(directory, actual);
+			auto actual = OperationHistory(0);
+			auto result = OperationHistoryManager::TryLoadState(directory, actual, 1234);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -58,8 +58,8 @@ namespace Soup::Build::Execute::UnitTests
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
 			auto directory = Path("TestFiles/GarbageOperationHistory");
-			OperationHistory actual;
-			auto result = OperationHistoryManager::TryLoadState(directory, actual);
+			auto actual = OperationHistory(0);
+			auto result = OperationHistoryManager::TryLoadState(directory, actual, 1234);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -82,6 +82,56 @@ namespace Soup::Build::Execute::UnitTests
 		}
 
 		[[Fact]]
+		void TryLoadFromFile_WrongStateId()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+
+			auto binaryFileContent = std::vector<char>(
+			{
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
+				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
+				0x0B, 0x00, 0x00, 0x00, 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
+				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',
+				0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+				0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+			});
+			fileSystem->CreateMockFile(
+				Path("TestFiles/SimpleOperationHistory/.soup/OperationHistory.bin"),
+				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
+
+			auto directory = Path("TestFiles/SimpleOperationHistory");
+			auto actual = OperationHistory(0);
+			auto result = OperationHistoryManager::TryLoadState(directory, actual, 22);
+
+			Assert::IsFalse(result, "Verify result is false.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: ./TestFiles/SimpleOperationHistory/.soup/OperationHistory.bin",
+					"OpenReadBinary: ./TestFiles/SimpleOperationHistory/.soup/OperationHistory.bin",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"WARN: Operation History uses an out of date state Id",
+				}),
+				testListener->GetMessages(),
+
+				"Verify messages match expected.");
+		}
+
+		[[Fact]]
 		void TryLoadFromFile_SimpleFile()
 		{
 			// Register the test listener
@@ -94,7 +144,8 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0B, 0x00, 0x00, 0x00, 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',
@@ -106,8 +157,8 @@ namespace Soup::Build::Execute::UnitTests
 				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
 
 			auto directory = Path("TestFiles/SimpleOperationHistory");
-			OperationHistory actual;
-			auto result = OperationHistoryManager::TryLoadState(directory, actual);
+			auto actual = OperationHistory(0);
+			auto result = OperationHistoryManager::TryLoadState(directory, actual, 12345);
 
 			Assert::IsTrue(result, "Verify result is true.");
 
@@ -161,6 +212,7 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto directory = Path("TestFiles/");
 			auto operationHistory = OperationHistory(
+				12345,
 				std::vector<OperationInfo>({
 					OperationInfo(
 						CommandInfo(
@@ -197,7 +249,8 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify the file content
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0D, 0x00, 0x00, 0x00, '.', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',

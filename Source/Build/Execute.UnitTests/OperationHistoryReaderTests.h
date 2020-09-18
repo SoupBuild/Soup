@@ -44,7 +44,8 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '2'
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '2'
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
@@ -59,7 +60,8 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00, 'E',
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00, 'E',
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
@@ -74,7 +76,8 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
@@ -91,7 +94,8 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0B, 0x00, 0x00, 0x00, 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',
@@ -131,7 +135,8 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '\0', 0x02, 0x00, 0x00, 0x00,
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x02, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0C, 0x00, 0x00, 0x00, 'D', 'o', 'S', 't', 'u', 'f', 'f', '1', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',

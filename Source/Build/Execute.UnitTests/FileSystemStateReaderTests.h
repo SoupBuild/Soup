@@ -44,7 +44,8 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 'F', 'I', 'S', '2'
+				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '2'
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
@@ -59,7 +60,8 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00, 'E',
+				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00, 'E',
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
@@ -74,12 +76,15 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
+				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
 			auto actual = FileSystemStateReader::Deserialize(content);
 
+			Assert::AreEqual(12345u, actual.GetId(), "Verify id matches expected.");
+			Assert::AreEqual(5u, actual.GetMaxFileId(), "Verify max file id matches expected.");
 			Assert::AreEqual(
 				std::unordered_map<FileId, Path>(),
 				actual.GetFiles(),
@@ -91,13 +96,16 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 'F', 'I', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
 			auto actual = FileSystemStateReader::Deserialize(content);
 
+			Assert::AreEqual(12345u, actual.GetId(), "Verify id matches expected.");
+			Assert::AreEqual(5u, actual.GetMaxFileId(), "Verify max file id matches expected.");
 			Assert::AreEqual(
 				std::unordered_map<FileId, Path>({
 					{
@@ -114,7 +122,8 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 'F', 'I', 'S', '\0', 0x02, 0x00, 0x00, 0x00,
+				'B', 'F', 'S', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x02, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 0x14, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '1', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 0x14, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '2', '.', 'e', 'x', 'e',
 			});
@@ -122,6 +131,8 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto actual = FileSystemStateReader::Deserialize(content);
 
+			Assert::AreEqual(12345u, actual.GetId(), "Verify id matches expected.");
+			Assert::AreEqual(5u, actual.GetMaxFileId(), "Verify max file id matches expected.");
 			Assert::AreEqual(
 				std::unordered_map<FileId, Path>({
 					{

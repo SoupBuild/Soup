@@ -13,6 +13,7 @@ namespace Soup::Build::Execute::UnitTests
 		void Serialize_Empty()
 		{
 			auto operationHistory = OperationHistory(
+				12345,
 				std::vector<OperationInfo>({}));
 			auto content = std::stringstream();
 
@@ -20,7 +21,8 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 			});
 			Assert::AreEqual(
 				std::string(binaryFileContent.data(), binaryFileContent.size()),
@@ -32,6 +34,7 @@ namespace Soup::Build::Execute::UnitTests
 		void Serialize_Single()
 		{
 			auto operationHistory = OperationHistory(
+				12345,
 				std::vector<OperationInfo>({
 					OperationInfo(
 						CommandInfo(
@@ -51,7 +54,8 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0D, 0x00, 0x00, 0x00, '.', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',
@@ -68,6 +72,7 @@ namespace Soup::Build::Execute::UnitTests
 		void Serialize_Multiple()
 		{
 			auto operationHistory = OperationHistory(
+				12345,
 				std::vector<OperationInfo>({
 					OperationInfo(
 						CommandInfo(
@@ -98,7 +103,8 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 'O', 'P', 'S', '\0', 0x02, 0x00, 0x00, 0x00,
+				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'O', 'P', 'S', '\0', 0x02, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0E, 0x00, 0x00, 0x00, '.', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '1', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',

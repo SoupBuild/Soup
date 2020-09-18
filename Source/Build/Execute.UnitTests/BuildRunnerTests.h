@@ -13,7 +13,7 @@ namespace Soup::Build::Execute::UnitTests
 		void Initialize()
 		{
 			auto workingDirectory = Path("C:/BuildDirectory/");
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 			auto uut = BuildRunner(workingDirectory, fileSystemState);
 		}
 
@@ -27,7 +27,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
@@ -82,7 +82,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
@@ -141,7 +141,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
@@ -218,7 +218,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
@@ -299,14 +299,14 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Create the initial operation history state
-			auto initialOperationHistory = OperationHistory();
+			auto initialOperationHistory = OperationHistory(1234);
 			std::stringstream initialBinaryOperationHistory;
 			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
 			fileSystem->CreateMockFile(
@@ -343,6 +343,7 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
 					"DIAG: Check for updated source",
+					"INFO: Unknown operation",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: ./Command.exe Arguments",
 					"INFO: Saving updated build state",
@@ -388,7 +389,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
@@ -403,15 +404,17 @@ namespace Soup::Build::Execute::UnitTests
 			fileSystemState.SetLastWriteTime(outputFileId, std::nullopt);
 
 			// Create the initial build state
-			auto initialOperationHistory = OperationHistory({
-				OperationInfo(
-					CommandInfo(
-						Path("C:/TestWorkingDirectory/"),
-						Path("./Command.exe"),
-						"Arguments"),
-					{ inputFileId, },
-					{ outputFileId, }),
-			});
+			auto initialOperationHistory = OperationHistory(
+				1234,
+				{
+					OperationInfo(
+						CommandInfo(
+							Path("C:/TestWorkingDirectory/"),
+							Path("./Command.exe"),
+							"Arguments"),
+						{ inputFileId, },
+						{ outputFileId, }),
+				});
 			std::stringstream initialBinaryOperationHistory;
 			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
 			fileSystem->CreateMockFile(
@@ -494,7 +497,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
@@ -510,7 +513,9 @@ namespace Soup::Build::Execute::UnitTests
 			fileSystemState.SetLastWriteTime(outputFileId, outputTime);
 
 			// Create the initial build state
-			auto initialOperationHistory = OperationHistory({
+			auto initialOperationHistory = OperationHistory(
+				1234,
+				{
 					OperationInfo(
 					CommandInfo(
 						Path("C:/TestWorkingDirectory/"),
@@ -518,7 +523,7 @@ namespace Soup::Build::Execute::UnitTests
 						"Arguments"),
 						{ inputFileId, },
 						{ outputFileId, }),
-			});
+				});
 			std::stringstream initialBinaryOperationHistory;
 			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
 			fileSystem->CreateMockFile(
@@ -601,7 +606,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState();
+			auto fileSystemState = FileSystemState(1234);
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
@@ -617,15 +622,17 @@ namespace Soup::Build::Execute::UnitTests
 			fileSystemState.SetLastWriteTime(outputFileId, outputTime);
 
 			// Create the initial build state
-			auto initialOperationHistory = OperationHistory({
-				OperationInfo(
-					CommandInfo(
-						Path("C:/TestWorkingDirectory/"),
-						Path("./Command.exe"),
-						"Arguments"),
-					{ inputFileId, },
-					{ outputFileId, }),
-			});
+			auto initialOperationHistory = OperationHistory(
+				1234,
+				{
+					OperationInfo(
+						CommandInfo(
+							Path("C:/TestWorkingDirectory/"),
+							Path("./Command.exe"),
+							"Arguments"),
+						{ inputFileId, },
+						{ outputFileId, }),
+				});
 			std::stringstream initialBinaryOperationHistory;
 			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
 			fileSystem->CreateMockFile(
