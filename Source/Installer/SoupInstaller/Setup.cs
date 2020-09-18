@@ -5,7 +5,7 @@ class Script
 {
 	static public void Main()
 	{
-		var soupBinFolder = @"..\..\Client\CLI\out\bin\MSVC\release\win32\x64\";
+		var soupBinFolder = @"..\..\Client\CLI\out\MSVC\release\win32\x64\bin\";
 		var project = new Project(
 			"Soup",
 			new Dir(
@@ -27,7 +27,7 @@ class Script
 			});
 
 		project.Platform = Platform.x64;
-		project.Version = new Version(0, 8, 9);
+		project.Version = new Version(0, 8, 10);
 		project.GUID = new Guid("2CF2A792-A266-416D-ACF9-B81781DC2B76");
 		project.BackgroundImage = @"Images\DialogBackground.bmp";
 		project.BannerImage = @"Images\DialogBanner.bmp";
