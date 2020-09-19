@@ -46,14 +46,14 @@ namespace Soup::Build::Utilities
 		return BuildOperationWrapper(resultReference);
 	}
 
-	void BuildOperationListWrapper::SetValueAt(uint64_t index, BuildOperationWrapper& value)
+	void BuildOperationListWrapper::SetValueAt(uint64_t index, BuildOperationWrapper value)
 	{
 		auto status = _value.TrySetValueAt(index, value.GetRaw());
 		if (status != ApiCallResult::Success)
 			throw std::runtime_error("TrySetValueAt Failed");
 	}
 
-	void BuildOperationListWrapper::Append(BuildOperationWrapper& value)
+	void BuildOperationListWrapper::Append(BuildOperationWrapper value)
 	{
 		auto currentSize = static_cast<size_t>(GetSize());
 		auto finalSize = currentSize + 1;
@@ -61,7 +61,7 @@ namespace Soup::Build::Utilities
 		SetValueAt(currentSize, value);
 	}
 
-	void BuildOperationListWrapper::Append(const BuildOperationListWrapper& values)
+	void BuildOperationListWrapper::Append(const BuildOperationListWrapper values)
 	{
 		auto currentSize = GetSize();
 		auto finalSize = currentSize + values.GetSize();

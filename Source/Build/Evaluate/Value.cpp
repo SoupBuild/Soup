@@ -151,7 +151,7 @@ ApiCallResult Value::TryGetAsList(IValueList*& result) noexcept
 {
 	try
 	{
-		result = false;
+		result = nullptr;
 		if (_value.type() == typeid(ValueList))
 		{
 			result = &std::any_cast<ValueList&>(_value);
@@ -174,7 +174,7 @@ ApiCallResult Value::TryGetAsString(IValuePrimitive<const char*>*& result) noexc
 {
 	try
 	{
-		result = false;
+		result = nullptr;
 		if (_value.type() == typeid(ValuePrimitive<const char*>))
 		{
 			result = &std::any_cast<ValuePrimitive<const char*>&>(_value);
@@ -197,7 +197,7 @@ ApiCallResult Value::TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexcept
 {
 	try
 	{
-		result = false;
+		result = nullptr;
 		if (_value.type() == typeid(ValuePrimitive<int64_t>))
 		{
 			result = &std::any_cast<ValuePrimitive<int64_t>&>(_value);
@@ -220,7 +220,7 @@ ApiCallResult Value::TryGetAsFloat(IValuePrimitive<double>*& result) noexcept
 {
 	try
 	{
-		result = false;
+		result = nullptr;
 		if (_value.type() == typeid(ValuePrimitive<double>))
 		{
 			result = &std::any_cast<ValuePrimitive<double>&>(_value);
@@ -243,7 +243,7 @@ ApiCallResult Value::TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept
 {
 	try
 	{
-		result = false;
+		result = nullptr;
 		if (_value.type() == typeid(ValuePrimitive<bool>))
 		{
 			result = &std::any_cast<ValuePrimitive<bool>&>(_value);

@@ -168,7 +168,7 @@ namespace Soup::Build::UnitTests
 R"(Name = "MyPackage"
 Version = "1.2.3"
 )";
-			auto& mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.toml"));
+			auto mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.toml"));
 			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");
 		}
 

@@ -67,7 +67,7 @@ namespace Soup::Compiler::MSVC
 		/// Compile
 		/// </summary>
 		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
-			Build::Utilities::BuildStateWrapper& state,
+			Build::Utilities::BuildStateWrapper state,
 			const CompileArguments& args) const override final
 		{
 			// Clang decided to do their module compilation in two stages
@@ -86,7 +86,7 @@ namespace Soup::Compiler::MSVC
 		/// Link
 		/// </summary>
 		Build::Utilities::BuildOperationWrapper CreateLinkOperation(
-			Build::Utilities::BuildStateWrapper& state,
+			Build::Utilities::BuildStateWrapper state,
 			const LinkArguments& args) const override final
 		{
 			// Select the correct executable for linking libraries or executables

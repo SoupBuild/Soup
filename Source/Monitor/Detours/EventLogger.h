@@ -105,6 +105,19 @@ public:
 		*reinterpret_cast<int*>(message.Content + startIndex) = value;
 	}
 
+	static void AppendValue(Monitor::DetourMessage& message, long value)
+	{
+		auto startIndex = message.ContentSize;
+		message.ContentSize += sizeof(long);
+		if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
+		{
+			WriteError("Message content too long for long value");
+			exit(-1234);
+		}
+
+		*reinterpret_cast<long*>(message.Content + startIndex) = value;
+	}
+
 	static void AppendValue(Monitor::DetourMessage& message, unsigned int value)
 	{
 		auto startIndex = message.ContentSize;

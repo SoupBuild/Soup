@@ -104,7 +104,7 @@ namespace Soup::Build::Utilities
 			Resize(finalSize);
 			for (size_t i = 0; i < finalSize; i++)
 			{
-				auto& currentValue = values.GetValueAt(i);
+				auto currentValue = values.GetValueAt(i);
 				GetValueAt(i).SetValue(currentValue);
 			}
 		}
@@ -141,7 +141,7 @@ namespace Soup::Build::Utilities
 			Resize(finalSize);
 			for (uint64_t i = currentSize; i < finalSize; i++)
 			{
-				auto& currentValue = values.GetValueAt(i - currentSize);
+				auto currentValue = values.GetValueAt(i - currentSize);
 				GetValueAt(i).SetValue(currentValue);
 			}
 		}

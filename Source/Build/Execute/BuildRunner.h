@@ -32,7 +32,7 @@ namespace Soup::Build::Execute
 
 		// TODO: Convert vector to const when we have a const version of the operation wrapper.
 		void Execute(
-			Utilities::BuildOperationListWrapper& operations,
+			Utilities::BuildOperationListWrapper operations,
 			const Path& outputDirectory,
 			bool forceBuild)
 		{
@@ -72,7 +72,7 @@ namespace Soup::Build::Execute
 		/// Build dependencies
 		/// </summary>
 		void BuildDependencies(
-			Utilities::BuildOperationListWrapper& operations,
+			Utilities::BuildOperationListWrapper operations,
 			const std::set<uint64_t>& parentSet)
 		{
 			for (auto i = 0; i < operations.GetSize(); i++)
@@ -107,7 +107,7 @@ namespace Soup::Build::Execute
 		/// Execute the collection of build operations
 		/// </summary>
 		void CheckExecuteOperations(
-			Utilities::BuildOperationListWrapper& operations,
+			Utilities::BuildOperationListWrapper operations,
 			bool forceBuild)
 		{
 			for (auto i = 0; i < operations.GetSize(); i++)

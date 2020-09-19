@@ -257,7 +257,7 @@ namespace Soup::Build::Execute::UnitTests
 				0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
 			});
-			auto& mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/OperationHistory.bin"));
+			auto mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/OperationHistory.bin"));
 			Assert::AreEqual(
 				std::string(binaryFileContent.data(), binaryFileContent.size()),
 				mockFile->Content.str(),

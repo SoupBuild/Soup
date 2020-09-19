@@ -182,7 +182,7 @@ namespace Soup::Build::Execute::UnitTests
 				'F', 'I', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 			});
-			auto& mockFile = fileSystem->GetMockFile(Path("./TestFiles/State/FileSystemState.bin"));
+			auto mockFile = fileSystem->GetMockFile(Path("./TestFiles/State/FileSystemState.bin"));
 			Assert::AreEqual(
 				std::string(binaryFileContent.data(), binaryFileContent.size()),
 				mockFile->Content.str(),
