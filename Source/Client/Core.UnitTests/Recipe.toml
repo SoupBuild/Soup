@@ -3,8 +3,7 @@ Version = "1.0.0"
 Type = "Executable"
 Dependencies = [
 	"json11@1.0.0",
-	# "../../Dependencies/SoupTest/Assert/",
-	"SoupTest@0.1.0",
+	"Soup.Test.Assert@0.1.6",
 	"../Core/",
 	"../../TestUtilities/",
 ]

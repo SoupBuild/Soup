@@ -1,8 +1,7 @@
 Name = "SoupTestUtilities"
 Version = "0.1.0"
 Dependencies = [
-	# "../../Dependencies/SoupTest/Assert/",
-	"SoupTest@0.1.0",
+	"Soup.Test.Assert@0.1.6",
 	"Opal@0.1.5",
 	"../Build/Utilities/",
 ]

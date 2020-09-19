@@ -2,11 +2,10 @@ Name = "SoupCompilerMSVCUnitTests"
 Version = "1.0.0"
 Type = "Executable"
 Dependencies = [
-	# "../../../Dependencies/SoupTest/Assert/",
 	"../MSVC/",
 	"../../../TestUtilities/",
 	"../../../Build/Evaluate/",
-	"SoupTest@0.1.0",
+	"Soup.Test.Assert@0.1.6",
 ]
 Source = [
 	"gen/Main.cpp",

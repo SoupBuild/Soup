@@ -8,12 +8,12 @@
 
 import Opal;
 import Soup.Build.Utilities;
-import SoupTest;
+import Soup.Test.Assert;
 import SoupTestUtilities;
 
 using namespace Opal;
 using namespace Opal::System;
-using namespace SoupTest;
+using namespace Soup::Test;
 
 #include "RecipeLanguageVersionTests.gen.h"
 #include "RecipeTypeTests.gen.h"

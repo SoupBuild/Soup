@@ -8,7 +8,7 @@
 import Opal;
 import SoupCompiler;
 import SoupCompilerClang;
-import SoupTest;
+import Soup.Test.Assert;
 import SoupTestUtilities;
 import Soup.Build;
 import Soup.Build.Utilities;
@@ -16,7 +16,7 @@ import Soup.Build.Evaluate;
 
 using namespace Opal;
 using namespace Opal::System;
-using namespace SoupTest;
+using namespace Soup::Test;
 
 #include "CompilerArgumentBuilderTests.gen.h"
 #include "CompilerTests.gen.h"

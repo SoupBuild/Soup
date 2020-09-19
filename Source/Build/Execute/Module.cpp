@@ -1,6 +1,7 @@
 ﻿module;
 
 #include <any>
+#include <array>
 #include <codecvt>
 #include <ctime>
 #include <locale>
@@ -18,6 +19,10 @@
 
 #include <Windows.h>
 
+#ifdef max
+#undef max
+#endif
+
 export module Soup.Build.Execute;
 
 import json11;
@@ -28,8 +33,9 @@ import Soup.Build.Utilities;
 
 using namespace Opal;
 
-#include "BuildHistory.h"
 #include "BuildHistoryChecker.h"
-#include "BuildHistoryJson.h"
-#include "BuildHistoryManager.h"
 #include "BuildRunner.h"
+#include "FileSystemState.h"
+#include "FileSystemStateManager.h"
+#include "OperationHistory.h"
+#include "OperationHistoryManager.h"
