@@ -312,7 +312,7 @@ namespace Soup::Build
 
 				// Select the correct build set to ensure that the different build properties 
 				// required the same project to be build twice
-				auto& buildSet = isSystemBuild ? _systemBuildSet : _buildSet;
+				auto& buildSet = isSystemBuild && _systemCompiler != _runtimeCompiler ? _systemBuildSet : _buildSet;
 				auto findBuildState = buildSet.find(recipe.GetName());
 				if (findBuildState != buildSet.end())
 				{

@@ -1,9 +1,9 @@
 @echo off
 SET HostDir=%~dp0
 SET DetoursDir=%HostDir%..\Detours
-SET BinaryDirectorPath=out\bin\MSVC\debug\win32
-SET HostBinaryDirectory=%HostDir%\%BinaryDirectorPath%
-SET DetoursBinaryDirectory=%DetoursDir%\%BinaryDirectorPath%
+SET OutputDirectorPath=out\MSVC\debug\win32
+SET HostOutputDirectory=%HostDir%\%OutputDirectorPath%
+SET DetoursOutputDirectory=%DetoursDir%\%OutputDirectorPath%
 REM - Build the host
 echo soup build %HostDir%
 call soup build %HostDir%
@@ -12,12 +12,12 @@ REM - Build Each version of the detours dll
 echo soup build %DetoursDir% -architecture x64
 call soup build %DetoursDir% -architecture x64
 if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
-echo copy %DetoursBinaryDirectory%\x64\Monitor.Detours.dll %HostBinaryDirectory%\x64\Monitor.Detours.64.dll
-copy %DetoursBinaryDirectory%\x64\Monitor.Detours.dll %HostBinaryDirectory%\x64\Monitor.Detours.64.dll > nul
-copy %DetoursBinaryDirectory%\x64\Monitor.Detours.pdb %HostBinaryDirectory%\x64\Monitor.Detours.64.pdb > nul
+echo copy %DetoursOutputDirectory%\x64\bin\Monitor.Detours.dll %HostOutputDirectory%\x64\bin\Monitor.Detours.64.dll
+copy %DetoursOutputDirectory%\x64\bin\Monitor.Detours.dll %HostOutputDirectory%\x64\bin\Monitor.Detours.64.dll > nul
+copy %DetoursOutputDirectory%\x64\bin\Monitor.Detours.pdb %HostOutputDirectory%\x64\bin\Monitor.Detours.64.pdb > nul
 echo soup build %DetoursDir% -architecture x86
 call soup build %DetoursDir% -architecture x86
 if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
-echo copy %DetoursBinaryDirectory%\x86\Monitor.Detours.dll %HostBinaryDirectory%\x64\Monitor.Detours.32.dll
-copy %DetoursBinaryDirectory%\x86\Monitor.Detours.dll %HostBinaryDirectory%\x64\Monitor.Detours.32.dll > nul
-copy %DetoursBinaryDirectory%\x86\Monitor.Detours.pdb %HostBinaryDirectory%\x64\Monitor.Detours.32.pdb > nul
+echo copy %DetoursOutputDirectory%\x86\bin\Monitor.Detours.dll %HostOutputDirectory%\x64\bin\Monitor.Detours.32.dll
+copy %DetoursOutputDirectory%\x86\bin\Monitor.Detours.dll %HostOutputDirectory%\x64\bin\Monitor.Detours.32.dll > nul
+copy %DetoursOutputDirectory%\x86\bin\Monitor.Detours.pdb %HostOutputDirectory%\x64\bin\Monitor.Detours.32.pdb > nul

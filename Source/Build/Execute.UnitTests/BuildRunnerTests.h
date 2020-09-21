@@ -187,6 +187,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/BuildDirectory/out/release/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/release/.soup/",
 					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationHistory.bin",
@@ -268,6 +269,7 @@ namespace Soup::Build::Execute::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/BuildDirectory/out/debug/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
 					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
@@ -358,6 +360,7 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
 					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/TestWorkingDirectory/OutputFile.obj",
 					"Exists: C:/BuildDirectory/out/debug/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
 					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
@@ -466,6 +469,7 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
 					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/BuildDirectory/out/debug/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
 					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
@@ -575,6 +579,7 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
 					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/BuildDirectory/out/debug/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
 					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",

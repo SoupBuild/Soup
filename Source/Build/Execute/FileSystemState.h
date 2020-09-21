@@ -97,6 +97,27 @@ namespace Soup::Build::Execute
 		}
 
 		/// <summary>
+		/// Update the write times for the provided set of files
+		/// </summary>
+		void CheckFileWriteTimes(const std::vector<FileId>& fileIds)
+		{
+			for (auto fileId : fileIds)
+			{
+				auto& filePath = GetFilePath(fileId);
+
+				// The file does not exist in the cache
+				// Load the actual value and save it for later
+				std::optional<std::time_t> lastWriteTime = std::nullopt;
+				if (System::IFileSystem::Current().Exists(filePath))
+				{
+					lastWriteTime = System::IFileSystem::Current().GetLastWriteTime(filePath);
+				}
+
+				SetLastWriteTime(fileId, lastWriteTime);
+			}
+		}
+
+		/// <summary>
 		/// Find a file path
 		/// </summary>
 		const Path& GetFilePath(FileId fileId) const

@@ -96,9 +96,14 @@ namespace Soup::Build
 		{
 			bool isRead = (desiredAccess & GENERIC_READ) != 0;
 			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
+			bool isDeleteOnClose = (flagsAndAttributes & FILE_FLAG_DELETE_ON_CLOSE) != 0;
 			if (isWrite)
 			{
-				TouchFileWrite(fileName);
+				// If the file will be deleted it is a transient file
+				if (!isDeleteOnClose)
+				{
+					TouchFileWrite(fileName);
+				}
 			}
 			else
 			{
@@ -117,9 +122,14 @@ namespace Soup::Build
 		{
 			bool isRead = (desiredAccess & GENERIC_READ) != 0;
 			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
+			bool isDeleteOnClose = (flagsAndAttributes & FILE_FLAG_DELETE_ON_CLOSE) != 0;
 			if (isWrite)
 			{
-				TouchFileWrite(fileName);
+				// If the file will be deleted it is a transient file
+				if (!isDeleteOnClose)
+				{
+					TouchFileWrite(fileName);
+				}
 			}
 			else
 			{
@@ -1062,14 +1072,14 @@ namespace Soup::Build
 			if (!IsSpecialFile(fileName))
 			{
 				auto filePath = Path(fileName);
-				auto filePathString = filePath.ToString();
+				// Log::Diag("TouchFileRead " + filePath.ToString());
 				if (exists)
 				{
-					m_input.insert(filePathString);
+					m_input.insert(filePath.ToString());
 				}
 				else
 				{
-					m_inputMissing.insert(filePathString);
+					m_inputMissing.insert(filePath.ToString());
 				}
 			}
 		}
@@ -1086,9 +1096,9 @@ namespace Soup::Build
 			if (!IsSpecialFile(fileName))
 			{
 				auto filePath = Path(fileName);
-				auto filePathString = filePath.ToString();
+				// Log::Diag("TouchFileWrite " + filePath.ToString());
 
-				m_output.insert(filePathString);
+				m_output.insert(filePath.ToString());
 			}
 		}
 
@@ -1105,8 +1115,10 @@ namespace Soup::Build
 			TouchFileDelete(filePath);
 		}
 
-		void TouchFileDelete(Path& filePath)
+		void TouchFileDelete(const Path& filePath)
 		{
+			// Log::Diag("TouchFileDelete " + filePath.ToString());
+
 			// If this was an output file extract it as it was a transient file
 			// TODO: May want to track if we created the file
 			auto extractOutputResult = m_output.extract(filePath.ToString());
