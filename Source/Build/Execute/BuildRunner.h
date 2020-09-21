@@ -236,6 +236,10 @@ namespace Soup::Build::Execute
 					command,
 					_fileSystemState.ToFileIds(input, command.WorkingDirectory),
 					_fileSystemState.ToFileIds(output, command.WorkingDirectory));
+
+				// Ensure the File System State is notified of any output files that have changed
+				_fileSystemState.CheckFileWriteTimes(operationInfo.Output);
+
 				_activeOperationHistory.AddOperationInfo(std::move(operationInfo));
 
 				if (!stdOut.empty())

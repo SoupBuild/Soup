@@ -119,47 +119,53 @@ namespace Monitor
 
 		void OnFindFirstChangeNotificationA(std::string_view pathName, bool watchSubtree, uint32_t notifyFilter) override final
 		{
-			m_stream << "FindFirstChangeNotificationA: " << std::endl;
+			m_stream << "FindFirstChangeNotificationA: " << pathName << std::endl;
 		}
 
 		void OnFindFirstChangeNotificationW(std::wstring_view pathName, bool watchSubtree, uint32_t notifyFilter) override final
 		{
-			m_stream << "FindFirstChangeNotificationW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FindFirstChangeNotificationW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
 		void OnFindFirstFileA(std::string_view fileName) override final
 		{
-			m_stream << "FindFirstFileA: " << std::endl;
+			m_stream << "FindFirstFileA: " << fileName << std::endl;
 		}
 
 		void OnFindFirstFileW(std::wstring_view fileName) override final
 		{
-			m_stream << "FindFirstFileW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FindFirstFileW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnFindFirstFileExA(std::string_view fileName) override final
 		{
-			m_stream << "FindFirstFileExA: " << std::endl;
+			m_stream << "FindFirstFileExA: " << fileName << std::endl;
 		}
 
 		void OnFindFirstFileExW(std::wstring_view fileName) override final
 		{
-			m_stream << "FindFirstFileExW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FindFirstFileExW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnFindFirstFileNameW(std::wstring_view fileName, uint32_t flags) override final
 		{
-			m_stream << "FindFirstFileNameW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FindFirstFileNameW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnFindFirstStreamW(std::wstring_view fileName) override final
 		{
-			m_stream << "FindFirstStreamW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FindFirstStreamW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnFindFirstVolumeW(std::wstring_view fileName) override final
 		{
-			m_stream << "FindFirstVolumeW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FindFirstVolumeW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnFindNextChangeNotification(bool result) override final
@@ -215,32 +221,35 @@ namespace Monitor
 
 		void OnGetDiskFreeSpaceA(std::string_view rootPathName, bool result) override final
 		{
-			m_stream << "GetDiskFreeSpaceA: " << std::endl;
+			m_stream << "GetDiskFreeSpaceA: " << rootPathName << std::endl;
 		}
 
 		void OnGetDiskFreeSpaceW(std::wstring_view rootPathName, bool result) override final
 		{
-			m_stream << "GetDiskFreeSpaceW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetDiskFreeSpaceW: " << converter.to_bytes(rootPathName.data()) << std::endl;
 		}
 
 		void OnGetDiskFreeSpaceExA(std::string_view directoryName, bool result) override final
 		{
-			m_stream << "GetDiskFreeSpaceExA: " << std::endl;
+			m_stream << "GetDiskFreeSpaceExA: " << directoryName << std::endl;
 		}
 
 		void OnGetDiskFreeSpaceExW(std::wstring_view directoryName, bool result) override final
 		{
-			m_stream << "GetDiskFreeSpaceExW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetDiskFreeSpaceExW: " << converter.to_bytes(directoryName.data()) << std::endl;
 		}
 
 		void OnGetDriveTypeA(std::string_view rootPathName, uint32_t result) override final
 		{
-			m_stream << "GetDriveTypeA: " << std::endl;
+			m_stream << "GetDriveTypeA: " << rootPathName << std::endl;
 		}
 
 		void OnGetDriveTypeW(std::wstring_view rootPathName, uint32_t result) override final
 		{
-			m_stream << "GetDriveTypeW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetDriveTypeW: " << converter.to_bytes(rootPathName.data()) << std::endl;
 		}
 
 		void OnGetFileAttributesA(std::string_view fileName, uint32_t result) override final
@@ -343,7 +352,8 @@ namespace Monitor
 
 		void OnGetTempFileNameW(std::wstring_view pathName, std::wstring_view prefixString, uint32_t unique, std::wstring_view tempFileName, uint32_t result) override final
 		{
-			m_stream << "GetTempFileNameW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetTempFileNameW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
 		void OnGetTempPathA(std::string_view buffer, uint32_t result) override final
@@ -383,7 +393,8 @@ namespace Monitor
 
 		void OnGetVolumePathNameW(std::wstring_view filename, bool result) override final
 		{
-			m_stream << "GetVolumePathNameW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetVolumePathNameW: " << converter.to_bytes(filename.data()) << std::endl;
 		}
 
 		void OnLocalFileTimeToFileTime(bool result) override final
@@ -539,33 +550,36 @@ namespace Monitor
 		// ProcessEnv
 		void OnSearchPathA(std::string_view path, std::string_view fileName, std::string_view extension, uint32_t result) override final
 		{
-			m_stream << "SearchPathA: " << std::endl;
+			m_stream << "SearchPathA: " << fileName << std::endl;
 		}
 
 		void OnSearchPathW(std::wstring_view path, std::wstring_view fileName, std::wstring_view extension, uint32_t result) override final
 		{
-			m_stream << "SearchPathW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "SearchPathW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		// ProcessThreadsApi
 		void OnCreateProcessA(bool wasDetoured, std::string_view applicationName, bool result) override final
 		{
-			m_stream << "CreateProcessA: " << std::endl;
+			m_stream << "CreateProcessA: " << applicationName << std::endl;
 		}
 
 		void OnCreateProcessW(bool wasDetoured, std::wstring_view applicationName, bool result) override final
 		{
-			m_stream << "CreateProcessW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateProcessW: " << converter.to_bytes(applicationName.data()) << std::endl;
 		}
 
 		void OnCreateProcessAsUserA(std::string_view applicationName, bool result) override final
 		{
-			m_stream << "CreateProcessAsUserA: " << std::endl;
+			m_stream << "CreateProcessAsUserA: " << applicationName << std::endl;
 		}
 
 		void OnCreateProcessAsUserW(std::wstring_view applicationName, bool result) override final
 		{
-			m_stream << "CreateProcessAsUserW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateProcessAsUserW: " << converter.to_bytes(applicationName.data()) << std::endl;
 		}
 
 		void OnExitProcess(uint32_t exitCode) override final
@@ -576,23 +590,25 @@ namespace Monitor
 		// UndocumentedApi
 		void OnPrivCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
-			m_stream << "PrivCopyFileExA: " << std::endl;
+			m_stream << "PrivCopyFileExA: " << existingFileName << " -> " << newFileName << std::endl;
 		}
 
 		void OnPrivCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
-			m_stream << "PrivCopyFileExW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "PrivCopyFileExW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
 		}
 
 		// WinBase
 		void OnCopyFileA(std::string_view existingFileName, std::string_view newFileName, bool failIfExists, bool result) override final
 		{
-			m_stream << "CopyFileA: " << std::endl;
+			m_stream << "CopyFileA: " << existingFileName << " -> " << newFileName << std::endl;
 		}
 
 		void OnCopyFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool failIfExists, bool result) override final
 		{
-			m_stream << "CopyFileW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CopyFileW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
 		}
 
 		void OnCopyFile2(
@@ -600,47 +616,52 @@ namespace Monitor
 			std::wstring_view newFileName,
 			uint64_t result) override final
 		{
-			m_stream << "CopyFile2: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CopyFile2: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
 		}
 
 		void OnCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
-			m_stream << "CopyFileExA: " << std::endl;
+			m_stream << "CopyFileExA: " << existingFileName << " -> " << newFileName << std::endl;
 		}
 
 		void OnCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
-			m_stream << "CopyFileExW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CopyFileExW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
 		}
 
 		void OnCopyFileTransactedA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
-			m_stream << "CopyFileTransactedA: " << std::endl;
+			m_stream << "CopyFileTransactedA: " << existingFileName << " -> " << newFileName << std::endl;
 		}
 
 		void OnCopyFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
-			m_stream << "CopyFileTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CopyFileTransactedW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
 		}
 
 		void OnCreateDirectoryExA(std::string_view templateDirectory, std::string_view newDirectory, bool result) override final
 		{
-			m_stream << "CreateDirectoryExA: " << std::endl;
+			m_stream << "CreateDirectoryExA: " << newDirectory << std::endl;
 		}
 
 		void OnCreateDirectoryExW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) override final
 		{
-			m_stream << "CreateDirectoryExW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateDirectoryExW: " << converter.to_bytes(newDirectory.data()) << std::endl;
 		}
 
 		void OnCreateDirectoryTransactedA(std::string_view templateDirectory, std::string_view newDirectory, bool result) override final
 		{
-			m_stream << "CreateDirectoryTransactedA: " << std::endl;
+			m_stream << "CreateDirectoryTransactedA: " << newDirectory << std::endl;
 		}
 
 		void OnCreateDirectoryTransactedW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) override final
 		{
-			m_stream << "CreateDirectoryTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateDirectoryTransactedW: " << converter.to_bytes(newDirectory.data()) << std::endl;
 		}
 
 		void OnCreateFileTransactedA(
@@ -649,7 +670,7 @@ namespace Monitor
 			uint32_t shareMode,
 			uint64_t result) override final
 		{
-			m_stream << "CreateFileTransactedA: " << std::endl;
+			m_stream << "CreateFileTransactedA: " << fileName << std::endl;
 		}
 
 		void OnCreateFileTransactedW(
@@ -658,137 +679,153 @@ namespace Monitor
 			uint32_t shareMode,
 			uint64_t result) override final
 		{
-			m_stream << "CreateFileTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateFileTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnCreateHardLinkA(std::string_view fileName, std::string_view existingFileName, bool result) override final
 		{
-			m_stream << "CreateHardLinkA: " << std::endl;
+			m_stream << "CreateHardLinkA: " << fileName << " -> " << existingFileName << std::endl;
 		}
 
 		void OnCreateHardLinkW(std::wstring_view fileName, std::wstring_view existingFileName, bool result) override final
 		{
-			m_stream << "CreateHardLinkW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateHardLinkW: " << converter.to_bytes(fileName.data()) << " -> " << converter.to_bytes(existingFileName.data()) << std::endl;
 		}
 
 		void OnCreateHardLinkTransactedA(std::string_view fileName, std::string_view existingFileName, bool result) override final
 		{
-			m_stream << "CreateHardLinkTransactedA: " << std::endl;
+			m_stream << "CreateHardLinkTransactedA: " << fileName << " -> " << existingFileName << std::endl;
 		}
 
 		void OnCreateHardLinkTransactedW(std::wstring_view fileName, std::wstring_view existingFileName, bool result) override final
 		{
-			m_stream << "CreateHardLinkTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateHardLinkTransactedW: " << converter.to_bytes(fileName.data()) << " -> " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnCreateProcessWithLogonW(std::wstring_view applicationName, bool result) override final
 		{
-			m_stream << "CreateProcessWithLogonW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateProcessWithLogonW: " << converter.to_bytes(applicationName.data()) << std::endl;
 		}
 
 		void OnCreateProcessWithTokenW(std::wstring_view applicationName, bool result) override final
 		{
-			m_stream << "CreateProcessWithTokenW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateProcessWithTokenW: " << converter.to_bytes(applicationName.data()) << std::endl;
 		}
 
 		void OnCreateSymbolicLinkA(std::string_view symlinkFileName, std::string_view targetFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "CreateSymbolicLinkA: " << std::endl;
+			m_stream << "CreateSymbolicLinkA: " << symlinkFileName << " -> " << targetFileName << std::endl;
 		}
 
 		void OnCreateSymbolicLinkW(std::wstring_view symlinkFileName, std::wstring_view targetFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "CreateSymbolicLinkW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateSymbolicLinkW: " << converter.to_bytes(symlinkFileName.data()) << " -> " << converter.to_bytes(targetFileName.data()) << std::endl;
 		}
 
 		void OnCreateSymbolicLinkTransactedA(std::string_view symlinkFileName, std::string_view targetFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "CreateSymbolicLinkTransactedA: " << std::endl;
+			m_stream << "CreateSymbolicLinkTransactedA: " << symlinkFileName << " -> " << targetFileName << std::endl;
 		}
 
 		void OnCreateSymbolicLinkTransactedW(std::wstring_view symlinkFileName, std::wstring_view targetFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "CreateSymbolicLinkTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateSymbolicLinkTransactedW: " << converter.to_bytes(symlinkFileName.data()) << " -> " << converter.to_bytes(targetFileName.data()) << std::endl;
 		}
 
 		void OnDecryptFileA(std::string_view fileName, bool result) override final
 		{
-			m_stream << "DecryptFileA: " << std::endl;
+			m_stream << "DecryptFileA: " << fileName << std::endl;
 		}
 		
 		void OnDecryptFileW(std::wstring_view fileName, bool result) override final
 		{
-			m_stream << "DecryptFileW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "DecryptFileW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnDeleteFileTransactedA(std::string_view fileName, bool result) override final
 		{
-			m_stream << "DeleteFileTransactedA: " << std::endl;
+			m_stream << "DeleteFileTransactedA: " << fileName << std::endl;
 		}
 
 		void OnDeleteFileTransactedW(std::wstring_view fileName, bool result) override final
 		{
-			m_stream << "DeleteFileTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "DeleteFileTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnEncryptFileA(std::string_view fileName, bool result) override final
 		{
-			m_stream << "EncryptFileA: " << std::endl;
+			m_stream << "EncryptFileA: " << fileName << std::endl;
 		}
 
 		void OnEncryptFileW(std::wstring_view fileName, bool result) override final
 		{
-			m_stream << "EncryptFileW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "EncryptFileW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnFileEncryptionStatusA(std::string_view fileName, bool result) override final
 		{
-			m_stream << "FileEncryptionStatusA: " << std::endl;
+			m_stream << "FileEncryptionStatusA: " << fileName << std::endl;
 		}
 
 		void OnFileEncryptionStatusW(std::wstring_view fileName, bool result) override final
 		{
-			m_stream << "FileEncryptionStatusW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FileEncryptionStatusW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnFindFirstFileNameTransactedW(std::wstring_view fileName, bool result) override final
 		{
-			m_stream << "FindFirstFileNameTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FindFirstFileNameTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnFindFirstFileTransactedA(std::string_view fileName) override final
 		{
-			m_stream << "FindFirstFileTransactedA: " << std::endl;
+			m_stream << "FindFirstFileTransactedA: " << fileName << std::endl;
 		}
 
 		void OnFindFirstFileTransactedW(std::wstring_view fileName) override final
 		{
-			m_stream << "FindFirstFileTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FindFirstFileTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnFindFirstStreamTransactedW(std::wstring_view fileName) override final
 		{
-			m_stream << "FindFirstStreamTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "FindFirstStreamTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnGetBinaryTypeA(std::string_view applicationName, bool result) override final
 		{
-			m_stream << "GetBinaryTypeA: " << std::endl;
+			m_stream << "GetBinaryTypeA: " << applicationName << std::endl;
 		}
 
 		void OnGetBinaryTypeW(std::wstring_view applicationName, bool result) override final
 		{
-			m_stream << "GetBinaryTypeW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetBinaryTypeW: " << converter.to_bytes(applicationName.data()) << std::endl;
 		}
 
 		void OnGetCompressedFileSizeTransactedA(std::string_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetCompressedFileSizeTransactedA: " << std::endl;
+			m_stream << "GetCompressedFileSizeTransactedA: " << fileName << std::endl;
 		}
 
 		void OnGetCompressedFileSizeTransactedW(std::wstring_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetCompressedFileSizeTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetCompressedFileSizeTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnGetDllDirectoryA(uint32_t result) override final
@@ -803,12 +840,13 @@ namespace Monitor
 
 		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetFileAttributesTransactedA: " << std::endl;
+			m_stream << "GetFileAttributesTransactedA: " << fileName << std::endl;
 		}
 
 		void OnGetFileAttributesTransactedW(std::wstring_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetFileAttributesTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetFileAttributesTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnGetFileBandwidthReservation(bool result) override final
@@ -823,17 +861,18 @@ namespace Monitor
 
 		void OnGetFileSecurityA(std::string_view fileName, bool result) override final
 		{
-			m_stream << "GetFileSecurityA: " << std::endl;
+			m_stream << "GetFileSecurityA: " << fileName << std::endl;
 		}
 
 		void OnGetFullPathNameTransactedA(std::string_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetFullPathNameTransactedA: " << std::endl;
+			m_stream << "GetFullPathNameTransactedA: " << fileName << std::endl;
 		}
 
 		void OnGetFullPathNameTransactedW(std::wstring_view fileName, uint32_t result) override final
 		{
-			m_stream << "GetFullPathNameTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetFullPathNameTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnGetLongPathNameTransactedA(std::string_view shortPath, std::string_view longPath, uint32_t result) override final
@@ -863,67 +902,72 @@ namespace Monitor
 
 		void OnLoadModule(std::string_view moduleName, uint32_t result) override final
 		{
-			m_stream << "LoadModule: " << std::endl;
+			m_stream << "LoadModule: " << moduleName << std::endl;
 		}
 
 		void OnLoadPackagedLibrary(std::string_view libFileName) override final
 		{
-			m_stream << "LoadPackagedLibrary: " << std::endl;
+			m_stream << "LoadPackagedLibrary: " << libFileName << std::endl;
 		}
 
 		void OnMoveFileA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
 		{
-			m_stream << "MoveFileA: " << std::endl;
+			m_stream << "MoveFileA: " << existingFileName << " -> " << newFileName << std::endl;
 		}
 
 		void OnMoveFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
 		{
-			m_stream << "MoveFileW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "MoveFileW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
 		}
 
 		void OnMoveFileExA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "MoveFileExA: " << std::endl;
+			m_stream << "MoveFileExA: " << existingFileName << " -> " << newFileName << std::endl;
 		}
 
 		void OnMoveFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "MoveFileExW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "MoveFileExW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
 		}
 
 		void OnMoveFileTransactedA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "MoveFileTransactedA: " << std::endl;
+			m_stream << "MoveFileTransactedA: " << existingFileName << " -> " << newFileName << std::endl;
 		}
 
 		void OnMoveFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "MoveFileTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "MoveFileTransactedW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
 		}
 
 		void OnMoveFileWithProgressA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "MoveFileWithProgressA: " << std::endl;
+			m_stream << "MoveFileWithProgressA: " << existingFileName << " -> " << newFileName << std::endl;
 		}
 
 		void OnMoveFileWithProgressW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
 		{
-			m_stream << "MoveFileWithProgressW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "MoveFileWithProgressW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
 		}
 
 		void OnOpenEncryptedFileRawA(std::string_view fileName, uint32_t flags, uint32_t result) override final
 		{
-			m_stream << "OpenEncryptedFileRawA: " << std::endl;
+			m_stream << "OpenEncryptedFileRawA: " << fileName << std::endl;
 		}
 
 		void OnOpenEncryptedFileRawW(std::wstring_view fileName, uint32_t flags, uint32_t result) override final
 		{
-			m_stream << "OpenEncryptedFileRawW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "OpenEncryptedFileRawW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
 		void OnOpenFile(std::string_view fileName) override final
 		{
-			m_stream << "OpenFile: " << std::endl;
+			m_stream << "OpenFile: " << fileName << std::endl;
 		}
 
 		void OnOpenFileById() override final
@@ -938,12 +982,13 @@ namespace Monitor
 
 		void OnRemoveDirectoryTransactedA(std::string_view pathName, bool result) override final
 		{
-			m_stream << "RemoveDirectoryTransactedA: " << std::endl;
+			m_stream << "RemoveDirectoryTransactedA: " << pathName << std::endl;
 		}
 
 		void OnRemoveDirectoryTransactedW(std::wstring_view pathName, bool result) override final
 		{
-			m_stream << "RemoveDirectoryTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "RemoveDirectoryTransactedW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
 		void OnReOpenFile() override final
@@ -953,42 +998,46 @@ namespace Monitor
 
 		void OnReplaceFileA(std::string_view replacedFileName, std::string_view replacementFileName, std::string_view backupFileName, uint32_t replaceFlags, bool result) override final
 		{
-			m_stream << "ReplaceFileA: " << std::endl;
+			m_stream << "ReplaceFileA: " << replacedFileName << " - " << replacementFileName << " - " << backupFileName << std::endl;
 		}
 
 		void OnReplaceFileW(std::wstring_view replacedFileName, std::wstring_view replacementFileName, std::wstring_view backupFileName, uint32_t replaceFlags, bool result) override final
 		{
-			m_stream << "ReplaceFileW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "ReplaceFileW: " << converter.to_bytes(replacedFileName.data()) << " - " << converter.to_bytes(replacementFileName.data()) << " - " << converter.to_bytes(backupFileName.data()) << std::endl;
 		}
 
 		void OnSetCurrentDirectoryA(std::string_view pathName, bool result) override final
 		{
-			m_stream << "SetCurrentDirectoryA: " << std::endl;
+			m_stream << "SetCurrentDirectoryA: " << pathName << std::endl;
 		}
 
 		void OnSetCurrentDirectoryW(std::wstring_view pathName, bool result) override final
 		{
-			m_stream << "SetCurrentDirectoryW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "SetCurrentDirectoryW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
 		void OnSetDllDirectoryA(std::string_view pathName, bool result) override final
 		{
-			m_stream << "SetDllDirectoryA: " << std::endl;
+			m_stream << "SetDllDirectoryA: " << pathName << std::endl;
 		}
 
 		void OnSetDllDirectoryW(std::wstring_view pathName, bool result) override final
 		{
-			m_stream << "SetDllDirectoryW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "SetDllDirectoryW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
 		void OnSetFileAttributesTransactedA(std::string_view pathName, uint32_t fileAttributes, bool result) override final
 		{
-			m_stream << "SetFileAttributesTransactedA: " << std::endl;
+			m_stream << "SetFileAttributesTransactedA: " << pathName << std::endl;
 		}
 
 		void OnSetFileAttributesTransactedW(std::wstring_view pathName, uint32_t fileAttributes, bool result) override final
 		{
-			m_stream << "SetFileAttributesTransactedW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "SetFileAttributesTransactedW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
 		void OnSetFileBandwidthReservation(bool result) override final
@@ -1003,17 +1052,18 @@ namespace Monitor
 
 		void OnSetFileSecurityA(std::string_view fileName, bool result) override final
 		{
-			m_stream << "SetFileSecurityA: " << std::endl;
+			m_stream << "SetFileSecurityA: " << fileName <<  std::endl;
 		}
 
 		void OnSetFileShortNameA(std::string_view shortName, bool result) override final
 		{
-			m_stream << "SetFileShortNameA: " << std::endl;
+			m_stream << "SetFileShortNameA: " << shortName << std::endl;
 		}
 
 		void OnSetFileShortNameW(std::wstring_view shortName, bool result) override final
 		{
-			m_stream << "SetFileShortNameW: " << std::endl;
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "SetFileShortNameW: " << converter.to_bytes(shortName.data()) << std::endl;
 		}
 
 		void OnSetSearchPathMode(uint32_t flags, bool result) override final
