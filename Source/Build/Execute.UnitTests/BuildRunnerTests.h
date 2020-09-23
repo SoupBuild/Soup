@@ -60,7 +60,7 @@ namespace Soup::Build::Execute::UnitTests
 				std::vector<std::string>({
 					"Exists: C:/BuildDirectory/out/release/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/release/.soup/",
-					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationHistory.bin",
+					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -104,7 +104,7 @@ namespace Soup::Build::Execute::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
-					"HIGH: Operation History file does not exist",
+					"HIGH: Operation graph file does not exist",
 					"INFO: No previous operation state found, full rebuild required",
 					"INFO: Saving updated build state",
 					"INFO: Create Directory: C:/BuildDirectory/out/release/.soup/",
@@ -116,10 +116,10 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/release/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/release/.soup/OperationGraph.bin",
 					"Exists: C:/BuildDirectory/out/release/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/release/.soup/",
-					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationHistory.bin",
+					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -190,7 +190,7 @@ namespace Soup::Build::Execute::UnitTests
 					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/BuildDirectory/out/release/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/release/.soup/",
-					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationHistory.bin",
+					"OpenWriteBinary: C:/BuildDirectory/out/release/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -210,7 +210,7 @@ namespace Soup::Build::Execute::UnitTests
 		}
 
 		[[Fact]]
-		void Execute_OneOperation_Incremental_NoOperationHistory()
+		void Execute_OneOperation_Incremental_NoOperationGraph()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -254,7 +254,7 @@ namespace Soup::Build::Execute::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Loading previous build state",
-					"HIGH: Operation History file does not exist",
+					"HIGH: Operation graph file does not exist",
 					"INFO: No previous operation state found, full rebuild required",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: ./Command.exe Arguments",
@@ -268,11 +268,11 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/BuildDirectory/out/debug/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
-					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -307,13 +307,13 @@ namespace Soup::Build::Execute::UnitTests
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
-			// Create the initial operation history state
-			auto initialOperationHistory = OperationHistory(1234);
-			std::stringstream initialBinaryOperationHistory;
-			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
+			// Create the initial operation graph state
+			auto initialOperationGraph = OperationGraph(1234);
+			std::stringstream initialBinaryOperationGraph;
+			OperationGraphWriter::Serialize(initialOperationGraph, initialBinaryOperationGraph);
 			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/out/debug/.soup/OperationHistory.bin"),
-				std::make_shared<MockFile>(std::move(initialBinaryOperationHistory)));
+				Path("C:/BuildDirectory/out/debug/.soup/OperationGraph.bin"),
+				std::make_shared<MockFile>(std::move(initialBinaryOperationGraph)));
 
 			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto uut = BuildRunner(workingDirectory, fileSystemState);
@@ -358,12 +358,12 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
-					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
+					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 					"Exists: C:/TestWorkingDirectory/OutputFile.obj",
 					"Exists: C:/BuildDirectory/out/debug/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
-					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -407,7 +407,7 @@ namespace Soup::Build::Execute::UnitTests
 			fileSystemState.SetLastWriteTime(outputFileId, std::nullopt);
 
 			// Create the initial build state
-			auto initialOperationHistory = OperationHistory(
+			auto initialOperationGraph = OperationGraph(
 				1234,
 				{
 					OperationInfo(
@@ -418,11 +418,11 @@ namespace Soup::Build::Execute::UnitTests
 						{ inputFileId, },
 						{ outputFileId, }),
 				});
-			std::stringstream initialBinaryOperationHistory;
-			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
+			std::stringstream initialBinaryOperationGraph;
+			OperationGraphWriter::Serialize(initialOperationGraph, initialBinaryOperationGraph);
 			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/out/debug/.soup/OperationHistory.bin"),
-				std::make_shared<MockFile>(std::move(initialBinaryOperationHistory)));
+				Path("C:/BuildDirectory/out/debug/.soup/OperationGraph.bin"),
+				std::make_shared<MockFile>(std::move(initialBinaryOperationGraph)));
 
 			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto uut = BuildRunner(workingDirectory, fileSystemState);
@@ -467,12 +467,12 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
-					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
+					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/BuildDirectory/out/debug/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
-					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -517,7 +517,7 @@ namespace Soup::Build::Execute::UnitTests
 			fileSystemState.SetLastWriteTime(outputFileId, outputTime);
 
 			// Create the initial build state
-			auto initialOperationHistory = OperationHistory(
+			auto initialOperationGraph = OperationGraph(
 				1234,
 				{
 					OperationInfo(
@@ -528,11 +528,11 @@ namespace Soup::Build::Execute::UnitTests
 						{ inputFileId, },
 						{ outputFileId, }),
 				});
-			std::stringstream initialBinaryOperationHistory;
-			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
+			std::stringstream initialBinaryOperationGraph;
+			OperationGraphWriter::Serialize(initialOperationGraph, initialBinaryOperationGraph);
 			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/out/debug/.soup/OperationHistory.bin"),
-				std::make_shared<MockFile>(std::move(initialBinaryOperationHistory)));
+				Path("C:/BuildDirectory/out/debug/.soup/OperationGraph.bin"),
+				std::make_shared<MockFile>(std::move(initialBinaryOperationGraph)));
 
 			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto uut = BuildRunner(workingDirectory, fileSystemState);
@@ -577,12 +577,12 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
-					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
+					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 					"Exists: C:/TestWorkingDirectory/OutputFile.out",
 					"Exists: C:/BuildDirectory/out/debug/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
-					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -627,7 +627,7 @@ namespace Soup::Build::Execute::UnitTests
 			fileSystemState.SetLastWriteTime(outputFileId, outputTime);
 
 			// Create the initial build state
-			auto initialOperationHistory = OperationHistory(
+			auto initialOperationGraph = OperationGraph(
 				1234,
 				{
 					OperationInfo(
@@ -638,11 +638,11 @@ namespace Soup::Build::Execute::UnitTests
 						{ inputFileId, },
 						{ outputFileId, }),
 				});
-			std::stringstream initialBinaryOperationHistory;
-			OperationHistoryWriter::Serialize(initialOperationHistory, initialBinaryOperationHistory);
+			std::stringstream initialBinaryOperationGraph;
+			OperationGraphWriter::Serialize(initialOperationGraph, initialBinaryOperationGraph);
 			fileSystem->CreateMockFile(
-				Path("C:/BuildDirectory/out/debug/.soup/OperationHistory.bin"),
-				std::make_shared<MockFile>(std::move(initialBinaryOperationHistory)));
+				Path("C:/BuildDirectory/out/debug/.soup/OperationGraph.bin"),
+				std::make_shared<MockFile>(std::move(initialBinaryOperationGraph)));
 
 			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto uut = BuildRunner(workingDirectory, fileSystemState);
@@ -686,11 +686,11 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
-					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"Exists: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
+					"OpenReadBinary: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 					"Exists: C:/BuildDirectory/out/debug/.soup/",
 					"CreateDirectory: C:/BuildDirectory/out/debug/.soup/",
-					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationHistory.bin",
+					"OpenWriteBinary: C:/BuildDirectory/out/debug/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

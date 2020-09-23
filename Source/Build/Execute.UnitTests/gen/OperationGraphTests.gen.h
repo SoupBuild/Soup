@@ -1,10 +1,10 @@
 #pragma once
-#include "OperationHistoryTests.h"
+#include "OperationGraphTests.h"
 
-TestState RunOperationHistoryTests() 
+TestState RunOperationGraphTests() 
  {
-	auto className = "OperationHistoryTests";
-	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::OperationHistoryTests>();
+	auto className = "OperationGraphTests";
+	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::OperationGraphTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Initialize_Default", [&testClass]() { testClass->Initialize_Default(); });
 	state += Soup::Test::RunTest(className, "Initialize_ListOperations_Single", [&testClass]() { testClass->Initialize_ListOperations_Single(); });

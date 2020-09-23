@@ -1,22 +1,22 @@
-﻿// <copyright file="OperationHistoryManager.h" company="Soup">
+﻿// <copyright file="OperationGraphManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "OperationHistory.h"
-#include "OperationHistoryReader.h"
-#include "OperationHistoryWriter.h"
+#include "OperationGraph.h"
+#include "OperationGraphReader.h"
+#include "OperationGraphWriter.h"
 
 namespace Soup::Build::Execute
 {
 	/// <summary>
 	/// The operation state manager
 	/// </summary>
-	export class OperationHistoryManager
+	export class OperationGraphManager
 	{
 	private:
-		// Binary Build History file format
-		static constexpr std::string_view FileName = "OperationHistory.bin";
+		// Binary Build Operation Graph file format
+		static constexpr std::string_view FileName = "OperationGraph.bin";
 		static constexpr std::string_view FolderName = ".soup/";
 
 	public:
@@ -25,29 +25,29 @@ namespace Soup::Build::Execute
 		/// </summary>
 		static bool TryLoadState(
 			const Path& directory,
-			OperationHistory& result,
+			OperationGraph& result,
 			FileSystemStateId activeStateId)
 		{
 			// Verify the requested file exists
-			auto operationHistoryFile = directory +
+			auto OperationGraphFile = directory +
 				Path(FolderName) +
 				Path(FileName);
-			if (!System::IFileSystem::Current().Exists(operationHistoryFile))
+			if (!System::IFileSystem::Current().Exists(OperationGraphFile))
 			{
-				Log::HighPriority("Operation History file does not exist");
+				Log::HighPriority("Operation graph file does not exist");
 				return false;
 			}
 
 			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(operationHistoryFile, true);
+			auto file = System::IFileSystem::Current().OpenRead(OperationGraphFile, true);
 
 			// Read the contents of the build state file
 			try
 			{
-				auto loadedResult = OperationHistoryReader::Deserialize(file->GetInStream());
+				auto loadedResult = OperationGraphReader::Deserialize(file->GetInStream());
 				if (loadedResult.GetStateId() != activeStateId)
 				{
-					Log::Warning("Operation History uses an out of date state Id");
+					Log::Warning("Operation graph uses an out of date state Id");
 					return false;
 				}
 				else
@@ -63,7 +63,7 @@ namespace Soup::Build::Execute
 			}
 			catch(...)
 			{
-				Log::Error("Failed to parse Operation History.");
+				Log::Error("Failed to parse operation graph");
 				return false;
 			}
 		}
@@ -71,11 +71,11 @@ namespace Soup::Build::Execute
 		/// <summary>
 		/// Save the operation state for the provided directory
 		/// </summary>
-		static void SaveState(const Path& directory, const OperationHistory& state)
+		static void SaveState(const Path& directory, const OperationGraph& state)
 		{
 			auto targetFolder = directory +
 				Path(FolderName);
-			auto operationHistoryFile = targetFolder +
+			auto OperationGraphFile = targetFolder +
 				Path(FileName);
 
 			// Ensure the target directories exists
@@ -86,10 +86,10 @@ namespace Soup::Build::Execute
 			}
 
 			// Open the file to write to
-			auto file = System::IFileSystem::Current().OpenWrite(operationHistoryFile, true);
+			auto file = System::IFileSystem::Current().OpenWrite(OperationGraphFile, true);
 
 			// Write the build state to the file stream
-			OperationHistoryWriter::Serialize(state, file->GetOutStream());
+			OperationGraphWriter::Serialize(state, file->GetOutStream());
 		}
 	};
 }

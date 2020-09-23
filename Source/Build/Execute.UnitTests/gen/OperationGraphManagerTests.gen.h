@@ -1,10 +1,10 @@
 #pragma once
-#include "OperationHistoryManagerTests.h"
+#include "OperationGraphManagerTests.h"
 
-TestState RunOperationHistoryManagerTests() 
+TestState RunOperationGraphManagerTests() 
  {
-	auto className = "OperationHistoryManagerTests";
-	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::OperationHistoryManagerTests>();
+	auto className = "OperationGraphManagerTests";
+	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::OperationGraphManagerTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "TryLoadFromFile_MissingFile", [&testClass]() { testClass->TryLoadFromFile_MissingFile(); });
 	state += Soup::Test::RunTest(className, "TryLoadFromFile_GarbageFile", [&testClass]() { testClass->TryLoadFromFile_GarbageFile(); });

@@ -1,29 +1,29 @@
-﻿// <copyright file="OperationHistoryWriter.h" company="Soup">
+﻿// <copyright file="OperationGraphWriter.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "OperationHistory.h"
+#include "OperationGraph.h"
 
 namespace Soup::Build::Execute
 {
 	/// <summary>
-	/// The operation history state writer
+	/// The operation graph state writer
 	/// </summary>
-	export class OperationHistoryWriter
+	export class OperationGraphWriter
 	{
 	private:
-		// Binary Operation History file format
+		// Binary Operation graph file format
 		static constexpr uint32_t FileVersion = 1;
 
 	public:
-		static void Serialize(const OperationHistory& state, std::ostream& stream)
+		static void Serialize(const OperationGraph& state, std::ostream& stream)
 		{
 			// Write the File Header with version
-			stream.write("BOH\0", 4);
+			stream.write("BOG\0", 4);
 			WriteValue(stream, FileVersion);
 
-			// Write out the file system state that was used for this operation history
+			// Write out the file system state that was used for this operation graph
 			WriteValue(stream, state.GetStateId());
 
 			// Write out the set of operations

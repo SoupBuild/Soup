@@ -1,4 +1,4 @@
-// <copyright file="OperationHistoryReaderTests.h" company="Soup">
+// <copyright file="OperationGraphReaderTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@
 
 namespace Soup::Build::Execute::UnitTests
 {
-	class OperationHistoryReaderTests
+	class OperationGraphReaderTests
 	{
 	public:
 		[[Fact]]
@@ -14,14 +14,14 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '2',
+				'B', 'O', 'G', '2',
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
 			Assert::ThrowsRuntimeError([&content]() {
-				auto actual = OperationHistoryReader::Deserialize(content);
+				auto actual = OperationGraphReader::Deserialize(content);
 			},
-			"Invalid operation history file header");
+			"Invalid operation graph file header");
 		}
 
 		[[Fact]]
@@ -29,14 +29,14 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x00, 0x00, 0x00, 0x02,
+				'B', 'O', 'G', '\0', 0x00, 0x00, 0x00, 0x02,
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
 			Assert::ThrowsRuntimeError([&content]() {
-				auto actual = OperationHistoryReader::Deserialize(content);
+				auto actual = OperationGraphReader::Deserialize(content);
 			},
-			"Operation History file version does not match expected");
+			"Operation graph file version does not match expected");
 		}
 
 		[[Fact]]
@@ -44,15 +44,15 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
 				'O', 'P', 'S', '2'
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
 			Assert::ThrowsRuntimeError([&content]() {
-				auto actual = OperationHistoryReader::Deserialize(content);
+				auto actual = OperationGraphReader::Deserialize(content);
 			},
-			"Invalid operation history operations header");
+			"Invalid operation graph operations header");
 		}
 
 		[[Fact]]
@@ -60,15 +60,15 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00, 'E',
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
 			Assert::ThrowsRuntimeError([&content]() {
-				auto actual = OperationHistoryReader::Deserialize(content);
+				auto actual = OperationGraphReader::Deserialize(content);
 			},
-			"Operation History file corrupted - Did not read the entire file");
+			"Operation graph file corrupted - Did not read the entire file");
 		}
 
 		[[Fact]]
@@ -76,12 +76,12 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			auto actual = OperationHistoryReader::Deserialize(content);
+			auto actual = OperationGraphReader::Deserialize(content);
 
 			Assert::AreEqual(
 				std::unordered_map<CommandInfo, OperationInfo>(),
@@ -94,7 +94,7 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0B, 0x00, 0x00, 0x00, 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
@@ -104,7 +104,7 @@ namespace Soup::Build::Execute::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			auto actual = OperationHistoryReader::Deserialize(content);
+			auto actual = OperationGraphReader::Deserialize(content);
 
 			Assert::AreEqual(
 				std::unordered_map<CommandInfo, OperationInfo>({
@@ -135,7 +135,7 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x02, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0C, 0x00, 0x00, 0x00, 'D', 'o', 'S', 't', 'u', 'f', 'f', '1', '.', 'e', 'x', 'e',
@@ -150,7 +150,7 @@ namespace Soup::Build::Execute::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			auto actual = OperationHistoryReader::Deserialize(content);
+			auto actual = OperationGraphReader::Deserialize(content);
 
 			Assert::AreEqual(
 				std::unordered_map<CommandInfo, OperationInfo>({

@@ -4,7 +4,7 @@
 
 #pragma once
 #include "FileSystemState.h"
-#include "OperationHistoryManager.h"
+#include "OperationGraphManager.h"
 #include "SystemAccessTracker.h"
 
 namespace Soup::Build::Execute
@@ -24,8 +24,8 @@ namespace Soup::Build::Execute
 			_workingDirectory(std::move(workingDirectory)),
 			_fileSystemState(fileSystemState),
 			_dependencyCounts(),
-			_previousOperationHistory(0),
-			_activeOperationHistory(_fileSystemState.GetId()),
+			_previousOperationGraph(0),
+			_activeOperationGraph(_fileSystemState.GetId()),
 			_stateChecker(fileSystemState)
 		{
 		}
@@ -41,13 +41,13 @@ namespace Soup::Build::Execute
 			if (!forceBuild)
 			{
 				Log::Diag("Loading previous build state");
-				if (!OperationHistoryManager::TryLoadState(
+				if (!OperationGraphManager::TryLoadState(
 					targetDirectory,
-					_previousOperationHistory,
+					_previousOperationGraph,
 					_fileSystemState.GetId()))
 				{
 					Log::Info("No previous operation state found, full rebuild required");
-					_previousOperationHistory = OperationHistory(_fileSystemState.GetId());
+					_previousOperationGraph = OperationGraph(_fileSystemState.GetId());
 					forceBuild = true;
 				}
 			}
@@ -62,7 +62,7 @@ namespace Soup::Build::Execute
 			CheckExecuteOperations(operations, forceBuild);
 
 			Log::Info("Saving updated build state");
-			OperationHistoryManager::SaveState(targetDirectory, _activeOperationHistory);
+			OperationGraphManager::SaveState(targetDirectory, _activeOperationGraph);
 
 			Log::HighPriority("Done");
 		}
@@ -155,9 +155,9 @@ namespace Soup::Build::Execute
 				// Check if each source file is out of date and requires a rebuild
 				Log::Diag("Check for updated source");
 
-				// Check if this operation is in the build history
+				// Check if this operation is in the build operation graph
 				const OperationInfo* operationInfo;
-				if (_previousOperationHistory.TryFindOperationInfo(command, operationInfo))
+				if (_previousOperationGraph.TryFindOperationInfo(command, operationInfo))
 				{
 					// Check if any of the input files have changed since last build
 					if (_stateChecker.IsOutdated(
@@ -170,8 +170,8 @@ namespace Soup::Build::Execute
 					{
 						Log::Info("Up to date");
 
-						// Move over the completed operation information to the new history since nothing has changed
-						_activeOperationHistory.AddOperationInfo(*operationInfo);
+						// Move over the completed operation information to the new graph since nothing has changed
+						_activeOperationGraph.AddOperationInfo(*operationInfo);
 					}
 				}
 				else
@@ -231,7 +231,7 @@ namespace Soup::Build::Execute
 					output.push_back(Path(value));
 				}
 
-				// Save off the build history for future builds
+				// Save off the build graph for future builds
 				auto operationInfo = OperationInfo(
 					command,
 					_fileSystemState.ToFileIds(input, command.WorkingDirectory),
@@ -240,7 +240,7 @@ namespace Soup::Build::Execute
 				// Ensure the File System State is notified of any output files that have changed
 				_fileSystemState.CheckFileWriteTimes(operationInfo.Output);
 
-				_activeOperationHistory.AddOperationInfo(std::move(operationInfo));
+				_activeOperationGraph.AddOperationInfo(std::move(operationInfo));
 
 				if (!stdOut.empty())
 				{
@@ -277,8 +277,8 @@ namespace Soup::Build::Execute
 		Path _workingDirectory;
 		FileSystemState& _fileSystemState;
 		std::map<int64_t, int64_t> _dependencyCounts;
-		OperationHistory _previousOperationHistory;
-		OperationHistory _activeOperationHistory;
+		OperationGraph _previousOperationGraph;
+		OperationGraph _activeOperationGraph;
 		BuildHistoryChecker _stateChecker;
 	};
 }

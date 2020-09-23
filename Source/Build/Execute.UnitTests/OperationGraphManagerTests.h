@@ -1,4 +1,4 @@
-// <copyright file="OperationHistoryManagerTests.h" company="Soup">
+// <copyright file="OperationGraphManagerTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@
 
 namespace Soup::Build::Execute::UnitTests
 {
-	class OperationHistoryManagerTests
+	class OperationGraphManagerTests
 	{
 	public:
 		[[Fact]]
@@ -21,15 +21,15 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto directory = Path("TestFiles/NoFile");
-			auto actual = OperationHistory(0);
-			auto result = OperationHistoryManager::TryLoadState(directory, actual, 1234);
+			auto actual = OperationGraph(0);
+			auto result = OperationGraphManager::TryLoadState(directory, actual, 1234);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/NoFile/.soup/OperationHistory.bin",
+					"Exists: ./TestFiles/NoFile/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -37,7 +37,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"HIGH: Operation History file does not exist",
+					"HIGH: Operation graph file does not exist",
 				}),
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -54,20 +54,20 @@ namespace Soup::Build::Execute::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageOperationHistory/.soup/OperationHistory.bin"),
+				Path("TestFiles/GarbageOperationGraph/.soup/OperationGraph.bin"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageOperationHistory");
-			auto actual = OperationHistory(0);
-			auto result = OperationHistoryManager::TryLoadState(directory, actual, 1234);
+			auto directory = Path("TestFiles/GarbageOperationGraph");
+			auto actual = OperationGraph(0);
+			auto result = OperationGraphManager::TryLoadState(directory, actual, 1234);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/GarbageOperationHistory/.soup/OperationHistory.bin",
-					"OpenReadBinary: ./TestFiles/GarbageOperationHistory/.soup/OperationHistory.bin",
+					"Exists: ./TestFiles/GarbageOperationGraph/.soup/OperationGraph.bin",
+					"OpenReadBinary: ./TestFiles/GarbageOperationGraph/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -75,7 +75,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"ERRO: Invalid operation history file header",
+					"ERRO: Invalid operation graph file header",
 				}),
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -94,7 +94,7 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0B, 0x00, 0x00, 0x00, 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
@@ -103,20 +103,20 @@ namespace Soup::Build::Execute::UnitTests
 				0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
 			});
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleOperationHistory/.soup/OperationHistory.bin"),
+				Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin"),
 				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
 
-			auto directory = Path("TestFiles/SimpleOperationHistory");
-			auto actual = OperationHistory(0);
-			auto result = OperationHistoryManager::TryLoadState(directory, actual, 22);
+			auto directory = Path("TestFiles/SimpleOperationGraph");
+			auto actual = OperationGraph(0);
+			auto result = OperationGraphManager::TryLoadState(directory, actual, 22);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/SimpleOperationHistory/.soup/OperationHistory.bin",
-					"OpenReadBinary: ./TestFiles/SimpleOperationHistory/.soup/OperationHistory.bin",
+					"Exists: ./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin",
+					"OpenReadBinary: ./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -124,7 +124,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"WARN: Operation History uses an out of date state Id",
+					"WARN: Operation graph uses an out of date state Id",
 				}),
 				testListener->GetMessages(),
 
@@ -144,7 +144,7 @@ namespace Soup::Build::Execute::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0B, 0x00, 0x00, 0x00, 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
@@ -153,12 +153,12 @@ namespace Soup::Build::Execute::UnitTests
 				0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
 			});
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleOperationHistory/.soup/OperationHistory.bin"),
+				Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin"),
 				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
 
-			auto directory = Path("TestFiles/SimpleOperationHistory");
-			auto actual = OperationHistory(0);
-			auto result = OperationHistoryManager::TryLoadState(directory, actual, 12345);
+			auto directory = Path("TestFiles/SimpleOperationGraph");
+			auto actual = OperationGraph(0);
+			auto result = OperationGraphManager::TryLoadState(directory, actual, 12345);
 
 			Assert::IsTrue(result, "Verify result is true.");
 
@@ -186,8 +186,8 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/SimpleOperationHistory/.soup/OperationHistory.bin",
-					"OpenReadBinary: ./TestFiles/SimpleOperationHistory/.soup/OperationHistory.bin",
+					"Exists: ./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin",
+					"OpenReadBinary: ./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -211,7 +211,7 @@ namespace Soup::Build::Execute::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto directory = Path("TestFiles/");
-			auto operationHistory = OperationHistory(
+			auto operationGraph = OperationGraph(
 				12345,
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -226,14 +226,14 @@ namespace Soup::Build::Execute::UnitTests
 							2,
 						})),
 				}));
-			OperationHistoryManager::SaveState(directory, operationHistory);
+			OperationGraphManager::SaveState(directory, operationGraph);
 
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"Exists: ./TestFiles/.soup/",
 					"CreateDirectory: ./TestFiles/.soup/",
-					"OpenWriteBinary: ./TestFiles/.soup/OperationHistory.bin",
+					"OpenWriteBinary: ./TestFiles/.soup/OperationGraph.bin",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -249,7 +249,7 @@ namespace Soup::Build::Execute::UnitTests
 			// Verify the file content
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'H', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0D, 0x00, 0x00, 0x00, '.', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
@@ -257,7 +257,7 @@ namespace Soup::Build::Execute::UnitTests
 				0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
 			});
-			auto& mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/OperationHistory.bin"));
+			auto& mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/OperationGraph.bin"));
 			Assert::AreEqual(
 				std::string(binaryFileContent.data(), binaryFileContent.size()),
 				mockFile->Content.str(),

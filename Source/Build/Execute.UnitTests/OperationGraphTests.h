@@ -1,4 +1,4 @@
-// <copyright file="OperationHistoryTests.h" company="Soup">
+// <copyright file="OperationGraphTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,13 +6,13 @@
 
 namespace Soup::Build::Execute::UnitTests
 {
-	class OperationHistoryTests
+	class OperationGraphTests
 	{
 	public:
 		[[Fact]]
 		void Initialize_Default()
 		{
-			auto uut = OperationHistory(1234);
+			auto uut = OperationGraph(1234);
 
 			Assert::AreEqual(
 				1234u,
@@ -27,7 +27,7 @@ namespace Soup::Build::Execute::UnitTests
 		[[Fact]]
 		void Initialize_ListOperations_Single()
 		{
-			auto uut = OperationHistory(
+			auto uut = OperationGraph(
 				1234,
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -74,7 +74,7 @@ namespace Soup::Build::Execute::UnitTests
 		[[Fact]]
 		void TryFindOperationInfo_Missing()
 		{
-			auto uut = OperationHistory(
+			auto uut = OperationGraph(
 				1234,
 				std::vector<OperationInfo>({}));
 
@@ -93,7 +93,7 @@ namespace Soup::Build::Execute::UnitTests
 		[[Fact]]
 		void TryFindOperationInfo_Found()
 		{
-			auto uut = OperationHistory(
+			auto uut = OperationGraph(
 				1234,
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -138,7 +138,7 @@ namespace Soup::Build::Execute::UnitTests
 		[[Fact]]
 		void AddOperationInfo()
 		{
-			auto uut = OperationHistory(
+			auto uut = OperationGraph(
 				1234,
 				std::vector<OperationInfo>({}));
 

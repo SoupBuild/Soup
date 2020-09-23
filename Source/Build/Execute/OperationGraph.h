@@ -1,4 +1,4 @@
-﻿// <copyright file="OperationHistory.h" company="Soup">
+﻿// <copyright file="OperationGraph.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -8,25 +8,25 @@
 namespace Soup::Build::Execute
 {
 	/// <summary>
-	/// The cached operation history that is used to track input/output mappings for previous build
+	/// The cached operation graph that is used to track input/output mappings for previous build
 	/// executions to support incremental builds
 	/// </summary>
-	export class OperationHistory
+	export class OperationGraph
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OperationHistory"/> class.
+		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
-		OperationHistory(FileSystemStateId stateId) :
+		OperationGraph(FileSystemStateId stateId) :
 			_stateId(stateId),
 			_operations()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OperationHistory"/> class.
+		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
-		OperationHistory(
+		OperationGraph(
 			FileSystemStateId stateId,
 			std::vector<OperationInfo> operations) :
 			_stateId(stateId),
@@ -40,7 +40,7 @@ namespace Soup::Build::Execute
 		}
 
 		/// <summary>
-		/// Get the file system state id used for this operation history
+		/// Get the file system state id used for this operation graph
 		/// </summary>
 		FileSystemStateId GetStateId() const
 		{
@@ -80,7 +80,7 @@ namespace Soup::Build::Execute
 			auto result = _operations.emplace(operation.Command, std::move(operation));
 			// TODO: Do we really want to allow two of the same operation?
 			// if (!result.second)
-			// 	throw std::runtime_error("The provided command already exists in the build history.");
+			// 	throw std::runtime_error("The provided command already exists in the build graph.");
 		}
 
 	private:

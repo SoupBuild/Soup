@@ -1,10 +1,10 @@
 #pragma once
-#include "OperationHistoryReaderTests.h"
+#include "OperationGraphReaderTests.h"
 
-TestState RunOperationHistoryReaderTests() 
+TestState RunOperationGraphReaderTests() 
 {
-	auto className = "OperationHistoryReaderTests";
-	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::OperationHistoryReaderTests>();
+	auto className = "OperationGraphReaderTests";
+	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::OperationGraphReaderTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Deserialize_InvalidFileHeaderThrows", [&testClass]() { testClass->Deserialize_InvalidFileHeaderThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_InvalidFileVersionThrows", [&testClass]() { testClass->Deserialize_InvalidFileVersionThrows(); });

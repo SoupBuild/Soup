@@ -37,5 +37,5 @@ using namespace Opal;
 #include "BuildRunner.h"
 #include "FileSystemState.h"
 #include "FileSystemStateManager.h"
-#include "OperationHistory.h"
-#include "OperationHistoryManager.h"
+#include "OperationGraph.h"
+#include "OperationGraphManager.h"

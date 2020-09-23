@@ -1,42 +1,42 @@
-﻿// <copyright file="OperationHistoryReader.h" company="Soup">
+﻿// <copyright file="OperationGraphReader.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "OperationHistory.h"
+#include "OperationGraph.h"
 
 namespace Soup::Build::Execute
 {
 	/// <summary>
-	/// The operation history state reader
+	/// The operation graph state reader
 	/// </summary>
-	export class OperationHistoryReader
+	export class OperationGraphReader
 	{
 	private:
-		// Binary Operation History file format
+		// Binary Operation Graph file format
 		static constexpr uint32_t FileVersion = 1;
 
 	public:
-		static OperationHistory Deserialize(std::istream& stream)
+		static OperationGraph Deserialize(std::istream& stream)
 		{
 			// Read the File Header with version
 			auto headerBuffer = std::array<char, 4>();
 			stream.read(headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'B' ||
 				headerBuffer[1] != 'O' ||
-				headerBuffer[2] != 'H' ||
+				headerBuffer[2] != 'G' ||
 				headerBuffer[3] != '\0')
 			{
-				throw std::runtime_error("Invalid operation history file header");
+				throw std::runtime_error("Invalid operation graph file header");
 			}
 
 			auto fileVersion = ReadUInt32(stream);
 			if (fileVersion != FileVersion)
 			{
-				throw std::runtime_error("Operation History file version does not match expected");
+				throw std::runtime_error("Operation graph file version does not match expected");
 			}
 
-			// Read in the file system state that was used for this operation history
+			// Read in the file system state that was used for this operation graph
 			auto stateId = ReadUInt32(stream);
 
 			// Read the set of operations
@@ -46,7 +46,7 @@ namespace Soup::Build::Execute
 				headerBuffer[2] != 'S' ||
 				headerBuffer[3] != '\0')
 			{
-				throw std::runtime_error("Invalid operation history operations header");
+				throw std::runtime_error("Invalid operation graph operations header");
 			}
 
 			auto operationCount = ReadUInt32(stream);
@@ -79,10 +79,10 @@ namespace Soup::Build::Execute
 
 			if (stream.peek() != std::char_traits<char>::eof())
 			{
-				throw std::runtime_error("Operation History file corrupted - Did not read the entire file");
+				throw std::runtime_error("Operation graph file corrupted - Did not read the entire file");
 			}
 
-			return OperationHistory(
+			return OperationGraph(
 				stateId,
 				std::move(operations));
 		}

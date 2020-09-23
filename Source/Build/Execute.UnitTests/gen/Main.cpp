@@ -28,10 +28,10 @@ using namespace Soup::Test;
 #include "FileSystemStateManagerTests.gen.h"
 #include "FileSystemStateReaderTests.gen.h"
 #include "FileSystemStateWriterTests.gen.h"
-#include "OperationHistoryTests.gen.h"
-#include "OperationHistoryManagerTests.gen.h"
-#include "OperationHistoryReaderTests.gen.h"
-#include "OperationHistoryWriterTests.gen.h"
+#include "OperationGraphTests.gen.h"
+#include "OperationGraphManagerTests.gen.h"
+#include "OperationGraphReaderTests.gen.h"
+#include "OperationGraphWriterTests.gen.h"
 
 int main()
 {
@@ -45,10 +45,10 @@ int main()
 	state += RunFileSystemStateManagerTests();
 	state += RunFileSystemStateReaderTests();
 	state += RunFileSystemStateWriterTests();
-	state += RunOperationHistoryTests();
-	state += RunOperationHistoryManagerTests();
-	state += RunOperationHistoryReaderTests();
-	state += RunOperationHistoryWriterTests();
+	state += RunOperationGraphTests();
+	state += RunOperationGraphManagerTests();
+	state += RunOperationGraphReaderTests();
+	state += RunOperationGraphWriterTests();
 
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;

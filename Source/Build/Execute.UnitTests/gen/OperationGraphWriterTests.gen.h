@@ -1,10 +1,10 @@
 #pragma once
-#include "OperationHistoryWriterTests.h"
+#include "OperationGraphWriterTests.h"
 
-TestState RunOperationHistoryWriterTests() 
+TestState RunOperationGraphWriterTests() 
 {
-	auto className = "OperationHistoryWriterTests";
-	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::OperationHistoryWriterTests>();
+	auto className = "OperationGraphWriterTests";
+	auto testClass = std::make_shared<Soup::Build::Execute::UnitTests::OperationGraphWriterTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Serialize_Empty", [&testClass]() { testClass->Serialize_Empty(); });
 	state += Soup::Test::RunTest(className, "Serialize_Single", [&testClass]() { testClass->Serialize_Single(); });
