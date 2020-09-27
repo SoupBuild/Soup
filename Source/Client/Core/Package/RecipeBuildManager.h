@@ -384,10 +384,19 @@ namespace Soup::Build
 			// Ensure the external build extension libraries outlive all usage in the build system
 			auto activeExtensionLibraries = std::vector<System::WindowsLibrary>();
 
+			auto buildState = Generate::BuildState(activeState);
+			auto activeBuildGraph = Evaluate::OperationGraph(0);
+
+			auto outputDirectory = RecipeExtensions::GetOutputDirectory(
+				_systemCompiler,
+				arguments.Flavor,
+				arguments.System,
+				arguments.Architecture);
+			auto targetDirectory = packageRoot + outputDirectory;
+			if (!arguments.SkipGenerate)
 			{
 				// Create a new build system for the requested build
 				auto buildSystem = Generate::BuildSystem();
-				auto buildState = Generate::BuildState(activeState);
 				auto activeStateWrapper = Utilities::ValueTableWrapper(buildState.GetActiveState());
 
 				// Select the correct compiler to use
@@ -403,11 +412,6 @@ namespace Soup::Build
 					activeCompiler = _runtimeCompiler;
 				}
 
-				auto outputDirectory = RecipeExtensions::GetOutputDirectory(
-					_systemCompiler,
-					arguments.Flavor,
-					arguments.System,
-					arguments.Architecture);
 				auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(
 					_systemCompiler,
 					arguments.Flavor,
@@ -463,76 +467,87 @@ namespace Soup::Build
 				// Find the output object directory so we can use it in the runner
 				auto buildTable = activeStateWrapper.GetValue("Build").AsTable();
 
-				if (!arguments.SkipEvaluate)
-				{
-					// Convert the generated build into the execution build graph
-					auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetBuildOperations());
-					auto operationGraphGenerator = Evaluate::OperationGraphGenerator(_fileSystemState);
-					auto activeBuildGraph  = operationGraphGenerator.CreateFromDefinition(buildOperations);
+				// Convert the generated build into the execution build graph
+				auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetBuildOperations());
+				auto operationGraphGenerator = Evaluate::OperationGraphGenerator(_fileSystemState);
+				auto activeBuildGraph  = operationGraphGenerator.CreateFromDefinition(buildOperations);
 
-					auto targetDirectory = packageRoot + outputDirectory;
-					if (!arguments.ForceRebuild)
+				if (!arguments.ForceRebuild)
+				{
+					// Load the previous build graph
+					Log::Diag("Loading previous build graph");
+					auto previousOperationGraph = Evaluate::OperationGraph(0);
+					if (Evaluate::OperationGraphManager::TryLoadState(
+						targetDirectory,
+						previousOperationGraph,
+						_fileSystemState.GetId()))
 					{
-						// Load the previous build graph
-						Log::Diag("Loading previous build graph");
-						auto previousOperationGraph = Evaluate::OperationGraph(0);
-						if (Evaluate::OperationGraphManager::TryLoadState(
-							targetDirectory,
-							previousOperationGraph,
-							_fileSystemState.GetId()))
+						Log::Diag("Merge previous operation graph observed results");
+						for (auto& activeOperationEntry : activeBuildGraph.GetOperations())
 						{
-							Log::Diag("Merge previous operation graph observed results");
-							for (auto& activeOperationEntry : activeBuildGraph.GetOperations())
+							auto& activeOperationInfo = activeOperationEntry.second;
+							Evaluate::OperationInfo* previousOperationInfo = nullptr;
+							if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
 							{
-								auto& activeOperationInfo = activeOperationEntry.second;
-								Evaluate::OperationInfo* previousOperationInfo = nullptr;
-								if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
-								{
-									activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
-									activeOperationInfo.ObservedInput = previousOperationInfo->ObservedInput;
-									activeOperationInfo.ObservedOutput = previousOperationInfo->ObservedOutput;
-								}
+								activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
+								activeOperationInfo.ObservedInput = previousOperationInfo->ObservedInput;
+								activeOperationInfo.ObservedOutput = previousOperationInfo->ObservedOutput;
 							}
-						}
-						else
-						{
-							Log::Info("No previous build graph found, full rebuild required");
 						}
 					}
 					else
 					{
-						Log::Info("Force build - Skip loading previous state");
+						Log::Info("No previous build graph found, full rebuild required");
 					}
+				}
+				else
+				{
+					Log::Info("Force build - Skip loading previous state");
+				}
+			}
+			else
+			{
+				// Load and run the previous stored state directly
+				Log::Info("Loading previous operation graph as the active graph");
+				if (!Evaluate::OperationGraphManager::TryLoadState(
+					targetDirectory,
+					activeBuildGraph,
+					_fileSystemState.GetId()))
+				{
+					throw std::runtime_error("Missing cached operation graph when skipping generate phase.");
+				}
+			}
 
-					try
-					{
-						// Execute the build
-						auto runner = Evaluate::BuildRunner(packageRoot, _fileSystemState, activeBuildGraph);
-						runner.Evaluate();
-					}
-					catch(const Evaluate::BuildFailedException& e)
-					{
-						Log::Info("Saving partial build state");
-						Evaluate::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
-						throw;
-					}
-
-					Log::Info("Saving updated build state");
+			if (!arguments.SkipEvaluate)
+			{
+				try
+				{
+					// Execute the build
+					auto runner = Evaluate::BuildRunner(packageRoot, _fileSystemState, activeBuildGraph);
+					runner.Evaluate();
+				}
+				catch(const Evaluate::BuildFailedException& e)
+				{
+					Log::Info("Saving partial build state");
 					Evaluate::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
-
-					Log::HighPriority("Done");
+					throw;
 				}
 
-				// Return only the build state that is to be passed to the downstream builds
-				// This allows the extension dlls to be released and the operations deleted
-				return buildState.RetrieveSharedState();
+				Log::Info("Saving updated build state");
+				Evaluate::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
+
+				Log::HighPriority("Done");
 			}
+
+			// Return only the build state that is to be passed to the downstream builds
+			// This allows the extension dlls to be released and the operations deleted
+			return buildState.RetrieveSharedState();
 		}
 
 		Path GetSoupUserDataPath() const
 		{
 			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
-					Path(".soup/");
+				Path(".soup/");
 			return result;
 		}
 
