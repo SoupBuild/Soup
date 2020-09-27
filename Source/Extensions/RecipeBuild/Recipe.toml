@@ -3,7 +3,7 @@ Type = "DynamicLibrary"
 Version = "1.0.0"
 Dependencies = [
 	"Opal@0.1.5",
-	"../../Build/Evaluate/",
+	"../../Build/Generate/",
 	"../Compiler/Core/",
 	"../Compiler/Clang/",
 	"../Compiler/MSVC/",

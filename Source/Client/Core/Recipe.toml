@@ -10,8 +10,8 @@ Dependencies = [
 	# "Soup.Build@0.3.0",
 	"../../Build/Utilities/",
 	# "Soup.Build.Utilities@0.3.0",
-	"../../Build/Execute/",
 	"../../Build/Evaluate/",
+	"../../Build/Generate/",
 ]
 Defines = [
 	# "LOCAL_DEBUG",

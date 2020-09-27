@@ -1,0 +1,16 @@
+Name = "Soup.Build.Generate"
+Description = """The Build Generate implementation of the contract classes that are 
+used inside the primary Build Generate Engine."""
+Version = "0.1.0"
+Dependencies = [
+	"../Contracts/",
+	# "Soup.Build@0.3.0",
+	"../Utilities/",
+	# "Soup.Build.Utilities@0.3.0",
+	"Opal@0.1.5",
+]
+
+Public = "Module.cpp"
+Source = [
+	"Value.cpp",
+]
