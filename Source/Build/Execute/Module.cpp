@@ -38,4 +38,5 @@ using namespace Opal;
 #include "FileSystemState.h"
 #include "FileSystemStateManager.h"
 #include "OperationGraph.h"
+#include "OperationGraphGenerator.h"
 #include "OperationGraphManager.h"

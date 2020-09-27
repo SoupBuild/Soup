@@ -19,7 +19,11 @@ namespace Soup::Build::Execute::UnitTests
 				uut.GetStateId(),
 				"Verify state id match expected.");
 			Assert::AreEqual(
-				std::unordered_map<CommandInfo, OperationInfo>(),
+				std::vector<OperationId>(),
+				uut.GetRootOperationIds(),
+				"Verify root operation ids match expected.");
+			Assert::AreEqual(
+				std::unordered_map<OperationId, OperationInfo>(),
 				uut.GetOperations(),
 				"Verify operations match expected.");
 		}
@@ -29,8 +33,13 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto uut = OperationGraph(
 				1234,
+				std::vector<OperationId>({
+					1,
+				}),
 				std::vector<OperationInfo>({
 					OperationInfo(
+						1,
+						"TestOperation",
 						CommandInfo(
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
@@ -40,7 +49,12 @@ namespace Soup::Build::Execute::UnitTests
 						}),
 						std::vector<FileId>({
 							2,
-						})),
+						}),
+						std::vector<OperationId>({}),
+						1,
+						false,
+						std::vector<FileId>({}),
+						std::vector<FileId>({})),
 				}));
 
 			Assert::AreEqual(
@@ -48,13 +62,18 @@ namespace Soup::Build::Execute::UnitTests
 				uut.GetStateId(),
 				"Verify state id match expected.");
 			Assert::AreEqual(
-				std::unordered_map<CommandInfo, OperationInfo>({
+				std::vector<OperationId>({
+					1,
+				}),
+				uut.GetRootOperationIds(),
+				"Verify root operation ids match expected.");
+			Assert::AreEqual(
+				std::unordered_map<OperationId, OperationInfo>({
 					{
-						CommandInfo(
-							Path("C:/Root/"),
-							Path("DoStuff.exe"),
-							"arg1 arg2"),
+						1,
 						OperationInfo(
+							1,
+							"TestOperation",
 							CommandInfo(
 								Path("C:/Root/"),
 								Path("DoStuff.exe"),
@@ -64,11 +83,61 @@ namespace Soup::Build::Execute::UnitTests
 							}),
 							std::vector<FileId>({
 								2,
-							})),
-					}
+							}),
+							std::vector<OperationId>({}),
+							1,
+							false,
+							std::vector<FileId>({}),
+							std::vector<FileId>({})),
+					},
 				}),
 				uut.GetOperations(),
 				"Verify operations match expected.");
+		}
+
+		[[Fact]]
+		void SetRootOperationIds()
+		{
+			auto uut = OperationGraph(
+				1234,
+				std::vector<OperationId>({}),
+				std::vector<OperationInfo>({
+					OperationInfo(
+						1,
+						"TestOperation",
+						CommandInfo(
+							Path("C:/Root/"),
+							Path("DoStuff.exe"),
+							"arg1 arg2"),
+						std::vector<FileId>({
+							1,
+						}),
+						std::vector<FileId>({
+							2,
+						}),
+						std::vector<OperationId>({}),
+						1,
+						false,
+						std::vector<FileId>({}),
+						std::vector<FileId>({})),
+				}));
+
+			Assert::AreEqual(
+				std::vector<OperationId>(),
+				uut.GetRootOperationIds(),
+				"Verify root operation ids match expected.");
+
+			uut.SetRootOperationIds(
+				std::vector<OperationId>({
+					1,
+				}));
+
+			Assert::AreEqual(
+				std::vector<OperationId>({
+					1
+				}),
+				uut.GetRootOperationIds(),
+				"Verify root operation ids match expected.");
 		}
 
 		[[Fact]]
@@ -76,9 +145,10 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto uut = OperationGraph(
 				1234,
+				std::vector<OperationId>({}),
 				std::vector<OperationInfo>({}));
 
-			const OperationInfo* operationInfo = nullptr;
+			OperationInfo* operationInfo = nullptr;
 			auto result = uut.TryFindOperationInfo(
 				CommandInfo(
 					Path("C:/Root/"),
@@ -95,8 +165,13 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto uut = OperationGraph(
 				1234,
+				std::vector<OperationId>({
+					1
+				}),
 				std::vector<OperationInfo>({
 					OperationInfo(
+						1,
+						"TestOperation",
 						CommandInfo(
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
@@ -106,10 +181,15 @@ namespace Soup::Build::Execute::UnitTests
 						}),
 						std::vector<FileId>({
 							2,
-						})),
+						}),
+						std::vector<OperationId>({}),
+						1,
+						false,
+						std::vector<FileId>({}),
+						std::vector<FileId>({})),
 				}));
 
-			const OperationInfo* operationInfo;
+			OperationInfo* operationInfo;
 			auto result = uut.TryFindOperationInfo(
 				CommandInfo(
 					Path("C:/Root/"),
@@ -121,6 +201,8 @@ namespace Soup::Build::Execute::UnitTests
 			Assert::NotNull(operationInfo, "Verify operationInfo is not null.");
 			Assert::AreEqual(
 				OperationInfo(
+					1,
+					"TestOperation",
 					CommandInfo(
 						Path("C:/Root/"),
 						Path("DoStuff.exe"),
@@ -130,8 +212,81 @@ namespace Soup::Build::Execute::UnitTests
 					}),
 					std::vector<FileId>({
 						2,
-					})),
+					}),
+					std::vector<OperationId>({}),
+					1,
+					false,
+					std::vector<FileId>({}),
+					std::vector<FileId>({})),
 				*operationInfo,
+				"Verify operationInfo is correct.");
+		}
+
+		[[Fact]]
+		void GetOperationInfo_MissingThrows()
+		{
+			auto uut = OperationGraph(
+				1234,
+				std::vector<OperationId>({}),
+				std::vector<OperationInfo>({}));
+
+			Assert::ThrowsRuntimeError([&uut]() {
+				auto operationInfo = uut.GetOperationInfo(1);
+			},
+			"The provided operation id does not exist");
+		}
+
+		[[Fact]]
+		void GetOperationInfo_Found()
+		{
+			auto uut = OperationGraph(
+				1234,
+				std::vector<OperationId>({
+					1
+				}),
+				std::vector<OperationInfo>({
+					OperationInfo(
+						1,
+						"TestOperation",
+						CommandInfo(
+							Path("C:/Root/"),
+							Path("DoStuff.exe"),
+							"arg1 arg2"),
+						std::vector<FileId>({
+							1,
+						}),
+						std::vector<FileId>({
+							2,
+						}),
+						std::vector<OperationId>({}),
+						1,
+						false,
+						std::vector<FileId>({}),
+						std::vector<FileId>({})),
+				}));
+
+			auto operationInfo = uut.GetOperationInfo(1);
+
+			Assert::AreEqual(
+				OperationInfo(
+					1,
+					"TestOperation",
+					CommandInfo(
+						Path("C:/Root/"),
+						Path("DoStuff.exe"),
+						"arg1 arg2"),
+					std::vector<FileId>({
+						1,
+					}),
+					std::vector<FileId>({
+						2,
+					}),
+					std::vector<OperationId>({}),
+					1,
+					false,
+					std::vector<FileId>({}),
+					std::vector<FileId>({})),
+				operationInfo,
 				"Verify operationInfo is correct.");
 		}
 
@@ -140,10 +295,13 @@ namespace Soup::Build::Execute::UnitTests
 		{
 			auto uut = OperationGraph(
 				1234,
+				std::vector<OperationId>({}),
 				std::vector<OperationInfo>({}));
 
 			uut.AddOperationInfo(
 				OperationInfo(
+					1,
+					"TestOperation",
 					CommandInfo(
 						Path("C:/Root/"),
 						Path("DoStuff.exe"),
@@ -153,16 +311,20 @@ namespace Soup::Build::Execute::UnitTests
 					}),
 					std::vector<FileId>({
 						2,
-					})));
+					}),
+					std::vector<OperationId>({}),
+					1,
+					false,
+					std::vector<FileId>({}),
+					std::vector<FileId>({})));
 
 			Assert::AreEqual(
-				std::unordered_map<CommandInfo, OperationInfo>({
+				std::unordered_map<OperationId, OperationInfo>({
 					{
-						CommandInfo(
-							Path("C:/Root/"),
-							Path("DoStuff.exe"),
-							"arg1 arg2"),
+						1,
 						OperationInfo(
+							1,
+							"TestOperation",
 							CommandInfo(
 								Path("C:/Root/"),
 								Path("DoStuff.exe"),
@@ -172,7 +334,12 @@ namespace Soup::Build::Execute::UnitTests
 							}),
 							std::vector<FileId>({
 								2,
-							})),
+							}),
+							std::vector<OperationId>({}),
+							1,
+							false,
+							std::vector<FileId>({}),
+							std::vector<FileId>({})),
 					}
 				}),
 				uut.GetOperations(),

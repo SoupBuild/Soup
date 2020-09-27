@@ -463,15 +463,64 @@ namespace Soup::Build
 				// Find the output object directory so we can use it in the runner
 				auto buildTable = activeStateWrapper.GetValue("Build").AsTable();
 
-				if (!arguments.SkipRun)
+				if (!arguments.SkipEvaluate)
 				{
-					// Execute the build operations
-					auto runner = Execute::BuildRunner(packageRoot, _fileSystemState);
+					// Convert the generated build into the execution build graph
 					auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetBuildOperations());
-					runner.Execute(
-						buildOperations,
-						outputDirectory,
-						arguments.ForceRebuild);
+					auto operationGraphGenerator = Execute::OperationGraphGenerator(_fileSystemState);
+					auto activeBuildGraph  = operationGraphGenerator.CreateFromDefinition(buildOperations);
+
+					auto targetDirectory = packageRoot + outputDirectory;
+					if (!arguments.ForceRebuild)
+					{
+						// Load the previous build graph
+						Log::Diag("Loading previous build graph");
+						auto previousOperationGraph = Execute::OperationGraph(0);
+						if (Execute::OperationGraphManager::TryLoadState(
+							targetDirectory,
+							previousOperationGraph,
+							_fileSystemState.GetId()))
+						{
+							Log::Diag("Merge previous operation graph observed results");
+							for (auto& activeOperationEntry : activeBuildGraph.GetOperations())
+							{
+								auto& activeOperationInfo = activeOperationEntry.second;
+								Execute::OperationInfo* previousOperationInfo = nullptr;
+								if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
+								{
+									activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
+									activeOperationInfo.ObservedInput = previousOperationInfo->ObservedInput;
+									activeOperationInfo.ObservedOutput = previousOperationInfo->ObservedOutput;
+								}
+							}
+						}
+						else
+						{
+							Log::Info("No previous build graph found, full rebuild required");
+						}
+					}
+					else
+					{
+						Log::Info("Force build - Skip loading previous state");
+					}
+
+					try
+					{
+						// Execute the build
+						auto runner = Execute::BuildRunner(packageRoot, _fileSystemState, activeBuildGraph);
+						runner.Evaluate();
+					}
+					catch(const Execute::BuildFailedException& e)
+					{
+						Log::Info("Saving partial build state");
+						Execute::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
+						throw;
+					}
+
+					Log::Info("Saving updated build state");
+					Execute::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
+
+					Log::HighPriority("Done");
 				}
 
 				// Return only the build state that is to be passed to the downstream builds

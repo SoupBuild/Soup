@@ -47,6 +47,8 @@ namespace Soup::Build::Execute
 		std::string Arguments;
 	};
 
+	export using OperationId = int32_t;
+
 	export class OperationInfo
 	{
 	public:
@@ -54,9 +56,16 @@ namespace Soup::Build::Execute
 		/// Initializes a new instance of the <see cref="OperationInfo"/> class.
 		/// </summary>
 		OperationInfo() :
+			Id(0),
+			Title(),
 			Command(),
-			Input(),
-			Output()
+			DeclaredInput(),
+			DeclaredOutput(),
+			Children(),
+			DependencyCount(0),
+			WasSuccessfulRun(false),
+			ObservedInput(),
+			ObservedOutput()
 		{
 		}
 
@@ -64,12 +73,50 @@ namespace Soup::Build::Execute
 		/// Initializes a new instance of the <see cref="OperationInfo"/> class.
 		/// </summary>
 		OperationInfo(
+			OperationId id,
+			std::string title,
 			CommandInfo command,
-			std::vector<FileId> input,
-			std::vector<FileId> output) :
+			std::vector<FileId> declaredInput,
+			std::vector<FileId> declaredOutput,
+			std::vector<OperationId> children,
+			uint32_t dependencyCount) :
+			Id(id),
+			Title(std::move(title)),
 			Command(std::move(command)),
-			Input(std::move(input)),
-			Output(std::move(output))
+			DeclaredInput(std::move(declaredInput)),
+			DeclaredOutput(std::move(declaredOutput)),
+			Children(std::move(children)),
+			DependencyCount(dependencyCount),
+			WasSuccessfulRun(false),
+			ObservedInput(),
+			ObservedOutput()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OperationInfo"/> class.
+		/// </summary>
+		OperationInfo(
+			OperationId id,
+			std::string title,
+			CommandInfo command,
+			std::vector<FileId> declaredInput,
+			std::vector<FileId> declaredOutput,
+			std::vector<OperationId> children,
+			uint32_t dependencyCount,
+			bool wasSuccessfulRun,
+			std::vector<FileId> observedInput,
+			std::vector<FileId> observedOutput) :
+			Id(id),
+			Title(std::move(title)),
+			Command(std::move(command)),
+			DeclaredInput(std::move(declaredInput)),
+			DeclaredOutput(std::move(declaredOutput)),
+			Children(std::move(children)),
+			DependencyCount(dependencyCount),
+			WasSuccessfulRun(wasSuccessfulRun),
+			ObservedInput(std::move(observedInput)),
+			ObservedOutput(std::move(observedOutput))
 		{
 		}
 
@@ -78,14 +125,28 @@ namespace Soup::Build::Execute
 		/// </summary>
 		bool operator ==(const OperationInfo& rhs) const
 		{
-			return Command == rhs.Command &&
-				Input == rhs.Input &&
-				Output == rhs.Output;
+			return Id == rhs.Id &&
+				Title == rhs.Title &&
+				Command == rhs.Command &&
+				DeclaredInput == rhs.DeclaredInput &&
+				DeclaredOutput == rhs.DeclaredOutput &&
+				Children == rhs.Children &&
+				DependencyCount == rhs.DependencyCount &&
+				WasSuccessfulRun == rhs.WasSuccessfulRun &&
+				ObservedInput == rhs.ObservedInput &&
+				ObservedOutput == rhs.ObservedOutput;
 		}
 
+		OperationId Id;
+		std::string Title;
 		CommandInfo Command;
-		std::vector<FileId> Input;
-		std::vector<FileId> Output;
+		std::vector<FileId> DeclaredInput;
+		std::vector<FileId> DeclaredOutput;
+		std::vector<OperationId> Children;
+		uint32_t DependencyCount;
+		bool WasSuccessfulRun;
+		std::vector<FileId> ObservedInput;
+		std::vector<FileId> ObservedOutput;
 	};
 }
 

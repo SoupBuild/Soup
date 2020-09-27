@@ -11,7 +11,8 @@ TestState RunOperationGraphReaderTests()
 	state += Soup::Test::RunTest(className, "Deserialize_InvalidOperationsHeaderThrows", [&testClass]() { testClass->Deserialize_InvalidOperationsHeaderThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_ExtraContentThrows", [&testClass]() { testClass->Deserialize_ExtraContentThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_Empty", [&testClass]() { testClass->Deserialize_Empty(); });
-	state += Soup::Test::RunTest(className, "Deserialize_Single", [&testClass]() { testClass->Deserialize_Single(); });
+	state += Soup::Test::RunTest(className, "Deserialize_SingleSimple", [&testClass]() { testClass->Deserialize_SingleSimple(); });
+	state += Soup::Test::RunTest(className, "Deserialize_SingleComplex", [&testClass]() { testClass->Deserialize_SingleComplex(); });
 	state += Soup::Test::RunTest(className, "Deserialize_Multiple", [&testClass]() { testClass->Deserialize_Multiple(); });
 
 	return state;

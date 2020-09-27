@@ -6,6 +6,7 @@
 #include "FileSystemState.h"
 #include "OperationGraphManager.h"
 #include "SystemAccessTracker.h"
+#include "BuildFailedException.h"
 
 namespace Soup::Build::Execute
 {
@@ -20,179 +21,117 @@ namespace Soup::Build::Execute
 		/// </summary>
 		BuildRunner(
 			Path workingDirectory,
-			FileSystemState& fileSystemState) :
-			_workingDirectory(std::move(workingDirectory)),
+			FileSystemState& fileSystemState,
+			OperationGraph& operationGraph) :
 			_fileSystemState(fileSystemState),
-			_dependencyCounts(),
-			_previousOperationGraph(0),
-			_activeOperationGraph(_fileSystemState.GetId()),
+			_operationGraph(operationGraph),
+			_remainingDependencyCounts(),
 			_stateChecker(fileSystemState)
 		{
 		}
 
-		// TODO: Convert vector to const when we have a const version of the operation wrapper.
-		void Execute(
-			Utilities::BuildOperationListWrapper& operations,
-			const Path& outputDirectory,
-			bool forceBuild)
+		/// <summary>
+		/// Execute the entire operation graph that is referenced by this build runner
+		/// </summary>
+		void Evaluate()
 		{
-			// Load the previous build state if performing an incremental build
-			auto targetDirectory = _workingDirectory + outputDirectory;
-			if (!forceBuild)
-			{
-				Log::Diag("Loading previous build state");
-				if (!OperationGraphManager::TryLoadState(
-					targetDirectory,
-					_previousOperationGraph,
-					_fileSystemState.GetId()))
-				{
-					Log::Info("No previous operation state found, full rebuild required");
-					_previousOperationGraph = OperationGraph(_fileSystemState.GetId());
-					forceBuild = true;
-				}
-			}
-
-			// Build the initial operation dependency set to
-			// ensure operations are built in the correct order 
-			// and that there are no cycles
-			auto emptyParentSet = std::set<uint64_t>();
-			BuildDependencies(operations, emptyParentSet);
-
 			// Run all build operations in the correct order with incremental build checks
-			CheckExecuteOperations(operations, forceBuild);
-
-			Log::Info("Saving updated build state");
-			OperationGraphManager::SaveState(targetDirectory, _activeOperationGraph);
-
-			Log::HighPriority("Done");
+			Log::Diag("Build evaluation start");
+			CheckExecuteOperations(_operationGraph.GetRootOperationIds());
+			Log::Diag("Build evaluation end");
 		}
 
 	private:
 		/// <summary>
-		/// Build dependencies
-		/// </summary>
-		void BuildDependencies(
-			Utilities::BuildOperationListWrapper& operations,
-			const std::set<uint64_t>& parentSet)
-		{
-			for (auto i = 0; i < operations.GetSize(); i++)
-			{
-				// Make sure there are no cycles using the address as a unique id
-				auto operation = operations.GetValueAt(i);
-				auto operationId = reinterpret_cast<uint64_t>(operation.GetRaw());
-				if (parentSet.contains(operationId))
-					throw std::runtime_error("A build operation graph must be acyclic.");
-				
-				// Check if the operation was already a child from a different path
-				auto currentOperationSearch = _dependencyCounts.find(operationId);
-				if (currentOperationSearch != _dependencyCounts.end())
-				{
-					// Increment the dependency count
-					currentOperationSearch->second++;
-				}
-				else
-				{
-					// Insert a new entry with a single count
-					_dependencyCounts.emplace(operationId, 1);
-					
-					// Recurse to children only the first time we see an operation
-					auto updatedParentSet = parentSet;
-					updatedParentSet.insert(operationId);
-					BuildDependencies(operation.GetChildList(), updatedParentSet);
-				}
-			}
-		}
-
-		/// <summary>
 		/// Execute the collection of build operations
 		/// </summary>
 		void CheckExecuteOperations(
-			Utilities::BuildOperationListWrapper& operations,
-			bool forceBuild)
+			const std::vector<OperationId>& operations)
 		{
-			for (auto i = 0; i < operations.GetSize(); i++)
+			for (auto operationId : operations)
 			{
 				// Check if the operation was already a child from a different path
-				// Make sure there are no cycles using the address as a unique id
-				auto operation = operations.GetValueAt(i);
-				auto operationId = reinterpret_cast<uint64_t>(operation.GetRaw());
-				auto currentOperationSearch = _dependencyCounts.find(operationId);
-				if (currentOperationSearch != _dependencyCounts.end())
+				// Only run the operation when all of its dependencies have completed
+				auto& operationInfo = _operationGraph.GetOperationInfo(operationId);
+				auto currentOperationSearch = _remainingDependencyCounts.find(operationId);
+				int32_t remainingCount = -1;
+				if (currentOperationSearch != _remainingDependencyCounts.end())
 				{
-					auto remainingCount = --currentOperationSearch->second;
-					if (remainingCount == 0)
-					{
-						ExecuteOperation(operation, forceBuild);
-					}
-					else
-					{
-						// This operation will be executed from a different path
-					}
+					remainingCount = --currentOperationSearch->second;
 				}
 				else
 				{
-					throw std::runtime_error("A operation id was missing from the dependency collection.");
+					// Get the cached total count and store the active count in the lookup
+					remainingCount = operationInfo.DependencyCount - 1;
+					auto insertResult = _remainingDependencyCounts.emplace(operationId, remainingCount);
+					if (!insertResult.second)
+						throw std::runtime_error("The operation id already existed in the remaining count lookup");
+				}
+
+				if (remainingCount == 0)
+				{
+					// Run the single operation
+					ExecuteOperation(operationInfo);
+					
+					// Recursively build all of the operation children
+					CheckExecuteOperations(operationInfo.Children);
+				}
+				else if (remainingCount < 0)
+				{
+					throw std::runtime_error("Remaining dependency count less than zero");
+				}
+				else
+				{
+					// This operation will be executed from a different path
 				}
 			}
 		}
 
 		/// <summary>
-		/// Execute a single build operation and all of its children
+		/// Execute a single build operation
 		/// </summary>
 		void ExecuteOperation(
-			Utilities::BuildOperationWrapper& operation,
-			bool forceBuild)
+			OperationInfo& operationInfo)
 		{
-			// Build up the operation unique command
-			auto command = CommandInfo(
-				Path(operation.GetWorkingDirectory()),
-				Path(operation.GetExecutable()),
-				std::string(operation.GetArguments()));
+			// Check if each source file is out of date and requires a rebuild
+			Log::Diag("Check for previous operation invocation");
 
-			bool buildRequired = forceBuild;
-			if (!forceBuild)
+			// Check if this operation was run before
+			auto buildRequired = false;
+			if (operationInfo.WasSuccessfulRun)
 			{
-				// Check if each source file is out of date and requires a rebuild
-				Log::Diag("Check for updated source");
-
-				// Check if this operation is in the build operation graph
-				const OperationInfo* operationInfo;
-				if (_previousOperationGraph.TryFindOperationInfo(command, operationInfo))
+				// Perform the incremental build checks
+				if (_stateChecker.IsOutdated(
+					operationInfo.ObservedOutput,
+					operationInfo.ObservedInput))
 				{
-					// Check if any of the input files have changed since last build
-					if (_stateChecker.IsOutdated(
-						operationInfo->Output,
-						operationInfo->Input))
-					{
-						buildRequired = true;
-					}
-					else
-					{
-						Log::Info("Up to date");
-
-						// Move over the completed operation information to the new graph since nothing has changed
-						_activeOperationGraph.AddOperationInfo(*operationInfo);
-					}
+					buildRequired = true;
 				}
 				else
 				{
-					// The build command has not been run before
-					Log::Info("Unknown operation");
-					buildRequired = true;
+					Log::Info("Up to date");
 				}
+			}
+			else
+			{
+				// The build command has not been run before
+				Log::Info("Operation has no successful previous invocation");
+				buildRequired = true;
 			}
 
 			if (buildRequired)
 			{
-				Log::HighPriority(operation.GetTitle());
-				auto message = "Execute: " + command.Executable.ToString() + " " + command.Arguments;
-				Log::Diag(message);
+				Log::HighPriority(operationInfo.Title);
+				auto messageBuilder = std::stringstream();
+				messageBuilder << "Execute: " << operationInfo.Command.Executable.ToString();
+				messageBuilder << " " << operationInfo.Command.Arguments;
+				Log::Diag(messageBuilder.str());
 
 				auto callback = std::make_shared<SystemAccessTracker>();
 				auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
-					command.Executable,
-					command.Arguments,
-					command.WorkingDirectory,
+					operationInfo.Command.Executable,
+					operationInfo.Command.Arguments,
+					operationInfo.Command.WorkingDirectory,
 					callback);
 
 				process->Start();
@@ -204,43 +143,6 @@ namespace Soup::Build::Execute
 
 				// Check the result of the monitor
 				callback->VerifyResult();
-
-				// Retrieve the input/output files
-				// TODO: Verify operation output matches input
-				auto runtimeInput = callback->GetInput();
-				for (auto& value : operation.GetInputFileList().CopyAsStringVector())
-				{
-					runtimeInput.insert(value);
-				}
-
-				auto input = std::vector<Path>();
-				for (auto& value : runtimeInput)
-				{
-					input.push_back(Path(value));
-				}
-
-				auto runtimeOutput = callback->GetOutput();
-				for (auto& value : operation.GetOutputFileList().CopyAsStringVector())
-				{
-					runtimeOutput.insert(value);
-				}
-
-				auto output = std::vector<Path>();
-				for (auto& value : runtimeOutput)
-				{
-					output.push_back(Path(value));
-				}
-
-				// Save off the build graph for future builds
-				auto operationInfo = OperationInfo(
-					command,
-					_fileSystemState.ToFileIds(input, command.WorkingDirectory),
-					_fileSystemState.ToFileIds(output, command.WorkingDirectory));
-
-				// Ensure the File System State is notified of any output files that have changed
-				_fileSystemState.CheckFileWriteTimes(operationInfo.Output);
-
-				_activeOperationGraph.AddOperationInfo(std::move(operationInfo));
 
 				if (!stdOut.empty())
 				{
@@ -258,27 +160,43 @@ namespace Soup::Build::Execute
 					Log::Error(stdErr);
 				}
 
-				if (exitCode != 0)
+				if (exitCode == 0)
 				{
-					throw std::runtime_error("Compiler Object Error: " + std::to_string(exitCode));
+					// Save off the build graph for future builds
+					auto input = std::vector<Path>();
+					for (auto& value : callback->GetInput())
+						input.push_back(Path(value));
+
+					auto output = std::vector<Path>();
+					for (auto& value : callback->GetOutput())
+						output.push_back(Path(value));
+
+					operationInfo.ObservedInput = _fileSystemState.ToFileIds(input, operationInfo.Command.WorkingDirectory);
+					operationInfo.ObservedOutput = _fileSystemState.ToFileIds(output, operationInfo.Command.WorkingDirectory);
+
+					// Mark this operation as successful to enable future incremental builds
+					operationInfo.WasSuccessfulRun = true;
+
+					// Ensure the File System State is notified of any output files that have changed
+					_fileSystemState.CheckFileWriteTimes(operationInfo.ObservedOutput);
+				}
+				else
+				{
+					// Leave the previous state untouched and abandon the remaining operations
+					Log::Error("Operation exited with non-success code: " + std::to_string(exitCode));
+					throw BuildFailedException();
 				}
 			}
 			else
 			{
-				Log::Info(operation.GetTitle());
+				Log::Info(operationInfo.Title);
 			}
-
-			// Recursively build all of the operation children
-			// Note: Force build if this operation was built
-			CheckExecuteOperations(operation.GetChildList(), buildRequired);
 		}
 
 	private:
-		Path _workingDirectory;
 		FileSystemState& _fileSystemState;
-		std::map<int64_t, int64_t> _dependencyCounts;
-		OperationGraph _previousOperationGraph;
-		OperationGraph _activeOperationGraph;
+		OperationGraph& _operationGraph;
+		std::unordered_map<OperationId, int32_t> _remainingDependencyCounts;
 		BuildHistoryChecker _stateChecker;
 	};
 }

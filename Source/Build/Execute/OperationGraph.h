@@ -19,7 +19,9 @@ namespace Soup::Build::Execute
 		/// </summary>
 		OperationGraph(FileSystemStateId stateId) :
 			_stateId(stateId),
-			_operations()
+			_rootOperations(),
+			_operations(),
+			_operationLookup()
 		{
 		}
 
@@ -28,14 +30,17 @@ namespace Soup::Build::Execute
 		/// </summary>
 		OperationGraph(
 			FileSystemStateId stateId,
+			std::vector<OperationId> rootOperations,
 			std::vector<OperationInfo> operations) :
 			_stateId(stateId),
-			_operations()
+			_rootOperations(std::move(rootOperations)),
+			_operations(),
+			_operationLookup()
 		{
 			// Store the incoming vector of operations as a lookup for fast checks
 			for (auto& info : operations)
 			{
-				_operations.emplace(info.Command, std::move(info));
+				AddOperationInfo(std::move(info));
 			}
 		}
 
@@ -48,9 +53,33 @@ namespace Soup::Build::Execute
 		}
 
 		/// <summary>
+		/// Get the list of root operation ids
+		/// </summary>
+		const std::vector<OperationId>& GetRootOperationIds() const
+		{
+			return _rootOperations;
+		}
+
+		/// <summary>
+		/// Set the list of root operation ids
+		/// </summary>
+		void SetRootOperationIds(std::vector<OperationId> value)
+		{
+			_rootOperations = std::move(value);
+		}
+
+		/// <summary>
 		/// Get Operations
 		/// </summary>
-		const std::unordered_map<CommandInfo, OperationInfo>& GetOperations() const
+		const std::unordered_map<OperationId, OperationInfo>& GetOperations() const
+		{
+			return _operations;
+		}
+
+		/// <summary>
+		/// Get Operations
+		/// </summary>
+		std::unordered_map<OperationId, OperationInfo>& GetOperations()
 		{
 			return _operations;
 		}
@@ -58,12 +87,14 @@ namespace Soup::Build::Execute
 		/// <summary>
 		/// Find an operation info
 		/// </summary>
-		bool TryFindOperationInfo(const CommandInfo& command, const OperationInfo*& operation) const
+		bool TryFindOperationInfo(
+			const CommandInfo& command,
+			OperationInfo*& operation)
 		{
-			auto findResult = _operations.find(command);
-			if (findResult != _operations.end())
+			auto findResult = _operationLookup.find(command);
+			if (findResult != _operationLookup.end())
 			{
-				operation = &findResult->second;
+				operation = &GetOperationInfo(findResult->second);
 				return true;
 			}
 			else
@@ -73,18 +104,41 @@ namespace Soup::Build::Execute
 		}
 
 		/// <summary>
+		/// Get an operation info
+		/// </summary>
+		OperationInfo& GetOperationInfo(OperationId operationId)
+		{
+			auto findResult = _operations.find(operationId);
+			if (findResult != _operations.end())
+			{
+				return findResult->second;
+			}
+			else
+			{
+				throw std::runtime_error("The provided operation id does not exist");
+			}
+		}
+
+		/// <summary>
 		/// Add an operation info
 		/// </summary>
-		void AddOperationInfo(OperationInfo operation)
+		OperationInfo& AddOperationInfo(OperationInfo info)
 		{
-			auto result = _operations.emplace(operation.Command, std::move(operation));
-			// TODO: Do we really want to allow two of the same operation?
-			// if (!result.second)
-			// 	throw std::runtime_error("The provided command already exists in the build graph.");
+			auto insertLookupResult = _operationLookup.emplace(info.Command, info.Id);
+			if (!insertLookupResult.second)
+				throw std::runtime_error("The provided command already exists in the graph");
+
+			auto insertResult = _operations.emplace(info.Id, std::move(info));
+			if (!insertResult.second)
+				throw std::runtime_error("The provided operation id already exists in the graph");
+
+			return insertResult.first->second;
 		}
 
 	private:
 		FileSystemStateId _stateId;
-		std::unordered_map<CommandInfo, OperationInfo> _operations;
+		std::vector<OperationId> _rootOperations;
+		std::unordered_map<OperationId, OperationInfo> _operations;
+		std::unordered_map<CommandInfo, OperationId> _operationLookup;
 	};
 }

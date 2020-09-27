@@ -41,6 +41,19 @@ namespace Soup::Build::Execute
 
 			// Read the set of operations
 			stream.read(headerBuffer.data(), 4);
+			if (headerBuffer[0] != 'R' ||
+				headerBuffer[1] != 'O' ||
+				headerBuffer[2] != 'P' ||
+				headerBuffer[3] != '\0')
+			{
+				throw std::runtime_error("Invalid operation graph root operations header");
+			}
+
+			// Write out the root operation ids
+			auto rootOperationIds = ReadOperationIdList(stream);
+
+			// Read the set of operations
+			stream.read(headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'O' ||
 				headerBuffer[1] != 'P' ||
 				headerBuffer[2] != 'S' ||
@@ -53,28 +66,7 @@ namespace Soup::Build::Execute
 			auto operations = std::vector<OperationInfo>(operationCount);
 			for (auto i = 0; i < operationCount; i++)
 			{
-				// Read the command working directory
-				auto workingDirectroy = Path(ReadString(stream));
-
-				// Read the command executable
-				auto executable = Path(ReadString(stream));
-
-				// Read the command arguments
-				auto arguments = ReadString(stream);
-
-				// Write out the input files
-				auto inputFiles = ReadFileIdList(stream);
-
-				// Write out the output files
-				auto outputFiles = ReadFileIdList(stream);
-
-				operations[i] = OperationInfo(
-					CommandInfo(
-						std::move(workingDirectroy),
-						std::move(executable),
-						std::move(arguments)),
-					std::move(inputFiles),
-					std::move(outputFiles));
+				operations[i] = ReadOperationInfo(stream);
 			}
 
 			if (stream.peek() != std::char_traits<char>::eof())
@@ -84,20 +76,99 @@ namespace Soup::Build::Execute
 
 			return OperationGraph(
 				stateId,
+				std::move(rootOperationIds),
 				std::move(operations));
 		}
 
 	private:
+		static OperationInfo ReadOperationInfo(std::istream& stream)
+		{
+			// Write out the operation id
+			auto id = ReadUInt32(stream);
+
+			// Write the operation title
+			auto title = ReadString(stream);
+
+			// Write the command working directory
+			auto workingDirectory = ReadString(stream);
+
+			// Write the command executable
+			auto executable = ReadString(stream);
+
+			// Write the command arguments
+			auto arguments = ReadString(stream);
+
+			// Write out the declared input files
+			auto declaredInput = ReadFileIdList(stream);
+
+			// Write out the declared output files
+			auto declaredOutput = ReadFileIdList(stream);
+
+			// Write out the child operation ids
+			auto children = ReadOperationIdList(stream);
+
+			// Write out the dependency count
+			auto dependecyCount = ReadInt32(stream);
+
+			// Write out the value indicating if there was a successful run
+			auto wasSuccessfulRun = ReadBoolean(stream);
+
+			// Write out the observed input files
+			auto observedInput = ReadFileIdList(stream);
+
+			// Write out the observed output files
+			auto observedOutput = ReadFileIdList(stream);
+
+			return OperationInfo(
+				id,
+				std::move(title),
+				CommandInfo(
+					Path(workingDirectory),
+					Path(executable),
+					std::move(arguments)),
+				std::move(declaredInput),
+				std::move(declaredOutput),
+				std::move(children),
+				dependecyCount,
+				wasSuccessfulRun,
+				std::move(observedInput),
+				std::move(observedOutput));
+		}
+
+		static int32_t ReadInt32(std::istream& stream)
+		{
+			int32_t result = 0;
+			stream.read(reinterpret_cast<char*>(&result), sizeof(int32_t));
+			if (stream.fail())
+			{
+				throw std::runtime_error("OperationGraphReader Failed to read integer value");
+			}
+
+			return result;
+		}
+
 		static uint32_t ReadUInt32(std::istream& stream)
 		{
 			uint32_t result = 0;
 			stream.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
 			if (stream.fail())
 			{
-				throw std::runtime_error("Failed to read unsigned integer value");
+				throw std::runtime_error("OperationGraphReader Failed to read unsigned integer value");
 			}
 
 			return result;
+		}
+
+		static boolean ReadBoolean(std::istream& stream)
+		{
+			uint32_t result = 0;
+			stream.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+			if (stream.fail())
+			{
+				throw std::runtime_error("OperationGraphReader Failed to read boolean value");
+			}
+
+			return result != 0;
 		}
 
 		static std::string ReadString(std::istream& stream)
@@ -107,7 +178,7 @@ namespace Soup::Build::Execute
 			stream.read(result.data(), size);
 			if (stream.fail())
 			{
-				throw std::runtime_error("Failed to read string value");
+				throw std::runtime_error("OperationGraphReader Failed to read string value");
 			}
 
 			return result;
@@ -117,6 +188,18 @@ namespace Soup::Build::Execute
 		{
 			auto size = ReadUInt32(stream);
 			auto result = std::vector<FileId>(size);
+			for (auto i = 0; i < size; i++)
+			{
+				result[i] = ReadUInt32(stream);
+			}
+
+			return result;
+		}
+
+		static std::vector<OperationId> ReadOperationIdList(std::istream& stream)
+		{
+			auto size = ReadUInt32(stream);
+			auto result = std::vector<OperationId>(size);
 			for (auto i = 0; i < size; i++)
 			{
 				result[i] = ReadUInt32(stream);

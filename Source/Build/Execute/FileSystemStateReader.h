@@ -83,7 +83,7 @@ namespace Soup::Build::Execute
 			stream.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
 			if (stream.fail())
 			{
-				throw std::runtime_error("Failed to read unsigned integer value");
+				throw std::runtime_error("FileSystemStateReader Failed to read unsigned integer value");
 			}
 
 			return result;
@@ -96,7 +96,7 @@ namespace Soup::Build::Execute
 			stream.read(result.data(), size);
 			if (stream.fail())
 			{
-				throw std::runtime_error("Failed to read string value");
+				throw std::runtime_error("FileSystemStateReader Failed to read string value");
 			}
 
 			return result;
