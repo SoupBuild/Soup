@@ -470,7 +470,7 @@ namespace Soup::Build
 				// Convert the generated build into the execution build graph
 				auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetBuildOperations());
 				auto operationGraphGenerator = Evaluate::OperationGraphGenerator(_fileSystemState);
-				auto activeBuildGraph  = operationGraphGenerator.CreateFromDefinition(buildOperations);
+				activeBuildGraph  = operationGraphGenerator.CreateFromDefinition(buildOperations);
 
 				if (!arguments.ForceRebuild)
 				{
