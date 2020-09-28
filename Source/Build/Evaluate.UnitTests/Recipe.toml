@@ -1,0 +1,15 @@
+Name = "Soup.Build.Evaluate.UnitTests"
+Version = "1.0.0"
+Type = "Executable"
+Dependencies = [
+	"json11@1.0.0",
+	"Soup.Test.Assert@0.1.6",
+	"../Evaluate/",
+	"../../TestUtilities/",
+]
+Source = [
+	"gen/Main.cpp"
+]
+IncludePaths = [
+	"./",
+]

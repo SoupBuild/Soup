@@ -27,9 +27,14 @@ namespace Soup
 		std::string Architecture;
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to skip running the build operations
+		/// Gets or sets a value indicating whether to skip running the build generate phase
 		/// </summary>
-		bool SkipRun;
+		bool SkipGenerate;
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to skip running the build evaluate phase
+		/// </summary>
+		bool SkipEvaluate;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to force a rebuild
@@ -44,7 +49,8 @@ namespace Soup
 			return Flavor == rhs.Flavor &&
 				System == rhs.System &&
 				Architecture == rhs.Architecture &&
-				SkipRun == rhs.SkipRun &&
+				SkipGenerate == rhs.SkipGenerate &&
+				SkipEvaluate == rhs.SkipEvaluate &&
 				ForceRebuild == rhs.ForceRebuild;
 		}
 
