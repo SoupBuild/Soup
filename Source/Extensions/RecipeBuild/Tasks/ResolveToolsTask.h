@@ -150,18 +150,18 @@ namespace RecipeBuild
 			// Set the platform libraries
 			auto platformLibraries = std::vector<Path>({
 				// Path("kernel32.lib"),
-				Path("user32.lib"),
+				// Path("user32.lib"),
 				// Path("gdi32.lib"),
 				// Path("winspool.lib"),
 				// Path("comdlg32.lib"),
-				Path("advapi32.lib"),
-				Path("shell32.lib"),
+				// Path("advapi32.lib"),
+				// Path("shell32.lib"),
 				// Path("ole32.lib"),
-				Path("oleaut32.lib"),
+				// Path("oleaut32.lib"),
 				// Path("uuid.lib"),
 				// Path("odbc32.lib"),
 				// Path("odbccp32.lib"),
-				Path("crypt32.lib"),
+				// Path("crypt32.lib"),
 			});
 
 			// if (_options.Configuration == "debug")

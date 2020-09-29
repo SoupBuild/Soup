@@ -13,3 +13,6 @@ Public = "Module.cpp"
 Source = [
 	"RegisterBuildExtension.cpp",
 ]
+PlatformLibraries = [
+	"shell32.lib",
+]
