@@ -83,15 +83,26 @@ namespace Soup::Build
 			{
 				auto rootParentSet = std::set<std::string>();
 				auto rootState = ConvertToBuildState(recipe.GetTable());
-				projectId = BuildRecipeAndDependencies(
-					projectId,
-					workingDirectory,
-					recipe,
-					arguments,
-					isSystemBuild,
-					isDevBuild,
-					rootParentSet,
-					rootState);
+				try
+				{
+					projectId = BuildRecipeAndDependencies(
+						projectId,
+						workingDirectory,
+						recipe,
+						arguments,
+						isSystemBuild,
+						isDevBuild,
+						rootParentSet,
+						rootState);
+				}
+				catch(const Evaluate::BuildFailedException&)
+				{
+					Log::EnsureListener().SetShowEventId(false);
+
+					Log::Info("Saving partial file system state");
+					Evaluate::FileSystemStateManager::SaveState(userDataDirectory, _fileSystemState);
+					throw;
+				}
 
 				Log::EnsureListener().SetShowEventId(false);
 
