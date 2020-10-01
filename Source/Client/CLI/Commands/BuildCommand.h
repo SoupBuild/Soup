@@ -62,7 +62,8 @@ namespace Soup::Client
 			// Setup the build arguments
 			auto arguments = RecipeBuildArguments();
 			arguments.ForceRebuild = _options.Force;
-			arguments.SkipRun = _options.SkipRun;
+			arguments.SkipGenerate = _options.SkipGenerate;
+			arguments.SkipEvaluate = _options.SkipEvaluate;
 
 			if (!_options.Flavor.empty())
 				arguments.Flavor = _options.Flavor;

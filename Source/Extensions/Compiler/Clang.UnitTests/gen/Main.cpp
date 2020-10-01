@@ -12,7 +12,7 @@ import Soup.Test.Assert;
 import SoupTestUtilities;
 import Soup.Build;
 import Soup.Build.Utilities;
-import Soup.Build.Evaluate;
+import Soup.Build.Generate;
 
 using namespace Opal;
 using namespace Opal::System;

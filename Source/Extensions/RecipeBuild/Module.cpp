@@ -23,8 +23,8 @@ export module RecipeBuild;
 
 import Opal;
 import Soup.Build;
+import Soup.Build.Generate;
 import Soup.Build.Utilities;
-import Soup.Build.Evaluate;
 import SoupCompiler;
 import SoupCompilerClang;
 import SoupCompilerMSVC;

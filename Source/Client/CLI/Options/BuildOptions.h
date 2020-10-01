@@ -21,10 +21,16 @@ namespace Soup::Client
 		std::string Path;
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to skip the execution of the build operations
+		/// Gets or sets a value indicating whether to skip the build generate phase
 		/// </summary>
-		[[Args::Option("skipRun", Default = false, HelpText = "Do not run the build operations.")]]
-		bool SkipRun;
+		[[Args::Option("skipGenerate", Default = false, HelpText = "Do not run the build generate phase.")]]
+		bool SkipGenerate;
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to skip the build evaluate phase
+		/// </summary>
+		[[Args::Option("skipEvaluate", Default = false, HelpText = "Do not run the build evaluate phase.")]]
+		bool SkipEvaluate;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to force a build

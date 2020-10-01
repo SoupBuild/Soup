@@ -1,5 +1,5 @@
 Name = "Soup"
-Version = "0.8.10"
+Version = "0.8.11"
 Type = "Executable"
 
 # Ensure the core build extensions are runtime dependencies
@@ -20,3 +20,9 @@ IncludePaths = [
 	"Commands/",
 	"Options/",
 ]
+PlatformLibraries = [
+	"OleAut32.lib",
+	"shell32.lib",
+	"User32.lib",
+]
+

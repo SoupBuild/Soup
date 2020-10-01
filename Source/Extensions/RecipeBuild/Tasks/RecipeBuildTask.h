@@ -89,6 +89,15 @@ namespace RecipeBuild
 			// Load Recipe properties
 			auto name = std::string(recipeTable.GetValue("Name").AsString().GetValue());
 
+			// Add any explicit platform dependencies that were added in the recipe
+			if (recipeTable.HasValue("PlatformLibraries"))
+			{
+				for (auto value : recipeTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector())
+				{
+					platformLibraries.push_back(std::move(value));
+				}
+			}
+
 			// Add the dependency static library closure to link if targeting an executable or dynamic library
 			std::vector<Path> linkLibraries = std::vector<Path>();
 			if (recipeTable.HasValue("LinkLibraries"))
