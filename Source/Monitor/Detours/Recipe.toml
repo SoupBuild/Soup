@@ -2,11 +2,15 @@ Name = "Monitor.Detours"
 Version = "1.0.0"
 Type = "DynamicLibrary"
 Dependencies = [
-    "../../../Dependencies/Detours/src/",
-    "../Shared/",
+	"../../../Dependencies/Detours/src/",
+	"../Shared/",
 ]
 Defines = [
-    # "ENABLE_MONITOR_DEBUG",
-    # "TRACE_DETOUR_CLIENT",
+	# "ENABLE_MONITOR_DEBUG",
+	# "TRACE_DETOUR_CLIENT",
 ]
 Public = "Module.cpp"
+PlatformLibraries = [
+	"Advapi32.lib",
+	"shell32.lib",
+]
