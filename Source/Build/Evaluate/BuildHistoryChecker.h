@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "FileSystemState.h"
+#include "FileSystemState/FileSystemState.h"
 
 namespace Soup::Build::Evaluate
 {

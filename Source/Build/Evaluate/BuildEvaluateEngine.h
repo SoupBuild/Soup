@@ -1,25 +1,26 @@
-﻿// <copyright file="BuildRunner.h" company="Soup">
+﻿// <copyright file="BuildEvaluateEngine.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "FileSystemState.h"
-#include "OperationGraphManager.h"
-#include "SystemAccessTracker.h"
 #include "BuildFailedException.h"
+#include "BuildHistoryChecker.h"
+#include "FileSystemstate/FileSystemState.h"
+#include "OperationGraph/OperationGraph.h"
+#include "SystemAccessTracker.h"
 
 namespace Soup::Build::Evaluate
 {
 	/// <summary>
-	/// The build runner
+	/// The core build evaluation engine that knows how to perform a build from a provided Operation Graph.
 	/// </summary>
-	export class BuildRunner
+	export class BuildEvaluateEngine
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="BuildRunner"/> class.
+		/// Initializes a new instance of the <see cref="BuildEvaluateEngine"/> class.
 		/// </summary>
-		BuildRunner(
+		BuildEvaluateEngine(
 			Path workingDirectory,
 			FileSystemState& fileSystemState,
 			OperationGraph& operationGraph) :
@@ -31,7 +32,7 @@ namespace Soup::Build::Evaluate
 		}
 
 		/// <summary>
-		/// Execute the entire operation graph that is referenced by this build runner
+		/// Execute the entire operation graph that is referenced by this build evaluate engine
 		/// </summary>
 		void Evaluate()
 		{

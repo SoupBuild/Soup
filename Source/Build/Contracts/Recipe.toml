@@ -1,6 +1,6 @@
 Name = "Soup.Build"
 Description = """The core Soup Build Contracts used to define 
-the stable Binary Interface layer between the Build Evaluation 
+the stable Binary Interface layer between the Build Generate 
 engine and the Extensions."""
 Version = "0.3.0"
 Dependencies = [

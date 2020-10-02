@@ -21,8 +21,8 @@ namespace Soup::Build
 		RecipeBuildManager(
 			std::string systemCompiler,
 			std::string runtimeCompiler) :
-			_systemCompiler(systemCompiler),
-			_runtimeCompiler(runtimeCompiler),
+			_systemCompiler(std::move(systemCompiler)),
+			_runtimeCompiler(std::move(runtimeCompiler)),
 			_knownRecipes(),
 			_buildSet(),
 			_systemBuildSet(),

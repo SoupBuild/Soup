@@ -1,4 +1,4 @@
-// <copyright file="BuildRunnerTests.h" company="Soup">
+// <copyright file="BuildEvaluateEngineTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@
 
 namespace Soup::Build::Evaluate::UnitTests
 {
-	class BuildRunnerTests
+	class BuildEvaluateEngineTests
 	{
 	public:
 		[[Fact]]
@@ -15,7 +15,7 @@ namespace Soup::Build::Evaluate::UnitTests
 			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto fileSystemState = FileSystemState(1234);
 			auto operationGraph = OperationGraph(1234);
-			auto uut = BuildRunner(
+			auto uut = BuildEvaluateEngine(
 				workingDirectory,
 				fileSystemState,
 				operationGraph);
@@ -40,7 +40,7 @@ namespace Soup::Build::Evaluate::UnitTests
 			// Setup the input build state
 			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto operationGraph = OperationGraph(1234);
-			auto uut = BuildRunner(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -106,7 +106,7 @@ namespace Soup::Build::Evaluate::UnitTests
 						{ },
 						{ }),
 				});
-			auto uut = BuildRunner(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -186,7 +186,7 @@ namespace Soup::Build::Evaluate::UnitTests
 						{ inputFileId, },
 						{ outputFileId, }),
 				});
-			auto uut = BuildRunner(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -272,7 +272,7 @@ namespace Soup::Build::Evaluate::UnitTests
 						{ outputFileId, }),
 				});
 
-			auto uut = BuildRunner(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -358,7 +358,7 @@ namespace Soup::Build::Evaluate::UnitTests
 						{ inputFileId, },
 						{ outputFileId, }),
 				});
-			auto uut = BuildRunner(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -444,7 +444,7 @@ namespace Soup::Build::Evaluate::UnitTests
 						{ inputFileId, },
 						{ outputFileId, }),
 				});
-			auto uut = BuildRunner(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();

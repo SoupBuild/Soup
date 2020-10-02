@@ -23,15 +23,17 @@ using namespace Opal::System;
 using namespace Soup::Test;
 
 #include "BuildHistoryCheckerTests.gen.h"
-#include "BuildRunnerTests.gen.h"
-#include "FileSystemStateTests.gen.h"
-#include "FileSystemStateManagerTests.gen.h"
-#include "FileSystemStateReaderTests.gen.h"
-#include "FileSystemStateWriterTests.gen.h"
-#include "OperationGraphTests.gen.h"
-#include "OperationGraphManagerTests.gen.h"
-#include "OperationGraphReaderTests.gen.h"
-#include "OperationGraphWriterTests.gen.h"
+#include "BuildEvaluateEngineTests.gen.h"
+
+#include "FileSystemState/FileSystemStateTests.gen.h"
+#include "FileSystemState/FileSystemStateManagerTests.gen.h"
+#include "FileSystemState/FileSystemStateReaderTests.gen.h"
+#include "FileSystemState/FileSystemStateWriterTests.gen.h"
+
+#include "OperationGraph/OperationGraphTests.gen.h"
+#include "OperationGraph/OperationGraphManagerTests.gen.h"
+#include "OperationGraph/OperationGraphReaderTests.gen.h"
+#include "OperationGraph/OperationGraphWriterTests.gen.h"
 
 int main()
 {
@@ -40,7 +42,7 @@ int main()
 	TestState state = { 0, 0 };
 
 	state += RunBuildHistoryCheckerTests();
-	state += RunBuildRunnerTests();
+	state += RunBuildEvaluateEngineTests();
 	state += RunFileSystemStateTests();
 	state += RunFileSystemStateManagerTests();
 	state += RunFileSystemStateReaderTests();

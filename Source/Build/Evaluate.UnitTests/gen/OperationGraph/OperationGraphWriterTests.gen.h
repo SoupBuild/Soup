@@ -1,5 +1,5 @@
 #pragma once
-#include "OperationGraphWriterTests.h"
+#include "OperationGraph/OperationGraphWriterTests.h"
 
 TestState RunOperationGraphWriterTests() 
 {

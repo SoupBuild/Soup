@@ -10,11 +10,11 @@ echo soup run %DepsDir%\Opal\UnitTests\
 call soup run %DepsDir%\Opal\UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
-echo soup build %SourceDir%\Build\Execute.UnitTests\
-call soup build %SourceDir%\Build\Execute.UnitTests\
+echo soup build %SourceDir%\Build\Evaluate.UnitTests\
+call soup build %SourceDir%\Build\Evaluate.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
-echo soup run %SourceDir%\Build\Execute.UnitTests\
-call soup run %SourceDir%\Build\Execute.UnitTests\
+echo soup run %SourceDir%\Build\Evaluate.UnitTests\
+call soup run %SourceDir%\Build\Evaluate.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
 echo soup build %SourceDir%\Build\Utilities.UnitTests\

@@ -1,6 +1,6 @@
 Name = "Soup.Build.Generate"
-Description = """The Build Generate implementation of the contract classes that are 
-used inside the primary Build Generate Engine."""
+Description = """The Build Generate phase implementation. This project contains the core logic required 
+beyond the shared contract implementations to execute the generate phase."""
 Version = "0.1.0"
 Dependencies = [
 	"../Contracts/",
