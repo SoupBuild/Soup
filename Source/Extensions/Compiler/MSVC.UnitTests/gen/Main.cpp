@@ -10,7 +10,7 @@ import Soup.Compiler;
 import Soup.Compiler.MSVC;
 import Soup.Build;
 import Soup.Build.Utilities;
-import Soup.Build.Generate;
+import Soup.Build.Runtime;
 import Soup.Test.Assert;
 import Soup.Test.Utilities;
 

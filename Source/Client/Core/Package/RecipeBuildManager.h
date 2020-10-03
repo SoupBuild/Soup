@@ -49,7 +49,7 @@ namespace Soup::Build
 			if (!arguments.ForceRebuild)
 			{
 				Log::Info("Loading previous file system state");
-				if (Evaluate::FileSystemStateManager::TryLoadState(userDataDirectory, _fileSystemState))
+				if (Runtime::FileSystemStateManager::TryLoadState(userDataDirectory, _fileSystemState))
 				{
 					// Load the current state of the known files
 					Log::Info("Loading current file system state");
@@ -64,7 +64,7 @@ namespace Soup::Build
 					auto currentTimeMilliseconds = std::chrono::time_point_cast<std::chrono::milliseconds>(currentTime);
 					auto offsetFromEpoch = currentTimeMilliseconds.time_since_epoch();
 					auto uniqueId = static_cast<uint32_t>(offsetFromEpoch.count());
-					_fileSystemState = Evaluate::FileSystemState(uniqueId);
+					_fileSystemState = Runtime::FileSystemState(uniqueId);
 				}
 			}
 			else
@@ -95,19 +95,19 @@ namespace Soup::Build
 						rootParentSet,
 						rootState);
 				}
-				catch(const Evaluate::BuildFailedException&)
+				catch(const Runtime::BuildFailedException&)
 				{
 					Log::EnsureListener().SetShowEventId(false);
 
 					Log::Info("Saving partial file system state");
-					Evaluate::FileSystemStateManager::SaveState(userDataDirectory, _fileSystemState);
+					Runtime::FileSystemStateManager::SaveState(userDataDirectory, _fileSystemState);
 					throw;
 				}
 
 				Log::EnsureListener().SetShowEventId(false);
 
 				Log::Info("Saving updated file system state");
-				Evaluate::FileSystemStateManager::SaveState(userDataDirectory, _fileSystemState);
+				Runtime::FileSystemStateManager::SaveState(userDataDirectory, _fileSystemState);
 			}
 			catch(...)
 			{
@@ -120,23 +120,23 @@ namespace Soup::Build
 		/// <summary>
 		/// Convert the root recipe table to a build Value Table entry
 		/// </summary>
-		Generate::ValueTable ConvertToRootBuildState(const RecipeTable& table)
+		Runtime::ValueTable ConvertToRootBuildState(const RecipeTable& table)
 		{
 			// Convert teh root table
 			auto recipeState = ConvertToBuildState(table);
 			
 			// Initialize the Recipe state
-			auto state = Generate::ValueTable();
-			state.SetValue("Recipe", Generate::Value(std::move(recipeState)));
+			auto state = Runtime::ValueTable();
+			state.SetValue("Recipe", Runtime::Value(std::move(recipeState)));
 			return state;
 		}
 
 		/// <summary>
 		/// Convert the recipe internal representation to initial build state
 		/// </summary>
-		Generate::ValueTable ConvertToBuildState(const RecipeTable& table)
+		Runtime::ValueTable ConvertToBuildState(const RecipeTable& table)
 		{
-			auto result = Generate::ValueTable();
+			auto result = Runtime::ValueTable();
 			for (auto& value : table)
 			{
 				auto buildValue = ConvertToBuildState(value.second);
@@ -149,9 +149,9 @@ namespace Soup::Build
 		/// <summary>
 		/// Convert the recipe internal representation to initial build state
 		/// </summary>
-		Generate::ValueList ConvertToBuildState(const RecipeList& list)
+		Runtime::ValueList ConvertToBuildState(const RecipeList& list)
 		{
-			auto result = Generate::ValueList();
+			auto result = Runtime::ValueList();
 			for (auto& value : list)
 			{
 				auto buildValue = ConvertToBuildState(value);
@@ -164,24 +164,24 @@ namespace Soup::Build
 		/// <summary>
 		/// Convert the recipe internal representation to initial build state
 		/// </summary>
-		Generate::Value ConvertToBuildState(const RecipeValue& value)
+		Runtime::Value ConvertToBuildState(const RecipeValue& value)
 		{
 			switch (value.GetType())
 			{
 				case RecipeValueType::Empty:
-					return Generate::Value();
+					return Runtime::Value();
 				case RecipeValueType::Table:
-					return Generate::Value(ConvertToBuildState(value.AsTable()));
+					return Runtime::Value(ConvertToBuildState(value.AsTable()));
 				case RecipeValueType::List:
-					return Generate::Value(ConvertToBuildState(value.AsList()));
+					return Runtime::Value(ConvertToBuildState(value.AsList()));
 				case RecipeValueType::String:
-					return Generate::Value(value.AsString());
+					return Runtime::Value(value.AsString());
 				case RecipeValueType::Integer:
-					return Generate::Value(value.AsInteger());
+					return Runtime::Value(value.AsInteger());
 				case RecipeValueType::Float:
-					return Generate::Value(value.AsFloat());
+					return Runtime::Value(value.AsFloat());
 				case RecipeValueType::Boolean:
-					return Generate::Value(value.AsBoolean());
+					return Runtime::Value(value.AsBoolean());
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}
@@ -198,7 +198,7 @@ namespace Soup::Build
 			bool isSystemBuild,
 			bool isDevBuild,
 			const std::set<std::string>& parentSet,
-			Generate::ValueTable& sharedState)
+			Runtime::ValueTable& sharedState)
 		{
 			// Add current package to the parent set when building child dependencies
 			auto activeParentSet = parentSet;
@@ -312,8 +312,8 @@ namespace Soup::Build
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
 			bool isDevBuild,
-			Generate::ValueTable& activeState,
-			Generate::ValueTable& sharedState)
+			Runtime::ValueTable& activeState,
+			Runtime::ValueTable& sharedState)
 		{
 			// TODO: RAII for active id
 			try
@@ -354,7 +354,7 @@ namespace Soup::Build
 					projectId++;
 				}
 
-				// Add the shared build state generated from this child build into the correct
+				// Add the shared build state Runtimed from this child build into the correct
 				// Table depending on if this is a normal dependency or a dev dependency
 				if (isDevBuild)
 				{
@@ -362,7 +362,7 @@ namespace Soup::Build
 					auto& devDependenciesTable = sharedState.EnsureValue("DevDependencies").EnsureTable();
 					devDependenciesTable.SetValue(
 						recipe.GetName(),
-						Generate::Value(findBuildState->second));
+						Runtime::Value(findBuildState->second));
 				}
 				else
 				{
@@ -370,7 +370,7 @@ namespace Soup::Build
 					auto& dependenciesTable = sharedState.EnsureValue("Dependencies").EnsureTable();
 					dependenciesTable.SetValue(
 						recipe.GetName(),
-						Generate::Value(findBuildState->second));
+						Runtime::Value(findBuildState->second));
 				}
 
 				Log::SetActiveId(0);
@@ -384,175 +384,129 @@ namespace Soup::Build
 			return projectId;
 		}
 
-		Generate::ValueTable RunInProcessBuild(
+		Runtime::ValueTable RunInProcessBuild(
 			int projectId,
 			const Path& packageRoot,
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isSystemBuild,
-			Generate::ValueTable& activeState)
+			Runtime::ValueTable& activeState)
 		{
-			// Ensure the external build extension libraries outlive all usage in the build system
-			auto activeExtensionLibraries = std::vector<System::WindowsLibrary>();
+			// Select the correct compiler to use
+			std::string activeCompiler = "";
+			if (isSystemBuild)
+			{
+				Log::HighPriority("System Build '" + recipe.GetName() + "'");
+				activeCompiler = _systemCompiler;
+			}
+			else
+			{
+				Log::HighPriority("Build '" + recipe.GetName() + "'");
+				activeCompiler = _runtimeCompiler;
+			}
 
-			auto buildState = Generate::BuildState(activeState);
-			auto activeBuildGraph = Evaluate::OperationGraph(0);
-
-			auto outputDirectory = RecipeExtensions::GetOutputDirectory(
+			// Build up the expected output directory for the build to be used to cache state
+			auto outputDirectory = Runtime::BuildGenerateEngine::GetOutputDirectory(
 				_systemCompiler,
 				arguments.Flavor,
 				arguments.System,
 				arguments.Architecture);
 			auto targetDirectory = packageRoot + outputDirectory;
+
+			auto activeBuildGraph = Runtime::OperationGraph(0);
+			auto sharedState = Runtime::ValueTable();
 			if (!arguments.SkipGenerate)
 			{
-				// Create a new build system for the requested build
-				auto buildSystem = Generate::BuildSystem();
-				auto activeStateWrapper = Utilities::ValueTableWrapper(buildState.GetActiveState());
-
-				// Select the correct compiler to use
-				std::string activeCompiler = "";
-				if (isSystemBuild)
-				{
-					Log::HighPriority("System Build '" + recipe.GetName() + "'");
-					activeCompiler = _systemCompiler;
-				}
-				else
-				{
-					Log::HighPriority("Build '" + recipe.GetName() + "'");
-					activeCompiler = _runtimeCompiler;
-				}
-
-				auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(
-					_systemCompiler,
-					arguments.Flavor,
-					arguments.System,
-					arguments.Architecture);
-				auto objectDirectory = RecipeExtensions::GetObjectDirectory(
-					_systemCompiler,
-					arguments.Flavor,
-					arguments.System,
-					arguments.Architecture);
-
-				// Set the input properties
-				activeStateWrapper.EnsureValue("PackageRoot").SetValueString(packageRoot.ToString());
-				activeStateWrapper.EnsureValue("BuildFlavor").SetValueString(arguments.Flavor);
-				activeStateWrapper.EnsureValue("BuildSystem").SetValueString(arguments.System);
-				activeStateWrapper.EnsureValue("BuildArchitecture").SetValueString(arguments.Architecture);
-				activeStateWrapper.EnsureValue("CompilerName").SetValueString(activeCompiler);
-				activeStateWrapper.EnsureValue("OutputDirectory").SetValueString(outputDirectory.ToString());
-				activeStateWrapper.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
-				activeStateWrapper.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
-
-				// Run all build extensions
-				// Note: Keep the extension libraries open while running the build system
-				// to ensure their memory is kept alive
+				auto buildExtensionLibraries = std::vector<Path>();
 
 				// Run the RecipeBuild extension to inject core build tasks
 				auto recipeBuildExtensionPath = Path("Soup.RecipeBuild.dll");
-				auto recipeBuildLibrary = RunBuildExtension(recipeBuildExtensionPath, buildSystem);
-				activeExtensionLibraries.push_back(std::move(recipeBuildLibrary));
+				buildExtensionLibraries.push_back(std::move(recipeBuildExtensionPath));
 
-				// Run all build extensions
 				if (recipe.HasDevDependencies())
 				{
+					auto systemBinaryDirectory = Runtime::BuildGenerateEngine::GetBinaryDirectory(
+						_systemCompiler,
+						arguments.Flavor,
+						arguments.System,
+						arguments.Architecture);
 					for (auto dependency : recipe.GetDevDependencies())
 					{
 						auto packagePath = GetPackageReferencePath(packageRoot, dependency);
 						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
 							packagePath,
-							binaryDirectory,
+							systemBinaryDirectory,
 							std::string("dll"));
 
 						if (System::IFileSystem::Current().Exists(libraryPath))
 						{
-							auto library = RunBuildExtension(libraryPath, buildSystem);
-							activeExtensionLibraries.push_back(std::move(library));
+							buildExtensionLibraries.push_back(std::move(libraryPath));
 						}
 					}
 				}
+			
+				auto buildGenerateEngine = Runtime::BuildGenerateEngine(
+					_fileSystemState,
+					_systemCompiler);
+				auto generateResult = buildGenerateEngine.Generate(
+					activeCompiler,
+					arguments.Flavor,
+					arguments.System,
+					arguments.Architecture,
+					packageRoot,
+					activeState,
+					buildExtensionLibraries);
 
-				// Run the build
-				buildSystem.Execute(buildState);
-
-				// Find the output object directory so we can use it in the runner
-				auto buildTable = activeStateWrapper.GetValue("Build").AsTable();
-
-				// Convert the generated build into the execution build graph
-				auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetBuildOperations());
-				auto operationGraphGenerator = Evaluate::OperationGraphGenerator(_fileSystemState);
-				activeBuildGraph  = operationGraphGenerator.CreateFromDefinition(buildOperations);
-
-				if (!arguments.ForceRebuild)
-				{
-					// Load the previous build graph
-					Log::Diag("Loading previous build graph");
-					auto previousOperationGraph = Evaluate::OperationGraph(0);
-					if (Evaluate::OperationGraphManager::TryLoadState(
-						targetDirectory,
-						previousOperationGraph,
-						_fileSystemState.GetId()))
-					{
-						Log::Diag("Merge previous operation graph observed results");
-						for (auto& activeOperationEntry : activeBuildGraph.GetOperations())
-						{
-							auto& activeOperationInfo = activeOperationEntry.second;
-							Evaluate::OperationInfo* previousOperationInfo = nullptr;
-							if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
-							{
-								activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
-								activeOperationInfo.ObservedInput = previousOperationInfo->ObservedInput;
-								activeOperationInfo.ObservedOutput = previousOperationInfo->ObservedOutput;
-							}
-						}
-					}
-					else
-					{
-						Log::Info("No previous build graph found, full rebuild required");
-					}
-				}
-				else
-				{
-					Log::Info("Force build - Skip loading previous state");
-				}
+				activeBuildGraph = std::move(generateResult.Graph);
+				sharedState = std::move(generateResult.SharedState);
 			}
 			else
 			{
 				// Load and run the previous stored state directly
 				Log::Info("Loading previous operation graph as the active graph");
-				if (!Evaluate::OperationGraphManager::TryLoadState(
+				if (!Runtime::OperationGraphManager::TryLoadState(
 					targetDirectory,
 					activeBuildGraph,
 					_fileSystemState.GetId()))
 				{
-					throw std::runtime_error("Missing cached operation graph when skipping generate phase.");
+					throw std::runtime_error("Missing cached operation graph when skipping Runtime phase.");
 				}
 			}
 
 			if (!arguments.SkipEvaluate)
 			{
+				if (arguments.ForceRebuild)
+				{
+					Log::Diag("Purge operation graph to force build");
+					for (auto& activeOperationEntry : activeBuildGraph.GetOperations())
+					{
+						auto& activeOperationInfo = activeOperationEntry.second;
+						activeOperationInfo.WasSuccessfulRun = false;
+						activeOperationInfo.ObservedInput = {};
+						activeOperationInfo.ObservedOutput = {};
+					}
+				}
+
 				try
 				{
 					// Evaluate the build
-					auto runner = Evaluate::BuildEvaluateEngine(packageRoot, _fileSystemState, activeBuildGraph);
+					auto runner = Runtime::BuildEvaluateEngine(packageRoot, _fileSystemState, activeBuildGraph);
 					runner.Evaluate();
 				}
-				catch(const Evaluate::BuildFailedException& e)
+				catch(const Runtime::BuildFailedException& e)
 				{
 					Log::Info("Saving partial build state");
-					Evaluate::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
+					Runtime::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
 					throw;
 				}
 
 				Log::Info("Saving updated build state");
-				Evaluate::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
+				Runtime::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
 
 				Log::HighPriority("Done");
 			}
 
-			// Return only the build state that is to be passed to the downstream builds
-			// This allows the extension dlls to be released and the operations deleted
-			return buildState.RetrieveSharedState();
+			return sharedState;
 		}
 
 		Path GetSoupUserDataPath() const
@@ -582,37 +536,6 @@ namespace Soup::Build
 			}
 
 			return packagePath;
-		}
-
-		System::WindowsLibrary RunBuildExtension(
-			Path& libraryPath,
-			IBuildSystem& buildSystem)
-		{
-			try
-			{
-				Log::Diag("Running Build Extension: " + libraryPath.ToString());
-				auto library = System::WindowsDynamicLibraryManager::LoadDynamicLibrary(
-					libraryPath.ToString().c_str());
-				auto function = (int(*)(IBuildSystem&))library.GetFunction(
-					"RegisterBuildExtension");
-				auto result = function(buildSystem);
-				if (result != 0)
-				{
-					Log::Error("Build Extension Failed: " + std::to_string(result));
-				}
-				else
-				{
-					Log::Info("Build Extension Done");
-				}
-
-				// Keep the library open to ensure the registered tasks are not lost
-				return library;
-			}
-			catch (...)
-			{
-				Log::Error("Build Extension Failed!");
-				throw;
-			}
 		}
 
 		bool TryGetRecipe(
@@ -652,9 +575,9 @@ namespace Soup::Build
 		std::string _runtimeCompiler;
 
 		std::map<std::string, Recipe> _knownRecipes;
-		std::map<std::string, Generate::ValueTable> _buildSet;
-		std::map<std::string, Generate::ValueTable> _systemBuildSet;
+		std::map<std::string, Runtime::ValueTable> _buildSet;
+		std::map<std::string, Runtime::ValueTable> _systemBuildSet;
 
-		Evaluate::FileSystemState _fileSystemState;
+		Runtime::FileSystemState _fileSystemState;
 	};
 }

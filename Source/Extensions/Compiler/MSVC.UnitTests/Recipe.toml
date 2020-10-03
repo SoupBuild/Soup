@@ -4,7 +4,7 @@ Type = "Executable"
 Dependencies = [
 	"../MSVC/",
 	"../../../TestUtilities/",
-	"../../../Build/Generate/",
+	"../../../Build/Runtime/",
 	"Soup.Test.Assert@0.1.6",
 ]
 Source = [
