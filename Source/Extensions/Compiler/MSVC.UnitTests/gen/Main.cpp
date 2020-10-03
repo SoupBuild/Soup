@@ -6,13 +6,13 @@
 #include <vector>
 
 import Opal;
-import SoupCompiler;
-import SoupCompilerMSVC;
+import Soup.Compiler;
+import Soup.Compiler.MSVC;
 import Soup.Build;
 import Soup.Build.Utilities;
 import Soup.Build.Generate;
 import Soup.Test.Assert;
-import SoupTestUtilities;
+import Soup.Test.Utilities;
 
 using namespace Opal;
 using namespace Opal::System;

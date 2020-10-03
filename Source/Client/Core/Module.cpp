@@ -16,7 +16,7 @@
 #include <unordered_set>
 #include <vector>
 
-export module SoupCore;
+export module Soup.Core;
 
 import Opal;
 import Opal.Extensions;

@@ -7,7 +7,7 @@
 #include <sstream>
 #include <vector>
 
-export module SoupCompiler;
+export module Soup.Compiler;
 
 import Opal;
 import Soup.Build.Utilities;

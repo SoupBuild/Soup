@@ -533,8 +533,8 @@ namespace Soup::Build
 			{
 				try
 				{
-					// Execute the build
-					auto runner = Evaluate::BuildRunner(packageRoot, _fileSystemState, activeBuildGraph);
+					// Evaluate the build
+					auto runner = Evaluate::BuildEvaluateEngine(packageRoot, _fileSystemState, activeBuildGraph);
 					runner.Evaluate();
 				}
 				catch(const Evaluate::BuildFailedException& e)

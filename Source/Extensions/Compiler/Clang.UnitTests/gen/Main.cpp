@@ -6,10 +6,10 @@
 #include <vector>
 
 import Opal;
-import SoupCompiler;
-import SoupCompilerClang;
+import Soup.Compiler;
+import Soup.Compiler.Clang;
 import Soup.Test.Assert;
-import SoupTestUtilities;
+import Soup.Test.Utilities;
 import Soup.Build;
 import Soup.Build.Utilities;
 import Soup.Build.Generate;

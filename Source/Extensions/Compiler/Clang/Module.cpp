@@ -7,11 +7,11 @@
 #include <sstream>
 #include <vector>
 
-export module SoupCompilerClang;
+export module Soup.Compiler.Clang;
 
 import Opal;
-import SoupCompiler;
-import SoupCompilerMSVC;
+import Soup.Compiler;
+import Soup.Compiler.MSVC;
 
 using namespace Opal;
 
