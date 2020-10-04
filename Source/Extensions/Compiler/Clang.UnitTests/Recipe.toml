@@ -1,9 +1,9 @@
-Name = "SoupCompilerClangUnitTests"
+Name = "Soup.Compiler.Clang.UnitTests"
 Version = "1.0.0"
 Type = "Executable"
 Dependencies = [
 	"../Clang/",
-	"../../../Build/Generate/",
+	"../../../Build/Runtime/",
 	"../../../TestUtilities/",
 	"Soup.Test.Assert@0.1.6",
 ]
@@ -13,4 +13,7 @@ Source = [
 ]
 IncludePaths = [
 	"./",
+]
+PlatformLibraries = [
+	"shell32.lib",
 ]

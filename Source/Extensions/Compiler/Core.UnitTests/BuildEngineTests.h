@@ -48,7 +48,7 @@ namespace Soup::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Generate::BuildState(Build::Generate::ValueTable());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -228,7 +228,7 @@ namespace Soup::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Generate::BuildState(Build::Generate::ValueTable());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -461,7 +461,7 @@ namespace Soup::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Generate::BuildState(Build::Generate::ValueTable());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -739,7 +739,7 @@ namespace Soup::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Generate::BuildState(Build::Generate::ValueTable());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs

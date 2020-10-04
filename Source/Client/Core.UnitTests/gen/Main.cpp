@@ -10,10 +10,10 @@
 
 import Opal;
 import Opal.Extensions;
-import SoupCore;
+import Soup.Core;
 import json11;
 import Soup.Test.Assert;
-import SoupTestUtilities;
+import Soup.Test.Utilities;
 
 using namespace Opal;
 using namespace Opal::System;

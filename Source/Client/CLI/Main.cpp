@@ -14,7 +14,7 @@
 import Monitor.Shared;
 import Opal;
 import Opal.Extensions;
-import SoupCore;
+import Soup.Core;
 
 using namespace Opal;
 

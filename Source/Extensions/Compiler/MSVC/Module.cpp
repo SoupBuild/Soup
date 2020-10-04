@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 
-export module SoupCompilerMSVC;
+export module Soup.Compiler.MSVC;
 
 import Opal;
-import SoupCompiler;
+import Soup.Compiler;
 
 using namespace Opal;
 

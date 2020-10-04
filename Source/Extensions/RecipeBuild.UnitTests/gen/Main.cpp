@@ -9,7 +9,7 @@
 #include <vector>
 
 import Opal;
-import SoupCore;
+import Soup.Core;
 import RecipeBuildExtension;
 import json11;
 import Soup.Test.Assert;
@@ -17,7 +17,7 @@ import Soup.Test.Assert;
 using namespace Opal;
 using namespace Opal::System;
 using namespace Soup::Test;
-import SoupTestUtilities;
+import Soup.Test.Utilities;
 
 #include "Tasks/BuildTaskTests.gen.h"
 #include "Tasks/RecipeBuildTaskTests.gen.h"

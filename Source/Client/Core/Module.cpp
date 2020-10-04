@@ -16,14 +16,13 @@
 #include <unordered_set>
 #include <vector>
 
-export module SoupCore;
+export module Soup.Core;
 
 import Opal;
 import Opal.Extensions;
 import Soup.Build;
 import Soup.Build.Utilities;
-import Soup.Build.Evaluate;
-import Soup.Build.Generate;
+import Soup.Build.Runtime;
 import LzmaSdk;
 import json11;
 import toml11;
