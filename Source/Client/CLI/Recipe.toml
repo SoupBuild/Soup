@@ -8,6 +8,7 @@ Dependencies = [
 	"../../Tools/Copy/",
 	"../../Tools/Mkdir/",
 	"../../Extensions/Cpp/Extension/",
+	"../../Extensions/CSharp/Extension/",
 	"../../Monitor/Shared/",
 ]
 RuntimeDependencies = [

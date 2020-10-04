@@ -39,12 +39,12 @@ namespace Soup::Cpp::Compiler
 			}
 
 			// Ensure the output directories exists as the first step
-			auto objectDirectry = arguments.WorkingDirectory + arguments.ObjectDirectory;
-			auto binaryDirectry = arguments.WorkingDirectory + arguments.BinaryDirectory;
+			auto objectDirectory = arguments.WorkingDirectory + arguments.ObjectDirectory;
+			auto binaryDirectory = arguments.WorkingDirectory + arguments.BinaryDirectory;
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryOperation(buildState, objectDirectry));
+				BuildUtilities::CreateCreateDirectoryOperation(buildState, objectDirectory));
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryOperation(buildState, binaryDirectry));
+				BuildUtilities::CreateCreateDirectoryOperation(buildState, binaryDirectory));
 
 			// Perform the core compilation of the source files
 			CoreCompile(buildState, arguments, result);

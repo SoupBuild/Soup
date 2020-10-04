@@ -52,6 +52,20 @@ echo soup run %SourceDir%\Extensions\Cpp\Extension.UnitTests\
 call soup run %SourceDir%\Extensions\Cpp\Extension.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
+echo soup build %SourceDir%\Extensions\CSharp\Compiler\Core.UnitTests\
+call soup build %SourceDir%\Extensions\CSharp\Compiler\Core.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+echo soup run %SourceDir%\Extensions\CSharp\Compiler\Core.UnitTests\
+call soup run %SourceDir%\Extensions\CSharp\Compiler\Core.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+
+echo soup build %SourceDir%\Extensions\CSharp\Extension.UnitTests\
+call soup build %SourceDir%\Extensions\CSharp\Extension.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+echo soup run %SourceDir%\Extensions\CSharp\Extension.UnitTests\
+call soup run %SourceDir%\Extensions\CSharp\Extension.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+
 echo soup build %SourceDir%\Client\Core.UnitTests\
 call soup build %SourceDir%\Client\Core.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
