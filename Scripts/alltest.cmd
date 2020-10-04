@@ -45,6 +45,13 @@ echo soup run %SourceDir%\Extensions\Cpp\Compiler\MSVC.UnitTests\
 call soup run %SourceDir%\Extensions\Cpp\Compiler\MSVC.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
+echo soup build %SourceDir%\Extensions\Cpp\Extension.UnitTests\
+call soup build %SourceDir%\Extensions\Cpp\Extension.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+echo soup run %SourceDir%\Extensions\Cpp\Extension.UnitTests\
+call soup run %SourceDir%\Extensions\Cpp\Extension.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+
 echo soup build %SourceDir%\Client\Core.UnitTests\
 call soup build %SourceDir%\Client\Core.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%

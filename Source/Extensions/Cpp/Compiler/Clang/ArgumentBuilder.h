@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Compiler::Clang
+namespace Soup::Cpp::Compiler::Clang
 {
 	/// <summary>
 	/// A helper class that builds the correct set of compiler arguments for a given

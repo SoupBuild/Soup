@@ -6,7 +6,7 @@
 #include "CompileArguments.h"
 #include "LinkArguments.h"
 
-namespace Soup::Compiler
+namespace Soup::Cpp::Compiler
 {
 	/// <summary>
 	/// The compiler interface definition

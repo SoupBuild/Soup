@@ -4,7 +4,7 @@
 TestState RunBuildEngineTests() 
  {
 	auto className = "BuildEngineTests";
-	auto testClass = std::make_shared<Soup::Compiler::UnitTests::BuildEngineTests>();
+	auto testClass = std::make_shared<Soup::Cpp::Compiler::UnitTests::BuildEngineTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Initialize_Success", [&testClass]() { testClass->Initialize_Success(); });
 	state += Soup::Test::RunTest(className, "Build_Executable", [&testClass]() { testClass->Build_Executable(); });

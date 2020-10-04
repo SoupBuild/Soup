@@ -5,7 +5,7 @@
 #pragma once
 #include "ArgumentBuilder.h"
 
-namespace Soup::Compiler::MSVC
+namespace Soup::Cpp::Compiler::MSVC
 {
 	/// <summary>
 	/// The Clang compiler implementation

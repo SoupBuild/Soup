@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace RecipeBuild
+namespace Soup::Cpp
 {
 	/// <summary>
 	/// The recipe build task that knows how to build a single recipe
@@ -202,7 +202,7 @@ namespace RecipeBuild
 				sourceFiles = recipeTable.GetValue("Source").AsList().CopyAsStringVector();
 			}
 			// Set the correct optimization level for the requested flavor
-			auto optimizationLevel = Soup::Compiler::BuildOptimizationLevel::None;
+			auto optimizationLevel = Soup::Cpp::Compiler::BuildOptimizationLevel::None;
 			bool generateSourceDebugInfo = false;
 			if (buildFlavor == "debug")
 			{
@@ -212,7 +212,7 @@ namespace RecipeBuild
 			else if (buildFlavor == "release")
 			{
 				preprocessorDefinitions.push_back("RELEASE");
-				optimizationLevel = Soup::Compiler::BuildOptimizationLevel::Speed;
+				optimizationLevel = Soup::Cpp::Compiler::BuildOptimizationLevel::Speed;
 			}
 			else
 			{
@@ -236,7 +236,7 @@ namespace RecipeBuild
 			buildTable.EnsureValue("Source").EnsureList().Append(sourceFiles);
 
 			// Convert the recipe type to the required build type
-			Soup::Compiler::BuildTargetType targetType;
+			Soup::Cpp::Compiler::BuildTargetType targetType;
 			auto recipeType = Soup::Build::Utilities::RecipeType::StaticLibrary;
 			if (recipeTable.HasValue("Type"))
 			{
@@ -246,13 +246,13 @@ namespace RecipeBuild
 			switch (recipeType)
 			{
 				case Soup::Build::Utilities::RecipeType::StaticLibrary:
-					targetType = Soup::Compiler::BuildTargetType::StaticLibrary;
+					targetType = Soup::Cpp::Compiler::BuildTargetType::StaticLibrary;
 					break;
 				case Soup::Build::Utilities::RecipeType::DynamicLibrary:
-					targetType = Soup::Compiler::BuildTargetType::DynamicLibrary;
+					targetType = Soup::Cpp::Compiler::BuildTargetType::DynamicLibrary;
 					break;
 				case Soup::Build::Utilities::RecipeType::Executable:
-					targetType = Soup::Compiler::BuildTargetType::Executable;
+					targetType = Soup::Cpp::Compiler::BuildTargetType::Executable;
 					break;
 				default:
 					throw std::runtime_error("Unknown build target type.");
@@ -268,20 +268,20 @@ namespace RecipeBuild
 					recipeTable.GetValue("Language").AsString().GetValue());
 			}
 
-			Soup::Compiler::LanguageStandard languageStandard;
+			Soup::Cpp::Compiler::LanguageStandard languageStandard;
 			switch (recipeLanguageVersion)
 			{
 				case Soup::Build::Utilities::RecipeLanguageVersion::CPP11:
-					languageStandard = Soup::Compiler::LanguageStandard::CPP11;
+					languageStandard = Soup::Cpp::Compiler::LanguageStandard::CPP11;
 					break;
 				case Soup::Build::Utilities::RecipeLanguageVersion::CPP14:
-					languageStandard = Soup::Compiler::LanguageStandard::CPP14;
+					languageStandard = Soup::Cpp::Compiler::LanguageStandard::CPP14;
 					break;
 				case Soup::Build::Utilities::RecipeLanguageVersion::CPP17:
-					languageStandard = Soup::Compiler::LanguageStandard::CPP17;
+					languageStandard = Soup::Cpp::Compiler::LanguageStandard::CPP17;
 					break;
 				case Soup::Build::Utilities::RecipeLanguageVersion::CPP20:
-					languageStandard = Soup::Compiler::LanguageStandard::CPP20;
+					languageStandard = Soup::Cpp::Compiler::LanguageStandard::CPP20;
 					break;
 				default:
 					throw std::runtime_error("Unknown recipe language version.");

@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Compiler::MSVC
+namespace Soup::Cpp::Compiler::MSVC
 {
 	/// <summary>
 	/// A helper class that builds the correct set of compiler arguments for a given

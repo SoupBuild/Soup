@@ -1,5 +1,5 @@
 {
-  "name": "RecipeBuildExtensionUnitTests",
+  "name": "Soup.Cpp.UnitTests",
   "version": "1.0.0",
   "type": "Executable",
   "dependencies": [

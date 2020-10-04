@@ -4,9 +4,9 @@
 
 #pragma once
 
-namespace RecipeBuild
+namespace Soup::Cpp
 {
-	export using CreateCompiler = std::function<std::shared_ptr<Soup::Compiler::ICompiler>(Soup::Build::Utilities::ValueTableWrapper&)>;
+	export using CreateCompiler = std::function<std::shared_ptr<Soup::Cpp::Compiler::ICompiler>(Soup::Build::Utilities::ValueTableWrapper&)>;
 	export using CompilerFactory = std::map<std::string, CreateCompiler>;
 
 	/// <summary>
@@ -80,12 +80,12 @@ namespace RecipeBuild
 
 			auto buildTable = activeState.GetValue("Build").AsTable();
 
-			auto arguments = Soup::Compiler::BuildArguments();
+			auto arguments = Soup::Cpp::Compiler::BuildArguments();
 			arguments.TargetArchitecture = activeState.GetValue("BuildArchitecture").AsString().GetValue();
 			arguments.TargetName = buildTable.GetValue("TargetName").AsString().GetValue();
-			arguments.TargetType = static_cast<Soup::Compiler::BuildTargetType>(
+			arguments.TargetType = static_cast<Soup::Cpp::Compiler::BuildTargetType>(
 				buildTable.GetValue("TargetType").AsInteger().GetValue());
-			arguments.LanguageStandard = static_cast<Soup::Compiler::LanguageStandard>(
+			arguments.LanguageStandard = static_cast<Soup::Cpp::Compiler::LanguageStandard>(
 				buildTable.GetValue("LanguageStandard").AsInteger().GetValue());
 			arguments.WorkingDirectory = Path(buildTable.GetValue("WorkingDirectory").AsString().GetValue());
 			arguments.ObjectDirectory = Path(buildTable.GetValue("ObjectDirectory").AsString().GetValue());
@@ -135,12 +135,12 @@ namespace RecipeBuild
 
 			if (buildTable.HasValue("OptimizationLevel"))
 			{
-				arguments.OptimizationLevel = static_cast<Soup::Compiler::BuildOptimizationLevel>(
+				arguments.OptimizationLevel = static_cast<Soup::Cpp::Compiler::BuildOptimizationLevel>(
 					buildTable.GetValue("OptimizationLevel").AsInteger().GetValue());
 			}
 			else
 			{
-				arguments.OptimizationLevel = Soup::Compiler::BuildOptimizationLevel::None;
+				arguments.OptimizationLevel = Soup::Cpp::Compiler::BuildOptimizationLevel::None;
 			}
 
 			if (buildTable.HasValue("GenerateSourceDebugInfo"))
@@ -186,7 +186,7 @@ namespace RecipeBuild
 			auto createCompiler = findCompilerFactory->second;
 			auto compiler = createCompiler(activeState);
 
-			auto buildEngine = Soup::Compiler::BuildEngine(compiler);
+			auto buildEngine = Soup::Cpp::Compiler::BuildEngine(compiler);
 			auto buildResult = buildEngine.Execute(buildState, arguments);
 
 			// Always pass along required input to shared build tasks

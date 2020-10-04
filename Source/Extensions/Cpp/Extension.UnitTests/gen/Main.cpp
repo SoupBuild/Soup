@@ -10,7 +10,7 @@
 
 import Opal;
 import Soup.Core;
-import RecipeBuildExtension;
+import Soup.Cpp;
 import json11;
 import Soup.Test.Assert;
 

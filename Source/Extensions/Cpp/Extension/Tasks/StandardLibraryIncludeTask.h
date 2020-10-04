@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace RecipeBuild
+namespace Soup::Cpp
 {
 	/// <summary>
 	/// The recipe build task that knows how to build a single recipe

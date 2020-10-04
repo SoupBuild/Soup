@@ -4,7 +4,7 @@
 TestState RunLinkerArgumentBuilderTests() 
  {
 	auto className = "LinkerArgumentBuilderTests";
-	auto testClass = std::make_shared<Soup::Compiler::Clang::UnitTests::LinkerArgumentBuilderTests>();
+	auto testClass = std::make_shared<Soup::Cpp::Compiler::Clang::UnitTests::LinkerArgumentBuilderTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "ZeroObjectFiles", [&testClass]() { testClass->ZeroObjectFiles(); });
 	state += Soup::Test::RunTest(className, "EmptyTargetFile_Throws", [&testClass]() { testClass->EmptyTargetFile_Throws(); });

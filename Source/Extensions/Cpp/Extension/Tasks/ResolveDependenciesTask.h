@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace RecipeBuild
+namespace Soup::Cpp
 {
 	/// <summary>
 	/// The resolve dependencies build task that knows how to combine all previous state

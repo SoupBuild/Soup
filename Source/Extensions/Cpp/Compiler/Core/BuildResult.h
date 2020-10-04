@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Compiler
+namespace Soup::Cpp::Compiler
 {
 	/// <summary>
 	/// The build result

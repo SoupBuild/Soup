@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace RecipeBuild::UnitTests
+namespace Soup::Cpp::UnitTests
 {
 	class StandardLibraryIncludeTaskTests
 	{

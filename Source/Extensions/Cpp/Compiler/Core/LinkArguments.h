@@ -2,7 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup::Compiler
+namespace Soup::Cpp::Compiler
 {
 	/// <summary>
 	/// The enumeration of link targets
@@ -123,7 +123,7 @@ namespace Soup::Compiler
 			auto stringBuilder = std::stringstream();
 			stringBuilder << "[" <<
 				TargetFile.ToString() << ", " <<
-				::Soup::Compiler::ToString(TargetType) << ", " <<
+				::Soup::Cpp::Compiler::ToString(TargetType) << ", " <<
 				RootDirectory.ToString() << ", [";
 
 			for (auto& value : ObjectFiles)

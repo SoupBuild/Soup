@@ -5,7 +5,7 @@
 #pragma once
 #include "ICompiler.h"
 
-namespace Soup::Compiler
+namespace Soup::Cpp::Compiler
 {
 	/// <summary>
 	/// The enumeration of build optimization levels

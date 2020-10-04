@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Compiler
+namespace Soup::Cpp::Compiler
 {
 	/// <summary>
 	/// The enumeration of language standards
@@ -166,8 +166,8 @@ namespace Soup::Compiler
 		{
 			auto stringBuilder = std::stringstream();
 			stringBuilder << "[" <<
-				::Soup::Compiler::ToString(Standard) << ", " <<
-				::Soup::Compiler::ToString(Optimize) << ", " <<
+				::Soup::Cpp::Compiler::ToString(Standard) << ", " <<
+				::Soup::Cpp::Compiler::ToString(Optimize) << ", " <<
 				RootDirectory.ToString() << ", [";
 
 			for (auto& value : PreprocessorDefinitions)

@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Compiler::Clang::UnitTests
+namespace Soup::Cpp::Compiler::Clang::UnitTests
 {
 	class LinkerArgumentBuilderTests
 	{

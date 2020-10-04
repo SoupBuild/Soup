@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Compiler::UnitTests
+namespace Soup::Cpp::Compiler::UnitTests
 {
 	class BuildEngineTests
 	{

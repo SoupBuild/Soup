@@ -4,7 +4,7 @@
 TestState RunBuildTaskTests() 
  {
 	auto className = "BuildTaskTests";
-	auto testClass = std::make_shared<RecipeBuild::UnitTests::BuildTaskTests>();
+	auto testClass = std::make_shared<Soup::Cpp::UnitTests::BuildTaskTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Initialize_Success", [&testClass]() { testClass->Initialize_Success(); });
 	// state += Soup::Test::RunTest(className, "Build_UnknownCompilerFails", [&testClass]() { testClass->Build_UnknownCompilerFails(); });

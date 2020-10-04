@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Compiler::Mock
+namespace Soup::Cpp::Compiler::Mock
 {
 	/// <summary>
 	/// A mock compiler interface implementation
