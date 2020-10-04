@@ -7,7 +7,7 @@ Dependencies = [
 	"../Core/",
 	"../../Tools/Copy/",
 	"../../Tools/Mkdir/",
-	"../../Extensions/RecipeBuild/",
+	"../../Extensions/Cpp/Extension/",
 	"../../Monitor/Shared/",
 ]
 RuntimeDependencies = [

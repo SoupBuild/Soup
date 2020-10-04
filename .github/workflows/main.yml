@@ -30,20 +30,20 @@ jobs:
     - name: Run Utilities UnitTests
       run: soup run Source/Build/Utilities.UnitTests/
 
-    - name: Build Extensions Compiler Core UnitTests
-      run: soup build Source/Extensions/Compiler/Core.UnitTests/
-    - name: Run Extensions Compiler Core UnitTests
+    - name: Build Extensions Cpp Compiler Core UnitTests
+      run: soup build Source/Extensions/Cpp/Compiler/Core.UnitTests/
+    - name: Run Extensions Cpp Compiler Core UnitTests
       run: soup run Source/Extensions/Compiler/Core.UnitTests/
 
-    - name: Build Extensions Compiler Clang UnitTests
-      run: soup build Source/Extensions/Compiler/Clang.UnitTests/
-    - name: Run Extensions Compiler Clang UnitTests
-      run: soup run Source/Extensions/Compiler/Clang.UnitTests/
+    - name: Build Extensions Cpp Compiler Clang UnitTests
+      run: soup build Source/Extensions/Cpp/Compiler/Clang.UnitTests/
+    - name: Run Extensions Cpp Compiler Clang UnitTests
+      run: soup run Source/Extensions/Cpp/Compiler/Clang.UnitTests/
 
-    - name: Build Extensions Compiler MSVC UnitTests
-      run: soup build Source/Extensions/Compiler/MSVC.UnitTests/
-    - name: Run Extensions Compiler MSVC UnitTests
-      run: soup run Source/Extensions/Compiler/MSVC.UnitTests/
+    - name: Build Extensions Cpp Compiler MSVC UnitTests
+      run: soup build Source/Extensions/Cpp/Compiler/MSVC.UnitTests/
+    - name: Run Extensions Cpp Compiler MSVC UnitTests
+      run: soup run Source/Extensions/Cpp/Compiler/MSVC.UnitTests/
 
     # openssl not available on CI build
     # - name: Build Client Core UnitTests

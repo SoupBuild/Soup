@@ -24,25 +24,25 @@ echo soup run %SourceDir%\Build\Utilities.UnitTests\
 call soup run %SourceDir%\Build\Utilities.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
-echo soup build %SourceDir%\Extensions\Compiler\Core.UnitTests\
-call soup build %SourceDir%\Extensions\Compiler\Core.UnitTests\
+echo soup build %SourceDir%\Extensions\Cpp\Compiler\Core.UnitTests\
+call soup build %SourceDir%\Extensions\Cpp\Compiler\Core.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
-echo soup run %SourceDir%\Extensions\Compiler\Core.UnitTests\
-call soup run %SourceDir%\Extensions\Compiler\Core.UnitTests\
-if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
-
-echo soup build %SourceDir%\Extensions\Compiler\Clang.UnitTests\
-call soup build %SourceDir%\Extensions\Compiler\Clang.UnitTests\
-if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
-echo soup run %SourceDir%\Extensions\Compiler\Clang.UnitTests\
-call soup run %SourceDir%\Extensions\Compiler\Clang.UnitTests\
+echo soup run %SourceDir%\Extensions\Cpp\Compiler\Core.UnitTests\
+call soup run %SourceDir%\Extensions\Cpp\Compiler\Core.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
-echo soup build %SourceDir%\Extensions\Compiler\MSVC.UnitTests\
-call soup build %SourceDir%\Extensions\Compiler\MSVC.UnitTests\
+echo soup build %SourceDir%\Extensions\Cpp\Compiler\Clang.UnitTests\
+call soup build %SourceDir%\Extensions\Cpp\Compiler\Clang.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
-echo soup run %SourceDir%\Extensions\Compiler\MSVC.UnitTests\
-call soup run %SourceDir%\Extensions\Compiler\MSVC.UnitTests\
+echo soup run %SourceDir%\Extensions\Cpp\Compiler\Clang.UnitTests\
+call soup run %SourceDir%\Extensions\Cpp\Compiler\Clang.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+
+echo soup build %SourceDir%\Extensions\Cpp\Compiler\MSVC.UnitTests\
+call soup build %SourceDir%\Extensions\Cpp\Compiler\MSVC.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+echo soup run %SourceDir%\Extensions\Cpp\Compiler\MSVC.UnitTests\
+call soup run %SourceDir%\Extensions\Cpp\Compiler\MSVC.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
 echo soup build %SourceDir%\Client\Core.UnitTests\
