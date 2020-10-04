@@ -444,7 +444,7 @@ namespace Soup::Build
 						}
 					}
 				}
-			
+
 				auto buildGenerateEngine = Runtime::BuildGenerateEngine(
 					_fileSystemState,
 					_systemCompiler);
