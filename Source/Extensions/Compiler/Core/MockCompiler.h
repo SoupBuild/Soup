@@ -84,7 +84,7 @@ namespace Soup::Compiler::Mock
 		/// Compile
 		/// </summary>
 		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
-			Build::Utilities::BuildStateWrapper& state,
+			Build::Utilities::BuildStateWrapper state,
 			const CompileArguments& args) const override final
 		{
 			_compileRequests.push_back(args);
@@ -106,7 +106,7 @@ namespace Soup::Compiler::Mock
 		/// Link
 		/// </summary>
 		Build::Utilities::BuildOperationWrapper CreateLinkOperation(
-			Build::Utilities::BuildStateWrapper& state,
+			Build::Utilities::BuildStateWrapper state,
 			const LinkArguments& args) const override final
 		{
 			_linkRequests.push_back(args);

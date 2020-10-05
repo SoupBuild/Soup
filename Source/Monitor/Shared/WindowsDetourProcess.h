@@ -326,9 +326,9 @@ namespace Monitor
 					// Wait for any of the pipe instances to signal
 					// This indicates that either a client connected to wrote to
 					// and open connection.
-					// Check every 5 seconds if the process has terminated unexpectedly
+					// Check every 500 milliseconds if the process has terminated unexpectedly
 					bool waitForAll = false;
-					DWORD timoutMilliseconds = 5000;
+					DWORD timoutMilliseconds = 500;
 					DebugTrace("WorkerThread WaitForMultipleObjects");
 					auto waitResult = WaitForMultipleObjects(
 						m_rawEventHandles.size(),
@@ -340,7 +340,10 @@ namespace Monitor
 						case WAIT_TIMEOUT:
 							if (!m_processRunning)
 							{
-								DebugTrace("Main process exited while children still running");
+								if (m_hasAnyClients)
+									m_eventListener.LogError("Main process exited while children still running");
+								else
+									m_eventListener.LogError("Main process never connected");
 								continue;
 							}
 							else
@@ -567,7 +570,7 @@ namespace Monitor
 						return;
 					}
 
-					// Otherwise the Pending read has finished succesfully
+					// Otherwise the Pending read has finished successfully
 					LogMessage(pipe.Message);
 				}
 			}

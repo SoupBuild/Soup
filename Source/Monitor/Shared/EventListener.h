@@ -22,6 +22,11 @@ namespace Monitor
 		{
 		}
 
+		void LogError(std::string_view message)
+		{
+			m_callback->OnError(message);
+		}
+
 		void LogMessage(DetourMessage& message)
 		{
 			int32_t offset = 0;

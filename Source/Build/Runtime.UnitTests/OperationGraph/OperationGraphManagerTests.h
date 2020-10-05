@@ -303,7 +303,7 @@ namespace Soup::Build::Runtime::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 			});
-			auto& mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/OperationGraph.bin"));
+			auto mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/OperationGraph.bin"));
 			Assert::AreEqual(
 				std::string(binaryFileContent.data(), binaryFileContent.size()),
 				mockFile->Content.str(),

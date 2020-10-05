@@ -10,8 +10,8 @@ namespace Soup
 	{
 	public:
 		static void AreEqual(
-			Build::Utilities::BuildOperationWrapper& expected,
-			Build::Utilities::BuildOperationWrapper& actual)
+			Build::Utilities::BuildOperationWrapper expected,
+			Build::Utilities::BuildOperationWrapper actual)
 		{
 			Assert::AreEqual(
 				expected.GetTitle(),
@@ -52,7 +52,7 @@ namespace Soup
 
 		static void AreEqual(
 			Memory::Reference<Build::Utilities::BuildOperation>& expected,
-			Build::Utilities::BuildOperationWrapper& actual)
+			Build::Utilities::BuildOperationWrapper actual)
 		{
 			AreEqual(
 				Build::Utilities::BuildOperationWrapper(expected), 
@@ -60,8 +60,8 @@ namespace Soup
 		}
 
 		static void AreEqual(
-			Build::Utilities::BuildOperationListWrapper& expected,
-			Build::Utilities::BuildOperationListWrapper& actual)
+			Build::Utilities::BuildOperationListWrapper expected,
+			Build::Utilities::BuildOperationListWrapper actual)
 		{
 			Assert::AreEqual(
 				expected.GetSize(),
