@@ -18,7 +18,7 @@ class Script
 				new File(System.IO.Path.Combine(soupBinFolder, "Monitor.Detours.32.dll")),
 				new File(System.IO.Path.Combine(soupBinFolder, "Monitor.Detours.64.dll")),
 				new File(System.IO.Path.Combine(soupBinFolder, "Soup.exe")),
-				new File(System.IO.Path.Combine(soupBinFolder, "Soup.Cpp.dll"))),
+				new File(System.IO.Path.Combine(soupBinFolder, "Soup.Cpp.dll")),
 				new File(System.IO.Path.Combine(soupBinFolder, "Soup.CSharp.dll"))),
 			new EnvironmentVariable("PATH", "[INSTALLDIR]")
 			{
