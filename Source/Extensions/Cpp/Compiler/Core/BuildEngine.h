@@ -1,4 +1,4 @@
-﻿// <copyright file="BuildEngine.h" company="Soup">
+﻿﻿// <copyright file="BuildEngine.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -25,7 +25,7 @@ namespace Soup::Cpp::Compiler
 		/// Generate the required build operations for the requested build
 		/// </summary>
 		BuildResult Execute(
-			Soup::Build::Utilities::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::BuildStateWrapper buildState,
 			const BuildArguments& arguments)
 		{
 			auto result = BuildResult();
@@ -39,12 +39,12 @@ namespace Soup::Cpp::Compiler
 			}
 
 			// Ensure the output directories exists as the first step
-			auto objectDirectory = arguments.WorkingDirectory + arguments.ObjectDirectory;
-			auto binaryDirectory = arguments.WorkingDirectory + arguments.BinaryDirectory;
+			auto objectDirectry = arguments.WorkingDirectory + arguments.ObjectDirectory;
+			auto binaryDirectry = arguments.WorkingDirectory + arguments.BinaryDirectory;
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryOperation(buildState, objectDirectory));
+				BuildUtilities::CreateCreateDirectoryOperation(buildState, objectDirectry));
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryOperation(buildState, binaryDirectory));
+				BuildUtilities::CreateCreateDirectoryOperation(buildState, binaryDirectry));
 
 			// Perform the core compilation of the source files
 			CoreCompile(buildState, arguments, result);
@@ -347,16 +347,16 @@ namespace Soup::Cpp::Compiler
 			}
 		}
 
-		Soup::Cpp::Compiler::OptimizationLevel Convert(BuildOptimizationLevel value)
+		Soup::Compiler::OptimizationLevel Convert(BuildOptimizationLevel value)
 		{
 			switch (value)
 			{
 				case BuildOptimizationLevel::None:
-					return Soup::Cpp::Compiler::OptimizationLevel::None;
+					return Soup::Compiler::OptimizationLevel::None;
 				case BuildOptimizationLevel::Speed:
-					return Soup::Cpp::Compiler::OptimizationLevel::Speed;
+					return Soup::Compiler::OptimizationLevel::Speed;
 				case BuildOptimizationLevel::Size:
-					return Soup::Cpp::Compiler::OptimizationLevel::Size;
+					return Soup::Compiler::OptimizationLevel::Size;
 				default:
 					throw std::runtime_error("Unknown BuildOptimizationLevel.");
 			}

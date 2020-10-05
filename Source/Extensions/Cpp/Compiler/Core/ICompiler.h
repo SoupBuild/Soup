@@ -46,14 +46,14 @@ namespace Soup::Cpp::Compiler
 		/// </summary>
 		// TODO: Should this state be replaced with a factory to limit access?
 		virtual Build::Utilities::BuildOperationWrapper CreateCompileOperation(
-			Build::Utilities::BuildStateWrapper& state,
+			Build::Utilities::BuildStateWrapper state,
 			const CompileArguments& args) const = 0;
 
 		/// <summary>
 		/// Link
 		/// </summary>
 		virtual Build::Utilities::BuildOperationWrapper CreateLinkOperation(
-			Build::Utilities::BuildStateWrapper& state,
+			Build::Utilities::BuildStateWrapper state,
 			const LinkArguments& args) const = 0;
 	};
 }

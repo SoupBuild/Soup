@@ -207,7 +207,7 @@ namespace Soup::Cpp
 			});
 
 			// Check if we should include pre-release versions
-			bool includePrerelease = false;
+			bool includePrerelease = true;
 			if (includePrerelease)
 			{
 				argumentList.push_back("-prerelease");

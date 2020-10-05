@@ -34,13 +34,13 @@ namespace Soup::Build::Utilities
 		/// <summary>
 		/// Property setter methods.
 		/// </summary>
-		void SetValueAt(uint64_t index, BuildOperationWrapper& value);
+		void SetValueAt(uint64_t index, BuildOperationWrapper value);
 
 		/// <summary>
 		/// Extended helpers for easy updating of entire contents
 		/// </summary>
-		void Append(BuildOperationWrapper& value);
-		void Append(const BuildOperationListWrapper& values);
+		void Append(BuildOperationWrapper value);
+		void Append(const BuildOperationListWrapper values);
 		void Append(std::vector<BuildOperationWrapper>& values);
 
 	private:

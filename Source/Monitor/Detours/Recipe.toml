@@ -10,7 +10,9 @@ Defines = [
 	# "ENABLE_MONITOR_DEBUG",
 	# "TRACE_DETOUR_CLIENT",
 ]
-Interface = "Module.cpp"
+Source = [
+	"Main.cpp",
+]
 PlatformLibraries = [
 	"Advapi32.lib",
 	"shell32.lib",

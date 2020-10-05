@@ -1,4 +1,4 @@
-﻿// <copyright file="Compiler.h" company="Soup">
+﻿﻿// <copyright file="Compiler.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -69,7 +69,7 @@ namespace Soup::Cpp::Compiler::Clang
 		/// Compile
 		/// </summary>
 		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
-			Build::Utilities::BuildStateWrapper& state,
+			Build::Utilities::BuildStateWrapper state,
 			const CompileArguments& args) const override final
 		{
 			// Clang decided to do their module compilation in two stages
@@ -88,7 +88,7 @@ namespace Soup::Cpp::Compiler::Clang
 		/// Link
 		/// </summary>
 		Build::Utilities::BuildOperationWrapper CreateLinkOperation(
-			Build::Utilities::BuildStateWrapper& state,
+			Build::Utilities::BuildStateWrapper state,
 			const LinkArguments& args) const override final
 		{
 			// Select the correct executable for linking libraries or executables

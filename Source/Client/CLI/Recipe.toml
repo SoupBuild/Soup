@@ -1,6 +1,6 @@
 Name = "Soup"
 Language = "C++"
-Version = "0.8.11"
+Version = "0.9.0"
 Type = "Executable"
 
 # Ensure the core build extensions are runtime dependencies

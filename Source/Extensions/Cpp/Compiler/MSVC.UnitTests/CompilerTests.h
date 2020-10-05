@@ -90,7 +90,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 				new Build::Utilities::BuildOperation(
 					"./File.cpp",
 					Path("bin/mock.cl.exe"),
-					"/nologo /Zc:__cplusplus /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /module:reference \"./Module.pcm\" /module:interface /module:output \"./obj/File.ifc\" /bigobj /c ./File.cpp /Fo\"./obj/File.obj\"",
+					"/nologo /Zc:__cplusplus /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /interface /ifcOutput \"./obj/File.ifc\" /bigobj /c ./File.cpp /Fo\"./obj/File.obj\"",
 					Path("Source"),
 					std::vector<Path>({
 						Path("Module.pcm"),

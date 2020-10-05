@@ -1,4 +1,3 @@
-module;
 
 #include <locale>
 #include <codecvt>
@@ -21,7 +20,6 @@ module;
 
 #define DllExport __declspec(dllexport)
 
-export module Monitor.Detours;
 import Detours;
 import Monitor.Shared;
 

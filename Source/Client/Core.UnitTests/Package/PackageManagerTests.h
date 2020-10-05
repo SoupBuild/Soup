@@ -382,7 +382,7 @@ Dependencies = [
 "TheirPackage@2.2.2",
 ]
 )";
-			auto& mockRecipeFile = fileSystem->GetMockFile(Path("C:/TestLocation/Recipe.toml"));
+			auto mockRecipeFile = fileSystem->GetMockFile(Path("C:/TestLocation/Recipe.toml"));
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 
@@ -531,7 +531,7 @@ Dependencies = [
 "TheirPackage@2.2.2",
 ]
 )";
-			auto& mockRecipeFile = fileSystem->GetMockFile(Path("C:/TestLocation/Recipe.toml"));
+			auto mockRecipeFile = fileSystem->GetMockFile(Path("C:/TestLocation/Recipe.toml"));
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 
@@ -658,7 +658,7 @@ Dependencies = [
 "TheirPackage@2.2.2",
 ]
 )";
-			auto& mockRecipeFile = fileSystem->GetMockFile(Path("C:/TestLocation/Recipe.toml"));
+			auto mockRecipeFile = fileSystem->GetMockFile(Path("C:/TestLocation/Recipe.toml"));
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 
