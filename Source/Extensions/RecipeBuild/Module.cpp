@@ -23,11 +23,11 @@ export module RecipeBuild;
 
 import Opal;
 import Soup.Build;
-import Soup.Build.Generate;
+import Soup.Build.Runtime;
 import Soup.Build.Utilities;
-import SoupCompiler;
-import SoupCompilerClang;
-import SoupCompilerMSVC;
+import Soup.Compiler;
+import Soup.Compiler.Clang;
+import Soup.Compiler.MSVC;
 
 using namespace Opal;
 

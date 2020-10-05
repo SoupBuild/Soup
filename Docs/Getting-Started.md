@@ -16,7 +16,7 @@ Note: While Clang will work, there is still work to auto-detect an installation 
 ### Run Installer
 Download and run the Soup.msi installer. 
 
-Note: The installer is not yet signed and you will have to ignore some scary warnings. We will start paying for the cerfiticate when it is no longer in Alpha.
+Note: The installer is not yet signed and you will have to ignore some scary warnings. We will start paying for the certificate when it is no longer in Alpha.
 
 ### Download Archive
 Unzip the Soup release somewhere safe and add it to your path in a command prompt.

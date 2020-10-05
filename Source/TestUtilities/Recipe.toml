@@ -1,4 +1,4 @@
-Name = "SoupTestUtilities"
+Name = "Soup.Test.Utilities"
 Version = "0.1.0"
 Dependencies = [
 	"Soup.Test.Assert@0.1.6",

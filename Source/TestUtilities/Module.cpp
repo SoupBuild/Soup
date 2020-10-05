@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-export module SoupTestUtilities;
+export module Soup.Test.Utilities;
 
 import Opal;
 import Soup.Test.Assert;

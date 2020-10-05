@@ -115,39 +115,5 @@ namespace Soup
 
 			return packagePath;
 		}
-
-		static Path GetOutputDirectory(
-			const std::string& compiler,
-			const std::string& flavor,
-			const std::string& system,
-			const std::string& architecture)
-		{
-			// Setup the output directories
-			return Path("out") +
-				Path(compiler) +
-				Path(flavor) +
-				Path(system) +
-				Path(architecture);
-		}
-
-		static Path GetObjectDirectory(
-			const std::string& compiler,
-			const std::string& flavor,
-			const std::string& system,
-			const std::string& architecture)
-		{
-			// Setup the object directories
-			return GetOutputDirectory(compiler, flavor, system, architecture) + Path("obj");
-		}
-
-		static Path GetBinaryDirectory(
-			const std::string& compiler,
-			const std::string& flavor,
-			const std::string& system,
-			const std::string& architecture)
-		{
-			// Setup the binary directories
-			return GetOutputDirectory(compiler, flavor, system, architecture) + Path("bin");
-		}
 	};
 }

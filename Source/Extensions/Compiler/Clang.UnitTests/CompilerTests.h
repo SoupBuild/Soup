@@ -30,7 +30,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			arguments.TargetFile = Path("obj/File.o");
 			arguments.RootDirectory = Path("Source");
 
-			auto buildState = Build::Generate::BuildState(Build::Generate::ValueTable());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
 			auto result = uut.CreateCompileOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
@@ -70,7 +70,7 @@ namespace Soup::Compiler::Clang::UnitTests
 			});
 			arguments.ExportModule = true;
 
-			auto buildState = Build::Generate::BuildState(Build::Generate::ValueTable());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
 			auto result = uut.CreateCompileOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
@@ -117,7 +117,7 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("File.mock.o"),
 			});
 
-			auto buildState = Build::Generate::BuildState(Build::Generate::ValueTable());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
 			auto result = uut.CreateLinkOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result
@@ -154,7 +154,7 @@ namespace Soup::Compiler::Clang::UnitTests
 				Path("Library.mock.a"),
 			});
 
-			auto buildState = Build::Generate::BuildState(Build::Generate::ValueTable());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
 			auto result = uut.CreateLinkOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify result

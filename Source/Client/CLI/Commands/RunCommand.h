@@ -71,7 +71,7 @@ namespace Soup::Client
 			auto system = "win32";
 			auto architecture = "x64";
 			auto compilerName = config.GetRuntimeCompiler();
-			auto binaryDirectory = RecipeExtensions::GetBinaryDirectory(
+			auto binaryDirectory = Build::Runtime::BuildGenerateEngine::GetBinaryDirectory(
 				compilerName,
 				flavor,
 				system,

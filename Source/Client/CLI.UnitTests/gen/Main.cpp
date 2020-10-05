@@ -1,5 +1,5 @@
 import Antlr4Runtime;
-import SoupCore;
+import Soup.Core;
 import Soup.Test.Assert;
 
 using namespace Soup::Test;
