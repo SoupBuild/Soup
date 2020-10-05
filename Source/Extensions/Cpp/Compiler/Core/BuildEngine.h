@@ -1,4 +1,4 @@
-﻿﻿// <copyright file="BuildEngine.h" company="Soup">
+﻿// <copyright file="BuildEngine.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -347,16 +347,16 @@ namespace Soup::Cpp::Compiler
 			}
 		}
 
-		Soup::Compiler::OptimizationLevel Convert(BuildOptimizationLevel value)
+		Soup::Cpp::Compiler::OptimizationLevel Convert(BuildOptimizationLevel value)
 		{
 			switch (value)
 			{
 				case BuildOptimizationLevel::None:
-					return Soup::Compiler::OptimizationLevel::None;
+					return Soup::Cpp::Compiler::OptimizationLevel::None;
 				case BuildOptimizationLevel::Speed:
-					return Soup::Compiler::OptimizationLevel::Speed;
+					return Soup::Cpp::Compiler::OptimizationLevel::Speed;
 				case BuildOptimizationLevel::Size:
-					return Soup::Compiler::OptimizationLevel::Size;
+					return Soup::Cpp::Compiler::OptimizationLevel::Size;
 				default:
 					throw std::runtime_error("Unknown BuildOptimizationLevel.");
 			}

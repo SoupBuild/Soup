@@ -15,5 +15,4 @@ import Soup.Cpp.Compiler.MSVC;
 
 using namespace Opal;
 
-#include "ArgumentBuilder.h"
 #include "Compiler.h"
