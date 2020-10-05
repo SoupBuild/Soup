@@ -98,7 +98,7 @@ namespace Soup::Build::UnitTests
 				Path("TestFiles/SimpleRecipe/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
-					Version = "1.2.3"
+					Language = "C++"
 				)")));
 
 			auto directory = Path("TestFiles/SimpleRecipe/Recipe.toml");
@@ -109,7 +109,7 @@ namespace Soup::Build::UnitTests
 
 			auto expected = Recipe(
 				"MyPackage",
-				SemanticVersion(1, 2, 3));
+				"C++");
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 
@@ -145,7 +145,7 @@ namespace Soup::Build::UnitTests
 			auto directory = Path("TestFiles/SimpleRecipe/Recipe.toml");
 			auto recipe = Recipe(
 				"MyPackage",
-				SemanticVersion(1, 2, 3));
+				"C++");
 			RecipeExtensions::SaveToFile(directory, recipe);
 
 			// Verify expected file system requests
@@ -166,7 +166,7 @@ namespace Soup::Build::UnitTests
 			// Verify the contents of the build file
 			std::string expectedBuildFile = 
 R"(Name = "MyPackage"
-Version = "1.2.3"
+Language = "C++"
 )";
 			auto& mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.toml"));
 			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");
@@ -223,7 +223,7 @@ Version = "1.2.3"
 				Path("Root/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
-					Version = "1.2.3"
+					Language = "C++"
 				)")));
 
 			auto packagePath = Path("Root/");

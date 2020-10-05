@@ -15,7 +15,7 @@ namespace Soup::Build::UnitTests
 			auto uut = Recipe();
 
 			Assert::AreEqual<std::string_view>("", uut.GetName(), "Verify name matches expected.");
-			Assert::AreEqual<std::string_view>("", uut.GetVersion(), "Verify language matches expected.");
+			Assert::AreEqual<std::string_view>("", uut.GetLanguage(), "Verify language matches expected.");
 			Assert::IsFalse(uut.HasVersion(), "Verify has no version.");
 			Assert::IsFalse(uut.HasDependencies(), "Verify has no dependencies.");
 			Assert::IsFalse(uut.HasDevDependencies(), "Verify has no dev dependencies.");
@@ -126,7 +126,7 @@ namespace Soup::Build::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++"
+				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage")),
@@ -138,7 +138,7 @@ namespace Soup::Build::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C#"
+					"C#",
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage")),

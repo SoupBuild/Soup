@@ -123,7 +123,7 @@ namespace Soup::Build::UnitTests
 
 			auto expected = 
 R"(Name = "MyPackage"
-Laguage = "C++"
+Language = "C++"
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");

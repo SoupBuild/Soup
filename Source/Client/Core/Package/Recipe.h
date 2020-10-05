@@ -28,7 +28,7 @@ namespace Soup
 			_table()
 		{
 			SetName("");
-			SetVersion(SemanticVersion());
+			SetLanguage("");
 		}
 
 		/// <summary>
