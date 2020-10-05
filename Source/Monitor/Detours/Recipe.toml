@@ -1,4 +1,5 @@
 Name = "Monitor.Detours"
+Language = "C++"
 Version = "1.0.0"
 Type = "DynamicLibrary"
 Dependencies = [
@@ -9,7 +10,7 @@ Defines = [
 	# "ENABLE_MONITOR_DEBUG",
 	# "TRACE_DETOUR_CLIENT",
 ]
-Public = "Module.cpp"
+Interface = "Module.cpp"
 PlatformLibraries = [
 	"Advapi32.lib",
 	"shell32.lib",

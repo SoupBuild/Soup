@@ -1,4 +1,5 @@
 Name = "Soup.Cpp.Compiler.Clang"
+Language = "C++"
 Version = "0.3.0"
 Dependencies = [
 	"../Core/",
@@ -7,4 +8,4 @@ Dependencies = [
 	# "Soup.Build.Compiler.MSVC@0.3.0",
 ]
 
-Public = "Module.cpp"
+Interface = "Module.cpp"

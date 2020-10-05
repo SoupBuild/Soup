@@ -1,3 +1,4 @@
 Name = "MyLibrary"
+Language = "C++"
 Version = "1.0.0"
-Public = "Module.cpp"
+Interface = "Module.cpp"

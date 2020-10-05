@@ -40,5 +40,4 @@ using namespace Opal;
 #include "Package/Recipe.h"
 #include "Package/RecipeBuildManager.h"
 #include "Package/RecipeExtensions.h"
-#include "Package/RecipeJson.h"
 #include "Package/RecipeToml.h"

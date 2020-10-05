@@ -1,10 +1,11 @@
 Name = "Soup.Core"
+Language = "C++"
 Version = "0.1.0"
 
 Dependencies = [
 	"../../../Dependencies/LzmaSdk/CPP/Library/",
-	"json11@1.0.0",
-	"toml11@1.0.0",
+	"json11@1.0.1",
+	"toml11@1.0.1",
 	"../OpalExtensions/",
 	"../../Build/Contracts/",
 	# "Soup.Build@0.3.0",
@@ -15,7 +16,7 @@ Dependencies = [
 Defines = [
 	# "LOCAL_DEBUG",
 ]
-Public = "Module.cpp"
+Interface = "Module.cpp"
 IncludePaths = [
 	"./",
 	"Compiler/",
@@ -24,7 +25,7 @@ IncludePaths = [
 
 DevDependencies = [
 	# "../../Extensions/TestBuild/",
-	"Soup.Test.Assert@0.1.6",
+	"Soup.Test.Assert@0.1.7",
 	"../../TestUtilities/",
 ]
 

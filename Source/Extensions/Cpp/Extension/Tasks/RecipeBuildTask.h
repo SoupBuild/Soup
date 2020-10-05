@@ -182,9 +182,9 @@ namespace Soup::Cpp
 
 			// Load the module interface file if present
 			auto moduleInterfaceSourceFile = std::string();
-			if (recipeTable.HasValue("Public"))
+			if (recipeTable.HasValue("Interface"))
 			{
-				auto moduleInterfaceSourceFilePath = Path(recipeTable.GetValue("Public").AsString().GetValue());
+				auto moduleInterfaceSourceFilePath = Path(recipeTable.GetValue("Interface").AsString().GetValue());
 				
 				// TODO: Clang requires annoying cppm extension
 				if (compilerName == "Clang")
@@ -236,58 +236,49 @@ namespace Soup::Cpp
 			buildTable.EnsureValue("Source").EnsureList().Append(sourceFiles);
 
 			// Convert the recipe type to the required build type
-			Soup::Cpp::Compiler::BuildTargetType targetType;
-			auto recipeType = Soup::Build::Utilities::RecipeType::StaticLibrary;
+			auto targetType = Soup::Cpp::Compiler::BuildTargetType::StaticLibrary;
 			if (recipeTable.HasValue("Type"))
 			{
-				recipeType = Soup::Build::Utilities::ParseRecipeType(recipeTable.GetValue("Type").AsString().GetValue());
-			}
-
-			switch (recipeType)
-			{
-				case Soup::Build::Utilities::RecipeType::StaticLibrary:
-					targetType = Soup::Cpp::Compiler::BuildTargetType::StaticLibrary;
-					break;
-				case Soup::Build::Utilities::RecipeType::DynamicLibrary:
-					targetType = Soup::Cpp::Compiler::BuildTargetType::DynamicLibrary;
-					break;
-				case Soup::Build::Utilities::RecipeType::Executable:
-					targetType = Soup::Cpp::Compiler::BuildTargetType::Executable;
-					break;
-				default:
-					throw std::runtime_error("Unknown build target type.");
+				targetType = ParseType(recipeTable.GetValue("Type").AsString().GetValue());
 			}
 
 			buildTable.EnsureValue("TargetType").SetValueInteger(static_cast<int64_t>(targetType));
 
 			// Convert the recipe language version to the required build language
-			auto recipeLanguageVersion = Soup::Build::Utilities::RecipeLanguageVersion::CPP20;
-			if (recipeTable.HasValue("Language"))
+			auto languageStandard = Soup::Cpp::Compiler::LanguageStandard::CPP20;
+			if (recipeTable.HasValue("LanguageVersion"))
 			{
-				recipeLanguageVersion = Soup::Build::Utilities::ParseRecipeLanguageVersion(
-					recipeTable.GetValue("Language").AsString().GetValue());
-			}
-
-			Soup::Cpp::Compiler::LanguageStandard languageStandard;
-			switch (recipeLanguageVersion)
-			{
-				case Soup::Build::Utilities::RecipeLanguageVersion::CPP11:
-					languageStandard = Soup::Cpp::Compiler::LanguageStandard::CPP11;
-					break;
-				case Soup::Build::Utilities::RecipeLanguageVersion::CPP14:
-					languageStandard = Soup::Cpp::Compiler::LanguageStandard::CPP14;
-					break;
-				case Soup::Build::Utilities::RecipeLanguageVersion::CPP17:
-					languageStandard = Soup::Cpp::Compiler::LanguageStandard::CPP17;
-					break;
-				case Soup::Build::Utilities::RecipeLanguageVersion::CPP20:
-					languageStandard = Soup::Cpp::Compiler::LanguageStandard::CPP20;
-					break;
-				default:
-					throw std::runtime_error("Unknown recipe language version.");
+				languageStandard = ParseLanguageStandard(
+					recipeTable.GetValue("LanguageVersion").AsString().GetValue());
 			}
 
 			buildTable.EnsureValue("LanguageStandard").SetValueInteger(static_cast<int64_t>(languageStandard));
+		}
+
+		static Soup::Cpp::Compiler::BuildTargetType ParseType(std::string_view value)
+		{
+			if (value == "Executable")
+				return Soup::Cpp::Compiler::BuildTargetType::Executable;
+			else if (value == "StaticLibrary")
+				return Soup::Cpp::Compiler::BuildTargetType::StaticLibrary;
+			else if (value == "DynamicLibrary")
+				return Soup::Cpp::Compiler::BuildTargetType::DynamicLibrary;
+			else
+				throw std::runtime_error("Unknown target type value.");
+		}
+
+		static Soup::Cpp::Compiler::LanguageStandard ParseLanguageStandard(const std::string& value)
+		{
+			if (value == "C++11")
+				return Soup::Cpp::Compiler::LanguageStandard::CPP11;
+			else if (value == "C++14")
+				return Soup::Cpp::Compiler::LanguageStandard::CPP14;
+			else if (value == "C++17")
+				return Soup::Cpp::Compiler::LanguageStandard::CPP17;
+			else if (value == "C++20")
+				return Soup::Cpp::Compiler::LanguageStandard::CPP20;
+			else
+				throw std::runtime_error("Unknown recipe language standard value.");
 		}
 
 	private:

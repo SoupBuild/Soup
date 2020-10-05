@@ -121,33 +121,16 @@ namespace Soup::CSharp
 				windows10KitVersionIncludePath + Path("/shared/"),
 			});
 
-			// Set the include paths
-			auto platformLibraryPaths = std::vector<Path>();
-			if (architectureName == "x64")
-			{
-				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x64/"));
-				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x64/"));
-				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x64/"));
-				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x64/"));
-			}
-			else if (architectureName == "x86")
-			{
-				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x86/"));
-				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x86/"));
-				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x86/"));
-				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x86/"));
-			}
-
 			// Set the platform definitions
 			auto platformPreprocessorDefinitions = std::vector<std::string>({
-				 "TRACE;DEBUG;NETCOREAPP;NETCOREAPP3_1"
+				"TRACE",
+				"DEBUG",
+				"NETCOREAPP",
+				"NETCOREAPP3_1",
 			});
 
-			if (architectureName == "x86")
-				platformPreprocessorDefinitions.push_back("WIN32");
-
 			// Set the platform libraries
-			"C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\"
+			// TODO: "C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\"
 			auto platformLibraries = std::vector<Path>({
 				Path("Microsoft.CSharp.dll"),
 				Path("Microsoft.VisualBasic.Core.dll"),
@@ -302,8 +285,6 @@ namespace Soup::CSharp
 				Path("WindowsBase.dll"),
 			});
 
-			state.EnsureValue("PlatformIncludePaths").SetValuePathList(platformIncludePaths);
-			state.EnsureValue("PlatformLibraryPaths").SetValuePathList(platformLibraryPaths);
 			state.EnsureValue("PlatformLibraries").SetValuePathList(platformLibraries);
 			state.EnsureValue("PlatformPreprocessorDefinitions").SetValueStringList(platformPreprocessorDefinitions);
 		}

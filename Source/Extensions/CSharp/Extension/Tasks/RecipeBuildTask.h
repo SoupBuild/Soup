@@ -180,21 +180,6 @@ namespace Soup::CSharp
 			auto binaryDirectory = rootTable.GetValue("BinaryDirectory").AsString().GetValue();
 			auto objectDirectory = rootTable.GetValue("ObjectDirectory").AsString().GetValue();
 
-			// Load the module interface file if present
-			auto moduleInterfaceSourceFile = std::string();
-			if (recipeTable.HasValue("Public"))
-			{
-				auto moduleInterfaceSourceFilePath = Path(recipeTable.GetValue("Public").AsString().GetValue());
-				
-				// TODO: Clang requires annoying cppm extension
-				if (compilerName == "Clang")
-				{
-					moduleInterfaceSourceFilePath.SetFileExtension("cppm");
-				}
-
-				moduleInterfaceSourceFile = moduleInterfaceSourceFilePath.ToString();
-			}
-
 			// Load the source files if present
 			auto sourceFiles = std::vector<std::string>();
 			if (recipeTable.HasValue("Source"))
@@ -225,7 +210,6 @@ namespace Soup::CSharp
 			buildTable.EnsureValue("WorkingDirectory").SetValueString(packageRoot.ToString());
 			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory);
 			buildTable.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory);
-			buildTable.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile);
 			buildTable.EnsureValue("EnableOptimization").SetValueBoolean(enableOptimization);
 			buildTable.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(generateSourceDebugInfo);
 
@@ -234,55 +218,23 @@ namespace Soup::CSharp
 			buildTable.EnsureValue("Source").EnsureList().Append(sourceFiles);
 
 			// Convert the recipe type to the required build type
-			Soup::CSharp::Compiler::BuildTargetType targetType;
-			auto recipeType = Soup::CSharp::Compiler::BuildTargetType::Library;
+			auto targetType = Soup::CSharp::Compiler::BuildTargetType::Library;
 			if (recipeTable.HasValue("Type"))
 			{
-				recipeType = Soup::Build::Utilities::ParseRecipeType(recipeTable.GetValue("Type").AsString().GetValue());
-			}
-
-			switch (recipeType)
-			{
-				case Soup::Build::Utilities::RecipeType::Library:
-					targetType = ;
-					break;
-				case Soup::Build::Utilities::RecipeType::Executable:
-					targetType = Soup::CSharp::Compiler::BuildTargetType::Executable;
-					break;
-				default:
-					throw std::runtime_error("Unknown build target type.");
+				targetType = ParseType(recipeTable.GetValue("Type").AsString().GetValue());
 			}
 
 			buildTable.EnsureValue("TargetType").SetValueInteger(static_cast<int64_t>(targetType));
+		}
 
-			// Convert the recipe language version to the required build language
-			auto recipeLanguageVersion = Soup::Build::Utilities::RecipeLanguageVersion::CPP20;
-			if (recipeTable.HasValue("Language"))
-			{
-				recipeLanguageVersion = Soup::Build::Utilities::ParseRecipeLanguageVersion(
-					recipeTable.GetValue("Language").AsString().GetValue());
-			}
-
-			Soup::CSharp::Compiler::LanguageStandard languageStandard;
-			switch (recipeLanguageVersion)
-			{
-				case Soup::Build::Utilities::RecipeLanguageVersion::CPP11:
-					languageStandard = Soup::CSharp::Compiler::LanguageStandard::CPP11;
-					break;
-				case Soup::Build::Utilities::RecipeLanguageVersion::CPP14:
-					languageStandard = Soup::CSharp::Compiler::LanguageStandard::CPP14;
-					break;
-				case Soup::Build::Utilities::RecipeLanguageVersion::CPP17:
-					languageStandard = Soup::CSharp::Compiler::LanguageStandard::CPP17;
-					break;
-				case Soup::Build::Utilities::RecipeLanguageVersion::CPP20:
-					languageStandard = Soup::CSharp::Compiler::LanguageStandard::CPP20;
-					break;
-				default:
-					throw std::runtime_error("Unknown recipe language version.");
-			}
-
-			buildTable.EnsureValue("LanguageStandard").SetValueInteger(static_cast<int64_t>(languageStandard));
+		static Soup::CSharp::Compiler::BuildTargetType ParseType(std::string_view value)
+		{
+			if (value == "Executable")
+				return Soup::CSharp::Compiler::BuildTargetType::Executable;
+			else if (value == "Library")
+				return Soup::CSharp::Compiler::BuildTargetType::Library;
+			else
+				throw std::runtime_error("Unknown target type value.");
 		}
 
 	private:

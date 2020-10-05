@@ -1,9 +1,10 @@
 Name = "Soup.Build"
+Language = "C++"
 Description = """The core Soup Build Contracts used to define the stable Binary Interface 
 layer between the Build Generate engine and the Extensions."""
 Version = "0.3.0"
 Dependencies = [
-	"Opal@0.1.5",
+	"Opal@0.1.6",
 ]
 
-Public = "Module.cpp"
+Interface = "Module.cpp"

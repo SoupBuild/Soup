@@ -15,17 +15,11 @@ using namespace Opal;
 using namespace Opal::System;
 using namespace Soup::Test;
 
-#include "RecipeLanguageVersionTests.gen.h"
-#include "RecipeTypeTests.gen.h"
-
 int main()
 {
 	std::cout << "Running Tests..." << std::endl;
 
 	TestState state = { 0, 0 };
-
-	state += RunRecipeLanguageVersionTests();
-	state += RunRecipeTypeTests();
 
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;

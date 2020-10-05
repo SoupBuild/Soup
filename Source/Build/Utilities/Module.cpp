@@ -20,6 +20,3 @@ using namespace Opal;
 #include "Wrapper/ValuePrimitiveWrapper.h"
 
 #include "BuildOperationExtensions.h"
-
-#include "RecipeLanguageVersion.h"
-#include "RecipeType.h"

@@ -38,12 +38,16 @@ namespace Soup::Client
 
 			auto recipe = Recipe(
 				workingDirectory.GetFileName(),
-				SemanticVersion(1, 0, 0));
+				"C++",
+				SemanticVersion(1, 0, 0),
+				std::nullopt,
+				std::nullopt);
 
-			recipe.SetType(Build::Utilities::RecipeType::Executable);
-			recipe.SetSource(std::vector<std::string>({
-				"Main.cpp",
-			}));
+			// TODO: 
+			// recipe.SetType("Executable");
+			// recipe.SetSource(std::vector<std::string>({
+			// 	"Main.cpp",
+			// }));
 
 			UpdateDefaultValues(recipe);
 

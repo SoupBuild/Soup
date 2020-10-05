@@ -1,4 +1,5 @@
 Name = "MyApplication"
+Language = "C++"
 Type = "Executable"
 Version = "1.0.0"
 Dependencies = [

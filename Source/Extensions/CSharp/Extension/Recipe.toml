@@ -1,12 +1,13 @@
 Name = "Soup.CSharp"
+Language = "C++"
 Type = "DynamicLibrary"
 Version = "1.0.0"
 Dependencies = [
-	"Opal@0.1.5",
+	"Opal@0.1.6",
 	"../Compiler/Core/",
 ]
 
-Public = "Module.cpp"
+Interface = "Module.cpp"
 Source = [
 	"RegisterBuildExtension.cpp",
 ]
