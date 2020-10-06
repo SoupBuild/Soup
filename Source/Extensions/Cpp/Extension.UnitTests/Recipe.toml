@@ -1,0 +1,15 @@
+Name = "Soup.Cpp.UnitTests"
+Version = "1.0.0"
+Type = "Executable"
+Dependencies = [
+	"json11@1.0.1",
+	"../../../Dependencies/SoupTest/Assert/",
+	"../RecipeBuildExtension/",
+	"../../TestUtilities/"
+]
+Source = [
+	"gen/Main.cpp"
+]
+IncludePaths = [
+	"./"
+]

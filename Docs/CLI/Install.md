@@ -20,7 +20,7 @@ Install the latest `json11` package and register it in the Recipe file.
 soup install json11
 ```
 
-Install version `1.0.0` of the `json11` package and register it in the Recipe file.
+Install version `1.0.1` of the `json11` package and register it in the Recipe file.
 ```
-soup install json11@1.0.0
+soup install json11@1.0.1
 ```
