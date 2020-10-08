@@ -10,7 +10,7 @@ Name = "ParseJsonFile"
 Version = "1.0.0"
 Type = "Executable"
 Dependencies = [
-    "json11@1.0.0",
+    "json11@1.0.1",
 ]
 RuntimeDependencies = [
     "Message.json"

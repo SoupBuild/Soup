@@ -2,13 +2,13 @@
 
 namespace Soup::Test
 {
-	using CreateCompiler = std::function<std::shared_ptr<Soup::Compiler::ICompiler>(Soup::Build::Utilities::ValueTableWrapper&)>;
+	using CreateCompiler = std::function<std::shared_ptr<Cpp::Compiler::ICompiler>(Build::Utilities::ValueTableWrapper&)>;
 	using CompilerFactory = std::map<std::string, CreateCompiler>;
 
 	/// <summary>
 	/// The simple build task that will run after the main build task
 	/// </summary>
-	class TestBuildTask : public Memory::ReferenceCounted<Soup::Build::IBuildTask>
+	class TestBuildTask : public Memory::ReferenceCounted<Build::IBuildTask>
 	{
 	public:
 		TestBuildTask(CompilerFactory compilerFactory) :
@@ -27,7 +27,7 @@ namespace Soup::Test
 		/// <summary>
 		/// Get the run before list
 		/// </summary>
-		const Soup::Build::IReadOnlyList<const char*>& GetRunBeforeList() const noexcept override final
+		const Build::IReadOnlyList<const char*>& GetRunBeforeList() const noexcept override final
 		{
 			return _runBeforeList;
 		}
@@ -35,7 +35,7 @@ namespace Soup::Test
 		/// <summary>
 		/// Get the run after list
 		/// </summary>
-		const Soup::Build::IReadOnlyList<const char*>& GetRunAfterList() const noexcept override final
+		const Build::IReadOnlyList<const char*>& GetRunAfterList() const noexcept override final
 		{
 			return _runAfterList;
 		}
@@ -43,27 +43,27 @@ namespace Soup::Test
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		Soup::Build::ApiCallResult TryExecute(
-			Soup::Build::IBuildState& buildState) noexcept override final
+		Build::ApiCallResult TryExecute(
+			Build::IBuildState& buildState) noexcept override final
 		{
-			auto buildStateWrapper = Soup::Build::Utilities::BuildStateWrapper(buildState);
+			auto buildStateWrapper = Build::Utilities::BuildStateWrapper(buildState);
 
 			try
 			{
 				// We cannot throw accross the DLL boundary for a build extension
 				// So all internal errors must be converted to error codes
 				Execute(buildStateWrapper);
-				return Soup::Build::ApiCallResult::Success;
+				return Build::ApiCallResult::Success;
 			}
 			catch(const std::exception& ex)
 			{
 				buildStateWrapper.LogError(ex.what());
-				return Soup::Build::ApiCallResult::Error;
+				return Build::ApiCallResult::Error;
 			}
 			catch(...)
 			{
 				buildStateWrapper.LogError("Unknown Error");
-				return Soup::Build::ApiCallResult::Error;
+				return Build::ApiCallResult::Error;
 			}
 		}
 
@@ -71,7 +71,7 @@ namespace Soup::Test
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
+		void Execute(Build::Utilities::BuildStateWrapper& buildState)
 		{
 			auto activeState = buildState.GetActiveState();
 			auto sharedState = buildState.GetSharedState();
@@ -83,7 +83,7 @@ namespace Soup::Test
 				throw std::runtime_error("");
 			}
 
-			auto arguments = Soup::Compiler::BuildArguments();
+			auto arguments = Cpp::Compiler::BuildArguments();
 			arguments.TargetArchitecture = activeState.GetValue("BuildArchitecture").AsString().GetValue();
 
 			// Load up the common build properties from the original Build table in the active state
@@ -102,6 +102,10 @@ namespace Soup::Test
 			// Load up the dev dependencies build input to add extra test runtime libraries
 			LoadDevDependencyBuildInput(buildState, activeState, arguments);
 
+			// Update to place the output in a sub folder
+			arguments.ObjectDirectory = arguments.ObjectDirectory + Path("Test");
+			arguments.BinaryDirectory = arguments.BinaryDirectory + Path("Test");
+
 			// Initialize the compiler to use
 			auto compilerName = std::string(activeState.GetValue("CompilerName").AsString().GetValue());
 			auto findCompilerFactory = _compilerFactory.find(compilerName);
@@ -114,7 +118,7 @@ namespace Soup::Test
 			auto createCompiler = findCompilerFactory->second;
 			auto compiler = createCompiler(activeState);
 
-			auto buildEngine = Soup::Compiler::BuildEngine(compiler);
+			auto buildEngine = Cpp::Compiler::BuildEngine(compiler);
 			auto buildResult = buildEngine.Execute(buildState, arguments);
 
 			// Create the operation to run tests during build
@@ -138,7 +142,7 @@ namespace Soup::Test
 					outputFiles));
 
 			// Run the test harness
-			Soup::Build::Utilities::BuildOperationExtensions::AddLeafChild(
+			Build::Utilities::BuildOperationExtensions::AddLeafChild(
 				buildResult.BuildOperations,
 				runTestsOperation);
 
@@ -147,10 +151,10 @@ namespace Soup::Test
 		}
 
 		void LoadBuildProperties(
-			Soup::Build::Utilities::ValueTableWrapper& buildTable,
-			Soup::Compiler::BuildArguments& arguments)
+			Build::Utilities::ValueTableWrapper& buildTable,
+			Cpp::Compiler::BuildArguments& arguments)
 		{
-			arguments.LanguageStandard = static_cast<Soup::Compiler::LanguageStandard>(
+			arguments.LanguageStandard = static_cast<Cpp::Compiler::LanguageStandard>(
 				buildTable.GetValue("LanguageStandard").AsInteger().GetValue());
 			arguments.WorkingDirectory = Path(buildTable.GetValue("WorkingDirectory").AsString().GetValue());
 			arguments.ObjectDirectory = Path(buildTable.GetValue("ObjectDirectory").AsString().GetValue());
@@ -160,6 +164,12 @@ namespace Soup::Test
 			{
 				arguments.IncludeDirectories =
 					buildTable.GetValue("IncludeDirectories").AsList().CopyAsPathVector();
+			}
+
+			if (buildTable.HasValue("PlatformLibraries"))
+			{
+				arguments.PlatformLinkDependencies =
+					buildTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
 			}
 
 			if (buildTable.HasValue("PlatformLibraries"))
@@ -188,12 +198,12 @@ namespace Soup::Test
 
 			if (buildTable.HasValue("OptimizationLevel"))
 			{
-				arguments.OptimizationLevel = static_cast<Soup::Compiler::BuildOptimizationLevel>(
+				arguments.OptimizationLevel = static_cast<Cpp::Compiler::BuildOptimizationLevel>(
 					buildTable.GetValue("OptimizationLevel").AsInteger().GetValue());
 			}
 			else
 			{
-				arguments.OptimizationLevel = Soup::Compiler::BuildOptimizationLevel::None;
+				arguments.OptimizationLevel = Cpp::Compiler::BuildOptimizationLevel::None;
 			}
 
 			if (buildTable.HasValue("GenerateSourceDebugInfo"))
@@ -208,9 +218,9 @@ namespace Soup::Test
 		}
 
 		void LoadTestBuildProperties(
-			Soup::Build::Utilities::BuildStateWrapper& buildState,
-			Soup::Build::Utilities::ValueTableWrapper& testTable,
-			Soup::Compiler::BuildArguments& arguments)
+			Build::Utilities::BuildStateWrapper& buildState,
+			Build::Utilities::ValueTableWrapper& testTable,
+			Cpp::Compiler::BuildArguments& arguments)
 		{
 			if (!testTable.HasValue("Source"))
 			{
@@ -229,13 +239,20 @@ namespace Soup::Test
 					testTable.GetValue("IncludePaths").AsList().CopyAsPathVector());
 			}
 
+			if (testTable.HasValue("PlatformLibraries"))
+			{
+				arguments.PlatformLinkDependencies = CombineUnique(
+					arguments.PlatformLinkDependencies,
+					testTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector());
+			}
+
 			arguments.TargetName = "TestHarness";
-			arguments.TargetType = Soup::Compiler::BuildTargetType::Executable;
+			arguments.TargetType = Cpp::Compiler::BuildTargetType::Executable;
 		}
 
 		void LoadDependencyBuildInput(
-			Soup::Build::Utilities::ValueTableWrapper& buildTable,
-			Soup::Compiler::BuildArguments& arguments)
+			Build::Utilities::ValueTableWrapper& buildTable,
+			Cpp::Compiler::BuildArguments& arguments)
 		{
 			// Load the runtime dependencies
 			if (buildTable.HasValue("RuntimeDependencies"))
@@ -260,9 +277,9 @@ namespace Soup::Test
 		}
 
 		static void LoadDevDependencyBuildInput(
-			Soup::Build::Utilities::BuildStateWrapper& buildState,
-			Soup::Build::Utilities::ValueTableWrapper& activeState,
-			Soup::Compiler::BuildArguments& arguments)
+			Build::Utilities::BuildStateWrapper& buildState,
+			Build::Utilities::ValueTableWrapper& activeState,
+			Cpp::Compiler::BuildArguments& arguments)
 		{
 			if (activeState.HasValue("DevDependencies"))
 			{
@@ -350,14 +367,14 @@ namespace Soup::Test
 
 	private:
 		CompilerFactory _compilerFactory;
-		static Soup::Build::Utilities::StringList _runBeforeList;
-		static Soup::Build::Utilities::StringList _runAfterList;
+		static Build::Utilities::StringList _runBeforeList;
+		static Build::Utilities::StringList _runAfterList;
 	};
 
-	Soup::Build::Utilities::StringList TestBuildTask::_runBeforeList =
-		Soup::Build::Utilities::StringList();
-	Soup::Build::Utilities::StringList TestBuildTask::_runAfterList =
-		Soup::Build::Utilities::StringList({
+	Build::Utilities::StringList TestBuildTask::_runBeforeList =
+		Build::Utilities::StringList();
+	Build::Utilities::StringList TestBuildTask::_runAfterList =
+		Build::Utilities::StringList({
 			"Build",
 		});
 }

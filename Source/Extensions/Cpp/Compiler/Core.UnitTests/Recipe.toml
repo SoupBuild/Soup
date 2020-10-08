@@ -1,0 +1,19 @@
+Name = "Soup.Cpp.Compiler.Core.UnitTests"
+Language = "C++"
+Version = "1.0.0"
+Type = "Executable"
+Dependencies = [
+	"../Core/",
+	"../../../../Build/Runtime/",
+	"../../../../TestUtilities/",
+	"Soup.Test.Assert@0.1.7",
+]
+Source = [
+	"gen/Main.cpp"
+]
+IncludePaths = [
+	"./",
+]
+PlatformLibraries = [
+	"shell32.lib",
+]

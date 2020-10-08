@@ -1,0 +1,35 @@
+Name = "Soup.CSharp"
+Language = "C++"
+Type = "DynamicLibrary"
+Version = "1.0.0"
+Dependencies = [
+	"Opal@0.1.7",
+	"../Compiler/Core/",
+]
+
+Interface = "Module.cpp"
+Source = [
+	"RegisterBuildExtension.cpp",
+]
+PlatformLibraries = [
+	"shell32.lib",
+]
+
+DevDependencies = [
+	# "../../TestBuild/",
+	"Soup.Test.Assert@0.1.7",
+	"../../../TestUtilities/",
+]
+
+	[Tests]
+	Source = [
+		"../Extension.UnitTests/gen/Main.cpp"
+	]
+	IncludePaths = [
+		"../Extension.UnitTests/",
+	]
+	PlatformLibraries = [
+		"OleAut32.lib",
+		"shell32.lib",
+		"User32.lib",
+	]

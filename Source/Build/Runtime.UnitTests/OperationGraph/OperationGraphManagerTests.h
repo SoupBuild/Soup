@@ -37,7 +37,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"HIGH: Operation graph file does not exist",
+					"INFO: Operation graph file does not exist",
 				}),
 				testListener->GetMessages(),
 				"Verify messages match expected.");

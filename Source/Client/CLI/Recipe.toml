@@ -1,5 +1,6 @@
 Name = "Soup"
-Version = "0.9.0"
+Language = "C++"
+Version = "0.9.1"
 Type = "Executable"
 
 # Ensure the core build extensions are runtime dependencies
@@ -7,7 +8,8 @@ Dependencies = [
 	"../Core/",
 	"../../Tools/Copy/",
 	"../../Tools/Mkdir/",
-	"../../Extensions/RecipeBuild/",
+	"../../Extensions/Cpp/Extension/",
+	"../../Extensions/CSharp/Extension/",
 	"../../Monitor/Shared/",
 ]
 RuntimeDependencies = [

@@ -31,7 +31,6 @@ using namespace Soup::Test;
 #include "Package/RecipeBuilderTests.gen.h"
 #include "Package/RecipeBuildManagerTests.gen.h"
 #include "Package/RecipeExtensionsTests.gen.h"
-#include "Package/RecipeJsonTests.gen.h"
 #include "Package/RecipeTests.gen.h"
 #include "Package/RecipeTomlTests.gen.h"
 
@@ -53,7 +52,6 @@ int main()
 	state += RunRecipeBuilderTests();
 	state += RunRecipeBuildManagerTests();
 	state += RunRecipeExtensionsTests();
-	state += RunRecipeJsonTests();
 	state += RunRecipeTests();
 	state += RunRecipeTomlTests();
 

@@ -1,9 +1,10 @@
 Name = "Soup.Build.Runtime.UnitTests"
+Language = "C++"
 Version = "1.0.0"
 Type = "Executable"
 Dependencies = [
-	"json11@1.0.0",
-	"Soup.Test.Assert@0.1.6",
+	"json11@1.0.1",
+	"Soup.Test.Assert@0.1.7",
 	"../Runtime/",
 	"../../TestUtilities/",
 ]

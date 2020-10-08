@@ -60,11 +60,12 @@ namespace Soup::Client
 			}
 
 			// Ensure that this is an executable
-			if (recipe.GetType() != Build::Utilities::RecipeType::Executable)
-			{
-				Log::Error("Cannot run a project not of type executable");
-				return;
-			}
+			// TODO: 
+			// if (recipe.GetType() != "Executable")
+			// {
+			// 	Log::Error("Cannot run a project not of type executable");
+			// 	return;
+			// }
 
 			// Ensure the executable exists
 			auto flavor = "debug";

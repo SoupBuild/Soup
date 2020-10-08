@@ -1,4 +1,5 @@
 Name = "Monitor.Detours"
+Language = "C++"
 Version = "1.0.0"
 Type = "DynamicLibrary"
 Dependencies = [

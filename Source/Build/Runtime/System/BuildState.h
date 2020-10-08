@@ -86,14 +86,6 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
-		/// Internal access to build operations
-		/// </summary>
-		IList<IBuildOperation*>& GetBuildOperations()
-		{
-			return _rootOperations;
-		}
-
-		/// <summary>
 		/// Pull out the shared state
 		/// </summary>
 		ValueTable RetrieveSharedState() noexcept

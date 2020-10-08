@@ -1,17 +1,18 @@
 Name = "Soup.Build.Runtime"
+Language = "C++"
 Description = """The Build Runtime that contains the generate and evaluate engines that is responsible for Execution of 
 the minimum set of Build Operations for a fully consistent build."""
 Version = "0.1.0"
 Dependencies = [
-	"json11@1.0.0",
-	"Opal@0.1.5",
+	"json11@1.0.1",
+	"Opal@0.1.7",
 	"../Contracts/",
 	# "Soup.Build@0.3.0",
 	"../Utilities/",
 	# "Soup.Build.Utilities@0.3.0",
 	"../../Monitor/Shared/",
 ]
-Public = "Module.cpp"
+Interface = "Module.cpp"
 Source = [
 	"System/Value.cpp",
 ]

@@ -420,7 +420,7 @@ namespace Soup::Build
 				auto buildExtensionLibraries = std::vector<Path>();
 
 				// Run the RecipeBuild extension to inject core build tasks
-				auto recipeBuildExtensionPath = Path("Soup.RecipeBuild.dll");
+				auto recipeBuildExtensionPath = Path("Soup.Cpp.dll");
 				buildExtensionLibraries.push_back(std::move(recipeBuildExtensionPath));
 
 				if (recipe.HasDevDependencies())

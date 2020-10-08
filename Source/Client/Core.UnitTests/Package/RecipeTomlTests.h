@@ -54,13 +54,13 @@ namespace Soup::Build::UnitTests
 			auto recipe = std::stringstream(
 				R"(
 					Name="MyPackage"
-					Version="1.2.3"
+					Language="C++"
 				)");
 			auto actual = RecipeToml::Deserialize(recipeFile, recipe);
 
 			auto expected = Recipe(
 				"MyPackage",
-				SemanticVersion(1, 2, 3));
+				"C++");
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}
@@ -73,13 +73,13 @@ namespace Soup::Build::UnitTests
 				R"(
 					# This is an awesome project
 					Name="MyPackage"
-					Version="1.2.3"
+					Language="C++"
 				)");
 			auto actual = RecipeToml::Deserialize(recipeFile, recipe);
 
 			auto expected = Recipe(
 				"MyPackage",
-				SemanticVersion(1, 2, 3));
+				"C++");
 			expected.GetNameValue().GetComments().push_back(" This is an awesome project");
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -93,29 +93,19 @@ namespace Soup::Build::UnitTests
 			auto recipe = std::stringstream(
 				R"(
 					Name="MyPackage"
+					Language="C++"
 					Version="1.2.3"
-					Type="Executable"
-					Language="C++17"
 					Dependencies=[]
 					DevDependencies=[]
-					Public="Public.cpp"
-					Source=[]
-					IncludePaths=[]
-					Defines=[]
 				)");
 			auto actual = RecipeToml::Deserialize(recipeFile, recipe);
 
 			auto expected = Recipe(
 				"MyPackage",
+				"C++",
 				SemanticVersion(1, 2, 3),
-				Build::Utilities::RecipeType::Executable,
-				Build::Utilities::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>(),
-				std::vector<PackageReference>(),
-				"Public.cpp",
-				std::vector<std::string>(),
-				std::vector<std::string>(),
-				std::vector<std::string>());
+				std::vector<PackageReference>());
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}
@@ -126,14 +116,14 @@ namespace Soup::Build::UnitTests
 			auto recipeFile = Path("Recipe.toml");
 			auto recipe = Recipe(
 				"MyPackage",
-				SemanticVersion(1, 2, 3));
+				"C++");
 
 			std::stringstream actual;
 			RecipeToml::Serialize(recipe, actual);
 
 			auto expected = 
 R"(Name = "MyPackage"
-Version = "1.2.3"
+Language = "C++"
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");
@@ -145,7 +135,7 @@ Version = "1.2.3"
 			auto recipeFile = Path("Recipe.toml");
 			auto recipe = Recipe(
 				"MyPackage",
-				SemanticVersion(1, 2, 3));
+				"C++");
 
 			recipe.GetNameValue().GetComments().push_back(" This is an awesome package");
 
@@ -155,7 +145,7 @@ Version = "1.2.3"
 			auto expected =
 R"(# This is an awesome package
 Name = "MyPackage"
-Version = "1.2.3"
+Language = "C++"
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");
@@ -167,30 +157,20 @@ Version = "1.2.3"
 			auto recipeFile = Path("Recipe.toml");
 			auto recipe = Recipe(
 				"MyPackage",
+				"C++",
 				SemanticVersion(1, 2, 3),
-				Build::Utilities::RecipeType::Executable,
-				Build::Utilities::RecipeLanguageVersion::CPP17,
 				std::vector<PackageReference>(),
-				std::vector<PackageReference>(),
-				"Public.cpp",
-				std::vector<std::string>(),
-				std::vector<std::string>(),
-				std::vector<std::string>());
+				std::vector<PackageReference>());
 
 			std::stringstream actual;
 			RecipeToml::Serialize(recipe, actual);
 
 			auto expected = 
 R"(Name = "MyPackage"
+Language = "C++"
 Version = "1.2.3"
-Type = "Executable"
-Language = "C++17"
 Dependencies = []
-Public = "Public.cpp"
-Source = []
 DevDependencies = []
-IncludePaths = []
-Defines = []
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");

@@ -14,16 +14,11 @@ namespace Soup
 	export class Recipe
 	{
 	private:
-		static constexpr const char* Property_Name = "Name";
-		static constexpr const char* Property_Version = "Version";
-		static constexpr const char* Property_Type = "Type";
-		static constexpr const char* Property_Language = "Language";
 		static constexpr const char* Property_Dependencies = "Dependencies";
 		static constexpr const char* Property_DevDependencies = "DevDependencies";
-		static constexpr const char* Property_Public = "Public";
-		static constexpr const char* Property_Source = "Source";
-		static constexpr const char* Property_IncludePaths = "IncludePaths";
-		static constexpr const char* Property_Defines = "Defines";
+		static constexpr const char* Property_Language = "Language";
+		static constexpr const char* Property_Name = "Name";
+		static constexpr const char* Property_Version = "Version";
 
 	public:
 		/// <summary>
@@ -33,7 +28,7 @@ namespace Soup
 			_table()
 		{
 			SetName("");
-			SetVersion(SemanticVersion());
+			SetLanguage("");
 		}
 
 		/// <summary>
@@ -41,11 +36,11 @@ namespace Soup
 		/// </summary>
 		Recipe(
 			std::string_view name,
-			SemanticVersion version) :
+			std::string_view language) :
 			_table()
 		{
 			SetName(name);
-			SetVersion(version);
+			SetLanguage(language);
 		}
 
 		/// <summary>
@@ -53,43 +48,23 @@ namespace Soup
 		/// </summary>
 		Recipe(
 			std::string_view name,
-			SemanticVersion version,
-			std::optional<Build::Utilities::RecipeType> type,
-			std::optional<Build::Utilities::RecipeLanguageVersion> languageVersion,
+			std::string_view language,
+			std::optional<SemanticVersion> version,
 			std::optional<std::vector<PackageReference>> dependencies,
-			std::optional<std::vector<PackageReference>> devDependencies,
-			std::optional<std::string> publicFile,
-			std::optional<std::vector<std::string>> source,
-			std::optional<std::vector<std::string>> includePaths,
-			std::optional<std::vector<std::string>> defines) :
+			std::optional<std::vector<PackageReference>> devDependencies) :
 			_table()
 		{
 			SetName(name);
-			SetVersion(version);
+			SetLanguage(language);
 
-			if (type.has_value())
-				SetType(type.value());
-
-			if (languageVersion.has_value())
-				SetLanguageVersion(languageVersion.value());
+			if (version.has_value())
+				SetVersion(version.value());
 
 			if (dependencies.has_value())
 				SetDependencies(dependencies.value());
 
 			if (devDependencies.has_value())
 				SetDevDependencies(devDependencies.value());
-
-			if (publicFile.has_value())
-				SetPublic(publicFile.value());
-
-			if (source.has_value())
-				SetSource(source.value());
-
-			if (includePaths.has_value())
-				SetIncludePaths(includePaths.value());
-
-			if (defines.has_value())
-				SetDefines(defines.value());
 		}
 
 		/// <summary>
@@ -100,8 +75,8 @@ namespace Soup
 		{
 			if (!HasValue(Property_Name))
 				throw std::runtime_error("Missing required property Name");
-			if (!HasValue(Property_Version))
-				throw std::runtime_error("Missing required property Version");
+			if (!HasValue(Property_Language))
+				throw std::runtime_error("Missing required property Language");
 		}
 
 		/// <summary>
@@ -123,10 +98,36 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Gets or sets the package language
+		/// </summary>
+		RecipeValue& GetLanguageValue()
+		{
+			return GetValue(Property_Language);
+		}
+
+		const std::string& GetLanguage()
+		{
+			return GetLanguageValue().AsString();
+		}
+
+		void SetLanguage(std::string_view value)
+		{
+			EnsureValue(Property_Language).SetValueString(std::string(value));
+		}
+
+		/// <summary>
 		/// Gets or sets the package version
 		/// </summary>
+		bool HasVersion()
+		{
+			return HasValue(Property_Version);
+		}
+
 		SemanticVersion GetVersion()
 		{
+			if (!HasVersion())
+				throw std::runtime_error("No version.");
+
 			return SemanticVersion::Parse(
 				GetValue(Property_Version).AsString());
 		}
@@ -134,49 +135,6 @@ namespace Soup
 		void SetVersion(SemanticVersion value)
 		{
 			return EnsureValue(Property_Version).SetValueString(value.ToString());
-		}
-
-		/// <summary>
-		/// Gets or sets the package type
-		/// </summary>
-		bool HasType()
-		{
-			return HasValue(Property_Type);
-		}
-
-		Build::Utilities::RecipeType GetType()
-		{
-			if (!HasType())
-				throw std::runtime_error("No type.");
-
-			return Build::Utilities::ParseRecipeType(GetValue(Property_Type).AsString());
-		}
-
-		void SetType(Build::Utilities::RecipeType value)
-		{
-			return EnsureValue(Property_Type).SetValueString(ToString(value));
-		}
-
-		/// <summary>
-		/// Gets or sets the language version
-		/// </summary>
-		bool HasLanguageVersion()
-		{
-			return HasValue(Property_Language);
-		}
-
-		Build::Utilities::RecipeLanguageVersion GetLanguageVersion()
-		{
-			if (!HasLanguageVersion())
-				throw std::runtime_error("No language version.");
-
-			return Build::Utilities::ParseRecipeLanguageVersion(
-				GetValue(Property_Language).AsString());
-		}
-
-		void SetLanguageVersion(Build::Utilities::RecipeLanguageVersion value)
-		{
-			return EnsureValue(Property_Language).SetValueString(ToString(value));
 		}
 
 		/// <summary>
@@ -247,127 +205,6 @@ namespace Soup
 			}
 
 			EnsureValue(Property_DevDependencies).SetValueList(std::move(stringValues));
-		}
-
-		/// <summary>
-		/// Gets or sets the public file
-		/// </summary>
-		bool HasPublic()
-		{
-			return HasValue(Property_Public);
-		}
-
-		const std::string& GetPublic()
-		{
-			if (!HasPublic())
-				throw std::runtime_error("No public.");
-
-			return GetValue(Property_Public).AsString();
-		}
-
-		void SetPublic(std::string_view value)
-		{
-			EnsureValue(Property_Public).SetValueString(std::string(value));
-		}
-
-		/// <summary>
-		/// Gets or sets the source values
-		/// TODO: Observable?
-		/// </summary>
-		bool HasSource()
-		{
-			return HasValue(Property_Source);
-		}
-
-		std::vector<std::string> GetSource()
-		{
-			if (!HasSource())
-				throw std::runtime_error("No source.");
-
-			auto stringValues = std::vector<std::string>();
-			for (auto& value : GetValue(Property_Source).AsList())
-			{
-				stringValues.push_back(value.AsString());
-			}
-
-			return stringValues;
-		}
-
-		void SetSource(const std::vector<std::string>& values)
-		{
-			auto stringValues = RecipeList();
-			for (auto& value : values)
-			{
-				stringValues.push_back(RecipeValue(value));
-			}
-
-			EnsureValue(Property_Source).SetValueList(std::move(stringValues));
-		}
-
-		/// <summary>
-		/// Gets or sets the include paths values
-		/// </summary>
-		bool HasIncludePaths()
-		{
-			return HasValue(Property_IncludePaths);
-		}
-
-		std::vector<std::string> GetIncludePaths()
-		{
-			if (!HasIncludePaths())
-				throw std::runtime_error("No includePaths.");
-
-			auto stringValues = std::vector<std::string>();
-			for (auto& value : GetValue(Property_IncludePaths).AsList())
-			{
-				stringValues.push_back(value.AsString());
-			}
-
-			return stringValues;
-		}
-
-		void SetIncludePaths(const std::vector<std::string>& values)
-		{
-			auto stringValues = RecipeList();
-			for (auto& value : values)
-			{
-				stringValues.push_back(RecipeValue(value));
-			}
-
-			EnsureValue(Property_IncludePaths).SetValueList(std::move(stringValues));
-		}
-
-		/// <summary>
-		/// Gets or sets the define values
-		/// </summary>
-		bool HasDefines()
-		{
-			return HasValue(Property_Defines);
-		}
-
-		std::vector<std::string> GetDefines()
-		{
-			if (!HasDefines())
-				throw std::runtime_error("No defines.");
-
-			auto stringValues = std::vector<std::string>();
-			for (auto& value : GetValue(Property_Defines).AsList())
-			{
-				stringValues.push_back(value.AsString());
-			}
-
-			return stringValues;
-		}
-
-		void SetDefines(const std::vector<std::string>& values)
-		{
-			auto stringValues = RecipeList();
-			for (auto& value : values)
-			{
-				stringValues.push_back(RecipeValue(value));
-			}
-
-			EnsureValue(Property_Defines).SetValueList(std::move(stringValues));
 		}
 
 		/// <summary>
