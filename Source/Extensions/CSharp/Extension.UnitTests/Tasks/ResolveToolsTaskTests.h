@@ -29,8 +29,8 @@ namespace Soup::CSharp::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Register the test listener
-			auto testListener = std::make_shared<Soup::TestTraceListener>();
-			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Opal::TestTraceListener>();
+			auto scopedTraceListener = Opal::ScopedTraceListenerRegister(testListener);
 
 			// Setup expected output from vswhere call
 			processManager->RegisterExecuteResult(
@@ -45,11 +45,11 @@ namespace Soup::CSharp::UnitTests
 			auto uut = ResolveToolsTask();
 
 			// Setup the input build state
-			auto buildState = Soup::Build::BuildState();
-			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto state = Build::Utilities::ValueTableWrapper(buildState.GetActiveState());
 
-			auto result = uut.Execute(buildState);
-			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
+			auto result = uut.TryExecute(buildState);
+			Assert::AreEqual(Build::ApiCallResult::Success, result, "Verify TryExecute returned success.");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -61,10 +61,11 @@ namespace Soup::CSharp::UnitTests
 				"Verify log messages match expected.");
 
 			// Verify build state
-			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>();
-			Soup::AssertExtensions::AreEqual(
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>();
+
+			AssertExtensions::AreEqual(
 				expectedBuildOperations,
-				buildState.GetBuildOperations());
+				Build::Utilities::BuildOperationListWrapper(buildState.GetRootOperationList()));
 
 			// Verify expected file system requests
 			Assert::AreEqual(

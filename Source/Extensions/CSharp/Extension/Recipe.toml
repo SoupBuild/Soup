@@ -3,7 +3,7 @@ Language = "C++"
 Type = "DynamicLibrary"
 Version = "1.0.0"
 Dependencies = [
-	"Opal@0.1.6",
+	"Opal@0.1.7",
 	"../Compiler/Core/",
 ]
 
@@ -14,3 +14,22 @@ Source = [
 PlatformLibraries = [
 	"shell32.lib",
 ]
+
+DevDependencies = [
+	# "../../TestBuild/",
+	"Soup.Test.Assert@0.1.7",
+	"../../../TestUtilities/",
+]
+
+	[Tests]
+	Source = [
+		"../Extension.UnitTests/gen/Main.cpp"
+	]
+	IncludePaths = [
+		"../Extension.UnitTests/",
+	]
+	PlatformLibraries = [
+		"OleAut32.lib",
+		"shell32.lib",
+		"User32.lib",
+	]

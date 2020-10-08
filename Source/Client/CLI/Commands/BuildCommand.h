@@ -56,7 +56,7 @@ namespace Soup::Client
 			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
 			{
 				Log::Error("Could not load the recipe file.");
-				return;
+				throw HandledException(55);
 			}
 
 			// Setup the build arguments

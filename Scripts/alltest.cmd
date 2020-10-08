@@ -10,11 +10,11 @@ echo soup run %DepsDir%\Opal\UnitTests\
 call soup run %DepsDir%\Opal\UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
-echo soup build %SourceDir%\Build\Evaluate.UnitTests\
-call soup build %SourceDir%\Build\Evaluate.UnitTests\
+echo soup build %SourceDir%\Build\Runtime.UnitTests\
+call soup build %SourceDir%\Build\Runtime.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
-echo soup run %SourceDir%\Build\Evaluate.UnitTests\
-call soup run %SourceDir%\Build\Evaluate.UnitTests\
+echo soup run %SourceDir%\Build\Runtime.UnitTests\
+call soup run %SourceDir%\Build\Runtime.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
 echo soup build %SourceDir%\Build\Utilities.UnitTests\
@@ -45,12 +45,12 @@ echo soup run %SourceDir%\Extensions\Cpp\Compiler\MSVC.UnitTests\
 call soup run %SourceDir%\Extensions\Cpp\Compiler\MSVC.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
-echo soup build %SourceDir%\Extensions\Cpp\Extension.UnitTests\
-call soup build %SourceDir%\Extensions\Cpp\Extension.UnitTests\
-if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
-echo soup run %SourceDir%\Extensions\Cpp\Extension.UnitTests\
-call soup run %SourceDir%\Extensions\Cpp\Extension.UnitTests\
-if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+REM echo soup build %SourceDir%\Extensions\Cpp\Extension.UnitTests\
+REM call soup build %SourceDir%\Extensions\Cpp\Extension.UnitTests\
+REM if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+REM echo soup run %SourceDir%\Extensions\Cpp\Extension.UnitTests\
+REM call soup run %SourceDir%\Extensions\Cpp\Extension.UnitTests\
+REM if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
 echo soup build %SourceDir%\Extensions\CSharp\Compiler\Core.UnitTests\
 call soup build %SourceDir%\Extensions\CSharp\Compiler\Core.UnitTests\
@@ -59,12 +59,12 @@ echo soup run %SourceDir%\Extensions\CSharp\Compiler\Core.UnitTests\
 call soup run %SourceDir%\Extensions\CSharp\Compiler\Core.UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
-echo soup build %SourceDir%\Extensions\CSharp\Extension.UnitTests\
-call soup build %SourceDir%\Extensions\CSharp\Extension.UnitTests\
-if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
-echo soup run %SourceDir%\Extensions\CSharp\Extension.UnitTests\
-call soup run %SourceDir%\Extensions\CSharp\Extension.UnitTests\
-if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+REM echo soup build %SourceDir%\Extensions\CSharp\Extension.UnitTests\
+REM call soup build %SourceDir%\Extensions\CSharp\Extension.UnitTests\
+REM if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+REM echo soup run %SourceDir%\Extensions\CSharp\Extension.UnitTests\
+REM call soup run %SourceDir%\Extensions\CSharp\Extension.UnitTests\
+REM if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
 echo soup build %SourceDir%\Client\Core.UnitTests\
 call soup build %SourceDir%\Client\Core.UnitTests\

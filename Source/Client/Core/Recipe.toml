@@ -24,7 +24,7 @@ IncludePaths = [
 ]
 
 DevDependencies = [
-	# "../../Extensions/TestBuild/",
+	"../../Extensions/TestBuild/",
 	"Soup.Test.Assert@0.1.7",
 	"../../TestUtilities/",
 ]
@@ -35,4 +35,9 @@ DevDependencies = [
 	]
 	IncludePaths = [
 		"../Core.UnitTests/",
+	]
+	PlatformLibraries = [
+		"OleAut32.lib",
+		"shell32.lib",
+		"User32.lib",
 	]

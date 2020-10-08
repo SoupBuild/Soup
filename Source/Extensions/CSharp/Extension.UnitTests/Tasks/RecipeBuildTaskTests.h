@@ -21,8 +21,8 @@ namespace Soup::CSharp::UnitTests
 		void Build_Executable()
 		{
 			// Register the test listener
-			auto testListener = std::make_shared<Soup::TestTraceListener>();
-			auto scopedTraceListener = Soup::ScopedTraceListenerRegister(testListener);
+			auto testListener = std::make_shared<Opal::TestTraceListener>();
+			auto scopedTraceListener = Opal::ScopedTraceListenerRegister(testListener);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -37,17 +37,17 @@ namespace Soup::CSharp::UnitTests
 			auto uut = RecipeBuildTask();
 
 			// Setup the input build state
-			auto buildState = Soup::Build::BuildState();
-			auto state = Soup::Build::PropertyBagWrapper(buildState.GetActiveState());
-			state.SetPropertyStringValue("PackageRoot", "C:/PackageRoot/");
-			state.SetPropertyStringValue("BuildFlavor", "debug");
-			state.SetPropertyStringList("PlatformLibraries", std::vector<std::string>());
-			state.SetPropertyStringList("PlatformIncludePaths", std::vector<std::string>());
-			state.SetPropertyStringList("PlatformLibraryPaths", std::vector<std::string>());
-			state.SetPropertyStringList("PlatformPreprocessorDefinitions", std::vector<std::string>());
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto state = Build::Utilities::ValueTableWrapper(buildState.GetActiveState());
+			state.CreateValue("PackageRoot").SetValueString("C:/PackageRoot/");
+			state.CreateValue("BuildFlavor").SetValueString("debug");
+			state.CreateValue("PlatformLibraries").SetValueStringList(std::vector<std::string>());
+			state.CreateValue("PlatformIncludePaths").SetValueStringList(std::vector<std::string>());
+			state.CreateValue("PlatformLibraryPaths").SetValueStringList(std::vector<std::string>());
+			state.CreateValue("PlatformPreprocessorDefinitions").SetValueStringList(std::vector<std::string>());
 
-			auto result = uut.Execute(buildState);
-			Assert::AreEqual<int64_t>(0, result, "Verify Execute returned success.");
+			auto result = uut.TryExecute(buildState);
+			Assert::AreEqual(Build::ApiCallResult::Success, result, "Verify TryExecute returned success.");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -57,11 +57,11 @@ namespace Soup::CSharp::UnitTests
 				"Verify log messages match expected.");
 
 			// Verify build state
-			auto expectedBuildOperations = std::vector<Memory::Reference<Soup::Build::BuildOperation>>();
+			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>();
 
-			Soup::AssertExtensions::AreEqual(
+			AssertExtensions::AreEqual(
 				expectedBuildOperations,
-				buildState.GetBuildOperations());
+				Build::Utilities::BuildOperationListWrapper(buildState.GetRootOperationList()));
 
 			// TODO: Verify build state
 		}

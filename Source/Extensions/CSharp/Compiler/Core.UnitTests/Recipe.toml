@@ -1,4 +1,5 @@
 Name = "Soup.CSharp.Compiler.Core.UnitTests"
+Language = "C++"
 Version = "1.0.0"
 Type = "Executable"
 Dependencies = [

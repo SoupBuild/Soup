@@ -88,5 +88,20 @@ namespace Soup
 				AreEqual(expected.at(i), actual.at(i));
 			}
 		}
+
+		static void AreEqual(
+			std::vector<Memory::Reference<Build::Utilities::BuildOperation>>& expected,
+			Build::Utilities::BuildOperationListWrapper actual)
+		{
+			Assert::AreEqual(
+				expected.size(),
+				actual.GetSize(),
+				"Verify build operations size match expected.");
+
+			for (size_t i = 0; i < expected.size(); i++)
+			{
+				AreEqual(expected.at(i), actual.GetValueAt(i));
+			}
+		}
 	};
 }

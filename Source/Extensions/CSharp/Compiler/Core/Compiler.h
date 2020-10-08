@@ -23,7 +23,7 @@ namespace Soup::CSharp::Compiler
 		/// Compile
 		/// </summary>
 		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
-			Build::Utilities::BuildStateWrapper& state,
+			Build::Utilities::BuildStateWrapper state,
 			const CompileArguments& args) const
 		{
 			return CompileStandard(state, args);

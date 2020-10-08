@@ -9,8 +9,10 @@
 #include <vector>
 
 import Opal;
-import Soup.Core;
+import Soup.Build.Utilities;
+import Soup.Build.Runtime;
 import Soup.CSharp;
+import Soup.CSharp.Compiler;
 import json11;
 import Soup.Test.Assert;
 

@@ -5,7 +5,7 @@ Interface = "Module.cpp"
 Dependencies = [
 	"../../../Dependencies/cpp-httplib/",
 	# "httplib@1.0.0",
-	"Opal@0.1.6",
+	"Opal@0.1.7",
 ]
 Defines = [
 	# "ENABLE_FIDDLER_PROXY",

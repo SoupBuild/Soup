@@ -220,7 +220,7 @@ namespace Soup::Build::Runtime
 			auto buildTable = activeStateWrapper.GetValue("Build").AsTable();
 
 			// Convert the generated build into the execution build graph
-			auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetBuildOperations());
+			auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetRootOperationList());
 			auto operationGraphGenerator = OperationGraphGenerator(_fileSystemState);
 			auto graph = operationGraphGenerator.CreateFromDefinition(buildOperations);
 

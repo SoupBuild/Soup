@@ -34,7 +34,7 @@ namespace Soup::Build::Runtime
 				Path(FileName);
 			if (!System::IFileSystem::Current().Exists(OperationGraphFile))
 			{
-				Log::HighPriority("Operation graph file does not exist");
+				Log::Info("Operation graph file does not exist");
 				return false;
 			}
 

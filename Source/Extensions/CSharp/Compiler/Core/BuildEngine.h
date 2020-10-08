@@ -25,7 +25,7 @@ namespace Soup::CSharp::Compiler
 		/// Generate the required build operations for the requested build
 		/// </summary>
 		BuildResult Execute(
-			Soup::Build::Utilities::BuildStateWrapper& buildState,
+			Soup::Build::Utilities::BuildStateWrapper buildState,
 			const BuildArguments& arguments)
 		{
 			auto result = BuildResult();

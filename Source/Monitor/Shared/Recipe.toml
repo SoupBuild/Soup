@@ -3,7 +3,7 @@ Language = "C++"
 Version = "1.0.0"
 Dependencies = [
 	"../../../Dependencies/Detours/src/",
-	"Opal@0.1.6",
+	"Opal@0.1.7",
 ]
 Defines = [
 	# "TRACE_DETOUR_SERVER",
