@@ -4,7 +4,7 @@ Description = """The core Soup Build Contracts used to define the stable Binary 
 layer between the Build Generate engine and the Extensions."""
 Version = "0.3.0"
 Dependencies = [
-	"Opal@0.1.7",
+	"Opal@0.1.8",
 ]
 
 Interface = "Module.cpp"

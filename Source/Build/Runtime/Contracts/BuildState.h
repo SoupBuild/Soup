@@ -4,6 +4,7 @@
 
 #pragma once
 #include "ValueTable.h"
+#include "OperationGraph/OperationGraphGenerator.h"
 
 namespace Soup::Build::Runtime
 {
@@ -17,18 +18,10 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
 		BuildState(ValueTable activeState) :
-			_rootOperations(),
 			_activeState(std::move(activeState)),
-			_sharedState()
+			_sharedState(),
+			_graphGenerator()
 		{
-		}
-
-		/// <summary>
-		/// Build Graph Access Methods
-		/// </summary>
-		IList<IBuildOperation*>& GetRootOperationList() noexcept override final
-		{
-			return _rootOperations;
 		}
 
 		/// <summary>
@@ -46,6 +39,35 @@ namespace Soup::Build::Runtime
 		IValueTable& GetSharedState() noexcept override final
 		{
 			return _sharedState;
+		}
+
+		/// <summary>
+		/// Create a build operation
+		/// </summary>
+		ApiCallResult TryCreateOperation(
+			const char* title,
+			const char* executable,
+			const char* arguments,
+			const char* workingDirectory,
+			IReadOnlyList<const char*>& declaredInput,
+			IReadOnlyList<const char*>& declaredOutput) noexcept override final
+		{
+			try
+			{
+				_graphGenerator.CreateOperation(
+					title,
+					Path(executable),
+					arguments,
+					Path(workingDirectory),
+					Utilities::ReadOnlyStringListWrapper(declaredInput).CopyAsPathVector(),
+					Utilities::ReadOnlyStringListWrapper(declaredOutput).CopyAsPathVector());
+				return ApiCallResult::Success;
+			}
+			catch (...)
+			{
+				// Unknown error
+				return ApiCallResult::Error;
+			}
 		}
 
 		/// <summary>
@@ -93,14 +115,19 @@ namespace Soup::Build::Runtime
 			return std::move(_sharedState);
 		}
 
+		OperationGraph BuildOperationGraph()
+		{
+			return _graphGenerator.BuildGraph();
+		}
+
 		void LogActive()
 		{
 			_activeState.Log();
 		}
 
 	private:
-		Utilities::BuildOperationList _rootOperations;
 		ValueTable _activeState;
 		ValueTable _sharedState;
+		OperationGraphGenerator _graphGenerator;
 	};
 }

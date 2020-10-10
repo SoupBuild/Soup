@@ -282,7 +282,7 @@ namespace Soup::Cpp
 		}
 
 	private:
-		Soup::Build::Utilities::StringList _runBeforeList;
-		Soup::Build::Utilities::StringList _runAfterList;
+		Soup::Build::Utilities::ReadOnlyStringList _runBeforeList;
+		Soup::Build::Utilities::ReadOnlyStringList _runAfterList;
 	};
 }

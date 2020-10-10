@@ -3,14 +3,12 @@ Language = "C++"
 Description = """A set of utility classes that are commonly needed to help make writing a Build Extension easier."""
 Version = "0.3.0"
 Dependencies = [
-	"Opal@0.1.7",
+	"Opal@0.1.8",
 	"../Contracts/",
 	# "Soup.Build@0.3.0",
 ]
 
 Interface = "Module.cpp"
 Source = [
-	"Runtime/BuildOperationList.cpp",
-	"Wrapper/BuildOperationListWrapper.cpp",
 	"Wrapper/ValueWrapper.cpp",
 ]

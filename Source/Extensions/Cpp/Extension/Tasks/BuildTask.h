@@ -196,7 +196,10 @@ namespace Soup::Cpp
 			sharedBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(buildResult.LinkDependencies);
 
 			// Register the root build tasks
-			buildState.GetRootOperationList().Append(buildResult.BuildOperations);
+			for (auto& operation : buildResult.BuildOperations)
+			{
+				buildState.CreateOperation(operation);
+			}
 
 			buildState.LogInfo("Build Generate Done");
 			return Soup::Build::ApiCallResult::Success;
@@ -217,7 +220,7 @@ namespace Soup::Cpp
 
 	private:
 		CompilerFactory _compilerFactory;
-		Soup::Build::Utilities::StringList _runBeforeList;
-		Soup::Build::Utilities::StringList _runAfterList;
+		Soup::Build::Utilities::ReadOnlyStringList _runBeforeList;
+		Soup::Build::Utilities::ReadOnlyStringList _runAfterList;
 	};
 }

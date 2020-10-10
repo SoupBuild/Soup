@@ -196,7 +196,6 @@ namespace Soup::Build::Runtime::UnitTests
 				std::vector<std::string>({
 					"DIAG: Build evaluation start",
 					"DIAG: Check for previous operation invocation",
-					"WARN: Output file missing from file system state.",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: ./Command.exe Arguments",
 					"DIAG: Build evaluation end",

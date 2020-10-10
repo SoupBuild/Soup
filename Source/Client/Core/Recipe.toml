@@ -24,9 +24,9 @@ IncludePaths = [
 ]
 
 DevDependencies = [
-	"../../Extensions/TestBuild/",
+	# "../../Extensions/TestBuild/",
 	"Soup.Test.Assert@0.1.7",
-	"../../TestUtilities/",
+	# "../../TestUtilities/",
 ]
 
 	[Tests]

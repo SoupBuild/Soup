@@ -17,8 +17,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
-		OperationGraph(FileSystemStateId stateId) :
-			_stateId(stateId),
+		OperationGraph() :
 			_rootOperations(),
 			_operations(),
 			_operationLookup()
@@ -29,10 +28,8 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
 		OperationGraph(
-			FileSystemStateId stateId,
 			std::vector<OperationId> rootOperations,
 			std::vector<OperationInfo> operations) :
-			_stateId(stateId),
 			_rootOperations(std::move(rootOperations)),
 			_operations(),
 			_operationLookup()
@@ -40,16 +37,8 @@ namespace Soup::Build::Runtime
 			// Store the incoming vector of operations as a lookup for fast checks
 			for (auto& info : operations)
 			{
-				AddOperationInfo(std::move(info));
+				AddOperation(std::move(info));
 			}
-		}
-
-		/// <summary>
-		/// Get the file system state id used for this operation graph
-		/// </summary>
-		FileSystemStateId GetStateId() const
-		{
-			return _stateId;
 		}
 
 		/// <summary>
@@ -82,6 +71,22 @@ namespace Soup::Build::Runtime
 		std::unordered_map<OperationId, OperationInfo>& GetOperations()
 		{
 			return _operations;
+		}
+
+		/// <summary>
+		/// Find an operation info
+		/// </summary>
+		bool HasCommand(const CommandInfo& command)
+		{
+			auto findResult = _operationLookup.find(command);
+			if (findResult != _operationLookup.end())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -122,7 +127,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Add an operation info
 		/// </summary>
-		OperationInfo& AddOperationInfo(OperationInfo info)
+		OperationInfo& AddOperation(OperationInfo info)
 		{
 			auto insertLookupResult = _operationLookup.emplace(info.Command, info.Id);
 			if (!insertLookupResult.second)
@@ -136,7 +141,6 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		FileSystemStateId _stateId;
 		std::vector<OperationId> _rootOperations;
 		std::unordered_map<OperationId, OperationInfo> _operations;
 		std::unordered_map<CommandInfo, OperationId> _operationLookup;

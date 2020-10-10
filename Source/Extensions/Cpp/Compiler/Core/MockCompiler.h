@@ -83,45 +83,43 @@ namespace Soup::Cpp::Compiler::Mock
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
-			Build::Utilities::BuildStateWrapper state,
+		std::vector<Build::Utilities::BuildOperation> CreateCompileOperation(
 			const CompileArguments& args) const override final
 		{
 			_compileRequests.push_back(args);
-			return Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
+			return {
+				Build::Utilities::BuildOperation(
 					"MockCompile: " + std::to_string(_compileRequests.size()),
+					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
-					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
 					}),
 					std::vector<Path>({
 						Path("OutputFile.out"),
-					})));
+					})),
+			};
 		}
 
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Utilities::BuildOperationWrapper CreateLinkOperation(
-			Build::Utilities::BuildStateWrapper state,
+		Build::Utilities::BuildOperation CreateLinkOperation(
 			const LinkArguments& args) const override final
 		{
 			_linkRequests.push_back(args);
-			return Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					"MockLink: " + std::to_string(_linkRequests.size()),
-					Path("MockLinker.exe"),
-					"Arguments",
-					Path("MockWorkingDirectory"),
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					})));
+			return Build::Utilities::BuildOperation(
+				"MockLink: " + std::to_string(_linkRequests.size()),
+				Path("MockWorkingDirectory"),
+				Path("MockLinker.exe"),
+				"Arguments",
+				std::vector<Path>({
+					Path("InputFile.in"),
+				}),
+				std::vector<Path>({
+					Path("OutputFile.out"),
+				}));
 		}
 
 	private:

@@ -5,6 +5,7 @@
 #pragma once
 #include "ApiCallResult.h"
 #include "IValue.h"
+#include "IReadOnlyList.h"
 
 namespace Soup::Build
 {

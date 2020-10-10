@@ -367,13 +367,13 @@ namespace Soup::Test
 
 	private:
 		CompilerFactory _compilerFactory;
-		static Build::Utilities::StringList _runBeforeList;
-		static Build::Utilities::StringList _runAfterList;
+		static Build::Utilities::ReadOnlyStringList _runBeforeList;
+		static Build::Utilities::ReadOnlyStringList _runAfterList;
 	};
 
-	Build::Utilities::StringList TestBuildTask::_runBeforeList =
+	Build::Utilities::ReadOnlyStringList TestBuildTask::_runBeforeList =
 		Build::Utilities::StringList();
-	Build::Utilities::StringList TestBuildTask::_runAfterList =
+	Build::Utilities::ReadOnlyStringList TestBuildTask::_runAfterList =
 		Build::Utilities::StringList({
 			"Build",
 		});

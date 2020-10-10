@@ -1,4 +1,4 @@
-// <copyright file="IList.h" company="Soup">
+// <copyright file="IValueList.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 

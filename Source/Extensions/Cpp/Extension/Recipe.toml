@@ -3,7 +3,7 @@ Language = "C++"
 Type = "DynamicLibrary"
 Version = "1.0.0"
 Dependencies = [
-	"Opal@0.1.7",
+	"Opal@0.1.8",
 	"../../../Build/Runtime/",
 	"../Compiler/Core/",
 	"../Compiler/Clang/",
@@ -21,7 +21,7 @@ PlatformLibraries = [
 DevDependencies = [
 	# "../../TestBuild/",
 	"Soup.Test.Assert@0.1.7",
-	"../../../TestUtilities/",
+	# "../../../TestUtilities/",
 ]
 
 	[Tests]

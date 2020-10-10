@@ -12,11 +12,8 @@ import Soup.Build;
 
 using namespace Opal;
 
-#include "Runtime/BuildOperation.h"
-#include "Runtime/StringList.h"
+#include "Contracts/ReadOnlyStringList.h"
 
 #include "Wrapper/BuildStateWrapper.h"
 #include "Wrapper/ValueListWrapper.h"
 #include "Wrapper/ValuePrimitiveWrapper.h"
-
-#include "BuildOperationExtensions.h"

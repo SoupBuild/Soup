@@ -79,7 +79,6 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"WARN: Output file missing from file system state.",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -161,7 +160,6 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"WARN: Input file missing from file system state.",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");

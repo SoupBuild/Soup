@@ -15,8 +15,8 @@ namespace Soup::Cpp::Compiler
 		/// <summary>
 		/// Create a build operation that will copy a file
 		/// </summary>
-		static Soup::Build::Utilities::BuildOperationWrapper CreateCopyFileOperation(
-			Soup::Build::Utilities::BuildStateWrapper& state,
+		static Soup::Build::Utilities::BuildOperation CreateCopyFileOperation(
+			const Path& workingDirectory,
 			const Path& source,
 			const Path& destination)
 		{
@@ -27,7 +27,6 @@ namespace Soup::Cpp::Compiler
 			auto moduleFolder = moduleName.GetParent();
 
 			auto program = moduleFolder + Path("copy.exe");
-			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({
 				source,
 			});
@@ -39,23 +38,25 @@ namespace Soup::Cpp::Compiler
 			std::stringstream arguments;
 			arguments << "\"" << source.ToAlternateString() << "\" \"" << destination.ToAlternateString() << "\"";
 
-			return Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					titleStream.str(),
-					program,
-					arguments.str(),
-					workingDirectory,
-					inputFiles,
-					outputFiles));
+			return Build::Utilities::BuildOperation(
+				titleStream.str(),
+				workingDirectory,
+				program,
+				arguments.str(),
+				inputFiles,
+				outputFiles);
 		}
 
 		/// <summary>
 		/// Create a build operation that will create a directory
 		/// </summary>
-		static Soup::Build::Utilities::BuildOperationWrapper CreateCreateDirectoryOperation(
-			Soup::Build::Utilities::BuildStateWrapper& state,
+		static Soup::Build::Utilities::BuildOperation CreateCreateDirectoryOperation(
+			const Path& workingDirectory,
 			const Path& directory)
 		{
+			if (directory.HasFileName())
+				throw std::runtime_error("Cannot create a directory with a filename.");
+
 			auto titleStream = std::stringstream();
 			titleStream << "MakeDir [" << directory.ToString() << "]";
 
@@ -63,7 +64,6 @@ namespace Soup::Cpp::Compiler
 			auto moduleFolder = moduleName.GetParent();
 
 			auto program = moduleFolder + Path("mkdir.exe");
-			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({});
 			auto outputFiles = std::vector<Path>({
 				directory,
@@ -73,14 +73,13 @@ namespace Soup::Cpp::Compiler
 			std::stringstream arguments;
 			arguments << "\"" << directory.ToString() << "\"";
 
-			return Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					titleStream.str(),
-					program,
-					arguments.str(),
-					workingDirectory,
-					inputFiles,
-					outputFiles));
+			return Build::Utilities::BuildOperation(
+				titleStream.str(),
+				workingDirectory,
+				program,
+				arguments.str(),
+				inputFiles,
+				outputFiles);
 		}
 	};
 }

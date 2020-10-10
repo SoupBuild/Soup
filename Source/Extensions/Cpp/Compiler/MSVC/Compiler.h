@@ -66,27 +66,25 @@ namespace Soup::Cpp::Compiler::MSVC
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
-			Build::Utilities::BuildStateWrapper state,
+		std::vector<Build::Utilities::BuildOperation> CreateCompileOperation(
 			const CompileArguments& args) const override final
 		{
 			// Clang decided to do their module compilation in two stages
 			// Now we have to also generate the object file from the precompiled module
 			if (args.ExportModule)
 			{
-				return CompileModuleInterfaceUnit(state, args);
+				return CompileModuleInterfaceUnit(args);
 			}
 			else
 			{
-				return CompileStandard(state, args);
+				return CompileStandard(args);
 			}
 		}
 
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Utilities::BuildOperationWrapper CreateLinkOperation(
-			Build::Utilities::BuildStateWrapper state,
+		Build::Utilities::BuildOperation CreateLinkOperation(
 			const LinkArguments& args) const override final
 		{
 			// Select the correct executable for linking libraries or executables
@@ -109,21 +107,19 @@ namespace Soup::Cpp::Compiler::MSVC
 			auto outputFiles = std::vector<Path>();
 			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
 
-			auto buildOperation = Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					args.TargetFile.ToString(),
-					executablePath,
-					CombineArguments(commandArgs),
-					args.RootDirectory,
-					inputFiles,
-					outputFiles));
+			auto buildOperation = Build::Utilities::BuildOperation(
+				args.TargetFile.ToString(),
+				args.RootDirectory,
+				executablePath,
+				CombineArguments(commandArgs),
+				inputFiles,
+				outputFiles);
 
 			return buildOperation;
 		}
 
 	private:
-		Build::Utilities::BuildOperationWrapper CompileStandard(
-			Build::Utilities::BuildStateWrapper& state,
+		std::vector<Build::Utilities::BuildOperation> CompileStandard(
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
@@ -137,20 +133,20 @@ namespace Soup::Cpp::Compiler::MSVC
 				inputFiles,
 				outputFiles);
 
-			auto buildOperation = Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					args.SourceFile.ToString(),
-					executablePath,
-					CombineArguments(commandArgs),
-					args.RootDirectory,
-					inputFiles,
-					outputFiles));
+			auto buildOperation = Build::Utilities::BuildOperation(
+				args.SourceFile.ToString(),
+				args.RootDirectory,
+				executablePath,
+				CombineArguments(commandArgs),
+				inputFiles,
+				outputFiles);
 
-			return buildOperation;
+			return {
+				std::move(buildOperation),
+			};
 		}
 
-		Build::Utilities::BuildOperationWrapper CompileModuleInterfaceUnit(
-			Build::Utilities::BuildStateWrapper& state,
+		std::vector<Build::Utilities::BuildOperation> CompileModuleInterfaceUnit(
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
@@ -179,16 +175,17 @@ namespace Soup::Cpp::Compiler::MSVC
 				inputFiles,
 				outputFiles);
 
-			auto buildOperation = Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					args.SourceFile.ToString(),
-					executablePath,
-					CombineArguments(compiledModuleCommandArgs),
-					args.RootDirectory,
-					inputFiles,
-					outputFiles));
+			auto buildOperation = Build::Utilities::BuildOperation(
+				args.SourceFile.ToString(),
+				args.RootDirectory,
+				executablePath,
+				CombineArguments(compiledModuleCommandArgs),
+				inputFiles,
+				outputFiles);
 
-			return buildOperation;
+			return {
+				std::move(buildOperation),
+			};
 		}
 
 		static std::string CombineArguments(const std::vector<std::string>& args)

@@ -25,8 +25,7 @@ namespace Soup::Build::Runtime
 		/// </summary>
 		static bool TryLoadState(
 			const Path& directory,
-			OperationGraph& result,
-			FileSystemStateId activeStateId)
+			OperationGraph& result)
 		{
 			// Verify the requested file exists
 			auto OperationGraphFile = directory +
@@ -45,16 +44,8 @@ namespace Soup::Build::Runtime
 			try
 			{
 				auto loadedResult = OperationGraphReader::Deserialize(file->GetInStream());
-				if (loadedResult.GetStateId() != activeStateId)
-				{
-					Log::Warning("Operation graph uses an out of date state Id");
-					return false;
-				}
-				else
-				{
-					result = loadedResult;
-					return true;
-				}
+				result = loadedResult;
+				return true;
 			}
 			catch(std::runtime_error& ex)
 			{

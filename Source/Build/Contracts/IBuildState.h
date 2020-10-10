@@ -35,11 +35,6 @@ namespace Soup::Build
 	{
 	public:
 		/// <summary>
-		/// Get the root build operation list that can be used to add new build operations
-		/// </summary>
-		virtual IList<IBuildOperation*>& GetRootOperationList() noexcept = 0;
-
-		/// <summary>
 		/// Get a reference to the active state
 		/// </summary>
 		virtual IValueTable& GetActiveState() noexcept = 0;
@@ -49,6 +44,17 @@ namespace Soup::Build
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
 		virtual IValueTable& GetSharedState() noexcept = 0;
+
+		/// <summary>
+		/// Create a build operation
+		/// </summary>
+		virtual ApiCallResult TryCreateOperation(
+			const char* title,
+			const char* executable,
+			const char* arguments,
+			const char* workingDirectory,
+			IReadOnlyList<const char*>& declaredInput,
+			IReadOnlyList<const char*>& declaredOutput) noexcept = 0;
 
 		/// <summary>
 		/// Log a message to the build system
