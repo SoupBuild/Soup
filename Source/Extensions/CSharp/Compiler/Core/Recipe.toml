@@ -2,7 +2,7 @@ Name = "Soup.CSharp.Compiler"
 Language = "C++"
 Version = "0.3.0"
 Dependencies = [
-	"C:/Users/mwasp/source/repos/Soup/Dependencies/Opal/Source/",
+	"Opal@0.1.8",
 	"../../../../Build/Utilities/",
 	# "Soup.Build.Utilities@0.3.0",
 ]
