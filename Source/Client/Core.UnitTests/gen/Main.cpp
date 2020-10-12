@@ -13,7 +13,6 @@ import Opal.Extensions;
 import Soup.Core;
 import json11;
 import Soup.Test.Assert;
-import Soup.Test.Utilities;
 
 using namespace Opal;
 using namespace Opal::System;

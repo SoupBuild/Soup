@@ -72,7 +72,8 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="BuildGenerateEngine"/> class.
 		/// </summary>
 		BuildGenerateEngine(
-			std::string systemCompiler)
+			FileSystemState& fileSystemState) :
+			_fileSystemState(fileSystemState)
 		{
 		}
 
@@ -125,10 +126,11 @@ namespace Soup::Build::Runtime
 
 			// Load the previous build graph
 			Log::Diag("Loading previous build graph");
-			auto previousOperationGraph = OperationGraph();
+			auto previousOperationGraph = OperationGraph(0);
 			if (!OperationGraphManager::TryLoadState(
 				targetDirectory,
-				previousOperationGraph))
+				previousOperationGraph,
+				_fileSystemState.GetId()))
 			{
 				Log::Info("No valid previous build graph found");
 			}
@@ -171,7 +173,7 @@ namespace Soup::Build::Runtime
 			auto activeExtensionLibraries = std::vector<System::WindowsLibrary>();
 
 			// Create a new build system for the requested build
-			auto buildState = BuildState(activeState);
+			auto buildState = BuildState(activeState, _fileSystemState);
 			auto buildSystem = BuildSystem();
 			auto activeStateWrapper = Utilities::ValueTableWrapper(buildState.GetActiveState());
 
@@ -256,5 +258,8 @@ namespace Soup::Build::Runtime
 				throw;
 			}
 		}
+
+	private:
+		FileSystemState& _fileSystemState;
 	};
 }

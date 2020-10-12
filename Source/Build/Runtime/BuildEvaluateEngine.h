@@ -5,7 +5,7 @@
 #pragma once
 #include "BuildFailedException.h"
 #include "BuildHistoryChecker.h"
-#include "FileSystemState.h"
+#include "FileSystemState/FileSystemState.h"
 #include "OperationGraph/OperationGraph.h"
 #include "SystemAccessTracker.h"
 
@@ -102,7 +102,6 @@ namespace Soup::Build::Runtime
 			{
 				// Perform the incremental build checks
 				if (_stateChecker.IsOutdated(
-					operationInfo.Command.WorkingDirectory,
 					operationInfo.ObservedOutput,
 					operationInfo.ObservedInput))
 				{
@@ -172,8 +171,8 @@ namespace Soup::Build::Runtime
 					for (auto& value : callback->GetOutput())
 						output.push_back(Path(value));
 
-					operationInfo.ObservedInput = std::move(input);
-					operationInfo.ObservedOutput = std::move(output);
+					operationInfo.ObservedInput = _fileSystemState.ToFileIds(input, operationInfo.Command.WorkingDirectory);
+					operationInfo.ObservedOutput = _fileSystemState.ToFileIds(output, operationInfo.Command.WorkingDirectory);
 
 					// Mark this operation as successful to enable future incremental builds
 					operationInfo.WasSuccessfulRun = true;

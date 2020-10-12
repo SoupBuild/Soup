@@ -76,8 +76,8 @@ namespace Soup::Build::Runtime
 			OperationId id,
 			std::string title,
 			CommandInfo command,
-			std::vector<Path> declaredInput,
-			std::vector<Path> declaredOutput) :
+			std::vector<FileId> declaredInput,
+			std::vector<FileId> declaredOutput) :
 			Id(id),
 			Title(std::move(title)),
 			Command(std::move(command)),
@@ -98,13 +98,13 @@ namespace Soup::Build::Runtime
 			OperationId id,
 			std::string title,
 			CommandInfo command,
-			std::vector<Path> declaredInput,
-			std::vector<Path> declaredOutput,
+			std::vector<FileId> declaredInput,
+			std::vector<FileId> declaredOutput,
 			std::vector<OperationId> children,
 			uint32_t dependencyCount,
 			bool wasSuccessfulRun,
-			std::vector<Path> observedInput,
-			std::vector<Path> observedOutput) :
+			std::vector<FileId> observedInput,
+			std::vector<FileId> observedOutput) :
 			Id(id),
 			Title(std::move(title)),
 			Command(std::move(command)),
@@ -138,13 +138,13 @@ namespace Soup::Build::Runtime
 		OperationId Id;
 		std::string Title;
 		CommandInfo Command;
-		std::vector<Path> DeclaredInput;
-		std::vector<Path> DeclaredOutput;
+		std::vector<FileId> DeclaredInput;
+		std::vector<FileId> DeclaredOutput;
 		std::vector<OperationId> Children;
 		uint32_t DependencyCount;
 		bool WasSuccessfulRun;
-		std::vector<Path> ObservedInput;
-		std::vector<Path> ObservedOutput;
+		std::vector<FileId> ObservedInput;
+		std::vector<FileId> ObservedOutput;
 	};
 }
 

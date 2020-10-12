@@ -7,7 +7,6 @@ Dependencies = [
 	"../../../../Dependencies/SoupTest/Assert/",
 	"../../../Build/Runtime/",
 	"../Extension/",
-	"../../../TestUtilities/"
 ]
 Source = [
 	"gen/Main.cpp"

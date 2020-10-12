@@ -18,7 +18,6 @@ import Soup.Test.Assert;
 using namespace Opal;
 using namespace Opal::System;
 using namespace Soup::Test;
-import Soup.Test.Utilities;
 
 #include "Tasks/BuildTaskTests.gen.h"
 #include "Tasks/RecipeBuildTaskTests.gen.h"

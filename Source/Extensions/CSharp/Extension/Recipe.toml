@@ -18,12 +18,11 @@ PlatformLibraries = [
 DevDependencies = [
 	# "../../TestBuild/",
 	"Soup.Test.Assert@0.1.7",
-	# "../../../TestUtilities/",
 ]
 
 	[Tests]
 	Source = [
-		"../Extension.UnitTests/gen/Main.cpp"
+		"../Extension.UnitTests/gen/Main.cpp",
 	]
 	IncludePaths = [
 		"../Extension.UnitTests/",

@@ -12,11 +12,9 @@ namespace Soup::Build::Runtime::UnitTests
 		[[Fact]]
 		void Initialize()
 		{
-			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto fileSystemState = FileSystemState(1234);
 			auto operationGraph = OperationGraph(1234);
 			auto uut = BuildEvaluateEngine(
-				workingDirectory,
 				fileSystemState,
 				operationGraph);
 		}
@@ -38,9 +36,8 @@ namespace Soup::Build::Runtime::UnitTests
 			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
 			// Setup the input build state
-			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto operationGraph = OperationGraph(1234);
-			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -74,22 +71,22 @@ namespace Soup::Build::Runtime::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(1234);
-
-			auto inputFileId = fileSystemState.ToFileId(Path("/InputFile.in"), Path("C:/TestWorkingDirectory/"));
-			auto outputFileId = fileSystemState.ToFileId(Path("/OutputFile.out"), Path("C:/TestWorkingDirectory/"));
+			auto fileSystemState = FileSystemState(
+				1234,
+				3,
+				std::unordered_map<FileId, Path>({
+					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
+					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
+				}));
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
-			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto operationGraph = OperationGraph(
 				1234,
-				{
-					1,
-				},
+				{ 1, },
 				{
 					OperationInfo(
 						1,
@@ -98,15 +95,15 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
 							"Arguments"),
-						{ inputFileId, },
-						{ outputFileId, },
+						{ 1, },
+						{ 2, },
 						{ },
 						1,
 						false,
 						{ },
 						{ }),
 				});
-			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -154,22 +151,22 @@ namespace Soup::Build::Runtime::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(1234);
-
-			auto inputFileId = fileSystemState.ToFileId(Path("/InputFile.in"), Path("C:/TestWorkingDirectory/"));
-			auto outputFileId = fileSystemState.ToFileId(Path("/OutputFile.out"), Path("C:/TestWorkingDirectory/"));
+			auto fileSystemState = FileSystemState(
+				1234,
+				3,
+				std::unordered_map<FileId, Path>({
+					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
+					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
+				}));
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
-			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto operationGraph = OperationGraph(
 				1234,
-				{
-					1,
-				},
+				{ 1, },
 				{
 					OperationInfo(
 						1,
@@ -178,15 +175,15 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
 							"Arguments"),
-						{ inputFileId, },
-						{ outputFileId, },
+						{ 1, },
+						{ 2, },
 						{ },
 						1,
 						true,
-						{ inputFileId, },
-						{ outputFileId, }),
+						{ 1, },
+						{ 2, }),
 				});
-			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -196,6 +193,7 @@ namespace Soup::Build::Runtime::UnitTests
 				std::vector<std::string>({
 					"DIAG: Build evaluation start",
 					"DIAG: Check for previous operation invocation",
+					"INFO: Output target does not exist: C:/TestWorkingDirectory/OutputFile.out",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: ./Command.exe Arguments",
 					"DIAG: Build evaluation end",
@@ -205,7 +203,9 @@ namespace Soup::Build::Runtime::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::string>({}),
+				std::vector<std::string>({
+					"Exists: C:/TestWorkingDirectory/OutputFile.out",
+				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
 
@@ -230,30 +230,32 @@ namespace Soup::Build::Runtime::UnitTests
 			auto testListener = std::make_shared<TestTraceListener>();
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
+			// Setup the input file only
+			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(1234);
-
-			auto inputFileId = fileSystemState.ToFileId(Path("/InputFile.in"), Path("C:/TestWorkingDirectory/"));
-			auto outputFileId = fileSystemState.ToFileId(Path("/OutputFile.out"), Path("C:/TestWorkingDirectory/"));
+			auto fileSystemState = FileSystemState(
+				1234,
+				3,
+				std::unordered_map<FileId, Path>({
+					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
+					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
+				}),
+				std::unordered_map<FileId, std::optional<time_t>>({
+					{ 1, inputTime },
+					{ 2, std::nullopt },
+				}));
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
-			// Setup the input file only
-			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystemState.SetLastWriteTime(inputFileId, inputTime);
-			fileSystemState.SetLastWriteTime(outputFileId, std::nullopt);
-
 			// Create the build state
-			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto operationGraph = OperationGraph(
 				1234,
-				{
-					1,
-				},
+				{ 1, },
 				{
 					OperationInfo(
 						1,
@@ -262,16 +264,16 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
 							"Arguments"),
-						{ inputFileId, },
-						{ outputFileId, },
+						{ 1, },
+						{ 2, },
 						{ },
 						1,
 						true,
-						{ inputFileId, },
-						{ outputFileId, }),
+						{ 1, },
+						{ 2, }),
 				});
 
-			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -316,31 +318,33 @@ namespace Soup::Build::Runtime::UnitTests
 			auto testListener = std::make_shared<TestTraceListener>();
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
+			// Setup the input/output files to be out of date
+			auto outputTime = CreateDateTime(2015, 5, 22, 9, 10);
+			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(1234);
-
-			auto inputFileId = fileSystemState.ToFileId(Path("/InputFile.in"), Path("C:/TestWorkingDirectory/"));
-			auto outputFileId = fileSystemState.ToFileId(Path("/OutputFile.out"), Path("C:/TestWorkingDirectory/"));
+			auto fileSystemState = FileSystemState(
+				1234,
+				3,
+				std::unordered_map<FileId, Path>({
+					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
+					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
+				}),
+				std::unordered_map<FileId, std::optional<time_t>>({
+					{ 1, inputTime },
+					{ 2, outputTime },
+				}));
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
-			// Setup the input/output files to be out of date
-			auto outputTime = CreateDateTime(2015, 5, 22, 9, 10);
-			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystemState.SetLastWriteTime(inputFileId, inputTime);
-			fileSystemState.SetLastWriteTime(outputFileId, outputTime);
-
 			// Setup the input build state
-			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto operationGraph = OperationGraph(
 				1234,
-				{
-					1,
-				},
+				{ 1, },
 				{
 					OperationInfo(
 						1,
@@ -349,15 +353,15 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
 							"Arguments"),
-						{ inputFileId, },
-						{ outputFileId, },
+						{ 1, },
+						{ 2, },
 						{ },
 						1,
 						true,
-						{ inputFileId, },
-						{ outputFileId, }),
+						{ 1, },
+						{ 2, }),
 				});
-			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -402,31 +406,33 @@ namespace Soup::Build::Runtime::UnitTests
 			auto testListener = std::make_shared<TestTraceListener>();
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
+			// Setup the input/output files to be up to date
+			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
+			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
+
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(1234);
+			auto fileSystemState = FileSystemState(
+				1234,
+				3,
+				std::unordered_map<FileId, Path>({
+					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
+					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
+				}),
+				std::unordered_map<FileId, std::optional<time_t>>({
+					{ 1, inputTime },
+					{ 2, outputTime },
+				}));
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
-			// Setup the input/output files to be up to date
-			auto inputFileId = fileSystemState.ToFileId(Path("/InputFile.in"), Path("C:/TestWorkingDirectory/"));
-			auto outputFileId = fileSystemState.ToFileId(Path("/OutputFile.out"), Path("C:/TestWorkingDirectory/"));
-
-			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
-			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystemState.SetLastWriteTime(inputFileId, inputTime);
-			fileSystemState.SetLastWriteTime(outputFileId, outputTime);
-
 			// Create the initial build state
-			auto workingDirectory = Path("C:/BuildDirectory/");
 			auto operationGraph = OperationGraph(
 				1234,
-				{
-					1,
-				},
+				{ 1, },
 				{
 					OperationInfo(
 						1,
@@ -435,15 +441,15 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
 							"Arguments"),
-						{ inputFileId, },
-						{ outputFileId, },
+						{ 1, },
+						{ 2, },
 						{ },
 						1,
 						true,
-						{ inputFileId, },
-						{ outputFileId, }),
+						{ 1, },
+						{ 2, }),
 				});
-			auto uut = BuildEvaluateEngine(workingDirectory, fileSystemState, operationGraph);
+			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
 
 			// Evaluate the build
 			uut.Evaluate();

@@ -4,6 +4,7 @@
 
 #pragma once
 #include "OperationInfo.h"
+#include "OperationGraph.h"
 
 namespace Soup::Build::Runtime
 {
@@ -14,9 +15,10 @@ namespace Soup::Build::Runtime
 	export class OperationGraphGenerator
 	{
 	public:
-		OperationGraphGenerator() :
+		OperationGraphGenerator(FileSystemState& fileSystemState) :
+			_fileSystemState(fileSystemState),
 			_uniqueId(0),
-			_graph(),
+			_graph(fileSystemState.GetId()),
 			_outputFileLookup()
 		{
 		}
@@ -52,13 +54,15 @@ namespace Soup::Build::Runtime
 			auto operationId = ++_uniqueId;
 
 			// Build up the declared build operation
+			auto declaredInputFileIds = _fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
+			auto declaredOutputFileIds = _fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
 			auto& operationInfo = _graph.AddOperation(
 				OperationInfo(
 					operationId,
 					std::move(title),
 					std::move(commandInfo),
-					std::move(declaredInput),
-					std::move(declaredOutput)));
+					std::move(declaredInputFileIds),
+					std::move(declaredOutputFileIds)));
 		}
 
 		OperationGraph BuildGraph()
@@ -67,16 +71,16 @@ namespace Soup::Build::Runtime
 			for (auto& operation : _graph.GetOperations())
 			{
 				auto& operationInfo = operation.second;
-				auto& workingDirectory = operationInfo.Command.WorkingDirectory;
-				for (auto& file : operationInfo.DeclaredOutput)
+				for (auto file : operationInfo.DeclaredOutput)
 				{
-					if (file.HasFileName())
+					auto& filePath = _fileSystemState.GetFilePath(file);
+					if (filePath.HasFileName())
 					{
-						EnsureOutputFileOperations(file, workingDirectory).push_back(std::ref(operationInfo));
+						EnsureOutputFileOperations(file).push_back(std::ref(operationInfo));
 					}
 					else
 					{
-						EnsureOutputDirectoryOperations(file, workingDirectory).push_back(std::ref(operationInfo));
+						EnsureOutputDirectoryOperations(file).push_back(std::ref(operationInfo));
 					}
 				}
 			}
@@ -88,10 +92,10 @@ namespace Soup::Build::Runtime
 				auto& workingDirectory = activeOperationInfo.Command.WorkingDirectory;
 
 				// Check for inputs that match previous output files
-				for (auto& file : activeOperationInfo.DeclaredInput)
+				for (auto file : activeOperationInfo.DeclaredInput)
 				{
 					std::vector<std::reference_wrapper<OperationInfo>>* matchedOperations = nullptr;
-					if (TryGetOutputFileOperations(file, workingDirectory, matchedOperations))
+					if (TryGetOutputFileOperations(file, matchedOperations))
 					{
 						for (OperationInfo& matchedOperation : *matchedOperations)
 						{
@@ -105,22 +109,26 @@ namespace Soup::Build::Runtime
 				}
 
 				// Check for output files that are under previous output directories
-				for (auto& file : activeOperationInfo.DeclaredOutput)
+				for (auto file : activeOperationInfo.DeclaredOutput)
 				{
-					auto rootedFile = file.HasRoot() ? file : workingDirectory + file;
-					auto parentDirectory = rootedFile.GetParent();
+					auto& filePath = _fileSystemState.GetFilePath(file);
+					auto parentDirectory = filePath.GetParent();
 					auto done = false;
 					while (!done)
 					{
-						std::vector<std::reference_wrapper<OperationInfo>>* matchedOperations = nullptr;
-						if (TryGetOutputDirectoryOperations(parentDirectory, workingDirectory, matchedOperations))
+						FileId parentDirectoryId;
+						if (_fileSystemState.TryFindFileId(parentDirectory, parentDirectoryId))
 						{
-							for (OperationInfo& matchedOperation : *matchedOperations)
+							std::vector<std::reference_wrapper<OperationInfo>>* matchedOperations = nullptr;
+							if (TryGetOutputDirectoryOperations(parentDirectoryId, matchedOperations))
 							{
-								// The matched directory output operation must run before the active operation
-								if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
+								for (OperationInfo& matchedOperation : *matchedOperations)
 								{
-									activeOperationInfo.DependencyCount++;
+									// The matched directory output operation must run before the active operation
+									if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
+									{
+										activeOperationInfo.DependencyCount++;
+									}
 								}
 							}
 						}
@@ -165,12 +173,10 @@ namespace Soup::Build::Runtime
 		}
 
 		bool TryGetOutputFileOperations(
-			const Path& file,
-			const Path& workingDirectory,
+			FileId file,
 			std::vector<std::reference_wrapper<OperationInfo>>*& operations)
 		{
-			auto rootedFile = file.HasRoot() ? file : workingDirectory + file;
-			auto result = _outputFileLookup.find(rootedFile.ToString());
+			auto result = _outputFileLookup.find(file);
 			if (result != _outputFileLookup.end())
 			{
 				operations = &result->second;
@@ -183,12 +189,10 @@ namespace Soup::Build::Runtime
 		}
 
 		bool TryGetOutputDirectoryOperations(
-			const Path& file,
-			const Path& workingDirectory,
+			FileId file,
 			std::vector<std::reference_wrapper<OperationInfo>>*& operations)
 		{
-			auto rootedFile = file.HasRoot() ? file : workingDirectory + file;
-			auto result = _outputDirectoryLookup.find(rootedFile.ToString());
+			auto result = _outputDirectoryLookup.find(file);
 			if (result != _outputDirectoryLookup.end())
 			{
 				operations = &result->second;
@@ -201,27 +205,24 @@ namespace Soup::Build::Runtime
 		}
 
 		std::vector<std::reference_wrapper<OperationInfo>>& EnsureOutputFileOperations(
-			const Path& file,
-			const Path& workingDirectory)
+			FileId file)
 		{
-			auto rootedFile = file.HasRoot() ? file : workingDirectory + file;
-			auto result = _outputFileLookup.emplace(rootedFile.ToString(), std::vector<std::reference_wrapper<OperationInfo>>());
+			auto result = _outputFileLookup.emplace(file, std::vector<std::reference_wrapper<OperationInfo>>());
 			return result.first->second;
 		}
 
 		std::vector<std::reference_wrapper<OperationInfo>>& EnsureOutputDirectoryOperations(
-			const Path& file,
-			const Path& workingDirectory)
+			FileId file)
 		{
-			auto rootedFile = file.HasRoot() ? file : workingDirectory + file;
-			auto result = _outputDirectoryLookup.emplace(rootedFile.ToString(), std::vector<std::reference_wrapper<OperationInfo>>());
+			auto result = _outputDirectoryLookup.emplace(file, std::vector<std::reference_wrapper<OperationInfo>>());
 			return result.first->second;
 		}
 
 	private:
+		FileSystemState& _fileSystemState;
 		OperationId _uniqueId;
 		OperationGraph _graph;
-		std::unordered_map<std::string, std::vector<std::reference_wrapper<OperationInfo>>> _outputFileLookup;
-		std::unordered_map<std::string, std::vector<std::reference_wrapper<OperationInfo>>> _outputDirectoryLookup;
+		std::unordered_map<FileId, std::vector<std::reference_wrapper<OperationInfo>>> _outputFileLookup;
+		std::unordered_map<FileId, std::vector<std::reference_wrapper<OperationInfo>>> _outputDirectoryLookup;
 	};
 }

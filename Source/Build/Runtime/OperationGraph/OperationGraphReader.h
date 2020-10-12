@@ -14,7 +14,7 @@ namespace Soup::Build::Runtime
 	{
 	private:
 		// Binary Operation Graph file format
-		static constexpr uint32_t FileVersion = 2;
+		static constexpr uint32_t FileVersion = 1;
 
 	public:
 		static OperationGraph Deserialize(std::istream& stream)
@@ -35,6 +35,9 @@ namespace Soup::Build::Runtime
 			{
 				throw std::runtime_error("Operation graph file version does not match expected");
 			}
+
+			// Read in the file system state that was used for this operation graph
+			auto stateId = ReadUInt32(stream);
 
 			// Read the set of operations
 			stream.read(headerBuffer.data(), 4);
@@ -72,6 +75,7 @@ namespace Soup::Build::Runtime
 			}
 
 			return OperationGraph(
+				stateId,
 				std::move(rootOperationIds),
 				std::move(operations));
 		}
@@ -95,10 +99,10 @@ namespace Soup::Build::Runtime
 			auto arguments = ReadString(stream);
 
 			// Write out the declared input files
-			auto declaredInput = ReadFileList(stream);
+			auto declaredInput = ReadFileIdList(stream);
 
 			// Write out the declared output files
-			auto declaredOutput = ReadFileList(stream);
+			auto declaredOutput = ReadFileIdList(stream);
 
 			// Write out the child operation ids
 			auto children = ReadOperationIdList(stream);
@@ -110,10 +114,10 @@ namespace Soup::Build::Runtime
 			auto wasSuccessfulRun = ReadBoolean(stream);
 
 			// Write out the observed input files
-			auto observedInput = ReadFileList(stream);
+			auto observedInput = ReadFileIdList(stream);
 
 			// Write out the observed output files
-			auto observedOutput = ReadFileList(stream);
+			auto observedOutput = ReadFileIdList(stream);
 
 			return OperationInfo(
 				id,
@@ -180,13 +184,13 @@ namespace Soup::Build::Runtime
 			return result;
 		}
 
-		static std::vector<Path> ReadFileList(std::istream& stream)
+		static std::vector<FileId> ReadFileIdList(std::istream& stream)
 		{
 			auto size = ReadUInt32(stream);
-			auto result = std::vector<Path>(size);
+			auto result = std::vector<FileId>(size);
 			for (auto i = 0; i < size; i++)
 			{
-				result[i] = Path(ReadString(stream));
+				result[i] = ReadUInt32(stream);
 			}
 
 			return result;

@@ -1,22 +1,22 @@
-﻿// <copyright file="BuildUtilities.h" company="Soup">
+﻿// <copyright file="SharedOperations.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 
-namespace Soup::CSharp::Compiler
+namespace Soup::Build::Utilities
 {
 	/// <summary>
-	/// The build utilities class
+	/// The Shared Operations class
 	/// </summary>
-	export class BuildUtilities
+	export class SharedOperations
 	{
 	public:
 		/// <summary>
 		/// Create a build operation that will copy a file
 		/// </summary>
-		static Soup::Build::Utilities::BuildOperationWrapper CreateCopyFileOperation(
-			Soup::Build::Utilities::BuildStateWrapper& state,
+		static BuildOperation CreateCopyFileOperation(
+			const Path& workingDirectory,
 			const Path& source,
 			const Path& destination)
 		{
@@ -27,7 +27,6 @@ namespace Soup::CSharp::Compiler
 			auto moduleFolder = moduleName.GetParent();
 
 			auto program = moduleFolder + Path("copy.exe");
-			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({
 				source,
 			});
@@ -37,25 +36,27 @@ namespace Soup::CSharp::Compiler
 
 			// Build the arguments
 			std::stringstream arguments;
-			arguments << "\"" << source.ToAlternateString() << "\" \"" << destination.ToAlternateString() << "\"";
+			arguments << "\"" << source.ToString() << "\" \"" << destination.ToString() << "\"";
 
-			return Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					titleStream.str(),
-					program,
-					arguments.str(),
-					workingDirectory,
-					inputFiles,
-					outputFiles));
+			return BuildOperation(
+				titleStream.str(),
+				workingDirectory,
+				program,
+				arguments.str(),
+				inputFiles,
+				outputFiles);
 		}
 
 		/// <summary>
 		/// Create a build operation that will create a directory
 		/// </summary>
-		static Soup::Build::Utilities::BuildOperationWrapper CreateCreateDirectoryOperation(
-			Soup::Build::Utilities::BuildStateWrapper& state,
+		static BuildOperation CreateCreateDirectoryOperation(
+			const Path& workingDirectory,
 			const Path& directory)
 		{
+			if (directory.HasFileName())
+				throw std::runtime_error("Cannot create a directory with a filename.");
+
 			auto titleStream = std::stringstream();
 			titleStream << "MakeDir [" << directory.ToString() << "]";
 
@@ -63,7 +64,6 @@ namespace Soup::CSharp::Compiler
 			auto moduleFolder = moduleName.GetParent();
 
 			auto program = moduleFolder + Path("mkdir.exe");
-			auto workingDirectory = Path("");
 			auto inputFiles = std::vector<Path>({});
 			auto outputFiles = std::vector<Path>({
 				directory,
@@ -73,14 +73,13 @@ namespace Soup::CSharp::Compiler
 			std::stringstream arguments;
 			arguments << "\"" << directory.ToString() << "\"";
 
-			return Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					titleStream.str(),
-					program,
-					arguments.str(),
-					workingDirectory,
-					inputFiles,
-					outputFiles));
+			return BuildOperation(
+				titleStream.str(),
+				workingDirectory,
+				program,
+				arguments.str(),
+				inputFiles,
+				outputFiles);
 		}
 	};
 }

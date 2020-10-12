@@ -9,7 +9,6 @@
 import Opal;
 import Soup.Build.Utilities;
 import Soup.Test.Assert;
-import Soup.Test.Utilities;
 
 using namespace Opal;
 using namespace Opal::System;

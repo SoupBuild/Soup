@@ -9,7 +9,7 @@ TestState RunBuildHistoryCheckerTests()
 	state += Soup::Test::RunTest(className, "IsOutdated_ZeroInput", [&testClass]() { testClass->IsOutdated_ZeroInput(); });
 	state += Soup::Test::RunTest(className, "IsOutdated_SingleInput_UnknownTarget", [&testClass]() { testClass->IsOutdated_SingleInput_UnknownTarget(); });
 	state += Soup::Test::RunTest(className, "IsOutdated_SingleInput_DeletedTarget", [&testClass]() { testClass->IsOutdated_SingleInput_DeletedTarget(); });
-	state += Soup::Test::RunTest(className, "IsOutdated_SingleInput_TargetExists_DeletedInputFile", [&testClass]() { testClass->IsOutdated_SingleInput_TargetExists_UnknownInputFile(); });
+	state += Soup::Test::RunTest(className, "IsOutdated_SingleInput_TargetExists_UnknownInputFile", [&testClass]() { testClass->IsOutdated_SingleInput_TargetExists_UnknownInputFile(); });
 	state += Soup::Test::RunTest(className, "IsOutdated_SingleInput_TargetExists_DeletedInputFile", [&testClass]() { testClass->IsOutdated_SingleInput_TargetExists_DeletedInputFile(); });
 	state += Soup::Test::RunTest(className, "IsOutdated_SingleInput_TargetExists_Outdated", [&testClass]() { testClass->IsOutdated_SingleInput_TargetExists_Outdated(); });
 	state += Soup::Test::RunTest(className, "IsOutdated_SingleInput_TargetExists_UpToDate", [&testClass]() { testClass->IsOutdated_SingleInput_TargetExists_UpToDate(); });

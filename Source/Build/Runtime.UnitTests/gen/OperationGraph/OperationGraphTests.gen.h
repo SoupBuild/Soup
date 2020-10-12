@@ -13,7 +13,7 @@ TestState RunOperationGraphTests()
 	state += Soup::Test::RunTest(className, "TryFindOperationInfo_Found", [&testClass]() { testClass->TryFindOperationInfo_Found(); });
 	state += Soup::Test::RunTest(className, "GetOperationInfo_MissingThrows", [&testClass]() { testClass->GetOperationInfo_MissingThrows(); });
 	state += Soup::Test::RunTest(className, "GetOperationInfo_Found", [&testClass]() { testClass->GetOperationInfo_Found(); });
-	state += Soup::Test::RunTest(className, "AddOperationInfo", [&testClass]() { testClass->AddOperationInfo(); });
+	state += Soup::Test::RunTest(className, "AddOperation", [&testClass]() { testClass->AddOperation(); });
 
 	return state;
 }

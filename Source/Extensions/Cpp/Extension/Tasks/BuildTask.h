@@ -195,7 +195,7 @@ namespace Soup::Cpp
 			sharedBuildTable.EnsureValue("RuntimeDependencies").EnsureList().SetAll(buildResult.RuntimeDependencies);
 			sharedBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(buildResult.LinkDependencies);
 
-			// Register the root build tasks
+			// Register the build operations
 			for (auto& operation : buildResult.BuildOperations)
 			{
 				buildState.CreateOperation(operation);

@@ -17,7 +17,8 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
-		OperationGraph() :
+		OperationGraph(FileSystemStateId stateId) :
+			_stateId(stateId),
 			_rootOperations(),
 			_operations(),
 			_operationLookup()
@@ -28,8 +29,10 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
 		OperationGraph(
+			FileSystemStateId stateId,
 			std::vector<OperationId> rootOperations,
 			std::vector<OperationInfo> operations) :
+			_stateId(stateId),
 			_rootOperations(std::move(rootOperations)),
 			_operations(),
 			_operationLookup()
@@ -39,6 +42,14 @@ namespace Soup::Build::Runtime
 			{
 				AddOperation(std::move(info));
 			}
+		}
+
+		/// <summary>
+		/// Get the file system state id used for this operation graph
+		/// </summary>
+		FileSystemStateId GetStateId() const
+		{
+			return _stateId;
 		}
 
 		/// <summary>
@@ -141,6 +152,7 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
+		FileSystemStateId _stateId;
 		std::vector<OperationId> _rootOperations;
 		std::unordered_map<OperationId, OperationInfo> _operations;
 		std::unordered_map<CommandInfo, OperationId> _operationLookup;

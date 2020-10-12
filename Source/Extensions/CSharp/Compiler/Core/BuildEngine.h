@@ -5,7 +5,6 @@
 #pragma once
 #include "BuildArguments.h"
 #include "BuildResult.h"
-#include "BuildUtilities.h"
 #include "Compiler.h"
 
 namespace Soup::CSharp::Compiler
@@ -31,18 +30,20 @@ namespace Soup::CSharp::Compiler
 			auto result = BuildResult();
 
 			// Ensure the output directories exists as the first step
-			auto objectDirectory = arguments.WorkingDirectory + arguments.ObjectDirectory;
-			auto binaryDirectory = arguments.WorkingDirectory + arguments.BinaryDirectory;
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryOperation(buildState, objectDirectory));
+				Build::Utilities::SharedOperations::CreateCreateDirectoryOperation(
+					arguments.WorkingDirectory,
+					arguments.ObjectDirectory));
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryOperation(buildState, binaryDirectory));
+				Build::Utilities::SharedOperations::CreateCreateDirectoryOperation(
+					arguments.WorkingDirectory,
+					arguments.BinaryDirectory));
 
 			// Perform the core compilation of the source files
 			CoreCompile(buildState, arguments, result);
 
 			// Copy previous runtime dependencies after linking has completed
-			CopyRuntimeDependencies(buildState, arguments, result);
+			CopyRuntimeDependencies(arguments, result);
 
 			return result;
 		}
@@ -56,8 +57,6 @@ namespace Soup::CSharp::Compiler
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
-			auto rootCompileOperations = std::vector<Soup::Build::Utilities::BuildOperationWrapper>();
-
 			if (!arguments.SourceFiles.empty())
 			{
 				CompileSourceFiles(
@@ -89,33 +88,28 @@ namespace Soup::CSharp::Compiler
 			compileArguments.TargetFile = arguments.ObjectDirectory + Path(arguments.TargetName);
 
 			// Compile the requested target
-			auto operation = _compiler->CreateCompileOperation(buildState, compileArguments);
-
-			// Run the core compile next
-			Soup::Build::Utilities::BuildOperationExtensions::AddLeafChild(result.BuildOperations, std::move(operation));
+			auto operation = _compiler->CreateCompileOperation(compileArguments);
+			result.BuildOperations.push_back(std::move(operation));
 		}
 
 		/// <summary>
 		/// Copy runtime dependencies
 		/// </summary>
 		void CopyRuntimeDependencies(
-			Soup::Build::Utilities::BuildStateWrapper& buildState,
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
-			if (arguments.TargetType == BuildTargetType::Executable)
+			if (arguments.TargetType == BuildTargetType::Executable ||
+				arguments.TargetType == BuildTargetType::Library)
 			{
-				auto copyOperations = std::vector<Soup::Build::Utilities::BuildOperationWrapper>();
 				for (auto source : arguments.RuntimeDependencies)
 				{
-					auto target = arguments.WorkingDirectory + arguments.BinaryDirectory + Path(source.GetFileName());
-					auto operation = BuildUtilities::CreateCopyFileOperation(buildState, source, target);
-					copyOperations.push_back(operation);
-				}
-				
-				if (!copyOperations.empty())
-				{
-					Soup::Build::Utilities::BuildOperationExtensions::AddLeafChildren(result.BuildOperations, copyOperations);
+					auto target = arguments.BinaryDirectory + Path(source.GetFileName());
+					auto operation = Build::Utilities::SharedOperations::CreateCopyFileOperation(
+						arguments.WorkingDirectory,
+						source,
+						target);
+					result.BuildOperations.push_back(std::move(operation));
 				}
 			}
 		}

@@ -5,7 +5,6 @@ Type = "Executable"
 Dependencies = [
 	"../Core/",
 	"../../../../Build/Runtime/",
-	"../../../../TestUtilities/",
 	"Soup.Test.Assert@0.1.7",
 ]
 Source = [

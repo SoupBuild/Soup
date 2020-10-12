@@ -5,7 +5,6 @@
 #pragma once
 #include "BuildArguments.h"
 #include "BuildResult.h"
-#include "BuildUtilities.h"
 #include "ICompiler.h"
 
 namespace Soup::Cpp::Compiler
@@ -40,11 +39,11 @@ namespace Soup::Cpp::Compiler
 
 			// Ensure the output directories exists as the first step
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryOperation(
+				Build::Utilities::SharedOperations::CreateCreateDirectoryOperation(
 					arguments.WorkingDirectory,
 					arguments.ObjectDirectory));
 			result.BuildOperations.push_back(
-				BuildUtilities::CreateCreateDirectoryOperation(
+				Build::Utilities::SharedOperations::CreateCreateDirectoryOperation(
 					arguments.WorkingDirectory,
 					arguments.BinaryDirectory));
 
@@ -85,10 +84,11 @@ namespace Soup::Cpp::Compiler
 				auto binaryOutputModuleInterfaceFile =
 					arguments.BinaryDirectory +
 					Path(arguments.TargetName + "." + std::string(_compiler->GetModuleFileExtension()));
-				auto copyInterfaceOperation = BuildUtilities::CreateCopyFileOperation(
-					arguments.WorkingDirectory,
-					objectModuleInterfaceFile,
-					binaryOutputModuleInterfaceFile);
+				auto copyInterfaceOperation =
+					Build::Utilities::SharedOperations::CreateCopyFileOperation(
+						arguments.WorkingDirectory,
+						objectModuleInterfaceFile,
+						binaryOutputModuleInterfaceFile);
 				result.BuildOperations.push_back(std::move(copyInterfaceOperation));
 
 				// Add output module interface to the parent set of modules
@@ -330,7 +330,7 @@ namespace Soup::Cpp::Compiler
 				for (auto source : arguments.RuntimeDependencies)
 				{
 					auto target = arguments.BinaryDirectory + Path(source.GetFileName());
-					auto operation = BuildUtilities::CreateCopyFileOperation(
+					auto operation = Build::Utilities::SharedOperations::CreateCopyFileOperation(
 						arguments.WorkingDirectory,
 						source,
 						target);

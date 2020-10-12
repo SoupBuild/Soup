@@ -14,7 +14,7 @@ namespace Soup::CSharp::Compiler
 		/// <summary>
 		/// Gets or sets the resulting root build operations
 		/// </summary>
-		std::vector<Soup::Build::Utilities::BuildOperationWrapper> BuildOperations;
+		std::vector<Soup::Build::Utilities::BuildOperation> BuildOperations;
 
 		/// <summary>
 		/// Gets or sets the list of link libraries

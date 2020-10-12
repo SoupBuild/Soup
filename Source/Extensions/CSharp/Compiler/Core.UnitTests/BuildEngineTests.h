@@ -39,8 +39,8 @@ namespace Soup::CSharp::Compiler::UnitTests
 			arguments.TargetName = "Library";
 			arguments.TargetType = BuildTargetType::Library;
 			arguments.WorkingDirectory = Path("C:/root/");
-			arguments.ObjectDirectory = Path("obj");
-			arguments.BinaryDirectory = Path("bin");
+			arguments.ObjectDirectory = Path("obj/");
+			arguments.BinaryDirectory = Path("bin/");
 			arguments.SourceFiles = std::vector<Path>({
 				Path("TestFile1.cs"),
 				Path("TestFile2.cs"),
@@ -49,7 +49,8 @@ namespace Soup::CSharp::Compiler::UnitTests
 			arguments.EnableOptimization = true;
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -70,46 +71,40 @@ namespace Soup::CSharp::Compiler::UnitTests
 				"Verify process manager requests match expected.");
 
 			// Verify build state
-			auto expectedCompileOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
+			auto expectedBuildOperations = std::vector<Build::Utilities::BuildOperation>({
+				Build::Utilities::BuildOperation(
+					"MakeDir [./obj/]",
+					Path("C:/root/"),
+					Path("C:/testlocation/mkdir.exe"),
+					"\"./obj/\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./obj/"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MakeDir [./bin/]",
+					Path("C:/root/"),
+					Path("C:/testlocation/mkdir.exe"),
+					"\"./bin/\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./bin/"),
+					})),
+				Build::Utilities::BuildOperation(
 					"CoreCompile",
+					Path("C:/root/"),
 					Path("C:/Tools/csc.test.exe"),
 					"/noconfig /unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:4 /errorendlocation /preferreduilang:en-US /highentropyva+ /debug- /debug:portable /filealign:512 /optimize+ /out:./obj/Library /target:library /warnaserror+ /utf8output /deterministic+ /langversion:8.0 ./TestFile1.cs ./TestFile2.cs ./TestFile3.cs",
-					Path("C:/root/"),
 					std::vector<Path>({
 					}),
 					std::vector<Path>({
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
 					})),
 			});
 
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/obj]",
-					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/obj\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({
-						Path("C:/root/obj"),
-					}),
-					expectedCompileOperations),
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/bin]",
-					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/bin\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({
-						Path("C:/root/bin"),
-					}),
-					expectedCompileOperations),
-			});
-
-			AssertExtensions::AreEqual(
+			Assert::AreEqual(
 				expectedBuildOperations,
-				result.BuildOperations);
+				result.BuildOperations,
+				"Verify Build Operations Result");
 
 			Assert::AreEqual(
 				std::vector<Path>({
@@ -144,14 +139,15 @@ namespace Soup::CSharp::Compiler::UnitTests
 			arguments.TargetName = "Program";
 			arguments.TargetType = BuildTargetType::Executable;
 			arguments.WorkingDirectory = Path("C:/root/");
-			arguments.ObjectDirectory = Path("obj");
-			arguments.BinaryDirectory = Path("bin");
+			arguments.ObjectDirectory = Path("obj/");
+			arguments.BinaryDirectory = Path("bin/");
 			arguments.SourceFiles = std::vector<Path>({
 			});
 			arguments.EnableOptimization = false;
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -171,34 +167,31 @@ namespace Soup::CSharp::Compiler::UnitTests
 				"Verify process manager requests match expected.");
 
 			// Verify build state
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/obj]",
+			auto expectedBuildOperations = std::vector<Build::Utilities::BuildOperation>({
+				Build::Utilities::BuildOperation(
+					"MakeDir [./obj/]",
+					Path("C:/root/"),
 					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/obj\"",
-					Path("./"),
+					"\"./obj/\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
-						Path("C:/root/obj"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
+						Path("./obj/"),
 					})),
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/bin]",
+				Build::Utilities::BuildOperation(
+					"MakeDir [./bin/]",
+					Path("C:/root/"),
 					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/bin\"",
-					Path("./"),
+					"\"./bin/\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
-						Path("C:/root/bin"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
+						Path("./bin/"),
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			Assert::AreEqual(
 				expectedBuildOperations,
-				result.BuildOperations);
+				result.BuildOperations,
+				"Verify Build Operations Result");
 
 			Assert::AreEqual(
 				std::vector<Path>({}),
@@ -233,8 +226,8 @@ namespace Soup::CSharp::Compiler::UnitTests
 			arguments.TargetName = "Library";
 			arguments.TargetType = BuildTargetType::Library;
 			arguments.WorkingDirectory = Path("C:/root/");
-			arguments.ObjectDirectory = Path("obj");
-			arguments.BinaryDirectory = Path("bin");
+			arguments.ObjectDirectory = Path("obj/");
+			arguments.BinaryDirectory = Path("bin/");
 			arguments.SourceFiles = std::vector<Path>({
 				Path("File1.cs"),
 				Path("File2.cs"),
@@ -246,7 +239,8 @@ namespace Soup::CSharp::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -267,50 +261,40 @@ namespace Soup::CSharp::Compiler::UnitTests
 				"Verify process manager requests match expected.");
 
 			// Verify build state
-			auto expectedCompileOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"CoreCompile",
-						Path("C:/Tools/csc.test.exe"),
-						"/noconfig /unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:4 /errorendlocation /preferreduilang:en-US /highentropyva+ /debug- /debug:portable /filealign:512 /optimize+ /out:./obj/Library /target:library /warnaserror+ /utf8output /deterministic+ /langversion:8.0 ./File1.cs ./File2.cs",
-						Path("C:/root/"),
-						std::vector<Path>({
-						}),
-						std::vector<Path>({
-						}),
-						std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						})));
-
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/obj]",
+			auto expectedBuildOperations = std::vector<Build::Utilities::BuildOperation>({
+				Build::Utilities::BuildOperation(
+					"MakeDir [./obj/]",
+					Path("C:/root/"),
 					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/obj\"",
-					Path("./"),
+					"\"./obj/\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
-						Path("C:/root/obj"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedCompileOperation,
+						Path("./obj/"),
 					})),
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/bin]",
+				Build::Utilities::BuildOperation(
+					"MakeDir [./bin/]",
+					Path("C:/root/"),
 					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/bin\"",
-					Path("./"),
+					"\"./bin/\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
-						Path("C:/root/bin"),
+						Path("./bin/"),
+					})),
+				Build::Utilities::BuildOperation(
+					"CoreCompile",
+					Path("C:/root/"),
+					Path("C:/Tools/csc.test.exe"),
+					"/noconfig /unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:4 /errorendlocation /preferreduilang:en-US /highentropyva+ /debug- /debug:portable /filealign:512 /optimize+ /out:./obj/Library /target:library /warnaserror+ /utf8output /deterministic+ /langversion:8.0 ./File1.cs ./File2.cs",
+					std::vector<Path>({
 					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedCompileOperation,
+					std::vector<Path>({
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			Assert::AreEqual(
 				expectedBuildOperations,
-				result.BuildOperations);
+				result.BuildOperations,
+				"Verify Build Operations Result");
 
 			Assert::AreEqual(
 				std::vector<Path>({

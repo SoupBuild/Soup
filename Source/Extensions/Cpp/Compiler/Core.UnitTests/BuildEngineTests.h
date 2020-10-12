@@ -36,8 +36,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 			arguments.TargetType = BuildTargetType::Executable;
 			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("C:/root/");
-			arguments.ObjectDirectory = Path("obj");
-			arguments.BinaryDirectory = Path("bin");
+			arguments.ObjectDirectory = Path("obj/");
+			arguments.BinaryDirectory = Path("bin/");
 			arguments.SourceFiles = std::vector<Path>({
 				Path("TestFile.cpp"),
 			});
@@ -48,7 +48,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -105,68 +106,53 @@ namespace Soup::Cpp::Compiler::UnitTests
 				compiler->GetLinkRequests(),
 				"Verify link requests match expected.");
 
-			// Verify build state
-			auto expectedLinkOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"MockLink: 1",
-						Path("MockLinker.exe"),
-						"Arguments",
-						Path("MockWorkingDirectory"),
-						std::vector<Path>({
-							Path("InputFile.in"),
-						}),
-						std::vector<Path>({
-							Path("OutputFile.out"),
-						})));
-
-			auto expectedCompileOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"MockCompile: 1",
-						Path("MockCompiler.exe"),
-						"Arguments",
-						Path("MockWorkingDirectory"),
-						std::vector<Path>({
-							Path("InputFile.in"),
-						}),
-						std::vector<Path>({
-							Path("OutputFile.out"),
-						}),
-						std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-							expectedLinkOperation,
-						})));
-
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/obj]",
+			auto expectedBuildOperations = std::vector<Build::Utilities::BuildOperation>({
+				Build::Utilities::BuildOperation(
+					"MakeDir [./obj/]",
+					Path("C:/root/"),
 					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/obj\"",
-					Path("./"),
+					"\"./obj/\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
-						Path("C:/root/obj"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedCompileOperation,
+						Path("./obj/"),
 					})),
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/bin]",
+				Build::Utilities::BuildOperation(
+					"MakeDir [./bin/]",
+					Path("C:/root/"),
 					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/bin\"",
-					Path("./"),
+					"\"./bin/\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
-						Path("C:/root/bin"),
+						Path("./bin/"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MockCompile: 1",
+					Path("MockWorkingDirectory"),
+					Path("MockCompiler.exe"),
+					"Arguments",
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedCompileOperation,
+					std::vector<Path>({
+						Path("OutputFile.out"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MockLink: 1",
+					Path("MockWorkingDirectory"),
+					Path("MockLinker.exe"),
+					"Arguments",
+					std::vector<Path>({
+						Path("InputFile.in"),
+					}),
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			Assert::AreEqual(
 				expectedBuildOperations,
-				result.BuildOperations);
+				result.BuildOperations,
+				"Verify Build Operations Result");
 
 			Assert::AreEqual(
 				std::vector<Path>({}),
@@ -206,8 +192,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 			arguments.TargetType = BuildTargetType::StaticLibrary;
 			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("C:/root/");
-			arguments.ObjectDirectory = Path("obj");
-			arguments.BinaryDirectory = Path("bin");
+			arguments.ObjectDirectory = Path("obj/");
+			arguments.BinaryDirectory = Path("bin/");
 			arguments.SourceFiles = std::vector<Path>({
 				Path("TestFile1.cpp"),
 				Path("TestFile2.cpp"),
@@ -228,7 +214,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -308,91 +295,75 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"MockLink: 1",
-						Path("MockLinker.exe"),
-						"Arguments",
-						Path("MockWorkingDirectory"),
-						std::vector<Path>({
-							Path("InputFile.in"),
-						}),
-						std::vector<Path>({
-							Path("OutputFile.out"),
-						})));
-
-			auto expectedCompileOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
+			auto expectedBuildOperations = std::vector<Build::Utilities::BuildOperation>({
+				Build::Utilities::BuildOperation(
+					"MakeDir [./obj/]",
+					Path("C:/root/"),
+					Path("C:/testlocation/mkdir.exe"),
+					"\"./obj/\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./obj/"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MakeDir [./bin/]",
+					Path("C:/root/"),
+					Path("C:/testlocation/mkdir.exe"),
+					"\"./bin/\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./bin/"),
+					})),
+				Build::Utilities::BuildOperation(
 					"MockCompile: 1",
+					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
-					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
 					}),
 					std::vector<Path>({
 						Path("OutputFile.out"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedLinkOperation,
 					})),
-				new Build::Utilities::BuildOperation(
+				Build::Utilities::BuildOperation(
 					"MockCompile: 2",
+					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
-					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
 					}),
 					std::vector<Path>({
 						Path("OutputFile.out"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedLinkOperation,
 					})),
-				new Build::Utilities::BuildOperation(
+				Build::Utilities::BuildOperation(
 					"MockCompile: 3",
+					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
-					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
 					}),
 					std::vector<Path>({
 						Path("OutputFile.out"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MockLink: 1",
+					Path("MockWorkingDirectory"),
+					Path("MockLinker.exe"),
+					"Arguments",
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedLinkOperation,
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					})),
 			});
 
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/obj]",
-					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/obj\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({
-						Path("C:/root/obj"),
-					}),
-					expectedCompileOperations),
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/bin]",
-					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/bin\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({
-						Path("C:/root/bin"),
-					}),
-					expectedCompileOperations),
-			});
-
-			AssertExtensions::AreEqual(
+			Assert::AreEqual(
 				expectedBuildOperations,
-				result.BuildOperations);
+				result.BuildOperations,
+				"Verify Build Operations Result");
 
 			Assert::AreEqual(
 				std::vector<Path>({}),
@@ -434,8 +405,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 			arguments.TargetType = BuildTargetType::StaticLibrary;
 			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("C:/root/");
-			arguments.ObjectDirectory = Path("obj");
-			arguments.BinaryDirectory = Path("bin");
+			arguments.ObjectDirectory = Path("obj/");
+			arguments.BinaryDirectory = Path("bin/");
 			arguments.ModuleInterfaceSourceFile = Path("Public.cpp");
 			arguments.SourceFiles = std::vector<Path>({
 				Path("TestFile1.cpp"),
@@ -461,7 +432,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -556,127 +528,97 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"MockLink: 1",
-						Path("MockLinker.exe"),
-						"Arguments",
-						Path("MockWorkingDirectory"),
-						std::vector<Path>({
-							Path("InputFile.in"),
-						}),
-						std::vector<Path>({
-							Path("OutputFile.out"),
-						})));
-
-			auto expectedCompileSourceOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
+			auto expectedBuildOperations = std::vector<Build::Utilities::BuildOperation>({
+				Build::Utilities::BuildOperation(
+					"MakeDir [./obj/]",
+					Path("C:/root/"),
+					Path("C:/testlocation/mkdir.exe"),
+					"\"./obj/\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./obj/"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MakeDir [./bin/]",
+					Path("C:/root/"),
+					Path("C:/testlocation/mkdir.exe"),
+					"\"./bin/\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./bin/"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MockCompile: 1",
+					Path("MockWorkingDirectory"),
+					Path("MockCompiler.exe"),
+					"Arguments",
+					std::vector<Path>({
+						Path("InputFile.in"),
+					}),
+					std::vector<Path>({
+						Path("OutputFile.out"),
+					})),
+				Build::Utilities::BuildOperation(
+					"Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
+					Path("C:/root/"),
+					Path("C:/testlocation/copy.exe"),
+					"\"./obj/Public.mock.bmi\" \"./bin/Library.mock.bmi\"",
+					std::vector<Path>({
+						Path("./obj/Public.mock.bmi"),
+					}),
+					std::vector<Path>({
+						Path("./bin/Library.mock.bmi"),
+					})),
+				Build::Utilities::BuildOperation(
 					"MockCompile: 2",
+					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
-					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
 					}),
 					std::vector<Path>({
 						Path("OutputFile.out"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedLinkOperation,
 					})),
-				new Build::Utilities::BuildOperation(
+				Build::Utilities::BuildOperation(
 					"MockCompile: 3",
+					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
-					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
 					}),
 					std::vector<Path>({
 						Path("OutputFile.out"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedLinkOperation,
 					})),
-				new Build::Utilities::BuildOperation(
+				Build::Utilities::BuildOperation(
 					"MockCompile: 4",
+					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
-					Path("MockWorkingDirectory"),
 					std::vector<Path>({
 						Path("InputFile.in"),
 					}),
 					std::vector<Path>({
 						Path("OutputFile.out"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MockLink: 1",
+					Path("MockWorkingDirectory"),
+					Path("MockLinker.exe"),
+					"Arguments",
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedLinkOperation,
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					})),
 			});
 
-			auto expectedCopyModuleInterfaceOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
-						Path("C:/testlocation/copy.exe"),
-						"\"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
-						Path("./"),
-						std::vector<Path>({
-							Path("C:/root/obj/Public.mock.bmi"),
-						}),
-						std::vector<Path>({
-							Path("C:/root/bin/Library.mock.bmi"),
-						}),
-						expectedCompileSourceOperations));
-
-			auto expectedCompileModuleOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"MockCompile: 1",
-						Path("MockCompiler.exe"),
-						"Arguments",
-						Path("MockWorkingDirectory"),
-						std::vector<Path>({
-							Path("InputFile.in"),
-						}),
-						std::vector<Path>({
-							Path("OutputFile.out"),
-						}),
-						std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-							expectedCopyModuleInterfaceOperation,
-						})));
-
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/obj]",
-					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/obj\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({
-						Path("C:/root/obj"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedCompileModuleOperation,
-					})),
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/bin]",
-					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/bin\"",
-					Path("./"),
-					std::vector<Path>({}),
-					std::vector<Path>({
-						Path("C:/root/bin"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedCompileModuleOperation,
-					})),
-			});
-
-			AssertExtensions::AreEqual(
+			Assert::AreEqual(
 				expectedBuildOperations,
-				result.BuildOperations);
+				result.BuildOperations,
+				"Verify Build Operations Result");
 
 			Assert::AreEqual(
 				std::vector<Path>({
@@ -720,8 +662,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 			arguments.TargetType = BuildTargetType::StaticLibrary;
 			arguments.LanguageStandard = LanguageStandard::CPP20;
 			arguments.WorkingDirectory = Path("C:/root/");
-			arguments.ObjectDirectory = Path("obj");
-			arguments.BinaryDirectory = Path("bin");
+			arguments.ObjectDirectory = Path("obj/");
+			arguments.BinaryDirectory = Path("bin/");
 			arguments.ModuleInterfaceSourceFile = Path("Public.cpp");
 			arguments.SourceFiles = std::vector<Path>({});
 			arguments.OptimizationLevel = BuildOptimizationLevel::Size;
@@ -739,7 +681,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
 			// Verify expected logs
@@ -807,84 +750,64 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"Verify link requests match expected.");
 
 			// Verify build state
-			auto expectedLinkOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"MockLink: 1",
-						Path("MockLinker.exe"),
-						"Arguments",
-						Path("MockWorkingDirectory"),
-						std::vector<Path>({
-							Path("InputFile.in"),
-						}),
-						std::vector<Path>({
-							Path("OutputFile.out"),
-						})));
-
-			auto expectedCopyModuleInterfaceOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"Copy [C:/root/obj/Public.mock.bmi] -> [C:/root/bin/Library.mock.bmi]",
-						Path("C:/testlocation/copy.exe"),
-						"\"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
-						Path("./"),
-						std::vector<Path>({
-							Path("C:/root/obj/Public.mock.bmi"),
-						}),
-						std::vector<Path>({
-							Path("C:/root/bin/Library.mock.bmi"),
-						}),
-						std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-							expectedLinkOperation,
-						})));
-
-			auto expectedCompileModuleOperation =
-				Memory::Reference<Build::Utilities::BuildOperation>(
-					new Build::Utilities::BuildOperation(
-						"MockCompile: 1",
-						Path("MockCompiler.exe"),
-						"Arguments",
-						Path("MockWorkingDirectory"),
-						std::vector<Path>({
-							Path("InputFile.in"),
-						}),
-						std::vector<Path>({
-							Path("OutputFile.out"),
-						}),
-						std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-							expectedCopyModuleInterfaceOperation,
-						})));
-
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/obj]",
+			auto expectedBuildOperations = std::vector<Build::Utilities::BuildOperation>({
+				Build::Utilities::BuildOperation(
+					"MakeDir [./obj/]",
+					Path("C:/root/"),
 					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/obj\"",
-					Path("./"),
+					"\"./obj/\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
-						Path("C:/root/obj"),
-					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedCompileModuleOperation,
+						Path("./obj/"),
 					})),
-				new Build::Utilities::BuildOperation(
-					"MakeDir [C:/root/bin]",
+				Build::Utilities::BuildOperation(
+					"MakeDir [./bin/]",
+					Path("C:/root/"),
 					Path("C:/testlocation/mkdir.exe"),
-					"\"C:/root/bin\"",
-					Path("./"),
+					"\"./bin/\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
-						Path("C:/root/bin"),
+						Path("./bin/"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MockCompile: 1",
+					Path("MockWorkingDirectory"),
+					Path("MockCompiler.exe"),
+					"Arguments",
+					std::vector<Path>({
+						Path("InputFile.in"),
 					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						expectedCompileModuleOperation,
+					std::vector<Path>({
+						Path("OutputFile.out"),
+					})),
+				Build::Utilities::BuildOperation(
+					"Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
+					Path("C:/root/"),
+					Path("C:/testlocation/copy.exe"),
+					"\"./obj/Public.mock.bmi\" \"./bin/Library.mock.bmi\"",
+					std::vector<Path>({
+						Path("./obj/Public.mock.bmi"),
+					}),
+					std::vector<Path>({
+						Path("./bin/Library.mock.bmi"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MockLink: 1",
+					Path("MockWorkingDirectory"),
+					Path("MockLinker.exe"),
+					"Arguments",
+					std::vector<Path>({
+						Path("InputFile.in"),
+					}),
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					})),
 			});
 
-			AssertExtensions::AreEqual(
+			Assert::AreEqual(
 				expectedBuildOperations,
-				result.BuildOperations);
+				result.BuildOperations,
+				"Verify Build Operations Result");
 
 			Assert::AreEqual(
 				std::vector<Path>({

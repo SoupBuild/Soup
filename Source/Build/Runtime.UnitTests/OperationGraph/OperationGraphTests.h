@@ -44,12 +44,8 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({
-							1,
-						}),
-						std::vector<FileId>({
-							2,
-						}),
+						std::vector<FileId>({ 1, }),
+						std::vector<FileId>({ 2, }),
 						std::vector<OperationId>({}),
 						1,
 						false,
@@ -78,12 +74,8 @@ namespace Soup::Build::Runtime::UnitTests
 								Path("C:/Root/"),
 								Path("DoStuff.exe"),
 								"arg1 arg2"),
-							std::vector<FileId>({
-								1,
-							}),
-							std::vector<FileId>({
-								2,
-							}),
+							std::vector<FileId>({ 1, }),
+							std::vector<FileId>({ 2, }),
 							std::vector<OperationId>({}),
 							1,
 							false,
@@ -109,12 +101,8 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({
-							1,
-						}),
-						std::vector<FileId>({
-							2,
-						}),
+						std::vector<FileId>({ 1, }),
+						std::vector<FileId>({ 2 }),
 						std::vector<OperationId>({}),
 						1,
 						false,
@@ -176,12 +164,8 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({
-							1,
-						}),
-						std::vector<FileId>({
-							2,
-						}),
+						std::vector<FileId>({ 1, }),
+						std::vector<FileId>({ 2, }),
 						std::vector<OperationId>({}),
 						1,
 						false,
@@ -207,12 +191,8 @@ namespace Soup::Build::Runtime::UnitTests
 						Path("C:/Root/"),
 						Path("DoStuff.exe"),
 						"arg1 arg2"),
-					std::vector<FileId>({
-						1,
-					}),
-					std::vector<FileId>({
-						2,
-					}),
+					std::vector<FileId>({ 1, }),
+					std::vector<FileId>({ 2, }),
 					std::vector<OperationId>({}),
 					1,
 					false,
@@ -252,12 +232,8 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({
-							1,
-						}),
-						std::vector<FileId>({
-							2,
-						}),
+						std::vector<FileId>({ 1, }),
+						std::vector<FileId>({ 2, }),
 						std::vector<OperationId>({}),
 						1,
 						false,
@@ -275,12 +251,8 @@ namespace Soup::Build::Runtime::UnitTests
 						Path("C:/Root/"),
 						Path("DoStuff.exe"),
 						"arg1 arg2"),
-					std::vector<FileId>({
-						1,
-					}),
-					std::vector<FileId>({
-						2,
-					}),
+					std::vector<FileId>({ 1, }),
+					std::vector<FileId>({ 2, }),
 					std::vector<OperationId>({}),
 					1,
 					false,
@@ -291,14 +263,14 @@ namespace Soup::Build::Runtime::UnitTests
 		}
 
 		[[Fact]]
-		void AddOperationInfo()
+		void AddOperation()
 		{
 			auto uut = OperationGraph(
 				1234,
 				std::vector<OperationId>({}),
 				std::vector<OperationInfo>({}));
 
-			uut.AddOperationInfo(
+			uut.AddOperation(
 				OperationInfo(
 					1,
 					"TestOperation",
@@ -306,12 +278,8 @@ namespace Soup::Build::Runtime::UnitTests
 						Path("C:/Root/"),
 						Path("DoStuff.exe"),
 						"arg1 arg2"),
-					std::vector<FileId>({
-						1,
-					}),
-					std::vector<FileId>({
-						2,
-					}),
+					std::vector<FileId>({ 1, }),
+					std::vector<FileId>({ 2, }),
 					std::vector<OperationId>({}),
 					1,
 					false,
@@ -329,12 +297,8 @@ namespace Soup::Build::Runtime::UnitTests
 								Path("C:/Root/"),
 								Path("DoStuff.exe"),
 								"arg1 arg2"),
-							std::vector<FileId>({
-								1,
-							}),
-							std::vector<FileId>({
-								2,
-							}),
+							std::vector<FileId>({ 1, }),
+							std::vector<FileId>({ 2, }),
 							std::vector<OperationId>({}),
 							1,
 							false,

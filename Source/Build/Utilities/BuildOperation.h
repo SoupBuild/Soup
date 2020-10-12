@@ -47,5 +47,23 @@ namespace Soup::Build::Utilities
 		std::string Arguments;
 		std::vector<Path> DeclaredInput;
 		std::vector<Path> DeclaredOutput;
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const BuildOperation& rhs) const
+		{
+			return Title == rhs.Title &&
+				WorkingDirectory == rhs.WorkingDirectory &&
+				Executable == rhs.Executable &&
+				Arguments == rhs.Arguments &&
+				DeclaredInput == rhs.DeclaredInput &&
+				DeclaredOutput == rhs.DeclaredOutput;
+		}
+
+		bool operator !=(const BuildOperation& rhs) const
+		{
+			return !(*this == rhs);
+		}
 	};
 }

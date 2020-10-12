@@ -16,7 +16,6 @@ import Soup.Build.Runtime;
 import Monitor.Shared;
 import json11;
 import Soup.Test.Assert;
-import Soup.Test.Utilities;
 
 using namespace Opal;
 using namespace Opal::System;
@@ -43,10 +42,12 @@ int main()
 
 	state += RunBuildHistoryCheckerTests();
 	state += RunBuildEvaluateEngineTests();
+
 	state += RunFileSystemStateTests();
 	state += RunFileSystemStateManagerTests();
 	state += RunFileSystemStateReaderTests();
 	state += RunFileSystemStateWriterTests();
+	
 	state += RunOperationGraphTests();
 	state += RunOperationGraphManagerTests();
 	state += RunOperationGraphReaderTests();

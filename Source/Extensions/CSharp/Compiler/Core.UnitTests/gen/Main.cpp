@@ -10,7 +10,6 @@ import Opal;
 import Soup.Build.Runtime;
 import Soup.CSharp.Compiler;
 import Soup.Test.Assert;
-import Soup.Test.Utilities;
 
 using namespace Opal;
 using namespace Opal::System;

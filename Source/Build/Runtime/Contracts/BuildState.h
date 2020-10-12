@@ -17,10 +17,10 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
-		BuildState(ValueTable activeState) :
+		BuildState(ValueTable activeState, FileSystemState& fileSystemState) :
 			_activeState(std::move(activeState)),
 			_sharedState(),
-			_graphGenerator()
+			_graphGenerator(fileSystemState)
 		{
 		}
 

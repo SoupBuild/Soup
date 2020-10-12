@@ -21,7 +21,6 @@ PlatformLibraries = [
 DevDependencies = [
 	# "../../TestBuild/",
 	"Soup.Test.Assert@0.1.7",
-	# "../../../TestUtilities/",
 ]
 
 	[Tests]
