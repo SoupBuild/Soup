@@ -33,9 +33,12 @@ import Soup.Build.Utilities;
 
 using namespace Opal;
 
-#include "BuildEvaluateEngine.h"
-#include "BuildGenerateEngine.h"
+#include "Contracts/ValuePrimitive.h"
+
 #include "FileSystemState/FileSystemStateManager.h"
+
 #include "OperationGraph/OperationGraphGenerator.h"
 #include "OperationGraph/OperationGraphManager.h"
-#include "System/ValuePrimitive.h"
+
+#include "BuildEvaluateEngine.h"
+#include "BuildGenerateEngine.h"

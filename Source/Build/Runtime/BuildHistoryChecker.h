@@ -10,7 +10,7 @@ namespace Soup::Build::Runtime
 	export class BuildHistoryChecker
 	{
 	public:
-		BuildHistoryChecker(const FileSystemState& fileSystemState) :
+		BuildHistoryChecker(FileSystemState& fileSystemState) :
 			_fileSystemState(fileSystemState)
 		{
 		}
@@ -48,72 +48,58 @@ namespace Soup::Build::Runtime
 			const std::vector<FileId>& inputFiles)
 		{
 			// Get the output file last write time
-			std::optional<time_t> targetFileLastWriteTime;
-			if (_fileSystemState.TryGetLastWriteTime(targetFile, targetFileLastWriteTime))
-			{
-				if (!targetFileLastWriteTime.has_value())
-				{
-					auto targetFilePath = _fileSystemState.GetFilePath(targetFile);
-					Log::Info("Output target does not exist: " + targetFilePath.ToString());
-					return true;
-				}
+			std::optional<time_t> targetFileLastWriteTime = _fileSystemState.GetLastWriteTime(targetFile);
 
-				// Note: No need to use cache here since target files should only be analyzed once
-				for (auto& inputFile : inputFiles)
-				{
-					// If the file is relative then combine it with the root path
-					if (IsOutdated(inputFile, targetFile, targetFileLastWriteTime.value()))
-					{
-						return true;
-					}
-				}
-
-				return false;
-			}
-			else
+			if (!targetFileLastWriteTime.has_value())
 			{
-				Log::Warning("Output file missing from file system state.");
+				auto targetFilePath = _fileSystemState.GetFilePath(targetFile);
+				Log::Info("Output target does not exist: " + targetFilePath.ToString());
 				return true;
 			}
+
+			// Note: No need to use cache here since target files should only be analyzed once
+			for (auto& inputFile : inputFiles)
+			{
+				// If the file is relative then combine it with the root path
+				if (IsOutdated(inputFile, targetFile, targetFileLastWriteTime.value()))
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		bool IsOutdated(FileId inputFile, FileId outputFile, std::time_t outputFileLastWriteTime)
 		{
 			// Get the file state from the cache
-			std::optional<time_t> lastWriteTime;
-			if (_fileSystemState.TryGetLastWriteTime(inputFile, lastWriteTime))
+			std::optional<time_t> lastWriteTime = _fileSystemState.GetLastWriteTime(inputFile);
+
+			// Perform the final check
+			if (!lastWriteTime.has_value())
 			{
-				// Perform the final check
-				if (!lastWriteTime.has_value())
+				// The input was missing
+				auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
+				Log::Info("Input Missing [" + targetFilePath.ToString() + "]");
+				return true;
+			}
+			else
+			{
+				if (lastWriteTime.value() > outputFileLastWriteTime)
 				{
-					// The input was missing
-					auto inputFilePath = _fileSystemState.GetFilePath(inputFile);
-					Log::Info("Input Missing [" + inputFilePath.ToString() + "]");
+					auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
+					auto outputFilePath = _fileSystemState.GetFilePath(outputFile);
+					Log::Info("Input altered after target [" + targetFilePath.ToString() + "] -> [" + outputFilePath.ToString() + "]");
 					return true;
 				}
 				else
 				{
-					if (lastWriteTime.value() > outputFileLastWriteTime)
-					{
-						auto inputFilePath = _fileSystemState.GetFilePath(inputFile);
-						auto outputFilePath = _fileSystemState.GetFilePath(outputFile);
-						Log::Info("Input altered after target [" + inputFilePath.ToString() + "] -> [" + outputFilePath.ToString() + "]");
-						return true;
-					}
-					else
-					{
-						return false;
-					}
+					return false;
 				}
-			}
-			else
-			{
-				Log::Warning("Input file missing from file system state.");
-				return true;
 			}
 		}
 
 	private:
-		const FileSystemState& _fileSystemState;
+		FileSystemState& _fileSystemState;
 	};
 }

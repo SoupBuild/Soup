@@ -5,7 +5,7 @@
 #pragma once
 #include "BuildFailedException.h"
 #include "BuildHistoryChecker.h"
-#include "FileSystemstate/FileSystemState.h"
+#include "FileSystemState/FileSystemState.h"
 #include "OperationGraph/OperationGraph.h"
 #include "SystemAccessTracker.h"
 
@@ -21,7 +21,6 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="BuildEvaluateEngine"/> class.
 		/// </summary>
 		BuildEvaluateEngine(
-			Path workingDirectory,
 			FileSystemState& fileSystemState,
 			OperationGraph& operationGraph) :
 			_fileSystemState(fileSystemState),

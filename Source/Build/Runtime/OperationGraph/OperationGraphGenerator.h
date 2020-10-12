@@ -4,6 +4,7 @@
 
 #pragma once
 #include "OperationInfo.h"
+#include "OperationGraph.h"
 
 namespace Soup::Build::Runtime
 {
@@ -14,11 +15,11 @@ namespace Soup::Build::Runtime
 	export class OperationGraphGenerator
 	{
 	public:
-		OperationGraphGenerator(
-			FileSystemState& fileSystemState) :
+		OperationGraphGenerator(FileSystemState& fileSystemState) :
 			_fileSystemState(fileSystemState),
 			_uniqueId(0),
-			_duplicateMonitor()
+			_graph(fileSystemState.GetId()),
+			_outputFileLookup()
 		{
 		}
 
@@ -26,121 +27,202 @@ namespace Soup::Build::Runtime
 		/// Create an operation graph from the provided generated graph
 		/// At the same time verify that there are no cycles
 		/// </summary>
-		OperationGraph CreateFromDefinition(
-			Utilities::BuildOperationListWrapper operations)
+		void CreateOperation(
+			std::string title,
+			Path executable,
+			std::string arguments,
+			Path workingDirectory,
+			std::vector<Path> declaredInput,
+			std::vector<Path> declaredOutput)
 		{
-			auto result = OperationGraph(
-				_fileSystemState.GetId());
+			if (!workingDirectory.HasRoot())
+				throw std::runtime_error("Working directory must be an absolute path.");
 
-			// Build the initial operation dependency set to
-			// ensure operations are built in the correct order 
-			// and that there are no cycles
-			auto emptyParentSet = std::set<OperationId>();
+			// Build up the operation unique command
+			auto commandInfo = CommandInfo(
+				std::move(workingDirectory),
+				std::move(executable),
+				std::move(arguments));
 
-			auto rootOperationIds = BuildFromDefinition(
-				operations,
-				emptyParentSet,
-				result);
+			// Ensure this is the a unique operation
+			if (_graph.HasCommand(commandInfo))
+			{
+				throw std::runtime_error("Operation with this command already exists.");
+			}
 
-			result.SetRootOperationIds(std::move(rootOperationIds));
+			// Generate a unique id for this new operation
+			auto operationId = ++_uniqueId;
 
-			return result;
+			// Build up the declared build operation
+			auto declaredInputFileIds = _fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
+			auto declaredOutputFileIds = _fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
+			auto& operationInfo = _graph.AddOperation(
+				OperationInfo(
+					operationId,
+					std::move(title),
+					std::move(commandInfo),
+					std::move(declaredInputFileIds),
+					std::move(declaredOutputFileIds)));
+		}
+
+		OperationGraph BuildGraph()
+		{
+			// Store the operation in the required file lookups to help build up the dependency graph
+			for (auto& operation : _graph.GetOperations())
+			{
+				auto& operationInfo = operation.second;
+				for (auto file : operationInfo.DeclaredOutput)
+				{
+					auto& filePath = _fileSystemState.GetFilePath(file);
+					if (filePath.HasFileName())
+					{
+						EnsureOutputFileOperations(file).push_back(std::ref(operationInfo));
+					}
+					else
+					{
+						EnsureOutputDirectoryOperations(file).push_back(std::ref(operationInfo));
+					}
+				}
+			}
+
+			// Build up the child dependencies based on the operations that use this operations output files
+			for (auto& activeOperation : _graph.GetOperations())
+			{
+				auto& activeOperationInfo = activeOperation.second;
+				auto& workingDirectory = activeOperationInfo.Command.WorkingDirectory;
+
+				// Check for inputs that match previous output files
+				for (auto file : activeOperationInfo.DeclaredInput)
+				{
+					std::vector<std::reference_wrapper<OperationInfo>>* matchedOperations = nullptr;
+					if (TryGetOutputFileOperations(file, matchedOperations))
+					{
+						for (OperationInfo& matchedOperation : *matchedOperations)
+						{
+							// The active operation must run after the matched output operation
+							if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
+							{
+								activeOperationInfo.DependencyCount++;
+							}
+						}
+					}
+				}
+
+				// Check for output files that are under previous output directories
+				for (auto file : activeOperationInfo.DeclaredOutput)
+				{
+					auto& filePath = _fileSystemState.GetFilePath(file);
+					auto parentDirectory = filePath.GetParent();
+					auto done = false;
+					while (!done)
+					{
+						FileId parentDirectoryId;
+						if (_fileSystemState.TryFindFileId(parentDirectory, parentDirectoryId))
+						{
+							std::vector<std::reference_wrapper<OperationInfo>>* matchedOperations = nullptr;
+							if (TryGetOutputDirectoryOperations(parentDirectoryId, matchedOperations))
+							{
+								for (OperationInfo& matchedOperation : *matchedOperations)
+								{
+									// The matched directory output operation must run before the active operation
+									if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
+									{
+										activeOperationInfo.DependencyCount++;
+									}
+								}
+							}
+						}
+
+						// Get the next parent directory
+						auto nextParentDirectory = parentDirectory.GetParent();
+						done = nextParentDirectory.ToString().size() == parentDirectory.ToString().size();
+						parentDirectory = std::move(nextParentDirectory);
+					}
+				}
+			}
+
+			// Add any operation with zero dependencies to the root
+			auto rootOperations = std::vector<OperationId>();
+			for (auto& activeOperation : _graph.GetOperations())
+			{
+				auto& activeOperationInfo = activeOperation.second;
+				if (activeOperationInfo.DependencyCount == 0)
+				{
+					activeOperationInfo.DependencyCount = 1;
+					rootOperations.push_back(activeOperationInfo.Id);
+				}
+			}
+
+			_graph.SetRootOperationIds(std::move(rootOperations));
+
+			return std::move(_graph);
 		}
 
 	private:
-		std::vector<OperationId> BuildFromDefinition(
-			Utilities::BuildOperationListWrapper operations,
-			const std::set<OperationId>& parentSet,
-			OperationGraph& graph)
+		bool UniqueAdd(std::vector<OperationId>& operationList, OperationId operation)
 		{
-			auto operationIds = std::vector<OperationId>();
-			for (auto i = 0; i < operations.GetSize(); i++)
+			if (std::find(operationList.begin(), operationList.end(), operation) == operationList.end())
 			{
-				// Find the unique OperationInfo for the Build Operation
-				auto operation = operations.GetValueAt(i);
-				auto operatioId = BuildOperationInfo(operation, parentSet, graph);
-				operationIds.push_back(operatioId);
-			}
-
-			return operationIds;
-		}
-
-		/// <summary>
-		/// Ensure the provided operation exists in the operation graph
-		/// If this is the first visit, then recurse to all children and store their ids
-		/// If this is a subsequent visit, track the dependency count for easy builds in the future
-		/// </summary>
-		OperationId BuildOperationInfo(
-			Utilities::BuildOperationWrapper operation,
-			const std::set<OperationId>& parentSet,
-			OperationGraph& graph)
-		{
-			// Build up the operation unique command
-			auto commandInfo = CommandInfo(
-				Path(operation.GetWorkingDirectory()),
-				Path(operation.GetExecutable()),
-				std::string(operation.GetArguments()));
-
-			OperationInfo* rawOperationInfo = nullptr;
-			if (graph.TryFindOperationInfo(commandInfo, rawOperationInfo))
-			{
-				auto& operationInfo = *rawOperationInfo;
-
-				// Verify that there are no duplicate commands from different nodes
-				auto findResult = _duplicateMonitor.find(operationInfo.Id);
-				if (findResult == _duplicateMonitor.end())
-					throw std::runtime_error("The existing operation id does not exist in the depency tracker");
-				if (findResult->second != operation.GetRaw())
-					throw std::runtime_error("Found duplicate operation commands from different nodes");
-
-				// Increment the dependency count only since all children will be traversed on first visit
-				operationInfo.DependencyCount++;
-
-				return operationInfo.Id;
+				operationList.push_back(operation);
+				return true;
 			}
 			else
 			{
-				// Generate a unique id for this new operation
-				auto operationId = ++_uniqueId;
-
-				// Recurse to children only the first time we see an operation
-				auto updatedParentSet = parentSet;
-				updatedParentSet.insert(operationId);
-				auto childOperationIds = BuildFromDefinition(
-					operation.GetChildList(),
-					updatedParentSet,
-					graph);
-
-				// Build up the declared build operation
-				auto declaredInput = _fileSystemState.ToFileIds(
-					operation.GetInputFileList().CopyAsPathVector(),
-					commandInfo.WorkingDirectory);
-				auto declaredOutput = _fileSystemState.ToFileIds(
-					operation.GetOutputFileList().CopyAsPathVector(),
-					commandInfo.WorkingDirectory);
-				auto operationInfo = OperationInfo(
-					operationId,
-					std::string(operation.GetTitle()),
-					std::move(commandInfo),
-					std::move(declaredInput),
-					std::move(declaredOutput),
-					std::move(childOperationIds),
-					1);
-
-				auto& insertedOperationInfo = graph.AddOperationInfo(std::move(operationInfo));
-
-				// Track the creator operation address to monitor for duplicate commands
-				auto insertResult = _duplicateMonitor.emplace(insertedOperationInfo.Id, operation.GetRaw());
-				if (!insertResult.second)
-					throw std::runtime_error("The new operation id already exists in the duplicate tracker");
-
-				return insertedOperationInfo.Id;
+				return false;
 			}
+		}
+
+		bool TryGetOutputFileOperations(
+			FileId file,
+			std::vector<std::reference_wrapper<OperationInfo>>*& operations)
+		{
+			auto result = _outputFileLookup.find(file);
+			if (result != _outputFileLookup.end())
+			{
+				operations = &result->second;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		bool TryGetOutputDirectoryOperations(
+			FileId file,
+			std::vector<std::reference_wrapper<OperationInfo>>*& operations)
+		{
+			auto result = _outputDirectoryLookup.find(file);
+			if (result != _outputDirectoryLookup.end())
+			{
+				operations = &result->second;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		std::vector<std::reference_wrapper<OperationInfo>>& EnsureOutputFileOperations(
+			FileId file)
+		{
+			auto result = _outputFileLookup.emplace(file, std::vector<std::reference_wrapper<OperationInfo>>());
+			return result.first->second;
+		}
+
+		std::vector<std::reference_wrapper<OperationInfo>>& EnsureOutputDirectoryOperations(
+			FileId file)
+		{
+			auto result = _outputDirectoryLookup.emplace(file, std::vector<std::reference_wrapper<OperationInfo>>());
+			return result.first->second;
 		}
 
 	private:
 		FileSystemState& _fileSystemState;
 		OperationId _uniqueId;
-		std::map<OperationId, void*> _duplicateMonitor;
+		OperationGraph _graph;
+		std::unordered_map<FileId, std::vector<std::reference_wrapper<OperationInfo>>> _outputFileLookup;
+		std::unordered_map<FileId, std::vector<std::reference_wrapper<OperationInfo>>> _outputDirectoryLookup;
 	};
 }

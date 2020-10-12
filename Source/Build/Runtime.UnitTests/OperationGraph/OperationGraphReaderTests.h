@@ -147,9 +147,7 @@ namespace Soup::Build::Runtime::UnitTests
 				actual.GetStateId(),
 				"Verify state id match expected.");
 			Assert::AreEqual(
-				std::vector<OperationId>({
-					5,
-				}),
+				std::vector<OperationId>({ 5, }),
 				actual.GetRootOperationIds(),
 				"Verify root operation ids match expected.");
 			Assert::AreEqual(
@@ -207,9 +205,7 @@ namespace Soup::Build::Runtime::UnitTests
 				actual.GetStateId(),
 				"Verify state id match expected.");
 			Assert::AreEqual(
-				std::vector<OperationId>({
-					5,
-				}),
+				std::vector<OperationId>({ 5, }),
 				actual.GetRootOperationIds(),
 				"Verify root operation ids match expected.");
 			Assert::AreEqual(
@@ -223,23 +219,13 @@ namespace Soup::Build::Runtime::UnitTests
 								Path("C:/Root/"),
 								Path("DoStuff.exe"),
 								"arg1 arg2"),
-							std::vector<FileId>({
-								1,
-							}),
-							std::vector<FileId>({
-								2,
-							}),
+							std::vector<FileId>({ 1, }),
+							std::vector<FileId>({ 2, }),
 							std::vector<OperationId>({}),
 							1,
 							true,
-							std::vector<FileId>({
-								1,
-								3,
-							}),
-							std::vector<FileId>({
-								2,
-								4,
-							})),
+							std::vector<FileId>({ 1, 3, }),
+							std::vector<FileId>({ 2, 4, })),
 					}
 				}),
 				actual.GetOperations(),
@@ -289,9 +275,7 @@ namespace Soup::Build::Runtime::UnitTests
 				actual.GetStateId(),
 				"Verify state id match expected.");
 			Assert::AreEqual(
-				std::vector<OperationId>({
-					6,
-				}),
+				std::vector<OperationId>({ 6, }),
 				actual.GetRootOperationIds(),
 				"Verify root operation ids match expected.");
 			Assert::AreEqual(
@@ -305,23 +289,13 @@ namespace Soup::Build::Runtime::UnitTests
 								Path("C:/Root/"),
 								Path("DoStuff1.exe"),
 								"arg1 arg2"),
-							std::vector<FileId>({
-								1,
-							}),
-							std::vector<FileId>({
-								2,
-							}),
+							std::vector<FileId>({ 1, }),
+							std::vector<FileId>({ 2, }),
 							std::vector<OperationId>({}),
 							2,
 							true,
-							std::vector<FileId>({
-								1,
-								3,
-							}),
-							std::vector<FileId>({
-								2,
-								4,
-							})),
+							std::vector<FileId>({ 1, 3, }),
+							std::vector<FileId>({ 2, 4, })),
 					},
 					{
 						6,
@@ -332,25 +306,13 @@ namespace Soup::Build::Runtime::UnitTests
 								Path("C:/Root/"),
 								Path("DoStuff2.exe"),
 								"arg3 arg4"),
-							std::vector<FileId>({
-								5,
-							}),
-							std::vector<FileId>({
-								6,
-							}),
-							std::vector<OperationId>({
-								5,
-							}),
+							std::vector<FileId>({ 5, }),
+							std::vector<FileId>({ 6, }),
+							std::vector<OperationId>({ 5, }),
 							1,
 							true,
-							std::vector<FileId>({
-								5,
-								7,
-							}),
-							std::vector<FileId>({
-								6,
-								8,
-							})),
+							std::vector<FileId>({ 5, 7, }),
+							std::vector<FileId>({ 6, 8, })),
 					},
 				}),
 				actual.GetOperations(),

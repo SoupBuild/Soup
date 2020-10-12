@@ -49,7 +49,7 @@ namespace Soup::Build::Runtime
 				throw std::runtime_error("Invalid operation graph root operations header");
 			}
 
-			// Write out the root operation ids
+			// Read the root operation ids
 			auto rootOperationIds = ReadOperationIdList(stream);
 
 			// Read the set of operations

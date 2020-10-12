@@ -45,31 +45,23 @@ namespace Soup::Build
 
 			auto userDataDirectory = GetSoupUserDataPath();
 
-			// Load up the known file system state
-			if (!arguments.ForceRebuild)
+			// Load up the file system state
+			Log::Info("Loading previous file system state");
+			if (Runtime::FileSystemStateManager::TryLoadState(userDataDirectory, _fileSystemState))
 			{
-				Log::Info("Loading previous file system state");
-				if (Runtime::FileSystemStateManager::TryLoadState(userDataDirectory, _fileSystemState))
-				{
-					// Load the current state of the known files
-					Log::Info("Loading current file system state");
-					_fileSystemState.LoadCurrentFileSystemState();
-				}
-				else
-				{
-					Log::Info("No previous file system state found");
-					
-					// Create a unique id using the lower range of the milliseconds since the epoch
-					auto currentTime = std::chrono::system_clock::now();
-					auto currentTimeMilliseconds = std::chrono::time_point_cast<std::chrono::milliseconds>(currentTime);
-					auto offsetFromEpoch = currentTimeMilliseconds.time_since_epoch();
-					auto uniqueId = static_cast<uint32_t>(offsetFromEpoch.count());
-					_fileSystemState = Runtime::FileSystemState(uniqueId);
-				}
+				// Load the current state of the known files
+				Log::Info("Loading current file system state");
 			}
 			else
 			{
-				Log::Info("Skipping file system state checks for forced rebuild");
+				Log::Info("No previous file system state found");
+
+				// Create a unique id using the lower range of the milliseconds since the epoch
+				auto currentTime = std::chrono::system_clock::now();
+				auto currentTimeMilliseconds = std::chrono::time_point_cast<std::chrono::milliseconds>(currentTime);
+				auto offsetFromEpoch = currentTimeMilliseconds.time_since_epoch();
+				auto uniqueId = static_cast<uint32_t>(offsetFromEpoch.count());
+				_fileSystemState = Runtime::FileSystemState(uniqueId);
 			}
 
 			// Enable log event ids to track individual builds
@@ -83,6 +75,7 @@ namespace Soup::Build
 			{
 				auto rootParentSet = std::set<std::string>();
 				auto rootState = ConvertToBuildState(recipe.GetTable());
+
 				try
 				{
 					projectId = BuildRecipeAndDependencies(
@@ -446,8 +439,7 @@ namespace Soup::Build
 				}
 
 				auto buildGenerateEngine = Runtime::BuildGenerateEngine(
-					_fileSystemState,
-					_systemCompiler);
+					_fileSystemState);
 				auto generateResult = buildGenerateEngine.Generate(
 					activeCompiler,
 					arguments.Flavor,
@@ -490,7 +482,9 @@ namespace Soup::Build
 				try
 				{
 					// Evaluate the build
-					auto runner = Runtime::BuildEvaluateEngine(packageRoot, _fileSystemState, activeBuildGraph);
+					auto runner = Runtime::BuildEvaluateEngine(
+						_fileSystemState,
+						activeBuildGraph);
 					runner.Evaluate();
 				}
 				catch(const Runtime::BuildFailedException& e)

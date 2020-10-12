@@ -9,7 +9,6 @@ import Opal;
 import Soup.Cpp.Compiler;
 import Soup.Cpp.Compiler.Clang;
 import Soup.Test.Assert;
-import Soup.Test.Utilities;
 import Soup.Build;
 import Soup.Build.Utilities;
 import Soup.Build.Runtime;

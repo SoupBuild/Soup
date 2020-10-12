@@ -3,9 +3,9 @@
 // </copyright>
 
 #pragma once
-#include "System/BuildState.h"
-#include "System/BuildSystem.h"
-#include "System/ValueTable.h"
+#include "Contracts/BuildState.h"
+#include "Contracts/BuildSystem.h"
+#include "Contracts/ValueTable.h"
 #include "OperationGraph/OperationGraphGenerator.h"
 #include "OperationGraph/OperationGraphManager.h"
 
@@ -40,7 +40,7 @@ namespace Soup::Build::Runtime
 			std::string_view architecture)
 		{
 			// Setup the output directories
-			return Path("out") +
+			return Path("out/") +
 				Path(compiler) +
 				Path(flavor) +
 				Path(system) +
@@ -54,7 +54,7 @@ namespace Soup::Build::Runtime
 			std::string_view architecture)
 		{
 			// Setup the object directories
-			return GetOutputDirectory(compiler, flavor, system, architecture) + Path("obj");
+			return GetOutputDirectory(compiler, flavor, system, architecture) + Path("obj/");
 		}
 
 		static Path GetBinaryDirectory(
@@ -64,7 +64,7 @@ namespace Soup::Build::Runtime
 			std::string_view architecture)
 		{
 			// Setup the binary directories
-			return GetOutputDirectory(compiler, flavor, system, architecture) + Path("bin");
+			return GetOutputDirectory(compiler, flavor, system, architecture) + Path("bin/");
 		}
 
 	public:
@@ -72,8 +72,7 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="BuildGenerateEngine"/> class.
 		/// </summary>
 		BuildGenerateEngine(
-			FileSystemState& fileSystemState,
-			std::string systemCompiler) :
+			FileSystemState& fileSystemState) :
 			_fileSystemState(fileSystemState)
 		{
 		}
@@ -174,7 +173,7 @@ namespace Soup::Build::Runtime
 			auto activeExtensionLibraries = std::vector<System::WindowsLibrary>();
 
 			// Create a new build system for the requested build
-			auto buildState = BuildState(activeState);
+			auto buildState = BuildState(activeState, _fileSystemState);
 			auto buildSystem = BuildSystem();
 			auto activeStateWrapper = Utilities::ValueTableWrapper(buildState.GetActiveState());
 
@@ -220,9 +219,7 @@ namespace Soup::Build::Runtime
 			auto buildTable = activeStateWrapper.GetValue("Build").AsTable();
 
 			// Convert the generated build into the execution build graph
-			auto buildOperations = Utilities::BuildOperationListWrapper(buildState.GetRootOperationList());
-			auto operationGraphGenerator = OperationGraphGenerator(_fileSystemState);
-			auto graph = operationGraphGenerator.CreateFromDefinition(buildOperations);
+			auto graph = buildState.BuildOperationGraph();
 
 			// Return only the build state that is to be passed to the downstream builds
 			// This allows the extension dlls to be released and the operations deleted

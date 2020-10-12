@@ -3,7 +3,7 @@ Language = "C++"
 Type = "DynamicLibrary"
 Version = "0.1.1"
 Dependencies = [
-	"Opal@0.1.7",
+	"Opal@0.1.8",
 	"../Cpp/Compiler/Core/",
 	# "Soup.Build.Compiler@0.3.0",
 	"../Cpp/Compiler/Clang/",

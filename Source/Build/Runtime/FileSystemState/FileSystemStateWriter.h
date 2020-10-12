@@ -1,4 +1,4 @@
-﻿// <copyright file="FileSystemStateWriter.h" company="Soup">
+// <copyright file="FileSystemStateWriter.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 

@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "ReadOnlyStringListWrapper.h"
 #include "ValueWrapper.h"
 #include "ValuePrimitiveWrapper.h"
 

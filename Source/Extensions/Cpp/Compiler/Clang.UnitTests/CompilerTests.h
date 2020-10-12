@@ -28,26 +28,29 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("obj/File.o");
-			arguments.RootDirectory = Path("Source");
+			arguments.RootDirectory = Path("Source/");
 
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateCompileOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateCompileOperation(arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
-				new Build::Utilities::BuildOperation(
+			auto expected = std::vector<Build::Utilities::BuildOperation>({
+				Build::Utilities::BuildOperation(
 					"./File.cpp",
+					Path("Source/"),
 					Path("C:/Clang/bin/clang++.exe"),
 					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c ./File.cpp -o ./obj/File.o",
-					Path("Source"),
 					std::vector<Path>({
 						Path("File.cpp"),
 					}),
 					std::vector<Path>({
 						Path("obj/File.o"),
-					})));
+					})),
+				});
 
-			AssertExtensions::AreEqual(expected, result);
+			Assert::AreEqual(
+				expected,
+				result,
+				"Verify result matches expected.");
 		}
 
 		[[Fact]]
@@ -58,7 +61,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			CompileArguments arguments = {};
 			arguments.SourceFile = Path("File.cpp");
 			arguments.TargetFile = Path("obj/File.obj");
-			arguments.RootDirectory = Path("Source");
+			arguments.RootDirectory = Path("Source/");
 			arguments.IncludeDirectories = std::vector<Path>({
 				Path("Includes"),
 			});
@@ -70,38 +73,39 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			});
 			arguments.ExportModule = true;
 
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateCompileOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateCompileOperation(arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
-				new Build::Utilities::BuildOperation(
+			auto expected = std::vector<Build::Utilities::BuildOperation>({
+				Build::Utilities::BuildOperation(
 					"./File.cpp",
+					Path("Source/"),
 					Path("C:/Clang/bin/clang++.exe"),
 					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"./Includes\" -DDEBUG -fmodule-file=\"./Module.pcm\" --precompile ./File.cpp -o ./obj/File.pcm",
-					Path("Source"),
 					std::vector<Path>({
 						Path("Module.pcm"),
 						Path("File.cpp"),
 					}),
 					std::vector<Path>({
 						Path("obj/File.pcm"),
+					})),
+				Build::Utilities::BuildOperation(
+					"./obj/File.pcm",
+					Path("Source/"),
+					Path("C:/Clang/bin/clang++.exe"),
+					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c ./obj/File.pcm -o ./obj/File.obj",
+					std::vector<Path>({
+						Path("obj/File.pcm"),
 					}),
-					std::vector<Memory::Reference<Build::Utilities::BuildOperation>>({
-						new Build::Utilities::BuildOperation(
-							"./obj/File.pcm",
-							Path("C:/Clang/bin/clang++.exe"),
-							"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c ./obj/File.pcm -o ./obj/File.obj",
-							Path("Source"),
-							std::vector<Path>({
-								Path("obj/File.pcm"),
-							}),
-							std::vector<Path>({
-								Path("obj/File.obj"),
-							})),
-					})));
+					std::vector<Path>({
+						Path("obj/File.obj"),
+					})),
+				});
 
-			AssertExtensions::AreEqual(expected, result);
+			Assert::AreEqual(
+				expected,
+				result,
+				"Verify result matches expected.");
 		}
 
 		[[Fact]]
@@ -112,29 +116,27 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
 			arguments.TargetFile = Path("Library.mock.a");
-			arguments.RootDirectory = Path("Source");
+			arguments.RootDirectory = Path("Source/");
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.o"),
 			});
 
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateLinkOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateLinkOperation(arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
-				new Build::Utilities::BuildOperation(
-					"./Library.mock.a",
-					Path("C:/Clang/bin/llvm-ar.exe"),
-					"rc ./Library.mock.a ./File.mock.o",
-					Path("Source"),
-					std::vector<Path>({
-						Path("File.mock.o"),
-					}),
-					std::vector<Path>({
-						Path("Library.mock.a"),
-					})));
+			auto expected = Build::Utilities::BuildOperation(
+				"./Library.mock.a",
+				Path("Source/"),
+				Path("C:/Clang/bin/llvm-ar.exe"),
+				"rc ./Library.mock.a ./File.mock.o",
+				std::vector<Path>({
+					Path("File.mock.o"),
+				}),
+				std::vector<Path>({
+					Path("Library.mock.a"),
+				}));
 
-			AssertExtensions::AreEqual(expected, result);
+			Assert::AreEqual(expected, result, "Verify result matches expected.");
 		}
 
 		[[Fact]]
@@ -146,7 +148,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			arguments.TargetType = LinkTarget::Executable;
 			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = Path("Something.exe");
-			arguments.RootDirectory = Path("Source");
+			arguments.RootDirectory = Path("Source/");
 			arguments.ObjectFiles = std::vector<Path>({
 				Path("File.mock.o"),
 			});
@@ -154,25 +156,23 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 				Path("Library.mock.a"),
 			});
 
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
-			auto result = uut.CreateLinkOperation(Build::Utilities::BuildStateWrapper(buildState), arguments);
+			auto result = uut.CreateLinkOperation(arguments);
 
 			// Verify result
-			auto expected = Memory::Reference<Build::Utilities::BuildOperation>(
-				new Build::Utilities::BuildOperation(
-					"./Something.exe",
-					Path("C:/Clang/bin/lld-link.exe"),
-					"/nologo /subsystem:console /machine:X64 /out:\"./Something.exe\" ./Library.mock.a ./File.mock.o",
-					Path("Source"),
-					std::vector<Path>({
-						Path("Library.mock.a"),
-						Path("File.mock.o"),
-					}),
-					std::vector<Path>({
-						Path("Something.exe"),
-					})));
+			auto expected = Build::Utilities::BuildOperation(
+				"./Something.exe",
+				Path("Source/"),
+				Path("C:/Clang/bin/lld-link.exe"),
+				"/nologo /subsystem:console /machine:X64 /out:\"./Something.exe\" ./Library.mock.a ./File.mock.o",
+				std::vector<Path>({
+					Path("Library.mock.a"),
+					Path("File.mock.o"),
+				}),
+				std::vector<Path>({
+					Path("Something.exe"),
+				}));
 
-			AssertExtensions::AreEqual(expected, result);
+			Assert::AreEqual(expected, result, "Verify result matches expected.");
 		}
 	};
 }

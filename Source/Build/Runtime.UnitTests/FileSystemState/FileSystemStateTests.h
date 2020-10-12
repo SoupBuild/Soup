@@ -61,79 +61,6 @@ namespace Soup::Build::Runtime::UnitTests
 		}
 
 		[[Fact]]
-		void LoadCurrentFileSystemState_Empty()
-		{
-			auto uut = FileSystemState(
-				1234,
-				5,
-				std::unordered_map<FileId, Path>({}));
-
-			uut.LoadCurrentFileSystemState();
-		}
-
-		[[Fact]]
-		void LoadCurrentFileSystemState_SingleMissing()
-		{
-			// Register the test file system
-			auto fileSystem = std::make_shared<MockFileSystem>();
-			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-
-			auto uut = FileSystemState(
-				1234,
-				10,
-				std::unordered_map<FileId, Path>({
-					{
-						8,
-						Path("C:/Root/DoStuff.exe"),
-					}
-				}));
-
-			uut.LoadCurrentFileSystemState();
-
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Exists: C:/Root/DoStuff.exe",
-				}),
-				fileSystem->GetRequests(),
-				"Verify file system requests match expected.");
-		}
-
-		[[Fact]]
-		void LoadCurrentFileSystemState_SingleExists()
-		{
-			// Register the test file system
-			auto fileSystem = std::make_shared<MockFileSystem>();
-			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-
-			auto lastWriteTime = CreateDateTime(2015, 5, 22, 9, 11);
-			fileSystem->CreateMockFile(
-				Path("C:/Root/DoStuff.exe"),
-				std::make_shared<MockFile>(lastWriteTime));
-
-			auto uut = FileSystemState(
-				1234,
-				10,
-				std::unordered_map<FileId, Path>({
-					{
-						8,
-						Path("C:/Root/DoStuff.exe"),
-					}
-				}));
-
-			uut.LoadCurrentFileSystemState();
-
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Exists: C:/Root/DoStuff.exe",
-					"GetLastWriteTime: C:/Root/DoStuff.exe",
-				}),
-				fileSystem->GetRequests(),
-				"Verify file system requests match expected.");
-		}
-
-		[[Fact]]
 		void GetFilePath_MissingThrows()
 		{
 			auto uut = FileSystemState(
@@ -164,39 +91,52 @@ namespace Soup::Build::Runtime::UnitTests
 		}
 
 		[[Fact]]
-		void TryGetLastWriteTime_Missing()
+		void GetLastWriteTime_Missing()
 		{
-			auto uut = FileSystemState(
-				1234,
-				10,
-				std::unordered_map<FileId, Path>({}));
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			std::optional<time_t> lastWriteTime;
-			auto result = uut.TryGetLastWriteTime(8, lastWriteTime);
-
-			Assert::IsFalse(result, "Verify result is false.");
-		}
-
-		[[Fact]]
-		void TryGetLastWriteTime_Found()
-		{
 			auto uut = FileSystemState(
 				1234,
 				10,
 				std::unordered_map<FileId, Path>({
-					{
-						8,
-						Path("C:/Root/DoStuff.exe"),
-					}}));
+					{ 2, Path("C:/Root/DoStuff.exe") },
+				}),
+				std::unordered_map<FileId, std::optional<time_t>>({}));
 
+			auto lastWriteTime = uut.GetLastWriteTime(2);
+
+			Assert::AreEqual(
+				std::optional<time_t>(std::nullopt),
+				lastWriteTime,
+				"Verify last write time matches expected.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: C:/Root/DoStuff.exe",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+		}
+
+		[[Fact]]
+		void GetLastWriteTime_Found()
+		{
 			auto setLastWriteTime = CreateDateTime(2015, 5, 22, 9, 11);
-			uut.SetLastWriteTime(8, setLastWriteTime);
+			auto uut = FileSystemState(
+				1234,
+				10,
+				std::unordered_map<FileId, Path>({
+					{ 2, Path("C:/Root/DoStuff.exe") },
+				}),
+				std::unordered_map<FileId, std::optional<time_t>>({
+					{ 2, setLastWriteTime },
+				}));
 
+			auto lastWriteTime = uut.GetLastWriteTime(2);
 
-			std::optional<time_t> lastWriteTime;
-			auto result = uut.TryGetLastWriteTime(8, lastWriteTime);
-
-			Assert::IsTrue(result, "Verify result is true.");
 			Assert::AreEqual(std::optional<time_t>(setLastWriteTime), lastWriteTime, "Verify last write time matches expected.");
 		}
 

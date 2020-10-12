@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "BuildOperationWrapper.h"
+#include "BuildOperation.h"
 #include "ValueTableWrapper.h"
 
 namespace Soup::Build::Utilities
@@ -23,14 +23,6 @@ namespace Soup::Build::Utilities
 		}
 
 		/// <summary>
-		/// Build Graph Access Methods
-		/// </summary>
-		BuildOperationListWrapper GetRootOperationList() noexcept
-		{
-			return BuildOperationListWrapper(_value.GetRootOperationList());
-		}
-
-		/// <summary>
 		/// Get a reference to the active state
 		/// </summary>
 		ValueTableWrapper GetActiveState() noexcept
@@ -45,6 +37,24 @@ namespace Soup::Build::Utilities
 		ValueTableWrapper GetSharedState() noexcept
 		{
 			return ValueTableWrapper(_value.GetSharedState());
+		}
+
+		/// <summary>
+		/// Create a build operation
+		/// </summary>
+		void CreateOperation(const BuildOperation& operation)
+		{
+			auto declaredInput = ReadOnlyStringList(operation.DeclaredInput);
+			auto declaredOutput = ReadOnlyStringList(operation.DeclaredOutput);
+			auto status = _value.TryCreateOperation(
+				operation.Title.c_str(),
+				operation.Executable.ToString().c_str(),
+				operation.Arguments.c_str(),
+				operation.WorkingDirectory.ToString().c_str(),
+				declaredInput,
+				declaredOutput);
+			if (status != ApiCallResult::Success)
+				throw std::runtime_error("TryCreateOperation Failed");
 		}
 
 		/// <summary>

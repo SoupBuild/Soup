@@ -40,7 +40,7 @@ namespace Soup::Build::Runtime
 			// Store the incoming vector of operations as a lookup for fast checks
 			for (auto& info : operations)
 			{
-				AddOperationInfo(std::move(info));
+				AddOperation(std::move(info));
 			}
 		}
 
@@ -87,6 +87,22 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Find an operation info
 		/// </summary>
+		bool HasCommand(const CommandInfo& command)
+		{
+			auto findResult = _operationLookup.find(command);
+			if (findResult != _operationLookup.end())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Find an operation info
+		/// </summary>
 		bool TryFindOperationInfo(
 			const CommandInfo& command,
 			OperationInfo*& operation)
@@ -122,7 +138,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Add an operation info
 		/// </summary>
-		OperationInfo& AddOperationInfo(OperationInfo info)
+		OperationInfo& AddOperation(OperationInfo info)
 		{
 			auto insertLookupResult = _operationLookup.emplace(info.Command, info.Id);
 			if (!insertLookupResult.second)

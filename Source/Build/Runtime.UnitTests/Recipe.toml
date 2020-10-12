@@ -6,10 +6,9 @@ Dependencies = [
 	"json11@1.0.1",
 	"Soup.Test.Assert@0.1.7",
 	"../Runtime/",
-	"../../TestUtilities/",
 ]
 Source = [
-	"gen/Main.cpp"
+	"gen/Main.cpp",
 ]
 IncludePaths = [
 	"./",

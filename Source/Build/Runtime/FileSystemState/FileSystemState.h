@@ -10,8 +10,7 @@ namespace Soup::Build::Runtime
 	export using FileId = uint32_t;
 
 	/// <summary>
-	/// The complete set of known files that have been used for previous builds with their up to date
-	/// change stamp used to track if a file has changed since the previous run.
+	/// The complete set of known files that tracking the active change state during execution
 	/// </summary>
 	export class FileSystemState
 	{
@@ -36,11 +35,23 @@ namespace Soup::Build::Runtime
 			FileSystemStateId id,
 			FileId maxFileId,
 			std::unordered_map<FileId, Path> files) :
+			FileSystemState(id, maxFileId, std::move(files), {})
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileSystemState"/> class.
+		/// </summary>
+		FileSystemState(
+			FileSystemStateId id,
+			FileId maxFileId,
+			std::unordered_map<FileId, Path> files,
+			std::unordered_map<FileId, std::optional<time_t>> writeCache) :
 			_id(id),
 			_maxFileId(maxFileId),
 			_files(std::move(files)),
 			_fileLookup(),
-			_writeCache()
+			_writeCache(std::move(writeCache))
 		{
 			// Build up the reverse lookup for new files
 			for (auto& file : _files)
@@ -76,94 +87,29 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
-		/// Load Current File State
-		/// </summary>
-		void LoadCurrentFileSystemState()
-		{
-			for (auto& file : _files)
-			{
-				// The file does not exist in the cache
-				// Load the actual value and save it for later
-				std::optional<std::time_t> lastWriteTime = std::nullopt;
-				if (System::IFileSystem::Current().Exists(file.second))
-				{
-					lastWriteTime = System::IFileSystem::Current().GetLastWriteTime(file.second);
-				}
-
-				auto insertResult = _writeCache.emplace(file.first, lastWriteTime);
-				if (!insertResult.second)
-					throw std::runtime_error("The file id already exists in the write cache.");
-			}
-		}
-
-		/// <summary>
 		/// Update the write times for the provided set of files
 		/// </summary>
-		void CheckFileWriteTimes(const std::vector<FileId>& fileIds)
+		void CheckFileWriteTimes(const std::vector<FileId>& files)
 		{
-			for (auto fileId : fileIds)
+			for (auto file : files)
 			{
-				auto& filePath = GetFilePath(fileId);
-
-				// The file does not exist in the cache
-				// Load the actual value and save it for later
-				std::optional<std::time_t> lastWriteTime = std::nullopt;
-				if (System::IFileSystem::Current().Exists(filePath))
-				{
-					lastWriteTime = System::IFileSystem::Current().GetLastWriteTime(filePath);
-				}
-
-				SetLastWriteTime(fileId, lastWriteTime);
-			}
-		}
-
-		/// <summary>
-		/// Find a file path
-		/// </summary>
-		const Path& GetFilePath(FileId fileId) const
-		{
-			auto findResult = _files.find(fileId);
-			if (findResult != _files.end())
-			{
-				return findResult->second;
-			}
-			else
-			{
-				throw std::runtime_error("The provided file id does not exist in the files set.");
+				CheckFileWriteTime(file);
 			}
 		}
 
 		/// <summary>
 		/// Find the write time for a given file id
 		/// </summary>
-		bool TryGetLastWriteTime(FileId fileId, std::optional<time_t>& value) const
+		std::optional<time_t> GetLastWriteTime(FileId file)
 		{
-			auto findResult = _writeCache.find(fileId);
+			auto findResult = _writeCache.find(file);
 			if (findResult != _writeCache.end())
 			{
-				value = findResult->second;
-				return true;
+				return findResult->second;
 			}
 			else
 			{
-				return false;
-			}
-		}
-
-		/// <summary>
-		/// Find an file id
-		/// </summary>
-		bool TryFindFileId(const Path& file, FileId& fileId) const
-		{
-			auto findResult = _fileLookup.find(file.ToString());
-			if (findResult != _fileLookup.end())
-			{
-				fileId = findResult->second;
-				return true;
-			}
-			else
-			{
-				return false;
+				return CheckFileWriteTime(file);
 			}
 		}
 
@@ -207,11 +153,56 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
-		/// Update the last write time for the provided file id
+		/// Find an file id
 		/// </summary>
-		void SetLastWriteTime(FileId fileId, std::optional<time_t> value)
+		bool TryFindFileId(const Path& file, FileId& fileId) const
 		{
-			auto insertResult = _writeCache.insert_or_assign(fileId, value);
+			auto findResult = _fileLookup.find(file.ToString());
+			if (findResult != _fileLookup.end())
+			{
+				fileId = findResult->second;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Find a file path
+		/// </summary>
+		const Path& GetFilePath(FileId fileId) const
+		{
+			auto findResult = _files.find(fileId);
+			if (findResult != _files.end())
+			{
+				return findResult->second;
+			}
+			else
+			{
+				throw std::runtime_error("The provided file id does not exist in the files set.");
+			}
+		}
+
+	private:
+		/// <summary>
+		/// Update the write times for the provided set of files
+		/// </summary>
+		std::optional<time_t> CheckFileWriteTime(FileId fileId)
+		{
+			auto& filePath = GetFilePath(fileId);
+
+			// The file does not exist in the cache
+			// Load the actual value and save it for later
+			std::optional<std::time_t> lastWriteTime = std::nullopt;
+			if (System::IFileSystem::Current().Exists(filePath))
+			{
+				lastWriteTime = System::IFileSystem::Current().GetLastWriteTime(filePath);
+			}
+
+			auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
+			return lastWriteTime;
 		}
 
 	private:

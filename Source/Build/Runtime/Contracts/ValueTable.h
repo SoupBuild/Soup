@@ -188,7 +188,7 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		Utilities::StringList _keyList;
+		Utilities::ReadOnlyStringList _keyList;
 		std::map<std::string, Value> _values;
 	};
 }

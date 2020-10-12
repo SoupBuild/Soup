@@ -37,9 +37,7 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto operationGraph = OperationGraph(
 				12345,
-				std::vector<OperationId>({
-					5,
-				}),
+				std::vector<OperationId>({ 5, }),
 				std::vector<OperationInfo>({
 					OperationInfo(
 						5,
@@ -90,9 +88,7 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto operationGraph = OperationGraph(
 				12345,
-				std::vector<OperationId>({
-					5,
-				}),
+				std::vector<OperationId>({ 5, }),
 				std::vector<OperationInfo>({
 					OperationInfo(
 						5,
@@ -101,23 +97,13 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({
-							1,
-						}),
-						std::vector<FileId>({
-							2,
-						}),
+						std::vector<FileId>({ 1, }),
+						std::vector<FileId>({ 2, }),
 						std::vector<OperationId>({}),
 						1,
 						true,
-						std::vector<FileId>({
-							1,
-							3,
-						}),
-						std::vector<FileId>({
-							2,
-							4,
-						})),
+						std::vector<FileId>({ 1, 3, }),
+						std::vector<FileId>({ 2, 4, })),
 				}));
 			auto content = std::stringstream();
 
@@ -153,9 +139,7 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto operationGraph = OperationGraph(
 				12345,
-				std::vector<OperationId>({
-					6,
-				}),
+				std::vector<OperationId>({ 6, }),
 				std::vector<OperationInfo>({
 					OperationInfo(
 						5,
@@ -164,23 +148,13 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff1.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({
-							1,
-						}),
-						std::vector<FileId>({
-							2,
-						}),
+						std::vector<FileId>({ 1, }),
+						std::vector<FileId>({ 2, }),
 						std::vector<OperationId>({}),
 						2,
 						true,
-						std::vector<FileId>({
-							1,
-							3,
-						}),
-						std::vector<FileId>({
-							2,
-							4,
-						})),
+						std::vector<FileId>({ 1, 3, }),
+						std::vector<FileId>({ 2, 4, })),
 					OperationInfo(
 						6,
 						"TestOperation2",
@@ -188,25 +162,13 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff2.exe"),
 							"arg3 arg4"),
-						std::vector<FileId>({
-							5,
-						}),
-						std::vector<FileId>({
-							6,
-						}),
-						std::vector<OperationId>({
-							5,
-						}),
+						std::vector<FileId>({ 5, }),
+						std::vector<FileId>({ 6, }),
+						std::vector<OperationId>({ 5, }),
 						1,
 						true,
-						std::vector<FileId>({
-							5,
-							7,
-						}),
-						std::vector<FileId>({
-							6,
-							8,
-						})),
+						std::vector<FileId>({ 5, 7, }),
+						std::vector<FileId>({ 6, 8, })),
 				}));
 			auto content = std::stringstream();
 

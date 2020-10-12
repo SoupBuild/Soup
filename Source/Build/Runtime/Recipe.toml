@@ -5,7 +5,7 @@ the minimum set of Build Operations for a fully consistent build."""
 Version = "0.1.0"
 Dependencies = [
 	"json11@1.0.1",
-	"Opal@0.1.7",
+	"Opal@0.1.8",
 	"../Contracts/",
 	# "Soup.Build@0.3.0",
 	"../Utilities/",
@@ -14,5 +14,5 @@ Dependencies = [
 ]
 Interface = "Module.cpp"
 Source = [
-	"System/Value.cpp",
+	"Contracts/Value.cpp",
 ]

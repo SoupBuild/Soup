@@ -77,16 +77,14 @@ namespace Soup::Build::Runtime
 			std::string title,
 			CommandInfo command,
 			std::vector<FileId> declaredInput,
-			std::vector<FileId> declaredOutput,
-			std::vector<OperationId> children,
-			uint32_t dependencyCount) :
+			std::vector<FileId> declaredOutput) :
 			Id(id),
 			Title(std::move(title)),
 			Command(std::move(command)),
 			DeclaredInput(std::move(declaredInput)),
 			DeclaredOutput(std::move(declaredOutput)),
-			Children(std::move(children)),
-			DependencyCount(dependencyCount),
+			Children(),
+			DependencyCount(0),
 			WasSuccessfulRun(false),
 			ObservedInput(),
 			ObservedOutput()

@@ -22,16 +22,14 @@ namespace Soup::CSharp::Compiler
 		/// <summary>
 		/// Compile
 		/// </summary>
-		Build::Utilities::BuildOperationWrapper CreateCompileOperation(
-			Build::Utilities::BuildStateWrapper state,
+		Build::Utilities::BuildOperation CreateCompileOperation(
 			const CompileArguments& args) const
 		{
-			return CompileStandard(state, args);
+			return CompileStandard(args);
 		}
 
 	private:
-		Build::Utilities::BuildOperationWrapper CompileStandard(
-			Build::Utilities::BuildStateWrapper& state,
+		Build::Utilities::BuildOperation CompileStandard(
 			const CompileArguments& args) const
 		{
 			auto executablePath = _toolsPath + _compilerExecutable;
@@ -45,14 +43,13 @@ namespace Soup::CSharp::Compiler
 				inputFiles,
 				outputFiles);
 
-			auto buildOperation = Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					"CoreCompile",
-					executablePath,
-					CombineArguments(commandArgs),
-					args.RootDirectory,
-					inputFiles,
-					outputFiles));
+			auto buildOperation = Build::Utilities::BuildOperation(
+				"CoreCompile",
+				args.RootDirectory,
+				executablePath,
+				CombineArguments(commandArgs),
+				inputFiles,
+				outputFiles);
 
 			return buildOperation;
 		}

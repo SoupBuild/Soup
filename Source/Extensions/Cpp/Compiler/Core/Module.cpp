@@ -19,4 +19,3 @@ using namespace Opal;
 #include "MockCompiler.h"
 
 #include "BuildEngine.h"
-#include "BuildUtilities.h"
