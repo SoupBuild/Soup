@@ -124,6 +124,7 @@ namespace Soup::Test
 			// Create the operation to run tests during build
 			auto title = std::string("Run Tests");
 			auto program =
+				arguments.WorkingDirectory +
 				arguments.BinaryDirectory +
 				Path(arguments.TargetName);
 			program.SetFileExtension("exe");
@@ -143,7 +144,7 @@ namespace Soup::Test
 					std::move(outputFiles));
 
 			// Run the test harness
-			// TODO: buildResult.BuildOperations.push_back(std::move(runTestsOperation));
+			buildResult.BuildOperations.push_back(std::move(runTestsOperation));
 
 			// Register the build operations
 			for (auto& operation : buildResult.BuildOperations)

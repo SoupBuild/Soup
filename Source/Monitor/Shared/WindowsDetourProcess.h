@@ -119,14 +119,6 @@ namespace Monitor
 			if (!SetHandleInformation(m_stdInWriteHandle.Get(), HANDLE_FLAG_INHERIT, 0))
 				throw std::runtime_error("Execute SetHandleInformation Failed");
 
-			// Initialize the pipes so they are ready for the process and the worker thread
-			InitializePipes();
-
-			// Create the worker thread that will act as the pipe server
-			m_processRunning = true;
-			m_workerFailed = false;
-			m_workerThread = std::thread(&WindowsDetourProcess::WorkerThread, std::ref(*this));
-
 			// Build up the detour dlls absolute path
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
@@ -170,6 +162,7 @@ namespace Monitor
 				switch (error)
 				{
 				case ERROR_FILE_NOT_FOUND:
+				case ERROR_PATH_NOT_FOUND:
 					throw std::runtime_error("Execute DetourCreateProcessWithDllExA the requested executable does not exist");
 				default:
 					throw std::runtime_error("Execute DetourCreateProcessWithDllExA Failed");
@@ -196,6 +189,14 @@ namespace Monitor
 			{
 				throw std::runtime_error("DetourCopyPayloadToProcess failed: " + std::to_string(GetLastError()));
 			}
+
+			// Initialize the pipes so they are ready for the process and the worker thread
+			InitializePipes();
+
+			// Create the worker thread that will act as the pipe server
+			m_processRunning = true;
+			m_workerFailed = false;
+			m_workerThread = std::thread(&WindowsDetourProcess::WorkerThread, std::ref(*this));
 
 			// Restart the process
 			auto hr = ResumeThread(m_threadHandle.Get());
