@@ -103,8 +103,8 @@ namespace Soup::Test
 			LoadDevDependencyBuildInput(buildState, activeState, arguments);
 
 			// Update to place the output in a sub folder
-			arguments.ObjectDirectory = arguments.ObjectDirectory + Path("Test");
-			arguments.BinaryDirectory = arguments.BinaryDirectory + Path("Test");
+			arguments.ObjectDirectory = arguments.ObjectDirectory + Path("Test/");
+			arguments.BinaryDirectory = arguments.BinaryDirectory + Path("Test/");
 
 			// Initialize the compiler to use
 			auto compilerName = std::string(activeState.GetValue("CompilerName").AsString().GetValue());
@@ -112,7 +112,7 @@ namespace Soup::Test
 			if (findCompilerFactory == _compilerFactory.end())
 			{
 				buildState.LogError("Unknown compiler: " + compilerName);
-				throw new std::runtime_error("");
+				throw std::runtime_error("");
 			}
 
 			auto createCompiler = findCompilerFactory->second;
@@ -122,32 +122,34 @@ namespace Soup::Test
 			auto buildResult = buildEngine.Execute(buildState, arguments);
 
 			// Create the operation to run tests during build
-			auto title = "Run Tests";
-			auto program = 
-				arguments.WorkingDirectory +
+			auto title = std::string("Run Tests");
+			auto program =
 				arguments.BinaryDirectory +
 				Path(arguments.TargetName);
 			program.SetFileExtension("exe");
-			auto workingDirectory = Path("");
-			auto runArguments = "";
-			auto inputFiles = std::vector<Path>({});
+			auto workingDirectory = arguments.WorkingDirectory;
+			auto runArguments = std::string("");
+			auto inputFiles = std::vector<Path>({
+				program,
+			});
 			auto outputFiles = std::vector<Path>({});
-			auto runTestsOperation = Build::Utilities::BuildOperationWrapper(
-				new Build::Utilities::BuildOperation(
-					title,
-					program,
-					runArguments,
-					workingDirectory,
-					inputFiles,
-					outputFiles));
+			auto runTestsOperation =
+				Build::Utilities::BuildOperation(
+					std::move(title),
+					std::move(workingDirectory),
+					std::move(program),
+					std::move(runArguments),
+					std::move(inputFiles),
+					std::move(outputFiles));
 
 			// Run the test harness
-			Build::Utilities::BuildOperationExtensions::AddLeafChild(
-				buildResult.BuildOperations,
-				runTestsOperation);
+			// TODO: buildResult.BuildOperations.push_back(std::move(runTestsOperation));
 
-			// Register the root build tasks
-			buildState.GetRootOperationList().Append(buildResult.BuildOperations);
+			// Register the build operations
+			for (auto& operation : buildResult.BuildOperations)
+			{
+				buildState.CreateOperation(operation);
+			}
 		}
 
 		void LoadBuildProperties(
@@ -170,18 +172,6 @@ namespace Soup::Test
 			{
 				arguments.PlatformLinkDependencies =
 					buildTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
-			}
-
-			if (buildTable.HasValue("PlatformLibraries"))
-			{
-				arguments.PlatformLinkDependencies =
-					buildTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
-			}
-
-			if (buildTable.HasValue("LinkLibraries"))
-			{
-				arguments.LinkDependencies =
-					buildTable.GetValue("LinkLibraries").AsList().CopyAsPathVector();
 			}
 
 			if (buildTable.HasValue("LibraryPaths"))
@@ -214,6 +204,13 @@ namespace Soup::Test
 			else
 			{
 				arguments.GenerateSourceDebugInfo = false;
+			}
+
+			// Load the internal link dependencies
+			if (buildTable.HasValue("InternalLinkDependencies"))
+			{
+				arguments.LinkDependencies = MakeUnique(
+					buildTable.GetValue("InternalLinkDependencies").AsList().CopyAsPathVector());
 			}
 		}
 
@@ -259,13 +256,6 @@ namespace Soup::Test
 			{
 				arguments.RuntimeDependencies = MakeUnique(
 					buildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector());
-			}
-
-			// Load the link dependencies
-			if (buildTable.HasValue("LinkDependencies"))
-			{
-				arguments.LinkDependencies = MakeUnique(
-					buildTable.GetValue("LinkDependencies").AsList().CopyAsPathVector());
 			}
 
 			// Load the module references
@@ -372,9 +362,9 @@ namespace Soup::Test
 	};
 
 	Build::Utilities::ReadOnlyStringList TestBuildTask::_runBeforeList =
-		Build::Utilities::StringList();
+		Build::Utilities::ReadOnlyStringList();
 	Build::Utilities::ReadOnlyStringList TestBuildTask::_runAfterList =
-		Build::Utilities::StringList({
+		Build::Utilities::ReadOnlyStringList({
 			"Build",
 		});
 }

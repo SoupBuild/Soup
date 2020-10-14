@@ -65,7 +65,12 @@ namespace Monitor
 		{
 			DebugTrace("Start");
 			std::stringstream argumentsValue;
-			argumentsValue << "\"" << m_executable.ToAlternateString() << "\"" << " " << m_arguments;
+			argumentsValue << "\"" << m_executable.ToAlternateString() << "\"";
+			if (!m_arguments.empty())
+			{
+				argumentsValue << " " << m_arguments;
+			}
+
 			std::string argumentsString = argumentsValue.str();
 
 			// Setup the input/output streams
@@ -167,7 +172,7 @@ namespace Monitor
 				case ERROR_FILE_NOT_FOUND:
 					throw std::runtime_error("Execute DetourCreateProcessWithDllExA the requested executable does not exist");
 				default:
-					throw std::runtime_error("Execute DetourCreateProcessWithDllExA Failed: " + std::to_string(error));
+					throw std::runtime_error("Execute DetourCreateProcessWithDllExA Failed");
 				}
 			}
 

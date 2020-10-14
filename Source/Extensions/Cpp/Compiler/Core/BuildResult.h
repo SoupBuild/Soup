@@ -22,9 +22,14 @@ namespace Soup::Cpp::Compiler
 		std::vector<Path> ModuleDependencies;
 
 		/// <summary>
-		/// Gets or sets the list of link libraries
+		/// Gets or sets the list of link libraries that downstream builds should use when linking
 		/// </summary>
 		std::vector<Path> LinkDependencies;
+
+		/// <summary>
+		/// Gets or sets the list of internal link libraries that were used to link the final result
+		/// </summary>
+		std::vector<Path> InternalLinkDependencies;
 
 		/// <summary>
 		/// Gets or sets the list of runtime dependencies

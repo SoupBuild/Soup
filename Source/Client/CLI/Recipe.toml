@@ -16,11 +16,11 @@ RuntimeDependencies = [
 	"LocalUserConfig.json",
 ]
 Source = [
-	"Main.cpp",
+	"Source/Main.cpp",
 ]
 IncludePaths = [
-	"Commands/",
-	"Options/",
+	"Source/Commands/",
+	"Source/Options/",
 ]
 PlatformLibraries = [
 	"OleAut32.lib",
@@ -28,3 +28,20 @@ PlatformLibraries = [
 	"User32.lib",
 ]
 
+DevDependencies = [
+	# ToDO: "../../Extensions/TestBuild/",
+	"Soup.Test.Assert@0.1.7",
+]
+
+	[Tests]
+	Source = [
+		"UnitTests/gen/Main.cpp"
+	]
+	IncludePaths = [
+		"UnitTests/",
+	]
+	PlatformLibraries = [
+		"OleAut32.lib",
+		"shell32.lib",
+		"User32.lib",
+	]

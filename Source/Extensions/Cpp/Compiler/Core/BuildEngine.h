@@ -315,6 +315,13 @@ namespace Soup::Cpp::Compiler
 			buildState.LogInfo("Generate Link Operation: " + linkArguments.TargetFile.ToString());
 			auto linkOperation = _compiler->CreateLinkOperation(linkArguments);
 			result.BuildOperations.push_back(std::move(linkOperation));
+
+			// Pass along the link arguments for internal access
+			result.InternalLinkDependencies = arguments.LinkDependencies;
+			result.InternalLinkDependencies.insert(
+				result.InternalLinkDependencies.end(),
+				std::make_move_iterator(linkArguments.ObjectFiles.begin()),
+				std::make_move_iterator(linkArguments.ObjectFiles.end()));
 		}
 
 		/// <summary>

@@ -9,7 +9,6 @@ Dependencies = [
 	"../Compiler/Clang/",
 	"../Compiler/MSVC/",
 ]
-
 Interface = "Module.cpp"
 Source = [
 	"RegisterBuildExtension.cpp",
@@ -17,7 +16,6 @@ Source = [
 PlatformLibraries = [
 	"shell32.lib",
 ]
-
 DevDependencies = [
 	# "../../TestBuild/",
 	"Soup.Test.Assert@0.1.7",

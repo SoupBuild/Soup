@@ -12,7 +12,25 @@ Dependencies = [
 	# "Soup.Build.Utilities@0.3.0",
 	"../../Monitor/Shared/",
 ]
-Interface = "Module.cpp"
+Interface = "Source/Module.cpp"
 Source = [
-	"Contracts/Value.cpp",
+	"Source/Contracts/Value.cpp",
 ]
+
+DevDependencies = [
+	"../../Extensions/TestBuild/",
+	"Soup.Test.Assert@0.1.7",
+]
+
+	[Tests]
+	Source = [
+		"UnitTests/gen/Main.cpp"
+	]
+	IncludePaths = [
+		"UnitTests/",
+	]
+	PlatformLibraries = [
+		"OleAut32.lib",
+		"shell32.lib",
+		"User32.lib",
+	]
