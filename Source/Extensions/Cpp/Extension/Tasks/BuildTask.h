@@ -189,6 +189,9 @@ namespace Soup::Cpp
 			auto buildEngine = Soup::Cpp::Compiler::BuildEngine(compiler);
 			auto buildResult = buildEngine.Execute(buildState, arguments);
 
+			// Pass along internal state for other stages to gain access
+			buildTable.EnsureValue("InternalLinkDependencies").EnsureList().SetAll(buildResult.InternalLinkDependencies);
+
 			// Always pass along required input to shared build tasks
 			auto sharedBuildTable = sharedState.EnsureValue("Build").EnsureTable();
 			sharedBuildTable.EnsureValue("ModuleDependencies").EnsureList().SetAll(buildResult.ModuleDependencies);

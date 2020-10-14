@@ -123,7 +123,8 @@ namespace Soup::Build::Runtime
 			{
 				Log::HighPriority(operationInfo.Title);
 				auto messageBuilder = std::stringstream();
-				messageBuilder << "Execute: " << operationInfo.Command.Executable.ToString();
+				messageBuilder << "Execute: [" << operationInfo.Command.WorkingDirectory.ToString() << "] ";
+				messageBuilder << operationInfo.Command.Executable.ToString();
 				messageBuilder << " " << operationInfo.Command.Arguments;
 				Log::Diag(messageBuilder.str());
 
