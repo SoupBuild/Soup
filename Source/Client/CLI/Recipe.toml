@@ -27,6 +27,7 @@ PlatformLibraries = [
 	"shell32.lib",
 	"User32.lib",
 ]
+
 DevDependencies = [
 	# ToDO: "../../Extensions/TestBuild/",
 	"Soup.Test.Assert@0.1.7",
@@ -44,4 +45,3 @@ DevDependencies = [
 		"shell32.lib",
 		"User32.lib",
 	]
-

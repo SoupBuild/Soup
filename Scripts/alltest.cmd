@@ -10,11 +10,8 @@ echo soup run %DepsDir%\Opal\UnitTests\
 call soup run %DepsDir%\Opal\UnitTests\
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
-echo soup build %SourceDir%\Build\Runtime.UnitTests\
-call soup build %SourceDir%\Build\Runtime.UnitTests\
-if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
-echo soup run %SourceDir%\Build\Runtime.UnitTests\
-call soup run %SourceDir%\Build\Runtime.UnitTests\
+echo %SourceDir%\Build\Runtime\out\MSVC\debug\win32\x64\bin\Test\TestHarness.exe
+call %SourceDir%\Build\Runtime\out\MSVC\debug\win32\x64\bin\Test\TestHarness.exe
 if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 
 echo soup build %SourceDir%\Build\Utilities.UnitTests\
