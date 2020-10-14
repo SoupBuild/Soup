@@ -16,11 +16,11 @@ Dependencies = [
 Defines = [
 	# "LOCAL_DEBUG",
 ]
-Interface = "Module.cpp"
+Interface = "Source/Module.cpp"
 IncludePaths = [
-	"./",
-	"Compiler/",
-	"Utils/",
+	"Source/",
+	"Source/Compiler/",
+	"Source/Utils/",
 ]
 
 DevDependencies = [
@@ -30,10 +30,10 @@ DevDependencies = [
 
 	[Tests]
 	Source = [
-		"../Core.UnitTests/gen/Main.cpp"
+		"UnitTests/gen/Main.cpp"
 	]
 	IncludePaths = [
-		"../Core.UnitTests/",
+		"UnitTests/",
 	]
 	PlatformLibraries = [
 		"OleAut32.lib",
