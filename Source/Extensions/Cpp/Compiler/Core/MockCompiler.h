@@ -87,19 +87,41 @@ namespace Soup::Cpp::Compiler::Mock
 			const SharedCompileArguments& arguments) const override final
 		{
 			_compileRequests.push_back(arguments);
-			return {
-				Build::Utilities::BuildOperation(
-					"MockCompile: " + std::to_string(_compileRequests.size()),
-					Path("MockWorkingDirectory"),
-					Path("MockCompiler.exe"),
-					"Arguments",
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					})),
-			};
+
+			auto result = std::vector<Build::Utilities::BuildOperation>();
+			if (arguments.InterfaceUnit.has_value())
+			{
+				result.push_back(
+					Build::Utilities::BuildOperation(
+						"MockCompileModule: " + std::to_string(_compileRequests.size()),
+						Path("MockWorkingDirectory"),
+						Path("MockCompiler.exe"),
+						"Arguments",
+						std::vector<Path>({
+							Path("InputFile.in"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.out"),
+						})));
+			}
+
+			for (auto& file : arguments.ImplementationUnits)
+			{
+				result.push_back(
+					Build::Utilities::BuildOperation(
+						"MockCompile: " + std::to_string(_compileRequests.size()),
+						Path("MockWorkingDirectory"),
+						Path("MockCompiler.exe"),
+						"Arguments",
+						std::vector<Path>({
+							Path("InputFile.in"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.out"),
+						})));
+			}
+
+			return result;
 		}
 
 		/// <summary>

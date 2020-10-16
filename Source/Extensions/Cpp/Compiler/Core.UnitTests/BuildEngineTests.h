@@ -55,7 +55,6 @@ namespace Soup::Cpp::Compiler::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"INFO: Compiling source files",
 					"INFO: Generate Compile Operation: ./TestFile.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
@@ -73,12 +72,15 @@ namespace Soup::Cpp::Compiler::UnitTests
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
 
-			auto expectedCompileArguments = CompileArguments();
+			auto expectedCompileArguments = SharedCompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
 			expectedCompileArguments.Optimize = OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
-			expectedCompileArguments.SourceFile = Path("TestFile.cpp");
-			expectedCompileArguments.TargetFile = Path("obj/TestFile.mock.obj");
+			
+			auto expectedTranslationUnitArguments = TranslationUnitCompileArguments();
+			expectedTranslationUnitArguments.SourceFile = Path("TestFile.cpp");
+			expectedTranslationUnitArguments.TargetFile = Path("obj/TestFile.mock.obj");
+			expectedCompileArguments.ImplementationUnits.push_back(expectedTranslationUnitArguments);
 
 			auto expectedLinkArguments = LinkArguments();
 			expectedLinkArguments.TargetType = LinkTarget::Executable;
@@ -94,7 +96,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
+				std::vector<SharedCompileArguments>({
 					expectedCompileArguments,
 				}),
 				compiler->GetCompileRequests(),
@@ -221,7 +223,6 @@ namespace Soup::Cpp::Compiler::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"INFO: Compiling source files",
 					"INFO: Generate Compile Operation: ./TestFile1.cpp",
 					"INFO: Generate Compile Operation: ./TestFile2.cpp",
 					"INFO: Generate Compile Operation: ./TestFile3.cpp",
@@ -242,7 +243,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"Verify process manager requests match expected.");
 
 			// Setup the shared arguments
-			auto expectedCompileArguments = CompileArguments();
+			auto expectedCompileArguments = SharedCompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
 			expectedCompileArguments.Optimize = OptimizationLevel::Size;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
@@ -255,15 +256,20 @@ namespace Soup::Cpp::Compiler::UnitTests
 				Path("../OtherModule2.mock.bmi"),
 			});
 
-			auto expectedCompile1Arguments = expectedCompileArguments;
-			expectedCompile1Arguments.SourceFile = Path("TestFile1.cpp");
-			expectedCompile1Arguments.TargetFile = Path("obj/TestFile1.mock.obj");
-			auto expectedCompile2Arguments = expectedCompileArguments;
-			expectedCompile2Arguments.SourceFile = Path("TestFile2.cpp");
-			expectedCompile2Arguments.TargetFile = Path("obj/TestFile2.mock.obj");
-			auto expectedCompile3Arguments = expectedCompileArguments;
-			expectedCompile3Arguments.SourceFile = Path("TestFile3.cpp");
-			expectedCompile3Arguments.TargetFile = Path("obj/TestFile3.mock.obj");
+			auto expectedTranslationUnit1Arguments = TranslationUnitCompileArguments();
+			expectedTranslationUnit1Arguments.SourceFile = Path("TestFile1.cpp");
+			expectedTranslationUnit1Arguments.TargetFile = Path("obj/TestFile1.mock.obj");
+			expectedCompileArguments.ImplementationUnits.push_back(expectedTranslationUnit1Arguments);
+
+			auto expectedTranslationUnit2Arguments = TranslationUnitCompileArguments();
+			expectedTranslationUnit2Arguments.SourceFile = Path("TestFile2.cpp");
+			expectedTranslationUnit2Arguments.TargetFile = Path("obj/TestFile2.mock.obj");
+			expectedCompileArguments.ImplementationUnits.push_back(expectedTranslationUnit2Arguments);
+
+			auto expectedTranslationUnit3Arguments = TranslationUnitCompileArguments();
+			expectedTranslationUnit3Arguments.SourceFile = Path("TestFile3.cpp");
+			expectedTranslationUnit3Arguments.TargetFile = Path("obj/TestFile3.mock.obj");
+			expectedCompileArguments.ImplementationUnits.push_back(expectedTranslationUnit3Arguments);
 
 			auto expectedLinkArguments = LinkArguments();
 			expectedLinkArguments.TargetFile = Path("bin/Library.mock.lib");
@@ -280,10 +286,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
-					expectedCompile1Arguments,
-					expectedCompile2Arguments,
-					expectedCompile3Arguments,
+				std::vector<SharedCompileArguments>({
+					expectedCompileArguments,
 				}),
 				compiler->GetCompileRequests(),
 				"Verify compiler requests match expected.");
@@ -326,7 +330,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 						Path("OutputFile.out"),
 					})),
 				Build::Utilities::BuildOperation(
-					"MockCompile: 2",
+					"MockCompile: 1",
 					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -337,7 +341,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 						Path("OutputFile.out"),
 					})),
 				Build::Utilities::BuildOperation(
-					"MockCompile: 3",
+					"MockCompile: 1",
 					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -439,9 +443,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"INFO: CompileModuleInterfaceUnit",
-					"INFO: Generate Compile Operation: ./Public.cpp",
-					"INFO: Compiling source files",
+					"INFO: Generate Module Unit Compile: ./Public.cpp",
 					"INFO: Generate Compile Operation: ./TestFile1.cpp",
 					"INFO: Generate Compile Operation: ./TestFile2.cpp",
 					"INFO: Generate Compile Operation: ./TestFile3.cpp",
@@ -463,7 +465,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"Verify process manager requests match expected.");
 
 			// Setup the shared arguments
-			auto expectedCompileArguments = CompileArguments();
+			auto expectedCompileArguments = SharedCompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
 			expectedCompileArguments.Optimize = OptimizationLevel::None;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
@@ -480,23 +482,26 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"AWESOME",
 			});
 
-			auto expectedCompileModuleArguments = expectedCompileArguments;
+			auto expectedCompileModuleArguments = InterfaceUnitCompileArguments();
 			expectedCompileModuleArguments.SourceFile = Path("Public.cpp");
 			expectedCompileModuleArguments.TargetFile = Path("obj/Public.mock.obj");
-			expectedCompileModuleArguments.ExportModule = true;
+			expectedCompileModuleArguments.ModuleInterfaceTarget = Path("obj/Public.mock.bmi");
+			expectedCompileArguments.InterfaceUnit = expectedCompileModuleArguments;
 
-			// Remaining source files should reference module interface
-			expectedCompileArguments.IncludeModules.push_back(Path("C:/root/bin/Library.mock.bmi"));
+			auto expectedTranslationUnit1Arguments = TranslationUnitCompileArguments();
+			expectedTranslationUnit1Arguments.SourceFile = Path("TestFile1.cpp");
+			expectedTranslationUnit1Arguments.TargetFile = Path("obj/TestFile1.mock.obj");
+			expectedCompileArguments.ImplementationUnits.push_back(expectedTranslationUnit1Arguments);
 
-			auto expectedCompile1Arguments = expectedCompileArguments;
-			expectedCompile1Arguments.SourceFile = Path("TestFile1.cpp");
-			expectedCompile1Arguments.TargetFile = Path("obj/TestFile1.mock.obj");
-			auto expectedCompile2Arguments = expectedCompileArguments;
-			expectedCompile2Arguments.SourceFile = Path("TestFile2.cpp");
-			expectedCompile2Arguments.TargetFile = Path("obj/TestFile2.mock.obj");
-			auto expectedCompile3Arguments = expectedCompileArguments;
-			expectedCompile3Arguments.SourceFile = Path("TestFile3.cpp");
-			expectedCompile3Arguments.TargetFile = Path("obj/TestFile3.mock.obj");
+			auto expectedTranslationUnit2Arguments = TranslationUnitCompileArguments();
+			expectedTranslationUnit2Arguments.SourceFile = Path("TestFile2.cpp");
+			expectedTranslationUnit2Arguments.TargetFile = Path("obj/TestFile2.mock.obj");
+			expectedCompileArguments.ImplementationUnits.push_back(expectedTranslationUnit2Arguments);
+
+			auto expectedTranslationUnit3Arguments = TranslationUnitCompileArguments();
+			expectedTranslationUnit3Arguments.SourceFile = Path("TestFile3.cpp");
+			expectedTranslationUnit3Arguments.TargetFile = Path("obj/TestFile3.mock.obj");
+			expectedCompileArguments.ImplementationUnits.push_back(expectedTranslationUnit3Arguments);
 
 			auto expectedLinkArguments = LinkArguments();
 			expectedLinkArguments.TargetFile = Path("bin/Library.mock.lib");
@@ -512,11 +517,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
-					expectedCompileModuleArguments,
-					expectedCompile1Arguments,
-					expectedCompile2Arguments,
-					expectedCompile3Arguments,
+				std::vector<SharedCompileArguments>({
+					expectedCompileArguments,
 				}),
 				compiler->GetCompileRequests(),
 				"Verify compiler requests match expected.");
@@ -548,17 +550,6 @@ namespace Soup::Cpp::Compiler::UnitTests
 						Path("./bin/"),
 					})),
 				Build::Utilities::BuildOperation(
-					"MockCompile: 1",
-					Path("MockWorkingDirectory"),
-					Path("MockCompiler.exe"),
-					"Arguments",
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					})),
-				Build::Utilities::BuildOperation(
 					"Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
 					Path("C:/root/"),
 					Path("C:/testlocation/copy.exe"),
@@ -570,7 +561,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 						Path("./bin/Library.mock.bmi"),
 					})),
 				Build::Utilities::BuildOperation(
-					"MockCompile: 2",
+					"MockCompileModule: 1",
 					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -581,7 +572,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 						Path("OutputFile.out"),
 					})),
 				Build::Utilities::BuildOperation(
-					"MockCompile: 3",
+					"MockCompile: 1",
 					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -592,7 +583,18 @@ namespace Soup::Cpp::Compiler::UnitTests
 						Path("OutputFile.out"),
 					})),
 				Build::Utilities::BuildOperation(
-					"MockCompile: 4",
+					"MockCompile: 1",
+					Path("MockWorkingDirectory"),
+					Path("MockCompiler.exe"),
+					"Arguments",
+					std::vector<Path>({
+						Path("InputFile.in"),
+					}),
+					std::vector<Path>({
+						Path("OutputFile.out"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MockCompile: 1",
 					Path("MockWorkingDirectory"),
 					Path("MockCompiler.exe"),
 					"Arguments",
@@ -688,8 +690,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"INFO: CompileModuleInterfaceUnit",
-					"INFO: Generate Compile Operation: ./Public.cpp",
+					"INFO: Generate Module Unit Compile: ./Public.cpp",
 					"INFO: CoreLink",
 					"INFO: Linking target",
 					"INFO: Generate Link Operation: ./bin/Library.mock.lib",
@@ -708,7 +709,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"Verify process manager requests match expected.");
 
 			// Setup the shared arguments
-			auto expectedCompileArguments = CompileArguments();
+			auto expectedCompileArguments = SharedCompileArguments();
 			expectedCompileArguments.Standard = LanguageStandard::CPP20;
 			expectedCompileArguments.Optimize = OptimizationLevel::Size;
 			expectedCompileArguments.RootDirectory = Path("C:/root/");
@@ -721,10 +722,11 @@ namespace Soup::Cpp::Compiler::UnitTests
 				Path("../OtherModule2.mock.bmi"),
 			});
 
-			auto expectedCompileModuleArguments = expectedCompileArguments;
+			auto expectedCompileModuleArguments = InterfaceUnitCompileArguments();
 			expectedCompileModuleArguments.SourceFile = Path("Public.cpp");
 			expectedCompileModuleArguments.TargetFile = Path("obj/Public.mock.obj");
-			expectedCompileModuleArguments.ExportModule = true;
+			expectedCompileModuleArguments.ModuleInterfaceTarget = Path("obj/Public.mock.bmi");
+			expectedCompileArguments.InterfaceUnit = expectedCompileModuleArguments;
 
 			auto expectedLinkArguments = LinkArguments();
 			expectedLinkArguments.TargetFile = Path("bin/Library.mock.lib");
@@ -737,8 +739,8 @@ namespace Soup::Cpp::Compiler::UnitTests
 
 			// Verify expected compiler calls
 			Assert::AreEqual(
-				std::vector<CompileArguments>({
-					expectedCompileModuleArguments,
+				std::vector<SharedCompileArguments>({
+					expectedCompileArguments,
 				}),
 				compiler->GetCompileRequests(),
 				"Verify compiler requests match expected.");
@@ -770,17 +772,6 @@ namespace Soup::Cpp::Compiler::UnitTests
 						Path("./bin/"),
 					})),
 				Build::Utilities::BuildOperation(
-					"MockCompile: 1",
-					Path("MockWorkingDirectory"),
-					Path("MockCompiler.exe"),
-					"Arguments",
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					})),
-				Build::Utilities::BuildOperation(
 					"Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
 					Path("C:/root/"),
 					Path("C:/testlocation/copy.exe"),
@@ -790,6 +781,17 @@ namespace Soup::Cpp::Compiler::UnitTests
 					}),
 					std::vector<Path>({
 						Path("./bin/Library.mock.bmi"),
+					})),
+				Build::Utilities::BuildOperation(
+					"MockCompileModule: 1",
+					Path("MockWorkingDirectory"),
+					Path("MockCompiler.exe"),
+					"Arguments",
+					std::vector<Path>({
+						Path("InputFile.in"),
+					}),
+					std::vector<Path>({
+						Path("OutputFile.out"),
 					})),
 				Build::Utilities::BuildOperation(
 					"MockLink: 1",
