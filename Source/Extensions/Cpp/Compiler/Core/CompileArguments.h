@@ -86,9 +86,65 @@ namespace Soup::Cpp::Compiler
 	}
 
 	/// <summary>
-	/// The set of standard compiler arguments
+	/// The set of file specific compiler arguments
 	/// </summary>
-	export struct CompileArguments
+	export struct TranslationUnitCompileArguments
+	{
+		/// <summary>
+		/// Gets or sets the source file
+		/// </summary>
+		Path SourceFile;
+
+		/// <summary>
+		/// Gets or sets the target file
+		/// </summary>
+		Path TargetFile;
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const TranslationUnitCompileArguments& rhs) const
+		{
+			return SourceFile == rhs.SourceFile &&
+				TargetFile == rhs.TargetFile;
+		}
+
+		bool operator !=(const TranslationUnitCompileArguments& rhs) const
+		{
+			return !(*this == rhs);
+		}
+	};
+
+	/// <summary>
+	/// The set of file specific compiler arguments
+	/// </summary>
+	export struct InterfaceUnitCompileArguments : public TranslationUnitCompileArguments
+	{
+		/// <summary>
+		/// Gets or sets the source file
+		/// </summary>
+		Path ModuleInterfaceTarget;
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const InterfaceUnitCompileArguments& rhs) const
+		{
+			return SourceFile == rhs.SourceFile &&
+				TargetFile == rhs.TargetFile;
+				ModuleInterfaceTarget == rhs.ModuleInterfaceTarget;
+		}
+
+		bool operator !=(const InterfaceUnitCompileArguments& rhs) const
+		{
+			return !(*this == rhs);
+		}
+	};
+
+	/// <summary>
+	/// The set of shared compiler arguments
+	/// </summary>
+	export struct SharedCompileArguments
 	{
 		/// <summary>
 		/// Gets or sets the language standard
@@ -106,19 +162,14 @@ namespace Soup::Cpp::Compiler
 		Path RootDirectory;
 
 		/// <summary>
+		/// Gets or sets the object directory
+		/// </summary>
+		Path ObjectDirectory;
+
+		/// <summary>
 		/// Gets or sets the list of preprocessor definitions
 		/// </summary>
 		std::vector<std::string> PreprocessorDefinitions;
-
-		/// <summary>
-		/// Gets or sets the source file
-		/// </summary>
-		Path SourceFile;
-
-		/// <summary>
-		/// Gets or sets the target file
-		/// </summary>
-		Path TargetFile;
 
 		/// <summary>
 		/// Gets or sets the list of include directories
@@ -131,64 +182,39 @@ namespace Soup::Cpp::Compiler
 		std::vector<Path> IncludeModules;
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to compile as export module
-		/// </summary>
-		bool ExportModule;
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to generate source debug information
 		/// </summary>
 		bool GenerateSourceDebugInfo;
 
 		/// <summary>
+		/// Gets or sets the single optional interface unit to compile
+		/// </summary>
+		std::optional<InterfaceUnitCompileArguments> InterfaceUnit;
+
+		/// <summary>
+		/// Gets or sets the list of individual translation units to compile
+		/// </summary>
+		std::vector<TranslationUnitCompileArguments> ImplementationUnits;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
-		bool operator ==(const CompileArguments& rhs) const
+		bool operator ==(const SharedCompileArguments& rhs) const
 		{
 			return Standard == rhs.Standard &&
 				Optimize == rhs.Optimize &&
 				RootDirectory == rhs.RootDirectory &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
-				SourceFile == rhs.SourceFile &&
-				TargetFile == rhs.TargetFile &&
 				IncludeDirectories == rhs.IncludeDirectories &&
 				IncludeModules == rhs.IncludeModules &&
-				ExportModule == rhs.ExportModule &&
-				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
+				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
+				InterfaceUnit == rhs.InterfaceUnit &&
+				ImplementationUnits == rhs.ImplementationUnits;
 		}
 
-		bool operator !=(const CompileArguments& rhs) const
+		bool operator !=(const SharedCompileArguments& rhs) const
 		{
 			return !(*this == rhs);
-		}
-
-		std::string ToString() const
-		{
-			auto stringBuilder = std::stringstream();
-			stringBuilder << "[" <<
-				::Soup::Cpp::Compiler::ToString(Standard) << ", " <<
-				::Soup::Cpp::Compiler::ToString(Optimize) << ", " <<
-				RootDirectory.ToString() << ", [";
-
-			for (auto& value : PreprocessorDefinitions)
-				stringBuilder << value << ", ";
-
-			stringBuilder << "], " << 
-				SourceFile.ToString() << ", " <<
-				TargetFile.ToString() << ", [";
-
-			for (auto& value : IncludeDirectories)
-				stringBuilder << value.ToString() << ", ";
-
-			stringBuilder << "], [";
-
-			for (auto& value : IncludeModules)
-				stringBuilder << value.ToString() << ", ";
-
-			stringBuilder << "], " <<
-				std::to_string(ExportModule) << "]";
-
-			return stringBuilder.str();
 		}
 	};
 }

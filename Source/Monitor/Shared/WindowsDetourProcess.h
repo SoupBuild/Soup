@@ -165,7 +165,7 @@ namespace Monitor
 				case ERROR_PATH_NOT_FOUND:
 					throw std::runtime_error("Execute DetourCreateProcessWithDllExA the requested executable does not exist");
 				default:
-					throw std::runtime_error("Execute DetourCreateProcessWithDllExA Failed");
+					throw std::runtime_error("Execute DetourCreateProcessWithDllExA Failed: " +  std::to_string(error));
 				}
 			}
 

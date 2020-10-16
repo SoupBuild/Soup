@@ -68,128 +68,77 @@ namespace Soup::Cpp::Compiler
 			const BuildArguments& arguments,
 			BuildResult& result)
 		{
-			// Compile the module interface unit if present
-			if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
+			// Ensure there are actually files to build
+			if (!arguments.ModuleInterfaceSourceFile.IsEmpty() || !arguments.SourceFiles.empty())
 			{
-				CompileModuleInterfaceUnit(
-					buildState,
-					arguments,
-					result);
+				// Setup the shared properties
+				auto compileArguments = SharedCompileArguments();
+				compileArguments.Standard = arguments.LanguageStandard;
+				compileArguments.Optimize = Convert(arguments.OptimizationLevel);
+				compileArguments.RootDirectory = arguments.WorkingDirectory;
+				compileArguments.ObjectDirectory = arguments.ObjectDirectory;
+				compileArguments.PreprocessorDefinitions = {};
+				compileArguments.IncludeDirectories = arguments.IncludeDirectories;
+				compileArguments.IncludeModules = arguments.ModuleDependencies;
+				compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
+				compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
 
-				// Copy the binary module interface to the binary directory after compiling
-				auto objectModuleInterfaceFile = 
-					arguments.ObjectDirectory +
-					Path(arguments.ModuleInterfaceSourceFile.GetFileName());
-				objectModuleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
-				auto binaryOutputModuleInterfaceFile =
-					arguments.BinaryDirectory +
-					Path(arguments.TargetName + "." + std::string(_compiler->GetModuleFileExtension()));
-				auto copyInterfaceOperation =
-					Build::Utilities::SharedOperations::CreateCopyFileOperation(
-						arguments.WorkingDirectory,
-						objectModuleInterfaceFile,
-						binaryOutputModuleInterfaceFile);
-				result.BuildOperations.push_back(std::move(copyInterfaceOperation));
+				// Compile the module interface unit if present
+				if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
+				{
+					buildState.LogInfo("Generate Module Unit Compile: " + arguments.ModuleInterfaceSourceFile.ToString());
 
-				// Add output module interface to the parent set of modules
-				// This will allow the module implementation units access as well as downstream
-				// dependencies to the public interface.
-				result.ModuleDependencies.push_back(
-					arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
-			}
+					auto objectModuleInterfaceFile = 
+						arguments.ObjectDirectory +
+						Path(arguments.ModuleInterfaceSourceFile.GetFileName());
+					objectModuleInterfaceFile.SetFileExtension(_compiler->GetModuleFileExtension());
+					auto binaryOutputModuleInterfaceFile =
+						arguments.BinaryDirectory +
+						Path(arguments.TargetName + "." + std::string(_compiler->GetModuleFileExtension()));
 
-			if (!arguments.SourceFiles.empty())
-			{
-				CompileSourceFiles(
-					buildState,
-					arguments,
-					result);
-			}
-		}
+					auto compileModuleFileArguments = InterfaceUnitCompileArguments();
+					compileModuleFileArguments.SourceFile = arguments.ModuleInterfaceSourceFile;
+					compileModuleFileArguments.TargetFile = arguments.ObjectDirectory + Path(arguments.ModuleInterfaceSourceFile.GetFileName());
+					compileModuleFileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
+					compileModuleFileArguments.ModuleInterfaceTarget = objectModuleInterfaceFile;
 
-		/// <summary>
-		/// Compile the single module interface unit
-		/// Returns true if the file was compiled
-		/// </summary>
-		void CompileModuleInterfaceUnit(
-			Soup::Build::Utilities::BuildStateWrapper& buildState,
-			const BuildArguments& arguments,
-			BuildResult& result)
-		{
-			buildState.LogInfo("CompileModuleInterfaceUnit");
+					// Add the interface unit arguments to the shared build definition
+					compileArguments.InterfaceUnit = std::move(compileModuleFileArguments);
 
-			// Build up the target object file name
-			auto targetFile = arguments.ObjectDirectory + Path(arguments.ModuleInterfaceSourceFile.GetFileName());
-			targetFile.SetFileExtension(_compiler->GetObjectFileExtension());
+					// Copy the binary module interface to the binary directory after compiling
+					auto copyInterfaceOperation =
+						Build::Utilities::SharedOperations::CreateCopyFileOperation(
+							arguments.WorkingDirectory,
+							objectModuleInterfaceFile,
+							binaryOutputModuleInterfaceFile);
+					result.BuildOperations.push_back(std::move(copyInterfaceOperation));
 
-			// Setup the shared properties
-			auto compileArguments = CompileArguments();
-			compileArguments.Standard = arguments.LanguageStandard;
-			compileArguments.Optimize = Convert(arguments.OptimizationLevel);
-			compileArguments.RootDirectory = arguments.WorkingDirectory;
-			compileArguments.PreprocessorDefinitions = {};
-			compileArguments.IncludeDirectories = arguments.IncludeDirectories;
-			compileArguments.IncludeModules = arguments.ModuleDependencies;
-			compileArguments.ExportModule = true;
-			compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
-			compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
-			compileArguments.TargetFile = targetFile;
+					// Add output module interface to the parent set of modules
+					// This will allow the module implementation units access as well as downstream
+					// dependencies to the public interface.
+					result.ModuleDependencies.push_back(
+						arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
+				}
 
-			// Compile the individual translation unit
-			const auto& file = arguments.ModuleInterfaceSourceFile;
-			buildState.LogInfo("Generate Compile Operation: " + file.ToString());
-			compileArguments.SourceFile = file;
+				// Compile the individual translation units
+				for (auto& file : arguments.SourceFiles)
+				{
+					buildState.LogInfo("Generate Compile Operation: " + file.ToString());
 
-			auto compileOperations = _compiler->CreateCompileOperation(compileArguments);
-			result.BuildOperations.insert(
-				result.BuildOperations.end(),
-				std::make_move_iterator(compileOperations.begin()),
-				std::make_move_iterator(compileOperations.end()));
-		}
+					auto compileFileArguments = TranslationUnitCompileArguments();
+					compileFileArguments.SourceFile = file;
+					compileFileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
+					compileFileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
 
-		/// <summary>
-		/// Compile the supporting source files
-		/// </summary>
-		void CompileSourceFiles(
-			Soup::Build::Utilities::BuildStateWrapper& buildState,
-			const BuildArguments& arguments,
-			BuildResult& result)
-		{
-			// Check if we can skip the whole dang thing
-			buildState.LogInfo("Compiling source files");
+					compileArguments.ImplementationUnits.push_back(std::move(compileFileArguments));
+				}
 
-			// Setup the shared properties
-			auto compileArguments = CompileArguments();
-			compileArguments.Standard = arguments.LanguageStandard;
-			compileArguments.Optimize = Convert(arguments.OptimizationLevel);
-			compileArguments.RootDirectory = arguments.WorkingDirectory;
-			compileArguments.PreprocessorDefinitions = {};
-			compileArguments.IncludeDirectories = arguments.IncludeDirectories;
-			compileArguments.IncludeModules = arguments.ModuleDependencies;
-			compileArguments.ExportModule = false;
-			compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
-			compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
-
-			// Include our own interface module file
-			std::copy(
-				result.ModuleDependencies.begin(),
-				result.ModuleDependencies.end(),
-				std::back_inserter(compileArguments.IncludeModules)); 
-
-			// Compile the individual translation units
-			for (auto& file : arguments.SourceFiles)
-			{
-				buildState.LogInfo("Generate Compile Operation: " + file.ToString());
-				compileArguments.SourceFile = file;
-				compileArguments.TargetFile = arguments.ObjectDirectory + Path(file.GetFileName());
-				compileArguments.TargetFile.SetFileExtension(_compiler->GetObjectFileExtension());
-
-				// Compile the file
-				auto operations = _compiler->CreateCompileOperation(compileArguments);
+				// Compile all source files as a single call
+				auto compileOperations = _compiler->CreateCompileOperations(compileArguments);
 				result.BuildOperations.insert(
 					result.BuildOperations.end(),
-					std::make_move_iterator(operations.begin()),
-					std::make_move_iterator(operations.end()));
+					std::make_move_iterator(compileOperations.begin()),
+					std::make_move_iterator(compileOperations.end()));
 			}
 		}
 
