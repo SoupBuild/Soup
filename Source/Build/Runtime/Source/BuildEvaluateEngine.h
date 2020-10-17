@@ -71,7 +71,7 @@ namespace Soup::Build::Runtime
 				if (remainingCount == 0)
 				{
 					// Run the single operation
-					ExecuteOperation(operationInfo);
+					CheckExecuteOperation(operationInfo);
 					
 					// Recursively build all of the operation children
 					CheckExecuteOperations(operationInfo.Children);
@@ -88,9 +88,9 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
-		/// Execute a single build operation
+		/// Check if an individual operation has been run and execute if required
 		/// </summary>
-		void ExecuteOperation(
+		void CheckExecuteOperation(
 			OperationInfo& operationInfo)
 		{
 			// Check if each source file is out of date and requires a rebuild
@@ -128,69 +128,126 @@ namespace Soup::Build::Runtime
 				messageBuilder << " " << operationInfo.Command.Arguments;
 				Log::Diag(messageBuilder.str());
 
-				auto callback = std::make_shared<SystemAccessTracker>();
-				auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
-					operationInfo.Command.Executable,
-					operationInfo.Command.Arguments,
-					operationInfo.Command.WorkingDirectory,
-					callback);
-
-				process->Start();
-				process->WaitForExit();
-
-				auto stdOut = process->GetStandardOutput();
-				auto stdErr = process->GetStandardError();
-				auto exitCode = process->GetExitCode();
-
-				// Check the result of the monitor
-				callback->VerifyResult();
-
-				if (!stdOut.empty())
+				// Check for special in-process write operations
+				if (operationInfo.Command.Executable == Path("writefile.exe"))
 				{
-					// Upgrade output to a warning if the command fails
-					if (exitCode != 0)
-						Log::Warning(stdOut);
-					else
-						Log::Info(stdOut);
-				}
-
-				// If there was any error output then the build failed
-				// TODO: Find warnings + errors
-				if (!stdErr.empty())
-				{
-					Log::Error(stdErr);
-				}
-
-				if (exitCode == 0)
-				{
-					// Save off the build graph for future builds
-					auto input = std::vector<Path>();
-					for (auto& value : callback->GetInput())
-						input.push_back(Path(value));
-
-					auto output = std::vector<Path>();
-					for (auto& value : callback->GetOutput())
-						output.push_back(Path(value));
-
-					operationInfo.ObservedInput = _fileSystemState.ToFileIds(input, operationInfo.Command.WorkingDirectory);
-					operationInfo.ObservedOutput = _fileSystemState.ToFileIds(output, operationInfo.Command.WorkingDirectory);
-
-					// Mark this operation as successful to enable future incremental builds
-					operationInfo.WasSuccessfulRun = true;
-
-					// Ensure the File System State is notified of any output files that have changed
-					_fileSystemState.CheckFileWriteTimes(operationInfo.ObservedOutput);
+					ExecuteWriteFileOperation(operationInfo);
 				}
 				else
 				{
-					// Leave the previous state untouched and abandon the remaining operations
-					Log::Error("Operation exited with non-success code: " + std::to_string(exitCode));
-					throw BuildFailedException();
+					ExecuteOperation(operationInfo);
 				}
 			}
 			else
 			{
 				Log::Info(operationInfo.Title);
+			}
+		}
+
+		/// <summary>
+		/// Execute a single build operation
+		/// </summary>
+		void ExecuteWriteFileOperation(
+			OperationInfo& operationInfo)
+		{
+			Log::Info("Execute InProcess WriteFile");
+
+			// Pull out the file path argument
+			auto findSecondQuote = operationInfo.Command.Arguments.find('\"', 1);
+			if (findSecondQuote == std::string::npos)
+			{
+				Log::Error("WriteFile path argument malformed");
+				throw BuildFailedException();
+			}
+
+			auto fileName = Path(std::string_view(operationInfo.Command.Arguments).substr(1, findSecondQuote - 1));
+			Log::Info("WritFile: " + fileName.ToString());
+
+			auto filePath = operationInfo.Command.WorkingDirectory + fileName;
+			auto content = std::string_view(operationInfo.Command.Arguments).substr(
+				findSecondQuote + 3,
+				operationInfo.Command.Arguments.size() - findSecondQuote - 4);
+
+			// Open the file to write to
+			auto file = System::IFileSystem::Current().OpenWrite(filePath, false);
+			file->GetOutStream() << content;
+
+			operationInfo.ObservedInput = {};
+			operationInfo.ObservedOutput = {
+				_fileSystemState.ToFileId(filePath, operationInfo.Command.WorkingDirectory),
+			};
+
+			// Mark this operation as successful to enable future incremental builds
+			operationInfo.WasSuccessfulRun = true;
+
+			// Ensure the File System State is notified of any output files that have changed
+			_fileSystemState.CheckFileWriteTimes(operationInfo.ObservedOutput);
+		}
+
+		/// <summary>
+		/// Execute a single build operation
+		/// </summary>
+		void ExecuteOperation(
+			OperationInfo& operationInfo)
+		{
+			auto callback = std::make_shared<SystemAccessTracker>();
+			auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
+				operationInfo.Command.Executable,
+				operationInfo.Command.Arguments,
+				operationInfo.Command.WorkingDirectory,
+				callback);
+
+			process->Start();
+			process->WaitForExit();
+
+			auto stdOut = process->GetStandardOutput();
+			auto stdErr = process->GetStandardError();
+			auto exitCode = process->GetExitCode();
+
+			// Check the result of the monitor
+			callback->VerifyResult();
+
+			if (!stdOut.empty())
+			{
+				// Upgrade output to a warning if the command fails
+				if (exitCode != 0)
+					Log::Warning(stdOut);
+				else
+					Log::Info(stdOut);
+			}
+
+			// If there was any error output then the build failed
+			// TODO: Find warnings + errors
+			if (!stdErr.empty())
+			{
+				Log::Error(stdErr);
+			}
+
+			if (exitCode == 0)
+			{
+				// Save off the build graph for future builds
+				auto input = std::vector<Path>();
+				for (auto& value : callback->GetInput())
+					input.push_back(Path(value));
+
+				auto output = std::vector<Path>();
+				for (auto& value : callback->GetOutput())
+					output.push_back(Path(value));
+
+				operationInfo.ObservedInput = _fileSystemState.ToFileIds(input, operationInfo.Command.WorkingDirectory);
+				operationInfo.ObservedOutput = _fileSystemState.ToFileIds(output, operationInfo.Command.WorkingDirectory);
+
+				// Mark this operation as successful to enable future incremental builds
+				operationInfo.WasSuccessfulRun = true;
+
+				// Ensure the File System State is notified of any output files that have changed
+				_fileSystemState.CheckFileWriteTimes(operationInfo.ObservedOutput);
+			}
+			else
+			{
+				// Leave the previous state untouched and abandon the remaining operations
+				Log::Error("Operation exited with non-success code: " + std::to_string(exitCode));
+				throw BuildFailedException();
 			}
 		}
 

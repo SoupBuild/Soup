@@ -96,10 +96,8 @@ namespace Soup::Build::Utilities
 			auto titleStream = std::stringstream();
 			titleStream << "WriteFile [" << destination.ToString() << "]";
 
-			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
-			auto moduleFolder = moduleName.GetParent();
-
-			auto program = moduleFolder + Path("writefile.exe");
+			// Create the fake write file executable that will be executed in process
+			auto program = Path("writefile.exe");
 			auto inputFiles = std::vector<Path>({});
 			auto outputFiles = std::vector<Path>({
 				destination,
@@ -108,8 +106,7 @@ namespace Soup::Build::Utilities
 			// Build the arguments
 			std::stringstream arguments;
 			arguments << "\"" << destination.ToString() << "\" \"";
-			EscapeString(content, arguments);
-			arguments << "\"";
+			arguments << content << "\"";
 
 			return BuildOperation(
 				titleStream.str(),
@@ -118,50 +115,6 @@ namespace Soup::Build::Utilities
 				arguments.str(),
 				std::move(inputFiles),
 				std::move(outputFiles));
-		}
-
-	private:
-		// TODO: Should not be doing my own raw UTF-8 manipulation, find a library or create one in Opal
-		static void EscapeString(std::string_view value, std::ostream& stream)
-		{
-			for (auto character : value)
-			{
-				switch (character)
-				{
-				case '"':
-					stream << "\\\"";
-					break;
-				case '\\':
-					stream << "\\\\";
-					break;
-				case '\b':
-					stream << "\\b";
-					break;
-				case '\f':
-					stream << "\\f";
-					break;
-				case '\n':
-					stream << "\\n";
-					break;
-				case '\r':
-					stream << "\\r";
-					break;
-				case '\t':
-					stream << "\\t";
-					break;
-				default:
-					if ('\x00' <= character && character <= '\x1f')
-					{
-						throw std::runtime_error("Unicode escape characters not supported yet...");
-					}
-					else
-					{
-						stream << character;
-					}
-
-					break;
-				}
-			}
 		}
 	};
 }
