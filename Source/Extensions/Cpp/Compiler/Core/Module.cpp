@@ -1,6 +1,7 @@
 ﻿module;
 
 #include <memory>
+#include <optional>
 #include <stack>
 #include <stdexcept>
 #include <string>

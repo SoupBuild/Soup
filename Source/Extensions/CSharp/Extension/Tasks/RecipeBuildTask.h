@@ -82,8 +82,6 @@ namespace Soup::CSharp
 			auto packageRoot = Path(rootTable.GetValue("PackageRoot").AsString().GetValue());
 			auto buildFlavor = std::string(rootTable.GetValue("BuildFlavor").AsString().GetValue());
 			auto platformLibraries = rootTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
-			auto platformIncludePaths = rootTable.GetValue("PlatformIncludePaths").AsList().CopyAsPathVector();
-			auto platformLibraryPaths = rootTable.GetValue("PlatformLibraryPaths").AsList().CopyAsPathVector();
 			auto platformPreprocessorDefinitions = rootTable.GetValue("PlatformPreprocessorDefinitions").AsList().CopyAsStringVector();
 
 			// Load Recipe properties
@@ -141,27 +139,8 @@ namespace Soup::CSharp
 				buildTable.EnsureValue("RuntimeDependencies").SetValuePathList(runtimeDependencies);
 			}
 
-			// Combine the include paths from the recipe and the system
-			auto includePaths = std::vector<Path>();
-			if (recipeTable.HasValue("IncludePaths"))
-			{
-				includePaths = recipeTable.GetValue("IncludePaths").AsList().CopyAsPathVector();
-			}
-
-			// Add the platform include paths
-			includePaths.insert(
-				includePaths.end(),
-				platformIncludePaths.begin(),
-				platformIncludePaths.end());
-
 			// Load the extra library paths provided to the build system
 			auto libraryPaths = std::vector<Path>();
-
-			// Add the platform library paths
-			libraryPaths.insert(
-				libraryPaths.end(),
-				platformLibraryPaths.begin(),
-				platformLibraryPaths.end());
 
 			// Combine the defines with the default set and the platform
 			auto preprocessorDefinitions = std::vector<std::string>();

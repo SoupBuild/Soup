@@ -25,22 +25,36 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 		{
 			auto uut = Compiler(Path("C:/Clang/bin/"));
 
-			CompileArguments arguments = {};
-			arguments.SourceFile = Path("File.cpp");
-			arguments.TargetFile = Path("obj/File.o");
+			SharedCompileArguments arguments = {};
 			arguments.RootDirectory = Path("Source/");
+			arguments.ObjectDirectory = Path("ObjectDir/");
 
-			auto result = uut.CreateCompileOperation(arguments);
+			auto translationUnitArguments = TranslationUnitCompileArguments();
+			translationUnitArguments.SourceFile = Path("File.cpp");
+			translationUnitArguments.TargetFile = Path("obj/File.o");
+			arguments.ImplementationUnits.push_back(translationUnitArguments);
+
+			auto result = uut.CreateCompileOperations(arguments);
 
 			// Verify result
 			auto expected = std::vector<Build::Utilities::BuildOperation>({
 				Build::Utilities::BuildOperation(
+					"WriteFile [./ObjectDir/SharedCompileArguments.txt]",
+					Path("Source/"),
+					Path("./writefile.exe"),
+					"\"./ObjectDir/SharedCompileArguments.txt\" \"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./ObjectDir/SharedCompileArguments.txt"),
+					})),
+				Build::Utilities::BuildOperation(
 					"./File.cpp",
 					Path("Source/"),
 					Path("C:/Clang/bin/clang++.exe"),
-					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c ./File.cpp -o ./obj/File.o",
+					"@./ObjectDir/SharedCompileArguments.txt -c ./File.cpp -o ./obj/File.o",
 					std::vector<Path>({
 						Path("File.cpp"),
+						Path("./ObjectDir/SharedCompileArguments.txt"),
 					}),
 					std::vector<Path>({
 						Path("obj/File.o"),
@@ -58,10 +72,9 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 		{
 			auto uut = Compiler(Path("C:/Clang/bin/"));
 
-			CompileArguments arguments = {};
-			arguments.SourceFile = Path("File.cpp");
-			arguments.TargetFile = Path("obj/File.obj");
+			SharedCompileArguments arguments = {};
 			arguments.RootDirectory = Path("Source/");
+			arguments.ObjectDirectory = Path("ObjectDir/");
 			arguments.IncludeDirectories = std::vector<Path>({
 				Path("Includes"),
 			});
@@ -71,20 +84,35 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			arguments.PreprocessorDefinitions = std::vector<std::string>({
 				"DEBUG"
 			});
-			arguments.ExportModule = true;
 
-			auto result = uut.CreateCompileOperation(arguments);
+			auto compileModuleArguments = InterfaceUnitCompileArguments();
+			compileModuleArguments.SourceFile = Path("File.cpp");
+			compileModuleArguments.TargetFile = Path("obj/File.obj");
+			compileModuleArguments.ModuleInterfaceTarget = Path("obj/File.pcm");
+			arguments.InterfaceUnit = compileModuleArguments;
+
+			auto result = uut.CreateCompileOperations(arguments);
 
 			// Verify result
 			auto expected = std::vector<Build::Utilities::BuildOperation>({
 				Build::Utilities::BuildOperation(
+					"WriteFile [./ObjectDir/SharedCompileArguments.txt]",
+					Path("Source/"),
+					Path("./writefile.exe"),
+					"\"./ObjectDir/SharedCompileArguments.txt\" \"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"./Includes\" -DDEBUG -fmodule-file=\"./Module.pcm\"\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./ObjectDir/SharedCompileArguments.txt"),
+					})),
+				Build::Utilities::BuildOperation(
 					"./File.cpp",
 					Path("Source/"),
 					Path("C:/Clang/bin/clang++.exe"),
-					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -I\"./Includes\" -DDEBUG -fmodule-file=\"./Module.pcm\" --precompile ./File.cpp -o ./obj/File.pcm",
+					"@./ObjectDir/SharedCompileArguments.txt --precompile ./File.cpp -o ./obj/File.pcm",
 					std::vector<Path>({
 						Path("Module.pcm"),
 						Path("File.cpp"),
+						Path("./ObjectDir/SharedCompileArguments.txt"),
 					}),
 					std::vector<Path>({
 						Path("obj/File.pcm"),
@@ -93,9 +121,10 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 					"./obj/File.pcm",
 					Path("Source/"),
 					Path("C:/Clang/bin/clang++.exe"),
-					"-nostdinc -Wno-unknown-attributes -Xclang -flto-visibility-public-std -std=c++11 -c ./obj/File.pcm -o ./obj/File.obj",
+					"@./ObjectDir/SharedCompileArguments.txt -c ./obj/File.pcm -o ./obj/File.obj",
 					std::vector<Path>({
 						Path("obj/File.pcm"),
+						Path("./ObjectDir/SharedCompileArguments.txt"),
 					}),
 					std::vector<Path>({
 						Path("obj/File.obj"),

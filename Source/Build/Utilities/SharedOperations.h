@@ -81,5 +81,40 @@ namespace Soup::Build::Utilities
 				inputFiles,
 				outputFiles);
 		}
+
+		/// <summary>
+		/// Create a build operation that will write the content to a file
+		/// </summary>
+		static BuildOperation CreateWriteFileOperation(
+			const Path& workingDirectory,
+			const Path& destination,
+			std::string_view content)
+		{
+			if (!destination.HasFileName())
+				throw std::runtime_error("Cannot create a file with from a directory.");
+
+			auto titleStream = std::stringstream();
+			titleStream << "WriteFile [" << destination.ToString() << "]";
+
+			// Create the fake write file executable that will be executed in process
+			auto program = Path("writefile.exe");
+			auto inputFiles = std::vector<Path>({});
+			auto outputFiles = std::vector<Path>({
+				destination,
+			});
+
+			// Build the arguments
+			std::stringstream arguments;
+			arguments << "\"" << destination.ToString() << "\" \"";
+			arguments << content << "\"";
+
+			return BuildOperation(
+				titleStream.str(),
+				workingDirectory,
+				program,
+				arguments.str(),
+				std::move(inputFiles),
+				std::move(outputFiles));
+		}
 	};
 }

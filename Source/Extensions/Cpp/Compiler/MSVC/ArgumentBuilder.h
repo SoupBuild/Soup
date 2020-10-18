@@ -45,168 +45,185 @@ namespace Soup::Cpp::Compiler::MSVC
 		static constexpr std::string_view Linker_ArgumentValue_X86 = "X86";
 
 	public:
-		static std::vector<std::string> BuildCompilerArguments(
-			const CompileArguments& args,
-			const Path& toolsPath,
-			std::vector<Path>& inputFiles,
-			std::vector<Path>& outputFiles)
+		static std::vector<std::string> BuildSharedCompilerArguments(
+			const SharedCompileArguments& arguments)
 		{
-			// Verify the input
-			if (args.SourceFile.GetFileName().empty())
-				throw std::runtime_error("Source file cannot be empty.");
-			if (args.TargetFile.GetFileName().empty())
-				throw std::runtime_error("Target file cannot be empty.");
-
 			// Calculate object output file
-			auto commandArgs = std::vector<std::string>();
+			auto commandArguments = std::vector<std::string>();
 
 			// Disable the logo
-			AddFlag(commandArgs, ArgumentFlag_NoLogo);
+			AddFlag(commandArguments, ArgumentFlag_NoLogo);
 
 			// Get better support for _cplusplus macro version
-			AddParameter(commandArgs, "Zc", "__cplusplus");
+			AddParameter(commandArguments, "Zc", "__cplusplus");
 
 			// Generate source debug information
-			if (args.GenerateSourceDebugInfo)
+			if (arguments.GenerateSourceDebugInfo)
 			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_GenerateDebugInformation);
+				AddFlag(commandArguments, Compiler_ArgumentFlag_GenerateDebugInformation);
 			}
 
 			// Set the language standard
-			switch (args.Standard)
+			switch (arguments.Standard)
 			{
 				case LanguageStandard::CPP11:
-					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++11");
+					AddParameter(commandArguments, Compiler_ArgumentParameter_Standard, "c++11");
 					break;
 				case LanguageStandard::CPP14:
-					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++14");
+					AddParameter(commandArguments, Compiler_ArgumentParameter_Standard, "c++14");
 					break;
 				case LanguageStandard::CPP17:
-					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++17");
+					AddParameter(commandArguments, Compiler_ArgumentParameter_Standard, "c++17");
 					break;
 				case LanguageStandard::CPP20:
-					AddParameter(commandArgs, Compiler_ArgumentParameter_Standard, "c++latest");
+					AddParameter(commandArguments, Compiler_ArgumentParameter_Standard, "c++latest");
 					break;
 				default:
 					throw std::runtime_error("Unknown language standard.");
 			}
 
 			// Set the optimization level
-			switch (args.Optimize)
+			switch (arguments.Optimize)
 			{
 				case OptimizationLevel::None:
-					AddFlag(commandArgs, Compiler_ArgumentFlag_Optimization_Disable);
+					AddFlag(commandArguments, Compiler_ArgumentFlag_Optimization_Disable);
 					break;
 				case OptimizationLevel::Speed:
-					AddFlag(commandArgs, Compiler_ArgumentFlag_Optimization_Speed);
+					AddFlag(commandArguments, Compiler_ArgumentFlag_Optimization_Speed);
 					break;
 				case OptimizationLevel::Size:
-					AddFlag(commandArgs, Compiler_ArgumentFlag_Optimization_Size);
+					AddFlag(commandArguments, Compiler_ArgumentFlag_Optimization_Size);
 					break;
 				default:
 					throw std::runtime_error("Unknown optimization level.");
 			}
 
 			// Set the include paths
-			for (auto directory : args.IncludeDirectories)
+			for (auto directory : arguments.IncludeDirectories)
 			{
-				AddFlagValueWithQuotes(commandArgs, Compiler_ArgumentParameter_Include, directory.ToString());
+				AddFlagValueWithQuotes(commandArguments, Compiler_ArgumentParameter_Include, directory.ToString());
 			}
 
 			// Set the preprocessor definitions
-			for (auto& definition : args.PreprocessorDefinitions)
+			for (auto& definition : arguments.PreprocessorDefinitions)
 			{
-				AddFlagValue(commandArgs, Compiler_ArgumentParameter_PreprocessorDefine, definition);
+				AddFlagValue(commandArguments, Compiler_ArgumentParameter_PreprocessorDefine, definition);
 			}
 
 			// Ignore Standard Include Paths to prevent pulling in accidental headers
-			AddFlag(commandArgs, Compiler_ArgumentFlag_IgnoreStandardIncludePaths);
+			AddFlag(commandArguments, Compiler_ArgumentFlag_IgnoreStandardIncludePaths);
 
 			// Enable basic runtime checks
-			AddFlag(commandArgs, Compiler_ArgumentFlag_RuntimeChecks);
+			AddFlag(commandArguments, Compiler_ArgumentFlag_RuntimeChecks);
 
 			// Enable c++ exceptions
-			AddFlag(commandArgs, "EHsc");
+			AddFlag(commandArguments, "EHsc");
 
 			// Enable multithreaded runtime static linked
-			if (args.GenerateSourceDebugInfo)
+			if (arguments.GenerateSourceDebugInfo)
 			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Debug);
+				AddFlag(commandArguments, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Debug);
 			}
 			else
 			{
-				AddFlag(commandArgs, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Release);
+				AddFlag(commandArguments, Compiler_ArgumentFlag_Runtime_MultithreadedStatic_Release);
 			}
 
 			// Add the module references as input
-			for (auto& moduleFile : args.IncludeModules)
+			for (auto& moduleFile : arguments.IncludeModules)
 			{
-				inputFiles.push_back(moduleFile);
-				AddFlag(commandArgs, "reference");
-				AddValueWithQuotes(commandArgs, moduleFile.ToString());
-			}
-
-			if (args.ExportModule)
-			{
-				AddFlag(commandArgs, "interface");
-
-				// Place the ifc in the output directory
-				//var outputFile = "{Path.GetFileNameWithoutExtension(sourceFile)}.{ModuleFileExtension}";
-				//commandArgs.AddRange(new string[] { "-o", outputFile });
-				
-				// Place the module interface file in the output directory
-				auto moduleInterfaceFile = args.TargetFile;
-				moduleInterfaceFile.SetFileExtension("ifc"); // TODO
-				outputFiles.push_back(moduleInterfaceFile);
-				AddFlag(commandArgs, "ifcOutput");
-				AddValueWithQuotes(commandArgs, moduleInterfaceFile.ToString());
+				AddFlag(commandArguments, "reference");
+				AddValueWithQuotes(commandArguments, moduleFile.ToString());
 			}
 
 			// TODO: For now we allow exports to be large
-			AddFlag(commandArgs, "bigobj");
+			AddFlag(commandArguments, "bigobj");
 
 			// Only run preprocessor, compile and assemble
-			AddFlag(commandArgs, Compiler_ArgumentFlag_CompileOnly);
+			AddFlag(commandArguments, Compiler_ArgumentFlag_CompileOnly);
+
+			return commandArguments;
+		}
+
+		static std::vector<std::string> BuildInterfaceUnitCompilerArguments(
+			const InterfaceUnitCompileArguments& arguments,
+			const Path& responseFile)
+		{
+			// Build the arguments for a standard translation unit
+			auto commandArguments = std::vector<std::string>();
+
+			// Add the response file
+			commandArguments.push_back("@" + responseFile.ToString());
 
 			// Add the source file as input
-			inputFiles.push_back(args.SourceFile);
-			commandArgs.push_back(args.SourceFile.ToString());
+			commandArguments.push_back(arguments.SourceFile.ToString());
 
 			// Add the target file as outputs
-			outputFiles.push_back(args.TargetFile);
-			AddFlagValueWithQuotes(commandArgs, Compiler_ArgumentParameter_ObjectFile, args.TargetFile.ToString());
+			AddFlagValueWithQuotes(commandArguments, Compiler_ArgumentParameter_ObjectFile, arguments.TargetFile.ToString());
 
-			return commandArgs;
+			// Add the unique arguments for an interface unit
+			AddFlag(commandArguments, "interface");
+
+			// Specify the module interface file output
+			AddFlag(commandArguments, "ifcOutput");
+			AddValueWithQuotes(commandArguments, arguments.ModuleInterfaceTarget.ToString());
+
+			return commandArguments;
+		}
+
+		static std::vector<std::string> BuildTranslationUnitCompilerArguments(
+			const TranslationUnitCompileArguments& arguments,
+			const Path& responseFile,
+			const std::vector<Path>& internalModules)
+		{
+			// Calculate object output file
+			auto commandArguments = std::vector<std::string>();
+
+			// Add the response file
+			commandArguments.push_back("@" + responseFile.ToString());
+
+			// Add the internal module references as input
+			for (auto& moduleFile : internalModules)
+			{
+				AddFlag(commandArguments, "reference");
+				AddValueWithQuotes(commandArguments, moduleFile.ToString());
+			}
+
+			// Add the source file as input
+			commandArguments.push_back(arguments.SourceFile.ToString());
+
+			// Add the target file as outputs
+			AddFlagValueWithQuotes(commandArguments, Compiler_ArgumentParameter_ObjectFile, arguments.TargetFile.ToString());
+
+			return commandArguments;
 		}
 
 		static std::vector<std::string> BuildLinkerArguments(
-			const LinkArguments& args,
-			std::vector<Path>& inputFiles,
-			std::vector<Path>& outputFiles)
+			const LinkArguments& arguments)
 		{
 			// Verify the input
-			if (args.TargetFile.GetFileName().empty())
+			if (arguments.TargetFile.GetFileName().empty())
 				throw std::runtime_error("Target file cannot be empty.");
 
-			auto commandArgs = std::vector<std::string>();
+			auto commandArguments = std::vector<std::string>();
 
 			// Disable the logo
-			AddFlag(commandArgs, ArgumentFlag_NoLogo);
+			AddFlag(commandArguments, ArgumentFlag_NoLogo);
 
 			// Disable the default libraries, we will set this up
-			// AddFlag(commandArgs, Linker_ArgumentFlag_NoDefaultLibraries);
+			// AddFlag(commandArguments, Linker_ArgumentFlag_NoDefaultLibraries);
 
 			// Enable verbose output
-			// AddFlag(commandArgs, Linker_ArgumentFlag_Verbose);
+			// AddFlag(commandArguments, Linker_ArgumentFlag_Verbose);
 
 			// Generate source debug information
-			if (args.GenerateSourceDebugInfo)
+			if (arguments.GenerateSourceDebugInfo)
 			{
-				AddParameter(commandArgs, "debug", "full");
+				AddParameter(commandArguments, "debug", "full");
 			}
 
 			// Calculate object output file
-			switch (args.TargetType)
+			switch (arguments.TargetType)
 			{
 				case LinkTarget::StaticLibrary:
 				{
@@ -216,30 +233,26 @@ namespace Soup::Cpp::Compiler::MSVC
 				{
 					// TODO: May want to specify the exact value
 					// set the default lib to mutlithreaded
-					// AddParameter(commandArgs, "defaultlib", "libcmt");
-					AddParameter(commandArgs, "subsystem", "console");
+					// AddParameter(commandArguments, "defaultlib", "libcmt");
+					AddParameter(commandArguments, "subsystem", "console");
 
 					// Create a dynamic library
-					AddFlag(commandArgs, Linker_ArgumentFlag_DLL);
+					AddFlag(commandArguments, Linker_ArgumentFlag_DLL);
 
 					// Set the output implementation library
 					AddParameterWithQuotes(
-						commandArgs,
+						commandArguments,
 						Linker_ArgumentParameter_ImplementationLibrary,
-						args.ImplementationFile.ToString());
-
-					// Add the library as an output
-					// TODO: This breaks incremental builds (Link.exe doesn't always touch this)
-					// outputFiles.push_back(implemenationLibraryfile);
+						arguments.ImplementationFile.ToString());
 
 					break;
 				}
 				case LinkTarget::Executable:
 				{
 					// TODO: May want to specify the exact value
-					// set the default lib to mutlithreaded
-					// AddParameter(commandArgs, "defaultlib", "libcmt");
-					AddParameter(commandArgs, "subsystem", "console");
+					// set the default lib to multithreaded
+					// AddParameter(commandArguments, "defaultlib", "libcmt");
+					AddParameter(commandArguments, "subsystem", "console");
 
 					break;
 				}
@@ -250,105 +263,102 @@ namespace Soup::Cpp::Compiler::MSVC
 			}
 
 			// Add the machine target
-			if (args.TargetArchitecture == "x64")
-				AddParameter(commandArgs, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X64);
-			else if (args.TargetArchitecture == "x86")
-				AddParameter(commandArgs, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X86);
+			if (arguments.TargetArchitecture == "x64")
+				AddParameter(commandArguments, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X64);
+			else if (arguments.TargetArchitecture == "x86")
+				AddParameter(commandArguments, Linker_ArgumentParameter_Machine, Linker_ArgumentValue_X86);
 			else
 				throw std::runtime_error("Unknown target architecture.");
 
 			// Set the library paths
-			for (auto directory : args.LibraryPaths)
+			for (auto directory : arguments.LibraryPaths)
 			{
-				AddParameterWithQuotes(commandArgs, Linker_ArgumentParameter_LibraryPath, directory.ToString());
+				AddParameterWithQuotes(commandArguments, Linker_ArgumentParameter_LibraryPath, directory.ToString());
 			}
 
 			// Add the target as an output
-			outputFiles.push_back(args.TargetFile);
-			AddParameterWithQuotes(commandArgs, Linker_ArgumentParameter_Output, args.TargetFile.ToString());
+			AddParameterWithQuotes(commandArguments, Linker_ArgumentParameter_Output, arguments.TargetFile.ToString());
 
 			// Add the library files
-			for (auto& file : args.LibraryFiles)
+			for (auto& file : arguments.LibraryFiles)
 			{
 				// Add the library files as input
-				inputFiles.push_back(file);
-				commandArgs.push_back(file.ToString());
+				commandArguments.push_back(file.ToString());
 			}
 
 			// Add the external libraries as default libraries so they are resolved last
-			for (auto& file : args.ExternalLibraryFiles)
+			for (auto& file : arguments.ExternalLibraryFiles)
 			{
 				// Add the external library files as input
 				// TODO: Explicitly ignore these files from the input for now
-				AddParameter(commandArgs, Linker_ArgumentParameter_DefaultLibrary, file.ToString());
+				AddParameter(commandArguments, Linker_ArgumentParameter_DefaultLibrary, file.ToString());
 			}
 
 			// Add the object files
-			for (auto& file : args.ObjectFiles)
+			for (auto& file : arguments.ObjectFiles)
 			{
 				// Add the object files as input
-				inputFiles.push_back(file);
-				commandArgs.push_back(file.ToString());
+				commandArguments.push_back(file.ToString());
 			}
 
-			return commandArgs;
+			return commandArguments;
 		}
 
 	private:
 		static void AddValueWithQuotes(
-			std::vector<std::string>& args,
+			std::vector<std::string>& arguments,
 			std::string value)
 		{
 			auto builder = std::stringstream();
 			builder << "\"" << value << "\"";
-			args.push_back(builder.str());
+			arguments.push_back(builder.str());
 		}
 
-		static void AddFlag(std::vector<std::string>& args, std::string_view flag)
+		static void AddFlag(std::vector<std::string>& arguments, std::string_view flag)
 		{
 			auto builder = std::stringstream();
 			builder << "/" << flag;
-			args.push_back(builder.str());
+			arguments.push_back(builder.str());
 		}
 
 		static void AddFlagValue(
-			std::vector<std::string>& args,
+			std::vector<std::string>& arguments,
 			std::string_view flag,
 			std::string value)
 		{
 			auto builder = std::stringstream();
 			builder << "/" << flag << value;
-			args.push_back(builder.str());
+			arguments.push_back(builder.str());
 		}
 
 		static void AddFlagValueWithQuotes(
-			std::vector<std::string>& args,
+			std::vector<std::string>& arguments,
 			std::string_view flag,
 			std::string value)
 		{
 			auto builder = std::stringstream();
 			builder << "/" << flag << "\"" << value << "\"";
-			args.push_back(builder.str());
+			arguments.push_back(builder.str());
 		}
 
 		static void AddParameter(
-			std::vector<std::string>& args,
+			std::vector<std::string>& arguments,
 			std::string_view name,
 			std::string_view value)
 		{
 			auto builder = std::stringstream();
 			builder << "/" << name << ":" << value;
-			args.push_back(builder.str());
+			arguments.push_back(builder.str());
 		}
 
 		static void AddParameterWithQuotes(
-			std::vector<std::string>& args,
+			std::vector<std::string>& arguments,
 			std::string_view name,
 			std::string_view value)
 		{
 			auto builder = std::stringstream();
 			builder << "/" << name << ":\"" << value << "\"";
-			args.push_back(builder.str());
+			arguments.push_back(builder.str());
 		}
 	};
 }

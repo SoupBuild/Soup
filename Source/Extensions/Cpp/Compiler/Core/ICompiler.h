@@ -44,14 +44,13 @@ namespace Soup::Cpp::Compiler
 		/// <summary>
 		/// Compile
 		/// </summary>
-		// TODO: Should this state be replaced with a factory to limit access?
-		virtual std::vector<Build::Utilities::BuildOperation> CreateCompileOperation(
-			const CompileArguments& args) const = 0;
+		virtual std::vector<Build::Utilities::BuildOperation> CreateCompileOperations(
+			const SharedCompileArguments& arguments) const = 0;
 
 		/// <summary>
 		/// Link
 		/// </summary>
 		virtual Build::Utilities::BuildOperation CreateLinkOperation(
-			const LinkArguments& args) const = 0;
+			const LinkArguments& arguments) const = 0;
 	};
 }

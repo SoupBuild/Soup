@@ -57,7 +57,7 @@ namespace Soup::Cpp::Compiler::Clang
 		}
 
 		/// <summary>
-		/// Gets the dynmaic library file extension for the compiler
+		/// Gets the dynamic library file extension for the compiler
 		/// TODO: This is platform specific
 		/// </summary>
 		std::string_view GetDynamicLibraryFileExtension() const override final
@@ -68,30 +68,117 @@ namespace Soup::Cpp::Compiler::Clang
 		/// <summary>
 		/// Compile
 		/// </summary>
-		std::vector<Build::Utilities::BuildOperation> CreateCompileOperation(
-			const CompileArguments& args) const override final
+		std::vector<Build::Utilities::BuildOperation> CreateCompileOperations(
+			const SharedCompileArguments& arguments) const override final
 		{
-			// Clang decided to do their module compilation in two stages
-			// Now we have to also generate the object file from the precompiled module
-			if (args.ExportModule)
+			auto operations = std::vector<Build::Utilities::BuildOperation>();
+
+			// Write the shared arguments to the response file
+			auto responseFile = arguments.ObjectDirectory + Path("SharedCompileArguments.txt");
+			auto sharedCommandArguments = ArgumentBuilder::BuildSharedCompilerArguments(arguments);
+			auto writeSharedArgumentsOperation = Build::Utilities::SharedOperations::CreateWriteFileOperation(
+				arguments.RootDirectory,
+				responseFile,
+				CombineArguments(sharedCommandArguments));
+			operations.push_back(std::move(writeSharedArgumentsOperation));
+
+			// Initialize a shared input set
+			auto sharedInputFiles = arguments.IncludeModules;
+
+			// Generate the interface build operation if present
+			auto executablePath = _toolPath + Path(CompilerExecutable);
+			if (arguments.InterfaceUnit.has_value())
 			{
-				return CompileModuleInterfaceUnit(args);
+				auto& interfaceUnitArguments = arguments.InterfaceUnit.value();
+
+				// Precompile the module interface unit
+				auto precompiledModuleInputFiles = sharedInputFiles;
+				precompiledModuleInputFiles.push_back(interfaceUnitArguments.SourceFile);
+				precompiledModuleInputFiles.push_back(responseFile);
+				auto precompiledModuleOutputFiles = std::vector<Path>({
+					interfaceUnitArguments.ModuleInterfaceTarget,
+				});
+				auto precompiledModuleCommandArguments =
+					ArgumentBuilder::BuildInterfaceUnitCompilerArguments(
+						interfaceUnitArguments,
+						responseFile);
+
+				// Generate the operation
+				auto precompiledModuleOperation = Build::Utilities::BuildOperation(
+					interfaceUnitArguments.SourceFile.ToString(),
+					arguments.RootDirectory,
+					executablePath,
+					CombineArguments(precompiledModuleCommandArguments),
+					std::move(precompiledModuleInputFiles),
+					std::move(precompiledModuleOutputFiles));
+				operations.push_back(std::move(precompiledModuleOperation));
+
+				// Compile the precompiled module
+				auto compilePrecompiledArguments = TranslationUnitCompileArguments();
+				compilePrecompiledArguments.SourceFile = interfaceUnitArguments.ModuleInterfaceTarget;
+				compilePrecompiledArguments.TargetFile = interfaceUnitArguments.TargetFile;
+
+				auto compilePrecompiledInputFiles = std::vector<Path>({
+					interfaceUnitArguments.ModuleInterfaceTarget,
+					responseFile,
+				});
+				auto compilePrecompiledOutputFiles = std::vector<Path>({
+					interfaceUnitArguments.TargetFile,
+				});
+				auto compilePrecompiledCommandArguments =
+					ArgumentBuilder::BuildTranslationUnitCompilerArguments(
+						compilePrecompiledArguments,
+						responseFile);
+
+				// Generate the operation
+				auto compilePrecompiledOperation = Build::Utilities::BuildOperation(
+					interfaceUnitArguments.ModuleInterfaceTarget.ToString(),
+					arguments.RootDirectory,
+					executablePath,
+					CombineArguments(compilePrecompiledCommandArguments),
+					std::move(compilePrecompiledInputFiles),
+					std::move(compilePrecompiledOutputFiles));
+				operations.push_back(std::move(compilePrecompiledOperation));
 			}
-			else
+
+			for (auto& implementationUnitArguments : arguments.ImplementationUnits)
 			{
-				return CompileStandard(args);
+				// Build up the input/output sets
+				auto inputFiles = sharedInputFiles;
+				inputFiles.push_back(implementationUnitArguments.SourceFile);
+				inputFiles.push_back(responseFile);
+				auto outputFiles = std::vector<Path>({
+					implementationUnitArguments.TargetFile,
+				});
+
+				// Build the unique arguments for this translation unit
+				auto commandArguments = ArgumentBuilder::BuildTranslationUnitCompilerArguments(
+					implementationUnitArguments,
+					responseFile);
+
+				// Generate the operation
+				auto buildOperation = Build::Utilities::BuildOperation(
+					implementationUnitArguments.SourceFile.ToString(),
+					arguments.RootDirectory,
+					executablePath,
+					CombineArguments(commandArguments),
+					std::move(inputFiles),
+					std::move(outputFiles));
+				operations.push_back(std::move(buildOperation));
 			}
+
+			return operations;
 		}
 
 		/// <summary>
 		/// Link
 		/// </summary>
 		Build::Utilities::BuildOperation CreateLinkOperation(
-			const LinkArguments& args) const override final
+			const LinkArguments& arguments) const override final
 		{
 			// Select the correct executable for linking libraries or executables
 			Path executablePath;
-			switch (args.TargetType)
+			switch (arguments.TargetType)
 			{
 				case LinkTarget::StaticLibrary:
 					executablePath = _toolPath + Path(ArchiverExecutable);
@@ -104,120 +191,34 @@ namespace Soup::Cpp::Compiler::Clang
 					throw std::runtime_error("Unknown LinkTarget.");
 			}
 
-			// Build the set of input/output files along with the arguments
+			// Build the set of input/output sets
 			auto inputFiles = std::vector<Path>();
-			auto outputFiles = std::vector<Path>();
-			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
+			inputFiles.insert(inputFiles.end(), arguments.LibraryFiles.begin(), arguments.LibraryFiles.end());
+			inputFiles.insert(inputFiles.end(), arguments.ObjectFiles.begin(), arguments.ObjectFiles.end());
+			auto outputFiles = std::vector<Path>({
+				arguments.TargetFile,
+			});
+
+			// Generate the link arguments
+			auto commandArguments = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto buildOperation = Build::Utilities::BuildOperation(
-				args.TargetFile.ToString(),
-				args.RootDirectory,
+				arguments.TargetFile.ToString(),
+				arguments.RootDirectory,
 				executablePath,
-				CombineArguments(commandArgs),
-				inputFiles,
-				outputFiles);
+				CombineArguments(commandArguments),
+				std::move(inputFiles),
+				std::move(outputFiles));
 
 			return buildOperation;
 		}
 
 	private:
-		std::vector<Build::Utilities::BuildOperation> CompileStandard(
-			const CompileArguments& args) const
-		{
-			auto executablePath = _toolPath + Path(CompilerExecutable);
-			
-			// Build the set of input/output files along with the arguments
-			auto inputFiles = std::vector<Path>();
-			auto outputFiles = std::vector<Path>();
-			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args, inputFiles, outputFiles);
-
-			auto buildOperation = Build::Utilities::BuildOperation(
-				args.SourceFile.ToString(),
-				args.RootDirectory,
-				executablePath,
-				CombineArguments(commandArgs),
-				inputFiles,
-				outputFiles);
-
-			return {
-				std::move(buildOperation),
-			};
-		}
-
-		std::vector<Build::Utilities::BuildOperation> CompileModuleInterfaceUnit(
-			const CompileArguments& args) const
-		{
-			auto executablePath = _toolPath + Path(CompilerExecutable);
-
-			// Replace the final object target with the intermediate precompiled module
-			auto generatePrecompiledModuleArgs = CompileArguments();
-			generatePrecompiledModuleArgs.Standard = args.Standard;
-			generatePrecompiledModuleArgs.Optimize = args.Optimize;
-			generatePrecompiledModuleArgs.RootDirectory = args.RootDirectory;
-			generatePrecompiledModuleArgs.IncludeDirectories = args.IncludeDirectories;
-			generatePrecompiledModuleArgs.IncludeModules = args.IncludeModules;
-			generatePrecompiledModuleArgs.ExportModule = true;
-			generatePrecompiledModuleArgs.PreprocessorDefinitions = args.PreprocessorDefinitions;
-			generatePrecompiledModuleArgs.GenerateSourceDebugInfo = args.GenerateSourceDebugInfo;
-
-			// Use the target file as input to the build and generate an object with the same name
-			generatePrecompiledModuleArgs.SourceFile = args.SourceFile;
-			generatePrecompiledModuleArgs.TargetFile = args.TargetFile;
-			generatePrecompiledModuleArgs.TargetFile.SetFileExtension(GetModuleFileExtension());
-
-			// Build the set of input/output files along with the arguments
-			auto generatePrecompiledModuleInputFiles = std::vector<Path>();
-			auto generatePrecompiledModuleOutputFiles = std::vector<Path>();
-			auto generatePrecompiledModuleCommandArgs = 
-				ArgumentBuilder::BuildCompilerArguments(
-					generatePrecompiledModuleArgs,
-					generatePrecompiledModuleInputFiles,
-					generatePrecompiledModuleOutputFiles);
-
-			auto precompiledModuleBuildOperation = Build::Utilities::BuildOperation(
-				generatePrecompiledModuleArgs.SourceFile.ToString(),
-				args.RootDirectory,
-				executablePath,
-				CombineArguments(generatePrecompiledModuleCommandArgs),
-				generatePrecompiledModuleInputFiles,
-				generatePrecompiledModuleOutputFiles);
-
-			// Now we can compile the object file from the precompiled module
-			auto compileObjectArgs = CompileArguments();
-			compileObjectArgs.Standard = args.Standard;
-			compileObjectArgs.Optimize = args.Optimize;
-			compileObjectArgs.RootDirectory = args.RootDirectory;
-			compileObjectArgs.SourceFile = generatePrecompiledModuleArgs.TargetFile;
-			compileObjectArgs.TargetFile = args.TargetFile;
-
-			// Build the set of input/output files along with the arguments
-			auto compileObjectInputFiles = std::vector<Path>();
-			auto compileObjectOutputFiles = std::vector<Path>();
-			auto compileObjectCommandArgs = 
-				ArgumentBuilder::BuildCompilerArguments(
-					compileObjectArgs,
-					compileObjectInputFiles,
-					compileObjectOutputFiles);
-
-			auto compileBuildOperation = Build::Utilities::BuildOperation(
-				compileObjectArgs.SourceFile.ToString(),
-				args.RootDirectory,
-				executablePath,
-				CombineArguments(compileObjectCommandArgs),
-				compileObjectInputFiles,
-				compileObjectOutputFiles);
-
-			return {
-				std::move(precompiledModuleBuildOperation),
-				std::move(compileBuildOperation),
-			};
-		}
-
-		static std::string CombineArguments(const std::vector<std::string>& args)
+		static std::string CombineArguments(const std::vector<std::string>& arguments)
 		{
 			auto argumentString = std::stringstream();
 			bool isFirst = true;
-			for (auto& arg : args)
+			for (auto& arg : arguments)
 			{
 				if (!isFirst)
 					argumentString << " ";

@@ -42,7 +42,6 @@ namespace Soup::CSharp::UnitTests
 			state.CreateValue("PackageRoot").SetValueString("C:/PackageRoot/");
 			state.CreateValue("BuildFlavor").SetValueString("debug");
 			state.CreateValue("PlatformLibraries").SetValueStringList(std::vector<std::string>());
-			state.CreateValue("PlatformIncludePaths").SetValueStringList(std::vector<std::string>());
 			state.CreateValue("PlatformLibraryPaths").SetValueStringList(std::vector<std::string>());
 			state.CreateValue("PlatformPreprocessorDefinitions").SetValueStringList(std::vector<std::string>());
 

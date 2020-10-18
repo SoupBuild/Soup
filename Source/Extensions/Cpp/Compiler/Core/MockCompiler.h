@@ -25,7 +25,7 @@ namespace Soup::Cpp::Compiler::Mock
 		/// <summary>
 		/// Get the compile requests
 		/// </summary>
-		const std::vector<CompileArguments>& GetCompileRequests() const
+		const std::vector<SharedCompileArguments>& GetCompileRequests() const
 		{
 			return _compileRequests;
 		}
@@ -83,32 +83,54 @@ namespace Soup::Cpp::Compiler::Mock
 		/// <summary>
 		/// Compile
 		/// </summary>
-		std::vector<Build::Utilities::BuildOperation> CreateCompileOperation(
-			const CompileArguments& args) const override final
+		std::vector<Build::Utilities::BuildOperation> CreateCompileOperations(
+			const SharedCompileArguments& arguments) const override final
 		{
-			_compileRequests.push_back(args);
-			return {
-				Build::Utilities::BuildOperation(
-					"MockCompile: " + std::to_string(_compileRequests.size()),
-					Path("MockWorkingDirectory"),
-					Path("MockCompiler.exe"),
-					"Arguments",
-					std::vector<Path>({
-						Path("InputFile.in"),
-					}),
-					std::vector<Path>({
-						Path("OutputFile.out"),
-					})),
-			};
+			_compileRequests.push_back(arguments);
+
+			auto result = std::vector<Build::Utilities::BuildOperation>();
+			if (arguments.InterfaceUnit.has_value())
+			{
+				result.push_back(
+					Build::Utilities::BuildOperation(
+						"MockCompileModule: " + std::to_string(_compileRequests.size()),
+						Path("MockWorkingDirectory"),
+						Path("MockCompiler.exe"),
+						"Arguments",
+						std::vector<Path>({
+							Path("InputFile.in"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.out"),
+						})));
+			}
+
+			for (auto& file : arguments.ImplementationUnits)
+			{
+				result.push_back(
+					Build::Utilities::BuildOperation(
+						"MockCompile: " + std::to_string(_compileRequests.size()),
+						Path("MockWorkingDirectory"),
+						Path("MockCompiler.exe"),
+						"Arguments",
+						std::vector<Path>({
+							Path("InputFile.in"),
+						}),
+						std::vector<Path>({
+							Path("OutputFile.out"),
+						})));
+			}
+
+			return result;
 		}
 
 		/// <summary>
 		/// Link
 		/// </summary>
 		Build::Utilities::BuildOperation CreateLinkOperation(
-			const LinkArguments& args) const override final
+			const LinkArguments& arguments) const override final
 		{
-			_linkRequests.push_back(args);
+			_linkRequests.push_back(arguments);
 			return Build::Utilities::BuildOperation(
 				"MockLink: " + std::to_string(_linkRequests.size()),
 				Path("MockWorkingDirectory"),
@@ -123,7 +145,7 @@ namespace Soup::Cpp::Compiler::Mock
 		}
 
 	private:
-		mutable std::vector<CompileArguments> _compileRequests;
+		mutable std::vector<SharedCompileArguments> _compileRequests;
 		mutable std::vector<LinkArguments> _linkRequests;
 	};
 }

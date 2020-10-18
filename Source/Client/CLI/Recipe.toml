@@ -1,6 +1,6 @@
 Name = "Soup"
 Language = "C++"
-Version = "0.9.2"
+Version = "0.9.5"
 Type = "Executable"
 
 # Ensure the core build extensions are runtime dependencies
@@ -29,7 +29,7 @@ PlatformLibraries = [
 ]
 
 DevDependencies = [
-	# ToDO: "../../Extensions/TestBuild/",
+	# TODO: "../../Extensions/TestBuild/",
 	"Soup.Test.Assert@0.1.7",
 ]
 

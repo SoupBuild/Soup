@@ -55,7 +55,7 @@ namespace Soup::Cpp::Compiler::MSVC
 		}
 
 		/// <summary>
-		/// Gets the dynmaic library file extension for the compiler
+		/// Gets the dynamic library file extension for the compiler
 		/// TODO: This is platform specific
 		/// </summary>
 		std::string_view GetDynamicLibraryFileExtension() const override final
@@ -66,30 +66,97 @@ namespace Soup::Cpp::Compiler::MSVC
 		/// <summary>
 		/// Compile
 		/// </summary>
-		std::vector<Build::Utilities::BuildOperation> CreateCompileOperation(
-			const CompileArguments& args) const override final
+		std::vector<Build::Utilities::BuildOperation> CreateCompileOperations(
+			const SharedCompileArguments& arguments) const override final
 		{
-			// Clang decided to do their module compilation in two stages
-			// Now we have to also generate the object file from the precompiled module
-			if (args.ExportModule)
+			auto operations = std::vector<Build::Utilities::BuildOperation>();
+
+			// Write the shared arguments to the response file
+			auto responseFile = arguments.ObjectDirectory + Path("SharedCompileArguments.txt");
+			auto sharedCommandArguments = ArgumentBuilder::BuildSharedCompilerArguments(arguments);
+			auto writeSharedArgumentsOperation = Build::Utilities::SharedOperations::CreateWriteFileOperation(
+				arguments.RootDirectory,
+				responseFile,
+				CombineArguments(sharedCommandArguments));
+			operations.push_back(std::move(writeSharedArgumentsOperation));
+
+			// Initialize a shared input set
+			auto sharedInputFiles = arguments.IncludeModules;
+
+			// Generate the interface build operation if present
+			auto executablePath = _toolsPath + _compilerExecutable;
+			auto internalModules = std::vector<Path>();
+			if (arguments.InterfaceUnit.has_value())
 			{
-				return CompileModuleInterfaceUnit(args);
+				auto& interfaceUnitArguments = arguments.InterfaceUnit.value();
+
+				// Build up the input/output sets
+				auto inputFiles = sharedInputFiles;
+				inputFiles.push_back(interfaceUnitArguments.SourceFile);
+				inputFiles.push_back(responseFile);
+				auto outputFiles = std::vector<Path>({
+					interfaceUnitArguments.TargetFile,
+					interfaceUnitArguments.ModuleInterfaceTarget,
+				});
+
+				// Build the unique arguments for this translation unit
+				auto commandArguments = ArgumentBuilder::BuildInterfaceUnitCompilerArguments(
+					interfaceUnitArguments,
+					responseFile);
+
+				// Generate the operation
+				auto buildOperation = Build::Utilities::BuildOperation(
+					interfaceUnitArguments.SourceFile.ToString(),
+					arguments.RootDirectory,
+					executablePath,
+					CombineArguments(commandArguments),
+					std::move(inputFiles),
+					std::move(outputFiles));
+				operations.push_back(std::move(buildOperation));
+
+				// Add our module interface back in for the downstream compilers
+				internalModules.push_back(interfaceUnitArguments.ModuleInterfaceTarget);
 			}
-			else
+
+			for (auto& implementationUnitArguments : arguments.ImplementationUnits)
 			{
-				return CompileStandard(args);
+				// Build up the input/output sets
+				auto inputFiles = sharedInputFiles;
+				inputFiles.push_back(implementationUnitArguments.SourceFile);
+				inputFiles.push_back(responseFile);
+				auto outputFiles = std::vector<Path>({
+					implementationUnitArguments.TargetFile,
+				});
+
+				// Build the unique arguments for this translation unit
+				auto commandArguments = ArgumentBuilder::BuildTranslationUnitCompilerArguments(
+					implementationUnitArguments,
+					responseFile,
+					internalModules);
+
+				// Generate the operation
+				auto buildOperation = Build::Utilities::BuildOperation(
+					implementationUnitArguments.SourceFile.ToString(),
+					arguments.RootDirectory,
+					executablePath,
+					CombineArguments(commandArguments),
+					std::move(inputFiles),
+					std::move(outputFiles));
+				operations.push_back(std::move(buildOperation));
 			}
+
+			return operations;
 		}
 
 		/// <summary>
 		/// Link
 		/// </summary>
 		Build::Utilities::BuildOperation CreateLinkOperation(
-			const LinkArguments& args) const override final
+			const LinkArguments& arguments) const override final
 		{
 			// Select the correct executable for linking libraries or executables
 			Path executablePath;
-			switch (args.TargetType)
+			switch (arguments.TargetType)
 			{
 				case LinkTarget::StaticLibrary:
 					executablePath = _toolsPath + _libraryExecutable;
@@ -104,14 +171,18 @@ namespace Soup::Cpp::Compiler::MSVC
 
 			// Build the set of input/output files along with the arguments
 			auto inputFiles = std::vector<Path>();
-			auto outputFiles = std::vector<Path>();
-			auto commandArgs = ArgumentBuilder::BuildLinkerArguments(args, inputFiles, outputFiles);
+			inputFiles.insert(inputFiles.end(), arguments.LibraryFiles.begin(), arguments.LibraryFiles.end());
+			inputFiles.insert(inputFiles.end(), arguments.ObjectFiles.begin(), arguments.ObjectFiles.end());
+			auto outputFiles = std::vector<Path>({
+				arguments.TargetFile,
+			});
+			auto commandarguments = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto buildOperation = Build::Utilities::BuildOperation(
-				args.TargetFile.ToString(),
-				args.RootDirectory,
+				arguments.TargetFile.ToString(),
+				arguments.RootDirectory,
 				executablePath,
-				CombineArguments(commandArgs),
+				CombineArguments(commandarguments),
 				inputFiles,
 				outputFiles);
 
@@ -119,80 +190,11 @@ namespace Soup::Cpp::Compiler::MSVC
 		}
 
 	private:
-		std::vector<Build::Utilities::BuildOperation> CompileStandard(
-			const CompileArguments& args) const
-		{
-			auto executablePath = _toolsPath + _compilerExecutable;
-
-			// Build the set of input/output files along with the arguments
-			auto inputFiles = std::vector<Path>();
-			auto outputFiles = std::vector<Path>();
-			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(
-				args,
-				_toolsPath,
-				inputFiles,
-				outputFiles);
-
-			auto buildOperation = Build::Utilities::BuildOperation(
-				args.SourceFile.ToString(),
-				args.RootDirectory,
-				executablePath,
-				CombineArguments(commandArgs),
-				inputFiles,
-				outputFiles);
-
-			return {
-				std::move(buildOperation),
-			};
-		}
-
-		std::vector<Build::Utilities::BuildOperation> CompileModuleInterfaceUnit(
-			const CompileArguments& args) const
-		{
-			auto executablePath = _toolsPath + _compilerExecutable;
-
-			// Replace the final object target with the intermediate precompiled module
-			auto compiledModuleArgs = CompileArguments();
-			compiledModuleArgs.Standard = args.Standard;
-			compiledModuleArgs.Optimize = args.Optimize;
-			compiledModuleArgs.RootDirectory = args.RootDirectory;
-			compiledModuleArgs.IncludeDirectories = args.IncludeDirectories;
-			compiledModuleArgs.IncludeModules = args.IncludeModules;
-			compiledModuleArgs.ExportModule = true;
-			compiledModuleArgs.PreprocessorDefinitions = args.PreprocessorDefinitions;
-			compiledModuleArgs.GenerateSourceDebugInfo = args.GenerateSourceDebugInfo;
-
-			// Use the target file as input to the build and generate an object with the same name
-			compiledModuleArgs.SourceFile = args.SourceFile;
-			compiledModuleArgs.TargetFile = args.TargetFile;
-
-			// Build the set of input/output files along with the arguments
-			auto inputFiles = std::vector<Path>();
-			auto outputFiles = std::vector<Path>();
-			auto compiledModuleCommandArgs = ArgumentBuilder::BuildCompilerArguments(
-				compiledModuleArgs,
-				_toolsPath,
-				inputFiles,
-				outputFiles);
-
-			auto buildOperation = Build::Utilities::BuildOperation(
-				args.SourceFile.ToString(),
-				args.RootDirectory,
-				executablePath,
-				CombineArguments(compiledModuleCommandArgs),
-				inputFiles,
-				outputFiles);
-
-			return {
-				std::move(buildOperation),
-			};
-		}
-
-		static std::string CombineArguments(const std::vector<std::string>& args)
+		static std::string CombineArguments(const std::vector<std::string>& arguments)
 		{
 			auto argumentString = std::stringstream();
 			bool isFirst = true;
-			for (auto& arg : args)
+			for (auto& arg : arguments)
 			{
 				if (!isFirst)
 					argumentString << " ";

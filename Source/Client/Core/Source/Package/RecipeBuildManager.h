@@ -413,7 +413,22 @@ namespace Soup::Build
 				auto buildExtensionLibraries = std::vector<Path>();
 
 				// Run the RecipeBuild extension to inject core build tasks
-				auto recipeBuildExtensionPath = Path("Soup.Cpp.dll");
+				auto recipeBuildExtensionPath = Path();
+				auto language = recipe.GetLanguage();
+				if (language == "C++")
+				{
+					recipeBuildExtensionPath = Path("Soup.Cpp.dll");
+				}
+				else if (language == "C#")
+				{
+					recipeBuildExtensionPath = Path("Soup.CSharp.dll");
+				}
+				else
+				{
+					throw std::runtime_error("Unknown language.");
+				}
+
+				
 				buildExtensionLibraries.push_back(std::move(recipeBuildExtensionPath));
 
 				if (recipe.HasDevDependencies())
