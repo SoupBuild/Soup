@@ -33,22 +33,36 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 				Path("mock.link.exe"),
 				Path("mock.lib.exe"));
 
-			CompileArguments arguments = {};
-			arguments.SourceFile = Path("File.cpp");
-			arguments.TargetFile = Path("obj/File.obj");
+			SharedCompileArguments arguments = {};
 			arguments.RootDirectory = Path("Source/");
+			arguments.ObjectDirectory = Path("ObjectDir/");
 
-			auto result = uut.CreateCompileOperation(arguments);
+			auto translationUnitArguments = TranslationUnitCompileArguments();
+			translationUnitArguments.SourceFile = Path("File.cpp");
+			translationUnitArguments.TargetFile = Path("obj/File.obj");
+			arguments.ImplementationUnits.push_back(translationUnitArguments);
+
+			auto result = uut.CreateCompileOperations(arguments);
 
 			// Verify result
 			auto expected = std::vector<Build::Utilities::BuildOperation>({
 				Build::Utilities::BuildOperation(
+					"WriteFile [./ObjectDir/SharedCompileArguments.txt]",
+					Path("Source/"),
+					Path("./writefile.exe"),
+					"\"./ObjectDir/SharedCompileArguments.txt\" \"/nologo /Zc:__cplusplus /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./ObjectDir/SharedCompileArguments.txt"),
+					})),
+				Build::Utilities::BuildOperation(
 					"./File.cpp",
 					Path("Source/"),
 					Path("bin/mock.cl.exe"),
-					"/nologo /Zc:__cplusplus /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c ./File.cpp /Fo\"./obj/File.obj\"",
+					"@./ObjectDir/SharedCompileArguments.txt ./File.cpp /Fo\"./obj/File.obj\"",
 					std::vector<Path>({
 						Path("File.cpp"),
+						Path("./ObjectDir/SharedCompileArguments.txt"),
 					}),
 					std::vector<Path>({
 						Path("obj/File.obj"),
@@ -70,10 +84,9 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 				Path("mock.link.exe"),
 				Path("mock.lib.exe"));
 
-			CompileArguments arguments = {};
-			arguments.SourceFile = Path("File.cpp");
-			arguments.TargetFile = Path("obj/File.obj");
+			SharedCompileArguments arguments = {};
 			arguments.RootDirectory = Path("Source/");
+			arguments.ObjectDirectory = Path("ObjectDir/");
 			arguments.IncludeDirectories = std::vector<Path>({
 				Path("Includes"),
 			});
@@ -83,24 +96,39 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			arguments.PreprocessorDefinitions = std::vector<std::string>({
 				"DEBUG"
 			});
-			arguments.ExportModule = true;
 
-			auto result = uut.CreateCompileOperation(arguments);
+			auto compileModuleArguments = InterfaceUnitCompileArguments();
+			compileModuleArguments.SourceFile = Path("File.cpp");
+			compileModuleArguments.TargetFile = Path("obj/File.obj");
+			compileModuleArguments.ModuleInterfaceTarget = Path("obj/File.pcm");
+			arguments.InterfaceUnit = compileModuleArguments;
+
+			auto result = uut.CreateCompileOperations(arguments);
 
 			// Verify result
 			auto expected = std::vector<Build::Utilities::BuildOperation>({
 				Build::Utilities::BuildOperation(
+					"WriteFile [./ObjectDir/SharedCompileArguments.txt]",
+					Path("Source/"),
+					Path("./writefile.exe"),
+					"\"./ObjectDir/SharedCompileArguments.txt\" \"/nologo /Zc:__cplusplus /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /bigobj /c\"",
+					std::vector<Path>({}),
+					std::vector<Path>({
+						Path("./ObjectDir/SharedCompileArguments.txt"),
+					})),
+				Build::Utilities::BuildOperation(
 					"./File.cpp",
 					Path("Source/"),
 					Path("bin/mock.cl.exe"),
-					"/nologo /Zc:__cplusplus /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /interface /ifcOutput \"./obj/File.ifc\" /bigobj /c ./File.cpp /Fo\"./obj/File.obj\"",
+					"@./ObjectDir/SharedCompileArguments.txt ./File.cpp /Fo\"./obj/File.obj\" /interface /ifcOutput \"./obj/File.pcm\"",
 					std::vector<Path>({
 						Path("Module.pcm"),
 						Path("File.cpp"),
+						Path("./ObjectDir/SharedCompileArguments.txt"),
 					}),
 					std::vector<Path>({
-						Path("obj/File.ifc"),
 						Path("obj/File.obj"),
+						Path("obj/File.pcm"),
 					})),
 				});
 

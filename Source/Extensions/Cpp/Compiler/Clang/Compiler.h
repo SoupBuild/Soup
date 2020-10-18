@@ -74,13 +74,16 @@ namespace Soup::Cpp::Compiler::Clang
 			auto operations = std::vector<Build::Utilities::BuildOperation>();
 
 			// Write the shared arguments to the response file
-			auto reponseFile = arguments.RootDirectory + Path("SharedCompileArguments.txt");
+			auto responseFile = arguments.ObjectDirectory + Path("SharedCompileArguments.txt");
 			auto sharedCommandArguments = ArgumentBuilder::BuildSharedCompilerArguments(arguments);
 			auto writeSharedArgumentsOperation = Build::Utilities::SharedOperations::CreateWriteFileOperation(
 				arguments.RootDirectory,
-				reponseFile,
+				responseFile,
 				CombineArguments(sharedCommandArguments));
 			operations.push_back(std::move(writeSharedArgumentsOperation));
+
+			// Initialize a shared input set
+			auto sharedInputFiles = arguments.IncludeModules;
 
 			// Generate the interface build operation if present
 			auto executablePath = _toolPath + Path(CompilerExecutable);
@@ -89,10 +92,16 @@ namespace Soup::Cpp::Compiler::Clang
 				auto& interfaceUnitArguments = arguments.InterfaceUnit.value();
 
 				// Precompile the module interface unit
-				auto precompiledModuleInputFiles = std::vector<Path>();
-				auto precompiledModuleOutputFiles = std::vector<Path>();
+				auto precompiledModuleInputFiles = sharedInputFiles;
+				precompiledModuleInputFiles.push_back(interfaceUnitArguments.SourceFile);
+				precompiledModuleInputFiles.push_back(responseFile);
+				auto precompiledModuleOutputFiles = std::vector<Path>({
+					interfaceUnitArguments.ModuleInterfaceTarget,
+				});
 				auto precompiledModuleCommandArguments =
-					ArgumentBuilder::BuildInterfaceUnitCompilerArguments(interfaceUnitArguments);
+					ArgumentBuilder::BuildInterfaceUnitCompilerArguments(
+						interfaceUnitArguments,
+						responseFile);
 
 				// Generate the operation
 				auto precompiledModuleOperation = Build::Utilities::BuildOperation(
@@ -108,15 +117,22 @@ namespace Soup::Cpp::Compiler::Clang
 				auto compilePrecompiledArguments = TranslationUnitCompileArguments();
 				compilePrecompiledArguments.SourceFile = interfaceUnitArguments.ModuleInterfaceTarget;
 				compilePrecompiledArguments.TargetFile = interfaceUnitArguments.TargetFile;
-				
-				auto compilePrecompiledInputFiles = std::vector<Path>();
-				auto compilePrecompiledOutputFiles = std::vector<Path>();
+
+				auto compilePrecompiledInputFiles = std::vector<Path>({
+					interfaceUnitArguments.ModuleInterfaceTarget,
+					responseFile,
+				});
+				auto compilePrecompiledOutputFiles = std::vector<Path>({
+					interfaceUnitArguments.TargetFile,
+				});
 				auto compilePrecompiledCommandArguments =
-					ArgumentBuilder::BuildTranslationUnitCompilerArguments(compilePrecompiledArguments);
+					ArgumentBuilder::BuildTranslationUnitCompilerArguments(
+						compilePrecompiledArguments,
+						responseFile);
 
 				// Generate the operation
 				auto compilePrecompiledOperation = Build::Utilities::BuildOperation(
-					interfaceUnitArguments.SourceFile.ToString(),
+					interfaceUnitArguments.ModuleInterfaceTarget.ToString(),
 					arguments.RootDirectory,
 					executablePath,
 					CombineArguments(compilePrecompiledCommandArguments),
@@ -128,11 +144,17 @@ namespace Soup::Cpp::Compiler::Clang
 			for (auto& implementationUnitArguments : arguments.ImplementationUnits)
 			{
 				// Build up the input/output sets
-				auto inputFiles = std::vector<Path>();
-				auto outputFiles = std::vector<Path>();
+				auto inputFiles = sharedInputFiles;
+				inputFiles.push_back(implementationUnitArguments.SourceFile);
+				inputFiles.push_back(responseFile);
+				auto outputFiles = std::vector<Path>({
+					implementationUnitArguments.TargetFile,
+				});
 
 				// Build the unique arguments for this translation unit
-				auto commandArguments = ArgumentBuilder::BuildTranslationUnitCompilerArguments(implementationUnitArguments);
+				auto commandArguments = ArgumentBuilder::BuildTranslationUnitCompilerArguments(
+					implementationUnitArguments,
+					responseFile);
 
 				// Generate the operation
 				auto buildOperation = Build::Utilities::BuildOperation(
@@ -169,9 +191,15 @@ namespace Soup::Cpp::Compiler::Clang
 					throw std::runtime_error("Unknown LinkTarget.");
 			}
 
-			// Build the set of input/output files along with the arguments
+			// Build the set of input/output sets
 			auto inputFiles = std::vector<Path>();
-			auto outputFiles = std::vector<Path>();
+			inputFiles.insert(inputFiles.end(), arguments.LibraryFiles.begin(), arguments.LibraryFiles.end());
+			inputFiles.insert(inputFiles.end(), arguments.ObjectFiles.begin(), arguments.ObjectFiles.end());
+			auto outputFiles = std::vector<Path>({
+				arguments.TargetFile,
+			});
+
+			// Generate the link arguments
 			auto commandArguments = ArgumentBuilder::BuildLinkerArguments(arguments);
 
 			auto buildOperation = Build::Utilities::BuildOperation(
@@ -179,8 +207,8 @@ namespace Soup::Cpp::Compiler::Clang
 				arguments.RootDirectory,
 				executablePath,
 				CombineArguments(commandArguments),
-				inputFiles,
-				outputFiles);
+				std::move(inputFiles),
+				std::move(outputFiles));
 
 			return buildOperation;
 		}

@@ -80,6 +80,9 @@ namespace Soup::Cpp::Compiler::MSVC
 				CombineArguments(sharedCommandArguments));
 			operations.push_back(std::move(writeSharedArgumentsOperation));
 
+			// Initialize a shared input set
+			auto sharedInputFiles = arguments.IncludeModules;
+
 			// Generate the interface build operation if present
 			auto executablePath = _toolsPath + _compilerExecutable;
 			auto internalModules = std::vector<Path>();
@@ -88,10 +91,9 @@ namespace Soup::Cpp::Compiler::MSVC
 				auto& interfaceUnitArguments = arguments.InterfaceUnit.value();
 
 				// Build up the input/output sets
-				auto inputFiles = std::vector<Path>({
-					interfaceUnitArguments.SourceFile,
-					responseFile,
-				});
+				auto inputFiles = sharedInputFiles;
+				inputFiles.push_back(interfaceUnitArguments.SourceFile);
+				inputFiles.push_back(responseFile);
 				auto outputFiles = std::vector<Path>({
 					interfaceUnitArguments.TargetFile,
 					interfaceUnitArguments.ModuleInterfaceTarget,
@@ -119,10 +121,9 @@ namespace Soup::Cpp::Compiler::MSVC
 			for (auto& implementationUnitArguments : arguments.ImplementationUnits)
 			{
 				// Build up the input/output sets
-				auto inputFiles = std::vector<Path>({
-					implementationUnitArguments.SourceFile,
-					responseFile,
-				});
+				auto inputFiles = sharedInputFiles;
+				inputFiles.push_back(implementationUnitArguments.SourceFile);
+				inputFiles.push_back(responseFile);
 				auto outputFiles = std::vector<Path>({
 					implementationUnitArguments.TargetFile,
 				});
@@ -169,7 +170,9 @@ namespace Soup::Cpp::Compiler::MSVC
 			}
 
 			// Build the set of input/output files along with the arguments
-			auto inputFiles = arguments.ObjectFiles;
+			auto inputFiles = std::vector<Path>();
+			inputFiles.insert(inputFiles.end(), arguments.LibraryFiles.begin(), arguments.LibraryFiles.end());
+			inputFiles.insert(inputFiles.end(), arguments.ObjectFiles.begin(), arguments.ObjectFiles.end());
 			auto outputFiles = std::vector<Path>({
 				arguments.TargetFile,
 			});

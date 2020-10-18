@@ -127,10 +127,14 @@ namespace Soup::Cpp::Compiler::Clang
 		}
 
 		static std::vector<std::string> BuildInterfaceUnitCompilerArguments(
-			const InterfaceUnitCompileArguments& arguments)
+			const InterfaceUnitCompileArguments& arguments,
+			const Path& responseFile)
 		{
 			// Calculate object output file
 			auto commandArguments = std::vector<std::string>();
+
+			// Add the response file
+			commandArguments.push_back("@" + responseFile.ToString());
 
 			commandArguments.push_back("--precompile");
 
@@ -143,16 +147,20 @@ namespace Soup::Cpp::Compiler::Clang
 
 			// Add the target file as output
 			commandArguments.push_back("-o");
-			commandArguments.push_back(arguments.TargetFile.ToString());
+			commandArguments.push_back(arguments.ModuleInterfaceTarget.ToString());
 
 			return commandArguments;
 		}
 
 		static std::vector<std::string> BuildTranslationUnitCompilerArguments(
-			const TranslationUnitCompileArguments& arguments)
+			const TranslationUnitCompileArguments& arguments,
+			const Path& responseFile)
 		{
 			// Calculate object output file
 			auto commandArguments = std::vector<std::string>();
+
+			// Add the response file
+			commandArguments.push_back("@" + responseFile.ToString());
 
 			// Only run preprocessor, compile and assemble
 			commandArguments.push_back("-c");
