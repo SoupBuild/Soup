@@ -17,7 +17,7 @@ PlatformLibraries = [
 	"shell32.lib",
 ]
 DevDependencies = [
-	# "../../TestBuild/",
+	# TODO "../../TestBuild/",
 	"Soup.Test.Assert@0.1.7",
 ]
 

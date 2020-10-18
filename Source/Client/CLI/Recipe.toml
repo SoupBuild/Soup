@@ -29,7 +29,7 @@ PlatformLibraries = [
 ]
 
 DevDependencies = [
-	# ToDO: "../../Extensions/TestBuild/",
+	# TODO: "../../Extensions/TestBuild/",
 	"Soup.Test.Assert@0.1.7",
 ]
 
