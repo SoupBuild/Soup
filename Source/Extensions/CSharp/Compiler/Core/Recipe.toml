@@ -3,8 +3,7 @@ Language = "C++"
 Version = "0.3.0"
 Dependencies = [
 	"Opal@0.1.8",
-	"../../../../Build/Utilities/",
-	# "Soup.Build.Utilities@0.3.0",
+	"Soup.Build.Utilities@0.4.0",
 ]
 
 Interface = "Module.cpp"

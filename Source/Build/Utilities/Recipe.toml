@@ -1,11 +1,10 @@
 Name = "Soup.Build.Utilities"
 Language = "C++"
 Description = """A set of utility classes that are commonly needed to help make writing a Build Extension easier."""
-Version = "0.3.0"
+Version = "0.4.0"
 Dependencies = [
 	"Opal@0.1.8",
-	"../Contracts/",
-	# "Soup.Build@0.3.0",
+	"Soup.Build@0.4.0",
 ]
 
 Interface = "Module.cpp"

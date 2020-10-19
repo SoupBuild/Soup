@@ -6,10 +6,8 @@ Version = "0.1.0"
 Dependencies = [
 	"json11@1.0.1",
 	"Opal@0.1.8",
-	"../Contracts/",
-	# "Soup.Build@0.3.0",
-	"../Utilities/",
-	# "Soup.Build.Utilities@0.3.0",
+	"Soup.Build@0.4.0",
+	"Soup.Build.Utilities@0.4.0",
 	"../../Monitor/Shared/",
 ]
 Interface = "Source/Module.cpp"
