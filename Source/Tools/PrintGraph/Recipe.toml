@@ -9,6 +9,3 @@ Dependencies = [
 Source = [
 	"Main.cpp",
 ]
-PlatformLibraries = [
-	"shell32.lib",
-]

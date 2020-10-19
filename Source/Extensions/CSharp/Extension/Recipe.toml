@@ -11,9 +11,6 @@ Interface = "Module.cpp"
 Source = [
 	"RegisterBuildExtension.cpp",
 ]
-PlatformLibraries = [
-	"shell32.lib",
-]
 
 DevDependencies = [
 	# TODO "../../TestBuild/",
@@ -26,9 +23,4 @@ DevDependencies = [
 	]
 	IncludePaths = [
 		"../Extension.UnitTests/",
-	]
-	PlatformLibraries = [
-		"OleAut32.lib",
-		"shell32.lib",
-		"User32.lib",
 	]

@@ -13,6 +13,3 @@ Source = [
 IncludePaths = [
 	"./",
 ]
-PlatformLibraries = [
-	"shell32.lib",
-]

@@ -13,7 +13,3 @@ Defines = [
 Source = [
 	"Main.cpp",
 ]
-PlatformLibraries = [
-	"Advapi32.lib",
-	"shell32.lib",
-]

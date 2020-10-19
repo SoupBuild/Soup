@@ -33,8 +33,3 @@ DevDependencies = [
 	IncludePaths = [
 		"UnitTests/",
 	]
-	PlatformLibraries = [
-		"OleAut32.lib",
-		"shell32.lib",
-		"User32.lib",
-	]

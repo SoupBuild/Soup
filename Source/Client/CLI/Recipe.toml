@@ -22,11 +22,6 @@ IncludePaths = [
 	"Source/Commands/",
 	"Source/Options/",
 ]
-PlatformLibraries = [
-	"OleAut32.lib",
-	"shell32.lib",
-	"User32.lib",
-]
 
 DevDependencies = [
 	# TODO: "../../Extensions/TestBuild/",
@@ -39,9 +34,4 @@ DevDependencies = [
 	]
 	IncludePaths = [
 		"UnitTests/",
-	]
-	PlatformLibraries = [
-		"OleAut32.lib",
-		"shell32.lib",
-		"User32.lib",
 	]
