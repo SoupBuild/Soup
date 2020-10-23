@@ -78,23 +78,11 @@ namespace Soup::CSharp
 			auto buildTable = rootTable.EnsureValue("Build").EnsureTable();
 
 			// Load the input properties
-			auto compilerName = std::string(rootTable.GetValue("CompilerName").AsString().GetValue());
 			auto packageRoot = Path(rootTable.GetValue("PackageRoot").AsString().GetValue());
 			auto buildFlavor = std::string(rootTable.GetValue("BuildFlavor").AsString().GetValue());
-			auto platformLibraries = rootTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
-			auto platformPreprocessorDefinitions = rootTable.GetValue("PlatformPreprocessorDefinitions").AsList().CopyAsStringVector();
 
 			// Load Recipe properties
 			auto name = std::string(recipeTable.GetValue("Name").AsString().GetValue());
-
-			// Add any explicit platform dependencies that were added in the recipe
-			if (recipeTable.HasValue("PlatformLibraries"))
-			{
-				for (auto value : recipeTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector())
-				{
-					platformLibraries.push_back(std::move(value));
-				}
-			}
 
 			// Add the dependency static library closure to link if targeting an executable or dynamic library
 			std::vector<Path> linkLibraries = std::vector<Path>();
@@ -140,7 +128,7 @@ namespace Soup::CSharp
 			}
 
 			// Load the extra library paths provided to the build system
-			auto libraryPaths = std::vector<Path>();
+			auto libraryFiles = std::vector<Path>();
 
 			// Combine the defines with the default set and the platform
 			auto preprocessorDefinitions = std::vector<std::string>();
@@ -149,11 +137,8 @@ namespace Soup::CSharp
 				preprocessorDefinitions = recipeTable.GetValue("Defines").AsList().CopyAsStringVector();
 			}
 
-			preprocessorDefinitions.insert(
-				preprocessorDefinitions.end(),
-				platformPreprocessorDefinitions.begin(),
-				platformPreprocessorDefinitions.end());
 			preprocessorDefinitions.push_back("SOUP_BUILD");
+			preprocessorDefinitions.push_back("TRACE");
 
 			// Build up arguments to build this individual recipe
 			auto binaryDirectory = rootTable.GetValue("BinaryDirectory").AsString().GetValue();
@@ -171,7 +156,7 @@ namespace Soup::CSharp
 			bool generateSourceDebugInfo = false;
 			if (buildFlavor == "debug")
 			{
-				// preprocessorDefinitions.push_back("DEBUG");
+				preprocessorDefinitions.push_back("DEBUG");
 				generateSourceDebugInfo = true;
 			}
 			else if (buildFlavor == "release")
@@ -185,6 +170,176 @@ namespace Soup::CSharp
 				throw std::runtime_error("Unknown build flavors type.");
 			}
 
+			//////////////////////////////////////
+			// DOT NET CORE 3.1 hard coded for now
+			//////////////////////////////////////
+
+			// Set the platform definitions 
+			preprocessorDefinitions.push_back("NETCOREAPP");
+			preprocessorDefinitions.push_back("NETCOREAPP3_1");
+
+			// Set the platform libraries
+			// TODO: Find this path...
+			auto dotNetCore31Root = Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/3.1.0/ref/netcoreapp3.1/");
+			auto platformLibraries = std::vector<Path>({
+				Path("Microsoft.CSharp.dll"),
+				Path("Microsoft.VisualBasic.Core.dll"),
+				Path("Microsoft.VisualBasic.dll"),
+				Path("Microsoft.Win32.Primitives.dll"),
+				Path("mscorlib.dll"),
+				Path("netstandard.dll"),
+				Path("System.AppContext.dll"),
+				Path("System.Buffers.dll"),
+				Path("System.Collections.Concurrent.dll"),
+				Path("System.Collections.dll"),
+				Path("System.Collections.Immutable.dll"),
+				Path("System.Collections.NonGeneric.dll"),
+				Path("System.Collections.Specialized.dll"),
+				Path("System.ComponentModel.Annotations.dll"),
+				Path("System.ComponentModel.DataAnnotations.dll"),
+				Path("System.ComponentModel.dll"),
+				Path("System.ComponentModel.EventBasedAsync.dll"),
+				Path("System.ComponentModel.Primitives.dll"),
+				Path("System.ComponentModel.TypeConverter.dll"),
+				Path("System.Configuration.dll"),
+				Path("System.Console.dll"),
+				Path("System.Core.dll"),
+				Path("System.Data.Common.dll"),
+				Path("System.Data.DataSetExtensions.dll"),
+				Path("System.Data.dll"),
+				Path("System.Diagnostics.Contracts.dll"),
+				Path("System.Diagnostics.Debug.dll"),
+				Path("System.Diagnostics.DiagnosticSource.dll"),
+				Path("System.Diagnostics.FileVersionInfo.dll"),
+				Path("System.Diagnostics.Process.dll"),
+				Path("System.Diagnostics.StackTrace.dll"),
+				Path("System.Diagnostics.TextWriterTraceListener.dll"),
+				Path("System.Diagnostics.Tools.dll"),
+				Path("System.Diagnostics.TraceSource.dll"),
+				Path("System.Diagnostics.Tracing.dll"),
+				Path("System.dll"),
+				Path("System.Drawing.dll"),
+				Path("System.Drawing.Primitives.dll"),
+				Path("System.Dynamic.Runtime.dll"),
+				Path("System.Globalization.Calendars.dll"),
+				Path("System.Globalization.dll"),
+				Path("System.Globalization.Extensions.dll"),
+				Path("System.IO.Compression.Brotli.dll"),
+				Path("System.IO.Compression.dll"),
+				Path("System.IO.Compression.FileSystem.dll"),
+				Path("System.IO.Compression.ZipFile.dll"),
+				Path("System.IO.dll"),
+				Path("System.IO.FileSystem.dll"),
+				Path("System.IO.FileSystem.DriveInfo.dll"),
+				Path("System.IO.FileSystem.Primitives.dll"),
+				Path("System.IO.FileSystem.Watcher.dll"),
+				Path("System.IO.IsolatedStorage.dll"),
+				Path("System.IO.MemoryMappedFiles.dll"),
+				Path("System.IO.Pipes.dll"),
+				Path("System.IO.UnmanagedMemoryStream.dll"),
+				Path("System.Linq.dll"),
+				Path("System.Linq.Expressions.dll"),
+				Path("System.Linq.Parallel.dll"),
+				Path("System.Linq.Queryable.dll"),
+				Path("System.Memory.dll"),
+				Path("System.Net.dll"),
+				Path("System.Net.Http.dll"),
+				Path("System.Net.HttpListener.dll"),
+				Path("System.Net.Mail.dll"),
+				Path("System.Net.NameResolution.dll"),
+				Path("System.Net.NetworkInformation.dll"),
+				Path("System.Net.Ping.dll"),
+				Path("System.Net.Primitives.dll"),
+				Path("System.Net.Requests.dll"),
+				Path("System.Net.Security.dll"),
+				Path("System.Net.ServicePoint.dll"),
+				Path("System.Net.Sockets.dll"),
+				Path("System.Net.WebClient.dll"),
+				Path("System.Net.WebHeaderCollection.dll"),
+				Path("System.Net.WebProxy.dll"),
+				Path("System.Net.WebSockets.Client.dll"),
+				Path("System.Net.WebSockets.dll"),
+				Path("System.Numerics.dll"),
+				Path("System.Numerics.Vectors.dll"),
+				Path("System.ObjectModel.dll"),
+				Path("System.Reflection.DispatchProxy.dll"),
+				Path("System.Reflection.dll"),
+				Path("System.Reflection.Emit.dll"),
+				Path("System.Reflection.Emit.ILGeneration.dll"),
+				Path("System.Reflection.Emit.Lightweight.dll"),
+				Path("System.Reflection.Extensions.dll"),
+				Path("System.Reflection.Metadata.dll"),
+				Path("System.Reflection.Primitives.dll"),
+				Path("System.Reflection.TypeExtensions.dll"),
+				Path("System.Resources.Reader.dll"),
+				Path("System.Resources.ResourceManager.dll"),
+				Path("System.Resources.Writer.dll"),
+				Path("System.Runtime.CompilerServices.Unsafe.dll"),
+				Path("System.Runtime.CompilerServices.VisualC.dll"),
+				Path("System.Runtime.dll"),
+				Path("System.Runtime.Extensions.dll"),
+				Path("System.Runtime.Handles.dll"),
+				Path("System.Runtime.InteropServices.dll"),
+				Path("System.Runtime.InteropServices.RuntimeInformation.dll"),
+				Path("System.Runtime.InteropServices.WindowsRuntime.dll"),
+				Path("System.Runtime.Intrinsics.dll"),
+				Path("System.Runtime.Loader.dll"),
+				Path("System.Runtime.Numerics.dll"),
+				Path("System.Runtime.Serialization.dll"),
+				Path("System.Runtime.Serialization.Formatters.dll"),
+				Path("System.Runtime.Serialization.Json.dll"),
+				Path("System.Runtime.Serialization.Primitives.dll"),
+				Path("System.Runtime.Serialization.Xml.dll"),
+				Path("System.Security.Claims.dll"),
+				Path("System.Security.Cryptography.Algorithms.dll"),
+				Path("System.Security.Cryptography.Csp.dll"),
+				Path("System.Security.Cryptography.Encoding.dll"),
+				Path("System.Security.Cryptography.Primitives.dll"),
+				Path("System.Security.Cryptography.X509Certificates.dll"),
+				Path("System.Security.dll"),
+				Path("System.Security.Principal.dll"),
+				Path("System.Security.SecureString.dll"),
+				Path("System.ServiceModel.Web.dll"),
+				Path("System.ServiceProcess.dll"),
+				Path("System.Text.Encoding.CodePages.dll"),
+				Path("System.Text.Encoding.dll"),
+				Path("System.Text.Encoding.Extensions.dll"),
+				Path("System.Text.Encodings.Web.dll"),
+				Path("System.Text.Json.dll"),
+				Path("System.Text.RegularExpressions.dll"),
+				Path("System.Threading.Channels.dll"),
+				Path("System.Threading.dll"),
+				Path("System.Threading.Overlapped.dll"),
+				Path("System.Threading.Tasks.Dataflow.dll"),
+				Path("System.Threading.Tasks.dll"),
+				Path("System.Threading.Tasks.Extensions.dll"),
+				Path("System.Threading.Tasks.Parallel.dll"),
+				Path("System.Threading.Thread.dll"),
+				Path("System.Threading.ThreadPool.dll"),
+				Path("System.Threading.Timer.dll"),
+				Path("System.Transactions.dll"),
+				Path("System.Transactions.Local.dll"),
+				Path("System.ValueTuple.dll"),
+				Path("System.Web.dll"),
+				Path("System.Web.HttpUtility.dll"),
+				Path("System.Windows.dll"),
+				Path("System.Xml.dll"),
+				Path("System.Xml.Linq.dll"),
+				Path("System.Xml.ReaderWriter.dll"),
+				Path("System.Xml.Serialization.dll"),
+				Path("System.Xml.XDocument.dll"),
+				Path("System.Xml.XmlDocument.dll"),
+				Path("System.Xml.XmlSerializer.dll"),
+				Path("System.Xml.XPath.dll"),
+				Path("System.Xml.XPath.XDocument.dll"),
+				Path("WindowsBase.dll"),
+			});
+			for (auto& library : platformLibraries)
+			{
+				libraryFiles.push_back(dotNetCore31Root + library);
+			}
+
+			// Pass along the build parameters to the build task
 			buildTable.EnsureValue("TargetName").SetValueString(name);
 			buildTable.EnsureValue("WorkingDirectory").SetValueString(packageRoot.ToString());
 			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory);
@@ -193,7 +348,7 @@ namespace Soup::CSharp
 			buildTable.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(generateSourceDebugInfo);
 
 			buildTable.EnsureValue("PreprocessorDefinitions").EnsureList().Append(preprocessorDefinitions);
-			buildTable.EnsureValue("LibraryPaths").EnsureList().Append(libraryPaths);
+			buildTable.EnsureValue("LibraryFiles").EnsureList().Append(libraryFiles);
 			buildTable.EnsureValue("Source").EnsureList().Append(sourceFiles);
 
 			// Convert the recipe type to the required build type

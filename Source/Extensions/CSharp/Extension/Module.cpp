@@ -32,4 +32,3 @@ using namespace Opal;
 #include "Tasks/RecipeBuildTask.h"
 #include "Tasks/ResolveDependenciesTask.h"
 #include "Tasks/ResolveToolsTask.h"
-#include "Tasks/StandardLibraryIncludeTask.h"

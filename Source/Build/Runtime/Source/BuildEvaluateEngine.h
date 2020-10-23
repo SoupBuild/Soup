@@ -228,11 +228,19 @@ namespace Soup::Build::Runtime
 				// Save off the build graph for future builds
 				auto input = std::vector<Path>();
 				for (auto& value : callback->GetInput())
-					input.push_back(Path(value));
+				{
+					auto path = Path(value);
+					// Log::Diag("ObservedInput: " + path.ToString());
+					input.push_back(std::move(path));
+				}
 
 				auto output = std::vector<Path>();
 				for (auto& value : callback->GetOutput())
-					output.push_back(Path(value));
+				{
+					auto path = Path(value);
+					// Log::Diag("ObservedOutput: " + path.ToString());
+					output.push_back(std::move(path));
+				}
 
 				operationInfo.ObservedInput = _fileSystemState.ToFileIds(input, operationInfo.Command.WorkingDirectory);
 				operationInfo.ObservedOutput = _fileSystemState.ToFileIds(output, operationInfo.Command.WorkingDirectory);
