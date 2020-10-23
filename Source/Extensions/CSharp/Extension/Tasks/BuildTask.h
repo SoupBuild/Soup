@@ -91,10 +91,10 @@ namespace Soup::CSharp
 					buildTable.GetValue("Source").AsList().CopyAsPathVector();
 			}
 
-			if (buildTable.HasValue("LibraryPaths"))
+			if (buildTable.HasValue("LibraryFiles"))
 			{
-				arguments.LibraryPaths =
-					buildTable.GetValue("LibraryPaths").AsList().CopyAsPathVector();
+				arguments.LibraryFiles =
+					buildTable.GetValue("LibraryFiles").AsList().CopyAsPathVector();
 			}
 
 			if (buildTable.HasValue("PreprocessorDefinitions"))
@@ -131,9 +131,9 @@ namespace Soup::CSharp
 			}
 
 			// Initialize the compiler to use
-			auto visualCompilerToolsRoot = activeState.GetValue("MSVC.VCToolsBinaryRoot").AsString().GetValue();
+			auto roslynToolsRoot = activeState.GetValue("Roslyn.BinaryRoot").AsString().GetValue();
 			auto compiler = std::make_shared<Soup::CSharp::Compiler::Compiler>(
-				Path(visualCompilerToolsRoot),
+				Path(roslynToolsRoot),
 				Path("csc.exe"));
 
 			auto buildEngine = Soup::CSharp::Compiler::BuildEngine(compiler);

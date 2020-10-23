@@ -65,7 +65,7 @@ namespace Soup::CSharp::Compiler
 			for (auto& file : arguments.LibraryFiles)
 			{
 				// Add the library files as reference
-				AddParameter(commandArgs, "reference", file.ToString());
+				AddParameterWithQuotes(commandArgs, "reference", file.ToString());
 			}
 
 			// Emit debugging information

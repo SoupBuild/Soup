@@ -73,14 +73,14 @@ namespace SimpleBuildExtension
 		}
 
 	private:
-		static Soup::Build::Utilities::StringList _runBeforeList;
-		static Soup::Build::Utilities::StringList _runAfterList;
+		static Soup::Build::Utilities::ReadOnlyStringList _runBeforeList;
+		static Soup::Build::Utilities::ReadOnlyStringList _runAfterList;
 	};
 
-	Soup::Build::Utilities::StringList BeforeBuildTask::_runBeforeList =
-		Soup::Build::Utilities::StringList({
+	Soup::Build::Utilities::ReadOnlyStringList BeforeBuildTask::_runBeforeList =
+		Soup::Build::Utilities::ReadOnlyStringList({
 			"Build",
 		});
-	Soup::Build::Utilities::StringList BeforeBuildTask::_runAfterList =
-		Soup::Build::Utilities::StringList();
+	Soup::Build::Utilities::ReadOnlyStringList BeforeBuildTask::_runAfterList =
+		Soup::Build::Utilities::ReadOnlyStringList();
 }

@@ -41,12 +41,6 @@ extern "C"
 			return -1;
 
 		// Register the standard library include task
-		auto standardLibraryIncludeTask = Memory::Reference<Soup::CSharp::StandardLibraryIncludeTask>(
-			new Soup::CSharp::StandardLibraryIncludeTask());
-		if (buildSystem.TryRegisterTask(standardLibraryIncludeTask.GetRaw()) != Soup::Build::ApiCallResult::Success)
-			return -1;
-
-		// Register the standard library include task
 		auto resolveDependenciesTask = Memory::Reference<Soup::CSharp::ResolveDependenciesTask>(
 			new Soup::CSharp::ResolveDependenciesTask());
 		if (buildSystem.TryRegisterTask(resolveDependenciesTask.GetRaw()) != Soup::Build::ApiCallResult::Success)

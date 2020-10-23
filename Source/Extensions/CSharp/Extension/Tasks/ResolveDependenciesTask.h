@@ -91,15 +91,6 @@ namespace Soup::CSharp
 					{
 						auto dependencyBuildTable = dependencyTable.GetValue("Build").AsTable();
 
-						if (dependencyBuildTable.HasValue("ModuleDependencies"))
-						{
-							auto moduleDependencies = dependencyBuildTable
-								.GetValue("ModuleDependencies")
-								.AsList()
-								.CopyAsStringVector();
-							buildTable.EnsureValue("ModuleDependencies").EnsureList().Append(moduleDependencies);
-						}
-
 						if (dependencyBuildTable.HasValue("RuntimeDependencies"))
 						{
 							auto runtimeDependencies = dependencyBuildTable

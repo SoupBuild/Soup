@@ -85,7 +85,9 @@ namespace Soup::CSharp::Compiler
 			compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 			compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
 			compileArguments.SourceFiles = arguments.SourceFiles;
+			compileArguments.LibraryFiles = arguments.LibraryFiles;
 			compileArguments.TargetFile = arguments.ObjectDirectory + Path(arguments.TargetName);
+			compileArguments.TargetFile.SetFileExtension("dll");
 
 			// Compile the requested target
 			auto operation = _compiler->CreateCompileOperation(compileArguments);

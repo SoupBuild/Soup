@@ -13,9 +13,6 @@ Interface = "Module.cpp"
 Source = [
 	"RegisterBuildExtension.cpp",
 ]
-PlatformLibraries = [
-	"shell32.lib",
-]
 DevDependencies = [
 	# TODO "../../TestBuild/",
 	"Soup.Test.Assert@0.1.7",
@@ -27,9 +24,4 @@ DevDependencies = [
 	]
 	IncludePaths = [
 		"../Extension.UnitTests/",
-	]
-	PlatformLibraries = [
-		"OleAut32.lib",
-		"shell32.lib",
-		"User32.lib",
 	]

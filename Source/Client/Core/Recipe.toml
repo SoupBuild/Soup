@@ -7,10 +7,8 @@ Dependencies = [
 	"json11@1.0.1",
 	"toml11@1.0.1",
 	"../OpalExtensions/",
-	"../../Build/Contracts/",
-	# "Soup.Build@0.3.0",
-	"../../Build/Utilities/",
-	# "Soup.Build.Utilities@0.3.0",
+	"Soup.Build@0.4.0",
+	"Soup.Build.Utilities@0.4.0",
 	"../../Build/Runtime/",
 ]
 Defines = [
@@ -34,9 +32,4 @@ DevDependencies = [
 	]
 	IncludePaths = [
 		"UnitTests/",
-	]
-	PlatformLibraries = [
-		"OleAut32.lib",
-		"shell32.lib",
-		"User32.lib",
 	]

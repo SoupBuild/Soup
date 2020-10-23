@@ -1,6 +1,6 @@
 Name = "Soup"
 Language = "C++"
-Version = "0.9.5"
+Version = "0.9.6"
 Type = "Executable"
 
 # Ensure the core build extensions are runtime dependencies
@@ -22,11 +22,6 @@ IncludePaths = [
 	"Source/Commands/",
 	"Source/Options/",
 ]
-PlatformLibraries = [
-	"OleAut32.lib",
-	"shell32.lib",
-	"User32.lib",
-]
 
 DevDependencies = [
 	# TODO: "../../Extensions/TestBuild/",
@@ -39,9 +34,4 @@ DevDependencies = [
 	]
 	IncludePaths = [
 		"UnitTests/",
-	]
-	PlatformLibraries = [
-		"OleAut32.lib",
-		"shell32.lib",
-		"User32.lib",
 	]

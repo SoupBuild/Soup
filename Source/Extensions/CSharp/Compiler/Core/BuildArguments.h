@@ -78,9 +78,9 @@ namespace Soup::CSharp::Compiler
 		std::vector<Path> SourceFiles;
 
 		/// <summary>
-		/// Gets or sets the list of library paths
+		/// Gets or sets the list of library files
 		/// </summary>
-		std::vector<Path> LibraryPaths;
+		std::vector<Path> LibraryFiles;
 
 		/// <summary>
 		/// Gets or sets the list of preprocessor definitions
@@ -114,7 +114,7 @@ namespace Soup::CSharp::Compiler
 				ObjectDirectory == rhs.ObjectDirectory &&
 				BinaryDirectory == rhs.BinaryDirectory &&
 				SourceFiles == rhs.SourceFiles &&
-				LibraryPaths == rhs.LibraryPaths &&
+				LibraryFiles == rhs.LibraryFiles &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
 				EnableOptimization == rhs.EnableOptimization &&
 				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
