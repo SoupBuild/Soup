@@ -19,15 +19,15 @@ namespace Soup::Build
 		/// Initializes a new instance of the <see cref="RecipeBuildManager"/> class.
 		/// </summary>
 		RecipeBuildManager(
-			std::string systemCompiler,
+			std::string hostCompiler,
 			std::string runtimeCompiler) :
-			_systemCompiler(std::move(systemCompiler)),
+			_hostCompiler(std::move(hostCompiler)),
 			_runtimeCompiler(std::move(runtimeCompiler)),
 			_knownRecipes(),
 			_knownRootRecipes(),
 			_buildSet(),
-			_systemBuildSet(),
-			_systemBuildPaths(),
+			_hostBuildSet(),
+			_hostBuildPaths(),
 			_fileSystemState(0)
 		{
 		}
@@ -40,11 +40,6 @@ namespace Soup::Build
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments)
 		{
-			// Clear the build set so we check all dependencies
-			_knownRecipes.clear();
-			_buildSet.clear();
-			_systemBuildSet.clear();
-
 			auto userDataDirectory = GetSoupUserDataPath();
 
 			// Load up the file system state
@@ -68,7 +63,7 @@ namespace Soup::Build
 
 			// Enable log event ids to track individual builds
 			int projectId = 1;
-			bool isSystemBuild = false;
+			bool isHostBuild = false;
 			bool isDevBuild = false;
 			Log::EnsureListener().SetShowEventId(true);
 
@@ -85,7 +80,7 @@ namespace Soup::Build
 						workingDirectory,
 						recipe,
 						arguments,
-						isSystemBuild,
+						isHostBuild,
 						isDevBuild,
 						rootParentSet,
 						rootState);
@@ -190,7 +185,7 @@ namespace Soup::Build
 			const Path& workingDirectory,
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
-			bool isSystemBuild,
+			bool isHostBuild,
 			bool isDevBuild,
 			const std::set<std::string>& parentSet,
 			Runtime::ValueTable& sharedState)
@@ -240,7 +235,7 @@ namespace Soup::Build
 						packagePath,
 						dependencyRecipe,
 						arguments,
-						isSystemBuild,
+						isHostBuild,
 						false,
 						activeParentSet,
 						activeState);
@@ -287,7 +282,7 @@ namespace Soup::Build
 				workingDirectory,
 				recipe,
 				arguments,
-				isSystemBuild,
+				isHostBuild,
 				isDevBuild,
 				activeState,
 				sharedState);
@@ -305,7 +300,7 @@ namespace Soup::Build
 			const Path& workingDirectory,
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
-			bool isSystemBuild,
+			bool isHostBuild,
 			bool isDevBuild,
 			Runtime::ValueTable& activeState,
 			Runtime::ValueTable& sharedState)
@@ -318,7 +313,7 @@ namespace Soup::Build
 
 				// Select the correct build set to ensure that the different build properties 
 				// required the same project to be build twice
-				auto& buildSet = isSystemBuild ? _systemBuildSet : _buildSet;
+				auto& buildSet = isHostBuild ? _hostBuildSet : _buildSet;
 				auto findBuildState = buildSet.find(recipe.GetName());
 				if (findBuildState != buildSet.end())
 				{
@@ -333,7 +328,7 @@ namespace Soup::Build
 						workingDirectory,
 						recipe,
 						arguments,
-						isSystemBuild,
+						isHostBuild,
 						activeState);
 
 					// Keep track of the packages we have already built
@@ -384,15 +379,15 @@ namespace Soup::Build
 			const Path& packageRoot,
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
-			bool isSystemBuild,
+			bool isHostBuild,
 			Runtime::ValueTable& activeState)
 		{
 			// Select the correct compiler to use
 			std::string activeCompiler = "";
-			if (isSystemBuild)
+			if (isHostBuild)
 			{
-				Log::HighPriority("System Build '" + recipe.GetName() + "'");
-				activeCompiler = _systemCompiler;
+				Log::HighPriority("Host Build '" + recipe.GetName() + "'");
+				activeCompiler = _hostCompiler;
 			}
 			else
 			{
@@ -403,8 +398,8 @@ namespace Soup::Build
 			// Set the default output directory to be relative to the package
 			auto rootOutput = packageRoot + Path("out/");
 
-			// Add unique location for system builds
-			if (isSystemBuild)
+			// Add unique location for host builds
+			if (isHostBuild)
 			{
 				rootOutput = rootOutput + Path("HostBuild/");
 			}
@@ -428,8 +423,8 @@ namespace Soup::Build
 					// Relative to the root recipe file itself
 					rootOutput = rootRecipe.GetOutputRoot();
 
-					// Add unique location for system builds
-					if (isSystemBuild)
+					// Add unique location for host builds
+					if (isHostBuild)
 					{
 						rootOutput = rootOutput + Path("HostBuild/");
 					}
@@ -449,15 +444,15 @@ namespace Soup::Build
 
 			// Build up the expected output directory for the build to be used to cache state
 			auto targetDirectory = rootOutput + Runtime::BuildGenerateEngine::GetConfigurationDirectory(
-				_systemCompiler,
+				_hostCompiler,
 				arguments.Flavor,
 				arguments.System,
 				arguments.Architecture);
 
-			// Cache if is system build to load build tasks
-			if (isSystemBuild)
+			// Cache if is host build to load build tasks
+			if (isHostBuild)
 			{
-				_systemBuildPaths.emplace(recipe.GetName(), targetDirectory);
+				_hostBuildPaths.emplace(recipe.GetName(), targetDirectory);
 			}
 
 			auto activeBuildGraph = Runtime::OperationGraph(0);
@@ -498,10 +493,10 @@ namespace Soup::Build
 						}
 
 						// Get the recipe output directory
-						auto findOutputDirectory = _systemBuildPaths.find(dependecyRecipe.GetName());
-						if (findOutputDirectory == _systemBuildPaths.end())
+						auto findOutputDirectory = _hostBuildPaths.find(dependecyRecipe.GetName());
+						if (findOutputDirectory == _hostBuildPaths.end())
 						{
-							Log::Error("Failed to find the system build path to check for a build extension: " + dependecyRecipe.GetName());
+							Log::Error("Failed to find the host build path to check for a build extension: " + dependecyRecipe.GetName());
 							throw std::runtime_error("RunInProcessBuild: Failed to get dev dependency output directory.");
 						}
 
@@ -676,16 +671,16 @@ namespace Soup::Build
 		}
 
 	private:
-		std::string _systemCompiler;
+		std::string _hostCompiler;
 		std::string _runtimeCompiler;
 
 		std::map<std::string, Recipe> _knownRecipes;
 		std::map<std::string, RootRecipe> _knownRootRecipes;
 
 		std::map<std::string, Runtime::ValueTable> _buildSet;
-		std::map<std::string, Runtime::ValueTable> _systemBuildSet;
+		std::map<std::string, Runtime::ValueTable> _hostBuildSet;
 
-		std::map<std::string, Path> _systemBuildPaths;
+		std::map<std::string, Path> _hostBuildPaths;
 
 		Runtime::FileSystemState _fileSystemState;
 	};
