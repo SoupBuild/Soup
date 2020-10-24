@@ -53,7 +53,7 @@ namespace Soup::Client
 				workingDirectory +
 				Path(Constants::RecipeFileName);
 			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
 			{
 				Log::Error("Could not load the recipe file");
 				return;
@@ -72,12 +72,44 @@ namespace Soup::Client
 			auto system = "win32";
 			auto architecture = "x64";
 			auto compilerName = config.GetRuntimeCompiler();
-			auto binaryDirectory = Build::Runtime::BuildGenerateEngine::GetBinaryDirectory(
+
+			// Set the default output directory to be relative to the package
+			auto rootOutput = recipePath + Path("out/");
+
+			// Check for root recipe file with overrides
+			Path rootRecipeFile;
+			if (RecipeExtensions::TryFindRootRecipeFile(recipePath, rootRecipeFile))
+			{
+				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
+				RootRecipe rootRecipe;
+				if (!RecipeExtensions::TryLoadRootRecipeFromFile(rootRecipeFile, rootRecipe))
+				{
+					// Nothing we can do, exit
+					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
+					throw HandledException(222);
+				}
+
+				// Today the only unique thing it can do is set the shared output directory
+				if (rootRecipe.HasOutputRoot())
+				{
+					// Relative to the root recipe file itself
+					rootOutput = rootRecipe.GetOutputRoot() + Path(recipe.GetName() + "/");
+					if (!rootOutput.HasRoot())
+					{
+						rootOutput = rootRecipeFile.GetParent() + rootOutput;
+					}
+
+					Log::Info("Override root output: " + rootOutput.ToString());
+				}
+			}
+
+			auto binaryDirectory = rootOutput + Build::Runtime::BuildGenerateEngine::GetConfigurationDirectory(
 				compilerName,
 				flavor,
 				system,
-				architecture);
-			auto executablePath = workingDirectory + binaryDirectory + Path(recipe.GetName() + ".exe");
+				architecture) +
+				Build::Runtime::BuildGenerateEngine::GetBinaryDirectory();
+			auto executablePath = binaryDirectory + Path(recipe.GetName() + ".exe");
 			Log::Info(executablePath.ToString());
 			if (!System::IFileSystem::Current().Exists(executablePath))
 			{

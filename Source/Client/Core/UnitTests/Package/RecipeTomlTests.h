@@ -20,34 +20,6 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void Deserialize_MissingNameThrows()
-		{
-			auto recipeFile = Path("Recipe.toml");
-			auto recipe = std::stringstream(
-				R"(
-					Version="1.2.3"
-				)");
-
-			Assert::ThrowsRuntimeError([&recipeFile, &recipe]() {
-				auto actual = RecipeToml::Deserialize(recipeFile, recipe);
-			});
-		}
-
-		[[Fact]]
-		void Deserialize_MissingVersionThrows()
-		{
-			auto recipeFile = Path("Recipe.toml");
-			auto recipe = std::stringstream(
-				R"(
-					Name="MyPackage"
-				)");
-
-			Assert::ThrowsRuntimeError([&recipeFile, &recipe]() {
-				auto actual = RecipeToml::Deserialize(recipeFile, recipe);
-			});
-		}
-
-		[[Fact]]
 		void Deserialize_Simple()
 		{
 			auto recipeFile = Path("Recipe.toml");
@@ -56,7 +28,7 @@ namespace Soup::Build::UnitTests
 					Name="MyPackage"
 					Language="C++"
 				)");
-			auto actual = RecipeToml::Deserialize(recipeFile, recipe);
+			auto actual = Recipe(RecipeToml::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(
 				"MyPackage",
@@ -75,7 +47,7 @@ namespace Soup::Build::UnitTests
 					Name="MyPackage"
 					Language="C++"
 				)");
-			auto actual = RecipeToml::Deserialize(recipeFile, recipe);
+			auto actual = Recipe(RecipeToml::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(
 				"MyPackage",
@@ -98,7 +70,7 @@ namespace Soup::Build::UnitTests
 					Dependencies=[]
 					DevDependencies=[]
 				)");
-			auto actual = RecipeToml::Deserialize(recipeFile, recipe);
+			auto actual = Recipe(RecipeToml::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(
 				"MyPackage",
@@ -119,7 +91,7 @@ namespace Soup::Build::UnitTests
 				"C++");
 
 			std::stringstream actual;
-			RecipeToml::Serialize(recipe, actual);
+			RecipeToml::Serialize(recipe.GetTable(), actual);
 
 			auto expected = 
 R"(Name = "MyPackage"
@@ -140,7 +112,7 @@ Language = "C++"
 			recipe.GetNameValue().GetComments().push_back(" This is an awesome package");
 
 			std::stringstream actual;
-			RecipeToml::Serialize(recipe, actual);
+			RecipeToml::Serialize(recipe.GetTable(), actual);
 
 			auto expected =
 R"(# This is an awesome package
@@ -163,7 +135,7 @@ Language = "C++"
 				std::vector<PackageReference>());
 
 			std::stringstream actual;
-			RecipeToml::Serialize(recipe, actual);
+			RecipeToml::Serialize(recipe.GetTable(), actual);
 
 			auto expected = 
 R"(Name = "MyPackage"

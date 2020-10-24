@@ -73,7 +73,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 				"CoreCompile",
 				Path("Source/"),
 				Path("./bin/csc.test.exe"),
-				"/noconfig /unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:4 /errorendlocation /preferreduilang:en-US /highentropyva+ /reference:./Library.mock.dll /debug- /debug:portable /filealign:512 /optimize- /out:./Something.exe /target:exe /warnaserror+ /utf8output /deterministic+ /langversion:8.0 ./File.mock.cs",
+				"/noconfig /unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:4 /errorendlocation /preferreduilang:en-US /highentropyva+ /reference:\"./Library.mock.dll\" /debug- /debug:portable /filealign:512 /optimize- /out:./Something.exe /target:exe /warnaserror+ /utf8output /deterministic+ /langversion:8.0 ./File.mock.cs",
 				std::vector<Path>({
 				}),
 				std::vector<Path>({

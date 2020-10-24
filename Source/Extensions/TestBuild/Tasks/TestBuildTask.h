@@ -123,11 +123,14 @@ namespace Soup::Test
 
 			// Create the operation to run tests during build
 			auto title = std::string("Run Tests");
-			auto program =
-				arguments.WorkingDirectory +
-				arguments.BinaryDirectory +
+			auto program = arguments.BinaryDirectory +
 				Path(arguments.TargetName);
 			program.SetFileExtension("exe");
+			if (!program.HasRoot())
+			{
+				program = arguments.WorkingDirectory + program;
+			}
+
 			auto workingDirectory = arguments.WorkingDirectory;
 			auto runArguments = std::string("");
 			auto inputFiles = std::vector<Path>({

@@ -20,7 +20,7 @@ namespace Soup
 		/// <summary>
 		/// Load from stream
 		/// </summary>
-		static Recipe Deserialize(
+		static RecipeTable Deserialize(
 			const Path& recipeFile,
 			std::istream& stream)
 		{
@@ -35,7 +35,7 @@ namespace Soup
 				auto table = RecipeTable();
 				Parse(table, root.as_table());
 
-				return Recipe(std::move(table));
+				return table;
 			}
 			catch(const toml::exception& ex)
 			{
@@ -46,10 +46,10 @@ namespace Soup
 		/// <summary>
 		/// Save the recipe to the root file
 		/// </summary>
-		static void Serialize(Recipe& recipe, std::ostream& stream)
+		static void Serialize(RecipeTable& recipeTable, std::ostream& stream)
 		{
 			// Serialize the contents of the recipe
-			auto root = Build(recipe.GetTable());
+			auto root = Build(recipeTable);
 
 			// Write out the entire root table
 			stream << root;

@@ -24,8 +24,10 @@ namespace Soup::Build
 			_systemCompiler(std::move(systemCompiler)),
 			_runtimeCompiler(std::move(runtimeCompiler)),
 			_knownRecipes(),
+			_knownRootRecipes(),
 			_buildSet(),
 			_systemBuildSet(),
+			_systemBuildPaths(),
 			_fileSystemState(0)
 		{
 		}
@@ -398,13 +400,48 @@ namespace Soup::Build
 				activeCompiler = _runtimeCompiler;
 			}
 
+			// Set the default output directory to be relative to the package
+			auto rootOutput = packageRoot + Path("out/");
+
+			// Check for root recipe file with overrides
+			Path rootRecipeFile;
+			if (RecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
+			{
+				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
+				RootRecipe rootRecipe;
+				if (!TryGetRootRecipe(rootRecipeFile, rootRecipe))
+				{
+					// Nothing we can do, exit
+					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
+					throw HandledException(222);
+				}
+
+				// Today the only unique thing it can do is set the shared output directory
+				if (rootRecipe.HasOutputRoot())
+				{
+					// Relative to the root recipe file itself
+					rootOutput = rootRecipe.GetOutputRoot() + Path(recipe.GetName() + "/");
+					if (!rootOutput.HasRoot())
+					{
+						rootOutput = rootRecipeFile.GetParent() + rootOutput;
+					}
+
+					Log::Info("Override root output: " + rootOutput.ToString());
+				}
+			}
+
 			// Build up the expected output directory for the build to be used to cache state
-			auto outputDirectory = Runtime::BuildGenerateEngine::GetOutputDirectory(
+			auto targetDirectory = rootOutput + Runtime::BuildGenerateEngine::GetConfigurationDirectory(
 				_systemCompiler,
 				arguments.Flavor,
 				arguments.System,
 				arguments.Architecture);
-			auto targetDirectory = packageRoot + outputDirectory;
+
+			// Cache if is system build to load build tasks
+			if (isSystemBuild)
+			{
+				_systemBuildPaths.emplace(recipe.GetName(), targetDirectory);
+			}
 
 			auto activeBuildGraph = Runtime::OperationGraph(0);
 			auto sharedState = Runtime::ValueTable();
@@ -428,23 +465,32 @@ namespace Soup::Build
 					throw std::runtime_error("Unknown language.");
 				}
 
-				
 				buildExtensionLibraries.push_back(std::move(recipeBuildExtensionPath));
 
 				if (recipe.HasDevDependencies())
 				{
-					auto systemBinaryDirectory = Runtime::BuildGenerateEngine::GetBinaryDirectory(
-						_systemCompiler,
-						arguments.Flavor,
-						arguments.System,
-						arguments.Architecture);
 					for (auto dependency : recipe.GetDevDependencies())
 					{
 						auto packagePath = GetPackageReferencePath(packageRoot, dependency);
-						auto libraryPath = RecipeExtensions::GetRecipeOutputPath(
-							packagePath,
-							systemBinaryDirectory,
-							std::string("dll"));
+						auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
+						Recipe dependecyRecipe = {};
+						if (!RecipeExtensions::TryLoadRecipeFromFile(packageRecipePath, dependecyRecipe))
+						{
+							Log::Error("Failed to load the package: " + packageRecipePath.ToString());
+							throw std::runtime_error("RunInProcessBuild: Failed to load dependency.");
+						}
+
+						// Get the recipe output directory
+						auto findOutputDirectory = _systemBuildPaths.find(dependecyRecipe.GetName());
+						if (findOutputDirectory == _systemBuildPaths.end())
+						{
+							Log::Error("Failed to find the system build path to check for a build extension: " + dependecyRecipe.GetName());
+							throw std::runtime_error("RunInProcessBuild: Failed to get dev dependency output directory.");
+						}
+
+						auto binaryPath = findOutputDirectory->second + Runtime::BuildGenerateEngine::GetBinaryDirectory();
+						auto moduleFilename = Path(dependecyRecipe.GetName() + ".dll");
+						auto libraryPath = binaryPath + moduleFilename;
 
 						if (System::IFileSystem::Current().Exists(libraryPath))
 						{
@@ -456,6 +502,7 @@ namespace Soup::Build
 				auto buildGenerateEngine = Runtime::BuildGenerateEngine(
 					_fileSystemState);
 				auto generateResult = buildGenerateEngine.Generate(
+					targetDirectory,
 					activeCompiler,
 					arguments.Flavor,
 					arguments.System,
@@ -547,6 +594,38 @@ namespace Soup::Build
 			return packagePath;
 		}
 
+		bool TryGetRootRecipe(
+			const Path& recipeFile,
+			RootRecipe& result)
+		{
+			// Check if the recipe was already loaded
+			auto findRecipe = _knownRootRecipes.find(recipeFile.ToString());
+			if (findRecipe != _knownRootRecipes.end())
+			{
+				result = findRecipe->second;
+				return true;
+			}
+			else
+			{
+				RootRecipe loadRecipe;
+				if (RecipeExtensions::TryLoadRootRecipeFromFile(recipeFile, loadRecipe))
+				{
+					// Save the recipe for later
+					auto insertRecipe = _knownRootRecipes.emplace(
+						recipeFile.ToString(),
+						std::move(loadRecipe));
+
+					result = insertRecipe.first->second;
+					return true;
+				}
+				else
+				{
+					// Failed to load this recipe
+					return false;
+				}
+			}
+		}
+
 		bool TryGetRecipe(
 			const Path& recipeFile,
 			Recipe& result)
@@ -561,7 +640,7 @@ namespace Soup::Build
 			else
 			{
 				Recipe loadRecipe;
-				if (RecipeExtensions::TryLoadFromFile(recipeFile, loadRecipe))
+				if (RecipeExtensions::TryLoadRecipeFromFile(recipeFile, loadRecipe))
 				{
 					// Save the recipe for later
 					auto insertRecipe = _knownRecipes.emplace(
@@ -584,8 +663,10 @@ namespace Soup::Build
 		std::string _runtimeCompiler;
 
 		std::map<std::string, Recipe> _knownRecipes;
+		std::map<std::string, RootRecipe> _knownRootRecipes;
 		std::map<std::string, Runtime::ValueTable> _buildSet;
 		std::map<std::string, Runtime::ValueTable> _systemBuildSet;
+		std::map<std::string, Path> _systemBuildPaths;
 
 		Runtime::FileSystemState _fileSystemState;
 	};

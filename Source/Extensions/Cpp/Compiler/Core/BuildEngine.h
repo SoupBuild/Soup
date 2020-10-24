@@ -117,7 +117,7 @@ namespace Soup::Cpp::Compiler
 					// This will allow the module implementation units access as well as downstream
 					// dependencies to the public interface.
 					result.ModuleDependencies.push_back(
-						arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
+						binaryOutputModuleInterfaceFile.HasRoot() ? binaryOutputModuleInterfaceFile : arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
 				}
 
 				// Compile the individual translation units
@@ -210,7 +210,8 @@ namespace Soup::Cpp::Compiler
 					
 					// Add the library as a link dependency and all transitive libraries
 					result.LinkDependencies = arguments.LinkDependencies;
-					result.LinkDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
+					auto absoluteTargetFile = linkArguments.TargetFile.HasRoot() ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
+					result.LinkDependencies.push_back(std::move(absoluteTargetFile));
 					break;
 				}
 				case BuildTargetType::DynamicLibrary:
@@ -218,11 +219,13 @@ namespace Soup::Cpp::Compiler
 					linkArguments.TargetType = LinkTarget::DynamicLibrary;
 
 					// Add the DLL as a runtime dependency
-					result.RuntimeDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
+					auto absoluteTargetFile = linkArguments.TargetFile.HasRoot() ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
+					result.RuntimeDependencies.push_back(std::move(absoluteTargetFile));
 
 					// Clear out all previous link dependencies and replace with the 
 					// single implementation library for the DLL
-					result.LinkDependencies.push_back(linkArguments.RootDirectory + linkArguments.ImplementationFile);
+					auto absoluteImplementationFile = linkArguments.ImplementationFile.HasRoot() ? linkArguments.ImplementationFile : linkArguments.RootDirectory + linkArguments.ImplementationFile;
+					result.LinkDependencies.push_back(std::move(absoluteImplementationFile));
 					break;
 				}
 				case BuildTargetType::Executable:
@@ -230,7 +233,8 @@ namespace Soup::Cpp::Compiler
 					linkArguments.TargetType = LinkTarget::Executable;
 
 					// Add the Executable as a runtime dependency
-					result.RuntimeDependencies.push_back(linkArguments.RootDirectory + linkArguments.TargetFile);
+					auto absoluteTargetFile = linkArguments.TargetFile.HasRoot() ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
+					result.RuntimeDependencies.push_back(std::move(absoluteTargetFile));
 
 					// All link dependencies stop here.
 					break;

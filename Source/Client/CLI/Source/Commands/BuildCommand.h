@@ -53,7 +53,7 @@ namespace Soup::Client
 				workingDirectory +
 				Path(Constants::RecipeFileName);
 			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
 			{
 				Log::Error("Could not load the recipe file.");
 				throw HandledException(55);

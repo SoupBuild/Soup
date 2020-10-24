@@ -33,38 +33,29 @@ namespace Soup::Build::Runtime
 	export class BuildGenerateEngine
 	{
 	public:
-		static Path GetOutputDirectory(
+		static Path GetConfigurationDirectory(
 			std::string_view compiler,
 			std::string_view flavor,
 			std::string_view system,
 			std::string_view architecture)
 		{
 			// Setup the output directories
-			return Path("out/") +
-				Path(compiler) +
+			return Path(compiler) +
 				Path(flavor) +
 				Path(system) +
 				Path(architecture);
 		}
 
-		static Path GetObjectDirectory(
-			std::string_view compiler,
-			std::string_view flavor,
-			std::string_view system,
-			std::string_view architecture)
+		static Path GetObjectDirectory()
 		{
 			// Setup the object directories
-			return GetOutputDirectory(compiler, flavor, system, architecture) + Path("obj/");
+			return Path("obj/");
 		}
 
-		static Path GetBinaryDirectory(
-			std::string_view compiler,
-			std::string_view flavor,
-			std::string_view system,
-			std::string_view architecture)
+		static Path GetBinaryDirectory()
 		{
 			// Setup the binary directories
-			return GetOutputDirectory(compiler, flavor, system, architecture) + Path("bin/");
+			return Path("bin/");
 		}
 
 	public:
@@ -81,6 +72,7 @@ namespace Soup::Build::Runtime
 		/// Execute the entire operation graph that is referenced by this build generate engine
 		/// </summary>
 		BuildGenerateResult Generate(
+			const Path& targetDirectory,
 			std::string_view activeCompiler,
 			std::string_view flavor,
 			std::string_view system,
@@ -92,6 +84,7 @@ namespace Soup::Build::Runtime
 			// Run all build operations in the correct order with incremental build checks
 			Log::Diag("Build generate start");
 			auto result = CheckExecuteGenerate(
+				targetDirectory,
 				activeCompiler,
 				flavor,
 				system,
@@ -109,6 +102,7 @@ namespace Soup::Build::Runtime
 		/// Execute the collection of build operations
 		/// </summary>
 		BuildGenerateResult CheckExecuteGenerate(
+			const Path& targetDirectory,
 			std::string_view activeCompiler,
 			std::string_view flavor,
 			std::string_view system,
@@ -117,13 +111,6 @@ namespace Soup::Build::Runtime
 			ValueTable& activeState,
 			const std::vector<Path>& buildExtensionLibraries)
 		{
-			auto outputDirectory = GetOutputDirectory(
-				activeCompiler,
-				flavor,
-				system,
-				architecture);
-			auto targetDirectory = packageRoot + outputDirectory;
-
 			// Load the previous build graph
 			Log::Diag("Loading previous build graph");
 			auto previousOperationGraph = OperationGraph(0);
@@ -136,6 +123,7 @@ namespace Soup::Build::Runtime
 			}
 
 			auto generateResult = RunEvaluate(
+				targetDirectory,
 				activeCompiler,
 				flavor,
 				system,
@@ -161,6 +149,7 @@ namespace Soup::Build::Runtime
 		}
 
 		BuildGenerateResult RunEvaluate(
+			const Path& targetDirectory,
 			std::string_view activeCompiler,
 			std::string_view flavor,
 			std::string_view system,
@@ -177,21 +166,8 @@ namespace Soup::Build::Runtime
 			auto buildSystem = BuildSystem();
 			auto activeStateWrapper = Utilities::ValueTableWrapper(buildState.GetActiveState());
 
-			auto outputDirectory = GetOutputDirectory(
-				activeCompiler,
-				flavor,
-				system,
-				architecture);
-			auto binaryDirectory = GetBinaryDirectory(
-				activeCompiler,
-				flavor,
-				system,
-				architecture);
-			auto objectDirectory = GetObjectDirectory(
-				activeCompiler,
-				flavor,
-				system,
-				architecture);
+			auto binaryDirectory = targetDirectory + GetBinaryDirectory();
+			auto objectDirectory = targetDirectory + GetObjectDirectory();
 
 			// Set the input properties
 			activeStateWrapper.EnsureValue("PackageRoot").SetValueString(packageRoot.ToString());
@@ -199,7 +175,7 @@ namespace Soup::Build::Runtime
 			activeStateWrapper.EnsureValue("BuildSystem").SetValueString(system);
 			activeStateWrapper.EnsureValue("BuildArchitecture").SetValueString(architecture);
 			activeStateWrapper.EnsureValue("CompilerName").SetValueString(activeCompiler);
-			activeStateWrapper.EnsureValue("OutputDirectory").SetValueString(outputDirectory.ToString());
+			activeStateWrapper.EnsureValue("OutputDirectory").SetValueString(targetDirectory.ToString());
 			activeStateWrapper.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
 			activeStateWrapper.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
 

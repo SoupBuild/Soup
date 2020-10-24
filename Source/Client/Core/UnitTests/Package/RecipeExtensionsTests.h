@@ -10,7 +10,7 @@ namespace Soup::Build::UnitTests
 	{
 	public:
 		[[Fact]]
-		void TryLoadFromFile_MissingFile()
+		void TryLoadRecipeFromFile_MissingFile()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -22,7 +22,7 @@ namespace Soup::Build::UnitTests
 
 			auto directory = Path("TestFiles/NoFile/Recipe.toml");
 			Recipe actual;
-			auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
+			auto result = RecipeExtensions::TryLoadRecipeFromFile(directory, actual);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -45,7 +45,7 @@ namespace Soup::Build::UnitTests
 		}
 		
 		[[Fact]]
-		void TryLoadFromFile_GarbageFile()
+		void TryLoadRecipeFromFile_GarbageFile()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -60,7 +60,7 @@ namespace Soup::Build::UnitTests
 
 			auto directory = Path("TestFiles/GarbageRecipe/Recipe.toml");
 			Recipe actual;
-			auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
+			auto result = RecipeExtensions::TryLoadRecipeFromFile(directory, actual);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -85,7 +85,7 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void TryLoadFromFile_SimpleFile()
+		void TryLoadRecipeFromFile_SimpleFile()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -103,7 +103,7 @@ namespace Soup::Build::UnitTests
 
 			auto directory = Path("TestFiles/SimpleRecipe/Recipe.toml");
 			Recipe actual;
-			auto result = RecipeExtensions::TryLoadFromFile(directory, actual);
+			auto result = RecipeExtensions::TryLoadRecipeFromFile(directory, actual);
 
 			Assert::IsTrue(result, "Verify result is false.");
 
@@ -170,85 +170,6 @@ Language = "C++"
 )";
 			auto mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.toml"));
 			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");
-		}
-
-		[[Fact]]
-		void GetRecipeOutputPath_MissingRecipeThrows()
-		{
-			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
-
-			// Register the test file system
-			auto fileSystem = std::make_shared<MockFileSystem>();
-			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-
-			auto packagePath = Path("Root/");
-			auto binaryDirectory = Path("out/bin/mock/");
-			std::string modileFileExtension = ".mock.bmi";
-			Assert::ThrowsRuntimeError([&packagePath, &binaryDirectory, &modileFileExtension]() {
-				auto result = RecipeExtensions::GetRecipeOutputPath(packagePath, binaryDirectory, modileFileExtension);
-			});
-
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Exists: ./Root/Recipe.toml",
-				}),
-				fileSystem->GetRequests(),
-				"Verify file system requests match expected.");
-
-			// Verify expected logs
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"DIAG: Load Recipe: ./Root/Recipe.toml",
-					"INFO: Recipe file does not exist.",
-					"ERRO: Failed to load the package: ./Root/Recipe.toml",
-				}), 
-				testListener->GetMessages(),
-				"Verify messages match expected.");
-		}
-
-		[[Fact]]
-		void GetRecipeOutputPath_Exists()
-		{
-			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
-
-			// Register the test file system
-			auto fileSystem = std::make_shared<MockFileSystem>();
-			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			fileSystem->CreateMockFile(
-				Path("Root/Recipe.toml"),
-				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++"
-				)")));
-
-			auto packagePath = Path("Root/");
-			auto binaryDirectory = Path("out/bin/mock/");
-			std::string modileFileExtension = "mock.bmi";
-			auto result = RecipeExtensions::GetRecipeOutputPath(packagePath, binaryDirectory, modileFileExtension);
-
-			Assert::AreEqual(result, Path("Root/out/bin/mock/MyPackage.mock.bmi"), "Verify the result matches expected.");
-
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"Exists: ./Root/Recipe.toml",
-					"OpenReadBinary: ./Root/Recipe.toml",
-				}),
-				fileSystem->GetRequests(),
-				"Verify file system requests match expected.");
-
-			// Verify expected logs
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"DIAG: Load Recipe: ./Root/Recipe.toml",
-				}), 
-				testListener->GetMessages(),
-				"Verify messages match expected.");
 		}
 
 		[[Fact]]

@@ -66,7 +66,7 @@ namespace Soup
 				workingDirectory +
 				Path(Constants::RecipeFileName);
 			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
 			{
 				throw std::runtime_error("Could not load the recipe file.");
 			}
@@ -156,7 +156,7 @@ namespace Soup
 				workingDirectory +
 				Path(Constants::RecipeFileName);
 			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
 			{
 				throw std::runtime_error("Could not load the recipe file.");
 			}
@@ -466,7 +466,7 @@ namespace Soup
 				recipeDirectory +
 				Path(Constants::RecipeFileName);
 			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadFromFile(recipePath, recipe))
+			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
 			{
 				throw std::runtime_error("Could not load the recipe file.");
 			}
