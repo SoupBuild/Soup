@@ -94,7 +94,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 					"CoreCompile",
 					Path("C:/root/"),
 					Path("C:/Tools/csc.test.exe"),
-					"/noconfig /unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:4 /errorendlocation /preferreduilang:en-US /highentropyva+ /debug- /debug:portable /filealign:512 /optimize+ /out:./obj/Library /target:library /warnaserror+ /utf8output /deterministic+ /langversion:8.0 ./TestFile1.cs ./TestFile2.cs ./TestFile3.cs",
+					"/noconfig /unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:4 /errorendlocation /preferreduilang:en-US /highentropyva+ /debug- /debug:portable /filealign:512 /optimize+ /out:./obj/Library.dll /target:library /warnaserror+ /utf8output /deterministic+ /langversion:8.0 ./TestFile1.cs ./TestFile2.cs ./TestFile3.cs",
 					std::vector<Path>({
 					}),
 					std::vector<Path>({
@@ -233,7 +233,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 				Path("File2.cs"),
 			});
 			arguments.EnableOptimization = true;
-			arguments.LibraryPaths = std::vector<Path>({
+			arguments.LibraryFiles = std::vector<Path>({
 				Path("../Other/bin/OtherModule1.mock.dll"),
 				Path("../OtherModule2.mock.dll"),
 			});
@@ -284,7 +284,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 					"CoreCompile",
 					Path("C:/root/"),
 					Path("C:/Tools/csc.test.exe"),
-					"/noconfig /unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:4 /errorendlocation /preferreduilang:en-US /highentropyva+ /debug- /debug:portable /filealign:512 /optimize+ /out:./obj/Library /target:library /warnaserror+ /utf8output /deterministic+ /langversion:8.0 ./File1.cs ./File2.cs",
+					"/noconfig /unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:4 /errorendlocation /preferreduilang:en-US /highentropyva+ /reference:\"../Other/bin/OtherModule1.mock.dll\" /reference:\"../OtherModule2.mock.dll\" /debug- /debug:portable /filealign:512 /optimize+ /out:./obj/Library.dll /target:library /warnaserror+ /utf8output /deterministic+ /langversion:8.0 ./File1.cs ./File2.cs",
 					std::vector<Path>({
 					}),
 					std::vector<Path>({

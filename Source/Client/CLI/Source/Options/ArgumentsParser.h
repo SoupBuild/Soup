@@ -130,10 +130,6 @@ namespace Soup::Client
 
 				auto options = std::make_unique<RunOptions>();
 
-				// Set defaults
-				auto syntheticParams = std::vector<std::string>();
-				options->Verbosity = CheckVerbosity(syntheticParams);
-
 				// Split all parameters after the args flag to pass into the run command
 				std::vector<std::string> runArgs;
 				SplitArguments("args", unusedArgs, runArgs);
@@ -144,6 +140,8 @@ namespace Soup::Client
 				{
 					options->Path = std::move(argument);
 				}
+
+				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				// All remaining arguments are passed to the executable
 				options->Arguments = std::move(runArgs);

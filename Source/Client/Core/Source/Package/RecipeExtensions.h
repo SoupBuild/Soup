@@ -86,6 +86,33 @@ namespace Soup
 		}
 
 		/// <summary>
+		/// Check if there is a root recipe file in any of the parent directories from the package root
+		/// </summary>
+		static bool TryFindRootRecipeFile(const Path& packageRoot, Path& rootRecipeFile)
+		{
+			auto parentDirectory = packageRoot.GetParent();
+			auto done = false;
+			while (!done)
+			{
+				auto checkRootRecipeFile = parentDirectory + Path("RootRecipe.toml");
+				if (System::IFileSystem::Current().Exists(checkRootRecipeFile))
+				{
+					// We found one!
+					rootRecipeFile = std::move(checkRootRecipeFile);
+					return true;
+				}
+
+				// Get the next parent directory
+				auto nextParentDirectory = parentDirectory.GetParent();
+				done = nextParentDirectory.ToString().size() == parentDirectory.ToString().size();
+				parentDirectory = std::move(nextParentDirectory);
+			}
+
+			// Non of the parent directories contain the known file
+			return false;
+		}
+
+		/// <summary>
 		/// Build up the recipe file location from the package reference
 		/// </summary>
 		static Path GetPackageRecipeFile(

@@ -405,7 +405,7 @@ namespace Soup::Build
 
 			// Check for root recipe file with overrides
 			Path rootRecipeFile;
-			if (TryLoadRootRecipeFile(packageRoot, rootRecipeFile))
+			if (RecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
 			{
 				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
 				RootRecipe rootRecipe;
@@ -563,30 +563,6 @@ namespace Soup::Build
 			}
 
 			return sharedState;
-		}
-
-		bool TryLoadRootRecipeFile(const Path& packageRoot, Path& rootRecipeFile) const
-		{
-			auto parentDirectory = packageRoot.GetParent();
-			auto done = false;
-			while (!done)
-			{
-				auto checkRootRecipeFile = parentDirectory + Path("RootRecipe.toml");
-				if (System::IFileSystem::Current().Exists(checkRootRecipeFile))
-				{
-					// We found one!
-					rootRecipeFile = std::move(checkRootRecipeFile);
-					return true;
-				}
-
-				// Get the next parent directory
-				auto nextParentDirectory = parentDirectory.GetParent();
-				done = nextParentDirectory.ToString().size() == parentDirectory.ToString().size();
-				parentDirectory = std::move(nextParentDirectory);
-			}
-
-			// Non of the parent directories contain the known file
-			return false;
 		}
 
 		Path GetSoupUserDataPath() const
