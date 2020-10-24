@@ -163,7 +163,7 @@ namespace Soup::Build::Runtime
 			auto fileName = Path(std::string_view(operationInfo.Command.Arguments).substr(1, findSecondQuote - 1));
 			Log::Info("WritFile: " + fileName.ToString());
 
-			auto filePath = operationInfo.Command.WorkingDirectory + fileName;
+			auto filePath = fileName.HasRoot() ? fileName : operationInfo.Command.WorkingDirectory + fileName;
 			auto content = std::string_view(operationInfo.Command.Arguments).substr(
 				findSecondQuote + 3,
 				operationInfo.Command.Arguments.size() - findSecondQuote - 4);

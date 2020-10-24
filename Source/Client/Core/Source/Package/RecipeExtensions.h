@@ -3,6 +3,8 @@
 // </copyright>
 
 #pragma once
+#include "Recipe.h"
+#include "RootRecipe.h"
 #include "RecipeToml.h"
 
 namespace Soup
@@ -16,7 +18,42 @@ namespace Soup
 		/// <summary>
 		/// Attempt to load from file
 		/// </summary>
-		static bool TryLoadFromFile(
+		static bool TryLoadRootRecipeFromFile(
+			const Path& recipeFile,
+			RootRecipe& result)
+		{
+			// Verify the requested file exists
+			Log::Diag("Load Root Recipe: " + recipeFile.ToString());
+			if (!System::IFileSystem::Current().Exists(recipeFile))
+			{
+				Log::Error("Root Recipe file does not exist.");
+				return false;
+			}
+
+			// Open the file to read from
+			auto file = System::IFileSystem::Current().OpenRead(recipeFile, true);
+
+			// Read the contents of the recipe file
+			try
+			{
+				result = RootRecipe(
+					RecipeToml::Deserialize(
+						recipeFile,
+						file->GetInStream()));
+				return true;
+			}
+			catch (std::exception& ex)
+			{
+				Log::Error(std::string("Deserialize Threw: ") + ex.what());
+				Log::Info("Failed to parse Recipe.");
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Attempt to load from file
+		/// </summary>
+		static bool TryLoadRecipeFromFile(
 			const Path& recipeFile,
 			Recipe& result)
 		{
@@ -34,9 +71,10 @@ namespace Soup
 			// Read the contents of the recipe file
 			try
 			{
-				result = RecipeToml::Deserialize(
-					recipeFile,
-					file->GetInStream());
+				result = Recipe(
+					RecipeToml::Deserialize(
+						recipeFile,
+						file->GetInStream()));
 				return true;
 			}
 			catch (std::exception& ex)
@@ -76,27 +114,7 @@ namespace Soup
 			auto file = System::IFileSystem::Current().OpenWrite(recipeFile, false);
 
 			// Write the recipe to the file stream
-			RecipeToml::Serialize(recipe, file->GetOutStream());
-		}
-
-		/// <summary>
-		/// Get the recipe output path
-		/// </summary>
-		static Path GetRecipeOutputPath(const Path& packagePath, const Path& binaryDirectory, const std::string& outputFileExtension)
-		{
-			auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
-			Recipe dependecyRecipe = {};
-			if (!RecipeExtensions::TryLoadFromFile(packageRecipePath, dependecyRecipe))
-			{
-				Log::Error("Failed to load the package: " + packageRecipePath.ToString());
-				throw std::runtime_error("GetRecipeOutputPath: Failed to load dependency.");
-			}
-
-			auto packageBinaryPath = packagePath + binaryDirectory;
-			auto moduleFilename = Path(dependecyRecipe.GetName() + "." + outputFileExtension);
-			auto modulePath = packageBinaryPath + moduleFilename;
-
-			return modulePath;
+			RecipeToml::Serialize(recipe.GetTable(), file->GetOutStream());
 		}
 
 		/// <summary>

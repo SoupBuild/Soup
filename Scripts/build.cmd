@@ -2,11 +2,12 @@
 SET Flavor=%1
 SET ScriptsDir=%~dp0
 SET SourceDir=%ScriptsDir%..\Source
+SET OutputDir=%ScriptsDir%..\out
 SET ClientCLIDir=%SourceDir%\Client\CLI
 SET DetoursDir=%SourceDir%\Monitor\Detours
-SET OutputDirectorPath=out\MSVC\%Flavor%\win32\
-SET ClientCLIOutputDirectory=%ClientCLIDir%\%OutputDirectorPath%
-SET DetoursOutputDirectory=%DetoursDir%\%OutputDirectorPath%
+SET OutputDirectorPath=MSVC\%Flavor%\win32
+SET ClientCLIOutputDirectory=%OutputDir%\Soup\%OutputDirectorPath%
+SET DetoursOutputDirectory=%OutputDir%\Monitor.Detours\%OutputDirectorPath%
 
 REM - Build each version of the detours dll
 echo soup build %DetoursDir% -architecture x64 -flavor %Flavor%
