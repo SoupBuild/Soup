@@ -318,7 +318,7 @@ namespace Soup::Build
 
 				// Select the correct build set to ensure that the different build properties 
 				// required the same project to be build twice
-				auto& buildSet = isSystemBuild && _systemCompiler != _runtimeCompiler ? _systemBuildSet : _buildSet;
+				auto& buildSet = isSystemBuild ? _systemBuildSet : _buildSet;
 				auto findBuildState = buildSet.find(recipe.GetName());
 				if (findBuildState != buildSet.end())
 				{
@@ -403,6 +403,12 @@ namespace Soup::Build
 			// Set the default output directory to be relative to the package
 			auto rootOutput = packageRoot + Path("out/");
 
+			// Add unique location for system builds
+			if (isSystemBuild)
+			{
+				rootOutput = rootOutput + Path("HostBuild/");
+			}
+
 			// Check for root recipe file with overrides
 			Path rootRecipeFile;
 			if (RecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
@@ -420,7 +426,18 @@ namespace Soup::Build
 				if (rootRecipe.HasOutputRoot())
 				{
 					// Relative to the root recipe file itself
-					rootOutput = rootRecipe.GetOutputRoot() + Path(recipe.GetName() + "/");
+					rootOutput = rootRecipe.GetOutputRoot();
+
+					// Add unique location for system builds
+					if (isSystemBuild)
+					{
+						rootOutput = rootOutput + Path("HostBuild/");
+					}
+
+					// Add the unique recipe name
+					rootOutput = rootOutput + Path(recipe.GetName() + "/");
+
+					// Ensure there is a root relative to the file itself
 					if (!rootOutput.HasRoot())
 					{
 						rootOutput = rootRecipeFile.GetParent() + rootOutput;
@@ -664,8 +681,10 @@ namespace Soup::Build
 
 		std::map<std::string, Recipe> _knownRecipes;
 		std::map<std::string, RootRecipe> _knownRootRecipes;
+
 		std::map<std::string, Runtime::ValueTable> _buildSet;
 		std::map<std::string, Runtime::ValueTable> _systemBuildSet;
+
 		std::map<std::string, Path> _systemBuildPaths;
 
 		Runtime::FileSystemState _fileSystemState;

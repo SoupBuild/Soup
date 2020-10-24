@@ -5,7 +5,7 @@ class Script
 {
 	static public void Main()
 	{
-		var soupBinFolder = @"..\..\Client\CLI\out\MSVC\release\win32\x64\bin\";
+		var soupBinFolder = @"..\..\..\out\Soup\MSVC\release\win32\x64\bin\";
 		var project = new Project(
 			"Soup",
 			new Dir(
@@ -42,7 +42,7 @@ class Script
 		};
 
 		// Upgrade values
-		project.Version = new Version(0, 9, 6);
+		project.Version = new Version(0, 10, 0);
 
 		Compiler.BuildMsi(project);
 	}
