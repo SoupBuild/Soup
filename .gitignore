@@ -3,8 +3,10 @@
 *.user
 .vscode/ipch/
 packages/
+bin/
+obj/
 
-# Build
+# Soup
 /out/
 
 # Wix
