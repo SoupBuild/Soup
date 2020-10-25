@@ -2,10 +2,12 @@ Name = "printgraph"
 Language = "C++"
 Version = "1.0.0"
 Type = "Executable"
-Dependencies = [
-	"Opal@0.1.8",
-	"../../Build/Runtime/"
-]
 Source = [
 	"Main.cpp",
+]
+
+[Dependencies]
+Runtime = [
+	"Opal@0.1.8",
+	"../../Build/Runtime/"
 ]

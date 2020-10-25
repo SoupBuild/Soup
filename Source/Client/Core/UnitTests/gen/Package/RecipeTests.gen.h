@@ -14,10 +14,12 @@ TestState RunRecipeTests()
 	state += Soup::Test::RunTest(className, "OperatorNotEqualLanguage", [&testClass]() { testClass->OperatorNotEqualLanguage(); });
 	state += Soup::Test::RunTest(className, "OperatorNotEqualVersion", [&testClass]() { testClass->OperatorNotEqualVersion(); });
 	state += Soup::Test::RunTest(className, "OperatorNotEqualNoVersion", [&testClass]() { testClass->OperatorNotEqualNoVersion(); });
-	state += Soup::Test::RunTest(className, "OperatorNotEqualDependencies", [&testClass]() { testClass->OperatorNotEqualDependencies(); });
-	state += Soup::Test::RunTest(className, "OperatorNotEqualNoDependencies", [&testClass]() { testClass->OperatorNotEqualNoDependencies(); });
-	state += Soup::Test::RunTest(className, "OperatorNotEqualDevDependencies", [&testClass]() { testClass->OperatorNotEqualDevDependencies(); });
-	state += Soup::Test::RunTest(className, "OperatorNotEqualNoDevDependencies", [&testClass]() { testClass->OperatorNotEqualNoDevDependencies(); });
+	state += Soup::Test::RunTest(className, "OperatorNotEqualRuntimeDependencies", [&testClass]() { testClass->OperatorNotEqualRuntimeDependencies(); });
+	state += Soup::Test::RunTest(className, "OperatorNotEqualNoRuntimeDependencies", [&testClass]() { testClass->OperatorNotEqualNoRuntimeDependencies(); });
+	state += Soup::Test::RunTest(className, "OperatorNotEqualBuildDependencies", [&testClass]() { testClass->OperatorNotEqualBuildDependencies(); });
+	state += Soup::Test::RunTest(className, "OperatorNotEqualNoBuildDependencies", [&testClass]() { testClass->OperatorNotEqualNoBuildDependencies(); });
+	state += Soup::Test::RunTest(className, "OperatorNotEqualTestDependencies", [&testClass]() { testClass->OperatorNotEqualTestDependencies(); });
+	state += Soup::Test::RunTest(className, "OperatorNotEqualNoTestDependencies", [&testClass]() { testClass->OperatorNotEqualNoTestDependencies(); });
 
 	return state;
 }

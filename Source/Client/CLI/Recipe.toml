@@ -3,15 +3,6 @@ Language = "C++"
 Version = "0.10.0"
 Type = "Executable"
 
-# Ensure the core build extensions are runtime dependencies
-Dependencies = [
-	"../Core/",
-	"../../Tools/Copy/",
-	"../../Tools/Mkdir/",
-	"../../Extensions/Cpp/Extension/",
-	"../../Extensions/CSharp/Extension/",
-	"../../Monitor/Shared/",
-]
 RuntimeDependencies = [
 	"LocalUserConfig.json",
 ]
@@ -23,15 +14,27 @@ IncludePaths = [
 	"Source/Options/",
 ]
 
-DevDependencies = [
+[Dependencies]
+# Ensure the core build extensions are runtime dependencies
+Runtime = [
+	"../Core/",
+	"../../Tools/Copy/",
+	"../../Tools/Mkdir/",
+	"../../Extensions/Cpp/Extension/",
+	"../../Extensions/CSharp/Extension/",
+	"../../Monitor/Shared/",
+]
+Build = [
 	# TODO: "../../Extensions/TestBuild/",
+]
+Test = [
 	"Soup.Test.Assert@0.1.7",
 ]
 
-	[Tests]
-	Source = [
-		"UnitTests/gen/Main.cpp"
-	]
-	IncludePaths = [
-		"UnitTests/",
-	]
+[Tests]
+Source = [
+	"UnitTests/gen/Main.cpp"
+]
+IncludePaths = [
+	"UnitTests/",
+]

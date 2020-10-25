@@ -64,7 +64,7 @@ namespace Soup::Build
 			// Enable log event ids to track individual builds
 			int projectId = 1;
 			bool isHostBuild = false;
-			bool isDevBuild = false;
+			std::string_view dependencyType = "Runtime";
 			Log::EnsureListener().SetShowEventId(true);
 
 			// TODO: A scoped listener cleanup would be nice
@@ -81,7 +81,7 @@ namespace Soup::Build
 						recipe,
 						arguments,
 						isHostBuild,
-						isDevBuild,
+						dependencyType,
 						rootParentSet,
 						rootState);
 				}
@@ -186,7 +186,7 @@ namespace Soup::Build
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isHostBuild,
-			bool isDevBuild,
+			std::string_view dependencyType,
 			const std::set<std::string>& parentSet,
 			Runtime::ValueTable& sharedState)
 		{
@@ -197,9 +197,9 @@ namespace Soup::Build
 			// Start a new active state that is initialized to the recipe itself
 			auto activeState = ConvertToRootBuildState(recipe.GetTable());
 
-			if (recipe.HasDependencies())
+			if (recipe.HasRuntimeDependencies())
 			{
-				for (auto dependency : recipe.GetDependencies())
+				for (auto dependency : recipe.GetRuntimeDependencies())
 				{
 					// Load this package recipe
 					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
@@ -209,12 +209,12 @@ namespace Soup::Build
 					{
 						if (dependency.IsLocal())
 						{
-							Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+							Log::Error("The runtime dependency Recipe does not exist: " + packageRecipePath.ToString());
 							Log::HighPriority("Make sure the path is correct and try again");
 						}
 						else
 						{
-							Log::Error("The Recipe version has not been installed: " + dependency.ToString());
+							Log::Error("The runtime dependency Recipe version has not been installed: " + dependency.ToString());
 							Log::HighPriority("Run `install` and try again");
 						}
 
@@ -225,8 +225,8 @@ namespace Soup::Build
 					// Ensure we do not have any circular dependencies
 					if (activeParentSet.contains(dependencyRecipe.GetName()))
 					{
-						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
-						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
+						Log::Error("Found circular runtime dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
+						throw std::runtime_error("BuildRecipeAndDependencies: Circular runtime dependency.");
 					}
 
 					// Build all recursive dependencies
@@ -236,15 +236,15 @@ namespace Soup::Build
 						dependencyRecipe,
 						arguments,
 						isHostBuild,
-						false,
+						"Runtime",
 						activeParentSet,
 						activeState);
 				}
 			}
 
-			if (recipe.HasDevDependencies())
+			if (recipe.HasTestDependencies())
 			{
-				for (auto dependency : recipe.GetDevDependencies())
+				for (auto dependency : recipe.GetTestDependencies())
 				{
 					// Load this package recipe
 					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
@@ -252,15 +252,60 @@ namespace Soup::Build
 					Recipe dependencyRecipe = {};
 					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
 					{
-						Log::Error("Failed to load the extension package: " + packageRecipePath.ToString());
-						throw std::runtime_error("BuildRecipeAndDependencies: Failed to load dependency.");
+						if (dependency.IsLocal())
+						{
+							Log::Error("The test dependency Recipe does not exist: " + packageRecipePath.ToString());
+							Log::HighPriority("Make sure the path is correct and try again");
+						}
+						else
+						{
+							Log::Error("The test dependency Recipe version has not been installed: " + dependency.ToString());
+							Log::HighPriority("Run `install` and try again");
+						}
+
+						// Nothing we can do, exit
+						throw HandledException(1234);
 					}
 
 					// Ensure we do not have any circular dependencies
 					if (activeParentSet.contains(dependencyRecipe.GetName()))
 					{
-						Log::Error("Found circular dev dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
-						throw std::runtime_error("BuildRecipeAndDependencies: Circular dev dependency.");
+						Log::Error("Found circular test dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
+						throw std::runtime_error("BuildRecipeAndDependencies: Circular test dependency.");
+					}
+
+					// Build all recursive dependencies
+					projectId = BuildRecipeAndDependencies(
+						projectId,
+						packagePath,
+						dependencyRecipe,
+						arguments,
+						isHostBuild,
+						"Test",
+						activeParentSet,
+						activeState);
+				}
+			}
+
+			if (recipe.HasBuildDependencies())
+			{
+				for (auto dependency : recipe.GetBuildDependencies())
+				{
+					// Load this package recipe
+					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
+					auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
+					Recipe dependencyRecipe = {};
+					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
+					{
+						Log::Error("Failed to load the build dependency package: " + packageRecipePath.ToString());
+						throw std::runtime_error("BuildRecipeAndDependencies: Failed to load build dependency.");
+					}
+
+					// Ensure we do not have any circular dependencies
+					if (activeParentSet.contains(dependencyRecipe.GetName()))
+					{
+						Log::Error("Found circular build dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
+						throw std::runtime_error("BuildRecipeAndDependencies: Circular build dependency.");
 					}
 
 					// Build all recursive dependencies
@@ -270,7 +315,7 @@ namespace Soup::Build
 						dependencyRecipe,
 						arguments,
 						true,
-						true,
+						"Build",
 						activeParentSet,
 						activeState);
 				}
@@ -283,7 +328,7 @@ namespace Soup::Build
 				recipe,
 				arguments,
 				isHostBuild,
-				isDevBuild,
+				dependencyType,
 				activeState,
 				sharedState);
 
@@ -301,7 +346,7 @@ namespace Soup::Build
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
 			bool isHostBuild,
-			bool isDevBuild,
+			std::string_view dependencyType,
 			Runtime::ValueTable& activeState,
 			Runtime::ValueTable& sharedState)
 		{
@@ -345,23 +390,12 @@ namespace Soup::Build
 				}
 
 				// Add the shared build state Runtimed from this child build into the correct
-				// Table depending on if this is a normal dependency or a dev dependency
-				if (isDevBuild)
-				{
-					// Move the parent state from active into the parents active state
-					auto& devDependenciesTable = sharedState.EnsureValue("DevDependencies").EnsureTable();
-					devDependenciesTable.SetValue(
-						recipe.GetName(),
-						Runtime::Value(findBuildState->second));
-				}
-				else
-				{
-					// Move the parent state from active into the parents active state
-					auto& dependenciesTable = sharedState.EnsureValue("Dependencies").EnsureTable();
-					dependenciesTable.SetValue(
-						recipe.GetName(),
-						Runtime::Value(findBuildState->second));
-				}
+				// Table depending on the build type
+				auto& dependenciesTable = sharedState.EnsureValue("Dependencies").EnsureTable();
+				auto& typedDependenciesTable = dependenciesTable.EnsureValue(dependencyType).EnsureTable();
+				typedDependenciesTable.SetValue(
+					recipe.GetName(),
+					Runtime::Value(findBuildState->second));
 
 				Log::SetActiveId(0);
 			}
@@ -384,15 +418,18 @@ namespace Soup::Build
 		{
 			// Select the correct compiler to use
 			std::string activeCompiler = "";
+			std::string activeFlavor = "";
 			if (isHostBuild)
 			{
 				Log::HighPriority("Host Build '" + recipe.GetName() + "'");
 				activeCompiler = _hostCompiler;
+				activeFlavor = arguments.Flavor;// TODO "release";
 			}
 			else
 			{
 				Log::HighPriority("Build '" + recipe.GetName() + "'");
 				activeCompiler = _runtimeCompiler;
+				activeFlavor = arguments.Flavor;
 			}
 
 			// Set the default output directory to be relative to the package
@@ -445,7 +482,7 @@ namespace Soup::Build
 			// Build up the expected output directory for the build to be used to cache state
 			auto targetDirectory = rootOutput + Runtime::BuildGenerateEngine::GetConfigurationDirectory(
 				_hostCompiler,
-				arguments.Flavor,
+				activeFlavor,
 				arguments.System,
 				arguments.Architecture);
 
@@ -479,9 +516,9 @@ namespace Soup::Build
 
 				buildExtensionLibraries.push_back(std::move(recipeBuildExtensionPath));
 
-				if (recipe.HasDevDependencies())
+				if (recipe.HasBuildDependencies())
 				{
-					for (auto dependency : recipe.GetDevDependencies())
+					for (auto dependency : recipe.GetBuildDependencies())
 					{
 						auto packagePath = GetPackageReferencePath(packageRoot, dependency);
 						auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
@@ -516,7 +553,7 @@ namespace Soup::Build
 				auto generateResult = buildGenerateEngine.Generate(
 					targetDirectory,
 					activeCompiler,
-					arguments.Flavor,
+					activeFlavor,
 					arguments.System,
 					arguments.Architecture,
 					packageRoot,

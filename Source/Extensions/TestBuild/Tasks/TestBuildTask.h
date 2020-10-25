@@ -99,8 +99,8 @@ namespace Soup::Test
 			auto sharedBuildTable = sharedState.GetValue("Build").AsTable();
 			LoadDependencyBuildInput(sharedBuildTable, arguments);
 
-			// Load up the dev dependencies build input to add extra test runtime libraries
-			LoadDevDependencyBuildInput(buildState, activeState, arguments);
+			// Load up the test dependencies build input to add extra test runtime libraries
+			LoadTestDependencyBuildInput(buildState, activeState, arguments);
 
 			// Update to place the output in a sub folder
 			arguments.ObjectDirectory = arguments.ObjectDirectory + Path("Test/");
@@ -270,59 +270,62 @@ namespace Soup::Test
 			}
 		}
 
-		static void LoadDevDependencyBuildInput(
+		static void LoadTestDependencyBuildInput(
 			Build::Utilities::BuildStateWrapper& buildState,
 			Build::Utilities::ValueTableWrapper& activeState,
 			Cpp::Compiler::BuildArguments& arguments)
 		{
-			if (activeState.HasValue("DevDependencies"))
+			if (activeState.HasValue("Dependencies"))
 			{
-				auto dependenciesTable = activeState.GetValue("DevDependencies").AsTable();
-
-				for (auto& dependencyName : dependenciesTable.GetValueKeyList().CopyAsStringVector())
+				auto dependenciesTable = activeState.GetValue("Dependencies").AsTable();
+				if (dependenciesTable.HasValue("Test"))
 				{
-					// Combine the core dependency build inputs for the core build task
-					buildState.LogInfo("Combine DevDependency: " + dependencyName);
-					auto dependencyTable = dependenciesTable.GetValue(dependencyName).AsTable();
-
-					if (dependencyTable.HasValue("Build"))
+					auto testDependenciesTable = dependenciesTable.GetValue("Test").AsTable();
+					for (auto& dependencyName : testDependenciesTable.GetValueKeyList().CopyAsStringVector())
 					{
-						auto dependencyBuildTable = dependencyTable.GetValue("Build").AsTable();
+						// Combine the core dependency build inputs for the core build task
+						buildState.LogInfo("Combine Test Dependency: " + dependencyName);
+						auto dependencyTable = testDependenciesTable.GetValue(dependencyName).AsTable();
 
-						if (dependencyBuildTable.HasValue("ModuleDependencies"))
+						if (dependencyTable.HasValue("Build"))
 						{
-							auto moduleDependencies = dependencyBuildTable
-								.GetValue("ModuleDependencies")
-								.AsList()
-								.CopyAsStringVector();
+							auto dependencyBuildTable = dependencyTable.GetValue("Build").AsTable();
 
-							arguments.ModuleDependencies = CombineUnique(
-								arguments.ModuleDependencies,
-								dependencyBuildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector());
-						}
+							if (dependencyBuildTable.HasValue("ModuleDependencies"))
+							{
+								auto moduleDependencies = dependencyBuildTable
+									.GetValue("ModuleDependencies")
+									.AsList()
+									.CopyAsStringVector();
 
-						if (dependencyBuildTable.HasValue("RuntimeDependencies"))
-						{
-							auto runtimeDependencies = dependencyBuildTable
-								.GetValue("RuntimeDependencies")
-								.AsList()
-								.CopyAsStringVector();
+								arguments.ModuleDependencies = CombineUnique(
+									arguments.ModuleDependencies,
+									dependencyBuildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector());
+							}
 
-							arguments.RuntimeDependencies = CombineUnique(
-								arguments.RuntimeDependencies,
-								dependencyBuildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector());
-						}
+							if (dependencyBuildTable.HasValue("RuntimeDependencies"))
+							{
+								auto runtimeDependencies = dependencyBuildTable
+									.GetValue("RuntimeDependencies")
+									.AsList()
+									.CopyAsStringVector();
 
-						if (dependencyBuildTable.HasValue("LinkDependencies"))
-						{
-							auto linkDependencies = dependencyBuildTable
-								.GetValue("LinkDependencies")
-								.AsList()
-								.CopyAsStringVector();
+								arguments.RuntimeDependencies = CombineUnique(
+									arguments.RuntimeDependencies,
+									dependencyBuildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector());
+							}
 
-							arguments.LinkDependencies = CombineUnique(
-								arguments.LinkDependencies,
-								dependencyBuildTable.GetValue("LinkDependencies").AsList().CopyAsPathVector());
+							if (dependencyBuildTable.HasValue("LinkDependencies"))
+							{
+								auto linkDependencies = dependencyBuildTable
+									.GetValue("LinkDependencies")
+									.AsList()
+									.CopyAsStringVector();
+
+								arguments.LinkDependencies = CombineUnique(
+									arguments.LinkDependencies,
+									dependencyBuildTable.GetValue("LinkDependencies").AsList().CopyAsPathVector());
+							}
 						}
 					}
 				}

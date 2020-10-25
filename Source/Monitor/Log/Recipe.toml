@@ -3,11 +3,13 @@ Name = "LogMonitor"
 Language = "C++"
 Version = "1.0.0"
 Type = "Executable"
-Dependencies = [
+Source = [
+	"Main.cpp",
+]
+
+[Dependencies]
+Runtime = [
 	"../../../Dependencies/Detours/src/",
 	"Opal@0.1.8",
 	"../Shared/",
-]
-Source = [
-	"Main.cpp",
 ]

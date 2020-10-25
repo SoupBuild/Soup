@@ -2,12 +2,13 @@ Name = "SimpleBuildExtension"
 Language = "C++"
 Type = "DynamicLibrary"
 Version = "1.0.0"
-Dependencies = [
-	"Opal@0.1.8",
-	"Soup.Build@0.4.0",
-	"Soup.Build.Utilities@0.4.0",
-]
-
 Source = [
 	"Register.cpp"
+]
+
+[Dependencies]
+Runtime = [
+	"Opal@0.1.8",
+	"Soup.Build@0.4.1",
+	"Soup.Build.Utilities@0.4.1",
 ]

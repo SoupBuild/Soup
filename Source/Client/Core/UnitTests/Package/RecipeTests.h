@@ -17,8 +17,9 @@ namespace Soup::Build::UnitTests
 			Assert::AreEqual<std::string_view>("", uut.GetName(), "Verify name matches expected.");
 			Assert::AreEqual<std::string_view>("", uut.GetLanguage(), "Verify language matches expected.");
 			Assert::IsFalse(uut.HasVersion(), "Verify has no version.");
-			Assert::IsFalse(uut.HasDependencies(), "Verify has no dependencies.");
-			Assert::IsFalse(uut.HasDevDependencies(), "Verify has no dev dependencies.");
+			Assert::IsFalse(uut.HasRuntimeDependencies(), "Verify has no runtime dependencies.");
+			Assert::IsFalse(uut.HasBuildDependencies(), "Verify has no build dependencies.");
+			Assert::IsFalse(uut.HasTestDependencies(), "Verify has no test dependencies.");
 		}
 
 		[[Fact]]
@@ -29,30 +30,40 @@ namespace Soup::Build::UnitTests
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../DevTask")),
+					PackageReference(Path("../DevTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreEqual<std::string_view>("MyPackage", uut.GetName(), "Verify name matches expected.");
 			Assert::AreEqual<std::string_view>("C++", uut.GetLanguage(), "Verify language matches expected.");
 			Assert::IsTrue(uut.HasVersion(), "Verify has version.");
 			Assert::AreEqual(SemanticVersion(1, 2, 3), uut.GetVersion(), "Verify version is correct.");
-			Assert::IsTrue(uut.HasDependencies(), "Verify has dependencies.");
+			Assert::IsTrue(uut.HasRuntimeDependencies(), "Verify has runtime dependencies.");
 			Assert::AreEqual(
 				std::vector<PackageReference>({
-					PackageReference(Path(Path("../OtherPackage"))),
+					PackageReference(Path(Path("../OtherPackage/"))),
 				}),
-				uut.GetDependencies(),
-				"Verify dependencies are correct.");
-			Assert::IsTrue(uut.HasDevDependencies(), "Verify has dev dependencies.");
+				uut.GetRuntimeDependencies(),
+				"Verify runtime dependencies are correct.");
+			Assert::IsTrue(uut.HasBuildDependencies(), "Verify has build dependencies.");
 			Assert::AreEqual(
 				std::vector<PackageReference>({
-					PackageReference(Path(Path("../DevTask"))),
+					PackageReference(Path(Path("../DevTask/"))),
 				}),
-				uut.GetDevDependencies(),
-				"Verify dev dependencies are correct.");
+				uut.GetBuildDependencies(),
+				"Verify build dependencies are correct.");
+			Assert::IsTrue(uut.HasTestDependencies(), "Verify has test dependencies.");
+			Assert::AreEqual(
+				std::vector<PackageReference>({
+					PackageReference(Path(Path("../TestPackage/"))),
+				}),
+				uut.GetTestDependencies(),
+				"Verify test dependencies are correct.");
 		}
 
 		[[Fact]]
@@ -71,10 +82,13 @@ namespace Soup::Build::UnitTests
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../BuildTask")),
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreEqual(
@@ -83,10 +97,13 @@ namespace Soup::Build::UnitTests
 					"C++",
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
-						PackageReference(Path("../OtherPackage")),
+						PackageReference(Path("../OtherPackage/")),
 					}),
 					std::vector<PackageReference>({
-						PackageReference(Path("../BuildTask")),
+						PackageReference(Path("../BuildTask/")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../TestPackage/")),
 					})),
 				uut,
 				"Verify equal.");
@@ -100,10 +117,13 @@ namespace Soup::Build::UnitTests
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../BuildTask")),
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreNotEqual(
@@ -112,10 +132,13 @@ namespace Soup::Build::UnitTests
 					"C++",
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
-						PackageReference(Path("../OtherPackage")),
+						PackageReference(Path("../OtherPackage/")),
 					}),
 					std::vector<PackageReference>({
-						PackageReference(Path("../BuildTask")),
+						PackageReference(Path("../BuildTask/")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../TestPackage/")),
 					})),
 				uut,
 				"Verify are not equal.");
@@ -129,10 +152,13 @@ namespace Soup::Build::UnitTests
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../BuildTask")),
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreNotEqual(
@@ -141,10 +167,13 @@ namespace Soup::Build::UnitTests
 					"C#",
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
-						PackageReference(Path("../OtherPackage")),
+						PackageReference(Path("../OtherPackage/")),
 					}),
 					std::vector<PackageReference>({
-						PackageReference(Path("../BuildTask")),
+						PackageReference(Path("../BuildTask/")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../TestPackage/")),
 					})),
 				uut,
 				"Verify are not equal.");
@@ -158,10 +187,13 @@ namespace Soup::Build::UnitTests
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../BuildTask")),
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreNotEqual(
@@ -170,10 +202,13 @@ namespace Soup::Build::UnitTests
 					"C++",
 					SemanticVersion(11, 2, 3),
 					std::vector<PackageReference>({
-						PackageReference(Path("../OtherPackage")),
+						PackageReference(Path("../OtherPackage/")),
 					}),
 					std::vector<PackageReference>({
-						PackageReference(Path("../BuildTask")),
+						PackageReference(Path("../BuildTask/")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../TestPackage/")),
 					})),
 				uut,
 				"Verify are not equal.");
@@ -187,10 +222,13 @@ namespace Soup::Build::UnitTests
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../BuildTask")),
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreNotEqual(
@@ -199,27 +237,33 @@ namespace Soup::Build::UnitTests
 					"C++",
 					std::nullopt,
 					std::vector<PackageReference>({
-						PackageReference(Path("../OtherPackage")),
+						PackageReference(Path("../OtherPackage/")),
 					}),
 					std::vector<PackageReference>({
-						PackageReference(Path("../BuildTask")),
+						PackageReference(Path("../BuildTask/")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../TestPackage/")),
 					})),
 				uut,
 				"Verify are not equal.");
 		}
 
 		[[Fact]]
-		void OperatorNotEqualDependencies()
+		void OperatorNotEqualRuntimeDependencies()
 		{
 			auto uut = Recipe(
 				"MyPackage",
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../BuildTask")),
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreNotEqual(
@@ -230,24 +274,30 @@ namespace Soup::Build::UnitTests
 					std::vector<PackageReference>({
 					}),
 					std::vector<PackageReference>({
-						PackageReference(Path("../BuildTask")),
+						PackageReference(Path("../BuildTask/")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../TestPackage/")),
 					})),
 				uut,
 				"Verify are not equal.");
 		}
 
 		[[Fact]]
-		void OperatorNotEqualNoDependencies()
+		void OperatorNotEqualNoRuntimeDependencies()
 		{
 			auto uut = Recipe(
 				"MyPackage",
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../BuildTask")),
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreNotEqual(
@@ -257,24 +307,30 @@ namespace Soup::Build::UnitTests
 					SemanticVersion(1, 2, 3),
 					std::nullopt,
 					std::vector<PackageReference>({
-						PackageReference(Path("../BuildTask")),
+						PackageReference(Path("../BuildTask/")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../TestPackage/")),
 					})),
 				uut,
 				"Verify are not equal.");
 		}
 
 		[[Fact]]
-		void OperatorNotEqualDevDependencies()
+		void OperatorNotEqualBuildDependencies()
 		{
 			auto uut = Recipe(
 				"MyPackage",
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../BuildTask")),
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreNotEqual(
@@ -283,7 +339,77 @@ namespace Soup::Build::UnitTests
 					"C++",
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
-						PackageReference(Path("../OtherPackage")),
+						PackageReference(Path("../OtherPackage/")),
+					}),
+					std::vector<PackageReference>({
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../TestPackage/")),
+					})),
+				uut,
+				"Verify are not equal.");
+		}
+
+		[[Fact]]
+		void OperatorNotEqualNoBuildDependencies()
+		{
+			auto uut = Recipe(
+				"MyPackage",
+				"C++",
+				SemanticVersion(1, 2, 3),
+				std::vector<PackageReference>({
+					PackageReference(Path("../OtherPackage/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
+				}));
+
+			Assert::AreNotEqual(
+				Recipe(
+					"MyPackage",
+					"C++",
+					SemanticVersion(1, 2, 3),
+					std::vector<PackageReference>({
+						PackageReference(Path("../OtherPackage/")),
+					}),
+					std::nullopt,
+					std::vector<PackageReference>({
+						PackageReference(Path("../TestPackage/")),
+					})),
+				uut,
+				"Verify are not equal.");
+		}
+
+		[[Fact]]
+		void OperatorNotEqualTestDependencies()
+		{
+			auto uut = Recipe(
+				"MyPackage",
+				"C++",
+				SemanticVersion(1, 2, 3),
+				std::vector<PackageReference>({
+					PackageReference(Path("../OtherPackage/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
+				}));
+
+			Assert::AreNotEqual(
+				Recipe(
+					"MyPackage",
+					"C++",
+					SemanticVersion(1, 2, 3),
+					std::vector<PackageReference>({
+						PackageReference(Path("../OtherPackage/")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask/")),
 					}),
 					std::vector<PackageReference>({
 					})),
@@ -292,17 +418,20 @@ namespace Soup::Build::UnitTests
 		}
 
 		[[Fact]]
-		void OperatorNotEqualNoDevDependencies()
+		void OperatorNotEqualNoTestDependencies()
 		{
 			auto uut = Recipe(
 				"MyPackage",
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
-					PackageReference(Path("../OtherPackage")),
+					PackageReference(Path("../OtherPackage/")),
 				}),
 				std::vector<PackageReference>({
-					PackageReference(Path("../BuildTask")),
+					PackageReference(Path("../BuildTask/")),
+				}),
+				std::vector<PackageReference>({
+					PackageReference(Path("../TestPackage/")),
 				}));
 
 			Assert::AreNotEqual(
@@ -311,7 +440,10 @@ namespace Soup::Build::UnitTests
 					"C++",
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
-						PackageReference(Path("../OtherPackage")),
+						PackageReference(Path("../OtherPackage/")),
+					}),
+					std::vector<PackageReference>({
+						PackageReference(Path("../BuildTask/")),
 					}),
 					std::nullopt),
 				uut,
