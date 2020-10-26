@@ -423,7 +423,7 @@ namespace Soup::Build
 			{
 				Log::HighPriority("Host Build '" + recipe.GetName() + "'");
 				activeCompiler = _hostCompiler;
-				activeFlavor = arguments.Flavor;// TODO "release";
+				activeFlavor = "release";
 			}
 			else
 			{

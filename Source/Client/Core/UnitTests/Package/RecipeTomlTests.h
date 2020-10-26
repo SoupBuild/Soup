@@ -79,6 +79,7 @@ namespace Soup::Build::UnitTests
 				"C++",
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>(),
+				std::vector<PackageReference>(),
 				std::vector<PackageReference>());
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
@@ -133,6 +134,7 @@ Language = "C++"
 				"MyPackage",
 				"C++",
 				SemanticVersion(1, 2, 3),
+				std::vector<PackageReference>(),
 				std::vector<PackageReference>(),
 				std::vector<PackageReference>());
 
