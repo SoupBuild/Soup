@@ -2,14 +2,16 @@ Name = "Soup.Cpp.Compiler.MSVC.UnitTests"
 Language = "C++"
 Version = "1.0.0"
 Type = "Executable"
-Dependencies = [
-	"../MSVC/",
-	"../../../../Build/Runtime/",
-	"Soup.Test.Assert@0.1.7",
-]
 Source = [
 	"gen/Main.cpp",
 ]
 IncludePaths = [
 	"./",
+]
+
+[Dependencies]
+Runtime = [
+	"../MSVC/",
+	"../../../../Build/Runtime/",
+	"Soup.Test.Assert@0.1.7",
 ]

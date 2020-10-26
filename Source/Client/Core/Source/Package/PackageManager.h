@@ -90,9 +90,9 @@ namespace Soup
 
 				// Check if the package is already installed
 				auto packageNameNormalized = ToUpper(packageName);
-				if (recipe.HasDependencies())
+				if (recipe.HasRuntimeDependencies())
 				{
-					for (auto& dependency : recipe.GetDependencies())
+					for (auto& dependency : recipe.GetRuntimeDependencies())
 					{
 						if (!dependency.IsLocal())
 						{
@@ -128,11 +128,11 @@ namespace Soup
 				// Register the package in the recipe
 				Log::Info("Adding reference to recipe");
 				auto dependencies = std::vector<PackageReference>();
-				if (recipe.HasDependencies())
-					dependencies = recipe.GetDependencies();
+				if (recipe.HasRuntimeDependencies())
+					dependencies = recipe.GetRuntimeDependencies();
 
 				dependencies.push_back(targetPackageReference);
-				recipe.SetDependencies(dependencies);
+				recipe.SetRuntimeDependencies(dependencies);
 
 				// Save the state of the recipe
 				RecipeExtensions::SaveToFile(recipePath, recipe);
@@ -471,9 +471,9 @@ namespace Soup
 				throw std::runtime_error("Could not load the recipe file.");
 			}
 	
-			if (recipe.HasDependencies())
+			if (recipe.HasRuntimeDependencies())
 			{
-				for (auto& dependency : recipe.GetDependencies())
+				for (auto& dependency : recipe.GetRuntimeDependencies())
 				{
 					// If local then check children for external package references
 					// Otherwise install the external package reference and its dependencies
@@ -496,9 +496,9 @@ namespace Soup
 				}
 			}
 
-			if (recipe.HasDevDependencies())
+			if (recipe.HasBuildDependencies())
 			{
-				for (auto& dependency : recipe.GetDevDependencies())
+				for (auto& dependency : recipe.GetBuildDependencies())
 				{
 					// If local then check children for external package references
 					// Otherwise install the external package reference and its dependencies

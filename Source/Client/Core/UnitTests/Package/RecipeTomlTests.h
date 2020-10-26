@@ -67,8 +67,10 @@ namespace Soup::Build::UnitTests
 					Name="MyPackage"
 					Language="C++"
 					Version="1.2.3"
-					Dependencies=[]
-					DevDependencies=[]
+					[Dependencies]
+					Runtime=[]
+					Build=[]
+					Test=[]
 				)");
 			auto actual = Recipe(RecipeToml::Deserialize(recipeFile, recipe));
 
@@ -141,8 +143,10 @@ Language = "C++"
 R"(Name = "MyPackage"
 Language = "C++"
 Version = "1.2.3"
-Dependencies = []
-DevDependencies = []
+[Dependencies]
+Runtime = []
+Build = []
+Test = []
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");

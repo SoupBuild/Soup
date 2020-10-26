@@ -1,9 +1,10 @@
 Name = "Soup.CSharp.Compiler"
 Language = "C++"
 Version = "0.3.0"
-Dependencies = [
-	"Opal@0.1.8",
-	"Soup.Build.Utilities@0.4.0",
-]
-
 Interface = "Module.cpp"
+
+[Dependencies]
+Runtime = [
+	"Opal@0.1.8",
+	"Soup.Build.Utilities@0.4.1",
+]

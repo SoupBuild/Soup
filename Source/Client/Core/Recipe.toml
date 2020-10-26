@@ -1,16 +1,6 @@
 Name = "Soup.Core"
 Language = "C++"
 Version = "0.1.0"
-
-Dependencies = [
-	"../../../Dependencies/LzmaSdk/CPP/Library/",
-	"json11@1.0.1",
-	"toml11@1.0.1",
-	"../OpalExtensions/",
-	"Soup.Build@0.4.0",
-	"Soup.Build.Utilities@0.4.0",
-	"../../Build/Runtime/",
-]
 Defines = [
 	# "LOCAL_DEBUG",
 ]
@@ -21,15 +11,27 @@ IncludePaths = [
 	"Source/Utils/",
 ]
 
-DevDependencies = [
-	"../../Extensions/TestBuild/",
+[Dependencies]
+Runtime = [
+	"../../../Dependencies/LzmaSdk/CPP/Library/",
+	"json11@1.0.1",
+	"toml11@1.0.1",
+	"../OpalExtensions/",
+	"Soup.Build@0.4.1",
+	"Soup.Build.Utilities@0.4.1",
+	"../../Build/Runtime/",
+]
+Build = [
+	# "../../Extensions/TestBuild/",
+]
+Test = [
 	"Soup.Test.Assert@0.1.7",
 ]
 
-	[Tests]
-	Source = [
-		"UnitTests/gen/Main.cpp"
-	]
-	IncludePaths = [
-		"UnitTests/",
-	]
+[Tests]
+Source = [
+	"UnitTests/gen/Main.cpp"
+]
+IncludePaths = [
+	"UnitTests/",
+]

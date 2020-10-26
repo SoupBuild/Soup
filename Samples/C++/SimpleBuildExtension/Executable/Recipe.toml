@@ -2,9 +2,11 @@ Name = "SimpleBuildExtension.Executable"
 Language = "C++"
 Type = "Executable"
 Version = "1.0.0"
-DevDependencies = [
-	"../Extension"
-]
 Source = [
 	"Main.cpp"
+]
+
+[Dependencies]
+Build = [
+	"../Extension/"
 ]

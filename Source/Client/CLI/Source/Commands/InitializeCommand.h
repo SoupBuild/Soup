@@ -41,6 +41,7 @@ namespace Soup::Client
 				"C++",
 				SemanticVersion(1, 0, 0),
 				std::nullopt,
+				std::nullopt,
 				std::nullopt);
 
 			// TODO: 

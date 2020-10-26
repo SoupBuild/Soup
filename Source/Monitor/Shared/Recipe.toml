@@ -1,11 +1,13 @@
 Name = "Monitor.Shared"
 Language = "C++"
 Version = "1.0.0"
-Dependencies = [
-	"../../../Dependencies/Detours/src/",
-	"Opal@0.1.8",
-]
 Defines = [
 	# "TRACE_DETOUR_SERVER",
 ]
 Interface = "Module.cpp"
+
+[Dependencies]
+Runtime = [
+	"../../../Dependencies/Detours/src/",
+	"Opal@0.1.8",
+]

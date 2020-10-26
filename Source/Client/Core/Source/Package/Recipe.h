@@ -15,7 +15,9 @@ namespace Soup
 	{
 	private:
 		static constexpr const char* Property_Dependencies = "Dependencies";
-		static constexpr const char* Property_DevDependencies = "DevDependencies";
+		static constexpr const char* Property_Runtime = "Runtime";
+		static constexpr const char* Property_Build = "Build";
+		static constexpr const char* Property_Test = "Test";
 		static constexpr const char* Property_Language = "Language";
 		static constexpr const char* Property_Name = "Name";
 		static constexpr const char* Property_Version = "Version";
@@ -50,8 +52,9 @@ namespace Soup
 			std::string_view name,
 			std::string_view language,
 			std::optional<SemanticVersion> version,
-			std::optional<std::vector<PackageReference>> dependencies,
-			std::optional<std::vector<PackageReference>> devDependencies) :
+			std::optional<std::vector<PackageReference>> runtimeDependencies,
+			std::optional<std::vector<PackageReference>> buildDependencies,
+			std::optional<std::vector<PackageReference>> testDependencies) :
 			_table()
 		{
 			SetName(name);
@@ -60,11 +63,14 @@ namespace Soup
 			if (version.has_value())
 				SetVersion(version.value());
 
-			if (dependencies.has_value())
-				SetDependencies(dependencies.value());
+			if (runtimeDependencies.has_value())
+				SetRuntimeDependencies(runtimeDependencies.value());
 
-			if (devDependencies.has_value())
-				SetDevDependencies(devDependencies.value());
+			if (buildDependencies.has_value())
+				SetBuildDependencies(buildDependencies.value());
+
+			if (testDependencies.has_value())
+				SetTestDependencies(testDependencies.value());
 		}
 
 		/// <summary>
@@ -73,9 +79,9 @@ namespace Soup
 		Recipe(RecipeTable table) :
 			_table(std::move(table))
 		{
-			if (!HasValue(Property_Name))
+			if (!HasValue(_table, Property_Name))
 				throw std::runtime_error("Missing required property Name");
-			if (!HasValue(Property_Language))
+			if (!HasValue(_table, Property_Language))
 				throw std::runtime_error("Missing required property Language");
 		}
 
@@ -84,7 +90,7 @@ namespace Soup
 		/// </summary>
 		RecipeValue& GetNameValue()
 		{
-			return GetValue(Property_Name);
+			return GetValue(_table, Property_Name);
 		}
 
 		const std::string& GetName()
@@ -94,7 +100,7 @@ namespace Soup
 
 		void SetName(std::string_view value)
 		{
-			EnsureValue(Property_Name).SetValueString(std::string(value));
+			EnsureValue(_table, Property_Name).SetValueString(std::string(value));
 		}
 
 		/// <summary>
@@ -102,7 +108,7 @@ namespace Soup
 		/// </summary>
 		RecipeValue& GetLanguageValue()
 		{
-			return GetValue(Property_Language);
+			return GetValue(_table, Property_Language);
 		}
 
 		const std::string& GetLanguage()
@@ -112,7 +118,7 @@ namespace Soup
 
 		void SetLanguage(std::string_view value)
 		{
-			EnsureValue(Property_Language).SetValueString(std::string(value));
+			EnsureValue(_table, Property_Language).SetValueString(std::string(value));
 		}
 
 		/// <summary>
@@ -120,7 +126,7 @@ namespace Soup
 		/// </summary>
 		bool HasVersion()
 		{
-			return HasValue(Property_Version);
+			return HasValue(_table, Property_Version);
 		}
 
 		SemanticVersion GetVersion()
@@ -129,29 +135,28 @@ namespace Soup
 				throw std::runtime_error("No version.");
 
 			return SemanticVersion::Parse(
-				GetValue(Property_Version).AsString());
+				GetValue(_table, Property_Version).AsString());
 		}
 
 		void SetVersion(SemanticVersion value)
 		{
-			return EnsureValue(Property_Version).SetValueString(value.ToString());
+			return EnsureValue(_table, Property_Version).SetValueString(value.ToString());
 		}
 
 		/// <summary>
-		/// Gets or sets the list of dependency packages
-		/// TODO: Observable?
+		/// Gets or sets the list of runtime dependency packages
 		/// </summary>
-		bool HasDependencies()
+		bool HasRuntimeDependencies()
 		{
-			return HasValue(Property_Dependencies);
+			return HasDependencies() && HasValue(GetDependencies(), Property_Runtime);
 		}
 
-		std::vector<PackageReference> GetDependencies()
+		std::vector<PackageReference> GetRuntimeDependencies()
 		{
-			if (!HasDependencies())
-				throw std::runtime_error("No dependencies.");
+			if (!HasRuntimeDependencies())
+				throw std::runtime_error("No runtime dependencies.");
 
-			auto& values = GetValue(Property_Dependencies).AsList();
+			auto& values = GetValue(GetDependencies(), Property_Runtime).AsList();
 			auto result = std::vector<PackageReference>();
 			for (auto& value : values)
 			{
@@ -161,7 +166,7 @@ namespace Soup
 			return result;
 		}
 
-		void SetDependencies(const std::vector<PackageReference>& values)
+		void SetRuntimeDependencies(const std::vector<PackageReference>& values)
 		{
 			auto stringValues = RecipeList();
 			for (auto& value : values)
@@ -169,24 +174,24 @@ namespace Soup
 				stringValues.push_back(RecipeValue(value.ToString()));
 			}
 
-			EnsureValue(Property_Dependencies).SetValueList(std::move(stringValues));
+			auto& dependenciesTable = EnsureValue(_table, Property_Dependencies).AsTable();
+			EnsureValue(dependenciesTable, Property_Runtime).SetValueList(std::move(stringValues));
 		}
 
 		/// <summary>
-		/// Gets or sets the list of dev dependency packages
-		/// TODO: Observable?
+		/// Gets or sets the list of build dependency packages
 		/// </summary>
-		bool HasDevDependencies()
+		bool HasBuildDependencies()
 		{
-			return HasValue(Property_DevDependencies);
+			return HasDependencies() && HasValue(GetDependencies(), Property_Build);
 		}
 
-		std::vector<PackageReference> GetDevDependencies()
+		std::vector<PackageReference> GetBuildDependencies()
 		{
-			if (!HasDevDependencies())
-				throw std::runtime_error("No dev dependencies.");
+			if (!HasBuildDependencies())
+				throw std::runtime_error("No build dependencies.");
 
-			auto& values = GetValue(Property_DevDependencies).AsList();
+			auto& values = GetValue(GetDependencies(), Property_Build).AsList();
 			auto result = std::vector<PackageReference>();
 			for (auto& value : values)
 			{
@@ -196,7 +201,7 @@ namespace Soup
 			return result;
 		}
 
-		void SetDevDependencies(const std::vector<PackageReference>& values)
+		void SetBuildDependencies(const std::vector<PackageReference>& values)
 		{
 			auto stringValues = RecipeList();
 			for (auto& value : values)
@@ -204,7 +209,43 @@ namespace Soup
 				stringValues.push_back(RecipeValue(value.ToString()));
 			}
 
-			EnsureValue(Property_DevDependencies).SetValueList(std::move(stringValues));
+			auto& dependenciesTable = EnsureValue(_table, Property_Dependencies).AsTable();
+			EnsureValue(dependenciesTable, Property_Build).SetValueList(std::move(stringValues));
+		}
+
+		/// <summary>
+		/// Gets or sets the list of test dependency packages
+		/// </summary>
+		bool HasTestDependencies()
+		{
+			return HasDependencies() && HasValue(GetDependencies(), Property_Test);
+		}
+
+		std::vector<PackageReference> GetTestDependencies()
+		{
+			if (!HasTestDependencies())
+				throw std::runtime_error("No test dependencies.");
+
+			auto& values = GetValue(GetDependencies(), Property_Test).AsList();
+			auto result = std::vector<PackageReference>();
+			for (auto& value : values)
+			{
+				result.push_back(PackageReference::Parse(value.AsString()));
+			}
+
+			return result;
+		}
+
+		void SetTestDependencies(const std::vector<PackageReference>& values)
+		{
+			auto stringValues = RecipeList();
+			for (auto& value : values)
+			{
+				stringValues.push_back(RecipeValue(value.ToString()));
+			}
+
+			auto& dependenciesTable = EnsureValue(_table, Property_Dependencies).AsTable();
+			EnsureValue(dependenciesTable, Property_Test).SetValueList(std::move(stringValues));
 		}
 
 		/// <summary>
@@ -232,34 +273,51 @@ namespace Soup
 		}
 
 	private:
-		bool HasValue(std::string_view key)
+		/// <summary>
+		/// Gets or sets the table of dependency packages
+		/// </summary>
+		bool HasDependencies()
 		{
-			return _table.contains(key.data());
+			return HasValue(_table, Property_Dependencies);
 		}
 
-		RecipeValue& GetValue(std::string_view key)
+		RecipeTable& GetDependencies()
 		{
-			auto findItr = _table.find(key.data());
-			if (findItr != _table.end())
+			if (!HasDependencies())
+				throw std::runtime_error("No dependencies.");
+
+			auto& values = GetValue(_table, Property_Dependencies).AsTable();
+			return values;
+		}
+
+		bool HasValue(RecipeTable& table, std::string_view key)
+		{
+			return table.contains(key.data());
+		}
+
+		RecipeValue& GetValue(RecipeTable& table, std::string_view key)
+		{
+			auto findItr = table.find(key.data());
+			if (findItr != table.end())
 			{
 				return findItr->second;
 			}
 			else
 			{
-				throw std::runtime_error("Requested recipe value does not exist in the root table.");
+				throw std::runtime_error("Requested recipe value does not exist in the table.");
 			}
 		}
 
-		RecipeValue& EnsureValue(std::string_view key)
+		RecipeValue& EnsureValue(RecipeTable& table, std::string_view key)
 		{
-			auto findItr = _table.find(key.data());
-			if (findItr != _table.end())
+			auto findItr = table.find(key.data());
+			if (findItr != table.end())
 			{
 				return findItr->second;
 			}
 			else
 			{
-				auto insertResult = _table.emplace(key.data(), RecipeValue());
+				auto insertResult = table.emplace(key.data(), RecipeValue());
 				if (insertResult.second)
 				{
 					return insertResult.first->second;

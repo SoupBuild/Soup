@@ -2,11 +2,13 @@ Name = "Opal.Extensions"
 Language = "C++"
 Version = "0.1.0"
 Interface = "Module.cpp"
-Dependencies = [
+Defines = [
+	# "ENABLE_FIDDLER_PROXY",
+]
+
+[Dependencies]
+Runtime = [
 	"../../../Dependencies/cpp-httplib/",
 	# "httplib@1.0.0",
 	"Opal@0.1.8",
-]
-Defines = [
-	# "ENABLE_FIDDLER_PROXY",
 ]

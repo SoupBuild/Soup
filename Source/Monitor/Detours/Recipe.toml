@@ -2,14 +2,16 @@ Name = "Monitor.Detours"
 Language = "C++"
 Version = "1.0.0"
 Type = "DynamicLibrary"
-Dependencies = [
-	"../../../Dependencies/Detours/src/",
-	"../Shared/",
-]
 Defines = [
 	# "ENABLE_MONITOR_DEBUG",
 	# "TRACE_DETOUR_CLIENT",
 ]
 Source = [
 	"Main.cpp",
+]
+
+[Dependencies]
+Runtime = [
+	"../../../Dependencies/Detours/src/",
+	"../Shared/",
 ]
