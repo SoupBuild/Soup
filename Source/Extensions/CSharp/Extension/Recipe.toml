@@ -17,6 +17,7 @@ Build = [
 ]
 Test = [
 	"Soup.Test.Assert@0.1.7",
+	"../../../Build/Runtime/",
 ]
 
 [Tests]
