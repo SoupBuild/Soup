@@ -105,7 +105,7 @@ namespace Soup::Cpp::Compiler::Mock
 						})));
 			}
 
-			for (auto& file : arguments.ImplementationUnits)
+			for (auto& fileArguments : arguments.ImplementationUnits)
 			{
 				result.push_back(
 					Build::Utilities::BuildOperation(
@@ -114,10 +114,10 @@ namespace Soup::Cpp::Compiler::Mock
 						Path("MockCompiler.exe"),
 						"Arguments",
 						std::vector<Path>({
-							Path("InputFile.in"),
+							fileArguments.SourceFile,
 						}),
 						std::vector<Path>({
-							Path("OutputFile.out"),
+							fileArguments.TargetFile,
 						})));
 			}
 

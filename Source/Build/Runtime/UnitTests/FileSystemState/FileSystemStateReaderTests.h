@@ -9,7 +9,7 @@ namespace Soup::Build::Runtime::UnitTests
 	class FileSystemStateReaderTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_InvalidFileHeaderThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -24,7 +24,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"Invalid file system state file header");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_InvalidFileVersionThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -39,7 +39,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"File System state file version does not match expected");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_InvalidOperationsHeaderThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -55,7 +55,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"Invalid file system state files header");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_ExtraContentThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -71,7 +71,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"File System State file corrupted - Did not read the entire file");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_Empty()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -91,7 +91,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify files match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_Single()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -117,7 +117,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify files match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_Multiple()
 		{
 			auto binaryFileContent = std::vector<char>(

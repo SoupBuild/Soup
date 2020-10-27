@@ -17,7 +17,7 @@ namespace Soup::Client
 		/// <summary>
 		/// Gets or sets the path to run
 		/// </summary>
-		[[Args::Option("path", Index = 0, HelpText = "Path to the package to run.")]]
+		// [[Args::Option("path", Index = 0, HelpText = "Path to the package to run.")]]
 		std::string Path;
 
 		/// <summary>

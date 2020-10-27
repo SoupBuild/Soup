@@ -9,7 +9,7 @@ namespace Soup::UnitTests
 	class LocalUserConfigJsonTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_GarbageThrows()
 		{
 			auto localUserConfig = std::stringstream("garbage");
@@ -18,7 +18,7 @@ namespace Soup::UnitTests
 			});
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_MissingRuntimeCompilerThrows()
 		{
 			auto localUserConfig = std::stringstream(
@@ -30,7 +30,7 @@ namespace Soup::UnitTests
 			});
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_Simple()
 		{
 			auto localUserConfig = std::stringstream(
@@ -49,7 +49,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_AllProperties()
 		{
 			auto localUserConfig = std::stringstream(

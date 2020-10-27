@@ -30,8 +30,8 @@ namespace Soup
 		std::transform(
 			result.begin(),
 			result.end(),
-			result.begin(), 
-			[](unsigned char c) { return std::toupper(c); });
+			result.begin(),
+			[](unsigned char c) { return static_cast<char>(std::toupper(c)); });
 
 		return result;
 	}

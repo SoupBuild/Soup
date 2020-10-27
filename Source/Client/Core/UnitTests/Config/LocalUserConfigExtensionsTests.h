@@ -9,7 +9,7 @@ namespace Soup::UnitTests
 	class LocalUserConfigExtensionsTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void GetLocalUserConfigFilePath()
 		{
 			// Register the test process manager
@@ -21,7 +21,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(result, Path("C:/TestInstall/LocalUserConfig.json"), "Verify the result matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void LoadFromFile_MissingFileThrows()
 		{
 			// Register the test process manager
@@ -58,7 +58,7 @@ namespace Soup::UnitTests
 				"Verify messages match expected.");
 		}
 		
-		[[Fact]]
+		// [[Fact]]
 		void LoadFromFile_GarbageFileThrows()
 		{
 			// Register the test process manager
@@ -100,7 +100,7 @@ namespace Soup::UnitTests
 				"Verify messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void LoadFromFile_SimpleFile()
 		{
 			// Register the test process manager

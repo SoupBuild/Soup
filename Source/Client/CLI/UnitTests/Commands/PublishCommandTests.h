@@ -10,7 +10,7 @@ namespace Soup::Client::UnitTests
 	class PublishCommandTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize()
 		{
 			auto uut = PublishCommand();

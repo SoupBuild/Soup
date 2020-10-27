@@ -9,7 +9,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 	class CompilerTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize()
 		{
 			auto uut = Compiler(Path("C:/Clang/bin/"));
@@ -20,7 +20,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(uut.GetDynamicLibraryFileExtension(), std::string_view("dll"), "Verify dynamic library file extension match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Compile_Simple()
 		{
 			auto uut = Compiler(Path("C:/Clang/bin/"));
@@ -67,7 +67,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 				"Verify result matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Compile_Module()
 		{
 			auto uut = Compiler(Path("C:/Clang/bin/"));
@@ -137,7 +137,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 				"Verify result matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void LinkStaticLibrary_Simple()
 		{
 			auto uut = Compiler(Path("C:/Clang/bin/"));
@@ -168,7 +168,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expected, result, "Verify result matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void LinkExecutable_Simple()
 		{
 			auto uut = Compiler(Path("C:/Clang/bin/"));

@@ -37,11 +37,7 @@ namespace Soup::CSharp::Compiler
 			// Build the set of input/output files along with the arguments
 			auto inputFiles = std::vector<Path>();
 			auto outputFiles = std::vector<Path>();
-			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(
-				args,
-				_toolsPath,
-				inputFiles,
-				outputFiles);
+			auto commandArgs = ArgumentBuilder::BuildCompilerArguments(args);
 
 			auto buildOperation = Build::Utilities::BuildOperation(
 				"CoreCompile",

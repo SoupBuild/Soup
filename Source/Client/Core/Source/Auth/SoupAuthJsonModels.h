@@ -146,7 +146,7 @@ namespace Soup::Api
 
 			return ClientCredentialsTokenModel(
 				std::move(accessToken),
-				expiresIn,
+				static_cast<int>(expiresIn),
 				std::move(tokenType),
 				std::move(scope));
 		}

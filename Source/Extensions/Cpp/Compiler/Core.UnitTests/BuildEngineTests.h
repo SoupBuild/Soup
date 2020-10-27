@@ -9,14 +9,14 @@ namespace Soup::Cpp::Compiler::UnitTests
 	class BuildEngineTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Success()
 		{
 			auto compiler = std::make_shared<Compiler::Mock::Compiler>();
 			auto uut = BuildEngine(compiler);
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Executable()
 		{
 			// Register the test listener
@@ -133,10 +133,10 @@ namespace Soup::Cpp::Compiler::UnitTests
 					Path("MockCompiler.exe"),
 					"Arguments",
 					std::vector<Path>({
-						Path("InputFile.in"),
+						Path("TestFile.cpp"),
 					}),
 					std::vector<Path>({
-						Path("OutputFile.out"),
+						Path("obj/TestFile.mock.obj"),
 					})),
 				Build::Utilities::BuildOperation(
 					"MockLink: 1",
@@ -174,7 +174,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"Verify Runtime Dependencies Result");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Library_MultipleFiles()
 		{
 			// Register the test listener
@@ -324,10 +324,10 @@ namespace Soup::Cpp::Compiler::UnitTests
 					Path("MockCompiler.exe"),
 					"Arguments",
 					std::vector<Path>({
-						Path("InputFile.in"),
+						Path("TestFile1.cpp"),
 					}),
 					std::vector<Path>({
-						Path("OutputFile.out"),
+						Path("obj/TestFile1.mock.obj"),
 					})),
 				Build::Utilities::BuildOperation(
 					"MockCompile: 1",
@@ -335,10 +335,10 @@ namespace Soup::Cpp::Compiler::UnitTests
 					Path("MockCompiler.exe"),
 					"Arguments",
 					std::vector<Path>({
-						Path("InputFile.in"),
+						Path("TestFile2.cpp"),
 					}),
 					std::vector<Path>({
-						Path("OutputFile.out"),
+						Path("obj/TestFile2.mock.obj"),
 					})),
 				Build::Utilities::BuildOperation(
 					"MockCompile: 1",
@@ -346,10 +346,10 @@ namespace Soup::Cpp::Compiler::UnitTests
 					Path("MockCompiler.exe"),
 					"Arguments",
 					std::vector<Path>({
-						Path("InputFile.in"),
+						Path("TestFile3.cpp"),
 					}),
 					std::vector<Path>({
-						Path("OutputFile.out"),
+						Path("obj/TestFile3.mock.obj"),
 					})),
 				Build::Utilities::BuildOperation(
 					"MockLink: 1",
@@ -389,7 +389,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"Verify Runtime Dependencies Result");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Library_ModuleInterface()
 		{
 			// Register the test listener
@@ -577,10 +577,10 @@ namespace Soup::Cpp::Compiler::UnitTests
 					Path("MockCompiler.exe"),
 					"Arguments",
 					std::vector<Path>({
-						Path("InputFile.in"),
+						Path("TestFile1.cpp"),
 					}),
 					std::vector<Path>({
-						Path("OutputFile.out"),
+						Path("obj/TestFile1.mock.obj"),
 					})),
 				Build::Utilities::BuildOperation(
 					"MockCompile: 1",
@@ -588,10 +588,10 @@ namespace Soup::Cpp::Compiler::UnitTests
 					Path("MockCompiler.exe"),
 					"Arguments",
 					std::vector<Path>({
-						Path("InputFile.in"),
+						Path("TestFile2.cpp"),
 					}),
 					std::vector<Path>({
-						Path("OutputFile.out"),
+						Path("obj/TestFile2.mock.obj"),
 					})),
 				Build::Utilities::BuildOperation(
 					"MockCompile: 1",
@@ -599,10 +599,10 @@ namespace Soup::Cpp::Compiler::UnitTests
 					Path("MockCompiler.exe"),
 					"Arguments",
 					std::vector<Path>({
-						Path("InputFile.in"),
+						Path("TestFile3.cpp"),
 					}),
 					std::vector<Path>({
-						Path("OutputFile.out"),
+						Path("obj/TestFile3.mock.obj"),
 					})),
 				Build::Utilities::BuildOperation(
 					"MockLink: 1",
@@ -644,7 +644,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 				"Verify Runtime Dependencies Result");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Library_ModuleInterfaceNoSource()
 		{
 			// Register the test listener

@@ -148,7 +148,7 @@ namespace Opal::Network
 		HttpResponse Post(
 			std::string_view request,
 			std::string_view contentType,
-			std::istream& content) override final
+			std::istream& /*content*/) override final
 		{
 			auto message = std::stringstream();
 			message << "Post: " << request;
@@ -183,7 +183,7 @@ namespace Opal::Network
 		HttpResponse Put(
 			std::string_view request,
 			std::string_view contentType,
-			std::istream& content) override final
+			std::istream& /*content*/) override final
 		{
 			auto message = std::stringstream();
 			message << "Put: " << request;

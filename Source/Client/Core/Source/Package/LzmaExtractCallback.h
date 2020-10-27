@@ -41,7 +41,7 @@ namespace Soup
 		std::shared_ptr<LzmaSdk::ISequentialOutStream> GetStream(
 			std::string_view path,
 			std::optional<std::time_t> modifiedTime,
-			std::optional<uint32_t> permissions) override final
+			std::optional<uint32_t> /*permissions*/) override final
 		{
 			_currentFilePath = Path(path);
 			Log::Info("ExtractGetStream: " + _currentFilePath.ToString());
@@ -64,12 +64,12 @@ namespace Soup
 		}
 
 		// Operation progress
-		void OnOperationStart(LzmaSdk::OperationType type) override final
+		void OnOperationStart(LzmaSdk::OperationType /*type*/) override final
 		{
 			Log::Info("ExtractOnOperationStart");
 		}
 
-		void OnOperationCompleted(LzmaSdk::OperationResult result) override final
+		void OnOperationCompleted(LzmaSdk::OperationResult /*result*/) override final
 		{
 			Log::Info("ExtractOperationCompleted");
 

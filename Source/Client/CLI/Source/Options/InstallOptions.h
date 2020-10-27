@@ -17,13 +17,13 @@ namespace Soup::Client
 		/// <summary>
 		/// Gets or sets the path to install
 		/// </summary>
-		[[Args::Option("path", Index = 0, HelpText = "Path to the package to install.")]]
+		// [[Args::Option("path", Index = 0, HelpText = "Path to the package to install.")]]
 		std::string Path;
 
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
-		[[Args::Option(Index = 0, HelpText = "The package reference to install.")]]
+		// [[Args::Option(Index = 0, HelpText = "The package reference to install.")]]
 		std::string PackageReference;
 
 		/// <summary>

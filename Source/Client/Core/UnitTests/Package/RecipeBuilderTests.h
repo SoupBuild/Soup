@@ -9,7 +9,7 @@ namespace Soup::UnitTests
 	class RecipeBuilderTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Success()
 		{
 			// auto systemCompiler = std::make_shared<Compiler::Mock::Compiler>();
@@ -17,7 +17,7 @@ namespace Soup::UnitTests
 			// auto uut = RecipeBuilder(systemCompiler, runtimeCompiler);
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_NullSystemCompilerThrows()
 		{
 			// Assert::ThrowsRuntimeError([]() {
@@ -27,7 +27,7 @@ namespace Soup::UnitTests
 			// });
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_NullRuntimeCompilerThrows()
 		{
 			// Assert::ThrowsRuntimeError([]() {

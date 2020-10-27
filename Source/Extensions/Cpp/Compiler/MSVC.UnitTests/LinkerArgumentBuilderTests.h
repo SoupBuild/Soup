@@ -9,7 +9,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 	class LinkerArgumentBuilderTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void ZeroObjectFiles()
 		{
 			LinkArguments arguments = {};
@@ -29,7 +29,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void EmptyTargetFile_Throws()
 		{
 			LinkArguments arguments = {};
@@ -43,7 +43,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			});
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void StaticLibrary()
 		{
 			LinkArguments arguments = {};
@@ -66,7 +66,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void StaticLibrary_LibraryPaths()
 		{
 			LinkArguments arguments = {};
@@ -93,7 +93,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void DynamicLibrary()
 		{
 			LinkArguments arguments = {};
@@ -120,7 +120,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Executable()
 		{
 			LinkArguments arguments = {};

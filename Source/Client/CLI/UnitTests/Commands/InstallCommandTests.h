@@ -10,7 +10,7 @@ namespace Soup::Client::UnitTests
 	class InstallCommandTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize()
 		{
 			auto uut = InstallCommand();

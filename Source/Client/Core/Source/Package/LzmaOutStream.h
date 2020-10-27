@@ -59,7 +59,7 @@ namespace Soup
 			return stream.tellp();
 		}
 
-		virtual void SetSize(uint64_t size) override final
+		virtual void SetSize(uint64_t /*size*/) override final
 		{
 			throw std::runtime_error("Not implemented");
 		}

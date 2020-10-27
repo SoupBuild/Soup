@@ -131,7 +131,7 @@ namespace Soup::Cpp::Compiler
 		bool operator ==(const InterfaceUnitCompileArguments& rhs) const
 		{
 			return SourceFile == rhs.SourceFile &&
-				TargetFile == rhs.TargetFile;
+				TargetFile == rhs.TargetFile &&
 				ModuleInterfaceTarget == rhs.ModuleInterfaceTarget;
 		}
 
@@ -197,6 +197,16 @@ namespace Soup::Cpp::Compiler
 		std::vector<TranslationUnitCompileArguments> ImplementationUnits;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to enable warnings as errors
+		/// </summary>
+		bool EnableWarningsAsErrors;
+
+		/// <summary>
+		/// Gets or sets the list of disabled warnings
+		/// </summary>
+		std::vector<std::string> DisabledWarnings;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		bool operator ==(const SharedCompileArguments& rhs) const
@@ -209,7 +219,9 @@ namespace Soup::Cpp::Compiler
 				IncludeModules == rhs.IncludeModules &&
 				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
 				InterfaceUnit == rhs.InterfaceUnit &&
-				ImplementationUnits == rhs.ImplementationUnits;
+				ImplementationUnits == rhs.ImplementationUnits &&
+				EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
+				DisabledWarnings == rhs.DisabledWarnings;
 		}
 
 		bool operator !=(const SharedCompileArguments& rhs) const

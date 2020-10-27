@@ -99,7 +99,6 @@ namespace Soup::Api
 			urlBuilder << path << query << fragment;
 			auto localPath = urlBuilder.str();
 
-			auto secret = "secret_for_client";
 			auto scope = "soup_api";
 			auto clientId = "soup.client";
 

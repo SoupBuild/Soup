@@ -9,7 +9,7 @@ namespace Soup::Build::UnitTests
 	class RecipeExtensionsTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void TryLoadRecipeFromFile_MissingFile()
 		{
 			// Register the test listener
@@ -44,7 +44,7 @@ namespace Soup::Build::UnitTests
 				"Verify messages match expected.");
 		}
 		
-		[[Fact]]
+		// [[Fact]]
 		void TryLoadRecipeFromFile_GarbageFile()
 		{
 			// Register the test listener
@@ -84,7 +84,7 @@ namespace Soup::Build::UnitTests
 				"Verify messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void TryLoadRecipeFromFile_SimpleFile()
 		{
 			// Register the test listener
@@ -131,7 +131,7 @@ namespace Soup::Build::UnitTests
 				"Verify messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void SaveToFile_SimpleFile()
 		{
 			// Register the test listener
@@ -172,7 +172,7 @@ Language = "C++"
 			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetPackageReferencePath_IsRooted()
 		{
 			auto reference = Path("Root/Sub/");
@@ -182,7 +182,7 @@ Language = "C++"
 			Assert::AreEqual(result, Path("C:/Other/Reference/"), "Verify the result matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetPackageReferencePath_NotRooted()
 		{
 			auto reference = Path("Root/Sub/");

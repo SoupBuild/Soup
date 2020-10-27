@@ -10,7 +10,7 @@ namespace Soup::Client::UnitTests
 	class InitializeCommandTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void NameIsCorrect()
 		{
 			auto uut = InitializeCommand();

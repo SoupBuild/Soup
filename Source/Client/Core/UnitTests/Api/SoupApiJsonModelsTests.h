@@ -9,7 +9,7 @@ namespace Soup::Api::UnitTests
 	class SoupApiJsonModelsTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void ParsePackageResult_GarbageThrows()
 		{
 			auto packageResult = std::string("garbage");
@@ -18,7 +18,7 @@ namespace Soup::Api::UnitTests
 			});
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void ParsePackageResult_MissingNameThrows()
 		{
 			auto packageResult = std::string(
@@ -30,7 +30,7 @@ namespace Soup::Api::UnitTests
 			});
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void ParsePackageResult_Simple()
 		{
 			auto packageResult = std::string(
@@ -45,7 +45,7 @@ namespace Soup::Api::UnitTests
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void ParsePackageResult_AllProperties()
 		{
 			auto packageResult = std::string(

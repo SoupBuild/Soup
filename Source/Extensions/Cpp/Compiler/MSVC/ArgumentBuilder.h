@@ -63,6 +63,20 @@ namespace Soup::Cpp::Compiler::MSVC
 				AddFlag(commandArguments, Compiler_ArgumentFlag_GenerateDebugInformation);
 			}
 
+			// Enable warnings as errors at W4 by default
+			if (arguments.EnableWarningsAsErrors)
+			{
+				AddFlag(commandArguments, "WX");
+			}
+
+			AddFlag(commandArguments, "W4");
+
+			// Disable any requested warnings
+			for (auto& warning : arguments.DisabledWarnings)
+			{
+				AddFlagValue(commandArguments, "wd", warning);
+			}
+
 			// Set the language standard
 			switch (arguments.Standard)
 			{

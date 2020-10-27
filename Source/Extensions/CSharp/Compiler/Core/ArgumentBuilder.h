@@ -15,10 +15,7 @@ namespace Soup::CSharp::Compiler
 	{
 	public:
 		static std::vector<std::string> BuildCompilerArguments(
-			const CompileArguments& arguments,
-			const Path& toolsPath,
-			std::vector<Path>& inputFiles,
-			std::vector<Path>& outputFiles)
+			const CompileArguments& arguments)
 		{
 			// Calculate object output file
 			auto commandArgs = std::vector<std::string>();

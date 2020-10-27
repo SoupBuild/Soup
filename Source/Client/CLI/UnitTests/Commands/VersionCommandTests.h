@@ -10,7 +10,7 @@ namespace Soup::Client::UnitTests
 	class VersionCommandTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize()
 		{
 			auto uut = VersionCommand();

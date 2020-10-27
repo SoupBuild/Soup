@@ -9,7 +9,7 @@ namespace Soup::Api::UnitTests
 	class SoupApiTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void GetPackage_NotFound()
 		{
 			// Register the test listener
@@ -56,7 +56,7 @@ namespace Soup::Api::UnitTests
 				"Verify http requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetPackage_Success()
 		{
 			// Register the test listener

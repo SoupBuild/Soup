@@ -9,7 +9,7 @@ namespace Soup::Build::Runtime::UnitTests
 	class FileSystemStateTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Default()
 		{
 			auto uut = FileSystemState(1234);
@@ -28,7 +28,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify files match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_ListOperations_Single()
 		{
 			auto uut = FileSystemState(
@@ -60,7 +60,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify files match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetFilePath_MissingThrows()
 		{
 			auto uut = FileSystemState(
@@ -74,7 +74,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"The provided file id does not exist in the files set.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetFilePath_Found()
 		{
 			auto uut = FileSystemState(
@@ -90,7 +90,7 @@ namespace Soup::Build::Runtime::UnitTests
 			Assert::AreEqual(Path("C:/Root/DoStuff.exe"), actual, "Verify path matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetLastWriteTime_Missing()
 		{
 			// Register the test file system
@@ -121,7 +121,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify file system requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetLastWriteTime_Found()
 		{
 			auto setLastWriteTime = CreateDateTime(2015, 5, 22, 9, 11);
@@ -140,7 +140,7 @@ namespace Soup::Build::Runtime::UnitTests
 			Assert::AreEqual(std::optional<time_t>(setLastWriteTime), lastWriteTime, "Verify last write time matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void TryFindFileId_Missing()
 		{
 			auto uut = FileSystemState(
@@ -154,7 +154,7 @@ namespace Soup::Build::Runtime::UnitTests
 			Assert::IsFalse(result, "Verify result is false.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void TryFindFileId_Found()
 		{
 			auto uut = FileSystemState(
@@ -173,7 +173,7 @@ namespace Soup::Build::Runtime::UnitTests
 			Assert::AreEqual<FileId>(8, fileId, "Verify file id matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void ToFileId_Existing()
 		{
 			auto uut = FileSystemState(
@@ -200,7 +200,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify files match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void ToFileId_Unknown()
 		{
 			auto uut = FileSystemState(

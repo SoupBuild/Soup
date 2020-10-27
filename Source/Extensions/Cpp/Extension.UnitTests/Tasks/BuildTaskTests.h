@@ -9,7 +9,7 @@ namespace Soup::Cpp::UnitTests
 	class BuildTaskTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Success()
 		{
 			auto compilerFactory = CompilerFactory();
@@ -18,7 +18,7 @@ namespace Soup::Cpp::UnitTests
 			Assert::AreEqual("Build", uut.GetName(), "Verify name matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Executable()
 		{
 			// Register the test listener
@@ -162,7 +162,7 @@ namespace Soup::Cpp::UnitTests
 				"Verify Build Operations Result");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Executable_OptimizeSpeed()
 		{
 			// Register the test listener
@@ -298,7 +298,7 @@ namespace Soup::Cpp::UnitTests
 				Build::Utilities::BuildOperationListWrapper(buildState.GetRootOperationList()));
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Executable_OptimizeSize()
 		{
 			// Register the test listener
@@ -434,7 +434,7 @@ namespace Soup::Cpp::UnitTests
 				Build::Utilities::BuildOperationListWrapper(buildState.GetRootOperationList()));
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Library_MultipleFiles()
 		{
 			// Register the test listener
@@ -639,7 +639,7 @@ namespace Soup::Cpp::UnitTests
 				Build::Utilities::BuildOperationListWrapper(buildState.GetRootOperationList()));
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Library_ModuleInterface()
 		{
 			// Register the test listener
@@ -914,7 +914,7 @@ namespace Soup::Cpp::UnitTests
 				Build::Utilities::BuildOperationListWrapper(buildState.GetRootOperationList()));
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Library_ModuleInterfaceNoSource()
 		{
 			// Register the test listener

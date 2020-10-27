@@ -9,7 +9,7 @@ namespace Soup::UnitTests
 	class LocalUserConfigTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void InitializerDefault()
 		{
 			auto uut = LocalUserConfig();
@@ -21,7 +21,7 @@ namespace Soup::UnitTests
 			Assert::IsFalse(uut.HasWindowsSDKLibraryPaths(), "Verify has no windows sdk library paths.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void InitializerAll()
 		{
 			auto uut = LocalUserConfig(

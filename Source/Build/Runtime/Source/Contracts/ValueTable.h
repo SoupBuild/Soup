@@ -117,8 +117,8 @@ namespace Soup::Build::Runtime
 				auto& keys = _keyList.GetValues();
 				keys.clear();
 				keys.reserve(_values.size());
-				for(auto& value : _values)
-					keys.push_back(value.first);
+				for(auto& keyValue : _values)
+					keys.push_back(keyValue.first);
 
 				return insertResult.first->second;
 			}

@@ -9,7 +9,7 @@ namespace Soup::UnitTests
 	class PackageReferenceTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void InitializeNameVersion()
 		{
 			auto uut = PackageReference(
@@ -21,7 +21,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(SemanticVersion(1, 2, 3), uut.GetVersion(), "Verify version matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void InitializePath()
 		{
 			auto uut = PackageReference(Path("../MyPackage"));
@@ -30,7 +30,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(Path("../MyPackage"), uut.GetPath(), "Verify path matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorEqualNameVersion()
 		{
 			auto uut = PackageReference(
@@ -45,7 +45,7 @@ namespace Soup::UnitTests
 				"Verify are equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorEqualPath()
 		{
 			auto uut = PackageReference(Path("../MyPackage"));
@@ -56,7 +56,7 @@ namespace Soup::UnitTests
 				"Verify are equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualName()
 		{
 			auto uut = PackageReference(
@@ -71,7 +71,7 @@ namespace Soup::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualVersion()
 		{
 			auto uut = PackageReference(
@@ -86,7 +86,7 @@ namespace Soup::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualPath()
 		{
 			auto uut = PackageReference(Path("../MyPackage"));
@@ -97,8 +97,8 @@ namespace Soup::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Theory]]
-		[[InlineData("Name@1.2.3", "Name", Soup::SemanticVersion(1, 2, 3))]]
+		// [[Theory]]
+		// [[InlineData("Name@1.2.3", "Name", Soup::SemanticVersion(1, 2, 3))]]
 		void ParseNameVersionValues(std::string value, std::string name, SemanticVersion version)
 		{
 			auto uut = PackageReference::Parse(value);
@@ -108,8 +108,8 @@ namespace Soup::UnitTests
 				"Verify matches expected values.");
 		}
 
-		[[Theory]]
-		[[InlineData("../Path")]]
+		// [[Theory]]
+		// [[InlineData("../Path")]]
 		void ParsePathValues(std::string value)
 		{
 			auto uut = PackageReference::Parse(value);
@@ -119,9 +119,9 @@ namespace Soup::UnitTests
 				"Verify matches expected values.");
 		}
 
-		[[Theory]]
-		[[InlineData("Package@1.2.3", true)]] // Success
-		[[InlineData("Package@2", false)]] // Fails invalid version
+		// [[Theory]]
+		// [[InlineData("Package@1.2.3", true)]] // Success
+		// [[InlineData("Package@2", false)]] // Fails invalid version
 		void TryParseValues(std::string value, bool expectedResult)
 		{
 			PackageReference uut;
@@ -132,8 +132,8 @@ namespace Soup::UnitTests
 				"Verify matches expected result.");
 		}
 
-		[[Theory]]
-		[[InlineData("Name", Soup::SemanticVersion(1, 2, 3), "Name@1.2.3")]]
+		// [[Theory]]
+		// [[InlineData("Name", Soup::SemanticVersion(1, 2, 3), "Name@1.2.3")]]
 		void ToStringNameVersionValues(std::string name, SemanticVersion version, std::string expected)
 		{
 			auto uut = PackageReference(name, version);
@@ -144,8 +144,8 @@ namespace Soup::UnitTests
 				"Verify matches expected value.");
 		}
 
-		[[Theory]]
-		[[InlineData("../Path")]]
+		// [[Theory]]
+		// [[InlineData("../Path")]]
 		void ToStringPathValues(std::string path)
 		{
 			auto uut = PackageReference(Path(path));

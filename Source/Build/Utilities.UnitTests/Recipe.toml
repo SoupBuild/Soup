@@ -12,5 +12,5 @@ IncludePaths = [
 [Dependencies]
 Runtime = [
 	"../Utilities/",
-	"Soup.Test.Assert@0.1.7",
+	"Soup.Test.Assert@0.1.8",
 ]

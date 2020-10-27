@@ -679,13 +679,14 @@ namespace Functions::WinBase::Overrides
 
 		return result;
 	}
+
 	BOOLEAN WINAPI CreateSymbolicLinkTransactedW(
 		LPCWSTR lpSymlinkFileName,
 		LPCWSTR lpTargetFileName,
 		DWORD dwFlags,
 		HANDLE hTransaction)
 	{
-		BOOL result = 0;
+		BOOLEAN result = 0;
 		__try
 		{
 			result = Cache::CreateSymbolicLinkTransactedW(

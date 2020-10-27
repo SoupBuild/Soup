@@ -9,7 +9,7 @@ namespace Soup::UnitTests
 	class PackageManagerTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void InstallPackages_NoDependencies_Success()
 		{
 			// Register the test listener
@@ -53,7 +53,7 @@ namespace Soup::UnitTests
 				"Verify file system requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void InstallPackages_OnlyLocalDependencies_Success()
 		{
 			// Register the test listener
@@ -136,7 +136,7 @@ namespace Soup::UnitTests
 				"Verify file system requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void InstallPackages_SingleDependency_Success()
 		{
 			// Register the test listener
@@ -241,7 +241,7 @@ namespace Soup::UnitTests
 				"Verify http requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void InstallPackageReference_MissingRecipe_Throws()
 		{
 			// Register the test listener
@@ -274,7 +274,7 @@ namespace Soup::UnitTests
 				"Verify file system requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void InstallPackageReference_Version_Success()
 		{
 			// Register the test listener
@@ -390,7 +390,7 @@ Runtime = [
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void InstallPackageReference_Recursive_Success()
 		{
 			// Register the test listener
@@ -540,7 +540,7 @@ Runtime = [
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void InstallPackageReference_Latest_Success()
 		{
 			// Register the test listener
@@ -668,7 +668,7 @@ Runtime = [
 			Assert::AreEqual(expectedFinalRecipe, mockRecipeFile->Content.str(), "Verify recipe file contents.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void PublishPackage_Success()
 		{
 			// Register the test listener
@@ -797,7 +797,7 @@ Runtime = [
 				"Verify http requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void PublishPackage_PackageMissing_Success()
 		{
 			// Register the test listener

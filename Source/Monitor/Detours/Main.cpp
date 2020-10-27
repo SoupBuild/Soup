@@ -463,12 +463,12 @@ void DetachDetours()
 }
 
 
-bool ThreadAttach(HMODULE hDll)
+bool ThreadAttach(HMODULE /*hDll*/)
 {
 	return true;
 }
 
-bool ThreadDetach(HMODULE hDll)
+bool ThreadDetach(HMODULE /*hDll*/)
 {
 	return true;
 }

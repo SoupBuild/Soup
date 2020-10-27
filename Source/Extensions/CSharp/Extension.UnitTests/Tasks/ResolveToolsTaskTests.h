@@ -9,7 +9,7 @@ namespace Soup::CSharp::UnitTests
 	class ResolveToolsTaskTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Success()
 		{
 			auto uut = ResolveToolsTask();
@@ -17,7 +17,7 @@ namespace Soup::CSharp::UnitTests
 			Assert::AreEqual("ResolveTools", uut.GetName(), "Verify name matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Execute()
 		{
 			// Register the test process manager

@@ -9,7 +9,7 @@ namespace Soup::CSharp::UnitTests
 	class BuildTaskTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Success()
 		{
 			auto uut = BuildTask();
@@ -17,7 +17,7 @@ namespace Soup::CSharp::UnitTests
 			Assert::AreEqual("Build", uut.GetName(), "Verify name matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Executable()
 		{
 			// Register the test listener
@@ -115,7 +115,7 @@ namespace Soup::CSharp::UnitTests
 				Build::Utilities::BuildOperationListWrapper(buildState.GetRootOperationList()));
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Executable_Optimize()
 		{
 			// Register the test listener
@@ -213,7 +213,7 @@ namespace Soup::CSharp::UnitTests
 				Build::Utilities::BuildOperationListWrapper(buildState.GetRootOperationList()));
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Library_MultipleFiles()
 		{
 			// Register the test listener
