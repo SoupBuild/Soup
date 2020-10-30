@@ -54,8 +54,27 @@ namespace Soup::Cpp::Compiler::MSVC
 			// Disable the logo
 			AddFlag(commandArguments, ArgumentFlag_NoLogo);
 
-			// Get better support for _cplusplus macro version
+			// Enable standards-conforming compiler behavior
+			// https://docs.microsoft.com/en-us/cpp/build/reference/permissive-standards-conformance?view=vs-2019
+			// Note: Enables /Zc:referenceBinding, /Zc:strictStrings, and /Zc:rvalueCast
+			// And after 15.3 /Zc:ternary
+			AddFlag(commandArguments, "permissive-");
+
+			// Enable the __cplusplus macro to report the supported standard
+			// https://docs.microsoft.com/en-us/cpp/build/reference/zc-cplusplus?view=vs-2019
 			AddParameter(commandArguments, "Zc", "__cplusplus");
+
+			// Enable external linkage for constexpr variables
+			// https://docs.microsoft.com/en-us/cpp/build/reference/zc-externconstexpr?view=vs-2019
+			AddParameter(commandArguments, "Zc", "externConstexpr");
+
+			// Remove unreferenced function or data if it is COMDAT or has internal linkage only
+			// https://docs.microsoft.com/en-us/cpp/build/reference/zc-inline-remove-unreferenced-comdat?view=vs-2019
+			AddParameter(commandArguments, "Zc", "inline");
+
+			// Assume operator new throws on failure
+			// https://docs.microsoft.com/en-us/cpp/build/reference/zc-throwingnew-assume-operator-new-throws?view=vs-2019
+			AddParameter(commandArguments, "Zc", "throwingNew");
 
 			// Generate source debug information
 			if (arguments.GenerateSourceDebugInfo)
@@ -63,7 +82,7 @@ namespace Soup::Cpp::Compiler::MSVC
 				AddFlag(commandArguments, Compiler_ArgumentFlag_GenerateDebugInformation);
 			}
 
-			// Enable warnings as errors at W4 by default
+			// Disabled individual warnings
 			if (arguments.EnableWarningsAsErrors)
 			{
 				AddFlag(commandArguments, "WX");
@@ -75,6 +94,12 @@ namespace Soup::Cpp::Compiler::MSVC
 			for (auto& warning : arguments.DisabledWarnings)
 			{
 				AddFlagValue(commandArguments, "wd", warning);
+			}
+
+			// Enable any requested warnings
+			for (auto& warning : arguments.EnabledWarnings)
+			{
+				AddFlagValue(commandArguments, "w", warning);
 			}
 
 			// Set the language standard

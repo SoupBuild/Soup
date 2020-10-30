@@ -199,6 +199,11 @@ namespace Soup::Cpp::Compiler
 		std::vector<std::string> DisabledWarnings;
 
 		/// <summary>
+		/// Gets or sets the list of enabled warnings
+		/// </summary>
+		std::vector<std::string> EnabledWarnings;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		bool operator ==(const BuildArguments& rhs) const
@@ -220,7 +225,8 @@ namespace Soup::Cpp::Compiler
 				OptimizationLevel == rhs.OptimizationLevel &&
 				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
 				EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
-				DisabledWarnings == rhs.DisabledWarnings;
+				DisabledWarnings == rhs.DisabledWarnings &&
+				EnabledWarnings == rhs.EnabledWarnings;
 		}
 
 		bool operator !=(const BuildArguments& rhs) const

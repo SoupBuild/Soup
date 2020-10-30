@@ -19,7 +19,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/W4",
 				"/std:c++11",
 				"/Od",
@@ -48,7 +52,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/W4",
 				expectedFlag,
 				"/Od",
@@ -74,7 +82,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/W4",
 				"/std:c++latest",
 				"/Od",
@@ -101,7 +113,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/W4",
 				"/std:c++17",
 				"/Od",
@@ -130,7 +146,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/W4",
 				"/std:c++17",
 				expectedFlag,
@@ -158,7 +178,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/WX",
 				"/W4",
 				"/std:c++17",
@@ -187,7 +211,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/Z7",
 				"/W4",
 				"/std:c++17",
@@ -217,7 +245,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/W4",
 				"/std:c++11",
 				"/Od",
@@ -248,7 +280,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/W4",
 				"/std:c++11",
 				"/Od",
@@ -279,7 +315,11 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/W4",
 				"/std:c++11",
 				"/Od",
