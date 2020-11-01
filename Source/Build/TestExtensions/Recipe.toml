@@ -1,0 +1,14 @@
+Name = "Soup.Build.Utilities"
+Language = "C++"
+Description = """A set of utility classes that are commonly needed to help make writing a Build Extension easier."""
+Version = "0.4.1"
+Interface = "Module.cpp"
+Source = [
+	"Wrapper/ValueWrapper.cpp",
+]
+
+[Dependencies]
+Runtime = [
+	"Opal@0.1.10",
+	"Soup.Build@0.4.1",
+]
