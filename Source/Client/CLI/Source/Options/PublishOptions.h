@@ -17,7 +17,7 @@ namespace Soup::Client
 		/// <summary>
 		/// Gets or sets the path to publish
 		/// </summary>
-		[[Args::Option("path", Index = 0, HelpText = "Path to the package to publish.")]]
+		// [[Args::Option("path", Index = 0, HelpText = "Path to the package to publish.")]]
 		std::string Path;
 	};
 }

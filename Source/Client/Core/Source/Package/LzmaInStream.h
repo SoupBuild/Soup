@@ -32,7 +32,7 @@ namespace Soup
 				throw std::runtime_error("Failed to write.");
 
 			auto sizeRead = stream.gcount();
-			return sizeRead;
+			return static_cast<uint32_t>(sizeRead);
 		}
 
 		uint64_t Seek(int64_t offset, LzmaSdk::StreamSeekOrigin origin) override final

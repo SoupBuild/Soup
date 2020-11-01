@@ -9,7 +9,7 @@ namespace Soup::Build::UnitTests
 	class RecipeTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void InitializerDefault()
 		{
 			auto uut = Recipe();
@@ -22,7 +22,7 @@ namespace Soup::Build::UnitTests
 			Assert::IsFalse(uut.HasTestDependencies(), "Verify has no test dependencies.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void InitializerAll()
 		{
 			auto uut = Recipe(
@@ -66,7 +66,7 @@ namespace Soup::Build::UnitTests
 				"Verify test dependencies are correct.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorEqualDefault()
 		{
 			auto uut = Recipe();
@@ -74,7 +74,7 @@ namespace Soup::Build::UnitTests
 			Assert::AreEqual(Recipe(), uut, "Verify equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorEqualAll()
 		{
 			auto uut = Recipe(
@@ -109,7 +109,7 @@ namespace Soup::Build::UnitTests
 				"Verify equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualName()
 		{
 			auto uut = Recipe(
@@ -144,7 +144,7 @@ namespace Soup::Build::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualLanguage()
 		{
 			auto uut = Recipe(
@@ -179,7 +179,7 @@ namespace Soup::Build::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualVersion()
 		{
 			auto uut = Recipe(
@@ -214,7 +214,7 @@ namespace Soup::Build::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualNoVersion()
 		{
 			auto uut = Recipe(
@@ -249,7 +249,7 @@ namespace Soup::Build::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualRuntimeDependencies()
 		{
 			auto uut = Recipe(
@@ -283,7 +283,7 @@ namespace Soup::Build::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualNoRuntimeDependencies()
 		{
 			auto uut = Recipe(
@@ -316,7 +316,7 @@ namespace Soup::Build::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualBuildDependencies()
 		{
 			auto uut = Recipe(
@@ -350,7 +350,7 @@ namespace Soup::Build::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualNoBuildDependencies()
 		{
 			auto uut = Recipe(
@@ -383,7 +383,7 @@ namespace Soup::Build::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualTestDependencies()
 		{
 			auto uut = Recipe(
@@ -417,7 +417,7 @@ namespace Soup::Build::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualNoTestDependencies()
 		{
 			auto uut = Recipe(

@@ -189,6 +189,21 @@ namespace Soup::Cpp::Compiler
 		bool GenerateSourceDebugInfo;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to enable warnings as errors
+		/// </summary>
+		bool EnableWarningsAsErrors;
+
+		/// <summary>
+		/// Gets or sets the list of disabled warnings
+		/// </summary>
+		std::vector<std::string> DisabledWarnings;
+
+		/// <summary>
+		/// Gets or sets the list of enabled warnings
+		/// </summary>
+		std::vector<std::string> EnabledWarnings;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		bool operator ==(const BuildArguments& rhs) const
@@ -208,7 +223,10 @@ namespace Soup::Cpp::Compiler
 				LibraryPaths == rhs.LibraryPaths &&
 				PreprocessorDefinitions == rhs.PreprocessorDefinitions &&
 				OptimizationLevel == rhs.OptimizationLevel &&
-				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
+				GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
+				EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
+				DisabledWarnings == rhs.DisabledWarnings &&
+				EnabledWarnings == rhs.EnabledWarnings;
 		}
 
 		bool operator !=(const BuildArguments& rhs) const

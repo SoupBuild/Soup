@@ -10,5 +10,5 @@ Defines = [
 Runtime = [
 	"../../../Dependencies/cpp-httplib/",
 	# "httplib@1.0.0",
-	"Opal@0.1.8",
+	"Opal@0.1.10",
 ]

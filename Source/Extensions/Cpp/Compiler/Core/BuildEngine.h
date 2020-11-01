@@ -82,6 +82,9 @@ namespace Soup::Cpp::Compiler
 				compileArguments.IncludeModules = arguments.ModuleDependencies;
 				compileArguments.PreprocessorDefinitions = arguments.PreprocessorDefinitions;
 				compileArguments.GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo;
+				compileArguments.EnableWarningsAsErrors = arguments.EnableWarningsAsErrors;
+				compileArguments.DisabledWarnings = arguments.DisabledWarnings;
+				compileArguments.EnabledWarnings = arguments.EnabledWarnings;
 
 				// Compile the module interface unit if present
 				if (!arguments.ModuleInterfaceSourceFile.IsEmpty())

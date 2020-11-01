@@ -9,7 +9,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 	class LinkerArgumentBuilderTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void ZeroObjectFiles()
 		{
 			LinkArguments arguments = {};
@@ -27,7 +27,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void EmptyTargetFile_Throws()
 		{
 			LinkArguments arguments = {};
@@ -42,7 +42,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			});
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void StaticLibrary()
 		{
 			LinkArguments arguments = {};
@@ -63,7 +63,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void DynamicLibrary()
 		{
 			LinkArguments arguments = {};
@@ -90,7 +90,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Executable()
 		{
 			LinkArguments arguments = {};

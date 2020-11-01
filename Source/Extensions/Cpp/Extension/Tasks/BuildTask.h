@@ -174,6 +174,24 @@ namespace Soup::Cpp
 					buildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector());
 			}
 
+			// Load the list of disabled warnings
+			if (buildTable.HasValue("EnableWarningsAsErrors"))
+			{
+				arguments.EnableWarningsAsErrors =
+					buildTable.GetValue("EnableWarningsAsErrors").AsBoolean().GetValue();
+			}
+			else
+			{
+				arguments.GenerateSourceDebugInfo = false;
+			}
+
+			// Load the list of disabled warnings
+			if (buildTable.HasValue("DisabledWarnings"))
+			{
+				arguments.DisabledWarnings = 
+					buildTable.GetValue("DisabledWarnings").AsList().CopyAsStringVector();
+			}
+
 			// Initialize the compiler to use
 			auto compilerName = std::string(activeState.GetValue("CompilerName").AsString().GetValue());
 			auto findCompilerFactory = _compilerFactory.find(compilerName);

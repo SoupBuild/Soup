@@ -11,16 +11,16 @@ Source = [
 [Dependencies]
 Runtime = [
 	"json11@1.0.1",
-	"Opal@0.1.8",
+	"Opal@0.1.10",
 	"Soup.Build@0.4.1",
 	"Soup.Build.Utilities@0.4.1",
 	"../../Monitor/Shared/",
 ]
 Build = [
-	#"../../Extensions/TestBuild/",
+	"../../Extensions/TestBuild/",
 ]
 Test = [
-	"Soup.Test.Assert@0.1.7",
+	"Soup.Test.Assert@0.1.8",
 ]
 
 [Tests]

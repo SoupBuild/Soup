@@ -22,10 +22,10 @@ Runtime = [
 	"../../Build/Runtime/",
 ]
 Build = [
-	# "../../Extensions/TestBuild/",
+	"../../Extensions/TestBuild/",
 ]
 Test = [
-	"Soup.Test.Assert@0.1.7",
+	"Soup.Test.Assert@0.1.8",
 ]
 
 [Tests]

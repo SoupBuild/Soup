@@ -9,7 +9,7 @@ namespace Soup::Build::Runtime::UnitTests
 	class FileSystemStateManagerTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void TryLoadFromFile_MissingFile()
 		{
 			// Register the test listener
@@ -43,7 +43,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void TryLoadFromFile_GarbageFile()
 		{
 			// Register the test listener
@@ -81,7 +81,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void TryLoadFromFile_SimpleFile()
 		{
 			// Register the test listener
@@ -134,7 +134,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void SaveState()
 		{
 			// Register the test listener

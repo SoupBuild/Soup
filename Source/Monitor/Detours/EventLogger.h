@@ -42,7 +42,7 @@ public:
 			auto stringValue = std::string_view(value);
 			auto startIndex = message.ContentSize;
 			auto size = stringValue.size() + 1;
-			message.ContentSize += size;
+			message.ContentSize += static_cast<uint32_t>(size);
 			if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
 			{
 				WriteError("Message content too long for const char* value");
@@ -64,7 +64,7 @@ public:
 			auto stringValue = std::wstring_view(value);
 			auto startIndex = message.ContentSize;
 			auto size = 2 * (stringValue.size() + 1);
-			message.ContentSize += size;
+			message.ContentSize += static_cast<uint32_t>(size);
 			if (message.ContentSize > sizeof(Monitor::DetourMessage::Content))
 			{
 				WriteError("Message content too long for const wchar_t* value");
@@ -283,6 +283,8 @@ private:
 	{
 #ifdef TRACE_DETOUR_CLIENT
 		printf("DETOUR-CLIENT: %s", message.data());
+#else
+		(message);
 #endif
 	}
 

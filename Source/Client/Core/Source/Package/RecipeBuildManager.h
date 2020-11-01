@@ -369,7 +369,6 @@ namespace Soup::Build
 					// Run the required builds in process
 					// This will break the circular requirements for the core build libraries
 					auto resultSharedState = RunInProcessBuild(
-						projectId,
 						workingDirectory,
 						recipe,
 						arguments,
@@ -409,7 +408,6 @@ namespace Soup::Build
 		}
 
 		Runtime::ValueTable RunInProcessBuild(
-			int projectId,
 			const Path& packageRoot,
 			Recipe& recipe,
 			const RecipeBuildArguments& arguments,
@@ -423,7 +421,7 @@ namespace Soup::Build
 			{
 				Log::HighPriority("Host Build '" + recipe.GetName() + "'");
 				activeCompiler = _hostCompiler;
-				activeFlavor = arguments.Flavor;// TODO "release";
+				activeFlavor = "release";
 			}
 			else
 			{
@@ -598,7 +596,7 @@ namespace Soup::Build
 						activeBuildGraph);
 					runner.Evaluate();
 				}
-				catch(const Runtime::BuildFailedException& e)
+				catch(const Runtime::BuildFailedException&)
 				{
 					Log::Info("Saving partial build state");
 					Runtime::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);

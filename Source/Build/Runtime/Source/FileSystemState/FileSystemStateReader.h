@@ -54,7 +54,7 @@ namespace Soup::Build::Runtime
 
 			auto fileCount = ReadUInt32(stream);
 			auto files = std::unordered_map<FileId, Path>();
-			for (auto i = 0; i < fileCount; i++)
+			for (auto i = 0u; i < fileCount; i++)
 			{
 				// Read the command working directory
 				auto fileId = ReadUInt32(stream);

@@ -201,6 +201,14 @@ namespace Soup::Cpp
 			{
 				sourceFiles = recipeTable.GetValue("Source").AsList().CopyAsStringVector();
 			}
+
+			// Check for warning settings
+			bool enableWarningsAsErrors = true;
+			if (recipeTable.HasValue("EnableWarningsAsErrors"))
+			{
+				enableWarningsAsErrors = recipeTable.GetValue("EnableWarningsAsErrors").AsBoolean().GetValue();
+			}
+
 			// Set the correct optimization level for the requested flavor
 			auto optimizationLevel = Soup::Cpp::Compiler::BuildOptimizationLevel::None;
 			bool generateSourceDebugInfo = false;
@@ -234,6 +242,8 @@ namespace Soup::Cpp
 			buildTable.EnsureValue("IncludeDirectories").EnsureList().Append(includePaths);
 			buildTable.EnsureValue("LibraryPaths").EnsureList().Append(libraryPaths);
 			buildTable.EnsureValue("Source").EnsureList().Append(sourceFiles);
+
+			buildTable.EnsureValue("EnableWarningsAsErrors").SetValueBoolean(enableWarningsAsErrors);
 
 			// Convert the recipe type to the required build type
 			auto targetType = Soup::Cpp::Compiler::BuildTargetType::StaticLibrary;

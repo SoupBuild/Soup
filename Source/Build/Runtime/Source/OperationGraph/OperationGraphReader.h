@@ -64,7 +64,7 @@ namespace Soup::Build::Runtime
 
 			auto operationCount = ReadUInt32(stream);
 			auto operations = std::vector<OperationInfo>(operationCount);
-			for (auto i = 0; i < operationCount; i++)
+			for (auto i = 0u; i < operationCount; i++)
 			{
 				operations[i] = ReadOperationInfo(stream);
 			}
@@ -188,7 +188,7 @@ namespace Soup::Build::Runtime
 		{
 			auto size = ReadUInt32(stream);
 			auto result = std::vector<FileId>(size);
-			for (auto i = 0; i < size; i++)
+			for (auto i = 0u; i < size; i++)
 			{
 				result[i] = ReadUInt32(stream);
 			}
@@ -200,7 +200,7 @@ namespace Soup::Build::Runtime
 		{
 			auto size = ReadUInt32(stream);
 			auto result = std::vector<OperationId>(size);
-			for (auto i = 0; i < size; i++)
+			for (auto i = 0u; i < size; i++)
 			{
 				result[i] = ReadUInt32(stream);
 			}

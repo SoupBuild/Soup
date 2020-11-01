@@ -9,7 +9,7 @@ namespace Soup::Build::Runtime::UnitTests
 	class FileSystemStateWriterTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Serialize_Empty()
 		{
 			auto fileSystemState = FileSystemState(
@@ -31,7 +31,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify file content match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Serialize_Single()
 		{
 			auto fileSystemState = FileSystemState(
@@ -59,7 +59,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify file content match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Serialize_Multiple()
 		{
 			auto fileSystemState = FileSystemState(

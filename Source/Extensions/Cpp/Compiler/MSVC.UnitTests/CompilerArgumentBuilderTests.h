@@ -9,7 +9,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 	class CompilerArgumentBuilderTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_DefaultParameters()
 		{
 			SharedCompileArguments arguments = {};
@@ -19,7 +19,12 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
+				"/W4",
 				"/std:c++11",
 				"/Od",
 				"/X",
@@ -33,10 +38,10 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Theory]]
-		[[InlineData(Soup::Compiler::LanguageStandard::CPP11, "/std:c++11")]]
-		[[InlineData(Soup::Compiler::LanguageStandard::CPP14, "/std:c++14")]]
-		[[InlineData(Soup::Compiler::LanguageStandard::CPP17, "/clang:-std=c++17")]]
+		// [[Theory]]
+		// [[InlineData(Soup::Compiler::LanguageStandard::CPP11, "/std:c++11")]]
+		// [[InlineData(Soup::Compiler::LanguageStandard::CPP14, "/std:c++14")]]
+		// [[InlineData(Soup::Compiler::LanguageStandard::CPP17, "/clang:-std=c++17")]]
 		void BuildSharedCompilerArguments_SingleArgument_LanguageStandard(LanguageStandard standard, std::string expectedFlag)
 		{
 			SharedCompileArguments arguments = {};
@@ -47,7 +52,12 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
+				"/W4",
 				expectedFlag,
 				"/Od",
 				"/X",
@@ -61,7 +71,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_LanguageStandard_CPP20()
 		{
 			SharedCompileArguments arguments = {};
@@ -72,7 +82,12 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
+				"/W4",
 				"/std:c++latest",
 				"/Od",
 				"/X",
@@ -86,7 +101,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_OptimizationLevel_Disabled()
 		{
 			SharedCompileArguments arguments = {};
@@ -98,7 +113,12 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
+				"/W4",
 				"/std:c++17",
 				"/Od",
 				"/X",
@@ -112,9 +132,9 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Theory]]
-		[[InlineData(Soup::OptimizationLevel::Size, "/Os")]]
-		[[InlineData(Soup::OptimizationLevel::Speed, "/Ot")]]
+		// [[Theory]]
+		// [[InlineData(Soup::OptimizationLevel::Size, "/Os")]]
+		// [[InlineData(Soup::OptimizationLevel::Speed, "/Ot")]]
 		void BuildSharedCompilerArguments_SingleArgument_OptimizationLevel(OptimizationLevel level, std::string expectedFlag)
 		{
 			SharedCompileArguments arguments = {};
@@ -126,7 +146,12 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
+				"/W4",
 				"/std:c++17",
 				expectedFlag,
 				"/X",
@@ -140,7 +165,40 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
+		void BuildSharedCompilerArguments_SingleArgument_EnableWarningsAsErrors()
+		{
+			SharedCompileArguments arguments = {};
+			arguments.Standard = LanguageStandard::CPP17;
+			arguments.Optimize = OptimizationLevel::None;
+			arguments.EnableWarningsAsErrors = true;
+
+			auto actualArguments = ArgumentBuilder::BuildSharedCompilerArguments(
+				arguments);
+
+			auto expectedArguments = std::vector<std::string>({
+				"/nologo",
+				"/permissive-",
+				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
+				"/WX",
+				"/W4",
+				"/std:c++17",
+				"/Od",
+				"/X",
+				"/RTC1",
+				"/EHsc",
+				"/MT",
+				"/bigobj",
+				"/c",
+			});
+
+			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
+		}
+
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_GenerateDebugInformation()
 		{
 			SharedCompileArguments arguments = {};
@@ -153,8 +211,13 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
 				"/Z7",
+				"/W4",
 				"/std:c++17",
 				"/Od",
 				"/X",
@@ -168,7 +231,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_IncludePaths()
 		{
 			SharedCompileArguments arguments = {};
@@ -182,7 +245,12 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
+				"/W4",
 				"/std:c++11",
 				"/Od",
 				"/I\"C:/Files/SDK/\"",
@@ -198,7 +266,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_PreprocessorDefinitions()
 		{
 			SharedCompileArguments arguments = {};
@@ -212,7 +280,12 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
+				"/W4",
 				"/std:c++11",
 				"/Od",
 				"/DDEBUG",
@@ -228,7 +301,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_Modules()
 		{
 			SharedCompileArguments arguments = {};
@@ -242,7 +315,12 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 
 			auto expectedArguments = std::vector<std::string>({
 				"/nologo",
+				"/permissive-",
 				"/Zc:__cplusplus",
+				"/Zc:externConstexpr",
+				"/Zc:inline",
+				"/Zc:throwingNew",
+				"/W4",
 				"/std:c++11",
 				"/Od",
 				"/X",
@@ -260,7 +338,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildInterfaceUnitCompilerArguments()
 		{
 			InterfaceUnitCompileArguments arguments = {};
@@ -286,7 +364,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildTranslationUnitCompilerArguments_Simple()
 		{
 			TranslationUnitCompileArguments arguments = {};
@@ -310,7 +388,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildTranslationUnitCompilerArguments_InternalModules()
 		{
 			TranslationUnitCompileArguments arguments = {};

@@ -29,7 +29,7 @@ namespace Monitor
 
 		void LogMessage(DetourMessage& message)
 		{
-			int32_t offset = 0;
+			uint32_t offset = 0;
 			switch (message.Type)
 			{
 				// Info
@@ -1423,7 +1423,7 @@ namespace Monitor
 		}
 
 	private:
-		bool ReadBoolValue(DetourMessage& message, int32_t& offset)
+		bool ReadBoolValue(DetourMessage& message, uint32_t& offset)
 		{
 			auto result = *reinterpret_cast<uint32_t*>(message.Content + offset);
 			offset += sizeof(uint32_t);
@@ -1432,7 +1432,7 @@ namespace Monitor
 			return result > 0;
 		}
 
-		int32_t ReadInt32Value(DetourMessage& message, int32_t& offset)
+		int32_t ReadInt32Value(DetourMessage& message, uint32_t& offset)
 		{
 			auto result = *reinterpret_cast<int32_t*>(message.Content + offset);
 			offset += sizeof(int32_t);
@@ -1441,7 +1441,7 @@ namespace Monitor
 			return result;
 		}
 
-		uint32_t ReadUInt32Value(DetourMessage& message, int32_t& offset)
+		uint32_t ReadUInt32Value(DetourMessage& message, uint32_t& offset)
 		{
 			auto result = *reinterpret_cast<uint32_t*>(message.Content + offset);
 			offset += sizeof(uint32_t);
@@ -1450,7 +1450,7 @@ namespace Monitor
 			return result;
 		}
 
-		uint64_t ReadUInt64Value(DetourMessage& message, int32_t& offset)
+		uint64_t ReadUInt64Value(DetourMessage& message, uint32_t& offset)
 		{
 			auto result = *reinterpret_cast<uint64_t*>(message.Content + offset);
 			offset += sizeof(uint64_t);
@@ -1459,19 +1459,19 @@ namespace Monitor
 			return result;
 		}
 
-		std::string_view ReadStringValue(DetourMessage& message, int32_t& offset)
+		std::string_view ReadStringValue(DetourMessage& message, uint32_t& offset)
 		{
 			auto result = std::string_view(reinterpret_cast<char*>(message.Content + offset));
-			offset += result.size() + 1;
+			offset += static_cast<uint32_t>(result.size()) + 1;
 			if (offset > message.ContentSize)
 				throw std::runtime_error("ReadStringValue past end of content");
 			return result;
 		}
 
-		std::wstring_view ReadWStringValue(DetourMessage& message, int32_t& offset)
+		std::wstring_view ReadWStringValue(DetourMessage& message, uint32_t& offset)
 		{
 			auto result = std::wstring_view(reinterpret_cast<wchar_t*>(message.Content + offset));
-			offset += 2 * (result.size() + 1);
+			offset += 2 * (static_cast<uint32_t>(result.size()) + 1);
 			if (offset > message.ContentSize)
 				throw std::runtime_error("ReadWStringValue past end of content");
 			return result;

@@ -49,7 +49,7 @@ namespace Soup
 				Log::Info("Deleting staging directory");
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 			}
-			catch(const std::exception& e)
+			catch(const std::exception&)
 			{
 				// Cleanup the staging directory and accept that we failed
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
@@ -137,7 +137,7 @@ namespace Soup
 				// Save the state of the recipe
 				RecipeExtensions::SaveToFile(recipePath, recipe);
 			}
-			catch(const std::exception& e)
+			catch(const std::exception&)
 			{
 				// Cleanup the staging directory and accept that we failed
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
@@ -295,7 +295,7 @@ namespace Soup
 				Log::Info("Cleanup staging directory");
 				System::IFileSystem::Current().DeleteDirectory(stagingPath, true);
 			}
-			catch(const std::exception& e)
+			catch(const std::exception&)
 			{
 				// Cleanup the staging directory and accept that we failed
 				Log::Info("Publish Failed: Cleanup staging directory");
@@ -470,7 +470,7 @@ namespace Soup
 			{
 				throw std::runtime_error("Could not load the recipe file.");
 			}
-	
+
 			if (recipe.HasRuntimeDependencies())
 			{
 				for (auto& dependency : recipe.GetRuntimeDependencies())
@@ -499,6 +499,31 @@ namespace Soup
 			if (recipe.HasBuildDependencies())
 			{
 				for (auto& dependency : recipe.GetBuildDependencies())
+				{
+					// If local then check children for external package references
+					// Otherwise install the external package reference and its dependencies
+					if (dependency.IsLocal())
+					{
+						auto dependencyPath = recipeDirectory + dependency.GetPath();
+						InstallRecursiveDependencies(
+							dependencyPath,
+							packagesDirectory,
+							stagingDirectory);
+					}
+					else
+					{
+						EnsurePackageDownloaded(
+							dependency.GetName(),
+							dependency.GetVersion(),
+							packagesDirectory,
+							stagingDirectory);
+					}
+				}
+			}
+
+			if (recipe.HasTestDependencies())
+			{
+				for (auto& dependency : recipe.GetTestDependencies())
 				{
 					// If local then check children for external package references
 					// Otherwise install the external package reference and its dependencies

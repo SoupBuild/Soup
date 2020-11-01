@@ -9,7 +9,7 @@ namespace Soup::Build::Runtime::UnitTests
 	class BuildEvaluateEngineTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize()
 		{
 			auto fileSystemState = FileSystemState(1234);
@@ -19,7 +19,7 @@ namespace Soup::Build::Runtime::UnitTests
 				operationGraph);
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Evaluate_NoOperations()
 		{
 			// Register the test listener
@@ -61,7 +61,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify process manager requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Execute_OneOperation_FirstRun()
 		{
 			// Register the test listener
@@ -141,7 +141,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify detour process manager requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Evaluate_OneOperation_Incremental_MissingFileInfo()
 		{
 			// Register the test listener
@@ -223,7 +223,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify detour process manager requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Evaluate_OneOperation_Incremental_MissingTargetFile()
 		{
 			// Register the test listener
@@ -311,7 +311,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify detour process manager requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Evaluate_OneOperation_Incremental_OutOfDate()
 		{
 			// Register the test listener
@@ -399,7 +399,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify detour process manager requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Evaluate_OneOperation_Incremental_UpToDate()
 		{
 			// Register the test listener

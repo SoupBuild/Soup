@@ -13,5 +13,5 @@ IncludePaths = [
 Runtime = [
 	"../Core/",
 	"../../../../Build/Runtime/",
-	"Soup.Test.Assert@0.1.7",
+	"Soup.Test.Assert@0.1.8",
 ]

@@ -9,7 +9,7 @@ namespace Soup::Build::UnitTests
 	class RecipeBuildManagerTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize()
 		{
 			auto systemCompiler = "MockCompiler.System";

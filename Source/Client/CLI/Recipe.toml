@@ -1,6 +1,6 @@
 Name = "Soup"
 Language = "C++"
-Version = "0.10.0"
+Version = "0.10.2"
 Type = "Executable"
 
 RuntimeDependencies = [
@@ -28,7 +28,7 @@ Build = [
 	# TODO: "../../Extensions/TestBuild/",
 ]
 Test = [
-	"Soup.Test.Assert@0.1.7",
+	"Soup.Test.Assert@0.1.8",
 ]
 
 [Tests]

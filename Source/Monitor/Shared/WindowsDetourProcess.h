@@ -200,6 +200,7 @@ namespace Monitor
 
 			// Restart the process
 			auto hr = ResumeThread(m_threadHandle.Get());
+			(hr);
 		}
 
 		/// <summary>
@@ -245,7 +246,7 @@ namespace Monitor
 
 			// Read all and write to stdout
 			// TODO: May want to switch over to a background thread with peak to read in order
-			DWORD dwRead = -1;
+			DWORD dwRead;
 			const int BufferSize = 256;
 			char buffer[BufferSize + 1];
 
@@ -337,7 +338,7 @@ namespace Monitor
 					DWORD timoutMilliseconds = 500;
 					DebugTrace("WorkerThread WaitForMultipleObjects");
 					auto waitResult = WaitForMultipleObjects(
-						m_rawEventHandles.size(),
+						static_cast<DWORD>(m_rawEventHandles.size()),
 						m_rawEventHandles.data(),
 						waitForAll,
 						timoutMilliseconds);
@@ -392,7 +393,7 @@ namespace Monitor
 		void InitializePipes()
 		{
 			DebugTrace("InitializePipes");
-			for (int i = 0; i < m_pipes.size(); i++)
+			for (auto i = 0u; i < m_pipes.size(); i++)
 			{
 				// Create an unamed event object for this instance that is in the signaled state
 				SECURITY_ATTRIBUTES* eventAttributes = nullptr;
@@ -643,7 +644,7 @@ namespace Monitor
 		void CleanupConnections()
 		{
 			DebugTrace("CleanupConnections");
-			for (int i = 0; i < m_pipes.size(); i++)
+			for (auto i = 0u; i < m_pipes.size(); i++)
 			{
 				m_pipes[i].EventHandle.Close();
 				m_rawEventHandles[i] = NULL;
@@ -652,11 +653,13 @@ namespace Monitor
 			}
 		}
 
-
 		void DebugTrace(std::string_view message, uint32_t value)
 		{
 #ifdef TRACE_DETOUR_SERVER
 			std::cout << "DETOUR-SERVER: " << message << " " << value << std::endl;
+#else
+		(message);
+		(value);
 #endif
 		}
 
@@ -664,6 +667,8 @@ namespace Monitor
 		{
 #ifdef TRACE_DETOUR_SERVER
 			std::cout << "DETOUR-SERVER: " << message << std::endl;
+#else
+		(message);
 #endif
 		}
 

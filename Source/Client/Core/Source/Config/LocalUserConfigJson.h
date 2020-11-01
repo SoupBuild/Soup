@@ -106,9 +106,9 @@ namespace Soup
 			if (!value[Property_WindowsSDKIncludes].is_null())
 			{
 				auto values = std::vector<std::string>();
-				for (auto& value : value[Property_WindowsSDKIncludes].array_items())
+				for (auto& arrayValue : value[Property_WindowsSDKIncludes].array_items())
 				{
-					values.push_back(value.string_value());
+					values.push_back(arrayValue.string_value());
 				}
 
 				windowsSDKIncludePaths = std::move(values);
@@ -117,9 +117,9 @@ namespace Soup
 			if (!value[Property_WindowsSDKLibraries].is_null())
 			{
 				auto values = std::vector<std::string>();
-				for (auto& value : value[Property_WindowsSDKLibraries].array_items())
+				for (auto& arrayValue : value[Property_WindowsSDKLibraries].array_items())
 				{
-					values.push_back(value.string_value());
+					values.push_back(arrayValue.string_value());
 				}
 
 				windowsSDKLibraryPaths = std::move(values);

@@ -9,7 +9,7 @@ namespace Soup::Cpp::UnitTests
 	class RecipeBuildTaskTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Success()
 		{
 			auto uut = RecipeBuildTask();
@@ -17,7 +17,7 @@ namespace Soup::Cpp::UnitTests
 			Assert::AreEqual("RecipeBuild", uut.GetName(), "Verify name matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Executable()
 		{
 			// Register the test listener

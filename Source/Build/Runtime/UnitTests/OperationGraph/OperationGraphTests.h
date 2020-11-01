@@ -9,7 +9,7 @@ namespace Soup::Build::Runtime::UnitTests
 	class OperationGraphTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Default()
 		{
 			auto uut = OperationGraph(1234);
@@ -28,7 +28,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify operations match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_ListOperations_Single()
 		{
 			auto uut = OperationGraph(
@@ -87,7 +87,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify operations match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void SetRootOperationIds()
 		{
 			auto uut = OperationGraph(
@@ -128,7 +128,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify root operation ids match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void TryFindOperationInfo_Missing()
 		{
 			auto uut = OperationGraph(
@@ -148,7 +148,7 @@ namespace Soup::Build::Runtime::UnitTests
 			Assert::IsNull(operationInfo, "Verify operationInfo is null.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void TryFindOperationInfo_Found()
 		{
 			auto uut = OperationGraph(
@@ -202,7 +202,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify operationInfo is correct.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetOperationInfo_MissingThrows()
 		{
 			auto uut = OperationGraph(
@@ -216,7 +216,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"The provided operation id does not exist");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetOperationInfo_Found()
 		{
 			auto uut = OperationGraph(
@@ -262,7 +262,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify operationInfo is correct.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void AddOperation()
 		{
 			auto uut = OperationGraph(

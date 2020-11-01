@@ -1,4 +1,4 @@
-// <copyright file="BuildHistoryCheckerTests.h" company="Soup">
+// <copyright file="Helpers.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 

@@ -9,7 +9,7 @@ Source = [
 
 [Dependencies]
 Runtime = [
-	"Opal@0.1.8",
+	"Opal@0.1.10",
 	"../../../Build/Runtime/",
 	"../Compiler/Core/",
 	"../Compiler/Clang/",
@@ -19,7 +19,8 @@ Build = [
 	# TODO "../../TestBuild/",
 ]
 Test = [
-	"Soup.Test.Assert@0.1.7",
+	"Soup.Test.Assert@0.1.8",
+	"../../../Build/Runtime/",
 ]
 
 [Tests]

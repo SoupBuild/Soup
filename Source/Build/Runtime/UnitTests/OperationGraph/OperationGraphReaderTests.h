@@ -9,7 +9,7 @@ namespace Soup::Build::Runtime::UnitTests
 	class OperationGraphReaderTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_InvalidFileHeaderThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -24,7 +24,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"Invalid operation graph file header");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_InvalidFileVersionThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -39,7 +39,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"Operation graph file version does not match expected");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_InvalidRootOperationsHeaderThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -55,7 +55,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"Invalid operation graph operations header");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_InvalidOperationsHeaderThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -72,7 +72,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"Invalid operation graph operations header");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_ExtraContentThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -89,7 +89,7 @@ namespace Soup::Build::Runtime::UnitTests
 			"Operation graph file corrupted - Did not read the entire file");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_Empty()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -116,7 +116,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify operations match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_SingleSimple()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -174,7 +174,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify operations match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_SingleComplex()
 		{
 			auto binaryFileContent = std::vector<char>(
@@ -232,7 +232,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify operations match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Deserialize_Multiple()
 		{
 			auto binaryFileContent = std::vector<char>(

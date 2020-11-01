@@ -9,7 +9,7 @@ namespace Soup::Cpp::UnitTests
 	class StandardLibraryIncludeTaskTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Success()
 		{
 			auto uut = StandardLibraryIncludeTask();
@@ -17,7 +17,7 @@ namespace Soup::Cpp::UnitTests
 			Assert::AreEqual("StandardLibraryInclude", uut.GetName(), "Verify name matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Execute()
 		{
 			// Register the test process manager

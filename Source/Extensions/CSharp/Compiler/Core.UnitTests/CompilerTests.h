@@ -9,7 +9,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 	class CompilerTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize()
 		{
 			auto uut = Compiler(
@@ -17,7 +17,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 				Path("csc.test.exe"));
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Compile_Library_Simple()
 		{
 			auto uut = Compiler(
@@ -48,7 +48,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 			Assert::AreEqual(expected, result, "Verify result matches expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Compile_Executable_Simple()
 		{
 			auto uut = Compiler(

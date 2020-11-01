@@ -9,7 +9,7 @@ namespace Soup::Build::Runtime::UnitTests
 	class OperationGraphWriterTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Serialize_Empty()
 		{
 			auto operationGraph = OperationGraph(
@@ -32,7 +32,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify file content match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Serialize_SingleSimple()
 		{
 			auto operationGraph = OperationGraph(
@@ -83,7 +83,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify file content match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Serialize_SingleComplex()
 		{
 			auto operationGraph = OperationGraph(
@@ -134,7 +134,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify file content match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Serialize_Multiple()
 		{
 			auto operationGraph = OperationGraph(

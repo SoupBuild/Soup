@@ -9,7 +9,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 	class BuildEngineTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void Initialize_Success()
 		{
 			auto compiler = std::make_shared<Soup::CSharp::Compiler::Compiler>(
@@ -18,7 +18,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 			auto uut = BuildEngine(compiler);
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Executable()
 		{
 			// Register the test listener
@@ -118,7 +118,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 				"Verify Runtime Dependencies Result");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Library_NoSource()
 		{
 			// Register the test listener
@@ -205,7 +205,7 @@ namespace Soup::CSharp::Compiler::UnitTests
 				"Verify Runtime Dependencies Result");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Build_Library_MultipleFiles()
 		{
 			// Register the test listener

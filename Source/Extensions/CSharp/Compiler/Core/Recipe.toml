@@ -5,6 +5,6 @@ Interface = "Module.cpp"
 
 [Dependencies]
 Runtime = [
-	"Opal@0.1.8",
+	"Opal@0.1.10",
 	"Soup.Build.Utilities@0.4.1",
 ]

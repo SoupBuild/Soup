@@ -10,7 +10,7 @@ namespace Soup::Build::Runtime::UnitTests
 	class BuildHistoryCheckerTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void IsOutdated_ZeroInput()
 		{
 			// Register the test listener
@@ -48,7 +48,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify log messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void IsOutdated_SingleInput_UnknownTarget()
 		{
 			// Register the test listener
@@ -103,7 +103,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify file system requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void IsOutdated_SingleInput_DeletedTarget()
 		{
 			// Register the test listener
@@ -147,7 +147,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify log messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void IsOutdated_SingleInput_TargetExists_UnknownInputFile()
 		{
 			// Register the test listener
@@ -203,7 +203,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify file system requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void IsOutdated_SingleInput_TargetExists_DeletedInputFile()
 		{
 			// Register the test listener
@@ -258,7 +258,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify file system requests match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void IsOutdated_SingleInput_TargetExists_Outdated()
 		{
 			// Register the test listener
@@ -306,7 +306,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify log messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void IsOutdated_SingleInput_TargetExists_UpToDate()
 		{
 			// Register the test listener
@@ -352,7 +352,7 @@ namespace Soup::Build::Runtime::UnitTests
 				"Verify log messages match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void IsOutdated_MultipleInputs_RelativeAndAbsolute()
 		{
 			// Register the test listener

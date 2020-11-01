@@ -174,8 +174,7 @@ namespace Soup
 				stringValues.push_back(RecipeValue(value.ToString()));
 			}
 
-			auto& dependenciesTable = EnsureValue(_table, Property_Dependencies).AsTable();
-			EnsureValue(dependenciesTable, Property_Runtime).SetValueList(std::move(stringValues));
+			EnsureValue(EnsureDependencies(), Property_Runtime).SetValueList(std::move(stringValues));
 		}
 
 		/// <summary>
@@ -209,8 +208,7 @@ namespace Soup
 				stringValues.push_back(RecipeValue(value.ToString()));
 			}
 
-			auto& dependenciesTable = EnsureValue(_table, Property_Dependencies).AsTable();
-			EnsureValue(dependenciesTable, Property_Build).SetValueList(std::move(stringValues));
+			EnsureValue(EnsureDependencies(), Property_Build).SetValueList(std::move(stringValues));
 		}
 
 		/// <summary>
@@ -244,8 +242,7 @@ namespace Soup
 				stringValues.push_back(RecipeValue(value.ToString()));
 			}
 
-			auto& dependenciesTable = EnsureValue(_table, Property_Dependencies).AsTable();
-			EnsureValue(dependenciesTable, Property_Test).SetValueList(std::move(stringValues));
+			EnsureValue(EnsureDependencies(), Property_Test).SetValueList(std::move(stringValues));
 		}
 
 		/// <summary>
@@ -288,6 +285,24 @@ namespace Soup
 
 			auto& values = GetValue(_table, Property_Dependencies).AsTable();
 			return values;
+		}
+
+		RecipeTable& EnsureDependencies()
+		{
+			auto& value = EnsureValue(_table, Property_Dependencies);
+			switch (value.GetType())
+			{
+				case RecipeValueType::Table:
+					// All good.
+					break;
+				case RecipeValueType::Empty:
+					value.SetValueTable(RecipeTable());
+					break;
+				default:
+					throw std::runtime_error("The recipe already has a non-table dependencies property");
+			}
+
+			return value.AsTable();
 		}
 
 		bool HasValue(RecipeTable& table, std::string_view key)

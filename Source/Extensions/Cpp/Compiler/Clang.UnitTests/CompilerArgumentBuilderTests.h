@@ -9,7 +9,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 	class CompilerArgumentBuilderTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_DefaultParameters()
 		{
 			SharedCompileArguments arguments = {};
@@ -28,10 +28,10 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Theory]]
-		[[InlineData(Soup::LanguageStandard::CPP11, "-std=c++11")]]
-		[[InlineData(Soup::LanguageStandard::CPP14, "-std=c++14")]]
-		[[InlineData(Soup::LanguageStandard::CPP17, "-std=c++17")]]
+		// [[Theory]]
+		// [[InlineData(Soup::LanguageStandard::CPP11, "-std=c++11")]]
+		// [[InlineData(Soup::LanguageStandard::CPP14, "-std=c++14")]]
+		// [[InlineData(Soup::LanguageStandard::CPP17, "-std=c++17")]]
 		void BuildSharedCompilerArguments_SingleArgument_LanguageStandard(LanguageStandard standard, std::string expectedFlag)
 		{
 			SharedCompileArguments arguments = {};
@@ -51,7 +51,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_LanguageStandard_CPP20()
 		{
 			SharedCompileArguments arguments = {};
@@ -71,7 +71,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_OptimizationLevel_Disabled()
 		{
 			SharedCompileArguments arguments = {};
@@ -98,9 +98,9 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Theory]]
-		[[InlineData(Soup::OptimizationLevel::Size, "-Oz")]]
-		[[InlineData(Soup::OptimizationLevel::Speed, "-O3")]]
+		// [[Theory]]
+		// [[InlineData(Soup::OptimizationLevel::Size, "-Oz")]]
+		// [[InlineData(Soup::OptimizationLevel::Speed, "-O3")]]
 		void BuildSharedCompilerArguments_SingleArgument_OptimizationLevel(OptimizationLevel level, std::string expectedFlag)
 		{
 			SharedCompileArguments arguments = {};
@@ -122,7 +122,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_GenerateDebugInformation()
 		{
 			SharedCompileArguments arguments = {};
@@ -145,7 +145,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_IncludePaths()
 		{
 			SharedCompileArguments arguments = {};
@@ -170,7 +170,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_PreprocessorDefinitions()
 		{
 			SharedCompileArguments arguments = {};
@@ -197,7 +197,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildSharedCompilerArguments_SingleArgument_Modules()
 		{
 			SharedCompileArguments arguments = {};
@@ -222,7 +222,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildInterfaceUnitCompilerArguments()
 		{
 			InterfaceUnitCompileArguments arguments = {};
@@ -247,7 +247,7 @@ namespace Soup::Cpp::Compiler::Clang::UnitTests
 			Assert::AreEqual(expectedArguments, actualArguments, "Verify generated arguments match expected.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void BuildTranslationUnitCompilerArguments()
 		{
 			TranslationUnitCompileArguments arguments = {};

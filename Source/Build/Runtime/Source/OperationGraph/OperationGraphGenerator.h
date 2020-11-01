@@ -56,7 +56,7 @@ namespace Soup::Build::Runtime
 			// Build up the declared build operation
 			auto declaredInputFileIds = _fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
 			auto declaredOutputFileIds = _fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
-			auto& operationInfo = _graph.AddOperation(
+			_graph.AddOperation(
 				OperationInfo(
 					operationId,
 					std::move(title),
@@ -89,7 +89,6 @@ namespace Soup::Build::Runtime
 			for (auto& activeOperation : _graph.GetOperations())
 			{
 				auto& activeOperationInfo = activeOperation.second;
-				auto& workingDirectory = activeOperationInfo.Command.WorkingDirectory;
 
 				// Check for inputs that match previous output files
 				for (auto file : activeOperationInfo.DeclaredInput)
