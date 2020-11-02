@@ -12,12 +12,8 @@ namespace Soup::Build::Runtime::UnitTests
 		// [[Fact]]
 		void Initialize_Default()
 		{
-			auto uut = FileSystemState(1234);
+			auto uut = FileSystemState();
 
-			Assert::AreEqual(
-				1234u,
-				uut.GetId(),
-				"Verify id match expected.");
 			Assert::AreEqual(
 				0u,
 				uut.GetMaxFileId(),
@@ -32,7 +28,6 @@ namespace Soup::Build::Runtime::UnitTests
 		void Initialize_ListOperations_Single()
 		{
 			auto uut = FileSystemState(
-				1234,
 				5,
 				std::unordered_map<FileId, Path>({
 					{
@@ -41,10 +36,6 @@ namespace Soup::Build::Runtime::UnitTests
 					}
 				}));
 
-			Assert::AreEqual(
-				1234u,
-				uut.GetId(),
-				"Verify id match expected.");
 			Assert::AreEqual(
 				5u,
 				uut.GetMaxFileId(),
@@ -64,7 +55,6 @@ namespace Soup::Build::Runtime::UnitTests
 		void GetFilePath_MissingThrows()
 		{
 			auto uut = FileSystemState(
-				1234,
 				10,
 				std::unordered_map<FileId, Path>({}));
 
@@ -78,7 +68,6 @@ namespace Soup::Build::Runtime::UnitTests
 		void GetFilePath_Found()
 		{
 			auto uut = FileSystemState(
-				1234,
 				10,
 				std::unordered_map<FileId, Path>({
 					{
@@ -98,7 +87,6 @@ namespace Soup::Build::Runtime::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto uut = FileSystemState(
-				1234,
 				10,
 				std::unordered_map<FileId, Path>({
 					{ 2, Path("C:/Root/DoStuff.exe") },
@@ -126,7 +114,6 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto setLastWriteTime = CreateDateTime(2015, 5, 22, 9, 11);
 			auto uut = FileSystemState(
-				1234,
 				10,
 				std::unordered_map<FileId, Path>({
 					{ 2, Path("C:/Root/DoStuff.exe") },
@@ -144,7 +131,6 @@ namespace Soup::Build::Runtime::UnitTests
 		void TryFindFileId_Missing()
 		{
 			auto uut = FileSystemState(
-				1234,
 				10,
 				std::unordered_map<FileId, Path>({}));
 
@@ -158,7 +144,6 @@ namespace Soup::Build::Runtime::UnitTests
 		void TryFindFileId_Found()
 		{
 			auto uut = FileSystemState(
-				1234,
 				10,
 				std::unordered_map<FileId, Path>({
 					{
@@ -177,7 +162,6 @@ namespace Soup::Build::Runtime::UnitTests
 		void ToFileId_Existing()
 		{
 			auto uut = FileSystemState(
-				1234,
 				10,
 				std::unordered_map<FileId, Path>({
 					{
@@ -204,7 +188,6 @@ namespace Soup::Build::Runtime::UnitTests
 		void ToFileId_Unknown()
 		{
 			auto uut = FileSystemState(
-				1234,
 				10,
 				std::unordered_map<FileId, Path>({
 					{

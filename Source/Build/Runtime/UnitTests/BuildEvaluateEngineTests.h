@@ -12,8 +12,8 @@ namespace Soup::Build::Runtime::UnitTests
 		// [[Fact]]
 		void Initialize()
 		{
-			auto fileSystemState = FileSystemState(1234);
-			auto operationGraph = OperationGraph(1234);
+			auto fileSystemState = std::make_shared<FileSystemState>();
+			auto operationGraph = OperationGraph();
 			auto uut = BuildEvaluateEngine(
 				fileSystemState,
 				operationGraph);
@@ -29,14 +29,14 @@ namespace Soup::Build::Runtime::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(1234);
+			auto fileSystemState = std::make_shared<FileSystemState>();
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
 			// Setup the input build state
-			auto operationGraph = OperationGraph(1234);
+			auto operationGraph = OperationGraph();
 			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
 
 			// Evaluate the build
@@ -71,8 +71,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
@@ -85,7 +84,9 @@ namespace Soup::Build::Runtime::UnitTests
 
 			// Setup the input build state
 			auto operationGraph = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -151,8 +152,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
@@ -165,7 +165,9 @@ namespace Soup::Build::Runtime::UnitTests
 
 			// Setup the input build state
 			auto operationGraph = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -236,8 +238,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
@@ -254,7 +255,9 @@ namespace Soup::Build::Runtime::UnitTests
 
 			// Create the build state
 			auto operationGraph = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -325,8 +328,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
@@ -343,7 +345,9 @@ namespace Soup::Build::Runtime::UnitTests
 
 			// Setup the input build state
 			auto operationGraph = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -413,8 +417,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
@@ -431,7 +434,9 @@ namespace Soup::Build::Runtime::UnitTests
 
 			// Create the initial build state
 			auto operationGraph = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				{ 1, },
 				{
 					OperationInfo(

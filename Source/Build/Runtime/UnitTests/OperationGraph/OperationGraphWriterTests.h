@@ -12,17 +12,15 @@ namespace Soup::Build::Runtime::UnitTests
 		// [[Fact]]
 		void Serialize_Empty()
 		{
-			auto operationGraph = OperationGraph(
-				12345,
-				std::vector<OperationId>({}),
-				std::vector<OperationInfo>({}));
+			auto operationGraph = OperationGraph({}, {}, {});
 			auto content = std::stringstream();
 
 			OperationGraphWriter::Serialize(operationGraph, content);
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x00, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 			});
@@ -36,7 +34,7 @@ namespace Soup::Build::Runtime::UnitTests
 		void Serialize_SingleSimple()
 		{
 			auto operationGraph = OperationGraph(
-				12345,
+				{ },
 				std::vector<OperationId>({ 5, }),
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -60,7 +58,8 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
@@ -87,7 +86,7 @@ namespace Soup::Build::Runtime::UnitTests
 		void Serialize_SingleComplex()
 		{
 			auto operationGraph = OperationGraph(
-				12345,
+				{ },
 				std::vector<OperationId>({ 5, }),
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -111,7 +110,8 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
@@ -138,7 +138,7 @@ namespace Soup::Build::Runtime::UnitTests
 		void Serialize_Multiple()
 		{
 			auto operationGraph = OperationGraph(
-				12345,
+				{ },
 				std::vector<OperationId>({ 6, }),
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -176,7 +176,8 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x06, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x02, 0x00, 0x00, 0x00,

@@ -12,12 +12,8 @@ namespace Soup::Build::Runtime::UnitTests
 		// [[Fact]]
 		void Initialize_Default()
 		{
-			auto uut = OperationGraph(1234);
+			auto uut = OperationGraph();
 
-			Assert::AreEqual(
-				1234u,
-				uut.GetStateId(),
-				"Verify state id match expected.");
 			Assert::AreEqual(
 				std::vector<OperationId>(),
 				uut.GetRootOperationIds(),
@@ -32,7 +28,9 @@ namespace Soup::Build::Runtime::UnitTests
 		void Initialize_ListOperations_Single()
 		{
 			auto uut = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				std::vector<OperationId>({
 					1,
 				}),
@@ -53,10 +51,6 @@ namespace Soup::Build::Runtime::UnitTests
 						std::vector<FileId>({})),
 				}));
 
-			Assert::AreEqual(
-				1234u,
-				uut.GetStateId(),
-				"Verify state id match expected.");
 			Assert::AreEqual(
 				std::vector<OperationId>({
 					1,
@@ -91,7 +85,9 @@ namespace Soup::Build::Runtime::UnitTests
 		void SetRootOperationIds()
 		{
 			auto uut = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				std::vector<OperationId>({}),
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -132,7 +128,9 @@ namespace Soup::Build::Runtime::UnitTests
 		void TryFindOperationInfo_Missing()
 		{
 			auto uut = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				std::vector<OperationId>({}),
 				std::vector<OperationInfo>({}));
 
@@ -152,7 +150,9 @@ namespace Soup::Build::Runtime::UnitTests
 		void TryFindOperationInfo_Found()
 		{
 			auto uut = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				std::vector<OperationId>({
 					1
 				}),
@@ -206,7 +206,9 @@ namespace Soup::Build::Runtime::UnitTests
 		void GetOperationInfo_MissingThrows()
 		{
 			auto uut = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				std::vector<OperationId>({}),
 				std::vector<OperationInfo>({}));
 
@@ -220,7 +222,9 @@ namespace Soup::Build::Runtime::UnitTests
 		void GetOperationInfo_Found()
 		{
 			auto uut = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				std::vector<OperationId>({
 					1
 				}),
@@ -266,7 +270,9 @@ namespace Soup::Build::Runtime::UnitTests
 		void AddOperation()
 		{
 			auto uut = OperationGraph(
-				1234,
+				{
+					{ 1, Path("C:/Folder/File.txt") },
+				},
 				std::vector<OperationId>({}),
 				std::vector<OperationInfo>({}));
 

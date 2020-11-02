@@ -18,8 +18,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				2,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/Root/Output.bin") },
@@ -60,8 +59,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/Root/Output.bin") },
@@ -111,8 +109,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/Root/Output.bin") },
@@ -162,8 +159,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/Root/Output.bin") },
@@ -218,8 +214,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto outputTime = CreateDateTime(2015, 5, 22, 9, 12);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/Root/Output.bin") },
@@ -270,8 +265,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 13);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/Root/Output.bin") },
@@ -318,8 +312,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				3,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/Root/Output.bin") },
@@ -364,8 +357,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto inputTime = CreateDateTime(2015, 5, 22, 9, 11);
 
 			// Initialize the file system state
-			auto fileSystemState = FileSystemState(
-				1234,
+			auto fileSystemState = std::make_shared<FileSystemState>(
 				4,
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/Root/Output.bin") },
