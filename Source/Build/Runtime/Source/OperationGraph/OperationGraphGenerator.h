@@ -15,10 +15,10 @@ namespace Soup::Build::Runtime
 	export class OperationGraphGenerator
 	{
 	public:
-		OperationGraphGenerator(FileSystemState& fileSystemState) :
-			_fileSystemState(fileSystemState),
+		OperationGraphGenerator(std::shared_ptr<FileSystemState> fileSystemState) :
+			_fileSystemState(std::move(fileSystemState)),
 			_uniqueId(0),
-			_graph(fileSystemState.GetId()),
+			_graph(),
 			_outputFileLookup()
 		{
 		}
@@ -54,8 +54,8 @@ namespace Soup::Build::Runtime
 			auto operationId = ++_uniqueId;
 
 			// Build up the declared build operation
-			auto declaredInputFileIds = _fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
-			auto declaredOutputFileIds = _fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
+			auto declaredInputFileIds = _fileSystemState->ToFileIds(declaredInput, commandInfo.WorkingDirectory);
+			auto declaredOutputFileIds = _fileSystemState->ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
 			_graph.AddOperation(
 				OperationInfo(
 					operationId,
@@ -73,7 +73,7 @@ namespace Soup::Build::Runtime
 				auto& operationInfo = operation.second;
 				for (auto file : operationInfo.DeclaredOutput)
 				{
-					auto& filePath = _fileSystemState.GetFilePath(file);
+					auto& filePath = _fileSystemState->GetFilePath(file);
 					if (filePath.HasFileName())
 					{
 						EnsureOutputFileOperations(file).push_back(std::ref(operationInfo));
@@ -110,13 +110,13 @@ namespace Soup::Build::Runtime
 				// Check for output files that are under previous output directories
 				for (auto file : activeOperationInfo.DeclaredOutput)
 				{
-					auto& filePath = _fileSystemState.GetFilePath(file);
+					auto& filePath = _fileSystemState->GetFilePath(file);
 					auto parentDirectory = filePath.GetParent();
 					auto done = false;
 					while (!done)
 					{
 						FileId parentDirectoryId;
-						if (_fileSystemState.TryFindFileId(parentDirectory, parentDirectoryId))
+						if (_fileSystemState->TryFindFileId(parentDirectory, parentDirectoryId))
 						{
 							std::vector<std::reference_wrapper<OperationInfo>>* matchedOperations = nullptr;
 							if (TryGetOutputDirectoryOperations(parentDirectoryId, matchedOperations))
@@ -218,7 +218,7 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		FileSystemState& _fileSystemState;
+		std::shared_ptr<FileSystemState> _fileSystemState;
 		OperationId _uniqueId;
 		OperationGraph _graph;
 		std::unordered_map<FileId, std::vector<std::reference_wrapper<OperationInfo>>> _outputFileLookup;

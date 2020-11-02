@@ -26,7 +26,7 @@ namespace Soup::Build::Runtime
 		static bool TryLoadState(
 			const Path& directory,
 			OperationGraph& result,
-			FileSystemStateId activeStateId)
+			FileSystemState& fileSystemState)
 		{
 			// Verify the requested file exists
 			auto OperationGraphFile = directory +
@@ -45,16 +45,32 @@ namespace Soup::Build::Runtime
 			try
 			{
 				auto loadedResult = OperationGraphReader::Deserialize(file->GetInStream());
-				if (loadedResult.GetStateId() != activeStateId)
+				
+				// Map up the incoming file ids to the active file system state ids
+				auto activeFileIdMap = std::unordered_map<FileId, FileId>();
+				for (auto& fileReference : loadedResult.GetReferencedFiles())
 				{
-					Log::Warning("Operation graph uses an out of date state Id");
-					return false;
+					auto activeFileId = fileSystemState.ToFileId(fileReference.second);
+					auto insertResult = activeFileIdMap.emplace(fileReference.first, activeFileId);
+					if (!insertResult.second)
+						throw std::runtime_error("Failed to insert file id lookup");
+
+					// Update the referenced id
+					fileReference.first = activeFileId;
 				}
-				else
+
+				// Update all of the operations
+				for (auto& operationReference : loadedResult.GetOperations())
 				{
-					result = loadedResult;
-					return true;
+					auto& operation = operationReference.second;
+					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
+					UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
+					UpdateFileIds(operation.ObservedInput, activeFileIdMap);
+					UpdateFileIds(operation.ObservedOutput, activeFileIdMap);
 				}
+
+				result = std::move(loadedResult);
+				return true;
 			}
 			catch(std::runtime_error& ex)
 			{
@@ -71,12 +87,34 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Save the operation state for the provided directory
 		/// </summary>
-		static void SaveState(const Path& directory, const OperationGraph& state)
+		static void SaveState(
+			const Path& directory,
+			OperationGraph& state,
+			const FileSystemState& fileSystemState)
 		{
 			auto targetFolder = directory +
 				Path(FolderName);
 			auto OperationGraphFile = targetFolder +
 				Path(FileName);
+
+			// Update the operation graph referenced files
+			auto files = std::set<FileId>();
+			for (auto& operationReference : state.GetOperations())
+			{
+				auto& operation = operationReference.second;
+				files.insert(operation.DeclaredInput.begin(), operation.DeclaredInput.end());
+				files.insert(operation.DeclaredOutput.begin(), operation.DeclaredOutput.end());
+				files.insert(operation.ObservedInput.begin(), operation.ObservedInput.end());
+				files.insert(operation.ObservedOutput.begin(), operation.ObservedOutput.end());
+			}
+
+			auto referencedFiles = std::vector<std::pair<FileId, Path>>();
+			for (auto fileId : files)
+			{
+				referencedFiles.push_back({ fileId, fileSystemState.GetFilePath(fileId) });
+			}
+
+			state.SetReferencedFiles(std::move(referencedFiles));
 
 			// Ensure the target directories exists
 			if (!System::IFileSystem::Current().Exists(targetFolder))
@@ -90,6 +128,18 @@ namespace Soup::Build::Runtime
 
 			// Write the build state to the file stream
 			OperationGraphWriter::Serialize(state, file->GetOutStream());
+		}
+
+	private:
+		static void UpdateFileIds(std::vector<FileId>& fileIds, const std::unordered_map<FileId, FileId>& activeFileIdMap)
+		{
+			for (auto& fileId : fileIds)
+			{
+				auto findActiveFileId = activeFileIdMap.find(fileId);
+				if (findActiveFileId == activeFileIdMap.end())
+					throw std::runtime_error("Could not find operation file id in active map");
+				fileId = findActiveFileId->second;
+			}
 		}
 	};
 }

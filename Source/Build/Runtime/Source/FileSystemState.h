@@ -6,7 +6,6 @@
 
 namespace Soup::Build::Runtime
 {
-	export using FileSystemStateId = uint32_t;
 	export using FileId = uint32_t;
 
 	/// <summary>
@@ -18,9 +17,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FileSystemState"/> class.
 		/// </summary>
-		FileSystemState(
-			FileSystemStateId id) :
-			_id(id),
+		FileSystemState() :
 			_maxFileId(0),
 			_files(),
 			_fileLookup(),
@@ -32,10 +29,9 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="FileSystemState"/> class.
 		/// </summary>
 		FileSystemState(
-			FileSystemStateId id,
 			FileId maxFileId,
 			std::unordered_map<FileId, Path> files) :
-			FileSystemState(id, maxFileId, std::move(files), {})
+			FileSystemState(maxFileId, std::move(files), {})
 		{
 		}
 
@@ -43,11 +39,9 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="FileSystemState"/> class.
 		/// </summary>
 		FileSystemState(
-			FileSystemStateId id,
 			FileId maxFileId,
 			std::unordered_map<FileId, Path> files,
 			std::unordered_map<FileId, std::optional<time_t>> writeCache) :
-			_id(id),
 			_maxFileId(maxFileId),
 			_files(std::move(files)),
 			_fileLookup(),
@@ -68,14 +62,6 @@ namespace Soup::Build::Runtime
 		const std::unordered_map<FileId, Path>& GetFiles() const
 		{
 			return _files;
-		}
-
-		/// <summary>
-		/// Get the max unique file id
-		/// </summary>
-		FileSystemStateId GetId() const
-		{
-			return _id;
 		}
 
 		/// <summary>
@@ -133,18 +119,25 @@ namespace Soup::Build::Runtime
 		FileId ToFileId(const Path& file, const Path& workingDirectory)
 		{
 			auto absolutePath = file.HasRoot() ? file : workingDirectory + file;
+			return ToFileId(absolutePath);
+		}
+
+		FileId ToFileId(const Path& file)
+		{
+			if (!file.HasRoot())
+				throw std::runtime_error("File paths must be absolute to resolve to an id");
 
 			// Check if the file is already known
 			FileId result;
-			if (!TryFindFileId(absolutePath, result))
+			if (!TryFindFileId(file, result))
 			{
 				// Insert the new file
 				result = ++_maxFileId;
-				auto insertResult = _files.emplace(result, absolutePath);
+				auto insertResult = _files.emplace(result, file);
 				if (!insertResult.second)
 					throw std::runtime_error("The provided file id already exists in the file system state");
 
-				auto insertLookupResult = _fileLookup.emplace(absolutePath.ToString(), result);
+				auto insertLookupResult = _fileLookup.emplace(file.ToString(), result);
 				if (!insertLookupResult.second)
 					throw std::runtime_error("The file was not unique even though we just failed to find it");
 			}
@@ -206,10 +199,6 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		// The unique id for this file system state
-		// Used to track if a file system cache was corrupted and re-generated
-		FileSystemStateId _id;
-
 		// The maximum id that has been used for files
 		// Used to ensure unique ids are generated accross the entire system
 		FileId _maxFileId;

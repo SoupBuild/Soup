@@ -5,7 +5,7 @@
 #pragma once
 #include "BuildFailedException.h"
 #include "BuildHistoryChecker.h"
-#include "FileSystemState/FileSystemState.h"
+#include "FileSystemState.h"
 #include "OperationGraph/OperationGraph.h"
 #include "SystemAccessTracker.h"
 
@@ -21,7 +21,7 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="BuildEvaluateEngine"/> class.
 		/// </summary>
 		BuildEvaluateEngine(
-			FileSystemState& fileSystemState,
+			const std::shared_ptr<FileSystemState>& fileSystemState,
 			OperationGraph& operationGraph) :
 			_fileSystemState(fileSystemState),
 			_operationGraph(operationGraph),
@@ -174,14 +174,14 @@ namespace Soup::Build::Runtime
 
 			operationInfo.ObservedInput = {};
 			operationInfo.ObservedOutput = {
-				_fileSystemState.ToFileId(filePath, operationInfo.Command.WorkingDirectory),
+				_fileSystemState->ToFileId(filePath, operationInfo.Command.WorkingDirectory),
 			};
 
 			// Mark this operation as successful to enable future incremental builds
 			operationInfo.WasSuccessfulRun = true;
 
 			// Ensure the File System State is notified of any output files that have changed
-			_fileSystemState.CheckFileWriteTimes(operationInfo.ObservedOutput);
+			_fileSystemState->CheckFileWriteTimes(operationInfo.ObservedOutput);
 		}
 
 		/// <summary>
@@ -242,14 +242,14 @@ namespace Soup::Build::Runtime
 					output.push_back(std::move(path));
 				}
 
-				operationInfo.ObservedInput = _fileSystemState.ToFileIds(input, operationInfo.Command.WorkingDirectory);
-				operationInfo.ObservedOutput = _fileSystemState.ToFileIds(output, operationInfo.Command.WorkingDirectory);
+				operationInfo.ObservedInput = _fileSystemState->ToFileIds(input, operationInfo.Command.WorkingDirectory);
+				operationInfo.ObservedOutput = _fileSystemState->ToFileIds(output, operationInfo.Command.WorkingDirectory);
 
 				// Mark this operation as successful to enable future incremental builds
 				operationInfo.WasSuccessfulRun = true;
 
 				// Ensure the File System State is notified of any output files that have changed
-				_fileSystemState.CheckFileWriteTimes(operationInfo.ObservedOutput);
+				_fileSystemState->CheckFileWriteTimes(operationInfo.ObservedOutput);
 			}
 			else
 			{
@@ -260,7 +260,7 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		FileSystemState& _fileSystemState;
+		std::shared_ptr<FileSystemState> _fileSystemState;
 		OperationGraph& _operationGraph;
 		std::unordered_map<OperationId, int32_t> _remainingDependencyCounts;
 		BuildHistoryChecker _stateChecker;

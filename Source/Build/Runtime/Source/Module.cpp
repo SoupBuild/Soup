@@ -38,8 +38,6 @@ using namespace Opal;
 
 #include "Contracts/ValuePrimitive.h"
 
-#include "FileSystemState/FileSystemStateManager.h"
-
 #include "OperationGraph/OperationGraphGenerator.h"
 #include "OperationGraph/OperationGraphManager.h"
 
