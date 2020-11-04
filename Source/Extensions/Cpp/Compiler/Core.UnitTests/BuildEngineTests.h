@@ -48,7 +48,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto fileSystemState = std::make_shared<Build::Runtime::FileSystemState>();
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
@@ -216,7 +216,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto fileSystemState = std::make_shared<Build::Runtime::FileSystemState>();
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
@@ -436,7 +436,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto fileSystemState = std::make_shared<Build::Runtime::FileSystemState>();
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 
@@ -683,7 +683,7 @@ namespace Soup::Cpp::Compiler::UnitTests
 			});
 
 			auto uut = BuildEngine(compiler);
-			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto fileSystemState = std::make_shared<Build::Runtime::FileSystemState>();
 			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto result = uut.Execute(Build::Utilities::BuildStateWrapper(buildState), arguments);
 

@@ -1,6 +1,6 @@
 Name = "Soup"
 Language = "C++"
-Version = "0.10.2"
+Version = "0.10.3"
 Type = "Executable"
 
 RuntimeDependencies = [

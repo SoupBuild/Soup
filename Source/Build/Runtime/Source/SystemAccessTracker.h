@@ -525,14 +525,14 @@ namespace Soup::Build::Runtime
 		}
 
 		// ProcessEnv
-		void OnSearchPathA(std::string_view /*path*/, std::string_view /*fileName*/, std::string_view /*extension*/, uint32_t /*result*/) override final
+		void OnSearchPathA(std::string_view path, std::string_view fileName, std::string_view /*extension*/, uint32_t /*result*/) override final
 		{
-			throw std::runtime_error("OnSearchPathA Not implemented");
+			WarnSearchPath(path, fileName);
 		}
 
-		void OnSearchPathW(std::wstring_view /*path*/, std::wstring_view /*fileName*/, std::wstring_view /*extension*/, uint32_t /*result*/) override final
+		void OnSearchPathW(std::wstring_view path, std::wstring_view fileName, std::wstring_view /*extension*/, uint32_t /*result*/) override final
 		{
-			throw std::runtime_error("OnSearchPathW Not implemented");
+			WarnSearchPath(path, fileName);
 		}
 
 		// ProcessThreadsApi
@@ -1154,6 +1154,19 @@ namespace Soup::Build::Runtime
 			return fileName.starts_with("\\\\.\\") ||
 				fileName == "CONIN$" ||
 				fileName == "CONOUT$";
+		}
+
+		void WarnSearchPath(std::string_view path, std::string_view filename)
+		{
+			Log::Warning("Search Path encountered: " + std::string(path) + " - " + std::string(filename));
+		}
+
+		void WarnSearchPath(std::wstring_view path, std::wstring_view filename)
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			auto pathString = converter.to_bytes(path.data());
+			auto filenameString = converter.to_bytes(filename.data());
+			WarnSearchPath(pathString, filenameString);
 		}
 
 		int m_activeProcessCount;

@@ -75,6 +75,13 @@ namespace Soup::Cpp
 			if (systemName != "win32")
 				throw std::runtime_error("Win32 is the only supported system... so far.");
 
+			// Check if skip platform includes was specified
+			bool skipPlatform = false;
+			if (state.HasValue("SkipPlatform"))
+			{
+				skipPlatform = state.GetValue("SkipPlatform").AsBoolean().GetValue();
+			}
+
 			// Find the location of the Windows SDK
 			auto visualStudioInstallRoot = FindVSInstallRoot(buildState);
 			buildState.LogInfo("Using VS Installation: " + visualStudioInstallRoot.ToString());
@@ -96,11 +103,21 @@ namespace Soup::Cpp
 			else
 				throw std::runtime_error("Unknown architecture.");
 
+			auto clToolPath = vcToolsBinaryFolder + Path("cl.exe");
+			auto linkToolPath = vcToolsBinaryFolder + Path("link.exe");
+			auto libToolPath = vcToolsBinaryFolder + Path("lib.exe");
+
 			// Save the build properties
 			state.EnsureValue("MSVS.InstallRoot").SetValueString(visualStudioInstallRoot.ToString());
 			state.EnsureValue("MSVC.Version").SetValueString(visualCompilerVersion);
 			state.EnsureValue("MSVC.VCToolsRoot").SetValueString(visualCompilerVersionFolder.ToString());
 			state.EnsureValue("MSVC.VCToolsBinaryRoot").SetValueString(vcToolsBinaryFolder.ToString());
+			state.EnsureValue("MSVC.LinkToolPath").SetValueString(linkToolPath.ToString());
+			state.EnsureValue("MSVC.LibToolPath").SetValueString(libToolPath.ToString());
+
+			// Allow custom overrides for the compiler path
+			if (!state.HasValue("MSVC.ClToolPath"))
+				state.EnsureValue("MSVC.ClToolPath").SetValueString(clToolPath.ToString());
 
 			// Calculate the windows kits directory
 			auto windows10KitPath = Path("C:/Program Files (x86)/Windows Kits/10/");
@@ -114,28 +131,35 @@ namespace Soup::Cpp
 			auto windows10KitVersionLibPath = windows10KitLibPath + Path(windowsKitVersion);
 
 			// Set the include paths
-			auto platformIncludePaths = std::vector<Path>({
-				visualCompilerVersionFolder + Path("/include/"),
-				windows10KitVersionIncludePath + Path("/ucrt/"),
-				windows10KitVersionIncludePath + Path("/um/"),
-				windows10KitVersionIncludePath + Path("/shared/"),
-			});
+			auto platformIncludePaths = std::vector<Path>();
+			if (!skipPlatform)
+			{
+				platformIncludePaths = std::vector<Path>({
+					visualCompilerVersionFolder + Path("/include/"),
+					windows10KitVersionIncludePath + Path("/ucrt/"),
+					windows10KitVersionIncludePath + Path("/um/"),
+					windows10KitVersionIncludePath + Path("/shared/"),
+				});
+			}
 
 			// Set the include paths
 			auto platformLibraryPaths = std::vector<Path>();
-			if (architectureName == "x64")
+			if (!skipPlatform)
 			{
-				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x64/"));
-				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x64/"));
-				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x64/"));
-				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x64/"));
-			}
-			else if (architectureName == "x86")
-			{
-				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x86/"));
-				platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x86/"));
-				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x86/"));
-				platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x86/"));
+				if (architectureName == "x64")
+				{
+					platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x64/"));
+					platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x64/"));
+					platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x64/"));
+					platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x64/"));
+				}
+				else if (architectureName == "x86")
+				{
+					platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x86/"));
+					platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x86/"));
+					platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x86/"));
+					platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x86/"));
+				}
 			}
 
 			// Set the platform definitions

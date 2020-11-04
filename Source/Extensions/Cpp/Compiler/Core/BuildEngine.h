@@ -85,6 +85,7 @@ namespace Soup::Cpp::Compiler
 				compileArguments.EnableWarningsAsErrors = arguments.EnableWarningsAsErrors;
 				compileArguments.DisabledWarnings = arguments.DisabledWarnings;
 				compileArguments.EnabledWarnings = arguments.EnabledWarnings;
+				compileArguments.CustomProperties = arguments.CustomProperties;
 
 				// Compile the module interface unit if present
 				if (!arguments.ModuleInterfaceSourceFile.IsEmpty())
