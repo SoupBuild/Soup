@@ -54,6 +54,9 @@ namespace Soup::Cpp::Compiler::MSVC
 			// Disable the logo
 			AddFlag(commandArguments, ArgumentFlag_NoLogo);
 
+			// Enable full paths for errors
+			AddFlag(commandArguments, "FC");
+
 			// Enable standards-conforming compiler behavior
 			// https://docs.microsoft.com/en-us/cpp/build/reference/permissive-standards-conformance?view=vs-2019
 			// Note: Enables /Zc:referenceBinding, /Zc:strictStrings, and /Zc:rvalueCast
