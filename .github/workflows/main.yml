@@ -20,11 +20,6 @@ jobs:
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
 
-    - name: Build Runtime UnitTests
-      run: soup build Source/Build/Runtime.UnitTests/
-    - name: Run Runtime UnitTests
-      run: soup run Source/Build/Runtime.UnitTests/
-
     - name: Build Utilities UnitTests
       run: soup build Source/Build/Utilities.UnitTests/
     - name: Run Utilities UnitTests
@@ -49,6 +44,11 @@ jobs:
       run: soup build Source/Extensions/CSharp/Compiler/Core.UnitTests/
     - name: Run Extensions CSharp Compiler Core UnitTests
       run: soup run Source/Extensions/CSharp/Compiler/Core.UnitTests/
+
+    - name: Build Extensions Rust Compiler Core UnitTests
+      run: soup build Source/Extensions/Rust/Compiler/Core.UnitTests/
+    - name: Run Extensions Rust Compiler Core UnitTests
+      run: soup run Source/Extensions/Rust/Compiler/Core.UnitTests/
 
     # openssl not available on CI build
     # - name: Build Client Core UnitTests
