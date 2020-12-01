@@ -1,0 +1,17 @@
+Name = "Soup.Rust.Compiler.Core.UnitTests"
+Language = "C++"
+Version = "1.0.0"
+Type = "Executable"
+Source = [
+	"gen/Main.cpp"
+]
+IncludePaths = [
+	"./",
+]
+
+[Dependencies]
+Runtime = [
+	"../Core/",
+	"../../../../Build/Runtime/",
+	"Soup.Test.Assert@0.1.8",
+]

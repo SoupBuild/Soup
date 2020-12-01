@@ -22,6 +22,7 @@ Runtime = [
 	"../../Tools/Mkdir/",
 	"../../Extensions/Cpp/Extension/",
 	"../../Extensions/CSharp/Extension/",
+	"../../Extensions/Rust/Extension/",
 	"../../Monitor/Shared/",
 ]
 Build = [

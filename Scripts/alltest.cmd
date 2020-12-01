@@ -58,3 +58,17 @@ REM if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
 REM echo soup run %SourceDir%\Extensions\CSharp\Extension.UnitTests\
 REM call soup run %SourceDir%\Extensions\CSharp\Extension.UnitTests\
 REM if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+
+echo soup build %SourceDir%\Extensions\Rust\Compiler\Core.UnitTests\
+call soup build %SourceDir%\Extensions\Rust\Compiler\Core.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+echo soup run %SourceDir%\Extensions\Rust\Compiler\Core.UnitTests\
+call soup run %SourceDir%\Extensions\Rust\Compiler\Core.UnitTests\
+if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+
+REM echo soup build %SourceDir%\Extensions\Rust\Extension.UnitTests\
+REM call soup build %SourceDir%\Extensions\Rust\Extension.UnitTests\
+REM if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
+REM echo soup run %SourceDir%\Extensions\Rust\Extension.UnitTests\
+REM call soup run %SourceDir%\Extensions\Rust\Extension.UnitTests\
+REM if %ERRORLEVEL% NEQ 0 exit /B %ERRORLEVEL%
