@@ -28,7 +28,7 @@ namespace Soup::Build
 			_buildSet(),
 			_hostBuildSet(),
 			_hostBuildPaths(),
-			_fileSystemState(0)
+			_fileSystemState(std::make_shared<Runtime::FileSystemState>())
 		{
 		}
 
@@ -42,25 +42,6 @@ namespace Soup::Build
 		{
 			auto userDataDirectory = GetSoupUserDataPath();
 
-			// Load up the file system state
-			Log::Info("Loading previous file system state");
-			if (Runtime::FileSystemStateManager::TryLoadState(userDataDirectory, _fileSystemState))
-			{
-				// Load the current state of the known files
-				Log::Info("Loading current file system state");
-			}
-			else
-			{
-				Log::Info("No previous file system state found");
-
-				// Create a unique id using the lower range of the milliseconds since the epoch
-				auto currentTime = std::chrono::system_clock::now();
-				auto currentTimeMilliseconds = std::chrono::time_point_cast<std::chrono::milliseconds>(currentTime);
-				auto offsetFromEpoch = currentTimeMilliseconds.time_since_epoch();
-				auto uniqueId = static_cast<uint32_t>(offsetFromEpoch.count());
-				_fileSystemState = Runtime::FileSystemState(uniqueId);
-			}
-
 			// Enable log event ids to track individual builds
 			int projectId = 1;
 			bool isHostBuild = false;
@@ -73,31 +54,17 @@ namespace Soup::Build
 				auto rootParentSet = std::set<std::string>();
 				auto rootState = ConvertToBuildState(recipe.GetTable());
 
-				try
-				{
-					projectId = BuildRecipeAndDependencies(
-						projectId,
-						workingDirectory,
-						recipe,
-						arguments,
-						isHostBuild,
-						dependencyType,
-						rootParentSet,
-						rootState);
-				}
-				catch(const Runtime::BuildFailedException&)
-				{
-					Log::EnsureListener().SetShowEventId(false);
-
-					Log::Info("Saving partial file system state");
-					Runtime::FileSystemStateManager::SaveState(userDataDirectory, _fileSystemState);
-					throw;
-				}
+				projectId = BuildRecipeAndDependencies(
+					projectId,
+					workingDirectory,
+					recipe,
+					arguments,
+					isHostBuild,
+					dependencyType,
+					rootParentSet,
+					rootState);
 
 				Log::EnsureListener().SetShowEventId(false);
-
-				Log::Info("Saving updated file system state");
-				Runtime::FileSystemStateManager::SaveState(userDataDirectory, _fileSystemState);
 			}
 			catch(...)
 			{
@@ -490,7 +457,7 @@ namespace Soup::Build
 				_hostBuildPaths.emplace(recipe.GetName(), targetDirectory);
 			}
 
-			auto activeBuildGraph = Runtime::OperationGraph(0);
+			auto activeBuildGraph = Runtime::OperationGraph();
 			auto sharedState = Runtime::ValueTable();
 			if (!arguments.SkipGenerate)
 			{
@@ -568,7 +535,7 @@ namespace Soup::Build
 				if (!Runtime::OperationGraphManager::TryLoadState(
 					targetDirectory,
 					activeBuildGraph,
-					_fileSystemState.GetId()))
+					*_fileSystemState))
 				{
 					throw std::runtime_error("Missing cached operation graph when skipping Runtime phase.");
 				}
@@ -599,12 +566,18 @@ namespace Soup::Build
 				catch(const Runtime::BuildFailedException&)
 				{
 					Log::Info("Saving partial build state");
-					Runtime::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
+					Runtime::OperationGraphManager::SaveState(
+						targetDirectory,
+						activeBuildGraph,
+						*_fileSystemState);
 					throw;
 				}
 
 				Log::Info("Saving updated build state");
-				Runtime::OperationGraphManager::SaveState(targetDirectory, activeBuildGraph);
+				Runtime::OperationGraphManager::SaveState(
+					targetDirectory,
+					activeBuildGraph,
+					*_fileSystemState);
 
 				Log::HighPriority("Done");
 			}
@@ -717,6 +690,6 @@ namespace Soup::Build
 
 		std::map<std::string, Path> _hostBuildPaths;
 
-		Runtime::FileSystemState _fileSystemState;
+		std::shared_ptr<Runtime::FileSystemState> _fileSystemState;
 	};
 }

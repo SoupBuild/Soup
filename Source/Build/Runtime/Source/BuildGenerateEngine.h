@@ -63,8 +63,8 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="BuildGenerateEngine"/> class.
 		/// </summary>
 		BuildGenerateEngine(
-			FileSystemState& fileSystemState) :
-			_fileSystemState(fileSystemState)
+			std::shared_ptr<FileSystemState> fileSystemState) :
+			_fileSystemState(std::move(fileSystemState))
 		{
 		}
 
@@ -113,11 +113,11 @@ namespace Soup::Build::Runtime
 		{
 			// Load the previous build graph
 			Log::Diag("Loading previous build graph");
-			auto previousOperationGraph = OperationGraph(0);
+			auto previousOperationGraph = OperationGraph();
 			if (!OperationGraphManager::TryLoadState(
 				targetDirectory,
 				previousOperationGraph,
-				_fileSystemState.GetId()))
+				*_fileSystemState))
 			{
 				Log::Info("No valid previous build graph found");
 			}
@@ -236,6 +236,6 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		FileSystemState& _fileSystemState;
+		std::shared_ptr<FileSystemState> _fileSystemState;
 	};
 }

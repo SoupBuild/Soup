@@ -188,8 +188,15 @@ namespace Soup::Cpp
 			// Load the list of disabled warnings
 			if (buildTable.HasValue("DisabledWarnings"))
 			{
-				arguments.DisabledWarnings = 
+				arguments.DisabledWarnings =
 					buildTable.GetValue("DisabledWarnings").AsList().CopyAsStringVector();
+			}
+
+			// Check for any custom compiler flags
+			if (buildTable.HasValue("CustomCompilerProperties"))
+			{
+				arguments.CustomProperties =
+					buildTable.GetValue("CustomCompilerProperties").AsList().CopyAsStringVector();
 			}
 
 			// Initialize the compiler to use

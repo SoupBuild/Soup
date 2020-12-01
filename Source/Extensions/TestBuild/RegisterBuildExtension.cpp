@@ -23,12 +23,13 @@ using namespace Opal;
 
 std::shared_ptr<Soup::Cpp::Compiler::ICompiler> CreateMSVCCompiler(Soup::Build::Utilities::ValueTableWrapper& activeState)
 {
-	auto visualCompilerToolsRoot = activeState.GetValue("MSVC.VCToolsBinaryRoot").AsString().GetValue();
+	auto clToolPath = Path(activeState.GetValue("MSVC.ClToolPath").AsString().GetValue());
+	auto linkToolPath = Path(activeState.GetValue("MSVC.LinkToolPath").AsString().GetValue());
+	auto libToolPath = Path(activeState.GetValue("MSVC.LibToolPath").AsString().GetValue());
 	std::shared_ptr<Soup::Cpp::Compiler::ICompiler> compiler = std::make_shared<Soup::Cpp::Compiler::MSVC::Compiler>(
-		Path(visualCompilerToolsRoot),
-		Path("cl.exe"),
-		Path("link.exe"),
-		Path("lib.exe"));
+		std::move(clToolPath),
+		std::move(linkToolPath),
+		std::move(libToolPath));
 
 	return compiler;
 }

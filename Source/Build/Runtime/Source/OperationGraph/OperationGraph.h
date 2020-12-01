@@ -17,8 +17,8 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
-		OperationGraph(FileSystemStateId stateId) :
-			_stateId(stateId),
+		OperationGraph() :
+			_referencedFiles(),
 			_rootOperations(),
 			_operations(),
 			_operationLookup()
@@ -29,10 +29,10 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
 		OperationGraph(
-			FileSystemStateId stateId,
+			std::vector<std::pair<FileId, Path>> referencedFiles,
 			std::vector<OperationId> rootOperations,
 			std::vector<OperationInfo> operations) :
-			_stateId(stateId),
+			_referencedFiles(std::move(referencedFiles)),
 			_rootOperations(std::move(rootOperations)),
 			_operations(),
 			_operationLookup()
@@ -45,11 +45,21 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
-		/// Get the file system state id used for this operation graph
+		/// Get the set of referenced file ids that map to their paths
 		/// </summary>
-		FileSystemStateId GetStateId() const
+		std::vector<std::pair<FileId, Path>>& GetReferencedFiles()
 		{
-			return _stateId;
+			return _referencedFiles;
+		}
+
+		const std::vector<std::pair<FileId, Path>>& GetReferencedFiles() const
+		{
+			return _referencedFiles;
+		}
+		
+		void SetReferencedFiles(std::vector<std::pair<FileId, Path>> files)
+		{
+			_referencedFiles = std::move(files);
 		}
 
 		/// <summary>
@@ -152,7 +162,7 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		FileSystemStateId _stateId;
+		std::vector<std::pair<FileId, Path>> _referencedFiles;
 		std::vector<OperationId> _rootOperations;
 		std::unordered_map<OperationId, OperationInfo> _operations;
 		std::unordered_map<CommandInfo, OperationId> _operationLookup;

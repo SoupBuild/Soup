@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "FileSystemState.h"
 
 namespace Soup::Build::Runtime
 {

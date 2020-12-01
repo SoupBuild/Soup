@@ -14,7 +14,7 @@ namespace Soup::Build::Runtime
 	{
 	private:
 		// Binary Operation graph file format
-		static constexpr uint32_t FileVersion = 1;
+		static constexpr uint32_t FileVersion = 2;
 
 	public:
 		static void Serialize(const OperationGraph& state, std::ostream& stream)
@@ -23,8 +23,16 @@ namespace Soup::Build::Runtime
 			stream.write("BOG\0", 4);
 			WriteValue(stream, FileVersion);
 
-			// Write out the file system state that was used for this operation graph
-			WriteValue(stream, state.GetStateId());
+			// Write out the set of files
+			auto& files = state.GetReferencedFiles();
+			stream.write("FIS\0", 4);
+			WriteValue(stream, static_cast<uint32_t>(files.size()));
+			for (auto& file : files)
+			{
+				// Write the file id + path length + path
+				WriteValue(stream, file.first);
+				WriteValue(stream, file.second.ToString());
+			}
 
 			// Write out the root operation ids
 			stream.write("ROP\0", 4);

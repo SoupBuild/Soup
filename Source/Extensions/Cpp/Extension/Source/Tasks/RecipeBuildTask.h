@@ -217,6 +217,12 @@ namespace Soup::Cpp
 				// preprocessorDefinitions.push_back("DEBUG");
 				generateSourceDebugInfo = true;
 			}
+			else if (buildFlavor == "debugrelease")
+			{
+				preprocessorDefinitions.push_back("RELEASE");
+				generateSourceDebugInfo = true;
+				optimizationLevel = Soup::Cpp::Compiler::BuildOptimizationLevel::Speed;
+			}
 			else if (buildFlavor == "release")
 			{
 				preprocessorDefinitions.push_back("RELEASE");

@@ -13,8 +13,7 @@ namespace Soup::Cpp::Compiler::MSVC
 	export class Compiler : public ICompiler
 	{
 	public:
-		Compiler(Path toolsPath, Path compilerExecutable, Path linkerExecutable, Path libraryExecutable) :
-			_toolsPath(std::move(toolsPath)),
+		Compiler(Path compilerExecutable, Path linkerExecutable, Path libraryExecutable) :
 			_compilerExecutable(std::move(compilerExecutable)),
 			_linkerExecutable(std::move(linkerExecutable)),
 			_libraryExecutable(std::move(libraryExecutable))
@@ -84,7 +83,6 @@ namespace Soup::Cpp::Compiler::MSVC
 			auto sharedInputFiles = arguments.IncludeModules;
 
 			// Generate the interface build operation if present
-			auto executablePath = _toolsPath + _compilerExecutable;
 			auto internalModules = std::vector<Path>();
 			if (arguments.InterfaceUnit.has_value())
 			{
@@ -108,7 +106,7 @@ namespace Soup::Cpp::Compiler::MSVC
 				auto buildOperation = Build::Utilities::BuildOperation(
 					interfaceUnitArguments.SourceFile.ToString(),
 					arguments.RootDirectory,
-					executablePath,
+					_compilerExecutable,
 					CombineArguments(commandArguments),
 					std::move(inputFiles),
 					std::move(outputFiles));
@@ -138,7 +136,7 @@ namespace Soup::Cpp::Compiler::MSVC
 				auto buildOperation = Build::Utilities::BuildOperation(
 					implementationUnitArguments.SourceFile.ToString(),
 					arguments.RootDirectory,
-					executablePath,
+					_compilerExecutable,
 					CombineArguments(commandArguments),
 					std::move(inputFiles),
 					std::move(outputFiles));
@@ -159,11 +157,11 @@ namespace Soup::Cpp::Compiler::MSVC
 			switch (arguments.TargetType)
 			{
 				case LinkTarget::StaticLibrary:
-					executablePath = _toolsPath + _libraryExecutable;
+					executablePath = _libraryExecutable;
 					break;
 				case LinkTarget::DynamicLibrary:
 				case LinkTarget::Executable:
-					executablePath = _toolsPath + _linkerExecutable;
+					executablePath = _linkerExecutable;
 					break;
 				default:
 					throw std::runtime_error("Unknown LinkTarget.");
@@ -207,7 +205,6 @@ namespace Soup::Cpp::Compiler::MSVC
 		}
 
 	private:
-		Path _toolsPath;
 		Path _compilerExecutable;
 		Path _linkerExecutable;
 		Path _libraryExecutable;

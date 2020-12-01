@@ -23,7 +23,6 @@ export module Soup.Cpp;
 
 import Opal;
 import Soup.Build;
-import Soup.Build.Runtime;
 import Soup.Build.Utilities;
 import Soup.Cpp.Compiler;
 import Soup.Cpp.Compiler.Clang;

@@ -13,10 +13,9 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 		void Initialize()
 		{
 			auto uut = Compiler(
-				Path("./bin/"),
-				Path("mock.cl.exe"),
-				Path("mock.link.exe"),
-				Path("mock.lib.exe"));
+				Path("C:/bin/mock.cl.exe"),
+				Path("C:/bin/mock.link.exe"),
+				Path("C:/bin/mock.lib.exe"));
 			Assert::AreEqual(uut.GetName(), std::string_view("MSVC"), "Verify name match expected.");
 			Assert::AreEqual(uut.GetObjectFileExtension(), std::string_view("obj"), "Verify object file extension match expected.");
 			Assert::AreEqual(uut.GetModuleFileExtension(), std::string_view("ifc"), "Verify module file extension match expected.");
@@ -28,10 +27,9 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 		void Compile_Simple()
 		{
 			auto uut = Compiler(
-				Path("./bin/"),
-				Path("mock.cl.exe"),
-				Path("mock.link.exe"),
-				Path("mock.lib.exe"));
+				Path("C:/bin/mock.cl.exe"),
+				Path("C:/bin/mock.link.exe"),
+				Path("C:/bin/mock.lib.exe"));
 
 			SharedCompileArguments arguments = {};
 			arguments.RootDirectory = Path("Source/");
@@ -58,7 +56,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 				Build::Utilities::BuildOperation(
 					"./File.cpp",
 					Path("Source/"),
-					Path("bin/mock.cl.exe"),
+					Path("C:/bin/mock.cl.exe"),
 					"@./ObjectDir/SharedCompileArguments.txt ./File.cpp /Fo\"./obj/File.obj\"",
 					std::vector<Path>({
 						Path("File.cpp"),
@@ -79,10 +77,9 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 		void Compile_Module()
 		{
 			auto uut = Compiler(
-				Path("./bin/"),
-				Path("mock.cl.exe"),
-				Path("mock.link.exe"),
-				Path("mock.lib.exe"));
+				Path("C:/bin/mock.cl.exe"),
+				Path("C:/bin/mock.link.exe"),
+				Path("C:/bin/mock.lib.exe"));
 
 			SharedCompileArguments arguments = {};
 			arguments.RootDirectory = Path("Source/");
@@ -119,7 +116,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 				Build::Utilities::BuildOperation(
 					"./File.cpp",
 					Path("Source/"),
-					Path("bin/mock.cl.exe"),
+					Path("C:/bin/mock.cl.exe"),
 					"@./ObjectDir/SharedCompileArguments.txt ./File.cpp /Fo\"./obj/File.obj\" /interface /ifcOutput \"./obj/File.pcm\"",
 					std::vector<Path>({
 						Path("Module.pcm"),
@@ -142,10 +139,9 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 		void LinkStaticLibrary_Simple()
 		{
 			auto uut = Compiler(
-				Path("./bin/"),
-				Path("mock.cl.exe"),
-				Path("mock.link.exe"),
-				Path("mock.lib.exe"));
+				Path("C:/bin/mock.cl.exe"),
+				Path("C:/bin/mock.link.exe"),
+				Path("C:/bin/mock.lib.exe"));
 
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::StaticLibrary;
@@ -162,7 +158,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			auto expected = Build::Utilities::BuildOperation(
 				"./Library.mock.a",
 				Path("Source/"),
-				Path("bin/mock.lib.exe"),
+				Path("C:/bin/mock.lib.exe"),
 				"/nologo /machine:X64 /out:\"./Library.mock.a\" ./File.mock.obj",
 				std::vector<Path>({
 					Path("File.mock.obj"),
@@ -181,10 +177,9 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 		void LinkExecutable_Simple()
 		{
 			auto uut = Compiler(
-				Path("./bin/"),
-				Path("mock.cl.exe"),
-				Path("mock.link.exe"),
-				Path("mock.lib.exe"));
+				Path("C:/bin/mock.cl.exe"),
+				Path("C:/bin/mock.link.exe"),
+				Path("C:/bin/mock.lib.exe"));
 
 			LinkArguments arguments = {};
 			arguments.TargetType = LinkTarget::Executable;
@@ -204,7 +199,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 			auto expected = Build::Utilities::BuildOperation(
 				"./Something.exe",
 				Path("Source/"),
-				Path("bin/mock.link.exe"),
+				Path("C:/bin/mock.link.exe"),
 				"/nologo /subsystem:console /machine:X64 /out:\"./Something.exe\" ./Library.mock.a ./File.mock.obj",
 				std::vector<Path>({
 					Path("Library.mock.a"),

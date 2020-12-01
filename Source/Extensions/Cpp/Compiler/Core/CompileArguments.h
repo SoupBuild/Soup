@@ -212,6 +212,11 @@ namespace Soup::Cpp::Compiler
 		std::vector<std::string> EnabledWarnings;
 
 		/// <summary>
+		/// Gets or sets the set of custom properties for the known compiler
+		/// </summary>
+		std::vector<std::string> CustomProperties;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		bool operator ==(const SharedCompileArguments& rhs) const
@@ -227,7 +232,8 @@ namespace Soup::Cpp::Compiler
 				ImplementationUnits == rhs.ImplementationUnits &&
 				EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
 				DisabledWarnings == rhs.DisabledWarnings &&
-				EnabledWarnings == rhs.EnabledWarnings;
+				EnabledWarnings == rhs.EnabledWarnings &&
+				CustomProperties == rhs.CustomProperties;
 		}
 
 		bool operator !=(const SharedCompileArguments& rhs) const

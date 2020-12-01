@@ -1,26 +1,24 @@
-// <copyright file="BuildState.h" company="Soup">
+// <copyright file="MockBuildState.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "ValueTable.h"
-#include "OperationGraph/OperationGraphGenerator.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Build::TestExtensions
 {
 	/// <summary>
-	/// Build State Extension interface
+	/// A mock Build State interface implementation to track incoming calls and setup input state
 	/// </summary>
-	export class BuildState : public IBuildState
+	export class MockBuildState : public IBuildState
 	{
 	public:
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
-		BuildState(ValueTable activeState, std::shared_ptr<FileSystemState> fileSystemState) :
-			_activeState(std::move(activeState)),
+		BuildState() :
+			_activeState(),
 			_sharedState(),
-			_graphGenerator(fileSystemState)
+			_operations()
 		{
 		}
 
@@ -61,6 +59,27 @@ namespace Soup::Build::Runtime
 					Path(workingDirectory),
 					Utilities::ReadOnlyStringListWrapper(declaredInput).CopyAsPathVector(),
 					Utilities::ReadOnlyStringListWrapper(declaredOutput).CopyAsPathVector());
+
+				// Build up the operation unique command
+				auto commandInfo = CommandInfo(
+					Path(workingDirectory),
+					Path(executable),
+					arguments);
+
+				// Generate a unique id for this new operation
+				auto operationId = _operations.size() + 1;
+
+			// Build up the declared build operation
+			auto declaredInputFileIds = _fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
+			auto declaredOutputFileIds = _fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
+			_graph.AddOperation(
+				OperationInfo(
+					operationId,
+					std::move(title),
+					std::move(commandInfo),
+					std::move(declaredInputFileIds),
+					std::move(declaredOutputFileIds)));
+
 				return ApiCallResult::Success;
 			}
 			catch (...)
@@ -107,27 +126,9 @@ namespace Soup::Build::Runtime
 			}
 		}
 
-		/// <summary>
-		/// Pull out the shared state
-		/// </summary>
-		ValueTable RetrieveSharedState() noexcept
-		{
-			return std::move(_sharedState);
-		}
-
-		OperationGraph BuildOperationGraph()
-		{
-			return _graphGenerator.BuildGraph();
-		}
-
-		void LogActive()
-		{
-			_activeState.Log();
-		}
-
 	private:
 		ValueTable _activeState;
 		ValueTable _sharedState;
-		OperationGraphGenerator _graphGenerator;
+		std::vector<OperationInfo> _operations;
 	};
 }

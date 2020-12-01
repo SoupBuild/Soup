@@ -14,7 +14,7 @@ namespace Soup::Build::Runtime
 	{
 	private:
 		// Binary Operation Graph file format
-		static constexpr uint32_t FileVersion = 1;
+		static constexpr uint32_t FileVersion = 2;
 
 	public:
 		static OperationGraph Deserialize(std::istream& stream)
@@ -36,8 +36,26 @@ namespace Soup::Build::Runtime
 				throw std::runtime_error("Operation graph file version does not match expected");
 			}
 
-			// Read in the file system state that was used for this operation graph
-			auto stateId = ReadUInt32(stream);
+			// Read the set of files
+			stream.read(headerBuffer.data(), 4);
+			if (headerBuffer[0] != 'F' ||
+				headerBuffer[1] != 'I' ||
+				headerBuffer[2] != 'S' ||
+				headerBuffer[3] != '\0')
+			{
+				throw std::runtime_error("Invalid operation graph files header");
+			}
+
+			auto fileCount = ReadUInt32(stream);
+			auto files = std::vector<std::pair<FileId, Path>>();
+			for (auto i = 0u; i < fileCount; i++)
+			{
+				// Read the command working directory
+				auto fileId = ReadUInt32(stream);
+				auto file = Path(ReadString(stream));
+
+				files.push_back({ fileId, std::move(file) });
+			}
 
 			// Read the set of operations
 			stream.read(headerBuffer.data(), 4);
@@ -75,7 +93,7 @@ namespace Soup::Build::Runtime
 			}
 
 			return OperationGraph(
-				stateId,
+				std::move(files),
 				std::move(rootOperationIds),
 				std::move(operations));
 		}

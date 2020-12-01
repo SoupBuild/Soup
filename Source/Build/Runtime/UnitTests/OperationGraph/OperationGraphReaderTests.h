@@ -40,11 +40,28 @@ namespace Soup::Build::Runtime::UnitTests
 		}
 
 		// [[Fact]]
+		void Deserialize_InvalidFilesHeaderThrows()
+		{
+			auto binaryFileContent = std::vector<char>(
+			{
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '2',
+			});
+			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
+
+			Assert::ThrowsRuntimeError([&content]() {
+				auto actual = OperationGraphReader::Deserialize(content);
+			},
+			"Invalid operation graph files header");
+		}
+
+		// [[Fact]]
 		void Deserialize_InvalidRootOperationsHeaderThrows()
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '2',
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
@@ -60,7 +77,8 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x00, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '2',
 			});
@@ -77,7 +95,8 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x00, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00, 'E',
 			});
@@ -94,7 +113,8 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x00, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 			});
@@ -102,10 +122,6 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto actual = OperationGraphReader::Deserialize(content);
 
-			Assert::AreEqual(
-				12345u,
-				actual.GetStateId(),
-				"Verify state id match expected.");
 			Assert::AreEqual(
 				std::vector<OperationId>(),
 				actual.GetRootOperationIds(),
@@ -121,7 +137,8 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
@@ -142,10 +159,6 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto actual = OperationGraphReader::Deserialize(content);
 
-			Assert::AreEqual(
-				12345u,
-				actual.GetStateId(),
-				"Verify state id match expected.");
 			Assert::AreEqual(
 				std::vector<OperationId>({ 5, }),
 				actual.GetRootOperationIds(),
@@ -179,7 +192,8 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x01, 0x00, 0x00, 0x00,
@@ -200,10 +214,6 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto actual = OperationGraphReader::Deserialize(content);
 
-			Assert::AreEqual(
-				12345u,
-				actual.GetStateId(),
-				"Verify state id match expected.");
 			Assert::AreEqual(
 				std::vector<OperationId>({ 5, }),
 				actual.GetRootOperationIds(),
@@ -237,7 +247,8 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x01, 0x00, 0x00, 0x00, 0x39, 0x30, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x06, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x02, 0x00, 0x00, 0x00,
@@ -270,10 +281,6 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto actual = OperationGraphReader::Deserialize(content);
 
-			Assert::AreEqual(
-				12345u,
-				actual.GetStateId(),
-				"Verify state id match expected.");
 			Assert::AreEqual(
 				std::vector<OperationId>({ 6, }),
 				actual.GetRootOperationIds(),

@@ -3,15 +3,15 @@
 // </copyright>
 
 #pragma once
-#include "FileSystemState/FileSystemState.h"
+#include "FileSystemState.h"
 
 namespace Soup::Build::Runtime
 {
 	export class BuildHistoryChecker
 	{
 	public:
-		BuildHistoryChecker(FileSystemState& fileSystemState) :
-			_fileSystemState(fileSystemState)
+		BuildHistoryChecker(std::shared_ptr<FileSystemState> fileSystemState) :
+			_fileSystemState(std::move(fileSystemState))
 		{
 		}
 
@@ -48,11 +48,11 @@ namespace Soup::Build::Runtime
 			const std::vector<FileId>& inputFiles)
 		{
 			// Get the output file last write time
-			std::optional<time_t> targetFileLastWriteTime = _fileSystemState.GetLastWriteTime(targetFile);
+			std::optional<time_t> targetFileLastWriteTime = _fileSystemState->GetLastWriteTime(targetFile);
 
 			if (!targetFileLastWriteTime.has_value())
 			{
-				auto targetFilePath = _fileSystemState.GetFilePath(targetFile);
+				auto targetFilePath = _fileSystemState->GetFilePath(targetFile);
 				Log::Info("Output target does not exist: " + targetFilePath.ToString());
 				return true;
 			}
@@ -73,13 +73,13 @@ namespace Soup::Build::Runtime
 		bool IsOutdated(FileId inputFile, FileId outputFile, std::time_t outputFileLastWriteTime)
 		{
 			// Get the file state from the cache
-			std::optional<time_t> lastWriteTime = _fileSystemState.GetLastWriteTime(inputFile);
+			std::optional<time_t> lastWriteTime = _fileSystemState->GetLastWriteTime(inputFile);
 
 			// Perform the final check
 			if (!lastWriteTime.has_value())
 			{
 				// The input was missing
-				auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
+				auto targetFilePath = _fileSystemState->GetFilePath(inputFile);
 				Log::Info("Input Missing [" + targetFilePath.ToString() + "]");
 				return true;
 			}
@@ -87,8 +87,8 @@ namespace Soup::Build::Runtime
 			{
 				if (lastWriteTime.value() > outputFileLastWriteTime)
 				{
-					auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
-					auto outputFilePath = _fileSystemState.GetFilePath(outputFile);
+					auto targetFilePath = _fileSystemState->GetFilePath(inputFile);
+					auto outputFilePath = _fileSystemState->GetFilePath(outputFile);
 					Log::Info("Input altered after target [" + targetFilePath.ToString() + "] -> [" + outputFilePath.ToString() + "]");
 					return true;
 				}
@@ -100,6 +100,6 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		FileSystemState& _fileSystemState;
+		std::shared_ptr<FileSystemState> _fileSystemState;
 	};
 }

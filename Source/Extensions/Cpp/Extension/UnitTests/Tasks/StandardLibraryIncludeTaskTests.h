@@ -35,7 +35,8 @@ namespace Soup::Cpp::UnitTests
 			auto uut = StandardLibraryIncludeTask();
 
 			// Setup the input build state
-			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable());
+			auto fileSystemState = Build::Runtime::FileSystemState(1234);
+			auto buildState = Build::Runtime::BuildState(Build::Runtime::ValueTable(), fileSystemState);
 			auto state = Build::Utilities::ValueTableWrapper(buildState.GetActiveState());
 
 			auto result = uut.TryExecute(buildState);
@@ -48,7 +49,7 @@ namespace Soup::Cpp::UnitTests
 				"Verify log messages match expected.");
 
 			// Verify build state
-			auto expectedBuildOperations = std::vector<Memory::Reference<Build::Utilities::BuildOperation>>();
+			auto expectedBuildOperations = std::vector<Build::Utilities::BuildOperation>();
 
 			AssertExtensions::AreEqual(
 				expectedBuildOperations,

@@ -54,6 +54,9 @@ namespace Soup::Cpp::Compiler::MSVC
 			// Disable the logo
 			AddFlag(commandArguments, ArgumentFlag_NoLogo);
 
+			// Enable full paths for errors
+			AddFlag(commandArguments, "FC");
+
 			// Enable standards-conforming compiler behavior
 			// https://docs.microsoft.com/en-us/cpp/build/reference/permissive-standards-conformance?view=vs-2019
 			// Note: Enables /Zc:referenceBinding, /Zc:strictStrings, and /Zc:rvalueCast
@@ -62,7 +65,15 @@ namespace Soup::Cpp::Compiler::MSVC
 
 			// Enable the __cplusplus macro to report the supported standard
 			// https://docs.microsoft.com/en-us/cpp/build/reference/zc-cplusplus?view=vs-2019
-			AddParameter(commandArguments, "Zc", "__cplusplus");
+			bool disableCPlusPlusMacroConformance =
+				std::find(
+					arguments.CustomProperties.begin(),
+					arguments.CustomProperties.end(),
+					"DisableCPlusPlusMacroConformance") != arguments.CustomProperties.end();
+			if (!disableCPlusPlusMacroConformance)
+			{
+				AddParameter(commandArguments, "Zc", "__cplusplus");
+			}
 
 			// Enable external linkage for constexpr variables
 			// https://docs.microsoft.com/en-us/cpp/build/reference/zc-externconstexpr?view=vs-2019
