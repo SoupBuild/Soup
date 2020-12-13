@@ -45,11 +45,6 @@ jobs:
     - name: Run Extensions CSharp Compiler Core UnitTests
       run: soup run Source/Extensions/CSharp/Compiler/Core.UnitTests/
 
-    - name: Build Extensions Rust Compiler Core UnitTests
-      run: soup build Source/Extensions/Rust/Compiler/Core.UnitTests/
-    - name: Run Extensions Rust Compiler Core UnitTests
-      run: soup run Source/Extensions/Rust/Compiler/Core.UnitTests/
-
     # openssl not available on CI build
     # - name: Build Client Core UnitTests
     #   run: soup build Source/Client/Core.UnitTests/
