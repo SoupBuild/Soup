@@ -5,6 +5,7 @@
 #pragma once
 #include "RecipeBuildArguments.h"
 #include "RecipeExtensions.h"
+#include "RecipeBuildStateConverter.h"
 
 namespace Soup::Build
 {
@@ -62,7 +63,7 @@ namespace Soup::Build
 				}
 
 				auto rootParentSet = std::set<std::string>();
-				auto rootState = ConvertToBuildState(recipe.GetTable());
+				auto rootState = RecipeBuildStateConverter::ConvertToBuildState(recipe.GetTable());
 
 				projectId = BuildRecipeAndDependencies(
 					projectId,
@@ -84,76 +85,6 @@ namespace Soup::Build
 
 	private:
 		/// <summary>
-		/// Convert the root recipe table to a build Value Table entry
-		/// </summary>
-		Runtime::ValueTable ConvertToRootBuildState(const RecipeTable& table)
-		{
-			// Convert teh root table
-			auto recipeState = ConvertToBuildState(table);
-			
-			// Initialize the Recipe state
-			auto state = Runtime::ValueTable();
-			state.SetValue("Recipe", Runtime::Value(std::move(recipeState)));
-			return state;
-		}
-
-		/// <summary>
-		/// Convert the recipe internal representation to initial build state
-		/// </summary>
-		Runtime::ValueTable ConvertToBuildState(const RecipeTable& table)
-		{
-			auto result = Runtime::ValueTable();
-			for (auto& value : table)
-			{
-				auto buildValue = ConvertToBuildState(value.second);
-				result.SetValue(value.first, std::move(buildValue));
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Convert the recipe internal representation to initial build state
-		/// </summary>
-		Runtime::ValueList ConvertToBuildState(const RecipeList& list)
-		{
-			auto result = Runtime::ValueList();
-			for (auto& value : list)
-			{
-				auto buildValue = ConvertToBuildState(value);
-				result.GetValues().push_back(std::move(buildValue));
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Convert the recipe internal representation to initial build state
-		/// </summary>
-		Runtime::Value ConvertToBuildState(const RecipeValue& value)
-		{
-			switch (value.GetType())
-			{
-				case RecipeValueType::Empty:
-					return Runtime::Value();
-				case RecipeValueType::Table:
-					return Runtime::Value(ConvertToBuildState(value.AsTable()));
-				case RecipeValueType::List:
-					return Runtime::Value(ConvertToBuildState(value.AsList()));
-				case RecipeValueType::String:
-					return Runtime::Value(value.AsString());
-				case RecipeValueType::Integer:
-					return Runtime::Value(value.AsInteger());
-				case RecipeValueType::Float:
-					return Runtime::Value(value.AsFloat());
-				case RecipeValueType::Boolean:
-					return Runtime::Value(value.AsBoolean());
-				default:
-					throw std::runtime_error("Unknown value type.");
-			}
-		}
-
-		/// <summary>
 		/// Build the dependencies for the provided recipe recursively
 		/// </summary>
 		int BuildRecipeAndDependencies(
@@ -170,7 +101,7 @@ namespace Soup::Build
 			activeParentSet.insert(std::string(recipe.GetName()));
 
 			// Start a new active state that is initialized to the recipe itself
-			auto activeState = ConvertToRootBuildState(recipe.GetTable());
+			auto activeState = RecipeBuildStateConverter::ConvertToRootBuildState(recipe.GetTable());
 
 			if (recipe.HasRuntimeDependencies())
 			{
