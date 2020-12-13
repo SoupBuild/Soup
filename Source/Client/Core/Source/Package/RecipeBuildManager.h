@@ -20,9 +20,11 @@ namespace Soup::Build
 		/// </summary>
 		RecipeBuildManager(
 			std::string hostCompiler,
-			std::string runtimeCompiler) :
+			std::string runtimeCompiler,
+			RecipeBuildArguments arguments) :
 			_hostCompiler(std::move(hostCompiler)),
 			_runtimeCompiler(std::move(runtimeCompiler)),
+			_arguments(std::move(arguments)),
 			_knownRecipes(),
 			_knownRootRecipes(),
 			_buildSet(),
@@ -35,10 +37,7 @@ namespace Soup::Build
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(
-			const Path& workingDirectory,
-			Recipe& recipe,
-			const RecipeBuildArguments& arguments)
+		void Execute(const Path& workingDirectory)
 		{
 			auto userDataDirectory = GetSoupUserDataPath();
 
@@ -51,6 +50,17 @@ namespace Soup::Build
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
+				auto recipePath = workingDirectory + Path(Constants::RecipeFileName);
+				Recipe recipe = {};
+				if (!TryGetRecipe(recipePath, recipe))
+				{
+					Log::Error("The target Recipe does not exist: " + recipePath.ToString());
+					Log::HighPriority("Make sure the path is correct and try again");
+
+					// Nothing we can do, exit
+					throw HandledException(1123124);
+				}
+
 				auto rootParentSet = std::set<std::string>();
 				auto rootState = ConvertToBuildState(recipe.GetTable());
 
@@ -58,7 +68,6 @@ namespace Soup::Build
 					projectId,
 					workingDirectory,
 					recipe,
-					arguments,
 					isHostBuild,
 					dependencyType,
 					rootParentSet,
@@ -151,7 +160,6 @@ namespace Soup::Build
 			int projectId,
 			const Path& workingDirectory,
 			Recipe& recipe,
-			const RecipeBuildArguments& arguments,
 			bool isHostBuild,
 			std::string_view dependencyType,
 			const std::set<std::string>& parentSet,
@@ -201,7 +209,6 @@ namespace Soup::Build
 						projectId,
 						packagePath,
 						dependencyRecipe,
-						arguments,
 						isHostBuild,
 						"Runtime",
 						activeParentSet,
@@ -246,7 +253,6 @@ namespace Soup::Build
 						projectId,
 						packagePath,
 						dependencyRecipe,
-						arguments,
 						isHostBuild,
 						"Test",
 						activeParentSet,
@@ -280,7 +286,6 @@ namespace Soup::Build
 						projectId,
 						packagePath,
 						dependencyRecipe,
-						arguments,
 						true,
 						"Build",
 						activeParentSet,
@@ -293,7 +298,6 @@ namespace Soup::Build
 				projectId,
 				workingDirectory,
 				recipe,
-				arguments,
 				isHostBuild,
 				dependencyType,
 				activeState,
@@ -311,7 +315,6 @@ namespace Soup::Build
 			int projectId,
 			const Path& workingDirectory,
 			Recipe& recipe,
-			const RecipeBuildArguments& arguments,
 			bool isHostBuild,
 			std::string_view dependencyType,
 			Runtime::ValueTable& activeState,
@@ -338,7 +341,6 @@ namespace Soup::Build
 					auto resultSharedState = RunInProcessBuild(
 						workingDirectory,
 						recipe,
-						arguments,
 						isHostBuild,
 						activeState);
 
@@ -377,7 +379,6 @@ namespace Soup::Build
 		Runtime::ValueTable RunInProcessBuild(
 			const Path& packageRoot,
 			Recipe& recipe,
-			const RecipeBuildArguments& arguments,
 			bool isHostBuild,
 			Runtime::ValueTable& activeState)
 		{
@@ -394,7 +395,7 @@ namespace Soup::Build
 			{
 				Log::HighPriority("Build '" + recipe.GetName() + "'");
 				activeCompiler = _runtimeCompiler;
-				activeFlavor = arguments.Flavor;
+				activeFlavor = _arguments.Flavor;
 			}
 
 			// Set the default output directory to be relative to the package
@@ -448,8 +449,8 @@ namespace Soup::Build
 			auto targetDirectory = rootOutput + Runtime::BuildGenerateEngine::GetConfigurationDirectory(
 				_hostCompiler,
 				activeFlavor,
-				arguments.System,
-				arguments.Architecture);
+				_arguments.System,
+				_arguments.Architecture);
 
 			// Cache if is host build to load build tasks
 			if (isHostBuild)
@@ -459,7 +460,7 @@ namespace Soup::Build
 
 			auto activeBuildGraph = Runtime::OperationGraph();
 			auto sharedState = Runtime::ValueTable();
-			if (!arguments.SkipGenerate)
+			if (!_arguments.SkipGenerate)
 			{
 				auto buildExtensionLibraries = std::vector<Path>();
 
@@ -519,8 +520,8 @@ namespace Soup::Build
 					targetDirectory,
 					activeCompiler,
 					activeFlavor,
-					arguments.System,
-					arguments.Architecture,
+					_arguments.System,
+					_arguments.Architecture,
 					packageRoot,
 					activeState,
 					buildExtensionLibraries);
@@ -541,9 +542,9 @@ namespace Soup::Build
 				}
 			}
 
-			if (!arguments.SkipEvaluate)
+			if (!_arguments.SkipEvaluate)
 			{
-				if (arguments.ForceRebuild)
+				if (_arguments.ForceRebuild)
 				{
 					Log::Diag("Purge operation graph to force build");
 					for (auto& activeOperationEntry : activeBuildGraph.GetOperations())
@@ -681,6 +682,7 @@ namespace Soup::Build
 	private:
 		std::string _hostCompiler;
 		std::string _runtimeCompiler;
+		RecipeBuildArguments _arguments;
 
 		std::map<std::string, Recipe> _knownRecipes;
 		std::map<std::string, RootRecipe> _knownRootRecipes;

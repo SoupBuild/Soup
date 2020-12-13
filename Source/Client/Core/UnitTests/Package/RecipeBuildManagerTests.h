@@ -14,7 +14,8 @@ namespace Soup::Build::UnitTests
 		{
 			auto systemCompiler = "MockCompiler.System";
 			auto runtimeCompiler = "MockCompiler.Runtime";
-			auto uut = RecipeBuildManager(systemCompiler, runtimeCompiler);
+			auto arguments = RecipeBuildArguments();
+			auto uut = RecipeBuildManager(systemCompiler, runtimeCompiler, arguments);
 		}
 
 		// TODO: Way more of this

@@ -48,7 +48,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 					"WriteFile [./ObjectDir/SharedCompileArguments.txt]",
 					Path("Source/"),
 					Path("./writefile.exe"),
-					"\"./ObjectDir/SharedCompileArguments.txt\" \"/nologo /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c\"",
+					"\"./ObjectDir/SharedCompileArguments.txt\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
 						Path("./ObjectDir/SharedCompileArguments.txt"),
@@ -108,7 +108,7 @@ namespace Soup::Cpp::Compiler::MSVC::UnitTests
 					"WriteFile [./ObjectDir/SharedCompileArguments.txt]",
 					Path("Source/"),
 					Path("./writefile.exe"),
-					"\"./ObjectDir/SharedCompileArguments.txt\" \"/nologo /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /bigobj /c\"",
+					"\"./ObjectDir/SharedCompileArguments.txt\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /bigobj /c\"",
 					std::vector<Path>({}),
 					std::vector<Path>({
 						Path("./ObjectDir/SharedCompileArguments.txt"),

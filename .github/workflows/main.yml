@@ -20,11 +20,6 @@ jobs:
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
 
-    - name: Build Runtime UnitTests
-      run: soup build Source/Build/Runtime.UnitTests/
-    - name: Run Runtime UnitTests
-      run: soup run Source/Build/Runtime.UnitTests/
-
     - name: Build Utilities UnitTests
       run: soup build Source/Build/Utilities.UnitTests/
     - name: Run Utilities UnitTests
