@@ -49,16 +49,6 @@ namespace Soup::Client
 				}
 			}
 
-			auto recipePath = 
-				workingDirectory +
-				Path(Constants::RecipeFileName);
-			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
-			{
-				Log::Error("Could not load the recipe file.");
-				throw HandledException(55);
-			}
-
 			// Setup the build arguments
 			auto arguments = RecipeBuildArguments();
 			arguments.ForceRebuild = _options.Force;
@@ -87,8 +77,11 @@ namespace Soup::Client
 			Log::Info("Begin Build:");
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			auto buildManager = Build::RecipeBuildManager(systemCompiler, runtimeCompiler);
-			buildManager.Execute(workingDirectory, recipe, arguments);
+			auto buildManager = Build::RecipeBuildManager(
+				std::move(systemCompiler),
+				std::move(runtimeCompiler),
+				std::move(arguments));
+			buildManager.Execute(workingDirectory);
 
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime -startTime);
