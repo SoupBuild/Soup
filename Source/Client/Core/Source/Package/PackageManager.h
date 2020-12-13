@@ -471,77 +471,36 @@ namespace Soup
 				throw std::runtime_error("Could not load the recipe file.");
 			}
 
-			if (recipe.HasRuntimeDependencies())
-			{
-				for (auto& dependency : recipe.GetRuntimeDependencies())
-				{
-					// If local then check children for external package references
-					// Otherwise install the external package reference and its dependencies
-					if (dependency.IsLocal())
-					{
-						auto dependencyPath = recipeDirectory + dependency.GetPath();
-						InstallRecursiveDependencies(
-							dependencyPath,
-							packagesDirectory,
-							stagingDirectory);
-					}
-					else
-					{
-						EnsurePackageDownloaded(
-							dependency.GetName(),
-							dependency.GetVersion(),
-							packagesDirectory,
-							stagingDirectory);
-					}
-				}
-			}
+			auto knownDependecyTypes = std::array<std::string_view, 3>({
+				"Runtime",
+				"Test",
+				"Build",
+			});
 
-			if (recipe.HasBuildDependencies())
+			for (auto dependecyType : knownDependecyTypes)
 			{
-				for (auto& dependency : recipe.GetBuildDependencies())
+				if (recipe.HasNamedDependencies(dependecyType))
 				{
-					// If local then check children for external package references
-					// Otherwise install the external package reference and its dependencies
-					if (dependency.IsLocal())
+					for (auto& dependency : recipe.GetNamedDependencies(dependecyType))
 					{
-						auto dependencyPath = recipeDirectory + dependency.GetPath();
-						InstallRecursiveDependencies(
-							dependencyPath,
-							packagesDirectory,
-							stagingDirectory);
-					}
-					else
-					{
-						EnsurePackageDownloaded(
-							dependency.GetName(),
-							dependency.GetVersion(),
-							packagesDirectory,
-							stagingDirectory);
-					}
-				}
-			}
-
-			if (recipe.HasTestDependencies())
-			{
-				for (auto& dependency : recipe.GetTestDependencies())
-				{
-					// If local then check children for external package references
-					// Otherwise install the external package reference and its dependencies
-					if (dependency.IsLocal())
-					{
-						auto dependencyPath = recipeDirectory + dependency.GetPath();
-						InstallRecursiveDependencies(
-							dependencyPath,
-							packagesDirectory,
-							stagingDirectory);
-					}
-					else
-					{
-						EnsurePackageDownloaded(
-							dependency.GetName(),
-							dependency.GetVersion(),
-							packagesDirectory,
-							stagingDirectory);
+						// If local then check children for external package references
+						// Otherwise install the external package reference and its dependencies
+						if (dependency.IsLocal())
+						{
+							auto dependencyPath = recipeDirectory + dependency.GetPath();
+							InstallRecursiveDependencies(
+								dependencyPath,
+								packagesDirectory,
+								stagingDirectory);
+						}
+						else
+						{
+							EnsurePackageDownloaded(
+								dependency.GetName(),
+								dependency.GetVersion(),
+								packagesDirectory,
+								stagingDirectory);
+						}
 					}
 				}
 			}

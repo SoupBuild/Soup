@@ -103,124 +103,56 @@ namespace Soup::Build
 			// Start a new active state that is initialized to the recipe itself
 			auto activeState = RecipeBuildStateConverter::ConvertToRootBuildState(recipe.GetTable());
 
-			if (recipe.HasRuntimeDependencies())
+			auto knownDependecyTypes = std::array<std::string_view, 3>({
+				"Runtime",
+				"Test",
+				"Build",
+			});
+
+			for (auto dependecyType : knownDependecyTypes)
 			{
-				for (auto dependency : recipe.GetRuntimeDependencies())
+				if (recipe.HasNamedDependencies(dependecyType))
 				{
-					// Load this package recipe
-					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
-					auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
-					Recipe dependencyRecipe = {};
-					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
+					for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 					{
-						if (dependency.IsLocal())
+						// Load this package recipe
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
+						auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
+						Recipe dependencyRecipe = {};
+						if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
 						{
-							Log::Error("The runtime dependency Recipe does not exist: " + packageRecipePath.ToString());
-							Log::HighPriority("Make sure the path is correct and try again");
-						}
-						else
-						{
-							Log::Error("The runtime dependency Recipe version has not been installed: " + dependency.ToString());
-							Log::HighPriority("Run `install` and try again");
-						}
+							if (dependency.IsLocal())
+							{
+								Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+								Log::HighPriority("Make sure the path is correct and try again");
+							}
+							else
+							{
+								Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString());
+								Log::HighPriority("Run `install` and try again");
+							}
 
-						// Nothing we can do, exit
-						throw HandledException(1234);
-					}
-
-					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependencyRecipe.GetName()))
-					{
-						Log::Error("Found circular runtime dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
-						throw std::runtime_error("BuildRecipeAndDependencies: Circular runtime dependency.");
-					}
-
-					// Build all recursive dependencies
-					projectId = BuildRecipeAndDependencies(
-						projectId,
-						packagePath,
-						dependencyRecipe,
-						isHostBuild,
-						"Runtime",
-						activeParentSet,
-						activeState);
-				}
-			}
-
-			if (recipe.HasTestDependencies())
-			{
-				for (auto dependency : recipe.GetTestDependencies())
-				{
-					// Load this package recipe
-					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
-					auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
-					Recipe dependencyRecipe = {};
-					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
-					{
-						if (dependency.IsLocal())
-						{
-							Log::Error("The test dependency Recipe does not exist: " + packageRecipePath.ToString());
-							Log::HighPriority("Make sure the path is correct and try again");
-						}
-						else
-						{
-							Log::Error("The test dependency Recipe version has not been installed: " + dependency.ToString());
-							Log::HighPriority("Run `install` and try again");
+							// Nothing we can do, exit
+							throw HandledException(1234);
 						}
 
-						// Nothing we can do, exit
-						throw HandledException(1234);
+						// Ensure we do not have any circular dependencies
+						if (activeParentSet.contains(dependencyRecipe.GetName()))
+						{
+							Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
+							throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
+						}
+
+						// Build all recursive dependencies
+						projectId = BuildRecipeAndDependencies(
+							projectId,
+							packagePath,
+							dependencyRecipe,
+							isHostBuild,
+							dependencyType,
+							activeParentSet,
+							activeState);
 					}
-
-					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependencyRecipe.GetName()))
-					{
-						Log::Error("Found circular test dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
-						throw std::runtime_error("BuildRecipeAndDependencies: Circular test dependency.");
-					}
-
-					// Build all recursive dependencies
-					projectId = BuildRecipeAndDependencies(
-						projectId,
-						packagePath,
-						dependencyRecipe,
-						isHostBuild,
-						"Test",
-						activeParentSet,
-						activeState);
-				}
-			}
-
-			if (recipe.HasBuildDependencies())
-			{
-				for (auto dependency : recipe.GetBuildDependencies())
-				{
-					// Load this package recipe
-					auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
-					auto packageRecipePath = packagePath + Path(Constants::RecipeFileName);
-					Recipe dependencyRecipe = {};
-					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
-					{
-						Log::Error("Failed to load the build dependency package: " + packageRecipePath.ToString());
-						throw std::runtime_error("BuildRecipeAndDependencies: Failed to load build dependency.");
-					}
-
-					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependencyRecipe.GetName()))
-					{
-						Log::Error("Found circular build dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
-						throw std::runtime_error("BuildRecipeAndDependencies: Circular build dependency.");
-					}
-
-					// Build all recursive dependencies
-					projectId = BuildRecipeAndDependencies(
-						projectId,
-						packagePath,
-						dependencyRecipe,
-						true,
-						"Build",
-						activeParentSet,
-						activeState);
 				}
 			}
 
