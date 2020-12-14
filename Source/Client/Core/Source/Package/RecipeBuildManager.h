@@ -109,11 +109,11 @@ namespace Soup::Build
 				"Build",
 			});
 
-			for (auto dependecyType : knownDependecyTypes)
+			for (auto knownDependecyType : knownDependecyTypes)
 			{
-				if (recipe.HasNamedDependencies(dependecyType))
+				if (recipe.HasNamedDependencies(knownDependecyType))
 				{
-					for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
 					{
 						// Load this package recipe
 						auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
@@ -144,12 +144,13 @@ namespace Soup::Build
 						}
 
 						// Build all recursive dependencies
+						bool isDependencyHostBuild = isHostBuild || knownDependecyType == "Build";
 						projectId = BuildRecipeAndDependencies(
 							projectId,
 							packagePath,
 							dependencyRecipe,
-							isHostBuild,
-							dependencyType,
+							isDependencyHostBuild,
+							knownDependecyType,
 							activeParentSet,
 							activeState);
 					}
