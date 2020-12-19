@@ -12,10 +12,7 @@ namespace Soup::Build::UnitTests
 		// [[Fact]]
 		void Initialize()
 		{
-			auto systemCompiler = "MockCompiler.System";
-			auto runtimeCompiler = "MockCompiler.Runtime";
-			auto arguments = RecipeBuildArguments();
-			auto uut = RecipeBuildManager(systemCompiler, runtimeCompiler, arguments);
+			auto uut = RecipeBuildManager();
 		}
 
 		// TODO: Way more of this

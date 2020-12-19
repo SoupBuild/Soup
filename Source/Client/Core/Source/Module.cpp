@@ -38,6 +38,6 @@ using namespace Opal;
 
 #include "Package/PackageManager.h"
 #include "Package/Recipe.h"
-#include "Package/RecipeBuildManager.h"
+#include "Package/RecipeBuildRunner.h"
 #include "Package/RecipeExtensions.h"
 #include "Package/RecipeToml.h"

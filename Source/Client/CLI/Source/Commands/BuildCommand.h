@@ -77,7 +77,7 @@ namespace Soup::Client
 			Log::Info("Begin Build:");
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			auto buildManager = Build::RecipeBuildManager(
+			auto buildManager = Build::RecipeBuildRunner(
 				std::move(systemCompiler),
 				std::move(runtimeCompiler),
 				std::move(arguments));
