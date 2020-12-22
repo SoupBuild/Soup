@@ -311,6 +311,84 @@ ValueList& Value::AsList()
 	}
 }
 
+const ValueTable& Value::AsTable() const
+{
+	if (_value.type() == typeid(ValueTable))
+	{
+		return std::any_cast<const ValueTable&>(_value);
+	}
+	else
+	{
+		// Wrong type
+		throw std::runtime_error("Attempt to access value as Table with incorrect type.");
+	}
+}
+
+const ValueList& Value::AsList() const
+{
+	if (_value.type() == typeid(ValueList))
+	{
+		return std::any_cast<const ValueList&>(_value);
+	}
+	else
+	{
+		// Wrong type
+		throw std::runtime_error("Attempt to access value as List with incorrect type.");
+	}
+}
+
+const ValuePrimitive<const char*>& Value::AsString() const
+{
+	if (_value.type() == typeid(ValuePrimitive<const char*>))
+	{
+		return std::any_cast<const ValuePrimitive<const char*>&>(_value);
+	}
+	else
+	{
+		// Wrong type
+		throw std::runtime_error("Attempt to access value as String with incorrect type.");
+	}
+}
+
+const ValuePrimitive<int64_t>& Value::AsInteger() const
+{
+	if (_value.type() == typeid(ValuePrimitive<int64_t>))
+	{
+		return std::any_cast<const ValuePrimitive<int64_t>&>(_value);
+	}
+	else
+	{
+		// Wrong type
+		throw std::runtime_error("Attempt to access value as Integer with incorrect type.");
+	}
+}
+
+const ValuePrimitive<double>& Value::AsFloat() const
+{
+	if (_value.type() == typeid(ValuePrimitive<double>))
+	{
+		return std::any_cast<const ValuePrimitive<double>&>(_value);
+	}
+	else
+	{
+		// Wrong type
+		throw std::runtime_error("Attempt to access value as Float with incorrect type.");
+	}
+}
+
+const ValuePrimitive<bool>& Value::AsBoolean() const
+{
+	if (_value.type() == typeid(ValuePrimitive<bool>))
+	{
+		return std::any_cast<const ValuePrimitive<bool>&>(_value);
+	}
+	else
+	{
+		// Wrong type
+		throw std::runtime_error("Attempt to access value as Boolean with incorrect type.");
+	}
+}
+
 ValueTable& Value::EnsureTable()
 {
 	if (_value.type() == typeid(ValueTable))

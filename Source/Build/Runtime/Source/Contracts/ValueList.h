@@ -21,6 +21,14 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the ValueList class
+		/// </summary>
+		ValueList(std::vector<Value> values) :
+			_values(std::move(values))
+		{
+		}
+
+		/// <summary>
 		/// Size access methods
 		/// </summary>
 		uint64_t GetSize() const noexcept override final
@@ -63,6 +71,11 @@ namespace Soup::Build::Runtime
 		/// Internal access to the state
 		/// </summary>
 		std::vector<Value>& GetValues()
+		{
+			return _values;
+		}
+
+		const std::vector<Value>& GetValues() const
 		{
 			return _values;
 		}

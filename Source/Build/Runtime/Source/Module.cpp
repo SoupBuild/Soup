@@ -37,6 +37,7 @@ import Soup.Build.Utilities;
 using namespace Opal;
 
 #include "Contracts/ValuePrimitive.h"
+#include "Contracts/ValueTableManager.h"
 
 #include "OperationGraph/OperationGraphGenerator.h"
 #include "OperationGraph/OperationGraphManager.h"

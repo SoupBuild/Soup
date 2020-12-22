@@ -24,6 +24,16 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the BuildPropertyBag class
+		/// </summary>
+		ValueTable(std::map<std::string, Value> values) :
+			_keyList(),
+			_values(std::move(values))
+		{
+			UpdateKeys();
+		}
+
+		/// <summary>
 		/// Property access methods
 		/// </summary>
 		ApiCallResult TryHasValue(const char* name, bool& result) const noexcept override final
@@ -114,11 +124,7 @@ namespace Soup::Build::Runtime
 			if (insertResult.second)
 			{
 				// Keep the key list in sync
-				auto& keys = _keyList.GetValues();
-				keys.clear();
-				keys.reserve(_values.size());
-				for(auto& keyValue : _values)
-					keys.push_back(keyValue.first);
+				UpdateKeys();
 
 				return insertResult.first->second;
 			}
@@ -129,6 +135,11 @@ namespace Soup::Build::Runtime
 		}
 
 		std::map<std::string, Value>& GetValues()
+		{
+			return _values;
+		}
+
+		const std::map<std::string, Value>& GetValues() const
 		{
 			return _values;
 		}
@@ -185,6 +196,19 @@ namespace Soup::Build::Runtime
 		bool operator !=(const ValueTable& rhs) const
 		{
 			return !(*this == rhs);
+		}
+
+	private:
+		/// <summary>
+		/// Helper function to keep the value keys list updated
+		/// </summary>
+		void UpdateKeys()
+		{
+			auto& keys = _keyList.GetValues();
+			keys.clear();
+			keys.reserve(_values.size());
+			for(auto& keyValue : _values)
+				keys.push_back(keyValue.first);
 		}
 
 	private:

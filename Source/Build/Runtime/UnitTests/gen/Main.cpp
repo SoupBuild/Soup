@@ -25,6 +25,10 @@ using namespace Soup::Test;
 #include "BuildEvaluateEngineTests.gen.h"
 #include "FileSystemStateTests.gen.h"
 
+#include "Contracts/ValueTableManagerTests.gen.h"
+#include "Contracts/ValueTableReaderTests.gen.h"
+#include "Contracts/ValueTableWriterTests.gen.h"
+
 #include "OperationGraph/OperationGraphTests.gen.h"
 #include "OperationGraph/OperationGraphManagerTests.gen.h"
 #include "OperationGraph/OperationGraphReaderTests.gen.h"
@@ -39,6 +43,10 @@ int main()
 	state += RunBuildHistoryCheckerTests();
 	state += RunBuildEvaluateEngineTests();
 	state += RunFileSystemStateTests();
+
+	state += RunValueTableManagerTests();
+	state += RunValueTableReaderTests();
+	state += RunValueTableWriterTests();
 
 	state += RunOperationGraphTests();
 	state += RunOperationGraphManagerTests();
