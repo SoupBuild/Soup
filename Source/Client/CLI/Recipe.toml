@@ -18,6 +18,7 @@ IncludePaths = [
 # Ensure the core build extensions are runtime dependencies
 Runtime = [
 	"../Core/",
+	"../../Build/Generate/",
 	"../../Tools/Copy/",
 	"../../Tools/Mkdir/",
 	"../../Extensions/Cpp/Extension/",

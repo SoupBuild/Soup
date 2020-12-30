@@ -20,10 +20,10 @@ namespace Soup::Build::Runtime::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/NoFile");
+			auto filePath = Path("TestFiles/NoFile/.soup/OperationGraph.bin");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationGraph();
-			auto result = OperationGraphManager::TryLoadState(directory, actual, *fileSystemState);
+			auto result = OperationGraphManager::TryLoadState(filePath, actual, *fileSystemState);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -58,10 +58,10 @@ namespace Soup::Build::Runtime::UnitTests
 				Path("TestFiles/GarbageOperationGraph/.soup/OperationGraph.bin"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageOperationGraph");
+			auto filePath = Path("TestFiles/GarbageOperationGraph/.soup/OperationGraph.bin");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationGraph();
-			auto result = OperationGraphManager::TryLoadState(directory, actual, *fileSystemState);
+			auto result = OperationGraphManager::TryLoadState(filePath, actual, *fileSystemState);
 
 			Assert::IsFalse(result, "Verify result is false.");
 
@@ -118,10 +118,10 @@ namespace Soup::Build::Runtime::UnitTests
 				Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin"),
 				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
 
-			auto directory = Path("TestFiles/SimpleOperationGraph");
+			auto filePath = Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationGraph();
-			auto result = OperationGraphManager::TryLoadState(directory, actual, *fileSystemState);
+			auto result = OperationGraphManager::TryLoadState(filePath, actual, *fileSystemState);
 
 			Assert::IsTrue(result, "Verify result is true.");
 
@@ -183,7 +183,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto fileSystemState = std::make_shared<FileSystemState>();
-			auto directory = Path("TestFiles/");
+			auto filePath = Path("TestFiles/.soup/OperationGraph.bin");
 			auto operationGraph = OperationGraph(
 				{},
 				std::vector<OperationId>({
@@ -205,7 +205,7 @@ namespace Soup::Build::Runtime::UnitTests
 						std::vector<FileId>({}),
 						std::vector<FileId>({})),
 				}));
-			OperationGraphManager::SaveState(directory, operationGraph, *fileSystemState);
+			OperationGraphManager::SaveState(filePath, operationGraph, *fileSystemState);
 
 			// Verify expected file system requests
 			Assert::AreEqual(

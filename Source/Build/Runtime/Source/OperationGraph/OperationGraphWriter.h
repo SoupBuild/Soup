@@ -110,16 +110,7 @@ namespace Soup::Build::Runtime
 			stream.write(value.data(), value.size());
 		}
 
-		static void WriteValues(std::ostream& stream, const std::vector<FileId>& values)
-		{
-			WriteValue(stream, static_cast<uint32_t>(values.size()));
-			for (auto& value : values)
-			{
-				WriteValue(stream, value);
-			}
-		}
-
-		static void WriteValues(std::ostream& stream, const std::vector<OperationId>& values)
+		static void WriteValues(std::ostream& stream, const std::vector<uint32_t>& values)
 		{
 			WriteValue(stream, static_cast<uint32_t>(values.size()));
 			for (auto& value : values)

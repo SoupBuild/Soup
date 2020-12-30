@@ -74,13 +74,14 @@ namespace Soup::Cpp
 		void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
 		{
 			auto rootTable = buildState.GetActiveState();
+			auto parametersTable = rootTable.GetValue("Parameters").AsTable();
 			auto recipeTable = rootTable.GetValue("Recipe").AsTable();
 			auto buildTable = rootTable.EnsureValue("Build").EnsureTable();
 
 			// Load the input properties
-			auto compilerName = std::string(rootTable.GetValue("CompilerName").AsString().GetValue());
-			auto packageRoot = Path(rootTable.GetValue("PackageRoot").AsString().GetValue());
-			auto buildFlavor = std::string(rootTable.GetValue("BuildFlavor").AsString().GetValue());
+			auto compilerName = std::string(parametersTable.GetValue("Compiler").AsString().GetValue());
+			auto packageRoot = Path(parametersTable.GetValue("PackageDirectory").AsString().GetValue());
+			auto buildFlavor = std::string(parametersTable.GetValue("Flavor").AsString().GetValue());
 			auto platformLibraries = rootTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
 			auto platformIncludePaths = rootTable.GetValue("PlatformIncludePaths").AsList().CopyAsPathVector();
 			auto platformLibraryPaths = rootTable.GetValue("PlatformLibraryPaths").AsList().CopyAsPathVector();
@@ -177,8 +178,9 @@ namespace Soup::Cpp
 			preprocessorDefinitions.push_back("SOUP_BUILD");
 
 			// Build up arguments to build this individual recipe
-			auto binaryDirectory = rootTable.GetValue("BinaryDirectory").AsString().GetValue();
-			auto objectDirectory = rootTable.GetValue("ObjectDirectory").AsString().GetValue();
+			auto targetDirectory = Path(parametersTable.GetValue("TargetDirectory").AsString().GetValue());
+			auto binaryDirectory = targetDirectory + Path("bin/");
+			auto objectDirectory = targetDirectory + Path("obj/");
 
 			// Load the module interface file if present
 			auto moduleInterfaceSourceFile = std::string();
@@ -236,8 +238,8 @@ namespace Soup::Cpp
 
 			buildTable.EnsureValue("TargetName").SetValueString(name);
 			buildTable.EnsureValue("WorkingDirectory").SetValueString(packageRoot.ToString());
-			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory);
-			buildTable.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory);
+			buildTable.EnsureValue("ObjectDirectory").SetValueString(objectDirectory.ToString());
+			buildTable.EnsureValue("BinaryDirectory").SetValueString(binaryDirectory.ToString());
 			buildTable.EnsureValue("ModuleInterfaceSourceFile").SetValueString(moduleInterfaceSourceFile);
 			buildTable.EnsureValue("OptimizationLevel").SetValueInteger(static_cast<int64_t>(optimizationLevel));
 			buildTable.EnsureValue("GenerateSourceDebugInfo").SetValueBoolean(generateSourceDebugInfo);

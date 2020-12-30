@@ -51,9 +51,9 @@ namespace Soup::Client
 
 			auto recipePath = 
 				workingDirectory +
-				Path(Constants::RecipeFileName);
-			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
+				Build::Runtime::BuildConstants::RecipeFileName();
+			Build::Runtime::Recipe recipe = {};
+			if (!Build::Runtime::RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
 			{
 				Log::Error("Could not load the recipe file");
 				return;
@@ -78,11 +78,11 @@ namespace Soup::Client
 
 			// Check for root recipe file with overrides
 			Path rootRecipeFile;
-			if (RecipeExtensions::TryFindRootRecipeFile(recipePath, rootRecipeFile))
+			if (Build::RootRecipeExtensions::TryFindRootRecipeFile(recipePath, rootRecipeFile))
 			{
 				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
-				RootRecipe rootRecipe;
-				if (!RecipeExtensions::TryLoadRootRecipeFromFile(rootRecipeFile, rootRecipe))
+				Build::RootRecipe rootRecipe;
+				if (!Build::RootRecipeExtensions::TryLoadRootRecipeFromFile(rootRecipeFile, rootRecipe))
 				{
 					// Nothing we can do, exit
 					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
@@ -103,12 +103,12 @@ namespace Soup::Client
 				}
 			}
 
-			auto binaryDirectory = rootOutput + Build::Runtime::BuildGenerateEngine::GetConfigurationDirectory(
+			// TODO: Load the value table to get the exe path
+			auto binaryDirectory = rootOutput + Build::RecipeBuildRunner::GetConfigurationDirectory(
 				compilerName,
 				flavor,
 				system,
-				architecture) +
-				Build::Runtime::BuildGenerateEngine::GetBinaryDirectory();
+				architecture);
 			auto executablePath = binaryDirectory + Path(recipe.GetName() + ".exe");
 			Log::Info(executablePath.ToString());
 			if (!System::IFileSystem::Current().Exists(executablePath))

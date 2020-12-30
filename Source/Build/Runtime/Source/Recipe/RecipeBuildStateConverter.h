@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build
+namespace Soup::Build::Runtime
 {
 	/// <summary>
 	/// The recipe build state converter that converts between a recipe table and a value table
@@ -12,20 +12,6 @@ namespace Soup::Build
 	export class RecipeBuildStateConverter
 	{
 	public:
-		/// <summary>
-		/// Convert the root recipe table to a build Value Table entry
-		/// </summary>
-		static Runtime::ValueTable ConvertToRootBuildState(const RecipeTable& table)
-		{
-			// Convert teh root table
-			auto recipeState = ConvertToBuildState(table);
-			
-			// Initialize the Recipe state
-			auto state = Runtime::ValueTable();
-			state.SetValue("Recipe", Runtime::Value(std::move(recipeState)));
-			return state;
-		}
-
 		/// <summary>
 		/// Convert the recipe internal representation to initial build state
 		/// </summary>

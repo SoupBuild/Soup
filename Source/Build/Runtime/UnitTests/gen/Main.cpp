@@ -1,6 +1,7 @@
 #include <any>
 #include <array>
 #include <ctime>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -12,6 +13,7 @@
 #include <vector>
 
 import Opal;
+import Soup.Build;
 import Soup.Build.Runtime;
 import Monitor.Shared;
 import json11;
@@ -23,6 +25,7 @@ using namespace Soup::Test;
 
 #include "BuildHistoryCheckerTests.gen.h"
 #include "BuildEvaluateEngineTests.gen.h"
+#include "BuildGenerateEngineTests.gen.h"
 #include "FileSystemStateTests.gen.h"
 
 #include "Contracts/ValueTableManagerTests.gen.h"
@@ -34,6 +37,11 @@ using namespace Soup::Test;
 #include "OperationGraph/OperationGraphReaderTests.gen.h"
 #include "OperationGraph/OperationGraphWriterTests.gen.h"
 
+#include "Recipe/PackageReferenceTests.gen.h"
+#include "Recipe/RecipeExtensionsTests.gen.h"
+#include "Recipe/RecipeTests.gen.h"
+#include "Recipe/RecipeTomlTests.gen.h"
+
 int main()
 {
 	std::cout << "Running Tests..." << std::endl;
@@ -42,6 +50,7 @@ int main()
 
 	state += RunBuildHistoryCheckerTests();
 	state += RunBuildEvaluateEngineTests();
+	state += RunBuildGenerateEngineTests();
 	state += RunFileSystemStateTests();
 
 	state += RunValueTableManagerTests();
@@ -52,6 +61,10 @@ int main()
 	state += RunOperationGraphManagerTests();
 	state += RunOperationGraphReaderTests();
 	state += RunOperationGraphWriterTests();
+
+	// Touch stamp file to ensure incremental builds work
+	auto testFile = std::fstream("TestHarness.stamp", std::fstream::out);
+	testFile << "TOUCH";
 
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;

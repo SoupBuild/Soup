@@ -4,8 +4,7 @@
 
 #pragma once
 #include "RecipeBuildArguments.h"
-#include "RecipeExtensions.h"
-#include "RecipeBuildStateConverter.h"
+#include "RootRecipeExtensions.h"
 
 namespace Soup::Build
 {
@@ -38,7 +37,7 @@ namespace Soup::Build
 			else
 			{
 				RootRecipe loadRecipe;
-				if (RecipeExtensions::TryLoadRootRecipeFromFile(recipeFile, loadRecipe))
+				if (RootRecipeExtensions::TryLoadRootRecipeFromFile(recipeFile, loadRecipe))
 				{
 					// Save the recipe for later
 					auto insertRecipe = _knownRootRecipes.emplace(
@@ -58,7 +57,7 @@ namespace Soup::Build
 
 		bool TryGetRecipe(
 			const Path& recipeFile,
-			Recipe& result)
+			Runtime::Recipe& result)
 		{
 			// Check if the recipe was already loaded
 			auto findRecipe = _knownRecipes.find(recipeFile.ToString());
@@ -69,8 +68,8 @@ namespace Soup::Build
 			}
 			else
 			{
-				Recipe loadRecipe;
-				if (RecipeExtensions::TryLoadRecipeFromFile(recipeFile, loadRecipe))
+				Runtime::Recipe loadRecipe = {};
+				if (Runtime::RecipeExtensions::TryLoadRecipeFromFile(recipeFile, loadRecipe))
 				{
 					// Save the recipe for later
 					auto insertRecipe = _knownRecipes.emplace(
@@ -89,7 +88,7 @@ namespace Soup::Build
 		}
 
 	private:
-		std::map<std::string, Recipe> _knownRecipes;
+		std::map<std::string, Runtime::Recipe> _knownRecipes;
 		std::map<std::string, RootRecipe> _knownRootRecipes;
 	};
 }

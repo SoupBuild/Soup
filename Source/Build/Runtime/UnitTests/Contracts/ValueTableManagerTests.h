@@ -20,7 +20,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/NoFile");
+			auto directory = Path("TestFiles/NoFile/.soup/ValueTable.bin");
 			auto actual = ValueTable();
 			auto result = ValueTableManager::TryLoadState(directory, actual);
 
@@ -57,7 +57,7 @@ namespace Soup::Build::Runtime::UnitTests
 				Path("TestFiles/GarbageValueTable/.soup/ValueTable.bin"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageValueTable");
+			auto directory = Path("TestFiles/GarbageValueTable/.soup/ValueTable.bin");
 			auto actual = ValueTable();
 			auto result = ValueTableManager::TryLoadState(directory, actual);
 
@@ -103,7 +103,7 @@ namespace Soup::Build::Runtime::UnitTests
 				Path("TestFiles/SimpleValueTable/.soup/ValueTable.bin"),
 				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
 
-			auto directory = Path("TestFiles/SimpleValueTable");
+			auto directory = Path("TestFiles/SimpleValueTable/.soup/ValueTable.bin");
 			auto actual = ValueTable();
 			auto result = ValueTableManager::TryLoadState(directory, actual);
 
@@ -148,7 +148,7 @@ namespace Soup::Build::Runtime::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/");
+			auto valueTableFile = Path("TestFiles/.soup/ValueTable.bin");
 			auto valueTable = ValueTable(
 				std::map<std::string, Value>({
 					{
@@ -156,7 +156,7 @@ namespace Soup::Build::Runtime::UnitTests
 						Value(),
 					},
 				}));
-			ValueTableManager::SaveState(directory, valueTable);
+			ValueTableManager::SaveState(valueTableFile, valueTable);
 
 			// Verify expected file system requests
 			Assert::AreEqual(

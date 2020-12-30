@@ -93,6 +93,7 @@ namespace Soup::Build::Runtime
 		{
 			return _keyList;
 		}
+		
 
 		/// <summary>
 		/// Helper methods to make our lives easier
@@ -116,6 +117,34 @@ namespace Soup::Build::Runtime
 		bool HasValue(std::string_view name) const
 		{
 			return _values.contains(name.data());
+		}
+
+		Value& GetValue(std::string_view name)
+		{
+			auto findResult = _values.find(name.data());
+			if (findResult != _values.end())
+			{
+				return findResult->second;
+			}
+			else
+			{
+				// The property does not exists
+				throw std::runtime_error(std::string("ValueTable::GetValue value (") + std::string(name) + ") does not exist");
+			}
+		}
+
+		const Value& GetValue(std::string_view name) const
+		{
+			auto findResult = _values.find(name.data());
+			if (findResult != _values.end())
+			{
+				return findResult->second;
+			}
+			else
+			{
+				// The property does not exists
+				throw std::runtime_error("ValueTable::GetValue value does not exist");
+			}
 		}
 
 		Value& SetValue(std::string_view name, Value value)

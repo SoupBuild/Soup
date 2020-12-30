@@ -7,6 +7,7 @@
 #include <array>
 #include <codecvt>
 #include <ctime>
+#include <iomanip>
 #include <locale>
 #include <map>
 #include <iostream>
@@ -29,6 +30,7 @@
 export module Soup.Build.Runtime;
 
 import json11;
+import toml11;
 import Monitor.Shared;
 import Opal;
 import Soup.Build;
@@ -41,6 +43,10 @@ using namespace Opal;
 
 #include "OperationGraph/OperationGraphGenerator.h"
 #include "OperationGraph/OperationGraphManager.h"
+
+#include "Recipe/Recipe.h"
+#include "Recipe/RecipeExtensions.h"
+#include "Recipe/RecipeToml.h"
 
 #include "BuildEvaluateEngine.h"
 #include "BuildGenerateEngine.h"

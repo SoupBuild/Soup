@@ -24,11 +24,6 @@ namespace Soup
 		static constexpr std::string_view LocalUserConfigFileName = "LocalUserConfig.json";
 
 		/// <summary>
-		/// Gets the Recipe file name
-		/// </summary>
-		static constexpr std::string_view RecipeFileName = "Recipe.toml";
-
-		/// <summary>
 		/// Gets the generated build file name
 		/// </summary>
 		static constexpr std::string_view GenerateBuildFileName = "Build.cpp";

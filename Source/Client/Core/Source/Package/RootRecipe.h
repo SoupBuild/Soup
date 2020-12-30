@@ -3,10 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "PackageReference.h"
-#include "RecipeValue.h"
 
-namespace Soup
+namespace Soup::Build
 {
 	/// <summary>
 	/// The root recipe container
@@ -28,7 +26,7 @@ namespace Soup
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
-		RootRecipe(RecipeTable table) :
+		RootRecipe(Runtime::RecipeTable table) :
 			_table(std::move(table))
 		{
 		}
@@ -53,7 +51,7 @@ namespace Soup
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		RecipeTable& GetTable()
+		Runtime::RecipeTable& GetTable()
 		{
 			return _table;
 		}
@@ -80,7 +78,7 @@ namespace Soup
 			return _table.contains(key.data());
 		}
 
-		RecipeValue& GetValue(std::string_view key)
+		Runtime::RecipeValue& GetValue(std::string_view key)
 		{
 			auto findItr = _table.find(key.data());
 			if (findItr != _table.end())
@@ -94,6 +92,6 @@ namespace Soup
 		}
 
 	private:
-		RecipeTable _table;
+		Runtime::RecipeTable _table;
 	};
 }

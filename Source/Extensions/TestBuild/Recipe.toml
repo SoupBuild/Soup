@@ -8,7 +8,7 @@ Source = [
 
 [Dependencies]
 Runtime = [
-	"Opal@0.1.10",
+	"Opal@0.2.1",
 	"../Cpp/Compiler/Core/",
 	# "Soup.Build.Compiler@0.3.0",
 	"../Cpp/Compiler/Clang/",

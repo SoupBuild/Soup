@@ -48,7 +48,7 @@ namespace Soup::Build::Runtime
 		std::string Arguments;
 	};
 
-	export using OperationId = int32_t;
+	export using OperationId = uint32_t;
 
 	export class OperationInfo
 	{

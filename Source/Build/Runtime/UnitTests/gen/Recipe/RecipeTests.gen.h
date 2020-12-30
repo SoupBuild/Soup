@@ -1,10 +1,10 @@
 #pragma once
-#include "Package/RecipeTests.h"
+#include "Recipe/RecipeTests.h"
 
 TestState RunRecipeTests() 
 {
 	auto className = "RecipeTests";
-	auto testClass = std::make_shared<Soup::Build::UnitTests::RecipeTests>();
+	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::RecipeTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "InitializerDefault", [&testClass]() { testClass->InitializerDefault(); });
 	state += Soup::Test::RunTest(className, "InitializerAll", [&testClass]() { testClass->InitializerAll(); });

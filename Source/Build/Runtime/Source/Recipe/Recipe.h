@@ -6,7 +6,7 @@
 #include "PackageReference.h"
 #include "RecipeValue.h"
 
-namespace Soup
+namespace Soup::Build::Runtime
 {
 	/// <summary>
 	/// The recipe container
@@ -106,12 +106,12 @@ namespace Soup
 		/// <summary>
 		/// Gets or sets the package language
 		/// </summary>
-		RecipeValue& GetLanguageValue()
+		const RecipeValue& GetLanguageValue() const
 		{
 			return GetValue(_table, Property_Language);
 		}
 
-		const std::string& GetLanguage()
+		const std::string& GetLanguage() const
 		{
 			return GetLanguageValue().AsString();
 		}
@@ -294,6 +294,19 @@ namespace Soup
 		bool HasValue(RecipeTable& table, std::string_view key)
 		{
 			return table.contains(key.data());
+		}
+
+		const RecipeValue& GetValue(const RecipeTable& table, std::string_view key) const
+		{
+			auto findItr = table.find(key.data());
+			if (findItr != table.end())
+			{
+				return findItr->second;
+			}
+			else
+			{
+				throw std::runtime_error("Requested recipe value does not exist in the table.");
+			}
 		}
 
 		RecipeValue& GetValue(RecipeTable& table, std::string_view key)

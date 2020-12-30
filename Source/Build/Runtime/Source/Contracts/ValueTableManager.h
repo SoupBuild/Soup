@@ -14,31 +14,23 @@ namespace Soup::Build::Runtime
 	/// </summary>
 	export class ValueTableManager
 	{
-	private:
-		// Binary Build Value Table file format
-		static constexpr std::string_view FileName = "ValueTable.bin";
-		static constexpr std::string_view FolderName = ".soup/";
-
 	public:
 		/// <summary>
-		/// Load the value table from the provided directory
+		/// Load the value table from the target file
 		/// </summary>
 		static bool TryLoadState(
-			const Path& directory,
+			const Path& valueTableFile,
 			ValueTable& result)
 		{
 			// Verify the requested file exists
-			auto ValueTableFile = directory +
-				Path(FolderName) +
-				Path(FileName);
-			if (!System::IFileSystem::Current().Exists(ValueTableFile))
+			if (!System::IFileSystem::Current().Exists(valueTableFile))
 			{
 				Log::Info("Value Table file does not exist");
 				return false;
 			}
 
 			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(ValueTableFile, true);
+			auto file = System::IFileSystem::Current().OpenRead(valueTableFile, true);
 
 			// Read the contents of the build state file
 			try
@@ -59,16 +51,13 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
-		/// Save the value table for the provided directory
+		/// Save the value table for the target file
 		/// </summary>
 		static void SaveState(
-			const Path& directory,
+			const Path& valueTableFile,
 			ValueTable& state)
 		{
-			auto targetFolder = directory +
-				Path(FolderName);
-			auto ValueTableFile = targetFolder +
-				Path(FileName);
+			auto targetFolder = valueTableFile.GetParent();
 
 			// Ensure the target directories exists
 			if (!System::IFileSystem::Current().Exists(targetFolder))
@@ -78,7 +67,7 @@ namespace Soup::Build::Runtime
 			}
 
 			// Open the file to write to
-			auto file = System::IFileSystem::Current().OpenWrite(ValueTableFile, true);
+			auto file = System::IFileSystem::Current().OpenWrite(valueTableFile, true);
 
 			// Write the build state to the file stream
 			ValueTableWriter::Serialize(state, file->GetOutStream());

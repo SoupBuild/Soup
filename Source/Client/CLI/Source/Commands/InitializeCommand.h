@@ -34,9 +34,9 @@ namespace Soup::Client
 			auto workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
 			auto recipePath = 
 				workingDirectory +
-				Path(Constants::RecipeFileName);
+				Build::Runtime::BuildConstants::RecipeFileName();
 
-			auto recipe = Recipe(
+			auto recipe = Build::Runtime::Recipe(
 				workingDirectory.GetFileName(),
 				"C++",
 				SemanticVersion(1, 0, 0),
@@ -53,7 +53,7 @@ namespace Soup::Client
 			UpdateDefaultValues(recipe);
 
 			// Save the state of the recipe if it has changed
-			RecipeExtensions::SaveToFile(recipePath, recipe);
+			Build::Runtime::RecipeExtensions::SaveToFile(recipePath, recipe);
 
 			// Save a simple main method
 			auto mainFileContent =
@@ -71,7 +71,7 @@ int main()
 		}
 
 	private:
-		void UpdateDefaultValues(Recipe& recipe)
+		void UpdateDefaultValues(Build::Runtime::Recipe& recipe)
 		{
 			Log::HighPriority("Name: (" + recipe.GetName() + ")");
 			auto newName = std::string();

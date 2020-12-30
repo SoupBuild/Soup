@@ -245,6 +245,9 @@ namespace Soup::Build::Runtime
 				operationInfo.ObservedInput = _fileSystemState->ToFileIds(input, operationInfo.Command.WorkingDirectory);
 				operationInfo.ObservedOutput = _fileSystemState->ToFileIds(output, operationInfo.Command.WorkingDirectory);
 
+				// Add the executable as actual input too
+				operationInfo.ObservedInput.push_back(_fileSystemState->ToFileId(operationInfo.Command.Executable, operationInfo.Command.WorkingDirectory));
+
 				// Mark this operation as successful to enable future incremental builds
 				operationInfo.WasSuccessfulRun = true;
 
