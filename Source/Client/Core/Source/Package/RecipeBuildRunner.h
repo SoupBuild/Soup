@@ -247,13 +247,13 @@ namespace Soup::Build
 			std::string activeSystem = _arguments.System;
 			if (isHostBuild)
 			{
-				Log::HighPriority("Host Build '" + recipe.GetName() + "'");
+				Log::Info("Host Build '" + recipe.GetName() + "'");
 				activeCompiler = _hostCompiler;
 				activeFlavor = "release";
 			}
 			else
 			{
-				Log::HighPriority("Build '" + recipe.GetName() + "'");
+				Log::Info("Build '" + recipe.GetName() + "'");
 				activeCompiler = _runtimeCompiler;
 				activeFlavor = _arguments.Flavor;
 			}
@@ -474,7 +474,7 @@ namespace Soup::Build
 				evaluateGraph,
 				*_fileSystemState);
 
-			Log::HighPriority("Done");
+			Log::Info("Done");
 		}
 
 		Path GetSoupUserDataPath() const

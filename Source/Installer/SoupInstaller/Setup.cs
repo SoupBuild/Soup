@@ -19,7 +19,8 @@ class Script
 				new File(System.IO.Path.Combine(soupBinFolder, "Monitor.Detours.64.dll")),
 				new File(System.IO.Path.Combine(soupBinFolder, "Soup.exe")),
 				new File(System.IO.Path.Combine(soupBinFolder, "Soup.Cpp.dll")),
-				new File(System.IO.Path.Combine(soupBinFolder, "Soup.CSharp.dll"))),
+				new File(System.IO.Path.Combine(soupBinFolder, "Soup.CSharp.dll")),
+				new File(System.IO.Path.Combine(soupBinFolder, "Soup.Generate.exe"))),
 			new EnvironmentVariable("PATH", "[INSTALLDIR]")
 			{
 				System = true,
@@ -42,7 +43,7 @@ class Script
 		};
 
 		// Upgrade values
-		project.Version = new Version(0, 10, 4);
+		project.Version = new Version(0, 11, 0);
 
 		Compiler.BuildMsi(project);
 	}
