@@ -81,7 +81,6 @@ ValueType Value::GetType() const noexcept
 
 ApiCallResult Value::TrySetType(ValueType type) noexcept
 {
-
 	try
 	{
 		auto currentType = GetType();

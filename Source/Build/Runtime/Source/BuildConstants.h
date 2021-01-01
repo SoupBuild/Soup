@@ -42,9 +42,9 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Gets the Generate Parameters Value Table file name
 		/// </summary>
-		static const Path EvaluateOperationGraphFileName()
+		static const Path GenerateEvaluateOperationGraphFileName()
 		{
-			static const Path value = Path("EvaluateGraph.bog");
+			static const Path value = Path("GenerateEvaluateGraph.bog");
 			return value;
 		}
 	};

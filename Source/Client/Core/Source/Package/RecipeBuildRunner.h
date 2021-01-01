@@ -42,7 +42,8 @@ namespace Soup::Build
 			_buildManager(),
 			_buildSet(),
 			_hostBuildSet(),
-			_hostBuildPaths(),
+			_buildCache(),
+			_hostBuildCache(),
 			_fileSystemState(std::make_shared<Runtime::FileSystemState>())
 		{
 		}
@@ -128,7 +129,7 @@ namespace Soup::Build
 							}
 							else
 							{
-								Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString());
+								Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " [" + workingDirectory.ToString() + "]");
 								Log::HighPriority("Run `install` and try again");
 							}
 
@@ -310,37 +311,46 @@ namespace Soup::Build
 				activeFlavor,
 				activeSystem,
 				activeArchitecture);
+			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
 
 			if (!_arguments.SkipGenerate)
 			{
 				RunIncrementalGenerate(
+					recipe,
 					packageRoot,
 					targetDirectory,
+					soupTargetDirectory,
 					activeArchitecture,
 					activeCompiler,
 					activeFlavor,
-					activeSystem);
+					activeSystem,
+					isHostBuild);
 			}
 
 			if (!_arguments.SkipEvaluate)
 			{
-				RunEvaluate(targetDirectory);
+				RunEvaluate(soupTargetDirectory);
 			}
+
+			// Cache the build state for upstream dependencies
+			auto& buildCache = isHostBuild ? _hostBuildCache : _buildCache;
+			buildCache.emplace(packageRoot, std::make_tuple(recipe.GetName(), targetDirectory, soupTargetDirectory));
 		}
 
 		/// <summary>
 		/// Run an incremental generate phase
 		/// </summary>
 		void RunIncrementalGenerate(
+			Runtime::Recipe& recipe,
 			const Path& packageDirectory,
 			const Path& targetDirectory,
+			const Path& soupTargetDirectory,
 			std::string_view architecture,
 			std::string_view compiler,
 			std::string_view flavor,
-			std::string_view system)
+			std::string_view system,
+			bool isHostBuild)
 		{
-			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
-
 			// Set the input parameters
 			auto parametersTable = Runtime::ValueTable();
 			parametersTable.SetValue("PackageDirectory", Runtime::Value(packageDirectory.ToString()));
@@ -351,6 +361,8 @@ namespace Soup::Build
 			parametersTable.SetValue("Compiler", Runtime::Value(std::string(compiler)));
 			parametersTable.SetValue("Flavor", Runtime::Value(std::string(flavor)));
 			parametersTable.SetValue("System", Runtime::Value(std::string(system)));
+
+			parametersTable.SetValue("Dependencies", BuildParametersDependenciesValueTable(recipe, packageDirectory, isHostBuild));
 
 			auto parametersFile = soupTargetDirectory + Runtime::BuildConstants::GenerateParametersFileName();
 			Log::Info("Check outdated parameters file: " + parametersFile.ToString());
@@ -389,7 +401,7 @@ namespace Soup::Build
 
 			// Load the previous build graph if it exists and merge it with the new one
 			auto generateGraphFile = soupTargetDirectory + GetGenerateGraphFileName();
-			Runtime::OperationGraphManager::TryMergeExisting(generateGraphFile, generateGraph, *_fileSystemState);
+			TryMergeExisting(generateGraphFile, generateGraph);
 
 			// Evaluate the Generate phase
 			auto evaluateGenerateEngine = Runtime::BuildEvaluateEngine(
@@ -416,31 +428,26 @@ namespace Soup::Build
 			}
 		}
 
-		void RunEvaluate(const Path& targetDirectory)
+		void RunEvaluate(const Path& soupTargetDirectory)
 		{
 			// Load and run the previous stored state directly
-			Log::Info("Loading evaluate operation graph");
-			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
-			auto evaluateGraphFile = soupTargetDirectory + Runtime::BuildConstants::EvaluateOperationGraphFileName();
+			auto generateEvaluateGraphFile = soupTargetDirectory + Runtime::BuildConstants::GenerateEvaluateOperationGraphFileName();
+			auto evaluateResultGraphFile = soupTargetDirectory + GetEvaluateResultGraphFileName();
+
+			Log::Info("Loading generate evaluate operation graph");
 			auto evaluateGraph = Runtime::OperationGraph();
 			if (!Runtime::OperationGraphManager::TryLoadState(
-				evaluateGraphFile,
+				generateEvaluateGraphFile,
 				evaluateGraph,
 				*_fileSystemState))
 			{
-				throw std::runtime_error("Missing cached operation graph for evaluate phase.");
+				throw std::runtime_error("Missing generated operation graph for evaluate phase.");
 			}
 
-			if (_arguments.ForceRebuild)
+			if (!_arguments.ForceRebuild)
 			{
-				Log::Diag("Purge operation graph to force build");
-				for (auto& operation : evaluateGraph.GetOperations())
-				{
-					auto& operationInfo = operation.second;
-					operationInfo.WasSuccessfulRun = false;
-					operationInfo.ObservedInput = {};
-					operationInfo.ObservedOutput = {};
-				}
+				// Load the previous build graph if it exists and merge it with the new one
+				TryMergeExisting(evaluateResultGraphFile, evaluateGraph);
 			}
 
 			try
@@ -455,7 +462,7 @@ namespace Soup::Build
 			{
 				Log::Info("Saving partial build state");
 				Runtime::OperationGraphManager::SaveState(
-					evaluateGraphFile,
+					evaluateResultGraphFile,
 					evaluateGraph,
 					*_fileSystemState);
 				throw;
@@ -463,7 +470,7 @@ namespace Soup::Build
 
 			Log::Info("Saving updated build state");
 			Runtime::OperationGraphManager::SaveState(
-				evaluateGraphFile,
+				evaluateResultGraphFile,
 				evaluateGraph,
 				*_fileSystemState);
 
@@ -499,6 +506,96 @@ namespace Soup::Build
 			return packagePath;
 		}
 
+		/// <summary>
+		/// Attempt to merge the existing operation graph if it exists
+		/// </summary>
+		void TryMergeExisting(
+			const Path& operationGraphFile,
+			Runtime::OperationGraph& operationGraph)
+		{
+			Log::Diag("Loading previous operation graph");
+			auto previousOperationGraph = Runtime::OperationGraph();
+			if (Runtime::OperationGraphManager::TryLoadState(
+				operationGraphFile,
+				previousOperationGraph,
+				*_fileSystemState))
+			{
+				Log::Diag("Merge previous operation graph observed results");
+				for (auto& activeOperationEntry : operationGraph.GetOperations())
+				{
+					auto& activeOperationInfo = activeOperationEntry.second;
+					Runtime::OperationInfo* previousOperationInfo = nullptr;
+					if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
+					{
+						activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
+						activeOperationInfo.ObservedInput = previousOperationInfo->ObservedInput;
+						activeOperationInfo.ObservedOutput = previousOperationInfo->ObservedOutput;
+					}
+				}
+			}
+			else
+			{
+				Log::Info("No valid previous build graph found");
+			}
+		}
+
+		Runtime::ValueTable BuildParametersDependenciesValueTable(
+			Runtime::Recipe& recipe,
+			const Path& workingDirectory,
+			bool isHostBuild)
+		{
+			auto knownDependecyTypes = std::array<std::string_view, 3>({
+				"Runtime",
+				"Test",
+				"Build",
+			});
+
+			auto result = Runtime::ValueTable();
+			for (auto knownDependecyType : knownDependecyTypes)
+			{
+				if (recipe.HasNamedDependencies(knownDependecyType))
+				{
+					auto& dependencyTypeTable = result.SetValue(knownDependecyType, Runtime::Value(Runtime::ValueTable())).AsTable();
+					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
+					{
+						// Load this package recipe
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
+
+						// Cache the build state for upstream dependencies
+						bool isDependencyHostBuild = isHostBuild || knownDependecyType == "Build";
+						auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
+
+						auto findBuildCache = buildCache.find(packagePath);
+						if (findBuildCache != buildCache.end())
+						{
+							auto& dependencyName = std::get<0>(findBuildCache->second);
+							auto& dependencyTargetDirectory = std::get<1>(findBuildCache->second);
+							auto& dependencySoupTargetDirectory = std::get<2>(findBuildCache->second);
+							dependencyTypeTable.SetValue(
+								dependencyName,
+								Runtime::Value(Runtime::ValueTable({
+									{
+										"TargetDirectory",
+										Runtime::Value(dependencyTargetDirectory.ToString())
+									},
+									{
+										"SoupTargetDirectory",
+										Runtime::Value(dependencySoupTargetDirectory.ToString())
+									},
+								})));
+						}
+						else
+						{
+							Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
+							throw std::runtime_error("Dependency does not exist in build cache");
+						}
+					}
+				}
+			}
+
+			return result;
+		}
+
 	private:
 		static Path GetSoupTargetDirectory()
 		{
@@ -512,6 +609,12 @@ namespace Soup::Build
 			return value;
 		}
 
+		static Path GetEvaluateResultGraphFileName()
+		{
+			static const auto value = Path("EvaluateResultGraph.bog");
+			return value;
+		}
+
 	private:
 		std::string _hostCompiler;
 		std::string _runtimeCompiler;
@@ -519,10 +622,13 @@ namespace Soup::Build
 
 		RecipeBuildManager _buildManager;
 
+		// Mapping from name to build folder to check for duplicate names with different packages
 		std::map<std::string, Path> _buildSet;
 		std::map<std::string, Path> _hostBuildSet;
 
-		std::map<std::string, Path> _hostBuildPaths;
+		// Mapping from package root path to the name and target folder to be used with dependencies parameters
+		std::map<Path, std::tuple<std::string, Path, Path>> _buildCache;
+		std::map<Path, std::tuple<std::string, Path, Path>> _hostBuildCache;
 
 		std::shared_ptr<Runtime::FileSystemState> _fileSystemState;
 	};

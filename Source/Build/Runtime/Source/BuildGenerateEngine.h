@@ -101,11 +101,8 @@ namespace Soup::Build::Runtime
 				sharedState = buildState.RetrieveSharedState();
 			}
 
-			// Load the previous build graph if it exists and merge it with the new one
-			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateOperationGraphFileName();
-			OperationGraphManager::TryMergeExisting(evaluateGraphFile, evaluateGraph, *_fileSystemState);
-
 			// Save the operation graph so the evaluate phase can load it
+			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::GenerateEvaluateOperationGraphFileName();
 			OperationGraphManager::SaveState(evaluateGraphFile, evaluateGraph, *_fileSystemState);
 
 			// Save the shared state that is to be passed to the downstream builds
@@ -122,10 +119,10 @@ namespace Soup::Build::Runtime
 		ValueTable LoadDependenciesSharedState(const ValueTable& parametersTable)
 		{
 			auto sharedDependenciesTable = ValueTable();
-			if (parametersTable.HasValue("ResolvedDependencies"))
+			if (parametersTable.HasValue("Dependencies"))
 			{
-				auto& resolvedDependencies = parametersTable.GetValue("ResolvedDependencies").AsTable();
-				for (auto dependencyTypeValue : resolvedDependencies.GetValues())
+				auto& dependenciesTable = parametersTable.GetValue("Dependencies").AsTable();
+				for (auto dependencyTypeValue : dependenciesTable.GetValues())
 				{
 					auto& dependencyType = dependencyTypeValue.first;
 					auto& dependencies = dependencyTypeValue.second.AsTable();
@@ -190,11 +187,14 @@ namespace Soup::Build::Runtime
 				for (auto dependencyValue : dependenciesSharedState.GetValue("Build").AsTable().GetValues())
 				{
 					auto& dependency = dependencyValue.second.AsTable();
-					auto targetFile = Path(dependency.GetValue("TargetFile").AsString().ToString());
-
-					if (System::IFileSystem::Current().Exists(targetFile))
+					if (dependency.HasValue("TargetFile"))
 					{
-						buildExtensionLibraries.push_back(std::move(targetFile));
+						auto targetFile = Path(dependency.GetValue("TargetFile").AsString().ToString());
+
+						if (System::IFileSystem::Current().Exists(targetFile))
+						{
+							buildExtensionLibraries.push_back(std::move(targetFile));
+						}
 					}
 				}
 			}

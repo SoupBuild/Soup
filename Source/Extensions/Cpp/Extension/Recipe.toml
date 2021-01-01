@@ -10,7 +10,7 @@ Source = [
 [Dependencies]
 Runtime = [
 	"Opal@0.2.1",
-	"../../../Build/Utilities/",
+	"Soup.Build.Utilities@0.4.2",
 	"../Compiler/Core/",
 	"../Compiler/Clang/",
 	"../Compiler/MSVC/",

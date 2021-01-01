@@ -119,40 +119,6 @@ namespace Soup::Build::Runtime
 			OperationGraphWriter::Serialize(state, file->GetOutStream());
 		}
 
-		/// <summary>
-		/// Attempt to merge the existing operation graph if it exists
-		/// </summary>
-		static void TryMergeExisting(
-			const Path& operationGraphFile,
-			OperationGraph& operationGraph,
-			FileSystemState& fileSystemState)
-		{
-			Log::Diag("Loading previous operation graph");
-			auto previousOperationGraph = OperationGraph();
-			if (TryLoadState(
-				operationGraphFile,
-				previousOperationGraph,
-				fileSystemState))
-			{
-				Log::Diag("Merge previous operation graph observed results");
-				for (auto& activeOperationEntry : operationGraph.GetOperations())
-				{
-					auto& activeOperationInfo = activeOperationEntry.second;
-					OperationInfo* previousOperationInfo = nullptr;
-					if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
-					{
-						activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
-						activeOperationInfo.ObservedInput = previousOperationInfo->ObservedInput;
-						activeOperationInfo.ObservedOutput = previousOperationInfo->ObservedOutput;
-					}
-				}
-			}
-			else
-			{
-				Log::Info("No valid previous build graph found");
-			}
-		}
-
 	private:
 		static void UpdateFileIds(std::vector<FileId>& fileIds, const std::unordered_map<FileId, FileId>& activeFileIdMap)
 		{

@@ -16,8 +16,8 @@ Runtime = [
 	"../../../Dependencies/LzmaSdk/CPP/Library/",
 	"json11@1.0.1",
 	"../OpalExtensions/",
-	"Soup.Build@0.4.1",
-	"Soup.Build.Utilities@0.4.1",
+	"Soup.Build@0.4.2",
+	"Soup.Build.Utilities@0.4.2",
 	"../../Build/Runtime/",
 ]
 Build = [
