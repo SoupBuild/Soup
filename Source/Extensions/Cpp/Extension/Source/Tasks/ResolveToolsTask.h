@@ -68,9 +68,10 @@ namespace Soup::Cpp
 		void Execute(Soup::Build::Utilities::BuildStateWrapper& buildState)
 		{
 			auto state = buildState.GetActiveState();
+			auto parameters = state.GetValue("Parameters").AsTable();
 
-			auto systemName = std::string(state.GetValue("BuildSystem").AsString().GetValue());
-			auto architectureName = std::string(state.GetValue("BuildArchitecture").AsString().GetValue());
+			auto systemName = std::string(parameters.GetValue("System").AsString().GetValue());
+			auto architectureName = std::string(parameters.GetValue("Architecture").AsString().GetValue());
 
 			if (systemName != "win32")
 				throw std::runtime_error("Win32 is the only supported system... so far.");

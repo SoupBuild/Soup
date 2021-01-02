@@ -79,9 +79,10 @@ namespace Soup::Cpp
 			auto sharedState = buildState.GetSharedState();
 
 			auto buildTable = activeState.GetValue("Build").AsTable();
+			auto parametersTable = activeState.GetValue("Parameters").AsTable();
 
 			auto arguments = Soup::Cpp::Compiler::BuildArguments();
-			arguments.TargetArchitecture = activeState.GetValue("BuildArchitecture").AsString().GetValue();
+			arguments.TargetArchitecture = parametersTable.GetValue("Architecture").AsString().GetValue();
 			arguments.TargetName = buildTable.GetValue("TargetName").AsString().GetValue();
 			arguments.TargetType = static_cast<Soup::Cpp::Compiler::BuildTargetType>(
 				buildTable.GetValue("TargetType").AsInteger().GetValue());
@@ -200,7 +201,7 @@ namespace Soup::Cpp
 			}
 
 			// Initialize the compiler to use
-			auto compilerName = std::string(activeState.GetValue("CompilerName").AsString().GetValue());
+			auto compilerName = std::string(parametersTable.GetValue("Compiler").AsString().GetValue());
 			auto findCompilerFactory = _compilerFactory.find(compilerName);
 			if (findCompilerFactory == _compilerFactory.end())
 			{
@@ -222,6 +223,11 @@ namespace Soup::Cpp
 			sharedBuildTable.EnsureValue("ModuleDependencies").EnsureList().SetAll(buildResult.ModuleDependencies);
 			sharedBuildTable.EnsureValue("RuntimeDependencies").EnsureList().SetAll(buildResult.RuntimeDependencies);
 			sharedBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(buildResult.LinkDependencies);
+
+			if (!buildResult.TargetFile.IsEmpty())
+			{
+				sharedBuildTable.EnsureValue("TargetFile").SetValueString(buildResult.TargetFile.ToString());
+			}
 
 			// Register the build operations
 			for (auto& operation : buildResult.BuildOperations)

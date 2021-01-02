@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "RecipeExtensions.h"
 #include "Api/SoupApi.h"
 #include "Auth/SoupAuth.h"
 #include "LzmaExtractCallback.h"
@@ -64,9 +63,9 @@ namespace Soup
 		{
 			auto recipePath =
 				workingDirectory +
-				Path(Constants::RecipeFileName);
-			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
+				Build::Runtime::BuildConstants::RecipeFileName();
+			Build::Runtime::Recipe recipe = {};
+			if (!Build::Runtime::RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
 			{
 				throw std::runtime_error("Could not load the recipe file.");
 			}
@@ -81,7 +80,7 @@ namespace Soup
 			try
 			{
 				// Parse the package reference to get the name
-				PackageReference targetPackageReference = PackageReference::Parse(packageReference);
+				auto targetPackageReference = Build::Runtime::PackageReference::Parse(packageReference);
 				std::string packageName = packageReference;
 				if (!targetPackageReference.IsLocal())
 				{
@@ -112,7 +111,7 @@ namespace Soup
 					auto packageModel = GetPackageModel(packageReference);
 					auto latestVersion = packageModel.GetLatest();
 					Log::HighPriority("Latest Version: " + latestVersion.ToString());
-					targetPackageReference = PackageReference(packageModel.GetName(), latestVersion);
+					targetPackageReference = Build::Runtime::PackageReference(packageModel.GetName(), latestVersion);
 				}
 
 				EnsurePackageDownloaded(
@@ -127,7 +126,7 @@ namespace Soup
 
 				// Register the package in the recipe
 				Log::Info("Adding reference to recipe");
-				auto dependencies = std::vector<PackageReference>();
+				auto dependencies = std::vector<Build::Runtime::PackageReference>();
 				if (recipe.HasRuntimeDependencies())
 					dependencies = recipe.GetRuntimeDependencies();
 
@@ -135,7 +134,7 @@ namespace Soup
 				recipe.SetRuntimeDependencies(dependencies);
 
 				// Save the state of the recipe
-				RecipeExtensions::SaveToFile(recipePath, recipe);
+				Build::Runtime::RecipeExtensions::SaveToFile(recipePath, recipe);
 			}
 			catch(const std::exception&)
 			{
@@ -154,9 +153,9 @@ namespace Soup
 
 			auto recipePath =
 				workingDirectory +
-				Path(Constants::RecipeFileName);
-			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
+				Build::Runtime::BuildConstants::RecipeFileName();
+			Build::Runtime::Recipe recipe = {};
+			if (!Build::Runtime::RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
 			{
 				throw std::runtime_error("Could not load the recipe file.");
 			}
@@ -464,84 +463,43 @@ namespace Soup
 		{
 			auto recipePath =
 				recipeDirectory +
-				Path(Constants::RecipeFileName);
-			Recipe recipe = {};
-			if (!RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
+				Build::Runtime::BuildConstants::RecipeFileName();
+			Build::Runtime::Recipe recipe = {};
+			if (!Build::Runtime::RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
 			{
 				throw std::runtime_error("Could not load the recipe file.");
 			}
 
-			if (recipe.HasRuntimeDependencies())
-			{
-				for (auto& dependency : recipe.GetRuntimeDependencies())
-				{
-					// If local then check children for external package references
-					// Otherwise install the external package reference and its dependencies
-					if (dependency.IsLocal())
-					{
-						auto dependencyPath = recipeDirectory + dependency.GetPath();
-						InstallRecursiveDependencies(
-							dependencyPath,
-							packagesDirectory,
-							stagingDirectory);
-					}
-					else
-					{
-						EnsurePackageDownloaded(
-							dependency.GetName(),
-							dependency.GetVersion(),
-							packagesDirectory,
-							stagingDirectory);
-					}
-				}
-			}
+			auto knownDependecyTypes = std::array<std::string_view, 3>({
+				"Runtime",
+				"Test",
+				"Build",
+			});
 
-			if (recipe.HasBuildDependencies())
+			for (auto dependecyType : knownDependecyTypes)
 			{
-				for (auto& dependency : recipe.GetBuildDependencies())
+				if (recipe.HasNamedDependencies(dependecyType))
 				{
-					// If local then check children for external package references
-					// Otherwise install the external package reference and its dependencies
-					if (dependency.IsLocal())
+					for (auto& dependency : recipe.GetNamedDependencies(dependecyType))
 					{
-						auto dependencyPath = recipeDirectory + dependency.GetPath();
-						InstallRecursiveDependencies(
-							dependencyPath,
-							packagesDirectory,
-							stagingDirectory);
-					}
-					else
-					{
-						EnsurePackageDownloaded(
-							dependency.GetName(),
-							dependency.GetVersion(),
-							packagesDirectory,
-							stagingDirectory);
-					}
-				}
-			}
-
-			if (recipe.HasTestDependencies())
-			{
-				for (auto& dependency : recipe.GetTestDependencies())
-				{
-					// If local then check children for external package references
-					// Otherwise install the external package reference and its dependencies
-					if (dependency.IsLocal())
-					{
-						auto dependencyPath = recipeDirectory + dependency.GetPath();
-						InstallRecursiveDependencies(
-							dependencyPath,
-							packagesDirectory,
-							stagingDirectory);
-					}
-					else
-					{
-						EnsurePackageDownloaded(
-							dependency.GetName(),
-							dependency.GetVersion(),
-							packagesDirectory,
-							stagingDirectory);
+						// If local then check children for external package references
+						// Otherwise install the external package reference and its dependencies
+						if (dependency.IsLocal())
+						{
+							auto dependencyPath = recipeDirectory + dependency.GetPath();
+							InstallRecursiveDependencies(
+								dependencyPath,
+								packagesDirectory,
+								stagingDirectory);
+						}
+						else
+						{
+							EnsurePackageDownloaded(
+								dependency.GetName(),
+								dependency.GetVersion(),
+								packagesDirectory,
+								stagingDirectory);
+						}
 					}
 				}
 			}

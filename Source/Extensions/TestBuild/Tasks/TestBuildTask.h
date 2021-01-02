@@ -136,7 +136,9 @@ namespace Soup::Test
 			auto inputFiles = std::vector<Path>({
 				program,
 			});
-			auto outputFiles = std::vector<Path>({});
+			auto outputFiles = std::vector<Path>({
+				
+			});
 			auto runTestsOperation =
 				Build::Utilities::BuildOperation(
 					std::move(title),

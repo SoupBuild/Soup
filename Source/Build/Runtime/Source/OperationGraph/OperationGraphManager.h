@@ -14,32 +14,24 @@ namespace Soup::Build::Runtime
 	/// </summary>
 	export class OperationGraphManager
 	{
-	private:
-		// Binary Build Operation Graph file format
-		static constexpr std::string_view FileName = "OperationGraph.bin";
-		static constexpr std::string_view FolderName = ".soup/";
-
 	public:
 		/// <summary>
 		/// Load the operation state from the provided directory
 		/// </summary>
 		static bool TryLoadState(
-			const Path& directory,
+			const Path& operationGraphFile,
 			OperationGraph& result,
 			FileSystemState& fileSystemState)
 		{
 			// Verify the requested file exists
-			auto OperationGraphFile = directory +
-				Path(FolderName) +
-				Path(FileName);
-			if (!System::IFileSystem::Current().Exists(OperationGraphFile))
+			if (!System::IFileSystem::Current().Exists(operationGraphFile))
 			{
 				Log::Info("Operation graph file does not exist");
 				return false;
 			}
 
 			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(OperationGraphFile, true);
+			auto file = System::IFileSystem::Current().OpenRead(operationGraphFile, true);
 
 			// Read the contents of the build state file
 			try
@@ -88,14 +80,11 @@ namespace Soup::Build::Runtime
 		/// Save the operation state for the provided directory
 		/// </summary>
 		static void SaveState(
-			const Path& directory,
+			const Path& operationGraphFile,
 			OperationGraph& state,
 			const FileSystemState& fileSystemState)
 		{
-			auto targetFolder = directory +
-				Path(FolderName);
-			auto OperationGraphFile = targetFolder +
-				Path(FileName);
+			auto targetFolder = operationGraphFile.GetParent();
 
 			// Update the operation graph referenced files
 			auto files = std::set<FileId>();
@@ -124,7 +113,7 @@ namespace Soup::Build::Runtime
 			}
 
 			// Open the file to write to
-			auto file = System::IFileSystem::Current().OpenWrite(OperationGraphFile, true);
+			auto file = System::IFileSystem::Current().OpenWrite(operationGraphFile, true);
 
 			// Write the build state to the file stream
 			OperationGraphWriter::Serialize(state, file->GetOutStream());

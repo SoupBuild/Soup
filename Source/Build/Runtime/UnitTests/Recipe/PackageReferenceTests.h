@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::UnitTests
+namespace Soup::Build::Runtime::UnitTests
 {
 	class PackageReferenceTests
 	{

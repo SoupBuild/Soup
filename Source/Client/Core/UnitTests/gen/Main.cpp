@@ -1,4 +1,5 @@
 #include <any>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -26,12 +27,8 @@ using namespace Soup::Test;
 #include "Config/LocalUserConfigTests.gen.h"
 
 #include "Package/PackageManagerTests.gen.h"
-#include "Package/PackageReferenceTests.gen.h"
 #include "Package/RecipeBuilderTests.gen.h"
 #include "Package/RecipeBuildManagerTests.gen.h"
-#include "Package/RecipeExtensionsTests.gen.h"
-#include "Package/RecipeTests.gen.h"
-#include "Package/RecipeTomlTests.gen.h"
 
 int main()
 {
@@ -47,12 +44,12 @@ int main()
 	state += RunLocalUserConfigTests();
 
 	state += RunPackageManagerTests();
-	state += RunPackageReferenceTests();
 	state += RunRecipeBuilderTests();
 	state += RunRecipeBuildManagerTests();
-	state += RunRecipeExtensionsTests();
-	state += RunRecipeTests();
-	state += RunRecipeTomlTests();
+
+	// Touch stamp file to ensure incremental builds work
+	// auto testFile = std::fstream("TestHarness.stamp", std::fstream::out);
+	// testFile << "TOUCH";
 
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;

@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "ValuePrimitive.h"
 
 namespace Soup::Build::Runtime
 {
@@ -49,6 +50,13 @@ namespace Soup::Build::Runtime
 
 		ValueTable& AsTable();
 		ValueList& AsList();
+		
+		const ValueTable& AsTable() const;
+		const ValueList& AsList() const;
+		const ValuePrimitive<const char*>& AsString() const;
+		const ValuePrimitive<int64_t>& AsInteger() const;
+		const ValuePrimitive<double>& AsFloat() const;
+		const ValuePrimitive<bool>& AsBoolean() const;
 
 		ValueTable& EnsureTable();
 

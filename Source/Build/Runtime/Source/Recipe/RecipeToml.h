@@ -5,7 +5,7 @@
 #pragma once
 #include "Recipe.h"
 
-namespace Soup
+namespace Soup::Build::Runtime
 {
 	using TomlValue = toml::basic_value<toml::preserve_comments>;
 	using TomlArray = std::vector<TomlValue>;

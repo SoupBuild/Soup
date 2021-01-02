@@ -3,8 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "Value.h"
-#include "ValueList.h"
 
 namespace Soup::Build::Runtime
 {
