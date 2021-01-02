@@ -103,17 +103,43 @@ namespace Soup::Client
 				}
 			}
 
-			// TODO: Load the value table to get the exe path
-			auto binaryDirectory = rootOutput + Build::RecipeBuildRunner::GetConfigurationDirectory(
+			// Load the value table to get the exe path
+			auto targetDirectory = rootOutput + Build::RecipeBuildRunner::GetConfigurationDirectory(
 				compilerName,
 				flavor,
 				system,
 				architecture);
-			auto executablePath = binaryDirectory + Path(recipe.GetName() + ".exe");
-			Log::Info(executablePath.ToString());
-			if (!System::IFileSystem::Current().Exists(executablePath))
+			auto soupTargetDirectory = targetDirectory + Build::RecipeBuildRunner::GetSoupTargetDirectory();
+			auto sharedStateFile = soupTargetDirectory + Build::Runtime::BuildConstants::GenerateSharedStateFileName();
+
+			// Load the shared state file
+			auto sharedStateTable = Build::Runtime::ValueTable();
+			if (!Build::Runtime::ValueTableManager::TryLoadState(sharedStateFile, sharedStateTable))
 			{
-				Log::Error("The executable does not exist");
+				Log::Error("Failed to load the shared state file: " + sharedStateFile.ToString());
+				return;
+			}
+
+			// Get the executable from the build target file property
+			// Check for any dynamic libraries in the shared state
+			if (!sharedStateTable.HasValue("Build"))
+			{
+				Log::Error("Shared state does not have a build table");
+				return;
+			}
+
+			auto& buildTable = sharedStateTable.GetValue("Build").AsTable();
+			if (!buildTable.HasValue("TargetFile"))
+			{
+				Log::Error("Build table does not have a TargetFile property");
+				return;
+			}
+
+			auto targetFile = Path(buildTable.GetValue("TargetFile").AsString().ToString());
+			Log::Info(targetFile.ToString());
+			if (!System::IFileSystem::Current().Exists(targetFile))
+			{
+				Log::Error("The target does not exist");
 				return;
 			}
 
@@ -125,7 +151,7 @@ namespace Soup::Client
 
 			// Execute the requested target
 			auto process = System::IProcessManager::Current().CreateProcess(
-				executablePath,
+				targetFile,
 				arguments.str(),
 				workingDirectory);
 			process->Start();

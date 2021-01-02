@@ -224,6 +224,11 @@ namespace Soup::Cpp
 			sharedBuildTable.EnsureValue("RuntimeDependencies").EnsureList().SetAll(buildResult.RuntimeDependencies);
 			sharedBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(buildResult.LinkDependencies);
 
+			if (!buildResult.TargetFile.IsEmpty())
+			{
+				sharedBuildTable.EnsureValue("TargetFile").SetValueString(buildResult.TargetFile.ToString());
+			}
+
 			// Register the build operations
 			for (auto& operation : buildResult.BuildOperations)
 			{

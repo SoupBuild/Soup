@@ -224,12 +224,16 @@ namespace Soup::Cpp::Compiler
 
 					// Add the DLL as a runtime dependency
 					auto absoluteTargetFile = linkArguments.TargetFile.HasRoot() ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
-					result.RuntimeDependencies.push_back(std::move(absoluteTargetFile));
+					result.RuntimeDependencies.push_back(absoluteTargetFile);
 
 					// Clear out all previous link dependencies and replace with the 
 					// single implementation library for the DLL
 					auto absoluteImplementationFile = linkArguments.ImplementationFile.HasRoot() ? linkArguments.ImplementationFile : linkArguments.RootDirectory + linkArguments.ImplementationFile;
 					result.LinkDependencies.push_back(std::move(absoluteImplementationFile));
+
+					// Set the targe file
+					result.TargetFile = std::move(absoluteTargetFile);
+
 					break;
 				}
 				case BuildTargetType::Executable:
@@ -238,9 +242,12 @@ namespace Soup::Cpp::Compiler
 
 					// Add the Executable as a runtime dependency
 					auto absoluteTargetFile = linkArguments.TargetFile.HasRoot() ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
-					result.RuntimeDependencies.push_back(std::move(absoluteTargetFile));
+					result.RuntimeDependencies.push_back(absoluteTargetFile);
 
 					// All link dependencies stop here.
+
+					// Set the targe file
+					result.TargetFile = std::move(absoluteTargetFile);
 					break;
 				}
 				default:

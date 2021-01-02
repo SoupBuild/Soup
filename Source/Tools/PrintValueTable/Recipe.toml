@@ -1,4 +1,4 @@
-Name = "printgraph"
+Name = "printvaluetable"
 Language = "C++"
 Version = "1.0.0"
 Type = "Executable"

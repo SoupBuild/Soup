@@ -387,6 +387,11 @@ namespace Soup::Cpp::Compiler::UnitTests
 				std::vector<Path>({}),
 				result.RuntimeDependencies,
 				"Verify Runtime Dependencies Result");
+
+			Assert::AreEqual(
+				Path(),
+				result.TargetFile,
+				"Verify Target File Result");
 		}
 
 		// [[Fact]]
@@ -642,6 +647,11 @@ namespace Soup::Cpp::Compiler::UnitTests
 				std::vector<Path>({}),
 				result.RuntimeDependencies,
 				"Verify Runtime Dependencies Result");
+
+			Assert::AreEqual(
+				Path(),
+				result.TargetFile,
+				"Verify Target File Result");
 		}
 
 		// [[Fact]]
@@ -831,6 +841,11 @@ namespace Soup::Cpp::Compiler::UnitTests
 				std::vector<Path>({}),
 				result.RuntimeDependencies,
 				"Verify Runtime Dependencies Result");
+
+			Assert::AreEqual(
+				Path(),
+				result.TargetFile,
+				"Verify Target File Result");
 		}
 	};
 }

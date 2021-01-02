@@ -35,5 +35,10 @@ namespace Soup::Cpp::Compiler
 		/// Gets or sets the list of runtime dependencies
 		/// </summary>
 		std::vector<Path> RuntimeDependencies;
+
+		/// <summary>
+		/// Gets or sets the target file for the build
+		/// </summary>
+		Path TargetFile;
 	};
 }

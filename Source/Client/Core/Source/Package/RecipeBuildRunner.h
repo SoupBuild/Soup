@@ -15,6 +15,12 @@ namespace Soup::Build
 	export class RecipeBuildRunner
 	{
 	public:
+		static Path GetSoupTargetDirectory()
+		{
+			static const auto value = Path(".soup/");
+			return value;
+		}
+
 		static Path GetConfigurationDirectory(
 			std::string_view compiler,
 			std::string_view flavor,
@@ -597,12 +603,6 @@ namespace Soup::Build
 		}
 
 	private:
-		static Path GetSoupTargetDirectory()
-		{
-			static const auto value = Path(".soup/");
-			return value;
-		}
-
 		static Path GetGenerateGraphFileName()
 		{
 			static const auto value = Path("GenerateGraph.bog");

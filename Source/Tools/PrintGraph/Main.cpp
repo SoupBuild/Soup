@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 import Opal;
@@ -7,6 +8,46 @@ import Soup.Build.Runtime;
 void PrintUsage()
 {
 	std::cout << "printgraph [path]" << std::endl;
+}
+
+std::string ToString(const std::vector<uint32_t>& valueList)
+{
+	auto builder = std::stringstream();
+	builder << "[";
+	bool isFirst = true;
+	for (auto value : valueList)
+	{
+		if (!isFirst)
+		{
+			builder << ", ";
+		}
+
+		builder << value;
+		isFirst = false;
+	}
+
+	builder << "]";
+	return builder.str();
+}
+
+void PrintOperations(Soup::Build::Runtime::OperationGraph& graph)
+{
+	for (auto operation : graph.GetOperations())
+	{
+		const auto& operationInfo = operation.second;
+		std::cout << "Operation: " << operationInfo.Id << std::endl;
+		std::cout << "\tTitle: " << operationInfo.Title << std::endl;
+		std::cout << "\tCommand-WorkingDirectory: " << operationInfo.Command.WorkingDirectory.ToString() << std::endl;
+		std::cout << "\tCommand-Executable: " << operationInfo.Command.Executable.ToString() << std::endl;
+		std::cout << "\tCommand-Arguments: " << operationInfo.Command.Arguments << std::endl;
+		std::cout << "\tDeclaredInput: " << ToString(operationInfo.DeclaredInput) << std::endl;
+		std::cout << "\tDeclaredOutput: " << ToString(operationInfo.DeclaredOutput) << std::endl;
+		std::cout << "\tChildren: " << ToString(operationInfo.Children) << std::endl;
+		std::cout << "\tDependencyCount: " << operationInfo.DependencyCount << std::endl;
+		std::cout << "\tWasSuccessfulRun: " << operationInfo.WasSuccessfulRun << std::endl;
+		std::cout << "\tObservedInput: " << ToString(operationInfo.ObservedInput) << std::endl;
+		std::cout << "\tObservedOutput: " << ToString(operationInfo.ObservedOutput) << std::endl;
+	}
 }
 
 void PrintGraph(
@@ -42,6 +83,7 @@ void LoadAndPrintGraph(const Opal::Path& operationGraphFile)
 	// Read the contents of the build state file
 	auto graph = Soup::Build::Runtime::OperationGraphReader::Deserialize(file->GetInStream());
 
+	PrintOperations(graph);
 	PrintGraph(graph);
 }
 
