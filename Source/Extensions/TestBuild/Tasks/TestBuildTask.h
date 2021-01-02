@@ -131,7 +131,7 @@ namespace Soup::Test
 				program = arguments.WorkingDirectory + program;
 			}
 
-			auto workingDirectory = arguments.BinaryDirectory;
+			auto workingDirectory = arguments.WorkingDirectory;
 			auto runArguments = std::string("");
 			auto inputFiles = std::vector<Path>({
 				program,

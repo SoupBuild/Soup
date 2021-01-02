@@ -21,8 +21,8 @@ int main()
 	state += RunVersionCommandTests();
 
 	// Touch stamp file to ensure incremental builds work
-	auto testFile = std::fstream("TestHarness.stamp", std::fstream::out);
-	testFile << "TOUCH";
+	// auto testFile = std::fstream("TestHarness.stamp", std::fstream::out);
+	// testFile << "TOUCH";
 
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;
