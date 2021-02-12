@@ -9,7 +9,7 @@
 * [C++ Modules Posts of Interest](./Docs/Posts-Of-Interest.md)
 
 ## Overview
-Soup is a build system that was created with the primary goal of simplifying the development and sharing of C++ code. Soup was built from the ground up with C++20 Modules as a core principal to support inter-project references. By sharing a single module interface between the individual packages the build system can ensure that the internals of one project will not "leak" into and out of external dependencies.
+Soup is a build system that was created with the primary goal of simplifying the development and sharing of C++ code. Soup was built from the ground up with a primary focus on reusability of both build logic and runtime code. By sharing a single module interface between the individual packages the build system can ensure that the internals of one project will not "leak" into and out of external dependencies.
 
 Soup utilizes a combination of a declarative frontend Recipe along with the ability to write native C++ Extensions to inject custom logic into the build runtime. Most developers will work entirely within the declarative Recipe that allows for a simple to understand and author build definition, however the full power of C++ is available to the build system engineers that need it.
 
