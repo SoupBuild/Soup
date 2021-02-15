@@ -2,8 +2,8 @@
 
 namespace Soup.Build
 {
-    public interface IBuildTask
-    {
-        void Execute();
-    }
+	public interface IBuildTask
+	{
+		void Execute();
+	}
 }
