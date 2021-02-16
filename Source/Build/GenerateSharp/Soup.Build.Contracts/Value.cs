@@ -15,7 +15,7 @@ namespace Soup.Build
 	{
 	}
 
-	public enum ValueType
+	public enum ValueType : uint
 	{
 		Empty = 1,
 		Table = 2,

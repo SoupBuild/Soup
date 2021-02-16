@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup.Utilities;
+using System;
+using System.Collections.Generic;
+
 namespace Soup.Build.Generate
 {
 	/// <summary>
@@ -30,23 +34,24 @@ namespace Soup.Build.Generate
 			IList<Path> declaredInput,
 			IList<Path> declaredOutput)
 		{
-			if (!workingDirectory.HasRoot())
-				throw std::runtime_error("Working directory must be an absolute path.");
+			if (!workingDirectory.HasRoot)
+				throw new InvalidOperationException("Working directory must be an absolute path.");
 
 			// Build up the operation unique command
-			auto commandInfo = CommandInfo(
-				std::move(workingDirectory),
-				std::move(executable),
-				std::move(arguments));
+			var commandInfo = new CommandInfo(
+				workingDirectory,
+				executable,
+				arguments);
 
 			// Ensure this is the a unique operation
 			if (_graph.HasCommand(commandInfo))
 			{
-				throw std::runtime_error("Operation with this command already exists.");
+				throw new InvalidOperationException("Operation with this command already exists.");
 			}
 
 			// Generate a unique id for this new operation
-			auto operationId = ++_uniqueId;
+			_uniqueId = new OperationId(_uniqueId.value + 1);
+			var operationId = _uniqueId;
 
 			// Build up the declared build operation
 			auto declaredInputFileIds = _fileSystemState->ToFileIds(declaredInput, commandInfo.WorkingDirectory);

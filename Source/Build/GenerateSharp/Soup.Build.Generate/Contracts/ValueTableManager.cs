@@ -35,18 +35,20 @@ namespace Soup.Build.Generate
 			}
 
 			// Open the file to read from
-			var file = System.IO.File.Open(valueTableFile, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-
-			// Read the contents of the build state file
-			try
+			using (var fileStream = System.IO.File.OpenRead(valueTableFile))
+			using (var reader = new System.IO.BinaryReader(fileStream))
 			{
-				result = ValueTableReader.Deserialize(file->GetInStream());
-				return true;
-			}
-			catch
-			{
-				Log.Error("Failed to parse value table");
-				return false;
+				// Read the contents of the build state file
+				try
+				{
+					result = ValueTableReader.Deserialize(reader);
+					return true;
+				}
+				catch
+				{
+					Log.Error("Failed to parse value table");
+					return false;
+				}
 			}
 		}
 
@@ -60,17 +62,19 @@ namespace Soup.Build.Generate
 			var targetFolder = valueTableFile.GetParent();
 
 			// Ensure the target directories exists
-			if (!System.IO.Directory.Exists(targetFolder))
+			if (!System.IO.Directory.Exists(targetFolder.ToString()))
 			{
 				Log.Info("Create Directory: " + targetFolder.ToString());
-				System.IO.Directory.CreateDirectory(targetFolder);
+				System.IO.Directory.CreateDirectory(targetFolder.ToString());
 			}
 
 			// Open the file to write to
-			var file = System.IO.File.Open(valueTableFile, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write);
-
-			// Write the build state to the file stream
-			ValueTableWriter.Serialize(state, file->GetOutStream());
+			using (var fileStream = System.IO.File.OpenWrite(valueTableFile.ToString()))
+			using (var writer = new System.IO.BinaryWriter(fileStream))
+			{
+				// Write the build state to the file stream
+				ValueTableWriter.Serialize(state, writer);
+			}
 		}
 	}
 }

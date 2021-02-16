@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup.Utilities;
+using System;
+using System.Collections.Generic;
+
 namespace Soup.Build.Generate
 {
 	/// <summary>
@@ -13,60 +17,56 @@ namespace Soup.Build.Generate
 		/// Load the operation state from the provided directory
 		/// </summary>
 		public static bool TryLoadState(
-			const Path& operationGraphFile,
-			OperationGraph& result,
-			FileSystemState& fileSystemState)
+			Path operationGraphFile,
+			OperationGraph result,
+			FileSystemState fileSystemState)
 		{
 			// Verify the requested file exists
-			if (!System::IFileSystem::Current().Exists(operationGraphFile))
+			if (!System.IO.File.Exists(operationGraphFile.ToString()))
 			{
 				Log.Info("Operation graph file does not exist");
 				return false;
 			}
 
 			// Open the file to read from
-			auto file = System::IFileSystem::Current().OpenRead(operationGraphFile, true);
-
-			// Read the contents of the build state file
-			try
+			using (var fileStream = System.IO.File.OpenRead(operationGraphFile.ToString()))
+			using (var reader = new System.IO.BinaryReader(fileStream))
 			{
-				auto loadedResult = OperationGraphReader::Deserialize(file->GetInStream());
-				
-				// Map up the incoming file ids to the active file system state ids
-				auto activeFileIdMap = std::unordered_map<FileId, FileId>();
-				for (auto& fileReference : loadedResult.GetReferencedFiles())
+				// Read the contents of the build state file
+				try
 				{
-					auto activeFileId = fileSystemState.ToFileId(fileReference.second);
-					auto insertResult = activeFileIdMap.emplace(fileReference.first, activeFileId);
-					if (!insertResult.second)
-						throw std::runtime_error("Failed to insert file id lookup");
+					var loadedResult = OperationGraphReader.Deserialize(reader);
 
-					// Update the referenced id
-					fileReference.first = activeFileId;
+					// Map up the incoming file ids to the active file system state ids
+					var activeFileIdMap = new Dictionary<FileId, FileId>();
+					for (var i = 0; i < loadedResult.GetReferencedFiles().Count; i++)
+					{
+						var fileReference = loadedResult.GetReferencedFiles()[i];
+						var activeFileId = fileSystemState.ToFileId(fileReference.Path);
+						activeFileIdMap.Add(fileReference.FileId, activeFileId);
+
+						// Update the referenced id
+						fileReference.FileId = activeFileId;
+					}
+
+					// Update all of the operations
+					foreach (var operationReference in loadedResult.GetOperations())
+					{
+						var operation = operationReference.Value;
+						UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
+						UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
+						UpdateFileIds(operation.ObservedInput, activeFileIdMap);
+						UpdateFileIds(operation.ObservedOutput, activeFileIdMap);
+					}
+
+					result = loadedResult;
+					return true;
 				}
-
-				// Update all of the operations
-				for (auto& operationReference : loadedResult.GetOperations())
+				catch
 				{
-					auto& operation = operationReference.second;
-					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
-					UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
-					UpdateFileIds(operation.ObservedInput, activeFileIdMap);
-					UpdateFileIds(operation.ObservedOutput, activeFileIdMap);
+					Log.Error("Failed to parse operation graph");
+					return false;
 				}
-
-				result = std::move(loadedResult);
-				return true;
-			}
-			catch(std::runtime_error& ex)
-			{
-				Log.Error(ex.what());
-				return false;
-			}
-			catch(...)
-			{
-				Log.Error("Failed to parse operation graph");
-				return false;
 			}
 		}
 
@@ -74,53 +74,53 @@ namespace Soup.Build.Generate
 		/// Save the operation state for the provided directory
 		/// </summary>
 		public static void SaveState(
-			const Path& operationGraphFile,
-			OperationGraph& state,
-			const FileSystemState& fileSystemState)
+			Path operationGraphFile,
+			OperationGraph state,
+			FileSystemState fileSystemState)
 		{
-			auto targetFolder = operationGraphFile.GetParent();
+			var targetFolder = operationGraphFile.GetParent();
 
 			// Update the operation graph referenced files
-			auto files = std::set<FileId>();
-			for (auto& operationReference : state.GetOperations())
+			var files = new HashSet<FileId>();
+			foreach (var operationReference in state.GetOperations())
 			{
-				auto& operation = operationReference.second;
-				files.insert(operation.DeclaredInput.begin(), operation.DeclaredInput.end());
-				files.insert(operation.DeclaredOutput.begin(), operation.DeclaredOutput.end());
-				files.insert(operation.ObservedInput.begin(), operation.ObservedInput.end());
-				files.insert(operation.ObservedOutput.begin(), operation.ObservedOutput.end());
+				var operation = operationReference.Value;
+				files.UnionWith(operation.DeclaredInput);
+				files.UnionWith(operation.DeclaredOutput);
+				files.UnionWith(operation.ObservedInput);
+				files.UnionWith(operation.ObservedOutput);
 			}
 
-			auto referencedFiles = IList<std::pair<FileId, Path>>();
-			for (auto fileId : files)
+			var referencedFiles = new List<(FileId FileId, Path Path)>();
+			foreach (var fileId in files)
 			{
-				referencedFiles.push_back({ fileId, fileSystemState.GetFilePath(fileId) });
+				referencedFiles.Add((fileId, fileSystemState.GetFilePath(fileId)));
 			}
 
-			state.SetReferencedFiles(std::move(referencedFiles));
+			state.SetReferencedFiles(referencedFiles);
 
 			// Ensure the target directories exists
-			if (!System::IFileSystem::Current().Exists(targetFolder))
+			if (!System.IO.Directory.Exists(targetFolder.ToString()))
 			{
 				Log.Info("Create Directory: " + targetFolder.ToString());
-				System::IFileSystem::Current().CreateDirectory2(targetFolder);
+				System.IO.Directory.CreateDirectory(targetFolder.ToString());
 			}
 
 			// Open the file to write to
-			auto file = System::IFileSystem::Current().OpenWrite(operationGraphFile, true);
-
-			// Write the build state to the file stream
-			OperationGraphWriter::Serialize(state, file->GetOutStream());
+			using (var fileStream = System.IO.File.OpenWrite(operationGraphFile.ToString()))
+			using (var writer = new System.IO.BinaryWriter(fileStream))
+			{
+				// Write the build state to the file stream
+				OperationGraphWriter.Serialize(state, writer);
+			}
 		}
 
-		private static void UpdateFileIds(IList<FileId>& fileIds, const std::unordered_map<FileId, FileId>& activeFileIdMap)
+		private static void UpdateFileIds(IList<FileId> fileIds, IDictionary<FileId, FileId> activeFileIdMap)
 		{
-			for (auto& fileId : fileIds)
+			for (var i = 0; i < fileIds.Count; i++)
 			{
-				auto findActiveFileId = activeFileIdMap.find(fileId);
-				if (findActiveFileId == activeFileIdMap.end())
-					throw std::runtime_error("Could not find operation file id in active map");
-				fileId = findActiveFileId->second;
+				var findActiveFileId = activeFileIdMap[fileIds[i]];
+				fileIds[i] = findActiveFileId;
 			}
 		}
 	}

@@ -3,6 +3,7 @@
 // </copyright>
 
 using Soup.Utilities;
+using System;
 using System.Collections.Generic;
 
 namespace Soup.Build.Generate
@@ -25,8 +26,9 @@ namespace Soup.Build.Generate
 		/// </summary>
 		public Recipe()
 		{
-			SetName(string.Empty);
-			SetLanguage(string.Empty);
+			_table = new ValueTable();
+			Name = string.Empty;
+			Language = string.Empty;
 		}
 
 		/// <summary>
@@ -36,8 +38,9 @@ namespace Soup.Build.Generate
 			string name,
 			string language)
 		{
-			SetName(name);
-			SetLanguage(language);
+			_table = new ValueTable();
+			Name = name;
+			Language = language;
 		}
 
 		/// <summary>
@@ -51,32 +54,33 @@ namespace Soup.Build.Generate
 			IList<PackageReference>? buildDependencies,
 			IList<PackageReference>? testDependencies)
 		{
-			SetName(name);
-			SetLanguage(language);
+			Name = name;
+			Language = language;
 
-			if (version.has_value())
-				SetVersion(version.value());
+			if (!ReferenceEquals(version, null))
+				Version = version;
 
-			if (runtimeDependencies.has_value())
-				SetRuntimeDependencies(runtimeDependencies.value());
+			if (!ReferenceEquals(runtimeDependencies, null))
+				RuntimeDependencies = runtimeDependencies;
 
-			if (buildDependencies.has_value())
-				SetBuildDependencies(buildDependencies.value());
+			if (!ReferenceEquals(buildDependencies, null))
+				BuildDependencies = buildDependencies;
 
-			if (testDependencies.has_value())
-				SetTestDependencies(testDependencies.value());
+			if (!ReferenceEquals(testDependencies, null))
+				TestDependencies = testDependencies;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
-		public Recipe(RecipeTable table) :
-			_table(std::move(table))
+		public Recipe(ValueTable table)
 		{
+			_table = table;
+
 			if (!HasValue(_table, Property_Name))
-				throw std::runtime_error("Missing required property Name");
+				throw new ArgumentException("Missing required property Name");
 			if (!HasValue(_table, Property_Language))
-				throw std::runtime_error("Missing required property Language");
+				throw new ArgumentException("Missing required property Language");
 		}
 
 		/// <summary>
@@ -87,7 +91,7 @@ namespace Soup.Build.Generate
 		public string Name
 		{
 			get { return NameValue.AsString(); }
-			set { EnsureValue(_table, Property_Name).SetValueString(value); }
+			set { EnsureValue(_table, Property_Name, new Value(value)); }
 		}
 
 		/// <summary>
@@ -98,7 +102,7 @@ namespace Soup.Build.Generate
 		public string Language
 		{
 			get { return LanguageValue.AsString(); }
-			set { EnsureValue(_table, Property_Language).SetValueString(value); }
+			set { EnsureValue(_table, Property_Language, new Value(value)); }
 		}
 
 		/// <summary>
@@ -118,7 +122,7 @@ namespace Soup.Build.Generate
 			}
 			set
             {
-				EnsureValue(_table, Property_Version).SetValueString(value.ToString());
+				EnsureValue(_table, Property_Version, new Value(value.ToString()));
 			}
 		}
 
@@ -153,7 +157,7 @@ namespace Soup.Build.Generate
 				stringValues.Add(new Value(value.ToString()));
 			}
 
-			EnsureValue(EnsureDependencies(), name).SetValueList(stringValues);
+			EnsureValue(EnsureDependencies(), name, new Value(stringValues));
 		}
 
 		/// <summary>
@@ -192,7 +196,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		public RecipeTable& GetTable()
+		public ValueTable GetTable()
 		{
 			return _table;
 		}
@@ -205,83 +209,70 @@ namespace Soup.Build.Generate
 			return HasValue(_table, Property_Dependencies);
 		}
 
-		private RecipeTable& GetDependencies()
+		private IValueTable GetDependencies()
 		{
 			if (!HasDependencies())
-				throw std::runtime_error("No dependencies.");
+				throw new InvalidOperationException("No dependencies.");
 
-			auto& values = GetValue(_table, Property_Dependencies).AsTable();
+			var values = GetValue(_table, Property_Dependencies).AsTable();
 			return values;
 		}
 
-		private RecipeTable& EnsureDependencies()
+		private IValueTable EnsureDependencies()
 		{
-			auto& value = EnsureValue(_table, Property_Dependencies);
-			switch (value.GetType())
+			if (_table.ContainsKey(Property_Dependencies))
 			{
-				case RecipeValueType::Table:
-					// All good.
-					break;
-				case RecipeValueType::Empty:
-					value.SetValueTable(RecipeTable());
-					break;
-				default:
-					throw std::runtime_error("The recipe already has a non-table dependencies property");
-			}
-
-			return value.AsTable();
-		}
-
-		private bool HasValue(RecipeTable& table, std::string_view key)
-		{
-			return table.contains(key.data());
-		}
-
-		private const RecipeValue& GetValue(RecipeTable table, std::string_view key)
-		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
-			{
-				return findItr->second;
-			}
-			else
-			{
-				throw std::runtime_error("Requested recipe value does not exist in the table.");
-			}
-		}
-
-		private RecipeValue& GetValue(RecipeTable& table, std::string_view key)
-		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
-			{
-				return findItr->second;
-			}
-			else
-			{
-				throw std::runtime_error("Requested recipe value does not exist in the table.");
-			}
-		}
-
-		private RecipeValue& EnsureValue(RecipeTable& table, std::string_view key)
-		{
-			auto findItr = table.find(key.data());
-			if (findItr != table.end())
-			{
-				return findItr->second;
-			}
-			else
-			{
-				auto insertResult = table.emplace(key.data(), RecipeValue());
-				if (insertResult.second)
+				var value = _table[Property_Dependencies];
+				switch (value.Type)
 				{
-					return insertResult.first->second;
-				}
-				else
-				{
-					throw std::runtime_error("Failed to insert a recipe value.");
+					case ValueType.Table:
+						// All good.
+						return value.AsTable();
+					case ValueType.Empty:
+						var newTable = new ValueTable();
+						_table.Add(Property_Dependencies, new Value(newTable));
+						return newTable;
+					default:
+						throw new InvalidOperationException("The recipe already has a non-table dependencies property");
 				}
 			}
+			else
+            {
+				var newTable = new ValueTable();
+				_table.Add(Property_Dependencies, new Value(newTable));
+				return newTable;
+			}
+		}
+
+		private bool HasValue(IValueTable table, string key)
+		{
+			return table.ContainsKey(key);
+		}
+
+		private Value GetValue(IValueTable table, string key)
+		{
+			if (table.TryGetValue(key, out var value))
+			{
+				return value;
+			}
+			else
+			{
+				throw new InvalidOperationException("Requested recipe value does not exist in the table.");
+			}
+		}
+
+		private Value EnsureValue(IValueTable table, string key, Value value)
+		{
+			if (table.ContainsKey(key))
+			{
+				table[key] = value;
+			}
+			else
+			{
+				table.Add(key, value);
+			}
+
+			return value;
 		}
 
 		private ValueTable _table;

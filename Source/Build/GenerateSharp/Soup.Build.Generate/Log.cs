@@ -8,11 +8,20 @@ namespace Soup.Build.Generate
 		{
 			Console.WriteLine(message);
 		}
+		public static void HighPriority(string message)
+		{
+			Console.WriteLine(message);
+		}
 
 		public static void Diag(string message)
 		{
 			Console.WriteLine(message);
 		}
+		public static void Warning(string message)
+		{
+			Console.WriteLine(message);
+		}
+
 		public static void Error(string message)
 		{
 			Console.WriteLine(message);

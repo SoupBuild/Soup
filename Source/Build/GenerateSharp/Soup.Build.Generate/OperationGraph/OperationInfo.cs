@@ -2,12 +2,13 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup.Utilities;
 using System;
 using System.Collections.Generic;
 
 namespace Soup.Build.Generate
 {
-	internal record OperationId(int value);
+	internal record OperationId(uint value);
 
 	internal class CommandInfo : IEquatable<CommandInfo>
 	{
@@ -15,7 +16,7 @@ namespace Soup.Build.Generate
 		/// Initializes a new instance of the <see cref="CommandInfo"/> class.
 		/// </summary>
 		public CommandInfo() :
-			this(string.Empty, string.Empty, string.Empty)
+			this(new Path(), new Path(), string.Empty)
 		{
 		}
 
@@ -23,8 +24,8 @@ namespace Soup.Build.Generate
 		/// Initializes a new instance of the <see cref="CommandInfo"/> class.
 		/// </summary>
 		public CommandInfo(
-			string workingDirectory,
-			string executable,
+			Path workingDirectory,
+			Path executable,
 			string arguments)
 		{
 			WorkingDirectory = workingDirectory;
@@ -66,8 +67,8 @@ namespace Soup.Build.Generate
 			return !(lhs == rhs);
 		}
 
-		public string WorkingDirectory { get; init; }
-		public string Executable { get; init; }
+		public Path WorkingDirectory { get; init; }
+		public Path Executable { get; init; }
 		public string Arguments { get; init; }
 	}
 

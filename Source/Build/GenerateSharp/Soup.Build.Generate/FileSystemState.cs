@@ -8,9 +8,9 @@ using System.Collections.Generic;
 
 namespace Soup.Build.Generate
 {
-	public record FileId(int value)
+	public record FileId(uint value)
 	{
-		public static FileId Invalid => new FileId(-1);
+		public static FileId Invalid => new FileId(uint.MaxValue);
 	}
 
 	/// <summary>

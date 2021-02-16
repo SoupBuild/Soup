@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.IO;
+
 namespace Soup.Build.Generate
 {
 	/// <summary>
@@ -9,110 +12,89 @@ namespace Soup.Build.Generate
 	/// </summary>
 	internal class ValueTableWriter
 	{
-	private:
 		// Binary Value Table file format
-		static constexpr uint32_t FileVersion = 1;
+		private static uint FileVersion => 1;
 
-	public:
-		static void Serialize(const ValueTable& state, std::ostream& stream)
+		public static void Serialize(ValueTable state, BinaryWriter writer)
 		{
 			// Write the File Header with version
-			stream.write("BVT\0", 4);
-			WriteValue(stream, FileVersion);
+			writer.Write(new char[] { 'B', 'V', 'T', '\0' });
+			writer.Write(FileVersion);
 
 			// Write out the root table
-			stream.write("TBL\0", 4);
-			WriteValue(stream, state);
+			writer.Write(new char[] { 'T', 'B', 'L', '\0' });
+			WriteValue(writer, state);
 		}
 
-	private:
-		static void WriteValue(std::ostream& stream, const Value& value)
+		private static void WriteValue(BinaryWriter writer, Value value)
 		{
 			// Write the value type
-			auto valueType = value.GetType();
-			WriteValue(stream, static_cast<uint32_t>(valueType));
+			writer.Write((uint)value.Type);
 
-			switch (valueType)
+			switch (value.Type)
 			{
-				case ValueType::Empty:
+				case ValueType.Empty:
 					// Nothing to write
 					break;
-				case ValueType::Table:
-					WriteValue(stream, value.AsTable());
+				case ValueType.Table:
+					WriteValue(writer, value.AsTable());
 					break;
-				case ValueType::List:
-					WriteValue(stream, value.AsList());
+				case ValueType.List:
+					WriteValue(writer, value.AsList());
 					break;
-				case ValueType::String:
-					WriteValue(stream, string_view(value.AsString().ToString()));
+				case ValueType.String:
+					WriteValue(writer, value.AsString());
 					break;
-				case ValueType::Integer:
-					WriteValue(stream, value.AsInteger().GetValue());
+				case ValueType.Integer:
+					writer.Write(value.AsInteger());
 					break;
-				case ValueType::Float:
-					WriteValue(stream, value.AsFloat().GetValue());
+				case ValueType.Float:
+					writer.Write(value.AsFloat());
 					break;
-				case ValueType::Boolean:
-					WriteValue(stream, value.AsBoolean().GetValue());
+				case ValueType.Boolean:
+					WriteValue(writer, value.AsBoolean());
 					break;
 				default:
-					throw std::runtime_error("Unknown ValueType");
+					throw new InvalidOperationException("Unknown ValueType");
 			}
 		}
 
-		static void WriteValue(std::ostream& stream, const ValueTable& value)
+		static void WriteValue(BinaryWriter writer, IValueTable value)
 		{
 			// Write the count of values
-			auto& tableValues = value.GetValues();
-			WriteValue(stream, static_cast<uint32_t>(tableValues.size()));
+			writer.Write((uint)value.Count);
 
-			for (auto& tableValue : tableValues)
+			foreach (var tableValue in value)
 			{
 				// Write the key
-				WriteValue(stream, string_view(tableValue.first));
+				WriteValue(writer, tableValue.Key);
 
 				// Write the value
-				WriteValue(stream, tableValue.second);
+				WriteValue(writer, tableValue.Value);
 			}
 		}
 
-		static void WriteValue(std::ostream& stream, const ValueList& value)
+		static void WriteValue(BinaryWriter writer, IValueList value)
 		{
 			// Write the count of values
-			auto& listValues = value.GetValues();
-			WriteValue(stream, static_cast<uint32_t>(listValues.size()));
+			writer.Write((uint)value.Count);
 
-			for (auto& listValue : listValues)
+			foreach (var listValue in value)
 			{
-				WriteValue(stream, listValue);
+				WriteValue(writer, listValue);
 			}
 		}
 
-		static void WriteValue(std::ostream& stream, uint32_t value)
+		public static void WriteValue(BinaryWriter writer, bool value)
 		{
-			stream.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
+			uint integerValue = value ? 1u : 0u;
+			writer.Write(integerValue);
 		}
 
-		static void WriteValue(std::ostream& stream, int64_t value)
+		public static void WriteValue(BinaryWriter writer, string value)
 		{
-			stream.write(reinterpret_cast<char*>(&value), sizeof(int64_t));
+			writer.Write((uint)value.Length);
+			writer.Write(value.ToCharArray());
 		}
-
-		static void WriteValue(std::ostream& stream, double value)
-		{
-			stream.write(reinterpret_cast<char*>(&value), sizeof(double));
-		}
-
-		static void WriteValue(std::ostream& stream, bool value)
-		{
-			uint32_t integerValue = value ? 1u : 0u;
-			stream.write(reinterpret_cast<char*>(&integerValue), sizeof(uint32_t));
-		}
-
-		static void WriteValue(std::ostream& stream, string_view value)
-		{
-			WriteValue(stream, static_cast<uint32_t>(value.size()));
-			stream.write(value.data(), value.size());
-		}
-	};
+	}
 }

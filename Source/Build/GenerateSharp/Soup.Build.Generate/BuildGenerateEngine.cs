@@ -39,8 +39,8 @@ namespace Soup.Build.Generate
 			}
 
 			// Get the required input state from the parameters
-			var targetDirectory = new Path(parametersState.GetValue("TargetDirectory").AsString().ToString());
-			var packageDirectory = new Path(parametersState.GetValue("PackageDirectory").AsString().ToString());
+			var targetDirectory = new Path(parametersState["TargetDirectory"].AsString().ToString());
+			var packageDirectory = new Path(parametersState["PackageDirectory"].AsString().ToString());
 
 			// Load the recipe file
 			var recipeFile = packageDirectory + BuildConstants.RecipeFileName;
@@ -72,13 +72,13 @@ namespace Soup.Build.Generate
 
 			// Keep the extension libraries open while running the build system
 			// to ensure their memory is kept alive
-			var activeExtensionLibraries = new List<std::shared_ptr<System::ILibrary>>();
+			var activeExtensionLibraries = new List<Assembly>();
 			var evaluateGraph = new OperationGraph();
 			var sharedState = new ValueTable();
 
 			{
 				// Create a new build system for the requested build
-				var buildSystem = new BuildSystem();
+				var buildSystem = new BuildTaskManager();
 
 				// Run all build extension register callbacks
 				foreach (var buildExtension in buildExtensionLibraries)
@@ -185,7 +185,7 @@ namespace Soup.Build.Generate
 					{
 						var targetFile = new Path(targetFileValue.AsString().ToString());
 
-						if (System::IFileSystem::Current().Exists(targetFile))
+						if (System.IO.File.Exists(targetFile.ToString()))
 						{
 							buildExtensionLibraries.Add(targetFile);
 						}
@@ -202,7 +202,7 @@ namespace Soup.Build.Generate
 			var pluginLocation = libraryPath.ToString();
 			Console.WriteLine($"Loading commands from: {pluginLocation}");
 			var loadContext = new ExtensionLoadContext(pluginLocation);
-			return loadContext.LoadFromAssemblyName(new AssemblyName(libraryPath.GetFileStem())));
+			return loadContext.LoadFromAssemblyName(new AssemblyName(libraryPath.GetFileStem()));
 		}
 
 		private FileSystemState _fileSystemState;

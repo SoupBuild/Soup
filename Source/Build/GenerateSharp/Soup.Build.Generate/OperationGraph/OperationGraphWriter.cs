@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Soup.Build.Generate
 {
 	/// <summary>
@@ -10,106 +12,105 @@ namespace Soup.Build.Generate
 	internal static class OperationGraphWriter
 	{
 		// Binary Operation graph file format
-		private static uint32_t FileVersion = 2;
+		private static uint FileVersion => 2;
 
-		public static void Serialize(const OperationGraph& state, std::ostream& stream)
+		public static void Serialize(OperationGraph state, System.IO.BinaryWriter writer)
 		{
 			// Write the File Header with version
-			stream.write("BOG\0", 4);
-			WriteValue(stream, FileVersion);
+			writer.Write(new char[] { 'B', 'O', 'G', '\0' });
+			writer.Write(FileVersion);
 
 			// Write out the set of files
-			auto& files = state.GetReferencedFiles();
-			stream.write("FIS\0", 4);
-			WriteValue(stream, static_cast<uint32_t>(files.size()));
-			for (auto& file : files)
+			var files = state.GetReferencedFiles();
+			writer.Write(new char[] { 'F', 'I', 'S', '\0' });
+			writer.Write((uint)files.Count);
+			foreach (var file in files)
 			{
 				// Write the file id + path length + path
-				WriteValue(stream, file.first);
-				WriteValue(stream, file.second.ToString());
+				writer.Write(file.FileId.value);
+				WriteValue(writer, file.Path.ToString());
 			}
 
 			// Write out the root operation ids
-			stream.write("ROP\0", 4);
-			WriteValues(stream, state.GetRootOperationIds());
+			writer.Write(new char[] { 'R', 'O', 'P', '\0' });
+			WriteValues(writer, state.GetRootOperationIds());
 
 			// Write out the set of operations
-			auto& operations = state.GetOperations();
-			stream.write("OPS\0", 4);
-			WriteValue(stream, static_cast<uint32_t>(operations.size()));
-			for (auto& operationValue : state.GetOperations())
+			var operations = state.GetOperations();
+			writer.Write(new char[] { 'O', 'P', 'S', '\0' });
+			writer.Write((uint)operations.Count);
+			foreach (var operationValue in state.GetOperations())
 			{
-				WriteOperationInfo(stream, operationValue.second);
+				WriteOperationInfo(writer, operationValue.Value);
 			}
 		}
 
-		private static void WriteOperationInfo(std::ostream& stream, const OperationInfo& operation)
+		private static void WriteOperationInfo(System.IO.BinaryWriter writer, OperationInfo operation)
 		{
 			// Write out the operation id
-			WriteValue(stream, operation.Id);
+			writer.Write(operation.Id.value);
 
 			// Write out the operation title
-			WriteValue(stream, operation.Title);
+			WriteValue(writer, operation.Title);
 
 			// Write the command working directory
-			WriteValue(stream, operation.Command.WorkingDirectory.ToString());
+			WriteValue(writer, operation.Command.WorkingDirectory.ToString());
 
 			// Write the command executable
-			WriteValue(stream, operation.Command.Executable.ToString());
+			WriteValue(writer, operation.Command.Executable.ToString());
 
 			// Write the command arguments
-			WriteValue(stream, operation.Command.Arguments);
+			WriteValue(writer, operation.Command.Arguments);
 
 			// Write out the declared input files
-			WriteValues(stream, operation.DeclaredInput);
+			WriteValues(writer, operation.DeclaredInput);
 
 			// Write out the declared output files
-			WriteValues(stream, operation.DeclaredOutput);
+			WriteValues(writer, operation.DeclaredOutput);
 
 			// Write out the child operation ids
-			WriteValues(stream, operation.Children);
+			WriteValues(writer, operation.Children);
 
 			// Write out the dependency count
-			WriteValue(stream, operation.DependencyCount);
+			writer.Write(operation.DependencyCount);
 
 			// Write out the value indicating if there was a successful run
-			WriteValue(stream, operation.WasSuccessfulRun);
+			WriteValue(writer, operation.WasSuccessfulRun);
 
 			// Write out the observed input files
-			WriteValues(stream, operation.ObservedInput);
+			WriteValues(writer, operation.ObservedInput);
 
 			// Write out the observed output files
-			WriteValues(stream, operation.ObservedOutput);
+			WriteValues(writer, operation.ObservedOutput);
 		}
 
-		private static void WriteValue(std::ostream& stream, uint32_t value)
+		private static void WriteValue(System.IO.BinaryWriter writer, bool value)
 		{
-			stream.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
+			uint integerValue = value ? 1u : 0u;
+			writer.Write(integerValue);
 		}
 
-		private static void WriteValue(std::ostream& stream, int32_t value)
+		private static void WriteValue(System.IO.BinaryWriter writer, string value)
 		{
-			stream.write(reinterpret_cast<char*>(&value), sizeof(int32_t));
+			writer.Write((uint)value.Length);
+			writer.Write(value.ToCharArray());
 		}
 
-		private static void WriteValue(std::ostream& stream, bool value)
+		private static void WriteValues(System.IO.BinaryWriter writer, IList<FileId> values)
 		{
-			uint32_t integerValue = value ? 1u : 0u;
-			stream.write(reinterpret_cast<char*>(&integerValue), sizeof(uint32_t));
-		}
-
-		private static void WriteValue(std::ostream& stream, string_view value)
-		{
-			WriteValue(stream, static_cast<uint32_t>(value.size()));
-			stream.write(value.data(), value.size());
-		}
-
-		private static void WriteValues(std::ostream& stream, const IList<uint32_t>& values)
-		{
-			WriteValue(stream, static_cast<uint32_t>(values.size()));
-			for (auto& value : values)
+			writer.Write((uint)values.Count);
+			foreach (var value in values)
 			{
-				WriteValue(stream, value);
+				writer.Write(value.value);
+			}
+		}
+
+		private static void WriteValues(System.IO.BinaryWriter writer, IList<OperationId> values)
+		{
+			writer.Write((uint)values.Count);
+			foreach (var value in values)
+			{
+				writer.Write(value.value);
 			}
 		}
 	}

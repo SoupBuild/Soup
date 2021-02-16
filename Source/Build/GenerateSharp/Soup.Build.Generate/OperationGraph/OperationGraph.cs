@@ -47,12 +47,12 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Get the set of referenced file ids that map to their paths
 		/// </summary>
-		IList<(FileId FileId, Path Path)> GetReferencedFiles()
+		public IList<(FileId FileId, Path Path)> GetReferencedFiles()
 		{
 			return _referencedFiles;
 		}
 
-		void SetReferencedFiles(List<(FileId FileId, Path Path)> files)
+		public void SetReferencedFiles(List<(FileId FileId, Path Path)> files)
 		{
 			_referencedFiles = files;
 		}
@@ -60,7 +60,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Get the list of root operation ids
 		/// </summary>
-		IList<OperationId> GetRootOperationIds()
+		public IList<OperationId> GetRootOperationIds()
 		{
 			return _rootOperations;
 		}
@@ -68,7 +68,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Set the list of root operation ids
 		/// </summary>
-		void SetRootOperationIds(List<OperationId> value)
+		public void SetRootOperationIds(List<OperationId> value)
 		{
 			_rootOperations = value;
 		}
@@ -76,7 +76,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Get Operations
 		/// </summary>
-		IReadOnlyDictionary<OperationId, OperationInfo> GetOperations()
+		public IReadOnlyDictionary<OperationId, OperationInfo> GetOperations()
 		{
 			return _operations;
 		}
@@ -84,7 +84,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Find an operation info
 		/// </summary>
-		bool HasCommand(CommandInfo command)
+		public bool HasCommand(CommandInfo command)
 		{
 			return _operationLookup.ContainsKey(command);
 		}
@@ -92,7 +92,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Find an operation info
 		/// </summary>
-		bool TryFindOperationInfo(
+		public bool TryFindOperationInfo(
 			CommandInfo command,
 			out OperationInfo operation)
 		{
@@ -111,7 +111,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Get an operation info
 		/// </summary>
-		OperationInfo GetOperationInfo(OperationId operationId)
+		public OperationInfo GetOperationInfo(OperationId operationId)
 		{
 			return _operations[operationId];
 		}
@@ -119,7 +119,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Add an operation info
 		/// </summary>
-		void AddOperation(OperationInfo info)
+		public void AddOperation(OperationInfo info)
 		{
 			_operationLookup.Add(info.Command, info.Id);
 			_operations.Add(info.Id, info);

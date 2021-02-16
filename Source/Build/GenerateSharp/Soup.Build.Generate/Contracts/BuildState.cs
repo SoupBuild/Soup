@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup.Utilities;
+using System;
+using System.Linq;
+
 namespace Soup.Build.Generate
 {
 	/// <summary>
@@ -12,7 +16,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
-		public BuildState(IValueTable activeState, FileSystemState fileSystemState)
+		public BuildState(ValueTable activeState, FileSystemState fileSystemState)
 		{
 			ActiveState = activeState;
 			SharedState = new ValueTable();
@@ -44,11 +48,11 @@ namespace Soup.Build.Generate
 		{
 			_graphGenerator.CreateOperation(
 				title,
-				Path(executable),
+				new Path(executable),
 				arguments,
-				Path(workingDirectory),
-				Utilities::ReadOnlyStringListWrapper(declaredInput).CopyAsPathVector(),
-				Utilities::ReadOnlyStringListWrapper(declaredOutput).CopyAsPathVector());
+				new Path(workingDirectory),
+				declaredInput.Select(value => new Path(value)).ToList(),
+				declaredOutput.Select(value => new Path(value)).ToList());
 		}
 
 		/// <summary>
@@ -64,24 +68,24 @@ namespace Soup.Build.Generate
 			case TraceLevel.Warning:
 				Log.Warning(message);
 				break;
-			case TraceLevel::HighPriority:
+			case TraceLevel.HighPriority:
 				Log.HighPriority(message);
 				break;
-			case TraceLevel::Information:
+			case TraceLevel.Information:
 				Log.Info(message);
 				break;
-			case TraceLevel::Debug:
+			case TraceLevel.Debug:
 				Log.Diag(message);
 				break;
 			default:
-				return ApiCallResult::Error;
+				throw new InvalidOperationException("Unknown trace level");
 			}
 		}
 
 		/// <summary>
 		/// Pull out the shared state
 		/// </summary>
-		ValueTable RetrieveSharedState() noexcept
+		ValueTable RetrieveSharedState()
 		{
 			return _sharedState;
 		}
@@ -91,13 +95,8 @@ namespace Soup.Build.Generate
 			return _graphGenerator.BuildGraph();
 		}
 
-		void LogActive()
-		{
-			_activeState.Log();
-		}
-
-		private IValueTable _activeState;
-		private IValueTable _sharedState;
+		private ValueTable _activeState;
+		private ValueTable _sharedState;
 		private OperationGraphGenerator _graphGenerator;
 	};
 }
