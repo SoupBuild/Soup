@@ -82,21 +82,11 @@ namespace Soup.Build.Generate
 			}
 		}
 
-		/// <summary>
-		/// Pull out the shared state
-		/// </summary>
-		ValueTable RetrieveSharedState()
-		{
-			return _sharedState;
-		}
-
-		OperationGraph BuildOperationGraph()
+		public OperationGraph BuildOperationGraph()
 		{
 			return _graphGenerator.BuildGraph();
 		}
 
-		private ValueTable _activeState;
-		private ValueTable _sharedState;
 		private OperationGraphGenerator _graphGenerator;
 	};
 }

@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup.Utilities;
+
 namespace Soup.Build.Generate
 {
 	/// <summary>
@@ -12,21 +14,21 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Gets the Recipe file name
 		/// </summary>
-		public static string RecipeFileName => "Recipe.toml";
+		public static Path RecipeFileName => new Path("Recipe.toml");
 
 		/// <summary>
 		/// Gets the Generate Parameters Value Table file name
 		/// </summary>
-		public static string GenerateParametersFileName => "GenerateParameters.bvt";
+		public static Path GenerateParametersFileName => new Path("GenerateParameters.bvt");
 
 		/// <summary>
 		/// Gets the Generate Shared State Value Table file name
 		/// </summary>
-		public static string GenerateSharedStateFileName => "GenerateSharedState.bvt";
+		public static Path GenerateSharedStateFileName => new Path("GenerateSharedState.bvt");
 
 		/// <summary>
 		/// Gets the Generate Parameters Value Table file name
 		/// </summary>
-		public static string GenerateEvaluateOperationGraphFileName => "GenerateEvaluateGraph.bog";
+		public static Path GenerateEvaluateOperationGraphFileName => new Path("GenerateEvaluateGraph.bog");
 	}
 }

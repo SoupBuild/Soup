@@ -54,6 +54,7 @@ namespace Soup.Build.Generate
 			IList<PackageReference>? buildDependencies,
 			IList<PackageReference>? testDependencies)
 		{
+			_table = new ValueTable();
 			Name = name;
 			Language = language;
 

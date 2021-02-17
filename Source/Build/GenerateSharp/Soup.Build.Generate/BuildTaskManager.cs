@@ -132,6 +132,9 @@ namespace Soup.Build.Generate
 			// ensuring they are run in the correct dependency order
 			while (TryFindNextTask(out var currentTask))
 			{
+				if (ReferenceEquals(currentTask, null))
+					throw new InvalidOperationException();
+
 				Log.Info("TaskStart: " + currentTask.Name);
 				currentTask.Task.Execute();
 				Log.Info("TaskDone: " + currentTask.Name);

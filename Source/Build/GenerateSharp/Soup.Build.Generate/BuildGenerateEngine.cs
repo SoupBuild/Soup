@@ -6,6 +6,7 @@ using Soup.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Generate
 {
@@ -23,8 +24,8 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Execute the entire operation graph that is referenced by this build generate engine
 		/// </summary>
-		void Generate(
-			string soupTargetDirectory)
+		async Task GenerateAsync(
+			Path soupTargetDirectory)
 		{
 			// Run all build operations in the correct order with incremental build checks
 			Log.Diag("Build generate start");
@@ -45,7 +46,7 @@ namespace Soup.Build.Generate
 			// Load the recipe file
 			var recipeFile = packageDirectory + BuildConstants.RecipeFileName;
 			var recipe = new Recipe();
-			if (!RecipeExtensions.TryLoadRecipeFromFile(recipeFile, recipe))
+			if (!await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile, recipe))
 			{
 				Log.Error("Failed to load the recipe: " + recipeFile.ToString());
 				throw new InvalidOperationException("Failed to load recipe.");
@@ -61,7 +62,7 @@ namespace Soup.Build.Generate
 			var activeState = new ValueTable();
 
 			// Initialize the Recipe Root Table
-			var recipeState = RecipeBuildStateConverter.ConvertToBuildState(recipe.GetTable());
+			var recipeState = recipe.GetTable();
 			activeState.Add("Recipe", new Value(recipeState));
 
 			// Initialize the Parameters Root Table
@@ -74,7 +75,7 @@ namespace Soup.Build.Generate
 			// to ensure their memory is kept alive
 			var activeExtensionLibraries = new List<Assembly>();
 			var evaluateGraph = new OperationGraph();
-			var sharedState = new ValueTable();
+			IValueTable sharedState = new ValueTable();
 
 			{
 				// Create a new build system for the requested build
@@ -88,12 +89,12 @@ namespace Soup.Build.Generate
 				}
 
 				// Run the build
-				var buildState = BuildState(activeState, _fileSystemState);
+				var buildState = new BuildState(activeState, _fileSystemState);
 				buildSystem.Execute(buildState);
 
 				// Grab the build results so the dependency libraries can be released asap
 				evaluateGraph = buildState.BuildOperationGraph();
-				sharedState = buildState.RetrieveSharedState();
+				sharedState = buildState.SharedState;
 			}
 
 			// Save the operation graph so the evaluate phase can load it
@@ -101,7 +102,7 @@ namespace Soup.Build.Generate
 			OperationGraphManager.SaveState(evaluateGraphFile, evaluateGraph, _fileSystemState);
 
 			// Save the shared state that is to be passed to the downstream builds
-			var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName();
+			var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
 			ValueTableManager.SaveState(sharedStateFile, sharedState);
 			Log.Diag("Build generate end");
 		}
@@ -124,8 +125,8 @@ namespace Soup.Build.Generate
 					{
 						var dependencyName = dependencyValue.Key;
 						var dependency = dependencyValue.Value.AsTable();
-						var soupTargetDirectory = new Path(dependency.GetValue("SoupTargetDirectory").AsString().ToString());
-						var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName();
+						var soupTargetDirectory = new Path(dependency["SoupTargetDirectory"].AsString());
+						var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
 
 						// Load the shared state file
 						var sharedStateTable = new ValueTable();
@@ -137,8 +138,8 @@ namespace Soup.Build.Generate
 
 						// Add the shared build state from this child build into the correct
 						// table depending on the build type
-						var typedDependenciesTable = sharedDependenciesTable.EnsureValue(dependencyType).EnsureTable();
-						typedDependenciesTable.SetValue(
+						var typedDependenciesTable = EnsureValueTable(sharedDependenciesTable, dependencyType);
+						typedDependenciesTable.Add(
 							dependencyName,
 							new Value(sharedStateTable));
 					}
@@ -146,6 +147,20 @@ namespace Soup.Build.Generate
 			}
 
 			return sharedDependenciesTable;
+		}
+
+		private IValueTable EnsureValueTable(IValueTable table, string key)
+		{
+			if (table.ContainsKey(key))
+			{
+				return table[key].AsTable();
+			}
+			else
+			{
+				var value = new ValueTable();
+				table.Add(key, new Value(value));
+				return value;
+			}
 		}
 
 		/// <summary>
@@ -159,7 +174,7 @@ namespace Soup.Build.Generate
 
 			// Run the RecipeBuild extension to inject core build tasks
 			var recipeBuildExtensionPath = new Path();
-			var language = recipe.GetLanguage();
+			var language = recipe.Language;
 			if (language == "C++")
 			{
 				recipeBuildExtensionPath = new Path("Soup.Cpp.dll");

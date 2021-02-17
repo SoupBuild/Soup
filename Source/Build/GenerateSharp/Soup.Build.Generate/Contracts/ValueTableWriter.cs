@@ -15,7 +15,7 @@ namespace Soup.Build.Generate
 		// Binary Value Table file format
 		private static uint FileVersion => 1;
 
-		public static void Serialize(ValueTable state, BinaryWriter writer)
+		public static void Serialize(IValueTable state, BinaryWriter writer)
 		{
 			// Write the File Header with version
 			writer.Write(new char[] { 'B', 'V', 'T', '\0' });

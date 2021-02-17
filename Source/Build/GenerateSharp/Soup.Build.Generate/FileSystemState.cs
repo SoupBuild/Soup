@@ -23,6 +23,9 @@ namespace Soup.Build.Generate
 		/// </summary>
 		public FileSystemState()
 		{
+			_maxFileId = new FileId(0);
+			_files = new Dictionary<FileId, Path>();
+			_fileLookup = new Dictionary<string, FileId>();
 		}
 
 		/// <summary>
@@ -106,7 +109,16 @@ namespace Soup.Build.Generate
 		/// </summary>
 		public bool TryFindFileId(Path file, out FileId fileId)
 		{
-			return _fileLookup.TryGetValue(file.ToString(), out fileId);
+			if (_fileLookup.TryGetValue(file.ToString(), out var value))
+            {
+				fileId = value;
+				return true;
+			}
+			else
+            {
+				fileId = new FileId(0);
+				return false;
+            }
 		}
 
 		/// <summary>

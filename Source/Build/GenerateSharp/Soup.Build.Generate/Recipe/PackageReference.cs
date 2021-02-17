@@ -61,7 +61,7 @@ namespace Soup.Build.Generate
 		public PackageReference()
 		{
 			_name = string.Empty;
-			_version = null;
+			_version = new SemanticVersion();
 			_path = new Path();
 		}
 
@@ -81,7 +81,7 @@ namespace Soup.Build.Generate
 		public PackageReference(Path path)
 		{
 			_name = string.Empty;
-			_version = null;
+			_version = new SemanticVersion();
 			_path = path;
 		}
 
@@ -183,7 +183,7 @@ namespace Soup.Build.Generate
 		}
 
 		private string _name;
-		private SemanticVersion? _version;
+		private SemanticVersion _version;
 		private Path _path;
 	}
 }

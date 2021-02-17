@@ -186,7 +186,7 @@ namespace Soup.Build.Generate
 		public IList<FileId> DeclaredInput { get; init; }
 		public IList<FileId> DeclaredOutput { get; init; }
 		public IList<OperationId> Children { get; init; }
-		public uint DependencyCount { get; init; }
+		public uint DependencyCount { get; set; }
 		public bool WasSuccessfulRun { get; init; }
 		public IList<FileId> ObservedInput { get; init; }
 		public IList<FileId> ObservedOutput { get; init; }

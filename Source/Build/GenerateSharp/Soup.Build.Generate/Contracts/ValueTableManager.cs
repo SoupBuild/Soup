@@ -24,18 +24,18 @@ namespace Soup.Build.Generate
 		/// Load the value table from the target file
 		/// </summary>
 		public static bool TryLoadState(
-			string valueTableFile,
+			Path valueTableFile,
 			IValueTable result)
 		{
 			// Verify the requested file exists
-			if (!System.IO.File.Exists(valueTableFile))
+			if (!System.IO.File.Exists(valueTableFile.ToString()))
 			{
 				Log.Info("Value Table file does not exist");
 				return false;
 			}
 
 			// Open the file to read from
-			using (var fileStream = System.IO.File.OpenRead(valueTableFile))
+			using (var fileStream = System.IO.File.OpenRead(valueTableFile.ToString()))
 			using (var reader = new System.IO.BinaryReader(fileStream))
 			{
 				// Read the contents of the build state file
@@ -55,9 +55,9 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Save the value table for the target file
 		/// </summary>
-		static void SaveState(
+		public static void SaveState(
 			Path valueTableFile,
-			ValueTable state)
+			IValueTable state)
 		{
 			var targetFolder = valueTableFile.GetParent();
 
