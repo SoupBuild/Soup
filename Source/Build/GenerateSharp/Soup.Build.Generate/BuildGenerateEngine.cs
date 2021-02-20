@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Microsoft.Extensions.DependencyInjection;
 using Soup.Utilities;
 using System;
 using System.Collections.Generic;
@@ -24,16 +25,14 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Execute the entire operation graph that is referenced by this build generate engine
 		/// </summary>
-		async Task GenerateAsync(
-			Path soupTargetDirectory)
+		public void Generate(Path soupTargetDirectory)
 		{
 			// Run all build operations in the correct order with incremental build checks
 			Log.Diag("Build generate start");
 
 			// Load the parameters file
 			var parametersFile = soupTargetDirectory + BuildConstants.GenerateParametersFileName;
-			var parametersState = new ValueTable();
-			if (!ValueTableManager.TryLoadState(parametersFile, parametersState))
+			if (!ValueTableManager.TryLoadState(parametersFile, out var parametersState))
 			{
 				Log.Error("Failed to load the parameter file: " + parametersFile.ToString());
 				throw new InvalidOperationException("Failed to load parameter file.");
@@ -45,8 +44,7 @@ namespace Soup.Build.Generate
 
 			// Load the recipe file
 			var recipeFile = packageDirectory + BuildConstants.RecipeFileName;
-			var recipe = new Recipe();
-			if (!await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile, recipe))
+			if (!RecipeExtensions.TryLoadRecipeFromFile(recipeFile, out var recipe))
 			{
 				Log.Error("Failed to load the recipe: " + recipeFile.ToString());
 				throw new InvalidOperationException("Failed to load recipe.");
@@ -81,13 +79,6 @@ namespace Soup.Build.Generate
 				// Create a new build system for the requested build
 				var buildSystem = new BuildTaskManager();
 
-				// Run all build extension register callbacks
-				foreach (var buildExtension in buildExtensionLibraries)
-				{
-					var library = RunBuildExtension(buildExtension, buildSystem);
-					activeExtensionLibraries.Add(library);
-				}
-
 				// Run the build
 				var buildState = new BuildState(activeState, _fileSystemState);
 				buildSystem.Execute(buildState);
@@ -111,7 +102,7 @@ namespace Soup.Build.Generate
 		/// Using the parameters to resolve the dependency output folders, load up the shared state table and
 		/// combine them into a single value table to be used as input the this generate phase.
 		/// </summary>
-		private ValueTable LoadDependenciesSharedState(ValueTable parametersTable)
+		private ValueTable LoadDependenciesSharedState(IValueTable parametersTable)
 		{
 			var sharedDependenciesTable = new ValueTable();
 			if (parametersTable.TryGetValue("Dependencies", out var dependencyTableValue))
@@ -129,8 +120,7 @@ namespace Soup.Build.Generate
 						var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
 
 						// Load the shared state file
-						var sharedStateTable = new ValueTable();
-						if (!ValueTableManager.TryLoadState(sharedStateFile, sharedStateTable))
+						if (!ValueTableManager.TryLoadState(sharedStateFile, out var sharedStateTable))
 						{
 							Log.Error("Failed to load the shared state file: " + sharedStateFile.ToString());
 							throw new InvalidOperationException("Failed to load shared state file.");
@@ -147,6 +137,27 @@ namespace Soup.Build.Generate
 			}
 
 			return sharedDependenciesTable;
+		}
+
+		static IEnumerable<IBuildTask> CreateCommands(Assembly assembly)
+		{
+			var serviceCollection = new ServiceCollection();
+			var activeState = new ValueTable();
+			var fileSystemState = new FileSystemState();
+			serviceCollection.AddSingleton(typeof(IBuildState), new BuildState(activeState, fileSystemState));
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+
+			foreach (Type type in assembly.GetTypes())
+			{
+				if (type.IsClass &&
+					type.IsPublic &&
+					!type.IsAbstract &&
+					typeof(IBuildTask).IsAssignableFrom(type))
+				{
+					var result = (IBuildTask)ActivatorUtilities.CreateInstance(serviceProvider, type);
+					yield return result;
+				}
+			}
 		}
 
 		private IValueTable EnsureValueTable(IValueTable table, string key)
@@ -177,7 +188,7 @@ namespace Soup.Build.Generate
 			var language = recipe.Language;
 			if (language == "C++")
 			{
-				recipeBuildExtensionPath = new Path("Soup.Cpp.dll");
+				recipeBuildExtensionPath = new Path("C:/Users/mwasp/source/repos/Soup/Source/Build/GenerateSharp/Soup.Cpp/bin/Debug/net5.0/Soup.Cpp.dll");
 			}
 			else if (language == "C#")
 			{

@@ -16,15 +16,16 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Attempt to load from file
 		/// </summary>
-		public static async Task<bool> TryLoadRecipeFromFileAsync(
+		public static bool TryLoadRecipeFromFile(
 			Path recipeFile,
-			Recipe result)
+			out Recipe result)
 		{
 			// Verify the requested file exists
 			Log.Diag("Load Recipe: " + recipeFile.ToString());
 			if (!System.IO.File.Exists(recipeFile.ToString()))
 			{
 				Log.Info("Recipe file does not exist.");
+				result = new Recipe();
 				return false;
 			}
 
@@ -38,13 +39,14 @@ namespace Soup.Build.Generate
 					result = new Recipe(
 						RecipeToml.Deserialize(
 							recipeFile,
-							await reader.ReadToEndAsync()));
+							reader.ReadToEnd()));
 					return true;
 				}
 				catch (Exception ex)
 				{
 					Log.Error($"Deserialize Threw: {ex.Message}");
 					Log.Info("Failed to parse Recipe.");
+					result = new Recipe();
 					return false;
 				}
 			}

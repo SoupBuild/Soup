@@ -21,7 +21,7 @@ namespace Soup.Utilities
 	{
 		private static char DirectorySeparator => '/';
 		private static char AlternateDirectorySeparator => '\\';
-		private static string AllValidDirectorySeparators => "/\\";
+		private static char[] AllValidDirectorySeparators => new char[] { '/', '\\' };
 		private static char LetterDriveSpecifier => ':';
 		private static char FileExtensionSeparator => '.';
 		private static string RelativeDirectory => ".";
@@ -370,13 +370,11 @@ namespace Soup.Utilities
 		{
 			// Break out the individual components of the path
 			var directories = new List<string>();
-			var root = string.Empty;
-			var fileName = string.Empty;
 			DecomposeRawPathString(
 				value,
 				directories,
-				root,
-				fileName);
+				out var root,
+				out var fileName);
 
 			// Normalize any unnecessary directories in the raw path
 			bool hasRoot = !string.IsNullOrEmpty(root);
@@ -392,13 +390,16 @@ namespace Soup.Utilities
 		private void DecomposeRawPathString(
 			string value,
 			IList<string> directories,
-			string root,
-			string fileName)
+			out string root,
+			out string fileName)
 		{
+			root = string.Empty;
+			fileName = string.Empty;
+
 			var current = 0;
 			var next = 0;
 			var isFirst = true;
-			while ((next = value.IndexOf(AllValidDirectorySeparators, current)) != -1)
+			while ((next = value.IndexOfAny(AllValidDirectorySeparators, current)) != -1)
 			{
 				var directory = value.Substring(current, next - current);
 
@@ -433,7 +434,7 @@ namespace Soup.Utilities
 			// Check if there are characters beyond the last separator
 			if (current != value.Length)
 			{
-				var directory = value.Substring(current, next - current);
+				var directory = value.Substring(current);
 
 				// Check if still on the first entry
 				// Could be empty root or single filename

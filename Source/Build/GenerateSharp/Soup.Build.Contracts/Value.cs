@@ -88,27 +88,42 @@ namespace Soup.Build
 
 		public IValueTable AsTable()
 		{
-			throw new InvalidOperationException("Attept to get value as incorrect type: Table");
+			if (Type == ValueType.Table && !ReferenceEquals(_tableValue, null))
+				return _tableValue;
+			else
+				throw new InvalidOperationException("Attept to get value as incorrect type: Table");
 		}
 
 		public IValueList AsList()
 		{
-			throw new InvalidOperationException("Attept to get value as incorrect type: List");
+			if (Type == ValueType.List && !ReferenceEquals(_listValue, null))
+				return _listValue;
+			else
+				throw new InvalidOperationException("Attept to get value as incorrect type: List");
 		}
 
 		public string AsString()
 		{
-			throw new InvalidOperationException("Attept to get value as incorrect type: String");
+			if (Type == ValueType.String && !ReferenceEquals(_stringValue, null))
+				return _stringValue;
+			else
+				throw new InvalidOperationException("Attept to get value as incorrect type: String");
 		}
 
-		public int AsInteger()
+		public long AsInteger()
 		{
-			throw new InvalidOperationException("Attept to get value as incorrect type: Integer");
+			if (Type == ValueType.Integer)
+				return _integerValue;
+			else
+				throw new InvalidOperationException("Attept to get value as incorrect type: Integer");
 		}
 
 		public double AsFloat()
 		{
-			throw new InvalidOperationException("Attept to get value as incorrect type: Float");
+			if (Type == ValueType.Float)
+				return _floatValue;
+			else
+				throw new InvalidOperationException("Attept to get value as incorrect type: Float");
 		}
 
 		public bool AsBoolean()

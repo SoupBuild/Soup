@@ -25,12 +25,13 @@ namespace Soup.Build.Generate
 		/// </summary>
 		public static bool TryLoadState(
 			Path valueTableFile,
-			IValueTable result)
+			out IValueTable result)
 		{
 			// Verify the requested file exists
 			if (!System.IO.File.Exists(valueTableFile.ToString()))
 			{
 				Log.Info("Value Table file does not exist");
+				result = new ValueTable();
 				return false;
 			}
 
@@ -47,6 +48,7 @@ namespace Soup.Build.Generate
 				catch
 				{
 					Log.Error("Failed to parse value table");
+					result = new ValueTable();
 					return false;
 				}
 			}
