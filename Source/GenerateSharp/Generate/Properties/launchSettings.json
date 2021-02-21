@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Soup.Build.Generate": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\mwasp\\source\\repos\\Soup\\out\\Opal\\MSVC\\debug\\win32\\x64\\.soup\\"
+    }
+  }
+}

@@ -16,15 +16,13 @@ namespace Soup.Build
 
 		public void Execute()
 		{
-			Console.WriteLine("Do it!");
-
-			var value = _factory.ActiveState["Test"];
+			_factory.LogTrace(TraceLevel.Debug, "Do it!");
 
 			_factory.CreateOperation(
 				"Title",
 				"Exe.exe",
 				"some arguments",
-				"Workingdir",
+				"C:/Workingdir",
 				Array.Empty<string>(),
 				Array.Empty<string>());
 		}

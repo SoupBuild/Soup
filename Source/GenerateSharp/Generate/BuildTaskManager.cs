@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,12 +13,12 @@ namespace Soup.Build.Generate
 	{
 		public BuildTaskContainer(
 			string name,
-			IBuildTask task,
+			Type taskType,
 			IList<string> runBeforeList,
 			IList<string> runAfterList)
 		{
 			Name = name;
-			Task = task;
+			TaskType = taskType;
 			RunBeforeList = runBeforeList;
 			RunAfterList = runAfterList;
 			RunAfterClosureList = new List<string>();
@@ -25,7 +26,7 @@ namespace Soup.Build.Generate
 		}
 
 		public string Name { get; init; }
-		public IBuildTask Task { get; init; }
+		public Type TaskType { get; init; }
 		public IList<string> RunBeforeList { get; init; }
 		public IList<string> RunAfterList { get; init; }
 		public List<string> RunAfterClosureList { get; init; }
@@ -50,7 +51,7 @@ namespace Soup.Build.Generate
 		/// </summary>
 		public void RegisterTask(
 			string name,
-			IBuildTask task,
+			Type taskType,
 			IList<string> runBeforeList,
 			IList<string> runAfterList)
 		{
@@ -58,7 +59,7 @@ namespace Soup.Build.Generate
 
 			var taskContainer = new BuildTaskContainer(
 				name,
-				task,
+				taskType,
 				runBeforeList,
 				runAfterList);
 
@@ -136,7 +137,15 @@ namespace Soup.Build.Generate
 					throw new InvalidOperationException();
 
 				Log.Info("TaskStart: " + currentTask.Name);
-				currentTask.Task.Execute();
+
+				var serviceCollection = new ServiceCollection();
+				serviceCollection.AddSingleton(typeof(IBuildState), state);
+				var serviceProvider = serviceCollection.BuildServiceProvider();
+
+				var task = (IBuildTask)ActivatorUtilities.CreateInstance(serviceProvider, currentTask.TaskType);
+
+				task.Execute();
+
 				Log.Info("TaskDone: " + currentTask.Name);
 
 				// TODO : state.LogActive();

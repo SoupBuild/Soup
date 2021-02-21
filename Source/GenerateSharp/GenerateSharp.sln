@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Contracts", "Soup.Build.Contracts\Soup.Build.Contracts.csproj", "{7FCFD5CD-9A14-483F-B2EB-0329B544EA77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Contracts", "Contracts\Soup.Build.Contracts.csproj", "{7FCFD5CD-9A14-483F-B2EB-0329B544EA77}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Generate", "Soup.Build.Generate\Soup.Build.Generate.csproj", "{E2C26B2D-EA0C-4E3D-B58D-EAFFFDC11F43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Generate", "Generate\Soup.Build.Generate.csproj", "{E2C26B2D-EA0C-4E3D-B58D-EAFFFDC11F43}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Cpp", "Soup.Cpp\Soup.Cpp.csproj", "{76A76C21-BFB1-4DDC-83F7-35F1E176EF22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Cpp", "Extensions\Cpp\Extension\Soup.Cpp.csproj", "{76A76C21-BFB1-4DDC-83F7-35F1E176EF22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soup.Utilities", "Soup.Utilities\Soup.Utilities.csproj", "{274AD7F0-D11F-4B6B-8BFC-51DEBFE40DF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soup.Utilities", "Utilities\Soup.Utilities.csproj", "{274AD7F0-D11F-4B6B-8BFC-51DEBFE40DF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -71,17 +71,23 @@ namespace Soup.Build.Generate
 
 			// Keep the extension libraries open while running the build system
 			// to ensure their memory is kept alive
-			var activeExtensionLibraries = new List<Assembly>();
 			var evaluateGraph = new OperationGraph();
 			IValueTable sharedState = new ValueTable();
 
 			{
 				// Create a new build system for the requested build
-				var buildSystem = new BuildTaskManager();
+				var buildTaskManager = new BuildTaskManager();
+
+				// Run all build extension register callbacks
+				foreach (var buildExtension in buildExtensionLibraries)
+				{
+					var library = LoadPlugin(buildExtension);
+					FindAllCommands(library, buildTaskManager);
+				}
 
 				// Run the build
 				var buildState = new BuildState(activeState, _fileSystemState);
-				buildSystem.Execute(buildState);
+				buildTaskManager.Execute(buildState);
 
 				// Grab the build results so the dependency libraries can be released asap
 				evaluateGraph = buildState.BuildOperationGraph();
@@ -139,14 +145,10 @@ namespace Soup.Build.Generate
 			return sharedDependenciesTable;
 		}
 
-		static IEnumerable<IBuildTask> CreateCommands(Assembly assembly)
+		static void FindAllCommands(
+			Assembly assembly,
+			BuildTaskManager buildTaskManager)
 		{
-			var serviceCollection = new ServiceCollection();
-			var activeState = new ValueTable();
-			var fileSystemState = new FileSystemState();
-			serviceCollection.AddSingleton(typeof(IBuildState), new BuildState(activeState, fileSystemState));
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-
 			foreach (Type type in assembly.GetTypes())
 			{
 				if (type.IsClass &&
@@ -154,8 +156,7 @@ namespace Soup.Build.Generate
 					!type.IsAbstract &&
 					typeof(IBuildTask).IsAssignableFrom(type))
 				{
-					var result = (IBuildTask)ActivatorUtilities.CreateInstance(serviceProvider, type);
-					yield return result;
+					buildTaskManager.RegisterTask(type.Name, type, new List<string>(), new List<string>());
 				}
 			}
 		}
@@ -188,7 +189,7 @@ namespace Soup.Build.Generate
 			var language = recipe.Language;
 			if (language == "C++")
 			{
-				recipeBuildExtensionPath = new Path("C:/Users/mwasp/source/repos/Soup/Source/Build/GenerateSharp/Soup.Cpp/bin/Debug/net5.0/Soup.Cpp.dll");
+				recipeBuildExtensionPath = new Path("C:/Users/mwasp/source/repos/Soup/Source/GenerateSharp/Extensions/Cpp/Extension/bin/Debug/net5.0/Soup.Cpp.dll");
 			}
 			else if (language == "C#")
 			{
@@ -225,9 +226,8 @@ namespace Soup.Build.Generate
 		static Assembly LoadPlugin(Path libraryPath)
 		{
 			// Navigate up to the solution root
-			var pluginLocation = libraryPath.ToString();
-			Console.WriteLine($"Loading commands from: {pluginLocation}");
-			var loadContext = new ExtensionLoadContext(pluginLocation);
+			Console.WriteLine($"Loading Plugin Assembly: {libraryPath}");
+			var loadContext = new ExtensionLoadContext(libraryPath.ToString());
 			return loadContext.LoadFromAssemblyName(new AssemblyName(libraryPath.GetFileStem()));
 		}
 
