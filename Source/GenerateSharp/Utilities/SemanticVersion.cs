@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Soup.Utilities
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The semantic version class

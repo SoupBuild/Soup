@@ -3,7 +3,7 @@
 // </copyright>
 
 using Microsoft.Extensions.DependencyInjection;
-using Soup.Utilities;
+using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

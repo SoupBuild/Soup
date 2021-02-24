@@ -1,5 +1,5 @@
 ﻿
-using Soup.Utilities;
+using Soup.Build.Utilities;
 using System.Threading.Tasks;
 
 namespace Soup.Build.Generate

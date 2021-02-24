@@ -4,9 +4,23 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Tasks\RecipeBuildTask.cs" />
+    <Compile Remove="Tasks\ResolveDependenciesTask.cs" />
+    <Compile Remove="Tasks\ResolveToolsTask.cs" />
+    <Compile Remove="Tasks\StandardLibraryIncludeTask.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Tasks\RecipeBuildTask.cs" />
+    <None Include="Tasks\ResolveDependenciesTask.cs" />
+    <None Include="Tasks\ResolveToolsTask.cs" />
+    <None Include="Tasks\StandardLibraryIncludeTask.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Contracts\Soup.Build.Contracts.csproj">
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Utilities\Soup.Utilities.csproj" />
+    <ProjectReference Include="..\Compiler\Core\Soup.Cpp.Compiler.csproj" />
   </ItemGroup>
 </Project>

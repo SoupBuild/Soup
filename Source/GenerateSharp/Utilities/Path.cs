@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Soup.Utilities
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// A container for a path string

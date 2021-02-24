@@ -2,7 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Utilities;
+using Soup.Build.Utilities;
 using System;
 using Tomlyn;
 using Tomlyn.Model;
