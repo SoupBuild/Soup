@@ -191,7 +191,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			return commandArguments;
 		}
 
-		private static IList<string> BuildInterfaceUnitCompilerArguments(
+		public static IList<string> BuildInterfaceUnitCompilerArguments(
 			InterfaceUnitCompileArguments arguments,
 			Path responseFile)
 		{
@@ -217,7 +217,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			return commandArguments;
 		}
 
-		private static IList<string> BuildTranslationUnitCompilerArguments(
+		public static IList<string> BuildTranslationUnitCompilerArguments(
 			TranslationUnitCompileArguments arguments,
 			Path responseFile,
 			IList<Path> internalModules)
@@ -244,7 +244,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			return commandArguments;
 		}
 
-		private static IList<string> BuildLinkerArguments(
+		public static IList<string> BuildLinkerArguments(
 			LinkArguments arguments)
 		{
 			// Verify the input

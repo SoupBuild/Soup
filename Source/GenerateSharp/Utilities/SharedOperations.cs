@@ -85,7 +85,7 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Create a build operation that will write the content to a file
 		/// </summary>
-		static BuildOperation CreateWriteFileOperation(
+		public static BuildOperation CreateWriteFileOperation(
 			Path workingDirectory,
 			Path destination,
 			string content)

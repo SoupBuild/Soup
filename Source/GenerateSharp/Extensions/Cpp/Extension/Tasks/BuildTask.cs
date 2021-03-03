@@ -11,10 +11,13 @@ namespace Soup.Build.Cpp
 	public class BuildTask : IBuildTask
 	{
 		private IBuildState _buildState;
+		private IDictionary<string, Func<IValueTable, ICompiler>> _compilerFactory;
 
 		public BuildTask(IBuildState buildState)
 		{
 			_buildState = buildState;
+
+			_compilerFactory = new Dictionary<string, Func<IValueTable, ICompiler>>();
 		}
 
 		public void Execute()
@@ -46,50 +49,44 @@ namespace Soup.Build.Cpp
 				arguments.SourceFiles = sourceValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
-			if (buildTable.HasValue("IncludeDirectories"))
+			if (buildTable.TryGetValue("IncludeDirectories", out var includeDirectoriesValue))
 			{
-				arguments.IncludeDirectories =
-					buildTable.GetValue("IncludeDirectories").AsList().CopyAsPathVector();
+				arguments.IncludeDirectories = includeDirectoriesValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
-			if (buildTable.HasValue("PlatformLibraries"))
+			if (buildTable.TryGetValue("PlatformLibraries", out var platformLibrariesValue))
 			{
-				arguments.PlatformLinkDependencies =
-					buildTable.GetValue("PlatformLibraries").AsList().CopyAsPathVector();
+				arguments.PlatformLinkDependencies = platformLibrariesValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
-			if (buildTable.HasValue("LinkLibraries"))
+			if (buildTable.TryGetValue("LinkLibraries", out var linkLibrariesValue))
 			{
-				arguments.LinkDependencies =
-					buildTable.GetValue("LinkLibraries").AsList().CopyAsPathVector();
+				arguments.LinkDependencies = linkLibrariesValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
-			if (buildTable.HasValue("LibraryPaths"))
+			if (buildTable.TryGetValue("LibraryPaths", out var libraryPathsValue))
 			{
-				arguments.LibraryPaths =
-					buildTable.GetValue("LibraryPaths").AsList().CopyAsPathVector();
+				arguments.LibraryPaths = libraryPathsValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
-			if (buildTable.HasValue("PreprocessorDefinitions"))
+			if (buildTable.TryGetValue("PreprocessorDefinitions", out var preprocessorDefinitionsValue))
 			{
-				arguments.PreprocessorDefinitions =
-					buildTable.GetValue("PreprocessorDefinitions").AsList().CopyAsStringVector();
+				arguments.PreprocessorDefinitions = preprocessorDefinitionsValue.AsList().Select(value => value.AsString()).ToList();
 			}
 
-			if (buildTable.HasValue("OptimizationLevel"))
+			if (buildTable.TryGetValue("OptimizationLevel", out var optimizationLevelValue))
 			{
-				arguments.OptimizationLevel = static_cast<Soup::Cpp::Compiler::BuildOptimizationLevel>(
-					buildTable.GetValue("OptimizationLevel").AsInteger().GetValue());
+				arguments.OptimizationLevel = (BuildOptimizationLevel)
+					optimizationLevelValue.AsInteger();
 			}
 			else
 			{
-				arguments.OptimizationLevel = Soup::Cpp::Compiler::BuildOptimizationLevel::None;
+				arguments.OptimizationLevel = BuildOptimizationLevel.None;
 			}
 
-			if (buildTable.HasValue("GenerateSourceDebugInfo"))
+			if (buildTable.TryGetValue("GenerateSourceDebugInfo", out var generateSourceDebugInfoValue))
 			{
-				arguments.GenerateSourceDebugInfo =
-					buildTable.GetValue("GenerateSourceDebugInfo").AsBoolean().GetValue();
+				arguments.GenerateSourceDebugInfo = generateSourceDebugInfoValue.AsBoolean();
 			}
 			else
 			{
@@ -97,31 +94,30 @@ namespace Soup.Build.Cpp
 			}
 
 			// Load the runtime dependencies
-			if (buildTable.HasValue("RuntimeDependencies"))
+			if (buildTable.TryGetValue("RuntimeDependencies", out var runtimeDependenciesValue))
 			{
 				arguments.RuntimeDependencies = MakeUnique(
-					buildTable.GetValue("RuntimeDependencies").AsList().CopyAsPathVector());
+					runtimeDependenciesValue.AsList().Select(value => new Path(value.AsString())));
 			}
 
 			// Load the link dependencies
-			if (buildTable.HasValue("LinkDependencies"))
+			if (buildTable.TryGetValue("LinkDependencies", out var linkDependenciesValue))
 			{
 				arguments.LinkDependencies = MakeUnique(
-					buildTable.GetValue("LinkDependencies").AsList().CopyAsPathVector());
+					linkDependenciesValue.AsList().Select(value => new Path(value.AsString())));
 			}
 
 			// Load the module references
-			if (buildTable.HasValue("ModuleDependencies"))
+			if (buildTable.TryGetValue("ModuleDependencies", out var moduleDependenciesValue))
 			{
 				arguments.ModuleDependencies = MakeUnique(
-					buildTable.GetValue("ModuleDependencies").AsList().CopyAsPathVector());
+					moduleDependenciesValue.AsList().Select(value => new Path(value.AsString())));
 			}
 
 			// Load the list of disabled warnings
-			if (buildTable.HasValue("EnableWarningsAsErrors"))
+			if (buildTable.TryGetValue("EnableWarningsAsErrors", out var enableWarningsAsErrorsValue))
 			{
-				arguments.EnableWarningsAsErrors =
-					buildTable.GetValue("EnableWarningsAsErrors").AsBoolean().GetValue();
+				arguments.EnableWarningsAsErrors = enableWarningsAsErrorsValue.AsBoolean();
 			}
 			else
 			{
@@ -129,68 +125,60 @@ namespace Soup.Build.Cpp
 			}
 
 			// Load the list of disabled warnings
-			if (buildTable.HasValue("DisabledWarnings"))
+			if (buildTable.TryGetValue("DisabledWarnings", out var disabledWarningsValue))
 			{
-				arguments.DisabledWarnings =
-					buildTable.GetValue("DisabledWarnings").AsList().CopyAsStringVector();
+				arguments.DisabledWarnings = disabledWarningsValue.AsList().Select(value => value.AsString()).ToList();
 			}
 
 			// Check for any custom compiler flags
-			if (buildTable.HasValue("CustomCompilerProperties"))
+			if (buildTable.TryGetValue("CustomCompilerProperties", out var customCompilerPropertiesValue))
 			{
-				arguments.CustomProperties =
-					buildTable.GetValue("CustomCompilerProperties").AsList().CopyAsStringVector();
+				arguments.CustomProperties = customCompilerPropertiesValue.AsList().Select(value => value.AsString()).ToList();
 			}
 
 			// Initialize the compiler to use
-			var compilerName = string(parametersTable.GetValue("Compiler").AsString().GetValue());
-			var findCompilerFactory = _compilerFactory.find(compilerName);
-			if (findCompilerFactory == _compilerFactory.end())
+			var compilerName = parametersTable["Compiler"].AsString();
+			if (!_compilerFactory.TryGetValue(compilerName, out var compileFactory))
 			{
-				buildState.LogError("Unknown compiler: " + compilerName);
-				return Soup::Build::ApiCallResult::Error;
+				_buildState.LogTrace(TraceLevel.Error, "Unknown compiler: " + compilerName);
+				throw new InvalidOperationException();
 			}
 
-			var createCompiler = findCompilerFactory->second;
-			var compiler = createCompiler(activeState);
+			var compiler = compileFactory(activeState);
 
-			var buildEngine = Soup::Cpp::Compiler::BuildEngine(compiler);
-			var buildResult = buildEngine.Execute(buildState, arguments);
+			var buildEngine = new BuildEngine(compiler);
+			var buildResult = buildEngine.Execute(_buildState, arguments);
 
 			// Pass along internal state for other stages to gain access
-			buildTable.EnsureValue("InternalLinkDependencies").EnsureList().SetAll(buildResult.InternalLinkDependencies);
+			buildTable.EnsureValueList("InternalLinkDependencies").SetAll(buildResult.InternalLinkDependencies);
 
 			// Always pass along required input to shared build tasks
-			var sharedBuildTable = sharedState.EnsureValue("Build").EnsureTable();
-			sharedBuildTable.EnsureValue("ModuleDependencies").EnsureList().SetAll(buildResult.ModuleDependencies);
-			sharedBuildTable.EnsureValue("RuntimeDependencies").EnsureList().SetAll(buildResult.RuntimeDependencies);
-			sharedBuildTable.EnsureValue("LinkDependencies").EnsureList().SetAll(buildResult.LinkDependencies);
+			var sharedBuildTable = sharedState.EnsureValueTable("Build");
+			sharedBuildTable.EnsureValueList("ModuleDependencies").SetAll(buildResult.ModuleDependencies);
+			sharedBuildTable.EnsureValueList("RuntimeDependencies").SetAll(buildResult.RuntimeDependencies);
+			sharedBuildTable.EnsureValueList("LinkDependencies").SetAll(buildResult.LinkDependencies);
 
-			if (!buildResult.TargetFile.IsEmpty())
+			if (!buildResult.TargetFile.IsEmpty)
 			{
-				sharedBuildTable.EnsureValue("TargetFile").SetValueString(buildResult.TargetFile.ToString());
+				sharedBuildTable["TargetFile"] = new Value(buildResult.TargetFile.ToString());
 			}
 
 			// Register the build operations
-			for (var & operation : buildResult.BuildOperations)
+			foreach (var operation in buildResult.BuildOperations)
 			{
-				buildState.CreateOperation(operation);
+				_buildState.CreateOperation(operation);
 			}
 
-			buildState.LogInfo("Build Generate Done");
+			_buildState.LogTrace(TraceLevel.Information, "Build Generate Done");
 		}
 
-		private static std::vector<Path> MakeUnique(const std::vector<Path>& collection)
+		private static IList<Path> MakeUnique(IEnumerable<Path> collection)
 		{
-			std::unordered_set<string> valueSet;
-			for (auto& value : collection)
-				valueSet.insert(value.ToString());
+			var valueSet = new HashSet<string>();
+			foreach (var value in collection)
+				valueSet.Add(value.ToString());
 
-			std::vector<Path> result;
-			for (auto& value : valueSet)
-				result.push_back(Path(value));
-
-			return result;
+			return valueSet.Select(value => new Path(value)).ToList();
 		}
-}
+	}
 }

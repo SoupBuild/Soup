@@ -1,146 +1,135 @@
-﻿// <copyright file="Compiler.h" company="Soup">
+﻿// <copyright file="Compiler.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "ArgumentBuilder.h"
+using Soup.Build.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace Soup::Cpp::Compiler::MSVC
+namespace Soup.Build.Cpp.Compiler.MSVC
 {
 	/// <summary>
 	/// The Clang compiler implementation
 	/// </summary>
-	export class Compiler : public ICompiler
+	public class Compiler : ICompiler
 	{
-	public:
-		Compiler(Path compilerExecutable, Path linkerExecutable, Path libraryExecutable) :
-			_compilerExecutable(std::move(compilerExecutable)),
-			_linkerExecutable(std::move(linkerExecutable)),
-			_libraryExecutable(std::move(libraryExecutable))
+		public Compiler(Path compilerExecutable, Path linkerExecutable, Path libraryExecutable)
 		{
+			_compilerExecutable = compilerExecutable;
+			_linkerExecutable = linkerExecutable;
+			_libraryExecutable = libraryExecutable;
 		}
 
 		/// <summary>
 		/// Gets the unique name for the compiler
 		/// </summary>
-		string_view GetName() const override final
-		{
-			return "MSVC";
-		}
+		public string Name => "MSVC";
 
 		/// <summary>
 		/// Gets the object file extension for the compiler
 		/// </summary>
-		string_view GetObjectFileExtension() const override final
-		{
-			return "obj";
-		}
+		public string ObjectFileExtension => "obj";
 
 		/// <summary>
 		/// Gets the module file extension for the compiler
 		/// </summary>
-		string_view GetModuleFileExtension() const override final
-		{
-			return "ifc";
-		}
+		public string ModuleFileExtension => "ifc";
 
 		/// <summary>
 		/// Gets the static library file extension for the compiler
 		/// TODO: This is platform specific
 		/// </summary>
-		string_view GetStaticLibraryFileExtension() const override final
-		{
-			return "lib";
-		}
+		public string StaticLibraryFileExtension => "lib";
 
 		/// <summary>
 		/// Gets the dynamic library file extension for the compiler
 		/// TODO: This is platform specific
 		/// </summary>
-		string_view GetDynamicLibraryFileExtension() const override final
-		{
-			return "dll";
-		}
+		public string DynamicLibraryFileExtension => "dll";
 
 		/// <summary>
 		/// Compile
 		/// </summary>
-		std::vector<Build::Utilities::BuildOperation> CreateCompileOperations(
-			const SharedCompileArguments& arguments) const override final
+		public IList<BuildOperation> CreateCompileOperations(
+			SharedCompileArguments arguments)
 		{
-			auto operations = std::vector<Build::Utilities::BuildOperation>();
+			var operations = new List<BuildOperation>();
 
 			// Write the shared arguments to the response file
-			auto responseFile = arguments.ObjectDirectory + Path("SharedCompileArguments.txt");
-			auto sharedCommandArguments = ArgumentBuilder::BuildSharedCompilerArguments(arguments);
-			auto writeSharedArgumentsOperation = Build::Utilities::SharedOperations::CreateWriteFileOperation(
+			var responseFile = arguments.ObjectDirectory + new Path("SharedCompileArguments.txt");
+			var sharedCommandArguments = ArgumentBuilder.BuildSharedCompilerArguments(arguments);
+			var writeSharedArgumentsOperation = SharedOperations.CreateWriteFileOperation(
 				arguments.RootDirectory,
 				responseFile,
 				CombineArguments(sharedCommandArguments));
-			operations.push_back(std::move(writeSharedArgumentsOperation));
+			operations.Add(writeSharedArgumentsOperation);
 
 			// Initialize a shared input set
-			auto sharedInputFiles = arguments.IncludeModules;
+			var sharedInputFiles = arguments.IncludeModules;
 
 			// Generate the interface build operation if present
-			auto internalModules = std::vector<Path>();
-			if (arguments.InterfaceUnit.has_value())
+			var internalModules = new List<Path>();
+			if (arguments.InterfaceUnit is not null)
 			{
-				auto& interfaceUnitArguments = arguments.InterfaceUnit.value();
+				var interfaceUnitArguments = arguments.InterfaceUnit;
 
 				// Build up the input/output sets
-				auto inputFiles = sharedInputFiles;
-				inputFiles.push_back(interfaceUnitArguments.SourceFile);
-				inputFiles.push_back(responseFile);
-				auto outputFiles = std::vector<Path>({
+				var inputFiles = sharedInputFiles.ToList();
+				inputFiles.Add(interfaceUnitArguments.SourceFile);
+				inputFiles.Add(responseFile);
+				var outputFiles = new List<Path>()
+				{
 					interfaceUnitArguments.TargetFile,
 					interfaceUnitArguments.ModuleInterfaceTarget,
-				});
+				};
 
 				// Build the unique arguments for this translation unit
-				auto commandArguments = ArgumentBuilder::BuildInterfaceUnitCompilerArguments(
+				var commandArguments = ArgumentBuilder.BuildInterfaceUnitCompilerArguments(
 					interfaceUnitArguments,
 					responseFile);
 
 				// Generate the operation
-				auto buildOperation = Build::Utilities::BuildOperation(
+				var buildOperation = new BuildOperation(
 					interfaceUnitArguments.SourceFile.ToString(),
 					arguments.RootDirectory,
 					_compilerExecutable,
 					CombineArguments(commandArguments),
-					std::move(inputFiles),
-					std::move(outputFiles));
-				operations.push_back(std::move(buildOperation));
+					inputFiles,
+					outputFiles);
+				operations.Add(buildOperation);
 
 				// Add our module interface back in for the downstream compilers
-				internalModules.push_back(interfaceUnitArguments.ModuleInterfaceTarget);
+				internalModules.Add(interfaceUnitArguments.ModuleInterfaceTarget);
 			}
 
-			for (auto& implementationUnitArguments : arguments.ImplementationUnits)
+			foreach (var implementationUnitArguments in arguments.ImplementationUnits)
 			{
 				// Build up the input/output sets
-				auto inputFiles = sharedInputFiles;
-				inputFiles.push_back(implementationUnitArguments.SourceFile);
-				inputFiles.push_back(responseFile);
-				auto outputFiles = std::vector<Path>({
+				var inputFiles = sharedInputFiles.ToList();
+				inputFiles.Add(implementationUnitArguments.SourceFile);
+				inputFiles.Add(responseFile);
+				var outputFiles = new List<Path>()
+				{
 					implementationUnitArguments.TargetFile,
-				});
+				};
 
 				// Build the unique arguments for this translation unit
-				auto commandArguments = ArgumentBuilder::BuildTranslationUnitCompilerArguments(
+				var commandArguments = ArgumentBuilder.BuildTranslationUnitCompilerArguments(
 					implementationUnitArguments,
 					responseFile,
 					internalModules);
 
 				// Generate the operation
-				auto buildOperation = Build::Utilities::BuildOperation(
+				var buildOperation = new BuildOperation(
 					implementationUnitArguments.SourceFile.ToString(),
 					arguments.RootDirectory,
 					_compilerExecutable,
 					CombineArguments(commandArguments),
-					std::move(inputFiles),
-					std::move(outputFiles));
-				operations.push_back(std::move(buildOperation));
+					inputFiles.ToArray(),
+					outputFiles);
+				operations.Add(buildOperation);
 			}
 
 			return operations;
@@ -149,34 +138,35 @@ namespace Soup::Cpp::Compiler::MSVC
 		/// <summary>
 		/// Link
 		/// </summary>
-		Build::Utilities::BuildOperation CreateLinkOperation(
-			const LinkArguments& arguments) const override final
+		public BuildOperation CreateLinkOperation(
+			LinkArguments arguments)
 		{
 			// Select the correct executable for linking libraries or executables
 			Path executablePath;
 			switch (arguments.TargetType)
 			{
-				case LinkTarget::StaticLibrary:
+				case LinkTarget.StaticLibrary:
 					executablePath = _libraryExecutable;
 					break;
-				case LinkTarget::DynamicLibrary:
-				case LinkTarget::Executable:
+				case LinkTarget.DynamicLibrary:
+				case LinkTarget.Executable:
 					executablePath = _linkerExecutable;
 					break;
 				default:
-					throw std::runtime_error("Unknown LinkTarget.");
+					throw new InvalidOperationException("Unknown LinkTarget.");
 			}
 
 			// Build the set of input/output files along with the arguments
-			auto inputFiles = std::vector<Path>();
-			inputFiles.insert(inputFiles.end(), arguments.LibraryFiles.begin(), arguments.LibraryFiles.end());
-			inputFiles.insert(inputFiles.end(), arguments.ObjectFiles.begin(), arguments.ObjectFiles.end());
-			auto outputFiles = std::vector<Path>({
+			var inputFiles = new List<Path>();
+			inputFiles.AddRange(arguments.LibraryFiles);
+			inputFiles.AddRange(arguments.ObjectFiles);
+			var outputFiles = new List<Path>()
+			{
 				arguments.TargetFile,
-			});
-			auto commandarguments = ArgumentBuilder::BuildLinkerArguments(arguments);
+			};
+			var commandarguments = ArgumentBuilder.BuildLinkerArguments(arguments);
 
-			auto buildOperation = Build::Utilities::BuildOperation(
+			var buildOperation = new BuildOperation(
 				arguments.TargetFile.ToString(),
 				arguments.RootDirectory,
 				executablePath,
@@ -187,26 +177,24 @@ namespace Soup::Cpp::Compiler::MSVC
 			return buildOperation;
 		}
 
-	private:
-		static string CombineArguments(const std::vector<string>& arguments)
+		private static string CombineArguments(IList<string> arguments)
 		{
-			auto argumentString = stringstream();
+			var argumentString = new StringBuilder();
 			bool isFirst = true;
-			for (auto& arg : arguments)
+			foreach (var arg in arguments)
 			{
 				if (!isFirst)
-					argumentString << " ";
+					argumentString.Append(" ");
 
-				argumentString << arg;
+				argumentString.Append(arg);
 				isFirst = false;
 			}
 
-			return argumentString.str();
+			return argumentString.ToString();
 		}
 
-	private:
-		Path _compilerExecutable;
-		Path _linkerExecutable;
-		Path _libraryExecutable;
-	};
+		private Path _compilerExecutable;
+		private Path _linkerExecutable;
+		private Path _libraryExecutable;
+	}
 }
