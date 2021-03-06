@@ -14,8 +14,8 @@ namespace Soup.Build.Generate
 		public BuildTaskContainer(
 			string name,
 			Type taskType,
-			IList<string> runBeforeList,
-			IList<string> runAfterList)
+			IReadOnlyList<string> runBeforeList,
+			IReadOnlyList<string> runAfterList)
 		{
 			Name = name;
 			TaskType = taskType;
@@ -27,8 +27,8 @@ namespace Soup.Build.Generate
 
 		public string Name { get; init; }
 		public Type TaskType { get; init; }
-		public IList<string> RunBeforeList { get; init; }
-		public IList<string> RunAfterList { get; init; }
+		public IReadOnlyList<string> RunBeforeList { get; init; }
+		public IReadOnlyList<string> RunAfterList { get; init; }
 		public List<string> RunAfterClosureList { get; init; }
 		public bool HasRun { get; set; }
 	}
@@ -52,8 +52,8 @@ namespace Soup.Build.Generate
 		public void RegisterTask(
 			string name,
 			Type taskType,
-			IList<string> runBeforeList,
-			IList<string> runAfterList)
+			IReadOnlyList<string> runBeforeList,
+			IReadOnlyList<string> runAfterList)
 		{
 			Log.Diag("RegisterTask: " + name);
 

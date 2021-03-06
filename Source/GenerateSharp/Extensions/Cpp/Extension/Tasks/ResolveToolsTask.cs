@@ -2,6 +2,12 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup.Build.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
+
 namespace Soup.Build.Cpp
 {
 	/// <summary>
@@ -9,132 +15,156 @@ namespace Soup.Build.Cpp
 	/// </summary>
 	public class ResolveToolsTask : IBuildTask
 	{
+		private IBuildState _buildState;
+
+		/// <summary>
+		/// Get the run before list
+		/// </summary>
+		public IReadOnlyList<string> RunBeforeList => new List<string>()
+		{
+		};
+
+		/// <summary>
+		/// Get the run after list
+		/// </summary>
+		public IReadOnlyList<string> RunAfterList => new List<string>()
+		{
+		};
+
+		public ResolveToolsTask(IBuildState buildState)
+		{
+			_buildState = buildState;
+		}
+
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
 		public void Execute()
 		{
-			var state = buildState.GetActiveState();
-			var parameters = state.GetValue("Parameters").AsTable();
+			var state = _buildState.ActiveState;
+			var parameters = state["Parameters"].AsTable();
 
-			var systemName = string(parameters.GetValue("System").AsString().GetValue());
-			var architectureName = string(parameters.GetValue("Architecture").AsString().GetValue());
+			var systemName = parameters["System"].AsString();
+			var architectureName = parameters["Architecture"].AsString();
 
 			if (systemName != "win32")
-				throw std::runtime_error("Win32 is the only supported system... so far.");
+				throw new InvalidOperationException("Win32 is the only supported system... so far.");
 
 			// Check if skip platform includes was specified
 			bool skipPlatform = false;
-			if (state.HasValue("SkipPlatform"))
+			if (state.TryGetValue("SkipPlatform", out var skipPlatformValue))
 			{
-				skipPlatform = state.GetValue("SkipPlatform").AsBoolean().GetValue();
+				skipPlatform = skipPlatformValue.AsBoolean();
 			}
 
 			// Find the location of the Windows SDK
-			var visualStudioInstallRoot = FindVSInstallRoot(buildState);
-			buildState.LogInfo("Using VS Installation: " + visualStudioInstallRoot.ToString());
+			var visualStudioInstallRoot = FindVSInstallRoot();
+			_buildState.LogTrace(TraceLevel.Information, "Using VS Installation: " + visualStudioInstallRoot.ToString());
 
 			// Use the default version
-			var visualCompilerVersion = FindDefaultVCToolsVersion(buildState, visualStudioInstallRoot);
-			buildState.LogInfo("Using VC Version: " + visualCompilerVersion);
+			var visualCompilerVersion = FindDefaultVCToolsVersion(visualStudioInstallRoot);
+			_buildState.LogTrace(TraceLevel.Information, "Using VC Version: " + visualCompilerVersion);
 
 			// Calculate the final VC tools folder
 			var visualCompilerVersionFolder =
-				visualStudioInstallRoot + Path("/VC/Tools/MSVC/") + Path(visualCompilerVersion);
+				visualStudioInstallRoot + new Path("/VC/Tools/MSVC/") + new Path(visualCompilerVersion);
 
 			// Sey the VC tools binary folder
 			Path vcToolsBinaryFolder;
 			if (architectureName == "x64")
-				vcToolsBinaryFolder = visualCompilerVersionFolder + Path("/bin/Hostx64/x64/");
+				vcToolsBinaryFolder = visualCompilerVersionFolder + new Path("/bin/Hostx64/x64/");
 			else if (architectureName == "x86")
-				vcToolsBinaryFolder = visualCompilerVersionFolder + Path("/bin/Hostx64/x86/");
+				vcToolsBinaryFolder = visualCompilerVersionFolder + new Path("/bin/Hostx64/x86/");
 			else
-				throw std::runtime_error("Unknown architecture.");
+				throw new InvalidOperationException("Unknown architecture.");
 
-			var clToolPath = vcToolsBinaryFolder + Path("cl.exe");
-			var linkToolPath = vcToolsBinaryFolder + Path("link.exe");
-			var libToolPath = vcToolsBinaryFolder + Path("lib.exe");
+			var clToolPath = vcToolsBinaryFolder + new Path("cl.exe");
+			var linkToolPath = vcToolsBinaryFolder + new Path("link.exe");
+			var libToolPath = vcToolsBinaryFolder + new Path("lib.exe");
 
 			// Save the build properties
-			state.EnsureValue("MSVS.InstallRoot").SetValueString(visualStudioInstallRoot.ToString());
-			state.EnsureValue("MSVC.Version").SetValueString(visualCompilerVersion);
-			state.EnsureValue("MSVC.VCToolsRoot").SetValueString(visualCompilerVersionFolder.ToString());
-			state.EnsureValue("MSVC.VCToolsBinaryRoot").SetValueString(vcToolsBinaryFolder.ToString());
-			state.EnsureValue("MSVC.LinkToolPath").SetValueString(linkToolPath.ToString());
-			state.EnsureValue("MSVC.LibToolPath").SetValueString(libToolPath.ToString());
+			state["MSVS.InstallRoot"] = new Value(visualStudioInstallRoot.ToString());
+			state["MSVC.Version"] = new Value(visualCompilerVersion);
+			state["MSVC.VCToolsRoot"] = new Value(visualCompilerVersionFolder.ToString());
+			state["MSVC.VCToolsBinaryRoot"] = new Value(vcToolsBinaryFolder.ToString());
+			state["MSVC.LinkToolPath"] = new Value(linkToolPath.ToString());
+			state["MSVC.LibToolPath"] = new Value(libToolPath.ToString());
 
 			// Allow custom overrides for the compiler path
-			if (!state.HasValue("MSVC.ClToolPath"))
-				state.EnsureValue("MSVC.ClToolPath").SetValueString(clToolPath.ToString());
+			if (!state.ContainsKey("MSVC.ClToolPath"))
+				state["MSVC.ClToolPath"] = new Value(clToolPath.ToString());
 
 			// Calculate the windows kits directory
-			var windows10KitPath = Path("C:/Program Files (x86)/Windows Kits/10/");
-			var windows10KitIncludePath = windows10KitPath + Path("/include/");
-			var windows10KitLibPath = windows10KitPath + Path("/Lib/");
+			var windows10KitPath = new Path("C:/Program Files (x86)/Windows Kits/10/");
+			var windows10KitIncludePath = windows10KitPath + new Path("/include/");
+			var windows10KitLibPath = windows10KitPath + new Path("/Lib/");
 
-			var windowsKitVersion = FindNewestWindows10KitVersion(buildState, windows10KitIncludePath);
+			var windowsKitVersion = FindNewestWindows10KitVersion(windows10KitIncludePath);
 
-			buildState.LogInfo("Using Windows Kit Version: " + windowsKitVersion);
-			var windows10KitVersionIncludePath = windows10KitIncludePath + Path(windowsKitVersion);
-			var windows10KitVersionLibPath = windows10KitLibPath + Path(windowsKitVersion);
+			_buildState.LogTrace(TraceLevel.Information, "Using Windows Kit Version: " + windowsKitVersion);
+			var windows10KitVersionIncludePath = windows10KitIncludePath + new Path(windowsKitVersion);
+			var windows10KitVersionLibPath = windows10KitLibPath + new Path(windowsKitVersion);
 
 			// Set the include paths
-			var platformIncludePaths = std::vector<Path>();
+			var platformIncludePaths = new List<Path>();
 			if (!skipPlatform)
 			{
-				platformIncludePaths = std::vector<Path>({
-					visualCompilerVersionFolder + Path("/include/"),
-					windows10KitVersionIncludePath + Path("/ucrt/"),
-					windows10KitVersionIncludePath + Path("/um/"),
-					windows10KitVersionIncludePath + Path("/shared/"),
-				});
+				platformIncludePaths = new List<Path>()
+				{
+					visualCompilerVersionFolder + new Path("/include/"),
+					windows10KitVersionIncludePath + new Path("/ucrt/"),
+					windows10KitVersionIncludePath + new Path("/um/"),
+					windows10KitVersionIncludePath + new Path("/shared/"),
+				};
 			}
 
 			// Set the include paths
-			var platformLibraryPaths = std::vector<Path>();
+			var platformLibraryPaths = new List<Path>();
 			if (!skipPlatform)
 			{
 				if (architectureName == "x64")
 				{
-					platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x64/"));
-					platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x64/"));
-					platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x64/"));
-					platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x64/"));
+					platformLibraryPaths.Add(windows10KitVersionLibPath + new Path("/ucrt/x64/"));
+					platformLibraryPaths.Add(windows10KitVersionLibPath + new Path("/um/x64/"));
+					platformLibraryPaths.Add(visualCompilerVersionFolder + new Path("/atlmfc/lib/x64/"));
+					platformLibraryPaths.Add(visualCompilerVersionFolder + new Path("/lib/x64/"));
 				}
 				else if (architectureName == "x86")
 				{
-					platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/ucrt/x86/"));
-					platformLibraryPaths.push_back(windows10KitVersionLibPath + Path("/um/x86/"));
-					platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/atlmfc/lib/x86/"));
-					platformLibraryPaths.push_back(visualCompilerVersionFolder + Path("/lib/x86/"));
+					platformLibraryPaths.Add(windows10KitVersionLibPath + new Path("/ucrt/x86/"));
+					platformLibraryPaths.Add(windows10KitVersionLibPath + new Path("/um/x86/"));
+					platformLibraryPaths.Add(visualCompilerVersionFolder + new Path("/atlmfc/lib/x86/"));
+					platformLibraryPaths.Add(visualCompilerVersionFolder + new Path("/lib/x86/"));
 				}
 			}
 
 			// Set the platform definitions
-			var platformPreprocessorDefinitions = std::vector<string>({
+			var platformPreprocessorDefinitions = new List<string>()
+			{
 				// "_DLL", // Link against the dynamic runtime dll
 				// "_MT", // Use multithreaded runtime
-			});
+			};
 
 			if (architectureName == "x86")
-				platformPreprocessorDefinitions.push_back("WIN32");
+				platformPreprocessorDefinitions.Add("WIN32");
 
 			// Set the platform libraries
-			var platformLibraries = std::vector<Path>({
-				Path("kernel32.lib"),
-				Path("user32.lib"),
-				Path("gdi32.lib"),
-				Path("winspool.lib"),
-				Path("comdlg32.lib"),
-				Path("advapi32.lib"),
-				Path("shell32.lib"),
-				Path("ole32.lib"),
-				Path("oleaut32.lib"),
-				Path("uuid.lib"),
+			var platformLibraries = new List<Path>()
+			{
+				new Path("kernel32.lib"),
+				new Path("user32.lib"),
+				new Path("gdi32.lib"),
+				new Path("winspool.lib"),
+				new Path("comdlg32.lib"),
+				new Path("advapi32.lib"),
+				new Path("shell32.lib"),
+				new Path("ole32.lib"),
+				new Path("oleaut32.lib"),
+				new Path("uuid.lib"),
 				// Path("odbc32.lib"),
 				// Path("odbccp32.lib"),
 				// Path("crypt32.lib"),
-			});
+			};
 
 			// if (_options.Configuration == "debug")
 			// {
@@ -156,19 +186,19 @@ namespace Soup.Build.Cpp
 			// 	});
 			// }
 	
-			state.EnsureValue("PlatformIncludePaths").SetValuePathList(platformIncludePaths);
-			state.EnsureValue("PlatformLibraryPaths").SetValuePathList(platformLibraryPaths);
-			state.EnsureValue("PlatformLibraries").SetValuePathList(platformLibraries);
-			state.EnsureValue("PlatformPreprocessorDefinitions").SetValueStringList(platformPreprocessorDefinitions);
+			state.EnsureValueList("PlatformIncludePaths").SetAll(platformIncludePaths);
+			state.EnsureValueList("PlatformLibraryPaths").SetAll(platformLibraryPaths);
+			state.EnsureValueList("PlatformLibraries").SetAll(platformLibraries);
+			state.EnsureValueList("PlatformPreprocessorDefinitions").SetAll(platformPreprocessorDefinitions);
 		}
 
-	private:
-		Path FindVSInstallRoot(Soup::Build::Utilities::BuildStateWrapper& buildState)
+		private Path FindVSInstallRoot()
 		{
 			// Find a copy of visual studio that has the required VisualCompiler
-			var executablePath = Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
-			var workingDirectory = Path("./");
-			var argumentList = std::vector<string>({
+			var executablePath = new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
+			var workingDirectory = new Path("./");
+			var argumentList = new List<string>()
+			{
 				"-latest",
 				"-products",
 				"*",
@@ -176,133 +206,132 @@ namespace Soup.Build.Cpp
 				"Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
 				"-property",
 				"installationPath",
-			});
+			};
 
 			// Check if we should include pre-release versions
 			bool includePrerelease = true;
 			if (includePrerelease)
 			{
-				argumentList.push_back("-prerelease");
+				argumentList.Add("-prerelease");
 			}
 
 			// Execute the requested target
 			var arguments = CombineArguments(argumentList);
-			buildState.LogDebug(executablePath.ToString() + " " + arguments);
-			var process = System::IProcessManager::Current().CreateProcess(
-				executablePath,
-				arguments,
-				workingDirectory);
-			process->Start();
-			process->WaitForExit();
-
-			var stdOut = process->GetStandardOutput();
-			var stdErr = process->GetStandardError();
-			var exitCode = process->GetExitCode();
-
-			if (!stdErr.empty())
+			_buildState.LogTrace(TraceLevel.Debug, executablePath.ToString() + " " + arguments);
+			var processInfo = new ProcessStartInfo()
 			{
-				buildState.LogError(stdErr);
-				throw std::runtime_error("VSWhere failed.");
+				FileName = executablePath.ToString(),
+				Arguments = arguments,
+				WorkingDirectory = workingDirectory.ToString(),
+			};
+			var process = Process.Start(processInfo);
+			if (process is null)
+				throw new InvalidOperationException("Failed to start process");
+
+			process.WaitForExit();
+
+			var stdOut = process.StandardOutput;
+			var stdErr = process.StandardError.ReadToEnd();
+			var exitCode = process.ExitCode;
+
+			if (!string.IsNullOrEmpty(stdErr))
+			{
+				_buildState.LogTrace(TraceLevel.Error, stdErr);
+				throw new InvalidOperationException("VSWhere failed.");
 			}
 
 			if (exitCode != 0)
 			{
 				// TODO: Return error code
-				buildState.LogError("FAILED");
-				throw std::runtime_error("VSWhere failed.");
+				_buildState.LogTrace(TraceLevel.Error, "FAILED");
+				throw new InvalidOperationException("VSWhere failed.");
 			}
-
-			var stream = std::istringstream(stdOut);
 
 			// The first line is the path
-			var path = string();
-			if (!std::getline(stream, path, '\r'))
+			var path = stdOut.ReadLine();
+			if (path is null)
 			{
-				buildState.LogError("Failed to parse vswhere output.");
-				throw std::runtime_error("Failed to parse vswhere output.");
+				_buildState.LogTrace(TraceLevel.Error, "Failed to parse vswhere output.");
+				throw new InvalidOperationException("Failed to parse vswhere output.");
 			}
 
-			return Path(path);
+			return new Path(path);
 		}
 
-		string FindDefaultVCToolsVersion(
-			Soup::Build::Utilities::BuildStateWrapper& buildState,
-			const Path& visualStudioInstallRoot)
+		private string FindDefaultVCToolsVersion(
+			Path visualStudioInstallRoot)
 		{
 			// Check the default tools version
 			var visualCompilerToolsDefaultVersionFile =
-				visualStudioInstallRoot + Path("VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
-			if (!System::IFileSystem::Current().Exists(visualCompilerToolsDefaultVersionFile))
+				visualStudioInstallRoot + new Path("VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
+			if (!System.IO.File.Exists(visualCompilerToolsDefaultVersionFile.ToString()))
 			{
-				buildState.LogError("VisualCompilerToolsDefaultVersionFile file does not exist: " + visualCompilerToolsDefaultVersionFile.ToString());
-				throw std::runtime_error("VisualCompilerToolsDefaultVersionFile file does not exist.");
+				_buildState.LogTrace(TraceLevel.Error, "VisualCompilerToolsDefaultVersionFile file does not exist: " + visualCompilerToolsDefaultVersionFile.ToString());
+				throw new InvalidOperationException("VisualCompilerToolsDefaultVersionFile file does not exist.");
 			}
 
 			// Read the entire file into a string
-			var file = System::IFileSystem::Current().OpenRead(visualCompilerToolsDefaultVersionFile, false);
-
-			// The first line is the version
-			var version = string();
-			if (!std::getline(file->GetInStream(), version, '\n'))
+			using (var file = System.IO.File.OpenRead(visualCompilerToolsDefaultVersionFile.ToString()))
+			using (var reader = new System.IO.StreamReader(file))
 			{
-				buildState.LogError("Failed to parse version from file.");
-				throw std::runtime_error("Failed to parse version from file.");
-			}
+				// The first line is the version
+				var version = reader.ReadLine();
+				if (version is null)
+				{
+					_buildState.LogTrace(TraceLevel.Error, "Failed to parse version from file.");
+					throw new InvalidOperationException("Failed to parse version from file.");
+				}
 
-			return version;
+				return version;
+			}
 		}
 
-		string FindNewestWindows10KitVersion(
-			Soup::Build::Utilities::BuildStateWrapper& buildState,
-			const Path& windows10KitIncludePath)
+		private string FindNewestWindows10KitVersion(
+			Path windows10KitIncludePath)
 		{
 			// Check the default tools version
-			buildState.LogDebug("FindNewestWindows10KitVersion: " + windows10KitIncludePath.ToString());
-			var currentVersion = SemanticVersion(0, 0, 0);
-			for (auto& child : System::IFileSystem::Current().GetDirectoryChildren(windows10KitIncludePath))
+			_buildState.LogTrace(TraceLevel.Debug, "FindNewestWindows10KitVersion: " + windows10KitIncludePath.ToString());
+			var currentVersion = new SemanticVersion(0, 0, 0);
+			foreach (var child in System.IO.Directory.EnumerateDirectories(windows10KitIncludePath.ToString()))
 			{
-				var name = child.Path.GetFileName();
-				buildState.LogDebug("CheckFile: " + string(name));
-				var platformVersion = name.substr(0, 3);
+				var name = new Path(child).GetFileName();
+				_buildState.LogTrace(TraceLevel.Debug, "CheckFile: " + name);
+				var platformVersion = name.Substring(0, 3);
 				if (platformVersion == "10.")
 				{
 					// Parse the version string
-					var version = SemanticVersion::Parse(name.substr(3));
+					var version = SemanticVersion.Parse(name.Substring(3));
 					if (version > currentVersion)
 						currentVersion = version;
 				}
 				else
 				{
-					buildState.LogWarning("Unexpected Kit Version: " + string(name));
+					_buildState.LogTrace(TraceLevel.Warning, "Unexpected Kit Version: " + name);
 				}
 			}
 
-			if (currentVersion == SemanticVersion(0, 0, 0))
-				throw std::runtime_error("Could not find a minimum Windows 10 Kit Version");
+			if (currentVersion == new SemanticVersion(0, 0, 0))
+				throw new InvalidOperationException("Could not find a minimum Windows 10 Kit Version");
 
 			// The first line is the version
-			var version = "10." + currentVersion.ToString();
-			return version;
+			var result = "10." + currentVersion.ToString();
+			return result;
 		}
 
-		static string CombineArguments(const std::vector<string>& args)
+		private static string CombineArguments(IList<string> args)
 		{
-			var argumentString = stringstream();
+			var argumentString = new StringBuilder();
 			bool isFirst = true;
-			for (auto& arg : args)
+			foreach (var arg in args)
 			{
 				if (!isFirst)
-					argumentString << " ";
+					argumentString.Append(" ");
 
-				argumentString << arg;
+				argumentString.Append(arg);
 				isFirst = false;
 			}
 
-			return argumentString.str();
+			return argumentString.ToString();
 		}
-
-	private:
-		Soup::Build::Utilities::ReadOnlyStringList _runBeforeList;
-		Soup::Build::Utilities::ReadOnlyStringList _runAfterList;
-	};
+	}
 }

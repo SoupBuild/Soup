@@ -156,7 +156,23 @@ namespace Soup.Build.Generate
 					!type.IsAbstract &&
 					typeof(IBuildTask).IsAssignableFrom(type))
 				{
-					buildTaskManager.RegisterTask(type.Name, type, new List<string>(), new List<string>());
+					var runBeforeListPropertyInfo = type.GetProperty("RunBeforeList", BindingFlags.Public | BindingFlags.Static);
+					if (runBeforeListPropertyInfo is null)
+						throw new InvalidOperationException("Type missing RunBeforeList");
+
+					var runBeforeList = (IReadOnlyList<string>?)runBeforeListPropertyInfo.GetValue(null, null);
+					if (runBeforeList is null)
+						throw new InvalidOperationException("RunBeforeList is null");
+
+					var runAfterListPropertyInfo = type.GetProperty("RunAfterList", BindingFlags.Public | BindingFlags.Static);
+					if (runAfterListPropertyInfo is null)
+						throw new InvalidOperationException("Type missing RunAfterList");
+
+					var runAfterList = (IReadOnlyList<string>?)runAfterListPropertyInfo.GetValue(null, null);
+					if (runAfterList is null)
+						throw new InvalidOperationException("RunAfterList is null");
+
+					buildTaskManager.RegisterTask(type.Name, type, runBeforeList, runAfterList);
 				}
 			}
 		}

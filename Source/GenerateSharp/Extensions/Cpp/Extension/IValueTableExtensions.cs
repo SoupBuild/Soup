@@ -52,6 +52,31 @@ namespace Soup.Build.Cpp
 				list.Add(new Value(value.ToString()));
 		}
 
+		public static void SetAll(this IValueList list, IEnumerable<string> values)
+		{
+			list.Clear();
+			foreach (var value in values)
+				list.Add(new Value(value));
+		}
+
+		public static void Append(this IValueList list, IEnumerable<Value> values)
+		{
+			foreach (var value in values)
+				list.Add(value);
+		}
+
+		public static void Append(this IValueList list, IEnumerable<Path> values)
+		{
+			foreach (var value in values)
+				list.Add(new Value(value.ToString()));
+		}
+
+		public static void Append(this IValueList list, IEnumerable<string> values)
+		{
+			foreach (var value in values)
+				list.Add(new Value(value));
+		}
+
 		public static void CreateOperation(this IBuildState buildState, BuildOperation operation)
 		{
 			buildState.CreateOperation(

@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Soup.Build.Cpp
 {
 	/// <summary>
@@ -10,9 +12,25 @@ namespace Soup.Build.Cpp
 	/// </summary>
 	public class ResolveDependenciesTask : IBuildTask
 	{
-	public:
-		ResolveDependenciesTask()
+		private IBuildState _buildState;
+
+		/// <summary>
+		/// Get the run before list
+		/// </summary>
+		public IReadOnlyList<string> RunBeforeList => new List<string>()
 		{
+		};
+
+		/// <summary>
+		/// Get the run after list
+		/// </summary>
+		public IReadOnlyList<string> RunAfterList => new List<string>()
+		{
+		};
+
+		public ResolveDependenciesTask(IBuildState buildState)
+		{
+			_buildState = buildState;
 		}
 
 		/// <summary>
@@ -20,60 +38,47 @@ namespace Soup.Build.Cpp
 		/// </summary>
 		public void Execute()
 		{
-			var activeState = buildState.GetActiveState();
+			var activeState = _buildState.ActiveState;
 
-			if (activeState.HasValue("Dependencies"))
+			if (activeState.TryGetValue("Dependencies", out var dependenciesValue))
 			{
-				var dependenciesTable = activeState.GetValue("Dependencies").AsTable();
-				if (dependenciesTable.HasValue("Runtime"))
+				var dependenciesTable = dependenciesValue.AsTable();
+				if (dependenciesTable.TryGetValue("Runtime", out var runtimeValue))
 				{
-					var runtimeDependenciesTable = dependenciesTable.GetValue("Runtime").AsTable();
-					var buildTable = activeState.EnsureValue("Build").EnsureTable();
+					var runtimeDependenciesTable = runtimeValue.AsTable();
+					var buildTable = activeState.EnsureValueTable("Build");
 
-					for (auto& dependencyName : runtimeDependenciesTable.GetValueKeyList().CopyAsStringVector())
+					foreach (var dependencyName in runtimeDependenciesTable.Keys)
 					{
 						// Combine the core dependency build inputs for the core build task
-						buildState.LogInfo("Combine Runtime Dependency: " + dependencyName);
-						var dependencyTable = runtimeDependenciesTable.GetValue(dependencyName).AsTable();
+						_buildState.LogTrace(TraceLevel.Information, "Combine Runtime Dependency: " + dependencyName);
+						var dependencyTable = runtimeDependenciesTable[dependencyName].AsTable();
 
-						if (dependencyTable.HasValue("Build"))
+						if (dependencyTable.TryGetValue("Build", out var buildValue))
 						{
-							var dependencyBuildTable = dependencyTable.GetValue("Build").AsTable();
+							var dependencyBuildTable = buildValue.AsTable();
 
-							if (dependencyBuildTable.HasValue("ModuleDependencies"))
+							if (dependencyBuildTable.TryGetValue("ModuleDependencies", out var moduleDependenciesValue))
 							{
-								var moduleDependencies = dependencyBuildTable
-									.GetValue("ModuleDependencies")
-									.AsList()
-									.CopyAsStringVector();
-								buildTable.EnsureValue("ModuleDependencies").EnsureList().Append(moduleDependencies);
+								var moduleDependencies = moduleDependenciesValue.AsList();
+								buildTable.EnsureValueList("ModuleDependencies").Append(moduleDependencies);
 							}
 
-							if (dependencyBuildTable.HasValue("RuntimeDependencies"))
+							if (dependencyBuildTable.TryGetValue("RuntimeDependencies", out var runtimeDependenciesValue))
 							{
-								var runtimeDependencies = dependencyBuildTable
-									.GetValue("RuntimeDependencies")
-									.AsList()
-									.CopyAsStringVector();
-								buildTable.EnsureValue("RuntimeDependencies").EnsureList().Append(runtimeDependencies);
+								var runtimeDependencies = runtimeDependenciesValue.AsList();
+								buildTable.EnsureValueList("RuntimeDependencies").Append(runtimeDependencies);
 							}
 
-							if (dependencyBuildTable.HasValue("LinkDependencies"))
+							if (dependencyBuildTable.TryGetValue("LinkDependencies", out var linkDependenciesValue))
 							{
-								var linkDependencies = dependencyBuildTable
-									.GetValue("LinkDependencies")
-									.AsList()
-									.CopyAsStringVector();
-								buildTable.EnsureValue("LinkDependencies").EnsureList().Append(linkDependencies);
+								var linkDependencies = linkDependenciesValue.AsList();
+								buildTable.EnsureValueList("LinkDependencies").Append(linkDependencies);
 							}
 						}
 					}
 				}
 			}
 		}
-
-	private:
-		Soup::Build::Utilities::ReadOnlyStringList _runBeforeList;
-		Soup::Build::Utilities::ReadOnlyStringList _runAfterList;
-	};
+	}
 }

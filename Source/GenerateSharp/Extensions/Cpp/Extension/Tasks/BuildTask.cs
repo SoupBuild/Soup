@@ -13,6 +13,20 @@ namespace Soup.Build.Cpp
 		private IBuildState _buildState;
 		private IDictionary<string, Func<IValueTable, ICompiler>> _compilerFactory;
 
+		/// <summary>
+		/// Get the run before list
+		/// </summary>
+		public IReadOnlyList<string> RunBeforeList => new List<string>()
+		{
+		};
+
+		/// <summary>
+		/// Get the run after list
+		/// </summary>
+		public IReadOnlyList<string> RunAfterList => new List<string>()
+		{
+		};
+
 		public BuildTask(IBuildState buildState)
 		{
 			_buildState = buildState;
