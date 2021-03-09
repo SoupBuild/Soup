@@ -86,11 +86,11 @@ namespace Soup.Build.Generate
 			foreach (var value in taskContainer.RunAfterList)
 			{
 				if (!isFirst)
-					runBeforeMessage.Append(", ");
+					runAfterMessage.Append(", ");
 
-				runBeforeMessage.Append("\"");
-				runBeforeMessage.Append(value);
-				runBeforeMessage.Append("\"");
+				runAfterMessage.Append("\"");
+				runAfterMessage.Append(value);
+				runAfterMessage.Append("\"");
 				isFirst = false;
 			}
 

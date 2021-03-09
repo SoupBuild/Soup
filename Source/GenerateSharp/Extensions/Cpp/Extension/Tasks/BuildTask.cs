@@ -16,14 +16,14 @@ namespace Soup.Build.Cpp
 		/// <summary>
 		/// Get the run before list
 		/// </summary>
-		public IReadOnlyList<string> RunBeforeList => new List<string>()
+		public static IReadOnlyList<string> RunBeforeList => new List<string>()
 		{
 		};
 
 		/// <summary>
 		/// Get the run after list
 		/// </summary>
-		public IReadOnlyList<string> RunAfterList => new List<string>()
+		public static IReadOnlyList<string> RunAfterList => new List<string>()
 		{
 		};
 

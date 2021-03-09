@@ -22,6 +22,7 @@ namespace Soup.Build.Cpp
 		/// </summary>
 		public static IReadOnlyList<string> RunBeforeList => new List<string>()
 		{
+			"Build",
 		};
 
 		/// <summary>
@@ -29,6 +30,7 @@ namespace Soup.Build.Cpp
 		/// </summary>
 		public static IReadOnlyList<string> RunAfterList => new List<string>()
 		{
+			"ResolveTools",
 		};
 
 		public RecipeBuildTask(IBuildState buildState)
