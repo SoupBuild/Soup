@@ -71,7 +71,7 @@ namespace Soup.Build.Utilities
 			};
 
 			// Build the arguments
-			var arguments = "\"{directory}\"";
+			var arguments = $"\"{directory}\"";
 
 			return new BuildOperation(
 				title,

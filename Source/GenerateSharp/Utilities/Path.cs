@@ -203,7 +203,7 @@ namespace Soup.Build.Utilities
 		public void SetFileExtension(string value)
 		{
 			// Build up the new filename and set the active state
-			SetFilename($"{GetFileStem()}{FileExtensionSeparator}");
+			SetFilename($"{GetFileStem()}{FileExtensionSeparator}{value}");
 		}
 
 		/// <summary>

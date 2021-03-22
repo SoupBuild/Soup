@@ -223,6 +223,8 @@ namespace Soup.Build.Cpp
 				FileName = executablePath.ToString(),
 				Arguments = arguments,
 				WorkingDirectory = workingDirectory.ToString(),
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
 			};
 			var process = Process.Start(processInfo);
 			if (process is null)

@@ -19,7 +19,7 @@ namespace Soup.Build.Cpp
 		/// </summary>
 		public static IReadOnlyList<string> RunBeforeList => new List<string>()
 		{
-			"Build",
+			"BuildTask",
 		};
 
 		/// <summary>

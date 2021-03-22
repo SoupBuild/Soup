@@ -32,6 +32,14 @@ namespace Soup.Build.Cpp
 			_buildState = buildState;
 
 			_compilerFactory = new Dictionary<string, Func<IValueTable, ICompiler>>();
+
+			_compilerFactory.Add("MSVC", (IValueTable activeState) =>
+			{
+				var clToolPath = new Path(activeState["MSVC.ClToolPath"].AsString());
+				var linkToolPath = new Path(activeState["MSVC.LinkToolPath"].AsString());
+				var libToolPath = new Path(activeState["MSVC.LibToolPath"].AsString());
+				return new Compiler.MSVC.Compiler(clToolPath, linkToolPath, libToolPath);
+			});
 		}
 
 		public void Execute()

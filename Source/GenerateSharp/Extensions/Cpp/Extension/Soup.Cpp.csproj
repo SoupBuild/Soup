@@ -10,5 +10,6 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\Utilities\Soup.Utilities.csproj" />
     <ProjectReference Include="..\Compiler\Core\Soup.Cpp.Compiler.csproj" />
+    <ProjectReference Include="..\Compiler\MSVC\Soup.Cpp.Compiler.MSVC.csproj" />
   </ItemGroup>
 </Project>
