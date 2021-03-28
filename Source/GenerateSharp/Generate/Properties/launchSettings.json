@@ -2,7 +2,7 @@
   "profiles": {
     "Soup.Build.Generate": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\mwasp\\source\\repos\\Soup\\out\\httplib\\MSVC\\debug\\win32\\x64\\.soup\\"
+      "commandLineArgs": "C:\\Users\\mwasp\\source\\repos\\Soup\\out\\Soup.Test.Assert\\MSVC\\debug\\win32\\x64\\.soup\\"
     }
   }
 }

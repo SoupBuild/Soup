@@ -108,44 +108,44 @@ namespace Soup.Build.Cpp.Compiler
 		/// Note: These files can be plain old translation units 
 		/// or they can be module implementation units
 		/// </summary>
-		public IList<Path> SourceFiles { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> SourceFiles { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of include directories
 		/// </summary>
-		public IList<Path> IncludeDirectories { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> IncludeDirectories { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of module dependencies
 		/// </summary>
-		public IList<Path> ModuleDependencies { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> ModuleDependencies { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of platform link libraries
 		/// Note: These libraries will be included at link time, but will not be an input
 		/// for the incremental builds
 		/// </summary>
-		public IList<Path> PlatformLinkDependencies { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> PlatformLinkDependencies { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of link libraries
 		/// </summary>
-		public IList<Path> LinkDependencies { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> LinkDependencies { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of library paths
 		/// </summary>
-		public IList<Path> LibraryPaths { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> LibraryPaths { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of preprocessor definitions
 		/// </summary>
-		public IList<string> PreprocessorDefinitions { get; set; } = new List<string>();
+		public IReadOnlyList<string> PreprocessorDefinitions { get; set; } = new List<string>();
 
 		/// <summary>
 		/// Gets or sets the list of runtime dependencies
 		/// </summary>
-		public IList<Path> RuntimeDependencies { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> RuntimeDependencies { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the optimization level
@@ -165,16 +165,16 @@ namespace Soup.Build.Cpp.Compiler
 		/// <summary>
 		/// Gets or sets the list of disabled warnings
 		/// </summary>
-		public IList<string> DisabledWarnings { get; set; } = new List<string>();
+		public IReadOnlyList<string> DisabledWarnings { get; set; } = new List<string>();
 
 		/// <summary>
 		/// Gets or sets the list of enabled warnings
 		/// </summary>
-		public IList<string> EnabledWarnings { get; set; } = new List<string>();
+		public IReadOnlyList<string> EnabledWarnings { get; set; } = new List<string>();
 
 		/// <summary>
 		/// Gets or sets the set of custom properties for the known compiler
 		/// </summary>
-		public IList<string> CustomProperties { get; set; } = new List<string>();
+		public IReadOnlyList<string> CustomProperties { get; set; } = new List<string>();
 	}
 }

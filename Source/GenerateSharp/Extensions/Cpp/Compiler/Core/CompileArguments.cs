@@ -109,17 +109,17 @@ namespace Soup.Build.Cpp.Compiler
 		/// <summary>
 		/// Gets or sets the list of preprocessor definitions
 		/// </summary>
-		public IList<string> PreprocessorDefinitions { get; init; } = new List<string>();
+		public IReadOnlyList<string> PreprocessorDefinitions { get; init; } = new List<string>();
 
 		/// <summary>
 		/// Gets or sets the list of include directories
 		/// </summary>
-		public IList<Path> IncludeDirectories { get; init; } = new List<Path>();
+		public IReadOnlyList<Path> IncludeDirectories { get; init; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of modules
 		/// </summary>
-		public IList<Path> IncludeModules { get; init; } = new List<Path>();
+		public IReadOnlyList<Path> IncludeModules { get; init; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to generate source debug information
@@ -134,7 +134,7 @@ namespace Soup.Build.Cpp.Compiler
 		/// <summary>
 		/// Gets or sets the list of individual translation units to compile
 		/// </summary>
-		public IList<TranslationUnitCompileArguments> ImplementationUnits { get; init; } = new List<TranslationUnitCompileArguments>();
+		public IReadOnlyList<TranslationUnitCompileArguments> ImplementationUnits { get; set; } = new List<TranslationUnitCompileArguments>();
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to enable warnings as errors
@@ -144,16 +144,16 @@ namespace Soup.Build.Cpp.Compiler
 		/// <summary>
 		/// Gets or sets the list of disabled warnings
 		/// </summary>
-		public IList<string> DisabledWarnings { get; init; } = new List<string>();
+		public IReadOnlyList<string> DisabledWarnings { get; set; } = new List<string>();
 
 		/// <summary>
 		/// Gets or sets the list of enabled warnings
 		/// </summary>
-		public IList<string> EnabledWarnings { get; init; } = new List<string>();
+		public IReadOnlyList<string> EnabledWarnings { get; init; } = new List<string>();
 
 		/// <summary>
 		/// Gets or sets the set of custom properties for the known compiler
 		/// </summary>
-		public IList<string> CustomProperties { get; init; } = new List<string>();
+		public IReadOnlyList<string> CustomProperties { get; init; } = new List<string>();
 	}
 }

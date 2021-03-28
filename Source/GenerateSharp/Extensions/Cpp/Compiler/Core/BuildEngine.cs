@@ -32,7 +32,7 @@ namespace Soup.Build.Cpp.Compiler
 			// TODO: MSVC requires the entire closure of interfaces
 			if (_compiler.Name == "MSVC")
 			{
-				result.ModuleDependencies = arguments.ModuleDependencies;
+				result.ModuleDependencies = new List<Path>(arguments.ModuleDependencies);
 			}
 
 			// Ensure the output directories exists as the first step
@@ -126,6 +126,7 @@ namespace Soup.Build.Cpp.Compiler
 				}
 
 				// Compile the individual translation units
+				var compileImplementationUnits = new List<TranslationUnitCompileArguments>(compileArguments.ImplementationUnits);
 				foreach (var file in arguments.SourceFiles)
 				{
 					buildState.LogTrace(TraceLevel.Information, "Generate Compile Operation: " + file.ToString());
@@ -135,8 +136,10 @@ namespace Soup.Build.Cpp.Compiler
 					compileFileArguments.TargetFile = arguments.ObjectDirectory + new Path(file.GetFileName());
 					compileFileArguments.TargetFile.SetFileExtension(_compiler.ObjectFileExtension);
 
-					compileArguments.ImplementationUnits.Add(compileFileArguments);
+					compileImplementationUnits.Add(compileFileArguments);
 				}
+
+				compileArguments.ImplementationUnits = compileImplementationUnits;
 
 				// Compile all source files as a single call
 				var compileOperations = _compiler.CreateCompileOperations(compileArguments);
@@ -204,7 +207,7 @@ namespace Soup.Build.Cpp.Compiler
 			// and determine what dependencies to inject into downstream builds
 
 			// Pass along all runtime dependencies
-			result.RuntimeDependencies = arguments.RuntimeDependencies;
+			result.RuntimeDependencies = new List<Path>(arguments.RuntimeDependencies);
 
 			switch (arguments.TargetType)
 			{
@@ -213,7 +216,7 @@ namespace Soup.Build.Cpp.Compiler
 					linkArguments.TargetType = LinkTarget.StaticLibrary;
 					
 					// Add the library as a link dependency and all transitive libraries
-					result.LinkDependencies = arguments.LinkDependencies;
+					result.LinkDependencies = new List<Path>(arguments.LinkDependencies);
 					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
 					result.LinkDependencies.Add(absoluteTargetFile);
 					break;
@@ -281,7 +284,7 @@ namespace Soup.Build.Cpp.Compiler
 			result.BuildOperations.Add(linkOperation);
 
 			// Pass along the link arguments for internal access
-			result.InternalLinkDependencies = arguments.LinkDependencies;
+			result.InternalLinkDependencies = new List<Path>(arguments.LinkDependencies);
 			foreach (var file in linkArguments.ObjectFiles)
 				result.InternalLinkDependencies.Add(file);
 		}

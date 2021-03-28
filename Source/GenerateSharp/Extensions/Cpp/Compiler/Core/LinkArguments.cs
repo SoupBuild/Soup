@@ -61,22 +61,22 @@ namespace Soup.Build.Cpp.Compiler
 		/// <summary>
 		/// Gets or sets the list of object files
 		/// </summary>
-		public IList<Path> ObjectFiles { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> ObjectFiles { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of library files
 		/// </summary>
-		public IList<Path> LibraryFiles { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> LibraryFiles { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of external library files
 		/// </summary>
-		public IList<Path> ExternalLibraryFiles { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> ExternalLibraryFiles { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of library paths
 		/// </summary>
-		public IList<Path> LibraryPaths { get; set; } = new List<Path>();
+		public IReadOnlyList<Path> LibraryPaths { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to generate source debug information

@@ -194,7 +194,7 @@ namespace Soup.Build.Cpp
 			_buildState.LogTrace(TraceLevel.Information, "Build Generate Done");
 		}
 
-		private static IList<Path> MakeUnique(IEnumerable<Path> collection)
+		private static List<Path> MakeUnique(IEnumerable<Path> collection)
 		{
 			var valueSet = new HashSet<string>();
 			foreach (var value in collection)

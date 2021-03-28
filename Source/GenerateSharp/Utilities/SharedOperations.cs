@@ -24,7 +24,7 @@ namespace Soup.Build.Utilities
 			var title = $"Copy [{source}] -> [{destination}]";
 
 			var moduleName = new Path(Assembly.GetExecutingAssembly().Location);
-			var moduleFolder = moduleName.GetParent();
+			var moduleFolder = new Path("C:/Program Files/SoupBuild/Soup/"); // TODO: moduleName.GetParent();
 
 			var program = moduleFolder + new Path("copy.exe");
 			var inputFiles = new List<Path>()
@@ -61,7 +61,7 @@ namespace Soup.Build.Utilities
 			var title = $"MakeDir [{directory}]";
 
 			var moduleName = new Path(Assembly.GetExecutingAssembly().Location);
-			var moduleFolder = moduleName.GetParent();
+			var moduleFolder = new Path("C:/Program Files/SoupBuild/Soup/"); // TODO: moduleName.GetParent();
 
 			var program = moduleFolder + new Path("mkdir.exe");
 			var inputFiles = new List<Path>();
