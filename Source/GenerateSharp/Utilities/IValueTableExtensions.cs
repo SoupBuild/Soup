@@ -6,7 +6,7 @@ using Soup.Build.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Soup.Build.Cpp
+namespace Soup.Build.Utilities
 {
 	internal class ValueTable : Dictionary<string, Value>, IValueTable
 	{

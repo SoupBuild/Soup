@@ -4,7 +4,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Contracts\Soup.Build.Contracts.csproj">
+    <ProjectReference Include="..\..\..\..\Utilities\Soup.Utilities.csproj" />
+    <ProjectReference Include="..\..\..\..\Contracts\Soup.Build.Contracts.csproj">
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>

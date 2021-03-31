@@ -5,7 +5,7 @@
 using Soup.Build.Utilities;
 using System.Collections.Generic;
 
-namespace Soup.Build.Cpp
+namespace Soup.Build.CSharp
 {
 	/// <summary>
 	/// The resolve dependencies build task that knows how to combine all previous state
