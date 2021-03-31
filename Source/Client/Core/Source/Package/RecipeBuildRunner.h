@@ -384,7 +384,7 @@ namespace Soup::Build
 			// Add the single root operation to perform the generate
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
-			auto generateExecutable = moduleFolder + Path("Soup.Generate.exe");
+			auto generateExecutable = moduleFolder + Path("Generate/Soup.Build.Generate.exe");
 			Runtime::OperationId generateOperatioId = 1;
 			auto generateArguments = std::stringstream();
 			generateArguments << soupTargetDirectory.ToString();

@@ -205,11 +205,13 @@ namespace Soup.Build.Generate
 			var language = recipe.Language;
 			if (language == "C++")
 			{
-				recipeBuildExtensionPath = new Path("C:/Users/mwasp/source/repos/Soup/Source/GenerateSharp/Extensions/Cpp/Extension/bin/Debug/net5.0/Soup.Cpp.dll");
+				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
+				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.Cpp/Soup.Cpp.dll");
 			}
 			else if (language == "C#")
 			{
-				recipeBuildExtensionPath = new Path("Soup.CSharp.dll");
+				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
+				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.CSharp/Soup.CSharp.dll");
 			}
 			else
 			{

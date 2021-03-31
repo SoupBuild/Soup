@@ -19,7 +19,12 @@ namespace Functions::ProcessThreadsApi::Overrides
 		bool wasDetoured = false;
 		__try
 		{
-			if (IsWhiteListProcess(lpApplicationName))
+			// TODO: Get name from args if not passed in
+			auto applicationName = std::string_view();
+			if (lpApplicationName != nullptr)
+				applicationName = lpApplicationName;
+
+			if (IsWhiteListProcess(applicationName))
 			{
 				result = Cache::CreateProcessA(
 					lpApplicationName,
@@ -110,7 +115,12 @@ namespace Functions::ProcessThreadsApi::Overrides
 		bool wasDetoured = false;
 		__try
 		{
-			if (IsWhiteListProcess(lpApplicationName))
+			// TODO: Get name from args if not passed in
+			auto applicationName = std::wstring_view();
+			if (lpApplicationName != nullptr)
+				applicationName = lpApplicationName;
+
+			if ( IsWhiteListProcess(applicationName))
 			{
 				result = Cache::CreateProcessW(
 					lpApplicationName,

@@ -175,18 +175,18 @@ namespace Soup.Build.Cpp
 			// Set the correct optimization level for the requested flavor
 			var optimizationLevel = BuildOptimizationLevel.None;
 			bool generateSourceDebugInfo = false;
-			if (buildFlavor == "debug")
+			if (string.Compare(buildFlavor, "debug", StringComparison.OrdinalIgnoreCase) == 0)
 			{
 				// preprocessorDefinitions.push_back("DEBUG");
 				generateSourceDebugInfo = true;
 			}
-			else if (buildFlavor == "debugrelease")
+			else if (string.Compare(buildFlavor, "debugrelease", StringComparison.OrdinalIgnoreCase) == 0)
 			{
 				preprocessorDefinitions.Add("RELEASE");
 				generateSourceDebugInfo = true;
 				optimizationLevel = BuildOptimizationLevel.Speed;
 			}
-			else if (buildFlavor == "release")
+			else if (string.Compare(buildFlavor, "release", StringComparison.OrdinalIgnoreCase) == 0)
 			{
 				preprocessorDefinitions.Add("RELEASE");
 				optimizationLevel = BuildOptimizationLevel.Speed;

@@ -271,18 +271,18 @@ private:
 
 	static void DebugError(std::string_view message, uint32_t value)
 	{
-		printf("DETOUR-CLIENT-ERROR: %s %u", message.data(), value);
+		printf("DETOUR-CLIENT-ERROR: %s %u\n", message.data(), value);
 	}
 
 	static void DebugError(std::string_view message)
 	{
-		printf("DETOUR-CLIENT-ERROR: %s", message.data());
+		printf("DETOUR-CLIENT-ERROR: %s\n", message.data());
 	}
 
 	static void DebugTrace(std::string_view message)
 	{
 #ifdef TRACE_DETOUR_CLIENT
-		printf("DETOUR-CLIENT: %s", message.data());
+		printf("DETOUR-CLIENT: %s\n", message.data());
 #else
 		(message);
 #endif

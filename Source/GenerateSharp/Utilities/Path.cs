@@ -550,6 +550,7 @@ namespace Soup.Build.Utilities
 							else
 							{
 								// Remove the directories and move back
+								directories.RemoveAt(i);
 								directories.RemoveAt(i - 1);
 								i -= 2;
 							}

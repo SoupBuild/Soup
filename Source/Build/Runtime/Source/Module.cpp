@@ -5,6 +5,7 @@
 
 #include <any>
 #include <array>
+#include <algorithm>
 #include <codecvt>
 #include <ctime>
 #include <iomanip>

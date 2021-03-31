@@ -8,7 +8,8 @@ namespace Soup::Build::Runtime
 		SystemAccessTracker() :
 			m_activeProcessCount(0),
 			m_input(),
-			m_output()
+			m_output(),
+			m_deleteOnClose()
 		{
 		}
 
@@ -17,6 +18,13 @@ namespace Soup::Build::Runtime
 			if (m_activeProcessCount != 0)
 			{
 				Log::Warning("A child process is still running in the background");
+			}
+
+			// Cleanup on close delete files
+			for (auto& file : m_deleteOnClose)
+			{
+				auto extractOutputResult = m_output.extract(file);
+				auto extractInputResult = m_input.extract(file);
 			}
 		}
 
@@ -95,13 +103,16 @@ namespace Soup::Build::Runtime
 		{
 			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
 			bool isDeleteOnClose = (flagsAndAttributes & FILE_FLAG_DELETE_ON_CLOSE) != 0;
+
+			// If the file will be deleted it is a transient file
+			if (isDeleteOnClose)
+			{
+				TouchFileDeleteOnClose(fileName);
+			}
+
 			if (isWrite)
 			{
-				// If the file will be deleted it is a transient file
-				if (!isDeleteOnClose)
-				{
-					TouchFileWrite(fileName);
-				}
+				TouchFileWrite(fileName);
 			}
 			else
 			{
@@ -120,13 +131,16 @@ namespace Soup::Build::Runtime
 		{
 			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
 			bool isDeleteOnClose = (flagsAndAttributes & FILE_FLAG_DELETE_ON_CLOSE) != 0;
+
+			// If the file will be deleted it is a transient file
+			if (isDeleteOnClose)
+			{
+				TouchFileDeleteOnClose(fileName);
+			}
+
 			if (isWrite)
 			{
-				// If the file will be deleted it is a transient file
-				if (!isDeleteOnClose)
-				{
-					TouchFileWrite(fileName);
-				}
+				TouchFileWrite(fileName);
 			}
 			else
 			{
@@ -1095,14 +1109,16 @@ namespace Soup::Build::Runtime
 			if (!IsSpecialFile(fileName))
 			{
 				auto filePath = Path(fileName);
-				// Log::Diag("TouchFileRead " + filePath.ToString());
+				auto value = filePath.ToString();
+				ToUpper(value);
+				// Log::Diag("TouchFileRead " + value);
 				if (exists)
 				{
-					m_input.insert(filePath.ToString());
+					m_input.insert(value);
 				}
 				else
 				{
-					m_inputMissing.insert(filePath.ToString());
+					m_inputMissing.insert(value);
 				}
 			}
 		}
@@ -1119,9 +1135,11 @@ namespace Soup::Build::Runtime
 			if (!IsSpecialFile(fileName))
 			{
 				auto filePath = Path(fileName);
-				// Log::Diag("TouchFileWrite " + filePath.ToString());
+				auto value = filePath.ToString();
+				ToUpper(value);
+				// Log::Diag("TouchFileWrite " + value);
 
-				m_output.insert(filePath.ToString());
+				m_output.insert(value);
 			}
 		}
 
@@ -1140,12 +1158,44 @@ namespace Soup::Build::Runtime
 
 		void TouchFileDelete(const Path& filePath)
 		{
-			// Log::Diag("TouchFileDelete " + filePath.ToString());
+			auto value = filePath.ToString();
+			ToUpper(value);
+			// Log::Diag("TouchFileDelete " + value);
 
 			// If this was an output file extract it as it was a transient file
 			// TODO: May want to track if we created the file
-			auto extractOutputResult = m_output.extract(filePath.ToString());
-			auto extractInputResult = m_input.extract(filePath.ToString());
+			auto extractOutputResult = m_output.extract(value);
+			auto extractInputResult = m_input.extract(value);
+		}
+
+		void TouchFileDeleteOnClose(std::string_view fileName)
+		{
+			auto filePath = Path(fileName);
+			TouchFileDeleteOnClose(filePath);
+		}
+
+		void TouchFileDeleteOnClose(std::wstring_view fileName)
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			auto filePath = Path(converter.to_bytes(fileName.data()));
+			TouchFileDeleteOnClose(filePath);
+		}
+
+		void TouchFileDeleteOnClose(const Path& filePath)
+		{
+			auto value = filePath.ToString();
+			ToUpper(value);
+			// Log::Diag("TouchFileDeleteOnClose " + value);
+			m_deleteOnClose.insert(std::move(value));
+		}
+
+		void ToUpper(std::string& value)
+		{
+			std::transform(
+				value.begin(),
+				value.end(),
+				value.begin(),
+				[](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
 		}
 
 		bool IsSpecialFile(std::string_view fileName)
@@ -1173,5 +1223,6 @@ namespace Soup::Build::Runtime
 		std::set<std::string> m_input;
 		std::set<std::string> m_inputMissing;
 		std::set<std::string> m_output;
+		std::set<std::string> m_deleteOnClose;
 	};
 }

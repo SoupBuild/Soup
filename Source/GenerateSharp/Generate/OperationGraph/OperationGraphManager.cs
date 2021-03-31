@@ -107,7 +107,7 @@ namespace Soup.Build.Generate
 			}
 
 			// Open the file to write to
-			using (var fileStream = System.IO.File.OpenWrite(operationGraphFile.ToString()))
+			using (var fileStream = System.IO.File.Open(operationGraphFile.ToString(), System.IO.FileMode.Create, System.IO.FileAccess.Write))
 			using (var writer = new System.IO.BinaryWriter(fileStream))
 			{
 				// Write the build state to the file stream
