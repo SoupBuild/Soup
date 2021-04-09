@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
+using Opal.System;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -23,7 +25,7 @@ namespace Soup.Build.Utilities
 		{
 			var title = $"Copy [{source}] -> [{destination}]";
 
-			var moduleName = new Path(Assembly.GetExecutingAssembly().Location);
+			var moduleName = IProcessManager.Current.GetCurrentProcessFileName();
 			var moduleFolder = new Path("C:/Program Files/SoupBuild/Soup/"); // TODO: moduleName.GetParent();
 
 			var program = moduleFolder + new Path("copy.exe");
@@ -60,7 +62,7 @@ namespace Soup.Build.Utilities
 
 			var title = $"MakeDir [{directory}]";
 
-			var moduleName = new Path(Assembly.GetExecutingAssembly().Location);
+			var moduleName = IProcessManager.Current.GetCurrentProcessFileName();
 			var moduleFolder = new Path("C:/Program Files/SoupBuild/Soup/"); // TODO: moduleName.GetParent();
 
 			var program = moduleFolder + new Path("mkdir.exe");

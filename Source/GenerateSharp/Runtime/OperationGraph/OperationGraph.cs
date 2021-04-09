@@ -2,16 +2,16 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Utilities;
+using Opal;
 using System.Collections.Generic;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Runtime
 {
 	/// <summary>
 	/// The cached operation graph that is used to track input/output mappings for previous build
 	/// executions to support incremental builds
 	/// </summary>
-	internal class OperationGraph
+	public class OperationGraph
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.

@@ -2,9 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
 using Soup.Build.Utilities;
 using System;
-using System.Threading.Tasks;
 
 namespace Soup.Build.Generate
 {

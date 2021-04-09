@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="IO\SystemConsoleInputStream.cs" />
+    <Compile Remove="IO\SystemConsoleManager.cs" />
+    <Compile Remove="Logger\TextWriterExtendedTraceListener.cs" />
+    <Compile Remove="System\STLFileSystem.cs" />
+    <Compile Remove="System\STLInputFile.cs" />
+    <Compile Remove="System\STLOutputFile.cs" />
+    <Compile Remove="System\WindowsDynamicLibrary.cs" />
+    <Compile Remove="System\WindowsDynamicLibraryManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Soup.Build.Contracts.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

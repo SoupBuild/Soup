@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Soup.Build.Utilities
+namespace Opal
 {
 	/// <summary>
 	/// A container for a path string

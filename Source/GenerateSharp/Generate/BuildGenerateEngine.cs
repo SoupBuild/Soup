@@ -2,7 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Microsoft.Extensions.DependencyInjection;
+using Opal;
+using Soup.Build.Runtime;
 using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;

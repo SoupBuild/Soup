@@ -1,5 +1,6 @@
 ﻿
 
+using Opal;
 using Soup.Build.Cpp.Compiler;
 using Soup.Build.Utilities;
 using System;

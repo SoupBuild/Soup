@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
 using System.Collections.Generic;
 
 namespace Soup.Build.Utilities

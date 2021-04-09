@@ -10,6 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Soup.Build.Contracts.csproj" />
+    <ProjectReference Include="..\Runtime\Soup.Build.Runtime.csproj" />
     <ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
     <ProjectReference Include="..\Extensions\Cpp\Extension\Soup.Cpp.csproj">
       <Private>false</Private>

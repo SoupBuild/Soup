@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Utilities;
+using Opal;
 using System;
 using System.Collections.Generic;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Runtime
 {
 	/// <summary>
 	/// The cached operation graph that is used to track input/output mappings for previous build

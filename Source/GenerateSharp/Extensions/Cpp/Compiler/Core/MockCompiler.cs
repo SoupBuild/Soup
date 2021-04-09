@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
 using Soup.Build.Utilities;
 using System.Collections.Generic;
 
@@ -25,7 +26,7 @@ namespace Soup.Build.Cpp.Compiler.Mock
 		/// <summary>
 		/// Get the compile requests
 		/// </summary>
-		IList<SharedCompileArguments> GetCompileRequests()
+		public IList<SharedCompileArguments> GetCompileRequests()
 		{
 			return _compileRequests;
 		}
@@ -33,7 +34,7 @@ namespace Soup.Build.Cpp.Compiler.Mock
 		/// <summary>
 		/// Get the link requests
 		/// </summary>
-		IList<LinkArguments> GetLinkRequests()
+		public IList<LinkArguments> GetLinkRequests()
 		{
 			return _linkRequests;
 		}

@@ -2,15 +2,15 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Utilities;
+using Opal;
 using System;
 using System.Collections.Generic;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Runtime
 {
-	internal record OperationId(uint value);
+	public record OperationId(uint value);
 
-	internal class CommandInfo : IEquatable<CommandInfo>
+	public class CommandInfo : IEquatable<CommandInfo>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CommandInfo"/> class.
@@ -72,7 +72,7 @@ namespace Soup.Build.Generate
 		public string Arguments { get; init; }
 	}
 
-	internal class OperationInfo : IEquatable<OperationInfo>
+	public class OperationInfo : IEquatable<OperationInfo>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OperationInfo"/> class.

@@ -2,16 +2,16 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Utilities;
+using Opal;
 using System;
 using System.Linq;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Runtime
 {
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	internal class BuildState : IBuildState
+	public class BuildState : IBuildState
 	{
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
@@ -88,5 +88,5 @@ namespace Soup.Build.Generate
 		}
 
 		private OperationGraphGenerator _graphGenerator;
-	};
+	}
 }

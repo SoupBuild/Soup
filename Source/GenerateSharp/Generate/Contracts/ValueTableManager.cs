@@ -2,19 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Utilities;
-using System.Collections.Generic;
+using Opal;
+using Soup.Build.Runtime;
 
 namespace Soup.Build.Generate
 {
-	internal class ValueTable : Dictionary<string, Value>, IValueTable
-	{
-	}
-
-	internal class ValueList : List<Value>, IValueList
-	{
-	}
-
 	/// <summary>
 	/// The Value Table state manager
 	/// </summary>

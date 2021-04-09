@@ -2,20 +2,14 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
+using Soup.Build.Runtime;
 using Soup.Build.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Soup.Build.Utilities
 {
-	internal class ValueTable : Dictionary<string, Value>, IValueTable
-	{
-	}
-
-	internal class ValueList : List<Value>, IValueList
-	{
-	}
-
 	public static class IValueTableExtensions
 	{
 		public static IValueTable EnsureValueTable(this IValueTable table, string propertyName)

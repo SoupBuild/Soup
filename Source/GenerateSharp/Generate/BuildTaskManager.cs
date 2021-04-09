@@ -3,6 +3,8 @@
 // </copyright>
 
 using Microsoft.Extensions.DependencyInjection;
+using Opal;
+using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Text;

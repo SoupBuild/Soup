@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
+using Soup.Build.Runtime;
 using Soup.Build.Utilities;
 using System;
 using Tomlyn;
@@ -19,7 +21,7 @@ namespace Soup.Build.Generate
 		/// </summary>
 		public static ValueTable Deserialize(
 			Path recipeFile,
-            string content)
+			string content)
 		{
 			// Read the contents of the recipe file
 			var root = Toml.Parse(content, recipeFile.ToString());

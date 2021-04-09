@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup.Build.Runtime;
 using System.Collections.Generic;
 
 namespace Soup.Build.Generate

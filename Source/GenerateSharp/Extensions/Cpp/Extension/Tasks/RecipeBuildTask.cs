@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
 using Soup.Build.Cpp.Compiler;
 using Soup.Build.Utilities;
 using System;

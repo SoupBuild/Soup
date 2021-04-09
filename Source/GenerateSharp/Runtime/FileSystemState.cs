@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Utilities;
+using Opal;
 using System;
 using System.Collections.Generic;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Runtime
 {
 	public record FileId(uint value)
 	{
@@ -16,7 +16,7 @@ namespace Soup.Build.Generate
 	/// <summary>
 	/// The complete set of known files that tracking the active change state during execution
 	/// </summary>
-	internal class FileSystemState
+	public class FileSystemState
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FileSystemState"/> class.
