@@ -4,7 +4,9 @@
 
 using Opal;
 using Soup.Build.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Soup.Build.Cpp.Compiler
 {
@@ -32,7 +34,7 @@ namespace Soup.Build.Cpp.Compiler
 	/// <summary>
 	/// The shared link arguments
 	/// </summary>
-	public class LinkArguments
+	public class LinkArguments : IEquatable<LinkArguments>
 	{
 		/// <summary>
 		/// Gets or sets the target file
@@ -83,5 +85,46 @@ namespace Soup.Build.Cpp.Compiler
 		/// Gets or sets a value indicating whether to generate source debug information
 		/// </summary>
 		public bool GenerateSourceDebugInfo { get; set; }
+
+		public override bool Equals(object? obj) => this.Equals(obj as LinkArguments);
+
+		public bool Equals(LinkArguments? rhs)
+		{
+			if (rhs is null)
+				return false;
+
+			// Optimization for a common success case.
+			if (object.ReferenceEquals(this, rhs))
+				return true;
+
+			// Return true if the fields match.
+			return this.TargetFile == rhs.TargetFile &&
+				this.TargetType == rhs.TargetType &&
+				this.ImplementationFile == rhs.ImplementationFile &&
+				this.RootDirectory == rhs.RootDirectory &&
+				this.TargetArchitecture == rhs.TargetArchitecture &&
+				Enumerable.SequenceEqual(this.ObjectFiles, rhs.ObjectFiles) &&
+				Enumerable.SequenceEqual(this.LibraryFiles, rhs.LibraryFiles) &&
+				Enumerable.SequenceEqual(this.ExternalLibraryFiles, rhs.ExternalLibraryFiles) &&
+				Enumerable.SequenceEqual(this.LibraryPaths, rhs.LibraryPaths) &&
+				this.GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
+		}
+
+		public override int GetHashCode() => (TargetFile, TargetType, ImplementationFile, RootDirectory, TargetArchitecture).GetHashCode();
+
+		public static bool operator ==(LinkArguments? lhs, LinkArguments? rhs)
+		{
+			if (lhs is null)
+			{
+				if (rhs is null)
+					return true;
+				else
+					return false;
+			}
+
+			return lhs.Equals(rhs);
+		}
+
+		public static bool operator !=(LinkArguments? lhs, LinkArguments? rhs) => !(lhs == rhs);
 	}
 }

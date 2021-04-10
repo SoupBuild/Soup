@@ -1,5 +1,6 @@
 ﻿
 using Opal;
+using Opal.System;
 using Soup.Build.Utilities;
 using System.Threading.Tasks;
 
@@ -9,6 +10,10 @@ namespace Soup.Build.Generate
 	{
 		static int Main(string[] args)
 		{
+			// Register the runtime services
+			Log.RegisterListener(new ConsoleTraceListener());
+			// IFileSystem.Register(new RuntimeFileSystem());
+
 			if (args.Length != 1)
 			{
 				Log.Error("Invalid parameters. Expected one parameter.");

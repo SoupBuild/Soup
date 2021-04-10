@@ -53,7 +53,7 @@ namespace Opal.System
 		/// <summary>
 		/// Gets the process file name
 		/// </summary>
-		public override Path GetCurrentProcessFileName()
+		public Path GetCurrentProcessFileName()
 		{
 			_requests.Add("GetCurrentProcessFileName");
 			return _processFileName;
@@ -62,7 +62,7 @@ namespace Opal.System
 		/// <summary>
 		/// Creates a process for the provided executable path
 		/// </summary>
-		public override IProcess CreateProcess(
+		public IProcess CreateProcess(
 			Path executable,
 			string arguments,
 			Path workingDirectory)

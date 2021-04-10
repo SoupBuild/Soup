@@ -44,7 +44,7 @@ namespace Opal.System
 		/// <summary>
 		/// Creates a Library for the provided executable path
 		/// </summary>
-		public override ILibrary LoadDynamicLibrary(Path path)
+		public ILibrary LoadDynamicLibrary(Path path)
 		{
 			_requests.Add($"LoadDynamicLibrary: {path}");
 

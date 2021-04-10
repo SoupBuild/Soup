@@ -57,7 +57,7 @@ namespace Opal.System
 		/// <summary>
 		/// Gets the current user profile directory
 		/// </summary>
-		public override Path GetUserProfileDirectory()
+		public Path GetUserProfileDirectory()
 		{
 			_requests.Add("GetCurrentDirectory");
 
@@ -67,7 +67,7 @@ namespace Opal.System
 		/// <summary>
 		/// Gets the current directory for the running processes
 		/// </summary>
-		public override Path GetCurrentDirectory2()
+		public Path GetCurrentDirectory2()
 		{
 			_requests.Add("GetCurrentDirectory");
 
@@ -77,7 +77,7 @@ namespace Opal.System
 		/// <summary>
 		/// Gets a value indicating whether the directory/file exists
 		/// </summary>
-		public override bool Exists(Path path)
+		public bool Exists(Path path)
 		{
 			_requests.Add($"Exists: {path}");
 
@@ -87,7 +87,7 @@ namespace Opal.System
 		/// <summary>
 		/// Get the last write time of the file/directory
 		/// </summary>
-		public override int GetLastWriteTime(Path path)
+		public int GetLastWriteTime(Path path)
 		{
 			_requests.Add($"GetLastWriteTime: {path}");
 
@@ -104,7 +104,7 @@ namespace Opal.System
 		/// <summary>
 		/// Set the last write time of the file/directory
 		/// </summary>
-		public override void SetLastWriteTime(Path path, int value)
+		public void SetLastWriteTime(Path path, int value)
 		{
 			_requests.Add($"SetLastWriteTime: {path}");
 		}
@@ -112,7 +112,7 @@ namespace Opal.System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
-		public override IInputFile OpenRead(Path path, bool isBinary)
+		public IInputFile OpenRead(Path path, bool isBinary)
 		{
 			if (isBinary)
 			{
@@ -136,7 +136,7 @@ namespace Opal.System
 		/// <summary>
 		/// Open the requested file as a stream to write
 		/// </summary>
-		public override IOutputFile OpenWrite(Path path, bool isBinary)
+		public IOutputFile OpenWrite(Path path, bool isBinary)
 		{
 			if (isBinary)
 			{
@@ -166,7 +166,7 @@ namespace Opal.System
 		/// <summary>
 		/// Rename the source file to the destination
 		/// </summary>
-		public override void Rename(Path source, Path destination)
+		public void Rename(Path source, Path destination)
 		{
 			_requests.Add($"Rename: [{source}] -> [{destination}]");
 		}
@@ -174,7 +174,7 @@ namespace Opal.System
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
-		public override void CopyFile2(Path source, Path destination)
+		public void CopyFile2(Path source, Path destination)
 		{
 			_requests.Add($"CopyFile: [{source}] -> [{destination}]");
 		}
@@ -182,7 +182,7 @@ namespace Opal.System
 		/// <summary>
 		/// Create the directory at the requested path
 		/// </summary>
-		public override void CreateDirectory2(Path path)
+		public void CreateDirectory2(Path path)
 		{
 			_requests.Add($"CreateDirectory: {path}");
 		}
@@ -190,7 +190,7 @@ namespace Opal.System
 		/// <summary>
 		/// Get the children of a directory
 		/// </summary>
-		public override IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path)
+		public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path)
 		{
 			_requests.Add($"GetDirectoryChildren: {path}");
 
@@ -201,7 +201,7 @@ namespace Opal.System
 		/// <summary>
 		/// Delete the directory
 		/// </summary>
-		public override void DeleteDirectory(Path path, bool recursive)
+		public void DeleteDirectory(Path path, bool recursive)
 		{
 			if (recursive)
 				_requests.Add($"DeleteDirectoryRecursive: {path}");

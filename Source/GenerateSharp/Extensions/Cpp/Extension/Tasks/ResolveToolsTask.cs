@@ -34,6 +34,7 @@ namespace Soup.Build.Cpp
 
 		public ResolveToolsTask(IBuildState buildState)
 		{
+			LifetimeManager.RegisterSingleton<IProcessManager, RuntimeProcessManager>();
 			_buildState = buildState;
 		}
 
@@ -219,7 +220,7 @@ namespace Soup.Build.Cpp
 			// Execute the requested target
 			var arguments = CombineArguments(argumentList);
 			_buildState.LogTrace(TraceLevel.Debug, executablePath.ToString() + " " + arguments);
-			var process = IProcessManager.Current.CreateProcess(
+			var process = LifetimeManager.Get<IProcessManager>().CreateProcess(
 				executablePath,
 				arguments,
 				workingDirectory);

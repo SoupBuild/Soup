@@ -4,7 +4,9 @@
 
 using Opal;
 using Soup.Build.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Soup.Build.Cpp.Compiler
 {
@@ -58,7 +60,7 @@ namespace Soup.Build.Cpp.Compiler
 	/// <summary>
 	/// The set of file specific compiler arguments
 	/// </summary>
-	public class TranslationUnitCompileArguments
+	public class TranslationUnitCompileArguments : IEquatable<TranslationUnitCompileArguments>
 	{
 		/// <summary>
 		/// Gets or sets the source file
@@ -69,23 +71,90 @@ namespace Soup.Build.Cpp.Compiler
 		/// Gets or sets the target file
 		/// </summary>
 		public Path TargetFile { get; set; } = new Path();
+
+		public override bool Equals(object? obj) => this.Equals(obj as TranslationUnitCompileArguments);
+
+		public bool Equals(TranslationUnitCompileArguments? rhs)
+		{
+			if (rhs is null)
+				return false;
+
+			// Optimization for a common success case.
+			if (object.ReferenceEquals(this, rhs))
+				return true;
+
+			// Return true if the fields match.
+			return this.SourceFile == rhs.SourceFile &&
+				this.TargetFile == rhs.TargetFile;
+		}
+
+		public override int GetHashCode() => (SourceFile, TargetFile).GetHashCode();
+
+		public static bool operator ==(TranslationUnitCompileArguments? lhs, TranslationUnitCompileArguments? rhs)
+		{
+			if (lhs is null)
+			{
+				if (rhs is null)
+					return true;
+				else
+					return false;
+			}
+
+			return lhs.Equals(rhs);
+		}
+
+		public static bool operator !=(TranslationUnitCompileArguments? lhs, TranslationUnitCompileArguments? rhs) => !(lhs == rhs);
 	}
 
 	/// <summary>
 	/// The set of file specific compiler arguments
 	/// </summary>
-	public class InterfaceUnitCompileArguments : TranslationUnitCompileArguments
+	public class InterfaceUnitCompileArguments : TranslationUnitCompileArguments, IEquatable<InterfaceUnitCompileArguments>
 	{
 		/// <summary>
 		/// Gets or sets the source file
 		/// </summary>
 		public Path ModuleInterfaceTarget { get; init; } = new Path();
+
+		public override bool Equals(object? obj) => this.Equals(obj as InterfaceUnitCompileArguments);
+
+		public bool Equals(InterfaceUnitCompileArguments? rhs)
+		{
+			if (rhs is null)
+				return false;
+
+			// Optimization for a common success case.
+			if (object.ReferenceEquals(this, rhs))
+				return true;
+
+			// Return true if the fields match.
+			return this.SourceFile == rhs.SourceFile &&
+				this.TargetFile == rhs.TargetFile && 
+				this.ModuleInterfaceTarget == rhs.ModuleInterfaceTarget;
+		}
+
+		public override int GetHashCode() => (SourceFile, TargetFile).GetHashCode();
+
+		public static bool operator ==(InterfaceUnitCompileArguments? lhs, InterfaceUnitCompileArguments? rhs)
+		{
+			if (lhs is null)
+			{
+				if (rhs is null)
+					return true;
+				else
+					return false;
+			}
+
+			return lhs.Equals(rhs);
+		}
+
+		public static bool operator !=(InterfaceUnitCompileArguments? lhs, InterfaceUnitCompileArguments? rhs) => !(lhs == rhs);
 	}
 
 	/// <summary>
 	/// The set of shared compiler arguments
 	/// </summary>
-	public class SharedCompileArguments
+	public class SharedCompileArguments : IEquatable<SharedCompileArguments>
 	{
 		/// <summary>
 		/// Gets or sets the language standard
@@ -156,5 +225,50 @@ namespace Soup.Build.Cpp.Compiler
 		/// Gets or sets the set of custom properties for the known compiler
 		/// </summary>
 		public IReadOnlyList<string> CustomProperties { get; init; } = new List<string>();
+
+		public override bool Equals(object? obj) => this.Equals(obj as SharedCompileArguments);
+
+		public bool Equals(SharedCompileArguments? rhs)
+		{
+			if (rhs is null)
+				return false;
+
+			// Optimization for a common success case.
+			if (object.ReferenceEquals(this, rhs))
+				return true;
+
+			// Return true if the fields match.
+			return this.Standard == rhs.Standard &&
+				this.Optimize == rhs.Optimize &&
+				this.RootDirectory == rhs.RootDirectory &&
+				this.ObjectDirectory == rhs.ObjectDirectory &&
+				Enumerable.SequenceEqual(this.PreprocessorDefinitions, rhs.PreprocessorDefinitions) &&
+				Enumerable.SequenceEqual(this.IncludeDirectories, rhs.IncludeDirectories) &&
+				Enumerable.SequenceEqual(this.IncludeModules, rhs.IncludeModules) &&
+				this.GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
+				this.InterfaceUnit == rhs.InterfaceUnit &&
+				Enumerable.SequenceEqual(this.ImplementationUnits, rhs.ImplementationUnits) &&
+				this.EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
+				Enumerable.SequenceEqual(this.DisabledWarnings, rhs.DisabledWarnings) &&
+				Enumerable.SequenceEqual(this.EnabledWarnings, rhs.EnabledWarnings) &&
+				Enumerable.SequenceEqual(this.CustomProperties, rhs.CustomProperties);
+		}
+
+		public override int GetHashCode() => (Standard, Optimize, RootDirectory, ObjectDirectory, InterfaceUnit).GetHashCode();
+
+		public static bool operator ==(SharedCompileArguments? lhs, SharedCompileArguments? rhs)
+		{
+			if (lhs is null)
+			{
+				if (rhs is null)
+					return true;
+				else
+					return false;
+			}
+
+			return lhs.Equals(rhs);
+		}
+
+		public static bool operator !=(SharedCompileArguments? lhs, SharedCompileArguments? rhs) => !(lhs == rhs);
 	}
 }

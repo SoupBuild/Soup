@@ -10,29 +10,8 @@ namespace Opal.System
 	/// The process manager interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	public abstract class IProcessManager
+	public interface IProcessManager
 	{
-		/// <summary>
-		/// Gets the current active process manager
-		/// </summary>
-		public static IProcessManager Current
-		{
-			get
-			{
-				if (_current == null)
-					throw new InvalidOperationException("No process manager implementation registered.");
-				return _current;
-			}
-		}
-
-		/// <summary>
-		/// Register a new active process manager
-		/// </summary>
-		public static void Register(IProcessManager? value)
-		{
-			_current = value;
-		}
-
 		/// <summary>
 		/// Gets the process file name
 		/// </summary>
@@ -45,7 +24,5 @@ namespace Opal.System
 			Path executable,
 			string arguments,
 			Path workingDirectory);
-
-		private static IProcessManager? _current = null;
 	}
 }

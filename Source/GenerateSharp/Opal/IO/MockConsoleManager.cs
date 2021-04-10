@@ -40,7 +40,7 @@ namespace Opal.IO
 		/// <summary>
 		/// Get the standard input stream
 		/// </summary>
-		public override IConsoleInputStream GetStandardInput()
+		public IConsoleInputStream GetStandardInput()
 		{
 			_requests.Add("GetStandardInput");
 

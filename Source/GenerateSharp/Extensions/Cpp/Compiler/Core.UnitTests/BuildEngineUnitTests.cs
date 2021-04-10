@@ -4,6 +4,7 @@ using Opal.System;
 using Soup.Build.Runtime;
 using Soup.Build.Utilities;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Soup.Build.Cpp.Compiler.UnitTests
@@ -24,7 +25,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
             var testListener = new TestTraceListener();
             var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedProcessManagerRegister(processManager))
+            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
 
                 // Register the mock compiler
@@ -107,6 +108,9 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                 };
 
                 // Verify expected compiler calls
+                var val = compiler.GetCompileRequests()[0];
+                var areEqual = val == expectedCompileArguments;
+                var areEqual2 = val.ObjectDirectory == expectedCompileArguments.ObjectDirectory;
                 Assert.Equal(
                     new List<SharedCompileArguments>()
                     {
@@ -125,7 +129,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                     new BuildOperation(
                         "MakeDir [./obj/]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/mkdir.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
                         "\"./obj/\"",
                         new List<Path>(),
                         new List<Path>()
@@ -135,7 +139,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                     new BuildOperation(
                         "MakeDir [./bin/]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/mkdir.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
                         "\"./bin/\"",
                         new List<Path>(),
                         new List<Path>()
@@ -198,7 +202,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
             var testListener = new TestTraceListener();
             var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedProcessManagerRegister(processManager))
+            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
                 // Register the mock compiler
                 var compiler = new Mock.Compiler();
@@ -267,6 +271,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                     Standard = LanguageStandard.CPP20,
                     Optimize = OptimizationLevel.Size,
                     RootDirectory = new Path("C:/root/"),
+                    ObjectDirectory = new Path("obj/"),
                     IncludeDirectories = new List<Path>()
                     {
                         new Path("Folder"),
@@ -332,7 +337,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                     new BuildOperation(
                         "MakeDir [./obj/]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/mkdir.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
                         "\"./obj/\"",
                         new List<Path>(),
 					    new List<Path>()
@@ -342,7 +347,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				    new BuildOperation(
                         "MakeDir [./bin/]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/mkdir.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
                         "\"./bin/\"",
                         new List<Path>(),
 					    new List<Path>()
@@ -437,7 +442,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
             var testListener = new TestTraceListener();
             var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedProcessManagerRegister(processManager))
+            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
                 // Register the mock compiler
                 var compiler = new Mock.Compiler();
@@ -514,6 +519,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                     Standard = LanguageStandard.CPP20,
                     Optimize = OptimizationLevel.None,
                     RootDirectory = new Path("C:/root/"),
+                    ObjectDirectory = new Path("obj/"),
                     IncludeDirectories = new List<Path>()
                     {
                         new Path("Folder"),
@@ -575,7 +581,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                 Assert.Equal(
                     new List<SharedCompileArguments>()
                     {
-                    expectedCompileArguments,
+                        expectedCompileArguments,
                     },
                     compiler.GetCompileRequests());
                 Assert.Equal(
@@ -591,7 +597,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                     new BuildOperation(
                         "MakeDir [./obj/]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/mkdir.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
                         "\"./obj/\"",
                         new List<Path>(),
                         new List<Path>()
@@ -601,7 +607,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				    new BuildOperation(
                         "MakeDir [./bin/]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/mkdir.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
                         "\"./bin/\"",
                         new List<Path>(),
                         new List<Path>()
@@ -609,9 +615,9 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                             new Path("./bin/"),
                         }),
 				    new BuildOperation(
-                        "Copy [./obj/Public.mock.bmi] . [./bin/Library.mock.bmi]",
+                        "Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/copy.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/copy.exe"),
                         "\"./obj/Public.mock.bmi\" \"./bin/Library.mock.bmi\"",
                         new List<Path>()
                         {
@@ -725,7 +731,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
             var testListener = new TestTraceListener();
             var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedProcessManagerRegister(processManager))
+            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
                 // Register the mock compiler
                 var compiler = new Mock.Compiler();
@@ -789,6 +795,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                     Standard = LanguageStandard.CPP20,
                     Optimize = OptimizationLevel.Size,
                     RootDirectory = new Path("C:/root/"),
+                    ObjectDirectory = new Path("obj/"),
                     IncludeDirectories = new List<Path>()
                     {
                         new Path("Folder"),
@@ -839,7 +846,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                     new BuildOperation(
                         "MakeDir [./obj/]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/mkdir.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
                         "\"./obj/\"",
                         new List<Path>(),
                         new List<Path>()
@@ -849,7 +856,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				    new BuildOperation(
                         "MakeDir [./bin/]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/mkdir.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
                         "\"./bin/\"",
                         new List<Path>(),
                         new List<Path>()
@@ -857,9 +864,9 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                             new Path("./bin/"),
                         }),
 				    new BuildOperation(
-                        "Copy [./obj/Public.mock.bmi] . [./bin/Library.mock.bmi]",
+                        "Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
                         new Path("C:/root/"),
-                        new Path("C:/testlocation/copy.exe"),
+                        new Path("C:/Program Files/SoupBuild/Soup/copy.exe"),
                         "\"./obj/Public.mock.bmi\" \"./bin/Library.mock.bmi\"",
                         new List<Path>()
                         {
