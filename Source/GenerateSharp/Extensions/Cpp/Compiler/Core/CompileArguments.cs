@@ -114,7 +114,7 @@ namespace Soup.Build.Cpp.Compiler
 		/// <summary>
 		/// Gets or sets the source file
 		/// </summary>
-		public Path ModuleInterfaceTarget { get; init; } = new Path();
+		public Path ModuleInterfaceTarget { get; set; } = new Path();
 
 		public override bool Equals(object? obj) => this.Equals(obj as InterfaceUnitCompileArguments);
 

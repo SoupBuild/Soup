@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Opal.UnitTests", "Opal.Unit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Runtime", "Runtime\Soup.Build.Runtime.csproj", "{32DB1BF4-77A3-4A49-8AC2-DE250D2CFCCE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Cpp.Compiler.MSVC.UnitTests", "Extensions\Cpp\Compiler\MSVC.UnitTests\Soup.Cpp.Compiler.MSVC.UnitTests.csproj", "{66FA6F08-F50B-4CB1-B172-94E7596AE830}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{32DB1BF4-77A3-4A49-8AC2-DE250D2CFCCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32DB1BF4-77A3-4A49-8AC2-DE250D2CFCCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32DB1BF4-77A3-4A49-8AC2-DE250D2CFCCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66FA6F08-F50B-4CB1-B172-94E7596AE830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66FA6F08-F50B-4CB1-B172-94E7596AE830}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66FA6F08-F50B-4CB1-B172-94E7596AE830}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66FA6F08-F50B-4CB1-B172-94E7596AE830}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

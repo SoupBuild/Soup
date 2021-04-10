@@ -4,7 +4,6 @@ using Opal.System;
 using Soup.Build.Runtime;
 using Soup.Build.Utilities;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Soup.Build.Cpp.Compiler.UnitTests
