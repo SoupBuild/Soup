@@ -134,7 +134,7 @@ namespace Soup.Build.Cpp.Compiler.Mock
 				});
 		}
 
-        private IList<SharedCompileArguments> _compileRequests;
+		private IList<SharedCompileArguments> _compileRequests;
 		private IList<LinkArguments> _linkRequests;
 	}
 }

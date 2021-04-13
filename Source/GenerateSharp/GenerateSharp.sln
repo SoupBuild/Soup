@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Runtime", "Runti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Cpp.Compiler.MSVC.UnitTests", "Extensions\Cpp\Compiler\MSVC.UnitTests\Soup.Cpp.Compiler.MSVC.UnitTests.csproj", "{66FA6F08-F50B-4CB1-B172-94E7596AE830}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Cpp.UnitTests", "Extensions\Cpp\Extension.UnitTests\Soup.Cpp.UnitTests.csproj", "{5DEF6E0F-0B23-46E4-8419-7B08D6A45627}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{66FA6F08-F50B-4CB1-B172-94E7596AE830}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66FA6F08-F50B-4CB1-B172-94E7596AE830}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66FA6F08-F50B-4CB1-B172-94E7596AE830}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DEF6E0F-0B23-46E4-8419-7B08D6A45627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DEF6E0F-0B23-46E4-8419-7B08D6A45627}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DEF6E0F-0B23-46E4-8419-7B08D6A45627}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DEF6E0F-0B23-46E4-8419-7B08D6A45627}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
