@@ -149,6 +149,11 @@ namespace Soup.Build.Cpp.Compiler
 		}
 
 		public static bool operator !=(InterfaceUnitCompileArguments? lhs, InterfaceUnitCompileArguments? rhs) => !(lhs == rhs);
+
+		public override string ToString()
+		{
+			return $"InterfaceUnitCompileArguments {{ SourceFile=\"{SourceFile}\", TargetFile=\"{TargetFile}\", ModuleInterfaceTarget=\"{ModuleInterfaceTarget}\" }}";
+		}
 	}
 
 	/// <summary>
@@ -270,5 +275,10 @@ namespace Soup.Build.Cpp.Compiler
 		}
 
 		public static bool operator !=(SharedCompileArguments? lhs, SharedCompileArguments? rhs) => !(lhs == rhs);
+
+		public override string ToString()
+		{
+			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], IncludeDirectories=[{string.Join(",", IncludeDirectories)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+		}
 	}
 }

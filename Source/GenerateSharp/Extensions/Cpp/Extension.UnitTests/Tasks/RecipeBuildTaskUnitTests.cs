@@ -29,12 +29,23 @@ namespace Soup.Build.Cpp.UnitTests
                 // Setup the input build state
                 var buildState = new MockBuildState();
                 var state = buildState.ActiveState;
-                state.Add("PackageRoot", new Value("C:/PackageRoot/"));
-                state.Add("BuildFlavor", new Value("debug"));
                 state.Add("PlatformLibraries", new Value(new ValueList()));
                 state.Add("PlatformIncludePaths", new Value(new ValueList()));
                 state.Add("PlatformLibraryPaths", new Value(new ValueList()));
                 state.Add("PlatformPreprocessorDefinitions", new Value(new ValueList()));
+
+                // Setup recipe table
+                var buildTable = new ValueTable();
+                state.Add("Recipe", new Value(buildTable));
+                buildTable.Add("Name", new Value("Program"));
+
+                // Setup parameters table
+                var parametersTable = new ValueTable();
+                state.Add("Parameters", new Value(parametersTable));
+                parametersTable.Add("TargetDirectory", new Value("C:/Target/"));
+                parametersTable.Add("PackageDirectory", new Value("C:/PackageRoot/"));
+                parametersTable.Add("Compiler", new Value("MOCK"));
+                parametersTable.Add("Flavor", new Value("debug"));
 
                 var uut = new RecipeBuildTask(buildState);
 

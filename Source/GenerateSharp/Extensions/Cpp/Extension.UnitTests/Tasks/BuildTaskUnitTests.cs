@@ -556,8 +556,8 @@ namespace Soup.Build.Cpp.UnitTests
                 {
                     new BuildOperation(
                         "MakeDir [./obj/]",
+                        new Path("C:/root/"),
                         new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        new Path("./"),
                         "\"./obj/\"",
                         new List<Path>(),
                         new List<Path>()
@@ -566,8 +566,8 @@ namespace Soup.Build.Cpp.UnitTests
                         }),
                     new BuildOperation(
                         "MakeDir [./bin/]",
+                        new Path("C:/root/"),
                         new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        new Path("./"),
                         "\"./bin/\"",
                         new List<Path>(),
                         new List<Path>()
@@ -575,74 +575,74 @@ namespace Soup.Build.Cpp.UnitTests
                             new Path("./bin/"),
                         }),
                     new BuildOperation(
+                        "Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
+                        new Path("C:/root/"),
+                        new Path("C:/Program Files/SoupBuild/Soup/copy.exe"),
+                        "\"./obj/Public.mock.bmi\" \"./bin/Library.mock.bmi\"",
+                        new List<Path>()
+                        {
+                            new Path("./obj/Public.mock.bmi"),
+                        },
+                        new List<Path>()
+                        {
+                            new Path("./bin/Library.mock.bmi"),
+                        }),
+                    new BuildOperation(
+                        "MockCompileModule: 1",
+                        new Path("MockWorkingDirectory"),
+                        new Path("MockCompiler.exe"),
+                        "Arguments",
+                        new List<Path>()
+                        {
+                            new Path("InputFile.in"),
+                        },
+                        new List<Path>()
+                        {
+                            new Path("OutputFile.out"),
+                        }),
+                    new BuildOperation(
+                        "MockCompile: 1",
+                        new Path("MockWorkingDirectory"),
+                        new Path("MockCompiler.exe"),
+                        "Arguments",
+                        new List<Path>()
+                        {
+                            new Path("TestFile1.cpp"),
+                        },
+                        new List<Path>()
+                        {
+                            new Path("obj/TestFile1.mock.obj"),
+                        }),
+                    new BuildOperation(
+                        "MockCompile: 1",
+                        new Path("MockWorkingDirectory"),
+                        new Path("MockCompiler.exe"),
+                        "Arguments",
+                        new List<Path>()
+                        {
+                            new Path("TestFile2.cpp"),
+                        },
+                        new List<Path>()
+                        {
+                            new Path("obj/TestFile2.mock.obj"),
+                        }),
+                    new BuildOperation(
+                        "MockCompile: 1",
+                        new Path("MockWorkingDirectory"),
+                        new Path("MockCompiler.exe"),
+                        "Arguments",
+                        new List<Path>()
+                        {
+                            new Path("TestFile3.cpp"),
+                        },
+                        new List<Path>()
+                        {
+                            new Path("obj/TestFile3.mock.obj"),
+                        }),
+                    new BuildOperation(
                         "MockLink: 1",
                         new Path("MockWorkingDirectory"),
                         new Path("MockLinker.exe"),
-                        "Arguments",
-                        new List<Path>()
-                        {
-                            new Path("InputFile.in"),
-                        },
-                        new List<Path>()
-                        {
-                            new Path("OutputFile.out"),
-                        }),
-                    new BuildOperation(
-                        "MockCompile: 1",
-                        new Path("MockWorkingDirectory"),
-                        new Path("MockCompiler.exe"),
-                        "Arguments",
-                        new List<Path>()
-                        {
-                            new Path("InputFile.in"),
-                        },
-                        new List<Path>()
-                        {
-                            new Path("OutputFile.out"),
-                        }),
-                    new BuildOperation(
-                        "MockCompile: 1",
-                        new Path("MockWorkingDirectory"),
-                        new Path("MockCompiler.exe"),
-                        "Arguments",
-                        new List<Path>()
-                        {
-                            new Path("InputFile.in"),
-                        },
-                        new List<Path>()
-                        {
-                            new Path("OutputFile.out"),
-                        }),
-                    new BuildOperation(
-                        "MockCompile: 1",
-                        new Path("MockWorkingDirectory"),
-                        new Path("MockCompiler.exe"),
-                        "Arguments",
-                        new List<Path>()
-                        {
-                            new Path("InputFile.in"),
-                        },
-                        new List<Path>()
-                        {
-                            new Path("OutputFile.out"),
-                        }),
-                    new BuildOperation(
-                        "Copy [C:/root/obj/Public.mock.bmi] . [C:/root/bin/Library.mock.bmi]",
-                        new Path("C:/Windows/System32/cmd.exe"),
-                        new Path("./"),
-                        "\"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
-                        new List<Path>()
-                        {
-                            new Path("C:/root/obj/Public.mock.bmi"),
-                        },
-                        new List<Path>()
-                        {
-                            new Path("C:/root/bin/Library.mock.bmi"),
-                        }),
-                    new BuildOperation(
-                        "MockCompile: 1",
-                        new Path("MockWorkingDirectory"),
-                        new Path("MockCompiler.exe"),
                         "Arguments",
                         new List<Path>()
                         {
@@ -674,30 +674,40 @@ namespace Soup.Build.Cpp.UnitTests
                 // Setup the input build state
                 var buildState = new MockBuildState();
                 var state = buildState.ActiveState;
-                state.Add("TargetName", new Value("Library"));
-                state.Add("TargetType", new Value((long)BuildTargetType.StaticLibrary));
-                state.Add("LanguageStandard", new Value((long)LanguageStandard.CPP20));
-                state.Add("WorkingDirectory", new Value("C:/root/"));
-                state.Add("ObjectDirectory", new Value("obj"));
-                state.Add("BinaryDirectory", new Value("bin"));
-                state.Add("ModuleInterfaceSourceFile", new Value("Public.cpp"));
+
+                // Setup build table
+                var buildTable = new ValueTable();
+                state.Add("Build", new Value(buildTable));
+                buildTable.Add("TargetName", new Value("Library"));
+                buildTable.Add("TargetType", new Value((long)BuildTargetType.StaticLibrary));
+                buildTable.Add("LanguageStandard", new Value((long)LanguageStandard.CPP20));
+                buildTable.Add("WorkingDirectory", new Value("C:/root/"));
+                buildTable.Add("ObjectDirectory", new Value("obj/"));
+                buildTable.Add("BinaryDirectory", new Value("bin/"));
+                buildTable.Add("ModuleInterfaceSourceFile", new Value("Public.cpp"));
                 state.Add("SourceFiles", new Value(new ValueList()));
-                state.Add("IncludeDirectories", new Value(new ValueList()
+                buildTable.Add("IncludeDirectories", new Value(new ValueList()
                 {
                     new Value("Folder"),
                     new Value("AnotherFolder/Sub"),
                 }));
-                state.Add("IncludeModules", new Value(new ValueList()
+                buildTable.Add("ModuleDependencies", new Value(new ValueList()
                 {
                     new Value("../Other/bin/OtherModule1.mock.bmi"),
                     new Value("../OtherModule2.mock.bmi"),
                 }));
-                state.Add("OptimizationLevel", new Value((long)BuildOptimizationLevel.None));
-                state.Add("LinkDependencies", new Value(new ValueList()
+                buildTable.Add("OptimizationLevel", new Value((long)BuildOptimizationLevel.None));
+                buildTable.Add("PreprocessorDefinitions", new Value(new ValueList()
                 {
-                    new Value("../Other/bin/OtherModule1.mock.a"),
-                    new Value("../OtherModule2.mock.a"),
+                    new Value("DEBUG"),
+                    new Value("AWESOME"),
                 }));
+
+                // Setup parameters table
+                var parametersTable = new ValueTable();
+                state.Add("Parameters", new Value(parametersTable));
+                parametersTable.Add("Architecture", new Value("x64"));
+                parametersTable.Add("Compiler", new Value("MOCK"));
 
                 // Register the mock compiler
                 var compiler = new Compiler.Mock.Compiler();
@@ -712,19 +722,7 @@ namespace Soup.Build.Cpp.UnitTests
                 Assert.Equal(
                     new List<string>
                     {
-                        "DIAG: TargetName = Library",
-                        "DIAG: TargetType = StaticLibrary",
-                        "DIAG: LanguageStandard = C++20",
-                        "DIAG: WorkingDirectory = C:/root/",
-                        "DIAG: ObjectDirectory = obj",
-                        "DIAG: BinaryDirectory = bin",
-                        "DIAG: ModuleInterfaceSourceFile = Public.cpp",
-                        "DIAG: OptimizationLevel = None",
-                        "DIAG: GenerateSourceDebugInfo = false",
-                        "DIAG: IncludeDirectories = Folder AnotherFolder/Sub",
-                        "DIAG: PreprocessorDefinitions = ",
-                        "INFO: CompileModuleInterfaceUnit",
-                        "INFO: Generate Compile Operation: ./Public.cpp",
+                        "INFO: Generate Module Unit Compile: ./Public.cpp",
                         "INFO: CoreLink",
                         "INFO: Linking target",
                         "INFO: Generate Link Operation: ./bin/Library.mock.lib",
@@ -738,6 +736,7 @@ namespace Soup.Build.Cpp.UnitTests
                     Standard = LanguageStandard.CPP20,
                     Optimize = OptimizationLevel.None,
                     RootDirectory = new Path("C:/root/"),
+                    ObjectDirectory = new Path("./obj/"),
                     IncludeDirectories = new List<Path>()
                     {
                         new Path("Folder"),
@@ -748,26 +747,29 @@ namespace Soup.Build.Cpp.UnitTests
                         new Path("../Other/bin/OtherModule1.mock.bmi"),
                         new Path("../OtherModule2.mock.bmi"),
                     },
+                    PreprocessorDefinitions = new List<string>()
+                    {
+                        "DEBUG",
+                        "AWESOME",
+                    },
+                    InterfaceUnit = new InterfaceUnitCompileArguments()
+                    {
+                        SourceFile = new Path("./Public.cpp"),
+                        TargetFile = new Path("./obj/Public.mock.obj"),
+                        ModuleInterfaceTarget = new Path("./obj/Public.mock.bmi"),
+                    }
                 };
-
-                //var expectedCompileModuleArguments = expectedCompileArguments;
-                //expectedCompileModuleArguments.SourceFile = new Path("Public.cpp");
-                //expectedCompileModuleArguments.TargetFile = new Path("obj/Public.mock.obj");
-                //expectedCompileModuleArguments.ExportModule = true;
 
                 var expectedLinkArguments = new LinkArguments();
                 expectedLinkArguments.TargetFile = new Path("bin/Library.mock.lib");
                 expectedLinkArguments.TargetType = LinkTarget.StaticLibrary;
+                expectedLinkArguments.TargetArchitecture = "x64";
                 expectedLinkArguments.RootDirectory = new Path("C:/root/");
                 expectedLinkArguments.ObjectFiles = new List<Path>()
                 {
                     new Path("obj/Public.mock.obj"),
                 };
-                expectedLinkArguments.LibraryFiles = new List<Path>()
-                {
-                    new Path("../Other/bin/OtherModule1.mock.a"),
-                    new Path("../OtherModule2.mock.a"),
-                };
+                expectedLinkArguments.LibraryFiles = new List<Path>();
 
                 // Verify expected compiler calls
                 Assert.Equal(
@@ -786,6 +788,52 @@ namespace Soup.Build.Cpp.UnitTests
                 // Verify build state
                 var expectedBuildOperations = new List<BuildOperation>()
                 {
+                    new BuildOperation(
+                        "MakeDir [./obj/]",
+                        new Path("C:/root/"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
+                        "\"./obj/\"",
+                        new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./obj/"),
+                        }),
+                    new BuildOperation(
+                        "MakeDir [./bin/]",
+                        new Path("C:/root/"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
+                        "\"./bin/\"",
+                        new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./bin/"),
+                        }),
+                    new BuildOperation(
+                        "Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
+                        new Path("C:/root/"),
+                        new Path("C:/Program Files/SoupBuild/Soup/copy.exe"),
+                        "\"./obj/Public.mock.bmi\" \"./bin/Library.mock.bmi\"",
+                        new List<Path>()
+                        {
+                            new Path("./obj/Public.mock.bmi"),
+                        },
+                        new List<Path>()
+                        {
+                            new Path("./bin/Library.mock.bmi"),
+                        }),
+                    new BuildOperation(
+                        "MockCompileModule: 1",
+                        new Path("MockWorkingDirectory"),
+                        new Path("MockCompiler.exe"),
+                        "Arguments",
+                        new List<Path>()
+                        {
+                            new Path("InputFile.in"),
+                        },
+                        new List<Path>()
+                        {
+                            new Path("OutputFile.out"),
+                        }),
                      new BuildOperation(
                         "MockLink: 1",
                         new Path("MockWorkingDirectory"),
@@ -798,52 +846,6 @@ namespace Soup.Build.Cpp.UnitTests
                         new List<Path>()
                         {
                             new Path("OutputFile.out"),
-                        }),
-                    new BuildOperation(
-                        "Copy [C:/root/obj/Public.mock.bmi] . [C:/root/bin/Library.mock.bmi]",
-                        new Path("C:/Windows/System32/cmd.exe"),
-                        new Path("./"),
-                        "\"C:\\root\\obj\\Public.mock.bmi\" \"C:\\root\\bin\\Library.mock.bmi\"",
-                        new List<Path>()
-                        {
-                            new Path("C:/root/obj/Public.mock.bmi"),
-                        },
-                        new List<Path>()
-                        {
-                            new Path("C:/root/bin/Library.mock.bmi"),
-                        }),
-                    new BuildOperation(
-                        "MockCompile: 1",
-                        new Path("MockWorkingDirectory"),
-                        new Path("MockCompiler.exe"),
-                        "Arguments",
-                        new List<Path>()
-                        {
-                            new Path("InputFile.in"),
-                        },
-                        new List<Path>()
-                        {
-                            new Path("OutputFile.out"),
-                        }),
-                    new BuildOperation(
-                        "MakeDir [./obj/]",
-                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        new Path("./"),
-                        "\"./obj/\"",
-                        new List<Path>(),
-                        new List<Path>()
-                        {
-                            new Path("./obj/"),
-                        }),
-                    new BuildOperation(
-                        "MakeDir [./bin/]",
-                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        new Path("./"),
-                        "\"./bin/\"",
-                        new List<Path>(),
-                        new List<Path>()
-                        {
-                            new Path("./bin/"),
                         }),
                 };
 
