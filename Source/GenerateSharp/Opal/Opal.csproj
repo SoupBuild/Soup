@@ -13,10 +13,4 @@
     <Compile Remove="System\WindowsDynamicLibrary.cs" />
     <Compile Remove="System\WindowsDynamicLibraryManager.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Contracts\Soup.Build.Contracts.csproj">
-      <Private>false</Private>
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

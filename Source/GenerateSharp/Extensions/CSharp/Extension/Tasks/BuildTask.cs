@@ -28,19 +28,22 @@ namespace Soup.Build.CSharp
 		{
 		};
 
-		public BuildTask(IBuildState buildState)
+		public BuildTask(IBuildState buildState) : this(buildState, new Dictionary<string, Func<IValueTable, ICompiler>>())
 		{
-			_buildState = buildState;
-
-			_compilerFactory = new Dictionary<string, Func<IValueTable, ICompiler>>();
-
+			// Register default compilers
 			_compilerFactory.Add("MSVC", (IValueTable activeState) =>
 			{
 				var clToolPath = new Path(activeState["MSVC.ClToolPath"].AsString());
 				var linkToolPath = new Path(activeState["MSVC.LinkToolPath"].AsString());
 				var libToolPath = new Path(activeState["MSVC.LibToolPath"].AsString());
-				return new Compiler.Roslyn.Compiler(clToolPath, linkToolPath, libToolPath);
+				return new Compiler.MSVC.Compiler(clToolPath, linkToolPath, libToolPath);
 			});
+		}
+
+		public BuildTask(IBuildState buildState, Dictionary<string, Func<IValueTable, ICompiler>> compilerFactory)
+		{
+			_buildState = buildState;
+			_compilerFactory = compilerFactory;
 		}
 
 		public void Execute()

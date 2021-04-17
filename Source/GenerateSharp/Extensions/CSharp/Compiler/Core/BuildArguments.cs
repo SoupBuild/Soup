@@ -3,7 +3,6 @@
 // </copyright>
 
 using Opal;
-using Soup.Build.Utilities;
 using System.Collections.Generic;
 
 namespace Soup.Build.CSharp.Compiler
@@ -51,15 +50,6 @@ namespace Soup.Build.CSharp.Compiler
 	}
 
 	/// <summary>
-	/// The source file definition
-	/// </summary>
-	public class SourceFile
-	{
-		public Path File { get; set; } = new Path();
-		public bool IsModule { get; set; }
-	}
-
-	/// <summary>
 	/// The set of build arguments
 	/// </summary>
 	public class BuildArguments
@@ -78,11 +68,6 @@ namespace Soup.Build.CSharp.Compiler
 		/// Gets or sets the target type
 		/// </summary>
 		public BuildTargetType TargetType { get; set; }
-
-		/// <summary>
-		/// Gets or sets the language standard
-		/// </summary>
-		public LanguageStandard LanguageStandard { get; set; }
 
 		/// <summary>
 		/// Gets or sets the working directory

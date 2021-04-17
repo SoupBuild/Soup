@@ -3,10 +3,10 @@
 // </copyright>
 
 using Opal;
+using Opal.System;
 using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 
 namespace Soup.Build.CSharp
@@ -219,23 +219,16 @@ namespace Soup.Build.CSharp
 			// Execute the requested target
 			var arguments = CombineArguments(argumentList);
 			_buildState.LogTrace(TraceLevel.Debug, executablePath.ToString() + " " + arguments);
-			var processInfo = new ProcessStartInfo()
-			{
-				FileName = executablePath.ToString(),
-				Arguments = arguments,
-				WorkingDirectory = workingDirectory.ToString(),
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
-			};
-			var process = Process.Start(processInfo);
-			if (process is null)
-				throw new InvalidOperationException("Failed to start process");
-
+			var process = LifetimeManager.Get<IProcessManager>().CreateProcess(
+				executablePath,
+				arguments,
+				workingDirectory);
+			process.Start();
 			process.WaitForExit();
 
-			var stdOut = process.StandardOutput;
-			var stdErr = process.StandardError.ReadToEnd();
-			var exitCode = process.ExitCode;
+			var stdOut = process.GetStandardOutput();
+			var stdErr = process.GetStandardError();
+			var exitCode = process.GetExitCode();
 
 			if (!string.IsNullOrEmpty(stdErr))
 			{
@@ -251,14 +244,17 @@ namespace Soup.Build.CSharp
 			}
 
 			// The first line is the path
-			var path = stdOut.ReadLine();
-			if (path is null)
+			using (var reader = new System.IO.StringReader(stdOut))
 			{
-				_buildState.LogTrace(TraceLevel.Error, "Failed to parse vswhere output.");
-				throw new InvalidOperationException("Failed to parse vswhere output.");
-			}
+				var path = reader.ReadLine();
+				if (path is null)
+				{
+					_buildState.LogTrace(TraceLevel.Error, "Failed to parse vswhere output.");
+					throw new InvalidOperationException("Failed to parse vswhere output.");
+				}
 
-			return new Path(path);
+				return new Path(path);
+			}
 		}
 
 		private string FindDefaultVCToolsVersion(

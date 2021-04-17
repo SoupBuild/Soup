@@ -19,24 +19,15 @@ namespace Soup.Build.CSharp.Compiler.Mock
 		/// </summary>
 		public Compiler()
 		{
-			_compileRequests = new List<SharedCompileArguments>();
-			_linkRequests = new List<LinkArguments>();
+			_compileRequests = new List<CompileArguments>();
 		}
 
 		/// <summary>
 		/// Get the compile requests
 		/// </summary>
-		IList<SharedCompileArguments> GetCompileRequests()
+		public IList<SharedCompileArguments> GetCompileRequests()
 		{
 			return _compileRequests;
-		}
-
-		/// <summary>
-		/// Get the link requests
-		/// </summary>
-		IList<LinkArguments> GetLinkRequests()
-		{
-			return _linkRequests;
 		}
 
 		/// <summary>
@@ -113,28 +104,6 @@ namespace Soup.Build.CSharp.Compiler.Mock
 			return result;
 		}
 
-		/// <summary>
-		/// Link
-		/// </summary>
-		public BuildOperation CreateLinkOperation(LinkArguments arguments)
-		{
-			_linkRequests.Add(arguments);
-			return new BuildOperation(
-				$"MockLink: {_linkRequests.Count}",
-				new Path("MockWorkingDirectory"),
-				new Path("MockLinker.exe"),
-				"Arguments",
-				new List< Path>()
-				{
-					new Path("InputFile.in"),
-				},
-				new List<Path>()
-				{
-					new Path("OutputFile.out"),
-				});
-		}
-
-        private IList<SharedCompileArguments> _compileRequests;
-		private IList<LinkArguments> _linkRequests;
+		private IList<CompileArguments> _compileRequests;
 	}
 }

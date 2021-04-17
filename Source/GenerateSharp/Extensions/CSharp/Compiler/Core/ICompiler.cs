@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Soup.Build.Utilities;
 using System.Collections.Generic;
 
 namespace Soup.Build.CSharp.Compiler
@@ -22,11 +23,6 @@ namespace Soup.Build.CSharp.Compiler
 		string ObjectFileExtension { get; }
 
 		/// <summary>
-		/// Gets the module file extension for the compiler
-		/// </summary>
-		string ModuleFileExtension { get; }
-
-		/// <summary>
 		/// Gets the static library file extension for the compiler
 		/// TODO: This is platform specific
 		/// </summary>
@@ -41,11 +37,6 @@ namespace Soup.Build.CSharp.Compiler
 		/// <summary>
 		/// Compile
 		/// </summary>
-		IList<Utilities.BuildOperation> CreateCompileOperations(SharedCompileArguments arguments);
-
-		/// <summary>
-		/// Link
-		/// </summary>
-		Utilities.BuildOperation CreateLinkOperation(LinkArguments arguments);
+		IList<BuildOperation> CreateCompileOperations(CompileArguments arguments);
 	}
 }
