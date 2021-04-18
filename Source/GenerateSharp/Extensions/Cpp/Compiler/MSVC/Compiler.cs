@@ -59,7 +59,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			var operations = new List<BuildOperation>();
 
 			// Write the shared arguments to the response file
-			var responseFile = arguments.ObjectDirectory + new Path("SharedCompileArguments.txt");
+			var responseFile = arguments.ObjectDirectory + new Path("SharedCompileArguments.rsp");
 			var sharedCommandArguments = ArgumentBuilder.BuildSharedCompilerArguments(arguments);
 			var writeSharedArgumentsOperation = SharedOperations.CreateWriteFileOperation(
 				arguments.RootDirectory,
@@ -180,18 +180,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 
 		private static string CombineArguments(IList<string> arguments)
 		{
-			var argumentString = new StringBuilder();
-			bool isFirst = true;
-			foreach (var arg in arguments)
-			{
-				if (!isFirst)
-					argumentString.Append(" ");
-
-				argumentString.Append(arg);
-				isFirst = false;
-			}
-
-			return argumentString.ToString();
+			return string.Join(" ", arguments);
 		}
 
 		private Path _compilerExecutable;

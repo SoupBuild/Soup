@@ -68,7 +68,7 @@ namespace Soup.Build.CSharp.Compiler
 		/// <summary>
 		/// Gets or sets the target file
 		/// </summary>
-		public Path Target { get; set; }
+		public Path Target { get; set; } = new Path();
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to enable warnings as errors
@@ -90,9 +90,9 @@ namespace Soup.Build.CSharp.Compiler
 		/// </summary>
 		public IReadOnlyList<string> CustomProperties { get; init; } = new List<string>();
 
-		public override bool Equals(object? obj) => this.Equals(obj as SharedCompileArguments);
+		public override bool Equals(object? obj) => this.Equals(obj as CompileArguments);
 
-		public bool Equals(SharedCompileArguments? rhs)
+		public bool Equals(CompileArguments? rhs)
 		{
 			if (rhs is null)
 				return false;
@@ -102,25 +102,22 @@ namespace Soup.Build.CSharp.Compiler
 				return true;
 
 			// Return true if the fields match.
-			return this.Standard == rhs.Standard &&
-				this.Optimize == rhs.Optimize &&
-				this.RootDirectory == rhs.RootDirectory &&
+			return this.RootDirectory == rhs.RootDirectory &&
 				this.ObjectDirectory == rhs.ObjectDirectory &&
 				Enumerable.SequenceEqual(this.PreprocessorDefinitions, rhs.PreprocessorDefinitions) &&
 				Enumerable.SequenceEqual(this.ReferenceLibraries, rhs.ReferenceLibraries) &&
-				Enumerable.SequenceEqual(this.IncludeModules, rhs.IncludeModules) &&
+				Enumerable.SequenceEqual(this.SourceFiles, rhs.SourceFiles) &&
 				this.GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
-				this.InterfaceUnit == rhs.InterfaceUnit &&
-				Enumerable.SequenceEqual(this.ImplementationUnits, rhs.ImplementationUnits) &&
+				this.Target == rhs.Target &&
 				this.EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
 				Enumerable.SequenceEqual(this.DisabledWarnings, rhs.DisabledWarnings) &&
 				Enumerable.SequenceEqual(this.EnabledWarnings, rhs.EnabledWarnings) &&
 				Enumerable.SequenceEqual(this.CustomProperties, rhs.CustomProperties);
 		}
 
-		public override int GetHashCode() => (Standard, Optimize, RootDirectory, ObjectDirectory, InterfaceUnit).GetHashCode();
+		public override int GetHashCode() => (RootDirectory, ObjectDirectory, Target).GetHashCode();
 
-		public static bool operator ==(SharedCompileArguments? lhs, SharedCompileArguments? rhs)
+		public static bool operator ==(CompileArguments? lhs, CompileArguments? rhs)
 		{
 			if (lhs is null)
 			{
@@ -133,11 +130,11 @@ namespace Soup.Build.CSharp.Compiler
 			return lhs.Equals(rhs);
 		}
 
-		public static bool operator !=(SharedCompileArguments? lhs, SharedCompileArguments? rhs) => !(lhs == rhs);
+		public static bool operator !=(CompileArguments? lhs, CompileArguments? rhs) => !(lhs == rhs);
 
 		public override string ToString()
 		{
-			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+			return $"SharedCompileArguments {{ RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], SourceFiles=[{string.Join(",", SourceFiles)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", Target={Target}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
 		}
 	}
 }

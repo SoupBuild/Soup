@@ -25,7 +25,7 @@ namespace Soup.Build.CSharp.Compiler.Mock
 		/// <summary>
 		/// Get the compile requests
 		/// </summary>
-		public IList<SharedCompileArguments> GetCompileRequests()
+		public IList<CompileArguments> GetCompileRequests()
 		{
 			return _compileRequests;
 		}
@@ -39,11 +39,6 @@ namespace Soup.Build.CSharp.Compiler.Mock
 		/// Gets the object file extension for the compiler
 		/// </summary>
 		public string ObjectFileExtension => "mock.obj";
-
-		/// <summary>
-		/// Gets the module file extension for the compiler
-		/// </summary>
-		public string ModuleFileExtension => "mock.bmi";
 
 		/// <summary>
 		/// Gets the static library file extension for the compiler
@@ -60,46 +55,25 @@ namespace Soup.Build.CSharp.Compiler.Mock
 		/// <summary>
 		/// Compile
 		/// </summary>
-		public IList<BuildOperation> CreateCompileOperations(SharedCompileArguments arguments)
+		public IList<BuildOperation> CreateCompileOperations(CompileArguments arguments)
 		{
 			_compileRequests.Add(arguments);
 
 			var result = new List<BuildOperation>();
-			if (!ReferenceEquals(arguments.InterfaceUnit, null))
-			{
-				result.Add(
-					new BuildOperation(
-						$"MockCompileModule: {_compileRequests.Count}",
-						new Path("MockWorkingDirectory"),
-						new Path("MockCompiler.exe"),
-						"Arguments",
-						new List<Path>()
-						{
-							new Path("InputFile.in"),
-						},
-						new List<Path>()
-						{
-							new Path("OutputFile.out"),
-						}));
-			}
-
-			foreach (var fileArguments in arguments.ImplementationUnits)
-			{
-				result.Add(
-					new BuildOperation(
-						$"MockCompile: {_compileRequests.Count}",
-						new Path("MockWorkingDirectory"),
-						new Path("MockCompiler.exe"),
-						"Arguments",
-						new List<Path>()
-						{
-							fileArguments.SourceFile,
-						},
-						new List<Path>()
-						{
-							fileArguments.TargetFile,
-						}));
-			}
+			result.Add(
+				new BuildOperation(
+					$"MockCompile: {_compileRequests.Count}",
+					new Path("MockWorkingDirectory"),
+					new Path("MockCompiler.exe"),
+					"Arguments",
+					new List<Path>()
+					{
+						new Path("InputFile.in"),
+					},
+					new List<Path>()
+					{
+						new Path("OutputFile.out"),
+					}));
 
 			return result;
 		}

@@ -85,33 +85,11 @@ namespace Soup.Build.CSharp.Compiler
 		public Path BinaryDirectory { get; set; } = new Path();
 
 		/// <summary>
-		/// Gets or sets the single module interface source file
-		/// </summary>
-		public Path ModuleInterfaceSourceFile { get; set; } = new Path();
-
-		/// <summary>
 		/// Gets or sets the list of source files
 		/// Note: These files can be plain old translation units 
 		/// or they can be module implementation units
 		/// </summary>
 		public IReadOnlyList<Path> SourceFiles { get; set; } = new List<Path>();
-
-		/// <summary>
-		/// Gets or sets the list of include directories
-		/// </summary>
-		public IReadOnlyList<Path> IncludeDirectories { get; set; } = new List<Path>();
-
-		/// <summary>
-		/// Gets or sets the list of module dependencies
-		/// </summary>
-		public IReadOnlyList<Path> ModuleDependencies { get; set; } = new List<Path>();
-
-		/// <summary>
-		/// Gets or sets the list of platform link libraries
-		/// Note: These libraries will be included at link time, but will not be an input
-		/// for the incremental builds
-		/// </summary>
-		public IReadOnlyList<Path> PlatformLinkDependencies { get; set; } = new List<Path>();
 
 		/// <summary>
 		/// Gets or sets the list of link libraries

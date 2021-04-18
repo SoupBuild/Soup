@@ -56,24 +56,24 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			var expected = new List<BuildOperation>()
 			{
 				new BuildOperation(
-					"WriteFile [./ObjectDir/SharedCompileArguments.txt]",
+					"WriteFile [./ObjectDir/SharedCompileArguments.rsp]",
 					new Path("Source/"),
 					new Path("./writefile.exe"),
-					"\"./ObjectDir/SharedCompileArguments.txt\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c\"",
+					"\"./ObjectDir/SharedCompileArguments.rsp\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c\"",
 					new List<Path>(),
 					new List<Path>()
 					{
-						new Path("./ObjectDir/SharedCompileArguments.txt"),
+						new Path("./ObjectDir/SharedCompileArguments.rsp"),
 					}),
 				new BuildOperation(
 					"./File.cpp",
 					new Path("Source/"),
 					new Path("C:/bin/mock.cl.exe"),
-					"@./ObjectDir/SharedCompileArguments.txt ./File.cpp /Fo\"./obj/File.obj\"",
+					"@./ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"./obj/File.obj\"",
 					new List<Path>()
 					{
 						new Path("File.cpp"),
-						new Path("./ObjectDir/SharedCompileArguments.txt"),
+						new Path("./ObjectDir/SharedCompileArguments.rsp"),
 					},
 					new List<Path>()
 					{
@@ -122,25 +122,25 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			var expected = new List<BuildOperation>()
 			{
 				new BuildOperation(
-					"WriteFile [./ObjectDir/SharedCompileArguments.txt]",
+					"WriteFile [./ObjectDir/SharedCompileArguments.rsp]",
 					new Path("Source/"),
 					new Path("./writefile.exe"),
-					"\"./ObjectDir/SharedCompileArguments.txt\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /bigobj /c\"",
+					"\"./ObjectDir/SharedCompileArguments.rsp\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /bigobj /c\"",
 					new List<Path>(),
 					new List<Path>()
 					{
-						new Path("./ObjectDir/SharedCompileArguments.txt"),
+						new Path("./ObjectDir/SharedCompileArguments.rsp"),
 					}),
 				new BuildOperation(
 					"./File.cpp",
 					new Path("Source/"),
 					new Path("C:/bin/mock.cl.exe"),
-					"@./ObjectDir/SharedCompileArguments.txt ./File.cpp /Fo\"./obj/File.obj\" /interface /ifcOutput \"./obj/File.pcm\"",
+					"@./ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"./obj/File.obj\" /interface /ifcOutput \"./obj/File.pcm\"",
 					new List<Path>()
 					{
 						new Path("Module.pcm"),
 						new Path("File.cpp"),
-						new Path("./ObjectDir/SharedCompileArguments.txt"),
+						new Path("./ObjectDir/SharedCompileArguments.rsp"),
 					},
 					new List<Path>()
 					{

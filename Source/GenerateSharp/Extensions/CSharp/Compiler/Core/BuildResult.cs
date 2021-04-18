@@ -19,11 +19,6 @@ namespace Soup.Build.CSharp.Compiler
 		public IList<BuildOperation> BuildOperations { get; set; } = new List<BuildOperation>();
 
 		/// <summary>
-		/// Gets or sets the list of module dependencies
-		/// </summary>
-		public IList<Path> ModuleDependencies { get; set; } = new List<Path>();
-
-		/// <summary>
 		/// Gets or sets the list of link libraries that downstream builds should use when linking
 		/// </summary>
 		public IList<Path> LinkDependencies { get; set; } = new List<Path>();

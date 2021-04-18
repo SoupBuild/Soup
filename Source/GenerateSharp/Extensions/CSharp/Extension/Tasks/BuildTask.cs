@@ -31,12 +31,10 @@ namespace Soup.Build.CSharp
 		public BuildTask(IBuildState buildState) : this(buildState, new Dictionary<string, Func<IValueTable, ICompiler>>())
 		{
 			// Register default compilers
-			_compilerFactory.Add("MSVC", (IValueTable activeState) =>
+			_compilerFactory.Add("Roslyn", (IValueTable activeState) =>
 			{
-				var clToolPath = new Path(activeState["MSVC.ClToolPath"].AsString());
-				var linkToolPath = new Path(activeState["MSVC.LinkToolPath"].AsString());
-				var libToolPath = new Path(activeState["MSVC.LibToolPath"].AsString());
-				return new Compiler.MSVC.Compiler(clToolPath, linkToolPath, libToolPath);
+				var clToolPath = new Path(activeState["MSVC.CscToolPath"].AsString());
+				return new Compiler.Roslyn.Compiler(clToolPath);
 			});
 		}
 
@@ -59,30 +57,14 @@ namespace Soup.Build.CSharp
 			arguments.TargetName = buildTable["TargetName"].AsString();
 			arguments.TargetType = (BuildTargetType)
 				buildTable["TargetType"].AsInteger();
-			arguments.LanguageStandard = (LanguageStandard)
-				buildTable["LanguageStandard"].AsInteger();
 			arguments.WorkingDirectory = new Path(buildTable["WorkingDirectory"].AsString());
 			arguments.ObjectDirectory = new Path(buildTable["ObjectDirectory"].AsString());
 			arguments.BinaryDirectory = new Path(buildTable["BinaryDirectory"].AsString());
 
-			if (buildTable.TryGetValue("ModuleInterfaceSourceFile", out var moduleInterfaceSourceFile))
-			{
-				arguments.ModuleInterfaceSourceFile = new Path(moduleInterfaceSourceFile.AsString());
-			}
 
 			if (buildTable.TryGetValue("Source", out var sourceValue))
 			{
 				arguments.SourceFiles = sourceValue.AsList().Select(value => new Path(value.AsString())).ToList();
-			}
-
-			if (buildTable.TryGetValue("IncludeDirectories", out var includeDirectoriesValue))
-			{
-				arguments.IncludeDirectories = includeDirectoriesValue.AsList().Select(value => new Path(value.AsString())).ToList();
-			}
-
-			if (buildTable.TryGetValue("PlatformLibraries", out var platformLibrariesValue))
-			{
-				arguments.PlatformLinkDependencies = platformLibrariesValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
 			if (buildTable.TryGetValue("LinkLibraries", out var linkLibrariesValue))
@@ -133,13 +115,6 @@ namespace Soup.Build.CSharp
 					linkDependenciesValue.AsList().Select(value => new Path(value.AsString())));
 			}
 
-			// Load the module references
-			if (buildTable.TryGetValue("ModuleDependencies", out var moduleDependenciesValue))
-			{
-				arguments.ModuleDependencies = MakeUnique(
-					moduleDependenciesValue.AsList().Select(value => new Path(value.AsString())));
-			}
-
 			// Load the list of disabled warnings
 			if (buildTable.TryGetValue("EnableWarningsAsErrors", out var enableWarningsAsErrorsValue))
 			{
@@ -180,7 +155,6 @@ namespace Soup.Build.CSharp
 
 			// Always pass along required input to shared build tasks
 			var sharedBuildTable = sharedState.EnsureValueTable("Build");
-			sharedBuildTable.EnsureValueList("ModuleDependencies").SetAll(buildResult.ModuleDependencies);
 			sharedBuildTable.EnsureValueList("RuntimeDependencies").SetAll(buildResult.RuntimeDependencies);
 			sharedBuildTable.EnsureValueList("LinkDependencies").SetAll(buildResult.LinkDependencies);
 

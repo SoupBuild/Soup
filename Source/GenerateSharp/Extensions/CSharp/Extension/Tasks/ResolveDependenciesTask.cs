@@ -60,12 +60,6 @@ namespace Soup.Build.CSharp
 						{
 							var dependencyBuildTable = buildValue.AsTable();
 
-							if (dependencyBuildTable.TryGetValue("ModuleDependencies", out var moduleDependenciesValue))
-							{
-								var moduleDependencies = moduleDependenciesValue.AsList();
-								buildTable.EnsureValueList("ModuleDependencies").Append(moduleDependencies);
-							}
-
 							if (dependencyBuildTable.TryGetValue("RuntimeDependencies", out var runtimeDependenciesValue))
 							{
 								var runtimeDependencies = runtimeDependenciesValue.AsList();

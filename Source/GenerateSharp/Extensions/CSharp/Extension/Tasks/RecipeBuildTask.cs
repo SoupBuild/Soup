@@ -113,16 +113,6 @@ namespace Soup.Build.CSharp
 				buildTable.EnsureValueList("RuntimeDependencies").SetAll(runtimeDependencies);
 			}
 
-			// Combine the include paths from the recipe and the system
-			var includePaths = new List<Path>();
-			if (recipeTable.TryGetValue("IncludePaths", out var includePathsValue))
-			{
-				includePaths = includePathsValue.AsList().Select(value => new Path(value.AsString())).ToList();
-			}
-
-			// Add the platform include paths
-			includePaths.AddRange(platformIncludePaths);
-
 			// Load the extra library paths provided to the build system
 			var libraryPaths = new List<Path>();
 
@@ -143,21 +133,6 @@ namespace Soup.Build.CSharp
 			var targetDirectory = new Path(parametersTable["TargetDirectory"].AsString());
 			var binaryDirectory = targetDirectory + new Path("bin/");
 			var objectDirectory = targetDirectory + new Path("obj/");
-
-			// Load the module interface file if present
-			var moduleInterfaceSourceFile = string.Empty;
-			if (recipeTable.TryGetValue("Interface", out var interfaceValue))
-			{
-				var moduleInterfaceSourceFilePath = new Path(interfaceValue.AsString());
-				
-				// TODO: Clang requires annoying cppm extension
-				if (compilerName == "Clang")
-				{
-					moduleInterfaceSourceFilePath.SetFileExtension("cppm");
-				}
-
-				moduleInterfaceSourceFile = moduleInterfaceSourceFilePath.ToString();
-			}
 
 			// Load the source files if present
 			var sourceFiles = new List<string>();
@@ -202,14 +177,12 @@ namespace Soup.Build.CSharp
 			buildTable["WorkingDirectory"] = new Value(packageRoot.ToString());
 			buildTable["ObjectDirectory"] = new Value(objectDirectory.ToString());
 			buildTable["BinaryDirectory"] = new Value(binaryDirectory.ToString());
-			buildTable["ModuleInterfaceSourceFile"] = new Value(moduleInterfaceSourceFile);
 			buildTable["OptimizationLevel"] = new Value((long)optimizationLevel);
 			buildTable["GenerateSourceDebugInfo"] = new Value(generateSourceDebugInfo);
 
 			buildTable.EnsureValueList("PlatformLibraries").Append(platformLibraries);
 			buildTable.EnsureValueList("LinkLibraries").Append(linkLibraries);
 			buildTable.EnsureValueList("PreprocessorDefinitions").Append(preprocessorDefinitions);
-			buildTable.EnsureValueList("IncludeDirectories").Append(includePaths);
 			buildTable.EnsureValueList("LibraryPaths").Append(libraryPaths);
 			buildTable.EnsureValueList("Source").Append(sourceFiles);
 
@@ -223,15 +196,6 @@ namespace Soup.Build.CSharp
 			}
 
 			buildTable["TargetType"] = new Value((long)targetType);
-
-			// Convert the recipe language version to the required build language
-			var languageStandard = LanguageStandard.CPP20;
-			if (recipeTable.TryGetValue("LanguageVersion", out var languageVersionValue))
-			{
-				languageStandard = ParseLanguageStandard(languageVersionValue.AsString());
-			}
-
-			buildTable["LanguageStandard"] = new Value((long)languageStandard);
 		}
 
 		private static BuildTargetType ParseType(string value)
@@ -244,20 +208,6 @@ namespace Soup.Build.CSharp
 				return BuildTargetType.DynamicLibrary;
 			else
 				throw new InvalidOperationException("Unknown target type value.");
-		}
-
-		private static LanguageStandard ParseLanguageStandard(string value)
-		{
-			if (value == "C++11")
-				return LanguageStandard.CPP11;
-			else if (value == "C++14")
-				return LanguageStandard.CPP14;
-			else if (value == "C++17")
-				return LanguageStandard.CPP17;
-			else if (value == "C++20")
-				return LanguageStandard.CPP20;
-			else
-				throw new InvalidOperationException("Unknown recipe language standard value.");
 		}
 	}
 }
