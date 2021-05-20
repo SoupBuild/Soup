@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Opal;
 using System.Collections.Generic;
 using Xunit;
 
@@ -78,7 +77,7 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 				"/out:\"./\"",
 				"/refout:\"./\"",
 				"/target:library",
-				"/warnaserror-",
+				"/warnaserror+",
 				"/utf8output",
 				"/deterministic+",
 				"/langversion:9.0",

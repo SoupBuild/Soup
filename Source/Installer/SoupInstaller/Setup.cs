@@ -13,7 +13,6 @@ class Script
 				new File(System.IO.Path.Combine(soupBinFolder, "copy.exe")),
 				new File(System.IO.Path.Combine(soupBinFolder, "libcrypto-3.dll")),
 				new File(System.IO.Path.Combine(soupBinFolder, "libssl-3.dll")),
-				new File(System.IO.Path.Combine(soupBinFolder, "LocalUserConfig.json")),
 				new File(System.IO.Path.Combine(soupBinFolder, "mkdir.exe")),
 				new File(System.IO.Path.Combine(soupBinFolder, "Monitor.Detours.32.dll")),
 				new File(System.IO.Path.Combine(soupBinFolder, "Monitor.Detours.64.dll")),

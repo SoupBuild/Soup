@@ -7,6 +7,9 @@ Interface = "Source/Module.cpp"
 Source = [
 	"Source/Contracts/Value.cpp",
 ]
+Defines = [
+	# "TRACE_SYSTEM_ACCESS",
+]
 
 [Dependencies]
 Runtime = [

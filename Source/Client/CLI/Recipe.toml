@@ -3,9 +3,6 @@ Language = "C++"
 Version = "0.12.0"
 Type = "Executable"
 
-RuntimeDependencies = [
-	"LocalUserConfig.json",
-]
 Source = [
 	"Source/Main.cpp",
 ]

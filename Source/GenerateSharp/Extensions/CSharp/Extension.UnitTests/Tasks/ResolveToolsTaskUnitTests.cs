@@ -32,7 +32,7 @@ namespace Soup.Build.CSharp.UnitTests
 
 			// Setup expected output from vswhere call
 			processManager.RegisterExecuteResult(
-				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
+				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
 				"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\r\n");
 
 			// Setup the default version file
@@ -64,12 +64,8 @@ namespace Soup.Build.CSharp.UnitTests
 				Assert.Equal(
 					new List<string>()
 					{
-						"DIAG: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
+						"DIAG: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
 						"INFO: Using VS Installation: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community",
-						"INFO: Using VC Version: 14.28.29910",
-						"DIAG: FindNewestWindows10KitVersion: C:/Program Files (x86)/Windows Kits/10/include/",
-						"DIAG: CheckFile: 10.0.19041.0",
-						"INFO: Using Windows Kit Version: 10.0.19041.0",
 					},
 					testListener.GetMessages());
 
@@ -90,7 +86,7 @@ namespace Soup.Build.CSharp.UnitTests
 				Assert.Equal(
 					new List<string>()
 					{
-						"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
+						"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
 						"ProcessStart: 1",
 						"WaitForExit: 1",
 						"GetStandardOutput: 1",

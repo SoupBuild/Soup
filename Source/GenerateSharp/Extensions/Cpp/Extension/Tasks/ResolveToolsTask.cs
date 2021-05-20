@@ -35,6 +35,11 @@ namespace Soup.Build.Cpp
 		public ResolveToolsTask(IBuildState buildState)
 		{
 			_buildState = buildState;
+
+			if (!LifetimeManager.Has<IProcessManager>())
+			{
+				LifetimeManager.RegisterSingleton<IProcessManager, RuntimeProcessManager>();
+			}
 		}
 
 		/// <summary>

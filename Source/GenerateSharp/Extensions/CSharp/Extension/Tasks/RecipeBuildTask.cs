@@ -53,22 +53,9 @@ namespace Soup.Build.CSharp
 			var compilerName = parametersTable["Compiler"].AsString();
 			var packageRoot = new Path(parametersTable["PackageDirectory"].AsString());
 			var buildFlavor = parametersTable["Flavor"].AsString();
-			var platformLibraries = rootTable["PlatformLibraries"].AsList().Select(value => new Path(value.AsString())).ToList();
-			var platformIncludePaths = rootTable["PlatformIncludePaths"].AsList().Select(value => new Path(value.AsString())).ToList();
-			var platformLibraryPaths = rootTable["PlatformLibraryPaths"].AsList().Select(value => new Path(value.AsString())).ToList();
-			var platformPreprocessorDefinitions = rootTable["PlatformPreprocessorDefinitions"].AsList().Select(value => value.AsString()).ToList();
 
 			// Load Recipe properties
 			var name = recipeTable["Name"].AsString();
-
-			// Add any explicit platform dependencies that were added in the recipe
-			if (recipeTable.TryGetValue("PlatformLibraries", out var platformLibrariesValue))
-			{
-				foreach (var value in platformLibrariesValue.AsList().Select(value => new Path(value.AsString())))
-				{
-					platformLibraries.Add(value);
-				}
-			}
 
 			// Add the dependency static library closure to link if targeting an executable or dynamic library
 			var linkLibraries = new List<Path>();
@@ -116,9 +103,6 @@ namespace Soup.Build.CSharp
 			// Load the extra library paths provided to the build system
 			var libraryPaths = new List<Path>();
 
-			// Add the platform library paths
-			libraryPaths.AddRange(platformLibraryPaths);
-
 			// Combine the defines with the default set and the platform
 			var preprocessorDefinitions = new List<string>();
 			if (recipeTable.TryGetValue("Defines", out var definesValue))
@@ -126,7 +110,6 @@ namespace Soup.Build.CSharp
 				preprocessorDefinitions = definesValue.AsList().Select(value => value.AsString()).ToList();
 			}
 
-			preprocessorDefinitions.AddRange(platformPreprocessorDefinitions);
 			preprocessorDefinitions.Add("SOUP_BUILD");
 
 			// Build up arguments to build this individual recipe
@@ -180,7 +163,6 @@ namespace Soup.Build.CSharp
 			buildTable["OptimizationLevel"] = new Value((long)optimizationLevel);
 			buildTable["GenerateSourceDebugInfo"] = new Value(generateSourceDebugInfo);
 
-			buildTable.EnsureValueList("PlatformLibraries").Append(platformLibraries);
 			buildTable.EnsureValueList("LinkLibraries").Append(linkLibraries);
 			buildTable.EnsureValueList("PreprocessorDefinitions").Append(preprocessorDefinitions);
 			buildTable.EnsureValueList("LibraryPaths").Append(libraryPaths);

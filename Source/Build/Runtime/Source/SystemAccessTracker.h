@@ -1111,7 +1111,11 @@ namespace Soup::Build::Runtime
 				auto filePath = Path(fileName);
 				auto value = filePath.ToString();
 				ToUpper(value);
-				// Log::Diag("TouchFileRead " + value);
+
+				#ifdef TRACE_SYSTEM_ACCESS
+				Log::Diag("TouchFileRead " + value);
+				#endif
+
 				if (exists)
 				{
 					m_input.insert(value);
@@ -1137,7 +1141,10 @@ namespace Soup::Build::Runtime
 				auto filePath = Path(fileName);
 				auto value = filePath.ToString();
 				ToUpper(value);
-				// Log::Diag("TouchFileWrite " + value);
+
+				#ifdef TRACE_SYSTEM_ACCESS
+				Log::Diag("TouchFileWrite " + value);
+				#endif
 
 				m_output.insert(value);
 			}
@@ -1160,7 +1167,10 @@ namespace Soup::Build::Runtime
 		{
 			auto value = filePath.ToString();
 			ToUpper(value);
-			// Log::Diag("TouchFileDelete " + value);
+
+			#ifdef TRACE_SYSTEM_ACCESS
+			Log::Diag("TouchFileDelete " + value);
+			#endif
 
 			// If this was an output file extract it as it was a transient file
 			// TODO: May want to track if we created the file
@@ -1185,7 +1195,11 @@ namespace Soup::Build::Runtime
 		{
 			auto value = filePath.ToString();
 			ToUpper(value);
-			// Log::Diag("TouchFileDeleteOnClose " + value);
+
+			#ifdef TRACE_SYSTEM_ACCESS
+			Log::Diag("TouchFileDeleteOnClose " + value);
+			#endif
+
 			m_deleteOnClose.insert(std::move(value));
 		}
 

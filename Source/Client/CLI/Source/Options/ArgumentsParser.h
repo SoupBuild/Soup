@@ -143,6 +143,24 @@ namespace Soup::Client
 
 				options->Verbosity = CheckVerbosity(unusedArgs);
 
+				auto flavorValue = std::string();
+				if (TryGetValueArgument("flavor", unusedArgs, flavorValue))
+				{
+					options->Flavor = std::move(flavorValue);
+				}
+
+				auto systemValue = std::string();
+				if (TryGetValueArgument("system", unusedArgs, systemValue))
+				{
+					options->System = std::move(systemValue);
+				}
+
+				auto architectureValue = std::string();
+				if (TryGetValueArgument("architecture", unusedArgs, architectureValue))
+				{
+					options->Architecture = std::move(architectureValue);
+				}
+
 				// All remaining arguments are passed to the executable
 				options->Arguments = std::move(runArgs);
 

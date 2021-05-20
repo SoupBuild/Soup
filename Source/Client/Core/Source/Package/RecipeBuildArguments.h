@@ -12,19 +12,9 @@ namespace Soup
 	export struct RecipeBuildArguments
 	{
 		/// <summary>
-		/// Gets or sets the flavor name
+		/// Gets or sets set of global arguments
 		/// </summary>
-		std::string Flavor;
-
-		/// <summary>
-		/// Gets or sets the system name
-		/// </summary>
-		std::string System;
-
-		/// <summary>
-		/// Gets or sets the architecture name
-		/// </summary>
-		std::string Architecture;
+		Build::Runtime::ValueTable GlobalParameters;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip running the build generate phase
@@ -46,9 +36,7 @@ namespace Soup
 		/// </summary>
 		bool operator ==(const RecipeBuildArguments& rhs) const
 		{
-			return Flavor == rhs.Flavor &&
-				System == rhs.System &&
-				Architecture == rhs.Architecture &&
+			return GlobalParameters == rhs.GlobalParameters &&
 				SkipGenerate == rhs.SkipGenerate &&
 				SkipEvaluate == rhs.SkipEvaluate &&
 				ForceRebuild == rhs.ForceRebuild;

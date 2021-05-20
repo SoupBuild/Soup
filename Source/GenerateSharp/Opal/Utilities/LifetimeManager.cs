@@ -44,13 +44,21 @@ namespace Opal
 		public static TInterface Get<TInterface>()
 		{
 			if (_singletons.TryGetValue(typeof(TInterface), out var instance))
-            {
+			{
 				return (TInterface)instance;
 			}
 			else
-            {
+			{
 				throw new InvalidOperationException($"No instance of type {typeof(TInterface)} registered");
-            }
+			}
+		}
+
+		/// <summary>
+		/// Get an instance of a managed type
+		/// </summary>
+		public static bool Has<TInterface>()
+		{
+			return _singletons.ContainsKey(typeof(TInterface));
 		}
 	}
 }

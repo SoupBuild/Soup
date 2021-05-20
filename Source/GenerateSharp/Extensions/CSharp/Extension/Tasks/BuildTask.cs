@@ -31,9 +31,10 @@ namespace Soup.Build.CSharp
 		public BuildTask(IBuildState buildState) : this(buildState, new Dictionary<string, Func<IValueTable, ICompiler>>())
 		{
 			// Register default compilers
-			_compilerFactory.Add("Roslyn", (IValueTable activeState) =>
+			// TODO: Fix up compiler names for different languages
+			_compilerFactory.Add("MSVC", (IValueTable activeState) =>
 			{
-				var clToolPath = new Path(activeState["MSVC.CscToolPath"].AsString());
+				var clToolPath = new Path(activeState["Roslyn.CscToolPath"].AsString());
 				return new Compiler.Roslyn.Compiler(clToolPath);
 			});
 		}

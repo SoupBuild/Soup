@@ -77,21 +77,36 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			AddFlag(commandArguments, "debug+");
 			AddParameter(commandArguments, "debug", "portable");
 
+			// Specify the alignment used for output file sections
 			AddParameter(commandArguments, "filealign", "512");
 
-			AddFlag(commandArguments, "optimize-");
+			// Enable optimizations
+			if (arguments.EnableOptimizations)
+				AddFlag(commandArguments, "optimize+");
+			else
+				AddFlag(commandArguments, "optimize-");
 
+			// Specify output file name
 			AddParameterWithQuotes(commandArguments, "out", arguments.Target.ToString());
+
+			// Reference assembly output to generate
 			AddParameterWithQuotes(commandArguments, "refout", arguments.Target.ToString());
 
 			AddParameter(commandArguments, "target", "library");
 
-			AddFlag(commandArguments, "warnaserror-");
+			// Report all warnings as errors
+			if (arguments.EnableWarningsAsErrors)
+				AddFlag(commandArguments, "warnaserror+");
+			else
+				AddFlag(commandArguments, "warnaserror-");
 
+			// Output compiler messages in UTF-8 encoding
 			AddFlag(commandArguments, "utf8output");
 
+			// Produce a deterministic assembly
 			AddFlag(commandArguments, "deterministic+");
 
+			// Specify language version
 			AddParameter(commandArguments, "langversion", "9.0");
 
 			// Add the source files

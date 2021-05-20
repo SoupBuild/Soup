@@ -41,7 +41,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                 arguments.BinaryDirectory = new Path("bin/");
                 arguments.SourceFiles = new List<Path>()
                 {
-                        new Path("TestFile.cpp"),
+                    new Path("TestFile.cs"),
                 };
                 arguments.OptimizationLevel = BuildOptimizationLevel.None;
                 arguments.LinkDependencies = new List<Path>()
@@ -75,6 +75,10 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                 {
                     ObjectDirectory = new Path("obj/"),
                     RootDirectory = new Path("C:/root/"),
+                    SourceFiles = new List<Path>()
+                    {
+                        new Path("TestFile.cs"),
+                    },
                 };
 
                 // Verify expected compiler calls

@@ -21,6 +21,24 @@ namespace Soup::Client
 		std::string Path;
 
 		/// <summary>
+		/// Gets or sets a value indicating what flavor to use
+		/// </summary>
+		// [[Args::Option('f', "flavor", Default = false, HelpText = "Flavor.")]]
+		std::string Flavor;
+
+		/// <summary>
+		/// Gets or sets a value indicating what target system
+		/// </summary>
+		// [[Args::Option('s', "system", Default = false, HelpText = "System.")]]
+		std::string System;
+
+		/// <summary>
+		/// Gets or sets a value indicating what target architecture
+		/// </summary>
+		// [[Args::Option('a', "architecture", Default = false, HelpText = "Architecture.")]]
+		std::string Architecture;
+
+		/// <summary>
 		/// Pass through all of the remaining arguments
 		/// </summary>
 		std::vector<std::string> Arguments;

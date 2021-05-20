@@ -61,6 +61,11 @@ namespace Soup.Build.CSharp.Compiler
 		public IReadOnlyList<Path> SourceFiles { get; init; } = new List<Path>();
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to enable optimizations
+		/// </summary>
+		public bool EnableOptimizations { get; init; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to generate source debug information
 		/// </summary>
 		public bool GenerateSourceDebugInfo { get; init; }
@@ -107,6 +112,7 @@ namespace Soup.Build.CSharp.Compiler
 				Enumerable.SequenceEqual(this.PreprocessorDefinitions, rhs.PreprocessorDefinitions) &&
 				Enumerable.SequenceEqual(this.ReferenceLibraries, rhs.ReferenceLibraries) &&
 				Enumerable.SequenceEqual(this.SourceFiles, rhs.SourceFiles) &&
+				this.EnableOptimizations == rhs.EnableOptimizations &&
 				this.GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
 				this.Target == rhs.Target &&
 				this.EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
@@ -134,7 +140,7 @@ namespace Soup.Build.CSharp.Compiler
 
 		public override string ToString()
 		{
-			return $"SharedCompileArguments {{ RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], SourceFiles=[{string.Join(",", SourceFiles)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", Target={Target}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+			return $"SharedCompileArguments {{ RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], SourceFiles=[{string.Join(",", SourceFiles)}], EnableOptimizations=\"{EnableOptimizations}\", GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", Target={Target}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
 		}
 	}
 }
