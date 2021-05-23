@@ -76,6 +76,11 @@ namespace Soup.Build.CSharp.Compiler
 		public Path Target { get; set; } = new Path();
 
 		/// <summary>
+		/// Gets or sets the reference target file
+		/// </summary>
+		public Path ReferenceTarget { get; set; } = new Path();
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to enable warnings as errors
 		/// </summary>
 		public bool EnableWarningsAsErrors { get; init; }

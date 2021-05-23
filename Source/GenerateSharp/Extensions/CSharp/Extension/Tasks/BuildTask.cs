@@ -68,11 +68,6 @@ namespace Soup.Build.CSharp
 				arguments.SourceFiles = sourceValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
-			if (buildTable.TryGetValue("LinkLibraries", out var linkLibrariesValue))
-			{
-				arguments.LinkDependencies = linkLibrariesValue.AsList().Select(value => new Path(value.AsString())).ToList();
-			}
-
 			if (buildTable.TryGetValue("LibraryPaths", out var libraryPathsValue))
 			{
 				arguments.LibraryPaths = libraryPathsValue.AsList().Select(value => new Path(value.AsString())).ToList();

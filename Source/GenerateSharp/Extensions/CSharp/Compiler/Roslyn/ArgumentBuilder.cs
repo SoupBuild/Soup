@@ -86,7 +86,7 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			AddParameterWithQuotes(commandArguments, "out", arguments.Target.ToString());
 
 			// Reference assembly output to generate
-			AddParameterWithQuotes(commandArguments, "refout", arguments.Target.ToString());
+			AddParameterWithQuotes(commandArguments, "refout", arguments.ReferenceTarget.ToString());
 
 			AddParameter(commandArguments, "target", "library");
 

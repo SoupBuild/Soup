@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Opal;
 using System.Collections.Generic;
 using Xunit;
 
@@ -12,7 +13,11 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 		[Fact]
 		public void BuildSharedCompilerArguments_DefaultParameters()
 		{
-			var arguments = new CompileArguments();
+			var arguments = new CompileArguments()
+			{
+				Target = new Path("bin/Target.dll"),
+				ReferenceTarget = new Path("ref/Target.dll"),
+			};
 
 			var actualArguments = ArgumentBuilder.BuildSharedCompilerArguments(
 				arguments);
@@ -33,8 +38,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 				"/debug:portable",
 				"/filealign:512",
 				"/optimize-",
-				"/out:\"./\"",
-				"/refout:\"./\"",
+				"/out:\"./bin/Target.dll\"",
+				"/refout:\"./ref/Target.dll\"",
 				"/target:library",
 				"/warnaserror-",
 				"/utf8output",
@@ -50,6 +55,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 		{
 			var arguments = new CompileArguments()
 			{
+				Target = new Path("bin/Target.dll"),
+				ReferenceTarget = new Path("ref/Target.dll"),
 				EnableWarningsAsErrors = true,
 			};
 
@@ -72,8 +79,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 				"/debug:portable",
 				"/filealign:512",
 				"/optimize-",
-				"/out:\"./\"",
-				"/refout:\"./\"",
+				"/out:\"./bin/Target.dll\"",
+				"/refout:\"./ref/Target.dll\"",
 				"/target:library",
 				"/warnaserror+",
 				"/utf8output",
@@ -89,6 +96,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 		{
 			var arguments = new CompileArguments()
 			{
+				Target = new Path("bin/Target.dll"),
+				ReferenceTarget = new Path("ref/Target.dll"),
 				GenerateSourceDebugInfo = true,
 			};
 
@@ -111,8 +120,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 				"/debug:portable",
 				"/filealign:512",
 				"/optimize-",
-				"/out:\"./\"",
-				"/refout:\"./\"",
+				"/out:\"./bin/Target.dll\"",
+				"/refout:\"./ref/Target.dll\"",
 				"/target:library",
 				"/warnaserror-",
 				"/utf8output",
@@ -128,6 +137,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 		{
 			var arguments = new CompileArguments()
 			{
+				Target = new Path("bin/Target.dll"),
+				ReferenceTarget = new Path("ref/Target.dll"),
 				PreprocessorDefinitions = new List<string>()
 				{
 					"DEBUG",
@@ -155,8 +166,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 				"/debug:portable",
 				"/filealign:512",
 				"/optimize-",
-				"/out:\"./\"",
-				"/refout:\"./\"",
+				"/out:\"./bin/Target.dll\"",
+				"/refout:\"./ref/Target.dll\"",
 				"/target:library",
 				"/warnaserror-",
 				"/utf8output",

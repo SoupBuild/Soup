@@ -84,13 +84,13 @@ namespace Soup.Build.CSharp
 			// Save the platform libraries
 			state["PlatformLibraries"] = new Value();
 			var linkDependencies = new List<Path>();
-			if (buildTable.TryGetValue("LinkLibraries", out var linkLibrariesValue))
+			if (buildTable.TryGetValue("LinkDependencies", out var linkLibrariesValue))
 			{
 				linkDependencies = linkLibrariesValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
 			linkDependencies.AddRange(GetPlatformLibraries());
-			buildTable["LinkLibraries"] = new Value(new ValueList(
+			buildTable["LinkDependencies"] = new Value(new ValueList(
 				linkDependencies.Select(value => new Value(value.ToString()))));
 		}
 

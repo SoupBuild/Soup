@@ -64,6 +64,7 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			var outputFiles = new List<Path>()
 			{
 				arguments.Target,
+				arguments.ReferenceTarget,
 			};
 
 			// Generate the compile build operation

@@ -30,6 +30,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 
 			var arguments = new CompileArguments()
 			{
+				Target = new Path("bin/Target.dll"),
+				ReferenceTarget = new Path("ref/Target.dll"),
 				RootDirectory = new Path("Source/"),
 				ObjectDirectory = new Path("ObjectDir/"),
 				SourceFiles = new List<Path>()
@@ -47,14 +49,14 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 					"WriteFile [./ObjectDir/CompileArguments.rsp]",
 					new Path("Source/"),
 					new Path("./writefile.exe"),
-					"\"./ObjectDir/CompileArguments.rsp\" \"/unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:5 /errorendlocation /preferreduilang:en-US /highentropyva+ /nullable:enable /debug+ /debug:portable /filealign:512 /optimize- /out:\"./\" /refout:\"./\" /target:library /warnaserror- /utf8output /deterministic+ /langversion:9.0 \"./File.cs\"\"",
+					"\"./ObjectDir/CompileArguments.rsp\" \"/unsafe- /checked- /fullpaths /nostdlib+ /errorreport:prompt /warn:5 /errorendlocation /preferreduilang:en-US /highentropyva+ /nullable:enable /debug+ /debug:portable /filealign:512 /optimize- /out:\"./bin/Target.dll\" /refout:\"./ref/Target.dll\" /target:library /warnaserror- /utf8output /deterministic+ /langversion:9.0 \"./File.cs\"\"",
 					new List<Path>(),
 					new List<Path>()
 					{
 						new Path("./ObjectDir/CompileArguments.rsp"),
 					}),
 				new BuildOperation(
-					"Compile - ./",
+					"Compile - ./bin/Target.dll",
 					new Path("Source/"),
 					new Path("C:/bin/mock.csc.exe"),
 					"@./ObjectDir/CompileArguments.rsp /noconfig",
@@ -65,7 +67,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 					},
 					new List<Path>()
 					{
-						new Path("./"),
+						new Path("./bin/Target.dll"),
+						new Path("./ref/Target.dll"),
 					}),
 				};
 

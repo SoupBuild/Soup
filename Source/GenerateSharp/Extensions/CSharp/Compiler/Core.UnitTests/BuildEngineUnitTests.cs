@@ -68,12 +68,14 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                     {
                         "GetCurrentProcessFileName",
                         "GetCurrentProcessFileName",
+                        "GetCurrentProcessFileName",
                     },
                     processManager.GetRequests());
 
                 var expectedCompileArguments = new CompileArguments()
                 {
                     Target = new Path("./bin/Program.exe"),
+                    ReferenceTarget = new Path("./bin/ref/Program.dll"),
                     ObjectDirectory = new Path("obj/"),
                     RootDirectory = new Path("C:/root/"),
                     SourceFiles = new List<Path>()
@@ -121,6 +123,16 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                             new Path("./bin/"),
                         }),
                     new BuildOperation(
+                        "MakeDir [./bin/ref/]",
+                        new Path("C:/root/"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
+                        "\"./bin/ref/\"",
+                        new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./bin/ref/"),
+                        }),
+                    new BuildOperation(
                         "MockCompile: 1",
                         new Path("MockWorkingDirectory"),
                         new Path("MockCompiler.exe"),
@@ -146,6 +158,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                 Assert.Equal(
                     new List<Path>()
                     {
+                        new Path("./bin/Program.exe"),
                     },
                     result.RuntimeDependencies);
             }
@@ -201,6 +214,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                     {
                         "GetCurrentProcessFileName",
                         "GetCurrentProcessFileName",
+                        "GetCurrentProcessFileName",
                     },
                     processManager.GetRequests());
 
@@ -244,17 +258,27 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                         {
                             new Path("./obj/"),
 					    }),
-				    new BuildOperation(
+                    new BuildOperation(
                         "MakeDir [./bin/]",
                         new Path("C:/root/"),
                         new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
                         "\"./bin/\"",
                         new List<Path>(),
-					    new List<Path>()
+                        new List<Path>()
                         {
                             new Path("./bin/"),
-					    }),
-				    new BuildOperation(
+                        }),
+                    new BuildOperation(
+                        "MakeDir [./bin/ref/]",
+                        new Path("C:/root/"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
+                        "\"./bin/ref/\"",
+                        new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./bin/ref/"),
+                        }),
+                    new BuildOperation(
                         "MockCompile: 1",
                         new Path("MockWorkingDirectory"),
                         new Path("MockCompiler.exe"),
@@ -276,11 +300,15 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                 Assert.Equal(
                     new List<Path>()
                     {
-				    },
+                        new Path("bin/ref/Library.mock.dll"),
+                    },
 				    result.LinkDependencies);
 
                 Assert.Equal(
-                    new List<Path>(),
+                    new List<Path>()
+                    {
+                        new Path("bin/Library.mock.dll"),
+                    },
                     result.RuntimeDependencies);
 
                 Assert.Equal(

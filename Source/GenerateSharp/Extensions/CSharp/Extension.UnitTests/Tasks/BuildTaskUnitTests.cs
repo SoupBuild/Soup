@@ -118,6 +118,16 @@ namespace Soup.Build.CSharp.UnitTests
                             new Path("./bin/"),
                         }),
                     new BuildOperation(
+                        "MakeDir [./bin/ref/]",
+                        new Path("C:/root/"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
+                        "\"./bin/ref/\"",
+                        new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./bin/ref/"),
+                        }),
+                    new BuildOperation(
                         "MockCompile: 1",
                         new Path("MockWorkingDirectory"),
                         new Path("MockCompiler.exe"),
@@ -246,6 +256,16 @@ namespace Soup.Build.CSharp.UnitTests
                         new List<Path>()
                         {
                             new Path("./bin/"),
+                        }),
+                    new BuildOperation(
+                        "MakeDir [./bin/ref/]",
+                        new Path("C:/root/"),
+                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
+                        "\"./bin/ref/\"",
+                        new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./bin/ref/"),
                         }),
                     new BuildOperation(
                         "MockCompile: 1",

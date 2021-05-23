@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Text;
 
 namespace Soup.Build.Runtime
 {
@@ -14,6 +15,22 @@ namespace Soup.Build.Runtime
 
 		public ValueList(IEnumerable<Value> collection) : base(collection)
         {
-        }
+		}
+
+		public override string ToString()
+		{
+			var builder = new StringBuilder();
+
+			builder.Append("[ ");
+			foreach (var value in this)
+			{
+				builder.Append(value);
+				builder.Append(", ");
+			}
+
+			builder.Append("]");
+
+			return builder.ToString();
+		}
 	}
 }

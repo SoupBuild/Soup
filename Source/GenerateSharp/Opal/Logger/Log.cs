@@ -78,7 +78,6 @@ namespace Opal
 			Diag(message, s_activeId);
 		}
 
-
 		/// <summary>
 		/// Log a warning message
 		/// </summary>

@@ -22,7 +22,7 @@ class Script
 							new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, @"Extensions\Soup.Cpp\", "*.*"))),
 						new Dir(
 							@"Soup.CSharp",
-							new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, @"Extensions\Soup.Cpp\", "*.*")))))),
+							new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, @"Extensions\Soup.CSharp\", "*.*")))))),
 			new EnvironmentVariable("PATH", "[INSTALLDIR]")
 			{
 				System = true,

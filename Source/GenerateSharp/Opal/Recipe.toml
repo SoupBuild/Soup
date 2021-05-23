@@ -8,4 +8,8 @@ Source = [
 	"IO/MockConsoleManager.cs",
 	# "IO/SystemConsoleInputStream.cs",
 	# "IO/SystemConsoleManager.cs",
+	"Utilities/LifetimeManager.cs",
+	"Utilities/Path.cs",
+	"Utilities/ScopedSingleton.cs",
+	"Utilities/SemanticVersion.cs",
 ]

@@ -133,5 +133,28 @@ namespace Soup.Build
 			else
 				throw new InvalidOperationException("Attept to get value as incorrect type: Boolean");
 		}
+
+		public override string ToString()
+		{
+			switch (Type)
+            {
+				case ValueType.Empty:
+					return "EMPTY";
+				case ValueType.Table:
+					return AsTable().ToString() ?? string.Empty;
+				case ValueType.List:
+					return AsList().ToString() ?? string.Empty;
+				case ValueType.String:
+					return $"\"{AsString()}\"";
+				case ValueType.Integer:
+					return _integerValue.ToString();
+				case ValueType.Float:
+					return _floatValue.ToString();
+				case ValueType.Boolean:
+					return _booleanValue.ToString();
+				default:
+					return "UNKNOWN";
+            }
+		}
 	};
 }

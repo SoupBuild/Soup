@@ -150,6 +150,8 @@ namespace Soup.Build.Generate
 
 				Log.Info("TaskDone: " + currentTask.Name);
 
+				Log.Diag(state.ActiveState.ToString());
+
 				// TODO : state.LogActive();
 				currentTask.HasRun = true;
 			}

@@ -4,11 +4,9 @@
 
 using Opal;
 using Soup.Build.Runtime;
-using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Soup.Build.Generate
 {

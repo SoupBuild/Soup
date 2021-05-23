@@ -28,6 +28,7 @@ namespace Soup.Build.CSharp.Compiler
 			var result = new BuildResult();
 
 			// Ensure the output directories exists as the first step
+			var referenceDirectory = arguments.BinaryDirectory + new Path("ref/");
 			result.BuildOperations.Add(
 				SharedOperations.CreateCreateDirectoryOperation(
 					arguments.WorkingDirectory,
@@ -36,9 +37,13 @@ namespace Soup.Build.CSharp.Compiler
 				SharedOperations.CreateCreateDirectoryOperation(
 					arguments.WorkingDirectory,
 					arguments.BinaryDirectory));
+			result.BuildOperations.Add(
+				SharedOperations.CreateCreateDirectoryOperation(
+					arguments.WorkingDirectory,
+					referenceDirectory));
 
 			// Perform the core compilation of the source files
-			CoreCompile(buildState, arguments, result);
+			CoreCompile(buildState, arguments, referenceDirectory, result);
 
 			// Copy previous runtime dependencies after linking has completed
 			CopyRuntimeDependencies(arguments, result);
@@ -52,23 +57,44 @@ namespace Soup.Build.CSharp.Compiler
 		private void CoreCompile(
 			IBuildState buildState,
 			BuildArguments arguments,
+			Path referenceDirectory,
 			BuildResult result)
 		{
 			// Ensure there are actually files to build
 			if (arguments.SourceFiles.Count != 0)
 			{
 				Path targetFile;
+				Path referenceTargetFile;
 				switch (arguments.TargetType)
 				{
 					case BuildTargetType.Library:
 						targetFile =
 							arguments.BinaryDirectory +
 							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
+						referenceTargetFile =
+							referenceDirectory +
+							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
+
+						// Add the DLL as a runtime dependency
+						result.RuntimeDependencies.Add(targetFile);
+
+						// Link against the reference target
+						result.LinkDependencies.Add(referenceTargetFile);
+
 						break;
 					case BuildTargetType.Executable:
 						targetFile =
 							arguments.BinaryDirectory +
 							new Path(arguments.TargetName + ".exe");
+						referenceTargetFile =
+							referenceDirectory +
+							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
+
+						// Add the Executable as a runtime dependency
+						result.RuntimeDependencies.Add(targetFile);
+
+						// All link dependencies stop here.
+
 						break;
 					default:
 						throw new InvalidOperationException("Unknown build target type.");
@@ -78,6 +104,7 @@ namespace Soup.Build.CSharp.Compiler
 				var compileArguments = new CompileArguments()
 				{
 					Target = targetFile,
+					ReferenceTarget = referenceTargetFile,
 					RootDirectory = arguments.WorkingDirectory,
 					ObjectDirectory = arguments.ObjectDirectory,
 					SourceFiles = arguments.SourceFiles,
