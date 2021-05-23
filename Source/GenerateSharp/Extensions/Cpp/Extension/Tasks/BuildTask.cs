@@ -187,6 +187,8 @@ namespace Soup.Build.Cpp
 			if (!buildResult.TargetFile.IsEmpty)
 			{
 				sharedBuildTable["TargetFile"] = new Value(buildResult.TargetFile.ToString());
+				sharedBuildTable["RunExecutable"] = new Value(buildResult.TargetFile.ToString());
+				sharedBuildTable["RunArguments"] = new Value("");
 			}
 
 			// Register the build operations

@@ -127,6 +127,8 @@ namespace Soup.Build.CSharp.Compiler
 				var compileOperations = _compiler.CreateCompileOperations(compileArguments);
 				foreach (var operation in compileOperations)
 					result.BuildOperations.Add(operation);
+
+				result.TargetFile = targetFile;
 			}
 		}
 

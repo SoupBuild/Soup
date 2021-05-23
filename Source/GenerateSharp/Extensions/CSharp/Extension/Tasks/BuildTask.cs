@@ -157,6 +157,8 @@ namespace Soup.Build.CSharp
 			if (!buildResult.TargetFile.IsEmpty)
 			{
 				sharedBuildTable["TargetFile"] = new Value(buildResult.TargetFile.ToString());
+				sharedBuildTable["RunExecutable"] = new Value("C:/Program Files/dotnet/dotnet.exe");
+				sharedBuildTable["RunArguments"] = new Value(buildResult.TargetFile.ToString());
 			}
 
 			// Register the build operations

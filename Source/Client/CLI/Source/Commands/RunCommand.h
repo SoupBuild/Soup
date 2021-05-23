@@ -110,29 +110,37 @@ namespace Soup::Client
 			}
 
 			auto& buildTable = sharedStateTable.GetValue("Build").AsTable();
-			if (!buildTable.HasValue("TargetFile"))
+			if (!buildTable.HasValue("RunExecutable"))
 			{
-				Log::Error("Build table does not have a TargetFile property");
+				Log::Error("Build table does not have a RunExecutable property");
 				return;
 			}
 
-			auto targetFile = Path(buildTable.GetValue("TargetFile").AsString().ToString());
-			Log::Info(targetFile.ToString());
-			if (!System::IFileSystem::Current().Exists(targetFile))
+			if (!buildTable.HasValue("RunArguments"))
 			{
-				Log::Error("The target does not exist");
+				Log::Error("Build table does not have a RunArguments property");
 				return;
 			}
 
+			auto runExecutable = Path(buildTable.GetValue("RunExecutable").AsString().ToString());
+			if (!System::IFileSystem::Current().Exists(runExecutable))
+			{
+				Log::Error("The run executable does not exist");
+				return;
+			}
+
+			auto runArguments = buildTable.GetValue("RunArguments").AsString().ToString();
 			auto arguments = std::stringstream();
+			arguments << runArguments << " ";
 			for (auto& argument : _options.Arguments)
 			{
 				arguments << argument << " ";
 			}
 
 			// Execute the requested target
+			Log::Info(runExecutable.ToString() + " " + arguments.str());
 			auto process = System::IProcessManager::Current().CreateProcess(
-				targetFile,
+				runExecutable,
 				arguments.str(),
 				workingDirectory);
 			process->Start();
