@@ -73,12 +73,18 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
 
                 var expectedCompileArguments = new CompileArguments()
                 {
+                    Target = new Path("./bin/Program.exe"),
                     ObjectDirectory = new Path("obj/"),
                     RootDirectory = new Path("C:/root/"),
                     SourceFiles = new List<Path>()
                     {
                         new Path("TestFile.cs"),
                     },
+                    ReferenceLibraries = new List<Path>()
+                    {
+                        new Path("../Other/bin/OtherModule1.mock.a"),
+                        new Path("../OtherModule2.mock.a"),
+                    }
                 };
 
                 // Verify expected compiler calls
@@ -160,7 +166,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                 // Setup the build arguments
                 var arguments = new BuildArguments();
                 arguments.TargetName = "Library";
-                arguments.TargetType = BuildTargetType.StaticLibrary;
+                arguments.TargetType = BuildTargetType.Library;
                 arguments.WorkingDirectory = new Path("C:/root/");
                 arguments.ObjectDirectory = new Path("obj/");
                 arguments.BinaryDirectory = new Path("bin/");
@@ -201,6 +207,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                 // Setup the shared arguments
                 var expectedCompileArguments = new CompileArguments()
                 {
+                    Target = new Path("./bin/Library.mock.dll"),
                     RootDirectory = new Path("C:/root/"),
                     ObjectDirectory = new Path("obj/"),
                     SourceFiles = new List<Path>()
@@ -208,6 +215,11 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                         new Path("TestFile1.cs"),
                         new Path("TestFile2.cs"),
                         new Path("TestFile3.cs"),
+                    },
+                    ReferenceLibraries = new List<Path>()
+                    {
+                        new Path("../Other/bin/OtherModule1.mock.a"),
+                        new Path("../OtherModule2.mock.a"),
                     },
                 };
 

@@ -62,6 +62,9 @@ namespace Soup::Build
 						rootOutput = rootOutput + Path("HostBuild/");
 					}
 
+					// Add the language sub folder
+					rootOutput = rootOutput + Path(recipe.GetLanguage() + "/");
+
 					// Add the unique recipe name
 					rootOutput = rootOutput + Path(recipe.GetName() + "/");
 
@@ -78,7 +81,8 @@ namespace Soup::Build
 			// Add unique folder name for parameters
 			auto parametersStream = std::stringstream();
 			Runtime::ValueTableWriter::Serialize(globalParameters, parametersStream);
-			auto uniqueParametersFolder = Path(std::to_string(parametersStream.str().size()) + "/");
+			auto hashParameters = Runtime::Sha3_256::HashBase64(parametersStream.str());
+			auto uniqueParametersFolder = Path(hashParameters + "/");
 			rootOutput = rootOutput + uniqueParametersFolder;
 
 			return rootOutput;

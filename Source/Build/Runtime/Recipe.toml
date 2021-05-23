@@ -10,6 +10,19 @@ Source = [
 Defines = [
 	# "TRACE_SYSTEM_ACCESS",
 ]
+IncludePaths = [
+	"../../../Dependencies/openssl/include/",
+]
+LinkLibraries = [
+	# Link against the dynamic libraries
+	"../../../Dependencies/openssl/libcrypto.lib",
+	"../../../Dependencies/openssl/libssl.lib",
+]
+RuntimeDependencies = [
+	# Copy the dynamic libraries
+	"../../../Dependencies/openssl/libcrypto-3.dll",
+	"../../../Dependencies/openssl/libssl-3.dll",
+]
 
 [Dependencies]
 Runtime = [

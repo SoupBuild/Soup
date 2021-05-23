@@ -4,6 +4,7 @@
 
 using Opal;
 using Soup.Build.Utilities;
+using System;
 
 namespace Soup.Build.CSharp.Compiler
 {
@@ -56,9 +57,27 @@ namespace Soup.Build.CSharp.Compiler
 			// Ensure there are actually files to build
 			if (arguments.SourceFiles.Count != 0)
 			{
+				Path targetFile;
+				switch (arguments.TargetType)
+				{
+					case BuildTargetType.Library:
+						targetFile =
+							arguments.BinaryDirectory +
+							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
+						break;
+					case BuildTargetType.Executable:
+						targetFile =
+							arguments.BinaryDirectory +
+							new Path(arguments.TargetName + ".exe");
+						break;
+					default:
+						throw new InvalidOperationException("Unknown build target type.");
+				}
+
 				// Setup the shared properties
 				var compileArguments = new CompileArguments()
 				{
+					Target = targetFile,
 					RootDirectory = arguments.WorkingDirectory,
 					ObjectDirectory = arguments.ObjectDirectory,
 					SourceFiles = arguments.SourceFiles,
@@ -68,6 +87,7 @@ namespace Soup.Build.CSharp.Compiler
 					DisabledWarnings = arguments.DisabledWarnings,
 					EnabledWarnings = arguments.EnabledWarnings,
 					CustomProperties = arguments.CustomProperties,
+					ReferenceLibraries = arguments.LinkDependencies,
 				};
 
 				// Compile all source files as a single call
@@ -85,7 +105,7 @@ namespace Soup.Build.CSharp.Compiler
 			BuildResult result)
 		{
 			if (arguments.TargetType == BuildTargetType.Executable ||
-				arguments.TargetType == BuildTargetType.DynamicLibrary)
+				arguments.TargetType == BuildTargetType.Library)
 			{
 				foreach (var source in arguments.RuntimeDependencies)
 				{

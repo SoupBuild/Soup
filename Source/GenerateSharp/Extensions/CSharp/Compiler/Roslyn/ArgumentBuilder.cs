@@ -14,14 +14,10 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 	{
 		public static string ArgumentFlag_NoConfig => "noconfig";
 
-		public static IList<string> BuildSharedCompilerArguments(
-			CompileArguments arguments)
+		public static IList<string> BuildSharedCompilerArguments(CompileArguments arguments)
 		{
 			// Calculate object output file
 			var commandArguments = new List<string>();
-
-			// Do not auto include CSC.RSP file
-			AddFlag(commandArguments, ArgumentFlag_NoConfig);
 
 			// Disable 'unsafe' code
 			AddFlag(commandArguments, "unsafe-");
@@ -114,6 +110,17 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			{
 				AddValueWithQuotes(commandArguments, file.ToString());
 			}
+
+			return commandArguments;
+		}
+
+		public static IList<string> BuildUniqueCompilerArguments()
+		{
+			// Calculate object output file
+			var commandArguments = new List<string>();
+
+			// Do not auto include CSC.RSP file
+			AddFlag(commandArguments, ArgumentFlag_NoConfig);
 
 			return commandArguments;
 		}

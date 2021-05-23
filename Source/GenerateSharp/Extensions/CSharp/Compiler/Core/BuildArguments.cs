@@ -39,14 +39,9 @@ namespace Soup.Build.CSharp.Compiler
 		Executable,
 
 		/// <summary>
-		/// Static Library
+		/// Library
 		/// </summary>
-		StaticLibrary,
-
-		/// <summary>
-		/// Dynamic Library
-		/// </summary>
-		DynamicLibrary,
+		Library,
 	}
 
 	/// <summary>

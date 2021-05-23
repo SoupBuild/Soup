@@ -77,6 +77,7 @@ namespace Soup.Build.CSharp.UnitTests
 
                 var expectedCompileArguments = new CompileArguments()
                 {
+                    Target = new Path("./bin/Program.exe"),
                     RootDirectory = new Path("C:/root/"),
                     ObjectDirectory = new Path("obj/"),
                     SourceFiles = new List<Path>()
@@ -156,7 +157,7 @@ namespace Soup.Build.CSharp.UnitTests
                 var buildTable = new ValueTable();
                 state.Add("Build", new Value(buildTable));
                 buildTable.Add("TargetName", new Value("Library"));
-                buildTable.Add("TargetType", new Value((long)BuildTargetType.StaticLibrary));
+                buildTable.Add("TargetType", new Value((long)BuildTargetType.Library));
                 buildTable.Add("WorkingDirectory", new Value("C:/root/"));
                 buildTable.Add("ObjectDirectory", new Value("obj/"));
                 buildTable.Add("BinaryDirectory", new Value("bin/"));
@@ -204,6 +205,7 @@ namespace Soup.Build.CSharp.UnitTests
                 // Setup the shared arguments
                 var expectedCompileArguments = new CompileArguments()
                 {
+                    Target = new Path("./bin/Library.mock.dll"),
                     RootDirectory = new Path("C:/root/"),
                     ObjectDirectory = new Path("obj/"),
                     SourceFiles = new List<Path>()

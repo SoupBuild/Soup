@@ -5,21 +5,24 @@ class Script
 {
 	static public void Main()
 	{
-		var soupBinFolder = @"..\..\..\out\Soup\MSVC\release\win32\x64\bin\";
+		var soupBinFolder = @"..\..\..\out\C++\Soup\fa11c194b8df931b2241afc7196c809fb2cc5692fd7e38a0ae2c176e63fd7ceb\bin\";
+		var soupBinGenerateFolder = @"..\..\..\Source\GenerateSharp\Generate\bin\Release\net5.0\";
 		var project = new Project(
 			"Soup",
 			new Dir(
 				@"%ProgramFiles%\SoupBuild\Soup",
-				new File(System.IO.Path.Combine(soupBinFolder, "copy.exe")),
-				new File(System.IO.Path.Combine(soupBinFolder, "libcrypto-3.dll")),
-				new File(System.IO.Path.Combine(soupBinFolder, "libssl-3.dll")),
-				new File(System.IO.Path.Combine(soupBinFolder, "mkdir.exe")),
-				new File(System.IO.Path.Combine(soupBinFolder, "Monitor.Detours.32.dll")),
-				new File(System.IO.Path.Combine(soupBinFolder, "Monitor.Detours.64.dll")),
-				new File(System.IO.Path.Combine(soupBinFolder, "Soup.exe")),
-				new File(System.IO.Path.Combine(soupBinFolder, "Soup.Cpp.dll")),
-				new File(System.IO.Path.Combine(soupBinFolder, "Soup.CSharp.dll")),
-				new File(System.IO.Path.Combine(soupBinFolder, "Soup.Generate.exe"))),
+				new DirFiles(System.IO.Path.Combine(soupBinFolder, "*.*")),
+				new Dir(
+					@"Generate",
+					new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, "*.*")),
+					new Dir(
+						@"Extensions",
+						new Dir(
+							@"Soup.Cpp",
+							new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, @"Extensions\Soup.Cpp\", "*.*"))),
+						new Dir(
+							@"Soup.CSharp",
+							new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, @"Extensions\Soup.Cpp\", "*.*")))))),
 			new EnvironmentVariable("PATH", "[INSTALLDIR]")
 			{
 				System = true,
@@ -42,7 +45,7 @@ class Script
 		};
 
 		// Upgrade values
-		project.Version = new Version(0, 11, 1);
+		project.Version = new Version(0, 12, 1);
 
 		Compiler.BuildMsi(project);
 	}

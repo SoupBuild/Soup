@@ -9,6 +9,7 @@
 #include "InstallCommand.h"
 #include "PublishCommand.h"
 #include "RunCommand.h"
+#include "TargetCommand.h"
 #include "VersionCommand.h"
 
 namespace Soup::Client
@@ -84,6 +85,8 @@ namespace Soup::Client
 					command = Setup(arguments.ExtractResult<InstallOptions>());
 				else if (arguments.IsA<PublishOptions>())
 					command = Setup(arguments.ExtractResult<PublishOptions>());
+				else if (arguments.IsA<TargetOptions>())
+					command = Setup(arguments.ExtractResult<TargetOptions>());
 				else if (arguments.IsA<VersionOptions>())
 					command = Setup(arguments.ExtractResult<VersionOptions>());
 				else
@@ -169,6 +172,14 @@ namespace Soup::Client
 			Log::Diag("Setup PublishCommand");
 			SetupShared(options);
 			return std::make_shared<PublishCommand>(
+				std::move(options));
+		}
+
+		std::shared_ptr<ICommand> Setup(TargetOptions options)
+		{
+			Log::Diag("Setup TargetOptions");
+			SetupShared(options);
+			return std::make_shared<TargetCommand>(
 				std::move(options));
 		}
 

@@ -171,7 +171,7 @@ namespace Soup.Build.CSharp
 			buildTable["EnableWarningsAsErrors"] = new Value(enableWarningsAsErrors);
 
 			// Convert the recipe type to the required build type
-			var targetType = BuildTargetType.StaticLibrary;
+			var targetType = BuildTargetType.Library;
 			if (recipeTable.TryGetValue("Type", out var typeValue))
 			{
 				targetType = ParseType(typeValue.AsString());
@@ -184,10 +184,8 @@ namespace Soup.Build.CSharp
 		{
 			if (value == "Executable")
 				return BuildTargetType.Executable;
-			else if (value == "StaticLibrary")
-				return BuildTargetType.StaticLibrary;
-			else if (value == "DynamicLibrary")
-				return BuildTargetType.DynamicLibrary;
+			else if (value == "Library")
+				return BuildTargetType.Library;
 			else
 				throw new InvalidOperationException("Unknown target type value.");
 		}

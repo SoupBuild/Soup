@@ -4,8 +4,8 @@ Version = "1.0.0"
 Source = [
 	"IO/IConsoleInputStream.cs",
 	"IO/IConsoleManager.cs",
-	"IO/MockConsoleInput.cs",
+	"IO/MockConsoleInputStream.cs",
 	"IO/MockConsoleManager.cs",
-	"IO/SystemConsoleInputStream.cs",
-	"IO/SystemConsoleManager.cs",
+	# "IO/SystemConsoleInputStream.cs",
+	# "IO/SystemConsoleManager.cs",
 ]

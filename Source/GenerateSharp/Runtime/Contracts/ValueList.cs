@@ -8,5 +8,12 @@ namespace Soup.Build.Runtime
 {
 	public class ValueList : List<Value>, IValueList
 	{
+		public ValueList() : base()
+		{
+		}
+
+		public ValueList(IEnumerable<Value> collection) : base(collection)
+        {
+        }
 	}
 }

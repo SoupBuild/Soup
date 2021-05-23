@@ -19,7 +19,6 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 
 			var expectedArguments = new List<string>()
 			{
-				"/noconfig",
 				"/unsafe-",
 				"/checked-",
 				"/fullpaths",
@@ -59,7 +58,6 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 
 			var expectedArguments = new List<string>()
 			{
-				"/noconfig",
 				"/unsafe-",
 				"/checked-",
 				"/fullpaths",
@@ -99,7 +97,6 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 
 			var expectedArguments = new List<string>()
 			{
-				"/noconfig",
 				"/unsafe-",
 				"/checked-",
 				"/fullpaths",
@@ -143,7 +140,6 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 
 			var expectedArguments = new List<string>()
 			{
-				"/noconfig",
 				"/unsafe-",
 				"/checked-",
 				"/fullpaths",
@@ -166,6 +162,19 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 				"/utf8output",
 				"/deterministic+",
 				"/langversion:9.0",
+			};
+
+			Assert.Equal(expectedArguments, actualArguments);
+		}
+
+		[Fact]
+		public void BuildUniqueCompilerArguments()
+		{
+			var actualArguments = ArgumentBuilder.BuildUniqueCompilerArguments();
+
+			var expectedArguments = new List<string>()
+			{
+				"/noconfig",
 			};
 
 			Assert.Equal(expectedArguments, actualArguments);

@@ -67,7 +67,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			};
 
 			// Generate the compile build operation
-			var commandArguments = $"@{responseFile}";
+			var uniqueCommandArguments = ArgumentBuilder.BuildUniqueCompilerArguments();
+			var commandArguments = $"@{responseFile} {string.Join(" ", uniqueCommandArguments)}";
 			var buildOperation = new BuildOperation(
 				$"Compile - {arguments.Target}",
 				arguments.RootDirectory,

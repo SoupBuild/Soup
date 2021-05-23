@@ -51,3 +51,5 @@ using namespace Opal;
 
 #include "BuildEvaluateEngine.h"
 #include "BuildGenerateEngine.h"
+
+#include "Sha3_256.h"

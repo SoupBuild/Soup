@@ -56,6 +56,10 @@ namespace Soup.Build.CSharp.UnitTests
 				parametersTable.Add("System", new Value("win32"));
 				parametersTable.Add("Architecture", new Value("x64"));
 
+				// Setup build table
+				var buildTable = new ValueTable();
+				state.Add("Build", new Value(buildTable));
+
 				var uut = new ResolveToolsTask(buildState);
 
 				uut.Execute();
