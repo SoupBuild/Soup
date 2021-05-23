@@ -332,7 +332,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                     result.RuntimeDependencies);
 
                 Assert.Equal(
-                    new Path(),
+                    new Path("bin/Library.mock.dll"),
                     result.TargetFile);
             }
         }
