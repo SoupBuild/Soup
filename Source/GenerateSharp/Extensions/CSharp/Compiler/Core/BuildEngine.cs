@@ -48,6 +48,8 @@ namespace Soup.Build.CSharp.Compiler
 			// Copy previous runtime dependencies after linking has completed
 			CopyRuntimeDependencies(arguments, result);
 
+			GenerateBuildRuntimeConfigurationFiles(arguments, result);
+
 			return result;
 		}
 
@@ -65,9 +67,11 @@ namespace Soup.Build.CSharp.Compiler
 			{
 				Path targetFile;
 				Path referenceTargetFile;
+				LinkTarget targetType;
 				switch (arguments.TargetType)
 				{
 					case BuildTargetType.Library:
+						targetType = LinkTarget.Library;
 						targetFile =
 							arguments.BinaryDirectory +
 							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
@@ -83,9 +87,10 @@ namespace Soup.Build.CSharp.Compiler
 
 						break;
 					case BuildTargetType.Executable:
+						targetType = LinkTarget.Executable;
 						targetFile =
 							arguments.BinaryDirectory +
-							new Path(arguments.TargetName + ".exe");
+							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
 						referenceTargetFile =
 							referenceDirectory +
 							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
@@ -105,6 +110,7 @@ namespace Soup.Build.CSharp.Compiler
 				{
 					Target = targetFile,
 					ReferenceTarget = referenceTargetFile,
+					TargetType = targetType,
 					RootDirectory = arguments.WorkingDirectory,
 					ObjectDirectory = arguments.ObjectDirectory,
 					SourceFiles = arguments.SourceFiles,
@@ -143,6 +149,35 @@ namespace Soup.Build.CSharp.Compiler
 						target);
 					result.BuildOperations.Add(operation);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Generate Build Runtime Configuration Files
+		/// </summary>
+		private void GenerateBuildRuntimeConfigurationFiles(
+			BuildArguments arguments,
+			BuildResult result)
+		{
+			if (arguments.TargetType == BuildTargetType.Executable)
+			{
+				// Generate the runtime configuration files
+				var runtimeConfigFile = arguments.BinaryDirectory + new Path($"{arguments.TargetName}.runtimeconfig.json");
+				var content =
+@"{
+  ""runtimeOptions"": {
+    ""tfm"": ""net5.0"",
+    ""framework"": {
+      ""name"": ""Microsoft.NETCore.App"",
+      ""version"": ""5.0.0""
+    }
+  }
+}";
+				var writeRuntimeConfigFile = SharedOperations.CreateWriteFileOperation(
+					arguments.WorkingDirectory,
+					runtimeConfigFile,
+					content);
+				result.BuildOperations.Add(writeRuntimeConfigFile);
 			}
 		}
 

@@ -74,8 +74,9 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
 
                 var expectedCompileArguments = new CompileArguments()
                 {
-                    Target = new Path("./bin/Program.exe"),
-                    ReferenceTarget = new Path("./bin/ref/Program.dll"),
+                    Target = new Path("./bin/Program.mock.dll"),
+                    ReferenceTarget = new Path("./bin/ref/Program.mock.dll"),
+                    TargetType = LinkTarget.Executable,
                     ObjectDirectory = new Path("obj/"),
                     RootDirectory = new Path("C:/root/"),
                     SourceFiles = new List<Path>()
@@ -145,6 +146,24 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                         {
                             new Path("./OutputFile.out"),
                         }),
+                    new BuildOperation(
+                        "WriteFile [./bin/Program.runtimeconfig.json]",
+                        new Path("C:/root/"),
+                        new Path("./writefile.exe"),
+                        @"""./bin/Program.runtimeconfig.json"" ""{
+  ""runtimeOptions"": {
+    ""tfm"": ""net5.0"",
+    ""framework"": {
+      ""name"": ""Microsoft.NETCore.App"",
+      ""version"": ""5.0.0""
+    }
+  }
+}""",
+                new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./bin/Program.runtimeconfig.json"),
+                        }),
                 };
 
                 Assert.Equal(
@@ -158,7 +177,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                 Assert.Equal(
                     new List<Path>()
                     {
-                        new Path("./bin/Program.exe"),
+                        new Path("./bin/Program.mock.dll"),
                     },
                     result.RuntimeDependencies);
             }
@@ -222,6 +241,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                 var expectedCompileArguments = new CompileArguments()
                 {
                     Target = new Path("./bin/Library.mock.dll"),
+                    ReferenceTarget = new Path("./bin/ref/Library.mock.dll"),
                     RootDirectory = new Path("C:/root/"),
                     ObjectDirectory = new Path("obj/"),
                     SourceFiles = new List<Path>()

@@ -15,14 +15,9 @@ namespace Soup.Build.CSharp.Compiler
 	public enum LinkTarget
 	{
 		/// <summary>
-		/// Static Library
-		/// </summary>
-		StaticLibrary,
-
-		/// <summary>
 		/// Dynamic Library
 		/// </summary>
-		DynamicLibrary,
+		Library,
 
 		/// <summary>
 		/// Executable
@@ -69,6 +64,11 @@ namespace Soup.Build.CSharp.Compiler
 		/// Gets or sets a value indicating whether to generate source debug information
 		/// </summary>
 		public bool GenerateSourceDebugInfo { get; init; }
+
+		/// <summary>
+		/// Gets or sets the target type
+		/// </summary>
+		public LinkTarget TargetType { get; init; } = LinkTarget.Library;
 
 		/// <summary>
 		/// Gets or sets the target file
@@ -119,7 +119,9 @@ namespace Soup.Build.CSharp.Compiler
 				Enumerable.SequenceEqual(this.SourceFiles, rhs.SourceFiles) &&
 				this.EnableOptimizations == rhs.EnableOptimizations &&
 				this.GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
+				this.TargetType == rhs.TargetType &&
 				this.Target == rhs.Target &&
+				this.ReferenceTarget == rhs.ReferenceTarget &&
 				this.EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
 				Enumerable.SequenceEqual(this.DisabledWarnings, rhs.DisabledWarnings) &&
 				Enumerable.SequenceEqual(this.EnabledWarnings, rhs.EnabledWarnings) &&
@@ -145,7 +147,7 @@ namespace Soup.Build.CSharp.Compiler
 
 		public override string ToString()
 		{
-			return $"SharedCompileArguments {{ RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], SourceFiles=[{string.Join(",", SourceFiles)}], EnableOptimizations=\"{EnableOptimizations}\", GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", Target={Target}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+			return $"SharedCompileArguments {{ RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], SourceFiles=[{string.Join(",", SourceFiles)}], EnableOptimizations=\"{EnableOptimizations}\", GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", TargetType={TargetType}, Target={Target}, ReferenceTarget={ReferenceTarget}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
 		}
 	}
 }

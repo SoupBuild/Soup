@@ -77,7 +77,9 @@ namespace Soup.Build.CSharp.UnitTests
 
                 var expectedCompileArguments = new CompileArguments()
                 {
-                    Target = new Path("./bin/Program.exe"),
+                    Target = new Path("./bin/Program.mock.dll"),
+                    ReferenceTarget = new Path("./bin/ref/Program.mock.dll"),
+                    TargetType = LinkTarget.Executable,
                     RootDirectory = new Path("C:/root/"),
                     ObjectDirectory = new Path("obj/"),
                     SourceFiles = new List<Path>()
@@ -139,6 +141,24 @@ namespace Soup.Build.CSharp.UnitTests
                         new List<Path>()
                         {
                             new Path("./OutputFile.out"),
+                        }),
+                    new BuildOperation(
+                        "WriteFile [./bin/Program.runtimeconfig.json]",
+                        new Path("C:/root/"),
+                        new Path("./writefile.exe"),
+                        @"""./bin/Program.runtimeconfig.json"" ""{
+  ""runtimeOptions"": {
+    ""tfm"": ""net5.0"",
+    ""framework"": {
+      ""name"": ""Microsoft.NETCore.App"",
+      ""version"": ""5.0.0""
+    }
+  }
+}""",
+                new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./bin/Program.runtimeconfig.json"),
                         }),
                 };
 
@@ -216,6 +236,7 @@ namespace Soup.Build.CSharp.UnitTests
                 var expectedCompileArguments = new CompileArguments()
                 {
                     Target = new Path("./bin/Library.mock.dll"),
+                    ReferenceTarget = new Path("./bin/ref/Library.mock.dll"),
                     RootDirectory = new Path("C:/root/"),
                     ObjectDirectory = new Path("obj/"),
                     SourceFiles = new List<Path>()

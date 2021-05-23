@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 
 namespace Soup.Build.CSharp.Compiler.Roslyn
@@ -88,7 +89,17 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			// Reference assembly output to generate
 			AddParameterWithQuotes(commandArguments, "refout", arguments.ReferenceTarget.ToString());
 
-			AddParameter(commandArguments, "target", "library");
+			switch (arguments.TargetType)
+            {
+				case LinkTarget.Library:
+					AddParameter(commandArguments, "target", "library");
+					break;
+				case LinkTarget.Executable:
+					AddParameter(commandArguments, "target", "exe");
+					break;
+				default:
+					throw new InvalidOperationException($"Unknown Target Type {arguments.TargetType}");
+			}
 
 			// Report all warnings as errors
 			if (arguments.EnableWarningsAsErrors)
