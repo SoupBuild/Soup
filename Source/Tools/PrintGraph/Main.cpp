@@ -31,6 +31,14 @@ std::string ToString(const std::vector<uint32_t>& valueList)
 	return builder.str();
 }
 
+void PrintFiles(Soup::Build::Runtime::OperationGraph& graph)
+{
+	for (auto fileReference : graph.GetReferencedFiles())
+	{
+		std::cout << "File: " << fileReference.first << " " << fileReference.second.ToString() << std::endl;
+	}
+}
+
 void PrintOperations(Soup::Build::Runtime::OperationGraph& graph)
 {
 	for (auto operation : graph.GetOperations())
@@ -95,6 +103,7 @@ void LoadAndPrintGraph(const Opal::Path& operationGraphFile)
 	// Read the contents of the build state file
 	auto graph = Soup::Build::Runtime::OperationGraphReader::Deserialize(file->GetInStream());
 
+	PrintFiles(graph);
 	PrintOperations(graph);
 	PrintGraph(graph);
 }

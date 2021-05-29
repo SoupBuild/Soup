@@ -28,6 +28,8 @@
 #undef max
 #endif
 
+#include <openssl/evp.h>
+
 export module Soup.Build.Runtime;
 
 import json11;

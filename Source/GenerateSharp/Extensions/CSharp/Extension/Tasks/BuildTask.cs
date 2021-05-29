@@ -62,7 +62,6 @@ namespace Soup.Build.CSharp
 			arguments.ObjectDirectory = new Path(buildTable["ObjectDirectory"].AsString());
 			arguments.BinaryDirectory = new Path(buildTable["BinaryDirectory"].AsString());
 
-
 			if (buildTable.TryGetValue("Source", out var sourceValue))
 			{
 				arguments.SourceFiles = sourceValue.AsList().Select(value => new Path(value.AsString())).ToList();

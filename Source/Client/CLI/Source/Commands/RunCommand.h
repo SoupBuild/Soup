@@ -123,6 +123,7 @@ namespace Soup::Client
 			}
 
 			auto runExecutable = Path(buildTable.GetValue("RunExecutable").AsString().ToString());
+			Log::Info("Executable: " + runExecutable.ToString());
 			if (!System::IFileSystem::Current().Exists(runExecutable))
 			{
 				Log::Error("The run executable does not exist");
@@ -138,7 +139,7 @@ namespace Soup::Client
 			}
 
 			// Execute the requested target
-			Log::Info(runExecutable.ToString() + " " + arguments.str());
+			Log::Info("Arguments: " + arguments.str());
 			auto process = System::IProcessManager::Current().CreateProcess(
 				runExecutable,
 				arguments.str(),

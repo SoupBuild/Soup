@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include <openssl/evp.h>
 
 namespace Soup::Build::Runtime
 {

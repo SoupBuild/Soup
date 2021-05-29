@@ -1,0 +1,19 @@
+Name = "Soup.Cpp.Compiler"
+Language = "C#"
+Version = "0.1.1"
+Source = [
+	"BuildArguments.cs",
+	"BuildEngine.cs",
+	"BuildResult.cs",
+	"CompileArguments.cs",
+	"ICompiler.cs",
+	"LinkArguments.cs",
+	"MockCompiler.cs",
+]
+
+[Dependencies]
+Runtime = [
+	"../../../../Contracts/",
+	"../../../../Opal/",
+	"../../../../Utilities/",
+]

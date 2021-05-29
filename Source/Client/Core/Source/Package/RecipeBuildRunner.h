@@ -369,7 +369,7 @@ namespace Soup::Build
 
 			auto parametersFile = soupTargetDirectory + Runtime::BuildConstants::GenerateParametersFileName();
 			Log::Info("Check outdated parameters file: " + parametersFile.ToString());
-			if (IsOutdated(parametersTable, parametersFile))
+			if (_arguments.ForceRebuild || IsOutdated(parametersTable, parametersFile))
 			{
 				Log::Info("Save Parameters file");
 				Runtime::ValueTableManager::SaveState(parametersFile, parametersTable);

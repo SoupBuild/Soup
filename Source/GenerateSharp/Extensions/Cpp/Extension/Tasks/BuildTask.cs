@@ -87,7 +87,7 @@ namespace Soup.Build.Cpp
 
 			if (buildTable.TryGetValue("LinkLibraries", out var linkLibrariesValue))
 			{
-				arguments.LinkDependencies = linkLibrariesValue.AsList().Select(value => new Path(value.AsString())).ToList();
+				arguments.LinkDependencies = MakeUnique(linkLibrariesValue.AsList().Select(value => new Path(value.AsString())));
 			}
 
 			if (buildTable.TryGetValue("LibraryPaths", out var libraryPathsValue))
@@ -129,7 +129,8 @@ namespace Soup.Build.Cpp
 			// Load the link dependencies
 			if (buildTable.TryGetValue("LinkDependencies", out var linkDependenciesValue))
 			{
-				arguments.LinkDependencies = MakeUnique(
+				arguments.LinkDependencies = CombineUnique(
+					arguments.LinkDependencies,
 					linkDependenciesValue.AsList().Select(value => new Path(value.AsString())));
 			}
 
@@ -198,6 +199,19 @@ namespace Soup.Build.Cpp
 			}
 
 			_buildState.LogTrace(TraceLevel.Information, "Build Generate Done");
+		}
+
+		private static List<Path> CombineUnique(
+			IEnumerable<Path> collection1,
+			IEnumerable<Path> collection2)
+		{
+			var valueSet = new HashSet<string>();
+			foreach (var value in collection1)
+				valueSet.Add(value.ToString());
+			foreach (var value in collection2)
+				valueSet.Add(value.ToString());
+
+			return valueSet.Select(value => new Path(value)).ToList();
 		}
 
 		private static List<Path> MakeUnique(IEnumerable<Path> collection)
