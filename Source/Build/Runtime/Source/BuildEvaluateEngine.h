@@ -191,11 +191,17 @@ namespace Soup::Build::Runtime
 			OperationInfo& operationInfo)
 		{
 			auto callback = std::make_shared<SystemAccessTracker>();
+
+			// Replace callback with logger and existing
+			// auto callbackWrapper = std::make_shared<Monitor::ForkCallbackLogger>(
+			// 	callback,
+			// 	std::make_shared<Monitor::DetourCallbackLogger>(std::cout));
+
 			auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
 				operationInfo.Command.Executable,
 				operationInfo.Command.Arguments,
 				operationInfo.Command.WorkingDirectory,
-				callback);
+				callback); // callbackWrapper);
 
 			process->Start();
 			process->WaitForExit();

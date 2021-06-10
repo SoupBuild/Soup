@@ -16,8 +16,10 @@ module;
 #include <strsafe.h>
 #pragma warning(pop)
 
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 #include <atomic>
 #include <array>
+#include <codecvt>
 #include <iostream>
 #include <map>
 #include <string>
@@ -283,3 +285,6 @@ export void ThrowIfFailed(int32_t result, std::string_view message)
 #include "MockDetourProcessManager.h"
 #include "WindowsDetourProcessManager.h"
 #include "ScopedDetourProcessManagerRegister.h"
+
+#include "DetourCallbackLogger.h"
+#include "ForkCallbackLogger.h"

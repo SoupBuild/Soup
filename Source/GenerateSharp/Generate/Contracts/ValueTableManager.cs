@@ -4,6 +4,7 @@
 
 using Opal;
 using Soup.Build.Runtime;
+using System;
 
 namespace Soup.Build.Generate
 {
@@ -37,9 +38,9 @@ namespace Soup.Build.Generate
 					result = ValueTableReader.Deserialize(reader);
 					return true;
 				}
-				catch
+				catch (Exception ex)
 				{
-					Log.Error("Failed to parse value table");
+					Log.Error($"Failed to parse value table: {ex.Message}");
 					result = new ValueTable();
 					return false;
 				}
