@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "Constants.h"
 #include "Api/SoupApi.h"
 #include "Auth/SoupAuth.h"
 #include "LzmaExtractCallback.h"
@@ -508,58 +509,57 @@ namespace Soup
 		/// <summary>
 		/// Build the kitchen library path
 		/// </summary>
-		// static string BuildKitchenLibraryPath(LocalUserConfig config)
+		// static string BuildKitchenLibraryPath()
 		// {
-		// 	return config.PackageStore +
-		// 		Path(Constants::StoreLibraryFolderName);
+		// 	return Path(Constants::StoreLibraryFolderName);
 		// }
 
 		// /// <summary>
 		// /// Build the kitchen build path
 		// /// </summary>
-		// static std::string BuildKitchenBuildPath(LocalUserConfig config, Recipe recipe)
+		// static std::string BuildKitchenBuildPath(Recipe recipe)
 		// {
-		// 	return BuildKitchenBuildPath(config, recipe.Name, recipe.Version);
+		// 	return BuildKitchenBuildPath(recipe.Name, recipe.Version);
 		// }
 
 		// /// <summary>
 		// /// Build the kitchen build path
 		// /// </summary>
-		// static string BuildKitchenBuildPath(LocalUserConfig config, PackageReference reference)
+		// static string BuildKitchenBuildPath(PackageReference reference)
 		// {
-		// 	return BuildKitchenBuildPath(config, reference.Name, reference.Version);
+		// 	return BuildKitchenBuildPath(reference.Name, reference.Version);
 		// }
 
 		// /// <summary>
 		// /// Build the kitchen package path
 		// /// </summary>
-		// static string BuildKitchenPackagePath(LocalUserConfig config, Recipe recipe)
+		// static string BuildKitchenPackagePath(Recipe recipe)
 		// {
-		// 	return BuildKitchenPackagePath(config, recipe.Name, recipe.Version);
+		// 	return BuildKitchenPackagePath(recipe.Name, recipe.Version);
 		// }
 
 		// /// <summary>
 		// /// Build the kitchen package path
 		// /// </summary>
-		// static string BuildKitchenPackagePath(LocalUserConfig config, PackageReference reference)
+		// static string BuildKitchenPackagePath(PackageReference reference)
 		// {
-		// 	return BuildKitchenPackagePath(config, reference.Name, reference.Version);
+		// 	return BuildKitchenPackagePath(reference.Name, reference.Version);
 		// }
 
 		// /// <summary>
 		// /// Build the kitchen package path
 		// /// </summary>
-		// static string BuildKitchenIncludePath(LocalUserConfig config, Recipe recipe)
+		// static string BuildKitchenIncludePath(Recipe recipe)
 		// {
-		// 	return BuildKitchenIncludePath(config, recipe.Name, recipe.Version);
+		// 	return BuildKitchenIncludePath(recipe.Name, recipe.Version);
 		// }
 
 		// /// <summary>
 		// /// Build the kitchen include path
 		// /// </summary>
-		// static string BuildKitchenIncludePath(LocalUserConfig config, PackageReference reference)
+		// static string BuildKitchenIncludePath(PackageReference reference)
 		// {
-		// 	return BuildKitchenIncludePath(config, reference.Name, reference.Version);
+		// 	return BuildKitchenIncludePath(reference.Name, reference.Version);
 		// }
 
 		/// <summary>
@@ -610,7 +610,7 @@ namespace Soup
 		// 	return Path.Combine(projectName, $"{version}");
 		// }
 
-		// private static string BuildKitchenPackagePath(LocalUserConfig config, string projectName, SemanticVersion version)
+		// private static string BuildKitchenPackagePath(string projectName, SemanticVersion version)
 		// {
 		// 	var kitchenPath = config.PackageStore;
 		// 	var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
@@ -618,7 +618,7 @@ namespace Soup
 		// 	return path;
 		// }
 
-		// private static string BuildKitchenBuildPath(LocalUserConfig config, string projectName, SemanticVersion version)
+		// private static string BuildKitchenBuildPath(string projectName, SemanticVersion version)
 		// {
 		// 	var kitchenPath = config.PackageStore;
 		// 	var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
@@ -626,7 +626,7 @@ namespace Soup
 		// 	return path;
 		// }
 
-		// private static string BuildKitchenIncludePath(LocalUserConfig config, string projectName, SemanticVersion version)
+		// private static string BuildKitchenIncludePath(string projectName, SemanticVersion version)
 		// {
 		// 	var kitchenPath = config.PackageStore;
 		// 	var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);

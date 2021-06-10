@@ -34,7 +34,5 @@ using namespace Opal;
 
 #include "Api/SoupApi.h"
 
-#include "Config/LocalUserConfigExtensions.h"
-
 #include "Package/PackageManager.h"
 #include "Package/RecipeBuildRunner.h"

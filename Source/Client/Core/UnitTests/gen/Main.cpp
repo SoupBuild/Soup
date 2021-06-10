@@ -22,10 +22,6 @@ using namespace Soup::Test;
 #include "Api/SoupApiTests.gen.h"
 #include "Api/SoupApiJsonModelsTests.gen.h"
 
-#include "Config/LocalUserConfigExtensionsTests.gen.h"
-#include "Config/LocalUserConfigJsonTests.gen.h"
-#include "Config/LocalUserConfigTests.gen.h"
-
 #include "Package/PackageManagerTests.gen.h"
 #include "Package/RecipeBuilderTests.gen.h"
 #include "Package/RecipeBuildManagerTests.gen.h"
@@ -38,10 +34,6 @@ int main()
 
 	state += RunSoupApiTests();
 	state += RunSoupApiJsonModelsTests();
-
-	state += RunLocalUserConfigExtensionsTests();
-	state += RunLocalUserConfigJsonTests();
-	state += RunLocalUserConfigTests();
 
 	state += RunPackageManagerTests();
 	state += RunRecipeBuilderTests();

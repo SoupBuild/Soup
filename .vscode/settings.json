@@ -90,6 +90,12 @@
     "complex": "cpp",
     "*.inc": "cpp",
     "compare": "cpp",
-    "cwctype": "cpp"
+    "cwctype": "cpp",
+    "bit": "cpp",
+    "charconv": "cpp",
+    "hash_map": "cpp",
+    "hash_set": "cpp",
+    "shared_mutex": "cpp",
+    "stop_token": "cpp"
   }
 }

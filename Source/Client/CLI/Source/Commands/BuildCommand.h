@@ -29,9 +29,6 @@ namespace Soup::Client
 		{
 			Log::Diag("BuildCommand::Run");
 
-			// Load the user config
-			auto config = LocalUserConfigExtensions::LoadFromFile();
-
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
 			{
@@ -55,32 +52,30 @@ namespace Soup::Client
 			arguments.SkipGenerate = _options.SkipGenerate;
 			arguments.SkipEvaluate = _options.SkipEvaluate;
 
+			auto flavor = std::string("debug");
 			if (!_options.Flavor.empty())
-				arguments.Flavor = _options.Flavor;
-			else
-				arguments.Flavor = "debug";
+				flavor = _options.Flavor;
 
+			auto system = std::string("win32");
 			if (!_options.System.empty())
-				arguments.System = _options.System;
-			else
-				arguments.System = "win32";
+				system = _options.System;
 
+			auto architecture = std::string("x64");
 			if (!_options.Architecture.empty())
-				arguments.Architecture = _options.Architecture;
-			else
-				arguments.Architecture = "x64";
+				architecture = _options.Architecture;
 
-			std::string runtimeCompiler = config.GetRuntimeCompiler();
-			std::string systemCompiler = runtimeCompiler;
+			auto compiler = std::string("MSVC");
+
+			arguments.GlobalParameters.SetValue("Architecture", Build::Runtime::Value(std::string(architecture)));
+			arguments.GlobalParameters.SetValue("Compiler", Build::Runtime::Value(std::string(compiler)));
+			arguments.GlobalParameters.SetValue("Flavor", Build::Runtime::Value(std::string(flavor)));
+			arguments.GlobalParameters.SetValue("System", Build::Runtime::Value(std::string(system)));
 
 			// Now build the current project
 			Log::Info("Begin Build:");
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			auto buildManager = Build::RecipeBuildRunner(
-				std::move(systemCompiler),
-				std::move(runtimeCompiler),
-				std::move(arguments));
+			auto buildManager = Build::RecipeBuildRunner(std::move(arguments));
 			buildManager.Execute(workingDirectory);
 
 			auto endTime = std::chrono::high_resolution_clock::now();

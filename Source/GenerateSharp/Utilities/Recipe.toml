@@ -1,0 +1,16 @@
+Name = "Soup.Build.Utilities"
+Language = "C#"
+Version = "1.0.0"
+Source = [
+	"BuildOperation.cs",
+	"IValueTableExtensions.cs",
+	"MockBuildState.cs",
+	"SharedOperations.cs",
+]
+
+[Dependencies]
+Runtime = [
+	"../Contracts/",
+	"../Opal/",
+	"../Runtime/",
+]

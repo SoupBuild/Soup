@@ -21,29 +21,78 @@ namespace Soup::Build
 			return value;
 		}
 
-		static Path GetConfigurationDirectory(
-			std::string_view compiler,
-			std::string_view flavor,
-			std::string_view system,
-			std::string_view architecture)
+		static Path GetOutputDirectory(
+			const Path& packageRoot,
+			Runtime::Recipe& recipe,
+			const Runtime::ValueTable& globalParameters,
+			bool isHostBuild,
+			RecipeBuildManager& buildManager)
 		{
-			// Setup the output directories
-			return Path(compiler) +
-				Path(flavor) +
-				Path(system) +
-				Path(architecture);
+			// Set the default output directory to be relative to the package
+			auto rootOutput = packageRoot + Path("out/");
+
+			// Add unique location for host builds
+			if (isHostBuild)
+			{
+				rootOutput = rootOutput + Path("HostBuild/");
+			}
+
+			// Check for root recipe file with overrides
+			Path rootRecipeFile;
+			if (RootRecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
+			{
+				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
+				RootRecipe rootRecipe;
+				if (!buildManager.TryGetRootRecipe(rootRecipeFile, rootRecipe))
+				{
+					// Nothing we can do, exit
+					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
+					throw HandledException(222);
+				}
+
+				// Today the only unique thing it can do is set the shared output directory
+				if (rootRecipe.HasOutputRoot())
+				{
+					// Relative to the root recipe file itself
+					rootOutput = rootRecipe.GetOutputRoot();
+
+					// Add unique location for host builds
+					if (isHostBuild)
+					{
+						rootOutput = rootOutput + Path("HostBuild/");
+					}
+
+					// Add the language sub folder
+					rootOutput = rootOutput + Path(recipe.GetLanguage() + "/");
+
+					// Add the unique recipe name
+					rootOutput = rootOutput + Path(recipe.GetName() + "/");
+
+					// Ensure there is a root relative to the file itself
+					if (!rootOutput.HasRoot())
+					{
+						rootOutput = rootRecipeFile.GetParent() + rootOutput;
+					}
+
+					Log::Info("Override root output: " + rootOutput.ToString());
+				}
+			}
+
+			// Add unique folder name for parameters
+			auto parametersStream = std::stringstream();
+			Runtime::ValueTableWriter::Serialize(globalParameters, parametersStream);
+			auto hashParameters = Runtime::Sha3_256::HashBase64(parametersStream.str());
+			auto uniqueParametersFolder = Path(hashParameters + "/");
+			rootOutput = rootOutput + uniqueParametersFolder;
+
+			return rootOutput;
 		}
 
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuildRunner"/> class.
 		/// </summary>
-		RecipeBuildRunner(
-			std::string hostCompiler,
-			std::string runtimeCompiler,
-			RecipeBuildArguments arguments) :
-			_hostCompiler(std::move(hostCompiler)),
-			_runtimeCompiler(std::move(runtimeCompiler)),
+		RecipeBuildRunner(RecipeBuildArguments arguments) :
 			_arguments(std::move(arguments)),
 			_buildManager(),
 			_buildSet(),
@@ -52,6 +101,17 @@ namespace Soup::Build
 			_hostBuildCache(),
 			_fileSystemState(std::make_shared<Runtime::FileSystemState>())
 		{
+			_hostBuildGlobalParameters = Runtime::ValueTable();
+			
+			auto flavor = std::string("release");
+			auto system = std::string("win32");
+			auto architecture = std::string("x64");
+			auto compiler = std::string("MSVC");
+
+			_hostBuildGlobalParameters.SetValue("Architecture", Build::Runtime::Value(std::string(architecture)));
+			_hostBuildGlobalParameters.SetValue("Compiler", Build::Runtime::Value(std::string(compiler)));
+			_hostBuildGlobalParameters.SetValue("Flavor", Build::Runtime::Value(std::string(flavor)));
+			_hostBuildGlobalParameters.SetValue("System", Build::Runtime::Value(std::string(system)));
 		}
 
 		/// <summary>
@@ -246,77 +306,24 @@ namespace Soup::Build
 			Runtime::Recipe& recipe,
 			bool isHostBuild)
 		{
-			// Select the correct compiler to use
-			std::string activeCompiler = "";
-			std::string activeFlavor = "";
-			std::string activeArchitecture = _arguments.Architecture;
-			std::string activeSystem = _arguments.System;
 			if (isHostBuild)
 			{
 				Log::Info("Host Build '" + recipe.GetName() + "'");
-				activeCompiler = _hostCompiler;
-				activeFlavor = "release";
 			}
 			else
 			{
 				Log::Info("Build '" + recipe.GetName() + "'");
-				activeCompiler = _runtimeCompiler;
-				activeFlavor = _arguments.Flavor;
 			}
 
-			// Set the default output directory to be relative to the package
-			auto rootOutput = packageRoot + Path("out/");
-
-			// Add unique location for host builds
-			if (isHostBuild)
-			{
-				rootOutput = rootOutput + Path("HostBuild/");
-			}
-
-			// Check for root recipe file with overrides
-			Path rootRecipeFile;
-			if (RootRecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
-			{
-				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
-				RootRecipe rootRecipe;
-				if (!_buildManager.TryGetRootRecipe(rootRecipeFile, rootRecipe))
-				{
-					// Nothing we can do, exit
-					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
-					throw HandledException(222);
-				}
-
-				// Today the only unique thing it can do is set the shared output directory
-				if (rootRecipe.HasOutputRoot())
-				{
-					// Relative to the root recipe file itself
-					rootOutput = rootRecipe.GetOutputRoot();
-
-					// Add unique location for host builds
-					if (isHostBuild)
-					{
-						rootOutput = rootOutput + Path("HostBuild/");
-					}
-
-					// Add the unique recipe name
-					rootOutput = rootOutput + Path(recipe.GetName() + "/");
-
-					// Ensure there is a root relative to the file itself
-					if (!rootOutput.HasRoot())
-					{
-						rootOutput = rootRecipeFile.GetParent() + rootOutput;
-					}
-
-					Log::Info("Override root output: " + rootOutput.ToString());
-				}
-			}
+			auto& globalParameters = isHostBuild ? _hostBuildGlobalParameters : _arguments.GlobalParameters;
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto targetDirectory = rootOutput + GetConfigurationDirectory(
-				activeCompiler,
-				activeFlavor,
-				activeSystem,
-				activeArchitecture);
+			auto targetDirectory = GetOutputDirectory(
+				packageRoot,
+				recipe,
+				globalParameters,
+				isHostBuild,
+				_buildManager);
 			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
 
 			if (!_arguments.SkipGenerate)
@@ -326,10 +333,7 @@ namespace Soup::Build
 					packageRoot,
 					targetDirectory,
 					soupTargetDirectory,
-					activeArchitecture,
-					activeCompiler,
-					activeFlavor,
-					activeSystem,
+					globalParameters,
 					isHostBuild);
 			}
 
@@ -351,28 +355,21 @@ namespace Soup::Build
 			const Path& packageDirectory,
 			const Path& targetDirectory,
 			const Path& soupTargetDirectory,
-			std::string_view architecture,
-			std::string_view compiler,
-			std::string_view flavor,
-			std::string_view system,
+			const Runtime::ValueTable& globalParameters,
 			bool isHostBuild)
 		{
+			// Clone the global parameters
+			auto parametersTable = Runtime::ValueTable(globalParameters.GetValues());
+
 			// Set the input parameters
-			auto parametersTable = Runtime::ValueTable();
 			parametersTable.SetValue("PackageDirectory", Runtime::Value(packageDirectory.ToString()));
 			parametersTable.SetValue("TargetDirectory", Runtime::Value(targetDirectory.ToString()));
 			parametersTable.SetValue("SoupTargetDirectory", Runtime::Value(soupTargetDirectory.ToString()));
-
-			parametersTable.SetValue("Architecture", Runtime::Value(std::string(architecture)));
-			parametersTable.SetValue("Compiler", Runtime::Value(std::string(compiler)));
-			parametersTable.SetValue("Flavor", Runtime::Value(std::string(flavor)));
-			parametersTable.SetValue("System", Runtime::Value(std::string(system)));
-
 			parametersTable.SetValue("Dependencies", BuildParametersDependenciesValueTable(recipe, packageDirectory, isHostBuild));
 
 			auto parametersFile = soupTargetDirectory + Runtime::BuildConstants::GenerateParametersFileName();
 			Log::Info("Check outdated parameters file: " + parametersFile.ToString());
-			if (IsOutdated(parametersTable, parametersFile))
+			if (_arguments.ForceRebuild || IsOutdated(parametersTable, parametersFile))
 			{
 				Log::Info("Save Parameters file");
 				Runtime::ValueTableManager::SaveState(parametersFile, parametersTable);
@@ -384,7 +381,7 @@ namespace Soup::Build
 			// Add the single root operation to perform the generate
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
-			auto generateExecutable = moduleFolder + Path("Soup.Generate.exe");
+			auto generateExecutable = moduleFolder + Path("Generate/Soup.Build.Generate.exe");
 			Runtime::OperationId generateOperatioId = 1;
 			auto generateArguments = std::stringstream();
 			generateArguments << soupTargetDirectory.ToString();
@@ -616,9 +613,8 @@ namespace Soup::Build
 		}
 
 	private:
-		std::string _hostCompiler;
-		std::string _runtimeCompiler;
 		RecipeBuildArguments _arguments;
+		Runtime::ValueTable _hostBuildGlobalParameters;
 
 		RecipeBuildManager _buildManager;
 

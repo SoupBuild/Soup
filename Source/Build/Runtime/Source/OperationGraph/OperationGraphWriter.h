@@ -93,11 +93,6 @@ namespace Soup::Build::Runtime
 			stream.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
 		}
 
-		static void WriteValue(std::ostream& stream, int32_t value)
-		{
-			stream.write(reinterpret_cast<char*>(&value), sizeof(int32_t));
-		}
-
 		static void WriteValue(std::ostream& stream, bool value)
 		{
 			uint32_t integerValue = value ? 1u : 0u;

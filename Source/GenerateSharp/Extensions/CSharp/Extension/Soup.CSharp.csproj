@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Contracts\Soup.Build.Contracts.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Utilities\Soup.Utilities.csproj" />
+    <ProjectReference Include="..\Compiler\Core\Soup.CSharp.Compiler.csproj" />
+    <ProjectReference Include="..\Compiler\Roslyn\Soup.CSharp.Compiler.Roslyn.csproj" />
+  </ItemGroup>
+</Project>

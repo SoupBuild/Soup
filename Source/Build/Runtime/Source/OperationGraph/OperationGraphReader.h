@@ -126,7 +126,7 @@ namespace Soup::Build::Runtime
 			auto children = ReadOperationIdList(stream);
 
 			// Write out the dependency count
-			auto dependecyCount = ReadInt32(stream);
+			auto dependecyCount = ReadUInt32(stream);
 
 			// Write out the value indicating if there was a successful run
 			auto wasSuccessfulRun = ReadBoolean(stream);
@@ -151,18 +151,6 @@ namespace Soup::Build::Runtime
 				wasSuccessfulRun,
 				std::move(observedInput),
 				std::move(observedOutput));
-		}
-
-		static int32_t ReadInt32(std::istream& stream)
-		{
-			int32_t result = 0;
-			stream.read(reinterpret_cast<char*>(&result), sizeof(int32_t));
-			if (stream.fail())
-			{
-				throw std::runtime_error("OperationGraphReader Failed to read integer value");
-			}
-
-			return result;
 		}
 
 		static uint32_t ReadUInt32(std::istream& stream)

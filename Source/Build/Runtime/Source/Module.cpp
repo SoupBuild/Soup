@@ -5,6 +5,7 @@
 
 #include <any>
 #include <array>
+#include <algorithm>
 #include <codecvt>
 #include <ctime>
 #include <iomanip>
@@ -26,6 +27,8 @@
 #ifdef max
 #undef max
 #endif
+
+#include <openssl/evp.h>
 
 export module Soup.Build.Runtime;
 
@@ -50,3 +53,5 @@ using namespace Opal;
 
 #include "BuildEvaluateEngine.h"
 #include "BuildGenerateEngine.h"
+
+#include "Sha3_256.h"

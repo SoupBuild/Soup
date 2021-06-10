@@ -1,11 +1,8 @@
 Name = "Soup"
 Language = "C++"
-Version = "0.11.1"
+Version = "0.12.2"
 Type = "Executable"
 
-RuntimeDependencies = [
-	"LocalUserConfig.json",
-]
 Source = [
 	"Source/Main.cpp",
 ]
@@ -18,11 +15,11 @@ IncludePaths = [
 # Ensure the core build extensions are runtime dependencies
 Runtime = [
 	"../Core/",
-	"../../Build/Generate/",
+	# "../../Build/Generate/",
 	"../../Tools/Copy/",
 	"../../Tools/Mkdir/",
-	"../../Extensions/Cpp/Extension/",
-	"../../Extensions/CSharp/Extension/",
+	# "../../Extensions/Cpp/Extension/",
+	# "../../Extensions/CSharp/Extension/",
 	"../../Monitor/Shared/",
 ]
 Build = [

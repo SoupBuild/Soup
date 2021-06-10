@@ -1,0 +1,12 @@
+Name = "Soup.Build.Generate"
+Language = "C#"
+Version = "1.0.0"
+Type = "Executable"
+Source = [
+	"BuildConstants.cs",
+]
+
+[Dependencies]
+Runtime = [
+	"../Opal/",
+]

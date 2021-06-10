@@ -29,9 +29,6 @@ namespace Soup::Client
 		{
 			Log::Diag("RunCommand::Run");
 
-			// Load the user config
-			auto config = LocalUserConfigExtensions::LoadFromFile();
-
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
 			{
@@ -49,66 +46,50 @@ namespace Soup::Client
 				}
 			}
 
-			auto recipePath = 
+			// Load the recipe
+			auto buildManager = Build::RecipeBuildManager();
+			auto recipePath =
 				workingDirectory +
 				Build::Runtime::BuildConstants::RecipeFileName();
 			Build::Runtime::Recipe recipe = {};
-			if (!Build::Runtime::RecipeExtensions::TryLoadRecipeFromFile(recipePath, recipe))
+			if (!buildManager.TryGetRecipe(recipePath, recipe))
 			{
-				Log::Error("Could not load the recipe file");
-				return;
+				Log::Error("The Recipe does not exist: " + recipePath.ToString());
+				Log::HighPriority("Make sure the path is correct and try again");
+
+				// Nothing we can do, exit
+				throw HandledException(1234);
 			}
 
-			// Ensure that this is an executable
-			// TODO: 
-			// if (recipe.GetType() != "Executable")
-			// {
-			// 	Log::Error("Cannot run a project not of type executable");
-			// 	return;
-			// }
+			// Setup the build parameters
+			auto flavor = std::string("debug");
+			if (!_options.Flavor.empty())
+				flavor = _options.Flavor;
 
-			// Ensure the executable exists
-			auto flavor = "debug";
-			auto system = "win32";
-			auto architecture = "x64";
-			auto compilerName = config.GetRuntimeCompiler();
+			auto system = std::string("win32");
+			if (!_options.System.empty())
+				system = _options.System;
 
-			// Set the default output directory to be relative to the package
-			auto rootOutput = recipePath + Path("out/");
+			auto architecture = std::string("x64");
+			if (!_options.Architecture.empty())
+				architecture = _options.Architecture;
 
-			// Check for root recipe file with overrides
-			Path rootRecipeFile;
-			if (Build::RootRecipeExtensions::TryFindRootRecipeFile(recipePath, rootRecipeFile))
-			{
-				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
-				Build::RootRecipe rootRecipe;
-				if (!Build::RootRecipeExtensions::TryLoadRootRecipeFromFile(rootRecipeFile, rootRecipe))
-				{
-					// Nothing we can do, exit
-					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
-					throw HandledException(222);
-				}
+			auto compiler = std::string("MSVC");
 
-				// Today the only unique thing it can do is set the shared output directory
-				if (rootRecipe.HasOutputRoot())
-				{
-					// Relative to the root recipe file itself
-					rootOutput = rootRecipe.GetOutputRoot() + Path(recipe.GetName() + "/");
-					if (!rootOutput.HasRoot())
-					{
-						rootOutput = rootRecipeFile.GetParent() + rootOutput;
-					}
-
-					Log::Info("Override root output: " + rootOutput.ToString());
-				}
-			}
+			auto globalParameters = Build::Runtime::ValueTable();
+			globalParameters.SetValue("Architecture", Build::Runtime::Value(std::string(architecture)));
+			globalParameters.SetValue("Compiler", Build::Runtime::Value(std::string(compiler)));
+			globalParameters.SetValue("Flavor", Build::Runtime::Value(std::string(flavor)));
+			globalParameters.SetValue("System", Build::Runtime::Value(std::string(system)));
 
 			// Load the value table to get the exe path
-			auto targetDirectory = rootOutput + Build::RecipeBuildRunner::GetConfigurationDirectory(
-				compilerName,
-				flavor,
-				system,
-				architecture);
+			auto isHostBuild = false;
+			auto targetDirectory = Build::RecipeBuildRunner::GetOutputDirectory(
+				workingDirectory,
+				recipe,
+				globalParameters,
+				isHostBuild,
+				buildManager);
 			auto soupTargetDirectory = targetDirectory + Build::RecipeBuildRunner::GetSoupTargetDirectory();
 			auto sharedStateFile = soupTargetDirectory + Build::Runtime::BuildConstants::GenerateSharedStateFileName();
 
@@ -129,29 +110,38 @@ namespace Soup::Client
 			}
 
 			auto& buildTable = sharedStateTable.GetValue("Build").AsTable();
-			if (!buildTable.HasValue("TargetFile"))
+			if (!buildTable.HasValue("RunExecutable"))
 			{
-				Log::Error("Build table does not have a TargetFile property");
+				Log::Error("Build table does not have a RunExecutable property");
 				return;
 			}
 
-			auto targetFile = Path(buildTable.GetValue("TargetFile").AsString().ToString());
-			Log::Info(targetFile.ToString());
-			if (!System::IFileSystem::Current().Exists(targetFile))
+			if (!buildTable.HasValue("RunArguments"))
 			{
-				Log::Error("The target does not exist");
+				Log::Error("Build table does not have a RunArguments property");
 				return;
 			}
 
+			auto runExecutable = Path(buildTable.GetValue("RunExecutable").AsString().ToString());
+			Log::Info("Executable: " + runExecutable.ToString());
+			if (!System::IFileSystem::Current().Exists(runExecutable))
+			{
+				Log::Error("The run executable does not exist");
+				return;
+			}
+
+			auto runArguments = buildTable.GetValue("RunArguments").AsString().ToString();
 			auto arguments = std::stringstream();
+			arguments << runArguments << " ";
 			for (auto& argument : _options.Arguments)
 			{
 				arguments << argument << " ";
 			}
 
 			// Execute the requested target
+			Log::Info("Arguments: " + arguments.str());
 			auto process = System::IProcessManager::Current().CreateProcess(
-				targetFile,
+				runExecutable,
 				arguments.str(),
 				workingDirectory);
 			process->Start();
