@@ -42,16 +42,16 @@ namespace Monitor
 			_callback2->OnCompareFileTime(result);
 		}
 
-		void OnCreateDirectoryA(std::string_view pathName, bool result) override final
+		void OnCreateDirectoryA(std::string_view pathName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCreateDirectoryA(pathName, result);
-			_callback2->OnCreateDirectoryA(pathName, result);
+			_callback1->OnCreateDirectoryA(pathName, result, wasBlocked);
+			_callback2->OnCreateDirectoryA(pathName, result, wasBlocked);
 		}
 
-		void OnCreateDirectoryW(std::wstring_view pathName, bool result) override final
+		void OnCreateDirectoryW(std::wstring_view pathName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCreateDirectoryW(pathName, result);
-			_callback2->OnCreateDirectoryW(pathName, result);
+			_callback1->OnCreateDirectoryW(pathName, result, wasBlocked);
+			_callback2->OnCreateDirectoryW(pathName, result, wasBlocked);
 		}
 
 		void OnCreateFile2(
@@ -59,10 +59,11 @@ namespace Monitor
 			uint32_t desiredAccess,
 			uint32_t sharedMode,
 			uint32_t creationDisposition,
-			uint64_t result) override final
+			uint64_t result,
+			bool wasBlocked) override final
 		{
-			_callback1->OnCreateFile2(fileName, desiredAccess, sharedMode, creationDisposition, result);
-			_callback2->OnCreateFile2(fileName, desiredAccess, sharedMode, creationDisposition, result);
+			_callback1->OnCreateFile2(fileName, desiredAccess, sharedMode, creationDisposition, result, wasBlocked);
+			_callback2->OnCreateFile2(fileName, desiredAccess, sharedMode, creationDisposition, result, wasBlocked);
 		}
 
 		void OnCreateFileA(
@@ -71,10 +72,11 @@ namespace Monitor
 			uint32_t sharedMode,
 			uint32_t creationDisposition,
 			uint32_t flagsAndAttributes,
-			uint64_t result) override final
+			uint64_t result,
+			bool wasBlocked) override final
 		{
-			_callback1->OnCreateFileA(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result);
-			_callback2->OnCreateFileA(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result);
+			_callback1->OnCreateFileA(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result, wasBlocked);
+			_callback2->OnCreateFileA(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result, wasBlocked);
 		}
 
 		void OnCreateFileW(
@@ -83,10 +85,11 @@ namespace Monitor
 			uint32_t sharedMode,
 			uint32_t creationDisposition,
 			uint32_t flagsAndAttributes,
-			uint64_t result) override final
+			uint64_t result,
+			bool wasBlocked) override final
 		{
-			_callback1->OnCreateFileW(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result);
-			_callback2->OnCreateFileW(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result);
+			_callback1->OnCreateFileW(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result, wasBlocked);
+			_callback2->OnCreateFileW(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result, wasBlocked);
 		}
 
 		void OnDefineDosDeviceW(uint32_t flags, std::wstring_view deviceName, std::wstring_view targetPath, bool result) override final
@@ -95,16 +98,16 @@ namespace Monitor
 			_callback2->OnDefineDosDeviceW(flags, deviceName, targetPath, result);
 		}
 
-		void OnDeleteFileA(std::string_view fileName, bool result) override final
+		void OnDeleteFileA(std::string_view fileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnDeleteFileA(fileName, result);
-			_callback2->OnDeleteFileA(fileName, result);
+			_callback1->OnDeleteFileA(fileName, result, wasBlocked);
+			_callback2->OnDeleteFileA(fileName, result, wasBlocked);
 		}
 
-		void OnDeleteFileW(std::wstring_view fileName, bool result) override final
+		void OnDeleteFileW(std::wstring_view fileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnDeleteFileW(fileName, result);
-			_callback2->OnDeleteFileW(fileName, result);
+			_callback1->OnDeleteFileW(fileName, result, wasBlocked);
+			_callback2->OnDeleteFileW(fileName, result, wasBlocked);
 		}
 
 		void OnDeleteVolumeMountPointW(std::wstring_view volumeMountPoint, bool result) override final
@@ -281,10 +284,10 @@ namespace Monitor
 			_callback2->OnGetDriveTypeW(rootPathName, result);
 		}
 
-		void OnGetFileAttributesA(std::string_view fileName, uint32_t result) override final
+		void OnGetFileAttributesA(std::string_view fileName, uint32_t result, bool wasBlocked) override final
 		{
-			_callback1->OnGetFileAttributesA(fileName, result);
-			_callback2->OnGetFileAttributesA(fileName, result);
+			_callback1->OnGetFileAttributesA(fileName, result, wasBlocked);
+			_callback2->OnGetFileAttributesA(fileName, result, wasBlocked);
 		}
 
 		void OnGetFileAttributesW(std::wstring_view fileName, uint32_t result, bool wasBlocked) override final
@@ -293,16 +296,16 @@ namespace Monitor
 			_callback2->OnGetFileAttributesW(fileName, result, wasBlocked);
 		}
 
-		void OnGetFileAttributesExA(std::string_view fileName, bool result) override final
+		void OnGetFileAttributesExA(std::string_view fileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnGetFileAttributesExA(fileName, result);
-			_callback2->OnGetFileAttributesExA(fileName, result);
+			_callback1->OnGetFileAttributesExA(fileName, result, wasBlocked);
+			_callback2->OnGetFileAttributesExA(fileName, result, wasBlocked);
 		}
 
-		void OnGetFileAttributesExW(std::wstring_view fileName, bool result) override final
+		void OnGetFileAttributesExW(std::wstring_view fileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnGetFileAttributesExW(fileName, result);
-			_callback2->OnGetFileAttributesExW(fileName, result);
+			_callback1->OnGetFileAttributesExW(fileName, result, wasBlocked);
+			_callback2->OnGetFileAttributesExW(fileName, result, wasBlocked);
 		}
 
 		void OnGetFileInformationByHandle(bool result) override final
@@ -491,16 +494,16 @@ namespace Monitor
 			_callback2->OnReadFileScatter(result);
 		}
 
-		void OnRemoveDirectoryA(std::string_view pathName, bool result) override final
+		void OnRemoveDirectoryA(std::string_view pathName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnRemoveDirectoryA(pathName, result);
-			_callback2->OnRemoveDirectoryA(pathName, result);
+			_callback1->OnRemoveDirectoryA(pathName, result, wasBlocked);
+			_callback2->OnRemoveDirectoryA(pathName, result, wasBlocked);
 		}
 
-		void OnRemoveDirectoryW(std::wstring_view pathName, bool result) override final
+		void OnRemoveDirectoryW(std::wstring_view pathName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnRemoveDirectoryW(pathName, result);
-			_callback2->OnRemoveDirectoryW(pathName, result);
+			_callback1->OnRemoveDirectoryW(pathName, result, wasBlocked);
+			_callback2->OnRemoveDirectoryW(pathName, result, wasBlocked);
 		}
 
 		void OnSetEndOfFile(bool result) override final
@@ -521,16 +524,16 @@ namespace Monitor
 			_callback2->OnSetFileApisToOEM();
 		}
 
-		void OnSetFileAttributesA(std::string_view fileName, bool result) override final
+		void OnSetFileAttributesA(std::string_view fileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnSetFileAttributesA(fileName, result);
-			_callback2->OnSetFileAttributesA(fileName, result);
+			_callback1->OnSetFileAttributesA(fileName, result, wasBlocked);
+			_callback2->OnSetFileAttributesA(fileName, result, wasBlocked);
 		}
 		
-		void OnSetFileAttributesW(std::wstring_view fileName, bool result) override final
+		void OnSetFileAttributesW(std::wstring_view fileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnSetFileAttributesW(fileName, result);
-			_callback2->OnSetFileAttributesW(fileName, result);
+			_callback1->OnSetFileAttributesW(fileName, result, wasBlocked);
+			_callback2->OnSetFileAttributesW(fileName, result, wasBlocked);
 		}
 
 		void OnSetFileInformationByHandle(bool result) override final
@@ -669,106 +672,109 @@ namespace Monitor
 		}
 
 		// UndocumentedApi
-		void OnPrivCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
+		void OnPrivCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnPrivCopyFileExA(existingFileName, newFileName, result);
-			_callback2->OnPrivCopyFileExA(existingFileName, newFileName, result);
+			_callback1->OnPrivCopyFileExA(existingFileName, newFileName, result, wasBlocked);
+			_callback2->OnPrivCopyFileExA(existingFileName, newFileName, result, wasBlocked);
 		}
 
-		void OnPrivCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
+		void OnPrivCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnPrivCopyFileExW(existingFileName, newFileName, result);
-			_callback2->OnPrivCopyFileExW(existingFileName, newFileName, result);
+			_callback1->OnPrivCopyFileExW(existingFileName, newFileName, result, wasBlocked);
+			_callback2->OnPrivCopyFileExW(existingFileName, newFileName, result, wasBlocked);
 		}
 
 		// WinBase
-		void OnCopyFileA(std::string_view existingFileName, std::string_view newFileName, bool failIfExists, bool result) override final
+		void OnCopyFileA(std::string_view existingFileName, std::string_view newFileName, bool failIfExists, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCopyFileA(existingFileName, newFileName, failIfExists, result);
-			_callback2->OnCopyFileA(existingFileName, newFileName, failIfExists, result);
+			_callback1->OnCopyFileA(existingFileName, newFileName, failIfExists, result, wasBlocked);
+			_callback2->OnCopyFileA(existingFileName, newFileName, failIfExists, result, wasBlocked);
 		}
 
-		void OnCopyFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool failIfExists, bool result) override final
+		void OnCopyFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool failIfExists, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCopyFileW(existingFileName, newFileName, failIfExists, result);
-			_callback2->OnCopyFileW(existingFileName, newFileName, failIfExists, result);
+			_callback1->OnCopyFileW(existingFileName, newFileName, failIfExists, result, wasBlocked);
+			_callback2->OnCopyFileW(existingFileName, newFileName, failIfExists, result, wasBlocked);
 		}
 
 		void OnCopyFile2(
 			std::wstring_view existingFileName,
 			std::wstring_view newFileName,
-			uint64_t result) override final
+			uint64_t result,
+			bool wasBlocked) override final
 		{
-			_callback1->OnCopyFile2(existingFileName, newFileName, result);
-			_callback2->OnCopyFile2(existingFileName, newFileName, result);
+			_callback1->OnCopyFile2(existingFileName, newFileName, result, wasBlocked);
+			_callback2->OnCopyFile2(existingFileName, newFileName, result, wasBlocked);
 		}
 
-		void OnCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
+		void OnCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCopyFileExA(existingFileName, newFileName, result);
-			_callback2->OnCopyFileExA(existingFileName, newFileName, result);
+			_callback1->OnCopyFileExA(existingFileName, newFileName, result, wasBlocked);
+			_callback2->OnCopyFileExA(existingFileName, newFileName, result, wasBlocked);
 		}
 
-		void OnCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
+		void OnCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCopyFileExW(existingFileName, newFileName, result);
-			_callback2->OnCopyFileExW(existingFileName, newFileName, result);
+			_callback1->OnCopyFileExW(existingFileName, newFileName, result, wasBlocked);
+			_callback2->OnCopyFileExW(existingFileName, newFileName, result, wasBlocked);
 		}
 
-		void OnCopyFileTransactedA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
+		void OnCopyFileTransactedA(std::string_view existingFileName, std::string_view newFileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCopyFileTransactedA(existingFileName, newFileName, result);
-			_callback2->OnCopyFileTransactedA(existingFileName, newFileName, result);
+			_callback1->OnCopyFileTransactedA(existingFileName, newFileName, result, wasBlocked);
+			_callback2->OnCopyFileTransactedA(existingFileName, newFileName, result, wasBlocked);
 		}
 
-		void OnCopyFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
+		void OnCopyFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCopyFileTransactedW(existingFileName, newFileName, result);
-			_callback2->OnCopyFileTransactedW(existingFileName, newFileName, result);
+			_callback1->OnCopyFileTransactedW(existingFileName, newFileName, result, wasBlocked);
+			_callback2->OnCopyFileTransactedW(existingFileName, newFileName, result, wasBlocked);
 		}
 
-		void OnCreateDirectoryExA(std::string_view templateDirectory, std::string_view newDirectory, bool result) override final
+		void OnCreateDirectoryExA(std::string_view templateDirectory, std::string_view newDirectory, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCreateDirectoryExA(templateDirectory, newDirectory, result);
-			_callback2->OnCreateDirectoryExA(templateDirectory, newDirectory, result);
+			_callback1->OnCreateDirectoryExA(templateDirectory, newDirectory, result, wasBlocked);
+			_callback2->OnCreateDirectoryExA(templateDirectory, newDirectory, result, wasBlocked);
 		}
 
-		void OnCreateDirectoryExW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) override final
+		void OnCreateDirectoryExW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCreateDirectoryExW(templateDirectory, newDirectory, result);
-			_callback2->OnCreateDirectoryExW(templateDirectory, newDirectory, result);
+			_callback1->OnCreateDirectoryExW(templateDirectory, newDirectory, result, wasBlocked);
+			_callback2->OnCreateDirectoryExW(templateDirectory, newDirectory, result, wasBlocked);
 		}
 
-		void OnCreateDirectoryTransactedA(std::string_view templateDirectory, std::string_view newDirectory, bool result) override final
+		void OnCreateDirectoryTransactedA(std::string_view templateDirectory, std::string_view newDirectory, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCreateDirectoryTransactedA(templateDirectory, newDirectory, result);
-			_callback2->OnCreateDirectoryTransactedA(templateDirectory, newDirectory, result);
+			_callback1->OnCreateDirectoryTransactedA(templateDirectory, newDirectory, result, wasBlocked);
+			_callback2->OnCreateDirectoryTransactedA(templateDirectory, newDirectory, result, wasBlocked);
 		}
 
-		void OnCreateDirectoryTransactedW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result) override final
+		void OnCreateDirectoryTransactedW(std::wstring_view templateDirectory, std::wstring_view newDirectory, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnCreateDirectoryTransactedW(templateDirectory, newDirectory, result);
-			_callback2->OnCreateDirectoryTransactedW(templateDirectory, newDirectory, result);
+			_callback1->OnCreateDirectoryTransactedW(templateDirectory, newDirectory, result, wasBlocked);
+			_callback2->OnCreateDirectoryTransactedW(templateDirectory, newDirectory, result, wasBlocked);
 		}
 
 		void OnCreateFileTransactedA(
 			std::string_view fileName,
 			uint32_t desiredAccess, 
 			uint32_t shareMode,
-			uint64_t result) override final
+			uint64_t result,
+			bool wasBlocked) override final
 		{
-			_callback1->OnCreateFileTransactedA(fileName, desiredAccess, shareMode, result);
-			_callback2->OnCreateFileTransactedA(fileName, desiredAccess, shareMode, result);
+			_callback1->OnCreateFileTransactedA(fileName, desiredAccess, shareMode, result, wasBlocked);
+			_callback2->OnCreateFileTransactedA(fileName, desiredAccess, shareMode, result, wasBlocked);
 		}
 
 		void OnCreateFileTransactedW(
 			std::wstring_view fileName,
 			uint32_t desiredAccess,
 			uint32_t shareMode,
-			uint64_t result) override final
+			uint64_t result,
+			bool wasBlocked) override final
 		{
-			_callback1->OnCreateFileTransactedW(fileName, desiredAccess, shareMode, result);
-			_callback2->OnCreateFileTransactedW(fileName, desiredAccess, shareMode, result);
+			_callback1->OnCreateFileTransactedW(fileName, desiredAccess, shareMode, result, wasBlocked);
+			_callback2->OnCreateFileTransactedW(fileName, desiredAccess, shareMode, result, wasBlocked);
 		}
 
 		void OnCreateHardLinkA(std::string_view fileName, std::string_view existingFileName, bool result) override final
@@ -843,16 +849,16 @@ namespace Monitor
 			_callback2->OnDecryptFileW(fileName, result);
 		}
 
-		void OnDeleteFileTransactedA(std::string_view fileName, bool result) override final
+		void OnDeleteFileTransactedA(std::string_view fileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnDeleteFileTransactedA(fileName, result);
-			_callback2->OnDeleteFileTransactedA(fileName, result);
+			_callback1->OnDeleteFileTransactedA(fileName, result, wasBlocked);
+			_callback2->OnDeleteFileTransactedA(fileName, result, wasBlocked);
 		}
 
-		void OnDeleteFileTransactedW(std::wstring_view fileName, bool result) override final
+		void OnDeleteFileTransactedW(std::wstring_view fileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnDeleteFileTransactedW(fileName, result);
-			_callback2->OnDeleteFileTransactedW(fileName, result);
+			_callback1->OnDeleteFileTransactedW(fileName, result, wasBlocked);
+			_callback2->OnDeleteFileTransactedW(fileName, result, wasBlocked);
 		}
 
 		void OnEncryptFileA(std::string_view fileName, bool result) override final
@@ -939,16 +945,16 @@ namespace Monitor
 			_callback2->OnGetDllDirectoryW(result);
 		}
 
-		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t result) override final
+		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t result, bool wasBlocked) override final
 		{
-			_callback1->OnGetFileAttributesTransactedA(fileName, result);
-			_callback2->OnGetFileAttributesTransactedA(fileName, result);
+			_callback1->OnGetFileAttributesTransactedA(fileName, result, wasBlocked);
+			_callback2->OnGetFileAttributesTransactedA(fileName, result, wasBlocked);
 		}
 
-		void OnGetFileAttributesTransactedW(std::wstring_view fileName, uint32_t result) override final
+		void OnGetFileAttributesTransactedW(std::wstring_view fileName, uint32_t result, bool wasBlocked) override final
 		{
-			_callback1->OnGetFileAttributesTransactedW(fileName, result);
-			_callback2->OnGetFileAttributesTransactedW(fileName, result);
+			_callback1->OnGetFileAttributesTransactedW(fileName, result, wasBlocked);
+			_callback2->OnGetFileAttributesTransactedW(fileName, result, wasBlocked);
 		}
 
 		void OnGetFileBandwidthReservation(bool result) override final
@@ -963,10 +969,10 @@ namespace Monitor
 			_callback2->OnGetFileInformationByHandleEx(result);
 		}
 
-		void OnGetFileSecurityA(std::string_view fileName, bool result) override final
+		void OnGetFileSecurityA(std::string_view fileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnGetFileSecurityA(fileName, result);
-			_callback2->OnGetFileSecurityA(fileName, result);
+			_callback1->OnGetFileSecurityA(fileName, result, wasBlocked);
+			_callback2->OnGetFileSecurityA(fileName, result, wasBlocked);
 		}
 
 		void OnGetFullPathNameTransactedA(std::string_view fileName, uint32_t result) override final
@@ -1023,52 +1029,52 @@ namespace Monitor
 			_callback2->OnLoadPackagedLibrary(libFileName);
 		}
 
-		void OnMoveFileA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
+		void OnMoveFileA(std::string_view existingFileName, std::string_view newFileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnMoveFileA(existingFileName, newFileName, result);
-			_callback2->OnMoveFileA(existingFileName, newFileName, result);
+			_callback1->OnMoveFileA(existingFileName, newFileName, result, wasBlocked);
+			_callback2->OnMoveFileA(existingFileName, newFileName, result, wasBlocked);
 		}
 
-		void OnMoveFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
+		void OnMoveFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnMoveFileW(existingFileName, newFileName, result);
-			_callback2->OnMoveFileW(existingFileName, newFileName, result);
+			_callback1->OnMoveFileW(existingFileName, newFileName, result, wasBlocked);
+			_callback2->OnMoveFileW(existingFileName, newFileName, result, wasBlocked);
 		}
 
-		void OnMoveFileExA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
+		void OnMoveFileExA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnMoveFileExA(existingFileName, newFileName, flags, result);
-			_callback2->OnMoveFileExA(existingFileName, newFileName, flags, result);
+			_callback1->OnMoveFileExA(existingFileName, newFileName, flags, result, wasBlocked);
+			_callback2->OnMoveFileExA(existingFileName, newFileName, flags, result, wasBlocked);
 		}
 
-		void OnMoveFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
+		void OnMoveFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnMoveFileExW(existingFileName, newFileName, flags, result);
-			_callback2->OnMoveFileExW(existingFileName, newFileName, flags, result);
+			_callback1->OnMoveFileExW(existingFileName, newFileName, flags, result, wasBlocked);
+			_callback2->OnMoveFileExW(existingFileName, newFileName, flags, result, wasBlocked);
 		}
 
-		void OnMoveFileTransactedA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
+		void OnMoveFileTransactedA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnMoveFileTransactedA(existingFileName, newFileName, flags, result);
-			_callback2->OnMoveFileTransactedA(existingFileName, newFileName, flags, result);
+			_callback1->OnMoveFileTransactedA(existingFileName, newFileName, flags, result, wasBlocked);
+			_callback2->OnMoveFileTransactedA(existingFileName, newFileName, flags, result, wasBlocked);
 		}
 
-		void OnMoveFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
+		void OnMoveFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnMoveFileTransactedW(existingFileName, newFileName, flags, result);
-			_callback2->OnMoveFileTransactedW(existingFileName, newFileName, flags, result);
+			_callback1->OnMoveFileTransactedW(existingFileName, newFileName, flags, result, wasBlocked);
+			_callback2->OnMoveFileTransactedW(existingFileName, newFileName, flags, result, wasBlocked);
 		}
 
-		void OnMoveFileWithProgressA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result) override final
+		void OnMoveFileWithProgressA(std::string_view existingFileName, std::string_view newFileName, uint32_t flags, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnMoveFileWithProgressA(existingFileName, newFileName, flags, result);
-			_callback2->OnMoveFileWithProgressA(existingFileName, newFileName, flags, result);
+			_callback1->OnMoveFileWithProgressA(existingFileName, newFileName, flags, result, wasBlocked);
+			_callback2->OnMoveFileWithProgressA(existingFileName, newFileName, flags, result, wasBlocked);
 		}
 
-		void OnMoveFileWithProgressW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result) override final
+		void OnMoveFileWithProgressW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t flags, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnMoveFileWithProgressW(existingFileName, newFileName, flags, result);
-			_callback2->OnMoveFileWithProgressW(existingFileName, newFileName, flags, result);
+			_callback1->OnMoveFileWithProgressW(existingFileName, newFileName, flags, result, wasBlocked);
+			_callback2->OnMoveFileWithProgressW(existingFileName, newFileName, flags, result, wasBlocked);
 		}
 
 		void OnOpenEncryptedFileRawA(std::string_view fileName, uint32_t flags, uint32_t result) override final
@@ -1083,10 +1089,10 @@ namespace Monitor
 			_callback2->OnOpenEncryptedFileRawW(fileName, flags, result);
 		}
 
-		void OnOpenFile(std::string_view fileName) override final
+		void OnOpenFile(std::string_view fileName, bool wasBlocked) override final
 		{
-			_callback1->OnOpenFile(fileName);
-			_callback2->OnOpenFile(fileName);
+			_callback1->OnOpenFile(fileName, wasBlocked);
+			_callback2->OnOpenFile(fileName, wasBlocked);
 		}
 
 		void OnOpenFileById() override final
@@ -1101,16 +1107,16 @@ namespace Monitor
 			_callback2->OnReadEncryptedFileRaw(result);
 		}
 
-		void OnRemoveDirectoryTransactedA(std::string_view pathName, bool result) override final
+		void OnRemoveDirectoryTransactedA(std::string_view pathName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnRemoveDirectoryTransactedA(pathName, result);
-			_callback2->OnRemoveDirectoryTransactedA(pathName, result);
+			_callback1->OnRemoveDirectoryTransactedA(pathName, result, wasBlocked);
+			_callback2->OnRemoveDirectoryTransactedA(pathName, result, wasBlocked);
 		}
 
-		void OnRemoveDirectoryTransactedW(std::wstring_view pathName, bool result) override final
+		void OnRemoveDirectoryTransactedW(std::wstring_view pathName, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnRemoveDirectoryTransactedW(pathName, result);
-			_callback2->OnRemoveDirectoryTransactedW(pathName, result);
+			_callback1->OnRemoveDirectoryTransactedW(pathName, result, wasBlocked);
+			_callback2->OnRemoveDirectoryTransactedW(pathName, result, wasBlocked);
 		}
 
 		void OnReOpenFile() override final
@@ -1155,16 +1161,16 @@ namespace Monitor
 			_callback2->OnSetDllDirectoryW(pathName, result);
 		}
 
-		void OnSetFileAttributesTransactedA(std::string_view pathName, uint32_t fileAttributes, bool result) override final
+		void OnSetFileAttributesTransactedA(std::string_view pathName, uint32_t fileAttributes, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnSetFileAttributesTransactedA(pathName, fileAttributes, result);
-			_callback2->OnSetFileAttributesTransactedA(pathName, fileAttributes, result);
+			_callback1->OnSetFileAttributesTransactedA(pathName, fileAttributes, result, wasBlocked);
+			_callback2->OnSetFileAttributesTransactedA(pathName, fileAttributes, result, wasBlocked);
 		}
 
-		void OnSetFileAttributesTransactedW(std::wstring_view pathName, uint32_t fileAttributes, bool result) override final
+		void OnSetFileAttributesTransactedW(std::wstring_view pathName, uint32_t fileAttributes, bool result, bool wasBlocked) override final
 		{
-			_callback1->OnSetFileAttributesTransactedW(pathName, fileAttributes, result);
-			_callback2->OnSetFileAttributesTransactedW(pathName, fileAttributes, result);
+			_callback1->OnSetFileAttributesTransactedW(pathName, fileAttributes, result, wasBlocked);
+			_callback2->OnSetFileAttributesTransactedW(pathName, fileAttributes, result, wasBlocked);
 		}
 
 		void OnSetFileBandwidthReservation(bool result) override final

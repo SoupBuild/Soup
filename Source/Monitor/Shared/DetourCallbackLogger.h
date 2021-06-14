@@ -36,15 +36,15 @@ namespace Monitor
 			m_stream << "CompareFileTime: " << std::endl;
 		}
 
-		void OnCreateDirectoryA(std::string_view pathName, bool /*result*/) override final
+		void OnCreateDirectoryA(std::string_view pathName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "CreateDirectoryA: " << pathName << std::endl;
+			m_stream << "CreateDirectoryA: " << pathName << " " << wasBlocked << std::endl;
 		}
 
-		void OnCreateDirectoryW(std::wstring_view pathName, bool /*result*/) override final
+		void OnCreateDirectoryW(std::wstring_view pathName, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CreateDirectoryW: " << converter.to_bytes(pathName.data()) << std::endl;
+			m_stream << "CreateDirectoryW: " << converter.to_bytes(pathName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnCreateFile2(
@@ -52,10 +52,11 @@ namespace Monitor
 			uint32_t /*desiredAccess*/,
 			uint32_t /*sharedMode*/,
 			uint32_t /*creationDisposition*/,
-			uint64_t /*result*/) override final
+			uint64_t /*result*/,
+			bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CreateFile2: " << converter.to_bytes(fileName.data()) << std::endl;
+			m_stream << "CreateFile2: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnCreateFileA(
@@ -64,9 +65,10 @@ namespace Monitor
 			uint32_t /*sharedMode*/,
 			uint32_t /*creationDisposition*/,
 			uint32_t /*flagsAndAttributes*/,
-			uint64_t /*result*/) override final
+			uint64_t /*result*/,
+			bool wasBlocked) override final
 		{
-			m_stream << "CreateFileA: " << fileName << std::endl;
+			m_stream << "CreateFileA: " << fileName << " " << wasBlocked << std::endl;
 		}
 
 		void OnCreateFileW(
@@ -75,10 +77,11 @@ namespace Monitor
 			uint32_t /*sharedMode*/,
 			uint32_t /*creationDisposition*/,
 			uint32_t /*flagsAndAttributes*/,
-			uint64_t /*result*/) override final
+			uint64_t /*result*/,
+			bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CreateFileW: " << converter.to_bytes(fileName.data()) << std::endl;
+			m_stream << "CreateFileW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnDefineDosDeviceW(uint32_t /*flags*/, std::wstring_view /*deviceName*/, std::wstring_view /*targetPath*/, bool /*result*/) override final
@@ -86,15 +89,15 @@ namespace Monitor
 			m_stream << "DefineDosDeviceW: " << std::endl;
 		}
 
-		void OnDeleteFileA(std::string_view fileName, bool /*result*/) override final
+		void OnDeleteFileA(std::string_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "DeleteFileA: " << fileName << std::endl;
+			m_stream << "DeleteFileA: " << fileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnDeleteFileW(std::wstring_view fileName, bool /*result*/) override final
+		void OnDeleteFileW(std::wstring_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "DeleteFileW: " << converter.to_bytes(fileName.data()) << std::endl;
+			m_stream << "DeleteFileW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnDeleteVolumeMountPointW(std::wstring_view /*volumeMountPoint*/, bool /*result*/) override final
@@ -252,9 +255,9 @@ namespace Monitor
 			m_stream << "GetDriveTypeW: " << converter.to_bytes(rootPathName.data()) << std::endl;
 		}
 
-		void OnGetFileAttributesA(std::string_view fileName, uint32_t /*result*/) override final
+		void OnGetFileAttributesA(std::string_view fileName, uint32_t /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "GetFileAttributesA: " << fileName << std::endl;
+			m_stream << "GetFileAttributesA: " << fileName << " " << wasBlocked << std::endl;
 		}
 
 		void OnGetFileAttributesW(std::wstring_view fileName, uint32_t /*result*/, bool wasBlocked) override final
@@ -263,15 +266,15 @@ namespace Monitor
 			m_stream << "GetFileAttributesW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
 		}
 
-		void OnGetFileAttributesExA(std::string_view fileName, bool /*result*/) override final
+		void OnGetFileAttributesExA(std::string_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "GetFileAttributesExA: " << fileName << std::endl;
+			m_stream << "GetFileAttributesExA: " << fileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnGetFileAttributesExW(std::wstring_view fileName, bool /*result*/) override final
+		void OnGetFileAttributesExW(std::wstring_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "GetFileAttributesExW: " << converter.to_bytes(fileName.data()) << std::endl;
+			m_stream << "GetFileAttributesExW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnGetFileInformationByHandle(bool /*result*/) override final
@@ -432,15 +435,15 @@ namespace Monitor
 			m_stream << "ReadFileScatter: " << std::endl;
 		}
 
-		void OnRemoveDirectoryA(std::string_view pathName, bool /*result*/) override final
+		void OnRemoveDirectoryA(std::string_view pathName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "RemoveDirectoryA: " << pathName << std::endl;
+			m_stream << "RemoveDirectoryA: " << pathName << " " << wasBlocked << std::endl;
 		}
 
-		void OnRemoveDirectoryW(std::wstring_view pathName, bool /*result*/) override final
+		void OnRemoveDirectoryW(std::wstring_view pathName, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "RemoveDirectoryW: " << converter.to_bytes(pathName.data()) << std::endl;
+			m_stream << "RemoveDirectoryW: " << converter.to_bytes(pathName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnSetEndOfFile(bool /*result*/) override final
@@ -458,15 +461,15 @@ namespace Monitor
 			m_stream << "SetFileApisToOEM: " << std::endl;
 		}
 
-		void OnSetFileAttributesA(std::string_view fileName, bool /*result*/) override final
+		void OnSetFileAttributesA(std::string_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "SetFileAttributesA: " << fileName << std::endl;
+			m_stream << "SetFileAttributesA: " << fileName << " " << wasBlocked << std::endl;
 		}
 		
-		void OnSetFileAttributesW(std::wstring_view fileName, bool /*result*/) override final
+		void OnSetFileAttributesW(std::wstring_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "SetFileAttributesW: " << converter.to_bytes(fileName.data()) << std::endl;
+			m_stream << "SetFileAttributesW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnSetFileInformationByHandle(bool /*result*/) override final
@@ -588,99 +591,134 @@ namespace Monitor
 		}
 
 		// UndocumentedApi
-		void OnPrivCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool /*result*/) override final
+		void OnPrivCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "PrivCopyFileExA: " << existingFileName << " -> " << newFileName << std::endl;
+			m_stream << "PrivCopyFileExA: " << existingFileName << " -> " << newFileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnPrivCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool /*result*/) override final
+		void OnPrivCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "PrivCopyFileExW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
+			m_stream << "PrivCopyFileExW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		// WinBase
-		void OnCopyFileA(std::string_view existingFileName, std::string_view newFileName, bool /*failIfExists*/, bool /*result*/) override final
+		void OnCopyFileA(std::string_view existingFileName, std::string_view newFileName, bool /*failIfExists*/, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "CopyFileA: " << existingFileName << " -> " << newFileName << std::endl;
+			m_stream << "CopyFileA: " << existingFileName << " -> " << newFileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnCopyFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool /*failIfExists*/, bool /*result*/) override final
+		void OnCopyFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool /*failIfExists*/, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CopyFileW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
+			m_stream << "CopyFileW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnCopyFile2(
 			std::wstring_view existingFileName,
 			std::wstring_view newFileName,
-			uint64_t /*result*/) override final
+			uint64_t /*result*/,
+			bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CopyFile2: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
+			m_stream << "CopyFile2: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << " " << wasBlocked << std::endl;
 		}
 
-		void OnCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool /*result*/) override final
+		void OnCopyFileExA(
+			std::string_view existingFileName,
+			std::string_view newFileName,
+			bool /*result*/,
+			bool wasBlocked) override final
 		{
-			m_stream << "CopyFileExA: " << existingFileName << " -> " << newFileName << std::endl;
+			m_stream << "CopyFileExA: " << existingFileName << " -> " << newFileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool /*result*/) override final
-		{
-			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CopyFileExW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
-		}
-
-		void OnCopyFileTransactedA(std::string_view existingFileName, std::string_view newFileName, bool /*result*/) override final
-		{
-			m_stream << "CopyFileTransactedA: " << existingFileName << " -> " << newFileName << std::endl;
-		}
-
-		void OnCopyFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, bool /*result*/) override final
+		void OnCopyFileExW(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			bool /*result*/,
+			bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CopyFileTransactedW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
+			m_stream << "CopyFileExW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << " " << wasBlocked << std::endl;
 		}
 
-		void OnCreateDirectoryExA(std::string_view /*templateDirectory*/, std::string_view newDirectory, bool /*result*/) override final
+		void OnCopyFileTransactedA(
+			std::string_view existingFileName,
+			std::string_view newFileName,
+			bool /*result*/,
+			bool wasBlocked) override final
 		{
-			m_stream << "CreateDirectoryExA: " << newDirectory << std::endl;
+			m_stream << "CopyFileTransactedA: " << existingFileName << " -> " << newFileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnCreateDirectoryExW(std::wstring_view /*templateDirectory*/, std::wstring_view newDirectory, bool /*result*/) override final
-		{
-			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CreateDirectoryExW: " << converter.to_bytes(newDirectory.data()) << std::endl;
-		}
-
-		void OnCreateDirectoryTransactedA(std::string_view /*templateDirectory*/, std::string_view newDirectory, bool /*result*/) override final
-		{
-			m_stream << "CreateDirectoryTransactedA: " << newDirectory << std::endl;
-		}
-
-		void OnCreateDirectoryTransactedW(std::wstring_view /*templateDirectory*/, std::wstring_view newDirectory, bool /*result*/) override final
+		void OnCopyFileTransactedW(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			bool /*result*/,
+			bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CreateDirectoryTransactedW: " << converter.to_bytes(newDirectory.data()) << std::endl;
+			m_stream << "CopyFileTransactedW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << " " << wasBlocked << std::endl;
+		}
+
+		void OnCreateDirectoryExA(
+			std::string_view /*templateDirectory*/,
+			std::string_view newDirectory,
+			bool /*result*/,
+			bool wasBlocked) override final
+		{
+			m_stream << "CreateDirectoryExA: " << newDirectory << " " << wasBlocked << std::endl;
+		}
+
+		void OnCreateDirectoryExW(
+			std::wstring_view /*templateDirectory*/,
+			std::wstring_view newDirectory,
+			bool /*result*/,
+			bool wasBlocked) override final
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateDirectoryExW: " << converter.to_bytes(newDirectory.data()) << " " << wasBlocked << std::endl;
+		}
+
+		void OnCreateDirectoryTransactedA(
+			std::string_view /*templateDirectory*/,
+			std::string_view newDirectory,
+			bool /*result*/,
+			bool wasBlocked) override final
+		{
+			m_stream << "CreateDirectoryTransactedA: " << newDirectory << " " << wasBlocked << std::endl;
+		}
+
+		void OnCreateDirectoryTransactedW(
+			std::wstring_view /*templateDirectory*/,
+			std::wstring_view newDirectory,
+			bool /*result*/,
+			bool wasBlocked) override final
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "CreateDirectoryTransactedW: " << converter.to_bytes(newDirectory.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnCreateFileTransactedA(
 			std::string_view fileName,
 			uint32_t /*desiredAccess*/, 
 			uint32_t /*shareMode*/,
-			uint64_t /*result*/) override final
+			uint64_t /*result*/,
+			bool wasBlocked) override final
 		{
-			m_stream << "CreateFileTransactedA: " << fileName << std::endl;
+			m_stream << "CreateFileTransactedA: " << fileName << " " << wasBlocked << std::endl;
 		}
 
 		void OnCreateFileTransactedW(
 			std::wstring_view fileName,
 			uint32_t /*desiredAccess*/,
 			uint32_t /*shareMode*/,
-			uint64_t /*result*/) override final
+			uint64_t /*result*/,
+			bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CreateFileTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
+			m_stream << "CreateFileTransactedW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnCreateHardLinkA(std::string_view fileName, std::string_view existingFileName, bool /*result*/) override final
@@ -750,15 +788,15 @@ namespace Monitor
 			m_stream << "DecryptFileW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnDeleteFileTransactedA(std::string_view fileName, bool /*result*/) override final
+		void OnDeleteFileTransactedA(std::string_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "DeleteFileTransactedA: " << fileName << std::endl;
+			m_stream << "DeleteFileTransactedA: " << fileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnDeleteFileTransactedW(std::wstring_view fileName, bool /*result*/) override final
+		void OnDeleteFileTransactedW(std::wstring_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "DeleteFileTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
+			m_stream << "DeleteFileTransactedW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnEncryptFileA(std::string_view fileName, bool /*result*/) override final
@@ -838,15 +876,15 @@ namespace Monitor
 			m_stream << "GetDllDirectoryW: " << std::endl;
 		}
 
-		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t /*result*/) override final
+		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "GetFileAttributesTransactedA: " << fileName << std::endl;
+			m_stream << "GetFileAttributesTransactedA: " << fileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnGetFileAttributesTransactedW(std::wstring_view fileName, uint32_t /*result*/) override final
+		void OnGetFileAttributesTransactedW(std::wstring_view fileName, uint32_t /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "GetFileAttributesTransactedW: " << converter.to_bytes(fileName.data()) << std::endl;
+			m_stream << "GetFileAttributesTransactedW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnGetFileBandwidthReservation(bool /*result*/) override final
@@ -859,9 +897,9 @@ namespace Monitor
 			m_stream << "GetFileInformationByHandleEx: " << std::endl;
 		}
 
-		void OnGetFileSecurityA(std::string_view fileName, bool /*result*/) override final
+		void OnGetFileSecurityA(std::string_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "GetFileSecurityA: " << fileName << std::endl;
+			m_stream << "GetFileSecurityA: " << fileName << " " << wasBlocked << std::endl;
 		}
 
 		void OnGetFullPathNameTransactedA(std::string_view fileName, uint32_t /*result*/) override final
@@ -910,48 +948,48 @@ namespace Monitor
 			m_stream << "LoadPackagedLibrary: " << libFileName << std::endl;
 		}
 
-		void OnMoveFileA(std::string_view existingFileName, std::string_view newFileName, bool /*result*/) override final
+		void OnMoveFileA(std::string_view existingFileName, std::string_view newFileName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "MoveFileA: " << existingFileName << " -> " << newFileName << std::endl;
+			m_stream << "MoveFileA: " << existingFileName << " -> " << newFileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnMoveFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool /*result*/) override final
+		void OnMoveFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "MoveFileW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
+			m_stream << "MoveFileW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << " " << wasBlocked << std::endl;
 		}
 
-		void OnMoveFileExA(std::string_view existingFileName, std::string_view newFileName, uint32_t /*flags*/, bool /*result*/) override final
+		void OnMoveFileExA(std::string_view existingFileName, std::string_view newFileName, uint32_t /*flags*/, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "MoveFileExA: " << existingFileName << " -> " << newFileName << std::endl;
+			m_stream << "MoveFileExA: " << existingFileName << " -> " << newFileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnMoveFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t /*flags*/, bool /*result*/) override final
-		{
-			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "MoveFileExW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
-		}
-
-		void OnMoveFileTransactedA(std::string_view existingFileName, std::string_view newFileName, uint32_t /*flags*/, bool /*result*/) override final
-		{
-			m_stream << "MoveFileTransactedA: " << existingFileName << " -> " << newFileName << std::endl;
-		}
-
-		void OnMoveFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t /*flags*/, bool /*result*/) override final
+		void OnMoveFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t /*flags*/, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "MoveFileTransactedW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
+			m_stream << "MoveFileExW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << " " << wasBlocked << std::endl;
 		}
 
-		void OnMoveFileWithProgressA(std::string_view existingFileName, std::string_view newFileName, uint32_t /*flags*/, bool /*result*/) override final
+		void OnMoveFileTransactedA(std::string_view existingFileName, std::string_view newFileName, uint32_t /*flags*/, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "MoveFileWithProgressA: " << existingFileName << " -> " << newFileName << std::endl;
+			m_stream << "MoveFileTransactedA: " << existingFileName << " -> " << newFileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnMoveFileWithProgressW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t /*flags*/, bool /*result*/) override final
+		void OnMoveFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t /*flags*/, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "MoveFileWithProgressW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << std::endl;
+			m_stream << "MoveFileTransactedW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << " " << wasBlocked << std::endl;
+		}
+
+		void OnMoveFileWithProgressA(std::string_view existingFileName, std::string_view newFileName, uint32_t /*flags*/, bool /*result*/, bool wasBlocked) override final
+		{
+			m_stream << "MoveFileWithProgressA: " << existingFileName << " -> " << newFileName << " " << wasBlocked << std::endl;
+		}
+
+		void OnMoveFileWithProgressW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t /*flags*/, bool /*result*/, bool wasBlocked) override final
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "MoveFileWithProgressW: " << converter.to_bytes(existingFileName.data()) << " -> " << converter.to_bytes(newFileName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnOpenEncryptedFileRawA(std::string_view fileName, uint32_t /*flags*/, uint32_t /*result*/) override final
@@ -965,9 +1003,9 @@ namespace Monitor
 			m_stream << "OpenEncryptedFileRawW: " << converter.to_bytes(fileName.data()) << std::endl;
 		}
 
-		void OnOpenFile(std::string_view fileName) override final
+		void OnOpenFile(std::string_view fileName, bool wasBlocked) override final
 		{
-			m_stream << "OpenFile: " << fileName << std::endl;
+			m_stream << "OpenFile: " << fileName << " " << wasBlocked << std::endl;
 		}
 
 		void OnOpenFileById() override final
@@ -980,15 +1018,15 @@ namespace Monitor
 			m_stream << "ReadEncryptedFileRaw: " << std::endl;
 		}
 
-		void OnRemoveDirectoryTransactedA(std::string_view pathName, bool /*result*/) override final
+		void OnRemoveDirectoryTransactedA(std::string_view pathName, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "RemoveDirectoryTransactedA: " << pathName << std::endl;
+			m_stream << "RemoveDirectoryTransactedA: " << pathName << " " << wasBlocked << std::endl;
 		}
 
-		void OnRemoveDirectoryTransactedW(std::wstring_view pathName, bool /*result*/) override final
+		void OnRemoveDirectoryTransactedW(std::wstring_view pathName, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "RemoveDirectoryTransactedW: " << converter.to_bytes(pathName.data()) << std::endl;
+			m_stream << "RemoveDirectoryTransactedW: " << converter.to_bytes(pathName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnReOpenFile() override final
@@ -1029,15 +1067,15 @@ namespace Monitor
 			m_stream << "SetDllDirectoryW: " << converter.to_bytes(pathName.data()) << std::endl;
 		}
 
-		void OnSetFileAttributesTransactedA(std::string_view pathName, uint32_t /*fileAttributes*/, bool /*result*/) override final
+		void OnSetFileAttributesTransactedA(std::string_view pathName, uint32_t /*fileAttributes*/, bool /*result*/, bool wasBlocked) override final
 		{
-			m_stream << "SetFileAttributesTransactedA: " << pathName << std::endl;
+			m_stream << "SetFileAttributesTransactedA: " << pathName << " " << wasBlocked << std::endl;
 		}
 
-		void OnSetFileAttributesTransactedW(std::wstring_view pathName, uint32_t /*fileAttributes*/, bool /*result*/) override final
+		void OnSetFileAttributesTransactedW(std::wstring_view pathName, uint32_t /*fileAttributes*/, bool /*result*/, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "SetFileAttributesTransactedW: " << converter.to_bytes(pathName.data()) << std::endl;
+			m_stream << "SetFileAttributesTransactedW: " << converter.to_bytes(pathName.data()) << " " << wasBlocked << std::endl;
 		}
 
 		void OnSetFileBandwidthReservation(bool /*result*/) override final

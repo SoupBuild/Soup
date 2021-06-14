@@ -67,14 +67,16 @@ namespace Monitor
 				{
 					auto pathName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCreateDirectoryA(pathName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryA(pathName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateDirectoryW:
 				{
 					auto pathName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCreateDirectoryW(pathName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryW(pathName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateFile2:
@@ -84,7 +86,8 @@ namespace Monitor
 					auto sharedMode = ReadUInt32Value(message, offset);
 					auto creationDisposition = ReadUInt32Value(message, offset);
 					auto result = ReadUInt64Value(message, offset);
-					m_callback->OnCreateFile2(fileName, desiredAccess, sharedMode, creationDisposition, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateFile2(fileName, desiredAccess, sharedMode, creationDisposition, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateFileA:
@@ -95,7 +98,8 @@ namespace Monitor
 					auto creationDisposition = ReadUInt32Value(message, offset);
 					auto flagsAndAttributes = ReadUInt32Value(message, offset);
 					auto result = ReadUInt64Value(message, offset);
-					m_callback->OnCreateFileA(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateFileA(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateFileW:
@@ -106,7 +110,8 @@ namespace Monitor
 					auto creationDisposition = ReadUInt32Value(message, offset);
 					auto flagsAndAttributes = ReadUInt32Value(message, offset);
 					auto result = ReadUInt64Value(message, offset);
-					m_callback->OnCreateFileW(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateFileW(fileName, desiredAccess, sharedMode, creationDisposition, flagsAndAttributes, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::DefineDosDeviceW:
@@ -122,14 +127,16 @@ namespace Monitor
 				{
 					auto fileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnDeleteFileA(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnDeleteFileA(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::DeleteFileW:
 				{
 					auto fileName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnDeleteFileW(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnDeleteFileW(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::DeleteVolumeMountPointW:
@@ -324,28 +331,32 @@ namespace Monitor
 				{
 					auto fileName = ReadStringValue(message, offset);
 					auto result = ReadUInt32Value(message, offset);
-					m_callback->OnGetFileAttributesA(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnGetFileAttributesA(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::GetFileAttributesW:
 				{
 					auto fileName = ReadWStringValue(message, offset);
 					auto result = ReadUInt32Value(message, offset);
-					m_callback->OnGetFileAttributesW(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnGetFileAttributesW(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::GetFileAttributesExA:
 				{
 					auto fileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnGetFileAttributesExA(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnGetFileAttributesExA(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::GetFileAttributesExW:
 				{
 					auto fileName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnGetFileAttributesExW(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnGetFileAttributesExW(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::GetFileInformationByHandle:
@@ -560,14 +571,16 @@ namespace Monitor
 				{
 					auto pathName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnRemoveDirectoryA(pathName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnRemoveDirectoryA(pathName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::RemoveDirectoryW:
 				{
 					auto pathName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnRemoveDirectoryW(pathName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnRemoveDirectoryW(pathName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::SetEndOfFile:
@@ -590,14 +603,16 @@ namespace Monitor
 				{
 					auto fileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnSetFileAttributesA(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnSetFileAttributesA(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::SetFileAttributesW:
 				{
 					auto fileName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnSetFileAttributesW(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnSetFileAttributesW(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::SetFileInformationByHandle:
@@ -757,7 +772,8 @@ namespace Monitor
 					auto existingFileName = ReadStringValue(message, offset);
 					auto newFileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnPrivCopyFileExA(existingFileName, newFileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnPrivCopyFileExA(existingFileName, newFileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::PrivCopyFileExW:
@@ -765,7 +781,8 @@ namespace Monitor
 					auto existingFileName = ReadWStringValue(message, offset);
 					auto newFileName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnPrivCopyFileExW(existingFileName, newFileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnPrivCopyFileExW(existingFileName, newFileName, result, wasBlocked);
 					break;
 				}
 				
@@ -776,7 +793,8 @@ namespace Monitor
 					auto newFileName = ReadStringValue(message, offset);
 					auto failIfExists = ReadBoolValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCopyFileA(existingFileName, newFileName, failIfExists, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileA(existingFileName, newFileName, failIfExists, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CopyFileW:
@@ -785,7 +803,8 @@ namespace Monitor
 					auto newFileName = ReadWStringValue(message, offset);
 					auto failIfExists = ReadBoolValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCopyFileW(existingFileName, newFileName, failIfExists, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileW(existingFileName, newFileName, failIfExists, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CopyFile2:
@@ -793,7 +812,8 @@ namespace Monitor
 					auto existingFileName = ReadWStringValue(message, offset);
 					auto newFileName = ReadWStringValue(message, offset);
 					auto result = ReadUInt64Value(message, offset);
-					m_callback->OnCopyFile2(existingFileName, newFileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCopyFile2(existingFileName, newFileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CopyFileExA:
@@ -801,7 +821,8 @@ namespace Monitor
 					auto existingFileName = ReadStringValue(message, offset);
 					auto newFileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCopyFileExA(existingFileName, newFileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileExA(existingFileName, newFileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CopyFileExW:
@@ -809,7 +830,8 @@ namespace Monitor
 					auto existingFileName = ReadWStringValue(message, offset);
 					auto newFileName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCopyFileExW(existingFileName, newFileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileExW(existingFileName, newFileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CopyFileTransactedA:
@@ -817,7 +839,8 @@ namespace Monitor
 					auto existingFileName = ReadStringValue(message, offset);
 					auto newFileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCopyFileTransactedA(existingFileName, newFileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileTransactedA(existingFileName, newFileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CopyFileTransactedW:
@@ -825,7 +848,8 @@ namespace Monitor
 					auto existingFileName = ReadWStringValue(message, offset);
 					auto newFileName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCopyFileTransactedW(existingFileName, newFileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCopyFileTransactedW(existingFileName, newFileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateDirectoryExA:
@@ -833,7 +857,8 @@ namespace Monitor
 					auto templateDirectory = ReadStringValue(message, offset);
 					auto newDirectory = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCreateDirectoryExA(templateDirectory, newDirectory, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryExA(templateDirectory, newDirectory, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateDirectoryExW:
@@ -841,7 +866,8 @@ namespace Monitor
 					auto templateDirectory = ReadWStringValue(message, offset);
 					auto newDirectory = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCreateDirectoryExW(templateDirectory, newDirectory, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryExW(templateDirectory, newDirectory, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateDirectoryTransactedA:
@@ -849,7 +875,8 @@ namespace Monitor
 					auto templateDirectory = ReadStringValue(message, offset);
 					auto newDirectory = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCreateDirectoryTransactedA(templateDirectory, newDirectory, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryTransactedA(templateDirectory, newDirectory, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateDirectoryTransactedW:
@@ -857,7 +884,8 @@ namespace Monitor
 					auto templateDirectory = ReadWStringValue(message, offset);
 					auto newDirectory = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnCreateDirectoryTransactedW(templateDirectory, newDirectory, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateDirectoryTransactedW(templateDirectory, newDirectory, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateFileTransactedA:
@@ -866,7 +894,8 @@ namespace Monitor
 					auto desiredAccess = ReadUInt32Value(message, offset);
 					auto shareMode = ReadUInt32Value(message, offset);
 					auto result = ReadUInt64Value(message, offset);
-					m_callback->OnCreateFileTransactedA(fileName, desiredAccess, shareMode, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateFileTransactedA(fileName, desiredAccess, shareMode, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateFileTransactedW:
@@ -875,7 +904,8 @@ namespace Monitor
 					auto desiredAccess = ReadUInt32Value(message, offset);
 					auto shareMode = ReadUInt32Value(message, offset);
 					auto result = ReadUInt64Value(message, offset);
-					m_callback->OnCreateFileTransactedW(fileName, desiredAccess, shareMode, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnCreateFileTransactedW(fileName, desiredAccess, shareMode, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::CreateHardLinkA:
@@ -978,14 +1008,16 @@ namespace Monitor
 				{
 					auto fileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnDeleteFileTransactedA(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnDeleteFileTransactedA(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::DeleteFileTransactedW:
 				{
 					auto fileName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnDeleteFileTransactedW(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnDeleteFileTransactedW(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::EncryptFileA:
@@ -1085,14 +1117,16 @@ namespace Monitor
 				{
 					auto fileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnGetFileAttributesTransactedA(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnGetFileAttributesTransactedA(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::GetFileAttributesTransactedW:
 				{
 					auto fileName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnGetFileAttributesTransactedW(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnGetFileAttributesTransactedW(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::GetFileBandwidthReservation:
@@ -1111,7 +1145,8 @@ namespace Monitor
 				{
 					auto fileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnGetFileSecurityA(fileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnGetFileSecurityA(fileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::GetFullPathNameTransactedA:
@@ -1182,7 +1217,8 @@ namespace Monitor
 					auto existingFileName = ReadStringValue(message, offset);
 					auto newFileName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnMoveFileA(existingFileName, newFileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileA(existingFileName, newFileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::MoveFileW:
@@ -1190,7 +1226,8 @@ namespace Monitor
 					auto existingFileName = ReadWStringValue(message, offset);
 					auto newFileName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnMoveFileW(existingFileName, newFileName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileW(existingFileName, newFileName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::MoveFileExA:
@@ -1199,7 +1236,8 @@ namespace Monitor
 					auto newFileName = ReadStringValue(message, offset);
 					auto flags = ReadUInt32Value(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnMoveFileExA(existingFileName, newFileName, flags, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileExA(existingFileName, newFileName, flags, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::MoveFileExW:
@@ -1208,7 +1246,8 @@ namespace Monitor
 					auto newFileName = ReadWStringValue(message, offset);
 					auto flags = ReadUInt32Value(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnMoveFileExW(existingFileName, newFileName, flags, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileExW(existingFileName, newFileName, flags, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::MoveFileTransactedA:
@@ -1217,7 +1256,8 @@ namespace Monitor
 					auto newFileName = ReadStringValue(message, offset);
 					auto flags = ReadUInt32Value(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnMoveFileTransactedA(existingFileName, newFileName, flags, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileTransactedA(existingFileName, newFileName, flags, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::MoveFileTransactedW:
@@ -1226,7 +1266,8 @@ namespace Monitor
 					auto newFileName = ReadWStringValue(message, offset);
 					auto flags = ReadUInt32Value(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnMoveFileTransactedW(existingFileName, newFileName, flags, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileTransactedW(existingFileName, newFileName, flags, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::MoveFileWithProgressA:
@@ -1235,7 +1276,8 @@ namespace Monitor
 					auto newFileName = ReadStringValue(message, offset);
 					auto flags = ReadUInt32Value(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnMoveFileWithProgressA(existingFileName, newFileName, flags, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileWithProgressA(existingFileName, newFileName, flags, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::MoveFileWithProgressW:
@@ -1244,7 +1286,8 @@ namespace Monitor
 					auto newFileName = ReadWStringValue(message, offset);
 					auto flags = ReadUInt32Value(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnMoveFileWithProgressW(existingFileName, newFileName, flags, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnMoveFileWithProgressW(existingFileName, newFileName, flags, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::OpenEncryptedFileRawA:
@@ -1266,7 +1309,8 @@ namespace Monitor
 				case DetourMessageType::OpenFile:
 				{
 					auto fileName = ReadStringValue(message, offset);
-					m_callback->OnOpenFile(fileName);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnOpenFile(fileName, wasBlocked);
 					break;
 				}
 				case DetourMessageType::OpenFileById:
@@ -1284,14 +1328,16 @@ namespace Monitor
 				{
 					auto pathName = ReadStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnRemoveDirectoryTransactedA(pathName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnRemoveDirectoryTransactedA(pathName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::RemoveDirectoryTransactedW:
 				{
 					auto pathName = ReadWStringValue(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnRemoveDirectoryTransactedW(pathName, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnRemoveDirectoryTransactedW(pathName, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::ReOpenFile:
@@ -1352,7 +1398,8 @@ namespace Monitor
 					auto fileName = ReadStringValue(message, offset);
 					auto fileAttributes = ReadUInt32Value(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnSetFileAttributesTransactedA(fileName, fileAttributes, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnSetFileAttributesTransactedA(fileName, fileAttributes, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::SetFileAttributesTransactedW:
@@ -1360,7 +1407,8 @@ namespace Monitor
 					auto fileName = ReadWStringValue(message, offset);
 					auto fileAttributes = ReadUInt32Value(message, offset);
 					auto result = ReadBoolValue(message, offset);
-					m_callback->OnSetFileAttributesTransactedW(fileName, fileAttributes, result);
+					auto wasBlocked = ReadBoolValue(message, offset);
+					m_callback->OnSetFileAttributesTransactedW(fileName, fileAttributes, result, wasBlocked);
 					break;
 				}
 				case DetourMessageType::SetFileBandwidthReservation:

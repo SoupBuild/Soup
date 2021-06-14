@@ -96,6 +96,7 @@
     "hash_map": "cpp",
     "hash_set": "cpp",
     "shared_mutex": "cpp",
-    "stop_token": "cpp"
+    "stop_token": "cpp",
+    "format": "cpp"
   }
 }

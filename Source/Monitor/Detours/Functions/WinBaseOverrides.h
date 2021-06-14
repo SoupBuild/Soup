@@ -8,13 +8,25 @@ namespace Functions::WinBase::Overrides
 		LPCSTR lpNewFileName,
 		BOOL bFailIfExists)
 	{
+		// Check if this file is allowed access
+		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CopyFileA(
-				lpExistingFileName,
-				lpNewFileName,
-				bFailIfExists);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CopyFileA(
+					lpExistingFileName,
+					lpNewFileName,
+					bFailIfExists);
+			}
 		}
 		__finally
 		{
@@ -24,6 +36,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, bFailIfExists);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -35,13 +48,25 @@ namespace Functions::WinBase::Overrides
 		LPCWSTR lpNewFileName,
 		BOOL bFailIfExists)
 	{
+		// Check if this file is allowed access
+		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CopyFileW(
-				lpExistingFileName,
-				lpNewFileName,
-				bFailIfExists);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CopyFileW(
+					lpExistingFileName,
+					lpNewFileName,
+					bFailIfExists);
+			}
 		}
 		__finally
 		{
@@ -51,6 +76,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, bFailIfExists);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -62,13 +88,25 @@ namespace Functions::WinBase::Overrides
 		PCWSTR pwszNewFileName,
 		COPYFILE2_EXTENDED_PARAMETERS *pExtendedParameters)
 	{
+		// Check if this file is allowed access
+		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(pwszExistingFileName);
+		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(pwszNewFileName);
+		bool blockAccess = blockReadAccess || blockWriteAccess;
 		HRESULT result = 0;
 		__try
 		{
-			result = Cache::CopyFile2(
-				pwszExistingFileName,
-				pwszNewFileName,
-				pExtendedParameters);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CopyFile2(
+					pwszExistingFileName,
+					pwszNewFileName,
+					pExtendedParameters);
+			}
 		}
 		__finally
 		{
@@ -77,6 +115,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, pwszExistingFileName);
 			EventLogger::AppendValue(message, pwszNewFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -91,16 +130,28 @@ namespace Functions::WinBase::Overrides
 		LPBOOL pbCancel,
 		DWORD dwCopyFlags)
 	{
+		// Check if this file is allowed access
+		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CopyFileExA(
-				lpExistingFileName,
-				lpNewFileName,
-				lpProgressRoutine,
-				lpData,
-				pbCancel,
-				dwCopyFlags);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CopyFileExA(
+					lpExistingFileName,
+					lpNewFileName,
+					lpProgressRoutine,
+					lpData,
+					pbCancel,
+					dwCopyFlags);
+			}
 		}
 		__finally
 		{
@@ -109,6 +160,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpExistingFileName);
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -123,16 +175,28 @@ namespace Functions::WinBase::Overrides
 		LPBOOL pbCancel,
 		DWORD dwCopyFlags)
 	{
+		// Check if this file is allowed access
+		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CopyFileExW(
-				lpExistingFileName,
-				lpNewFileName,
-				lpProgressRoutine,
-				lpData,
-				pbCancel,
-				dwCopyFlags);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CopyFileExW(
+					lpExistingFileName,
+					lpNewFileName,
+					lpProgressRoutine,
+					lpData,
+					pbCancel,
+					dwCopyFlags);
+			}
 		}
 		__finally
 		{
@@ -141,6 +205,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpExistingFileName);
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -156,17 +221,29 @@ namespace Functions::WinBase::Overrides
 		DWORD dwCopyFlags,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed access
+		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CopyFileTransactedA(
-				lpExistingFileName,
-				lpNewFileName,
-				lpProgressRoutine,
-				lpData,
-				pbCancel,
-				dwCopyFlags,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CopyFileTransactedA(
+					lpExistingFileName,
+					lpNewFileName,
+					lpProgressRoutine,
+					lpData,
+					pbCancel,
+					dwCopyFlags,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -175,6 +252,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpExistingFileName);
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -190,17 +268,29 @@ namespace Functions::WinBase::Overrides
 		DWORD dwCopyFlags,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed access
+		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CopyFileTransactedW(
-				lpExistingFileName,
-				lpNewFileName,
-				lpProgressRoutine,
-				lpData,
-				pbCancel,
-				dwCopyFlags,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CopyFileTransactedW(
+					lpExistingFileName,
+					lpNewFileName,
+					lpProgressRoutine,
+					lpData,
+					pbCancel,
+					dwCopyFlags,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -209,6 +299,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpExistingFileName);
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -220,13 +311,23 @@ namespace Functions::WinBase::Overrides
 		LPCSTR lpNewDirectory,
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateDirectoryExA(
-				lpTemplateDirectory,
-				lpNewDirectory,
-				lpSecurityAttributes);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateDirectoryExA(
+					lpTemplateDirectory,
+					lpNewDirectory,
+					lpSecurityAttributes);
+			}
 		}
 		__finally
 		{
@@ -235,6 +336,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpTemplateDirectory);
 			EventLogger::AppendValue(message, lpNewDirectory);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -246,13 +348,23 @@ namespace Functions::WinBase::Overrides
 		LPCWSTR lpNewDirectory,
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateDirectoryExW(
-				lpTemplateDirectory,
-				lpNewDirectory,
-				lpSecurityAttributes);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateDirectoryExW(
+					lpTemplateDirectory,
+					lpNewDirectory,
+					lpSecurityAttributes);
+			}
 		}
 		__finally
 		{
@@ -261,6 +373,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpTemplateDirectory);
 			EventLogger::AppendValue(message, lpNewDirectory);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -273,14 +386,24 @@ namespace Functions::WinBase::Overrides
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateDirectoryTransactedA(
-				lpTemplateDirectory,
-				lpNewDirectory,
-				lpSecurityAttributes,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateDirectoryTransactedA(
+					lpTemplateDirectory,
+					lpNewDirectory,
+					lpSecurityAttributes,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -289,6 +412,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpTemplateDirectory);
 			EventLogger::AppendValue(message, lpNewDirectory);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -301,14 +425,24 @@ namespace Functions::WinBase::Overrides
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateDirectoryTransactedW(
-				lpTemplateDirectory,
-				lpNewDirectory,
-				lpSecurityAttributes,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateDirectoryTransactedW(
+					lpTemplateDirectory,
+					lpNewDirectory,
+					lpSecurityAttributes,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -317,6 +451,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpTemplateDirectory);
 			EventLogger::AppendValue(message, lpNewDirectory);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -335,20 +470,30 @@ namespace Functions::WinBase::Overrides
 		PUSHORT pusMiniVersion,
 		PVOID lpExtendedParameter)
 	{
+		// Check if this file is allowed access
+		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::CreateFileTransactedA(
-				lpFileName,
-				dwDesiredAccess,
-				dwShareMode,
-				lpSecurityAttributes,
-				dwCreationDisposition,
-				dwFlagsAndAttributes,
-				hTemplateFile,
-				hTransaction,
-				pusMiniVersion,
-				lpExtendedParameter);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateFileTransactedA(
+					lpFileName,
+					dwDesiredAccess,
+					dwShareMode,
+					lpSecurityAttributes,
+					dwCreationDisposition,
+					dwFlagsAndAttributes,
+					hTemplateFile,
+					hTransaction,
+					pusMiniVersion,
+					lpExtendedParameter);
+			}
 		}
 		__finally
 		{
@@ -358,6 +503,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, dwDesiredAccess);
 			EventLogger::AppendValue(message, dwShareMode);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -376,20 +522,30 @@ namespace Functions::WinBase::Overrides
 		PUSHORT pusMiniVersion,
 		PVOID lpExtendedParameter)
 	{
+		// Check if this file is allowed access
+		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::CreateFileTransactedW(
-				lpFileName,
-				dwDesiredAccess,
-				dwShareMode,
-				lpSecurityAttributes,
-				dwCreationDisposition,
-				dwFlagsAndAttributes,
-				hTemplateFile,
-				hTransaction,
-				pusMiniVersion,
-				lpExtendedParameter);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateFileTransactedW(
+					lpFileName,
+					dwDesiredAccess,
+					dwShareMode,
+					lpSecurityAttributes,
+					dwCreationDisposition,
+					dwFlagsAndAttributes,
+					hTemplateFile,
+					hTransaction,
+					pusMiniVersion,
+					lpExtendedParameter);
+			}
 		}
 		__finally
 		{
@@ -399,6 +555,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, dwDesiredAccess);
 			EventLogger::AppendValue(message, dwShareMode);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -780,12 +937,22 @@ namespace Functions::WinBase::Overrides
 		LPCSTR lpFileName,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::DeleteFileTransactedA(
-				lpFileName,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::DeleteFileTransactedA(
+					lpFileName,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -793,6 +960,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::DeleteFileTransactedA;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -803,12 +971,22 @@ namespace Functions::WinBase::Overrides
 		LPCWSTR lpFileName,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::DeleteFileTransactedW(
-				lpFileName,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::DeleteFileTransactedW(
+					lpFileName,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -816,6 +994,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::DeleteFileTransactedW;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1177,14 +1356,24 @@ namespace Functions::WinBase::Overrides
 		LPVOID lpFileInformation,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed read access
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetFileAttributesTransactedA(
-				lpFileName,
-				fInfoLevelId,
-				lpFileInformation,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::GetFileAttributesTransactedA(
+					lpFileName,
+					fInfoLevelId,
+					lpFileInformation,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -1192,6 +1381,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::GetFileAttributesTransactedA;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1204,14 +1394,24 @@ namespace Functions::WinBase::Overrides
 		LPVOID lpFileInformation,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed read access
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetFileAttributesTransactedW(
-				lpFileName,
-				fInfoLevelId,
-				lpFileInformation,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::GetFileAttributesTransactedW(
+					lpFileName,
+					fInfoLevelId,
+					lpFileInformation,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -1219,6 +1419,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::GetFileAttributesTransactedW;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1288,15 +1489,25 @@ namespace Functions::WinBase::Overrides
 		DWORD nLength,
 		LPDWORD lpnLengthNeeded)
 	{
+		// Check if this file is allowed read access
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetFileSecurityA(
-				lpFileName,
-				RequestedInformation,
-				pSecurityDescriptor,
-				nLength,
-				lpnLengthNeeded);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::GetFileSecurityA(
+					lpFileName,
+					RequestedInformation,
+					pSecurityDescriptor,
+					nLength,
+					lpnLengthNeeded);
+			}
 		}
 		__finally
 		{
@@ -1304,6 +1515,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::GetFileSecurityA;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1557,12 +1769,24 @@ namespace Functions::WinBase::Overrides
 		LPCTSTR lpExistingFileName,
 		LPCTSTR lpNewFileName)
 	{
+		// Check if this file is allowed write access
+		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::MoveFileA(
-				lpExistingFileName,
-				lpNewFileName);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::MoveFileA(
+					lpExistingFileName,
+					lpNewFileName);
+			}
 		}
 		__finally
 		{
@@ -1571,6 +1795,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpExistingFileName);
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1581,12 +1806,24 @@ namespace Functions::WinBase::Overrides
 		LPCWSTR lpExistingFileName,
 		LPCWSTR lpNewFileName)
 	{
+		// Check if this file is allowed write access
+		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::MoveFileW(
-				lpExistingFileName,
-				lpNewFileName);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::MoveFileW(
+					lpExistingFileName,
+					lpNewFileName);
+			}
 		}
 		__finally
 		{
@@ -1595,6 +1832,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpExistingFileName);
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1606,13 +1844,25 @@ namespace Functions::WinBase::Overrides
 		LPCSTR lpNewFileName,
 		DWORD dwFlags)
 	{
+		// Check if this file is allowed write access
+		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::MoveFileExA(
-				lpExistingFileName,
-				lpNewFileName,
-				dwFlags);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::MoveFileExA(
+					lpExistingFileName,
+					lpNewFileName,
+					dwFlags);
+			}
 		}
 		__finally
 		{
@@ -1622,6 +1872,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, dwFlags);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1633,13 +1884,25 @@ namespace Functions::WinBase::Overrides
 		LPCWSTR lpNewFileName,
 		DWORD dwFlags)
 	{
+		// Check if this file is allowed write access
+		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::MoveFileExW(
-				lpExistingFileName,
-				lpNewFileName,
-				dwFlags);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::MoveFileExW(
+					lpExistingFileName,
+					lpNewFileName,
+					dwFlags);
+			}
 		}
 		__finally
 		{
@@ -1649,6 +1912,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, dwFlags);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1663,16 +1927,28 @@ namespace Functions::WinBase::Overrides
 		DWORD dwFlags,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::MoveFileTransactedA(
-				lpExistingFileName,
-				lpNewFileName,
-				lpProgressRoutine,
-				lpData,
-				dwFlags,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::MoveFileTransactedA(
+					lpExistingFileName,
+					lpNewFileName,
+					lpProgressRoutine,
+					lpData,
+					dwFlags,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -1682,6 +1958,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, dwFlags);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1696,16 +1973,28 @@ namespace Functions::WinBase::Overrides
 		DWORD dwFlags,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::MoveFileTransactedW(
-				lpExistingFileName,
-				lpNewFileName,
-				lpProgressRoutine,
-				lpData,
-				dwFlags,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::MoveFileTransactedW(
+					lpExistingFileName,
+					lpNewFileName,
+					lpProgressRoutine,
+					lpData,
+					dwFlags,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -1715,6 +2004,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, dwFlags);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1728,15 +2018,27 @@ namespace Functions::WinBase::Overrides
 		LPVOID lpData,
 		DWORD dwFlags)
 	{
+		// Check if this file is allowed write access
+		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::MoveFileWithProgressA(
-				lpExistingFileName,
-				lpNewFileName,
-				lpProgressRoutine,
-				lpData,
-				dwFlags);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::MoveFileWithProgressA(
+					lpExistingFileName,
+					lpNewFileName,
+					lpProgressRoutine,
+					lpData,
+					dwFlags);
+			}
 		}
 		__finally
 		{
@@ -1746,6 +2048,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, dwFlags);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1759,15 +2062,27 @@ namespace Functions::WinBase::Overrides
 		LPVOID lpData,
 		DWORD dwFlags)
 	{
+		// Check if this file is allowed write access
+		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::MoveFileWithProgressW(
-				lpExistingFileName,
-				lpNewFileName,
-				lpProgressRoutine,
-				lpData,
-				dwFlags);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::MoveFileWithProgressW(
+					lpExistingFileName,
+					lpNewFileName,
+					lpProgressRoutine,
+					lpData,
+					dwFlags);
+			}
 		}
 		__finally
 		{
@@ -1777,6 +2092,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpNewFileName);
 			EventLogger::AppendValue(message, dwFlags);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1840,19 +2156,30 @@ namespace Functions::WinBase::Overrides
 		LPOFSTRUCT lpReOpenBuff,
 		UINT uStyle)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		HFILE result = 0;
 		__try
 		{
-			result = Cache::OpenFile(
-				lpFileName,
-				lpReOpenBuff,
-				uStyle);
+			if (blockAccess)
+			{
+				result = 0;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::OpenFile(
+					lpFileName,
+					lpReOpenBuff,
+					uStyle);
+			}
 		}
 		__finally
 		{
 			auto message = Monitor::DetourMessage();
 			message.Type = Monitor::DetourMessageType::OpenFile;
 			EventLogger::AppendValue(message, lpFileName);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1916,12 +2243,22 @@ namespace Functions::WinBase::Overrides
 		LPCSTR lpPathName,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::RemoveDirectoryTransactedA(
-				lpPathName,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::RemoveDirectoryTransactedA(
+					lpPathName,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -1929,6 +2266,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::RemoveDirectoryTransactedA;
 			EventLogger::AppendValue(message, lpPathName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1939,12 +2277,22 @@ namespace Functions::WinBase::Overrides
 		LPCWSTR lpPathName,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::RemoveDirectoryTransactedW(
-				lpPathName,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::RemoveDirectoryTransactedW(
+					lpPathName,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -1952,6 +2300,7 @@ namespace Functions::WinBase::Overrides
 			message.Type = Monitor::DetourMessageType::RemoveDirectoryTransactedW;
 			EventLogger::AppendValue(message, lpPathName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -2140,13 +2489,23 @@ namespace Functions::WinBase::Overrides
 		DWORD dwFileAttributes,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetFileAttributesTransactedA(
-				lpFileName,
-				dwFileAttributes,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::SetFileAttributesTransactedA(
+					lpFileName,
+					dwFileAttributes,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -2155,6 +2514,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, dwFileAttributes);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -2166,13 +2526,23 @@ namespace Functions::WinBase::Overrides
 		DWORD dwFileAttributes,
 		HANDLE hTransaction)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetFileAttributesTransactedW(
-				lpFileName,
-				dwFileAttributes,
-				hTransaction);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::SetFileAttributesTransactedW(
+					lpFileName,
+					dwFileAttributes,
+					hTransaction);
+			}
 		}
 		__finally
 		{
@@ -2181,6 +2551,7 @@ namespace Functions::WinBase::Overrides
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, dwFileAttributes);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 

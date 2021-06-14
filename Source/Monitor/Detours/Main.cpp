@@ -1,4 +1,7 @@
 
+// TODO: Warning unsafe method
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#include <algorithm>
 #include <locale>
 #include <codecvt>
 #include <fstream>
@@ -20,6 +23,7 @@
 
 #define DllExport __declspec(dllexport)
 
+import Opal;
 import Detours;
 import Monitor.Shared;
 
@@ -518,6 +522,7 @@ bool ProcessAttach(HMODULE hDll)
 	{
 		// Initialize the event pipe
 		EventLogger::Initialize();
+		FileSystemAccessSandbox::Initialize();
 
 		// Find hidden functions.
 		Functions::UndocumentedApi::Cache::PrivCopyFileExA =

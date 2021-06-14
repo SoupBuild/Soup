@@ -64,14 +64,14 @@ namespace Soup::Build::Runtime
 		{
 		}
 
-		void OnCreateDirectoryA(std::string_view pathName, bool /*result*/) override final
+		void OnCreateDirectoryA(std::string_view pathName, bool /*result*/, bool wasBlocked) override final
 		{
-			TouchFileWrite(pathName);
+			TouchFileWrite(pathName, wasBlocked);
 		}
 
-		void OnCreateDirectoryW(std::wstring_view pathName, bool /*result*/) override final
+		void OnCreateDirectoryW(std::wstring_view pathName, bool /*result*/, bool wasBlocked) override final
 		{
-			TouchFileWrite(pathName);
+			TouchFileWrite(pathName, wasBlocked);
 		}
 
 		void OnCreateFile2(
@@ -79,17 +79,18 @@ namespace Soup::Build::Runtime
 			uint32_t desiredAccess,
 			uint32_t /*sharedMode*/,
 			uint32_t /*creationDisposition*/,
-			uint64_t result) override final
+			uint64_t result,
+			bool wasBlocked) override final
 		{
 			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
 			if (isWrite)
 			{
-				TouchFileWrite(fileName);
+				TouchFileWrite(fileName, wasBlocked);
 			}
 			else
 			{
 				bool exists = result != (uint64_t)INVALID_HANDLE_VALUE;
-				TouchFileRead(fileName, exists);
+				TouchFileRead(fileName, exists, wasBlocked);
 			}
 		}
 
@@ -99,25 +100,26 @@ namespace Soup::Build::Runtime
 			uint32_t /*sharedMode*/,
 			uint32_t /*creationDisposition*/,
 			uint32_t flagsAndAttributes,
-			uint64_t result) override final
+			uint64_t result,
+			bool wasBlocked) override final
 		{
 			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
 			bool isDeleteOnClose = (flagsAndAttributes & FILE_FLAG_DELETE_ON_CLOSE) != 0;
 
 			// If the file will be deleted it is a transient file
-			if (isDeleteOnClose)
+			if (isDeleteOnClose && !wasBlocked)
 			{
 				TouchFileDeleteOnClose(fileName);
 			}
 
 			if (isWrite)
 			{
-				TouchFileWrite(fileName);
+				TouchFileWrite(fileName, wasBlocked);
 			}
 			else
 			{
 				bool exists = result != (uint64_t)INVALID_HANDLE_VALUE;
-				TouchFileRead(fileName, exists);
+				TouchFileRead(fileName, exists, wasBlocked);
 			}
 		}
 
@@ -127,25 +129,26 @@ namespace Soup::Build::Runtime
 			uint32_t /*sharedMode*/,
 			uint32_t /*creationDisposition*/,
 			uint32_t flagsAndAttributes,
-			uint64_t result) override final
+			uint64_t result,
+			bool wasBlocked) override final
 		{
 			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
 			bool isDeleteOnClose = (flagsAndAttributes & FILE_FLAG_DELETE_ON_CLOSE) != 0;
 
 			// If the file will be deleted it is a transient file
-			if (isDeleteOnClose)
+			if (isDeleteOnClose && !wasBlocked)
 			{
 				TouchFileDeleteOnClose(fileName);
 			}
 
 			if (isWrite)
 			{
-				TouchFileWrite(fileName);
+				TouchFileWrite(fileName, wasBlocked);
 			}
 			else
 			{
 				bool exists = result != (uint64_t)INVALID_HANDLE_VALUE;
-				TouchFileRead(fileName, exists);
+				TouchFileRead(fileName, exists, wasBlocked);
 			}
 		}
 
@@ -153,14 +156,14 @@ namespace Soup::Build::Runtime
 		{
 		}
 
-		void OnDeleteFileA(std::string_view fileName, bool /*result*/) override final
+		void OnDeleteFileA(std::string_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			TouchFileDelete(fileName);
+			TouchFileDelete(fileName, wasBlocked);
 		}
 
-		void OnDeleteFileW(std::wstring_view fileName, bool /*result*/) override final
+		void OnDeleteFileW(std::wstring_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			TouchFileDelete(fileName);
+			TouchFileDelete(fileName, wasBlocked);
 		}
 
 		void OnDeleteVolumeMountPointW(std::wstring_view /*volumeMountPoint*/, bool /*result*/) override final
@@ -289,26 +292,26 @@ namespace Soup::Build::Runtime
 		{
 		}
 
-		void OnGetFileAttributesA(std::string_view fileName, uint32_t result) override final
+		void OnGetFileAttributesA(std::string_view fileName, uint32_t result, bool wasBlocked) override final
 		{
 			auto exists = result != INVALID_FILE_ATTRIBUTES;
-			TouchFileRead(fileName, exists);
+			TouchFileRead(fileName, exists, wasBlocked);
 		}
 
-		void OnGetFileAttributesW(std::wstring_view fileName, uint32_t result) override final
+		void OnGetFileAttributesW(std::wstring_view fileName, uint32_t result, bool wasBlocked) override final
 		{
 			auto exists = result != INVALID_FILE_ATTRIBUTES;
-			TouchFileRead(fileName, exists);
+			TouchFileRead(fileName, exists, wasBlocked);
 		}
 
-		void OnGetFileAttributesExA(std::string_view fileName, bool result) override final
+		void OnGetFileAttributesExA(std::string_view fileName, bool result, bool wasBlocked) override final
 		{
-			TouchFileRead(fileName, result);
+			TouchFileRead(fileName, result, wasBlocked);
 		}
 
-		void OnGetFileAttributesExW(std::wstring_view fileName, bool result) override final
+		void OnGetFileAttributesExW(std::wstring_view fileName, bool result, bool wasBlocked) override final
 		{
-			TouchFileRead(fileName, result);
+			TouchFileRead(fileName, result, wasBlocked);
 		}
 
 		void OnGetFileInformationByHandle(bool /*result*/) override final
@@ -445,12 +448,12 @@ namespace Soup::Build::Runtime
 		{
 		}
 
-		void OnRemoveDirectoryA(std::string_view /*pathName*/, bool /*result*/) override final
+		void OnRemoveDirectoryA(std::string_view /*pathName*/, bool /*result*/, bool /*wasBlocked*/) override final
 		{
 			throw std::runtime_error("OnRemoveDirectoryA Not implemented");
 		}
 
-		void OnRemoveDirectoryW(std::wstring_view /*pathName*/, bool /*result*/) override final
+		void OnRemoveDirectoryW(std::wstring_view /*pathName*/, bool /*result*/, bool /*wasBlocked*/) override final
 		{
 			throw std::runtime_error("OnRemoveDirectoryW Not implemented");
 		}
@@ -467,14 +470,14 @@ namespace Soup::Build::Runtime
 		{
 		}
 
-		void OnSetFileAttributesA(std::string_view fileName, bool /*result*/) override final
+		void OnSetFileAttributesA(std::string_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			TouchFileWrite(fileName);
+			TouchFileWrite(fileName, wasBlocked);
 		}
 		
-		void OnSetFileAttributesW(std::wstring_view fileName, bool /*result*/) override final
+		void OnSetFileAttributesW(std::wstring_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			TouchFileWrite(fileName);
+			TouchFileWrite(fileName, wasBlocked);
 		}
 
 		void OnSetFileInformationByHandle(bool /*result*/) override final
@@ -576,18 +579,26 @@ namespace Soup::Build::Runtime
 		}
 
 		// UndocumentedApi
-		void OnPrivCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
+		void OnPrivCopyFileExA(
+			std::string_view existingFileName,
+			std::string_view newFileName,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnPrivCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
+		void OnPrivCopyFileExW(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
 		// WinBase
@@ -595,104 +606,152 @@ namespace Soup::Build::Runtime
 			std::string_view existingFileName,
 			std::string_view newFileName,
 			bool /*failIfExists*/,
-			bool result) override final
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
 		void OnCopyFileW(
 			std::wstring_view existingFileName,
 			std::wstring_view newFileName,
 			bool /*failIfExists*/,
-			bool result) override final
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnCopyFile2(std::wstring_view existingFileName, std::wstring_view newFileName, uint64_t result) override final
+		void OnCopyFile2(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			uint64_t result,
+			bool wasBlocked) override final
 		{
 			bool exists = result != (uint64_t)INVALID_HANDLE_VALUE;
-			TouchFileRead(existingFileName, exists);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, exists, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnCopyFileExA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
+		void OnCopyFileExA(
+			std::string_view existingFileName,
+			std::string_view newFileName,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnCopyFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
+		void OnCopyFileExW(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnCopyFileTransactedA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
+		void OnCopyFileTransactedA(
+			std::string_view existingFileName,
+			std::string_view newFileName,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnCopyFileTransactedW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
+		void OnCopyFileTransactedW(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnCreateDirectoryExA(std::string_view /*templateDirectory*/, std::string_view newDirectory, bool /*result*/) override final
+		void OnCreateDirectoryExA(
+			std::string_view /*templateDirectory*/,
+			std::string_view newDirectory,
+			bool /*result*/,
+			bool wasBlocked) override final
 		{
-			TouchFileWrite(newDirectory);
+			TouchFileWrite(newDirectory, wasBlocked);
 		}
 
-		void OnCreateDirectoryExW(std::wstring_view /*templateDirectory*/, std::wstring_view newDirectory, bool /*result*/) override final
+		void OnCreateDirectoryExW(
+			std::wstring_view /*templateDirectory*/,
+			std::wstring_view newDirectory,
+			bool /*result*/,
+			bool wasBlocked) override final
 		{
-			TouchFileWrite(newDirectory);
+			TouchFileWrite(newDirectory, wasBlocked);
 		}
 
-		void OnCreateDirectoryTransactedA(std::string_view /*templateDirectory*/, std::string_view newDirectory, bool /*result*/) override final
+		void OnCreateDirectoryTransactedA(
+			std::string_view /*templateDirectory*/,
+			std::string_view newDirectory,
+			bool /*result*/,
+			bool wasBlocked) override final
 		{
-			TouchFileWrite(newDirectory);
+			TouchFileWrite(newDirectory, wasBlocked);
 		}
 
-		void OnCreateDirectoryTransactedW(std::wstring_view /*templateDirectory*/, std::wstring_view newDirectory, bool /*result*/) override final
+		void OnCreateDirectoryTransactedW(
+			std::wstring_view /*templateDirectory*/,
+			std::wstring_view newDirectory,
+			bool /*result*/,
+			bool wasBlocked) override final
 		{
-			TouchFileWrite(newDirectory);
+			TouchFileWrite(newDirectory, wasBlocked);
 		}
 
-		void OnCreateFileTransactedA(std::string_view fileName, uint32_t desiredAccess, uint32_t /*shareMode*/, uint64_t result) override final
+		void OnCreateFileTransactedA(
+			std::string_view fileName,
+			uint32_t desiredAccess,
+			uint32_t /*shareMode*/,
+			uint64_t result,
+			bool wasBlocked) override final
 		{
 			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
 			if (isWrite)
 			{
-				TouchFileWrite(fileName);
+				TouchFileWrite(fileName, wasBlocked);
 			}
 			else
 			{
 				bool exists = result != (uint64_t)INVALID_HANDLE_VALUE;
-				TouchFileRead(fileName, exists);
+				TouchFileRead(fileName, exists, wasBlocked);
 			}
 		}
 
-		void OnCreateFileTransactedW(std::wstring_view fileName, uint32_t desiredAccess, uint32_t /*shareMode*/, uint64_t result) override final
+		void OnCreateFileTransactedW(
+			std::wstring_view fileName,
+			uint32_t desiredAccess,
+			uint32_t /*shareMode*/,
+			uint64_t result,
+			bool wasBlocked) override final
 		{
 			bool isWrite = (desiredAccess & GENERIC_WRITE) != 0;
 			if (isWrite)
 			{
-				TouchFileWrite(fileName);
+				TouchFileWrite(fileName, wasBlocked);
 			}
 			else
 			{
 				bool exists = result != (uint64_t)INVALID_HANDLE_VALUE;
-				TouchFileRead(fileName, exists);
+				TouchFileRead(fileName, exists, wasBlocked);
 			}
 		}
 
@@ -756,14 +815,14 @@ namespace Soup::Build::Runtime
 			throw std::runtime_error("OnDecryptFileW Not implemented");
 		}
 
-		void OnDeleteFileTransactedA(std::string_view fileName, bool /*result*/) override final
+		void OnDeleteFileTransactedA(std::string_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			TouchFileDelete(fileName);
+			TouchFileDelete(fileName, wasBlocked);
 		}
 
-		void OnDeleteFileTransactedW(std::wstring_view fileName, bool /*result*/) override final
+		void OnDeleteFileTransactedW(std::wstring_view fileName, bool /*result*/, bool wasBlocked) override final
 		{
-			TouchFileDelete(fileName);
+			TouchFileDelete(fileName, wasBlocked);
 		}
 
 		void OnEncryptFileA(std::string_view /*fileName*/, bool /*result*/) override final
@@ -832,16 +891,22 @@ namespace Soup::Build::Runtime
 		{
 		}
 
-		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t result) override final
+		void OnGetFileAttributesTransactedA(
+			std::string_view fileName,
+			uint32_t result,
+			bool wasBlocked) override final
 		{
 			auto exists = result != INVALID_FILE_ATTRIBUTES;
-			TouchFileRead(fileName, exists);
+			TouchFileRead(fileName, exists, wasBlocked);
 		}
 
-		void OnGetFileAttributesTransactedW(std::wstring_view fileName, uint32_t result) override final
+		void OnGetFileAttributesTransactedW(
+			std::wstring_view fileName,
+			uint32_t result,
+			bool wasBlocked) override final
 		{
 			auto exists = result != INVALID_FILE_ATTRIBUTES;
-			TouchFileRead(fileName, exists);
+			TouchFileRead(fileName, exists, wasBlocked);
 		}
 
 		void OnGetFileBandwidthReservation(bool /*result*/) override final
@@ -852,9 +917,12 @@ namespace Soup::Build::Runtime
 		{
 		}
 
-		void OnGetFileSecurityA(std::string_view fileName, bool result) override final
+		void OnGetFileSecurityA(
+			std::string_view fileName,
+			bool result,
+			bool wasBlocked) override final
 		{
-			TouchFileRead(fileName, result);
+			TouchFileRead(fileName, result, wasBlocked);
 		}
 
 		void OnGetFullPathNameTransactedA(std::string_view /*fileName*/, uint32_t /*result*/) override final
@@ -895,68 +963,98 @@ namespace Soup::Build::Runtime
 		{
 		}
 
-		void OnMoveFileA(std::string_view existingFileName, std::string_view newFileName, bool result) override final
+		void OnMoveFileA(
+			std::string_view existingFileName,
+			std::string_view newFileName,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnMoveFileW(std::wstring_view existingFileName, std::wstring_view newFileName, bool result) override final
+		void OnMoveFileW(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnMoveFileExA(std::string_view existingFileName, std::string_view newFileName, uint32_t /*flags*/, bool result) override final
+		void OnMoveFileExA(
+			std::string_view existingFileName,
+			std::string_view newFileName,
+			uint32_t /*flags*/,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnMoveFileExW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t /*flags*/, bool result) override final
+		void OnMoveFileExW(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			uint32_t /*flags*/,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnMoveFileTransactedA(std::string_view existingFileName, std::string_view newFileName, uint32_t /*flags*/, bool result) override final
+		void OnMoveFileTransactedA(
+			std::string_view existingFileName,
+			std::string_view newFileName,
+			uint32_t /*flags*/,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
 		void OnMoveFileTransactedW(
 			std::wstring_view existingFileName,
 			std::wstring_view newFileName,
 			uint32_t /*flags*/,
-			bool result) override final
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
 		void OnMoveFileWithProgressA(
 			std::string_view existingFileName,
 			std::string_view newFileName,
 			uint32_t /*flags*/,
-			bool result) override final
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
-		void OnMoveFileWithProgressW(std::wstring_view existingFileName, std::wstring_view newFileName, uint32_t /*flags*/, bool result) override final
+		void OnMoveFileWithProgressW(
+			std::wstring_view existingFileName,
+			std::wstring_view newFileName,
+			uint32_t /*flags*/,
+			bool result,
+			bool wasBlocked) override final
 		{
 			// TODO: May want to check the last error for ERROR_FILE_NOT_FOUND
-			TouchFileRead(existingFileName, result);
-			TouchFileWrite(newFileName);
+			TouchFileRead(existingFileName, result, wasBlocked);
+			TouchFileWrite(newFileName, wasBlocked);
 		}
 
 		void OnOpenEncryptedFileRawA(std::string_view /*fileName*/, uint32_t /*flags*/, uint32_t /*result*/) override final
@@ -969,7 +1067,7 @@ namespace Soup::Build::Runtime
 			throw std::runtime_error("OnOpenEncryptedFileRawW Not implemented");
 		}
 
-		void OnOpenFile(std::string_view /*fileName*/) override final
+		void OnOpenFile(std::string_view /*fileName*/, bool /*wasBlocked*/) override final
 		{
 			throw std::runtime_error("OnOpenFile Not implemented");
 		}
@@ -983,12 +1081,12 @@ namespace Soup::Build::Runtime
 		{
 		}
 
-		void OnRemoveDirectoryTransactedA(std::string_view /*pathName*/, bool /*result*/) override final
+		void OnRemoveDirectoryTransactedA(std::string_view /*pathName*/, bool /*result*/, bool /*wasBlocked*/) override final
 		{
 			throw std::runtime_error("OnRemoveDirectoryTransactedA Not implemented");
 		}
 
-		void OnRemoveDirectoryTransactedW(std::wstring_view /*pathName*/, bool /*result*/) override final
+		void OnRemoveDirectoryTransactedW(std::wstring_view /*pathName*/, bool /*result*/, bool /*wasBlocked*/) override final
 		{
 			throw std::runtime_error("OnRemoveDirectoryTransactedW Not implemented");
 		}
@@ -1040,12 +1138,12 @@ namespace Soup::Build::Runtime
 			throw std::runtime_error("OnSetDllDirectoryW Not implemented");
 		}
 
-		void OnSetFileAttributesTransactedA(std::string_view /*pathName*/, uint32_t /*fileAttributes*/, bool /*result*/) override final
+		void OnSetFileAttributesTransactedA(std::string_view /*pathName*/, uint32_t /*fileAttributes*/, bool /*result*/, bool /*wasBlocked*/) override final
 		{
 			throw std::runtime_error("OnSetFileAttributesTransactedA Not implemented");
 		}
 
-		void OnSetFileAttributesTransactedW(std::wstring_view /*pathName*/, uint32_t /*fileAttributes*/, bool /*result*/) override final
+		void OnSetFileAttributesTransactedW(std::wstring_view /*pathName*/, uint32_t /*fileAttributes*/, bool /*result*/, bool /*wasBlocked*/) override final
 		{
 			throw std::runtime_error("OnSetFileAttributesTransactedW Not implemented");
 		}
@@ -1097,85 +1195,108 @@ namespace Soup::Build::Runtime
 				Log::Diag("SystemAccessTracker::OnCreateProcess - " + std::string(applicationName));
 		}
 
-		void TouchFileRead(std::wstring_view fileName, bool exists)
+		void TouchFileRead(std::wstring_view fileName, bool exists, bool wasBlocked)
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			TouchFileRead(converter.to_bytes(fileName.data()), exists);
+			TouchFileRead(converter.to_bytes(fileName.data()), exists, wasBlocked);
 		}
 
-		void TouchFileRead(std::string_view fileName, bool exists)
+		void TouchFileRead(std::string_view fileName, bool exists, bool wasBlocked)
 		{
-			// Verify not a special file
-			if (!IsSpecialFile(fileName))
+			if (wasBlocked)
 			{
 				auto filePath = Path(fileName);
-				auto value = filePath.ToString();
-				ToUpper(value);
-
-				#ifdef TRACE_SYSTEM_ACCESS
-				Log::Diag("TouchFileRead " + value);
-				#endif
-
-				if (exists)
+				Log::Warning("FileReadBlocked: " + filePath.ToString());
+			}
+			else
+			{
+				// Verify not a special file
+				if (!IsSpecialFile(fileName))
 				{
-					m_input.insert(value);
-				}
-				else
-				{
-					m_inputMissing.insert(value);
+					auto filePath = Path(fileName);
+					auto value = filePath.ToString();
+					ToUpper(value);
+
+					#ifdef TRACE_SYSTEM_ACCESS
+					Log::Diag("TouchFileRead " + value);
+					#endif
+
+					if (exists)
+					{
+						m_input.insert(value);
+					}
+					else
+					{
+						m_inputMissing.insert(value);
+					}
 				}
 			}
 		}
 
-		void TouchFileWrite(std::wstring_view fileName)
+		void TouchFileWrite(std::wstring_view fileName, bool wasBlocked)
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			TouchFileWrite(converter.to_bytes(fileName.data()));
+			TouchFileWrite(converter.to_bytes(fileName.data()), wasBlocked);
 		}
 
-		void TouchFileWrite(std::string_view fileName)
+		void TouchFileWrite(std::string_view fileName, bool wasBlocked)
 		{
-			// Verify not a special file
-			if (!IsSpecialFile(fileName))
+			if (wasBlocked)
 			{
 				auto filePath = Path(fileName);
-				auto value = filePath.ToString();
-				ToUpper(value);
+				Log::Warning("FileWriteBlocked: " + filePath.ToString());
+			}
+			else
+			{
+				// Verify not a special file
+				if (!IsSpecialFile(fileName))
+				{
+					auto filePath = Path(fileName);
+					auto value = filePath.ToString();
+					ToUpper(value);
 
-				#ifdef TRACE_SYSTEM_ACCESS
-				Log::Diag("TouchFileWrite " + value);
-				#endif
+					#ifdef TRACE_SYSTEM_ACCESS
+					Log::Diag("TouchFileWrite " + value);
+					#endif
 
-				m_output.insert(value);
+					m_output.insert(value);
+				}
 			}
 		}
 
-		void TouchFileDelete(std::string_view fileName)
+		void TouchFileDelete(std::string_view fileName, bool wasBlocked)
 		{
 			auto filePath = Path(fileName);
-			TouchFileDelete(filePath);
+			TouchFileDelete(filePath, wasBlocked);
 		}
 
-		void TouchFileDelete(std::wstring_view fileName)
+		void TouchFileDelete(std::wstring_view fileName, bool wasBlocked)
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 			auto filePath = Path(converter.to_bytes(fileName.data()));
-			TouchFileDelete(filePath);
+			TouchFileDelete(filePath, wasBlocked);
 		}
 
-		void TouchFileDelete(const Path& filePath)
+		void TouchFileDelete(const Path& filePath, bool wasBlocked)
 		{
-			auto value = filePath.ToString();
-			ToUpper(value);
+			if (wasBlocked)
+			{
+				Log::Warning("FileDeleteBlocked: " + filePath.ToString());
+			}
+			else
+			{
+				auto value = filePath.ToString();
+				ToUpper(value);
 
-			#ifdef TRACE_SYSTEM_ACCESS
-			Log::Diag("TouchFileDelete " + value);
-			#endif
+				#ifdef TRACE_SYSTEM_ACCESS
+				Log::Diag("TouchFileDelete " + value);
+				#endif
 
-			// If this was an output file extract it as it was a transient file
-			// TODO: May want to track if we created the file
-			auto extractOutputResult = m_output.extract(value);
-			auto extractInputResult = m_input.extract(value);
+				// If this was an output file extract it as it was a transient file
+				// TODO: May want to track if we created the file
+				auto extractOutputResult = m_output.extract(value);
+				auto extractInputResult = m_input.extract(value);
+			}
 		}
 
 		void TouchFileDeleteOnClose(std::string_view fileName)

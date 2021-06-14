@@ -1,6 +1,7 @@
 #pragma once
 #include "FileApiCache.h"
 #include "EventLogger.h"
+#include "FileSystemAccessSandbox.h"
 
 namespace Functions::FileApi::Overrides
 {
@@ -49,12 +50,22 @@ namespace Functions::FileApi::Overrides
 		LPCSTR lpPathName,
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateDirectoryA(
-				lpPathName,
-				lpSecurityAttributes);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateDirectoryA(
+					lpPathName,
+					lpSecurityAttributes);
+			}
 		}
 		__finally
 		{
@@ -62,6 +73,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::CreateDirectoryA;
 			EventLogger::AppendValue(message, lpPathName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -72,12 +84,22 @@ namespace Functions::FileApi::Overrides
 		LPCWSTR lpPathName,
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::CreateDirectoryW(
-				lpPathName,
-				lpSecurityAttributes);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateDirectoryW(
+					lpPathName,
+					lpSecurityAttributes);
+			}
 		}
 		__finally
 		{
@@ -85,6 +107,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::CreateDirectoryW;
 			EventLogger::AppendValue(message, lpPathName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -98,15 +121,25 @@ namespace Functions::FileApi::Overrides
 		DWORD dwCreationDisposition,
 		LPCREATEFILE2_EXTENDED_PARAMETERS pCreateExParams)
 	{
+		// Check if this file is allowed access
+		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::CreateFile2(
-				lpFileName,
-				dwDesiredAccess,
-				dwShareMode,
-				dwCreationDisposition,
-				pCreateExParams);
+			if (blockAccess)
+			{
+				result = INVALID_HANDLE_VALUE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateFile2(
+					lpFileName,
+					dwDesiredAccess,
+					dwShareMode,
+					dwCreationDisposition,
+					pCreateExParams);
+			}
 		}
 		__finally
 		{
@@ -117,6 +150,7 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, dwShareMode);
 			EventLogger::AppendValue(message, dwCreationDisposition);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -132,17 +166,27 @@ namespace Functions::FileApi::Overrides
 		DWORD dwFlagsAndAttributes,
 		HANDLE hTemplateFile)
 	{
+		// Check if this file is allowed access
+		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::CreateFileA(
-				lpFileName,
-				dwDesiredAccess,
-				dwShareMode,
-				lpSecurityAttributes,
-				dwCreationDisposition,
-				dwFlagsAndAttributes,
-				hTemplateFile);
+			if (blockAccess)
+			{
+				result = INVALID_HANDLE_VALUE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateFileA(
+					lpFileName,
+					dwDesiredAccess,
+					dwShareMode,
+					lpSecurityAttributes,
+					dwCreationDisposition,
+					dwFlagsAndAttributes,
+					hTemplateFile);
+			}
 		}
 		__finally
 		{
@@ -154,6 +198,7 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, dwCreationDisposition);
 			EventLogger::AppendValue(message, dwFlagsAndAttributes);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -169,17 +214,27 @@ namespace Functions::FileApi::Overrides
 		DWORD dwFlagsAndAttributes,
 		HANDLE hTemplateFile)
 	{
+		// Check if this file is allowed access
+		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
-			result = Cache::CreateFileW(
-				lpFileName,
-				dwDesiredAccess,
-				dwShareMode,
-				lpSecurityAttributes,
-				dwCreationDisposition,
-				dwFlagsAndAttributes,
-				hTemplateFile);
+			if (blockAccess)
+			{
+				result = INVALID_HANDLE_VALUE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::CreateFileW(
+					lpFileName,
+					dwDesiredAccess,
+					dwShareMode,
+					lpSecurityAttributes,
+					dwCreationDisposition,
+					dwFlagsAndAttributes,
+					hTemplateFile);
+			}
 		}
 		__finally
 		{
@@ -191,6 +246,7 @@ namespace Functions::FileApi::Overrides
 			EventLogger::AppendValue(message, dwCreationDisposition);
 			EventLogger::AppendValue(message, dwFlagsAndAttributes);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -227,11 +283,21 @@ namespace Functions::FileApi::Overrides
 	BOOL WINAPI DeleteFileA(
 		LPCSTR lpFileName)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::DeleteFileA(
-				lpFileName);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::DeleteFileA(
+					lpFileName);
+			}
 		}
 		__finally
 		{
@@ -239,6 +305,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::DeleteFileA;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -248,11 +315,21 @@ namespace Functions::FileApi::Overrides
 	BOOL WINAPI DeleteFileW(
 		LPCWSTR lpFileName)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::DeleteFileW(
-				lpFileName);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::DeleteFileW(
+					lpFileName);
+			}
 		}
 		__finally
 		{
@@ -260,6 +337,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::DeleteFileW;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -958,11 +1036,21 @@ namespace Functions::FileApi::Overrides
 	DWORD WINAPI GetFileAttributesA(
 		LPCSTR lpFileName)
 	{
-		bool result = 0;
+		// Check if this file is allowed read access
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
+		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetFileAttributesA(
-				lpFileName);
+			if (blockAccess)
+			{
+				result = INVALID_FILE_ATTRIBUTES;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::GetFileAttributesA(
+					lpFileName);
+			}
 		}
 		__finally
 		{
@@ -970,6 +1058,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::GetFileAttributesA;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -979,11 +1068,21 @@ namespace Functions::FileApi::Overrides
 	DWORD WINAPI GetFileAttributesW(
 		LPCWSTR lpFileName)
 	{
+		// Check if this file is allowed read access
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		DWORD result = 0;
 		__try
 		{
-			result = Cache::GetFileAttributesW(
-				lpFileName);
+			if (blockAccess)
+			{
+				result = INVALID_FILE_ATTRIBUTES;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::GetFileAttributesW(
+					lpFileName);
+			}
 		}
 		__finally
 		{
@@ -991,6 +1090,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::GetFileAttributesW;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1002,13 +1102,23 @@ namespace Functions::FileApi::Overrides
 		GET_FILEEX_INFO_LEVELS fInfoLevelId,
 		LPVOID lpFileInformation)
 	{
+		// Check if this file is allowed read access
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetFileAttributesExA(
-				lpFileName,
-				fInfoLevelId,
-				lpFileInformation);
+			if (blockAccess)
+			{
+				result = INVALID_FILE_ATTRIBUTES;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::GetFileAttributesExA(
+					lpFileName,
+					fInfoLevelId,
+					lpFileInformation);
+			}
 		}
 		__finally
 		{
@@ -1016,6 +1126,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::GetFileAttributesExA;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1027,13 +1138,23 @@ namespace Functions::FileApi::Overrides
 		GET_FILEEX_INFO_LEVELS fInfoLevelId,
 		LPVOID lpFileInformation)
 	{
+		// Check if this file is allowed read access
+		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::GetFileAttributesExW(
-				lpFileName,
-				fInfoLevelId,
-				lpFileInformation);
+			if (blockAccess)
+			{
+				result = INVALID_FILE_ATTRIBUTES;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::GetFileAttributesExW(
+					lpFileName,
+					fInfoLevelId,
+					lpFileInformation);
+			}
 		}
 		__finally
 		{
@@ -1041,6 +1162,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::GetFileAttributesExW;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1860,11 +1982,21 @@ namespace Functions::FileApi::Overrides
 	BOOL WINAPI RemoveDirectoryA(
 		LPCSTR lpPathName)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::RemoveDirectoryA(
-				lpPathName);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::RemoveDirectoryA(
+					lpPathName);
+			}
 		}
 		__finally
 		{
@@ -1872,6 +2004,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::RemoveDirectoryA;
 			EventLogger::AppendValue(message, lpPathName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1881,11 +2014,21 @@ namespace Functions::FileApi::Overrides
 	BOOL WINAPI RemoveDirectoryW(
 		LPCWSTR lpPathName)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::RemoveDirectoryW(
-				lpPathName);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::RemoveDirectoryW(
+					lpPathName);
+			}
 		}
 		__finally
 		{
@@ -1893,6 +2036,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::RemoveDirectoryW;
 			EventLogger::AppendValue(message, lpPathName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1951,12 +2095,22 @@ namespace Functions::FileApi::Overrides
 		LPCSTR lpFileName,
 		DWORD  dwFileAttributes)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetFileAttributesA(
-				lpFileName,
-				dwFileAttributes);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::SetFileAttributesA(
+					lpFileName,
+					dwFileAttributes);
+			}
 		}
 		__finally
 		{
@@ -1964,6 +2118,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::SetFileAttributesA;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
@@ -1974,12 +2129,22 @@ namespace Functions::FileApi::Overrides
 		LPCWSTR lpFileName,
 		DWORD  dwFileAttributes)
 	{
+		// Check if this file is allowed write access
+		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
-			result = Cache::SetFileAttributesW(
-				lpFileName,
-				dwFileAttributes);
+			if (blockAccess)
+			{
+				result = FALSE;
+				SetLastError(ERROR_ACCESS_DENIED);
+			}
+			else
+			{
+				result = Cache::SetFileAttributesW(
+					lpFileName,
+					dwFileAttributes);
+			}
 		}
 		__finally
 		{
@@ -1987,6 +2152,7 @@ namespace Functions::FileApi::Overrides
 			message.Type = Monitor::DetourMessageType::SetFileAttributesW;
 			EventLogger::AppendValue(message, lpFileName);
 			EventLogger::AppendValue(message, result);
+			EventLogger::AppendValue(message, blockAccess);
 			EventLogger::WriteMessage(message);
 		}
 
