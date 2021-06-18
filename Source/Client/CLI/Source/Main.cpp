@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-import Monitor.Manager;
+import Monitor.Host;
 import Opal;
 import Opal.Extensions;
 import Soup.Core;

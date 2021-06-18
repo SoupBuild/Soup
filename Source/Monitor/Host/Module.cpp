@@ -27,7 +27,7 @@ module;
 #include <thread>
 #include <vector>
 
-export module Monitor.Manager;
+export module Monitor.Host;
 import Detours;
 import Monitor.Shared;
 import Opal;

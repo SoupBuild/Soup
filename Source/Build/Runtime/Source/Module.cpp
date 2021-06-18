@@ -34,7 +34,7 @@ export module Soup.Build.Runtime;
 
 import json11;
 import toml11;
-import Monitor.Manager;
+import Monitor.Host;
 import Opal;
 import Soup.Build;
 import Soup.Build.Utilities;

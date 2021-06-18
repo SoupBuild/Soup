@@ -1,4 +1,4 @@
-Name = "Monitor.Manager"
+Name = "Monitor.Host"
 Language = "C++"
 Version = "1.0.0"
 Defines = [
