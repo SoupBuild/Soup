@@ -1,13 +1,5 @@
 Name = "Monitor.Shared"
+Description = "The shared resources that are used from both the detoured process and the monitor manager."
 Language = "C++"
 Version = "1.0.0"
-Defines = [
-	# "TRACE_DETOUR_SERVER",
-]
 Interface = "Module.cpp"
-
-[Dependencies]
-Runtime = [
-	"../../../Dependencies/Detours/src/",
-	"Opal@0.2.1",
-]

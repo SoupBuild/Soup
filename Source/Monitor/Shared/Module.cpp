@@ -28,10 +28,6 @@ module;
 #include <vector>
 
 export module Monitor.Shared;
-import Detours;
-import Opal;
-
-using namespace Opal;
 
 export constexpr const char* TBLOG_PIPE_NAMEA = "\\\\.\\pipe\\monitor";
 export constexpr const wchar_t* TBLOG_PIPE_NAMEW = L"\\\\.\\pipe\\monitor";
@@ -281,10 +277,3 @@ export void ThrowIfFailed(int32_t result, std::string_view message)
 		throw std::runtime_error(message.data());
 	}
 }
-
-#include "MockDetourProcessManager.h"
-#include "WindowsDetourProcessManager.h"
-#include "ScopedDetourProcessManagerRegister.h"
-
-#include "DetourCallbackLogger.h"
-#include "ForkCallbackLogger.h"
