@@ -12,12 +12,12 @@ REM - Build Each version of the detours dll
 echo soup build %DetoursDir% -architecture x64
 call soup build %DetoursDir% -architecture x64
 if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
-echo copy %DetoursOutputDirectory%\x64\bin\Monitor.Detours.dll %HostOutputDirectory%\x64\bin\Monitor.Detours.64.dll
-copy %DetoursOutputDirectory%\x64\bin\Monitor.Detours.dll %HostOutputDirectory%\x64\bin\Monitor.Detours.64.dll > nul
-copy %DetoursOutputDirectory%\x64\bin\Monitor.Detours.pdb %HostOutputDirectory%\x64\bin\Monitor.Detours.64.pdb > nul
+echo copy %DetoursOutputDirectory%\x64\bin\Monitor.Client.dll %HostOutputDirectory%\x64\bin\Monitor.Client.64.dll
+copy %DetoursOutputDirectory%\x64\bin\Monitor.Client.dll %HostOutputDirectory%\x64\bin\Monitor.Client.64.dll > nul
+copy %DetoursOutputDirectory%\x64\bin\Monitor.Client.pdb %HostOutputDirectory%\x64\bin\Monitor.Client.64.pdb > nul
 echo soup build %DetoursDir% -architecture x86
 call soup build %DetoursDir% -architecture x86
 if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
-echo copy %DetoursOutputDirectory%\x86\bin\Monitor.Detours.dll %HostOutputDirectory%\x64\bin\Monitor.Detours.32.dll
-copy %DetoursOutputDirectory%\x86\bin\Monitor.Detours.dll %HostOutputDirectory%\x64\bin\Monitor.Detours.32.dll > nul
-copy %DetoursOutputDirectory%\x86\bin\Monitor.Detours.pdb %HostOutputDirectory%\x64\bin\Monitor.Detours.32.pdb > nul
+echo copy %DetoursOutputDirectory%\x86\bin\Monitor.Client.dll %HostOutputDirectory%\x64\bin\Monitor.Client.32.dll
+copy %DetoursOutputDirectory%\x86\bin\Monitor.Client.dll %HostOutputDirectory%\x64\bin\Monitor.Client.32.dll > nul
+copy %DetoursOutputDirectory%\x86\bin\Monitor.Client.pdb %HostOutputDirectory%\x64\bin\Monitor.Client.32.pdb > nul

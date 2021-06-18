@@ -122,7 +122,7 @@ namespace Monitor
 			// Build up the detour dlls absolute path
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
-			auto dllPath = moduleFolder + Path("Monitor.Detours.64.dll");
+			auto dllPath = moduleFolder + Path("Monitor.Client.64.dll");
 			auto dllPathString = dllPath.ToAlternateString();
 
 			// Setup the process creation parameters
