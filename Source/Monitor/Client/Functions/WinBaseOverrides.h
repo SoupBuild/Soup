@@ -9,8 +9,8 @@ namespace Functions::WinBase::Overrides
 		BOOL bFailIfExists)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
@@ -30,14 +30,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CopyFileA;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, bFailIfExists);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CopyFileA));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(bFailIfExists);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -49,8 +50,8 @@ namespace Functions::WinBase::Overrides
 		BOOL bFailIfExists)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
@@ -70,14 +71,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CopyFileW;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, bFailIfExists);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CopyFileW));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(bFailIfExists);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -89,8 +91,8 @@ namespace Functions::WinBase::Overrides
 		COPYFILE2_EXTENDED_PARAMETERS *pExtendedParameters)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(pwszExistingFileName);
-		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(pwszNewFileName);
+		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(pwszExistingFileName);
+		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(pwszNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		HRESULT result = 0;
 		__try
@@ -110,13 +112,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CopyFile2;
-			EventLogger::AppendValue(message, pwszExistingFileName);
-			EventLogger::AppendValue(message, pwszNewFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CopyFile2));
+			message.AppendValue(pwszExistingFileName);
+			message.AppendValue(pwszNewFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -131,8 +134,8 @@ namespace Functions::WinBase::Overrides
 		DWORD dwCopyFlags)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
@@ -155,13 +158,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CopyFileExA;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CopyFileExA));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -176,8 +180,8 @@ namespace Functions::WinBase::Overrides
 		DWORD dwCopyFlags)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
@@ -200,13 +204,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CopyFileExW;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CopyFileExW));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -222,8 +227,8 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
@@ -247,13 +252,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CopyFileTransactedA;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CopyFileTransactedA));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -269,8 +275,8 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		BOOL result = 0;
 		__try
@@ -294,13 +300,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CopyFileTransactedW;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CopyFileTransactedW));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -312,7 +319,7 @@ namespace Functions::WinBase::Overrides
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
 		BOOL result = 0;
 		__try
 		{
@@ -331,13 +338,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateDirectoryExA;
-			EventLogger::AppendValue(message, lpTemplateDirectory);
-			EventLogger::AppendValue(message, lpNewDirectory);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateDirectoryExA));
+			message.AppendValue(lpTemplateDirectory);
+			message.AppendValue(lpNewDirectory);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -349,7 +357,7 @@ namespace Functions::WinBase::Overrides
 		LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
 		BOOL result = 0;
 		__try
 		{
@@ -368,13 +376,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateDirectoryExW;
-			EventLogger::AppendValue(message, lpTemplateDirectory);
-			EventLogger::AppendValue(message, lpNewDirectory);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateDirectoryExW));
+			message.AppendValue(lpTemplateDirectory);
+			message.AppendValue(lpNewDirectory);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -387,7 +396,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
 		BOOL result = 0;
 		__try
 		{
@@ -407,13 +416,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateDirectoryTransactedA;
-			EventLogger::AppendValue(message, lpTemplateDirectory);
-			EventLogger::AppendValue(message, lpNewDirectory);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateDirectoryTransactedA));
+			message.AppendValue(lpTemplateDirectory);
+			message.AppendValue(lpNewDirectory);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -426,7 +436,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewDirectory);
 		BOOL result = 0;
 		__try
 		{
@@ -446,13 +456,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateDirectoryTransactedW;
-			EventLogger::AppendValue(message, lpTemplateDirectory);
-			EventLogger::AppendValue(message, lpNewDirectory);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateDirectoryTransactedW));
+			message.AppendValue(lpTemplateDirectory);
+			message.AppendValue(lpNewDirectory);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -471,7 +482,7 @@ namespace Functions::WinBase::Overrides
 		PVOID lpExtendedParameter)
 	{
 		// Check if this file is allowed access
-		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
@@ -497,14 +508,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateFileTransactedA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, dwDesiredAccess);
-			EventLogger::AppendValue(message, dwShareMode);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateFileTransactedA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(dwDesiredAccess);
+			message.AppendValue(dwShareMode);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -523,7 +535,7 @@ namespace Functions::WinBase::Overrides
 		PVOID lpExtendedParameter)
 	{
 		// Check if this file is allowed access
-		bool blockAccess = !FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsAllowed(lpFileName, dwDesiredAccess);
 		HANDLE result = 0;
 		__try
 		{
@@ -549,14 +561,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateFileTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, dwDesiredAccess);
-			EventLogger::AppendValue(message, dwShareMode);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateFileTransactedW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(dwDesiredAccess);
+			message.AppendValue(dwShareMode);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -577,12 +590,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateHardLinkA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateHardLinkA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -603,12 +617,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateHardLinkW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateHardLinkW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -631,12 +646,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateHardLinkTransactedA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateHardLinkTransactedA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -659,12 +675,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateHardLinkTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateHardLinkTransactedW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -701,14 +718,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateProcessWithLogonW;
-			EventLogger::AppendValue(message, lpApplicationName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessWithLogonW));
+			message.AppendValue(lpApplicationName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 
 			// TODO
-			EventLogger::WriteError("Cannot detour process from CreateProcessWithLogonW");
+			Monitor::ConnectionManager::WriteError("Cannot detour process from CreateProcessWithLogonW");
 		}
 
 		return result;
@@ -741,14 +759,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateProcessWithTokenW;
-			EventLogger::AppendValue(message, lpApplicationName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessWithTokenW));
+			message.AppendValue(lpApplicationName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 
 			// TODO
-			EventLogger::WriteError("Cannot detour process from CreateProcessWithTokenW");
+			Monitor::ConnectionManager::WriteError("Cannot detour process from CreateProcessWithTokenW");
 		}
 
 		return result;
@@ -769,13 +788,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateSymbolicLinkA;
-			EventLogger::AppendValue(message, lpSymlinkFileName);
-			EventLogger::AppendValue(message, lpTargetFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateSymbolicLinkA));
+			message.AppendValue(lpSymlinkFileName);
+			message.AppendValue(lpTargetFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -796,13 +816,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateSymbolicLinkW;
-			EventLogger::AppendValue(message, lpSymlinkFileName);
-			EventLogger::AppendValue(message, lpTargetFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateSymbolicLinkW));
+			message.AppendValue(lpSymlinkFileName);
+			message.AppendValue(lpTargetFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -825,13 +846,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateSymbolicLinkTransactedA;
-			EventLogger::AppendValue(message, lpSymlinkFileName);
-			EventLogger::AppendValue(message, lpTargetFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateSymbolicLinkTransactedA));
+			message.AppendValue(lpSymlinkFileName);
+			message.AppendValue(lpTargetFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -854,13 +876,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateSymbolicLinkTransactedW;
-			EventLogger::AppendValue(message, lpSymlinkFileName);
-			EventLogger::AppendValue(message, lpTargetFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateSymbolicLinkTransactedW));
+			message.AppendValue(lpSymlinkFileName);
+			message.AppendValue(lpTargetFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -879,11 +902,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::DecryptFileA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DecryptFileA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -902,11 +926,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::DecryptFileW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DecryptFileW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -923,11 +948,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::DeleteFile;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DeleteFile));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -938,7 +964,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -956,12 +982,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::DeleteFileTransactedA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DeleteFileTransactedA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -972,7 +999,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -990,12 +1017,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::DeleteFileTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::DeleteFileTransactedW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1012,11 +1040,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::EncryptFileA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::EncryptFileA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1033,11 +1062,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::EncryptFileW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::EncryptFileW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1056,11 +1086,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::FileEncryptionStatusA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FileEncryptionStatusA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1079,11 +1110,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::FileEncryptionStatusW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FileEncryptionStatusW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1108,11 +1140,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::FindFirstFileNameTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileNameTransactedW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(dwFlags);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1141,10 +1174,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::FindFirstFileTransactedA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileTransactedA));
+			message.AppendValue(lpFileName);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1173,10 +1207,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::FindFirstFileTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstFileTransactedW));
+			message.AppendValue(lpFileName);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1201,10 +1236,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::FindFirstStreamTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::FindFirstStreamTransactedW));
+			message.AppendValue(lpFileName);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1223,11 +1259,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetBinaryTypeA;
-			EventLogger::AppendValue(message, lpApplicationName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetBinaryTypeA));
+			message.AppendValue(lpApplicationName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1246,11 +1283,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetBinaryTypeW;
-			EventLogger::AppendValue(message, lpApplicationName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetBinaryTypeW));
+			message.AppendValue(lpApplicationName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1271,11 +1309,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetCompressedFileSizeTransactedA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetCompressedFileSizeTransactedA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1296,11 +1335,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetCompressedFileSizeTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetCompressedFileSizeTransactedW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1319,10 +1359,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetDllDirectoryA;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDllDirectoryA));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1341,10 +1382,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetDllDirectoryW;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetDllDirectoryW));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1357,7 +1399,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed read access
-		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -1377,12 +1419,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetFileAttributesTransactedA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileAttributesTransactedA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1395,7 +1438,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed read access
-		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -1415,12 +1458,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetFileAttributesTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileAttributesTransactedW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1447,10 +1491,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetFileBandwidthReservation;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileBandwidthReservation));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1473,10 +1518,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetFileInformationByHandleEx;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileInformationByHandleEx));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1490,7 +1536,7 @@ namespace Functions::WinBase::Overrides
 		LPDWORD lpnLengthNeeded)
 	{
 		// Check if this file is allowed read access
-		bool blockAccess = !FileSystemAccessSandbox::IsReadAllowed(lpFileName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -1511,12 +1557,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetFileSecurityA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFileSecurityA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1541,11 +1588,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetFullPathNameTransactedA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFullPathNameTransactedA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1570,11 +1618,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetFullPathNameTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetFullPathNameTransactedW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1597,12 +1646,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetLongPathNameTransactedA;
-			EventLogger::AppendValue(message, lpszShortPath);
-			EventLogger::AppendValue(message, lpszLongPath);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetLongPathNameTransactedA));
+			message.AppendValue(lpszShortPath);
+			message.AppendValue(lpszLongPath);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1625,12 +1675,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetLongPathNameTransactedW;
-			EventLogger::AppendValue(message, lpszShortPath);
-			EventLogger::AppendValue(message, lpszLongPath);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetLongPathNameTransactedW));
+			message.AppendValue(lpszShortPath);
+			message.AppendValue(lpszLongPath);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1655,10 +1706,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetQueuedCompletionStatus;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetQueuedCompletionStatus));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1685,10 +1737,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetQueuedCompletionStatusEx;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetQueuedCompletionStatusEx));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1709,12 +1762,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::GetShortPathNameA;
-			EventLogger::AppendValue(message, lpszLongPath);
-			EventLogger::AppendValue(message, lpszShortPath);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetShortPathNameA));
+			message.AppendValue(lpszLongPath);
+			message.AppendValue(lpszShortPath);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1733,11 +1787,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::LoadModule;
-			EventLogger::AppendValue(message, lpModuleName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadModule));
+			message.AppendValue(lpModuleName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1756,10 +1811,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::LoadPackagedLibrary;
-			EventLogger::AppendValue(message, lpwLibFileName);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadPackagedLibrary));
+			message.AppendValue(lpwLibFileName);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1770,8 +1826,8 @@ namespace Functions::WinBase::Overrides
 		LPCTSTR lpNewFileName)
 	{
 		// Check if this file is allowed write access
-		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
-		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockExistingFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
@@ -1790,13 +1846,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::MoveFileA;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::MoveFileA));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1807,8 +1864,8 @@ namespace Functions::WinBase::Overrides
 		LPCWSTR lpNewFileName)
 	{
 		// Check if this file is allowed write access
-		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
-		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockExistingFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
@@ -1827,13 +1884,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::MoveFileW;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::MoveFileW));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1845,8 +1903,8 @@ namespace Functions::WinBase::Overrides
 		DWORD dwFlags)
 	{
 		// Check if this file is allowed write access
-		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
-		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockExistingFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
@@ -1866,14 +1924,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::MoveFileExA;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::MoveFileExA));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1885,8 +1944,8 @@ namespace Functions::WinBase::Overrides
 		DWORD dwFlags)
 	{
 		// Check if this file is allowed write access
-		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
-		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockExistingFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
@@ -1906,14 +1965,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::MoveFileExW;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::MoveFileExW));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1928,8 +1988,8 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
-		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockExistingFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
@@ -1952,14 +2012,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::MoveFileTransactedA;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::MoveFileTransactedA));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -1974,8 +2035,8 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
-		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockExistingFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
@@ -1998,14 +2059,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::MoveFileTransactedW;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::MoveFileTransactedW));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2019,8 +2081,8 @@ namespace Functions::WinBase::Overrides
 		DWORD dwFlags)
 	{
 		// Check if this file is allowed write access
-		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
-		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockExistingFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
@@ -2042,14 +2104,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::MoveFileWithProgressA;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::MoveFileWithProgressA));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2063,8 +2126,8 @@ namespace Functions::WinBase::Overrides
 		DWORD dwFlags)
 	{
 		// Check if this file is allowed write access
-		bool blockExistingFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
-		bool blockNewFileAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockExistingFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpExistingFileName);
+		bool blockNewFileAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockExistingFileAccess || blockNewFileAccess;
 		BOOL result = 0;
 		__try
@@ -2086,14 +2149,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::MoveFileWithProgressW;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, dwFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::MoveFileWithProgressW));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(dwFlags);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2114,12 +2178,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::OpenEncryptedFileRawA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, ulFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::OpenEncryptedFileRawA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(ulFlags);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2140,12 +2205,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::OpenEncryptedFileRawW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, ulFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::OpenEncryptedFileRawW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(ulFlags);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2157,7 +2223,7 @@ namespace Functions::WinBase::Overrides
 		UINT uStyle)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		HFILE result = 0;
 		__try
 		{
@@ -2176,11 +2242,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::OpenFile;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::OpenFile));
+			message.AppendValue(lpFileName);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2207,9 +2274,10 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::OpenFileById;
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::OpenFileById));
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2230,10 +2298,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::ReadEncryptedFileRaw;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ReadEncryptedFileRaw));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2244,7 +2313,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
@@ -2262,12 +2331,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::RemoveDirectoryTransactedA;
-			EventLogger::AppendValue(message, lpPathName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::RemoveDirectoryTransactedA));
+			message.AppendValue(lpPathName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2278,7 +2348,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpPathName);
 		BOOL result = 0;
 		__try
 		{
@@ -2296,12 +2366,13 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::RemoveDirectoryTransactedW;
-			EventLogger::AppendValue(message, lpPathName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::RemoveDirectoryTransactedW));
+			message.AppendValue(lpPathName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2324,9 +2395,10 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::ReOpenFile;
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ReOpenFile));
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2353,14 +2425,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::ReplaceFileA;
-			EventLogger::AppendValue(message, lpReplacedFileName);
-			EventLogger::AppendValue(message, lpReplacementFileName);
-			EventLogger::AppendValue(message, lpBackupFileName);
-			EventLogger::AppendValue(message, dwReplaceFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ReplaceFileA));
+			message.AppendValue(lpReplacedFileName);
+			message.AppendValue(lpReplacementFileName);
+			message.AppendValue(lpBackupFileName);
+			message.AppendValue(dwReplaceFlags);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2387,14 +2460,15 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::ReplaceFileW;
-			EventLogger::AppendValue(message, lpReplacedFileName);
-			EventLogger::AppendValue(message, lpReplacementFileName);
-			EventLogger::AppendValue(message, lpBackupFileName);
-			EventLogger::AppendValue(message, dwReplaceFlags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ReplaceFileW));
+			message.AppendValue(lpReplacedFileName);
+			message.AppendValue(lpReplacementFileName);
+			message.AppendValue(lpBackupFileName);
+			message.AppendValue(dwReplaceFlags);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2411,11 +2485,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetCurrentDirectoryA;
-			EventLogger::AppendValue(message, lpPathName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetCurrentDirectoryA));
+			message.AppendValue(lpPathName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2432,11 +2507,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetCurrentDirectoryW;
-			EventLogger::AppendValue(message, lpPathName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetCurrentDirectoryW));
+			message.AppendValue(lpPathName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2453,11 +2529,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetDllDirectoryA;
-			EventLogger::AppendValue(message, lpPathName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetDllDirectoryA));
+			message.AppendValue(lpPathName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2474,11 +2551,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetDllDirectoryW;
-			EventLogger::AppendValue(message, lpPathName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetDllDirectoryW));
+			message.AppendValue(lpPathName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2490,7 +2568,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -2509,13 +2587,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetFileAttributesTransactedA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, dwFileAttributes);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileAttributesTransactedA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(dwFileAttributes);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2527,7 +2606,7 @@ namespace Functions::WinBase::Overrides
 		HANDLE hTransaction)
 	{
 		// Check if this file is allowed write access
-		bool blockAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
+		bool blockAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpFileName);
 		BOOL result = 0;
 		__try
 		{
@@ -2546,13 +2625,14 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetFileAttributesTransactedW;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, dwFileAttributes);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileAttributesTransactedW));
+			message.AppendValue(lpFileName);
+			message.AppendValue(dwFileAttributes);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2579,10 +2659,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetFileBandwidthReservation;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileBandwidthReservation));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2601,10 +2682,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetFileCompletionNotificationModes;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileCompletionNotificationModes));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2625,11 +2707,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetFileSecurityA;
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileSecurityA));
+			message.AppendValue(lpFileName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2648,11 +2731,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetFileShortNameA;
-			EventLogger::AppendValue(message, lpShortName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileShortNameA));
+			message.AppendValue(lpShortName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2671,11 +2755,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetFileShortNameW;
-			EventLogger::AppendValue(message, lpShortName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetFileShortNameW));
+			message.AppendValue(lpShortName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2692,11 +2777,12 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SetSearchPathMode;
-			EventLogger::AppendValue(message, Flags);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SetSearchPathMode));
+			message.AppendValue(Flags);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -2717,10 +2803,11 @@ namespace Functions::WinBase::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::WriteEncryptedFileRaw;
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::WriteEncryptedFileRaw));
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;

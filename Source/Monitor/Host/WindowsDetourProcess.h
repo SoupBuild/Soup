@@ -16,7 +16,7 @@ namespace Monitor
 		OVERLAPPED Overlap;
 		Opal::System::SmartHandle EventHandle;
 		Opal::System::SmartHandle PipeHandle;
-		DetourMessage Message;
+		Message Message;
 		bool IsConnected;
 		bool HasPendingIO;
 	};
@@ -173,8 +173,8 @@ namespace Monitor
 			m_processHandle = Opal::System::SmartHandle(processInfo.hProcess);
 			m_threadHandle = Opal::System::SmartHandle(processInfo.hThread);
 
-			// Set the detoured process payload
-			DetourPayload payload;
+			// Set the child process payload
+			ProcessPayload payload;
 			ZeroMemory(&payload, sizeof(payload));
 			payload.nParentProcessId = GetCurrentProcessId();
 			payload.nTraceProcessId = GetCurrentProcessId();
@@ -183,7 +183,7 @@ namespace Monitor
 			payload.wzParents[0] = 0;
 			if (!DetourCopyPayloadToProcess(
 				m_processHandle.Get(),
-				GuidTrace,
+				ProcessPayloadResourceId,
 				&payload,
 				sizeof(payload)))
 			{
@@ -568,8 +568,8 @@ namespace Monitor
 					}
 
 					DWORD expectedSize = pipe.Message.ContentSize +
-						sizeof(Monitor::DetourMessage::Type) +
-						sizeof(Monitor::DetourMessage::ContentSize);
+						sizeof(Monitor::Message::Type) +
+						sizeof(Monitor::Message::ContentSize);
 					if (bytesTransferred != expectedSize)
 					{
 						DebugTrace("HandlePipeEvent - GetOverlappedResult - Size Mismatched");
@@ -623,8 +623,8 @@ namespace Monitor
 				}
 
 				DWORD expectedSize = pipe.Message.ContentSize +
-					sizeof(Monitor::DetourMessage::Type) +
-					sizeof(Monitor::DetourMessage::ContentSize);
+					sizeof(Monitor::Message::Type) +
+					sizeof(Monitor::Message::ContentSize);
 				if (bytesRead != expectedSize)
 				{
 					throw std::runtime_error("HandlePipeEvent - GetOverlappedResult - Size Mismatched");
@@ -635,7 +635,7 @@ namespace Monitor
 			}
 		}
 
-		void LogMessage(DetourMessage& message)
+		void LogMessage(Message& message)
 		{
 			DebugTrace("LogMessage");
 			m_eventListener.LogMessage(message);
@@ -655,8 +655,8 @@ namespace Monitor
 
 		void DebugTrace(std::string_view message, uint32_t value)
 		{
-#ifdef TRACE_DETOUR_SERVER
-			std::cout << "DETOUR-SERVER: " << message << " " << value << std::endl;
+#ifdef TRACE_DETOUR_HOST
+			std::cout << "DETOUR-HOST: " << message << " " << value << std::endl;
 #else
 		(message);
 		(value);
@@ -665,8 +665,8 @@ namespace Monitor
 
 		void DebugTrace(std::string_view message)
 		{
-#ifdef TRACE_DETOUR_SERVER
-			std::cout << "DETOUR-SERVER: " << message << std::endl;
+#ifdef TRACE_DETOUR_HOST
+			std::cout << "DETOUR-HOST: " << message << std::endl;
 #else
 		(message);
 #endif

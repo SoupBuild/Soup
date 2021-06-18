@@ -17,8 +17,8 @@ namespace Functions::UndocumentedApi::Overrides
 		DWORD dwCopyFlags)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		bool result = 0;
 		__try
@@ -41,13 +41,14 @@ namespace Functions::UndocumentedApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::PrivCopyFileExA;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::PrivCopyFileExA));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -62,8 +63,8 @@ namespace Functions::UndocumentedApi::Overrides
 		DWORD dwCopyFlags)
 	{
 		// Check if this file is allowed access
-		bool blockReadAccess = !FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
-		bool blockWriteAccess = !FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
+		bool blockReadAccess = !Monitor::FileSystemAccessSandbox::IsReadAllowed(lpExistingFileName);
+		bool blockWriteAccess = !Monitor::FileSystemAccessSandbox::IsWriteAllowed(lpNewFileName);
 		bool blockAccess = blockReadAccess || blockWriteAccess;
 		bool result = 0;
 		__try
@@ -86,13 +87,14 @@ namespace Functions::UndocumentedApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::PrivCopyFileExW;
-			EventLogger::AppendValue(message, lpExistingFileName);
-			EventLogger::AppendValue(message, lpNewFileName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::AppendValue(message, blockAccess);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::PrivCopyFileExW));
+			message.AppendValue(lpExistingFileName);
+			message.AppendValue(lpNewFileName);
+			message.AppendValue(result);
+			message.AppendValue(blockAccess);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;

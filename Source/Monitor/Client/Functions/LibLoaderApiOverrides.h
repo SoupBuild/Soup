@@ -14,10 +14,11 @@ namespace Functions::LibLoaderApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::LoadLibraryA;
-			EventLogger::AppendValue(message, lpLibFileName);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryA));
+			message.AppendValue(lpLibFileName);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -34,10 +35,11 @@ namespace Functions::LibLoaderApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::LoadLibraryW;
-			EventLogger::AppendValue(message, lpLibFileName);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryW));
+			message.AppendValue(lpLibFileName);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -58,10 +60,11 @@ namespace Functions::LibLoaderApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::LoadLibraryExA;
-			EventLogger::AppendValue(message, lpLibFileName);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryExA));
+			message.AppendValue(lpLibFileName);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -82,10 +85,11 @@ namespace Functions::LibLoaderApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::LoadLibraryExW;
-			EventLogger::AppendValue(message, lpLibFileName);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::LoadLibraryExW));
+			message.AppendValue(lpLibFileName);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;

@@ -485,16 +485,16 @@ bool ProcessAttach(HMODULE hDll)
 	s_hKernel32 = nullptr;
 
 	PBYTE xCreate = (PBYTE)DetourCodeFromPointer((PVOID)Functions::ProcessThreadsApi::Cache::CreateProcessW, nullptr);
-	Monitor::DetourPayload* pPayload = nullptr;
+	Monitor::ProcessPayload* pPayload = nullptr;
 
 	for (HMODULE hMod = nullptr; (hMod = DetourEnumerateModules(hMod)) != nullptr;)
 	{
 		ULONG cbData;
-		PVOID pvData = DetourFindPayload(hMod, Monitor::GuidTrace, &cbData);
+		PVOID pvData = DetourFindPayload(hMod, Monitor::ProcessPayloadResourceId, &cbData);
 
 		if (pvData != nullptr && pPayload == nullptr)
 		{
-			pPayload = (Monitor::DetourPayload*)pvData;
+			pPayload = (Monitor::ProcessPayload*)pvData;
 		}
 
 		ULONG cbMod = DetourGetModuleSize(hMod);
@@ -521,9 +521,8 @@ bool ProcessAttach(HMODULE hDll)
 	try
 	{
 		// Initialize the event pipe
-		ConnectionManager::Initialize();
-		EventLogger::Initialize();
-		FileSystemAccessSandbox::Initialize();
+		Monitor::ConnectionManager::Initialize();
+		Monitor::FileSystemAccessSandbox::Initialize();
 
 		// Find hidden functions.
 		Functions::UndocumentedApi::Cache::PrivCopyFileExA =
@@ -547,12 +546,12 @@ bool ProcessAttach(HMODULE hDll)
 	}
 	catch (const std::exception& ex)
 	{
-		EventLogger::WriteError(ex.what());
+		Monitor::ConnectionManager::WriteError(ex.what());
 		exit(-1234);
 	}
 	catch (...)
 	{
-		EventLogger::WriteError("Unknown error attaching detours");
+		Monitor::ConnectionManager::WriteError("Unknown error attaching detours");
 		exit(-1234);
 	}
 
@@ -571,16 +570,16 @@ bool ProcessDetach(HMODULE hDll)
 	}
 	catch (const std::exception& ex)
 	{
-		EventLogger::WriteError(ex.what());
+		Monitor::ConnectionManager::WriteError(ex.what());
 		exit(-1234);
 	}
 	catch (...)
 	{
-		EventLogger::WriteError("Unknown error detaching detours");
+		Monitor::ConnectionManager::WriteError("Unknown error detaching detours");
 		exit(-1234);
 	}
 
-	EventLogger::Shutdown();
+	Monitor::ConnectionManager::Shutdown();
 
 	return true;
 }

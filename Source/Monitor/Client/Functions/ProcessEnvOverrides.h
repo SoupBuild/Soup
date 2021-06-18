@@ -24,13 +24,14 @@ namespace Functions::ProcessEnv::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SearchPathA;
-			EventLogger::AppendValue(message, lpPath);
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, lpExtension);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SearchPathA));
+			message.AppendValue(lpPath);
+			message.AppendValue(lpFileName);
+			message.AppendValue(lpExtension);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -57,13 +58,14 @@ namespace Functions::ProcessEnv::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::SearchPathW;
-			EventLogger::AppendValue(message, lpPath);
-			EventLogger::AppendValue(message, lpFileName);
-			EventLogger::AppendValue(message, lpExtension);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::SearchPathW));
+			message.AppendValue(lpPath);
+			message.AppendValue(lpFileName);
+			message.AppendValue(lpExtension);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
