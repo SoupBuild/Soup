@@ -34,11 +34,15 @@ namespace Monitor
 			const Path& executable,
 			const std::string& arguments,
 			const Path& workingDirectory,
-			std::shared_ptr<IDetourCallback> callback) :
+			std::shared_ptr<IDetourCallback> callback,
+			const std::vector<Path>& allowedReadAccess,
+			const std::vector<Path>& allowedWriteAccess) :
 			m_executable(executable),
 			m_arguments(arguments),
 			m_workingDirectory(workingDirectory),
 			m_eventListener(std::move(callback)),
+			m_allowedReadAccess(std::move(allowedReadAccess)),
+			m_allowedWriteAccess(std::move(allowedWriteAccess)),
 			m_pipes(),
 			m_rawEventHandles(),
 			m_workerThread(),
@@ -181,6 +185,11 @@ namespace Monitor
 			payload.nGeneology = 1;
 			payload.rGeneology[0] = 0;
 			payload.wzParents[0] = 0;
+
+			// Pass long the read/write access lists
+			LoadStringList(m_allowedReadAccess, payload.zReadAccessDirectories, payload.cReadAccessDirectories, 4096);
+			LoadStringList(m_allowedWriteAccess, payload.zWriteAccessDirectories, payload.cWriteAccessDirectories, 4096);
+
 			if (!DetourCopyPayloadToProcess(
 				m_processHandle.Get(),
 				ProcessPayloadResourceId,
@@ -315,6 +324,30 @@ namespace Monitor
 		}
 
 	private:
+		static void LoadStringList(
+			const std::vector<Path>& values,
+			char* rawValues,
+			unsigned long& length,
+			uint64_t maxLength)
+		{
+			length = 0;
+			rawValues[0] = 0;
+
+			for (auto value : values)
+			{
+				auto stringValue = value.ToString();
+				auto newLength = length + static_cast<unsigned long>(stringValue.length()) + 1;
+				if (newLength > maxLength)
+					throw std::runtime_error("Ran out of space in payload string list");
+
+				// Copy over the null terminated string
+				stringValue.copy(rawValues + length, stringValue.length());
+				rawValues[newLength - 1] = 0;
+
+				length = newLength;
+			}
+		}
+
 		/// <summary>
 		/// The main entry point for the worker thread that will monitor incoming messages from all
 		/// client connections.
@@ -678,6 +711,9 @@ namespace Monitor
 		std::string m_arguments;
 		Path m_workingDirectory;
 		EventListener m_eventListener;
+
+		std::vector<Path> m_allowedReadAccess;
+		std::vector<Path> m_allowedWriteAccess;
 
 		// Runtime
 		std::thread m_workerThread;

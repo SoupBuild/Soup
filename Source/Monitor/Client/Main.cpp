@@ -466,7 +466,6 @@ void DetachDetours()
 	ThrowIfFailed(DetourTransactionCommit(), "DetachDetours DetourTransactionCommit Failed");
 }
 
-
 bool ThreadAttach(HMODULE /*hDll*/)
 {
 	return true;
@@ -475,6 +474,25 @@ bool ThreadAttach(HMODULE /*hDll*/)
 bool ThreadDetach(HMODULE /*hDll*/)
 {
 	return true;
+}
+
+std::vector<std::string> ExtractStringList(const char* rawValues, uint64_t length)
+{
+	auto result = std::vector<std::string>();
+	auto remainingContent = length;
+	auto valueBuffer = rawValues;
+
+	// Keep pulling off strings until we reach the end
+	while (remainingContent > 0)
+	{
+		auto value = std::string(valueBuffer);
+		valueBuffer += value.length() + 1;
+		remainingContent -= value.length() + 1;
+
+		result.push_back(std::move(value));
+	}
+
+	return result;
 }
 
 bool ProcessAttach(HMODULE hDll)
@@ -514,15 +532,21 @@ bool ProcessAttach(HMODULE hDll)
 
 	CopyMemory(&s_Payload, pPayload, sizeof(s_Payload));
 
-	s_nTraceProcessId = s_Payload.nTraceProcessId;
-
 	GetModuleFileNameA(s_hInst, s_szDllPath, ARRAYSIZE(s_szDllPath));
 
 	try
 	{
+		auto traceProcessId = s_Payload.nTraceProcessId;
+
+		// Extract the allowed read/write directories
+		auto allowedReadDirectories = ExtractStringList(s_Payload.zReadAccessDirectories, s_Payload.cReadAccessDirectories);
+		auto allowedWriteDirectories = ExtractStringList(s_Payload.zWriteAccessDirectories, s_Payload.cWriteAccessDirectories);
+
 		// Initialize the event pipe
-		Monitor::ConnectionManager::Initialize();
-		Monitor::FileSystemAccessSandbox::Initialize();
+		Monitor::ConnectionManager::Initialize(traceProcessId);
+		Monitor::FileSystemAccessSandbox::Initialize(
+			std::move(allowedReadDirectories),
+			std::move(allowedWriteDirectories));
 
 		// Find hidden functions.
 		Functions::UndocumentedApi::Cache::PrivCopyFileExA =

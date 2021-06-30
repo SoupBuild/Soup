@@ -40,7 +40,9 @@ namespace Monitor
 			const Path& executable,
 			const std::string& arguments,
 			const Path& workingDirectory,
-			std::shared_ptr<IDetourCallback> callback) = 0;
+			std::shared_ptr<IDetourCallback> callback,
+			const std::vector<Path>& allowedReadAccess,
+			const std::vector<Path>& allowedWriteAccess) = 0;
 
 	private:
 		static std::shared_ptr<IDetourProcessManager> _current;

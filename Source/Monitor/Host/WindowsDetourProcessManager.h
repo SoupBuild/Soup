@@ -28,13 +28,17 @@ namespace Monitor
 			const Path& executable,
 			const std::string& arguments,
 			const Path& workingDirectory,
-			std::shared_ptr<IDetourCallback> callback) override final
+			std::shared_ptr<IDetourCallback> callback,
+			const std::vector<Path>& allowedReadAccess,
+			const std::vector<Path>& allowedWriteAccess) override final
 		{
 			return std::make_shared<WindowsDetourProcess>(
 				executable,
 				arguments,
 				workingDirectory,
-				std::move(callback));
+				std::move(callback),
+				allowedReadAccess,
+				allowedWriteAccess);
 		}
 	};
 }

@@ -7,10 +7,10 @@ namespace Monitor
 	class ConnectionManager
 	{
 	public:
-		static void Initialize()
+		static void Initialize(DWORD traceProcessId)
 		{
 			DebugTrace("ConnectionManager::Initialize");
-			Connect();
+			Connect(traceProcessId);
 
 			// Notify that we are connected
 			Monitor::Message message;
@@ -73,11 +73,11 @@ namespace Monitor
 		}
 
 	private:
-		static void Connect()
+		static void Connect(DWORD traceProcessId)
 		{
 			DebugTrace("ConnectionManager::Connect");
 			std::stringstream pipeNameBuilder;
-			pipeNameBuilder << TBLOG_PIPE_NAMEA << "." << s_nTraceProcessId;
+			pipeNameBuilder << TBLOG_PIPE_NAMEA << "." << traceProcessId;
 			auto pipeName = pipeNameBuilder.str();
 
 			auto lock = std::lock_guard<std::mutex>(s_pipeMutex);

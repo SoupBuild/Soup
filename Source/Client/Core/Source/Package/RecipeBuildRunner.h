@@ -402,6 +402,9 @@ namespace Soup::Build
 				generateOperatioId,
 			});
 
+			auto allowedReadAccess = std::vector<Path>();
+			auto allowedWriteAccess = std::vector<Path>();
+
 			// Load the previous build graph if it exists and merge it with the new one
 			auto generateGraphFile = soupTargetDirectory + GetGenerateGraphFileName();
 			TryMergeExisting(generateGraphFile, generateGraph);
@@ -409,7 +412,9 @@ namespace Soup::Build
 			// Evaluate the Generate phase
 			auto evaluateGenerateEngine = Runtime::BuildEvaluateEngine(
 				_fileSystemState,
-				generateGraph);
+				generateGraph,
+				std::move(allowedReadAccess),
+				std::move(allowedWriteAccess));
 			evaluateGenerateEngine.Evaluate();
 
 			// Save the operation graph for future incremental builds
@@ -453,12 +458,33 @@ namespace Soup::Build
 				TryMergeExisting(evaluateResultGraphFile, evaluateGraph);
 			}
 
+			auto allowedReadAccess = std::vector<Path>();
+			auto allowedWriteAccess = std::vector<Path>();
+
+			allowedReadAccess.push_back(
+				Path("C:\\Windows\\"));
+			allowedReadAccess.push_back(
+				Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/"));
+			allowedReadAccess.push_back(
+				Path("C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\Bin\\Roslyn\\"));
+			allowedReadAccess.push_back(
+				Path("C:/Program Files/dotnet/"));
+			allowedReadAccess.push_back(
+				Path("C:\\Users\\mwasp\\source\\repos\\Soup\\Source\\GenerateSharp\\Opal\\"));
+			allowedReadAccess.push_back(
+				Path("C:/Users/mwasp/source/repos/Soup/out/C#/Opal/d6cd8e54c2437463cfea37201849278a10a3fb82df1565fbc685206e25f5/"));
+
+			allowedWriteAccess.push_back(
+				Path("C:/Users/mwasp/source/repos/Soup/out/C#/Opal/d6cd8e54c2437463cfea37201849278a10a3fb82df1565fbc685206e25f5/"));
+
 			try
 			{
 				// Evaluate the build
 				auto evaluateEngine = Runtime::BuildEvaluateEngine(
 					_fileSystemState,
-					evaluateGraph);
+					evaluateGraph,
+					std::move(allowedReadAccess),
+					std::move(allowedWriteAccess));
 				evaluateEngine.Evaluate();
 			}
 			catch(const Runtime::BuildFailedException&)

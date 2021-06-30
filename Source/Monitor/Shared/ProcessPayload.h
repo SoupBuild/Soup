@@ -9,6 +9,10 @@ namespace Monitor
 		DWORD nGeneology;
 		DWORD rGeneology[64];
 		WCHAR wzParents[256];
+		DWORD cReadAccessDirectories;
+		CHAR zReadAccessDirectories[4096];
+		DWORD cWriteAccessDirectories;
+		CHAR zWriteAccessDirectories[4096];
 	};
 
 	// Shared payload guid used to get/set the payload when creating the child process

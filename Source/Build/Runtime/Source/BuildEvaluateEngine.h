@@ -22,11 +22,15 @@ namespace Soup::Build::Runtime
 		/// </summary>
 		BuildEvaluateEngine(
 			const std::shared_ptr<FileSystemState>& fileSystemState,
-			OperationGraph& operationGraph) :
+			OperationGraph& operationGraph,
+			std::vector<Path> allowedReadAccess,
+			std::vector<Path> allowedWriteAccess) :
 			_fileSystemState(fileSystemState),
 			_operationGraph(operationGraph),
 			_remainingDependencyCounts(),
-			_stateChecker(fileSystemState)
+			_stateChecker(fileSystemState),
+			_allowedReadAccess(std::move(allowedReadAccess)),
+			_allowedWriteAccess(std::move(allowedWriteAccess))
 		{
 		}
 
@@ -201,7 +205,9 @@ namespace Soup::Build::Runtime
 				operationInfo.Command.Executable,
 				operationInfo.Command.Arguments,
 				operationInfo.Command.WorkingDirectory,
-				callback); // callbackWrapper);
+				callback, // callbackWrapper,
+				_allowedReadAccess,
+				_allowedWriteAccess);
 
 			process->Start();
 			process->WaitForExit();
@@ -271,7 +277,11 @@ namespace Soup::Build::Runtime
 	private:
 		std::shared_ptr<FileSystemState> _fileSystemState;
 		OperationGraph& _operationGraph;
+
 		std::unordered_map<OperationId, int32_t> _remainingDependencyCounts;
 		BuildHistoryChecker _stateChecker;
+
+		std::vector<Path> _allowedReadAccess;
+		std::vector<Path> _allowedWriteAccess;
 	};
 }

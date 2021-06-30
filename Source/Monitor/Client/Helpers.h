@@ -6,7 +6,6 @@ static CHAR s_szDllPath[MAX_PATH];
 static Monitor::ProcessPayload s_Payload;
 static Monitor::ProcessPayload s_ChildPayload;
 static CRITICAL_SECTION s_csChildPayload;
-static DWORD s_nTraceProcessId = 0;
 static LONG s_nChildCnt = 0;
 
 bool CreateProcessInternals(
@@ -22,7 +21,11 @@ bool CreateProcessInternals(
 		(DWORD)InterlockedIncrement(&s_nChildCnt);
 	s_ChildPayload.nGeneology++;
 
-	DetourCopyPayloadToProcess(hProcess, Monitor::ProcessPayloadResourceId, &s_ChildPayload, sizeof(s_ChildPayload));
+	DetourCopyPayloadToProcess(
+		hProcess,
+		Monitor::ProcessPayloadResourceId,
+		&s_ChildPayload,
+		sizeof(s_ChildPayload));
 
 	LeaveCriticalSection(&s_csChildPayload);
 

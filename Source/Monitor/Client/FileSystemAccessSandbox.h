@@ -8,24 +8,18 @@ namespace Monitor
 	class FileSystemAccessSandbox
 	{
 	public:
-		static void Initialize()
+		static void Initialize(
+			std::vector<std::string> allowedReadDirectories,
+			std::vector<std::string> allowedWriteDirectories)
 		{
 			ConnectionManager::DebugTrace("FileSystemAccessSandbox::Initialize");
-			m_allowedReadDirectories.push_back(
-				NormalizePath("C:\\Windows\\"));
-			m_allowedReadDirectories.push_back(
-				NormalizePath("C:/Program Files (x86)/Microsoft Visual Studio/Installer/"));
-			m_allowedReadDirectories.push_back(
-				NormalizePath("C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\Bin\\Roslyn\\"));
-			m_allowedReadDirectories.push_back(
-				NormalizePath("C:/Program Files/dotnet/"));
-			m_allowedReadDirectories.push_back(
-				NormalizePath("C:\\Users\\mwasp\\source\\repos\\Soup\\Source\\GenerateSharp\\Opal\\"));
-			m_allowedReadDirectories.push_back(
-				NormalizePath("C:/Users/mwasp/source/repos/Soup/out/C#/Opal/d6cd8e54c2437463cfea37201849278a10a3fb82df1565fbc685206e25f5/"));
+			m_allowedReadDirectories.clear();
+			for (auto& value : allowedReadDirectories)
+				m_allowedReadDirectories.push_back(NormalizePath(value.c_str()));
 
-			m_allowedWriteDirectories.push_back(
-				NormalizePath("C:/Users/mwasp/source/repos/Soup/out/C#/Opal/d6cd8e54c2437463cfea37201849278a10a3fb82df1565fbc685206e25f5/"));
+			m_allowedWriteDirectories.clear();
+			for (auto& value : allowedWriteDirectories)
+				m_allowedWriteDirectories.push_back(NormalizePath(value.c_str()));
 		}
 
 		static bool IsAllowed(const wchar_t* fileName, DWORD desiredAccess)
@@ -48,6 +42,9 @@ namespace Monitor
 
 		static bool IsReadAllowed(const char* fileName)
 		{
+			if (m_allowedReadDirectories.empty())
+				return true;
+
 			auto normalizedFileName = NormalizePath(fileName);
 			for (const auto& allowedDiractory : m_allowedReadDirectories)
 			{
@@ -55,18 +52,23 @@ namespace Monitor
 					return true;
 			}
 
-			Monitor::ConnectionManager::DebugError("Prevent Read user");
 			return false;
 		}
 
 		static bool IsReadAllowed(const wchar_t* fileName)
 		{
+			if (m_allowedReadDirectories.empty())
+				return true;
+
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 			return IsReadAllowed(converter.to_bytes(fileName).c_str());
 		}
 
 		static bool IsWriteAllowed(const char* fileName)
 		{
+			if (m_allowedWriteDirectories.empty())
+				return true;
+
 			auto normalizedFileName = NormalizePath(fileName);
 			for (const auto& allowedDiractory : m_allowedWriteDirectories)
 			{
@@ -74,12 +76,14 @@ namespace Monitor
 					return true;
 			}
 
-			Monitor::ConnectionManager::DebugError("Prevent Write user");
 			return false;
 		}
 
 		static bool IsWriteAllowed(const wchar_t* fileName)
 		{
+			if (m_allowedWriteDirectories.empty())
+				return true;
+
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 			return IsWriteAllowed(converter.to_bytes(fileName).c_str());
 		}
