@@ -339,7 +339,7 @@ namespace Soup::Build
 
 			if (!_arguments.SkipEvaluate)
 			{
-				RunEvaluate(soupTargetDirectory);
+				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory);
 			}
 
 			// Cache the build state for upstream dependencies
@@ -436,7 +436,7 @@ namespace Soup::Build
 			}
 		}
 
-		void RunEvaluate(const Path& soupTargetDirectory)
+		void RunEvaluate(const Path& packageRoot, const Path& targetDirectory, const Path& soupTargetDirectory)
 		{
 			// Load and run the previous stored state directly
 			auto generateEvaluateGraphFile = soupTargetDirectory + Runtime::BuildConstants::GenerateEvaluateOperationGraphFileName();
@@ -461,21 +461,24 @@ namespace Soup::Build
 			auto allowedReadAccess = std::vector<Path>();
 			auto allowedWriteAccess = std::vector<Path>();
 
+			// Allow reading from system and sdk paths
 			allowedReadAccess.push_back(
-				Path("C:\\Windows\\"));
+				Path("C:/Windows/"));
 			allowedReadAccess.push_back(
 				Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/"));
 			allowedReadAccess.push_back(
-				Path("C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\Bin\\Roslyn\\"));
+				Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/"));
+			allowedReadAccess.push_back(
+				Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/Roslyn/"));
 			allowedReadAccess.push_back(
 				Path("C:/Program Files/dotnet/"));
-			allowedReadAccess.push_back(
-				Path("C:\\Users\\mwasp\\source\\repos\\Soup\\Source\\GenerateSharp\\Opal\\"));
-			allowedReadAccess.push_back(
-				Path("C:/Users/mwasp/source/repos/Soup/out/C#/Opal/d6cd8e54c2437463cfea37201849278a10a3fb82df1565fbc685206e25f5/"));
 
-			allowedWriteAccess.push_back(
-				Path("C:/Users/mwasp/source/repos/Soup/out/C#/Opal/d6cd8e54c2437463cfea37201849278a10a3fb82df1565fbc685206e25f5/"));
+			// Allow reading from the package root (source input) and the target directory (intermediate output)
+			allowedReadAccess.push_back(packageRoot);
+			allowedReadAccess.push_back(targetDirectory);
+
+			// Only allow writing to the target directory
+			allowedWriteAccess.push_back(targetDirectory);
 
 			try
 			{
