@@ -161,6 +161,8 @@ namespace Monitor
 		GetCompressedFileSizeTransactedW,
 		GetDllDirectoryA,
 		GetDllDirectoryW,
+		GetEnvironmentVariableA,
+		GetEnvironmentVariableW,
 		GetFileAttributesTransactedA,
 		GetFileAttributesTransactedW,
 		GetFileBandwidthReservation,

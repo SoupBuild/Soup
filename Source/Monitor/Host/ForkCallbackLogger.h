@@ -945,6 +945,18 @@ namespace Monitor
 			_callback2->OnGetDllDirectoryW(result);
 		}
 
+		void OnGetEnvironmentVariableA(std::string_view name, uint32_t result) override final
+		{
+			_callback1->OnGetEnvironmentVariableA(name, result);
+			_callback2->OnGetEnvironmentVariableA(name, result);
+		}
+
+		void OnGetEnvironmentVariableW(std::wstring_view name, uint32_t result) override final
+		{
+			_callback1->OnGetEnvironmentVariableW(name, result);
+			_callback2->OnGetEnvironmentVariableW(name, result);
+		}
+
 		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t result, bool wasBlocked) override final
 		{
 			_callback1->OnGetFileAttributesTransactedA(fileName, result, wasBlocked);

@@ -1392,6 +1392,58 @@ namespace Functions::WinBase::Overrides
 		return result;
 	}
 
+	DWORD WINAPI GetEnvironmentVariableA(
+		LPCTSTR lpName,
+		LPTSTR lpBuffer,
+		DWORD nSize)
+	{
+		DWORD result = 0;
+		__try
+		{
+			result = Cache::GetEnvironmentVariableA(
+				lpName,
+				lpBuffer,
+				nSize);
+		}
+		__finally
+		{
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetEnvironmentVariableA));
+			message.AppendValue(lpName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
+		}
+
+		return result;
+	}
+
+	DWORD WINAPI GetEnvironmentVariableW(
+		LPCWSTR lpName,
+		LPWSTR lpBuffer,
+		DWORD nSize)
+	{
+		DWORD result = 0;
+		__try
+		{
+			result = Cache::GetEnvironmentVariableW(
+				lpName,
+				lpBuffer,
+				nSize);
+		}
+		__finally
+		{
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::GetEnvironmentVariableW));
+			message.AppendValue(lpName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
+		}
+
+		return result;
+	}
+
 	BOOL WINAPI GetFileAttributesTransactedA(
 		LPCSTR lpFileName,
 		GET_FILEEX_INFO_LEVELS fInfoLevelId,

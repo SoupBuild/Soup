@@ -876,6 +876,17 @@ namespace Monitor
 			m_stream << "GetDllDirectoryW: " << std::endl;
 		}
 
+		void OnGetEnvironmentVariableA(std::string_view name, uint32_t /*result*/) override final
+		{
+			m_stream << "GetEnvironmentVariableA: " << name << std::endl;
+		}
+
+		void OnGetEnvironmentVariableW(std::wstring_view name, uint32_t /*result*/) override final
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			m_stream << "GetEnvironmentVariableW: " << converter.to_bytes(name.data()) << std::endl;
+		}
+
 		void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t /*result*/, bool wasBlocked) override final
 		{
 			m_stream << "GetFileAttributesTransactedA: " << fileName << " " << wasBlocked << std::endl;

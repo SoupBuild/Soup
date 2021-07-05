@@ -1136,6 +1136,20 @@ namespace Monitor
 					m_callback->OnGetDllDirectoryW(result);
 					break;
 				}
+				case DetourEventType::GetEnvironmentVariableA:
+				{
+					auto name = ReadStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetEnvironmentVariableA(name, result);
+					break;
+				}
+				case DetourEventType::GetEnvironmentVariableW:
+				{
+					auto name = ReadWStringValue(message, offset);
+					auto result = ReadBoolValue(message, offset);
+					m_callback->OnGetEnvironmentVariableW(name, result);
+					break;
+				}
 				case DetourEventType::GetFileAttributesTransactedA:
 				{
 					auto fileName = ReadStringValue(message, offset);

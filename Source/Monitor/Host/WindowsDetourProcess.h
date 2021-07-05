@@ -34,12 +34,14 @@ namespace Monitor
 			const Path& executable,
 			const std::string& arguments,
 			const Path& workingDirectory,
+			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IDetourCallback> callback,
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) :
 			m_executable(executable),
 			m_arguments(arguments),
 			m_workingDirectory(workingDirectory),
+			m_environmentVariables(environmentVariables),
 			m_eventListener(std::move(callback)),
 			m_allowedReadAccess(std::move(allowedReadAccess)),
 			m_allowedWriteAccess(std::move(allowedWriteAccess)),
@@ -129,12 +131,40 @@ namespace Monitor
 			auto dllPath = moduleFolder + Path("Monitor.Client.64.dll");
 			auto dllPathString = dllPath.ToAlternateString();
 
+			// Build up the new environment
+			auto environmentBuilder = std::stringstream();
+			for (const auto& [key, value] : m_environmentVariables)
+			{
+				environmentBuilder << key << '=' << value << (char)'\0';
+			}
+
+			// Add the required windows evironment
+			environmentBuilder << "ALLUSERSPROFILE" << '=' << "C:\\ProgramData" << '\0';
+			environmentBuilder << "APPDATA" << '=' << "C:\\Users\\USERNAME\\AppData\\Roaming" << '\0';
+			environmentBuilder << "CommonProgramFiles" << '=' << "C:\\Program Files\\Common Files" << '\0';
+			environmentBuilder << "CommonProgramFiles(x86)" << '=' << "C:\\Program Files (x86)\\Common Files" << '\0';
+			environmentBuilder << "CommonProgramW6432" << '=' << "C:\\Program Files\\Common Files" << '\0';
+			environmentBuilder << "ComSpec" << '=' << "C:\\Windows\\system32\\cmd.exe" << '\0';
+			environmentBuilder << "HOMEDRIVE" << '=' << "C:" << '\0';
+			environmentBuilder << "HOMEPATH" << '=' << "C:\\Users\\USERNAME" << '\0';
+			environmentBuilder << "LOCALAPPDATA" << '=' << "C:\\Users\\USERNAME\\AppData\\Local" << '\0';
+			environmentBuilder << "ProgramData" << '=' << "C:\\ProgramData" << '\0';
+			environmentBuilder << "ProgramFiles(x86)" << '=' << "C:\\Program Files (x86)" << '\0';
+			environmentBuilder << "ProgramFiles" << '=' << "C:\\Program Files" << '\0';
+			environmentBuilder << "PUBLIC" << '=' << "C:\\Users\\Public" << '\0';
+			environmentBuilder << "SystemDrive" << '=' << "C:" << '\0';
+			environmentBuilder << "SystemRoot" << '=' << "C:\\Windows" << '\0';
+			// %TEMP% and %TMP%	C:\Users\USERNAME\AppData\Local\Temp
+			environmentBuilder << "USERPROFILE" << '=' << "C:\\Users\\USERNAME" << '\0';
+			environmentBuilder << "WINDIR" << '=' << "C:\\Windows" << '\0';
+
+			auto environment = environmentBuilder.str();
+
 			// Setup the process creation parameters
 			LPSECURITY_ATTRIBUTES processAttributes = nullptr;
 			LPSECURITY_ATTRIBUTES threadAttributes = nullptr;
 			bool inheritHandles = true;
 			DWORD creationFlags = CREATE_DEFAULT_ERROR_MODE | CREATE_SUSPENDED;
-			void* environment = nullptr;
 
 			STARTUPINFOA startupInfo = {};
 			ZeroMemory(&startupInfo, sizeof(STARTUPINFOA));
@@ -155,7 +185,7 @@ namespace Monitor
 				threadAttributes,
 				inheritHandles,
 				creationFlags,
-				environment,
+				(LPTSTR)environment.c_str(),
 				m_workingDirectory.IsEmpty() ? nullptr : m_workingDirectory.ToString().c_str(),
 				&startupInfo,
 				&processInfo,
@@ -710,6 +740,7 @@ namespace Monitor
 		Path m_executable;
 		std::string m_arguments;
 		Path m_workingDirectory;
+		std::map<std::string, std::string> m_environmentVariables;
 		EventListener m_eventListener;
 
 		std::vector<Path> m_allowedReadAccess;

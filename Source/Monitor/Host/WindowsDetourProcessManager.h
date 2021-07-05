@@ -28,6 +28,7 @@ namespace Monitor
 			const Path& executable,
 			const std::string& arguments,
 			const Path& workingDirectory,
+			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IDetourCallback> callback,
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) override final
@@ -36,6 +37,7 @@ namespace Monitor
 				executable,
 				arguments,
 				workingDirectory,
+				environmentVariables,
 				std::move(callback),
 				allowedReadAccess,
 				allowedWriteAccess);

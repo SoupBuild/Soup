@@ -205,6 +205,7 @@ namespace Soup::Build::Runtime
 				operationInfo.Command.Executable,
 				operationInfo.Command.Arguments,
 				operationInfo.Command.WorkingDirectory,
+				operationInfo.Command.Environment,
 				callback, // callbackWrapper,
 				_allowedReadAccess,
 				_allowedWriteAccess);

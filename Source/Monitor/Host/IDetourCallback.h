@@ -166,6 +166,8 @@ namespace Monitor
 		virtual void OnGetCompressedFileSizeTransactedW(std::wstring_view fileName, uint32_t result) = 0;
 		virtual void OnGetDllDirectoryA(uint32_t result) = 0;
 		virtual void OnGetDllDirectoryW(uint32_t result) = 0;
+		virtual void OnGetEnvironmentVariableA(std::string_view name, uint32_t result) = 0;
+		virtual void OnGetEnvironmentVariableW(std::wstring_view name, uint32_t result) = 0;
 		virtual void OnGetFileAttributesTransactedA(std::string_view fileName, uint32_t result, bool wasBlocked) = 0;
 		virtual void OnGetFileAttributesTransactedW(std::wstring_view fileName, uint32_t result, bool wasBlocked) = 0;
 		virtual void OnGetFileBandwidthReservation(bool result) = 0;

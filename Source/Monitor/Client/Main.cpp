@@ -205,6 +205,8 @@ void AttachDetours()
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::WinBase::Cache::GetCompressedFileSizeTransactedW, Functions::WinBase::Overrides::GetCompressedFileSizeTransactedW), "AttachDetours DetourAttach GetCompressedFileSizeTransactedW Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::WinBase::Cache::GetDllDirectoryA, Functions::WinBase::Overrides::GetDllDirectoryA), "AttachDetours DetourAttach GetDllDirectoryA Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::WinBase::Cache::GetDllDirectoryW, Functions::WinBase::Overrides::GetDllDirectoryW), "AttachDetours DetourAttach GetDllDirectoryW Failed");
+	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::WinBase::Cache::GetEnvironmentVariableA, Functions::WinBase::Overrides::GetEnvironmentVariableA), "AttachDetours DetourAttach GetEnvironmentVariableA Failed");
+	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::WinBase::Cache::GetEnvironmentVariableW, Functions::WinBase::Overrides::GetEnvironmentVariableW), "AttachDetours DetourAttach GetEnvironmentVariableW Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::WinBase::Cache::GetFileAttributesTransactedA, Functions::WinBase::Overrides::GetFileAttributesTransactedA), "AttachDetours DetourAttach GetFileAttributesTransactedA Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::WinBase::Cache::GetFileAttributesTransactedW, Functions::WinBase::Overrides::GetFileAttributesTransactedW), "AttachDetours DetourAttach GetFileAttributesTransactedW Failed");
 	ThrowIfFailed(DetourAttach(&(PVOID&)Functions::WinBase::Cache::GetFileBandwidthReservation, Functions::WinBase::Overrides::GetFileBandwidthReservation), "AttachDetours DetourAttach GetFileBandwidthReservation Failed");
@@ -417,6 +419,8 @@ void DetachDetours()
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::WinBase::Cache::GetCompressedFileSizeTransactedW, Functions::WinBase::Overrides::GetCompressedFileSizeTransactedW), "DetachDetours DetourDetach GetCompressedFileSizeTransactedW Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::WinBase::Cache::GetDllDirectoryA, Functions::WinBase::Overrides::GetDllDirectoryA), "DetachDetours DetourDetach GetDllDirectoryA Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::WinBase::Cache::GetDllDirectoryW, Functions::WinBase::Overrides::GetDllDirectoryW), "DetachDetours DetourDetach GetDllDirectoryW Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::WinBase::Cache::GetEnvironmentVariableA, Functions::WinBase::Overrides::GetEnvironmentVariableA), "DetachDetours DetourDetach GetEnvironmentVariableA Failed");
+	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::WinBase::Cache::GetEnvironmentVariableW, Functions::WinBase::Overrides::GetEnvironmentVariableW), "DetachDetours DetourDetach GetEnvironmentVariableW Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::WinBase::Cache::GetFileAttributesTransactedA, Functions::WinBase::Overrides::GetFileAttributesTransactedA), "DetachDetours DetourDetach GetFileAttributesTransactedA Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::WinBase::Cache::GetFileAttributesTransactedW, Functions::WinBase::Overrides::GetFileAttributesTransactedW), "DetachDetours DetourDetach GetFileAttributesTransactedW Failed");
 	ThrowIfFailed(DetourDetach(&(PVOID&)Functions::WinBase::Cache::GetFileBandwidthReservation, Functions::WinBase::Overrides::GetFileBandwidthReservation), "DetachDetours DetourDetach GetFileBandwidthReservation Failed");

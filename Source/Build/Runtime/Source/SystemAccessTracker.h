@@ -891,6 +891,17 @@ namespace Soup::Build::Runtime
 		{
 		}
 
+		void OnGetEnvironmentVariableA(std::string_view name, uint32_t /*result*/) override final
+		{
+			Log::HighPriority(name);
+		}
+
+		void OnGetEnvironmentVariableW(std::wstring_view name, uint32_t /*result*/) override final
+		{
+			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+			Log::HighPriority(converter.to_bytes(name.data()));
+		}
+
 		void OnGetFileAttributesTransactedA(
 			std::string_view fileName,
 			uint32_t result,
