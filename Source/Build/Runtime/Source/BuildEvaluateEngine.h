@@ -23,12 +23,14 @@ namespace Soup::Build::Runtime
 		BuildEvaluateEngine(
 			const std::shared_ptr<FileSystemState>& fileSystemState,
 			OperationGraph& operationGraph,
+			Path temporaryDirectory,
 			std::vector<Path> allowedReadAccess,
 			std::vector<Path> allowedWriteAccess) :
 			_fileSystemState(fileSystemState),
 			_operationGraph(operationGraph),
 			_remainingDependencyCounts(),
 			_stateChecker(fileSystemState),
+			_temporaryDirectory(std::move(temporaryDirectory)),
 			_allowedReadAccess(std::move(allowedReadAccess)),
 			_allowedWriteAccess(std::move(allowedWriteAccess))
 		{
@@ -201,11 +203,16 @@ namespace Soup::Build::Runtime
 			// 	callback,
 			// 	std::make_shared<Monitor::DetourCallbackLogger>(std::cout));
 
+			// Add the temp folder to the environment
+			auto environment = std::map<std::string, std::string>();
+			environment.emplace("TEMP", _temporaryDirectory.ToString());
+			environment.emplace("TMP", _temporaryDirectory.ToString());
+
 			auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
 				operationInfo.Command.Executable,
 				operationInfo.Command.Arguments,
 				operationInfo.Command.WorkingDirectory,
-				operationInfo.Command.Environment,
+				environment,
 				callback, // callbackWrapper,
 				_allowedReadAccess,
 				_allowedWriteAccess);
@@ -282,6 +289,7 @@ namespace Soup::Build::Runtime
 		std::unordered_map<OperationId, int32_t> _remainingDependencyCounts;
 		BuildHistoryChecker _stateChecker;
 
+		Path _temporaryDirectory;
 		std::vector<Path> _allowedReadAccess;
 		std::vector<Path> _allowedWriteAccess;
 	};

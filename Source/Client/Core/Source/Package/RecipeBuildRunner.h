@@ -409,10 +409,14 @@ namespace Soup::Build
 			auto generateGraphFile = soupTargetDirectory + GetGenerateGraphFileName();
 			TryMergeExisting(generateGraphFile, generateGraph);
 
+			// Set the temporary folder under the target folder
+			auto temporaryDirectory = soupTargetDirectory + GetTempraryFolderName();
+
 			// Evaluate the Generate phase
 			auto evaluateGenerateEngine = Runtime::BuildEvaluateEngine(
 				_fileSystemState,
 				generateGraph,
+				std::move(temporaryDirectory),
 				std::move(allowedReadAccess),
 				std::move(allowedWriteAccess));
 			evaluateGenerateEngine.Evaluate();
@@ -480,12 +484,16 @@ namespace Soup::Build
 			// Only allow writing to the target directory
 			allowedWriteAccess.push_back(targetDirectory);
 
+			// Set the temporary folder under the target folder
+			auto temporaryDirectory = soupTargetDirectory + GetTempraryFolderName();
+
 			try
 			{
 				// Evaluate the build
 				auto evaluateEngine = Runtime::BuildEvaluateEngine(
 					_fileSystemState,
 					evaluateGraph,
+					std::move(temporaryDirectory),
 					std::move(allowedReadAccess),
 					std::move(allowedWriteAccess));
 				evaluateEngine.Evaluate();
@@ -638,6 +646,12 @@ namespace Soup::Build
 		static Path GetEvaluateResultGraphFileName()
 		{
 			static const auto value = Path("EvaluateResultGraph.bog");
+			return value;
+		}
+
+		static Path GetTempraryFolderName()
+		{
+			static const auto value = Path("temp/");
 			return value;
 		}
 

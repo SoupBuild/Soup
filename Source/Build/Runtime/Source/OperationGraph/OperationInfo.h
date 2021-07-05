@@ -16,8 +16,7 @@ namespace Soup::Build::Runtime
 		CommandInfo() :
 			WorkingDirectory(),
 			Executable(),
-			Arguments(),
-			Environment()
+			Arguments()
 		{
 		}
 
@@ -30,8 +29,7 @@ namespace Soup::Build::Runtime
 			std::string arguments) :
 			WorkingDirectory(std::move(workingDirectory)),
 			Executable(std::move(executable)),
-			Arguments(std::move(arguments)),
-			Environment()
+			Arguments(std::move(arguments))
 		{
 		}
 
@@ -42,14 +40,12 @@ namespace Soup::Build::Runtime
 		{
 			return WorkingDirectory == rhs.WorkingDirectory &&
 				Executable == rhs.Executable &&
-				Arguments == rhs.Arguments &&
-				Environment == rhs.Environment;
+				Arguments == rhs.Arguments;
 		}
 
 		Path WorkingDirectory;
 		Path Executable;
 		std::string Arguments;
-		std::map<std::string, std::string> Environment;
 	};
 
 	export using OperationId = uint32_t;
