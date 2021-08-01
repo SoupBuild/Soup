@@ -8,6 +8,24 @@
 
 namespace Soup::Build
 {
+	class RecipeBuildCacheState
+	{
+	public:
+		RecipeBuildCacheState(
+			std::string name,
+			Path targetDirectory,
+			Path soupTargetDirectory) :
+			Name(std::move(name)),
+			TargetDirectory(std::move(targetDirectory)),
+			SoupTargetDirectory(std::move(soupTargetDirectory))
+		{
+		}
+
+		std::string Name;
+		Path TargetDirectory;
+		Path SoupTargetDirectory;
+	};
+
 	/// <summary>
 	/// The recipe build runner that knows how to perform the correct build for a recipe
 	/// and all of its development and runtime dependencies
@@ -344,7 +362,9 @@ namespace Soup::Build
 
 			// Cache the build state for upstream dependencies
 			auto& buildCache = isHostBuild ? _hostBuildCache : _buildCache;
-			buildCache.emplace(packageRoot, std::make_tuple(recipe.GetName(), targetDirectory, soupTargetDirectory));
+			buildCache.emplace(
+				packageRoot,
+				RecipeBuildCacheState(recipe.GetName(), std::move(targetDirectory), std::move(soupTargetDirectory)));
 		}
 
 		/// <summary>
@@ -620,19 +640,17 @@ namespace Soup::Build
 						auto findBuildCache = buildCache.find(packagePath);
 						if (findBuildCache != buildCache.end())
 						{
-							auto& dependencyName = std::get<0>(findBuildCache->second);
-							auto& dependencyTargetDirectory = std::get<1>(findBuildCache->second);
-							auto& dependencySoupTargetDirectory = std::get<2>(findBuildCache->second);
+							auto& dependencyState = findBuildCache->second;
 							dependencyTypeTable.SetValue(
-								dependencyName,
+								dependencyState.Name,
 								Runtime::Value(Runtime::ValueTable({
 									{
 										"TargetDirectory",
-										Runtime::Value(dependencyTargetDirectory.ToString())
+										Runtime::Value(dependencyState.TargetDirectory.ToString())
 									},
 									{
 										"SoupTargetDirectory",
-										Runtime::Value(dependencySoupTargetDirectory.ToString())
+										Runtime::Value(dependencyState.SoupTargetDirectory.ToString())
 									},
 								})));
 						}
@@ -678,8 +696,8 @@ namespace Soup::Build
 		std::map<std::string, Path> _hostBuildSet;
 
 		// Mapping from package root path to the name and target folder to be used with dependencies parameters
-		std::map<Path, std::tuple<std::string, Path, Path>> _buildCache;
-		std::map<Path, std::tuple<std::string, Path, Path>> _hostBuildCache;
+		std::map<Path, RecipeBuildCacheState> _buildCache;
+		std::map<Path, RecipeBuildCacheState> _hostBuildCache;
 
 		std::shared_ptr<Runtime::FileSystemState> _fileSystemState;
 	};

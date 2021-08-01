@@ -99,6 +99,7 @@
     "stop_token": "cpp",
     "format": "cpp",
     "*.tcc": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "memory_resource": "cpp"
   }
 }
