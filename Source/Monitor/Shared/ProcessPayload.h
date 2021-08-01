@@ -9,6 +9,7 @@ namespace Monitor
 		DWORD nGeneology;
 		DWORD rGeneology[64];
 		WCHAR wzParents[256];
+		CHAR zWorkingDirectory[256];
 		DWORD cReadAccessDirectories;
 		CHAR zReadAccessDirectories[4096];
 		DWORD cWriteAccessDirectories;

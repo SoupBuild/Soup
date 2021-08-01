@@ -216,6 +216,11 @@ namespace Monitor
 			payload.rGeneology[0] = 0;
 			payload.wzParents[0] = 0;
 
+			// Copy over the working directory
+			auto workingDirectoryString = m_workingDirectory.ToString();
+			workingDirectoryString.copy(payload.zWorkingDirectory, workingDirectoryString.length());
+			payload.zWorkingDirectory[workingDirectoryString.length()] = 0;
+
 			// Pass long the read/write access lists
 			LoadStringList(m_allowedReadAccess, payload.zReadAccessDirectories, payload.cReadAccessDirectories, 4096);
 			LoadStringList(m_allowedWriteAccess, payload.zWriteAccessDirectories, payload.cWriteAccessDirectories, 4096);

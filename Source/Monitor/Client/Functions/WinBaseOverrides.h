@@ -1,5 +1,6 @@
 #pragma once
 #include "WinBaseCache.h"
+#include "FileSystemAccessSandbox.h"
 
 namespace Functions::WinBase::Overrides
 {
@@ -2534,6 +2535,11 @@ namespace Functions::WinBase::Overrides
 		{
 			result = Cache::SetCurrentDirectoryA(
 				lpPathName);
+
+			if (result)
+			{
+				Monitor::FileSystemAccessSandbox::UpdateWorkingDirectory(lpPathName);
+			}
 		}
 		__finally
 		{
@@ -2556,6 +2562,11 @@ namespace Functions::WinBase::Overrides
 		{
 			result = Cache::SetCurrentDirectoryW(
 				lpPathName);
+
+			if (result)
+			{
+				Monitor::FileSystemAccessSandbox::UpdateWorkingDirectory(lpPathName);
+			}
 		}
 		__finally
 		{

@@ -410,7 +410,7 @@ namespace Soup::Build
 			TryMergeExisting(generateGraphFile, generateGraph);
 
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = soupTargetDirectory + GetTempraryFolderName();
+			auto temporaryDirectory = targetDirectory + GetTempraryFolderName();
 
 			// Evaluate the Generate phase
 			auto evaluateGenerateEngine = Runtime::BuildEvaluateEngine(
@@ -473,9 +473,14 @@ namespace Soup::Build
 			allowedReadAccess.push_back(
 				Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/"));
 			allowedReadAccess.push_back(
+				Path("C:/Program Files (x86)/Windows Kits/10/"));
+			allowedReadAccess.push_back(
 				Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/Roslyn/"));
 			allowedReadAccess.push_back(
 				Path("C:/Program Files/dotnet/"));
+
+			allowedReadAccess.push_back(
+				Path("C:/USERS/MWASP/SOURCE/REPOS/SOUP/DEPENDENCIES/OPENSSL/INCLUDE/"));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
 			allowedReadAccess.push_back(packageRoot);
@@ -485,7 +490,14 @@ namespace Soup::Build
 			allowedWriteAccess.push_back(targetDirectory);
 
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = soupTargetDirectory + GetTempraryFolderName();
+			auto temporaryDirectory = targetDirectory + GetTempraryFolderName();
+
+			// Ensure the temporary directories exists
+			if (!System::IFileSystem::Current().Exists(temporaryDirectory))
+			{
+				Log::Info("Create Directory: " + temporaryDirectory.ToString());
+				System::IFileSystem::Current().CreateDirectory2(temporaryDirectory);
+			}
 
 			try
 			{

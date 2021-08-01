@@ -73,15 +73,15 @@ namespace Monitor
 
 		void OnCreateFileW(
 			std::wstring_view fileName,
-			uint32_t /*desiredAccess*/,
-			uint32_t /*sharedMode*/,
-			uint32_t /*creationDisposition*/,
-			uint32_t /*flagsAndAttributes*/,
-			uint64_t /*result*/,
+			uint32_t desiredAccess,
+			uint32_t sharedMode,
+			uint32_t creationDisposition,
+			uint32_t flagsAndAttributes,
+			uint64_t result,
 			bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "CreateFileW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
+			m_stream << "CreateFileW: " << converter.to_bytes(fileName.data()) << " " << desiredAccess << " " << sharedMode << " " << creationDisposition << " " << flagsAndAttributes << result << " " << wasBlocked << std::endl;
 		}
 
 		void OnDefineDosDeviceW(uint32_t /*flags*/, std::wstring_view /*deviceName*/, std::wstring_view /*targetPath*/, bool /*result*/) override final
