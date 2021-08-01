@@ -8,6 +8,27 @@
 
 namespace Soup::Build
 {
+	class RecipeBuildCacheState
+	{
+	public:
+		RecipeBuildCacheState(
+			std::string name,
+			Path targetDirectory,
+			Path soupTargetDirectory,
+			std::set<Path> childTargetDirectorySet) :
+			Name(std::move(name)),
+			TargetDirectory(std::move(targetDirectory)),
+			SoupTargetDirectory(std::move(soupTargetDirectory)),
+			ChildTargetDirectorySet(std::move(childTargetDirectorySet))
+		{
+		}
+
+		std::string Name;
+		Path TargetDirectory;
+		Path SoupTargetDirectory;
+		std::set<Path> ChildTargetDirectorySet;
+	};
+
 	/// <summary>
 	/// The recipe build runner that knows how to perform the correct build for a recipe
 	/// and all of its development and runtime dependencies
@@ -337,14 +358,22 @@ namespace Soup::Build
 					isHostBuild);
 			}
 
+			// Build up the child target directory set
+			auto childTargetDirectorySet = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
 			if (!_arguments.SkipEvaluate)
 			{
-				RunEvaluate(soupTargetDirectory);
+				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory, childTargetDirectorySet);
 			}
 
 			// Cache the build state for upstream dependencies
 			auto& buildCache = isHostBuild ? _hostBuildCache : _buildCache;
-			buildCache.emplace(packageRoot, std::make_tuple(recipe.GetName(), targetDirectory, soupTargetDirectory));
+			buildCache.emplace(
+				packageRoot,
+				RecipeBuildCacheState(
+					recipe.GetName(),
+					std::move(targetDirectory),
+					std::move(soupTargetDirectory),
+					std::move(childTargetDirectorySet)));
 		}
 
 		/// <summary>
@@ -402,14 +431,23 @@ namespace Soup::Build
 				generateOperatioId,
 			});
 
+			auto allowedReadAccess = std::vector<Path>();
+			auto allowedWriteAccess = std::vector<Path>();
+
 			// Load the previous build graph if it exists and merge it with the new one
 			auto generateGraphFile = soupTargetDirectory + GetGenerateGraphFileName();
 			TryMergeExisting(generateGraphFile, generateGraph);
 
+			// Set the temporary folder under the target folder
+			auto temporaryDirectory = targetDirectory + GetTempraryFolderName();
+
 			// Evaluate the Generate phase
 			auto evaluateGenerateEngine = Runtime::BuildEvaluateEngine(
 				_fileSystemState,
-				generateGraph);
+				generateGraph,
+				std::move(temporaryDirectory),
+				std::move(allowedReadAccess),
+				std::move(allowedWriteAccess));
 			evaluateGenerateEngine.Evaluate();
 
 			// Save the operation graph for future incremental builds
@@ -431,7 +469,11 @@ namespace Soup::Build
 			}
 		}
 
-		void RunEvaluate(const Path& soupTargetDirectory)
+		void RunEvaluate(
+			const Path& packageRoot,
+			const Path& targetDirectory,
+			const Path& soupTargetDirectory,
+			const std::set<Path>& childTargetDirectorySet)
 		{
 			// Load and run the previous stored state directly
 			auto generateEvaluateGraphFile = soupTargetDirectory + Runtime::BuildConstants::GenerateEvaluateOperationGraphFileName();
@@ -453,12 +495,55 @@ namespace Soup::Build
 				TryMergeExisting(evaluateResultGraphFile, evaluateGraph);
 			}
 
+			auto allowedReadAccess = std::vector<Path>();
+			auto allowedWriteAccess = std::vector<Path>();
+
+			// Allow read access for all transitive dependencies target directories
+			std::copy(childTargetDirectorySet.begin(), childTargetDirectorySet.end(), std::back_inserter(allowedReadAccess));
+
+			// Allow reading from system and sdk paths
+			allowedReadAccess.push_back(
+				Path("C:/Windows/"));
+			allowedReadAccess.push_back(
+				Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/"));
+			allowedReadAccess.push_back(
+				Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/"));
+			allowedReadAccess.push_back(
+				Path("C:/Program Files (x86)/Windows Kits/10/"));
+			allowedReadAccess.push_back(
+				Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/Roslyn/"));
+			allowedReadAccess.push_back(
+				Path("C:/Program Files/dotnet/"));
+
+			allowedReadAccess.push_back(
+				Path("C:/USERS/MWASP/SOURCE/REPOS/SOUP/DEPENDENCIES/OPENSSL/"));
+
+			// Allow reading from the package root (source input) and the target directory (intermediate output)
+			allowedReadAccess.push_back(packageRoot);
+			allowedReadAccess.push_back(targetDirectory);
+
+			// Only allow writing to the target directory
+			allowedWriteAccess.push_back(targetDirectory);
+
+			// Set the temporary folder under the target folder
+			auto temporaryDirectory = targetDirectory + GetTempraryFolderName();
+
+			// Ensure the temporary directories exists
+			if (!System::IFileSystem::Current().Exists(temporaryDirectory))
+			{
+				Log::Info("Create Directory: " + temporaryDirectory.ToString());
+				System::IFileSystem::Current().CreateDirectory2(temporaryDirectory);
+			}
+
 			try
 			{
 				// Evaluate the build
 				auto evaluateEngine = Runtime::BuildEvaluateEngine(
 					_fileSystemState,
-					evaluateGraph);
+					evaluateGraph,
+					std::move(temporaryDirectory),
+					std::move(allowedReadAccess),
+					std::move(allowedWriteAccess));
 				evaluateEngine.Evaluate();
 			}
 			catch(const Runtime::BuildFailedException&)
@@ -571,21 +656,64 @@ namespace Soup::Build
 						auto findBuildCache = buildCache.find(packagePath);
 						if (findBuildCache != buildCache.end())
 						{
-							auto& dependencyName = std::get<0>(findBuildCache->second);
-							auto& dependencyTargetDirectory = std::get<1>(findBuildCache->second);
-							auto& dependencySoupTargetDirectory = std::get<2>(findBuildCache->second);
+							auto& dependencyState = findBuildCache->second;
 							dependencyTypeTable.SetValue(
-								dependencyName,
+								dependencyState.Name,
 								Runtime::Value(Runtime::ValueTable({
 									{
 										"TargetDirectory",
-										Runtime::Value(dependencyTargetDirectory.ToString())
+										Runtime::Value(dependencyState.TargetDirectory.ToString())
 									},
 									{
 										"SoupTargetDirectory",
-										Runtime::Value(dependencySoupTargetDirectory.ToString())
+										Runtime::Value(dependencyState.SoupTargetDirectory.ToString())
 									},
 								})));
+						}
+						else
+						{
+							Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
+							throw std::runtime_error("Dependency does not exist in build cache");
+						}
+					}
+				}
+			}
+
+			return result;
+		}
+
+		std::set<Path> BuildChildDependenciesTargetDirectorySet(
+			Runtime::Recipe& recipe,
+			const Path& workingDirectory,
+			bool isHostBuild)
+		{
+			auto knownDependecyTypes = std::array<std::string_view, 3>({
+				"Runtime",
+				"Test",
+				"Build",
+			});
+
+			auto result = std::set<Path>();
+			for (auto knownDependecyType : knownDependecyTypes)
+			{
+				if (recipe.HasNamedDependencies(knownDependecyType))
+				{
+					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
+					{
+						// Load this package recipe
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
+
+						// Cache the build state for upstream dependencies
+						bool isDependencyHostBuild = isHostBuild || knownDependecyType == "Build";
+						auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
+
+						auto findBuildCache = buildCache.find(packagePath);
+						if (findBuildCache != buildCache.end())
+						{
+							// Combine the child dependency target and the transitive children
+							auto& dependencyState = findBuildCache->second;
+							result.insert(dependencyState.TargetDirectory);
+							result.insert(dependencyState.ChildTargetDirectorySet.begin(), dependencyState.ChildTargetDirectorySet.end());
 						}
 						else
 						{
@@ -612,6 +740,12 @@ namespace Soup::Build
 			return value;
 		}
 
+		static Path GetTempraryFolderName()
+		{
+			static const auto value = Path("temp/");
+			return value;
+		}
+
 	private:
 		RecipeBuildArguments _arguments;
 		Runtime::ValueTable _hostBuildGlobalParameters;
@@ -623,8 +757,8 @@ namespace Soup::Build
 		std::map<std::string, Path> _hostBuildSet;
 
 		// Mapping from package root path to the name and target folder to be used with dependencies parameters
-		std::map<Path, std::tuple<std::string, Path, Path>> _buildCache;
-		std::map<Path, std::tuple<std::string, Path, Path>> _hostBuildCache;
+		std::map<Path, RecipeBuildCacheState> _buildCache;
+		std::map<Path, RecipeBuildCacheState> _hostBuildCache;
 
 		std::shared_ptr<Runtime::FileSystemState> _fileSystemState;
 	};

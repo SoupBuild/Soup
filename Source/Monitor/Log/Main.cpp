@@ -12,8 +12,6 @@ using namespace Opal;
 #include <thread>
 #include <vector>
 
-#include "DetourCallbackLogger.h"
-
 int main(int argc, char **argv)
 {
 	try

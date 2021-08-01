@@ -13,7 +13,7 @@ IncludePaths = [
 
 [Dependencies]
 Runtime = [
-	"../../../Dependencies/LzmaSdk/CPP/Library/",
+	"../../../Dependencies/LzmaSdk/",
 	"json11@1.0.1",
 	"../OpalExtensions/",
 	"Soup.Build@0.4.2",

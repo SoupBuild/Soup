@@ -88,12 +88,13 @@ namespace Functions::ProcessThreadsApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateProcessA;
-			EventLogger::AppendValue(message, wasDetoured);
-			EventLogger::AppendValue(message, lpApplicationName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessA));
+			message.AppendValue(wasDetoured);
+			message.AppendValue(lpApplicationName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -184,12 +185,13 @@ namespace Functions::ProcessThreadsApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateProcessW;
-			EventLogger::AppendValue(message, wasDetoured);
-			EventLogger::AppendValue(message, lpApplicationName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessW));
+			message.AppendValue(wasDetoured);
+			message.AppendValue(lpApplicationName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 
 		return result;
@@ -226,14 +228,15 @@ namespace Functions::ProcessThreadsApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateProcessAsUserA;
-			EventLogger::AppendValue(message, lpApplicationName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessAsUserA));
+			message.AppendValue(lpApplicationName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 
 			// TODO
-			EventLogger::WriteError("Cannot detour process from CreateProcessAsUserA");
+			Monitor::ConnectionManager::WriteError("Cannot detour process from CreateProcessAsUserA");
 		}
 
 		return result;
@@ -270,14 +273,15 @@ namespace Functions::ProcessThreadsApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::CreateProcessAsUserW;
-			EventLogger::AppendValue(message, lpApplicationName);
-			EventLogger::AppendValue(message, result);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::CreateProcessAsUserW));
+			message.AppendValue(lpApplicationName);
+			message.AppendValue(result);
+			Monitor::ConnectionManager::WriteMessage(message);
 
 			// TODO
-			EventLogger::WriteError("Cannot detour process from CreateProcessAsUserW");
+			Monitor::ConnectionManager::WriteError("Cannot detour process from CreateProcessAsUserW");
 		}
 
 		return result;
@@ -291,10 +295,11 @@ namespace Functions::ProcessThreadsApi::Overrides
 		}
 		__finally
 		{
-			auto message = Monitor::DetourMessage();
-			message.Type = Monitor::DetourMessageType::ExitProcess;
-			EventLogger::AppendValue(message, uExitCode);
-			EventLogger::WriteMessage(message);
+			auto message = Monitor::Message();
+			message.Type = Monitor::MessageType::Detour;
+			message.AppendValue(static_cast<uint32_t>(Monitor::DetourEventType::ExitProcess));
+			message.AppendValue(uExitCode);
+			Monitor::ConnectionManager::WriteMessage(message);
 		}
 	}
 }

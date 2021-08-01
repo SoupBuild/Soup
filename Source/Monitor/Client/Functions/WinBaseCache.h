@@ -318,6 +318,18 @@ namespace Functions::WinBase::Cache
 		LPWSTR lpBuffer) = ::GetDllDirectoryW;
 
 	/// <summary>
+	/// Retrieves the contents of the specified variable from the environment block of the calling process.
+	/// </summary>
+	DWORD (WINAPI* GetEnvironmentVariableA)(
+		LPCTSTR lpName,
+		LPTSTR lpBuffer,
+		DWORD nSize) = ::GetEnvironmentVariableA;
+	DWORD (WINAPI* GetEnvironmentVariableW)(
+		LPCWSTR lpName,
+		LPWSTR lpBuffer,
+		DWORD nSize) = ::GetEnvironmentVariableW;
+
+	/// <summary>
 	/// Retrieves file system attributes for a specified file or directory as a transacted operation.
 	/// </summary>
 	BOOL (WINAPI* GetFileAttributesTransactedA)(

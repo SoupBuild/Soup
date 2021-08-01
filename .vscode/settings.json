@@ -96,6 +96,10 @@
     "hash_map": "cpp",
     "hash_set": "cpp",
     "shared_mutex": "cpp",
-    "stop_token": "cpp"
+    "stop_token": "cpp",
+    "format": "cpp",
+    "*.tcc": "cpp",
+    "cinttypes": "cpp",
+    "memory_resource": "cpp"
   }
 }

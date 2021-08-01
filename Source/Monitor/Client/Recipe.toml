@@ -1,0 +1,19 @@
+Name = "Monitor.Client"
+Description = "The Detours dynamic library that is injected into a child process to intercept system calls."
+Language = "C++"
+Version = "1.0.0"
+Type = "DynamicLibrary"
+Defines = [
+	# "ENABLE_MONITOR_DEBUG",
+	# "TRACE_DETOUR_CLIENT",
+]
+Source = [
+	"Main.cpp",
+]
+
+[Dependencies]
+Runtime = [
+	"../../../Dependencies/Detours/src/",
+	"../Shared/",
+	"Opal@0.2.1"
+]
