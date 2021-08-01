@@ -14,16 +14,19 @@ namespace Soup::Build
 		RecipeBuildCacheState(
 			std::string name,
 			Path targetDirectory,
-			Path soupTargetDirectory) :
+			Path soupTargetDirectory,
+			std::set<Path> childTargetDirectorySet) :
 			Name(std::move(name)),
 			TargetDirectory(std::move(targetDirectory)),
-			SoupTargetDirectory(std::move(soupTargetDirectory))
+			SoupTargetDirectory(std::move(soupTargetDirectory)),
+			ChildTargetDirectorySet(std::move(childTargetDirectorySet))
 		{
 		}
 
 		std::string Name;
 		Path TargetDirectory;
 		Path SoupTargetDirectory;
+		std::set<Path> ChildTargetDirectorySet;
 	};
 
 	/// <summary>
@@ -355,16 +358,22 @@ namespace Soup::Build
 					isHostBuild);
 			}
 
+			// Build up the child target directory set
+			auto childTargetDirectorySet = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
 			if (!_arguments.SkipEvaluate)
 			{
-				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory);
+				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory, childTargetDirectorySet);
 			}
 
 			// Cache the build state for upstream dependencies
 			auto& buildCache = isHostBuild ? _hostBuildCache : _buildCache;
 			buildCache.emplace(
 				packageRoot,
-				RecipeBuildCacheState(recipe.GetName(), std::move(targetDirectory), std::move(soupTargetDirectory)));
+				RecipeBuildCacheState(
+					recipe.GetName(),
+					std::move(targetDirectory),
+					std::move(soupTargetDirectory),
+					std::move(childTargetDirectorySet)));
 		}
 
 		/// <summary>
@@ -460,7 +469,11 @@ namespace Soup::Build
 			}
 		}
 
-		void RunEvaluate(const Path& packageRoot, const Path& targetDirectory, const Path& soupTargetDirectory)
+		void RunEvaluate(
+			const Path& packageRoot,
+			const Path& targetDirectory,
+			const Path& soupTargetDirectory,
+			const std::set<Path>& childTargetDirectorySet)
 		{
 			// Load and run the previous stored state directly
 			auto generateEvaluateGraphFile = soupTargetDirectory + Runtime::BuildConstants::GenerateEvaluateOperationGraphFileName();
@@ -485,6 +498,9 @@ namespace Soup::Build
 			auto allowedReadAccess = std::vector<Path>();
 			auto allowedWriteAccess = std::vector<Path>();
 
+			// Allow read access for all transitive dependencies target directories
+			std::copy(childTargetDirectorySet.begin(), childTargetDirectorySet.end(), std::back_inserter(allowedReadAccess));
+
 			// Allow reading from system and sdk paths
 			allowedReadAccess.push_back(
 				Path("C:/Windows/"));
@@ -500,7 +516,7 @@ namespace Soup::Build
 				Path("C:/Program Files/dotnet/"));
 
 			allowedReadAccess.push_back(
-				Path("C:/USERS/MWASP/SOURCE/REPOS/SOUP/DEPENDENCIES/OPENSSL/INCLUDE/"));
+				Path("C:/USERS/MWASP/SOURCE/REPOS/SOUP/DEPENDENCIES/OPENSSL/"));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
 			allowedReadAccess.push_back(packageRoot);
@@ -653,6 +669,51 @@ namespace Soup::Build
 										Runtime::Value(dependencyState.SoupTargetDirectory.ToString())
 									},
 								})));
+						}
+						else
+						{
+							Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
+							throw std::runtime_error("Dependency does not exist in build cache");
+						}
+					}
+				}
+			}
+
+			return result;
+		}
+
+		std::set<Path> BuildChildDependenciesTargetDirectorySet(
+			Runtime::Recipe& recipe,
+			const Path& workingDirectory,
+			bool isHostBuild)
+		{
+			auto knownDependecyTypes = std::array<std::string_view, 3>({
+				"Runtime",
+				"Test",
+				"Build",
+			});
+
+			auto result = std::set<Path>();
+			for (auto knownDependecyType : knownDependecyTypes)
+			{
+				if (recipe.HasNamedDependencies(knownDependecyType))
+				{
+					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
+					{
+						// Load this package recipe
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
+
+						// Cache the build state for upstream dependencies
+						bool isDependencyHostBuild = isHostBuild || knownDependecyType == "Build";
+						auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
+
+						auto findBuildCache = buildCache.find(packagePath);
+						if (findBuildCache != buildCache.end())
+						{
+							// Combine the child dependency target and the transitive children
+							auto& dependencyState = findBuildCache->second;
+							result.insert(dependencyState.TargetDirectory);
+							result.insert(dependencyState.ChildTargetDirectorySet.begin(), dependencyState.ChildTargetDirectorySet.end());
 						}
 						else
 						{
