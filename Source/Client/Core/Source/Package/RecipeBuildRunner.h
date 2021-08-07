@@ -71,7 +71,7 @@ namespace Soup::Build
 					throw HandledException(222);
 				}
 
-				// Today the only unique thing it can do is set the shared output directory
+				// Check if there was a root output set
 				if (rootRecipe.HasOutputRoot())
 				{
 					// Relative to the root recipe file itself
