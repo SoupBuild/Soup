@@ -71,12 +71,23 @@ namespace Soup::Client
 			arguments.GlobalParameters.SetValue("Flavor", Build::Runtime::Value(std::string(flavor)));
 			arguments.GlobalParameters.SetValue("System", Build::Runtime::Value(std::string(system)));
 
+			auto localUserConfigPath = System::IFileSystem::Current().GetUserProfileDirectory() +
+				Path(".soup/LocalUserConfig.toml");
+			Build::Runtime::LocalUserConfig localUserConfig = {};
+			if (!Build::Runtime::LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
+			{
+				Log::Error("Local User Config invalid.");
+				return;
+			}
+
 			// Now build the current project
 			Log::Info("Begin Build:");
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			auto buildManager = Build::RecipeBuildRunner(std::move(arguments));
-			buildManager.Execute(workingDirectory);
+			auto buildRunner = Build::RecipeBuildRunner(
+				std::move(arguments),
+				std::move(localUserConfig));
+			buildRunner.Execute(workingDirectory);
 
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime -startTime);

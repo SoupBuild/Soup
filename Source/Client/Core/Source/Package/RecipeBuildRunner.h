@@ -113,13 +113,14 @@ namespace Soup::Build
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuildRunner"/> class.
 		/// </summary>
-		RecipeBuildRunner(RecipeBuildArguments arguments) :
+		RecipeBuildRunner(RecipeBuildArguments arguments, Runtime::LocalUserConfig localUserConfig) :
 			_arguments(std::move(arguments)),
 			_buildManager(),
 			_buildSet(),
 			_hostBuildSet(),
 			_buildCache(),
 			_hostBuildCache(),
+			_globalReadAccess(),
 			_fileSystemState(std::make_shared<Runtime::FileSystemState>())
 		{
 			_hostBuildGlobalParameters = Runtime::ValueTable();
@@ -129,10 +130,33 @@ namespace Soup::Build
 			auto architecture = std::string("x64");
 			auto compiler = std::string("MSVC");
 
-			_hostBuildGlobalParameters.SetValue("Architecture", Build::Runtime::Value(std::string(architecture)));
-			_hostBuildGlobalParameters.SetValue("Compiler", Build::Runtime::Value(std::string(compiler)));
-			_hostBuildGlobalParameters.SetValue("Flavor", Build::Runtime::Value(std::string(flavor)));
-			_hostBuildGlobalParameters.SetValue("System", Build::Runtime::Value(std::string(system)));
+			_hostBuildGlobalParameters.SetValue("Architecture", Runtime::Value(std::string(architecture)));
+			_hostBuildGlobalParameters.SetValue("Compiler", Runtime::Value(std::string(compiler)));
+			_hostBuildGlobalParameters.SetValue("Flavor", Runtime::Value(std::string(flavor)));
+			_hostBuildGlobalParameters.SetValue("System", Runtime::Value(std::string(system)));
+
+			// Allow reading from system
+			_globalReadAccess.push_back(
+				Path("C:/Windows/"));
+
+			// Allow read access for sdks
+			if (localUserConfig.HasSDKs())
+			{
+				Log::Info("Checking SDKs for read access");
+				auto sdks = localUserConfig.GetSDKs();
+				for (auto& sdk : sdks)
+				{
+					Log::Info("Found SDK: " + sdk.GetName());
+					if (sdk.HasSourceDirectories())
+					{
+						for (auto& sourceDirectory : sdk.GetSourceDirectories())
+						{
+							Log::Info("  Read Access: " + sourceDirectory.ToString());
+							_globalReadAccess.push_back(sourceDirectory);
+						}
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -140,14 +164,14 @@ namespace Soup::Build
 		/// </summary>
 		void Execute(const Path& workingDirectory)
 		{
-			// Enable log event ids to track individual builds
-			int projectId = 1;
-			bool isHostBuild = false;
-			Log::EnsureListener().SetShowEventId(true);
-
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
+				// Enable log event ids to track individual builds
+				int projectId = 1;
+				bool isHostBuild = false;
+				Log::EnsureListener().SetShowEventId(true);
+
 				auto recipePath = workingDirectory + Runtime::BuildConstants::RecipeFileName();
 				Runtime::Recipe recipe = {};
 				if (!_buildManager.TryGetRecipe(recipePath, recipe))
@@ -431,6 +455,7 @@ namespace Soup::Build
 				generateOperatioId,
 			});
 
+			// Allow no read or write access to the generate phase
 			auto allowedReadAccess = std::vector<Path>();
 			auto allowedWriteAccess = std::vector<Path>();
 
@@ -495,28 +520,12 @@ namespace Soup::Build
 				TryMergeExisting(evaluateResultGraphFile, evaluateGraph);
 			}
 
-			auto allowedReadAccess = std::vector<Path>();
+			// Initialize the read access with the shared global set
+			auto allowedReadAccess = std::vector<Path>(_globalReadAccess);
 			auto allowedWriteAccess = std::vector<Path>();
 
 			// Allow read access for all transitive dependencies target directories
 			std::copy(childTargetDirectorySet.begin(), childTargetDirectorySet.end(), std::back_inserter(allowedReadAccess));
-
-			// Allow reading from system and sdk paths
-			allowedReadAccess.push_back(
-				Path("C:/Windows/"));
-			allowedReadAccess.push_back(
-				Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/"));
-			allowedReadAccess.push_back(
-				Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/"));
-			allowedReadAccess.push_back(
-				Path("C:/Program Files (x86)/Windows Kits/10/"));
-			allowedReadAccess.push_back(
-				Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/Roslyn/"));
-			allowedReadAccess.push_back(
-				Path("C:/Program Files/dotnet/"));
-
-			allowedReadAccess.push_back(
-				Path("C:/USERS/MWASP/SOURCE/REPOS/SOUP/DEPENDENCIES/OPENSSL/"));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
 			allowedReadAccess.push_back(packageRoot);
@@ -751,6 +760,9 @@ namespace Soup::Build
 		Runtime::ValueTable _hostBuildGlobalParameters;
 
 		RecipeBuildManager _buildManager;
+
+		// Global read access
+		std::vector<Path> _globalReadAccess;
 
 		// Mapping from name to build folder to check for duplicate names with different packages
 		std::map<std::string, Path> _buildSet;

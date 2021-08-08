@@ -1,56 +1,72 @@
-﻿// <copyright file="LocalUserConfig.h" company="Soup">
+﻿// <copyright file="SDKConfig.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 #include "Recipe/RecipeValue.h"
-#include "SDKConfig.h"
 
 namespace Soup::Build::Runtime
 {
 	/// <summary>
-	/// The local user config container
+	/// The SDK config container
 	/// </summary>
-	export class LocalUserConfig
+	export class SDKConfig
 	{
 	private:
-		static constexpr const char* Property_SDKs = "SDKs";
+		static constexpr const char* Property_Name = "Name";
+		static constexpr const char* Property_SourceDirectories = "SourceDirectories";
 
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
+		/// Initializes a new instance of the <see cref="SDKConfig"/> class.
 		/// </summary>
-		LocalUserConfig() :
+		SDKConfig() :
 			_table()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
+		/// Initializes a new instance of the <see cref="SDKConfig"/> class.
 		/// </summary>
-		LocalUserConfig(RecipeTable table) :
+		SDKConfig(RecipeTable table) :
 			_table(std::move(table))
 		{
 		}
 
 		/// <summary>
-		/// Gets or sets the list of SDKs
+		/// Gets or sets the Name
 		/// </summary>
-		bool HasSDKs()
+		bool HasName()
 		{
-			return HasValue(Property_SDKs);
+			return HasValue(Property_Name);
 		}
 
-		std::vector<SDKConfig> GetSDKs()
+		std::string GetName()
 		{
-			if (!HasSDKs())
+			if (!HasName())
+				throw std::runtime_error("No Name.");
+
+			return GetValue(Property_Name).AsString();
+		}
+
+		/// <summary>
+		/// Gets or sets the list of Source Directories
+		/// </summary>
+		bool HasSourceDirectories()
+		{
+			return HasValue(Property_SourceDirectories);
+		}
+
+		std::vector<Path> GetSourceDirectories()
+		{
+			if (!HasSourceDirectories())
 				throw std::runtime_error("No SDKs.");
 
-			auto& values = GetValue(Property_SDKs).AsList();
-			auto result = std::vector<SDKConfig>();
+			auto& values = GetValue(Property_SourceDirectories).AsList();
+			auto result = std::vector<Path>();
 			for (auto& value : values)
 			{
-				result.push_back(SDKConfig(value.AsTable()));
+				result.push_back(Path(value.AsString()));
 			}
 
 			return result;
@@ -67,7 +83,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Equality operator
 		/// </summary>
-		bool operator ==(const LocalUserConfig& rhs) const
+		bool operator ==(const SDKConfig& rhs) const
 		{
 			return _table == rhs._table;
 		}
@@ -75,7 +91,7 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Inequality operator
 		/// </summary>
-		bool operator !=(const LocalUserConfig& rhs) const
+		bool operator !=(const SDKConfig& rhs) const
 		{
 			return !(*this == rhs);
 		}
