@@ -100,7 +100,7 @@ namespace Functions::WinBase::Overrides
 		{
 			if (blockAccess)
 			{
-				result = FALSE;
+				result = HRESULT_FROM_WIN32(ERROR_REQUEST_ABORTED);
 				SetLastError(ERROR_ACCESS_DENIED);
 			}
 			else

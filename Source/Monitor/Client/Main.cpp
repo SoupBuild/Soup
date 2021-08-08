@@ -544,12 +544,14 @@ bool ProcessAttach(HMODULE hDll)
 
 		// Extract the allowed read/write directories
 		auto workingDirectory = Opal::Path(s_Payload.zWorkingDirectory);
+		bool enableAccessChecks = s_Payload.EnableAccessChecks;
 		auto allowedReadDirectories = ExtractStringList(s_Payload.zReadAccessDirectories, s_Payload.cReadAccessDirectories);
 		auto allowedWriteDirectories = ExtractStringList(s_Payload.zWriteAccessDirectories, s_Payload.cWriteAccessDirectories);
 
 		// Initialize the event pipe
 		Monitor::ConnectionManager::Initialize(traceProcessId);
 		Monitor::FileSystemAccessSandbox::Initialize(
+			enableAccessChecks,
 			std::move(workingDirectory),
 			std::move(allowedReadDirectories),
 			std::move(allowedWriteDirectories));

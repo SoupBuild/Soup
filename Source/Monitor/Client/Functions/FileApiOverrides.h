@@ -1150,7 +1150,7 @@ namespace Functions::FileApi::Overrides
 		{
 			if (blockAccess)
 			{
-				result = INVALID_FILE_ATTRIBUTES;
+				result = FALSE;
 				SetLastError(ERROR_ACCESS_DENIED);
 			}
 			else
@@ -1187,7 +1187,7 @@ namespace Functions::FileApi::Overrides
 		{
 			if (blockAccess)
 			{
-				result = INVALID_FILE_ATTRIBUTES;
+				result = FALSE;
 				SetLastError(ERROR_ACCESS_DENIED);
 			}
 			else

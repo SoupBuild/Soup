@@ -51,6 +51,7 @@ namespace Monitor
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IDetourCallback> callback,
+			bool enableAccessChecks,
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) override final
 		{
@@ -58,6 +59,7 @@ namespace Monitor
 			auto id = m_uniqueId++;
 			message << "CreateDetourProcess: " << id << " [" << workingDirectory.ToString() << "] " << executable.ToString() << " " << arguments;
 			message << " Environment [" << environmentVariables.size() << "]";
+			message << " " << enableAccessChecks;
 			message << " AlowedRead [" << allowedReadAccess.size() << "]";
 			message << " AlowedWrite [" << allowedWriteAccess.size() << "]";
 

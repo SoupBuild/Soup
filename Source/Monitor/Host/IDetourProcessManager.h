@@ -42,6 +42,7 @@ namespace Monitor
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IDetourCallback> callback,
+			bool enableAccessChecks,
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) = 0;
 

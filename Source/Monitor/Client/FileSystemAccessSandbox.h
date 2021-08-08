@@ -9,12 +9,14 @@ namespace Monitor
 	{
 	public:
 		static void Initialize(
+			bool enableAccessChecks,
 			Opal::Path workingDirectory,
 			std::vector<std::string> allowedReadDirectories,
 			std::vector<std::string> allowedWriteDirectories)
 		{
 			ConnectionManager::DebugTrace("FileSystemAccessSandbox::Initialize");
 
+			m_enableAccessChecks = enableAccessChecks;
 			m_workingDirectory = std::move(workingDirectory);
 
 			m_allowedReadDirectories.clear();
@@ -66,7 +68,7 @@ namespace Monitor
 
 		static bool IsReadAllowed(const char* fileName)
 		{
-			if (m_allowedReadDirectories.empty())
+			if (!m_enableAccessChecks)
 				return true;
 
 			if (IsPipe(fileName))
@@ -84,7 +86,7 @@ namespace Monitor
 
 		static bool IsReadAllowed(const wchar_t* fileName)
 		{
-			if (m_allowedReadDirectories.empty())
+			if (!m_enableAccessChecks)
 				return true;
 
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -93,7 +95,7 @@ namespace Monitor
 
 		static bool IsWriteAllowed(const char* fileName)
 		{
-			if (m_allowedWriteDirectories.empty())
+			if (!m_enableAccessChecks)
 				return true;
 
 			if (IsPipe(fileName))
@@ -111,7 +113,7 @@ namespace Monitor
 
 		static bool IsWriteAllowed(const wchar_t* fileName)
 		{
-			if (m_allowedWriteDirectories.empty())
+			if (!m_enableAccessChecks)
 				return true;
 
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -153,12 +155,14 @@ namespace Monitor
 			return fileName.find(directory) == 0;
 		}
 
+		static bool m_enableAccessChecks;
 		static Opal::Path m_workingDirectory;
 
 		static std::vector<std::string> m_allowedReadDirectories;
 		static std::vector<std::string> m_allowedWriteDirectories;
 	};
 
+	bool FileSystemAccessSandbox::m_enableAccessChecks = false;
 	Opal::Path FileSystemAccessSandbox::m_workingDirectory = Opal::Path();
 	std::vector<std::string> FileSystemAccessSandbox::m_allowedReadDirectories = std::vector<std::string>();
 	std::vector<std::string> FileSystemAccessSandbox::m_allowedWriteDirectories = std::vector<std::string>();

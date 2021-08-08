@@ -371,6 +371,9 @@ namespace Soup::Build
 				_buildManager);
 			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
 
+			// Build up the child target directory set
+			auto childTargetDirectorySet = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
+
 			if (!_arguments.SkipGenerate)
 			{
 				RunIncrementalGenerate(
@@ -379,11 +382,10 @@ namespace Soup::Build
 					targetDirectory,
 					soupTargetDirectory,
 					globalParameters,
-					isHostBuild);
+					isHostBuild,
+					childTargetDirectorySet);
 			}
 
-			// Build up the child target directory set
-			auto childTargetDirectorySet = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
 			if (!_arguments.SkipEvaluate)
 			{
 				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory, childTargetDirectorySet);
@@ -409,7 +411,8 @@ namespace Soup::Build
 			const Path& targetDirectory,
 			const Path& soupTargetDirectory,
 			const Runtime::ValueTable& globalParameters,
-			bool isHostBuild)
+			bool isHostBuild,
+			const std::set<Path>& childTargetDirectorySet)
 		{
 			// Clone the global parameters
 			auto parametersTable = Runtime::ValueTable(globalParameters.GetValues());
@@ -434,7 +437,8 @@ namespace Soup::Build
 			// Add the single root operation to perform the generate
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
-			auto generateExecutable = moduleFolder + Path("Generate/Soup.Build.Generate.exe");
+			auto generateFolder = moduleFolder + Path("Generate/");
+			auto generateExecutable = generateFolder + Path("Soup.Build.Generate.exe");
 			Runtime::OperationId generateOperatioId = 1;
 			auto generateArguments = std::stringstream();
 			generateArguments << soupTargetDirectory.ToString();
@@ -455,8 +459,22 @@ namespace Soup::Build
 				generateOperatioId,
 			});
 
-			// Allow no read or write access to the generate phase
-			auto allowedReadAccess = std::vector<Path>();
+			// Allow read access to the generate executable folder only
+			auto allowedReadAccess = std::vector<Path>({
+				generateFolder,
+				Path("C:/Windows/"),
+			});
+
+			// Allow reading from the package root (source input) and the target directory (intermediate output)
+			allowedReadAccess.push_back(packageDirectory);
+			allowedReadAccess.push_back(targetDirectory);
+
+			// Allow read access for all transitive dependencies target directories
+			// TODO: This is needed to get the shared properties, this may be better to do in process
+			// and only allow read access to build dependencies.
+			std::copy(childTargetDirectorySet.begin(), childTargetDirectorySet.end(), std::back_inserter(allowedReadAccess));
+
+			// Allow no write access to the generate phase
 			auto allowedWriteAccess = std::vector<Path>();
 
 			// Load the previous build graph if it exists and merge it with the new one
