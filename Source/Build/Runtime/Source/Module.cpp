@@ -44,6 +44,9 @@ using namespace Opal;
 #include "Contracts/ValuePrimitive.h"
 #include "Contracts/ValueTableManager.h"
 
+#include "LocalUserConfig/LocalUserConfig.h"
+#include "LocalUserConfig/LocalUserConfigExtensions.h"
+
 #include "OperationGraph/OperationGraphGenerator.h"
 #include "OperationGraph/OperationGraphManager.h"
 

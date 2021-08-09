@@ -208,12 +208,14 @@ namespace Soup::Build::Runtime
 			environment.emplace("TEMP", _temporaryDirectory.ToString());
 			environment.emplace("TMP", _temporaryDirectory.ToString());
 
+			bool enableAccessChecks = true;
 			auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
 				operationInfo.Command.Executable,
 				operationInfo.Command.Arguments,
 				operationInfo.Command.WorkingDirectory,
 				environment,
 				callback, // callbackWrapper,
+				enableAccessChecks,
 				_allowedReadAccess,
 				_allowedWriteAccess);
 

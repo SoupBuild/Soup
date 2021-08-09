@@ -66,18 +66,15 @@ namespace Soup.Build.CSharp
 				skipPlatform = skipPlatformValue.AsBoolean();
 			}
 
-			// Find the location of the Windows SDK
-			var visualStudioInstallRoot = FindVSInstallRoot();
-			_buildState.LogTrace(TraceLevel.Information, "Using VS Installation: " + visualStudioInstallRoot.ToString());
+			// Find the Roslyn SDK
+			var roslynSDKProperties = GetSDKProperties("Roslyn", parameters);
 
 			// Calculate the final Roslyn binaries folder
-			var roslynFolder =
-				visualStudioInstallRoot + new Path("/MSBuild/Current/Bin/Roslyn/");
+			var roslynFolder = new Path(roslynSDKProperties["ToolsRoot"].AsString());
 
 			var cscToolPath = roslynFolder + new Path("csc.exe");
 
 			// Save the build properties
-			state["MSVS.InstallRoot"] = new Value(visualStudioInstallRoot.ToString());
 			state["Roslyn.BinRoot"] = new Value(roslynFolder.ToString());
 			state["Roslyn.CscToolPath"] = new Value(cscToolPath.ToString());
 
@@ -92,70 +89,6 @@ namespace Soup.Build.CSharp
 			linkDependencies.AddRange(GetPlatformLibraries());
 			buildTable["LinkDependencies"] = new Value(new ValueList(
 				linkDependencies.Select(value => new Value(value.ToString()))));
-		}
-
-		private Path FindVSInstallRoot()
-		{
-			// Find a copy of visual studio that has the required VisualCompiler
-			var executablePath = new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
-			var workingDirectory = new Path("./");
-			var argumentList = new List<string>()
-			{
-				"-latest",
-				"-products",
-				"*",
-				"-requires",
-				"Microsoft.VisualStudio.Component.Roslyn.Compiler",
-				"-property",
-				"installationPath",
-			};
-
-			// Check if we should include pre-release versions
-			bool includePrerelease = true;
-			if (includePrerelease)
-			{
-				argumentList.Add("-prerelease");
-			}
-
-			// Execute the requested target
-			var arguments = CombineArguments(argumentList);
-			_buildState.LogTrace(TraceLevel.Debug, executablePath.ToString() + " " + arguments);
-			var process = LifetimeManager.Get<IProcessManager>().CreateProcess(
-				executablePath,
-				arguments,
-				workingDirectory);
-			process.Start();
-			process.WaitForExit();
-
-			var stdOut = process.GetStandardOutput();
-			var stdErr = process.GetStandardError();
-			var exitCode = process.GetExitCode();
-
-			if (!string.IsNullOrEmpty(stdErr))
-			{
-				_buildState.LogTrace(TraceLevel.Error, stdErr);
-				throw new InvalidOperationException("VSWhere failed.");
-			}
-
-			if (exitCode != 0)
-			{
-				// TODO: Return error code
-				_buildState.LogTrace(TraceLevel.Error, "FAILED");
-				throw new InvalidOperationException("VSWhere failed.");
-			}
-
-			// The first line is the path
-			using (var reader = new System.IO.StringReader(stdOut))
-			{
-				var path = reader.ReadLine();
-				if (path is null)
-				{
-					_buildState.LogTrace(TraceLevel.Error, "Failed to parse vswhere output.");
-					throw new InvalidOperationException("Failed to parse vswhere output.");
-				}
-
-				return new Path(path);
-			}
 		}
 
 		private IEnumerable<Path> GetPlatformLibraries()
@@ -321,20 +254,21 @@ namespace Soup.Build.CSharp
 			return platformLibraries.Select(value => path + value);
 		}
 
-		private static string CombineArguments(IList<string> args)
+		private IValueTable GetSDKProperties(string name, IValueTable state)
 		{
-			var argumentString = new StringBuilder();
-			bool isFirst = true;
-			foreach (var arg in args)
+			foreach (var sdk in state["SDKs"].AsList())
 			{
-				if (!isFirst)
-					argumentString.Append(" ");
-
-				argumentString.Append(arg);
-				isFirst = false;
+				var sdkTable = sdk.AsTable();
+				if (sdkTable.TryGetValue("Name", out var nameValue))
+				{
+					if (nameValue.AsString() == name)
+					{
+						return sdkTable["Properties"].AsTable();
+					}
+				}
 			}
 
-			return argumentString.ToString();
+			throw new InvalidOperationException($"Missing SDK {name}");
 		}
 	}
 }

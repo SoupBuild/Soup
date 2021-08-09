@@ -36,6 +36,7 @@ namespace Monitor
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IDetourCallback> callback,
+			bool enableAccessChecks,
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) :
 			m_executable(executable),
@@ -43,6 +44,7 @@ namespace Monitor
 			m_workingDirectory(workingDirectory),
 			m_environmentVariables(environmentVariables),
 			m_eventListener(std::move(callback)),
+			m_enableAccessChecks(enableAccessChecks),
 			m_allowedReadAccess(std::move(allowedReadAccess)),
 			m_allowedWriteAccess(std::move(allowedWriteAccess)),
 			m_pipes(),
@@ -222,6 +224,7 @@ namespace Monitor
 			payload.zWorkingDirectory[workingDirectoryString.length()] = 0;
 
 			// Pass long the read/write access lists
+			payload.EnableAccessChecks = m_enableAccessChecks;
 			LoadStringList(m_allowedReadAccess, payload.zReadAccessDirectories, payload.cReadAccessDirectories, 4096);
 			LoadStringList(m_allowedWriteAccess, payload.zWriteAccessDirectories, payload.cWriteAccessDirectories, 4096);
 
@@ -748,6 +751,7 @@ namespace Monitor
 		std::map<std::string, std::string> m_environmentVariables;
 		EventListener m_eventListener;
 
+		bool m_enableAccessChecks;
 		std::vector<Path> m_allowedReadAccess;
 		std::vector<Path> m_allowedWriteAccess;
 

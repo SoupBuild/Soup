@@ -32,6 +32,9 @@ using namespace Soup::Test;
 #include "Contracts/ValueTableReaderTests.gen.h"
 #include "Contracts/ValueTableWriterTests.gen.h"
 
+#include "LocalUserConfig/LocalUserConfigExtensionsTests.gen.h"
+#include "LocalUserConfig/LocalUserConfigTests.gen.h"
+
 #include "OperationGraph/OperationGraphTests.gen.h"
 #include "OperationGraph/OperationGraphManagerTests.gen.h"
 #include "OperationGraph/OperationGraphReaderTests.gen.h"
@@ -53,6 +56,9 @@ int main()
 	state += RunBuildGenerateEngineTests();
 	state += RunFileSystemStateTests();
 
+	state += RunLocalUserConfigExtensionsTests();
+	state += RunLocalUserConfigTests();
+
 	state += RunValueTableManagerTests();
 	state += RunValueTableReaderTests();
 	state += RunValueTableWriterTests();
@@ -62,9 +68,10 @@ int main()
 	state += RunOperationGraphReaderTests();
 	state += RunOperationGraphWriterTests();
 
-	// Touch stamp file to ensure incremental builds work
-	// auto testFile = std::fstream("TestHarness.stamp", std::fstream::out);
-	// testFile << "TOUCH";
+	state += RunPackageReferenceTests();
+	state += RunRecipeExtensionsTests();
+	state += RunRecipeTests();
+	state += RuneRecipeTomlTests();
 
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;

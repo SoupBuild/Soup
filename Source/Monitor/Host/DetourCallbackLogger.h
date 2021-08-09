@@ -271,10 +271,10 @@ namespace Monitor
 			m_stream << "GetFileAttributesExA: " << fileName << " " << wasBlocked << std::endl;
 		}
 
-		void OnGetFileAttributesExW(std::wstring_view fileName, bool /*result*/, bool wasBlocked) override final
+		void OnGetFileAttributesExW(std::wstring_view fileName, bool result, bool wasBlocked) override final
 		{
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-			m_stream << "GetFileAttributesExW: " << converter.to_bytes(fileName.data()) << " " << wasBlocked << std::endl;
+			m_stream << "GetFileAttributesExW: " << converter.to_bytes(fileName.data()) << " " << result << " " << wasBlocked << std::endl;
 		}
 
 		void OnGetFileInformationByHandle(bool /*result*/) override final

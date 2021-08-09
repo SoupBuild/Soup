@@ -30,6 +30,7 @@ namespace Monitor
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IDetourCallback> callback,
+			bool enableAccessChecks,
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) override final
 		{
@@ -39,6 +40,7 @@ namespace Monitor
 				workingDirectory,
 				environmentVariables,
 				std::move(callback),
+				enableAccessChecks,
 				allowedReadAccess,
 				allowedWriteAccess);
 		}
