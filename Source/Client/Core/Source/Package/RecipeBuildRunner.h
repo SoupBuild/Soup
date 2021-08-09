@@ -115,6 +115,7 @@ namespace Soup::Build
 		/// </summary>
 		RecipeBuildRunner(RecipeBuildArguments arguments, Runtime::LocalUserConfig localUserConfig) :
 			_arguments(std::move(arguments)),
+			_sdkParameters(),
 			_buildManager(),
 			_buildSet(),
 			_hostBuildSet(),
@@ -139,14 +140,15 @@ namespace Soup::Build
 			_globalReadAccess.push_back(
 				Path("C:/Windows/"));
 
-			// Allow read access for sdks
+			// Process the SDKs
 			if (localUserConfig.HasSDKs())
 			{
 				Log::Info("Checking SDKs for read access");
 				auto sdks = localUserConfig.GetSDKs();
 				for (auto& sdk : sdks)
 				{
-					Log::Info("Found SDK: " + sdk.GetName());
+					auto sdkName = sdk.GetName();
+					Log::Info("Found SDK: " + sdkName);
 					if (sdk.HasSourceDirectories())
 					{
 						for (auto& sourceDirectory : sdk.GetSourceDirectories())
@@ -155,6 +157,15 @@ namespace Soup::Build
 							_globalReadAccess.push_back(sourceDirectory);
 						}
 					}
+
+					auto sdkParameters = Runtime::ValueTable();
+					sdkParameters.SetValue("Name", Runtime::Value(sdkName));
+					if (sdk.HasProperties())
+					{
+						sdkParameters.SetValue("Properties", Runtime::RecipeBuildStateConverter::ConvertToBuildState(sdk.GetProperties()));
+					}
+
+					_sdkParameters.GetValues().push_back(std::move(sdkParameters));
 				}
 			}
 		}
@@ -422,6 +433,7 @@ namespace Soup::Build
 			parametersTable.SetValue("TargetDirectory", Runtime::Value(targetDirectory.ToString()));
 			parametersTable.SetValue("SoupTargetDirectory", Runtime::Value(soupTargetDirectory.ToString()));
 			parametersTable.SetValue("Dependencies", BuildParametersDependenciesValueTable(recipe, packageDirectory, isHostBuild));
+			parametersTable.SetValue("SDKs", _sdkParameters);
 
 			auto parametersFile = soupTargetDirectory + Runtime::BuildConstants::GenerateParametersFileName();
 			Log::Info("Check outdated parameters file: " + parametersFile.ToString());
@@ -459,23 +471,24 @@ namespace Soup::Build
 				generateOperatioId,
 			});
 
-			// Allow read access to the generate executable folder only
-			auto allowedReadAccess = std::vector<Path>({
-				generateFolder,
-				Path("C:/Windows/"),
-			});
+			// Set Read and Write access fore the generate phase
+			auto allowedReadAccess = std::vector<Path>();
+			auto allowedWriteAccess = std::vector<Path>();
+
+			// Allow read access to the generate executable folder, Windows and the DotNet install
+			allowedReadAccess.push_back(generateFolder);
+			allowedReadAccess.push_back(Path("C:/Windows/"));
+			allowedReadAccess.push_back(Path("C:/Program Files/dotnet/"));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
 			allowedReadAccess.push_back(packageDirectory);
 			allowedReadAccess.push_back(targetDirectory);
 
-			// Allow read access for all transitive dependencies target directories
+			// Allow read access for all transitive dependencies target directories and write to own targets
 			// TODO: This is needed to get the shared properties, this may be better to do in process
 			// and only allow read access to build dependencies.
 			std::copy(childTargetDirectorySet.begin(), childTargetDirectorySet.end(), std::back_inserter(allowedReadAccess));
-
-			// Allow no write access to the generate phase
-			auto allowedWriteAccess = std::vector<Path>();
+			allowedWriteAccess.push_back(targetDirectory);
 
 			// Load the previous build graph if it exists and merge it with the new one
 			auto generateGraphFile = soupTargetDirectory + GetGenerateGraphFileName();
@@ -776,6 +789,8 @@ namespace Soup::Build
 	private:
 		RecipeBuildArguments _arguments;
 		Runtime::ValueTable _hostBuildGlobalParameters;
+
+		Runtime::ValueList _sdkParameters;
 
 		RecipeBuildManager _buildManager;
 

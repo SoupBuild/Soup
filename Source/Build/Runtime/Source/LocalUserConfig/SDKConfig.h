@@ -15,6 +15,7 @@ namespace Soup::Build::Runtime
 	private:
 		static constexpr const char* Property_Name = "Name";
 		static constexpr const char* Property_SourceDirectories = "SourceDirectories";
+		static constexpr const char* Property_Properties = "Properties";
 
 	public:
 		/// <summary>
@@ -70,6 +71,22 @@ namespace Soup::Build::Runtime
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Gets or sets the properties table
+		/// </summary>
+		bool HasProperties()
+		{
+			return HasValue(Property_Properties);
+		}
+
+		RecipeTable GetProperties()
+		{
+			if (!HasSourceDirectories())
+				throw std::runtime_error("No Properties.");
+
+			return GetValue(Property_Properties).AsTable();
 		}
 
 		/// <summary>

@@ -63,17 +63,15 @@ namespace Soup.Build.Cpp
 				skipPlatform = skipPlatformValue.AsBoolean();
 			}
 
-			// Find the location of the Windows SDK
-			var visualStudioInstallRoot = FindVSInstallRoot();
-			_buildState.LogTrace(TraceLevel.Information, "Using VS Installation: " + visualStudioInstallRoot.ToString());
+			// Find the MSVC SDK
+			var msvcSDKProperties = GetSDKProperties("MSVC", parameters);
 
 			// Use the default version
-			var visualCompilerVersion = FindDefaultVCToolsVersion(visualStudioInstallRoot);
+			var visualCompilerVersion = msvcSDKProperties["Version"].AsString();
 			_buildState.LogTrace(TraceLevel.Information, "Using VC Version: " + visualCompilerVersion);
 
-			// Calculate the final VC tools folder
-			var visualCompilerVersionFolder =
-				visualStudioInstallRoot + new Path("/VC/Tools/MSVC/") + new Path(visualCompilerVersion);
+			// Get the final VC tools folder
+			var visualCompilerVersionFolder = new Path(msvcSDKProperties["VCToolsRoot"].AsString());
 
 			// Sey the VC tools binary folder
 			Path vcToolsBinaryFolder;
@@ -89,7 +87,6 @@ namespace Soup.Build.Cpp
 			var libToolPath = vcToolsBinaryFolder + new Path("lib.exe");
 
 			// Save the build properties
-			state["MSVS.InstallRoot"] = new Value(visualStudioInstallRoot.ToString());
 			state["MSVC.Version"] = new Value(visualCompilerVersion);
 			state["MSVC.VCToolsRoot"] = new Value(visualCompilerVersionFolder.ToString());
 			state["MSVC.VCToolsBinaryRoot"] = new Value(vcToolsBinaryFolder.ToString());
@@ -100,16 +97,19 @@ namespace Soup.Build.Cpp
 			if (!state.ContainsKey("MSVC.ClToolPath"))
 				state["MSVC.ClToolPath"] = new Value(clToolPath.ToString());
 
+			// Load the Windows sdk
+			var windowsSDKProperties = GetSDKProperties("Windows", parameters);
+
 			// Calculate the windows kits directory
-			var windows10KitPath = new Path("C:/Program Files (x86)/Windows Kits/10/");
+			var windows10KitPath = new Path(windowsSDKProperties["RootPath"].AsString());
 			var windows10KitIncludePath = windows10KitPath + new Path("/include/");
 			var windows10KitLibPath = windows10KitPath + new Path("/Lib/");
 
-			var windowsKitVersion = FindNewestWindows10KitVersion(windows10KitIncludePath);
+			var windowsKitVersion = windowsSDKProperties["Version"].AsString();
 
 			_buildState.LogTrace(TraceLevel.Information, "Using Windows Kit Version: " + windowsKitVersion);
-			var windows10KitVersionIncludePath = windows10KitIncludePath + new Path(windowsKitVersion);
-			var windows10KitVersionLibPath = windows10KitLibPath + new Path(windowsKitVersion);
+			var windows10KitVersionIncludePath = windows10KitIncludePath + new Path(windowsKitVersion + "/");
+			var windows10KitVersionLibPath = windows10KitLibPath + new Path(windowsKitVersion + "/");
 
 			// Set the include paths
 			var platformIncludePaths = new List<Path>();
@@ -198,68 +198,21 @@ namespace Soup.Build.Cpp
 			state.EnsureValueList("PlatformPreprocessorDefinitions").SetAll(platformPreprocessorDefinitions);
 		}
 
-		private Path FindVSInstallRoot()
+		private IValueTable GetSDKProperties(string name, IValueTable state)
 		{
-			// Find a copy of visual studio that has the required VisualCompiler
-			var executablePath = new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
-			var workingDirectory = new Path("./");
-			var argumentList = new List<string>()
+			foreach (var sdk in state["SDKs"].AsList())
 			{
-				"-latest",
-				"-products",
-				"*",
-				"-requires",
-				"Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
-				"-property",
-				"installationPath",
-			};
-
-			// Check if we should include pre-release versions
-			bool includePrerelease = true;
-			if (includePrerelease)
-			{
-				argumentList.Add("-prerelease");
-			}
-
-			// Execute the requested target
-			var arguments = CombineArguments(argumentList);
-			_buildState.LogTrace(TraceLevel.Debug, executablePath.ToString() + " " + arguments);
-			var process = LifetimeManager.Get<IProcessManager>().CreateProcess(
-				executablePath,
-				arguments,
-				workingDirectory);
-			process.Start();
-			process.WaitForExit();
-
-			var stdOut = process.GetStandardOutput();
-			var stdErr = process.GetStandardError();
-			var exitCode = process.GetExitCode();
-
-			if (!string.IsNullOrEmpty(stdErr))
-			{
-				_buildState.LogTrace(TraceLevel.Error, stdErr);
-				throw new InvalidOperationException("VSWhere failed.");
-			}
-
-			if (exitCode != 0)
-			{
-				// TODO: Return error code
-				_buildState.LogTrace(TraceLevel.Error, "FAILED");
-				throw new InvalidOperationException("VSWhere failed.");
-			}
-
-			// The first line is the path
-			using (var reader = new System.IO.StringReader(stdOut))
-			{
-				var path = reader.ReadLine();
-				if (path is null)
+				var sdkTable = sdk.AsTable();
+				if (sdkTable.TryGetValue("Name", out var nameValue))
 				{
-					_buildState.LogTrace(TraceLevel.Error, "Failed to parse vswhere output.");
-					throw new InvalidOperationException("Failed to parse vswhere output.");
+					if (nameValue.AsString() == name)
+					{
+						return sdkTable["Properties"].AsTable();
+					}
 				}
-
-				return new Path(path);
 			}
+
+			throw new InvalidOperationException($"Missing SDK {name}");
 		}
 
 		private string FindDefaultVCToolsVersion(
@@ -288,54 +241,6 @@ namespace Soup.Build.Cpp
 
 				return version;
 			}
-		}
-
-		private string FindNewestWindows10KitVersion(
-			Path windows10KitIncludePath)
-		{
-			// Check the default tools version
-			_buildState.LogTrace(TraceLevel.Debug, "FindNewestWindows10KitVersion: " + windows10KitIncludePath.ToString());
-			var currentVersion = new SemanticVersion(0, 0, 0);
-			foreach (var child in System.IO.Directory.EnumerateDirectories(windows10KitIncludePath.ToString()))
-			{
-				var name = new Path(child).GetFileName();
-				_buildState.LogTrace(TraceLevel.Debug, "CheckFile: " + name);
-				var platformVersion = name.Substring(0, 3);
-				if (platformVersion == "10.")
-				{
-					// Parse the version string
-					var version = SemanticVersion.Parse(name.Substring(3));
-					if (version > currentVersion)
-						currentVersion = version;
-				}
-				else
-				{
-					_buildState.LogTrace(TraceLevel.Warning, "Unexpected Kit Version: " + name);
-				}
-			}
-
-			if (currentVersion == new SemanticVersion(0, 0, 0))
-				throw new InvalidOperationException("Could not find a minimum Windows 10 Kit Version");
-
-			// The first line is the version
-			var result = "10." + currentVersion.ToString();
-			return result;
-		}
-
-		private static string CombineArguments(IList<string> args)
-		{
-			var argumentString = new StringBuilder();
-			bool isFirst = true;
-			foreach (var arg in args)
-			{
-				if (!isFirst)
-					argumentString.Append(" ");
-
-				argumentString.Append(arg);
-				isFirst = false;
-			}
-
-			return argumentString.ToString();
 		}
 	}
 }
