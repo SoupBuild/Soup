@@ -214,33 +214,5 @@ namespace Soup.Build.Cpp
 
 			throw new InvalidOperationException($"Missing SDK {name}");
 		}
-
-		private string FindDefaultVCToolsVersion(
-			Path visualStudioInstallRoot)
-		{
-			// Check the default tools version
-			var visualCompilerToolsDefaultVersionFile =
-				visualStudioInstallRoot + new Path("VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
-			if (!System.IO.File.Exists(visualCompilerToolsDefaultVersionFile.ToString()))
-			{
-				_buildState.LogTrace(TraceLevel.Error, "VisualCompilerToolsDefaultVersionFile file does not exist: " + visualCompilerToolsDefaultVersionFile.ToString());
-				throw new InvalidOperationException("VisualCompilerToolsDefaultVersionFile file does not exist.");
-			}
-
-			// Read the entire file into a string
-			using (var file = System.IO.File.OpenRead(visualCompilerToolsDefaultVersionFile.ToString()))
-			using (var reader = new System.IO.StreamReader(file))
-			{
-				// The first line is the version
-				var version = reader.ReadLine();
-				if (version is null)
-				{
-					_buildState.LogTrace(TraceLevel.Error, "Failed to parse version from file.");
-					throw new InvalidOperationException("Failed to parse version from file.");
-				}
-
-				return version;
-			}
-		}
 	}
 }
