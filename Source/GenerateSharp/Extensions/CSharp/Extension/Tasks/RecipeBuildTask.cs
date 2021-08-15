@@ -131,6 +131,13 @@ namespace Soup.Build.CSharp
 				enableWarningsAsErrors = enableWarningsAsErrorsValue.AsBoolean();
 			}
 
+			// Check for warning settings
+			bool enableNullable = true;
+			if (recipeTable.TryGetValue("EnableNullable", out var enableNullableValue))
+			{
+				enableNullable = enableNullableValue.AsBoolean();
+			}
+
 			// Set the correct optimization level for the requested flavor
 			var optimizationLevel = BuildOptimizationLevel.None;
 			bool generateSourceDebugInfo = false;
@@ -169,6 +176,7 @@ namespace Soup.Build.CSharp
 			buildTable.EnsureValueList("Source").Append(sourceFiles);
 
 			buildTable["EnableWarningsAsErrors"] = new Value(enableWarningsAsErrors);
+			buildTable["EnableNullable"] = new Value(enableNullable);
 
 			// Convert the recipe type to the required build type
 			var targetType = BuildTargetType.Library;

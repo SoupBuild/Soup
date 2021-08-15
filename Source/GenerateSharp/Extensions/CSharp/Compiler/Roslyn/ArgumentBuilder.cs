@@ -62,7 +62,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			AddFlag(commandArguments, "highentropyva+");
 
 			// Specify nullable context option enabled
-			AddParameter(commandArguments, "nullable", "enable");
+			if (arguments.NullableEnabled)
+				AddParameter(commandArguments, "nullable", "enable");
 
 			// Add the reference libraries
 			foreach (var file in arguments.ReferenceLibraries)

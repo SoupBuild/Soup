@@ -96,6 +96,15 @@ namespace Soup.Build.CSharp
 				arguments.GenerateSourceDebugInfo = false;
 			}
 
+			if (buildTable.TryGetValue("EnableNullable", out var enableNullableValue))
+			{
+				arguments.EnableNullable = enableNullableValue.AsBoolean();
+			}
+			else
+			{
+				arguments.EnableNullable = true;
+			}
+
 			// Load the runtime dependencies
 			if (buildTable.TryGetValue("RuntimeDependencies", out var runtimeDependenciesValue))
 			{

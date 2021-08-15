@@ -24,35 +24,45 @@ namespace Soup.Build.Cpp.UnitTests
 		[Fact]
 		public void Execute()
 		{
-			// Register the test process manager
-			var processManager = new MockProcessManager();
-
-			// Register the test file system
-			var fileSystem = new MockFileSystem();
-
-			// Setup expected output from vswhere call
-			processManager.RegisterExecuteResult(
-				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
-				"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\r\n");
-
-			// Setup the default version file
-			fileSystem.CreateMockFile(
-				new Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
-				new MockFile(new System.IO.MemoryStream(Encoding.ASCII.GetBytes("1.2.3.4\n"))));
-
 			// Register the test systems
 			var testListener = new TestTraceListener();
 			using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-			using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
-			using (var scopedFileSystem = new ScopedSingleton<IFileSystem>(fileSystem))
 			{
 				// Setup the input build state
 				var buildState = new MockBuildState();
 				var state = buildState.ActiveState;
 
+				// Set the sdks
+				var sdks = new ValueList();
+				sdks.Add(new Value(new ValueTable()
+				{
+					{ "Name", new Value("MSVC") },
+					{ 
+						"Properties",
+						new Value(new ValueTable()
+						{
+							{ "Version", new Value("1.0.0") },
+							{ "VCToolsRoot", new Value("C:/VCTools/Root/") },
+						})
+					},
+				}));
+				sdks.Add(new Value(new ValueTable()
+				{
+					{ "Name", new Value("Windows") },
+					{
+						"Properties",
+						new Value(new ValueTable()
+						{
+							{ "Version", new Value("10.0.0") },
+							{ "RootPath", new Value("C:/WindowsKit/Root/") },
+						})
+					},
+				}));
+
 				// Setup parameters table
 				var parametersTable = new ValueTable();
 				state.Add("Parameters", new Value(parametersTable));
+				parametersTable.Add("SDKs", new Value(sdks));
 				parametersTable.Add("System", new Value("win32"));
 				parametersTable.Add("Architecture", new Value("x64"));
 
@@ -64,12 +74,8 @@ namespace Soup.Build.Cpp.UnitTests
 				Assert.Equal(
 					new List<string>()
 					{
-						"DIAG: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
-						"INFO: Using VS Installation: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community",
-						"INFO: Using VC Version: 14.28.29910",
-						"DIAG: FindNewestWindows10KitVersion: C:/Program Files (x86)/Windows Kits/10/include/",
-						"DIAG: CheckFile: 10.0.19041.0",
-						"INFO: Using Windows Kit Version: 10.0.19041.0",
+						"INFO: Using VC Version: 1.0.0",
+						"INFO: Using Windows Kit Version: 10.0.0",
 					},
 					testListener.GetMessages());
 
@@ -79,25 +85,6 @@ namespace Soup.Build.Cpp.UnitTests
 				Assert.Equal(
 					expectedBuildOperations,
 					buildState.GetBuildOperations());
-
-				// Verify expected file system requests
-				Assert.Equal(
-					new List<string>()
-					{},
-					fileSystem.GetRequests());
-
-				// Verify expected process requests
-				Assert.Equal(
-					new List<string>()
-					{
-						"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
-						"ProcessStart: 1",
-						"WaitForExit: 1",
-						"GetStandardOutput: 1",
-						"GetStandardError: 1",
-						"GetExitCode: 1",
-					},
-					processManager.GetRequests());
 			}
 		}
 	}

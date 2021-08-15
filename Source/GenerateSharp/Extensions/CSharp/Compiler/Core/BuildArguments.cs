@@ -122,6 +122,11 @@ namespace Soup.Build.CSharp.Compiler
 		public bool EnableWarningsAsErrors { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to enable nullable
+		/// </summary>
+		public bool EnableNullable { get; set; }
+
+		/// <summary>
 		/// Gets or sets the list of disabled warnings
 		/// </summary>
 		public IReadOnlyList<string> DisabledWarnings { get; set; } = new List<string>();
