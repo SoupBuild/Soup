@@ -29,4 +29,6 @@ Runtime = [
 	"../Runtime/",
 	"../Utilities/",
 	"../../../../Tomlyn/src/Tomlyn/",
+	"../../../../runtime/src/libraries/Microsoft.Extensions.DependencyInjection/src/",
+	"../../../../runtime/src/libraries/Microsoft.Extensions.DependencyInjection.Abstractions/src/",
 ]
