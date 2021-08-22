@@ -3,16 +3,15 @@
 // </copyright>
 
 using Opal;
-using Soup.Build.Utilities;
 using System;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// A package reference object which will consist of a name version pair that
 	/// refers to a published package or a path to a local recipe
 	/// </summary>
-	internal class PackageReference : IEquatable<PackageReference>
+	public class PackageReference : IEquatable<PackageReference>
 	{
 		/// <summary>
 		/// Try parse a package reference from the provided string

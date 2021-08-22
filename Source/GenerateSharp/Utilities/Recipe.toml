@@ -5,6 +5,7 @@ Source = [
 	"BuildOperation.cs",
 	"IValueTableExtensions.cs",
 	"MockBuildState.cs",
+	"PackageReference.cs",
 	"SharedOperations.cs",
 ]
 
