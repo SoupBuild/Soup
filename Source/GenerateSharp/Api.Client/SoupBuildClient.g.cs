@@ -54,7 +54,7 @@ namespace Soup.Build.Api.Client
         /// <param name="name">The unique name of the package.</param>
         /// <returns>The action result.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task GetPackageAsync(string name)
+        public System.Threading.Tasks.Task<PackageModel> GetPackageAsync(string name)
         {
             return GetPackageAsync(name, System.Threading.CancellationToken.None);
         }
@@ -64,7 +64,7 @@ namespace Soup.Build.Api.Client
         /// <param name="name">The unique name of the package.</param>
         /// <returns>The action result.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task GetPackageAsync(string name, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<PackageModel> GetPackageAsync(string name, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/packages/{name}");
@@ -77,6 +77,7 @@ namespace Soup.Build.Api.Client
                 using (var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false))
                 {
                     request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -101,7 +102,12 @@ namespace Soup.Build.Api.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<PackageModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -138,7 +144,7 @@ namespace Soup.Build.Api.Client
         /// <param name="model">The incoming model.</param>
         /// <returns>Updated.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task CreateOrUpdatePackageAsync(string name, PackageCreateOrUpdateModel model)
+        public System.Threading.Tasks.Task<PackageModel> CreateOrUpdatePackageAsync(string name, PackageCreateOrUpdateModel model)
         {
             return CreateOrUpdatePackageAsync(name, model, System.Threading.CancellationToken.None);
         }
@@ -149,7 +155,7 @@ namespace Soup.Build.Api.Client
         /// <param name="model">The incoming model.</param>
         /// <returns>Updated.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task CreateOrUpdatePackageAsync(string name, PackageCreateOrUpdateModel model, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<PackageModel> CreateOrUpdatePackageAsync(string name, PackageCreateOrUpdateModel model, System.Threading.CancellationToken cancellationToken)
         {
             if (model == null)
                 throw new System.ArgumentNullException("model");
@@ -168,6 +174,7 @@ namespace Soup.Build.Api.Client
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -192,12 +199,22 @@ namespace Soup.Build.Api.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<PackageModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<PackageModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)
@@ -476,7 +493,7 @@ namespace Soup.Build.Api.Client
         /// <param name="version">The package version to get.</param>
         /// <returns>The action result.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task GetPackageVersionAsync(string name, string version)
+        public System.Threading.Tasks.Task<PackageVersionModel> GetPackageVersionAsync(string name, string version)
         {
             return GetPackageVersionAsync(name, version, System.Threading.CancellationToken.None);
         }
@@ -487,7 +504,7 @@ namespace Soup.Build.Api.Client
         /// <param name="version">The package version to get.</param>
         /// <returns>The action result.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task GetPackageVersionAsync(string name, string version, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<PackageVersionModel> GetPackageVersionAsync(string name, string version, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/packages/{name}/v{version}");
@@ -501,6 +518,7 @@ namespace Soup.Build.Api.Client
                 using (var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false))
                 {
                     request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -525,7 +543,12 @@ namespace Soup.Build.Api.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<PackageVersionModel>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)
@@ -679,7 +702,7 @@ namespace Soup.Build.Api.Client
         /// <param name="version">The package version to download.</param>
         /// <returns>The action result.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task DownloadPackageVersionAsync(string name, string version)
+        public System.Threading.Tasks.Task<FileResponse> DownloadPackageVersionAsync(string name, string version)
         {
             return DownloadPackageVersionAsync(name, version, System.Threading.CancellationToken.None);
         }
@@ -690,7 +713,7 @@ namespace Soup.Build.Api.Client
         /// <param name="version">The package version to download.</param>
         /// <returns>The action result.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task DownloadPackageVersionAsync(string name, string version, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<FileResponse> DownloadPackageVersionAsync(string name, string version, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/packages/{name}/v{version}/download");
@@ -704,6 +727,7 @@ namespace Soup.Build.Api.Client
                 using (var request_ = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false))
                 {
                     request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/x-7z-compressed"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -726,9 +750,9 @@ namespace Soup.Build.Api.Client
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 206)
                         {
-                            return;
+                            return default(FileResponse);
                         }
                         else
                         if (status_ == 400)
@@ -873,6 +897,68 @@ namespace Soup.Build.Api.Client
         }
     }
 
+    /// <summary>A class representing the package result.</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class PackageModel
+    {
+        /// <summary>Gets or sets the name.</summary>
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Name { get; set; }
+
+        /// <summary>Gets or sets the description.</summary>
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        /// <summary>Gets or sets the latest published version.</summary>
+        [Newtonsoft.Json.JsonProperty("latest", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public SemanticVersion Latest { get; set; }
+
+        /// <summary>Gets or sets the list of versions.</summary>
+        [Newtonsoft.Json.JsonProperty("versions", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<PackageVersionModel> Versions { get; set; }
+
+
+    }
+
+    /// <summary>The semantic version class.</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class SemanticVersion
+    {
+        /// <summary>Gets or sets the version major.</summary>
+        [Newtonsoft.Json.JsonProperty("major", Required = Newtonsoft.Json.Required.Always)]
+        public int Major { get; set; }
+
+        /// <summary>Gets or sets the version minor.</summary>
+        [Newtonsoft.Json.JsonProperty("minor", Required = Newtonsoft.Json.Required.Always)]
+        public int Minor { get; set; }
+
+        /// <summary>Gets or sets the version patch.</summary>
+        [Newtonsoft.Json.JsonProperty("patch", Required = Newtonsoft.Json.Required.Always)]
+        public int Patch { get; set; }
+
+
+    }
+
+    /// <summary>Package version model.</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class PackageVersionModel
+    {
+        /// <summary>Gets or sets the version.</summary>
+        [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public SemanticVersion Version { get; set; }
+
+        /// <summary>Gets or sets the date published.</summary>
+        [Newtonsoft.Json.JsonProperty("datePublished", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.DateTimeOffset DatePublished { get; set; }
+
+        /// <summary>Gets or sets the total downloads count.</summary>
+        [Newtonsoft.Json.JsonProperty("totalDownloads", Required = Newtonsoft.Json.Required.Always)]
+        public int TotalDownloads { get; set; }
+
+
+    }
+
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class ProblemDetails
     {
@@ -947,6 +1033,42 @@ namespace Soup.Build.Api.Client
         public string Description { get; set; }
 
 
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.13.2.0 (NJsonSchema v10.5.2.0 (Newtonsoft.Json v12.0.0.0))")]
+    public partial class FileResponse : System.IDisposable
+    {
+        private System.IDisposable _client;
+        private System.IDisposable _response;
+
+        public int StatusCode { get; private set; }
+
+        public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
+
+        public System.IO.Stream Stream { get; private set; }
+
+        public bool IsPartial
+        {
+            get { return StatusCode == 206; }
+        }
+
+        public FileResponse(int statusCode, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.IO.Stream stream, System.IDisposable client, System.IDisposable response)
+        {
+            StatusCode = statusCode;
+            Headers = headers;
+            Stream = stream;
+            _client = client;
+            _response = response;
+        }
+
+        public void Dispose()
+        {
+            Stream.Dispose();
+            if (_response != null)
+                _response.Dispose();
+            if (_client != null)
+                _client.Dispose();
+        }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.13.2.0 (NJsonSchema v10.5.2.0 (Newtonsoft.Json v12.0.0.0))")]

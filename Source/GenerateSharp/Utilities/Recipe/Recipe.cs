@@ -4,16 +4,15 @@
 
 using Opal;
 using Soup.Build.Runtime;
-using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The recipe container
 	/// </summary>
-	internal class Recipe
+	public class Recipe
 	{
 		private static string Property_Dependencies => "Dependencies";
 		private static string Property_Runtime => "Runtime";

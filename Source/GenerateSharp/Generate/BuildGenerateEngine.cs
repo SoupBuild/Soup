@@ -4,9 +4,11 @@
 
 using Opal;
 using Soup.Build.Runtime;
+using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Generate
 {
@@ -24,7 +26,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Execute the entire operation graph that is referenced by this build generate engine
 		/// </summary>
-		public void Generate(Path soupTargetDirectory)
+		public async Task GenerateAsync(Path soupTargetDirectory)
 		{
 			// Run all build operations in the correct order with incremental build checks
 			Log.Diag("Build generate start");
@@ -43,7 +45,8 @@ namespace Soup.Build.Generate
 
 			// Load the recipe file
 			var recipeFile = packageDirectory + BuildConstants.RecipeFileName;
-			if (!RecipeExtensions.TryLoadRecipeFromFile(recipeFile, out var recipe))
+			var (isSuccess, recipe) = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
+			if (!isSuccess)
 			{
 				Log.Error("Failed to load the recipe: " + recipeFile.ToString());
 				throw new InvalidOperationException("Failed to load recipe.");

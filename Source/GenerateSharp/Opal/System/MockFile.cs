@@ -38,8 +38,12 @@ namespace Opal.System
 	
 	public class MockOutputFile : IOutputFile
 	{
+		private MockFile _file;
+		private bool isDisposed;
+
 		public MockOutputFile(MockFile file)
 		{
+			this.isDisposed = false;
 			_file = file;
 		}
 
@@ -50,22 +54,31 @@ namespace Opal.System
 		{
 			return _file.Content;
 		}
-
-		/// <summary>
-		/// Close the file stream
-		/// </summary>
-		public void Close()
-		{
-			// Ignore for now
-		}
 	
-		private MockFile _file;
-	}
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!isDisposed)
+            {
+				isDisposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            global::System.GC.SuppressFinalize(this);
+        }
+    }
 	
 	public class MockInputFile : IInputFile
 	{
+		private MockFile _file;
+		private bool isDisposed;
+
 		public MockInputFile(MockFile file)
 		{
+			this.isDisposed = false;
 			_file = file;
 		}
 
@@ -77,14 +90,19 @@ namespace Opal.System
 			return _file.Content;
 		}
 
-		/// <summary>
-		/// Close the file stream
-		/// </summary>
-		public void Close()
+		protected virtual void Dispose(bool disposing)
 		{
-			// Ignore for now
+			if (!isDisposed)
+			{
+				isDisposed = true;
+			}
 		}
 
-		private MockFile _file;
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+			Dispose(disposing: true);
+			global::System.GC.SuppressFinalize(this);
+		}
 	}
 }

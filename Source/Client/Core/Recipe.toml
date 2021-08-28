@@ -1,6 +1,6 @@
 Name = "Soup.Core"
 Language = "C++"
-Version = "0.1.0"
+Version = "0.1.1"
 Defines = [
 	# "LOCAL_DEBUG",
 ]
@@ -13,9 +13,6 @@ IncludePaths = [
 
 [Dependencies]
 Runtime = [
-	"../../../Dependencies/LzmaSdk/",
-	"json11@1.0.1",
-	"../OpalExtensions/",
 	"Soup.Build@0.4.2",
 	"Soup.Build.Utilities@0.4.2",
 	"../../Build/Runtime/",

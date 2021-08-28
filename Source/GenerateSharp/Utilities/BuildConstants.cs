@@ -4,12 +4,12 @@
 
 using Opal;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The constants used throughout the build
 	/// </summary>
-	internal static class BuildConstants
+	public static class BuildConstants
 	{
 		/// <summary>
 		/// Gets the Recipe file name

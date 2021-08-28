@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
 using System.IO;
 
 namespace Opal.System
@@ -10,7 +11,7 @@ namespace Opal.System
 	/// The input file interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	public interface IInputFile : IFile
+	public interface IInputFile : IDisposable
 	{
 		/// <summary>
 		/// Gets the input stream
