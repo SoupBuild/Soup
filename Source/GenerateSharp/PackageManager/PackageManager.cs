@@ -22,6 +22,9 @@ namespace Soup.Build.PackageManager
     {
         private static string StagingFolderName => ".staging/";
 
+        //// private static string SoupApiEndpoint => "https://localhost:7071";
+        private static string SoupApiEndpoint => "https://api.soupbuild.com";
+
         /// <summary>
         /// Install packages
         /// </summary>
@@ -186,6 +189,7 @@ namespace Soup.Build.PackageManager
                 {
                     var packageClient = new Api.Client.PackageClient(httpClient)
                     {
+                        BaseUrl = SoupApiEndpoint,
                         BearerToken = accessToken,
                     };
 
@@ -220,6 +224,7 @@ namespace Soup.Build.PackageManager
 
                     var packageVersionClient = new Api.Client.PackageVersionClient(httpClient)
                     {
+                        BaseUrl = SoupApiEndpoint,
                         BearerToken = accessToken,
                     };
 
@@ -269,7 +274,10 @@ namespace Soup.Build.PackageManager
         {
             using (var httpClient = new HttpClient())
             {
-                var client = new Api.Client.PackageClient(httpClient);
+                var client = new Api.Client.PackageClient(httpClient)
+                {
+                    BaseUrl = SoupApiEndpoint,
+                };
                 return await client.GetPackageAsync(languageName, packageName);
             }
         }
@@ -324,7 +332,8 @@ namespace Soup.Build.PackageManager
         {
             Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
 
-            var packageRootFolder = packagesDirectory + new Path(packageName);
+            var languageRootFolder = packagesDirectory + new Path(languageName);
+            var packageRootFolder = languageRootFolder + new Path(packageName);
             var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
 
             // Check if the package version already exists
@@ -339,7 +348,10 @@ namespace Soup.Build.PackageManager
                 var archivePath = stagingDirectory + new Path(packageName + ".zip");
                 using (var httpClient = new HttpClient())
                 {
-                    var client = new Api.Client.PackageVersionClient(httpClient);
+                    var client = new Api.Client.PackageVersionClient(httpClient)
+                    {
+                        BaseUrl = SoupApiEndpoint,
+                    };
                     var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
 
                     // Write the contents to disk, scope cleanup

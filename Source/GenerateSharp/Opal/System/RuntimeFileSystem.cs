@@ -44,7 +44,7 @@ namespace Opal.System
         /// </summary>
         public bool Exists(Path path)
         {
-            return File.Exists(path.ToString());
+            return File.Exists(path.ToString()) || Directory.Exists(path.ToString());
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Opal.System
         /// </summary>
         public virtual void Rename(Path source, Path destination)
         {
-            throw new NotImplementedException();
+            Directory.Move(source.ToString(), destination.ToString());
         }
 
         /// <summary>
