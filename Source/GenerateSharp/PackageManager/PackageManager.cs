@@ -105,13 +105,14 @@ namespace Soup.Build.PackageManager
                 // Get the latest version if no version provided
                 if (targetPackageReference.IsLocal)
                 {
-                    var packageModel = await GetPackageModelAsync(packageReference);
+                    var packageModel = await GetPackageModelAsync(recipe.Language, packageName);
                     var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
                     Log.HighPriority("Latest Version: " + latestVersion.ToString());
                     targetPackageReference = new PackageReference(packageModel.Name, latestVersion);
                 }
 
                 await EnsurePackageDownloadedAsync(
+                    recipe.Language,
                     targetPackageReference.GetName,
                     targetPackageReference.Version,
                     packageStore,
@@ -141,250 +142,187 @@ namespace Soup.Build.PackageManager
             }
         }
 
-        /////// <summary>
-        /////// Publish a package
-        /////// </summary>
-        ////static void PublishPackage(Path workingDirectory)
-        ////{
-        ////    Log.Info("Publish Project: {recipe.Name}@{recipe.Version}");
+        /// <summary>
+        /// Publish a package
+        /// </summary>
+        public static async Task PublishPackageAsync(Path workingDirectory)
+        {
+            Log.Info($"Publish Project: {workingDirectory}");
 
-        ////    var recipePath =
-        ////        workingDirectory +
-        ////        BuildConstants.RecipeFileName;
-        ////    Recipe recipe = null;
-        ////    if (!RecipeExtensions.TryLoadRecipeFromFile(recipePath, recipe))
-        ////    {
-        ////        throw new InvalidOperationException("Could not load the recipe file.");
-        ////    }
+            var recipePath =
+                workingDirectory +
+                BuildConstants.RecipeFileName;
+            var (isSuccess, recipe) = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipePath);
+            if (!isSuccess)
+            {
+                throw new InvalidOperationException("Could not load the recipe file.");
+            }
 
-        ////    var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-        ////        new Path(".soup/packages/");
-        ////    Log.Info("Using Package Store: " + packageStore.ToString());
+            var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
+                new Path(".soup/packages/");
+            Log.Info("Using Package Store: " + packageStore.ToString());
 
-        ////    // Create the staging directory
-        ////    var stagingPath = EnsureStagingDirectoryExists(packageStore);
+            // Create the staging directory
+            var stagingPath = EnsureStagingDirectoryExists(packageStore);
 
-        ////    try
-        ////    {
-        ////        var archivePath = stagingPath + new Path(recipe.Name + ".7z");
-        ////        var files = GetPackageFiles(workingDirectory);
+            try
+            {
+                var archivePath = stagingPath + new Path(recipe.Name + ".zip");
 
-        ////        // Create the archive of the package
-        ////        ////{
-        ////        ////    var archiveStream = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true);
-        ////        ////    var outStream = make_shared<LzmaOutStream>(archiveStream);
-        ////        ////    var archive = LzmaSdk.ArchiveWriter(outStream);
-        ////        ////    archive.AddFiles(files);
+                // Create the archive of the package
+                using (var writeArchiveFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
+                using (var zipArchive = new ZipArchive(writeArchiveFile.GetOutStream(), ZipArchiveMode.Create, false))
+                {
+                    AddPackageFiles(workingDirectory, zipArchive);
+                }
 
-        ////        ////    var callback = make_shared<LzmaUpdateCallback>(workingDirectory);
-        ////        ////    archive.Save(callback);
-        ////        ////}
+                // Authenticate the user
+                Log.Info("Request Authentication Token");
+                var accessToken = await AuthenticationManager.EnsureSignInAsync();
 
-        ////        // Authenticate the user
-        ////        Log.Info("Request Authentication Token");
-        ////        var userDetails = GetUserDetails();
-        ////        var openIdConfiguration = Api.SoupAuth.GetOpenIdConfiguration();
-        ////        var tokenResult = Api.SoupAuth.RequestClientCredentialsToken(
-        ////            openIdConfiguration.TokenEndpoint,
-        ////            userDetails.UserName,
-        ////            userDetails.Password);
-        ////        switch (tokenResult.Status)
-        ////        {
-        ////            case Api.RequestClientCredentialsTokenResult.Success:
-        ////                // All good
-        ////                break;
-        ////            case Api.RequestClientCredentialsTokenResult.InvalidUserNameOrPassword:
-        ////                Log.HighPriority("Invalid UserName or Password");
-        ////                return;
-        ////            default:
-        ////                throw runtime_error("Unknown RequestClientCredentialsTokenResult");
-        ////        }
+                // Publish the archive
+                Log.Info("Publish package");
+                using (var httpClient = new HttpClient())
+                {
+                    var packageClient = new Api.Client.PackageClient(httpClient)
+                    {
+                        BearerToken = accessToken,
+                    };
 
-        ////        // Publish the archive, scope cleanup file access
-        ////        {
-        ////            Log.Info("Publish package");
-        ////            var archiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(archivePath, true);
-        ////            var publishResult = Api.SoupApi.PublishPackage(
-        ////                tokenResult.Result,
-        ////                recipe.GetName(),
-        ////                recipe.GetVersion(),
-        ////                archiveFile->GetInStream());
+                    // Check if the package exists
+                    bool packageExists = false;
+                    try
+                    {
+                        var package = await packageClient.GetPackageAsync(recipe.Language, recipe.Name);
+                        packageExists = true;
+                    }
+                    catch (Api.Client.ApiException ex)
+                    {
+                        if (ex.StatusCode == 404)
+                        {
+                            packageExists = false;
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
 
-        ////            // Check if we should publish the package
-        ////            bool createPackageRequired = false;
-        ////            switch (publishResult)
-        ////            {
-        ////                case Api.PublishPackageResult.Success:
-        ////                    // All Good
-        ////                    Log.Info("Package version created");
-        ////                    break;
-        ////                case Api.PublishPackageResult.PackageDoesNotExist:
-        ////                    // Not found indicates the package does not exist, create it
-        ////                    Log.HighPriority("The provided package name does not exist");
-        ////                    createPackageRequired = true;
-        ////                    break;
-        ////                case Api.PublishPackageResult.AlreadyExists:
-        ////                    Log.HighPriority("A Package with this version already exists");
-        ////                    break;
-        ////                case Api.PublishPackageResult.Forbidden:
-        ////                    Log.HighPriority("User account forbidden to create package. Make sure you have verified your email.");
-        ////                    break;
-        ////                default:
-        ////                    throw runtime_error("Unknown PublishPackageResult");
-        ////            }
+                    // Create the package if it does not exist
+                    if (!packageExists)
+                    {
+                        var createPackageModel = new Api.Client.PackageCreateOrUpdateModel()
+                        {
+                            Description = string.Empty,
+                        };
+                        await packageClient.CreateOrUpdatePackageAsync(recipe.Language, recipe.Name, createPackageModel);
+                    }
 
-        ////            // Create the package if needed and retry
-        ////            if (createPackageRequired)
-        ////            {
-        ////                // Create the package
-        ////                Log.HighPriority("Create package");
-        ////                var createModel = Api.PackageCreateOrUpdateModel();
-        ////                var createdPackage = Api.SoupApi.CreatePackage(
-        ////                    tokenResult.Result,
-        ////                    recipe.GetName,
-        ////                    createModel);
+                    var packageVersionClient = new Api.Client.PackageVersionClient(httpClient)
+                    {
+                        BearerToken = accessToken,
+                    };
 
-        ////                switch (createdPackage.first)
-        ////                {
-        ////                    case Api.CreatePackageResult.Success:
-        ////                        {
-        ////                            Log.Info("Package version created");
+                    using (var readArchiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(archivePath, true))
+                    {
+                        try
+                        {
+                            await packageVersionClient.PublishPackageVersionAsync(
+                                recipe.Language,
+                                recipe.Name,
+                                recipe.Version.ToString(),
+                                new Api.Client.FileParameter(readArchiveFile.GetInStream(), string.Empty, "application/zip"));
 
-        ////                            // Retry
-        ////                            Log.HighPriority("Retry publish package");
+                            Log.Info("Package published");
+                        }
+                        catch (Api.Client.ApiException ex)
+                        {
+                            if (ex.StatusCode == 409)
+                            {
+                                Log.Info("Package version already exists");
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                    }
 
-        ////                            // Reset the archive file
-        ////                            var & archiveStream = archiveFile->GetInStream();
-        ////                            archiveStream.clear();
-        ////                            archiveStream.seekg(0, ios.beg);
+                    // All Good
+                    Log.Info("Package version created");
+                }
 
-        ////                            publishResult = Api.SoupApi.PublishPackage(
-        ////                                tokenResult.Result,
-        ////                                recipe.GetName(),
-        ////                                recipe.GetVersion(),
-        ////                                archiveStream);
-        ////                            switch (publishResult)
-        ////                            {
-        ////                                case Api.PublishPackageResult.Success:
-        ////                                    // All Good
-        ////                                    Log.Info("Package version created");
-        ////                                    break;
-        ////                                default:
-        ////                                    throw runtime_error("Unknown PublishPackageResult");
-        ////                            }
-        ////                            break;
-        ////                        }
-        ////                    case Api.CreatePackageResult.Forbidden:
-        ////                        {
-        ////                            Log.HighPriority("User account forbidden to create package. Make sure you have verified your email.");
-        ////                            break;
-        ////                        }
-        ////                    default:
-        ////                        {
-        ////                            throw new InvalidOperationException("Unknown PublishPackageResult");
-        ////                        }
-        ////                }
-        ////            }
-        ////        }
+                // Cleanup the staging directory
+                Log.Info("Cleanup staging directory");
+                LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingPath, true);
+            }
+            catch (Exception)
+            {
+                // Cleanup the staging directory and accept that we failed
+                Log.Info("Publish Failed: Cleanup staging directory");
+                LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingPath, true);
+                throw;
+            }
+        }
 
-        ////        // Cleanup the staging directory
-        ////        Log.Info("Cleanup staging directory");
-        ////        LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingPath, true);
-        ////    }
-        ////    catch (Exception)
-        ////    {
-        ////        // Cleanup the staging directory and accept that we failed
-        ////        Log.Info("Publish Failed: Cleanup staging directory");
-        ////        LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingPath, true);
-        ////        throw;
-        ////    }
-        ////}
-
-        private static async Task<Api.Client.PackageModel> GetPackageModelAsync(string name)
+        private static async Task<Api.Client.PackageModel> GetPackageModelAsync(string languageName, string packageName)
         {
             using (var httpClient = new HttpClient())
             {
                 var client = new Api.Client.PackageClient(httpClient);
-                return await client.GetPackageAsync(name);
+                return await client.GetPackageAsync(languageName, packageName);
             }
         }
 
-        ////  private static IList<LzmaSdk.FileProperties> GetPackageFiles(Path workingDirectory)
-        ////  {
-        ////      var result = new List<LzmaSdk.FileProperties>();
+        private static void AddPackageFiles(Path workingDirectory, ZipArchive archive)
+        {
+            foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(workingDirectory))
+            {
+                if (child.IsDirectory)
+                {
+                    // Ignore output folder
+                    if (child.Path.GetFileName() != "out")
+                    {
+                        AddAllFilesRecursive(child.Path, workingDirectory, archive);
+                    }
+                }
+                else
+                {
+                    var relativePath = child.Path.GetRelativeTo(workingDirectory);
+                    var relativeName = relativePath.ToString().Substring(2);
+                    var fileEentry = archive.CreateEntryFromFile(child.Path.ToString(), relativeName);
+                }
+            }
+        }
 
-        ////      foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(workingDirectory))
-        ////      {
-        ////          if (child.IsDirectory)
-        ////          {
-        ////              // Ignore output folder
-        ////              if (child.Path.GetFileName() != "out")
-        ////              {
-        ////                  var directoryFiles = GetAllFilesRecursive(child.Path, workingDirectory);
-        ////                  result.insert(
-        ////                      result.end(),
-        ////                      directoryFiles.begin(),
-        ////                      directoryFiles.end());
-        ////              }
-        ////          }
-        ////          else
-        ////          {
-        ////              var relativePath = child.Path.GetRelativeTo(workingDirectory);
-        ////              var fileProperties = LzmaSdk.FileProperties();
-        ////              fileProperties.Name = relativePath.ToString();
-        ////              fileProperties.Size = child.Size;
-        ////              fileProperties.CreateTime = child.CreateTime;
-        ////              fileProperties.AccessTime = child.AccessTime;
-        ////              fileProperties.ModifiedTime = child.ModifiedTime;
-        ////              fileProperties.Attributes = child.Attributes;
-        ////              result.push_back(move(fileProperties));
-        ////          }
-        ////      }
-
-        ////      return result;
-        ////  }
-
-        ////  static IList<LzmaSdk.FileProperties> GetAllFilesRecursive(Path directory, Path workingDirectory)
-        ////  {
-        ////      var result = new List<LzmaSdk.FileProperties>();
-
-        ////      for (var child : LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(directory))
-        ////      {
-        ////          if (child.IsDirectory)
-        ////          {
-        ////              var directoryFiles = GetAllFilesRecursive(child.Path, workingDirectory);
-        ////              result.Add(
-        ////                  result.end(),
-        ////                  directoryFiles.begin(),
-        ////                  directoryFiles.end());
-        ////          }
-        ////          else
-        ////          {
-        ////              var relativePath = child.Path.GetRelativeTo(workingDirectory);
-        ////              var fileProperties = LzmaSdk.FileProperties();
-        ////              fileProperties.Name = relativePath.ToString();
-        ////              fileProperties.Size = child.Size;
-        ////              fileProperties.CreateTime = child.CreateTime;
-        ////              fileProperties.AccessTime = child.AccessTime;
-        ////              fileProperties.ModifiedTime = child.ModifiedTime;
-        ////              fileProperties.Attributes = child.Attributes;
-        ////              result.Add(move(fileProperties));
-        ////          }
-        ////      }
-
-        ////      return result;
-        ////  }
+        private static void AddAllFilesRecursive(Path directory, Path workingDirectory, ZipArchive archive)
+        {
+            foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(directory))
+            {
+                if (child.IsDirectory)
+                {
+                    AddAllFilesRecursive(child.Path, workingDirectory, archive);
+                }
+                else
+                {
+                    var relativePath = child.Path.GetRelativeTo(workingDirectory);
+                    var relativeName = relativePath.ToString().Substring(2);
+                    var fileEentry = archive.CreateEntryFromFile(child.Path.ToString(), relativeName);
+                }
+            }
+        }
 
         /// <summary>
         /// Ensure a package version is downloaded
         /// </summary>
         private static async Task EnsurePackageDownloadedAsync(
+            string languageName,
             string packageName,
              SemanticVersion packageVersion,
              Path packagesDirectory,
              Path stagingDirectory)
         {
-            Log.HighPriority("Install Package: " + packageName + "@" + packageVersion.ToString());
+            Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
 
             var packageRootFolder = packagesDirectory + new Path(packageName);
             var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
@@ -402,7 +340,7 @@ namespace Soup.Build.PackageManager
                 using (var httpClient = new HttpClient())
                 {
                     var client = new Api.Client.PackageVersionClient(httpClient);
-                    var result = await client.DownloadPackageVersionAsync(packageName, packageVersion.ToString());
+                    var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
 
                     // Write the contents to disk, scope cleanup
                     using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
@@ -478,7 +416,9 @@ namespace Soup.Build.PackageManager
                         }
                         else
                         {
+                            // TODO: Assume the same language for now
                             await EnsurePackageDownloadedAsync(
+                                recipe.Language,
                                 dependency.GetName,
                                 dependency.Version,
                                 packagesDirectory,

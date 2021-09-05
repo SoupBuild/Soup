@@ -9,6 +9,25 @@ namespace Soup.Build.Api.Client
     using System.Threading;
     using System.Threading.Tasks;
 
+    public partial class LanguageClient
+    {
+        public string BearerToken { get; set; }
+
+        /// <summary>
+        /// Called by implementing swagger client classes
+        /// </summary>
+        protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync(CancellationToken cancellationToken)
+        {
+            var request = new HttpRequestMessage();
+            if (!string.IsNullOrEmpty(BearerToken))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", BearerToken);
+            }
+
+            return Task.FromResult(request);
+        }
+    }
+
     public partial class PackageClient
     {
         public string BearerToken { get; set; }
@@ -30,12 +49,26 @@ namespace Soup.Build.Api.Client
 
     public partial class PackageVersionClient
     {
-        public string BearerToken { get; private set; }
+        public string BearerToken { get; set; }
 
-        public void SetBearerToken(string token)
+        /// <summary>
+        /// Called by implementing swagger client classes
+        /// </summary>
+        protected Task<HttpRequestMessage> CreateHttpRequestMessageAsync(CancellationToken cancellationToken)
         {
-            BearerToken = token;
+            var request = new HttpRequestMessage();
+            if (!string.IsNullOrEmpty(BearerToken))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", BearerToken);
+            }
+
+            return Task.FromResult(request);
         }
+    }
+
+    public partial class SearchClient
+    {
+        public string BearerToken { get; set; }
 
         /// <summary>
         /// Called by implementing swagger client classes

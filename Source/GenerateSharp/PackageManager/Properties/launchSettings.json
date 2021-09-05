@@ -2,7 +2,7 @@
   "profiles": {
     "Soup.Build.PackageManager": {
       "commandName": "Project",
-      "commandLineArgs": "install-package C:\\Users\\mwasp\\source\\repos\\Soup\\Source\\Client\\CLI test"
+      "commandLineArgs": "publish-package C:\\Users\\mwasp\\source\\repos\\Soup\\Source\\GenerateSharp\\Opal\\"
     }
   }
 }

@@ -10,6 +10,7 @@ namespace Soup.Build.PackageManager
     using System.Threading.Tasks;
     using Microsoft.Identity.Client;
     using Newtonsoft.Json.Linq;
+    using Opal;
 
     internal class AuthenticationManager
     {
@@ -36,7 +37,7 @@ namespace Soup.Build.PackageManager
             IPublicClientApplication publicClientApp = PublicClientApplicationBuilder.Create(ClientId)
                 .WithB2CAuthority(SignUpSignInAuthority)
                 .WithRedirectUri(RedirectUri)
-                .WithLogging(Log, LogLevel.Info, false)
+                .WithLogging(PublicClientLog, LogLevel.Info, false)
                 .Build();
 
             TokenCache.Bind(publicClientApp.UserTokenCache);
@@ -61,10 +62,10 @@ namespace Soup.Build.PackageManager
             return authResult.AccessToken;
         }
 
-        private static void Log(LogLevel level, string message, bool containsPii)
+        private static void PublicClientLog(LogLevel level, string message, bool containsPii)
         {
             string logs = $"{level} {message}";
-            Console.WriteLine(logs);
+            Log.Diag(logs);
         }
 
         private static void DisplayUserInfo(AuthenticationResult authResult)
@@ -73,21 +74,21 @@ namespace Soup.Build.PackageManager
             {
                 JObject user = ParseIdToken(authResult.IdToken);
 
-                Console.WriteLine("");
-                Console.WriteLine($"Name: {user["name"]?.ToString()}");
-                Console.WriteLine($"User Identifier: {user["oid"]?.ToString()}");
-                Console.WriteLine($"Street Address: {user["streetAddress"]?.ToString()}");
-                Console.WriteLine($"City: {user["city"]?.ToString()}");
-                Console.WriteLine($"State: {user["state"]?.ToString()}");
-                Console.WriteLine($"Country: {user["country"]?.ToString()}");
-                Console.WriteLine($"Job Title: {user["jobTitle"]?.ToString()}");
+                Log.Diag("");
+                Log.Diag($"Name: {user["name"]?.ToString()}");
+                Log.Diag($"User Identifier: {user["oid"]?.ToString()}");
+                Log.Diag($"Street Address: {user["streetAddress"]?.ToString()}");
+                Log.Diag($"City: {user["city"]?.ToString()}");
+                Log.Diag($"State: {user["state"]?.ToString()}");
+                Log.Diag($"Country: {user["country"]?.ToString()}");
+                Log.Diag($"Job Title: {user["jobTitle"]?.ToString()}");
 
                 if (user["emails"] is JArray emails)
                 {
-                    Console.WriteLine($"Emails: {emails[0].ToString()}");
+                    Log.Diag($"Emails: {emails[0]}");
                 }
 
-                Console.WriteLine($"Identity Provider: {user["iss"]?.ToString()}");
+                Log.Diag($"Identity Provider: {user["iss"]?.ToString()}");
             }
         }
 

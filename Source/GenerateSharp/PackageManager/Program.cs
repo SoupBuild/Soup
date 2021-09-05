@@ -4,7 +4,6 @@
 
 namespace Soup.Build.PackageManager
 {
-    using System;
     using System.Threading.Tasks;
     using Opal;
     using Opal.System;
@@ -13,7 +12,7 @@ namespace Soup.Build.PackageManager
     {
         public static async Task<int> Main(string[] args)
         {
-            Log.RegisterListener(new ConsoleTraceListener());
+            Log.RegisterListener(new ConsoleTraceListener("", new EventTypeFilter(TraceEventFlag.Information), false, false));
             LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
 
             if (args.Length < 2)
@@ -48,6 +47,17 @@ namespace Soup.Build.PackageManager
 
                         var packageReference = args[2];
                         await PackageManager.InstallPackageReferenceAsync(workingDirectory, packageReference);
+                    }
+                    break;
+                case "publish-package":
+                    {
+                        if (args.Length != 2)
+                        {
+                            PrintUsage();
+                            return -1;
+                        }
+
+                        await PackageManager.PublishPackageAsync(workingDirectory);
                     }
                     break;
                 default:
