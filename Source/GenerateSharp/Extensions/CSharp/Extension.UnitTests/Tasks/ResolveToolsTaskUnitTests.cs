@@ -3,11 +3,9 @@
 // </copyright>
 
 using Opal;
-using Opal.System;
 using Soup.Build.Runtime;
 using Soup.Build.Utilities;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Soup.Build.CSharp.UnitTests
@@ -18,7 +16,8 @@ namespace Soup.Build.CSharp.UnitTests
 		public void Initialize_Success()
 		{
 			var buildState = new MockBuildState();
-			var uut = new ResolveToolsTask(buildState);
+			var factory = new ValueFactory();
+			var uut = new ResolveToolsTask(buildState, factory);
 		}
 
 		[Fact]
@@ -57,7 +56,8 @@ namespace Soup.Build.CSharp.UnitTests
 				var buildTable = new ValueTable();
 				state.Add("Build", new Value(buildTable));
 
-				var uut = new ResolveToolsTask(buildState);
+				var factory = new ValueFactory();
+				var uut = new ResolveToolsTask(buildState, factory);
 
 				uut.Execute();
 

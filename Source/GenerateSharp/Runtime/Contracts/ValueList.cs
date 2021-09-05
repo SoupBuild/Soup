@@ -7,14 +7,14 @@ using System.Text;
 
 namespace Soup.Build.Runtime
 {
-	public class ValueList : List<Value>, IValueList
+	public class ValueList : List<IValue>, IValueList
 	{
 		public ValueList() : base()
 		{
 		}
 
 		public ValueList(IEnumerable<Value> collection) : base(collection)
-        {
+		{
 		}
 
 		public override string ToString()

@@ -7,7 +7,6 @@ using Opal.System;
 using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Soup.Build.Cpp
 {
@@ -17,6 +16,7 @@ namespace Soup.Build.Cpp
 	public class ResolveToolsTask : IBuildTask
 	{
 		private IBuildState _buildState;
+		private IValueFactory _factory;
 
 		/// <summary>
 		/// Get the run before list
@@ -32,9 +32,10 @@ namespace Soup.Build.Cpp
 		{
 		};
 
-		public ResolveToolsTask(IBuildState buildState)
+		public ResolveToolsTask(IBuildState buildState, IValueFactory factory)
 		{
 			_buildState = buildState;
+			_factory = factory;
 
 			if (!LifetimeManager.Has<IProcessManager>())
 			{
@@ -87,15 +88,15 @@ namespace Soup.Build.Cpp
 			var libToolPath = vcToolsBinaryFolder + new Path("lib.exe");
 
 			// Save the build properties
-			state["MSVC.Version"] = new Value(visualCompilerVersion);
-			state["MSVC.VCToolsRoot"] = new Value(visualCompilerVersionFolder.ToString());
-			state["MSVC.VCToolsBinaryRoot"] = new Value(vcToolsBinaryFolder.ToString());
-			state["MSVC.LinkToolPath"] = new Value(linkToolPath.ToString());
-			state["MSVC.LibToolPath"] = new Value(libToolPath.ToString());
+			state["MSVC.Version"] = _factory.Create(visualCompilerVersion);
+			state["MSVC.VCToolsRoot"] = _factory.Create(visualCompilerVersionFolder.ToString());
+			state["MSVC.VCToolsBinaryRoot"] = _factory.Create(vcToolsBinaryFolder.ToString());
+			state["MSVC.LinkToolPath"] = _factory.Create(linkToolPath.ToString());
+			state["MSVC.LibToolPath"] = _factory.Create(libToolPath.ToString());
 
 			// Allow custom overrides for the compiler path
 			if (!state.ContainsKey("MSVC.ClToolPath"))
-				state["MSVC.ClToolPath"] = new Value(clToolPath.ToString());
+				state["MSVC.ClToolPath"] = _factory.Create(clToolPath.ToString());
 
 			// Load the Windows sdk
 			var windowsSDKProperties = GetSDKProperties("Windows", parameters);

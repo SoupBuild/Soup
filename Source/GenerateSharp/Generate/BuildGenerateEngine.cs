@@ -62,7 +62,7 @@ namespace Soup.Build.Generate
 			var activeState = new ValueTable();
 
 			// Initialize the Recipe Root Table
-			var recipeState = recipe.GetTable();
+			var recipeState = recipe.Table;
 			activeState.Add("Recipe", new Value(recipeState));
 
 			// Initialize the Parameters Root Table

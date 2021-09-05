@@ -9,13 +9,12 @@ namespace Soup::Build
 {
 	export enum class ValueType : uint64_t
 	{
-		Empty = 1,
-		Table = 2,
-		List = 3,
-		String = 4,
-		Integer = 5,
-		Float = 6,
-		Boolean = 7,
+		Table = 1,
+		List = 2,
+		String = 3,
+		Integer = 4,
+		Float = 5,
+		Boolean = 6,
 	};
 
 	class IValueTable;

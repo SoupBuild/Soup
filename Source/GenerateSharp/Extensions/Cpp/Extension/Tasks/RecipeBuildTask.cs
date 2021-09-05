@@ -17,6 +17,7 @@ namespace Soup.Build.Cpp
 	public class RecipeBuildTask : IBuildTask
 	{
 		private IBuildState _buildState;
+		private IValueFactory _factory;
 
 		/// <summary>
 		/// Get the run before list
@@ -34,9 +35,10 @@ namespace Soup.Build.Cpp
 			"ResolveToolsTask",
 		};
 
-		public RecipeBuildTask(IBuildState buildState)
+		public RecipeBuildTask(IBuildState buildState, IValueFactory factory)
 		{
 			_buildState = buildState;
+			_factory = factory;
 		}
 
 		/// <summary>
@@ -198,13 +200,13 @@ namespace Soup.Build.Cpp
 				throw new InvalidOperationException("Unknown build flavors type.");
 			}
 
-			buildTable["TargetName"] = new Value(name);
-			buildTable["WorkingDirectory"] = new Value(packageRoot.ToString());
-			buildTable["ObjectDirectory"] = new Value(objectDirectory.ToString());
-			buildTable["BinaryDirectory"] = new Value(binaryDirectory.ToString());
-			buildTable["ModuleInterfaceSourceFile"] = new Value(moduleInterfaceSourceFile);
-			buildTable["OptimizationLevel"] = new Value((long)optimizationLevel);
-			buildTable["GenerateSourceDebugInfo"] = new Value(generateSourceDebugInfo);
+			buildTable["TargetName"] = _factory.Create(name);
+			buildTable["WorkingDirectory"] = _factory.Create(packageRoot.ToString());
+			buildTable["ObjectDirectory"] = _factory.Create(objectDirectory.ToString());
+			buildTable["BinaryDirectory"] = _factory.Create(binaryDirectory.ToString());
+			buildTable["ModuleInterfaceSourceFile"] = _factory.Create(moduleInterfaceSourceFile);
+			buildTable["OptimizationLevel"] = _factory.Create((long)optimizationLevel);
+			buildTable["GenerateSourceDebugInfo"] = _factory.Create(generateSourceDebugInfo);
 
 			buildTable.EnsureValueList("PlatformLibraries").Append(platformLibraries);
 			buildTable.EnsureValueList("LinkLibraries").Append(linkLibraries);
@@ -213,7 +215,7 @@ namespace Soup.Build.Cpp
 			buildTable.EnsureValueList("LibraryPaths").Append(libraryPaths);
 			buildTable.EnsureValueList("Source").Append(sourceFiles);
 
-			buildTable["EnableWarningsAsErrors"] = new Value(enableWarningsAsErrors);
+			buildTable["EnableWarningsAsErrors"] = _factory.Create(enableWarningsAsErrors);
 
 			// Convert the recipe type to the required build type
 			var targetType = BuildTargetType.StaticLibrary;
@@ -222,7 +224,7 @@ namespace Soup.Build.Cpp
 				targetType = ParseType(typeValue.AsString());
 			}
 
-			buildTable["TargetType"] = new Value((long)targetType);
+			buildTable["TargetType"] = _factory.Create((long)targetType);
 
 			// Convert the recipe language version to the required build language
 			var languageStandard = LanguageStandard.CPP20;
@@ -231,7 +233,7 @@ namespace Soup.Build.Cpp
 				languageStandard = ParseLanguageStandard(languageVersionValue.AsString());
 			}
 
-			buildTable["LanguageStandard"] = new Value((long)languageStandard);
+			buildTable["LanguageStandard"] = _factory.Create((long)languageStandard);
 		}
 
 		private static BuildTargetType ParseType(string value)

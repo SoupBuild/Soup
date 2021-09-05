@@ -101,12 +101,7 @@ ValueTableWrapper ValueWrapper::EnsureTable()
 {
 	auto type = GetType();
 
-	// Auto convert empty values
-	if (type == ValueType::Empty)
-	{
-		SetType(ValueType::Table);
-	}
-	else if (type != ValueType::Table)
+	if (type != ValueType::Table)
 	{
 		throw std::runtime_error("EnsureTable will not auto convert other types.");
 	}
@@ -118,12 +113,7 @@ ValueListWrapper ValueWrapper::EnsureList()
 {
 	auto type = GetType();
 
-	// Auto convert empty values
-	if (type == ValueType::Empty)
-	{
-		SetType(ValueType::List);
-	}
-	else if (type != ValueType::List)
+	if (type != ValueType::List)
 	{
 		throw std::runtime_error("EnsureList will not auto convert other types.");
 	}
@@ -135,12 +125,7 @@ ValuePrimitiveWrapper<const char*> ValueWrapper::EnsureString()
 {
 	auto type = GetType();
 
-	// Auto convert empty values
-	if (type == ValueType::Empty)
-	{
-		SetType(ValueType::String);
-	}
-	else if (type != ValueType::String)
+	if (type != ValueType::String)
 	{
 		throw std::runtime_error("EnsureString will not auto convert other types.");
 	}
@@ -152,12 +137,7 @@ ValuePrimitiveWrapper<int64_t> ValueWrapper::EnsureInteger()
 {
 	auto type = GetType();
 
-	// Auto convert empty values
-	if (type == ValueType::Empty)
-	{
-		SetType(ValueType::Integer);
-	}
-	else if (type != ValueType::Integer)
+	if (type != ValueType::Integer)
 	{
 		throw std::runtime_error("EnsureInteger will not auto convert other types.");
 	}
@@ -169,12 +149,7 @@ ValuePrimitiveWrapper<double> ValueWrapper::EnsureFloat()
 {
 	auto type = GetType();
 
-	// Auto convert empty values
-	if (type == ValueType::Empty)
-	{
-		SetType(ValueType::Float);
-	}
-	else if (type != ValueType::Float)
+	if (type != ValueType::Float)
 	{
 		throw std::runtime_error("EnsureFloat will not auto convert other types.");
 	}
@@ -186,12 +161,7 @@ ValuePrimitiveWrapper<bool> ValueWrapper::EnsureBoolean()
 {
 	auto type = GetType();
 
-	// Auto convert empty values
-	if (type == ValueType::Empty)
-	{
-		SetType(ValueType::Boolean);
-	}
-	else if (type != ValueType::Boolean)
+	if (type != ValueType::Boolean)
 	{
 		throw std::runtime_error("EnsureBoolean will not auto convert other types.");
 	}

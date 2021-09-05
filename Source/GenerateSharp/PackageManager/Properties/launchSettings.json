@@ -2,7 +2,7 @@
   "profiles": {
     "Soup.Build.PackageManager": {
       "commandName": "Project",
-      "commandLineArgs": "install-packages C:\\Users\\mwasp\\source\\repos\\Soup\\Samples\\C#\\SimpleConsoleApplication\\"
+      "commandLineArgs": "install-package C:\\Users\\mwasp\\source\\repos\\Soup\\Samples\\C#\\SimpleConsoleApplication\\ Opal"
     }
   }
 }

@@ -4,7 +4,6 @@
 
 using Opal;
 using Soup.Build.Runtime;
-using Soup.Build.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -53,7 +52,7 @@ namespace Soup.Build.Utilities
 				list.Add(new Value(value));
 		}
 
-		public static void Append(this IValueList list, IEnumerable<Value> values)
+		public static void Append(this IValueList list, IEnumerable<IValue> values)
 		{
 			foreach (var value in values)
 				list.Add(value);

@@ -10,5 +10,5 @@ Source = [
 [Dependencies]
 Runtime = [
 	"Opal@0.2.1",
-	"Soup.Build@0.4.2",
+	"../Contracts/",
 ]

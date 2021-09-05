@@ -12,6 +12,7 @@ namespace Soup.Build.Cpp
 	public class BuildTask : IBuildTask
 	{
 		private IBuildState _buildState;
+		private IValueFactory _factory;
 		private IDictionary<string, Func<IValueTable, ICompiler>> _compilerFactory;
 
 		/// <summary>
@@ -28,7 +29,8 @@ namespace Soup.Build.Cpp
 		{
 		};
 
-		public BuildTask(IBuildState buildState) : this(buildState, new Dictionary<string, Func<IValueTable, ICompiler>>())
+		public BuildTask(IBuildState buildState, IValueFactory factory) :
+			this(buildState, factory, new Dictionary<string, Func<IValueTable, ICompiler>>())
 		{
 			// Register default compilers
 			_compilerFactory.Add("MSVC", (IValueTable activeState) =>
@@ -40,9 +42,10 @@ namespace Soup.Build.Cpp
 			});
 		}
 
-		public BuildTask(IBuildState buildState, Dictionary<string, Func<IValueTable, ICompiler>> compilerFactory)
+		public BuildTask(IBuildState buildState, IValueFactory factory, Dictionary<string, Func<IValueTable, ICompiler>> compilerFactory)
 		{
 			_buildState = buildState;
+			_factory = factory;
 			_compilerFactory = compilerFactory;
 		}
 
@@ -187,9 +190,9 @@ namespace Soup.Build.Cpp
 
 			if (!buildResult.TargetFile.IsEmpty)
 			{
-				sharedBuildTable["TargetFile"] = new Value(buildResult.TargetFile.ToString());
-				sharedBuildTable["RunExecutable"] = new Value(buildResult.TargetFile.ToString());
-				sharedBuildTable["RunArguments"] = new Value("");
+				sharedBuildTable["TargetFile"] = _factory.Create(buildResult.TargetFile.ToString());
+				sharedBuildTable["RunExecutable"] = _factory.Create(buildResult.TargetFile.ToString());
+				sharedBuildTable["RunArguments"] = _factory.Create("");
 			}
 
 			// Register the build operations

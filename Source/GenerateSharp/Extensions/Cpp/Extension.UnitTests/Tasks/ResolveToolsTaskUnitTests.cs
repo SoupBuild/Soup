@@ -18,7 +18,8 @@ namespace Soup.Build.Cpp.UnitTests
 		public void Initialize_Success()
 		{
 			var buildState = new MockBuildState();
-			var uut = new ResolveToolsTask(buildState);
+			var factory = new ValueFactory();
+			var uut = new ResolveToolsTask(buildState, factory);
 		}
 
 		[Fact]
@@ -66,7 +67,8 @@ namespace Soup.Build.Cpp.UnitTests
 				parametersTable.Add("System", new Value("win32"));
 				parametersTable.Add("Architecture", new Value("x64"));
 
-				var uut = new ResolveToolsTask(buildState);
+				var factory = new ValueFactory();
+				var uut = new ResolveToolsTask(buildState, factory);
 
 				uut.Execute();
 

@@ -7,25 +7,29 @@ using System.Text;
 
 namespace Soup.Build.Runtime
 {
-	public class ValueTable : Dictionary<string, Value>, IValueTable
-	{
-		public override string ToString()
+    public class ValueTable : Dictionary<string, IValue>, IValueTable
+    {
+        public ValueTable()
         {
-			var builder = new StringBuilder();
+        }
 
-			builder.Append("{ ");
-			foreach (var value in this)
-			{
-				builder.Append("\"");
-				builder.Append(value.Key);
-				builder.Append("\": ");
-				builder.Append(value.Value);
-				builder.Append(", ");
-			}
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
 
-			builder.Append("}");
+            builder.Append("{ ");
+            foreach (var value in this)
+            {
+                builder.Append("\"");
+                builder.Append(value.Key);
+                builder.Append("\": ");
+                builder.Append(value.Value);
+                builder.Append(", ");
+            }
 
-			return builder.ToString();
-		}
-	}
+            builder.Append("}");
+
+            return builder.ToString();
+        }
+    }
 }

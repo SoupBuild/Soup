@@ -1,6 +1,6 @@
-﻿
-
-using System.Collections.Generic;
+﻿// <copyright file="IBuildTask.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
 
 namespace Soup.Build
 {

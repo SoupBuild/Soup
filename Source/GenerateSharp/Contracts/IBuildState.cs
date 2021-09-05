@@ -1,4 +1,6 @@
-﻿
+﻿// <copyright file="IBuildState.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
 
 namespace Soup.Build
 {

@@ -14,7 +14,7 @@ namespace Soup::Build::Runtime
 	{
 	private:
 		// Binary Value Table file format
-		static constexpr uint32_t FileVersion = 1;
+		static constexpr uint32_t FileVersion = 2;
 
 	public:
 		static void Serialize(const ValueTable& state, std::ostream& stream)
@@ -37,9 +37,6 @@ namespace Soup::Build::Runtime
 
 			switch (valueType)
 			{
-				case ValueType::Empty:
-					// Nothing to write
-					break;
 				case ValueType::Table:
 					WriteValue(stream, value.AsTable());
 					break;

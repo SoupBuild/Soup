@@ -71,11 +71,13 @@ ValueType Value::GetType() const noexcept
 		else if (valueType == typeid(ValuePrimitive<bool>))
 			return ValueType::Boolean;
 		else
-			return ValueType::Empty;
+			// TODO: Remove
+			return ValueType::Table;
 	}
 	else
 	{
-		return ValueType::Empty;
+		// TODO: Remove
+		return ValueType::Table;
 	}
 }
 
@@ -265,8 +267,6 @@ std::string Value::ToString()
 {
 	switch (GetType())
 	{
-		case ValueType::Empty:
-			return "";
 		case ValueType::Table:
 			return std::any_cast<ValueTable&>(_value).ToString();
 		case ValueType::List:
@@ -407,8 +407,6 @@ bool Value::operator ==(const Value& rhs) const
 	{
 		switch (GetType())
 		{
-			case ValueType::Empty:
-				return true;
 			case ValueType::Table:
 				return std::any_cast<const ValueTable&>(_value) == std::any_cast<const ValueTable&>(rhs._value);
 			case ValueType::List:

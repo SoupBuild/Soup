@@ -9,7 +9,6 @@ using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Soup.Build.CSharp
 {
@@ -19,6 +18,7 @@ namespace Soup.Build.CSharp
 	public class ResolveToolsTask : IBuildTask
 	{
 		private IBuildState _buildState;
+		private IValueFactory _factory;
 
 		/// <summary>
 		/// Get the run before list
@@ -34,9 +34,10 @@ namespace Soup.Build.CSharp
 		{
 		};
 
-		public ResolveToolsTask(IBuildState buildState)
+		public ResolveToolsTask(IBuildState buildState, IValueFactory factory)
 		{
 			_buildState = buildState;
+			_factory = factory;
 
 			if (!LifetimeManager.Has<IProcessManager>())
 			{
@@ -79,7 +80,7 @@ namespace Soup.Build.CSharp
 			state["Roslyn.CscToolPath"] = new Value(cscToolPath.ToString());
 
 			// Save the platform libraries
-			state["PlatformLibraries"] = new Value();
+			state["PlatformLibraries"] = _factory.Create("");
 			var linkDependencies = new List<Path>();
 			if (buildTable.TryGetValue("LinkDependencies", out var linkLibrariesValue))
 			{

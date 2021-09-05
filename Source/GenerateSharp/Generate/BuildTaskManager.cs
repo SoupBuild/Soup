@@ -142,6 +142,7 @@ namespace Soup.Build.Generate
 
 				var serviceCollection = new ServiceCollection();
 				serviceCollection.AddSingleton(typeof(IBuildState), state);
+				serviceCollection.AddSingleton(typeof(IValueFactory), new ValueFactory());
 				var serviceProvider = serviceCollection.BuildServiceProvider();
 
 				var task = (IBuildTask)ActivatorUtilities.CreateInstance(serviceProvider, currentTask.TaskType);
@@ -150,7 +151,7 @@ namespace Soup.Build.Generate
 
 				Log.Info("TaskDone: " + currentTask.Name);
 
-				Log.Diag(state.ActiveState.ToString());
+				Log.Diag($"{state.ActiveState}");
 
 				// TODO : state.LogActive();
 				currentTask.HasRun = true;

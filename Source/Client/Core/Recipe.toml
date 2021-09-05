@@ -13,8 +13,8 @@ IncludePaths = [
 
 [Dependencies]
 Runtime = [
-	"Soup.Build@0.4.2",
-	"Soup.Build.Utilities@0.4.2",
+	"../../Build/Contracts/",
+	"../../Build/Utilities/",
 	"../../Build/Runtime/",
 ]
 Build = [

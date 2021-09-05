@@ -17,6 +17,7 @@ namespace Soup.Build.CSharp
 	public class RecipeBuildTask : IBuildTask
 	{
 		private IBuildState _buildState;
+		private IValueFactory _factory;
 
 		/// <summary>
 		/// Get the run before list
@@ -34,9 +35,10 @@ namespace Soup.Build.CSharp
 			"ResolveToolsTask",
 		};
 
-		public RecipeBuildTask(IBuildState buildState)
+		public RecipeBuildTask(IBuildState buildState, IValueFactory factory)
 		{
 			_buildState = buildState;
+			_factory = factory;
 		}
 
 		/// <summary>
@@ -163,20 +165,20 @@ namespace Soup.Build.CSharp
 				throw new InvalidOperationException("Unknown build flavors type.");
 			}
 
-			buildTable["TargetName"] = new Value(name);
-			buildTable["WorkingDirectory"] = new Value(packageRoot.ToString());
-			buildTable["ObjectDirectory"] = new Value(objectDirectory.ToString());
-			buildTable["BinaryDirectory"] = new Value(binaryDirectory.ToString());
-			buildTable["OptimizationLevel"] = new Value((long)optimizationLevel);
-			buildTable["GenerateSourceDebugInfo"] = new Value(generateSourceDebugInfo);
+			buildTable["TargetName"] = _factory.Create(name);
+			buildTable["WorkingDirectory"] = _factory.Create(packageRoot.ToString());
+			buildTable["ObjectDirectory"] = _factory.Create(objectDirectory.ToString());
+			buildTable["BinaryDirectory"] = _factory.Create(binaryDirectory.ToString());
+			buildTable["OptimizationLevel"] = _factory.Create((long)optimizationLevel);
+			buildTable["GenerateSourceDebugInfo"] = _factory.Create(generateSourceDebugInfo);
 
 			buildTable.EnsureValueList("LinkLibraries").Append(linkLibraries);
 			buildTable.EnsureValueList("PreprocessorDefinitions").Append(preprocessorDefinitions);
 			buildTable.EnsureValueList("LibraryPaths").Append(libraryPaths);
 			buildTable.EnsureValueList("Source").Append(sourceFiles);
 
-			buildTable["EnableWarningsAsErrors"] = new Value(enableWarningsAsErrors);
-			buildTable["EnableNullable"] = new Value(enableNullable);
+			buildTable["EnableWarningsAsErrors"] = _factory.Create(enableWarningsAsErrors);
+			buildTable["EnableNullable"] = _factory.Create(enableNullable);
 
 			// Convert the recipe type to the required build type
 			var targetType = BuildTargetType.Library;
@@ -185,7 +187,7 @@ namespace Soup.Build.CSharp
 				targetType = ParseType(typeValue.AsString());
 			}
 
-			buildTable["TargetType"] = new Value((long)targetType);
+			buildTable["TargetType"] = _factory.Create((long)targetType);
 		}
 
 		private static BuildTargetType ParseType(string value)

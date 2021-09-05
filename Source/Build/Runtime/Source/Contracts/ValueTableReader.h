@@ -14,7 +14,7 @@ namespace Soup::Build::Runtime
 	{
 	private:
 		// Binary Value Table file format
-		static constexpr uint32_t FileVersion = 1;
+		static constexpr uint32_t FileVersion = 2;
 
 	public:
 		static ValueTable Deserialize(std::istream& stream)
@@ -64,8 +64,6 @@ namespace Soup::Build::Runtime
 
 			switch (valueType)
 			{
-				case ValueType::Empty:
-					return Value();
 				case ValueType::Table:
 					return Value(ReadValueTable(stream));
 				case ValueType::List:

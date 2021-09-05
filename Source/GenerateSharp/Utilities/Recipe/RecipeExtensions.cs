@@ -34,10 +34,9 @@ namespace Soup.Build.Utilities
                 // Read the contents of the recipe file
                 try
                 {
-                    var result = new Recipe(
-                        RecipeToml.Deserialize(
-                            recipeFile,
-                            await reader.ReadToEndAsync()));
+                    var result = RecipeToml.Deserialize(
+                        recipeFile,
+                        await reader.ReadToEndAsync());
                     return (true, result);
                 }
                 catch (Exception ex)
@@ -95,7 +94,7 @@ namespace Soup.Build.Utilities
             var file = LifetimeManager.Get<IFileSystem>().OpenWrite(recipeFile, false);
 
             // Write the recipe to the file stream
-            await RecipeToml.SerializeAsync(recipe.GetTable(), file.GetOutStream());
+            await RecipeToml.SerializeAsync(recipe, file.GetOutStream());
         }
     }
 }

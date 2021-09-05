@@ -4,7 +4,6 @@
 
 using Soup.Build.Runtime;
 using System;
-using System.Collections.Generic;
 
 namespace Soup.Build.Generate
 {
@@ -14,7 +13,7 @@ namespace Soup.Build.Generate
 	internal class ValueTableReader
 	{
 		// Binary Value Table file format
-		private static uint FileVersion => 1;
+		private static uint FileVersion => 2;
 
 		public static ValueTable Deserialize(System.IO.BinaryReader reader)
 		{
@@ -61,8 +60,6 @@ namespace Soup.Build.Generate
 
 			switch (valueType)
 			{
-				case ValueType.Empty:
-					return new Value();
 				case ValueType.Table:
 					return new Value(ReadValueTable(reader));
 				case ValueType.List:

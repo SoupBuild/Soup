@@ -6,6 +6,7 @@ using Opal;
 using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
+using Tomlyn.Syntax;
 
 namespace Soup.Build.Utilities
 {
@@ -22,12 +23,17 @@ namespace Soup.Build.Utilities
 		private static string Property_Name => "Name";
 		private static string Property_Version => "Version";
 
+		private ValueTable _table;
+
+		private DocumentSyntax? _mirrorSyntax;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
 		public Recipe()
 		{
 			_table = new ValueTable();
+			_mirrorSyntax = null;
 			Name = string.Empty;
 			Language = string.Empty;
 		}
@@ -40,6 +46,7 @@ namespace Soup.Build.Utilities
 			string language)
 		{
 			_table = new ValueTable();
+			_mirrorSyntax = null;
 			Name = name;
 			Language = language;
 		}
@@ -56,6 +63,7 @@ namespace Soup.Build.Utilities
 			IList<PackageReference>? testDependencies)
 		{
 			_table = new ValueTable();
+			_mirrorSyntax = null;
 			Name = name;
 			Language = language;
 
@@ -75,9 +83,10 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
-		public Recipe(ValueTable table)
+		public Recipe(ValueTable table, DocumentSyntax mirrorSystax)
 		{
 			_table = table;
+			_mirrorSyntax = mirrorSystax;
 
 			if (!HasValue(_table, Property_Name))
 				throw new ArgumentException("Missing required property Name");
@@ -88,7 +97,7 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
-		public Value NameValue => GetValue(_table, Property_Name);
+		public IValue NameValue => GetValue(_table, Property_Name);
 
 		public string Name
 		{
@@ -99,7 +108,7 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Gets or sets the package language
 		/// </summary>
-		public Value LanguageValue => GetValue(_table, Property_Language);
+		public IValue LanguageValue => GetValue(_table, Property_Language);
 
 		public string Language
 		{
@@ -198,10 +207,9 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		public ValueTable GetTable()
-		{
-			return _table;
-		}
+		public ValueTable Table => _table;
+
+		public DocumentSyntax? MirrorSyntax => _mirrorSyntax;
 
 		/// <summary>
 		/// Gets or sets the table of dependency packages
@@ -230,10 +238,6 @@ namespace Soup.Build.Utilities
 					case ValueType.Table:
 						// All good.
 						return value.AsTable();
-					case ValueType.Empty:
-						var newTable = new ValueTable();
-						_table.Add(Property_Dependencies, new Value(newTable));
-						return newTable;
 					default:
 						throw new InvalidOperationException("The recipe already has a non-table dependencies property");
 				}
@@ -251,7 +255,7 @@ namespace Soup.Build.Utilities
 			return table.ContainsKey(key);
 		}
 
-		private Value GetValue(IValueTable table, string key)
+		private IValue GetValue(IValueTable table, string key)
 		{
 			if (table.TryGetValue(key, out var value))
 			{
@@ -276,7 +280,5 @@ namespace Soup.Build.Utilities
 
 			return value;
 		}
-
-		private ValueTable _table;
 	}
 }
