@@ -2,8 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
-using Opal;
-
 namespace Soup.Build.PackageManager
 {
     using System;
@@ -247,9 +245,6 @@ namespace Soup.Build.PackageManager
                             }
                         }
                     }
-
-                    // All Good
-                    Log.Info("Package version created");
                 }
 
                 // Cleanup the staging directory

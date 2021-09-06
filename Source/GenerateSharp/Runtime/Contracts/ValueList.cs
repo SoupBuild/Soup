@@ -11,19 +11,19 @@ namespace Soup.Build.Runtime
 {
 	public class ValueList : IValueList
 	{
-		private List<Value> _impl;
+		private List<IValue> _impl;
 
 		public SyntaxNode? MirrorSyntax { get; set; }
 
 		public ValueList()
 		{
-			_impl = new List<Value>();
+			_impl = new List<IValue>();
 			MirrorSyntax = null;
 		}
 
 		public ValueList(IEnumerable<Value> collection)
 		{
-			_impl = new List<Value>(collection);
+			_impl = new List<IValue>(collection);
 		}
 
 		public IValue this[int index] => this._impl[index];
@@ -32,7 +32,7 @@ namespace Soup.Build.Runtime
 
 		public void Add(IValue item)
 		{
-			this._impl.Add((Value)item);
+			this._impl.Add(item);
 		}
 
 		public void Clear()

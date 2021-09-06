@@ -13,20 +13,20 @@ namespace Soup.Build.Runtime
 {
 	public class ValueTable : IValueTable
 	{
-		private Dictionary<string, Value> _impl;
+		private Dictionary<string, IValue> _impl;
 
 		public SyntaxNode? MirrorSyntax { get; set; }
 
 		public ValueTable()
 		{
-			_impl = new Dictionary<string, Value>();
+			_impl = new Dictionary<string, IValue>();
 			MirrorSyntax = null;
 		}
 
 		public IValue this[string key]
 		{
 			get { return this._impl[key]; }
-			set { this._impl[key] = (Value)value; }
+			set { this._impl[key] = value; }
 		}
 
 		public IEnumerable<string> Keys => this._impl.Keys;
@@ -37,7 +37,7 @@ namespace Soup.Build.Runtime
 
 		public void Add(string key, IValue value)
 		{
-			this._impl.Add(key, (Value)value);
+			this._impl.Add(key, value);
 		}
 
 		public bool ContainsKey(string key)
@@ -47,10 +47,7 @@ namespace Soup.Build.Runtime
 
 		public IEnumerator<KeyValuePair<string, IValue>> GetEnumerator()
 		{
-			return this._impl
-				.Select(value => new KeyValuePair<string, IValue>(value.Key, value.Value))
-				.ToList()
-				.GetEnumerator();
+			return this._impl.GetEnumerator();
 		}
 
 		public bool Remove(string key)
