@@ -54,35 +54,6 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
-		public Recipe(
-			string name,
-			string language,
-			SemanticVersion? version,
-			IList<PackageReference>? runtimeDependencies,
-			IList<PackageReference>? buildDependencies,
-			IList<PackageReference>? testDependencies)
-		{
-			_table = new ValueTable();
-			_mirrorSyntax = null;
-			Name = name;
-			Language = language;
-
-			if (!ReferenceEquals(version, null))
-				Version = version;
-
-			if (!ReferenceEquals(runtimeDependencies, null))
-				RuntimeDependencies = runtimeDependencies;
-
-			if (!ReferenceEquals(buildDependencies, null))
-				BuildDependencies = buildDependencies;
-
-			if (!ReferenceEquals(testDependencies, null))
-				TestDependencies = testDependencies;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Recipe"/> class.
-		/// </summary>
 		public Recipe(ValueTable table, DocumentSyntax mirrorSystax)
 		{
 			_table = table;
@@ -132,7 +103,7 @@ namespace Soup.Build.Utilities
 					GetValue(_table, Property_Version).AsString());
 			}
 			set
-            {
+			{
 				EnsureValue(_table, Property_Version, new Value(value.ToString()));
 			}
 		}
@@ -160,15 +131,12 @@ namespace Soup.Build.Utilities
 			return result;
 		}
 
-		public void SetNamedDependencies(string name, IList<PackageReference> values)
+		public void AddRuntimeDependency(string value)
 		{
-			var stringValues = new ValueList();
-			foreach (var value in values)
-			{
-				stringValues.Add(new Value(value.ToString()));
-			}
+			var dependencies = EnsureHasTable(_table, Property_Dependencies);
+			var runtimeDependencies = EnsureHasList(dependencies, Property_Runtime);
 
-			EnsureValue(EnsureDependencies(), name, new Value(stringValues));
+			AddItemWithSyntax(runtimeDependencies, value);
 		}
 
 		/// <summary>
@@ -179,7 +147,6 @@ namespace Soup.Build.Utilities
 		public IList<PackageReference> RuntimeDependencies
 		{
 			get { return GetNamedDependencies(Property_Runtime); }
-			set { SetNamedDependencies(Property_Runtime, value); }
 		}
 
 		/// <summary>
@@ -190,7 +157,6 @@ namespace Soup.Build.Utilities
 		public IList<PackageReference> BuildDependencies
 		{
 			get { return GetNamedDependencies(Property_Build); }
-			set { SetNamedDependencies(Property_Build, value); }
 		}
 
 		/// <summary>
@@ -201,7 +167,6 @@ namespace Soup.Build.Utilities
 		public IList<PackageReference> TestDependencies
 		{
 			get { return GetNamedDependencies(Property_Test); }
-			set { SetNamedDependencies(Property_Test, value); }
 		}
 
 		/// <summary>
@@ -228,26 +193,127 @@ namespace Soup.Build.Utilities
 			return values;
 		}
 
-		private IValueTable EnsureDependencies()
+		private ValueTable EnsureHasTable(ValueTable table, string name)
 		{
-			if (_table.ContainsKey(Property_Dependencies))
+			if (table.ContainsKey(name))
 			{
-				var value = _table[Property_Dependencies];
-				switch (value.Type)
-				{
-					case ValueType.Table:
-						// All good.
-						return value.AsTable();
-					default:
-						throw new InvalidOperationException("The recipe already has a non-table dependencies property");
-				}
+				var value = _table[name];
+				if (value.Type != ValueType.Table)
+					throw new InvalidOperationException("The recipe already has a non-table dependencies property");
+
+				// Find the Syntax for the table
+				return (ValueTable)value.AsTable();
 			}
 			else
-            {
-				var newTable = new ValueTable();
-				_table.Add(Property_Dependencies, new Value(newTable));
-				return newTable;
+			{
+				// Create a new table
+				return AddTableWithSyntax(table, name);
 			}
+		}
+
+		private ValueList EnsureHasList(ValueTable table, string name)
+		{
+			if (table.ContainsKey(name))
+			{
+				var value = _table[name];
+				if (value.Type != ValueType.List)
+					throw new InvalidOperationException("The recipe already has a non-list dependencies property");
+
+				// Find the Syntax for the table
+				return (ValueList)value.AsList();
+			}
+			else
+			{
+				// Create a new list
+				return AddListWithSyntax(table, name);
+			}
+		}
+
+		private void AddItemWithSyntax(ValueList list, string value)
+		{
+			// Create a new item and matching syntax
+			var newSyntaxValue = new StringValueSyntax(value);
+			var newValue = new Value(value)
+			{
+				// TODO: MirrorSyntax = newSyntaxTable,
+			};
+
+			// Add the model to the parent table model
+			list.Add(newValue);
+
+			// Add the new syntax to the parent table syntax
+			var arrayItemSyntax = new ArrayItemSyntax()
+			{
+				Value = newSyntaxValue,
+				Comma = SyntaxFactory.Token(TokenKind.Comma),
+			};
+			arrayItemSyntax.Comma.AddTrailingWhitespace();
+			switch (list.MirrorSyntax)
+			{
+				case ArraySyntax arraySyntax:
+					arraySyntax.Items.Add(arrayItemSyntax);
+					break;
+				default:
+					throw new InvalidOperationException("Unknown Syntax on ValueList");
+			}
+		}
+
+		private ValueTable AddTableWithSyntax(ValueTable table, string name)
+		{
+			// Create a new table and matching syntax
+			var newSyntaxTable = new TableSyntax(name);
+			var newTable = new ValueTable()
+			{
+				MirrorSyntax = newSyntaxTable,
+			};
+
+			// Add the model to the parent table model
+			table.Add(name, new Value(newTable));
+
+			// Add the new syntax to the parent table syntax
+			switch (table.MirrorSyntax)
+			{
+				case DocumentSyntax documentSyntax:
+					documentSyntax.Tables.Add(newSyntaxTable);
+					break;
+				default:
+					throw new InvalidOperationException("Unknown Syntax on ValueTable");
+			}
+
+			return newTable;
+		}
+
+		private ValueList AddListWithSyntax(ValueTable table, string name)
+		{
+			// Create a new list and matching syntax
+			var newSyntaxList = new ArraySyntax()
+			{
+				OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
+				CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket),
+			};
+			newSyntaxList.OpenBracket.AddTrailingWhitespace();
+			var newList = new ValueList()
+			{
+				MirrorSyntax = newSyntaxList,
+			};
+
+			// Add the model to the parent table model
+			table.Add(name, new Value(newList));
+
+			// Add the new syntax to the parent table syntax
+			switch (table.MirrorSyntax)
+			{
+				case DocumentSyntax documentSyntax:
+					documentSyntax.KeyValues.Add(new KeyValueSyntax(name, newSyntaxList));
+					break;
+				case TableSyntax tableSyntax:
+					tableSyntax.Items.Add(new KeyValueSyntax(name, newSyntaxList));
+					break;
+				default:
+					throw new InvalidOperationException("Unknown Syntax on ValueTable");
+			}
+
+			return newList;
 		}
 
 		private bool HasValue(IValueTable table, string key)
@@ -267,11 +333,11 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		private Value EnsureValue(IValueTable table, string key, Value value)
+		private IValue EnsureValue(IValueTable table, string key, IValue value)
 		{
 			if (table.ContainsKey(key))
 			{
-				table[key] = value;
+				table.Add(key, value);
 			}
 			else
 			{

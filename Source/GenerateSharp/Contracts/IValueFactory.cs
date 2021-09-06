@@ -1,9 +1,8 @@
-// <copyright file="IValue.cs" company="Soup">
+// <copyright file="IValueFactory.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 
 namespace Soup.Build
 {

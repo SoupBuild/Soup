@@ -2,19 +2,52 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Tomlyn.Syntax;
 
 namespace Soup.Build.Runtime
 {
-	public class ValueList : List<IValue>, IValueList
+	public class ValueList : IValueList
 	{
-		public ValueList() : base()
+		private List<Value> _impl;
+
+		public SyntaxNode? MirrorSyntax { get; set; }
+
+		public ValueList()
 		{
+			_impl = new List<Value>();
+			MirrorSyntax = null;
 		}
 
-		public ValueList(IEnumerable<Value> collection) : base(collection)
+		public ValueList(IEnumerable<Value> collection)
 		{
+			_impl = new List<Value>(collection);
+		}
+
+		public IValue this[int index] => this._impl[index];
+
+		public int Count => this._impl.Count;
+
+		public void Add(IValue item)
+		{
+			this._impl.Add((Value)item);
+		}
+
+		public void Clear()
+		{
+			this._impl.Clear();
+		}
+
+		public IEnumerator<IValue> GetEnumerator()
+		{
+			return this._impl.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return this._impl.GetEnumerator();
 		}
 
 		public override string ToString()

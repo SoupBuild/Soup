@@ -1,11 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <Platforms>AnyCPU;x64</Platforms>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Contracts\Soup.Build.Contracts.csproj" />
-    <ProjectReference Include="..\Opal\Opal.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Tomlyn" Version="0.1.2" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Contracts\Soup.Build.Contracts.csproj" />
+		<ProjectReference Include="..\Opal\Opal.csproj" />
+	</ItemGroup>
 </Project>

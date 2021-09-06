@@ -127,12 +127,7 @@ namespace Soup.Build.PackageManager
 
                 // Register the package in the recipe
                 Log.Info("Adding reference to recipe");
-                IList<PackageReference> dependencies = new List<PackageReference>();
-                if (recipe.HasRuntimeDependencies)
-                    dependencies = recipe.RuntimeDependencies;
-
-                dependencies.Add(targetPackageReference);
-                recipe.RuntimeDependencies = dependencies;
+                recipe.AddRuntimeDependency(targetPackageReference.ToString());
 
                 // Save the state of the recipe
                 await RecipeExtensions.SaveToFileAsync(recipePath, recipe);

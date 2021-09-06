@@ -25,14 +25,17 @@ namespace Soup.Build.Utilities
             string content)
         {
             // Read the contents of the recipe file
-            var syntax = Toml.Parse(content, recipeFile.ToString());
+            var documentSyntax = Toml.Parse(content, recipeFile.ToString());
 
             // Load the entire root table
-            var valueTable = new ValueTable();
+            var valueTable = new ValueTable()
+            {
+                MirrorSyntax = documentSyntax,
+            };
             var visitor = new RecipeTomlVisitor(valueTable);
-            syntax.Accept(visitor);
+            documentSyntax.Accept(visitor);
 
-            return new Recipe(valueTable, syntax);
+            return new Recipe(valueTable, documentSyntax);
         }
 
         /// <summary>

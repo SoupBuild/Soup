@@ -6,7 +6,10 @@ using System.Collections.Generic;
 
 namespace Soup.Build
 {
-	public interface IValueList : IList<IValue>
+	public interface IValueList : IReadOnlyList<IValue>
 	{
+		void Add(IValue item);
+
+		void Clear();
 	}
 }

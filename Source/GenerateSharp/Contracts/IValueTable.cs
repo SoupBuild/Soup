@@ -6,7 +6,12 @@ using System.Collections.Generic;
 
 namespace Soup.Build
 {
-	public interface IValueTable : IDictionary<string, IValue>
+	public interface IValueTable : IReadOnlyDictionary<string, IValue>
 	{
+		new IValue this[string key] { get; set; }
+
+		void Add(string key, IValue value);
+
+		bool Remove(string key);
 	}
 }
