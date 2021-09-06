@@ -1,17 +1,16 @@
-﻿// <copyright file="STLInputFile.cs" company="Soup">
+﻿// <copyright file="RuntimeInputFile.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.IO;
-
 namespace Opal.System
 {
+    using global::System;
+    using global::System.IO;
 
     /// <summary>
-    /// The standard library input file implementation
+    /// The standard library input file implementation.
     /// </summary>
-    class RuntimeInputFile : IInputFile
+    internal class RuntimeInputFile : IInputFile
     {
         private FileStream stream;
         private bool isDisposed;
@@ -23,31 +22,31 @@ namespace Opal.System
         }
 
         /// <summary>
-        /// Gets the file stream
+        /// Gets the file stream.
         /// </summary>
         public Stream GetInStream()
         {
             return this.stream;
         }
 
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
-            if (!isDisposed)
+            if (!this.isDisposed)
             {
                 if (disposing)
                 {
                     this.stream.Dispose();
                 }
 
-                isDisposed = true;
+                this.isDisposed = true;
             }
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,17 +1,17 @@
-// <copyright file="IValue.cs" company="Soup">
+// <copyright file="IValueTable.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace Soup.Build
 {
-	public interface IValueTable : IReadOnlyDictionary<string, IValue>
-	{
-		new IValue this[string key] { get; set; }
+    using System.Collections.Generic;
 
-		void Add(string key, IValue value);
+    public interface IValueTable : IReadOnlyDictionary<string, IValue>
+    {
+        new IValue this[string key] { get; set; }
 
-		bool Remove(string key);
-	}
+        void Add(string key, IValue value);
+
+        bool Remove(string key);
+    }
 }

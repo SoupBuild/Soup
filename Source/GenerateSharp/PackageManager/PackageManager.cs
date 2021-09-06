@@ -431,61 +431,61 @@ namespace Soup.Build.PackageManager
             }
         }
 
-        /// <summary>
-        /// Build the kitchen library path
-        /// </summary>
-        // static string BuildKitchenLibraryPath()
-        // {
-        // 	return Path(Constants.StoreLibraryFolderName);
-        // }
+        ///// <summary>
+        ///// Build the kitchen library path
+        ///// </summary>
+        //// static string BuildKitchenLibraryPath()
+        //// {
+        //// 	return Path(Constants.StoreLibraryFolderName);
+        //// }
 
-        // /// <summary>
-        // /// Build the kitchen build path
-        // /// </summary>
-        // static string BuildKitchenBuildPath(Recipe recipe)
-        // {
-        // 	return BuildKitchenBuildPath(recipe.Name, recipe.Version);
-        // }
+        //// /// <summary>
+        //// /// Build the kitchen build path
+        //// /// </summary>
+        //// static string BuildKitchenBuildPath(Recipe recipe)
+        //// {
+        //// 	return BuildKitchenBuildPath(recipe.Name, recipe.Version);
+        //// }
 
-        // /// <summary>
-        // /// Build the kitchen build path
-        // /// </summary>
-        // static string BuildKitchenBuildPath(PackageReference reference)
-        // {
-        // 	return BuildKitchenBuildPath(reference.Name, reference.Version);
-        // }
+        //// /// <summary>
+        //// /// Build the kitchen build path
+        //// /// </summary>
+        //// static string BuildKitchenBuildPath(PackageReference reference)
+        //// {
+        //// 	return BuildKitchenBuildPath(reference.Name, reference.Version);
+        //// }
 
-        // /// <summary>
-        // /// Build the kitchen package path
-        // /// </summary>
-        // static string BuildKitchenPackagePath(Recipe recipe)
-        // {
-        // 	return BuildKitchenPackagePath(recipe.Name, recipe.Version);
-        // }
+        //// /// <summary>
+        //// /// Build the kitchen package path
+        //// /// </summary>
+        //// static string BuildKitchenPackagePath(Recipe recipe)
+        //// {
+        //// 	return BuildKitchenPackagePath(recipe.Name, recipe.Version);
+        //// }
 
-        // /// <summary>
-        // /// Build the kitchen package path
-        // /// </summary>
-        // static string BuildKitchenPackagePath(PackageReference reference)
-        // {
-        // 	return BuildKitchenPackagePath(reference.Name, reference.Version);
-        // }
+        //// /// <summary>
+        //// /// Build the kitchen package path
+        //// /// </summary>
+        //// static string BuildKitchenPackagePath(PackageReference reference)
+        //// {
+        //// 	return BuildKitchenPackagePath(reference.Name, reference.Version);
+        //// }
 
-        // /// <summary>
-        // /// Build the kitchen package path
-        // /// </summary>
-        // static string BuildKitchenIncludePath(Recipe recipe)
-        // {
-        // 	return BuildKitchenIncludePath(recipe.Name, recipe.Version);
-        // }
+        //// /// <summary>
+        //// /// Build the kitchen package path
+        //// /// </summary>
+        //// static string BuildKitchenIncludePath(Recipe recipe)
+        //// {
+        //// 	return BuildKitchenIncludePath(recipe.Name, recipe.Version);
+        //// }
 
-        // /// <summary>
-        // /// Build the kitchen include path
-        // /// </summary>
-        // static string BuildKitchenIncludePath(PackageReference reference)
-        // {
-        // 	return BuildKitchenIncludePath(reference.Name, reference.Version);
-        // }
+        //// /// <summary>
+        //// /// Build the kitchen include path
+        //// /// </summary>
+        //// static string BuildKitchenIncludePath(PackageReference reference)
+        //// {
+        //// 	return BuildKitchenIncludePath(reference.Name, reference.Version);
+        //// }
 
         /// <summary>
         /// Ensure the staging directory exists

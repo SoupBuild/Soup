@@ -1,17 +1,44 @@
-// <copyright file="IValue.cs" company="Soup">
+// <copyright file="ValueType.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 namespace Soup.Build
 {
-	public enum ValueType : uint
-	{
-		Table = 1,
-		List = 2,
-		String = 3,
-		Integer = 4,
-		Float = 5,
-		Boolean = 6,
-		DateTime = 7,
-	}
+    public enum ValueType : uint
+    {
+        /// <summary>
+        /// Table
+        /// </summary>
+        Table = 1,
+
+        /// <summary>
+        /// List
+        /// </summary>
+        List = 2,
+
+        /// <summary>
+        /// String
+        /// </summary>
+        String = 3,
+
+        /// <summary>
+        /// Integer
+        /// </summary>
+        Integer = 4,
+
+        /// <summary>
+        /// Float
+        /// </summary>
+        Float = 5,
+
+        /// <summary>
+        /// Boolean
+        /// </summary>
+        Boolean = 6,
+
+        /// <summary>
+        /// DateTime
+        /// </summary>
+        DateTime = 7,
+    }
 }

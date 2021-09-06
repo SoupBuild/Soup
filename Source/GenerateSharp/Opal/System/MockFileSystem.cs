@@ -2,214 +2,232 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Opal;
-using System;
-using System.Collections.Generic;
-
 namespace Opal.System
 {
-	/// <summary>
-	/// The mock file system
-	/// TODO: Move into test project
-	/// </summary>
-	public class MockFileSystem : IFileSystem
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref='MockFileSystem'/> class.
-		/// </summary>
-		public MockFileSystem()
-		{
-			_requests = new List<string>();
-			_files = new Dictionary<Path, MockFile>();
-		}
+    using global::System;
+    using global::System.Collections.Generic;
 
-		/// <summary>
-		/// Get the load requests
-		/// </summary>
-		public IReadOnlyList<string> GetRequests()
-		{
-			return _requests;
-		}
+    /// <summary>
+    /// The mock file system
+    /// TODO: Move into test project.
+    /// </summary>
+    public class MockFileSystem : IFileSystem
+    {
+        private List<string> requests;
+        private Dictionary<Path, MockFile> files;
 
-		/// <summary>
-		/// Create a test file
-		/// </summary>
-		public void CreateMockFile(Path path, MockFile file)
-		{
-			_files.Add(path, file);
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref='MockFileSystem'/> class.
+        /// </summary>
+        public MockFileSystem()
+        {
+            this.requests = new List<string>();
+            this.files = new Dictionary<Path, MockFile>();
+        }
 
-		/// <summary>
-		/// Create a test file
-		/// </summary>
-		public MockFile GetMockFile(Path path)
-		{
-			if (_files.TryGetValue(path, out var file))
-			{
-				return file;
-			}
-			else
-			{
-				throw new InvalidOperationException($"Cannot find file: {path}");
-			}
-		}
+        /// <summary>
+        /// Get the load requests.
+        /// </summary>
+        public IReadOnlyList<string> GetRequests()
+        {
+            return this.requests;
+        }
 
-		/// <summary>
-		/// Gets the current user profile directory
-		/// </summary>
-		public Path GetUserProfileDirectory()
-		{
-			_requests.Add("GetCurrentDirectory");
+        /// <summary>
+        /// Create a test file.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="file">The file.</param>
+        public void CreateMockFile(Path path, MockFile file)
+        {
+            this.files.Add(path, file);
+        }
 
-			return new Path("C:/Users/Me/");
-		}
+        /// <summary>
+        /// Create a test file.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        public MockFile GetMockFile(Path path)
+        {
+            if (this.files.TryGetValue(path, out var file))
+            {
+                return file;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Cannot find file: {path}");
+            }
+        }
 
-		/// <summary>
-		/// Gets the current directory for the running processes
-		/// </summary>
-		public Path GetCurrentDirectory2()
-		{
-			_requests.Add("GetCurrentDirectory");
+        /// <summary>
+        /// Gets the current user profile directory.
+        /// </summary>
+        public Path GetUserProfileDirectory()
+        {
+            this.requests.Add("GetCurrentDirectory");
 
-			return new Path("C:/Current/");
-		}
+            return new Path("C:/Users/Me/");
+        }
 
-		/// <summary>
-		/// Gets a value indicating whether the directory/file exists
-		/// </summary>
-		public bool Exists(Path path)
-		{
-			_requests.Add($"Exists: {path}");
+        /// <summary>
+        /// Gets the current directory for the running processes.
+        /// </summary>
+        public Path GetCurrentDirectory2()
+        {
+            this.requests.Add("GetCurrentDirectory");
 
-			return _files.ContainsKey(path);
-		}
+            return new Path("C:/Current/");
+        }
 
-		/// <summary>
-		/// Get the last write time of the file/directory
-		/// </summary>
-		public int GetLastWriteTime(Path path)
-		{
-			_requests.Add($"GetLastWriteTime: {path}");
+        /// <summary>
+        /// Gets a value indicating whether the directory/file exists.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        public bool Exists(Path path)
+        {
+            this.requests.Add($"Exists: {path}");
 
-			if (_files.TryGetValue(path, out var file))
-			{
-				return file.LastWriteTime;
-			}
-			else
-			{
-				throw new InvalidOperationException($"Cannot find file for last write time: {path}");
-			}
-		}
+            return this.files.ContainsKey(path);
+        }
 
-		/// <summary>
-		/// Set the last write time of the file/directory
-		/// </summary>
-		public void SetLastWriteTime(Path path, int value)
-		{
-			_requests.Add($"SetLastWriteTime: {path}");
-		}
+        /// <summary>
+        /// Get the last write time of the file/directory.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        public int GetLastWriteTime(Path path)
+        {
+            this.requests.Add($"GetLastWriteTime: {path}");
 
-		/// <summary>
-		/// Open the requested file as a stream to read
-		/// </summary>
-		public IInputFile OpenRead(Path path, bool isBinary)
-		{
-			if (isBinary)
-			{
-				_requests.Add($"OpenReadBinary: {path}");
-			}
-			else
-			{
-				_requests.Add($"OpenRead: {path}");
-			}
+            if (this.files.TryGetValue(path, out var file))
+            {
+                return file.LastWriteTime;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Cannot find file for last write time: {path}");
+            }
+        }
 
-			if (_files.TryGetValue(path, out var file))
-			{
-				return new MockInputFile(file);
-			}
-			else
-			{
-				throw new InvalidOperationException($"Cannot open read: {path}");
-			}
-		}
+        /// <summary>
+        /// Set the last write time of the file/directory.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="value">The value.</param>
+        public void SetLastWriteTime(Path path, int value)
+        {
+            this.requests.Add($"SetLastWriteTime: {path}");
+        }
 
-		/// <summary>
-		/// Open the requested file as a stream to write
-		/// </summary>
-		public IOutputFile OpenWrite(Path path, bool isBinary)
-		{
-			if (isBinary)
-			{
-				_requests.Add($"OpenWriteBinary: {path}");
-			}
-			else
-			{
-				_requests.Add($"OpenWrite: {path}");
-			}
+        /// <summary>
+        /// Open the requested file as a stream to read.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="isBinary">A value indicating if is binary.</param>
+        public IInputFile OpenRead(Path path, bool isBinary)
+        {
+            if (isBinary)
+            {
+                this.requests.Add($"OpenReadBinary: {path}");
+            }
+            else
+            {
+                this.requests.Add($"OpenRead: {path}");
+            }
 
-			if (_files.TryGetValue(path, out var file))
-			{
-				// Reset the existing content offset and return it.
-				var content = file.Content;
-				content.SetLength(0);
-				return new MockOutputFile(file);
-			}
-			else
-			{
-				// Create the file if it does not exist
-				var insert = new MockFile();
-				_files.Add(path, insert);
-				return new MockOutputFile(insert);
-			}
-		}
+            if (this.files.TryGetValue(path, out var file))
+            {
+                return new MockInputFile(file);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Cannot open read: {path}");
+            }
+        }
 
-		/// <summary>
-		/// Rename the source file to the destination
-		/// </summary>
-		public void Rename(Path source, Path destination)
-		{
-			_requests.Add($"Rename: [{source}] -> [{destination}]");
-		}
+        /// <summary>
+        /// Open the requested file as a stream to write.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="isBinary">A value indicating if is binary.</param>
+        public IOutputFile OpenWrite(Path path, bool isBinary)
+        {
+            if (isBinary)
+            {
+                this.requests.Add($"OpenWriteBinary: {path}");
+            }
+            else
+            {
+                this.requests.Add($"OpenWrite: {path}");
+            }
 
-		/// <summary>
-		/// Copy the source file to the destination
-		/// </summary>
-		public void CopyFile2(Path source, Path destination)
-		{
-			_requests.Add($"CopyFile: [{source}] -> [{destination}]");
-		}
+            if (this.files.TryGetValue(path, out var file))
+            {
+                // Reset the existing content offset and return it.
+                var content = file.Content;
+                content.SetLength(0);
+                return new MockOutputFile(file);
+            }
+            else
+            {
+                // Create the file if it does not exist
+                var insert = new MockFile();
+                this.files.Add(path, insert);
+                return new MockOutputFile(insert);
+            }
+        }
 
-		/// <summary>
-		/// Create the directory at the requested path
-		/// </summary>
-		public void CreateDirectory2(Path path)
-		{
-			_requests.Add($"CreateDirectory: {path}");
-		}
+        /// <summary>
+        /// Rename the source file to the destination.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        public void Rename(Path source, Path destination)
+        {
+            this.requests.Add($"Rename: [{source}] -> [{destination}]");
+        }
 
-		/// <summary>
-		/// Get the children of a directory
-		/// </summary>
-		public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path)
-		{
-			_requests.Add($"GetDirectoryChildren: {path}");
+        /// <summary>
+        /// Copy the source file to the destination.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        public void CopyFile2(Path source, Path destination)
+        {
+            this.requests.Add($"CopyFile: [{source}] -> [{destination}]");
+        }
 
-			var result = new List<DirectoryEntry>();
-			return result;
-		}
+        /// <summary>
+        /// Create the directory at the requested path.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        public void CreateDirectory2(Path path)
+        {
+            this.requests.Add($"CreateDirectory: {path}");
+        }
 
-		/// <summary>
-		/// Delete the directory
-		/// </summary>
-		public void DeleteDirectory(Path path, bool recursive)
-		{
-			if (recursive)
-				_requests.Add($"DeleteDirectoryRecursive: {path}");
-			else
-				_requests.Add($"DeleteDirectory: {path}");
-		}
+        /// <summary>
+        /// Get the children of a directory.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path)
+        {
+            this.requests.Add($"GetDirectoryChildren: {path}");
 
-		private List<string> _requests;
-		private Dictionary<Path, MockFile> _files;
-	}
+            var result = new List<DirectoryEntry>();
+            return result;
+        }
+
+        /// <summary>
+        /// Delete the directory.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="recursive">A value indicating if the delete is recursive.</param>
+        public void DeleteDirectory(Path path, bool recursive)
+        {
+            if (recursive)
+                this.requests.Add($"DeleteDirectoryRecursive: {path}");
+            else
+                this.requests.Add($"DeleteDirectory: {path}");
+        }
+    }
 }

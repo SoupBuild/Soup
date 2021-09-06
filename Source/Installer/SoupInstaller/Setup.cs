@@ -6,8 +6,8 @@ class Script
 	static public void Main()
 	{
 		var soupBinFolder = @"..\..\..\out\C++\Soup\fa11c194b8df931b2241afc7196c809fb2cc5692fd7e38a0ae2c176e63fd7ceb\bin\";
-		var soupBinGenerateFolder = @"..\..\..\Source\GenerateSharp\Generate\bin\Release\net5.0\";
-		var soupBinPackageManagerFolder = @"..\..\..\Source\GenerateSharp\PackageManager\bin\Release\net5-windows10.0.17763.0\";
+		var soupBinGenerateFolder = @"..\..\..\out\msbuild\bin\Soup.Build.Generate\Release\net5.0\";
+		var soupBinPackageManagerFolder = @"..\..\..\out\msbuild\Soup.Build.PackageManager\Release\net5-windows10.0.17763.0\";
 		var project = new Project(
 			"Soup",
 			new Dir(

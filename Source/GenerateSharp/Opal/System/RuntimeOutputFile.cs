@@ -1,15 +1,14 @@
-﻿// <copyright file="RuntimeOutputFile.h" company="Soup">
+﻿// <copyright file="RuntimeOutputFile.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.IO;
-
 namespace Opal.System
 {
+    using global::System;
+    using global::System.IO;
 
     /// <summary>
-    /// The standard library output file implementation
+    /// The standard library output file implementation.
     /// </summary>
     internal class RuntimeOutputFile : IOutputFile
     {
@@ -23,32 +22,31 @@ namespace Opal.System
         }
 
         /// <summary>
-        /// Get the file stream
+        /// Get the file stream.
         /// </summary>
         public Stream GetOutStream()
         {
             return this.stream;
         }
 
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!isDisposed)
+            if (!this.isDisposed)
             {
                 if (disposing)
                 {
                     this.stream.Dispose();
                 }
 
-                isDisposed = true;
+                this.isDisposed = true;
             }
         }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-    };
+    }
 }

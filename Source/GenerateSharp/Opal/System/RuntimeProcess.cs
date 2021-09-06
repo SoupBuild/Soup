@@ -2,94 +2,97 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.Diagnostics;
-
 namespace Opal.System
 {
-	/// <summary>
-	/// The shared runtime process executable using system
-	/// </summary>
-	public class RuntimeProcess : IProcess
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref='RuntimeProcess'/> class.
-		/// </summary>
-		public RuntimeProcess(
-			Path executable,
-			string arguments,
-			Path workingDirectory)
-		{
-			m_executable = executable;
-			m_arguments = arguments;
-			m_workingDirectory = workingDirectory;
-		}
+    using global::System;
+    using global::System.Diagnostics;
 
-		/// <summary>
-		/// Execute a process for the provided
-		/// </summary>
-		public void Start()
-		{
-			var processInfo = new ProcessStartInfo()
-			{
-				FileName = m_executable.ToString(),
-				Arguments = m_arguments,
-				WorkingDirectory = m_workingDirectory.ToString(),
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
-			};
+    /// <summary>
+    /// The shared runtime process executable using system.
+    /// </summary>
+    public class RuntimeProcess : IProcess
+    {
+        // Input
+        private Path executable;
+        private string arguments;
+        private Path workingDirectory;
 
-			m_process = Process.Start(processInfo);
-			if (m_process is null)
-				throw new InvalidOperationException("Failed to start process");
-		}
+        // Runtime
+        private Process? process;
 
-		/// <summary>
-		/// Wait for the process to exit
-		/// </summary>
-		public void WaitForExit()
-		{
-			if (m_process is null)
-				throw new InvalidOperationException("Cannot wait on process that is not running");
-			m_process.WaitForExit();
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref='RuntimeProcess'/> class.
+        /// </summary>
+        /// <param name="executable">The executable.</param>
+        /// <param name="arguments">The arguemnts.</param>
+        /// <param name="workingDirectory">The workingDirectory.</param>
+        public RuntimeProcess(
+            Path executable,
+            string arguments,
+            Path workingDirectory)
+        {
+            this.executable = executable;
+            this.arguments = arguments;
+            this.workingDirectory = workingDirectory;
+        }
 
-		/// <summary>
-		/// Get the exit code
-		/// </summary>
-		public int GetExitCode()
-		{
-			if (m_process is null)
-				throw new InvalidOperationException("Cannot access process that does not exist");
-			return m_process.ExitCode;
-		}
+        /// <summary>
+        /// Execute a process for the provided.
+        /// </summary>
+        public void Start()
+        {
+            var processInfo = new ProcessStartInfo()
+            {
+                FileName = this.executable.ToString(),
+                Arguments = this.arguments,
+                WorkingDirectory = this.workingDirectory.ToString(),
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
 
-		/// <summary>
-		/// Get the standard output
-		/// </summary>
-		public string GetStandardOutput()
-		{
-			if (m_process is null)
-				throw new InvalidOperationException("Cannot access process that does not exist");
-			return m_process.StandardOutput.ReadToEnd();
-		}
+            this.process = Process.Start(processInfo);
+            if (this.process is null)
+                throw new InvalidOperationException("Failed to start process");
+        }
 
-		/// <summary>
-		/// Get the standard error output
-		/// </summary>
-		public string GetStandardError()
-		{
-			if (m_process is null)
-				throw new InvalidOperationException("Cannot access process that does not exist");
-			return m_process.StandardError.ReadToEnd();
-		}
+        /// <summary>
+        /// Wait for the process to exit.
+        /// </summary>
+        public void WaitForExit()
+        {
+            if (this.process is null)
+                throw new InvalidOperationException("Cannot wait on process that is not running");
+            this.process.WaitForExit();
+        }
 
-		// Input
-		private Path m_executable;
-		private string m_arguments;
-		private Path m_workingDirectory;
+        /// <summary>
+        /// Get the exit code.
+        /// </summary>
+        public int GetExitCode()
+        {
+            if (this.process is null)
+                throw new InvalidOperationException("Cannot access process that does not exist");
+            return this.process.ExitCode;
+        }
 
-		// Runtime
-		Process? m_process;
-	}
+        /// <summary>
+        /// Get the standard output.
+        /// </summary>
+        public string GetStandardOutput()
+        {
+            if (this.process is null)
+                throw new InvalidOperationException("Cannot access process that does not exist");
+            return this.process.StandardOutput.ReadToEnd();
+        }
+
+        /// <summary>
+        /// Get the standard error output.
+        /// </summary>
+        public string GetStandardError()
+        {
+            if (this.process is null)
+                throw new InvalidOperationException("Cannot access process that does not exist");
+            return this.process.StandardError.ReadToEnd();
+        }
+    }
 }

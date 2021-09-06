@@ -2,107 +2,123 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Opal
 {
-	/// <summary>
-	/// The static logger class
-	/// </summary>
-	public class Log
-	{
-		/// <summary>
-		/// Register the single event listener
-		/// </summary>
-		public static void RegisterListener(TraceListener? listener)
-		{
-			s_listener = listener;
-		}
+    using global::System;
 
-		/// <summary>
-		/// Get access to the single event listener
-		/// </summary>
-		public static TraceListener EnsureListener()
-		{
-			if (s_listener == null)
-				throw new InvalidOperationException("No Listener registered.");
-			return s_listener;
-		}
+    /// <summary>
+    /// The static logger class.
+    /// </summary>
+    public class Log
+    {
+        private static int activeId = 0;
+        private static TraceListener? listener = null;
 
-		/// <summary>
-		/// Set the active ids to use for each event
-		/// </summary>
-		public static int GetActiveId()
-		{
-			return s_activeId;
-		}
+        /// <summary>
+        /// Register the single event listener.
+        /// </summary>
+        /// <param name="listener">The listener.</param>
+        public static void RegisterListener(TraceListener? listener)
+        {
+            Log.listener = listener;
+        }
 
-		public static void SetActiveId(int value)
-		{
-			s_activeId = value;
-		}
+        /// <summary>
+        /// Get access to the single event listener.
+        /// </summary>
+        public static TraceListener EnsureListener()
+        {
+            if (listener == null)
+                throw new InvalidOperationException("No Listener registered.");
+            return listener;
+        }
 
-		/// <summary>
-		/// Log a high priority message
-		/// </summary>
-		public static void HighPriority(string message, int id)
-		{
-			EnsureListener().TraceEvent(TraceEventFlag.HighPriority, id, message);
-		}
-		public static void HighPriority(string message)
-		{
-			HighPriority(message, s_activeId);
-		}
+        /// <summary>
+        /// Set the active ids to use for each event.
+        /// </summary>
+        public static int GetActiveId()
+        {
+            return activeId;
+        }
 
-		/// <summary>
-		/// Log a generic infomational message
-		/// </summary>
-		public static void Info(string message, int id)
-		{
-			EnsureListener().TraceEvent(TraceEventFlag.Information, id, message);
-		}
-		public static void Info(string message)
-		{
-			Info(message, s_activeId);
-		}
+        public static void SetActiveId(int value)
+        {
+            activeId = value;
+        }
 
-		/// <summary>
-		/// Log a diagnostic message
-		/// </summary>
-		public static void Diag(string message, int id)
-		{
-			EnsureListener().TraceEvent(TraceEventFlag.Diagnostic, id, message);
-		}
-		public static void Diag(string message)
-		{
-			Diag(message, s_activeId);
-		}
+        /// <summary>
+        /// Log a high priority message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="id">The message id.</param>
+        public static void HighPriority(string message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag.HighPriority, id, message);
+        }
 
-		/// <summary>
-		/// Log a warning message
-		/// </summary>
-		public static void Warning(string message, int id)
-		{
-			EnsureListener().TraceEvent(TraceEventFlag.Warning, id, message);
-		}
-		public static void Warning(string message)
-		{
-			Warning(message, s_activeId);
-		}
+        public static void HighPriority(string message)
+        {
+            HighPriority(message, activeId);
+        }
 
-		/// <summary>
-		/// Log an error message
-		/// </summary>
-		public static void Error(string message, int id)
-		{
-			EnsureListener().TraceEvent(TraceEventFlag.Error, id, message);
-		}
-		public static void Error(string message)
-		{
-			Error(message, s_activeId);
-		}
+        /// <summary>
+        /// Log a generic infomational message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="id">The message id.</param>
+        public static void Info(string message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag.Information, id, message);
+        }
 
-		private static int s_activeId = 0;
-		private static TraceListener? s_listener = null;
-	}
+        public static void Info(string message)
+        {
+            Info(message, activeId);
+        }
+
+        /// <summary>
+        /// Log a diagnostic message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="id">The message id.</param>
+        public static void Diag(string message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag.Diagnostic, id, message);
+        }
+
+        public static void Diag(string message)
+        {
+            Diag(message, activeId);
+        }
+
+        /// <summary>
+        /// Log a warning message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="id">The message id.</param>
+        public static void Warning(string message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag.Warning, id, message);
+        }
+
+        public static void Warning(string message)
+        {
+            Warning(message, activeId);
+        }
+
+        /// <summary>
+        /// Log an error message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="id">The message id.</param>
+        public static void Error(string message, int id)
+        {
+            EnsureListener().TraceEvent(TraceEventFlag.Error, id, message);
+        }
+
+        public static void Error(string message)
+        {
+            Error(message, activeId);
+        }
+    }
 }
