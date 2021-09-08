@@ -1,0 +1,11 @@
+Name = "Samples.SimpleBuildExtension.Extension"
+Language = "C#"
+Version = "1.0.0"
+Source = [
+	"CustomBuildTask.cs"
+]
+
+[Dependencies]
+Runtime = [
+	{ Reference = "C:/Users/mwasp/source/repos/Soup/Source/GenerateSharp/Build", ExcludeRuntime = true },
+]
