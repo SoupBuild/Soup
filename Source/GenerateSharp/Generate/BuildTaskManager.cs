@@ -151,7 +151,7 @@ namespace Soup.Build.Generate
 
 				Log.Info("TaskDone: " + currentTask.Name);
 
-				Log.Diag($"{state.ActiveState}");
+				Log.Diag($"{(ValueTable)state.ActiveState}");
 
 				// TODO : state.LogActive();
 				currentTask.HasRun = true;

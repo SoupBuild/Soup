@@ -49,9 +49,6 @@ void PrintValue(Soup::Build::Runtime::Value& value, const std::string& indent)
 	auto valueType = value.GetType();
 	switch (valueType)
 	{
-	case Soup::Build::ValueType::Empty:
-		std::cout << "EMPTY";
-		break;
 	case Soup::Build::ValueType::Table:
 		PrintValueTable(value.AsTable(), indent);
 		break;

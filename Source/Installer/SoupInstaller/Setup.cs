@@ -5,11 +5,11 @@ class Script
 {
 	static public void Main()
 	{
-		var soupBinFolder = @"..\..\..\out\C++\Soup\fa11c194b8df931b2241afc7196c809fb2cc5692fd7e38a0ae2c176e63fd7ceb\bin\";
+		var soupBinFolder = @"..\..\..\out\C++\Soup\1281a639dd5d393781f4188942c6bc05544b7c2c0124eae4cc59236248e36\bin\";
 		var soupBinGenerateFolder = @"..\..\..\out\msbuild\bin\Soup.Build.Generate\Release\net5.0\";
 		var soupBinPackageManagerFolder = @"..\..\..\out\msbuild\Soup.Build.PackageManager\Release\net5-windows10.0.17763.0\";
 		var project = new Project(
-			"Soup",
+			"Soup Build",
 			new Dir(
 				@"%ProgramFiles%\SoupBuild\Soup",
 				new DirFiles(System.IO.Path.Combine(soupBinFolder, "*.*")),

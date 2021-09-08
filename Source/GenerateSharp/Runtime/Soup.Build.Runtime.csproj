@@ -8,7 +8,7 @@
 		<PackageReference Include="Tomlyn" Version="0.1.2" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Contracts\Soup.Build.Contracts.csproj" />
+		<ProjectReference Include="..\Build\Soup.Build.csproj" />
 		<ProjectReference Include="..\Opal\Opal.csproj" />
 	</ItemGroup>
 </Project>

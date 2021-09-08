@@ -6,7 +6,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\..\Utilities\Soup.Utilities.csproj" />
-		<ProjectReference Include="..\..\..\..\Contracts\Soup.Build.Contracts.csproj">
+		<ProjectReference Include="..\..\..\..\Build\Soup.Build.csproj">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</ProjectReference>

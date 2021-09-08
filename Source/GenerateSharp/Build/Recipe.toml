@@ -1,0 +1,14 @@
+Name = "Soup.Build"
+Language = "C#"
+Version = "1.0.1"
+Source = [
+	"IBuildState.cs",
+	"IBuildTask.cs",
+	"IValue.cs",
+	"IValueExtensions.cs",
+	"IValueFactory.cs",
+	"IValueList.cs",
+	"IValueTable.cs",
+	"IValueTableExtensions.cs",
+	"ValueType.cs",
+]

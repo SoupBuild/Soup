@@ -9,7 +9,7 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Contracts\Soup.Build.Contracts.csproj" />
+		<ProjectReference Include="..\Build\Soup.Build.csproj" />
 		<ProjectReference Include="..\Runtime\Soup.Build.Runtime.csproj" />
 		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
 		<ProjectReference Include="..\Extensions\Cpp\Extension\Soup.Cpp.csproj">

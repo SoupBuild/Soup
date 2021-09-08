@@ -41,9 +41,14 @@ export namespace Soup::Build::Runtime
 			return _comments;
 		}
 
+		bool IsString() const
+		{
+			return _value.type() == typeid(std::string);
+		}
+
 		const std::string& AsString() const
 		{
-			if (_value.type() == typeid(std::string))
+			if (IsString())
 			{
 				return std::any_cast<const std::string&>(_value);
 			}
@@ -113,9 +118,14 @@ export namespace Soup::Build::Runtime
 			_value = value;
 		}
 
+		bool IsTable() const
+		{
+			return _value.type() == typeid(RecipeTable);
+		}
+
 		RecipeTable& AsTable()
 		{
-			if (_value.type() == typeid(RecipeTable))
+			if (IsTable())
 			{
 				return std::any_cast<RecipeTable&>(_value);
 			}

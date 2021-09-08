@@ -1,8 +1,0 @@
-Name = "Soup.Build"
-Language = "C#"
-Version = "1.0.0"
-Source = [
-	"IBuildState.cs",
-	"IBuildTask.cs",
-	"Value.cs",
-]

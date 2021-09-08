@@ -5,8 +5,8 @@ SET SourceDir=%ScriptsDir%..\Source
 SET OutputDir=%ScriptsDir%..\out
 SET ClientCLIDir=%SourceDir%\Client\CLI
 SET MonitorClientDir=%SourceDir%\Monitor\Client
-if %Flavor% == release (SET OutputX64DirectorPath=fa11c194b8df931b2241afc7196c809fb2cc5692fd7e38a0ae2c176e63fd7ceb) else (SET OutputX64DirectorPath=d6cd8e54c2437463cfea37201849278a10a3fb82df1565fbc685206e25f5)
-if %Flavor% == release (SET OutputX86DirectorPath=cd591834cc6c87c42810bd8097848cce03b5635656fa759ec4c2047a439d4b8) else (SET OutputX86DirectorPath=8a7e5abbb0fa75ca7dd3396963ece83dd47228fcce11496ef773c8f56294d)
+if %Flavor% == release (SET OutputX64DirectorPath=1281a639dd5d393781f4188942c6bc05544b7c2c0124eae4cc59236248e36) else (SET OutputX64DirectorPath=3d80717e7d2695f0a7aa5c38e2849624beeaa5714331ca96898fe4b8b8023fe)
+if %Flavor% == release (SET OutputX86DirectorPath=a15736f28dbf78415c82858ab76573eb6efdf98c85e3d67b3984210f54747) else (SET OutputX86DirectorPath=9e1e87dea39eeb349e44752a9a37cdf3ed1c2e7aea3044a45ed8bb44609efd)
 SET ClientCLIOutputDirectory=%OutputDir%\C++\Soup\%OutputX64DirectorPath%
 SET MonitorClientOutputX64Directory=%OutputDir%\C++\Monitor.Client\%OutputX64DirectorPath%
 SET MonitorClientOutputX86Directory=%OutputDir%\C++\Monitor.Client\%OutputX86DirectorPath%

@@ -239,7 +239,7 @@ namespace Soup::Build
 					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
 					{
 						// Load this package recipe
-						auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, recipe.GetLanguage());
 						auto packageRecipePath = packagePath + Runtime::BuildConstants::RecipeFileName();
 						Runtime::Recipe dependencyRecipe = {};
 						if (!_buildManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
@@ -612,7 +612,10 @@ namespace Soup::Build
 			return result;
 		}
 
-		Path GetPackageReferencePath(const Path& workingDirectory, const Runtime::PackageReference& reference) const
+		Path GetPackageReferencePath(
+			const Path& workingDirectory,
+			const Runtime::PackageReference& reference,
+			const std::string& parentPackageLangauge) const
 		{
 			// If the path is relative then combine with the working directory
 			Path packagePath;
@@ -626,9 +629,11 @@ namespace Soup::Build
 			}
 			else
 			{
-				auto packageStore = GetSoupUserDataPath() +
-					Path("packages/");
-				packagePath = packageStore + Path(reference.GetName()) + Path(reference.GetVersion().ToString());
+				auto packageStore = GetSoupUserDataPath() + Path("packages/");
+				packagePath = packageStore +
+					Path(parentPackageLangauge) +
+					Path(reference.GetName()) +
+					Path(reference.GetVersion().ToString());
 			}
 
 			return packagePath;
@@ -687,7 +692,7 @@ namespace Soup::Build
 					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
 					{
 						// Load this package recipe
-						auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, recipe.GetLanguage());
 
 						// Cache the build state for upstream dependencies
 						bool isDependencyHostBuild = isHostBuild || knownDependecyType == "Build";
@@ -700,6 +705,10 @@ namespace Soup::Build
 							dependencyTypeTable.SetValue(
 								dependencyState.Name,
 								Runtime::Value(Runtime::ValueTable({
+									{
+										"Reference",
+										Runtime::Value(dependency.ToString())
+									},
 									{
 										"TargetDirectory",
 										Runtime::Value(dependencyState.TargetDirectory.ToString())
@@ -741,7 +750,7 @@ namespace Soup::Build
 					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
 					{
 						// Load this package recipe
-						auto packagePath = GetPackageReferencePath(workingDirectory, dependency);
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, recipe.GetLanguage());
 
 						// Cache the build state for upstream dependencies
 						bool isDependencyHostBuild = isHostBuild || knownDependecyType == "Build";
