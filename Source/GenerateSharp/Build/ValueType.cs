@@ -35,10 +35,5 @@ namespace Soup.Build
         /// Boolean
         /// </summary>
         Boolean = 6,
-
-        /// <summary>
-        /// DateTime
-        /// </summary>
-        DateTime = 7,
     }
 }

@@ -126,8 +126,6 @@ namespace Soup.Build.Utilities
             var result = new List<PackageReference>();
             foreach (var value in values)
             {
-                result.Add(PackageReference.Parse(value.AsString()));
-
                 // A dependency can either be a string or a table with reference key
                 if (value.IsString())
                 {

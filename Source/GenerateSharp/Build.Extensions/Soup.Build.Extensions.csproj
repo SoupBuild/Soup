@@ -4,4 +4,7 @@
 		<Nullable>enable</Nullable>
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Build\Soup.Build.csproj" />
+	</ItemGroup>
 </Project>

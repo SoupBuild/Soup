@@ -1,13 +1,12 @@
-Name = "Soup.Build"
+Name = "Soup.Build.Extensions"
 Language = "C#"
-Version = "1.0.1"
+Version = "0.1.4"
 Source = [
-	"IBuildState.cs",
-	"IBuildTask.cs",
-	"IValue.cs",
 	"IValueExtensions.cs",
-	"IValueFactory.cs",
-	"IValueList.cs",
-	"IValueTable.cs",
-	"ValueType.cs",
+	"IValueTableExtensions.cs",
+]
+
+[Dependencies]
+Runtime = [
+	{ Reference = "Soup.Build@0.1.3", ExcludeRuntime = true },
 ]

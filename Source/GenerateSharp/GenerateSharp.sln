@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Api.Client", "Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build", "Build\Soup.Build.csproj", "{CD73104E-C7DE-4400-89F2-A04950649235}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Extensions", "Build.Extensions\Soup.Build.Extensions.csproj", "{C81003D5-1FA4-464C-AE8F-38F79305FEDA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -211,6 +213,14 @@ Global
 		{CD73104E-C7DE-4400-89F2-A04950649235}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD73104E-C7DE-4400-89F2-A04950649235}.Release|x64.ActiveCfg = Release|x64
 		{CD73104E-C7DE-4400-89F2-A04950649235}.Release|x64.Build.0 = Release|x64
+		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Debug|x64.ActiveCfg = Debug|x64
+		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Debug|x64.Build.0 = Debug|x64
+		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Release|x64.ActiveCfg = Release|x64
+		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

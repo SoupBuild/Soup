@@ -38,11 +38,6 @@ namespace Soup.Build.Runtime
             return new Value(value);
         }
 
-        public IValue Create(DateTime value)
-        {
-            return new Value(value);
-        }
-
         public IValueList CreateList()
         {
             return new ValueList();

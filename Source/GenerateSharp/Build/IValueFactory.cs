@@ -20,8 +20,6 @@ namespace Soup.Build
 
         IValue Create(IValueList value);
 
-        IValue Create(DateTime value);
-
         IValueTable CreateTable();
 
         IValueList CreateList();

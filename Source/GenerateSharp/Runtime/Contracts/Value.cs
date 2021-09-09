@@ -48,12 +48,6 @@ namespace Soup.Build.Runtime
 			RawValue = value;
 		}
 
-		public Value(DateTime value)
-		{
-			Type = ValueType.DateTime;
-			RawValue = value;
-		}
-
 		public override string ToString()
 		{
 			switch (Type)
@@ -70,8 +64,6 @@ namespace Soup.Build.Runtime
 					return this.AsFloat().ToString();
 				case ValueType.Boolean:
 					return this.AsBoolean().ToString();
-				case ValueType.DateTime:
-					return this.AsDateTime().ToString();
 				default:
 					return "UNKNOWN";
 			}

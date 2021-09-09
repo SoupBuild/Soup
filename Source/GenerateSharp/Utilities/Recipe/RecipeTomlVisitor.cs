@@ -88,9 +88,7 @@ namespace Soup.Build.Utilities
 
 		public override void Visit(DateTimeValueSyntax dateTimeValueSyntax)
 		{
-			if (_currentValue != null)
-				throw new InvalidOperationException("A DateTime value must be at a leaf.");
-			_currentValue = new Value(dateTimeValueSyntax.Value);
+			throw new NotImplementedException("Recipe TOML does not allow DateTimes.");
 		}
 
 		public override void Visit(FloatValueSyntax floatValueSyntax)
