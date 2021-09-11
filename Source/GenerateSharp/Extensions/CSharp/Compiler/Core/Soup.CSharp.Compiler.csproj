@@ -5,10 +5,10 @@
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\..\Utilities\Soup.Utilities.csproj" />
 		<ProjectReference Include="..\..\..\..\Build\Soup.Build.csproj">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</ProjectReference>
+		<ProjectReference Include="..\..\..\..\Build.Extensions\Soup.Build.Extensions.csproj" />
 	</ItemGroup>
 </Project>

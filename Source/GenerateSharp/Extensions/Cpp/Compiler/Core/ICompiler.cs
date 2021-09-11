@@ -41,11 +41,11 @@ namespace Soup.Build.Cpp.Compiler
 		/// <summary>
 		/// Compile
 		/// </summary>
-		IList<Utilities.BuildOperation> CreateCompileOperations(SharedCompileArguments arguments);
+		IList<BuildOperation> CreateCompileOperations(SharedCompileArguments arguments);
 
 		/// <summary>
 		/// Link
 		/// </summary>
-		Utilities.BuildOperation CreateLinkOperation(LinkArguments arguments);
+		BuildOperation CreateLinkOperation(LinkArguments arguments);
 	}
 }

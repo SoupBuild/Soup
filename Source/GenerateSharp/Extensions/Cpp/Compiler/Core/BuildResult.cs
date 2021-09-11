@@ -3,7 +3,6 @@
 // </copyright>
 
 using Opal;
-using Soup.Build.Utilities;
 using System.Collections.Generic;
 
 namespace Soup.Build.Cpp.Compiler

@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build
 {
 	/// <summary>
 	/// The Shared Operations class

@@ -1,12 +1,17 @@
 Name = "Soup.Build.Extensions"
 Language = "C#"
-Version = "0.1.4"
+Version = "0.1.5"
 Source = [
+	"BuildOperation.cs",
+	"IBuildStateExtensions.cs",
 	"IValueExtensions.cs",
+	"IValueListExtensions.cs",
 	"IValueTableExtensions.cs",
+	"SharedOperations.cs",
 ]
 
 [Dependencies]
 Runtime = [
+	{ Reference = "Opal@1.0.1" },
 	{ Reference = "Soup.Build@0.1.3", ExcludeRuntime = true },
 ]

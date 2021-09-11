@@ -23,16 +23,5 @@ namespace Soup.Build.Utilities
             foreach (var value in values)
                 list.Add(new Value(value.ToString()));
         }
-
-        public static void CreateOperation(this IBuildState buildState, BuildOperation operation)
-        {
-            buildState.CreateOperation(
-                operation.Title,
-                operation.Executable.ToString(),
-                operation.Arguments,
-                operation.WorkingDirectory.ToString(),
-                operation.DeclaredInput.Select(value => value.ToString()).ToArray(),
-                operation.DeclaredOutput.Select(value => value.ToString()).ToArray());
-        }
     }
 }
