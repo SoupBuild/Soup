@@ -1,12 +1,13 @@
 Name = "Soup.Build.Extensions"
 Language = "C#"
-Version = "0.1.5"
+Version = "0.1.6"
 Source = [
 	"BuildOperation.cs",
 	"IBuildStateExtensions.cs",
 	"IValueExtensions.cs",
 	"IValueListExtensions.cs",
 	"IValueTableExtensions.cs",
+	"PackageReference.cs",
 	"SharedOperations.cs",
 ]
 

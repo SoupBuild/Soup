@@ -4,7 +4,6 @@
 
 using Opal;
 using Soup.Build.CSharp.Compiler;
-using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,7 +98,7 @@ namespace Soup.Build.CSharp
                     }
                 }
 
-                buildTable.EnsureValueList(this.factory, "RuntimeDependencies").SetAll(runtimeDependencies);
+                buildTable.EnsureValueList(this.factory, "RuntimeDependencies").SetAll(this.factory, runtimeDependencies);
             }
 
             // Load the extra library paths provided to the build system
@@ -172,9 +171,9 @@ namespace Soup.Build.CSharp
             buildTable["OptimizationLevel"] = this.factory.Create((long)optimizationLevel);
             buildTable["GenerateSourceDebugInfo"] = this.factory.Create(generateSourceDebugInfo);
 
-            buildTable.EnsureValueList(this.factory, "LinkLibraries").Append(linkLibraries);
+            buildTable.EnsureValueList(this.factory, "LinkLibraries").Append(this.factory, linkLibraries);
             buildTable.EnsureValueList(this.factory, "PreprocessorDefinitions").Append(this.factory, preprocessorDefinitions);
-            buildTable.EnsureValueList(this.factory, "LibraryPaths").Append(libraryPaths);
+            buildTable.EnsureValueList(this.factory, "LibraryPaths").Append(this.factory, libraryPaths);
             buildTable.EnsureValueList(this.factory, "Source").Append(this.factory, sourceFiles);
 
             buildTable["EnableWarningsAsErrors"] = this.factory.Create(enableWarningsAsErrors);

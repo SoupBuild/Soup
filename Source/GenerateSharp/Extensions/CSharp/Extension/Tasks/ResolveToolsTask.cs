@@ -4,8 +4,6 @@
 
 using Opal;
 using Opal.System;
-using Soup.Build.Runtime;
-using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,8 +74,8 @@ namespace Soup.Build.CSharp
             var cscToolPath = roslynFolder + new Path("csc.exe");
 
             // Save the build properties
-            state["Roslyn.BinRoot"] = new Value(roslynFolder.ToString());
-            state["Roslyn.CscToolPath"] = new Value(cscToolPath.ToString());
+            state["Roslyn.BinRoot"] = this.factory.Create(roslynFolder.ToString());
+            state["Roslyn.CscToolPath"] = this.factory.Create(cscToolPath.ToString());
 
             // Save the platform libraries
             state["PlatformLibraries"] = this.factory.Create("");
@@ -88,8 +86,8 @@ namespace Soup.Build.CSharp
             }
 
             linkDependencies.AddRange(GetPlatformLibraries());
-            buildTable["LinkDependencies"] = new Value(new ValueList(
-                linkDependencies.Select(value => new Value(value.ToString()))));
+            buildTable["LinkDependencies"] = this.factory.Create(
+                this.factory.CreateList().SetAll(this.factory, linkDependencies));
         }
 
         private IEnumerable<Path> GetPlatformLibraries()

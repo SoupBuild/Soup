@@ -5,7 +5,7 @@
 using Opal;
 using System;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build
 {
 	/// <summary>
 	/// A package reference object which will consist of a name version pair that

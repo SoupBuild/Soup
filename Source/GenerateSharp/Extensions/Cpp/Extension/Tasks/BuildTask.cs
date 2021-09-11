@@ -2,7 +2,6 @@
 
 using Opal;
 using Soup.Build.Cpp.Compiler;
-using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -180,13 +179,13 @@ namespace Soup.Build.Cpp
             var buildResult = buildEngine.Execute(this.buildState, arguments);
 
             // Pass along internal state for other stages to gain access
-            buildTable.EnsureValueList(this.factory, "InternalLinkDependencies").SetAll(buildResult.InternalLinkDependencies);
+            buildTable.EnsureValueList(this.factory, "InternalLinkDependencies").SetAll(this.factory, buildResult.InternalLinkDependencies);
 
             // Always pass along required input to shared build tasks
             var sharedBuildTable = sharedState.EnsureValueTable(this.factory, "Build");
-            sharedBuildTable.EnsureValueList(this.factory, "ModuleDependencies").SetAll(buildResult.ModuleDependencies);
-            sharedBuildTable.EnsureValueList(this.factory, "RuntimeDependencies").SetAll(buildResult.RuntimeDependencies);
-            sharedBuildTable.EnsureValueList(this.factory, "LinkDependencies").SetAll(buildResult.LinkDependencies);
+            sharedBuildTable.EnsureValueList(this.factory, "ModuleDependencies").SetAll(this.factory, buildResult.ModuleDependencies);
+            sharedBuildTable.EnsureValueList(this.factory, "RuntimeDependencies").SetAll(this.factory, buildResult.RuntimeDependencies);
+            sharedBuildTable.EnsureValueList(this.factory, "LinkDependencies").SetAll(this.factory, buildResult.LinkDependencies);
 
             if (!buildResult.TargetFile.IsEmpty)
             {

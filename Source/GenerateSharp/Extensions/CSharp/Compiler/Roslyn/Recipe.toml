@@ -1,6 +1,6 @@
 Name = "Soup.CSharp.Compiler.Roslyn"
 Language = "C#"
-Version = "0.1.1"
+Version = "0.1.2"
 Source = [
 	"ArgumentBuilder.cs",
 	"Compiler.cs",
@@ -9,6 +9,6 @@ Source = [
 [Dependencies]
 Runtime = [
 	"Opal@1.0.1",
-	"Soup.CSharp.Compiler@0.1.1",
-	"Soup.Build.Extensions@0.1.5",
+	"Soup.CSharp.Compiler@0.1.2",
+	"Soup.Build.Extensions@0.1.6",
 ]
