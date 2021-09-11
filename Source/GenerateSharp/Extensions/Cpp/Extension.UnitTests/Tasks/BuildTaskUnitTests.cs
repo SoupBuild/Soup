@@ -19,7 +19,8 @@ namespace Soup.Build.Cpp.UnitTests
         public void Initialize_Success()
         {
             var buildState = new MockBuildState();
-            var uut = new BuildTask(buildState);
+            var factory = new ValueFactory();
+            var uut = new BuildTask(buildState, factory);
         }
 
         [Fact]
@@ -64,7 +65,8 @@ namespace Soup.Build.Cpp.UnitTests
                 var compilerFactory = new Dictionary<string, Func<IValueTable, ICompiler>>();
                 compilerFactory.Add("MOCK", (IValueTable state) => { return compiler; });
 
-                var uut = new BuildTask(buildState, compilerFactory);
+                var factory = new ValueFactory();
+                var uut = new BuildTask(buildState, factory, compilerFactory);
 
                 uut.Execute();
 
@@ -231,7 +233,8 @@ namespace Soup.Build.Cpp.UnitTests
                 var compilerFactory = new Dictionary<string, Func<IValueTable, ICompiler>>();
                 compilerFactory.Add("MOCK", (IValueTable state) => { return compiler; });
 
-                var uut = new BuildTask(buildState, compilerFactory);
+                var factory = new ValueFactory();
+                var uut = new BuildTask(buildState, factory, compilerFactory);
 
                 uut.Execute();
 
@@ -456,7 +459,8 @@ namespace Soup.Build.Cpp.UnitTests
                 var compilerFactory = new Dictionary<string, Func<IValueTable, ICompiler>>();
                 compilerFactory.Add("MOCK", (IValueTable state) => { return compiler; });
 
-                var uut = new BuildTask(buildState, compilerFactory);
+                var factory = new ValueFactory();
+                var uut = new BuildTask(buildState, factory, compilerFactory);
 
                 uut.Execute();
 
@@ -714,7 +718,8 @@ namespace Soup.Build.Cpp.UnitTests
                 var compilerFactory = new Dictionary<string, Func<IValueTable, ICompiler>>();
                 compilerFactory.Add("MOCK", (IValueTable state) => { return compiler; });
 
-                var uut = new BuildTask(buildState, compilerFactory);
+                var factory = new ValueFactory();
+                var uut = new BuildTask(buildState, factory, compilerFactory);
 
                 uut.Execute();
 

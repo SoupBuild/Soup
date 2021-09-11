@@ -9,7 +9,7 @@ namespace Soup::Build::Runtime
 	/// <summary>
 	/// Build list implementation for simple objects
 	/// </summary>
-	export class ValueList : public IValueList
+	export class ValueList
 	{
 	public:
 		/// <summary>
@@ -31,40 +31,22 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Size access methods
 		/// </summary>
-		uint64_t GetSize() const noexcept override final
+		uint64_t GetSize() const noexcept
 		{
 			return _values.size();
 		}
 
-		ApiCallResult TryResize(uint64_t size) noexcept override final
+		void Resize(uint64_t size)
 		{
-			try
-			{
-				_values.resize(size);
-				return ApiCallResult::Success;
-			}
-			catch (...)
-			{
-				// Unknown error
-				return ApiCallResult::Error;
-			}
+			_values.resize(size);
 		}
 
 		/// <summary>
 		/// Type specific accessor methods
 		/// </summary>
-		ApiCallResult TryGetValueAt(uint64_t index, IValue*& result) noexcept override final
+		Value& GetValueAt(uint64_t index)
 		{
-			try
-			{
-				result = &_values.at(index);
-				return ApiCallResult::Success;
-			}
-			catch (...)
-			{
-				// Unknown error
-				return ApiCallResult::Error;
-			}
+			return _values.at(index);
 		}
 
 		/// <summary>

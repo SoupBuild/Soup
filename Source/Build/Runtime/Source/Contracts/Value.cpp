@@ -71,193 +71,47 @@ ValueType Value::GetType() const noexcept
 		else if (valueType == typeid(ValuePrimitive<bool>))
 			return ValueType::Boolean;
 		else
-			return ValueType::Empty;
+			// TODO: Remove
+			return ValueType::Table;
 	}
 	else
 	{
-		return ValueType::Empty;
+		// TODO: Remove
+		return ValueType::Table;
 	}
 }
 
-ApiCallResult Value::TrySetType(ValueType type) noexcept
+void Value::SetType(ValueType type)
 {
-	try
-	{
-		auto currentType = GetType();
+	auto currentType = GetType();
 
-		// Ignore requests to set to same type
-		if (currentType != type)
-		{
-			switch (type)
-			{
-				case ValueType::Table:
-					_value = ValueTable();
-					break;
-				case ValueType::List:
-					_value = ValueList();
-					break;
-				case ValueType::String:
-					_value = ValuePrimitive<const char*>();
-					break;
-				case ValueType::Integer:
-					_value = ValuePrimitive<int64_t>();
-					break;
-				case ValueType::Float:
-					_value = ValuePrimitive<double>();
-					break;
-				case ValueType::Boolean:
-					_value = ValuePrimitive<bool>();
-					break;
-				default:
-					// Unknown type
-					return ApiCallResult::Error;
-			}
-		}
-
-		return ApiCallResult::Success;
-	}
-	catch (...)
+	// Ignore requests to set to same type
+	if (currentType != type)
 	{
-		// Unknown error
-		return ApiCallResult::Error;
-	}
-}
-
-ApiCallResult Value::TryGetAsTable(IValueTable*& result) noexcept
-{
-	try
-	{
-		result = nullptr;
-		if (_value.type() == typeid(ValueTable))
+		switch (type)
 		{
-			result = &std::any_cast<ValueTable&>(_value);
-			return ApiCallResult::Success;
+			case ValueType::Table:
+				_value = ValueTable();
+				break;
+			case ValueType::List:
+				_value = ValueList();
+				break;
+			case ValueType::String:
+				_value = ValuePrimitive<const char*>();
+				break;
+			case ValueType::Integer:
+				_value = ValuePrimitive<int64_t>();
+				break;
+			case ValueType::Float:
+				_value = ValuePrimitive<double>();
+				break;
+			case ValueType::Boolean:
+				_value = ValuePrimitive<bool>();
+				break;
+			default:
+				// Unknown type
+				throw std::runtime_error("Unknown type");
 		}
-		else
-		{
-			// Wrong type
-			return ApiCallResult::Error;
-		}
-	}
-	catch (...)
-	{
-		// Unknown errors
-		return ApiCallResult::Error;
-	}
-}
-
-ApiCallResult Value::TryGetAsList(IValueList*& result) noexcept
-{
-	try
-	{
-		result = nullptr;
-		if (_value.type() == typeid(ValueList))
-		{
-			result = &std::any_cast<ValueList&>(_value);
-			return ApiCallResult::Success;
-		}
-		else
-		{
-			// Wrong type
-			return ApiCallResult::Error;
-		}
-	}
-	catch (...)
-	{
-		// Unknown errors
-		return ApiCallResult::Error;
-	}
-}
-
-ApiCallResult Value::TryGetAsString(IValuePrimitive<const char*>*& result) noexcept
-{
-	try
-	{
-		result = nullptr;
-		if (_value.type() == typeid(ValuePrimitive<const char*>))
-		{
-			result = &std::any_cast<ValuePrimitive<const char*>&>(_value);
-			return ApiCallResult::Success;
-		}
-		else
-		{
-			// Wrong type
-			return ApiCallResult::Error;
-		}
-	}
-	catch (...)
-	{
-		// Unknown errors
-		return ApiCallResult::Error;
-	}
-}
-
-ApiCallResult Value::TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexcept
-{
-	try
-	{
-		result = nullptr;
-		if (_value.type() == typeid(ValuePrimitive<int64_t>))
-		{
-			result = &std::any_cast<ValuePrimitive<int64_t>&>(_value);
-			return ApiCallResult::Success;
-		}
-		else
-		{
-			// Wrong type
-			return ApiCallResult::Error;
-		}
-	}
-	catch (...)
-	{
-		// Unknown errors
-		return ApiCallResult::Error;
-	}
-}
-
-ApiCallResult Value::TryGetAsFloat(IValuePrimitive<double>*& result) noexcept
-{
-	try
-	{
-		result = nullptr;
-		if (_value.type() == typeid(ValuePrimitive<double>))
-		{
-			result = &std::any_cast<ValuePrimitive<double>&>(_value);
-			return ApiCallResult::Success;
-		}
-		else
-		{
-			// Wrong type
-			return ApiCallResult::Error;
-		}
-	}
-	catch (...)
-	{
-		// Unknown errors
-		return ApiCallResult::Error;
-	}
-}
-
-ApiCallResult Value::TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept
-{
-	try
-	{
-		result = nullptr;
-		if (_value.type() == typeid(ValuePrimitive<bool>))
-		{
-			result = &std::any_cast<ValuePrimitive<bool>&>(_value);
-			return ApiCallResult::Success;
-		}
-		else
-		{
-			// Wrong type
-			return ApiCallResult::Error;
-		}
-	}
-	catch (...)
-	{
-		// Unknown errors
-		return ApiCallResult::Error;
 	}
 }
 
@@ -265,8 +119,6 @@ std::string Value::ToString()
 {
 	switch (GetType())
 	{
-		case ValueType::Empty:
-			return "";
 		case ValueType::Table:
 			return std::any_cast<ValueTable&>(_value).ToString();
 		case ValueType::List:
@@ -407,8 +259,6 @@ bool Value::operator ==(const Value& rhs) const
 	{
 		switch (GetType())
 		{
-			case ValueType::Empty:
-				return true;
 			case ValueType::Table:
 				return std::any_cast<const ValueTable&>(_value) == std::any_cast<const ValueTable&>(rhs._value);
 			case ValueType::List:

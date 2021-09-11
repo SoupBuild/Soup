@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Soup Rules" Description="Code analysis rules for Soup." ToolsVersion="14.0">
+  <Include Path="ExtendedRecommendedRules.ruleset" Action="Default" />
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <!-- BracesMustNotBeOmmited: Allow single line conditionals. -->
+    <Rule Id="SA1503" Action="None" />
+    <!-- ElementsMustBeDocumented: This rule causes useless comments that add nothing. -->
+    <Rule Id="CS1591" Action="None" />
+    <!-- ElementsMustBeDocumented: This rule causes useless comments that add nothing. -->
+    <Rule Id="SA1600" Action="None" />
+    <!-- ElementReturnValueMustBeDocumented: This rule causes useless comments that add nothing. -->
+    <Rule Id="SA1615" Action="None" />
+  </Rules>
+</RuleSet>

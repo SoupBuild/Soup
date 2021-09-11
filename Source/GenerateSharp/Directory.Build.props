@@ -1,0 +1,41 @@
+<Project>
+  <!-- Common Project Directories -->
+  <PropertyGroup>
+    <GenerateSharpDirectory>$(MSBuildThisFileDirectory.TrimEnd('\'))</GenerateSharpDirectory>
+    <SourceDirectory>$([System.IO.Path]::GetDirectoryName($(GenerateSharpDirectory)))</SourceDirectory>
+    <RootDirectory>$([System.IO.Path]::GetDirectoryName($(SourceDirectory)))</RootDirectory>
+    <OutDirectory>$(RootDirectory)\out\msbuild</OutDirectory>
+    <ObjectRoot>$(OutDirectory)\obj</ObjectRoot>
+    <BinaryRoot>$(OutDirectory)\bin</BinaryRoot>
+    <TempRoot>$(OutDirectory)\temp</TempRoot>
+  </PropertyGroup>
+
+  <!-- Setup a shared output directory -->
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(ObjectRoot)\$(MSBuildProjectName)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinaryRoot)\$(MSBuildProjectName)</BaseOutputPath>
+  </PropertyGroup>
+
+  <!-- Inject Analyzers into all projects -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" />
+    <!-- <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" /> -->
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Inject the shared StyleCop settings -->
+  <ItemGroup>
+    <AdditionalFiles Include="$(GenerateSharpDirectory)\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(GenerateSharpDirectory)\Soup.Rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <!-- Generate the XML documentation -->
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>

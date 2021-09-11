@@ -21,6 +21,7 @@ namespace Soup::Build::Runtime
 		static constexpr const char* Property_Language = "Language";
 		static constexpr const char* Property_Name = "Name";
 		static constexpr const char* Property_Version = "Version";
+		static constexpr const char* Property_Reference = "Reference";
 
 	public:
 		/// <summary>
@@ -95,7 +96,11 @@ namespace Soup::Build::Runtime
 
 		const std::string& GetName()
 		{
-			return GetNameValue().AsString();
+			auto& nameValue = GetNameValue();
+			if (nameValue.IsString())
+				return nameValue.AsString();
+			else
+				throw std::runtime_error("The Recipe name must be of type String");
 		}
 
 		void SetName(std::string_view value)
@@ -113,7 +118,11 @@ namespace Soup::Build::Runtime
 
 		const std::string& GetLanguage() const
 		{
-			return GetLanguageValue().AsString();
+			auto& languageValue = GetLanguageValue();
+			if (languageValue.IsString())
+				return languageValue.AsString();
+			else
+				throw std::runtime_error("The Recipe language must be of type String");
 		}
 
 		void SetLanguage(std::string_view value)
@@ -134,8 +143,11 @@ namespace Soup::Build::Runtime
 			if (!HasVersion())
 				throw std::runtime_error("No version.");
 
-			return SemanticVersion::Parse(
-				GetValue(_table, Property_Version).AsString());
+			auto& versionValue = GetValue(_table, Property_Version);
+			if (versionValue.IsString())
+				return SemanticVersion::Parse(versionValue.AsString());
+			else
+				throw std::runtime_error("The Recipe version must be of type String");
 		}
 
 		void SetVersion(SemanticVersion value)
@@ -160,7 +172,30 @@ namespace Soup::Build::Runtime
 			auto result = std::vector<PackageReference>();
 			for (auto& value : values)
 			{
-				result.push_back(PackageReference::Parse(value.AsString()));
+				// A dependency can either be a string or a table with reference key
+				if (value.IsString())
+				{
+					result.push_back(PackageReference::Parse(value.AsString()));
+				}
+				else if (value.IsTable())
+				{
+					auto& valueTable = value.AsTable();
+					if (!HasValue(valueTable, Property_Reference))
+						throw std::runtime_error("Recipe dependency table missing required Reference value.");
+					auto& referenceValue = GetValue(valueTable, Property_Reference);
+					if (referenceValue.IsString())
+					{
+						result.push_back(PackageReference::Parse(referenceValue.AsString()));
+					}
+					else
+					{
+						throw std::runtime_error("Recipe dependency Reference must be type String.");
+					}
+				}
+				else
+				{
+					throw std::runtime_error("Unknown Recipe dependency type.");
+				}
 			}
 
 			return result;

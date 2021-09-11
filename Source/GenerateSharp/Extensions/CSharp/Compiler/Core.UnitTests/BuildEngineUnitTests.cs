@@ -87,7 +87,8 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                     {
                         new Path("../Other/bin/OtherModule1.mock.a"),
                         new Path("../OtherModule2.mock.a"),
-                    }
+                    },
+                    NullableEnabled = false,
                 };
 
                 // Verify expected compiler calls
@@ -214,6 +215,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                     new Path("../Other/bin/OtherModule1.mock.a"),
                     new Path("../OtherModule2.mock.a"),
                 };
+                arguments.EnableNullable = true;
 
                 var uut = new BuildEngine(compiler);
                 var fileSystemState = new Runtime.FileSystemState();
@@ -255,6 +257,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                         new Path("../Other/bin/OtherModule1.mock.a"),
                         new Path("../OtherModule2.mock.a"),
                     },
+                    NullableEnabled = true,
                 };
 
                 // Verify expected compiler calls

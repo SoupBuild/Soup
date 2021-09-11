@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Soup.Build.PackageManager": {
+      "commandName": "Project",
+      "commandLineArgs": "publish-package C:\\Users\\mwasp\\source\\repos\\Soup\\Source\\GenerateSharp\\Contracts"
+    }
+  }
+}

@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <Platforms>AnyCPU;x64</Platforms>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Contracts\Soup.Build.Contracts.csproj">
-      <Private>false</Private>
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Utilities\Soup.Utilities.csproj" />
-    <ProjectReference Include="..\Compiler\Core\Soup.Cpp.Compiler.csproj" />
-    <ProjectReference Include="..\Compiler\MSVC\Soup.Cpp.Compiler.MSVC.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Build\Soup.Build.csproj">
+			<Private>false</Private>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</ProjectReference>
+		<ProjectReference Include="..\..\..\Utilities\Soup.Utilities.csproj" />
+		<ProjectReference Include="..\Compiler\Core\Soup.Cpp.Compiler.csproj" />
+		<ProjectReference Include="..\Compiler\MSVC\Soup.Cpp.Compiler.MSVC.csproj" />
+	</ItemGroup>
 </Project>

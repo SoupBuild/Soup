@@ -119,6 +119,7 @@ namespace Soup.Build.CSharp.Compiler
 					EnableWarningsAsErrors = arguments.EnableWarningsAsErrors,
 					DisabledWarnings = arguments.DisabledWarnings,
 					EnabledWarnings = arguments.EnabledWarnings,
+					NullableEnabled = arguments.EnableNullable,
 					CustomProperties = arguments.CustomProperties,
 					ReferenceLibraries = arguments.LinkDependencies,
 				};

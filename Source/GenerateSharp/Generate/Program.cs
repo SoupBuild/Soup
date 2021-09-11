@@ -1,15 +1,15 @@
 ﻿
 using Opal;
+using System.Threading.Tasks;
 
 namespace Soup.Build.Generate
 {
 	class Program
 	{
-		static int Main(string[] args)
+		static async Task<int> Main(string[] args)
 		{
 			// Register the runtime services
 			Log.RegisterListener(new ConsoleTraceListener());
-			// IFileSystem.Register(new RuntimeFileSystem());
 
 			if (args.Length != 1)
 			{
@@ -19,7 +19,7 @@ namespace Soup.Build.Generate
 
 			var soupTargetDirectory = new Path(args[0]);
 			var generateEngine = new BuildGenerateEngine();
-			generateEngine.Generate(soupTargetDirectory);
+			await generateEngine.GenerateAsync(soupTargetDirectory);
 
 			return 0;
 		}

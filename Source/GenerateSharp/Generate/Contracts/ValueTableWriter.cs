@@ -13,7 +13,7 @@ namespace Soup.Build.Generate
 	internal class ValueTableWriter
 	{
 		// Binary Value Table file format
-		private static uint FileVersion => 1;
+		private static uint FileVersion => 2;
 
 		public static void Serialize(IValueTable state, BinaryWriter writer)
 		{
@@ -26,16 +26,13 @@ namespace Soup.Build.Generate
 			WriteValue(writer, state);
 		}
 
-		private static void WriteValue(BinaryWriter writer, Value value)
+		private static void WriteValue(BinaryWriter writer, IValue value)
 		{
 			// Write the value type
 			writer.Write((uint)value.Type);
 
 			switch (value.Type)
 			{
-				case ValueType.Empty:
-					// Nothing to write
-					break;
 				case ValueType.Table:
 					WriteValue(writer, value.AsTable());
 					break;

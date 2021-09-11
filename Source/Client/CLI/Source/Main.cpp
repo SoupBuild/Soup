@@ -14,7 +14,6 @@
 
 import Monitor.Host;
 import Opal;
-import Opal.Extensions;
 import Soup.Core;
 
 using namespace Opal;

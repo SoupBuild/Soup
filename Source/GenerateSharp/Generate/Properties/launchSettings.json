@@ -2,7 +2,7 @@
   "profiles": {
     "Soup.Build.Generate": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\mwasp\\source\\repos\\Soup\\out\\C#\\Soup.Build.Generate\\d6cd8e54c2437463cfea37201849278a10a3fb82df1565fbc685206e25f5\\.soup"
+      "commandLineArgs": "C:\\Users\\mwasp\\source\\repos\\Soup\\out\\C#\\Samples.SimpleBuildExtension.Executable\\3d80717e7d2695f0a7aa5c38e2849624beeaa5714331ca96898fe4b8b8023fe\\.soup\\"
     }
   }
 }

@@ -10,7 +10,7 @@ namespace Soup::Build::Runtime
 	/// Build State Extension interface
 	/// </summary>
 	template<typename T>
-	class ValuePrimitive : public IValuePrimitive<T>
+	class ValuePrimitive
 	{
 	public:
 		/// <summary>
@@ -32,15 +32,9 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Type checker methods
 		/// </summary>
-		T GetValue() const noexcept override final
+		T GetValue() const noexcept
 		{
 			return _value;
-		}
-
-		ApiCallResult TrySetValue(T value) noexcept override final
-		{
-			_value = value;
-			return ApiCallResult::Success;
 		}
 
 		/// <summary>
@@ -72,7 +66,7 @@ namespace Soup::Build::Runtime
 	};
 
 	template<>
-	class ValuePrimitive<const char*> : public IValuePrimitive<const char*>
+	class ValuePrimitive<const char*>
 	{
 	public:
 		/// <summary>
@@ -94,24 +88,15 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Type checker methods
 		/// </summary>
-		const char* GetValue() const noexcept override final
+		const char* GetValue() const noexcept
 		{
 			return _value.c_str();
 		}
 
-		ApiCallResult TrySetValue(const char* value) noexcept override final
+		void SetValue(const char* value)
 		{
-			try
-			{
-				// String assign can fail
-				_value = value;
-				return ApiCallResult::Success;
-			}
-			catch(...)
-			{
-				// Unknown error
-				return ApiCallResult::Error;
-			}
+			// String assign can fail
+			_value = value;
 		}
 
 		/// <summary>

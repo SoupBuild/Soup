@@ -16,7 +16,8 @@ namespace Soup.Build.CSharp.UnitTests
         public void Initialize_Success()
         {
             var buildState = new MockBuildState();
-            var uut = new RecipeBuildTask(buildState);
+            var factory = new ValueFactory();
+            var uut = new RecipeBuildTask(buildState, factory);
         }
 
         [Fact]
@@ -47,7 +48,8 @@ namespace Soup.Build.CSharp.UnitTests
                 parametersTable.Add("Compiler", new Value("MOCK"));
                 parametersTable.Add("Flavor", new Value("debug"));
 
-                var uut = new RecipeBuildTask(buildState);
+                var factory = new ValueFactory();
+                var uut = new RecipeBuildTask(buildState, factory);
 
                 uut.Execute();
  

@@ -15,7 +15,7 @@ namespace Soup.Build.CSharp.Compiler.Mock
 	public class Compiler : ICompiler
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref='MockCompiler'/> class.
+		/// Initializes a new instance of the <see cref='Compiler'/> class.
 		/// </summary>
 		public Compiler()
 		{
