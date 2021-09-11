@@ -19,8 +19,6 @@
 export module Soup.Core;
 
 import Opal;
-import Soup.Build;
-import Soup.Build.Utilities;
 import Soup.Build.Runtime;
 import toml11;
 

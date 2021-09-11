@@ -11,14 +11,13 @@ namespace Soup::Build::Runtime
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	export class ValueTable : public IValueTable
+	export class ValueTable
 	{
 	public:
 		/// <summary>
 		/// Initializes a new instance of the BuildPropertyBag class
 		/// </summary>
 		ValueTable() :
-			_keyList(),
 			_values()
 		{
 		}
@@ -27,73 +26,23 @@ namespace Soup::Build::Runtime
 		/// Initializes a new instance of the BuildPropertyBag class
 		/// </summary>
 		ValueTable(std::map<std::string, Value> values) :
-			_keyList(),
 			_values(std::move(values))
 		{
-			UpdateKeys();
 		}
 
-		/// <summary>
-		/// Property access methods
-		/// </summary>
-		ApiCallResult TryHasValue(const char* name, bool& result) const noexcept override final
+		Value& GetValue(const char* name)
 		{
-			try
+			auto findResult = _values.find(name);
+			if (findResult != _values.end())
 			{
-				result = HasValue(name);
-				return ApiCallResult::Success;
+				return findResult->second;
 			}
-			catch (...)
+			else
 			{
-				// Unknown error
-				return ApiCallResult::Error;
+				// The property does not exists
+				throw std::runtime_error("Value does not exist.");
 			}
 		}
-
-		ApiCallResult TryGetValue(const char* name, IValue*& result) noexcept override final
-		{
-			try
-			{
-				result = nullptr;
-				auto findResult = _values.find(name);
-				if (findResult != _values.end())
-				{
-					result = &findResult->second;
-					return ApiCallResult::Success;
-				}
-				else
-				{
-					// The property does not exists
-					return ApiCallResult::Error;
-				}
-			}
-			catch (...)
-			{
-				// Unknown error
-				return ApiCallResult::Error;
-			}
-		}
-
-		ApiCallResult TryCreateValue(const char* name, IValue*& result) noexcept override final
-		{
-			try
-			{
-				result = nullptr;
-				result = &SetValue(name, Value());
-				return ApiCallResult::Success;
-			}
-			catch (...)
-			{
-				// Unknown error
-				return ApiCallResult::Error;
-			}
-		}
-
-		const IReadOnlyList<const char*>& GetValueKeyList() const noexcept override final
-		{
-			return _keyList;
-		}
-		
 
 		/// <summary>
 		/// Helper methods to make our lives easier
@@ -152,9 +101,6 @@ namespace Soup::Build::Runtime
 			auto insertResult = _values.emplace(name, std::move(value));
 			if (insertResult.second)
 			{
-				// Keep the key list in sync
-				UpdateKeys();
-
 				return insertResult.first->second;
 			}
 			else
@@ -202,7 +148,6 @@ namespace Soup::Build::Runtime
 		void Log()
 		{
 			auto stream = std::stringstream();
-			stream << "BuildState\n";
 			for (auto& value : _values)
 			{
 				stream << "\t" << value.first << "=\"" << value.second.ToString() << "\"\n";
@@ -228,20 +173,6 @@ namespace Soup::Build::Runtime
 		}
 
 	private:
-		/// <summary>
-		/// Helper function to keep the value keys list updated
-		/// </summary>
-		void UpdateKeys()
-		{
-			auto& keys = _keyList.GetValues();
-			keys.clear();
-			keys.reserve(_values.size());
-			for(auto& keyValue : _values)
-				keys.push_back(keyValue.first);
-		}
-
-	private:
-		Utilities::ReadOnlyStringList _keyList;
 		std::map<std::string, Value> _values;
 	};
 }

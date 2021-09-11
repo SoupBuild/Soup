@@ -29,8 +29,6 @@ Runtime = [
 	"json11@1.0.1",
 	"Opal@0.2.1",
 	"toml11@1.0.1",
-	"../Contracts/",
-	"../Utilities/",
 	"../../Monitor/Host/",
 ]
 Build = [

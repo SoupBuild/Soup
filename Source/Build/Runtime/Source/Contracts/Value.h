@@ -10,10 +10,20 @@ namespace Soup::Build::Runtime
 	export class ValueTable;
 	export class ValueList;
 
+	export enum class ValueType : uint64_t
+	{
+		Table = 1,
+		List = 2,
+		String = 3,
+		Integer = 4,
+		Float = 5,
+		Boolean = 6,
+	};
+
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	export class Value : public IValue
+	export class Value
 	{
 	public:
 		/// <summary>
@@ -30,18 +40,8 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Type checker methods
 		/// </summary>
-		ValueType GetType() const noexcept override final;
-		ApiCallResult TrySetType(ValueType type) noexcept override final;
-
-		/// <summary>
-		/// Type specific accessor methods
-		/// </summary>
-		ApiCallResult TryGetAsTable(IValueTable*& result) noexcept override final;
-		ApiCallResult TryGetAsList(IValueList*& result) noexcept override final;
-		ApiCallResult TryGetAsString(IValuePrimitive<const char*>*& result) noexcept override final;
-		ApiCallResult TryGetAsInteger(IValuePrimitive<int64_t>*& result) noexcept override final;
-		ApiCallResult TryGetAsFloat(IValuePrimitive<double>*& result) noexcept override final;
-		ApiCallResult TryGetAsBoolean(IValuePrimitive<bool>*& result) noexcept override final;
+		ValueType GetType() const noexcept;
+		void SetType(ValueType type);
 
 		/// <summary>
 		/// Internal accessors

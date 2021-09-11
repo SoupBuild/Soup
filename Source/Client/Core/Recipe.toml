@@ -13,8 +13,6 @@ IncludePaths = [
 
 [Dependencies]
 Runtime = [
-	"../../Build/Contracts/",
-	"../../Build/Utilities/",
 	"../../Build/Runtime/",
 ]
 Build = [
