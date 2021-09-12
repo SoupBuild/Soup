@@ -25,7 +25,7 @@ namespace Soup.Build
 		{
 			var title = $"Copy [{source}] -> [{destination}]";
 
-			var moduleName = LifetimeManager.Get<IProcessManager>().GetCurrentProcessFileName();
+			// TODO: var moduleName = LifetimeManager.Get<IProcessManager>().GetCurrentProcessFileName();
 			var moduleFolder = new Path("C:/Program Files/SoupBuild/Soup/"); // TODO: moduleName.GetParent();
 
 			var program = moduleFolder + new Path("copy.exe");
@@ -62,7 +62,7 @@ namespace Soup.Build
 
 			var title = $"MakeDir [{directory}]";
 
-			var moduleName = LifetimeManager.Get<IProcessManager>().GetCurrentProcessFileName();
+			// TODO: var moduleName = LifetimeManager.Get<IProcessManager>().GetCurrentProcessFileName();
 			var moduleFolder = new Path("C:/Program Files/SoupBuild/Soup/"); // TODO: moduleName.GetParent();
 
 			var program = moduleFolder + new Path("mkdir.exe");

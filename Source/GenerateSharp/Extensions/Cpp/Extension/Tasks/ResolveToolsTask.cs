@@ -35,11 +35,6 @@ namespace Soup.Build.Cpp
         {
             this.buildState = buildState;
             this.factory = factory;
-
-            if (!LifetimeManager.Has<IProcessManager>())
-            {
-                LifetimeManager.RegisterSingleton<IProcessManager, RuntimeProcessManager>();
-            }
         }
 
         /// <summary>

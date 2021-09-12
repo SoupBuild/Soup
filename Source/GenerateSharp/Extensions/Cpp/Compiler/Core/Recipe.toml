@@ -1,6 +1,6 @@
 Name = "Soup.Cpp.Compiler"
 Language = "C#"
-Version = "0.1.2"
+Version = "0.1.3"
 Source = [
 	"BuildArguments.cs",
 	"BuildEngine.cs",
@@ -15,5 +15,5 @@ Source = [
 Runtime = [
 	{ Reference = "Opal@1.0.1" },
 	{ Reference = "Soup.Build@0.1.3", ExcludeRuntime = true },
-	{ Reference = "Soup.Build.Extensions@0.1.6" },
+	{ Reference = "Soup.Build.Extensions@0.1.7" },
 ]
