@@ -232,14 +232,23 @@ namespace Soup::Build
 				"Build",
 			});
 
-			for (auto knownDependecyType : knownDependecyTypes)
+			for (auto dependecyType : knownDependecyTypes)
 			{
-				if (recipe.HasNamedDependencies(knownDependecyType))
+				if (recipe.HasNamedDependencies(dependecyType))
 				{
-					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
+					// Same language as parent is implied
+					auto implicitLanguage = recipe.GetLanguage();
+					if (dependecyType == "Build")
+					{
+						// Build dependencies do not inherit the parent language
+						// Instead, they default to C#
+						implicitLanguage = "C#";
+					}
+
+					for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 					{
 						// Load this package recipe
-						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, recipe.GetLanguage());
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
 						auto packageRecipePath = packagePath + Runtime::BuildConstants::RecipeFileName();
 						Runtime::Recipe dependencyRecipe = {};
 						if (!_buildManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
@@ -267,7 +276,7 @@ namespace Soup::Build
 						}
 
 						// Build all recursive dependencies
-						bool isDependencyHostBuild = isHostBuild || knownDependecyType == "Build";
+						bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
 						projectId = BuildRecipeAndDependencies(
 							projectId,
 							packagePath,
@@ -684,18 +693,27 @@ namespace Soup::Build
 			});
 
 			auto result = Runtime::ValueTable();
-			for (auto knownDependecyType : knownDependecyTypes)
+			for (auto dependecyType : knownDependecyTypes)
 			{
-				if (recipe.HasNamedDependencies(knownDependecyType))
+				if (recipe.HasNamedDependencies(dependecyType))
 				{
-					auto& dependencyTypeTable = result.SetValue(knownDependecyType, Runtime::Value(Runtime::ValueTable())).AsTable();
-					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
+					// Same language as parent is implied
+					auto implicitLanguage = recipe.GetLanguage();
+					if (dependecyType == "Build")
+					{
+						// Build dependencies do not inherit the parent language
+						// Instead, they default to C#
+						implicitLanguage = "C#";
+					}
+
+					auto& dependencyTypeTable = result.SetValue(dependecyType, Runtime::Value(Runtime::ValueTable())).AsTable();
+					for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 					{
 						// Load this package recipe
-						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, recipe.GetLanguage());
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
 
 						// Cache the build state for upstream dependencies
-						bool isDependencyHostBuild = isHostBuild || knownDependecyType == "Build";
+						bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
 						auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
 
 						auto findBuildCache = buildCache.find(packagePath);
@@ -743,17 +761,26 @@ namespace Soup::Build
 			});
 
 			auto result = std::set<Path>();
-			for (auto knownDependecyType : knownDependecyTypes)
+			for (auto dependecyType : knownDependecyTypes)
 			{
-				if (recipe.HasNamedDependencies(knownDependecyType))
+				if (recipe.HasNamedDependencies(dependecyType))
 				{
-					for (auto dependency : recipe.GetNamedDependencies(knownDependecyType))
+					// Same language as parent is implied
+					auto implicitLanguage = recipe.GetLanguage();
+					if (dependecyType == "Build")
+					{
+						// Build dependencies do not inherit the parent language
+						// Instead, they default to C#
+						implicitLanguage = "C#";
+					}
+
+					for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 					{
 						// Load this package recipe
-						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, recipe.GetLanguage());
+						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
 
 						// Cache the build state for upstream dependencies
-						bool isDependencyHostBuild = isHostBuild || knownDependecyType == "Build";
+						bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
 						auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
 
 						auto findBuildCache = buildCache.find(packagePath);

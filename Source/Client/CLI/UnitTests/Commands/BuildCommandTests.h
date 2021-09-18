@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+#include "InitializeCommand.h"
+
 namespace Soup::Client::UnitTests
 {
 	/// <summary>
@@ -13,7 +16,8 @@ namespace Soup::Client::UnitTests
 		// [[Fact]]
 		void NameIsCorrect()
 		{
-			auto uut = InitializeCommand();
+			auto options = InitializeOptions();
+			auto uut = InitializeCommand(options);
 		}
 	};
 }

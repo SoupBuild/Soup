@@ -1,3 +1,5 @@
+#include <iostream>
+
 import Soup.Core;
 import Soup.Test.Assert;
 

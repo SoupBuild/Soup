@@ -20,8 +20,8 @@ namespace Soup.Build.PackageManager
 	{
 		private static string StagingFolderName => ".staging/";
 
-		private static string SoupApiEndpoint => "https://localhost:7071";
-		//// private static string SoupApiEndpoint => "https://api.soupbuild.com";
+		//// private static string SoupApiEndpoint => "https://localhost:7071";
+		private static string SoupApiEndpoint => "https://api.soupbuild.com";
 
 		/// <summary>
 		/// Install packages
@@ -420,6 +420,15 @@ namespace Soup.Build.PackageManager
 			{
 				if (recipe.HasNamedDependencies(dependecyType))
 				{
+					// Same language as parent is implied
+					var implicitLanguage = recipe.Language;
+					if (dependecyType == "Build")
+					{
+						// Build dependencies do not inherit the parent language
+						// Instead, they default to C#
+						implicitLanguage = "C#";
+					}
+
 					foreach (var dependency in recipe.GetNamedDependencies(dependecyType))
 					{
 						// If local then check children for external package references
@@ -434,9 +443,8 @@ namespace Soup.Build.PackageManager
 						}
 						else
 						{
-							// TODO: Assume the same language for now
 							await EnsurePackageDownloadedAsync(
-								recipe.Language,
+								implicitLanguage,
 								dependency.GetName,
 								dependency.Version,
 								packagesDirectory,
