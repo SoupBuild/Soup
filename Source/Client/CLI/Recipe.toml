@@ -1,6 +1,6 @@
 Name = "Soup"
 Language = "C++"
-Version = "0.12.8"
+Version = "0.13.0"
 Type = "Executable"
 
 Source = [

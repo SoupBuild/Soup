@@ -50,7 +50,7 @@ class Script
         };
 
         // Upgrade values
-        project.Version = new Version(0, 12, 8);
+        project.Version = new Version(0, 13, 0);
 
         Compiler.BuildMsi(project);
     }
