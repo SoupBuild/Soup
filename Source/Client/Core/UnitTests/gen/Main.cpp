@@ -10,7 +10,6 @@
 #include <vector>
 
 import Opal;
-import Opal.Extensions;
 import Soup.Core;
 import json11;
 import Soup.Test.Assert;
@@ -18,9 +17,6 @@ import Soup.Test.Assert;
 using namespace Opal;
 using namespace Opal::System;
 using namespace Soup::Test;
-
-#include "Api/SoupApiTests.gen.h"
-#include "Api/SoupApiJsonModelsTests.gen.h"
 
 #include "Package/PackageManagerTests.gen.h"
 #include "Package/RecipeBuilderTests.gen.h"
@@ -31,9 +27,6 @@ int main()
 	std::cout << "Running Tests..." << std::endl;
 
 	TestState state = { 0, 0 };
-
-	state += RunSoupApiTests();
-	state += RunSoupApiJsonModelsTests();
 
 	state += RunPackageManagerTests();
 	state += RunRecipeBuilderTests();

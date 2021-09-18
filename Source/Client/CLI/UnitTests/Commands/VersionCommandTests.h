@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#pragma once
+#include "VersionCommand.h"
+
 namespace Soup::Client::UnitTests
 {
 	/// <summary>
@@ -13,7 +16,8 @@ namespace Soup::Client::UnitTests
 		// [[Fact]]
 		void Initialize()
 		{
-			auto uut = VersionCommand();
+			auto options = VersionOptions();
+			auto uut = VersionCommand(options);
 		}
 	};
 }

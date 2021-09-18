@@ -32,7 +32,7 @@ Runtime = [
 	"../../Monitor/Host/",
 ]
 Build = [
-	# TODO "../../Extensions/TestBuild/",
+	# "../../../../SoupTest/Cpp",
 ]
 Test = [
 	"Soup.Test.Assert@0.1.8",

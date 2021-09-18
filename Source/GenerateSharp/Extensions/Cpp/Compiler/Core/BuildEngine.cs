@@ -206,9 +206,6 @@ namespace Soup.Build.Cpp.Compiler
 			// Translate the target type into the link target
 			// and determine what dependencies to inject into downstream builds
 
-			// Pass along all runtime dependencies
-			result.RuntimeDependencies = new List<Path>(arguments.RuntimeDependencies);
-
 			switch (arguments.TargetType)
 			{
 				case BuildTargetType.StaticLibrary:
@@ -307,6 +304,17 @@ namespace Soup.Build.Cpp.Compiler
 						source,
 						target);
 					result.BuildOperations.Add(operation);
+
+					// Add the copied file as the new runtime dependency
+					result.RuntimeDependencies.Add(target);
+				}
+			}
+			else
+			{
+				// Pass along all runtime dependencies in their original location
+				foreach (var source in arguments.RuntimeDependencies)
+				{
+					result.RuntimeDependencies.Add(source);
 				}
 			}
 		}

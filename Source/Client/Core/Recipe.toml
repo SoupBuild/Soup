@@ -16,7 +16,7 @@ Runtime = [
 	"../../Build/Runtime/",
 ]
 Build = [
-	# TODO: "../../Extensions/TestBuild/",
+	"Soup.Test.Cpp@0.1.1",
 ]
 Test = [
 	"Soup.Test.Assert@0.1.8",
