@@ -1,4 +1,4 @@
-Name = "Soup.Cpp.Compiler.MSVC"
+Name = "Soup.CSharp.Compiler.Roslyn"
 Language = "C#"
 Version = "0.1.4"
 Source = [
@@ -9,6 +9,6 @@ Source = [
 [Dependencies]
 Runtime = [
 	"Opal@1.0.1",
-	"Soup.Cpp.Compiler@0.1.3",
+	"Soup.CSharp.Compiler@0.1.3",
 	"Soup.Build.Extensions@0.1.7",
 ]

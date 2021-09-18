@@ -17,6 +17,7 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\Utilities\Soup.Utilities.csproj" />
 		<ProjectReference Include="..\Extension\Soup.Cpp.csproj" />
 	</ItemGroup>
 </Project>

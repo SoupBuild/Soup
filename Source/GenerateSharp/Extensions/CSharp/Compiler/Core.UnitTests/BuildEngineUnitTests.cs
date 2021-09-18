@@ -2,7 +2,6 @@
 using Opal;
 using Opal.System;
 using Soup.Build.Runtime;
-using Soup.Build.Utilities;
 using System.Collections.Generic;
 using Xunit;
 

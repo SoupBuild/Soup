@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Soup.Build.Utilities
+namespace Soup.Build
 {
 	public class BuildOperation : IEquatable<BuildOperation>
 	{

@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Utilities;
 using System.Collections.Generic;
 
 namespace Soup.Build.CSharp.Compiler

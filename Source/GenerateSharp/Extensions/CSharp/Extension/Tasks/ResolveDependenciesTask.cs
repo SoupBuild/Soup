@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -65,9 +64,9 @@ namespace Soup.Build.CSharp
                         {
                             var dependencyBuildTable = buildValue.AsTable();
                             var dependencyReference = GetRuntimeDependencyParameterReference(parametersTable, dependencyName);
-                            var depdencyRecipeReference = GetRuntimeDependencyReference(recipeTable, dependencyReference);
+                            var dependencyRecipeReference = GetRuntimeDependencyReference(recipeTable, dependencyReference);
 
-                            if (!depdencyRecipeReference.ExcludeRuntime)
+                            if (!dependencyRecipeReference.ExcludeRuntime)
                             {
                                 if (dependencyBuildTable.TryGetValue("RuntimeDependencies", out var runtimeDependenciesValue))
                                 {

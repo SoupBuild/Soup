@@ -6,5 +6,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Build\Soup.Build.csproj" />
+		<ProjectReference Include="..\Opal\Opal.csproj" />
 	</ItemGroup>
 </Project>

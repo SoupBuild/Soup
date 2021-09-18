@@ -4,7 +4,6 @@
 
 using Opal;
 using Opal.System;
-using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -36,11 +35,6 @@ namespace Soup.Build.Cpp
         {
             this.buildState = buildState;
             this.factory = factory;
-
-            if (!LifetimeManager.Has<IProcessManager>())
-            {
-                LifetimeManager.RegisterSingleton<IProcessManager, RuntimeProcessManager>();
-            }
         }
 
         /// <summary>
@@ -193,9 +187,9 @@ namespace Soup.Build.Cpp
             // 	});
             // }
 
-            state.EnsureValueList(this.factory, "PlatformIncludePaths").SetAll(platformIncludePaths);
-            state.EnsureValueList(this.factory, "PlatformLibraryPaths").SetAll(platformLibraryPaths);
-            state.EnsureValueList(this.factory, "PlatformLibraries").SetAll(platformLibraries);
+            state.EnsureValueList(this.factory, "PlatformIncludePaths").SetAll(this.factory, platformIncludePaths);
+            state.EnsureValueList(this.factory, "PlatformLibraryPaths").SetAll(this.factory, platformLibraryPaths);
+            state.EnsureValueList(this.factory, "PlatformLibraries").SetAll(this.factory, platformLibraries);
             state.EnsureValueList(this.factory, "PlatformPreprocessorDefinitions").SetAll(this.factory, platformPreprocessorDefinitions);
         }
 

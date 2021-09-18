@@ -1214,7 +1214,8 @@ namespace Soup::Build::Runtime
 			if (wasBlocked)
 			{
 				auto filePath = Path(fileName);
-				Log::Warning("FileReadBlocked: " + filePath.ToString());
+				// TODO: Warning
+				Log::Info("FileReadBlocked: " + filePath.ToString());
 			}
 			else
 			{
@@ -1252,7 +1253,8 @@ namespace Soup::Build::Runtime
 			if (wasBlocked)
 			{
 				auto filePath = Path(fileName);
-				Log::Warning("FileWriteBlocked: " + filePath.ToString());
+				// TODO: Warning
+				Log::Info("FileWriteBlocked: " + filePath.ToString());
 			}
 			else
 			{
@@ -1289,7 +1291,8 @@ namespace Soup::Build::Runtime
 		{
 			if (wasBlocked)
 			{
-				Log::Warning("FileDeleteBlocked: " + filePath.ToString());
+				// TODO: Warning
+				Log::Info("FileDeleteBlocked: " + filePath.ToString());
 			}
 			else
 			{

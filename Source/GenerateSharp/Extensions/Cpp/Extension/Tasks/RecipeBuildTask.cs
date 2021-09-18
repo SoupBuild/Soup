@@ -4,7 +4,6 @@
 
 using Opal;
 using Soup.Build.Cpp.Compiler;
-using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,7 +111,7 @@ namespace Soup.Build.Cpp
                     }
                 }
 
-                buildTable.EnsureValueList(this.factory, "RuntimeDependencies").SetAll(runtimeDependencies);
+                buildTable.EnsureValueList(this.factory, "RuntimeDependencies").SetAll(this.factory, runtimeDependencies);
             }
 
             // Combine the include paths from the recipe and the system
@@ -208,11 +207,11 @@ namespace Soup.Build.Cpp
             buildTable["OptimizationLevel"] = this.factory.Create((long)optimizationLevel);
             buildTable["GenerateSourceDebugInfo"] = this.factory.Create(generateSourceDebugInfo);
 
-            buildTable.EnsureValueList(this.factory, "PlatformLibraries").Append(platformLibraries);
-            buildTable.EnsureValueList(this.factory, "LinkLibraries").Append(linkLibraries);
+            buildTable.EnsureValueList(this.factory, "PlatformLibraries").Append(this.factory, platformLibraries);
+            buildTable.EnsureValueList(this.factory, "LinkLibraries").Append(this.factory, linkLibraries);
             buildTable.EnsureValueList(this.factory, "PreprocessorDefinitions").Append(this.factory, preprocessorDefinitions);
-            buildTable.EnsureValueList(this.factory, "IncludeDirectories").Append(includePaths);
-            buildTable.EnsureValueList(this.factory, "LibraryPaths").Append(libraryPaths);
+            buildTable.EnsureValueList(this.factory, "IncludeDirectories").Append(this.factory, includePaths);
+            buildTable.EnsureValueList(this.factory, "LibraryPaths").Append(this.factory, libraryPaths);
             buildTable.EnsureValueList(this.factory, "Source").Append(this.factory, sourceFiles);
 
             buildTable["EnableWarningsAsErrors"] = this.factory.Create(enableWarningsAsErrors);

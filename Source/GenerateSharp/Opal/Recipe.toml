@@ -1,6 +1,6 @@
 Name = "Opal"
 Language = "C#"
-Version = "1.0.0"
+Version = "1.0.1"
 Source = [
 	"IO/IConsoleInputStream.cs",
 	"IO/IConsoleManager.cs",
@@ -10,12 +10,13 @@ Source = [
 	# "IO/SystemConsoleManager.cs",
 	"Logger/ConsoleTraceListener.cs",
 	"Logger/EventTypeFilter.cs",
+	"Logger/IEventFilter.cs",
 	"Logger/Log.cs",
 	"Logger/ScopedTraceListenerRegister.cs",
 	"Logger/TestTraceListener.cs",
 	# "Logger/TextWriterExtendedTraceListener.cs",
 	"Logger/TraceListener.cs",
-	"System/IFile.cs",
+	"System/DirectoryEntry.cs",
 	"System/IFileSystem.cs",
 	"System/IInputFile.cs",
 	"System/ILibrary.cs",
