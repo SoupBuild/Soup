@@ -23,7 +23,7 @@ Runtime = [
 	"../../Monitor/Host/",
 ]
 Build = [
-	# "../../../../SoupTest/Cpp/TestBuild/",
+	# TODO: "Soup.Test.Cpp@0.1.1",
 ]
 Test = [
 	"Soup.Test.Assert@0.1.8",

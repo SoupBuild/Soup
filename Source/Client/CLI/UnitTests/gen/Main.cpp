@@ -1,8 +1,11 @@
+#include <chrono>
 #include <iostream>
 
+import Opal;
 import Soup.Core;
 import Soup.Test.Assert;
 
+using namespace Opal;
 using namespace Soup::Test;
 
 #include "Commands/BuildCommandTests.gen.h"

@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "InitializeCommand.h"
+#include "BuildCommand.h"
 
 namespace Soup::Client::UnitTests
 {
@@ -16,8 +16,8 @@ namespace Soup::Client::UnitTests
 		// [[Fact]]
 		void NameIsCorrect()
 		{
-			auto options = InitializeOptions();
-			auto uut = InitializeCommand(options);
+			auto options = BuildOptions();
+			auto uut = BuildCommand(options);
 		}
 	};
 }
