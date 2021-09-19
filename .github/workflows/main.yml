@@ -2,7 +2,7 @@ name: CI
 on: 
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -19,34 +19,3 @@ jobs:
         version: latest
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
-
-    - name: Build Utilities UnitTests
-      run: soup build Source/Build/Utilities.UnitTests/
-    - name: Run Utilities UnitTests
-      run: soup run Source/Build/Utilities.UnitTests/
-
-    - name: Build Extensions Cpp Compiler Core UnitTests
-      run: soup build Source/Extensions/Cpp/Compiler/Core.UnitTests/
-    - name: Run Extensions Cpp Compiler Core UnitTests
-      run: soup run Source/Extensions/Cpp/Compiler/Core.UnitTests/
-
-    - name: Build Extensions Cpp Compiler Clang UnitTests
-      run: soup build Source/Extensions/Cpp/Compiler/Clang.UnitTests/
-    - name: Run Extensions Cpp Compiler Clang UnitTests
-      run: soup run Source/Extensions/Cpp/Compiler/Clang.UnitTests/
-
-    - name: Build Extensions Cpp Compiler MSVC UnitTests
-      run: soup build Source/Extensions/Cpp/Compiler/MSVC.UnitTests/
-    - name: Run Extensions Cpp Compiler MSVC UnitTests
-      run: soup run Source/Extensions/Cpp/Compiler/MSVC.UnitTests/
-
-    - name: Build Extensions CSharp Compiler Core UnitTests
-      run: soup build Source/Extensions/CSharp/Compiler/Core.UnitTests/
-    - name: Run Extensions CSharp Compiler Core UnitTests
-      run: soup run Source/Extensions/CSharp/Compiler/Core.UnitTests/
-
-    # openssl not available on CI build
-    # - name: Build Client Core UnitTests
-    #   run: soup build Source/Client/Core.UnitTests/
-    # - name: Run Client Core UnitTests
-    #   run: soup run Source/Client/Core.UnitTests/
