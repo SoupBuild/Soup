@@ -3,8 +3,6 @@ on:
   pull_request:
     branches:
       - main
-env:
-  DOTNET_VERSION: '5.0.301' # The .NET SDK version to use
 jobs:
   build:
     runs-on: windows-latest
@@ -17,7 +15,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: 5.0.x
     - name: Setup Soup Build
       uses: soupbuild/setup-soup@v1
       with:
@@ -25,9 +23,11 @@ jobs:
 
     # Build DotNet
     - name: DotNet Restore
-      run: dotnet restore Source/GenerateSharp/GenerateSharp.sln
+      run: dotnet restore Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Build
-      run: dotnet build --configuration Release --no-restore Source/GenerateSharp/GenerateSharp.sln
+      run: dotnet build --configuration Release --no-restore ./Source/GenerateSharp/GenerateSharp.sln
+    - name: DotNet Test
+      run: dotnet test --no-build --verbosity normal Source/GenerateSharp/GenerateSharp.sln
 
     # Build Soup
     - name: Soup Install
