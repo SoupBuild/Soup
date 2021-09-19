@@ -82,7 +82,7 @@ namespace Soup.Build.PackageManager
 			}
 			catch (Exception ex)
 			{
-				Log.HighPriority($"Unhandled error {ex.Message}");
+				Log.HighPriority($"Unhandled Error: {ex}");
 				return -2;
 			}
 		}

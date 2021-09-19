@@ -368,17 +368,14 @@ namespace Soup.Build.PackageManager
 				}
 
 				// Create the package folder to extract to
-				var stagingVersionFolder = stagingDirectory + new Path(packageName) + new Path(packageVersion.ToString()) + new Path("/");
+				var stagingVersionFolder = stagingDirectory + new Path($"{languageName}_{packageName}_{packageVersion}/");
 				LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingVersionFolder);
 
 				// Unpack the contents of the archive
 				ZipFile.ExtractToDirectory(archivePath.ToString(), stagingVersionFolder.ToString());
 
-				// Install transitive dependencies
-				await InstallRecursiveDependenciesAsync(
-					stagingVersionFolder,
-					packagesDirectory,
-					stagingDirectory);
+				// Delete the archive file
+				LifetimeManager.Get<IFileSystem>().DeleteFile(archivePath);
 
 				// Ensure the package root folder exists
 				if (!LifetimeManager.Get<IFileSystem>().Exists(packageRootFolder))
@@ -389,6 +386,12 @@ namespace Soup.Build.PackageManager
 
 				// Move the extracted contents into the version folder
 				LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
+
+				// Install transitive dependencies
+				await InstallRecursiveDependenciesAsync(
+					packageVersionFolder,
+					packagesDirectory,
+					stagingDirectory);
 			}
 		}
 
