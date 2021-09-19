@@ -21,9 +21,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
         {
             // Register the test mocks
             var testListener = new TestTraceListener();
-            var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
 
                 // Register the mock compiler
@@ -60,16 +58,6 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                     {
                     },
                     testListener.GetMessages());
-
-                // Verify expected process requests
-                Assert.Equal(
-                    new List<string>()
-                    {
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                    },
-                    processManager.GetRequests());
 
                 var expectedCompileArguments = new CompileArguments()
                 {
@@ -188,9 +176,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
         {
             // Register the test mocks
             var testListener = new TestTraceListener();
-            var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
                 // Register the mock compiler
                 var compiler = new Mock.Compiler();
@@ -227,16 +213,6 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
                     {
                     },
                     testListener.GetMessages());
-
-                // Verify expected process requests
-                Assert.Equal(
-                    new List<string>()
-                    {
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                    },
-                    processManager.GetRequests());
 
                 // Setup the shared arguments
                 var expectedCompileArguments = new CompileArguments()

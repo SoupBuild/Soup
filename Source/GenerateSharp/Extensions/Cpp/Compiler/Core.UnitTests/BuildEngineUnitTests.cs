@@ -21,9 +21,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
         {
             // Register the test mocks
             var testListener = new TestTraceListener();
-            var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
 
                 // Register the mock compiler
@@ -65,15 +63,6 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                         "INFO: Generate Link Operation: ./bin/Program.exe",
                     },
                     testListener.GetMessages());
-
-                // Verify expected process requests
-                Assert.Equal(
-                    new List<string>()
-                    {
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                    },
-                    processManager.GetRequests());
 
                 var expectedCompileArguments = new SharedCompileArguments()
                 {
@@ -198,9 +187,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
         {
             // Register the test mocks
             var testListener = new TestTraceListener();
-            var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
                 // Register the mock compiler
                 var compiler = new Mock.Compiler();
@@ -253,15 +240,6 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                         "INFO: Generate Link Operation: ./bin/Library.mock.lib",
                     },
                     testListener.GetMessages());
-
-                // Verify expected process requests
-                Assert.Equal(
-                    new List<string>()
-                    {
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                    },
-                    processManager.GetRequests());
 
                 // Setup the shared arguments
                 var expectedCompileArguments = new SharedCompileArguments()
@@ -438,9 +416,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
         {
             // Register the test mocks
             var testListener = new TestTraceListener();
-            var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
                 // Register the mock compiler
                 var compiler = new Mock.Compiler();
@@ -500,16 +476,6 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                         "INFO: Generate Link Operation: ./bin/Library.mock.lib",
                     },
                     testListener.GetMessages());
-
-                // Verify expected process requests
-                Assert.Equal(
-                    new List<string>()
-                    {
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                    },
-                    processManager.GetRequests());
 
                 // Setup the shared arguments
                 var expectedCompileArguments = new SharedCompileArguments()
@@ -727,9 +693,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
         {
             // Register the test mocks
             var testListener = new TestTraceListener();
-            var processManager = new MockProcessManager();
             using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
             {
                 // Register the mock compiler
                 var compiler = new Mock.Compiler();
@@ -776,16 +740,6 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                         "INFO: Generate Link Operation: ./bin/Library.mock.lib",
                     },
                     testListener.GetMessages());
-
-                // Verify expected process requests
-                Assert.Equal(
-                    new List<string>()
-                    {
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                    },
-                    processManager.GetRequests());
 
                 // Setup the shared arguments
                 var expectedCompileArguments = new SharedCompileArguments()
