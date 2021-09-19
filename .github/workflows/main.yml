@@ -19,7 +19,7 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Setup Soup Build
-      uses: soupbuild/setup-soup@v1.0.4
+      uses: soupbuild/setup-soup@v1
       with:
         version: latest
 
