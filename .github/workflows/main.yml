@@ -24,13 +24,13 @@ jobs:
         version: latest
 
     # Build DotNet
-    - name: Install dependencies
+    - name: DotNet Restore
       run: dotnet restore Source/GenerateSharp/GenerateSharp.sln
-    - name: Build
+    - name: DotNet Build
       run: dotnet build --configuration Release --no-restore Source/GenerateSharp/GenerateSharp.sln
 
     # Build Soup
     - name: Soup Install
       run: soup install Source/Client/CLI/ -v:d
     - name: Soup Build
-      run: soup build Source/Client/CLI/ -v:d
+      run: soup build Source/Client/CLI/ -v:d -flavor release
