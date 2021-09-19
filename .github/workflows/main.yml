@@ -23,14 +23,14 @@ jobs:
 
     # Build DotNet
     - name: DotNet Restore
-      run: dotnet restore Soup/Source/GenerateSharp/GenerateSharp.sln
+      run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Build
-      run: dotnet build --configuration Release --no-restore ./Source/GenerateSharp/GenerateSharp.sln
+      run: dotnet build --configuration Release --no-restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Test
-      run: dotnet test --no-build --verbosity normal Source/GenerateSharp/GenerateSharp.sln
+      run: dotnet test --no-build --verbosity normal ./Soup/Source/GenerateSharp/GenerateSharp.sln
 
     # Build Soup
     - name: Soup Install
-      run: soup install Source/Client/CLI/ -v:d
+      run: soup install ./Soup/Source/Client/CLI/ -v:d
     - name: Soup Build
-      run: soup build Source/Client/CLI/ -v:d -flavor release
+      run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor release
