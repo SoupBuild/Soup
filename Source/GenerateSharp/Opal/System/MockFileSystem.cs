@@ -122,17 +122,9 @@ namespace Opal.System
 		/// Open the requested file as a stream to read.
 		/// </summary>
 		/// <param name="path">The path.</param>
-		/// <param name="isBinary">A value indicating if is binary.</param>
-		public IInputFile OpenRead(Path path, bool isBinary)
+		public IInputFile OpenRead(Path path)
 		{
-			if (isBinary)
-			{
-				this.requests.Add($"OpenReadBinary: {path}");
-			}
-			else
-			{
-				this.requests.Add($"OpenRead: {path}");
-			}
+			this.requests.Add($"OpenRead: {path}");
 
 			if (this.files.TryGetValue(path, out var file))
 			{
@@ -148,12 +140,12 @@ namespace Opal.System
 		/// Open the requested file as a stream to write.
 		/// </summary>
 		/// <param name="path">The path.</param>
-		/// <param name="isBinary">A value indicating if is binary.</param>
-		public IOutputFile OpenWrite(Path path, bool isBinary)
+		/// <param name="truncate">A value indicating if open should truncate.</param>
+		public IOutputFile OpenWrite(Path path, bool truncate)
 		{
-			if (isBinary)
+			if (truncate)
 			{
-				this.requests.Add($"OpenWriteBinary: {path}");
+				this.requests.Add($"OpenWriteTruncate: {path}");
 			}
 			else
 			{

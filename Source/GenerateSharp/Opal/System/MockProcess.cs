@@ -6,11 +6,12 @@ namespace Opal.System
 {
     using global::System;
     using global::System.Collections.Generic;
+	using global::System.Threading.Tasks;
 
-    /// <summary>
-    /// A mock process executable using system.
-    /// </summary>
-    public class MockProcess : IProcess
+	/// <summary>
+	/// A mock process executable using system.
+	/// </summary>
+	public class MockProcess : IProcess
     {
         // Input
         private int id;
@@ -56,11 +57,12 @@ namespace Opal.System
         /// <summary>
         /// Wait for the process to exit.
         /// </summary>
-        public void WaitForExit()
+        public Task WaitForExitAsync()
         {
             this.requests.Add($"WaitForExit: {this.id}");
 
             this.isFinished = true;
+            return Task.CompletedTask;
         }
 
         /// <summary>

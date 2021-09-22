@@ -76,8 +76,7 @@ namespace Soup::Client
 			Build::Runtime::LocalUserConfig localUserConfig = {};
 			if (!Build::Runtime::LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
 			{
-				Log::Error("Local User Config invalid.");
-				return;
+				Log::Warning("Local User Config invalid.");
 			}
 
 			// Now build the current project

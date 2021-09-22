@@ -48,16 +48,17 @@ namespace Opal.System
 			throw new NotImplementedException();
 		}
 
-		public IInputFile OpenRead(Path path, bool isBinary)
+		public IInputFile OpenRead(Path path)
 		{
 			return new RuntimeInputFile(
 				global::System.IO.File.OpenRead(path.ToString()));
 		}
 
-		public IOutputFile OpenWrite(Path path, bool isBinary)
+		public IOutputFile OpenWrite(Path path, bool truncate)
 		{
+			var mode = truncate ? global::System.IO.FileMode.Create : global::System.IO.FileMode.OpenOrCreate;
 			return new RuntimeOutputFile(
-				global::System.IO.File.OpenWrite(path.ToString()));
+				global::System.IO.File.Open(path.ToString(), mode, global::System.IO.FileAccess.Write));
 		}
 
 		public virtual void Rename(Path source, Path destination)

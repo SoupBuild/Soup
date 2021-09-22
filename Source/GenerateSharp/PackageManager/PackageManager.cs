@@ -221,7 +221,7 @@ namespace Soup.Build.PackageManager
 						BearerToken = accessToken,
 					};
 
-					using (var readArchiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(archivePath, true))
+					using (var readArchiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(archivePath))
 					{
 						try
 						{

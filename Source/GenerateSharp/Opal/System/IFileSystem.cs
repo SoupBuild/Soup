@@ -47,15 +47,14 @@ namespace Opal.System
 		/// Open the requested file as a stream to read.
 		/// </summary>
 		/// <param name="path">The path.</param>
-		/// <param name="isBinary">A value indicating if read is binary.</param>
-		public IInputFile OpenRead(Path path, bool isBinary);
+		public IInputFile OpenRead(Path path);
 
 		/// <summary>
 		/// Open the requested file as a stream to write.
 		/// </summary>
 		/// <param name="path">The path.</param>
-		/// <param name="isBinary">A value indicating if write is binary.</param>
-		public IOutputFile OpenWrite(Path path, bool isBinary);
+		/// <param name="truncate">A value indicating if open should truncate file.</param>
+		public IOutputFile OpenWrite(Path path, bool truncate);
 
 		/// <summary>
 		/// Rename the source file to the destination.

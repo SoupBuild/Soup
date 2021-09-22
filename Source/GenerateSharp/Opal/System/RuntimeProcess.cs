@@ -6,11 +6,12 @@ namespace Opal.System
 {
     using global::System;
     using global::System.Diagnostics;
+	using global::System.Threading.Tasks;
 
-    /// <summary>
-    /// The shared runtime process executable using system.
-    /// </summary>
-    public class RuntimeProcess : IProcess
+	/// <summary>
+	/// The shared runtime process executable using system.
+	/// </summary>
+	public class RuntimeProcess : IProcess
     {
         // Input
         private Path executable;
@@ -58,11 +59,11 @@ namespace Opal.System
         /// <summary>
         /// Wait for the process to exit.
         /// </summary>
-        public void WaitForExit()
+        public Task WaitForExitAsync()
         {
             if (this.process is null)
                 throw new InvalidOperationException("Cannot wait on process that is not running");
-            this.process.WaitForExit();
+            return this.process.WaitForExitAsync();
         }
 
         /// <summary>
