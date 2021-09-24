@@ -36,7 +36,7 @@ namespace Soup.Build.Discover
 
 				// Load up the Local User Config
 				var localUserConfigPath = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-					new Path(".soup/LocalUserConfig2.toml");
+					new Path(".soup/LocalUserConfig.toml");
 				var (loadConfigResult, userConfig) = await LocalUserConfigExtensions.TryLoadLocalUserConfigFromFileAsync(localUserConfigPath);
 				if (!loadConfigResult)
 				{
@@ -44,17 +44,45 @@ namespace Soup.Build.Discover
 				}
 
 				// Find the Roslyn SDKs
-				var path = await VSWhereUtilities.FindRoslynInstallAsync();
+				var roslynInstallPath = await VSWhereUtilities.FindRoslynInstallAsync();
 
 				var roslynSDK = userConfig.EnsureSDK("Roslyn");
 				roslynSDK.SourceDirectories = new List<Path>()
 				{
-					path,
+					roslynInstallPath,
 				};
 				roslynSDK.SetProperties(
 					new Dictionary<string, string>()
 					{
-						{ "ToolsRoot", path.ToString() }
+						{ "ToolsRoot", roslynInstallPath.ToString() },
+					});
+
+				var msvcVersion = "14.29.30133";
+				var msvcInstallPath = new Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/");
+				var msvcSDK = userConfig.EnsureSDK("MSVC");
+				msvcSDK.SourceDirectories = new List<Path>()
+				{
+					msvcInstallPath,
+				};
+				msvcSDK.SetProperties(
+					new Dictionary<string, string>()
+					{
+						{ "Version", msvcVersion },
+						{ "VCToolsRoot", msvcInstallPath.ToString() },
+					});
+
+				var windowsSDKVersion = "10.0.19041.0";
+				var windowsSDKInstallPath = new Path("C:/Program Files (x86)/Windows Kits/10/");
+				var windowsSDK = userConfig.EnsureSDK("Windows");
+				windowsSDK.SourceDirectories = new List<Path>()
+				{
+					windowsSDKInstallPath,
+				};
+				windowsSDK.SetProperties(
+					new Dictionary<string, string>()
+					{
+						{ "Version", windowsSDKVersion },
+						{ "RootPath", windowsSDKInstallPath.ToString() },
 					});
 
 				// Save the result

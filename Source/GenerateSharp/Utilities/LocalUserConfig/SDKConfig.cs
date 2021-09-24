@@ -117,7 +117,7 @@ namespace Soup.Build.Utilities
 						OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
 						CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket),
 					};
-					arraySyntax.OpenBracket.AddTrailingWhitespace();
+					arraySyntax.OpenBracket.TrailingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.NewLineTrivia() };
 					values = new ValueList()
 					{
 						MirrorSyntax = arraySyntax,
@@ -151,7 +151,8 @@ namespace Soup.Build.Utilities
 								Value = new StringValueSyntax(item.ToString()),
 								Comma = SyntaxFactory.Token(TokenKind.Comma),
 							};
-							arrayItemSyntax.Comma.AddTrailingWhitespace();
+							arrayItemSyntax.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
+							arrayItemSyntax.Comma.TrailingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.NewLineTrivia() };
 							arraySyntax.Items.Add(arrayItemSyntax);
 						}
 						break;
@@ -224,13 +225,30 @@ namespace Soup.Build.Utilities
 					while (tableSyntax.Items.ChildrenCount > 0)
 						tableSyntax.Items.RemoveChildrenAt(0);
 
+					var index = 0;
 					foreach (var item in value)
 					{
-						var newKeyValue = new InlineTableItemSyntax(
-							new KeyValueSyntax(item.Key, new StringValueSyntax(item.Value)))
+						bool isLastItem = index == value.Keys.Count - 1;
+						var equalToken = SyntaxFactory.Token(TokenKind.Equal);
+						equalToken.AddLeadingWhitespace();
+						equalToken.AddTrailingWhitespace();
+						var newKeyValue = new KeyValueSyntax()
+						{
+							Key = new KeySyntax(item.Key),
+							EqualToken = equalToken,
+							Value = new StringValueSyntax(item.Value),
+						};
+						var newInlineTableItem = new InlineTableItemSyntax(newKeyValue)
 						{
 						};
-						tableSyntax.Items.Add(newKeyValue);
+						if (!isLastItem)
+						{
+							newInlineTableItem.Comma = SyntaxFactory.Token(TokenKind.Comma);
+						}
+
+						newInlineTableItem.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
+						tableSyntax.Items.Add(newInlineTableItem);
+						index++;
 					}
 					break;
 				default:
