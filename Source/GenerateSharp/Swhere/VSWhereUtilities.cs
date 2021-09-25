@@ -28,6 +28,26 @@ namespace Soup.Build.Discover
 			return roslynFolder;
 		}
 
+		/// <summary>
+		/// Attempt to find MSVC compiler installation 
+		/// </summary>
+		public static async Task<(string Version, Path Path)> FindMSVCInstallAsync()
+		{
+			// Find the location of the Windows SDK
+			var visualStudioInstallRoot = await FindVSInstallRootAsync("Microsoft.VisualStudio.Component.VC.Tools.x86.x64");
+			Log.HighPriority("Using VS Installation: " + visualStudioInstallRoot.ToString());
+
+			// Use the default version
+			var visualCompilerVersion = FindDefaultVCToolsVersion(visualStudioInstallRoot);
+			Log.HighPriority("Using VC Version: " + visualCompilerVersion);
+
+			// Calculate the final VC tools folder
+			var visualCompilerVersionFolder =
+				visualStudioInstallRoot + new Path("/VC/Tools/MSVC/") + new Path(visualCompilerVersion);
+
+			return (visualCompilerVersion, visualCompilerVersionFolder);
+		}
+
 		private static async Task<Path> FindVSInstallRootAsync(string requires)
 		{
 			// Find a copy of visual studio that has the required VisualCompiler
@@ -90,6 +110,34 @@ namespace Soup.Build.Discover
 				}
 
 				return new Path(path);
+			}
+		}
+
+		private static string FindDefaultVCToolsVersion(
+			Path visualStudioInstallRoot)
+		{
+			// Check the default tools version
+			var visualCompilerToolsDefaultVersionFile =
+				visualStudioInstallRoot + new Path("VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
+			if (!System.IO.File.Exists(visualCompilerToolsDefaultVersionFile.ToString()))
+			{
+				Log.Error("VisualCompilerToolsDefaultVersionFile file does not exist: " + visualCompilerToolsDefaultVersionFile.ToString());
+				throw new HandledException();
+			}
+
+			// Read the entire file into a string
+			using (var file = System.IO.File.OpenRead(visualCompilerToolsDefaultVersionFile.ToString()))
+			using (var reader = new System.IO.StreamReader(file))
+			{
+				// The first line is the version
+				var version = reader.ReadLine();
+				if (version is null)
+				{
+					Log.Error("Failed to parse version from file.");
+					throw new HandledException();
+				}
+
+				return version;
 			}
 		}
 

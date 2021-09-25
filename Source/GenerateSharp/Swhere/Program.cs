@@ -68,8 +68,7 @@ namespace Soup.Build.Discover
 					{
 					});
 
-				var msvcVersion = "14.29.30133";
-				var msvcInstallPath = new Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/");
+				var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync();
 				var msvcSDK = userConfig.EnsureSDK("MSVC");
 				msvcSDK.SourceDirectories = new List<Path>()
 				{
