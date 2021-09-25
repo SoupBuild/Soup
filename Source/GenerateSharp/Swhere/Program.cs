@@ -81,8 +81,7 @@ namespace Soup.Build.Discover
 						{ "VCToolsRoot", msvcInstallPath.ToString() },
 					});
 
-				var windowsSDKVersion = "10.0.19041.0";
-				var windowsSDKInstallPath = new Path("C:/Program Files (x86)/Windows Kits/10/");
+				var (windowsSDKVersion, windowsSDKInstallPath) = WindowsSDKUtilities.FindWindows10Kit();
 				var windowsSDK = userConfig.EnsureSDK("Windows");
 				windowsSDK.SourceDirectories = new List<Path>()
 				{
