@@ -57,6 +57,17 @@ namespace Soup.Build.Discover
 						{ "ToolsRoot", roslynInstallPath.ToString() },
 					});
 
+				var dotnetSDKInstallPath = new Path("C:/Program Files/dotnet/");
+				var dotnetSDK = userConfig.EnsureSDK("DotNet");
+				dotnetSDK.SourceDirectories = new List<Path>()
+				{
+					dotnetSDKInstallPath,
+				};
+				dotnetSDK.SetProperties(
+					new Dictionary<string, string>()
+					{
+					});
+
 				var msvcVersion = "14.29.30133";
 				var msvcInstallPath = new Path("C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/");
 				var msvcSDK = userConfig.EnsureSDK("MSVC");

@@ -18,7 +18,7 @@ namespace Soup.Build.Discover
 		public static async Task<Path> FindRoslynInstallAsync()
 		{
 			// Find the location of the Windows SDK
-			var visualStudioInstallRoot = await FindVSInstallRootAsync();
+			var visualStudioInstallRoot = await FindVSInstallRootAsync("Microsoft.VisualStudio.Component.Roslyn.Compiler");
 			Log.HighPriority("Using VS Installation: " + visualStudioInstallRoot.ToString());
 
 			// Calculate the final Roslyn binaries folder
@@ -28,7 +28,7 @@ namespace Soup.Build.Discover
 			return roslynFolder;
 		}
 
-		private static async Task<Path> FindVSInstallRootAsync()
+		private static async Task<Path> FindVSInstallRootAsync(string requires)
 		{
 			// Find a copy of visual studio that has the required VisualCompiler
 			var executablePath = new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
@@ -39,7 +39,7 @@ namespace Soup.Build.Discover
 				"-products",
 				"*",
 				"-requires",
-				"Microsoft.VisualStudio.Component.Roslyn.Compiler",
+				requires,
 				"-property",
 				"installationPath",
 			};
