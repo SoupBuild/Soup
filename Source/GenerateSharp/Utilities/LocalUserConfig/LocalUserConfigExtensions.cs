@@ -58,6 +58,14 @@ namespace Soup.Build.Utilities
 			Path configFile,
 			LocalUserConfig config)
 		{
+			// Ensure the parent folder exists
+			var folder = configFile.GetParent();
+			if (!LifetimeManager.Get<IFileSystem>().Exists(folder))
+			{
+				Log.Info($"Creating directory {folder}");
+				LifetimeManager.Get<IFileSystem>().CreateDirectory2(folder);
+			}
+
 			// Open the file to write to
 			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(configFile, true);
 

@@ -6,7 +6,6 @@ using Opal;
 using Opal.System;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace Soup.Build
 {
@@ -25,8 +24,8 @@ namespace Soup.Build
 		{
 			var title = $"Copy [{source}] -> [{destination}]";
 
-			// TODO: var moduleName = LifetimeManager.Get<IProcessManager>().GetCurrentProcessFileName();
-			var moduleFolder = new Path("C:/Program Files/SoupBuild/Soup/"); // TODO: moduleName.GetParent();
+			var moduleName = LifetimeManager.Get<IProcessManager>().GetCurrentProcessFileName();
+			var moduleFolder = moduleName.GetParent().GetParent();
 
 			var program = moduleFolder + new Path("copy.exe");
 			var inputFiles = new List<Path>()
@@ -62,8 +61,8 @@ namespace Soup.Build
 
 			var title = $"MakeDir [{directory}]";
 
-			// TODO: var moduleName = LifetimeManager.Get<IProcessManager>().GetCurrentProcessFileName();
-			var moduleFolder = new Path("C:/Program Files/SoupBuild/Soup/"); // TODO: moduleName.GetParent();
+			var moduleName = LifetimeManager.Get<IProcessManager>().GetCurrentProcessFileName();
+			var moduleFolder = moduleName.GetParent().GetParent();
 
 			var program = moduleFolder + new Path("mkdir.exe");
 			var inputFiles = new List<Path>();

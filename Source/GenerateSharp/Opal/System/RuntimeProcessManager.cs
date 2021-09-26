@@ -2,6 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Opal.System
@@ -23,7 +24,7 @@ namespace Opal.System
         /// </summary>
         public Path GetCurrentProcessFileName()
         {
-            return new Path(Assembly.GetExecutingAssembly().Location);
+            return new Path(Assembly.GetEntryAssembly()?.Location ?? string.Empty);
         }
 
         /// <summary>

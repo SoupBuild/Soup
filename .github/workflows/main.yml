@@ -38,5 +38,24 @@ jobs:
       run: swhere
     - name: Soup Install
       run: soup install ./Soup/Source/Client/CLI/ -v:d
-    - name: Soup Build
-      run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
+    # TODO: Disabled for openssl - name: Soup Build
+    #  run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
+
+    # Build Samples
+    - name: Soup Build Cpp ModuleConsoleApplication
+      run: soup build ./Soup/Samples/Cpp/ModuleConsoleApplication/ -flavor ${{matrix.config}}
+    - name: Soup Install Cpp ParseJsonFile
+      run: soup install ./Soup/Samples/Cpp/ParseJsonFile/
+    - name: Soup Build Cpp ParseJsonFile
+      run: soup build ./Soup/Samples/Cpp/ParseJsonFile/ -flavor ${{matrix.config}}
+    - name: Soup Build Cpp SimpleConsoleApplication
+      run: soup build ./Soup/Samples/Cpp/SimpleConsoleApplication/ -flavor ${{matrix.config}}
+    - name: Soup Build Cpp StaticLibraryReference
+      run: soup build ./Soup/Samples/Cpp/StaticLibraryReference/MyApplication/ -flavor ${{matrix.config}}
+
+    - name: Soup Install CSharp SimpleBuildExtension
+      run: soup install ./Soup/Samples/CSharp/SimpleBuildExtension/Executable/
+    - name: Soup Build CSharp SimpleBuildExtension
+      run: soup build ./Soup/Samples/CSharp/SimpleBuildExtension/Executable/ -flavor ${{matrix.config}}
+    - name: Soup Build CSharp SimpleConsoleApplication
+      run: soup build ./Soup/Samples/CSharp/SimpleConsoleApplication/ -flavor ${{matrix.config}}
