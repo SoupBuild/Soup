@@ -1,52 +1,61 @@
 name: CI
 on: 
   pull_request:
-    branches:
-      - master
-
+    branches: [ main ]
 jobs:
   build:
-    runs-on: windows-latest
-
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+        config: [ Debug, Release ]
+    name: PR Build ${{matrix.os}} ${{matrix.config}}
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v1
+    # Setup Environment
+    - uses: actions/checkout@v2
       with:
         path: "Soup"
         submodules: true
-    - name: Setup Soup
-      uses: SoupBuild/Setup-Soup@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Setup Soup Build
+      uses: soupbuild/setup-soup@v1
       with:
         version: latest
+
+    # Build DotNet
+    - name: DotNet Restore
+      run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
+    - name: DotNet Build
+      run: dotnet build -c ${{matrix.config}} --no-restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
+    - name: DotNet Test
+      run: dotnet test -c ${{matrix.config}} --no-build --verbosity normal ./Soup/Source/GenerateSharp/GenerateSharp.sln
+
+    # Build Soup
+    - name: Soup Where
+      run: swhere
     - name: Soup Install
-      run: soup install Source/Client/CLI/ -v:d
+      run: soup install ./Soup/Source/Client/CLI/ -v:d
+    # TODO: Disabled for openssl - name: Soup Build
+    #  run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
 
-    - name: Build Utilities UnitTests
-      run: soup build Source/Build/Utilities.UnitTests/
-    - name: Run Utilities UnitTests
-      run: soup run Source/Build/Utilities.UnitTests/
+    # Build Samples
+    - name: Soup Build Cpp ModuleConsoleApplication
+      run: soup build ./Soup/Samples/Cpp/ModuleConsoleApplication/ -flavor ${{matrix.config}}
+    - name: Soup Install Cpp ParseJsonFile
+      run: soup install ./Soup/Samples/Cpp/ParseJsonFile/
+    - name: Soup Build Cpp ParseJsonFile
+      run: soup build ./Soup/Samples/Cpp/ParseJsonFile/ -flavor ${{matrix.config}}
+    - name: Soup Build Cpp SimpleConsoleApplication
+      run: soup build ./Soup/Samples/Cpp/SimpleConsoleApplication/ -flavor ${{matrix.config}}
+    - name: Soup Build Cpp StaticLibraryReference
+      run: soup build ./Soup/Samples/Cpp/StaticLibraryReference/MyApplication/ -flavor ${{matrix.config}}
 
-    - name: Build Extensions Cpp Compiler Core UnitTests
-      run: soup build Source/Extensions/Cpp/Compiler/Core.UnitTests/
-    - name: Run Extensions Cpp Compiler Core UnitTests
-      run: soup run Source/Extensions/Cpp/Compiler/Core.UnitTests/
-
-    - name: Build Extensions Cpp Compiler Clang UnitTests
-      run: soup build Source/Extensions/Cpp/Compiler/Clang.UnitTests/
-    - name: Run Extensions Cpp Compiler Clang UnitTests
-      run: soup run Source/Extensions/Cpp/Compiler/Clang.UnitTests/
-
-    - name: Build Extensions Cpp Compiler MSVC UnitTests
-      run: soup build Source/Extensions/Cpp/Compiler/MSVC.UnitTests/
-    - name: Run Extensions Cpp Compiler MSVC UnitTests
-      run: soup run Source/Extensions/Cpp/Compiler/MSVC.UnitTests/
-
-    - name: Build Extensions CSharp Compiler Core UnitTests
-      run: soup build Source/Extensions/CSharp/Compiler/Core.UnitTests/
-    - name: Run Extensions CSharp Compiler Core UnitTests
-      run: soup run Source/Extensions/CSharp/Compiler/Core.UnitTests/
-
-    # openssl not available on CI build
-    # - name: Build Client Core UnitTests
-    #   run: soup build Source/Client/Core.UnitTests/
-    # - name: Run Client Core UnitTests
-    #   run: soup run Source/Client/Core.UnitTests/
+    - name: Soup Install CSharp SimpleBuildExtension
+      run: soup install ./Soup/Samples/CSharp/SimpleBuildExtension/Executable/
+    - name: Soup Build CSharp SimpleBuildExtension
+      run: soup build ./Soup/Samples/CSharp/SimpleBuildExtension/Executable/ -flavor ${{matrix.config}}
+    - name: Soup Build CSharp SimpleConsoleApplication
+      run: soup build ./Soup/Samples/CSharp/SimpleConsoleApplication/ -flavor ${{matrix.config}}

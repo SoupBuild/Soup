@@ -82,7 +82,7 @@ namespace Soup.Build.PackageManager
 			}
 			catch (Exception ex)
 			{
-				Log.HighPriority($"Unhandled error {ex.Message}");
+				Log.HighPriority($"Unhandled Error: {ex}");
 				return -2;
 			}
 		}
@@ -92,6 +92,7 @@ namespace Soup.Build.PackageManager
 			Log.Info("Soup.Build.PackageManager.exe [command] [directory]");
 			Log.Info("\tinstall-package [directory] [packageReference]");
 			Log.Info("\tinstall-packages [directory]");
+			Log.Info("\tpublish-package [directory]");
 		}
 	}
 }

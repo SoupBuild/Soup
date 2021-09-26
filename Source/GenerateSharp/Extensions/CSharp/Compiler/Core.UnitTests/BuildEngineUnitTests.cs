@@ -7,150 +7,149 @@ using Xunit;
 
 namespace Soup.Build.CSharp.Compiler.UnitTests
 {
-    public class BuildEngineUnitTests
-    {
-        [Fact]
-        public void Initialize_Success()
-        {
-            var compiler = new Mock.Compiler();
-            var uut = new BuildEngine(compiler);
-        }
+	public class BuildEngineUnitTests
+	{
+		[Fact]
+		public void Initialize_Success()
+		{
+			var compiler = new Mock.Compiler();
+			var uut = new BuildEngine(compiler);
+		}
 
-        [Fact]
-        public void Build_Executable()
-        {
-            // Register the test mocks
-            var testListener = new TestTraceListener();
-            var processManager = new MockProcessManager();
-            using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
-            {
+		[Fact]
+		public void Build_Executable()
+		{
+			// Register the test process manager
+			var processManager = new MockProcessManager();
 
-                // Register the mock compiler
-                var compiler = new Mock.Compiler();
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
+			using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
+			{
+				// Register the mock compiler
+				var compiler = new Mock.Compiler();
 
-                // Register the test process manager
+				// Setup the build arguments
+				var arguments = new BuildArguments();
+				arguments.TargetName = "Program";
+				arguments.TargetType = BuildTargetType.Executable;
+				arguments.WorkingDirectory = new Path("C:/root/");
+				arguments.ObjectDirectory = new Path("obj/");
+				arguments.BinaryDirectory = new Path("bin/");
+				arguments.SourceFiles = new List<Path>()
+				{
+					new Path("TestFile.cs"),
+				};
+				arguments.OptimizationLevel = BuildOptimizationLevel.None;
+				arguments.LinkDependencies = new List<Path>()
+				{
+					new Path("../Other/bin/OtherModule1.mock.a"),
+					new Path("../OtherModule2.mock.a"),
+				};
 
-                // Setup the build arguments
-                var arguments = new BuildArguments();
-                arguments.TargetName = "Program";
-                arguments.TargetType = BuildTargetType.Executable;
-                arguments.WorkingDirectory = new Path("C:/root/");
-                arguments.ObjectDirectory = new Path("obj/");
-                arguments.BinaryDirectory = new Path("bin/");
-                arguments.SourceFiles = new List<Path>()
-                {
-                    new Path("TestFile.cs"),
-                };
-                arguments.OptimizationLevel = BuildOptimizationLevel.None;
-                arguments.LinkDependencies = new List<Path>()
-                {
-                    new Path("../Other/bin/OtherModule1.mock.a"),
-                    new Path("../OtherModule2.mock.a"),
-                };
+				var uut = new BuildEngine(compiler);
+				var fileSystemState = new FileSystemState();
+				var buildState = new BuildState(new ValueTable(), fileSystemState);
+				var result = uut.Execute(buildState, arguments);
 
-                var uut = new BuildEngine(compiler);
-                var fileSystemState = new FileSystemState();
-                var buildState = new BuildState(new ValueTable(), fileSystemState);
-                var result = uut.Execute(buildState, arguments);
+				// Verify expected process manager requests
+				Assert.Equal(
+					new List<string>()
+					{
+						"GetCurrentProcessFileName",
+						"GetCurrentProcessFileName",
+						"GetCurrentProcessFileName",
+					},
+					processManager.GetRequests());
 
-                // Verify expected logs
-                Assert.Equal(
-                    new List<string>()
-                    {
-                    },
-                    testListener.GetMessages());
+				// Verify expected logs
+				Assert.Equal(
+					new List<string>()
+					{
+					},
+					testListener.GetMessages());
 
-                // Verify expected process requests
-                Assert.Equal(
-                    new List<string>()
-                    {
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                    },
-                    processManager.GetRequests());
+				var expectedCompileArguments = new CompileArguments()
+				{
+					Target = new Path("./bin/Program.mock.dll"),
+					ReferenceTarget = new Path("./bin/ref/Program.mock.dll"),
+					TargetType = LinkTarget.Executable,
+					ObjectDirectory = new Path("obj/"),
+					RootDirectory = new Path("C:/root/"),
+					SourceFiles = new List<Path>()
+					{
+						new Path("TestFile.cs"),
+					},
+					ReferenceLibraries = new List<Path>()
+					{
+						new Path("../Other/bin/OtherModule1.mock.a"),
+						new Path("../OtherModule2.mock.a"),
+					},
+					NullableEnabled = false,
+				};
 
-                var expectedCompileArguments = new CompileArguments()
-                {
-                    Target = new Path("./bin/Program.mock.dll"),
-                    ReferenceTarget = new Path("./bin/ref/Program.mock.dll"),
-                    TargetType = LinkTarget.Executable,
-                    ObjectDirectory = new Path("obj/"),
-                    RootDirectory = new Path("C:/root/"),
-                    SourceFiles = new List<Path>()
-                    {
-                        new Path("TestFile.cs"),
-                    },
-                    ReferenceLibraries = new List<Path>()
-                    {
-                        new Path("../Other/bin/OtherModule1.mock.a"),
-                        new Path("../OtherModule2.mock.a"),
-                    },
-                    NullableEnabled = false,
-                };
+				// Verify expected compiler calls
+				var val = compiler.GetCompileRequests()[0];
+				var areEqual = val == expectedCompileArguments;
+				var areEqual2 = val.ObjectDirectory == expectedCompileArguments.ObjectDirectory;
+				Assert.Equal(
+					new List<CompileArguments>()
+					{
+						expectedCompileArguments,
+					},
+					compiler.GetCompileRequests());
 
-                // Verify expected compiler calls
-                var val = compiler.GetCompileRequests()[0];
-                var areEqual = val == expectedCompileArguments;
-                var areEqual2 = val.ObjectDirectory == expectedCompileArguments.ObjectDirectory;
-                Assert.Equal(
-                    new List<CompileArguments>()
-                    {
-                        expectedCompileArguments,
-                    },
-                    compiler.GetCompileRequests());
-
-                var expectedBuildOperations = new List<BuildOperation>()
-                {
-                    new BuildOperation(
-                        "MakeDir [./obj/]",
-                        new Path("C:/root/"),
-                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        "\"./obj/\"",
-                        new List<Path>(),
-                        new List<Path>()
-                        {
-                            new Path("./obj/"),
-                        }),
-                    new BuildOperation(
-                        "MakeDir [./bin/]",
-                        new Path("C:/root/"),
-                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        "\"./bin/\"",
-                        new List<Path>(),
-                        new List<Path>()
-                        {
-                            new Path("./bin/"),
-                        }),
-                    new BuildOperation(
-                        "MakeDir [./bin/ref/]",
-                        new Path("C:/root/"),
-                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        "\"./bin/ref/\"",
-                        new List<Path>(),
-                        new List<Path>()
-                        {
-                            new Path("./bin/ref/"),
-                        }),
-                    new BuildOperation(
-                        "MockCompile: 1",
-                        new Path("MockWorkingDirectory"),
-                        new Path("MockCompiler.exe"),
-                        "Arguments",
-                        new List<Path>()
-                        {
-                            new Path("./InputFile.in"),
-                        },
-                        new List<Path>()
-                        {
-                            new Path("./OutputFile.out"),
-                        }),
-                    new BuildOperation(
-                        "WriteFile [./bin/Program.runtimeconfig.json]",
-                        new Path("C:/root/"),
-                        new Path("./writefile.exe"),
-                        @"""./bin/Program.runtimeconfig.json"" ""{
+				var expectedBuildOperations = new List<BuildOperation>()
+				{
+					new BuildOperation(
+						"MakeDir [./obj/]",
+						new Path("C:/root/"),
+						new Path("C:/mkdir.exe"),
+						"\"./obj/\"",
+						new List<Path>(),
+						new List<Path>()
+						{
+							new Path("./obj/"),
+						}),
+					new BuildOperation(
+						"MakeDir [./bin/]",
+						new Path("C:/root/"),
+						new Path("C:/mkdir.exe"),
+						"\"./bin/\"",
+						new List<Path>(),
+						new List<Path>()
+						{
+							new Path("./bin/"),
+						}),
+					new BuildOperation(
+						"MakeDir [./bin/ref/]",
+						new Path("C:/root/"),
+						new Path("C:/mkdir.exe"),
+						"\"./bin/ref/\"",
+						new List<Path>(),
+						new List<Path>()
+						{
+							new Path("./bin/ref/"),
+						}),
+					new BuildOperation(
+						"MockCompile: 1",
+						new Path("MockWorkingDirectory"),
+						new Path("MockCompiler.exe"),
+						"Arguments",
+						new List<Path>()
+						{
+							new Path("./InputFile.in"),
+						},
+						new List<Path>()
+						{
+							new Path("./OutputFile.out"),
+						}),
+					new BuildOperation(
+						"WriteFile [./bin/Program.runtimeconfig.json]",
+						new Path("C:/root/"),
+						new Path("./writefile.exe"),
+						@"""./bin/Program.runtimeconfig.json"" ""{
   ""runtimeOptions"": {
     ""tfm"": ""net5.0"",
     ""framework"": {
@@ -159,184 +158,186 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
     }
   }
 }""",
-                new List<Path>(),
-                        new List<Path>()
-                        {
-                            new Path("./bin/Program.runtimeconfig.json"),
-                        }),
-                };
+				new List<Path>(),
+						new List<Path>()
+						{
+							new Path("./bin/Program.runtimeconfig.json"),
+						}),
+				};
 
-                Assert.Equal(
-                    expectedBuildOperations,
-                    result.BuildOperations);
+				Assert.Equal(
+					expectedBuildOperations,
+					result.BuildOperations);
 
-                Assert.Equal(
-                    new List<Path>(),
-                    result.LinkDependencies);
+				Assert.Equal(
+					new List<Path>(),
+					result.LinkDependencies);
 
-                Assert.Equal(
-                    new List<Path>()
-                    {
-                        new Path("./bin/Program.mock.dll"),
-                    },
-                    result.RuntimeDependencies);
-            }
-        }
+				Assert.Equal(
+					new List<Path>()
+					{
+						new Path("./bin/Program.mock.dll"),
+					},
+					result.RuntimeDependencies);
+			}
+		}
 
-        [Fact]
-        public void Build_Library_MultipleFiles()
-        {
-            // Register the test mocks
-            var testListener = new TestTraceListener();
-            var processManager = new MockProcessManager();
-            using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
-            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
-            {
-                // Register the mock compiler
-                var compiler = new Mock.Compiler();
+		[Fact]
+		public void Build_Library_MultipleFiles()
+		{
+			// Register the test process manager
+			var processManager = new MockProcessManager();
 
-                // Setup the build arguments
-                var arguments = new BuildArguments();
-                arguments.TargetName = "Library";
-                arguments.TargetType = BuildTargetType.Library;
-                arguments.WorkingDirectory = new Path("C:/root/");
-                arguments.ObjectDirectory = new Path("obj/");
-                arguments.BinaryDirectory = new Path("bin/");
-                arguments.SourceFiles = new List<Path>()
-                {
-                    new Path("TestFile1.cs"),
-                    new Path("TestFile2.cs"),
-                    new Path("TestFile3.cs"),
-                };
-                arguments.OptimizationLevel = BuildOptimizationLevel.Size;
-                arguments.LinkDependencies = new List<Path>()
-                {
-                    new Path("../Other/bin/OtherModule1.mock.a"),
-                    new Path("../OtherModule2.mock.a"),
-                };
-                arguments.EnableNullable = true;
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
+			using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
+			{
+				// Register the mock compiler
+				var compiler = new Mock.Compiler();
 
-                var uut = new BuildEngine(compiler);
-                var fileSystemState = new Runtime.FileSystemState();
-                var buildState = new BuildState(new ValueTable(), fileSystemState);
-                var result = uut.Execute(buildState, arguments);
+				// Setup the build arguments
+				var arguments = new BuildArguments();
+				arguments.TargetName = "Library";
+				arguments.TargetType = BuildTargetType.Library;
+				arguments.WorkingDirectory = new Path("C:/root/");
+				arguments.ObjectDirectory = new Path("obj/");
+				arguments.BinaryDirectory = new Path("bin/");
+				arguments.SourceFiles = new List<Path>()
+				{
+					new Path("TestFile1.cs"),
+					new Path("TestFile2.cs"),
+					new Path("TestFile3.cs"),
+				};
+				arguments.OptimizationLevel = BuildOptimizationLevel.Size;
+				arguments.LinkDependencies = new List<Path>()
+				{
+					new Path("../Other/bin/OtherModule1.mock.a"),
+					new Path("../OtherModule2.mock.a"),
+				};
+				arguments.EnableNullable = true;
 
-                // Verify expected logs
-                Assert.Equal(
-                    new List<string>()
-                    {
-                    },
-                    testListener.GetMessages());
+				var uut = new BuildEngine(compiler);
+				var fileSystemState = new Runtime.FileSystemState();
+				var buildState = new BuildState(new ValueTable(), fileSystemState);
+				var result = uut.Execute(buildState, arguments);
 
-                // Verify expected process requests
-                Assert.Equal(
-                    new List<string>()
-                    {
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                        "GetCurrentProcessFileName",
-                    },
-                    processManager.GetRequests());
+				// Verify expected process manager requests
+				Assert.Equal(
+					new List<string>()
+					{
+						"GetCurrentProcessFileName",
+						"GetCurrentProcessFileName",
+						"GetCurrentProcessFileName",
+					},
+					processManager.GetRequests());
 
-                // Setup the shared arguments
-                var expectedCompileArguments = new CompileArguments()
-                {
-                    Target = new Path("./bin/Library.mock.dll"),
-                    ReferenceTarget = new Path("./bin/ref/Library.mock.dll"),
-                    RootDirectory = new Path("C:/root/"),
-                    ObjectDirectory = new Path("obj/"),
-                    SourceFiles = new List<Path>()
-                    {
-                        new Path("TestFile1.cs"),
-                        new Path("TestFile2.cs"),
-                        new Path("TestFile3.cs"),
-                    },
-                    ReferenceLibraries = new List<Path>()
-                    {
-                        new Path("../Other/bin/OtherModule1.mock.a"),
-                        new Path("../OtherModule2.mock.a"),
-                    },
-                    NullableEnabled = true,
-                };
+				// Verify expected logs
+				Assert.Equal(
+					new List<string>()
+					{
+					},
+					testListener.GetMessages());
 
-                // Verify expected compiler calls
-                Assert.Equal(
-                    new List<CompileArguments>()
-                    {
-                        expectedCompileArguments,
-				    },
-				    compiler.GetCompileRequests());
+				// Setup the shared arguments
+				var expectedCompileArguments = new CompileArguments()
+				{
+					Target = new Path("./bin/Library.mock.dll"),
+					ReferenceTarget = new Path("./bin/ref/Library.mock.dll"),
+					RootDirectory = new Path("C:/root/"),
+					ObjectDirectory = new Path("obj/"),
+					SourceFiles = new List<Path>()
+					{
+						new Path("TestFile1.cs"),
+						new Path("TestFile2.cs"),
+						new Path("TestFile3.cs"),
+					},
+					ReferenceLibraries = new List<Path>()
+					{
+						new Path("../Other/bin/OtherModule1.mock.a"),
+						new Path("../OtherModule2.mock.a"),
+					},
+					NullableEnabled = true,
+				};
 
-                // Verify build state
-                var expectedBuildOperations = new List<BuildOperation>()
-                {
-                    new BuildOperation(
-                        "MakeDir [./obj/]",
-                        new Path("C:/root/"),
-                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        "\"./obj/\"",
-                        new List<Path>(),
-					    new List<Path>()
-                        {
-                            new Path("./obj/"),
-					    }),
-                    new BuildOperation(
-                        "MakeDir [./bin/]",
-                        new Path("C:/root/"),
-                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        "\"./bin/\"",
-                        new List<Path>(),
-                        new List<Path>()
-                        {
-                            new Path("./bin/"),
-                        }),
-                    new BuildOperation(
-                        "MakeDir [./bin/ref/]",
-                        new Path("C:/root/"),
-                        new Path("C:/Program Files/SoupBuild/Soup/mkdir.exe"),
-                        "\"./bin/ref/\"",
-                        new List<Path>(),
-                        new List<Path>()
-                        {
-                            new Path("./bin/ref/"),
-                        }),
-                    new BuildOperation(
-                        "MockCompile: 1",
-                        new Path("MockWorkingDirectory"),
-                        new Path("MockCompiler.exe"),
-                        "Arguments",
-                        new List<Path>()
-                        {
-                            new Path("InputFile.in"),
-					    },
-					    new List<Path>()
-                        {
-                            new Path("OutputFile.out"),
-					    }),
-			    };
+				// Verify expected compiler calls
+				Assert.Equal(
+					new List<CompileArguments>()
+					{
+						expectedCompileArguments,
+					},
+					compiler.GetCompileRequests());
 
-                Assert.Equal(
-                    expectedBuildOperations,
-                    result.BuildOperations);
+				// Verify build state
+				var expectedBuildOperations = new List<BuildOperation>()
+				{
+					new BuildOperation(
+						"MakeDir [./obj/]",
+						new Path("C:/root/"),
+						new Path("C:/mkdir.exe"),
+						"\"./obj/\"",
+						new List<Path>(),
+						new List<Path>()
+						{
+							new Path("./obj/"),
+						}),
+					new BuildOperation(
+						"MakeDir [./bin/]",
+						new Path("C:/root/"),
+						new Path("C:/mkdir.exe"),
+						"\"./bin/\"",
+						new List<Path>(),
+						new List<Path>()
+						{
+							new Path("./bin/"),
+						}),
+					new BuildOperation(
+						"MakeDir [./bin/ref/]",
+						new Path("C:/root/"),
+						new Path("C:/mkdir.exe"),
+						"\"./bin/ref/\"",
+						new List<Path>(),
+						new List<Path>()
+						{
+							new Path("./bin/ref/"),
+						}),
+					new BuildOperation(
+						"MockCompile: 1",
+						new Path("MockWorkingDirectory"),
+						new Path("MockCompiler.exe"),
+						"Arguments",
+						new List<Path>()
+						{
+							new Path("InputFile.in"),
+						},
+						new List<Path>()
+						{
+							new Path("OutputFile.out"),
+						}),
+				};
 
-                Assert.Equal(
-                    new List<Path>()
-                    {
-                        new Path("bin/ref/Library.mock.dll"),
-                    },
-				    result.LinkDependencies);
+				Assert.Equal(
+					expectedBuildOperations,
+					result.BuildOperations);
 
-                Assert.Equal(
-                    new List<Path>()
-                    {
-                        new Path("bin/Library.mock.dll"),
-                    },
-                    result.RuntimeDependencies);
+				Assert.Equal(
+					new List<Path>()
+					{
+						new Path("bin/ref/Library.mock.dll"),
+					},
+					result.LinkDependencies);
 
-                Assert.Equal(
-                    new Path("bin/Library.mock.dll"),
-                    result.TargetFile);
-            }
-        }
-    }
+				Assert.Equal(
+					new List<Path>()
+					{
+						new Path("bin/Library.mock.dll"),
+					},
+					result.RuntimeDependencies);
+
+				Assert.Equal(
+					new Path("bin/Library.mock.dll"),
+					result.TargetFile);
+			}
+		}
+	}
 }

@@ -330,7 +330,7 @@ namespace Soup.Build.Utilities
                 case DocumentSyntax documentSyntax:
                     documentSyntax.KeyValues.Add(new KeyValueSyntax(name, newSyntaxList));
                     break;
-                case TableSyntax tableSyntax:
+                case TableSyntaxBase tableSyntax:
                     tableSyntax.Items.Add(new KeyValueSyntax(name, newSyntaxList));
                     break;
                 default:

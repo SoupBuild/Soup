@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System.Threading.Tasks;
+
 namespace Opal.System
 {
     /// <summary>
@@ -18,7 +20,7 @@ namespace Opal.System
         /// <summary>
         /// Wait for the process to exit.
         /// </summary>
-        void WaitForExit();
+        Task WaitForExitAsync();
 
         /// <summary>
         /// Get the exit code.

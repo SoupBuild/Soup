@@ -45,6 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build", "Build\Soup.Bu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soup.Build.Extensions", "Build.Extensions\Soup.Build.Extensions.csproj", "{C81003D5-1FA4-464C-AE8F-38F79305FEDA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swhere", "Swhere\Swhere.csproj", "{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -221,6 +223,14 @@ Global
 		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Release|x64.ActiveCfg = Release|x64
 		{C81003D5-1FA4-464C-AE8F-38F79305FEDA}.Release|x64.Build.0 = Release|x64
+		{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}.Debug|x64.Build.0 = Debug|Any CPU
+		{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}.Release|x64.ActiveCfg = Release|Any CPU
+		{2FBD7ED6-C001-4DC8-86B6-CAE7358B4A62}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

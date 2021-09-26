@@ -7,7 +7,6 @@ using Soup.Build.Runtime;
 using System;
 using System.Threading.Tasks;
 using Tomlyn;
-using Tomlyn.Model;
 using Tomlyn.Syntax;
 
 namespace Soup.Build.Utilities
@@ -15,39 +14,34 @@ namespace Soup.Build.Utilities
     /// <summary>
     /// The recipe Toml serialize manager
     /// </summary>
-    internal static class RecipeToml
+    internal static class ValueTableTomlUtilities
     {
         /// <summary>
         /// Load from stream
         /// </summary>
-        public static Recipe Deserialize(
-            Path recipeFile,
+        public static (ValueTable Table, DocumentSyntax Root) Deserialize(
+            Path tomlFile,
             string content)
         {
             // Read the contents of the recipe file
-            var documentSyntax = Toml.Parse(content, recipeFile.ToString());
+            var documentSyntax = Toml.Parse(content, tomlFile.ToString());
 
             // Load the entire root table
             var valueTable = new ValueTable()
             {
                 MirrorSyntax = documentSyntax,
             };
-            var visitor = new RecipeTomlVisitor(valueTable);
+            var visitor = new ValueTableTomlVisitor(valueTable);
             documentSyntax.Accept(visitor);
 
-            return new Recipe(valueTable, documentSyntax);
+            return (valueTable, documentSyntax);
         }
 
         /// <summary>
-        /// Save the recipe to the root file
+        /// Save the document syntax to the root file
         /// </summary>
-        public static async Task SerializeAsync(Recipe recipe, System.IO.Stream stream)
+        public static async Task SerializeAsync(DocumentSyntax documentSyntax, System.IO.Stream stream)
         {
-            // Serialize the contents of the recipe
-            var documentSyntax = recipe.MirrorSyntax;
-            if (documentSyntax == null)
-                throw new ArgumentException("The provided recipe does not have a mirrored syntax tree.", nameof(recipe));
-
             // Write out the entire root table
             var content = documentSyntax.ToString();
             using (var writer = new System.IO.StreamWriter(stream))

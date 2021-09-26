@@ -1,4 +1,4 @@
-﻿// <copyright file="RecipeTomlVisitor.cs" company="Soup">
+﻿// <copyright file="ValueTableTomlVisitor.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -12,13 +12,13 @@ namespace Soup.Build.Utilities
 	/// <summary>
 	/// Visitor used to transform a <see cref="DocumentSyntax"/> into a <see cref="ValueTable"/>
 	/// </summary>
-	internal class RecipeTomlVisitor : SyntaxVisitor
+	internal class ValueTableTomlVisitor : SyntaxVisitor
 	{
 		private readonly ValueTable _rootTable;
 		private ValueTable _currentTable;
 		private Value? _currentValue;
 
-		public RecipeTomlVisitor(ValueTable rootTable)
+		public ValueTableTomlVisitor(ValueTable rootTable)
 		{
 			_rootTable = rootTable;
 			_currentTable = _rootTable;
@@ -68,6 +68,7 @@ namespace Soup.Build.Utilities
 			// Resolve the key
 			var (currentTable, valueName) = ResolveKey(table.Name);
 			_currentTable = GetTable(currentTable, valueName, true);
+			_currentTable.MirrorSyntax = table;
 
 			base.Visit(table);
 		}
@@ -88,7 +89,7 @@ namespace Soup.Build.Utilities
 
 		public override void Visit(DateTimeValueSyntax dateTimeValueSyntax)
 		{
-			throw new NotImplementedException("Recipe TOML does not allow DateTimes.");
+			throw new NotImplementedException("ValueTable TOML does not allow DateTimes.");
 		}
 
 		public override void Visit(FloatValueSyntax floatValueSyntax)
@@ -110,7 +111,10 @@ namespace Soup.Build.Utilities
 			if (_currentValue != null)
 				throw new InvalidOperationException("An Array value must not have an active value.");
 
-			var tomlArray = new ValueList();
+			var tomlArray = new ValueList()
+			{
+				MirrorSyntax = array,
+			};
 			var items = array.Items;
 			for (int i = 0; i < items.ChildrenCount; i++)
 			{
@@ -133,7 +137,10 @@ namespace Soup.Build.Utilities
 		public override void Visit(InlineTableSyntax inlineTable)
 		{
 			var parentTable = _currentTable;
-			_currentTable = new ValueTable();
+			_currentTable = new ValueTable()
+			{
+				MirrorSyntax = inlineTable,
+			};
 			base.Visit(inlineTable);
 			_currentValue = new Value(_currentTable);
 			_currentTable = parentTable;
