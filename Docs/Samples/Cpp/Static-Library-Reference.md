@@ -1,14 +1,15 @@
 # Static Library Reference
 This is a console application that has a single static library dependency.
 
-[Source](https://github.com/mwasplund/Soup/tree/master/Samples/StaticLibraryReference)
+[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/StaticLibraryReference)
 
 ## MyLibrary/Recipe.toml
 The Recipe file that defines the static library "MyLibrary".
 ```
 Name = "MyLibrary"
+Language = "C++"
 Version = "1.0.0"
-Public = "Module.cpp"
+Interface = "Module.cpp"
 ```
 
 ## MyLibrary/Module.cpp
@@ -38,13 +39,16 @@ export namespace MyLibrary
 The Recipe file that defines the executable "MyApplication".
 ```
 Name = "MyApplication"
+Language = "C++"
 Type = "Executable"
 Version = "1.0.0"
-Dependencies = [
-    "../MyLibrary/"
-]
 Source = [
     "Main.cpp"
+]
+
+[Dependencies]
+Runtime = [
+    "../MyLibrary/"
 ]
 ```
 

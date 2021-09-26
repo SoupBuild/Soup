@@ -1,24 +1,23 @@
 #  Parse Json File
 A console application that reads in a json file using the an external module and prints a single known property value.
 
-[Source](https://github.com/mwasplund/Soup/tree/master/Samples/ParseJsonFile)
+[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ParseJsonFile)
 
 ## Recipe.toml
 The Recipe file that sets the standard name, type, version, as well as the single external dependency of the [json11](https://github.com/dropbox/json11) project.
 ```
 Name = "ParseJsonFile"
+Language = "C++"
 Version = "1.0.0"
 Type = "Executable"
-Dependencies = [
-    "json11@1.0.1",
-]
-RuntimeDependencies = [
-    "Message.json"
-]
 Source = [
     "Main.cpp",
 ]
 
+[Dependencies]
+Runtime = [
+    "json11@1.0.1",
+]
 ```
 
 ## Message.json
