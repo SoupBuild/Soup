@@ -1,6 +1,6 @@
 Name = "Samples.SimpleConsoleApplication"
 Language = "C#"
-Type = "Executable"
+Type = "Module"
 Version = "1.1.4"
 Source = [
 	"Program.cs",

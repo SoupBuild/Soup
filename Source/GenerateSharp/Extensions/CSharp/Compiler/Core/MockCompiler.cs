@@ -52,6 +52,12 @@ namespace Soup.Build.CSharp.Compiler.Mock
 		public string DynamicLibraryFileExtension =>  "mock.dll";
 
 		/// <summary>
+		/// Gets the module file extension for the compiler
+		/// TODO: This is platform specific
+		/// </summary>
+		public string ModuleFileExtension => "mock.netmodule";
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		public IList<BuildOperation> CreateCompileOperations(CompileArguments arguments)

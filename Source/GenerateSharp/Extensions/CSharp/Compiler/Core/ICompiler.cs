@@ -34,6 +34,12 @@ namespace Soup.Build.CSharp.Compiler
 		string DynamicLibraryFileExtension { get; }
 
 		/// <summary>
+		/// Gets the module file extension for the compiler
+		/// TODO: This is platform specific
+		/// </summary>
+		string ModuleFileExtension { get; }
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		IList<BuildOperation> CreateCompileOperations(CompileArguments arguments);

@@ -23,6 +23,37 @@ namespace Soup.Build.CSharp.Compiler
 		/// Executable
 		/// </summary>
 		Executable,
+
+		/// <summary>
+		/// Module
+		/// </summary>
+		Module,
+	}
+
+	/// <summary>
+	/// The enumeration of nullable state
+	/// </summary>
+	public enum NullableState
+	{
+		/// <summary>
+		/// Enabled
+		/// </summary>
+		Enabled,
+
+		/// <summary>
+		/// Disabled
+		/// </summary>
+		Disabled,
+
+		/// <summary>
+		/// Annotations
+		/// </summary>
+		Annotations,
+
+		/// <summary>
+		/// Warnings
+		/// </summary>
+		Warnings,
 	}
 
 	/// <summary>
@@ -98,7 +129,7 @@ namespace Soup.Build.CSharp.Compiler
 		/// <summary>
 		/// Gets or sets a value indicating whether nullable is enabled
 		/// </summary>
-		public bool NullableEnabled {get; init; } = true;
+		public NullableState NullableState {get; init; } = NullableState.Disabled;
 
 		/// <summary>
 		/// Gets or sets the set of custom properties for the known compiler
@@ -130,7 +161,7 @@ namespace Soup.Build.CSharp.Compiler
 				this.EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
 				Enumerable.SequenceEqual(this.DisabledWarnings, rhs.DisabledWarnings) &&
 				Enumerable.SequenceEqual(this.EnabledWarnings, rhs.EnabledWarnings) &&
-				this.NullableEnabled == rhs.NullableEnabled &&
+				this.NullableState == rhs.NullableState &&
 				Enumerable.SequenceEqual(this.CustomProperties, rhs.CustomProperties);
 		}
 
@@ -153,7 +184,7 @@ namespace Soup.Build.CSharp.Compiler
 
 		public override string ToString()
 		{
-			return $"SharedCompileArguments {{ RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], SourceFiles=[{string.Join(",", SourceFiles)}], EnableOptimizations=\"{EnableOptimizations}\", GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", TargetType={TargetType}, Target={Target}, ReferenceTarget={ReferenceTarget}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], NullableEnabled=\"{NullableEnabled}\" CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+			return $"SharedCompileArguments {{ RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], SourceFiles=[{string.Join(",", SourceFiles)}], EnableOptimizations=\"{EnableOptimizations}\", GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", TargetType={TargetType}, Target={Target}, ReferenceTarget={ReferenceTarget}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], NullableState=\"{NullableState}\" CustomProperties=[{string.Join(",", CustomProperties)}]}}";
 		}
 	}
 }

@@ -42,6 +42,37 @@ namespace Soup.Build.CSharp.Compiler
 		/// Library
 		/// </summary>
 		Library,
+
+		/// <summary>
+		/// Module
+		/// </summary>
+		Module,
+	}
+
+	/// <summary>
+	/// The enumeration of nullable state
+	/// </summary>
+	public enum BuildNullableState
+	{
+		/// <summary>
+		/// Enabled
+		/// </summary>
+		Enabled,
+
+		/// <summary>
+		/// Disabled
+		/// </summary>
+		Disabled,
+
+		/// <summary>
+		/// Annotations
+		/// </summary>
+		Annotations,
+
+		/// <summary>
+		/// Warnings
+		/// </summary>
+		Warnings,
 	}
 
 	/// <summary>
@@ -122,9 +153,9 @@ namespace Soup.Build.CSharp.Compiler
 		public bool EnableWarningsAsErrors { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to enable nullable
+		/// Gets or sets a the nullable state
 		/// </summary>
-		public bool EnableNullable { get; set; }
+		public BuildNullableState NullableState { get; set; }
 
 		/// <summary>
 		/// Gets or sets the list of disabled warnings
