@@ -151,7 +151,7 @@ namespace Soup.Build.Utilities
 								Value = new StringValueSyntax(item.ToString()),
 								Comma = SyntaxFactory.Token(TokenKind.Comma),
 							};
-							arrayItemSyntax.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
+							// arrayItemSyntax.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
 							arrayItemSyntax.Comma.TrailingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.NewLineTrivia() };
 							arraySyntax.Items.Add(arrayItemSyntax);
 						}
@@ -246,7 +246,7 @@ namespace Soup.Build.Utilities
 							newInlineTableItem.Comma = SyntaxFactory.Token(TokenKind.Comma);
 						}
 
-						newInlineTableItem.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
+						// newInlineTableItem.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
 						tableSyntax.Items.Add(newInlineTableItem);
 						index++;
 					}
