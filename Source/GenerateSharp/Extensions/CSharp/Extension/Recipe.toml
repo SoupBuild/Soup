@@ -1,6 +1,7 @@
 Name = "Soup.CSharp"
 Language = "C#"
 Version = "1.0.0"
+
 Source = [
 	"Tasks/BuildTask.cs",
 	"Tasks/RecipeBuildTask.cs",

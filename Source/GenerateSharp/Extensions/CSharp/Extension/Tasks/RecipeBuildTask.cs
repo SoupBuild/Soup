@@ -132,8 +132,8 @@ namespace Soup.Build.CSharp
 				enableWarningsAsErrors = enableWarningsAsErrorsValue.AsBoolean();
 			}
 
-			// Check for warning settings
-			var nullableState = BuildNullableState.Disabled;
+			// Check for nullable settings, default to enabled
+			var nullableState = BuildNullableState.Enabled;
 			if (recipeTable.TryGetValue("Nullable", out var nullableValue))
 			{
 				nullableState = ParseNullable(nullableValue.AsString());

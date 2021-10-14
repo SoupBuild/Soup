@@ -12,19 +12,32 @@ Note: While Clang will work, there is still work to auto-detect an installation 
 * [Latest Release](https://github.com/mwasplund/Soup/releases/latest)
 
 ## Setup
+You can either install Soup or download a reference the archive.
 
-### Run Installer
-Download and run the Soup.msi installer. 
+* Installer
 
-Note: The installer is not yet signed and you will have to ignore some scary warnings. We will start paying for the certificate when it is no longer in Alpha.
+  Download and run the SoupBuild.msi installer from the [Latest Release](https://github.com/mwasplund/Soup/releases/latest). 
 
-### Download Archive
-Unzip the Soup release somewhere safe and add it to your path in a command prompt.
+  Note: The installer is not yet signed and you will have to ignore some scary warnings. We will start paying for the certificate when it is no longer in Alpha.
+
+* Archive
+
+  Download the SoupBuild.zip archive from the [Latest Release](https://github.com/mwasplund/Soup/releases/latest). 
+
+  Unzip the Soup release somewhere safe and add it to your path in a command prompt.
+
+  ```
+  set PATH=%PATH%;C:\Soup\bin\
+  ```
+  Or add it to the "Path" System Environment Variable to always have it available!
+
+## Setup SDKs
+
+Use the SWhere tool to find the latest installed version of the SDKs on your local machine (listed in the dependencies list).
 
 ```
-set PATH=%PATH%;C:\Soup\bin\
+swhere
 ```
-Or add it to the "Path" System Environment Variable to always have it available!
 
 ## Create First Project
 Run Initialize command to create a new project!

@@ -1,17 +1,15 @@
 # Soup Build
 
 ## Quick Links
-* [Soup Build Website](https://www.soupbuild.com/)
+* [Official Site](https://www.soupbuild.com/)
 * [Getting Started](./Docs/Getting-Started.md)
 * [Command Line Interface (CLI)](./Docs/CLI.md)
 * [Samples](./Docs/Samples.md)
-* [Architecture](./Docs/Architecture.md)
-* [C++ Modules Posts of Interest](./Docs/Posts-Of-Interest.md)
 
 ## Overview
-Soup is a build system that was created with the primary goal of simplifying the development and sharing of C++ code. Soup was built from the ground up with a primary focus on reusability of both build logic and runtime code. By sharing a single module interface between the individual packages the build system can ensure that the internals of one project will not "leak" into and out of external dependencies.
+Soup is a build system for writing code as a community with a primary focus on developer velocity. Soup was built from the ground up to allow for reusability of both build logic and runtime code.
 
-Soup utilizes a combination of a declarative frontend Recipe along with the ability to write native C++ Extensions to inject custom logic into the build runtime. Most developers will work entirely within the declarative Recipe that allows for a simple to understand and author build definition, however the full power of C++ is available to the build system engineers that need it.
+Soup utilizes a combination of a declarative frontend Recipe along with the ability to write Extensions to inject custom logic into the build runtime. Most developers will work entirely within the declarative Recipe that allows for a simple to understand and author build definition, however the full power of C++ is available to the build system engineers that need it.
 
 The clean isolation of individual projects and the ability to write custom build logic that will be integrated into the shared runtime work together to allow for easy authoring of a package that can be shared with other teams or organizations through a public source based [Package Manager](https://www.soupbuild.com/).
 
