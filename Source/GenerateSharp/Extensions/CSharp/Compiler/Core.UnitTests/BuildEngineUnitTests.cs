@@ -86,7 +86,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
 						new Path("../Other/bin/OtherModule1.mock.a"),
 						new Path("../OtherModule2.mock.a"),
 					},
-					NullableState = NullableState.Disabled,
+					NullableState = NullableState.Enabled,
 			};
 
 				// Verify expected compiler calls
@@ -215,7 +215,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
 					new Path("../Other/bin/OtherModule1.mock.a"),
 					new Path("../OtherModule2.mock.a"),
 				};
-				arguments.NullableState = BuildNullableState.Enabled;
+				arguments.NullableState = BuildNullableState.Disabled;
 
 				var uut = new BuildEngine(compiler);
 				var fileSystemState = new Runtime.FileSystemState();
@@ -257,7 +257,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
 						new Path("../Other/bin/OtherModule1.mock.a"),
 						new Path("../OtherModule2.mock.a"),
 					},
-					NullableState = NullableState.Enabled,
+					NullableState = NullableState.Disabled,
 			};
 
 				// Verify expected compiler calls

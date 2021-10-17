@@ -111,7 +111,7 @@ namespace Soup.Build.CSharp
 			}
 			else
 			{
-				arguments.NullableState = BuildNullableState.Disabled;
+				arguments.NullableState = BuildNullableState.Enabled;
 			}
 
 			// Load the runtime dependencies

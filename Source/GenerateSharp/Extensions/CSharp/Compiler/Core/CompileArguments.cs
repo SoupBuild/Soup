@@ -129,7 +129,7 @@ namespace Soup.Build.CSharp.Compiler
 		/// <summary>
 		/// Gets or sets a value indicating whether nullable is enabled
 		/// </summary>
-		public NullableState NullableState {get; init; } = NullableState.Disabled;
+		public NullableState NullableState {get; init; } = NullableState.Enabled;
 
 		/// <summary>
 		/// Gets or sets the set of custom properties for the known compiler
