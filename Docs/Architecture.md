@@ -2,15 +2,37 @@
 # Architecture
 
 ## Overview
-The **Soup** build system utilizes a declarative **Recipe** file as an easy to understand definition for an individual Package. This file will be the primary way to tell Soup **what** to build. The core command line application will be used to invoke the build and provide extra configuration parameters. Internally, **Soup** uses a **Task** execution engine to translate the **what** into the **how**. Build Tasks have the ability to express an ordering through a set of before and after named sets. The Tasks will not invoke any build logic themselves, and will instead generate a [Directed Acyclic Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) of build **Operations** that make up the actual build. These **Operations** will be evaluated to produce the final build result by the system itself to support the ability to track actual input/output files that are accessed during execution for future incremental builds.
+The **Soup** build system utilizes a three phased approach to building code. A **declarative** frontend that tells the build **what** to build. A **generate** layer then defines **how** to build the requested definition. And finally, the **evaluate** engine **runs** the build.
 
-## Application
-The [Command Line Interface (CLI)](CLI.md) is the first thing a user will see when they interact with the Soup build system. The CLI is primarily there to take user input through a set of parameters and flags to pass temporary configuration values into the build execution. While important, it is fairly straightforward to design and will be left open to evolve through use.
+## Declaration
+There are four ways to declare the state for an invocation of a build. Through the command line application, from the Recipe file for each package, from a Root Recipe file that is shared with packages in the same folder hierarchy and from the global user config. All input state is combined into a single [Active State Table](Architecture/Active-State-Table.md) which is consumed by the Generate Phase.
 
-## Definition
-The build definition will use a declarative Recipe configuration file is how the user will configure their project. The Recipe file will utilize the [toml](https://github.com/toml-lang/toml) language as a clean, human readable, configuration definition that supports a core set of data types. The file can be thought of as a simple property bag for getting shared parameters passed into the build system for an individual package. There are a few "known" property values that will be used within the build engine itself; however, the entire contents will be provided as initial input to the build engine.
+### Application
+The [Command Line Interface (CLI)](CLI.md) is the first thing a user will see when they interact with the Soup build system. The CLI is primarily there to take user input through a set of parameters and flags to pass temporary configuration values into the build execution. The command parameters will be used to generate a unique output folder for the given build to allow for individual builds to coexist for the same package (i.e. Release vs Debug). The argument properties will be combined with a set of generated properties from the application that are passed into the next phase of the build through a [Parameters Table](Architecture/Parameters-Table.md).
 
-## Engine
+### Recipe
+The build definition will use a declarative **Recipe** configuration file is how the user will configure their project. The Recipe file will utilize the [toml](https://github.com/toml-lang/toml) language (and possibly a custom config language in the future) as a clean, human readable, configuration definition that supports a core set of data types. The file can be thought of as a simple property bag for setting shared parameters into the build system for an individual package.
+
+There are a few "known" property values that will be used within the build engine itself; however, the entire contents will be provided as initial input to the build engine.
+
+### Root Recipe
+When processing the state for a given Recipe file the system will walk up the directory structure for the first instance of a [Root Recipe](Architecture/Root-Recipe.md). This file is used as a shared set of properties that can be used by multiple packages.
+
+### Local User Config
+The [Local User Config](Architecture/Local-User-Config.md) allows the user to specify external SDK definitions that will grant read access to the specified folders and pass in the shared state to the build.
+
+## Generate
+The Generate Phase takes the combined input Declaration along with the [Shared State](Shared-State-Table.md) Generated from the dependencies and generates the [Operation](Build-Operation.md) Graph that will be passed to the Evaluate phase, along with the output Shared State that downstream dependencies will consume.
+
+All build logic is injected into the Generate phase through the [Build Extension](Build-Extension.md) framework. Each build extension is simply a C# library package that contains one or more public implementations of the `IBuildTask` interface. When referenced from the another Recipe as a **Build** dependency the Generate Engine will user reflection to discover and instantiate all instances of the build tasks. Each build task contains of a set of run before and after lists that instruct the Generate Engine in what order to run the tasks to ensure shared state is setup in the correct order. The tasks then invoke their single Run method that will allow them to read and write from the active and shared state and generate build Operations.
+
+Along with the list of explicit Build dependencies that inject build extensions, the **Language** property also instructs Soup to add the default tasks for that language.
+
+## Evaluate
+
+## Detailed Flow
+![Flow Diagram for Soup Build](Architecture/Soup-FLow.svg)
+
 The build Engine is responsible for recursively building all transitive dependencies, facilitating the registration and execution of build Tasks, and evaluating all requirement build Operations. All build logic will be contained in Tasks and all build execution will be performed in Operations. Having this extra layer of separation between the build generate and the build evaluate allows for build Extensions to get fast incremental build support for "free" and will allow for future performance improvements without introducing breaking changes into the Extension Framework itself. This means **Soup** can support super fast builds for any possible unique build step or even be extended to support any language by only writing a new default build Extension layer.
 
 This work can be broken down into four phases:

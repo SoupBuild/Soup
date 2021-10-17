@@ -1,0 +1,2 @@
+# Shared State Table
+The output shared state from the Generate phase that will be passed along to all of the packages that directly reference the package. This is the best to influence downstream builds to tell them what input they need to consume from the referenced package. This can be used to specify runtime dependencies that need to be copied over or build time dependencies that need to be linked against.
