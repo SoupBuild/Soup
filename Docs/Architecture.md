@@ -31,7 +31,7 @@ Along with the list of explicit Build dependencies that inject build extensions,
 ## Evaluate
 
 ## Detailed Flow
-![Flow Diagram for Soup Build](Architecture/Soup-FLow.svg)
+![Flow Diagram for Soup Build](Architecture/Soup-Flow.svg)
 
 The build Engine is responsible for recursively building all transitive dependencies, facilitating the registration and execution of build Tasks, and evaluating all requirement build Operations. All build logic will be contained in Tasks and all build execution will be performed in Operations. Having this extra layer of separation between the build generate and the build evaluate allows for build Extensions to get fast incremental build support for "free" and will allow for future performance improvements without introducing breaking changes into the Extension Framework itself. This means **Soup** can support super fast builds for any possible unique build step or even be extended to support any language by only writing a new default build Extension layer.
 
