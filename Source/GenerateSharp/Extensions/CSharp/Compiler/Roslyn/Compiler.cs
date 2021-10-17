@@ -40,6 +40,12 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 		public string DynamicLibraryFileExtension => "dll";
 
 		/// <summary>
+		/// Gets the module file extension for the compiler
+		/// TODO: This is platform specific
+		/// </summary>
+		public string ModuleFileExtension => "netmodule";
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		public IList<BuildOperation> CreateCompileOperations(

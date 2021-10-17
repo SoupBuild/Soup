@@ -62,8 +62,23 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			AddFlag(commandArguments, "highentropyva+");
 
 			// Specify nullable context option enabled
-			if (arguments.NullableEnabled)
-				AddParameter(commandArguments, "nullable", "enable");
+			switch (arguments.NullableState)
+			{
+				case NullableState.Disabled:
+					AddParameter(commandArguments, "nullable", "disable");
+					break;
+				case NullableState.Enabled:
+					AddParameter(commandArguments, "nullable", "enable");
+					break;
+				case NullableState.Warnings:
+					AddParameter(commandArguments, "nullable", "warnings");
+					break;
+				case NullableState.Annotations:
+					AddParameter(commandArguments, "nullable", "annotations");
+					break;
+				default:
+					throw new InvalidOperationException("Unknown Nullable State");
+			}
 
 			// Add the reference libraries
 			foreach (var file in arguments.ReferenceLibraries)
@@ -88,15 +103,22 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			AddParameterWithQuotes(commandArguments, "out", arguments.Target.ToString());
 
 			// Reference assembly output to generate
-			AddParameterWithQuotes(commandArguments, "refout", arguments.ReferenceTarget.ToString());
+			// Note: Modules cannot use refout
+			if (arguments.TargetType != LinkTarget.Module)
+			{
+				AddParameterWithQuotes(commandArguments, "refout", arguments.ReferenceTarget.ToString());
+			}
 
 			switch (arguments.TargetType)
-            {
+			{
 				case LinkTarget.Library:
 					AddParameter(commandArguments, "target", "library");
 					break;
 				case LinkTarget.Executable:
 					AddParameter(commandArguments, "target", "exe");
+					break;
+				case LinkTarget.Module:
+					AddParameter(commandArguments, "target", "module");
 					break;
 				default:
 					throw new InvalidOperationException($"Unknown Target Type {arguments.TargetType}");

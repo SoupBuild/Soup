@@ -132,11 +132,11 @@ namespace Soup.Build.CSharp
 				enableWarningsAsErrors = enableWarningsAsErrorsValue.AsBoolean();
 			}
 
-			// Check for warning settings
-			bool enableNullable = true;
-			if (recipeTable.TryGetValue("EnableNullable", out var enableNullableValue))
+			// Check for nullable settings, default to enabled
+			var nullableState = BuildNullableState.Enabled;
+			if (recipeTable.TryGetValue("Nullable", out var nullableValue))
 			{
-				enableNullable = enableNullableValue.AsBoolean();
+				nullableState = ParseNullable(nullableValue.AsString());
 			}
 
 			// Set the correct optimization level for the requested flavor
@@ -177,7 +177,7 @@ namespace Soup.Build.CSharp
 			buildTable.EnsureValueList(this.factory, "Source").Append(this.factory, sourceFiles);
 
 			buildTable["EnableWarningsAsErrors"] = this.factory.Create(enableWarningsAsErrors);
-			buildTable["EnableNullable"] = this.factory.Create(enableNullable);
+			buildTable["NullableState"] = this.factory.Create((long)nullableState);
 
 			// Convert the recipe type to the required build type
 			var targetType = BuildTargetType.Library;
@@ -195,8 +195,24 @@ namespace Soup.Build.CSharp
 				return BuildTargetType.Executable;
 			else if (value == "Library")
 				return BuildTargetType.Library;
+			else if (value == "Module")
+				return BuildTargetType.Module;
 			else
 				throw new InvalidOperationException("Unknown target type value.");
+		}
+
+		private static BuildNullableState ParseNullable(string value)
+		{
+			if (value == "Enabled")
+				return BuildNullableState.Enabled;
+			else if (value == "Disabled")
+				return BuildNullableState.Disabled;
+			else if (value == "Warnings")
+				return BuildNullableState.Warnings;
+			else if (value == "Annotations")
+				return BuildNullableState.Annotations;
+			else
+				throw new InvalidOperationException("Unknown nullable state value.");
 		}
 	}
 }

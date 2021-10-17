@@ -15,12 +15,12 @@ Install all of the current defined external dependency packages.
 soup install
 ```
 
-Install the latest `json11` package and register it in the Recipe file.
+Install the latest `json11` package and register it in the MyProject Recipe file.
 ```
-soup install json11
+soup install MyProject/ -p json11
 ```
 
-Install version `1.0.1` of the `json11` package and register it in the Recipe file.
+Install version `1.0.1` of the `json11` package and register it in the current folder Recipe file.
 ```
-soup install json11@1.0.1
+soup install -p json11@1.0.1
 ```

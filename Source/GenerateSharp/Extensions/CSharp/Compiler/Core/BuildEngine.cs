@@ -100,8 +100,44 @@ namespace Soup.Build.CSharp.Compiler
 						// All link dependencies stop here.
 
 						break;
+					case BuildTargetType.Module:
+						targetType = LinkTarget.Module;
+						targetFile =
+							arguments.BinaryDirectory +
+							new Path(arguments.TargetName + "." + _compiler.ModuleFileExtension);
+						referenceTargetFile =
+							referenceDirectory +
+							new Path(arguments.TargetName + "." + _compiler.ModuleFileExtension);
+
+						// Add the DLL as a runtime dependency
+						result.RuntimeDependencies.Add(targetFile);
+
+						// Link against the reference target
+						result.LinkDependencies.Add(referenceTargetFile);
+
+						break;
 					default:
 						throw new InvalidOperationException("Unknown build target type.");
+				}
+
+				// Convert the nullable state
+				NullableState nullableState;
+				switch (arguments.NullableState)
+				{
+					case BuildNullableState.Disabled:
+						nullableState = NullableState.Disabled;
+						break;
+					case BuildNullableState.Enabled:
+						nullableState = NullableState.Enabled;
+						break;
+					case BuildNullableState.Warnings:
+						nullableState = NullableState.Warnings;
+						break;
+					case BuildNullableState.Annotations:
+						nullableState = NullableState.Annotations;
+						break;
+					default:
+						throw new InvalidOperationException("Unknown Nullable State");
 				}
 
 				// Setup the shared properties
@@ -118,7 +154,7 @@ namespace Soup.Build.CSharp.Compiler
 					EnableWarningsAsErrors = arguments.EnableWarningsAsErrors,
 					DisabledWarnings = arguments.DisabledWarnings,
 					EnabledWarnings = arguments.EnabledWarnings,
-					NullableEnabled = arguments.EnableNullable,
+					NullableState = nullableState,
 					CustomProperties = arguments.CustomProperties,
 					ReferenceLibraries = arguments.LinkDependencies,
 				};

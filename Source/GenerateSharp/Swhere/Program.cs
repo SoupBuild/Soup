@@ -94,6 +94,18 @@ namespace Soup.Build.Discover
 						{ "RootPath", windowsSDKInstallPath.ToString() },
 					});
 
+				var netFXToolsPath = WindowsSDKUtilities.FindNetFXTools();
+				var netFXToolsSDK = userConfig.EnsureSDK("NetFXTools");
+				netFXToolsSDK.SourceDirectories = new List<Path>()
+				{
+					netFXToolsPath,
+				};
+				netFXToolsSDK.SetProperties(
+					new Dictionary<string, string>()
+					{
+						{ "ToolsRoot", netFXToolsPath.ToString() },
+					});
+
 				// Save the result
 				await LocalUserConfigExtensions.SaveToFileAsync(localUserConfigPath, userConfig);
 

@@ -16,6 +16,11 @@ namespace Soup.Build.Discover
 			return (windowsSDKVersion, windowsSDKInstallPath);
 		}
 
+		public static Path FindNetFXTools()
+		{
+			return new Path("C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/");
+		}
+
 		private static string FindNewestWindows10KitVersion(Path windowsSDKInstallPath)
 		{
 			var windowsSDKIncludePath = windowsSDKInstallPath + new Path("/include/");

@@ -1,3 +1,3 @@
 @echo off 
-SET ROOT=%cd%
+SET ROOT=%~dp0
 SET PATH=%ROOT%\Scripts\;%PATH%

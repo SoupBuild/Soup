@@ -1,15 +1,16 @@
 # Module Console Application
 A console application that uses a single module interface file used inside the same projects.
 
-[Source](https://github.com/mwasplund/Soup/tree/master/Samples/ModuleConsoleApplication)
+[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ModuleConsoleApplication)
 
 ## Recipe.toml
 The Recipe file that sets the name, type, version, the public interface module and the single source file.
 ```
 Name = "ModuleConsoleApplication"
+Language = "C++"
 Type = "Executable"
 Version = "1.2.5"
-Public = "Module.cpp"
+Interface = "Module.cpp"
 Source = [
     "Main.cpp"
 ]

@@ -1,24 +1,21 @@
 # Soup Build
 
 ## Quick Links
-* [Soup Build Website](https://www.soupbuild.com/)
+* [Official Site](https://www.soupbuild.com/)
 * [Getting Started](./Docs/Getting-Started.md)
 * [Command Line Interface (CLI)](./Docs/CLI.md)
 * [Samples](./Docs/Samples.md)
-* [Architecture](./Docs/Architecture.md)
-* [C++ Modules Posts of Interest](./Docs/Posts-Of-Interest.md)
 
 ## Overview
-Soup is a build system that was created with the primary goal of simplifying the development and sharing of C++ code. Soup was built from the ground up with a primary focus on reusability of both build logic and runtime code. By sharing a single module interface between the individual packages the build system can ensure that the internals of one project will not "leak" into and out of external dependencies.
+Soup is a build system for developing software as a community, with a primary focus on developer velocity. Soup was built from the ground up to support guaranteed minimum incremental builds while allowing for reusability of both build logic and runtime code.
 
-Soup utilizes a combination of a declarative frontend Recipe along with the ability to write native C++ Extensions to inject custom logic into the build runtime. Most developers will work entirely within the declarative Recipe that allows for a simple to understand and author build definition, however the full power of C++ is available to the build system engineers that need it.
+Soup utilizes a three phased approach to building code. A **declarative** frontend [Recipe](./Docs/About/Recipe.md) tells the build **what** to build. A **generate** layer uses C# [Extensions](./Docs/About/BuildExtension.md) to define **how** to build. And finally, the **evaluate** engine runs the build [Operations](./Docs/About/BuildOperation.md) to invoke the required build executables.
 
 The clean isolation of individual projects and the ability to write custom build logic that will be integrated into the shared runtime work together to allow for easy authoring of a package that can be shared with other teams or organizations through a public source based [Package Manager](https://www.soupbuild.com/).
 
-More Information:
-* [Design Proposal](./Docs/Proposal.md) - An in depth writeup of the original justification for the project.
-* [Architecture](./Docs/Architecture.md) - An up to date breakdown of the Build Runtime and Design.
+### More Information:
 * [Design Requirements and Goals](./Docs/Design-Requirements-Goals.md) - An up to date set of design goals taken from the original design proposal.
+* [Architecture](./Docs/Architecture.md) - An up to date breakdown of the Build Runtime and Design.
 * [Command Line Interface (CLI)](./Docs/CLI.md) - The help documentation for the Soup Command line application.
 
 ## Release Status
@@ -29,4 +26,3 @@ Soup is currently in active prototyping and testing. If you are interested in co
 * [Getting Started](./Docs/Getting-Started.md)
 * [Samples](./Docs/Samples.md)
 * [Developer Setup](./Docs/Developer-Setup.md)
-* [Create Release](./Docs/Create-Release.md)
