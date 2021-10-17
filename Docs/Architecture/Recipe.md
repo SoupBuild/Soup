@@ -11,7 +11,7 @@ Name = "MyAwesomePackage"
 ```
 
 ### Language
-The **Language** property is required for all packages. It consists of a string value that contains the language type. This language tells Soup what default [Build Tasks](./BuildTask.md) to inject into the build.
+The **Language** property is required for all packages. It consists of a string value that contains the language type. This language tells Soup what default [Build Tasks](Build-Task.md) to inject into the build.
 ```
 Language = "C#"
 ```
@@ -23,7 +23,7 @@ Version = "1.0.0"
 ```
 
 ### Dependencies
-The **Dependencies** property is a table of different dependency types that each consist of a list of dependency values. A dependency value can either be a string value with a [Package Reference](./PackageReference.md) or a table with a required **Reference** property that contains the Package Reference. The runtime will recursively build the dependencies and inject shared properties and allow read access for builds.
+The **Dependencies** property is a table of different dependency types that each consist of a list of dependency values. A dependency value can either be a string value with a [Package Reference](Package-Reference.md) or a table with a required **Reference** property that contains the Package Reference. The runtime will recursively build the dependencies and inject shared properties and allow read access for builds.
 ```
 [Dependencies]
 Runtime = [
@@ -34,4 +34,4 @@ Runtime = [
 ```
 
 #### Build Dependencies
-Build dependencies are a special set that are assumed to be C# Dynamic Libraries containing [Build Tasks](./BuildTask.md). These build tasks will be loaded into the build generate and allow for shared build logic.
+Build dependencies are a special set that are assumed to be C# Dynamic Libraries containing [Build Tasks](Build-Task.md). These build tasks will be loaded into the build generate and allow for shared build logic.
