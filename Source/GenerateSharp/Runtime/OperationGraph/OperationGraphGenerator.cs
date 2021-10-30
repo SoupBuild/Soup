@@ -76,11 +76,11 @@ namespace Soup.Build.Runtime
 					var filePath = _fileSystemState.GetFilePath(file);
 					if (filePath.HasFileName())
 					{
-						EnsureOutputFileOperations(file).Add(operationInfo);
+						AddOutputFileOperations(file).Add(operationInfo);
 					}
 					else
 					{
-						EnsureOutputDirectoryOperations(file).Add(operationInfo);
+						AddOutputDirectoryOperations(file).Add(operationInfo);
 					}
 				}
 			}
@@ -196,20 +196,34 @@ namespace Soup.Build.Runtime
 			}
 		}
 
-		private IList<OperationInfo> EnsureOutputFileOperations(
+		private IList<OperationInfo> AddOutputFileOperations(
 			FileId file)
 		{
-			var result = new List<OperationInfo>();
-			_outputFileLookup.Add(file, result);
-			return result;
+			if (_outputFileLookup.ContainsKey(file))
+			{
+				throw new InvalidOperationException("Operation output file already exists");
+			}
+			else
+			{
+				var result = new List<OperationInfo>();
+				_outputFileLookup.Add(file, result);
+				return result;
+			}
 		}
 
-		private IList<OperationInfo> EnsureOutputDirectoryOperations(
+		private IList<OperationInfo> AddOutputDirectoryOperations(
 			FileId file)
 		{
-			var result = new List<OperationInfo>();
-			_outputDirectoryLookup.Add(file, result);
-			return result;
+			if (_outputFileLookup.ContainsKey(file))
+			{
+				throw new InvalidOperationException("Operation output directory already exists");
+			}
+			else
+			{
+				var result = new List<OperationInfo>();
+				_outputDirectoryLookup.Add(file, result);
+				return result;
+			}
 		}
 
 		private FileSystemState _fileSystemState;
