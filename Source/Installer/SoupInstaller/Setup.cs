@@ -29,7 +29,18 @@ class Script
                             new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, @"Extensions\Soup.CSharp\", "*.*"))))),
                 new Dir(
                     @"PackageManager",
-                    new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, "*.*"))),
+                    new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, "*.*")),
+                    new Dir(
+                        @"runtimes",
+                        new Dir(
+                            @"win-arm64\native",
+                            new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-arm64\native\", "*.*"))),
+                        new Dir(
+                            @"win-x64\native",
+                            new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-x64\native\", "*.*"))),
+                        new Dir(
+                            @"win-x86\native",
+                            new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-x86\native\", "*.*"))))),
                 new Dir(
                     @"Swhere",
                     new DirFiles(System.IO.Path.Combine(soupBinSwhereFolder, "*.*")))),
