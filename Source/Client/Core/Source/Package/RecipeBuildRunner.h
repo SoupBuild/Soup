@@ -452,6 +452,26 @@ namespace Soup::Build
 				Runtime::ValueTableManager::SaveState(parametersFile, parametersTable);
 			}
 
+			auto readAccessList = std::vector<Path>();
+
+			auto readAccessFile = soupTargetDirectory + Runtime::BuildConstants::GenerateReadAccessFileName();
+			Log::Info("Check outdated read access file: " + readAccessFile.ToString());
+			if (_arguments.ForceRebuild || IsOutdated(readAccessList, readAccessFile))
+			{
+				Log::Info("Save Read Access file");
+				Runtime::PathListManager::Save(readAccessFile, readAccessList);
+			}
+
+			auto writeAccessList = std::vector<Path>();
+
+			auto writeAccessFile = soupTargetDirectory + Runtime::BuildConstants::GenerateWriteAccessFileName();
+			Log::Info("Check outdated write access file: " + writeAccessFile.ToString());
+			if (_arguments.ForceRebuild || IsOutdated(writeAccessList, writeAccessFile))
+			{
+				Log::Info("Save Write Access file");
+				Runtime::PathListManager::Save(writeAccessFile, writeAccessList);
+			}
+
 			// Run the incremental generate
 			auto generateGraph = Runtime::OperationGraph();
 
@@ -527,6 +547,21 @@ namespace Soup::Build
 			if (Runtime::ValueTableManager::TryLoadState(parametersFile, previousParametersState))
 			{
 				return previousParametersState != parametersTable;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		bool IsOutdated(const std::vector<Path>& fileList, const Path& pathListFile)
+		{
+			// Load up the existing path list file and check if our state matches the previous
+			// to ensure incremental builds function correctly
+			auto previousFileList = std::vector<Path>();
+			if (Runtime::PathListManager::TryLoad(pathListFile, previousFileList))
+			{
+				return previousFileList != fileList;
 			}
 			else
 			{

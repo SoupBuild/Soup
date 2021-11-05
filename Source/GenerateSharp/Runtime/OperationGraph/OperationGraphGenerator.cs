@@ -14,7 +14,8 @@ namespace Soup.Build.Runtime
 	/// </summary>
 	internal class OperationGraphGenerator
 	{
-		public OperationGraphGenerator(FileSystemState fileSystemState)
+		public OperationGraphGenerator(
+			FileSystemState fileSystemState)
 		{
 			_fileSystemState = fileSystemState;
 			_uniqueId = new OperationId(0);
@@ -169,15 +170,15 @@ namespace Soup.Build.Runtime
 			out IList<OperationInfo> operations)
 		{
 			if (_outputFileLookup.TryGetValue(file, out var value))
-            {
+			{
 				operations = value;
 				return true;
 			}
 			else
-            {
+			{
 				operations = new List<OperationInfo>();
 				return false;
-            }
+			}
 		}
 
 		private bool TryGetOutputDirectoryOperations(

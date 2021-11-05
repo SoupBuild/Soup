@@ -4,261 +4,279 @@
 
 namespace Soup.Build.Generate
 {
-    using Opal;
-    using Soup.Build.Runtime;
-    using Soup.Build.Utilities;
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
-    using System.Threading.Tasks;
+	using Opal;
+	using Soup.Build.Runtime;
+	using Soup.Build.Utilities;
+	using System;
+	using System.Collections.Generic;
+	using System.Reflection;
+	using System.Threading.Tasks;
 
-    /// <summary>
-    /// The core build generate engine that knows how to run all of the required build Tasks to generate the
-    /// Operation Graph.
-    /// </summary>
-    internal class BuildGenerateEngine
-    {
-        public BuildGenerateEngine()
-        {
-            _fileSystemState = new FileSystemState();
-        }
+	/// <summary>
+	/// The core build generate engine that knows how to run all of the required build Tasks to generate the
+	/// Operation Graph.
+	/// </summary>
+	internal class BuildGenerateEngine
+	{
+		public BuildGenerateEngine()
+		{
+			_fileSystemState = new FileSystemState();
+		}
 
-        /// <summary>
-        /// Execute the entire operation graph that is referenced by this build generate engine.
-        /// </summary>
-        public async Task GenerateAsync(Path soupTargetDirectory)
-        {
-            // Run all build operations in the correct order with incremental build checks
-            Log.Diag("Build generate start");
+		/// <summary>
+		/// Execute the entire operation graph that is referenced by this build generate engine.
+		/// </summary>
+		public async Task GenerateAsync(Path soupTargetDirectory)
+		{
+			// Run all build operations in the correct order with incremental build checks
+			Log.Diag("Build generate start");
 
-            // Load the parameters file
-            var parametersFile = soupTargetDirectory + BuildConstants.GenerateParametersFileName;
-            if (!ValueTableManager.TryLoadState(parametersFile, out var parametersState))
-            {
-                Log.Error("Failed to load the parameter file: " + parametersFile.ToString());
-                throw new InvalidOperationException("Failed to load parameter file.");
-            }
+			// Load the parameters file
+			var parametersFile = soupTargetDirectory + BuildConstants.GenerateParametersFileName;
+			if (!ValueTableManager.TryLoadState(parametersFile, out var parametersState))
+			{
+				Log.Error("Failed to load the parameter file: " + parametersFile.ToString());
+				throw new InvalidOperationException("Failed to load parameter file.");
+			}
 
-            // Get the required input state from the parameters
-            var targetDirectory = new Path(parametersState["TargetDirectory"].AsString().ToString());
-            var packageDirectory = new Path(parametersState["PackageDirectory"].AsString().ToString());
+			// Load the read access file
+			var readAccessFile = soupTargetDirectory + BuildConstants.GenerateReadAccessFileName;
+			var readAccessList = new List<Path>();
+			if (!await PathListManager.TryLoadFileAsync(readAccessFile, readAccessList))
+			{
+				Log.Error("Failed to load the read access file: " + readAccessFile.ToString());
+				throw new InvalidOperationException("Failed to load read access file.");
+			}
 
-            // Load the recipe file
-            var recipeFile = packageDirectory + BuildConstants.RecipeFileName;
-            var (isSuccess, recipe) = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
-            if (!isSuccess)
-            {
-                Log.Error("Failed to load the recipe: " + recipeFile.ToString());
-                throw new InvalidOperationException("Failed to load recipe.");
-            }
+			// Load the write access file
+			var writeAccessFile = soupTargetDirectory + BuildConstants.GenerateReadAccessFileName;
+			var writeAccessList = new List<Path>();
+			if (!await PathListManager.TryLoadFileAsync(writeAccessFile, writeAccessList))
+			{
+				Log.Error("Failed to load the write access file: " + writeAccessFile.ToString());
+				throw new InvalidOperationException("Failed to load write access file.");
+			}
 
-            // Combine all the dependencies shared state
-            var dependenciesSharedState = LoadDependenciesSharedState(parametersState);
+			// Get the required input state from the parameters
+			var targetDirectory = new Path(parametersState["TargetDirectory"].AsString().ToString());
+			var packageDirectory = new Path(parametersState["PackageDirectory"].AsString().ToString());
 
-            // Generate the set of build extension libraries
-            var buildExtensionLibraries = GenerateBuildExtensionSet(recipe, dependenciesSharedState);
+			// Load the recipe file
+			var recipeFile = packageDirectory + BuildConstants.RecipeFileName;
+			var (isSuccess, recipe) = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
+			if (!isSuccess)
+			{
+				Log.Error("Failed to load the recipe: " + recipeFile.ToString());
+				throw new InvalidOperationException("Failed to load recipe.");
+			}
 
-            // Start a new active state that is initialized to the recipe itself
-            var activeState = new ValueTable();
+			// Combine all the dependencies shared state
+			var dependenciesSharedState = LoadDependenciesSharedState(parametersState);
 
-            // Initialize the Recipe Root Table
-            var recipeState = recipe.Table;
-            activeState.Add("Recipe", new Value(recipeState));
+			// Generate the set of build extension libraries
+			var buildExtensionLibraries = GenerateBuildExtensionSet(recipe, dependenciesSharedState);
 
-            // Initialize the Parameters Root Table
-            activeState.Add("Parameters", new Value(parametersState));
+			// Start a new active state that is initialized to the recipe itself
+			var activeState = new ValueTable();
 
-            // Initialize the Dependencies Root Table
-            activeState.Add("Dependencies", new Value(dependenciesSharedState));
+			// Initialize the Recipe Root Table
+			var recipeState = recipe.Table;
+			activeState.Add("Recipe", new Value(recipeState));
 
-            // Keep the extension libraries open while running the build system
-            // to ensure their memory is kept alive
-            var evaluateGraph = new OperationGraph();
-            IValueTable sharedState = new ValueTable();
+			// Initialize the Parameters Root Table
+			activeState.Add("Parameters", new Value(parametersState));
 
-            {
-                // Create a new build system for the requested build
-                var buildTaskManager = new BuildTaskManager();
+			// Initialize the Dependencies Root Table
+			activeState.Add("Dependencies", new Value(dependenciesSharedState));
 
-                // Run all build extension register callbacks
-                foreach (var buildExtension in buildExtensionLibraries)
-                {
-                    var library = LoadPlugin(buildExtension);
-                    FindAllCommands(library, buildTaskManager);
-                }
+			// Keep the extension libraries open while running the build system
+			// to ensure their memory is kept alive
+			var evaluateGraph = new OperationGraph();
+			IValueTable sharedState = new ValueTable();
 
-                // Run the build
-                var buildState = new BuildState(activeState, _fileSystemState);
-                buildTaskManager.Execute(buildState);
+			{
+				// Create a new build system for the requested build
+				var buildTaskManager = new BuildTaskManager();
 
-                // Grab the build results so the dependency libraries can be released asap
-                evaluateGraph = buildState.BuildOperationGraph();
-                sharedState = buildState.SharedState;
-            }
+				// Run all build extension register callbacks
+				foreach (var buildExtension in buildExtensionLibraries)
+				{
+					var library = LoadPlugin(buildExtension);
+					FindAllCommands(library, buildTaskManager);
+				}
 
-            // Save the operation graph so the evaluate phase can load it
-            var evaluateGraphFile = soupTargetDirectory + BuildConstants.GenerateEvaluateOperationGraphFileName;
-            OperationGraphManager.SaveState(evaluateGraphFile, evaluateGraph, _fileSystemState);
+				// Run the build
+				var buildState = new BuildState(activeState, _fileSystemState);
+				buildTaskManager.Execute(buildState);
 
-            // Save the shared state that is to be passed to the downstream builds
-            var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
-            ValueTableManager.SaveState(sharedStateFile, sharedState);
-            Log.Diag("Build generate end");
-        }
+				// Grab the build results so the dependency libraries can be released asap
+				evaluateGraph = buildState.BuildOperationGraph();
+				sharedState = buildState.SharedState;
+			}
 
-        /// <summary>
-        /// Using the parameters to resolve the dependency output folders, load up the shared state table and
-        /// combine them into a single value table to be used as input the this generate phase.
-        /// </summary>
-        private ValueTable LoadDependenciesSharedState(IValueTable parametersTable)
-        {
-            var sharedDependenciesTable = new ValueTable();
-            if (parametersTable.TryGetValue("Dependencies", out var dependencyTableValue))
-            {
-                var dependenciesTable = dependencyTableValue.AsTable();
-                foreach (var dependencyTypeValue in dependenciesTable)
-                {
-                    var dependencyType = dependencyTypeValue.Key;
-                    var dependencies = dependencyTypeValue.Value.AsTable();
-                    foreach (var dependencyValue in dependencies)
-                    {
-                        var dependencyName = dependencyValue.Key;
-                        var dependency = dependencyValue.Value.AsTable();
-                        var soupTargetDirectory = new Path(dependency["SoupTargetDirectory"].AsString());
-                        var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
+			// Save the operation graph so the evaluate phase can load it
+			var evaluateGraphFile = soupTargetDirectory + BuildConstants.GenerateEvaluateOperationGraphFileName;
+			OperationGraphManager.SaveState(evaluateGraphFile, evaluateGraph, _fileSystemState);
 
-                        // Load the shared state file
-                        if (!ValueTableManager.TryLoadState(sharedStateFile, out var sharedStateTable))
-                        {
-                            Log.Error("Failed to load the shared state file: " + sharedStateFile.ToString());
-                            throw new InvalidOperationException("Failed to load shared state file.");
-                        }
+			// Save the shared state that is to be passed to the downstream builds
+			var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
+			ValueTableManager.SaveState(sharedStateFile, sharedState);
+			Log.Diag("Build generate end");
+		}
 
-                        // Add the shared build state from this child build into the correct
-                        // table depending on the build type
-                        var typedDependenciesTable = EnsureValueTable(sharedDependenciesTable, dependencyType);
-                        typedDependenciesTable.Add(
-                            dependencyName,
-                            new Value(sharedStateTable));
-                    }
-                }
-            }
+		/// <summary>
+		/// Using the parameters to resolve the dependency output folders, load up the shared state table and
+		/// combine them into a single value table to be used as input the this generate phase.
+		/// </summary>
+		private ValueTable LoadDependenciesSharedState(IValueTable parametersTable)
+		{
+			var sharedDependenciesTable = new ValueTable();
+			if (parametersTable.TryGetValue("Dependencies", out var dependencyTableValue))
+			{
+				var dependenciesTable = dependencyTableValue.AsTable();
+				foreach (var dependencyTypeValue in dependenciesTable)
+				{
+					var dependencyType = dependencyTypeValue.Key;
+					var dependencies = dependencyTypeValue.Value.AsTable();
+					foreach (var dependencyValue in dependencies)
+					{
+						var dependencyName = dependencyValue.Key;
+						var dependency = dependencyValue.Value.AsTable();
+						var soupTargetDirectory = new Path(dependency["SoupTargetDirectory"].AsString());
+						var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
 
-            return sharedDependenciesTable;
-        }
+						// Load the shared state file
+						if (!ValueTableManager.TryLoadState(sharedStateFile, out var sharedStateTable))
+						{
+							Log.Error("Failed to load the shared state file: " + sharedStateFile.ToString());
+							throw new InvalidOperationException("Failed to load shared state file.");
+						}
 
-        static void FindAllCommands(
-            Assembly assembly,
-            BuildTaskManager buildTaskManager)
-        {
-            foreach (Type type in assembly.GetTypes())
-            {
-                if (type.IsClass &&
-                    type.IsPublic &&
-                    !type.IsAbstract &&
-                    typeof(IBuildTask).IsAssignableFrom(type))
-                {
-                    var runBeforeListPropertyInfo = type.GetProperty("RunBeforeList", BindingFlags.Public | BindingFlags.Static);
-                    if (runBeforeListPropertyInfo is null)
-                        throw new InvalidOperationException("Type missing RunBeforeList");
+						// Add the shared build state from this child build into the correct
+						// table depending on the build type
+						var typedDependenciesTable = EnsureValueTable(sharedDependenciesTable, dependencyType);
+						typedDependenciesTable.Add(
+							dependencyName,
+							new Value(sharedStateTable));
+					}
+				}
+			}
 
-                    var runBeforeList = (IReadOnlyList<string>?)runBeforeListPropertyInfo.GetValue(null, null);
-                    if (runBeforeList is null)
-                        throw new InvalidOperationException("RunBeforeList is null");
+			return sharedDependenciesTable;
+		}
 
-                    var runAfterListPropertyInfo = type.GetProperty("RunAfterList", BindingFlags.Public | BindingFlags.Static);
-                    if (runAfterListPropertyInfo is null)
-                        throw new InvalidOperationException("Type missing RunAfterList");
+		static void FindAllCommands(
+			Assembly assembly,
+			BuildTaskManager buildTaskManager)
+		{
+			foreach (Type type in assembly.GetTypes())
+			{
+				if (type.IsClass &&
+					type.IsPublic &&
+					!type.IsAbstract &&
+					typeof(IBuildTask).IsAssignableFrom(type))
+				{
+					var runBeforeListPropertyInfo = type.GetProperty("RunBeforeList", BindingFlags.Public | BindingFlags.Static);
+					if (runBeforeListPropertyInfo is null)
+						throw new InvalidOperationException("Type missing RunBeforeList");
 
-                    var runAfterList = (IReadOnlyList<string>?)runAfterListPropertyInfo.GetValue(null, null);
-                    if (runAfterList is null)
-                        throw new InvalidOperationException("RunAfterList is null");
+					var runBeforeList = (IReadOnlyList<string>?)runBeforeListPropertyInfo.GetValue(null, null);
+					if (runBeforeList is null)
+						throw new InvalidOperationException("RunBeforeList is null");
 
-                    buildTaskManager.RegisterTask(type.Name, type, runBeforeList, runAfterList);
-                }
-            }
-        }
+					var runAfterListPropertyInfo = type.GetProperty("RunAfterList", BindingFlags.Public | BindingFlags.Static);
+					if (runAfterListPropertyInfo is null)
+						throw new InvalidOperationException("Type missing RunAfterList");
 
-        private IValueTable EnsureValueTable(IValueTable table, string key)
-        {
-            if (table.ContainsKey(key))
-            {
-                return table[key].AsTable();
-            }
-            else
-            {
-                var value = new ValueTable();
-                table.Add(key, new Value(value));
-                return value;
-            }
-        }
+					var runAfterList = (IReadOnlyList<string>?)runAfterListPropertyInfo.GetValue(null, null);
+					if (runAfterList is null)
+						throw new InvalidOperationException("RunAfterList is null");
 
-        /// <summary>
-        /// Generate the collection of build extensions
-        /// </summary>
-        private IList<Path> GenerateBuildExtensionSet(
-            Recipe recipe,
-            ValueTable dependenciesSharedState)
-        {
-            var buildExtensionLibraries = new List<Path>();
+					buildTaskManager.RegisterTask(type.Name, type, runBeforeList, runAfterList);
+				}
+			}
+		}
 
-            // Run the RecipeBuild extension to inject core build tasks
-            var recipeBuildExtensionPath = new Path();
-            var language = recipe.Language;
-            if (language == "C++")
-            {
-                var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
-                recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.Cpp/Soup.Cpp.dll");
-            }
-            else if (language == "C#")
-            {
-                var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
-                recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.CSharp/Soup.CSharp.dll");
-            }
-            else
-            {
-                throw new InvalidOperationException("Unknown language.");
-            }
+		private IValueTable EnsureValueTable(IValueTable table, string key)
+		{
+			if (table.ContainsKey(key))
+			{
+				return table[key].AsTable();
+			}
+			else
+			{
+				var value = new ValueTable();
+				table.Add(key, new Value(value));
+				return value;
+			}
+		}
 
-            buildExtensionLibraries.Add(recipeBuildExtensionPath);
+		/// <summary>
+		/// Generate the collection of build extensions
+		/// </summary>
+		private IList<Path> GenerateBuildExtensionSet(
+			Recipe recipe,
+			ValueTable dependenciesSharedState)
+		{
+			var buildExtensionLibraries = new List<Path>();
 
-            // Check for any dynamic libraries in the shared state
-            if (dependenciesSharedState.TryGetValue("Build", out var buildDependenciesValue))
-            {
-                foreach (var dependencyValue in buildDependenciesValue.AsTable())
-                {
-                    var dependency = dependencyValue.Value.AsTable();
-                    if (dependency.TryGetValue("Build", out var buildTableValue))
-                    {
-                        var buildTable = buildTableValue.AsTable();
-                        if (buildTable.TryGetValue("TargetFile", out var targetFileValue))
-                        {
-                            var targetFile = new Path(targetFileValue.AsString().ToString());
-                            buildExtensionLibraries.Add(targetFile);
-                        }
-                        else
-                        {
-                            Log.Warning("Found build dependency with no target file.");
-                        }
-                    }
-                    else
-                    {
-                        Log.Warning("Found build dependency with no build table.");
-                    }
-                }
-            }
+			// Run the RecipeBuild extension to inject core build tasks
+			var recipeBuildExtensionPath = new Path();
+			var language = recipe.Language;
+			if (language == "C++")
+			{
+				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
+				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.Cpp/Soup.Cpp.dll");
+			}
+			else if (language == "C#")
+			{
+				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
+				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.CSharp/Soup.CSharp.dll");
+			}
+			else
+			{
+				throw new InvalidOperationException("Unknown language.");
+			}
 
-            return buildExtensionLibraries;
-        }
+			buildExtensionLibraries.Add(recipeBuildExtensionPath);
 
-        static Assembly LoadPlugin(Path libraryPath)
-        {
-            // Navigate up to the solution root
-            Console.WriteLine($"Loading Plugin Assembly: {libraryPath}");
-            var loadContext = new ExtensionLoadContext(libraryPath.ToString());
-            return loadContext.LoadFromAssemblyName(new AssemblyName(libraryPath.GetFileStem()));
-        }
+			// Check for any dynamic libraries in the shared state
+			if (dependenciesSharedState.TryGetValue("Build", out var buildDependenciesValue))
+			{
+				foreach (var dependencyValue in buildDependenciesValue.AsTable())
+				{
+					var dependency = dependencyValue.Value.AsTable();
+					if (dependency.TryGetValue("Build", out var buildTableValue))
+					{
+						var buildTable = buildTableValue.AsTable();
+						if (buildTable.TryGetValue("TargetFile", out var targetFileValue))
+						{
+							var targetFile = new Path(targetFileValue.AsString().ToString());
+							buildExtensionLibraries.Add(targetFile);
+						}
+						else
+						{
+							Log.Warning("Found build dependency with no target file.");
+						}
+					}
+					else
+					{
+						Log.Warning("Found build dependency with no build table.");
+					}
+				}
+			}
 
-        private FileSystemState _fileSystemState;
-    }
+			return buildExtensionLibraries;
+		}
+
+		static Assembly LoadPlugin(Path libraryPath)
+		{
+			// Navigate up to the solution root
+			Console.WriteLine($"Loading Plugin Assembly: {libraryPath}");
+			var loadContext = new ExtensionLoadContext(libraryPath.ToString());
+			return loadContext.LoadFromAssemblyName(new AssemblyName(libraryPath.GetFileStem()));
+		}
+
+		private FileSystemState _fileSystemState;
+	}
 }

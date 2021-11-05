@@ -223,7 +223,7 @@ namespace Monitor
 			workingDirectoryString.copy(payload.zWorkingDirectory, workingDirectoryString.length());
 			payload.zWorkingDirectory[workingDirectoryString.length()] = 0;
 
-			// Pass long the read/write access lists
+			// Pass along the read/write access lists
 			payload.EnableAccessChecks = m_enableAccessChecks;
 			LoadStringList(m_allowedReadAccess, payload.zReadAccessDirectories, payload.cReadAccessDirectories, 4096);
 			LoadStringList(m_allowedWriteAccess, payload.zWriteAccessDirectories, payload.cWriteAccessDirectories, 4096);

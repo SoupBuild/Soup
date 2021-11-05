@@ -22,6 +22,16 @@ namespace Soup.Build.Utilities
 		public static Path GenerateParametersFileName => new Path("GenerateParameters.bvt");
 
 		/// <summary>
+		/// Gets the Generate Read Access file name
+		/// </summary>
+		public static Path GenerateReadAccessFileName => new Path("GenerateReadAccess.txt");
+
+		/// <summary>
+		/// Gets the Generate Write Access file name
+		/// </summary>
+		public static Path GenerateWriteAccessFileName => new Path("GenerateWriteAccess.txt");
+
+		/// <summary>
 		/// Gets the Generate Shared State Value Table file name
 		/// </summary>
 		public static Path GenerateSharedStateFileName => new Path("GenerateSharedState.bvt");

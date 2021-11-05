@@ -48,6 +48,8 @@ using namespace Opal;
 #include "OperationGraph/OperationGraphGenerator.h"
 #include "OperationGraph/OperationGraphManager.h"
 
+#include "PathList/PathListManager.h"
+
 #include "Recipe/Recipe.h"
 #include "Recipe/RecipeBuildStateConverter.h"
 #include "Recipe/RecipeExtensions.h"

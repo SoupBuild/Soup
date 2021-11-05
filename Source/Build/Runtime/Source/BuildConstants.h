@@ -31,6 +31,24 @@ namespace Soup::Build::Runtime
 		}
 
 		/// <summary>
+		/// Gets the Generate Read Access file name
+		/// </summary>
+		static const Path GenerateReadAccessFileName()
+		{
+			static const Path value = Path("GenerateReadAccess.txt");
+			return value;
+		}
+
+		/// <summary>
+		/// Gets the Generate Write Access file name
+		/// </summary>
+		static const Path GenerateWriteAccessFileName()
+		{
+			static const Path value = Path("GenerateWriteAccess.txt");
+			return value;
+		}
+
+		/// <summary>
 		/// Gets the Generate Shared State Value Table file name
 		/// </summary>
 		static const Path GenerateSharedStateFileName()
