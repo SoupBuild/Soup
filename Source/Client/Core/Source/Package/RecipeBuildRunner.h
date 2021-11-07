@@ -15,18 +15,18 @@ namespace Soup::Build
 			std::string name,
 			Path targetDirectory,
 			Path soupTargetDirectory,
-			std::set<Path> childTargetDirectorySet) :
+			std::set<Path> transitiveChildTargetDirectorySet) :
 			Name(std::move(name)),
 			TargetDirectory(std::move(targetDirectory)),
 			SoupTargetDirectory(std::move(soupTargetDirectory)),
-			ChildTargetDirectorySet(std::move(childTargetDirectorySet))
+			TransitiveChildTargetDirectorySet(std::move(transitiveChildTargetDirectorySet))
 		{
 		}
 
 		std::string Name;
 		Path TargetDirectory;
 		Path SoupTargetDirectory;
-		std::set<Path> ChildTargetDirectorySet;
+		std::set<Path> TransitiveChildTargetDirectorySet;
 	};
 
 	/// <summary>
@@ -392,7 +392,9 @@ namespace Soup::Build
 			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
 
 			// Build up the child target directory set
-			auto childTargetDirectorySet = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
+			auto childTargetDirectorySets = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
+			auto& directChildTargetDirectories = childTargetDirectorySets.first;
+			auto& transitiveChildTargetDirectories = childTargetDirectorySets.second;
 
 			if (!_arguments.SkipGenerate)
 			{
@@ -403,12 +405,13 @@ namespace Soup::Build
 					soupTargetDirectory,
 					globalParameters,
 					isHostBuild,
-					childTargetDirectorySet);
+					directChildTargetDirectories,
+					transitiveChildTargetDirectories);
 			}
 
 			if (!_arguments.SkipEvaluate)
 			{
-				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory, childTargetDirectorySet);
+				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory, transitiveChildTargetDirectories);
 			}
 
 			// Cache the build state for upstream dependencies
@@ -419,7 +422,7 @@ namespace Soup::Build
 					recipe.GetName(),
 					std::move(targetDirectory),
 					std::move(soupTargetDirectory),
-					std::move(childTargetDirectorySet)));
+					std::move(transitiveChildTargetDirectories)));
 		}
 
 		/// <summary>
@@ -432,7 +435,8 @@ namespace Soup::Build
 			const Path& soupTargetDirectory,
 			const Runtime::ValueTable& globalParameters,
 			bool isHostBuild,
-			const std::set<Path>& childTargetDirectorySet)
+			const std::set<Path>& directChildTargetDirectories,
+			const std::set<Path>& transitiveChildTargetDirectories)
 		{
 			// Clone the global parameters
 			auto parametersTable = Runtime::ValueTable(globalParameters.GetValues());
@@ -452,24 +456,37 @@ namespace Soup::Build
 				Runtime::ValueTableManager::SaveState(parametersFile, parametersTable);
 			}
 
-			auto readAccessList = std::vector<Path>();
+			// Initialize the read access with the shared global set
+			auto evaluateAllowedReadAccess = std::vector<Path>(_globalReadAccess);
+			auto evaluateAllowedWriteAccess = std::vector<Path>();
+
+			// Allow read access for all transitive dependencies target directories
+			std::copy(
+				transitiveChildTargetDirectories.begin(),
+				transitiveChildTargetDirectories.end(),
+				std::back_inserter(evaluateAllowedReadAccess));
+
+			// Allow reading from the package root (source input) and the target directory (intermediate output)
+			evaluateAllowedReadAccess.push_back(packageDirectory);
+			evaluateAllowedReadAccess.push_back(targetDirectory);
+
+			// Only allow writing to the target directory
+			evaluateAllowedWriteAccess.push_back(targetDirectory);
 
 			auto readAccessFile = soupTargetDirectory + Runtime::BuildConstants::GenerateReadAccessFileName();
 			Log::Info("Check outdated read access file: " + readAccessFile.ToString());
-			if (_arguments.ForceRebuild || IsOutdated(readAccessList, readAccessFile))
+			if (_arguments.ForceRebuild || IsOutdated(evaluateAllowedReadAccess, readAccessFile))
 			{
 				Log::Info("Save Read Access file");
-				Runtime::PathListManager::Save(readAccessFile, readAccessList);
+				Runtime::PathListManager::Save(readAccessFile, evaluateAllowedReadAccess);
 			}
-
-			auto writeAccessList = std::vector<Path>();
 
 			auto writeAccessFile = soupTargetDirectory + Runtime::BuildConstants::GenerateWriteAccessFileName();
 			Log::Info("Check outdated write access file: " + writeAccessFile.ToString());
-			if (_arguments.ForceRebuild || IsOutdated(writeAccessList, writeAccessFile))
+			if (_arguments.ForceRebuild || IsOutdated(evaluateAllowedWriteAccess, writeAccessFile))
 			{
 				Log::Info("Save Write Access file");
-				Runtime::PathListManager::Save(writeAccessFile, writeAccessList);
+				Runtime::PathListManager::Save(writeAccessFile, evaluateAllowedWriteAccess);
 			}
 
 			// Run the incremental generate
@@ -501,23 +518,23 @@ namespace Soup::Build
 			});
 
 			// Set Read and Write access fore the generate phase
-			auto allowedReadAccess = std::vector<Path>();
-			auto allowedWriteAccess = std::vector<Path>();
+			auto generateAllowedReadAccess = std::vector<Path>();
+			auto generateAllowedWriteAccess = std::vector<Path>();
 
 			// Allow read access to the generate executable folder, Windows and the DotNet install
-			allowedReadAccess.push_back(generateFolder);
-			allowedReadAccess.push_back(Path("C:/Windows/"));
-			allowedReadAccess.push_back(Path("C:/Program Files/dotnet/"));
+			generateAllowedReadAccess.push_back(generateFolder);
+			generateAllowedReadAccess.push_back(Path("C:/Windows/"));
+			generateAllowedReadAccess.push_back(Path("C:/Program Files/dotnet/"));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
-			allowedReadAccess.push_back(packageDirectory);
-			allowedReadAccess.push_back(targetDirectory);
+			generateAllowedReadAccess.push_back(packageDirectory);
+			generateAllowedReadAccess.push_back(targetDirectory);
 
-			// Allow read access for all transitive dependencies target directories and write to own targets
+			// Allow read access for all direct dependencies target directories and write to own targets
 			// TODO: This is needed to get the shared properties, this may be better to do in process
 			// and only allow read access to build dependencies.
-			std::copy(childTargetDirectorySet.begin(), childTargetDirectorySet.end(), std::back_inserter(allowedReadAccess));
-			allowedWriteAccess.push_back(targetDirectory);
+			std::copy(directChildTargetDirectories.begin(), directChildTargetDirectories.end(), std::back_inserter(generateAllowedReadAccess));
+			generateAllowedWriteAccess.push_back(targetDirectory);
 
 			// Load the previous build graph if it exists and merge it with the new one
 			auto generateGraphFile = soupTargetDirectory + GetGenerateGraphFileName();
@@ -531,8 +548,8 @@ namespace Soup::Build
 				_fileSystemState,
 				generateGraph,
 				std::move(temporaryDirectory),
-				std::move(allowedReadAccess),
-				std::move(allowedWriteAccess));
+				std::move(generateAllowedReadAccess),
+				std::move(generateAllowedWriteAccess));
 			evaluateGenerateEngine.Evaluate();
 
 			// Save the operation graph for future incremental builds
@@ -573,7 +590,7 @@ namespace Soup::Build
 			const Path& packageRoot,
 			const Path& targetDirectory,
 			const Path& soupTargetDirectory,
-			const std::set<Path>& childTargetDirectorySet)
+			const std::set<Path>& transitiveChildTargetDirectories)
 		{
 			// Load and run the previous stored state directly
 			auto generateEvaluateGraphFile = soupTargetDirectory + Runtime::BuildConstants::GenerateEvaluateOperationGraphFileName();
@@ -600,7 +617,7 @@ namespace Soup::Build
 			auto allowedWriteAccess = std::vector<Path>();
 
 			// Allow read access for all transitive dependencies target directories
-			std::copy(childTargetDirectorySet.begin(), childTargetDirectorySet.end(), std::back_inserter(allowedReadAccess));
+			std::copy(transitiveChildTargetDirectories.begin(), transitiveChildTargetDirectories.end(), std::back_inserter(allowedReadAccess));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
 			allowedReadAccess.push_back(packageRoot);
@@ -784,7 +801,7 @@ namespace Soup::Build
 			return result;
 		}
 
-		std::set<Path> BuildChildDependenciesTargetDirectorySet(
+		std::pair<std::set<Path>, std::set<Path>> BuildChildDependenciesTargetDirectorySet(
 			Runtime::Recipe& recipe,
 			const Path& workingDirectory,
 			bool isHostBuild)
@@ -795,7 +812,8 @@ namespace Soup::Build
 				"Build",
 			});
 
-			auto result = std::set<Path>();
+			auto directDirectories = std::set<Path>();
+			auto transitiveDirectories = std::set<Path>();
 			for (auto dependecyType : knownDependecyTypes)
 			{
 				if (recipe.HasNamedDependencies(dependecyType))
@@ -823,8 +841,9 @@ namespace Soup::Build
 						{
 							// Combine the child dependency target and the transitive children
 							auto& dependencyState = findBuildCache->second;
-							result.insert(dependencyState.TargetDirectory);
-							result.insert(dependencyState.ChildTargetDirectorySet.begin(), dependencyState.ChildTargetDirectorySet.end());
+							directDirectories.insert(dependencyState.TargetDirectory);
+							transitiveDirectories.insert(dependencyState.TargetDirectory);
+							transitiveDirectories.insert(dependencyState.TransitiveChildTargetDirectorySet.begin(), dependencyState.TransitiveChildTargetDirectorySet.end());
 						}
 						else
 						{
@@ -835,7 +854,7 @@ namespace Soup::Build
 				}
 			}
 
-			return result;
+			return std::make_pair(std::move(directDirectories), std::move(transitiveDirectories));
 		}
 
 	private:
