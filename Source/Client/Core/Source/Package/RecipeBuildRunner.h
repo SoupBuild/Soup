@@ -15,18 +15,18 @@ namespace Soup::Build
 			std::string name,
 			Path targetDirectory,
 			Path soupTargetDirectory,
-			std::set<Path> transitiveChildTargetDirectorySet) :
+			std::set<Path> recursiveChildTargetDirectorySet) :
 			Name(std::move(name)),
 			TargetDirectory(std::move(targetDirectory)),
 			SoupTargetDirectory(std::move(soupTargetDirectory)),
-			TransitiveChildTargetDirectorySet(std::move(transitiveChildTargetDirectorySet))
+			RecursiveChildTargetDirectorySet(std::move(recursiveChildTargetDirectorySet))
 		{
 		}
 
 		std::string Name;
 		Path TargetDirectory;
 		Path SoupTargetDirectory;
-		std::set<Path> TransitiveChildTargetDirectorySet;
+		std::set<Path> RecursiveChildTargetDirectorySet;
 	};
 
 	/// <summary>
@@ -394,7 +394,7 @@ namespace Soup::Build
 			// Build up the child target directory set
 			auto childTargetDirectorySets = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
 			auto& directChildTargetDirectories = childTargetDirectorySets.first;
-			auto& transitiveChildTargetDirectories = childTargetDirectorySets.second;
+			auto& recursiveChildTargetDirectories = childTargetDirectorySets.second;
 
 			if (!_arguments.SkipGenerate)
 			{
@@ -406,12 +406,12 @@ namespace Soup::Build
 					globalParameters,
 					isHostBuild,
 					directChildTargetDirectories,
-					transitiveChildTargetDirectories);
+					recursiveChildTargetDirectories);
 			}
 
 			if (!_arguments.SkipEvaluate)
 			{
-				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory, transitiveChildTargetDirectories);
+				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory, recursiveChildTargetDirectories);
 			}
 
 			// Cache the build state for upstream dependencies
@@ -422,7 +422,7 @@ namespace Soup::Build
 					recipe.GetName(),
 					std::move(targetDirectory),
 					std::move(soupTargetDirectory),
-					std::move(transitiveChildTargetDirectories)));
+					std::move(recursiveChildTargetDirectories)));
 		}
 
 		/// <summary>
@@ -436,7 +436,7 @@ namespace Soup::Build
 			const Runtime::ValueTable& globalParameters,
 			bool isHostBuild,
 			const std::set<Path>& directChildTargetDirectories,
-			const std::set<Path>& transitiveChildTargetDirectories)
+			const std::set<Path>& recursiveChildTargetDirectories)
 		{
 			// Clone the global parameters
 			auto parametersTable = Runtime::ValueTable(globalParameters.GetValues());
@@ -460,10 +460,10 @@ namespace Soup::Build
 			auto evaluateAllowedReadAccess = std::vector<Path>(_globalReadAccess);
 			auto evaluateAllowedWriteAccess = std::vector<Path>();
 
-			// Allow read access for all transitive dependencies target directories
+			// Allow read access for all recursive dependencies target directories
 			std::copy(
-				transitiveChildTargetDirectories.begin(),
-				transitiveChildTargetDirectories.end(),
+				recursiveChildTargetDirectories.begin(),
+				recursiveChildTargetDirectories.end(),
 				std::back_inserter(evaluateAllowedReadAccess));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
@@ -590,7 +590,7 @@ namespace Soup::Build
 			const Path& packageRoot,
 			const Path& targetDirectory,
 			const Path& soupTargetDirectory,
-			const std::set<Path>& transitiveChildTargetDirectories)
+			const std::set<Path>& recursiveChildTargetDirectories)
 		{
 			// Load and run the previous stored state directly
 			auto generateEvaluateGraphFile = soupTargetDirectory + Runtime::BuildConstants::GenerateEvaluateOperationGraphFileName();
@@ -616,8 +616,8 @@ namespace Soup::Build
 			auto allowedReadAccess = std::vector<Path>(_globalReadAccess);
 			auto allowedWriteAccess = std::vector<Path>();
 
-			// Allow read access for all transitive dependencies target directories
-			std::copy(transitiveChildTargetDirectories.begin(), transitiveChildTargetDirectories.end(), std::back_inserter(allowedReadAccess));
+			// Allow read access for all recursive dependencies target directories
+			std::copy(recursiveChildTargetDirectories.begin(), recursiveChildTargetDirectories.end(), std::back_inserter(allowedReadAccess));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
 			allowedReadAccess.push_back(packageRoot);
@@ -813,7 +813,7 @@ namespace Soup::Build
 			});
 
 			auto directDirectories = std::set<Path>();
-			auto transitiveDirectories = std::set<Path>();
+			auto recursiveDirectories = std::set<Path>();
 			for (auto dependecyType : knownDependecyTypes)
 			{
 				if (recipe.HasNamedDependencies(dependecyType))
@@ -839,11 +839,11 @@ namespace Soup::Build
 						auto findBuildCache = buildCache.find(packagePath);
 						if (findBuildCache != buildCache.end())
 						{
-							// Combine the child dependency target and the transitive children
+							// Combine the child dependency target and the recursive children
 							auto& dependencyState = findBuildCache->second;
 							directDirectories.insert(dependencyState.TargetDirectory);
-							transitiveDirectories.insert(dependencyState.TargetDirectory);
-							transitiveDirectories.insert(dependencyState.TransitiveChildTargetDirectorySet.begin(), dependencyState.TransitiveChildTargetDirectorySet.end());
+							recursiveDirectories.insert(dependencyState.TargetDirectory);
+							recursiveDirectories.insert(dependencyState.RecursiveChildTargetDirectorySet.begin(), dependencyState.RecursiveChildTargetDirectorySet.end());
 						}
 						else
 						{
@@ -854,7 +854,7 @@ namespace Soup::Build
 				}
 			}
 
-			return std::make_pair(std::move(directDirectories), std::move(transitiveDirectories));
+			return std::make_pair(std::move(directDirectories), std::move(recursiveDirectories));
 		}
 
 	private:

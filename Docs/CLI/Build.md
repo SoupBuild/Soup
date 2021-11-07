@@ -1,6 +1,6 @@
 # Build
 ## Overview
-Build a recipe and all transitive dependencies.
+Build a recipe and all recursive dependencies.
 ```
 soup build <path> [-flavor <name>|-force]
 ```
