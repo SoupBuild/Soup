@@ -72,7 +72,7 @@ namespace Soup.Build
 		public static bool operator !=(BuildOperation? lhs, BuildOperation? rhs) => !(lhs == rhs);
 
 		public override string ToString()
-        {
+		{
 			return $"BuildOperation {{ Title=\"{Title}\", WorkingDirectory=\"{WorkingDirectory}\", Executable=\"{Executable}\", Arguments=\"{Arguments}\", DeclaredInput=[{string.Join(",", DeclaredInput)}], DeclaredOutput=[{string.Join(",", DeclaredOutput)}] }}";
 		}
 	}

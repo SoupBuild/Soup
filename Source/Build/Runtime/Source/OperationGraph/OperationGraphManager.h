@@ -57,6 +57,8 @@ namespace Soup::Build::Runtime
 					auto& operation = operationReference.second;
 					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
 					UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
+					UpdateFileIds(operation.ReadAccess, activeFileIdMap);
+					UpdateFileIds(operation.WriteAccess, activeFileIdMap);
 					UpdateFileIds(operation.ObservedInput, activeFileIdMap);
 					UpdateFileIds(operation.ObservedOutput, activeFileIdMap);
 				}
@@ -93,6 +95,8 @@ namespace Soup::Build::Runtime
 				auto& operation = operationReference.second;
 				files.insert(operation.DeclaredInput.begin(), operation.DeclaredInput.end());
 				files.insert(operation.DeclaredOutput.begin(), operation.DeclaredOutput.end());
+				files.insert(operation.ReadAccess.begin(), operation.ReadAccess.end());
+				files.insert(operation.WriteAccess.begin(), operation.WriteAccess.end());
 				files.insert(operation.ObservedInput.begin(), operation.ObservedInput.end());
 				files.insert(operation.ObservedOutput.begin(), operation.ObservedOutput.end());
 			}

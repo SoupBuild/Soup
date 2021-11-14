@@ -32,12 +32,12 @@ namespace Soup::Client
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
 			{
-				// Buildin the current directory
+				// Build in the current directory
 				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
 			}
 			else
 			{
-				workingDirectory = Path(_options.Path);
+				workingDirectory = Path(_options.Path + "/");
 
 				// Check if this is relative to current directory
 				if (!workingDirectory.HasRoot())

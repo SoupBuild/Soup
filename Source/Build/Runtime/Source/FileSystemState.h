@@ -165,6 +165,20 @@ namespace Soup::Build::Runtime
 		/// <summary>
 		/// Find a file path
 		/// </summary>
+		std::vector<Path> GetFilePaths(const std::vector<FileId>& fileIds) const
+		{
+			auto result = std::vector<Path>();
+			for (auto& fileId : fileIds)
+			{
+				result.push_back(GetFilePath(fileId));
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Find a file path
+		/// </summary>
 		const Path& GetFilePath(FileId fileId) const
 		{
 			auto findResult = _files.find(fileId);

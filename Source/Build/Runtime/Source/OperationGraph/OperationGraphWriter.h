@@ -14,7 +14,7 @@ namespace Soup::Build::Runtime
 	{
 	private:
 		// Binary Operation graph file format
-		static constexpr uint32_t FileVersion = 2;
+		static constexpr uint32_t FileVersion = 3;
 
 	public:
 		static void Serialize(const OperationGraph& state, std::ostream& stream)
@@ -71,6 +71,12 @@ namespace Soup::Build::Runtime
 
 			// Write out the declared output files
 			WriteValues(stream, operation.DeclaredOutput);
+
+			// Write out the read access list
+			WriteValues(stream, operation.ReadAccess);
+
+			// Write out the write access list
+			WriteValues(stream, operation.WriteAccess);
 
 			// Write out the child operation ids
 			WriteValues(stream, operation.Children);

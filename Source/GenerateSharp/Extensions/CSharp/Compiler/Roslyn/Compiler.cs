@@ -62,14 +62,19 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 				string.Join(" ", sharedCommandArguments));
 			operations.Add(writeSharedArgumentsOperation);
 
+			var symbolFile = new Path(arguments.Target.ToString());
+			symbolFile.SetFileExtension("pdb");
+
 			// Build up the input/output sets
 			var inputFiles = new List<Path>();
 			inputFiles.Add(responseFile);
 			inputFiles.AddRange(arguments.SourceFiles);
+			inputFiles.AddRange(arguments.ReferenceLibraries);
 			var outputFiles = new List<Path>()
 			{
 				arguments.Target,
 				arguments.ReferenceTarget,
+				symbolFile,
 			};
 
 			// Generate the compile build operation

@@ -84,29 +84,8 @@ namespace Soup.Build.Runtime
 				new CommandInfo(),
 				new List<FileId>(),
 				new List<FileId>(),
-				new List<OperationId>(),
-				0,
-				false,
 				new List<FileId>(),
-				new List<FileId>())
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OperationInfo"/> class.
-		/// </summary>
-		public OperationInfo(
-			OperationId id,
-			string title,
-			CommandInfo command,
-			IList<FileId> declaredInput,
-			IList<FileId> declaredOutput) :
-			this(
-				id,
-				title,
-				command,
-				declaredInput,
-				declaredOutput,
+				new List<FileId>(),
 				new List<OperationId>(),
 				0,
 				false,
@@ -124,6 +103,35 @@ namespace Soup.Build.Runtime
 			CommandInfo command,
 			IList<FileId> declaredInput,
 			IList<FileId> declaredOutput,
+			IList<FileId> readAccess,
+			IList<FileId> writeAccess) :
+			this(
+				id,
+				title,
+				command,
+				declaredInput,
+				declaredOutput,
+				readAccess,
+				writeAccess,
+				new List<OperationId>(),
+				0,
+				false,
+				new List<FileId>(),
+				new List<FileId>())
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OperationInfo"/> class.
+		/// </summary>
+		public OperationInfo(
+			OperationId id,
+			string title,
+			CommandInfo command,
+			IList<FileId> declaredInput,
+			IList<FileId> declaredOutput,
+			IList<FileId> readAccess,
+			IList<FileId> writeAccess,
 			IList<OperationId> children,
 			uint dependencyCount,
 			bool wasSuccessfulRun,
@@ -135,6 +143,8 @@ namespace Soup.Build.Runtime
 			Command = command;
 			DeclaredInput = declaredInput;
 			DeclaredOutput = declaredOutput;
+			ReadAccess = readAccess;
+			WriteAccess = writeAccess;
 			Children = children;
 			DependencyCount = dependencyCount;
 			WasSuccessfulRun = wasSuccessfulRun;
@@ -151,6 +161,8 @@ namespace Soup.Build.Runtime
 				Command == rhs.Command &&
 				DeclaredInput == rhs.DeclaredInput &&
 				DeclaredOutput == rhs.DeclaredOutput &&
+				ReadAccess == rhs.ReadAccess &&
+				WriteAccess == rhs.WriteAccess &&
 				Children == rhs.Children &&
 				DependencyCount == rhs.DependencyCount &&
 				WasSuccessfulRun == rhs.WasSuccessfulRun &&
@@ -185,6 +197,8 @@ namespace Soup.Build.Runtime
 		public CommandInfo Command { get; init; }
 		public IList<FileId> DeclaredInput { get; init; }
 		public IList<FileId> DeclaredOutput { get; init; }
+		public IList<FileId> ReadAccess { get; init; }
+		public IList<FileId> WriteAccess { get; init; }
 		public IList<OperationId> Children { get; init; }
 		public uint DependencyCount { get; set; }
 		public bool WasSuccessfulRun { get; init; }

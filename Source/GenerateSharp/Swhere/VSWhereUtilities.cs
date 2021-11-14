@@ -43,7 +43,7 @@ namespace Soup.Build.Discover
 
 			// Calculate the final VC tools folder
 			var visualCompilerVersionFolder =
-				visualStudioInstallRoot + new Path("/VC/Tools/MSVC/") + new Path(visualCompilerVersion);
+				visualStudioInstallRoot + new Path($"/VC/Tools/MSVC/{visualCompilerVersion}/");
 
 			return (visualCompilerVersion, visualCompilerVersionFolder);
 		}

@@ -51,6 +51,8 @@ void PrintOperations(Soup::Build::Runtime::OperationGraph& graph)
 		std::cout << "\tCommand-Arguments: " << operationInfo.Command.Arguments << std::endl;
 		std::cout << "\tDeclaredInput: " << ToString(operationInfo.DeclaredInput) << std::endl;
 		std::cout << "\tDeclaredOutput: " << ToString(operationInfo.DeclaredOutput) << std::endl;
+		std::cout << "\tReadAccess: " << ToString(operationInfo.ReadAccess) << std::endl;
+		std::cout << "\tWriteAccess: " << ToString(operationInfo.WriteAccess) << std::endl;
 		std::cout << "\tChildren: " << ToString(operationInfo.Children) << std::endl;
 		std::cout << "\tDependencyCount: " << operationInfo.DependencyCount << std::endl;
 		std::cout << "\tWasSuccessfulRun: " << operationInfo.WasSuccessfulRun << std::endl;

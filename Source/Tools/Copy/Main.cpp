@@ -1,4 +1,4 @@
-#include <filesystem>
+#include <Windows.h>
 #include <iostream>
 #include <string_view>
 
@@ -19,8 +19,10 @@ int main(int argc, char** argv)
 	{
 		auto sourcePath = std::string_view(argv[1]);
 		auto destinationPath = std::string_view(argv[2]);
-		auto copyOptions = std::filesystem::copy_options::update_existing;
-		std::filesystem::copy(sourcePath, destinationPath, copyOptions);
+		if (!CopyFileA(sourcePath.data(), destinationPath.data(), false))
+		{
+			throw std::runtime_error("Copy failed");
+		}
 	}
 	catch(const std::exception& e)
 	{

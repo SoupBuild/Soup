@@ -89,6 +89,8 @@ namespace Soup.Build.Generate
 				var operation = operationReference.Value;
 				files.UnionWith(operation.DeclaredInput);
 				files.UnionWith(operation.DeclaredOutput);
+				files.UnionWith(operation.ReadAccess);
+				files.UnionWith(operation.WriteAccess);
 				files.UnionWith(operation.ObservedInput);
 				files.UnionWith(operation.ObservedOutput);
 			}

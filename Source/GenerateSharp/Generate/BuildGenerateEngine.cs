@@ -49,7 +49,7 @@ namespace Soup.Build.Generate
 			}
 
 			// Load the write access file
-			var writeAccessFile = soupTargetDirectory + BuildConstants.GenerateReadAccessFileName;
+			var writeAccessFile = soupTargetDirectory + BuildConstants.GenerateWriteAccessFileName;
 			var writeAccessList = new List<Path>();
 			if (!await PathListManager.TryLoadFileAsync(writeAccessFile, writeAccessList))
 			{
@@ -106,7 +106,11 @@ namespace Soup.Build.Generate
 				}
 
 				// Run the build
-				var buildState = new BuildState(activeState, _fileSystemState);
+				var buildState = new BuildState(
+					activeState,
+					_fileSystemState,
+					readAccessList,
+					writeAccessList);
 				buildTaskManager.Execute(buildState);
 
 				// Grab the build results so the dependency libraries can be released asap

@@ -14,7 +14,7 @@ namespace Soup::Build::Runtime
 	{
 	private:
 		// Binary Operation Graph file format
-		static constexpr uint32_t FileVersion = 2;
+		static constexpr uint32_t FileVersion = 3;
 
 	public:
 		static OperationGraph Deserialize(std::istream& stream)
@@ -122,6 +122,12 @@ namespace Soup::Build::Runtime
 			// Write out the declared output files
 			auto declaredOutput = ReadFileIdList(stream);
 
+			// Write out the read access list
+			auto readAccess = ReadFileIdList(stream);
+
+			// Write out the write access list
+			auto writeAccess = ReadFileIdList(stream);
+
 			// Write out the child operation ids
 			auto children = ReadOperationIdList(stream);
 
@@ -146,6 +152,8 @@ namespace Soup::Build::Runtime
 					std::move(arguments)),
 				std::move(declaredInput),
 				std::move(declaredOutput),
+				std::move(readAccess),
+				std::move(writeAccess),
 				std::move(children),
 				dependecyCount,
 				wasSuccessfulRun,

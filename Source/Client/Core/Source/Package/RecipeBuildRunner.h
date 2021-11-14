@@ -121,7 +121,8 @@ namespace Soup::Build
 			_hostBuildSet(),
 			_buildCache(),
 			_hostBuildCache(),
-			_globalReadAccess(),
+			_systemReadAccess(),
+			_sdkReadAccess(),
 			_fileSystemState(std::make_shared<Runtime::FileSystemState>())
 		{
 			_hostBuildGlobalParameters = Runtime::ValueTable();
@@ -137,7 +138,7 @@ namespace Soup::Build
 			_hostBuildGlobalParameters.SetValue("System", Runtime::Value(std::string(system)));
 
 			// Allow reading from system
-			_globalReadAccess.push_back(
+			_systemReadAccess.push_back(
 				Path("C:/Windows/"));
 
 			// Process the SDKs
@@ -154,7 +155,7 @@ namespace Soup::Build
 						for (auto& sourceDirectory : sdk.GetSourceDirectories())
 						{
 							Log::Info("  Read Access: " + sourceDirectory.ToString());
-							_globalReadAccess.push_back(sourceDirectory);
+							_sdkReadAccess.push_back(sourceDirectory);
 						}
 					}
 
@@ -411,7 +412,7 @@ namespace Soup::Build
 
 			if (!_arguments.SkipEvaluate)
 			{
-				RunEvaluate(packageRoot, targetDirectory, soupTargetDirectory, recursiveChildTargetDirectories);
+				RunEvaluate(targetDirectory, soupTargetDirectory);
 			}
 
 			// Cache the build state for upstream dependencies
@@ -457,8 +458,14 @@ namespace Soup::Build
 			}
 
 			// Initialize the read access with the shared global set
-			auto evaluateAllowedReadAccess = std::vector<Path>(_globalReadAccess);
+			auto evaluateAllowedReadAccess = std::vector<Path>();
 			auto evaluateAllowedWriteAccess = std::vector<Path>();
+
+			// Allow read access for all sdk directories
+			std::copy(
+				_sdkReadAccess.begin(),
+				_sdkReadAccess.end(),
+				std::back_inserter(evaluateAllowedReadAccess));
 
 			// Allow read access for all recursive dependencies target directories
 			std::copy(
@@ -508,6 +515,8 @@ namespace Soup::Build
 					generateExecutable,
 					generateArguments.str()),
 				{},
+				{},
+				{},
 				{});
 			generateOperation.DependencyCount = 1;
 			generateGraph.AddOperation(std::move(generateOperation));
@@ -533,7 +542,10 @@ namespace Soup::Build
 			// Allow read access for all direct dependencies target directories and write to own targets
 			// TODO: This is needed to get the shared properties, this may be better to do in process
 			// and only allow read access to build dependencies.
-			std::copy(directChildTargetDirectories.begin(), directChildTargetDirectories.end(), std::back_inserter(generateAllowedReadAccess));
+			std::copy(
+				directChildTargetDirectories.begin(),
+				directChildTargetDirectories.end(),
+				std::back_inserter(generateAllowedReadAccess));
 			generateAllowedWriteAccess.push_back(targetDirectory);
 
 			// Load the previous build graph if it exists and merge it with the new one
@@ -541,7 +553,7 @@ namespace Soup::Build
 			TryMergeExisting(generateGraphFile, generateGraph);
 
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + GetTempraryFolderName();
+			auto temporaryDirectory = targetDirectory + GetTemporaryFolderName();
 
 			// Evaluate the Generate phase
 			auto evaluateGenerateEngine = Runtime::BuildEvaluateEngine(
@@ -587,10 +599,8 @@ namespace Soup::Build
 		}
 
 		void RunEvaluate(
-			const Path& packageRoot,
 			const Path& targetDirectory,
-			const Path& soupTargetDirectory,
-			const std::set<Path>& recursiveChildTargetDirectories)
+			const Path& soupTargetDirectory)
 		{
 			// Load and run the previous stored state directly
 			auto generateEvaluateGraphFile = soupTargetDirectory + Runtime::BuildConstants::GenerateEvaluateOperationGraphFileName();
@@ -612,22 +622,28 @@ namespace Soup::Build
 				TryMergeExisting(evaluateResultGraphFile, evaluateGraph);
 			}
 
+			// Set the temporary folder under the target folder
+			auto temporaryDirectory = targetDirectory + GetTemporaryFolderName();
+
 			// Initialize the read access with the shared global set
-			auto allowedReadAccess = std::vector<Path>(_globalReadAccess);
+			auto allowedReadAccess = std::vector<Path>();
 			auto allowedWriteAccess = std::vector<Path>();
 
-			// Allow read access for all recursive dependencies target directories
-			std::copy(recursiveChildTargetDirectories.begin(), recursiveChildTargetDirectories.end(), std::back_inserter(allowedReadAccess));
+			// Allow read access from system runtime directories
+			std::copy(
+				_systemReadAccess.begin(),
+				_systemReadAccess.end(),
+				std::back_inserter(allowedReadAccess));
 
-			// Allow reading from the package root (source input) and the target directory (intermediate output)
-			allowedReadAccess.push_back(packageRoot);
-			allowedReadAccess.push_back(targetDirectory);
+			// Allow read and write access to the temparary directory that is not explicitly declared
+			allowedReadAccess.push_back(temporaryDirectory);
+			allowedWriteAccess.push_back(temporaryDirectory);
 
-			// Only allow writing to the target directory
-			allowedWriteAccess.push_back(targetDirectory);
-
-			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + GetTempraryFolderName();
+			// TODO: REMOVE - Allow read access from SDKs
+			std::copy(
+				_sdkReadAccess.begin(),
+				_sdkReadAccess.end(),
+				std::back_inserter(allowedReadAccess));
 
 			// Ensure the temporary directories exists
 			if (!System::IFileSystem::Current().Exists(temporaryDirectory))
@@ -870,7 +886,7 @@ namespace Soup::Build
 			return value;
 		}
 
-		static Path GetTempraryFolderName()
+		static Path GetTemporaryFolderName()
 		{
 			static const auto value = Path("temp/");
 			return value;
@@ -885,7 +901,8 @@ namespace Soup::Build
 		RecipeBuildManager _buildManager;
 
 		// Global read access
-		std::vector<Path> _globalReadAccess;
+		std::vector<Path> _systemReadAccess;
+		std::vector<Path> _sdkReadAccess;
 
 		// Mapping from name to build folder to check for duplicate names with different packages
 		std::map<std::string, Path> _buildSet;
