@@ -10,6 +10,6 @@ Source = [
 [Dependencies]
 Runtime = [
 	"../../../Dependencies/Detours/src/",
-	"Opal@0.2.1",
+	"Opal@0.3.0",
 	"../Shared/",
 ]

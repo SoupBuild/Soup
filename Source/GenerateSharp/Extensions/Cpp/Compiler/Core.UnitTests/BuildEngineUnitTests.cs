@@ -43,7 +43,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				arguments.BinaryDirectory = new Path("bin/");
 				arguments.SourceFiles = new List<Path>()
 				{
-						new Path("TestFile.cpp"),
+					new Path("TestFile.cpp"),
 				};
 				arguments.OptimizationLevel = BuildOptimizationLevel.None;
 				arguments.LinkDependencies = new List<Path>()
@@ -54,7 +54,9 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 
 				var uut = new BuildEngine(compiler);
 				var fileSystemState = new FileSystemState();
-				var buildState = new BuildState(new ValueTable(), fileSystemState);
+				var readAccessList = new List<Path>();
+				var writeAccessList = new List<Path>();
+				var buildState = new BuildState(new ValueTable(), fileSystemState, readAccessList, writeAccessList);
 				var result = uut.Execute(buildState, arguments);
 
 				// Verify expected process manager requests
@@ -241,8 +243,10 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				};
 
 				var uut = new BuildEngine(compiler);
-				var fileSystemState = new Runtime.FileSystemState();
-				var buildState = new BuildState(new ValueTable(), fileSystemState);
+				var fileSystemState = new FileSystemState();
+				var readAccessList = new List<Path>();
+				var writeAccessList = new List<Path>();
+				var buildState = new BuildState(new ValueTable(), fileSystemState, readAccessList, writeAccessList);
 				var result = uut.Execute(buildState, arguments);
 
 				// Verify expected process manager requests
@@ -489,8 +493,10 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				};
 
 				var uut = new BuildEngine(compiler);
-				var fileSystemState = new Runtime.FileSystemState();
-				var buildState = new BuildState(new ValueTable(), fileSystemState);
+				var fileSystemState = new FileSystemState();
+				var readAccessList = new List<Path>();
+				var writeAccessList = new List<Path>();
+				var buildState = new BuildState(new ValueTable(), fileSystemState, readAccessList, writeAccessList);
 				var result = uut.Execute(buildState, arguments);
 
 				// Verify expected process manager requests
@@ -770,8 +776,10 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				};
 
 				var uut = new BuildEngine(compiler);
-				var fileSystemState = new Runtime.FileSystemState();
-				var buildState = new BuildState(new ValueTable(), fileSystemState);
+				var fileSystemState = new FileSystemState();
+				var readAccessList = new List<Path>();
+				var writeAccessList = new List<Path>();
+				var buildState = new BuildState(new ValueTable(), fileSystemState, readAccessList, writeAccessList);
 				var result = uut.Execute(buildState, arguments);
 
 				// Verify expected process manager requests

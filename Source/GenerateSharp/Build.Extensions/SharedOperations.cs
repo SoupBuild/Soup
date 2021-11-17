@@ -65,7 +65,9 @@ namespace Soup.Build
 			var moduleFolder = moduleName.GetParent().GetParent();
 
 			var program = moduleFolder + new Path("mkdir.exe");
-			var inputFiles = new List<Path>();
+			var inputFiles = new List<Path>()
+			{
+			};
 			var outputFiles = new List<Path>()
 			{
 				directory,

@@ -5,6 +5,7 @@
 using Opal;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Soup.Build.Runtime
 {
@@ -14,13 +15,27 @@ namespace Soup.Build.Runtime
 	/// </summary>
 	internal class OperationGraphGenerator
 	{
-		public OperationGraphGenerator(FileSystemState fileSystemState)
+		private FileSystemState fileSystemState;
+		private IList<Path> readAccessList;
+		private IList<Path> writeAccessList;
+		private OperationId uniqueId;
+		private OperationGraph graph;
+		private Dictionary<FileId, IList<OperationInfo>> outputFileLookup;
+		private Dictionary<FileId, IList<OperationInfo>> outputDirectoryLookup;
+
+		public OperationGraphGenerator(
+			FileSystemState fileSystemState,
+			IList<Path> readAccessList,
+			IList<Path> writeAccessList)
 		{
-			_fileSystemState = fileSystemState;
-			_uniqueId = new OperationId(0);
-			_graph = new OperationGraph();
-			_outputFileLookup = new Dictionary<FileId, IList<OperationInfo>>();
-			_outputDirectoryLookup = new Dictionary<FileId, IList<OperationInfo>>();
+			this.fileSystemState = fileSystemState;
+			this.readAccessList = readAccessList;
+			this.writeAccessList = writeAccessList;
+
+			this.uniqueId = new OperationId(0);
+			this.graph = new OperationGraph();
+			this.outputFileLookup = new Dictionary<FileId, IList<OperationInfo>>();
+			this.outputDirectoryLookup = new Dictionary<FileId, IList<OperationInfo>>();
 		}
 
 		/// <summary>
@@ -45,48 +60,73 @@ namespace Soup.Build.Runtime
 				arguments);
 
 			// Ensure this is the a unique operation
-			if (_graph.HasCommand(commandInfo))
+			if (this.graph.HasCommand(commandInfo))
 			{
 				throw new InvalidOperationException("Operation with this command already exists.");
 			}
 
+			// Verify allowed read access
+			if (!IsAllowedAccess(this.readAccessList, declaredInput, workingDirectory, out var readAccess))
+			{
+				throw new InvalidOperationException("Operation does not have permission to read requested input.");
+			}
+
+			Log.Diag($"Read Access Subset:");
+			foreach (var file in readAccess)
+				Log.Diag($"{file}");
+
+			// Verify allowed write access
+			if (!IsAllowedAccess(this.writeAccessList, declaredOutput, workingDirectory, out var writeAccess))
+			{
+				throw new InvalidOperationException("Operation does not have permission to write requested output.");
+			}
+
+			Log.Diag($"Write Access Subset:");
+			foreach (var file in writeAccess)
+				Log.Diag($"{file}");
+
 			// Generate a unique id for this new operation
-			_uniqueId = new OperationId(_uniqueId.value + 1);
-			var operationId = _uniqueId;
+			this.uniqueId = new OperationId(this.uniqueId.value + 1);
+			var operationId = this.uniqueId;
 
 			// Build up the declared build operation
-			var declaredInputFileIds = _fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
-			var declaredOutputFileIds = _fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
-			_graph.AddOperation(
+			var declaredInputFileIds = this.fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
+			var declaredOutputFileIds = this.fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
+			var readAccessFileIds = this.fileSystemState.ToFileIds(readAccess, commandInfo.WorkingDirectory);
+			var writeAccessFileIds = this.fileSystemState.ToFileIds(writeAccess, commandInfo.WorkingDirectory);
+			this.graph.AddOperation(
 				new OperationInfo(
 					operationId,
 					title,
 					commandInfo,
 					declaredInputFileIds,
-					declaredOutputFileIds));
+					declaredOutputFileIds,
+					readAccessFileIds,
+					writeAccessFileIds));
 		}
+
 
 		public OperationGraph BuildGraph()
 		{
 			// Store the operation in the required file lookups to help build up the dependency graph
-			foreach (var operationInfo in _graph.GetOperations().Values)
+			foreach (var operationInfo in this.graph.GetOperations().Values)
 			{
 				foreach (var file in operationInfo.DeclaredOutput)
 				{
-					var filePath = _fileSystemState.GetFilePath(file);
+					var filePath = this.fileSystemState.GetFilePath(file);
 					if (filePath.HasFileName())
 					{
-						EnsureOutputFileOperations(file).Add(operationInfo);
+						AddOutputFileOperations(file).Add(operationInfo);
 					}
 					else
 					{
-						EnsureOutputDirectoryOperations(file).Add(operationInfo);
+						AddOutputDirectoryOperations(file).Add(operationInfo);
 					}
 				}
 			}
 
 			// Build up the child dependencies based on the operations that use this operations output files
-			foreach (var activeOperationInfo in _graph.GetOperations().Values)
+			foreach (var activeOperationInfo in this.graph.GetOperations().Values)
 			{
 				// Check for inputs that match previous output files
 				foreach (var file in activeOperationInfo.DeclaredInput)
@@ -107,12 +147,12 @@ namespace Soup.Build.Runtime
 				// Check for output files that are under previous output directories
 				foreach (var file in activeOperationInfo.DeclaredOutput)
 				{
-					var filePath = _fileSystemState.GetFilePath(file);
+					var filePath = this.fileSystemState.GetFilePath(file);
 					var parentDirectory = filePath.GetParent();
 					var done = false;
 					while (!done)
 					{
-						if (_fileSystemState.TryFindFileId(parentDirectory, out var parentDirectoryId))
+						if (this.fileSystemState.TryFindFileId(parentDirectory, out var parentDirectoryId))
 						{
 							if (TryGetOutputDirectoryOperations(parentDirectoryId, out var matchedOperations))
 							{
@@ -137,7 +177,7 @@ namespace Soup.Build.Runtime
 
 			// Add any operation with zero dependencies to the root
 			var rootOperations = new List<OperationId>();
-			foreach (var activeOperationInfo in _graph.GetOperations().Values)
+			foreach (var activeOperationInfo in this.graph.GetOperations().Values)
 			{
 				if (activeOperationInfo.DependencyCount == 0)
 				{
@@ -146,9 +186,56 @@ namespace Soup.Build.Runtime
 				}
 			}
 
-			_graph.SetRootOperationIds(rootOperations);
+			this.graph.SetRootOperationIds(rootOperations);
 
-			return _graph;
+			return this.graph;
+		}
+
+		private bool IsAllowedAccess(
+			IList<Path> accessList,
+			IList<Path> files,
+			Path workingDirectory,
+			out IReadOnlyList<Path> usedAccessList)
+		{
+			var accessSet = new HashSet<Path>();
+			foreach (var file in files)
+			{
+				var accessDirectory = GetAllowedAccess(accessList, file, workingDirectory);
+				if (accessDirectory is null)
+				{
+					// The file was not under any of the provided directories
+					Log.Error($"File access denied: {file}");
+					usedAccessList = new List<Path>();
+					return false;
+				}
+				else
+				{
+					accessSet.Add(accessDirectory);
+				}
+			}
+
+
+			usedAccessList = accessSet.ToList();
+			return true;
+		}
+
+		private Path? GetAllowedAccess(IList<Path> accessList, Path file, Path workingDirectory)
+		{
+			// Combine the working directory if a relative file path
+			if (!file.HasRoot)
+				file = workingDirectory + file;
+
+			var fileString = file.ToString();
+			foreach (var accessDirectory in accessList)
+			{
+				if (fileString.StartsWith(accessDirectory.ToString()))
+				{
+					Log.Diag($"Allow {accessDirectory} : {fileString}");
+					return accessDirectory;
+				}
+			}
+
+			return null;
 		}
 
 		private bool UniqueAdd(IList<OperationId> operationList, OperationId operation)
@@ -168,23 +255,23 @@ namespace Soup.Build.Runtime
 			FileId file,
 			out IList<OperationInfo> operations)
 		{
-			if (_outputFileLookup.TryGetValue(file, out var value))
-            {
+			if (this.outputFileLookup.TryGetValue(file, out var value))
+			{
 				operations = value;
 				return true;
 			}
 			else
-            {
+			{
 				operations = new List<OperationInfo>();
 				return false;
-            }
+			}
 		}
 
 		private bool TryGetOutputDirectoryOperations(
 			FileId file,
 			out IList<OperationInfo> operations)
 		{
-			if (_outputDirectoryLookup.TryGetValue(file, out var value))
+			if (this.outputDirectoryLookup.TryGetValue(file, out var value))
 			{
 				operations = value;
 				return true;
@@ -196,26 +283,34 @@ namespace Soup.Build.Runtime
 			}
 		}
 
-		private IList<OperationInfo> EnsureOutputFileOperations(
+		private IList<OperationInfo> AddOutputFileOperations(
 			FileId file)
 		{
-			var result = new List<OperationInfo>();
-			_outputFileLookup.Add(file, result);
-			return result;
+			if (this.outputFileLookup.ContainsKey(file))
+			{
+				throw new InvalidOperationException("Operation output file already exists");
+			}
+			else
+			{
+				var result = new List<OperationInfo>();
+				this.outputFileLookup.Add(file, result);
+				return result;
+			}
 		}
 
-		private IList<OperationInfo> EnsureOutputDirectoryOperations(
+		private IList<OperationInfo> AddOutputDirectoryOperations(
 			FileId file)
 		{
-			var result = new List<OperationInfo>();
-			_outputDirectoryLookup.Add(file, result);
-			return result;
+			if (this.outputFileLookup.ContainsKey(file))
+			{
+				throw new InvalidOperationException("Operation output directory already exists");
+			}
+			else
+			{
+				var result = new List<OperationInfo>();
+				this.outputDirectoryLookup.Add(file, result);
+				return result;
+			}
 		}
-
-		private FileSystemState _fileSystemState;
-		private OperationId _uniqueId;
-		private OperationGraph _graph;
-		private Dictionary<FileId, IList<OperationInfo>> _outputFileLookup;
-		private Dictionary<FileId, IList<OperationInfo>> _outputDirectoryLookup;
-	};
+	}
 }

@@ -4,7 +4,6 @@
 
 using Opal;
 using Soup.Build.Runtime;
-using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +15,7 @@ namespace Soup.Build.Generate
 	internal static class OperationGraphReader
 	{
 		// Binary Operation Graph file format
-		private static uint FileVersion => 2;
+		private static uint FileVersion => 3;
 
 		public static OperationGraph Deserialize(System.IO.BinaryReader reader)
 		{
@@ -121,6 +120,12 @@ namespace Soup.Build.Generate
 			// Write out the declared output files
 			var declaredOutput = ReadFileIdList(reader);
 
+			// Write out the read access list
+			var readAccess = ReadFileIdList(reader);
+
+			// Write out the write access list
+			var writeAccess = ReadFileIdList(reader);
+
 			// Write out the child operation ids
 			var children = ReadOperationIdList(reader);
 
@@ -145,6 +150,8 @@ namespace Soup.Build.Generate
 					arguments),
 				declaredInput,
 				declaredOutput,
+				readAccess,
+				writeAccess,
 				children,
 				dependecyCount,
 				wasSuccessfulRun,

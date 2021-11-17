@@ -9,7 +9,7 @@ soup <command> [arguments]
 
 * [Initialize](CLI/Initialize.md) - Initialize a new Package with default properties.
 
-* [Install](CLI/Install.md) - Install dependencies for a specified Package and all transitive references.
+* [Install](CLI/Install.md) - Install dependencies for a specified Package and all recursive references.
 
 * [Publish](CLI/Publish.md) - Publish a given package to the public feed.
 

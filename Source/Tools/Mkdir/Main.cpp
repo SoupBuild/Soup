@@ -1,33 +1,9 @@
-#include <filesystem>
+#include <Windows.h>
 #include <iostream>
-#include <string_view>
 
 void PrintUsage()
 {
 	std::cout << "mkdir [path]" << std::endl;
-}
-
-void CreateDirectory(const std::filesystem::path& directory)
-{
-	std::error_code errorCode;
-	if (!std::filesystem::create_directory(directory, errorCode))
-	{
-		if (!errorCode)
-		{
-			// The directory already existed
-		}
-		else if (errorCode == std::errc::no_such_file_or_directory)
-		{
-			// Create the parent recursively and then retry this folder
-			auto parentPath = directory.parent_path();
-			CreateDirectory(parentPath);
-			std::filesystem::create_directory(directory);
-		}
-		else
-		{
-			throw std::system_error(errorCode);
-		}
-	}
 }
 
 int main(int argc, char** argv)
@@ -41,7 +17,18 @@ int main(int argc, char** argv)
 	try
 	{
 		auto directory = std::string_view(argv[1]);
-		CreateDirectory(directory);
+		if (!CreateDirectoryA(directory.data(), nullptr))
+		{
+			auto errorCode =  GetLastError();
+			if (errorCode == ERROR_ALREADY_EXISTS)
+				std::cout << "Directory already exists" << std::endl;
+			else
+				throw std::runtime_error("Create directory failed");
+		}
+		else
+		{
+			std::cout << "Directory created" << std::endl;
+		}
 	}
 	catch(const std::exception& e)
 	{

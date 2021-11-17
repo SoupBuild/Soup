@@ -24,15 +24,15 @@ namespace Soup::Build::Runtime
 			const std::shared_ptr<FileSystemState>& fileSystemState,
 			OperationGraph& operationGraph,
 			Path temporaryDirectory,
-			std::vector<Path> allowedReadAccess,
-			std::vector<Path> allowedWriteAccess) :
+			std::vector<Path> globalAllowedReadAccess,
+			std::vector<Path> globalAllowedWriteAccess) :
 			_fileSystemState(fileSystemState),
 			_operationGraph(operationGraph),
 			_remainingDependencyCounts(),
 			_stateChecker(fileSystemState),
 			_temporaryDirectory(std::move(temporaryDirectory)),
-			_allowedReadAccess(std::move(allowedReadAccess)),
-			_allowedWriteAccess(std::move(allowedWriteAccess))
+			_globalAllowedReadAccess(std::move(globalAllowedReadAccess)),
+			_globalAllowedWriteAccess(std::move(globalAllowedWriteAccess))
 		{
 		}
 
@@ -208,6 +208,21 @@ namespace Soup::Build::Runtime
 			environment.emplace("TEMP", _temporaryDirectory.ToString());
 			environment.emplace("TMP", _temporaryDirectory.ToString());
 
+			// Allow access to the declared inputs/outputs
+			auto allowedReadAccess = _fileSystemState->GetFilePaths(operationInfo.ReadAccess);
+			auto allowedWriteAccess = _fileSystemState->GetFilePaths(operationInfo.WriteAccess);
+
+			// Allow access to the global overrides
+			std::copy(_globalAllowedReadAccess.begin(), _globalAllowedReadAccess.end(), std::back_inserter(allowedReadAccess));
+			std::copy(_globalAllowedWriteAccess.begin(), _globalAllowedWriteAccess.end(), std::back_inserter(allowedWriteAccess));
+
+			Log::Diag("Allowed Read Access:");
+			for (auto& file : allowedReadAccess)
+				Log::Diag(file.ToString());
+			Log::Diag("Allowed Write Access:");
+			for (auto& file : allowedWriteAccess)
+				Log::Diag(file.ToString());
+
 			bool enableAccessChecks = true;
 			auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
 				operationInfo.Command.Executable,
@@ -216,8 +231,8 @@ namespace Soup::Build::Runtime
 				environment,
 				callback, // callbackWrapper,
 				enableAccessChecks,
-				_allowedReadAccess,
-				_allowedWriteAccess);
+				allowedReadAccess,
+				allowedWriteAccess);
 
 			process->Start();
 			process->WaitForExit();
@@ -292,7 +307,7 @@ namespace Soup::Build::Runtime
 		BuildHistoryChecker _stateChecker;
 
 		Path _temporaryDirectory;
-		std::vector<Path> _allowedReadAccess;
-		std::vector<Path> _allowedWriteAccess;
+		std::vector<Path> _globalAllowedReadAccess;
+		std::vector<Path> _globalAllowedWriteAccess;
 	};
 }

@@ -4,6 +4,7 @@
 
 using Opal;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Soup.Build.Runtime
@@ -13,15 +14,24 @@ namespace Soup.Build.Runtime
 	/// </summary>
 	public class BuildState : IBuildState
 	{
+		private OperationGraphGenerator graphGenerator;
+
 		/// <summary>
 		/// Initializes a new instance of the BuildState class
 		/// </summary>
-		public BuildState(ValueTable activeState, FileSystemState fileSystemState)
+		public BuildState(
+			ValueTable activeState,
+			FileSystemState fileSystemState,
+			IList<Path> readAccessList,
+			IList<Path> writeAccessList)
 		{
-			ActiveState = activeState;
-			SharedState = new ValueTable();
+			this.ActiveState = activeState;
+			this.SharedState = new ValueTable();
 
-			_graphGenerator = new OperationGraphGenerator(fileSystemState);
+			this.graphGenerator = new OperationGraphGenerator(
+				fileSystemState,
+				readAccessList,
+				writeAccessList);
 		}
 
 		/// <summary>
@@ -46,7 +56,7 @@ namespace Soup.Build.Runtime
 			string[] declaredInput,
 			string[] declaredOutput)
 		{
-			_graphGenerator.CreateOperation(
+			this.graphGenerator.CreateOperation(
 				title,
 				new Path(executable),
 				arguments,
@@ -84,9 +94,7 @@ namespace Soup.Build.Runtime
 
 		public OperationGraph BuildOperationGraph()
 		{
-			return _graphGenerator.BuildGraph();
+			return this.graphGenerator.BuildGraph();
 		}
-
-		private OperationGraphGenerator _graphGenerator;
 	}
 }

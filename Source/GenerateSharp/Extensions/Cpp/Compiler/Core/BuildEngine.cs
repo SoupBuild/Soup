@@ -212,7 +212,7 @@ namespace Soup.Build.Cpp.Compiler
 				{
 					linkArguments.TargetType = LinkTarget.StaticLibrary;
 					
-					// Add the library as a link dependency and all transitive libraries
+					// Add the library as a link dependency and all recursive libraries
 					result.LinkDependencies = new List<Path>(arguments.LinkDependencies);
 					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
 					result.LinkDependencies.Add(absoluteTargetFile);

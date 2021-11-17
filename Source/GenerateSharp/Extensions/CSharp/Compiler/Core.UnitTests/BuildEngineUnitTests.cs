@@ -50,7 +50,9 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
 
 				var uut = new BuildEngine(compiler);
 				var fileSystemState = new FileSystemState();
-				var buildState = new BuildState(new ValueTable(), fileSystemState);
+				var readAccessList = new List<Path>();
+				var writeAccessList = new List<Path>();
+				var buildState = new BuildState(new ValueTable(), fileSystemState, readAccessList, writeAccessList);
 				var result = uut.Execute(buildState, arguments);
 
 				// Verify expected process manager requests
@@ -218,8 +220,10 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
 				arguments.NullableState = BuildNullableState.Disabled;
 
 				var uut = new BuildEngine(compiler);
-				var fileSystemState = new Runtime.FileSystemState();
-				var buildState = new BuildState(new ValueTable(), fileSystemState);
+				var fileSystemState = new FileSystemState();
+				var readAccessList = new List<Path>();
+				var writeAccessList = new List<Path>();
+				var buildState = new BuildState(new ValueTable(), fileSystemState, readAccessList, writeAccessList);
 				var result = uut.Execute(buildState, arguments);
 
 				// Verify expected process manager requests

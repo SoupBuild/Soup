@@ -34,9 +34,9 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 				RootDirectory = new Path("Source/"),
 				ObjectDirectory = new Path("ObjectDir/"),
 				SourceFiles = new List<Path>()
-                {
+				{
 					new Path("File.cs"),
-                }
+				},
 			};
 
 			var result = uut.CreateCompileOperations(arguments);
@@ -68,6 +68,7 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 					{
 						new Path("./bin/Target.dll"),
 						new Path("./ref/Target.dll"),
+						new Path("./bin/Target.pdb"),
 					}),
 				};
 

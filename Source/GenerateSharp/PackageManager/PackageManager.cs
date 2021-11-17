@@ -387,7 +387,7 @@ namespace Soup.Build.PackageManager
 				// Move the extracted contents into the version folder
 				LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
 
-				// Install transitive dependencies
+				// Install recursive dependencies
 				await InstallRecursiveDependenciesAsync(
 					packageVersionFolder,
 					packagesDirectory,
@@ -396,7 +396,7 @@ namespace Soup.Build.PackageManager
 		}
 
 		/// <summary>
-		/// Recursively install all dependencies and transitive dependencies
+		/// Recursively install all dependencies
 		/// </summary>
 		static async Task InstallRecursiveDependenciesAsync(
 			Path recipeDirectory,

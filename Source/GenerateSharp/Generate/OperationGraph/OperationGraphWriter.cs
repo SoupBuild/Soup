@@ -13,7 +13,7 @@ namespace Soup.Build.Generate
 	internal static class OperationGraphWriter
 	{
 		// Binary Operation graph file format
-		private static uint FileVersion => 2;
+		private static uint FileVersion => 3;
 
 		public static void Serialize(OperationGraph state, System.IO.BinaryWriter writer)
 		{
@@ -68,6 +68,12 @@ namespace Soup.Build.Generate
 
 			// Write out the declared output files
 			WriteValues(writer, operation.DeclaredOutput);
+
+			// Write out the read access list
+			WriteValues(writer, operation.ReadAccess);
+
+			// Write out the write access list
+			WriteValues(writer, operation.WriteAccess);
 
 			// Write out the child operation ids
 			WriteValues(writer, operation.Children);

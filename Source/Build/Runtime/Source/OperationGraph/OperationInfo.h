@@ -62,28 +62,8 @@ namespace Soup::Build::Runtime
 			Command(),
 			DeclaredInput(),
 			DeclaredOutput(),
-			Children(),
-			DependencyCount(0),
-			WasSuccessfulRun(false),
-			ObservedInput(),
-			ObservedOutput()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OperationInfo"/> class.
-		/// </summary>
-		OperationInfo(
-			OperationId id,
-			std::string title,
-			CommandInfo command,
-			std::vector<FileId> declaredInput,
-			std::vector<FileId> declaredOutput) :
-			Id(id),
-			Title(std::move(title)),
-			Command(std::move(command)),
-			DeclaredInput(std::move(declaredInput)),
-			DeclaredOutput(std::move(declaredOutput)),
+			ReadAccess(),
+			WriteAccess(),
 			Children(),
 			DependencyCount(0),
 			WasSuccessfulRun(false),
@@ -101,6 +81,34 @@ namespace Soup::Build::Runtime
 			CommandInfo command,
 			std::vector<FileId> declaredInput,
 			std::vector<FileId> declaredOutput,
+			std::vector<FileId> readAccess,
+			std::vector<FileId> writeAccess) :
+			Id(id),
+			Title(std::move(title)),
+			Command(std::move(command)),
+			DeclaredInput(std::move(declaredInput)),
+			DeclaredOutput(std::move(declaredOutput)),
+			ReadAccess(std::move(readAccess)),
+			WriteAccess(std::move(writeAccess)),
+			Children(),
+			DependencyCount(0),
+			WasSuccessfulRun(false),
+			ObservedInput(),
+			ObservedOutput()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OperationInfo"/> class.
+		/// </summary>
+		OperationInfo(
+			OperationId id,
+			std::string title,
+			CommandInfo command,
+			std::vector<FileId> declaredInput,
+			std::vector<FileId> declaredOutput,
+			std::vector<FileId> readAccess,
+			std::vector<FileId> writeAccess,
 			std::vector<OperationId> children,
 			uint32_t dependencyCount,
 			bool wasSuccessfulRun,
@@ -111,6 +119,8 @@ namespace Soup::Build::Runtime
 			Command(std::move(command)),
 			DeclaredInput(std::move(declaredInput)),
 			DeclaredOutput(std::move(declaredOutput)),
+			ReadAccess(std::move(readAccess)),
+			WriteAccess(std::move(writeAccess)),
 			Children(std::move(children)),
 			DependencyCount(dependencyCount),
 			WasSuccessfulRun(wasSuccessfulRun),
@@ -129,6 +139,8 @@ namespace Soup::Build::Runtime
 				Command == rhs.Command &&
 				DeclaredInput == rhs.DeclaredInput &&
 				DeclaredOutput == rhs.DeclaredOutput &&
+				ReadAccess == rhs.ReadAccess &&
+				WriteAccess == rhs.WriteAccess &&
 				Children == rhs.Children &&
 				DependencyCount == rhs.DependencyCount &&
 				WasSuccessfulRun == rhs.WasSuccessfulRun &&
@@ -141,6 +153,8 @@ namespace Soup::Build::Runtime
 		CommandInfo Command;
 		std::vector<FileId> DeclaredInput;
 		std::vector<FileId> DeclaredOutput;
+		std::vector<FileId> ReadAccess;
+		std::vector<FileId> WriteAccess;
 		std::vector<OperationId> Children;
 		uint32_t DependencyCount;
 		bool WasSuccessfulRun;
