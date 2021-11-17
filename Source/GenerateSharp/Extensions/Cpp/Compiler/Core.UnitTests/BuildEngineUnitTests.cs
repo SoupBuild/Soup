@@ -43,7 +43,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				arguments.BinaryDirectory = new Path("bin/");
 				arguments.SourceFiles = new List<Path>()
 				{
-						new Path("TestFile.cpp"),
+					new Path("TestFile.cpp"),
 				};
 				arguments.OptimizationLevel = BuildOptimizationLevel.None;
 				arguments.LinkDependencies = new List<Path>()
