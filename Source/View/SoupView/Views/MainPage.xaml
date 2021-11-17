@@ -1,0 +1,17 @@
+<Shell
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="SoupView.Views.MainPage"
+    xmlns:Views="clr-namespace:SoupView.Views"
+    xmlns:ViewModels="clr-namespace:SoupView.ViewModels">
+    <Shell.BindingContext>
+        <ViewModels:MainPageModel />
+    </Shell.BindingContext>
+    <FlyoutItem>
+    </FlyoutItem>
+    <ShellContent Title="Soup View" ContentTemplate="{DataTemplate Views:Page1}" />
+    <MenuItem
+        Text="Load Project"
+        IconImageSource="load.png"
+        Command="{Binding LoadCommand}" />
+</Shell>
