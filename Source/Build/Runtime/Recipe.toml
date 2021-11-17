@@ -27,7 +27,7 @@ RuntimeDependencies = [
 [Dependencies]
 Runtime = [
 	"json11@1.0.1",
-	"Opal@0.2.1",
+	"Opal@0.3.0",
 	"toml11@1.0.1",
 	"../../Monitor/Host/",
 ]

@@ -52,7 +52,9 @@ namespace Soup::Build::Runtime
 			{
 				// Read the command working directory
 				auto fileId = ReadUInt32(stream);
-				auto file = Path(ReadString(stream));
+
+				auto fileString = ReadString(stream);
+				auto file = Path::Load(std::move(fileString));
 
 				files.push_back({ fileId, std::move(file) });
 			}
