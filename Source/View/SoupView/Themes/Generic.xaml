@@ -1,5 +1,18 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:SoupView">
+    xmlns:media="using:Microsoft.UI.Xaml.Media"
+    xmlns:local="using:SoupView"
+    xmlns:view="using:SoupView.View">
+
+    <Style TargetType="view:GraphViewer">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="view:GraphViewer">
+                    <Canvas Name="RootCanvas" Background="Purple">
+                    </Canvas>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
