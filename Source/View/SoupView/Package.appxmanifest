@@ -7,14 +7,14 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="A28692AA-0CF7-47AC-9BF5-542D753E4AC5"
-    Publisher="CN=User Name"
+    Name="7a16c044-069a-400b-bc10-b118c242d03c"
+    Publisher="CN=mwasp"
     Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>SoupView</DisplayName>
-    <PublisherDisplayName>Microsoft</PublisherDisplayName>
-    <Logo>Assets\appiconStoreLogo.png</Logo>
+    <PublisherDisplayName>mwasp</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -34,19 +34,10 @@
         DisplayName="SoupView"
         Description="SoupView"
         BackgroundColor="transparent"
-        Square150x150Logo="Assets\appiconMediumTile.png"
-        Square44x44Logo="Assets\appiconLogo.png">
-        <uap:DefaultTile
-          Wide310x150Logo="Assets\appiconWideTile.png"
-          Square71x71Logo="Assets\appiconSmallTile.png"
-          Square310x310Logo="Assets\appiconLargeTile.png"
-          ShortName="SoupView">
-          <uap:ShowNameOnTiles>
-            <uap:ShowOn Tile="square150x150Logo"/>
-            <uap:ShowOn Tile="wide310x150Logo"/>
-          </uap:ShowNameOnTiles>
-        </uap:DefaultTile >
-        <uap:SplashScreen Image="Assets\appiconfgSplashScreen.png" />
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
     </Application>
   </Applications>
@@ -54,5 +45,4 @@
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
-
 </Package>

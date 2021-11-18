@@ -1,8 +1,15 @@
 {
   "profiles": {
-    "Windows Machine": {
-      "commandName": "MsixPackage",
-      "nativeDebugging": false
+    "SoupView (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SoupView (Unpackaged)": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
     }
   }
 }

@@ -1,8 +1,9 @@
 <Project>
   <!-- Common Project Directories -->
   <PropertyGroup>
-    <GenerateSharpDirectory>$(MSBuildThisFileDirectory.TrimEnd('\'))</GenerateSharpDirectory>
-    <SourceDirectory>$([System.IO.Path]::GetDirectoryName($(GenerateSharpDirectory)))</SourceDirectory>
+    <SourceDirectory>$(MSBuildThisFileDirectory.TrimEnd('\'))</SourceDirectory>
+    <GenerateSharpDirectory>$(RootDirectory)\GenerateSharp</GenerateSharpDirectory>
+    <ViewDirectory>$(RootDirectory)\GenerateSharp</ViewDirectory>
     <RootDirectory>$([System.IO.Path]::GetDirectoryName($(SourceDirectory)))</RootDirectory>
     <OutDirectory>$(RootDirectory)\out\msbuild</OutDirectory>
     <ObjectRoot>$(OutDirectory)\obj</ObjectRoot>
@@ -28,10 +29,10 @@
 
   <!-- Inject the shared StyleCop settings -->
   <ItemGroup>
-    <AdditionalFiles Include="$(GenerateSharpDirectory)\stylecop.json" Link="stylecop.json" />
+    <AdditionalFiles Include="$(SourceDirectory)\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <PropertyGroup>
-    <CodeAnalysisRuleSet>$(GenerateSharpDirectory)\Soup.Rules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(SourceDirectory)\Soup.Rules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <!-- Generate the XML documentation -->
