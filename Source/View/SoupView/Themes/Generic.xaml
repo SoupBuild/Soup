@@ -1,16 +1,41 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:media="using:Microsoft.UI.Xaml.Media"
-    xmlns:local="using:SoupView"
     xmlns:view="using:SoupView.View">
 
+    <Style TargetType="view:GraphViewerItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="view:GraphViewerItem">
+                    <Border
+                        CornerRadius="4"
+                        Background="{ThemeResource SystemBaseLowColor}"
+                        Translation="0,0,10">
+                        <Border.Shadow>
+                            <ThemeShadow />
+                        </Border.Shadow>
+                        <TextBlock
+                            Text="{TemplateBinding Title}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
     <Style TargetType="view:GraphViewer">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="view:GraphViewer">
-                    <Canvas Name="RootCanvas" Background="Purple">
-                    </Canvas>
+                    <ScrollViewer 
+                        HorizontalScrollBarVisibility="Visible"
+                        HorizontalScrollMode="Enabled"
+                        VerticalScrollBarVisibility="Visible"
+                        VerticalScrollMode="Enabled"
+                        ZoomMode="Enabled">
+                        <Canvas Name="RootCanvas" />
+                    </ScrollViewer>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -19,6 +19,8 @@ namespace SoupView.View
         public MainWindow()
         {
             this.InitializeComponent();
+
+            this.Title = "Soup View";
         }
 
         private async void AppBarButton_Load_Click(object sender, RoutedEventArgs e)

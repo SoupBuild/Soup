@@ -8,7 +8,7 @@
     xmlns:viewmodel="using:SoupView.ViewModel"
     mc:Ignorable="d">
 
-    <Grid Name="Root" Background="Pink">
+    <Grid Name="Root" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.DataContext>
             <viewmodel:MainPageModel />
         </Grid.DataContext>
@@ -17,7 +17,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <CommandBar Background="Red" Grid.Row="0">
+        <CommandBar Grid.Row="0">
             <AppBarButton Icon="Add" Label="Load" Click="AppBarButton_Load_Click" />
             <CommandBar.SecondaryCommands>
                 <AppBarButton Icon="Setting" Label="Settings">
@@ -28,15 +28,6 @@
             </CommandBar.SecondaryCommands>
         </CommandBar>
 
-        <ScrollViewer 
-            Background="Green"
-            Grid.Row="1"
-            HorizontalScrollBarVisibility="Visible"
-            HorizontalScrollMode="Enabled"
-            VerticalScrollBarVisibility="Visible"
-            VerticalScrollMode="Enabled"
-            ZoomMode="Enabled">
-            <view:GraphViewer />
-        </ScrollViewer>
+        <view:GraphViewer Grid.Row="1" />
     </Grid>
 </Window>
