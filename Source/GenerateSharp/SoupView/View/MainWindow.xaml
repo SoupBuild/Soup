@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:view="using:SoupView.View"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:viewmodel="using:SoupView.ViewModel"
     mc:Ignorable="d">
 
@@ -28,6 +29,16 @@
             </CommandBar.SecondaryCommands>
         </CommandBar>
 
-        <view:GraphViewer Grid.Row="1" />
+        <view:GraphViewer
+            Grid.Row="1"
+            Graph="{Binding Graph}" />
+
+        <StackPanel Grid.Row="1">
+            <controls:InfoBar
+                Severity="Error"
+                Title="Error"
+                IsOpen="{Binding IsErrorBarOpen}"
+                Message="{Binding ErrorBarMessage}" />
+        </StackPanel>
     </Grid>
 </Window>

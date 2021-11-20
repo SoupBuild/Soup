@@ -23,8 +23,6 @@ namespace SoupView.View
             this.DefaultStyleKey = typeof(GraphViewerItem);
         }
 
-        private readonly Canvas containerCanvas = new Canvas();
-
         /// <summary>
         /// Gets or sets the title
         /// </summary>

@@ -4,27 +4,16 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
+using SoupView.ViewModel;
 using Windows.Foundation;
 using Windows.UI;
 
 namespace SoupView.View
 {
-    public class GraphNode
-    {
-        public GraphNode(string title, int id)
-        {
-            this.Title = title;
-            this.Id = id;
-        }
-
-        public string Title { get; init; } = string.Empty;
-        public int Id { get; init; } = -1;
-        public IList<int> ChildNodes { get; init;} = new List<int>();
-    }
-
     public sealed class GraphViewer : Control
     {
         private static int NodeWidth = 120;
@@ -35,13 +24,36 @@ namespace SoupView.View
 
         private static int InternalPadding = 20;
 
+        /// <summary>
+        /// Identifies the <see cref="Graph"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty GraphProperty = DependencyProperty.Register(
+            nameof(Graph),
+            typeof(IList<IList<GraphNode>>),
+            typeof(GraphViewer),
+            new PropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
+
         public GraphViewer()
         {
             this.DefaultStyleKey = typeof(GraphViewer);
             this.SizeChanged += GraphViewer_SizeChanged;
         }
 
-        private void GraphViewer_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
+        /// <summary>
+        /// Gets or sets the Graph
+        /// </summary>
+        public IList<IList<GraphNode>> Graph
+        {
+            get { return (IList<IList<GraphNode>>)GetValue(GraphProperty); }
+            set { SetValue(GraphProperty, value); }
+        }
+
+        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((GraphViewer)d).LayoutGraph();
+        }
+
+        private void GraphViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             this.LayoutGraph();
         }
@@ -55,60 +67,16 @@ namespace SoupView.View
         private void LayoutGraph()
         {
             var canvas = this.GetTemplateChild("RootCanvas") as Canvas;
-
-            var columns = new List<List<GraphNode>>()
-            {
-                new List<GraphNode>()
-                {
-                    new GraphNode("1", 1)
-                    {
-                        ChildNodes = new List<int>() { 5, 6, },
-                    },
-                    new GraphNode("2", 2)
-                    {
-                        ChildNodes = new List<int>() { 6, },
-                    },
-                    new GraphNode("3", 3)
-                    {
-                        ChildNodes = new List<int>() { 6, },
-                    },
-                    new GraphNode("4", 4)
-                    {
-                        ChildNodes = new List<int>() { 6, },
-                    },
-                },
-                new List<GraphNode>()
-                {
-                    new GraphNode("5", 5)
-                    {
-                        ChildNodes = new List<int>() { 8, },
-                    },
-                    new GraphNode("6", 6)
-                    {
-                        ChildNodes = new List<int>() { 8, },
-                    },
-                    new GraphNode("7", 7)
-                    {
-                        ChildNodes = new List<int>() { 9, },
-                    },
-                    null,
-                },
-                new List<GraphNode>()
-                {
-                    null,
-                    new GraphNode("8", 8),
-                    new GraphNode("9", 9),
-                    null,
-                },
-            };
+            if (canvas is null)
+                return;
 
             canvas.Children.Clear();
 
             int maxHeight = 0;
             int currentOffsetX = 0;
             int currentOffsetY = 0;
-            var nodeState = new Dictionary<int, (GraphViewerItem Item, Point InConnect, Point OutConnect)>();
-            foreach (var column in columns)
+            var nodeState = new Dictionary<uint, (GraphViewerItem Item, Point InConnect, Point OutConnect)>();
+            foreach (var column in Graph)
             {
                 // Reset vertical offset for each column
                 maxHeight = Math.Max(maxHeight, currentOffsetY);
@@ -157,7 +125,7 @@ namespace SoupView.View
             }
 
             // Connect all the known nodes
-            foreach (var column in columns)
+            foreach (var column in Graph)
             {
                 foreach (var value in column)
                 {

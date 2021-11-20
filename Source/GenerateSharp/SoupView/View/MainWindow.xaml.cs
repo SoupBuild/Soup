@@ -4,6 +4,7 @@
 
 using System;
 using Microsoft.UI.Xaml;
+using Opal;
 using SoupView.ViewModel;
 using Windows.Storage.Pickers;
 
@@ -37,7 +38,10 @@ namespace SoupView.View
             filePicker.FileTypeFilter.Add(".toml");
             var file = await filePicker.PickSingleFileAsync();
 
-            await ((MainPageModel)this.Root.DataContext).LoadProjectAsync(file?.Path);
+            if (file != null)
+            {
+                await ((MainPageModel)this.Root.DataContext).LoadProjectAsync(new Path(file.Path));
+            }
         }
     }
 }
