@@ -16,8 +16,8 @@ namespace SoupView.View
 {
     public sealed class GraphViewer : Control
     {
-        private static int NodeWidth = 120;
-        private static int NodeHeight = 40;
+        private static int NodeWidth = 200;
+        private static int NodeHeight = 50;
 
         private static int NodeSpacingHorizontal = 80;
         private static int NodeSpacingVertical = 50;
@@ -72,14 +72,16 @@ namespace SoupView.View
 
             canvas.Children.Clear();
 
+            if (this.Graph is null)
+                return;
+
             int maxHeight = 0;
             int currentOffsetX = 0;
-            int currentOffsetY = 0;
+            int currentOffsetY;
             var nodeState = new Dictionary<uint, (GraphViewerItem Item, Point InConnect, Point OutConnect)>();
-            foreach (var column in Graph)
+            foreach (var column in this.Graph)
             {
                 // Reset vertical offset for each column
-                maxHeight = Math.Max(maxHeight, currentOffsetY);
                 currentOffsetY = 0;
 
                 // Update X offset for the current column location
@@ -122,6 +124,9 @@ namespace SoupView.View
 
                 // Update for the next column location
                 currentOffsetX += NodeWidth;
+
+                // Check the max height
+                maxHeight = Math.Max(maxHeight, currentOffsetY);
             }
 
             // Connect all the known nodes

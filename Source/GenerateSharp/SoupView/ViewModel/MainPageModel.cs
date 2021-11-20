@@ -8,6 +8,7 @@ using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SoupView.ViewModel
@@ -16,51 +17,7 @@ namespace SoupView.ViewModel
     {
         private string errorBarMessage = string.Empty;
         private bool isErrorBarOpen = false;
-        private IList<IList<GraphNode>> graph = new List<IList<GraphNode>>()
-        {
-            new List<GraphNode>()
-            {
-                new GraphNode("1", 1)
-                {
-                    ChildNodes = new List<uint>() { 5, 6, },
-                },
-                new GraphNode("2", 2)
-                {
-                    ChildNodes = new List<uint>() { 6, },
-                },
-                new GraphNode("3", 3)
-                {
-                    ChildNodes = new List<uint>() { 6, },
-                },
-                new GraphNode("4", 4)
-                {
-                    ChildNodes = new List<uint>() { 6, },
-                },
-            },
-            new List<GraphNode>()
-            {
-                new GraphNode("5", 5)
-                {
-                    ChildNodes = new List<uint>() { 8, },
-                },
-                new GraphNode("6", 6)
-                {
-                    ChildNodes = new List<uint>() { 8, },
-                },
-                new GraphNode("7", 7)
-                {
-                    ChildNodes = new List<uint>() { 9, },
-                },
-                null,
-            },
-            new List<GraphNode>()
-            {
-                null,
-                new GraphNode("8", 8),
-                new GraphNode("9", 9),
-                null,
-            },
-        };
+        private IList<IList<GraphNode>> graph = null;
 
         public string ErrorBarMessage
         {
@@ -119,19 +76,7 @@ namespace SoupView.ViewModel
                     return;
                 }
 
-                var rootIds = evaluateGraph.GetRootOperationIds();
-                var graph = new List<IList<GraphNode>>();
-
-                var column = new List<GraphNode>();
-                foreach (var rootId in rootIds)
-                {
-                    var operation = evaluateGraph.GetOperationInfo(rootId);
-                    column.Add(new GraphNode(operation.Title, rootId.value));
-                }
-
-                graph.Add(column);
-
-                Graph = graph;
+                Graph = BuildGraph(evaluateGraph);
             }
             else
             {
@@ -143,6 +88,61 @@ namespace SoupView.ViewModel
         {
             ErrorBarMessage = message;
             IsErrorBarOpen = true;
+        }
+
+        private IList<IList<GraphNode>> BuildGraph(OperationGraph evaluateGraph)
+        {
+            var activeIds = evaluateGraph.GetRootOperationIds();
+            var activeGraph = new List<IList<GraphNode>>();
+            var knownIds = new HashSet<OperationId>();
+            BuildGraphColumn(evaluateGraph, activeGraph, activeIds, knownIds);
+
+            return activeGraph;
+        }
+
+        private void BuildGraphColumn(
+            OperationGraph evaluateGraph,
+            IList<IList<GraphNode>> activeGraph,
+            IList<OperationId> activeIds,
+            HashSet<OperationId> knownIds)
+        {
+            // Build up the total set of nodes in the next level
+            var nextIds = new List<OperationId>();
+            foreach (var operationId in activeIds)
+            {
+                var operation = evaluateGraph.GetOperationInfo(operationId);
+                foreach (var childId in operation.Children)
+                {
+                    nextIds.Add(childId);
+                }
+            }
+
+            // Find the depest level first
+            if (nextIds.Count > 0)
+            {
+                BuildGraphColumn(evaluateGraph, activeGraph, nextIds, knownIds);
+            }
+
+            // Build up all the nodes at this level that have not already been added
+            var column = new List<GraphNode>();
+            foreach (var operationId in activeIds)
+            {
+                if (!knownIds.Contains(operationId))
+                {
+                    var operation = evaluateGraph.GetOperationInfo(operationId);
+
+                    var node = new GraphNode(operation.Title, operationId.value)
+                    {
+                        ChildNodes = operation.Children.Select(value => value.value).ToList(),
+                    };
+
+                    knownIds.Add(operationId);
+                    column.Add(node);
+                }
+            }
+
+            // Add the new column at the start
+            activeGraph.Insert(0, column);
         }
 
         private async Task<Path> GetTargetPathAsync(Path packageDirectory)

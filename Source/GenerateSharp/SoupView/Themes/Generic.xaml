@@ -10,12 +10,15 @@
                     <Border
                         CornerRadius="4"
                         Background="{ThemeResource SystemBaseLowColor}"
-                        Translation="0,0,10">
+                        Translation="0,0,10"
+                        ToolTipService.ToolTip="{TemplateBinding Title}"
+                        Padding="4">
                         <Border.Shadow>
                             <ThemeShadow />
                         </Border.Shadow>
                         <TextBlock
                             Text="{TemplateBinding Title}"
+                            TextTrimming="CharacterEllipsis"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center" />
                     </Border>
