@@ -91,7 +91,7 @@ namespace Soup::Client
 				isHostBuild,
 				buildManager);
 			
-			Log::HighPriority(targetDirectory.ToString());
+			std::cout << targetDirectory.ToString() << std::flush;
 		}
 
 	private:
