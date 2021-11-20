@@ -180,7 +180,7 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
 				Assert.Equal(
 					new List<Path>()
 					{
-						new Path("./bin/Program.mock.dll"),
+						new Path("C:/target/bin/Program.mock.dll"),
 					},
 					result.RuntimeDependencies);
 			}
@@ -331,19 +331,19 @@ namespace Soup.Build.CSharp.Compiler.UnitTests
 				Assert.Equal(
 					new List<Path>()
 					{
-						new Path("bin/ref/Library.mock.dll"),
+						new Path("C:/target/bin/ref/Library.mock.dll"),
 					},
 					result.LinkDependencies);
 
 				Assert.Equal(
 					new List<Path>()
 					{
-						new Path("bin/Library.mock.dll"),
+						new Path("C:/target/bin/Library.mock.dll"),
 					},
 					result.RuntimeDependencies);
 
 				Assert.Equal(
-					new Path("bin/Library.mock.dll"),
+					new Path("C:/target/bin/Library.mock.dll"),
 					result.TargetFile);
 			}
 		}

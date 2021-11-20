@@ -79,10 +79,10 @@ namespace Soup.Build.CSharp.Compiler
 							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
 
 						// Add the DLL as a runtime dependency
-						result.RuntimeDependencies.Add(targetFile);
+						result.RuntimeDependencies.Add(arguments.TargetRootDirectory + targetFile);
 
 						// Link against the reference target
-						result.LinkDependencies.Add(referenceTargetFile);
+						result.LinkDependencies.Add(arguments.TargetRootDirectory + referenceTargetFile);
 
 						break;
 					case BuildTargetType.Executable:
@@ -95,7 +95,7 @@ namespace Soup.Build.CSharp.Compiler
 							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
 
 						// Add the Executable as a runtime dependency
-						result.RuntimeDependencies.Add(targetFile);
+						result.RuntimeDependencies.Add(arguments.TargetRootDirectory + targetFile);
 
 						// All link dependencies stop here.
 
@@ -110,10 +110,10 @@ namespace Soup.Build.CSharp.Compiler
 							new Path(arguments.TargetName + "." + _compiler.ModuleFileExtension);
 
 						// Add the DLL as a runtime dependency
-						result.RuntimeDependencies.Add(targetFile);
+						result.RuntimeDependencies.Add(arguments.TargetRootDirectory + targetFile);
 
 						// Link against the reference target
-						result.LinkDependencies.Add(referenceTargetFile);
+						result.LinkDependencies.Add(arguments.TargetRootDirectory + referenceTargetFile);
 
 						break;
 					default:
@@ -165,7 +165,7 @@ namespace Soup.Build.CSharp.Compiler
 				foreach (var operation in compileOperations)
 					result.BuildOperations.Add(operation);
 
-				result.TargetFile = targetFile;
+				result.TargetFile = arguments.TargetRootDirectory + targetFile;
 			}
 		}
 
