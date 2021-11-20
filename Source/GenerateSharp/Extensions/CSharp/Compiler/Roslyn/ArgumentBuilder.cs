@@ -100,13 +100,15 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 				AddFlag(commandArguments, "optimize-");
 
 			// Specify output file name
-			AddParameterWithQuotes(commandArguments, "out", arguments.Target.ToString());
+			var absoluteTarget = arguments.TargetRootDirectory + arguments.Target;
+			AddParameterWithQuotes(commandArguments, "out", absoluteTarget.ToString());
 
 			// Reference assembly output to generate
 			// Note: Modules cannot use refout
 			if (arguments.TargetType != LinkTarget.Module)
 			{
-				AddParameterWithQuotes(commandArguments, "refout", arguments.ReferenceTarget.ToString());
+				var absoluteReferenceTarget = arguments.TargetRootDirectory + arguments.ReferenceTarget;
+				AddParameterWithQuotes(commandArguments, "refout", absoluteReferenceTarget.ToString());
 			}
 
 			switch (arguments.TargetType)

@@ -50,6 +50,8 @@ namespace Soup.Build.Runtime
 			List<Path> declaredInput,
 			List<Path> declaredOutput)
 		{
+			Log.Diag($"Create Operation: {title}");
+
 			if (!workingDirectory.HasRoot)
 				throw new InvalidOperationException("Working directory must be an absolute path.");
 
@@ -230,7 +232,6 @@ namespace Soup.Build.Runtime
 			{
 				if (fileString.StartsWith(accessDirectory.ToString()))
 				{
-					Log.Diag($"Allow {accessDirectory} : {fileString}");
 					return accessDirectory;
 				}
 			}
