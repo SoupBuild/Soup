@@ -200,7 +200,8 @@ namespace Soup.Build.Cpp
             }
 
             buildTable["TargetName"] = this.factory.Create(name);
-            buildTable["WorkingDirectory"] = this.factory.Create(packageRoot.ToString());
+            buildTable["SourceRootDirectory"] = this.factory.Create(packageRoot.ToString());
+            buildTable["TargetRootDirectory"] = this.factory.Create(targetDirectory.ToString());
             buildTable["ObjectDirectory"] = this.factory.Create(objectDirectory.ToString());
             buildTable["BinaryDirectory"] = this.factory.Create(binaryDirectory.ToString());
             buildTable["ModuleInterfaceSourceFile"] = this.factory.Create(moduleInterfaceSourceFile);

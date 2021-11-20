@@ -96,9 +96,14 @@ namespace Soup.Build.CSharp.Compiler
 		public BuildTargetType TargetType { get; set; }
 
 		/// <summary>
-		/// Gets or sets the working directory
+		/// Gets or sets the source directory
 		/// </summary>
-		public Path WorkingDirectory { get; set; } = new Path();
+		public Path SourceRootDirectory { get; set; } = new Path();
+
+		/// <summary>
+		/// Gets or sets the target directory
+		/// </summary>
+		public Path TargetRootDirectory { get; set; } = new Path();
 
 		/// <summary>
 		/// Gets or sets the output object directory

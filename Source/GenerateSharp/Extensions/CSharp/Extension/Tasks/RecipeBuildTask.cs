@@ -115,8 +115,8 @@ namespace Soup.Build.CSharp
 
 			// Build up arguments to build this individual recipe
 			var targetDirectory = new Path(parametersTable["TargetDirectory"].AsString());
-			var binaryDirectory = targetDirectory + new Path("bin/");
-			var objectDirectory = targetDirectory + new Path("obj/");
+			var binaryDirectory = new Path("bin/");
+			var objectDirectory = new Path("obj/");
 
 			// Load the source files if present
 			var sourceFiles = new List<string>();
@@ -165,7 +165,8 @@ namespace Soup.Build.CSharp
 			}
 
 			buildTable["TargetName"] = this.factory.Create(name);
-			buildTable["WorkingDirectory"] = this.factory.Create(packageRoot.ToString());
+            buildTable["SourceRootDirectory"] = this.factory.Create(packageRoot.ToString());
+            buildTable["TargetRootDirectory"] = this.factory.Create(targetDirectory.ToString());
 			buildTable["ObjectDirectory"] = this.factory.Create(objectDirectory.ToString());
 			buildTable["BinaryDirectory"] = this.factory.Create(binaryDirectory.ToString());
 			buildTable["OptimizationLevel"] = this.factory.Create((long)optimizationLevel);

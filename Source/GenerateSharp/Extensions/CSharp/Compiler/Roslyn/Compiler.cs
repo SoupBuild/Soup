@@ -57,7 +57,7 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			var responseFile = arguments.ObjectDirectory + new Path("CompileArguments.rsp");
 			var sharedCommandArguments = ArgumentBuilder.BuildSharedCompilerArguments(arguments);
 			var writeSharedArgumentsOperation = SharedOperations.CreateWriteFileOperation(
-				arguments.RootDirectory,
+				arguments.TargetRootDirectory,
 				responseFile,
 				string.Join(" ", sharedCommandArguments));
 			operations.Add(writeSharedArgumentsOperation);
@@ -82,7 +82,7 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			var commandArguments = $"@{responseFile} {string.Join(" ", uniqueCommandArguments)}";
 			var buildOperation = new BuildOperation(
 				$"Compile - {arguments.Target}",
-				arguments.RootDirectory,
+				arguments.SourceRootDirectory,
 				_compilerExecutable,
 				commandArguments,
 				inputFiles,

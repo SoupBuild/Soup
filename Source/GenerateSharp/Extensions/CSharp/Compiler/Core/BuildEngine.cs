@@ -30,15 +30,15 @@ namespace Soup.Build.CSharp.Compiler
 			var referenceDirectory = arguments.BinaryDirectory + new Path("ref/");
 			result.BuildOperations.Add(
 				SharedOperations.CreateCreateDirectoryOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					arguments.ObjectDirectory));
 			result.BuildOperations.Add(
 				SharedOperations.CreateCreateDirectoryOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					arguments.BinaryDirectory));
 			result.BuildOperations.Add(
 				SharedOperations.CreateCreateDirectoryOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					referenceDirectory));
 
 			// Perform the core compilation of the source files
@@ -146,7 +146,8 @@ namespace Soup.Build.CSharp.Compiler
 					Target = targetFile,
 					ReferenceTarget = referenceTargetFile,
 					TargetType = targetType,
-					RootDirectory = arguments.WorkingDirectory,
+					SourceRootDirectory = arguments.SourceRootDirectory,
+					TargetRootDirectory = arguments.TargetRootDirectory,
 					ObjectDirectory = arguments.ObjectDirectory,
 					SourceFiles = arguments.SourceFiles,
 					PreprocessorDefinitions = arguments.PreprocessorDefinitions,
@@ -182,7 +183,7 @@ namespace Soup.Build.CSharp.Compiler
 				{
 					var target = arguments.BinaryDirectory + new Path(source.GetFileName());
 					var operation = SharedOperations.CreateCopyFileOperation(
-						arguments.WorkingDirectory,
+						arguments.TargetRootDirectory,
 						source,
 						target);
 					result.BuildOperations.Add(operation);
@@ -212,7 +213,7 @@ namespace Soup.Build.CSharp.Compiler
   }
 }";
 				var writeRuntimeConfigFile = SharedOperations.CreateWriteFileOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					runtimeConfigFile,
 					content);
 				result.BuildOperations.Add(writeRuntimeConfigFile);

@@ -60,7 +60,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			var responseFile = arguments.ObjectDirectory + new Path("SharedCompileArguments.rsp");
 			var sharedCommandArguments = ArgumentBuilder.BuildSharedCompilerArguments(arguments);
 			var writeSharedArgumentsOperation = SharedOperations.CreateWriteFileOperation(
-				arguments.RootDirectory,
+				arguments.TargetRootDirectory,
 				responseFile,
 				CombineArguments(sharedCommandArguments));
 			operations.Add(writeSharedArgumentsOperation);
@@ -92,7 +92,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				// Generate the operation
 				var buildOperation = new BuildOperation(
 					interfaceUnitArguments.SourceFile.ToString(),
-					arguments.RootDirectory,
+					arguments.SourceRootDirectory,
 					_compilerExecutable,
 					CombineArguments(commandArguments),
 					inputFiles,
@@ -123,7 +123,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				// Generate the operation
 				var buildOperation = new BuildOperation(
 					implementationUnitArguments.SourceFile.ToString(),
-					arguments.RootDirectory,
+					arguments.SourceRootDirectory,
 					_compilerExecutable,
 					CombineArguments(commandArguments),
 					inputFiles.ToArray(),
@@ -167,7 +167,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 
 			var buildOperation = new BuildOperation(
 				arguments.TargetFile.ToString(),
-				arguments.RootDirectory,
+				arguments.TargetRootDirectory,
 				executablePath,
 				CombineArguments(commandarguments),
 				inputFiles,

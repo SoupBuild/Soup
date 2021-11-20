@@ -34,7 +34,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 
 			var arguments = new SharedCompileArguments()
 			{
-				RootDirectory = new Path("Source/"),
+				SourceRootDirectory = new Path("C:/source/"),
+				TargetRootDirectory = new Path("C:/target/"),
 				ObjectDirectory = new Path("ObjectDir/"),
 			};
 
@@ -56,7 +57,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			{
 				new BuildOperation(
 					"WriteFile [./ObjectDir/SharedCompileArguments.rsp]",
-					new Path("Source/"),
+					new Path("C:/target/"),
 					new Path("./writefile.exe"),
 					"\"./ObjectDir/SharedCompileArguments.rsp\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /X /RTC1 /EHsc /MT /bigobj /c\"",
 					new List<Path>(),
@@ -66,7 +67,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 					}),
 				new BuildOperation(
 					"./File.cpp",
-					new Path("Source/"),
+					new Path("C:/source/"),
 					new Path("C:/bin/mock.cl.exe"),
 					"@./ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"./obj/File.obj\"",
 					new List<Path>()
@@ -93,7 +94,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 
 			var arguments = new SharedCompileArguments()
 			{
-				RootDirectory = new Path("Source/"),
+				SourceRootDirectory = new Path("C:/source/"),
+				TargetRootDirectory = new Path("C:/target/"),
 				ObjectDirectory = new Path("ObjectDir/"),
 				IncludeDirectories = new List<Path>()
 				{
@@ -122,7 +124,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			{
 				new BuildOperation(
 					"WriteFile [./ObjectDir/SharedCompileArguments.rsp]",
-					new Path("Source/"),
+					new Path("C:/target/"),
 					new Path("./writefile.exe"),
 					"\"./ObjectDir/SharedCompileArguments.rsp\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /bigobj /c\"",
 					new List<Path>(),
@@ -132,7 +134,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 					}),
 				new BuildOperation(
 					"./File.cpp",
-					new Path("Source/"),
+					new Path("C:/source/"),
 					new Path("C:/bin/mock.cl.exe"),
 					"@./ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"./obj/File.obj\" /interface /ifcOutput \"./obj/File.pcm\"",
 					new List<Path>()
@@ -163,7 +165,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			arguments.TargetType = LinkTarget.StaticLibrary;
 			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = new Path("Library.mock.a");
-			arguments.RootDirectory = new Path("Source/");
+			arguments.TargetRootDirectory = new Path("C:/target/");
 			arguments.ObjectFiles = new List<Path>()
 			{
 				new Path("File.mock.obj"),
@@ -174,7 +176,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			// Verify result
 			var expected = new BuildOperation(
 				"./Library.mock.a",
-				new Path("Source/"),
+				new Path("C:/target/"),
 				new Path("C:/bin/mock.lib.exe"),
 				"/nologo /machine:X64 /out:\"./Library.mock.a\" ./File.mock.obj",
 				new List<Path>()
@@ -201,7 +203,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			arguments.TargetType = LinkTarget.Executable;
 			arguments.TargetArchitecture = "x64";
 			arguments.TargetFile = new Path("Something.exe");
-			arguments.RootDirectory = new Path("Source/");
+			arguments.TargetRootDirectory = new Path("C:/target/");
 			arguments.ObjectFiles = new List<Path>()
 			{
 				new Path("File.mock.obj"),
@@ -216,7 +218,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			// Verify result
 			var expected = new BuildOperation(
 				"./Something.exe",
-				new Path("Source/"),
+				new Path("C:/target/"),
 				new Path("C:/bin/mock.link.exe"),
 				"/nologo /subsystem:console /machine:X64 /out:\"./Something.exe\" ./Library.mock.a ./File.mock.obj",
 				new List<Path>()

@@ -65,9 +65,9 @@ namespace Soup.Build.CSharp
 			var arguments = new BuildArguments();
 			arguments.TargetArchitecture = parametersTable["Architecture"].AsString();
 			arguments.TargetName = buildTable["TargetName"].AsString();
-			arguments.TargetType = (BuildTargetType)
-				buildTable["TargetType"].AsInteger();
-			arguments.WorkingDirectory = new Path(buildTable["WorkingDirectory"].AsString());
+			arguments.TargetType = (BuildTargetType)buildTable["TargetType"].AsInteger();
+			arguments.SourceRootDirectory = new Path(buildTable["SourceRootDirectory"].AsString());
+			arguments.TargetRootDirectory = new Path(buildTable["TargetRootDirectory"].AsString());
 			arguments.ObjectDirectory = new Path(buildTable["ObjectDirectory"].AsString());
 			arguments.BinaryDirectory = new Path(buildTable["BinaryDirectory"].AsString());
 

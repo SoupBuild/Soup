@@ -49,7 +49,8 @@ namespace Soup.Build.CSharp.UnitTests
 				state.Add("Build", new Value(buildTable));
 				buildTable.Add("TargetName", new Value("Program"));
 				buildTable.Add("TargetType", new Value((long)BuildTargetType.Executable));
-				buildTable.Add("WorkingDirectory", new Value("C:/root/"));
+				buildTable.Add("SourceRootDirectory", new Value("C:/source/"));
+				buildTable.Add("TargetRootDirectory", new Value("C:/target/"));
 				buildTable.Add("ObjectDirectory", new Value("obj/"));
 				buildTable.Add("BinaryDirectory", new Value("bin/"));
 				buildTable.Add(
@@ -98,7 +99,8 @@ namespace Soup.Build.CSharp.UnitTests
 					Target = new Path("./bin/Program.mock.dll"),
 					ReferenceTarget = new Path("./bin/ref/Program.mock.dll"),
 					TargetType = LinkTarget.Executable,
-					RootDirectory = new Path("C:/root/"),
+					SourceRootDirectory = new Path("C:/source/"),
+					TargetRootDirectory = new Path("C:/target/"),
 					ObjectDirectory = new Path("obj/"),
 					SourceFiles = new List<Path>()
 					{
@@ -119,7 +121,7 @@ namespace Soup.Build.CSharp.UnitTests
 				{
 					new BuildOperation(
 						"MakeDir [./obj/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./obj/\"",
 						new List<Path>(),
@@ -129,7 +131,7 @@ namespace Soup.Build.CSharp.UnitTests
 						}),
 					new BuildOperation(
 						"MakeDir [./bin/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./bin/\"",
 						new List<Path>(),
@@ -139,7 +141,7 @@ namespace Soup.Build.CSharp.UnitTests
 						}),
 					new BuildOperation(
 						"MakeDir [./bin/ref/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./bin/ref/\"",
 						new List<Path>(),
@@ -162,7 +164,7 @@ namespace Soup.Build.CSharp.UnitTests
 						}),
 					new BuildOperation(
 						"WriteFile [./bin/Program.runtimeconfig.json]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("./writefile.exe"),
 						@"""./bin/Program.runtimeconfig.json"" ""{
   ""runtimeOptions"": {
@@ -206,7 +208,8 @@ namespace Soup.Build.CSharp.UnitTests
 				state.Add("Build", new Value(buildTable));
 				buildTable.Add("TargetName", new Value("Library"));
 				buildTable.Add("TargetType", new Value((long)BuildTargetType.Library));
-				buildTable.Add("WorkingDirectory", new Value("C:/root/"));
+				buildTable.Add("SourceRootDirectory", new Value("C:/source/"));
+				buildTable.Add("TargetRootDirectory", new Value("C:/target/"));
 				buildTable.Add("ObjectDirectory", new Value("obj/"));
 				buildTable.Add("BinaryDirectory", new Value("bin/"));
 				buildTable.Add("Source", new Value(new ValueList()
@@ -266,7 +269,8 @@ namespace Soup.Build.CSharp.UnitTests
 				{
 					Target = new Path("./bin/Library.mock.dll"),
 					ReferenceTarget = new Path("./bin/ref/Library.mock.dll"),
-					RootDirectory = new Path("C:/root/"),
+					SourceRootDirectory = new Path("C:/source/"),
+					TargetRootDirectory = new Path("C:/target/"),
 					ObjectDirectory = new Path("obj/"),
 					SourceFiles = new List<Path>()
 					{
@@ -289,7 +293,7 @@ namespace Soup.Build.CSharp.UnitTests
 				{
 					new BuildOperation(
 						"MakeDir [./obj/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./obj/\"",
 						new List<Path>(),
@@ -299,7 +303,7 @@ namespace Soup.Build.CSharp.UnitTests
 						}),
 					new BuildOperation(
 						"MakeDir [./bin/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./bin/\"",
 						new List<Path>(),
@@ -309,7 +313,7 @@ namespace Soup.Build.CSharp.UnitTests
 						}),
 					new BuildOperation(
 						"MakeDir [./bin/ref/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./bin/ref/\"",
 						new List<Path>(),
