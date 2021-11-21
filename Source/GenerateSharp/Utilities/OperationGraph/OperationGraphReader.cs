@@ -88,7 +88,8 @@ namespace Soup.Build.Utilities
 
 			if (reader.BaseStream.Position != reader.BaseStream.Length)
 			{
-				throw new InvalidOperationException("Operation graph file corrupted - Did not read the entire file");
+				var remaining = reader.BaseStream.Length - reader.BaseStream.Position;
+				throw new InvalidOperationException($"Operation graph file corrupted - Did not read the entire file {remaining}");
 			}
 
 			return new OperationGraph(

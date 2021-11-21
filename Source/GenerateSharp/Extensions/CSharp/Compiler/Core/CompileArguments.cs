@@ -62,9 +62,14 @@ namespace Soup.Build.CSharp.Compiler
 	public class CompileArguments : IEquatable<CompileArguments>
 	{
 		/// <summary>
-		/// Gets or sets the root directory
+		/// Gets or sets the source directory
 		/// </summary>
-		public Path RootDirectory { get; init; } = new Path();
+		public Path SourceRootDirectory { get; init; } = new Path();
+
+		/// <summary>
+		/// Gets or sets the target directory
+		/// </summary>
+		public Path TargetRootDirectory { get; init; } = new Path();
 
 		/// <summary>
 		/// Gets or sets the object directory
@@ -148,7 +153,8 @@ namespace Soup.Build.CSharp.Compiler
 				return true;
 
 			// Return true if the fields match.
-			return this.RootDirectory == rhs.RootDirectory &&
+			return this.SourceRootDirectory == rhs.SourceRootDirectory &&
+				this.TargetRootDirectory == rhs.TargetRootDirectory &&
 				this.ObjectDirectory == rhs.ObjectDirectory &&
 				Enumerable.SequenceEqual(this.PreprocessorDefinitions, rhs.PreprocessorDefinitions) &&
 				Enumerable.SequenceEqual(this.ReferenceLibraries, rhs.ReferenceLibraries) &&
@@ -165,7 +171,7 @@ namespace Soup.Build.CSharp.Compiler
 				Enumerable.SequenceEqual(this.CustomProperties, rhs.CustomProperties);
 		}
 
-		public override int GetHashCode() => (RootDirectory, ObjectDirectory, Target).GetHashCode();
+		public override int GetHashCode() => (SourceRootDirectory, TargetRootDirectory, ObjectDirectory, Target).GetHashCode();
 
 		public static bool operator ==(CompileArguments? lhs, CompileArguments? rhs)
 		{
@@ -184,7 +190,7 @@ namespace Soup.Build.CSharp.Compiler
 
 		public override string ToString()
 		{
-			return $"SharedCompileArguments {{ RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], SourceFiles=[{string.Join(",", SourceFiles)}], EnableOptimizations=\"{EnableOptimizations}\", GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", TargetType={TargetType}, Target={Target}, ReferenceTarget={ReferenceTarget}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], NullableState=\"{NullableState}\" CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+			return $"SharedCompileArguments {{ SourceRootDirectory=\"{SourceRootDirectory}\", TargetRootDirectory=\"{TargetRootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], ReferenceLibraries=[{string.Join(",", ReferenceLibraries)}], SourceFiles=[{string.Join(",", SourceFiles)}], EnableOptimizations=\"{EnableOptimizations}\", GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", TargetType={TargetType}, Target={Target}, ReferenceTarget={ReferenceTarget}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], NullableState=\"{NullableState}\" CustomProperties=[{string.Join(",", CustomProperties)}]}}";
 		}
 	}
 }

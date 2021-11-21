@@ -53,7 +53,7 @@ namespace Soup.Build.Cpp.Compiler
 		/// <summary>
 		/// Gets or sets the root directory
 		/// </summary>
-		public Path RootDirectory { get; set; } = new Path();
+		public Path TargetRootDirectory { get; set; } = new Path();
 
 		/// <summary>
 		/// Gets or sets the target architecture
@@ -100,7 +100,7 @@ namespace Soup.Build.Cpp.Compiler
 			return this.TargetFile == rhs.TargetFile &&
 				this.TargetType == rhs.TargetType &&
 				this.ImplementationFile == rhs.ImplementationFile &&
-				this.RootDirectory == rhs.RootDirectory &&
+				this.TargetRootDirectory == rhs.TargetRootDirectory &&
 				this.TargetArchitecture == rhs.TargetArchitecture &&
 				Enumerable.SequenceEqual(this.ObjectFiles, rhs.ObjectFiles) &&
 				Enumerable.SequenceEqual(this.LibraryFiles, rhs.LibraryFiles) &&
@@ -109,7 +109,7 @@ namespace Soup.Build.Cpp.Compiler
 				this.GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo;
 		}
 
-		public override int GetHashCode() => (TargetFile, TargetType, ImplementationFile, RootDirectory, TargetArchitecture).GetHashCode();
+		public override int GetHashCode() => (TargetFile, TargetType, ImplementationFile, TargetRootDirectory, TargetArchitecture).GetHashCode();
 
 		public static bool operator ==(LinkArguments? lhs, LinkArguments? rhs)
 		{
@@ -128,7 +128,7 @@ namespace Soup.Build.Cpp.Compiler
 
         public override string ToString()
         {
-			return $"LinkArguments {{ TargetFile=\"{TargetFile}\", TargetType={TargetType}, ImplementationFile=\"{ImplementationFile}\", RootDirectory=\"{RootDirectory}\", TargetArchitecture=\"{TargetArchitecture}\", ObjectFiles=[{string.Join(",", ObjectFiles)}], LibraryFiles=[{string.Join(",", LibraryFiles)}], ExternalLibraryFiles=[{string.Join(",", ExternalLibraryFiles)}], LibraryPaths=[{string.Join(",", LibraryPaths)}], GenerateSourceDebugInfo={GenerateSourceDebugInfo} }}";
+			return $"LinkArguments {{ TargetFile=\"{TargetFile}\", TargetType={TargetType}, ImplementationFile=\"{ImplementationFile}\", TargetRootDirectory=\"{TargetRootDirectory}\", TargetArchitecture=\"{TargetArchitecture}\", ObjectFiles=[{string.Join(",", ObjectFiles)}], LibraryFiles=[{string.Join(",", LibraryFiles)}], ExternalLibraryFiles=[{string.Join(",", ExternalLibraryFiles)}], LibraryPaths=[{string.Join(",", LibraryPaths)}], GenerateSourceDebugInfo={GenerateSourceDebugInfo} }}";
 		}
     }
 }

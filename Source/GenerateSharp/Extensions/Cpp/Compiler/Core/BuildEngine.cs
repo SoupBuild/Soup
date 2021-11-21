@@ -38,11 +38,11 @@ namespace Soup.Build.Cpp.Compiler
 			// Ensure the output directories exists as the first step
 			result.BuildOperations.Add(
 				SharedOperations.CreateCreateDirectoryOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					arguments.ObjectDirectory));
 			result.BuildOperations.Add(
 				SharedOperations.CreateCreateDirectoryOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					arguments.BinaryDirectory));
 
 			// Perform the core compilation of the source files
@@ -73,7 +73,8 @@ namespace Soup.Build.Cpp.Compiler
 				{
 					Standard = arguments.LanguageStandard,
 					Optimize = Convert(arguments.OptimizationLevel),
-					RootDirectory = arguments.WorkingDirectory,
+					SourceRootDirectory = arguments.SourceRootDirectory,
+					TargetRootDirectory = arguments.TargetRootDirectory,
 					ObjectDirectory = arguments.ObjectDirectory,
 					IncludeDirectories = arguments.IncludeDirectories,
 					IncludeModules = arguments.ModuleDependencies,
@@ -113,7 +114,7 @@ namespace Soup.Build.Cpp.Compiler
 					// Copy the binary module interface to the binary directory after compiling
 					var copyInterfaceOperation =
 						SharedOperations.CreateCopyFileOperation(
-							arguments.WorkingDirectory,
+							arguments.TargetRootDirectory,
 							objectModuleInterfaceFile,
 							binaryOutputModuleInterfaceFile);
 					result.BuildOperations.Add(copyInterfaceOperation);
@@ -122,7 +123,9 @@ namespace Soup.Build.Cpp.Compiler
 					// This will allow the module implementation units access as well as downstream
 					// dependencies to the public interface.
 					result.ModuleDependencies.Add(
-						binaryOutputModuleInterfaceFile.HasRoot ? binaryOutputModuleInterfaceFile : arguments.WorkingDirectory + binaryOutputModuleInterfaceFile);
+						binaryOutputModuleInterfaceFile.HasRoot ?
+							binaryOutputModuleInterfaceFile :
+							arguments.TargetRootDirectory + binaryOutputModuleInterfaceFile);
 				}
 
 				// Compile the individual translation units
@@ -191,7 +194,7 @@ namespace Soup.Build.Cpp.Compiler
 				TargetFile = targetFile,
 				TargetArchitecture = arguments.TargetArchitecture,
 				ImplementationFile = implementationFile,
-				RootDirectory = arguments.WorkingDirectory,
+				TargetRootDirectory = arguments.TargetRootDirectory,
 				LibraryPaths = arguments.LibraryPaths,
 				GenerateSourceDebugInfo = arguments.GenerateSourceDebugInfo,
 			};
@@ -214,7 +217,7 @@ namespace Soup.Build.Cpp.Compiler
 					
 					// Add the library as a link dependency and all recursive libraries
 					result.LinkDependencies = new List<Path>(arguments.LinkDependencies);
-					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
+					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.TargetRootDirectory + linkArguments.TargetFile;
 					result.LinkDependencies.Add(absoluteTargetFile);
 					break;
 				}
@@ -223,12 +226,12 @@ namespace Soup.Build.Cpp.Compiler
 					linkArguments.TargetType = LinkTarget.DynamicLibrary;
 
 					// Add the DLL as a runtime dependency
-					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
+					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.TargetRootDirectory + linkArguments.TargetFile;
 					result.RuntimeDependencies.Add(absoluteTargetFile);
 
 					// Clear out all previous link dependencies and replace with the 
 					// single implementation library for the DLL
-					var absoluteImplementationFile = linkArguments.ImplementationFile.HasRoot ? linkArguments.ImplementationFile : linkArguments.RootDirectory + linkArguments.ImplementationFile;
+					var absoluteImplementationFile = linkArguments.ImplementationFile.HasRoot ? linkArguments.ImplementationFile : linkArguments.TargetRootDirectory + linkArguments.ImplementationFile;
 					result.LinkDependencies.Add(absoluteImplementationFile);
 
 					// Set the targe file
@@ -241,7 +244,7 @@ namespace Soup.Build.Cpp.Compiler
 					linkArguments.TargetType = LinkTarget.Executable;
 
 					// Add the Executable as a runtime dependency
-					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.RootDirectory + linkArguments.TargetFile;
+					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.TargetRootDirectory + linkArguments.TargetFile;
 					result.RuntimeDependencies.Add(absoluteTargetFile);
 
 					// All link dependencies stop here.
@@ -300,7 +303,7 @@ namespace Soup.Build.Cpp.Compiler
 				{
 					var target = arguments.BinaryDirectory + new Path(source.GetFileName());
 					var operation = SharedOperations.CreateCopyFileOperation(
-						arguments.WorkingDirectory,
+						arguments.TargetRootDirectory,
 						source,
 						target);
 					result.BuildOperations.Add(operation);

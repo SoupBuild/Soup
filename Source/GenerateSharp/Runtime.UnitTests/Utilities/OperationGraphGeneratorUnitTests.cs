@@ -35,6 +35,7 @@ namespace Soup.Build.Runtime.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
+					"DIAG: Create Operation: Do Stuff",
 					"DIAG: Read Access Subset:",
 					"DIAG: Write Access Subset:",
 				},
@@ -182,7 +183,7 @@ namespace Soup.Build.Runtime.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"DIAG: Allow C:/WorkingDir/ReadAccess/ : C:/WorkingDir/ReadAccess/ReadFile.txt",
+					"DIAG: Create Operation: Do Stuff",
 					"DIAG: Read Access Subset:",
 					"DIAG: C:/WorkingDir/ReadAccess/",
 					"DIAG: Write Access Subset:"
@@ -223,8 +224,8 @@ namespace Soup.Build.Runtime.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
+					"DIAG: Create Operation: Do Stuff",
 					"DIAG: Read Access Subset:",
-					"DIAG: Allow C:/WorkingDir/WriteAccess/ : C:/WorkingDir/WriteAccess/WriteFile.txt",
 					"DIAG: Write Access Subset:",
 					"DIAG: C:/WorkingDir/WriteAccess/",
 				},
@@ -264,7 +265,7 @@ namespace Soup.Build.Runtime.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"DIAG: Allow C:/WorkingDir/ReadAccess/ : C:/WorkingDir/ReadAccess/SubFolder/ReadFile.txt",
+					"DIAG: Create Operation: Do Stuff",
 					"DIAG: Read Access Subset:",
 					"DIAG: C:/WorkingDir/ReadAccess/",
 					"DIAG: Write Access Subset:"
@@ -305,8 +306,8 @@ namespace Soup.Build.Runtime.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
+					"DIAG: Create Operation: Do Stuff",
 					"DIAG: Read Access Subset:",
-					"DIAG: Allow C:/WorkingDir/WriteAccess/ : C:/WorkingDir/WriteAccess/SubFolder/WriteFile.txt",
 					"DIAG: Write Access Subset:",
 					"DIAG: C:/WorkingDir/WriteAccess/",
 				},
