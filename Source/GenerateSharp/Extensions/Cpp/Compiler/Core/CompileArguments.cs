@@ -171,9 +171,14 @@ namespace Soup.Build.Cpp.Compiler
 		public OptimizationLevel Optimize { get; init; }
 
 		/// <summary>
-		/// Gets or sets the root directory
+		/// Gets or sets the source directory
 		/// </summary>
-		public Path RootDirectory { get; init; } = new Path();
+		public Path SourceRootDirectory { get; init; } = new Path();
+
+		/// <summary>
+		/// Gets or sets the target directory
+		/// </summary>
+		public Path TargetRootDirectory { get; init; } = new Path();
 
 		/// <summary>
 		/// Gets or sets the object directory
@@ -244,7 +249,8 @@ namespace Soup.Build.Cpp.Compiler
 			// Return true if the fields match.
 			return this.Standard == rhs.Standard &&
 				this.Optimize == rhs.Optimize &&
-				this.RootDirectory == rhs.RootDirectory &&
+				this.SourceRootDirectory == rhs.SourceRootDirectory &&
+				this.TargetRootDirectory == rhs.TargetRootDirectory &&
 				this.ObjectDirectory == rhs.ObjectDirectory &&
 				Enumerable.SequenceEqual(this.PreprocessorDefinitions, rhs.PreprocessorDefinitions) &&
 				Enumerable.SequenceEqual(this.IncludeDirectories, rhs.IncludeDirectories) &&
@@ -258,7 +264,7 @@ namespace Soup.Build.Cpp.Compiler
 				Enumerable.SequenceEqual(this.CustomProperties, rhs.CustomProperties);
 		}
 
-		public override int GetHashCode() => (Standard, Optimize, RootDirectory, ObjectDirectory, InterfaceUnit).GetHashCode();
+		public override int GetHashCode() => (Standard, Optimize, SourceRootDirectory, TargetRootDirectory, ObjectDirectory, InterfaceUnit).GetHashCode();
 
 		public static bool operator ==(SharedCompileArguments? lhs, SharedCompileArguments? rhs)
 		{
@@ -277,7 +283,7 @@ namespace Soup.Build.Cpp.Compiler
 
 		public override string ToString()
 		{
-			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, RootDirectory=\"{RootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], IncludeDirectories=[{string.Join(",", IncludeDirectories)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, SourceRootDirectory=\"{SourceRootDirectory}\", TargetRootDirectory=\"{TargetRootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], IncludeDirectories=[{string.Join(",", IncludeDirectories)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
 		}
 	}
 }

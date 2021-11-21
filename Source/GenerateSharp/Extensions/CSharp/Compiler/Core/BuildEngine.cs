@@ -30,15 +30,15 @@ namespace Soup.Build.CSharp.Compiler
 			var referenceDirectory = arguments.BinaryDirectory + new Path("ref/");
 			result.BuildOperations.Add(
 				SharedOperations.CreateCreateDirectoryOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					arguments.ObjectDirectory));
 			result.BuildOperations.Add(
 				SharedOperations.CreateCreateDirectoryOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					arguments.BinaryDirectory));
 			result.BuildOperations.Add(
 				SharedOperations.CreateCreateDirectoryOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					referenceDirectory));
 
 			// Perform the core compilation of the source files
@@ -79,10 +79,10 @@ namespace Soup.Build.CSharp.Compiler
 							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
 
 						// Add the DLL as a runtime dependency
-						result.RuntimeDependencies.Add(targetFile);
+						result.RuntimeDependencies.Add(arguments.TargetRootDirectory + targetFile);
 
 						// Link against the reference target
-						result.LinkDependencies.Add(referenceTargetFile);
+						result.LinkDependencies.Add(arguments.TargetRootDirectory + referenceTargetFile);
 
 						break;
 					case BuildTargetType.Executable:
@@ -95,7 +95,7 @@ namespace Soup.Build.CSharp.Compiler
 							new Path(arguments.TargetName + "." + _compiler.DynamicLibraryFileExtension);
 
 						// Add the Executable as a runtime dependency
-						result.RuntimeDependencies.Add(targetFile);
+						result.RuntimeDependencies.Add(arguments.TargetRootDirectory + targetFile);
 
 						// All link dependencies stop here.
 
@@ -110,10 +110,10 @@ namespace Soup.Build.CSharp.Compiler
 							new Path(arguments.TargetName + "." + _compiler.ModuleFileExtension);
 
 						// Add the DLL as a runtime dependency
-						result.RuntimeDependencies.Add(targetFile);
+						result.RuntimeDependencies.Add(arguments.TargetRootDirectory + targetFile);
 
 						// Link against the reference target
-						result.LinkDependencies.Add(referenceTargetFile);
+						result.LinkDependencies.Add(arguments.TargetRootDirectory + referenceTargetFile);
 
 						break;
 					default:
@@ -146,7 +146,8 @@ namespace Soup.Build.CSharp.Compiler
 					Target = targetFile,
 					ReferenceTarget = referenceTargetFile,
 					TargetType = targetType,
-					RootDirectory = arguments.WorkingDirectory,
+					SourceRootDirectory = arguments.SourceRootDirectory,
+					TargetRootDirectory = arguments.TargetRootDirectory,
 					ObjectDirectory = arguments.ObjectDirectory,
 					SourceFiles = arguments.SourceFiles,
 					PreprocessorDefinitions = arguments.PreprocessorDefinitions,
@@ -164,7 +165,7 @@ namespace Soup.Build.CSharp.Compiler
 				foreach (var operation in compileOperations)
 					result.BuildOperations.Add(operation);
 
-				result.TargetFile = targetFile;
+				result.TargetFile = arguments.TargetRootDirectory + targetFile;
 			}
 		}
 
@@ -182,7 +183,7 @@ namespace Soup.Build.CSharp.Compiler
 				{
 					var target = arguments.BinaryDirectory + new Path(source.GetFileName());
 					var operation = SharedOperations.CreateCopyFileOperation(
-						arguments.WorkingDirectory,
+						arguments.TargetRootDirectory,
 						source,
 						target);
 					result.BuildOperations.Add(operation);
@@ -212,7 +213,7 @@ namespace Soup.Build.CSharp.Compiler
   }
 }";
 				var writeRuntimeConfigFile = SharedOperations.CreateWriteFileOperation(
-					arguments.WorkingDirectory,
+					arguments.TargetRootDirectory,
 					runtimeConfigFile,
 					content);
 				result.BuildOperations.Add(writeRuntimeConfigFile);

@@ -193,6 +193,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 		}
 
 		public static IList<string> BuildInterfaceUnitCompilerArguments(
+			Path targetRootDirectory,
 			InterfaceUnitCompileArguments arguments,
 			Path responseFile)
 		{
@@ -206,19 +207,26 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			commandArguments.Add(arguments.SourceFile.ToString());
 
 			// Add the target file as outputs
-			AddFlagValueWithQuotes(commandArguments, Compiler_ArgumentParameter_ObjectFile, arguments.TargetFile.ToString());
+			var absoluteTargetFile = targetRootDirectory + arguments.TargetFile;
+			AddFlagValueWithQuotes(
+				commandArguments,
+				Compiler_ArgumentParameter_ObjectFile,
+				absoluteTargetFile.ToString());
 
 			// Add the unique arguments for an interface unit
 			AddFlag(commandArguments, "interface");
 
 			// Specify the module interface file output
 			AddFlag(commandArguments, "ifcOutput");
-			AddValueWithQuotes(commandArguments, arguments.ModuleInterfaceTarget.ToString());
+
+			var absoluteModuleInterfaceFile = targetRootDirectory + arguments.ModuleInterfaceTarget;
+			AddValueWithQuotes(commandArguments, absoluteModuleInterfaceFile.ToString());
 
 			return commandArguments;
 		}
 
 		public static IList<string> BuildTranslationUnitCompilerArguments(
+			Path targetRootDirectory,
 			TranslationUnitCompileArguments arguments,
 			Path responseFile,
 			IList<Path> internalModules)
@@ -240,7 +248,11 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			commandArguments.Add(arguments.SourceFile.ToString());
 
 			// Add the target file as outputs
-			AddFlagValueWithQuotes(commandArguments, Compiler_ArgumentParameter_ObjectFile, arguments.TargetFile.ToString());
+			var absoluteTargetFile = targetRootDirectory + arguments.TargetFile;
+			AddFlagValueWithQuotes(
+				commandArguments,
+				Compiler_ArgumentParameter_ObjectFile,
+				absoluteTargetFile.ToString());
 
 			return commandArguments;
 		}

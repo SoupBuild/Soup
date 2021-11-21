@@ -57,7 +57,7 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			var responseFile = arguments.ObjectDirectory + new Path("CompileArguments.rsp");
 			var sharedCommandArguments = ArgumentBuilder.BuildSharedCompilerArguments(arguments);
 			var writeSharedArgumentsOperation = SharedOperations.CreateWriteFileOperation(
-				arguments.RootDirectory,
+				arguments.TargetRootDirectory,
 				responseFile,
 				string.Join(" ", sharedCommandArguments));
 			operations.Add(writeSharedArgumentsOperation);
@@ -65,24 +65,26 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 			var symbolFile = new Path(arguments.Target.ToString());
 			symbolFile.SetFileExtension("pdb");
 
+			var targetResponseFile = arguments.TargetRootDirectory + responseFile;
+
 			// Build up the input/output sets
 			var inputFiles = new List<Path>();
-			inputFiles.Add(responseFile);
+			inputFiles.Add(targetResponseFile);
 			inputFiles.AddRange(arguments.SourceFiles);
 			inputFiles.AddRange(arguments.ReferenceLibraries);
 			var outputFiles = new List<Path>()
 			{
-				arguments.Target,
-				arguments.ReferenceTarget,
-				symbolFile,
+				arguments.TargetRootDirectory + arguments.Target,
+				arguments.TargetRootDirectory + arguments.ReferenceTarget,
+				arguments.TargetRootDirectory + symbolFile,
 			};
 
 			// Generate the compile build operation
 			var uniqueCommandArguments = ArgumentBuilder.BuildUniqueCompilerArguments();
-			var commandArguments = $"@{responseFile} {string.Join(" ", uniqueCommandArguments)}";
+			var commandArguments = $"@{targetResponseFile} {string.Join(" ", uniqueCommandArguments)}";
 			var buildOperation = new BuildOperation(
 				$"Compile - {arguments.Target}",
-				arguments.RootDirectory,
+				arguments.SourceRootDirectory,
 				_compilerExecutable,
 				commandArguments,
 				inputFiles,

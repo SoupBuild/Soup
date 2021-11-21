@@ -50,7 +50,8 @@ namespace Soup.Build.Cpp.UnitTests
 				buildTable.Add("TargetName", new Value("Program"));
 				buildTable.Add("TargetType", new Value((long)BuildTargetType.Executable));
 				buildTable.Add("LanguageStandard", new Value((long)LanguageStandard.CPP20));
-				buildTable.Add("WorkingDirectory", new Value("C:/root/"));
+				buildTable.Add("SourceRootDirectory", new Value("C:/source/"));
+				buildTable.Add("TargetRootDirectory", new Value("C:/target/"));
 				buildTable.Add("ObjectDirectory", new Value("obj/"));
 				buildTable.Add("BinaryDirectory", new Value("bin/"));
 				buildTable.Add(
@@ -101,7 +102,8 @@ namespace Soup.Build.Cpp.UnitTests
 				{
 					Standard = LanguageStandard.CPP20,
 					Optimize = OptimizationLevel.None,
-					RootDirectory = new Path("C:/root/"),
+					SourceRootDirectory = new Path("C:/source/"),
+					TargetRootDirectory = new Path("C:/target/"),
 					ObjectDirectory = new Path("obj/"),
 				};
 
@@ -118,7 +120,7 @@ namespace Soup.Build.Cpp.UnitTests
 				expectedLinkArguments.TargetType = LinkTarget.Executable;
 				expectedLinkArguments.TargetArchitecture = "x64";
 				expectedLinkArguments.TargetFile = new Path("bin/Program.exe");
-				expectedLinkArguments.RootDirectory = new Path("C:/root/");
+				expectedLinkArguments.TargetRootDirectory = new Path("C:/target/");
 				expectedLinkArguments.ObjectFiles = new List<Path>()
 				{
 					new Path("obj/TestFile.mock.obj"),
@@ -143,7 +145,7 @@ namespace Soup.Build.Cpp.UnitTests
 				{
 					new BuildOperation(
 						"MakeDir [./obj/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./obj/\"",
 						new List<Path>(),
@@ -153,7 +155,7 @@ namespace Soup.Build.Cpp.UnitTests
 						}),
 					new BuildOperation(
 						"MakeDir [./bin/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./bin/\"",
 						new List<Path>(),
@@ -216,7 +218,8 @@ namespace Soup.Build.Cpp.UnitTests
 				buildTable.Add("TargetName", new Value("Library"));
 				buildTable.Add("TargetType", new Value((long)BuildTargetType.StaticLibrary));
 				buildTable.Add("LanguageStandard", new Value((long)LanguageStandard.CPP20));
-				buildTable.Add("WorkingDirectory", new Value("C:/root/"));
+				buildTable.Add("SourceRootDirectory", new Value("C:/source/"));
+				buildTable.Add("TargetRootDirectory", new Value("C:/target/"));
 				buildTable.Add("ObjectDirectory", new Value("obj/"));
 				buildTable.Add("BinaryDirectory", new Value("bin/"));
 				buildTable.Add("Source", new Value(new ValueList()
@@ -281,7 +284,8 @@ namespace Soup.Build.Cpp.UnitTests
 				{
 					Standard = LanguageStandard.CPP20,
 					Optimize = OptimizationLevel.None,
-					RootDirectory = new Path("C:/root/"),
+					SourceRootDirectory = new Path("C:/source/"),
+					TargetRootDirectory = new Path("C:/target/"),
 					ObjectDirectory = new Path("obj/"),
 					IncludeDirectories = new List<Path>()
 					{
@@ -318,7 +322,7 @@ namespace Soup.Build.Cpp.UnitTests
 				expectedLinkArguments.TargetFile = new Path("bin/Library.mock.lib");
 				expectedLinkArguments.TargetType = LinkTarget.StaticLibrary;
 				expectedLinkArguments.TargetArchitecture = "x64";
-				expectedLinkArguments.RootDirectory = new Path("C:/root/");
+				expectedLinkArguments.TargetRootDirectory = new Path("C:/target/");
 				expectedLinkArguments.ObjectFiles = new List<Path>()
 				{
 					new Path("obj/TestFile1.mock.obj"),
@@ -346,7 +350,7 @@ namespace Soup.Build.Cpp.UnitTests
 				{
 					new BuildOperation(
 						"MakeDir [./obj/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./obj/\"",
 						new List<Path>(),
@@ -356,7 +360,7 @@ namespace Soup.Build.Cpp.UnitTests
 						}),
 					new BuildOperation(
 						"MakeDir [./bin/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./bin/\"",
 						new List<Path>(),
@@ -445,7 +449,8 @@ namespace Soup.Build.Cpp.UnitTests
 				buildTable.Add("TargetName", new Value("Library"));
 				buildTable.Add("TargetType", new Value((long)BuildTargetType.StaticLibrary));
 				buildTable.Add("LanguageStandard", new Value((long)LanguageStandard.CPP20));
-				buildTable.Add("WorkingDirectory", new Value("C:/root/"));
+				buildTable.Add("SourceRootDirectory", new Value("C:/source/"));
+				buildTable.Add("TargetRootDirectory", new Value("C:/target/"));
 				buildTable.Add("ObjectDirectory", new Value("obj/"));
 				buildTable.Add("BinaryDirectory", new Value("bin/"));
 				buildTable.Add("ModuleInterfaceSourceFile", new Value("Public.cpp"));
@@ -518,7 +523,8 @@ namespace Soup.Build.Cpp.UnitTests
 				{
 					Standard = LanguageStandard.CPP20,
 					Optimize = OptimizationLevel.None,
-					RootDirectory = new Path("C:/root/"),
+					SourceRootDirectory = new Path("C:/source/"),
+					TargetRootDirectory = new Path("C:/target/"),
 					ObjectDirectory = new Path("obj/"),
 					IncludeDirectories = new List<Path>()
 					{
@@ -565,7 +571,7 @@ namespace Soup.Build.Cpp.UnitTests
 				expectedLinkArguments.TargetFile = new Path("bin/Library.mock.lib");
 				expectedLinkArguments.TargetType = LinkTarget.StaticLibrary;
 				expectedLinkArguments.TargetArchitecture = "x64";
-				expectedLinkArguments.RootDirectory = new Path("C:/root/");
+				expectedLinkArguments.TargetRootDirectory = new Path("C:/target/");
 				expectedLinkArguments.ObjectFiles = new List<Path>()
 				{
 					new Path("obj/TestFile1.mock.obj"),
@@ -594,7 +600,7 @@ namespace Soup.Build.Cpp.UnitTests
 				{
 					new BuildOperation(
 						"MakeDir [./obj/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./obj/\"",
 						new List<Path>(),
@@ -604,7 +610,7 @@ namespace Soup.Build.Cpp.UnitTests
 						}),
 					new BuildOperation(
 						"MakeDir [./bin/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./bin/\"",
 						new List<Path>(),
@@ -614,7 +620,7 @@ namespace Soup.Build.Cpp.UnitTests
 						}),
 					new BuildOperation(
 						"Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/copy.exe"),
 						"\"./obj/Public.mock.bmi\" \"./bin/Library.mock.bmi\"",
 						new List<Path>()
@@ -719,7 +725,8 @@ namespace Soup.Build.Cpp.UnitTests
 				buildTable.Add("TargetName", new Value("Library"));
 				buildTable.Add("TargetType", new Value((long)BuildTargetType.StaticLibrary));
 				buildTable.Add("LanguageStandard", new Value((long)LanguageStandard.CPP20));
-				buildTable.Add("WorkingDirectory", new Value("C:/root/"));
+				buildTable.Add("SourceRootDirectory", new Value("C:/source/"));
+				buildTable.Add("TargetRootDirectory", new Value("C:/target/"));
 				buildTable.Add("ObjectDirectory", new Value("obj/"));
 				buildTable.Add("BinaryDirectory", new Value("bin/"));
 				buildTable.Add("ModuleInterfaceSourceFile", new Value("Public.cpp"));
@@ -784,7 +791,8 @@ namespace Soup.Build.Cpp.UnitTests
 				{
 					Standard = LanguageStandard.CPP20,
 					Optimize = OptimizationLevel.None,
-					RootDirectory = new Path("C:/root/"),
+					SourceRootDirectory = new Path("C:/source/"),
+					TargetRootDirectory = new Path("C:/target/"),
 					ObjectDirectory = new Path("./obj/"),
 					IncludeDirectories = new List<Path>()
 					{
@@ -813,7 +821,7 @@ namespace Soup.Build.Cpp.UnitTests
 				expectedLinkArguments.TargetFile = new Path("bin/Library.mock.lib");
 				expectedLinkArguments.TargetType = LinkTarget.StaticLibrary;
 				expectedLinkArguments.TargetArchitecture = "x64";
-				expectedLinkArguments.RootDirectory = new Path("C:/root/");
+				expectedLinkArguments.TargetRootDirectory = new Path("C:/target/");
 				expectedLinkArguments.ObjectFiles = new List<Path>()
 				{
 					new Path("obj/Public.mock.obj"),
@@ -839,7 +847,7 @@ namespace Soup.Build.Cpp.UnitTests
 				{
 					new BuildOperation(
 						"MakeDir [./obj/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./obj/\"",
 						new List<Path>(),
@@ -849,7 +857,7 @@ namespace Soup.Build.Cpp.UnitTests
 						}),
 					new BuildOperation(
 						"MakeDir [./bin/]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/mkdir.exe"),
 						"\"./bin/\"",
 						new List<Path>(),
@@ -859,7 +867,7 @@ namespace Soup.Build.Cpp.UnitTests
 						}),
 					new BuildOperation(
 						"Copy [./obj/Public.mock.bmi] -> [./bin/Library.mock.bmi]",
-						new Path("C:/root/"),
+						new Path("C:/target/"),
 						new Path("C:/copy.exe"),
 						"\"./obj/Public.mock.bmi\" \"./bin/Library.mock.bmi\"",
 						new List<Path>()

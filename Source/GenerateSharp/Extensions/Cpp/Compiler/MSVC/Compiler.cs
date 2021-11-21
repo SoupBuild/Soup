@@ -60,13 +60,15 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			var responseFile = arguments.ObjectDirectory + new Path("SharedCompileArguments.rsp");
 			var sharedCommandArguments = ArgumentBuilder.BuildSharedCompilerArguments(arguments);
 			var writeSharedArgumentsOperation = SharedOperations.CreateWriteFileOperation(
-				arguments.RootDirectory,
+				arguments.TargetRootDirectory,
 				responseFile,
 				CombineArguments(sharedCommandArguments));
 			operations.Add(writeSharedArgumentsOperation);
 
 			// Initialize a shared input set
 			var sharedInputFiles = arguments.IncludeModules;
+
+			var absoluteResponseFile = arguments.TargetRootDirectory + responseFile;
 
 			// Generate the interface build operation if present
 			var internalModules = new List<Path>();
@@ -77,22 +79,23 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				// Build up the input/output sets
 				var inputFiles = sharedInputFiles.ToList();
 				inputFiles.Add(interfaceUnitArguments.SourceFile);
-				inputFiles.Add(responseFile);
+				inputFiles.Add(absoluteResponseFile);
 				var outputFiles = new List<Path>()
 				{
-					interfaceUnitArguments.TargetFile,
-					interfaceUnitArguments.ModuleInterfaceTarget,
+					arguments.TargetRootDirectory + interfaceUnitArguments.TargetFile,
+					arguments.TargetRootDirectory + interfaceUnitArguments.ModuleInterfaceTarget,
 				};
 
 				// Build the unique arguments for this translation unit
 				var commandArguments = ArgumentBuilder.BuildInterfaceUnitCompilerArguments(
+					arguments.TargetRootDirectory,
 					interfaceUnitArguments,
-					responseFile);
+					absoluteResponseFile);
 
 				// Generate the operation
 				var buildOperation = new BuildOperation(
 					interfaceUnitArguments.SourceFile.ToString(),
-					arguments.RootDirectory,
+					arguments.SourceRootDirectory,
 					_compilerExecutable,
 					CombineArguments(commandArguments),
 					inputFiles,
@@ -100,7 +103,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				operations.Add(buildOperation);
 
 				// Add our module interface back in for the downstream compilers
-				internalModules.Add(interfaceUnitArguments.ModuleInterfaceTarget);
+				internalModules.Add(arguments.TargetRootDirectory + interfaceUnitArguments.ModuleInterfaceTarget);
 			}
 
 			foreach (var implementationUnitArguments in arguments.ImplementationUnits)
@@ -108,22 +111,23 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				// Build up the input/output sets
 				var inputFiles = sharedInputFiles.ToList();
 				inputFiles.Add(implementationUnitArguments.SourceFile);
-				inputFiles.Add(responseFile);
+				inputFiles.Add(absoluteResponseFile);
 				var outputFiles = new List<Path>()
 				{
-					implementationUnitArguments.TargetFile,
+					arguments.TargetRootDirectory + implementationUnitArguments.TargetFile,
 				};
 
 				// Build the unique arguments for this translation unit
 				var commandArguments = ArgumentBuilder.BuildTranslationUnitCompilerArguments(
+					arguments.TargetRootDirectory,
 					implementationUnitArguments,
-					responseFile,
+					absoluteResponseFile,
 					internalModules);
 
 				// Generate the operation
 				var buildOperation = new BuildOperation(
 					implementationUnitArguments.SourceFile.ToString(),
-					arguments.RootDirectory,
+					arguments.SourceRootDirectory,
 					_compilerExecutable,
 					CombineArguments(commandArguments),
 					inputFiles.ToArray(),
@@ -161,13 +165,13 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			inputFiles.AddRange(arguments.ObjectFiles);
 			var outputFiles = new List<Path>()
 			{
-				arguments.TargetFile,
+				arguments.TargetRootDirectory + arguments.TargetFile,
 			};
 			var commandarguments = ArgumentBuilder.BuildLinkerArguments(arguments);
 
 			var buildOperation = new BuildOperation(
 				arguments.TargetFile.ToString(),
-				arguments.RootDirectory,
+				arguments.TargetRootDirectory,
 				executablePath,
 				CombineArguments(commandarguments),
 				inputFiles,
