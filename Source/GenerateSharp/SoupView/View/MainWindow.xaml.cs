@@ -22,6 +22,22 @@ namespace SoupView.View
             this.InitializeComponent();
 
             this.Title = "Soup View";
+            LoadIcon("Assets/Soup.ico");
+        }
+
+        private void LoadIcon(string iconName)
+        {
+            // Get the Window's HWND
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            var iconHandle = PInvoke.User32.LoadImage(
+                IntPtr.Zero,
+                iconName,
+                PInvoke.User32.ImageType.IMAGE_ICON,
+                32,
+                32,
+                PInvoke.User32.LoadImageFlags.LR_LOADFROMFILE);
+
+            PInvoke.User32.SendMessage(hwnd, PInvoke.User32.WindowMessage.WM_SETICON, (IntPtr)0, iconHandle);
         }
 
         private async void AppBarButton_Load_Click(object sender, RoutedEventArgs e)
