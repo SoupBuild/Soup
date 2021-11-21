@@ -136,7 +136,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 					"./File.cpp",
 					new Path("C:/source/"),
 					new Path("C:/bin/mock.cl.exe"),
-					"@C:/target/ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"./obj/File.obj\" /interface /ifcOutput \"./obj/File.pcm\"",
+					"@C:/target/ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"C:/target/obj/File.obj\" /interface /ifcOutput \"C:/target/obj/File.pcm\"",
 					new List<Path>()
 					{
 						new Path("Module.pcm"),

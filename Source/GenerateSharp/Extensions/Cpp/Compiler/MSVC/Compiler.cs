@@ -88,6 +88,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 
 				// Build the unique arguments for this translation unit
 				var commandArguments = ArgumentBuilder.BuildInterfaceUnitCompilerArguments(
+					arguments.TargetRootDirectory,
 					interfaceUnitArguments,
 					absoluteResponseFile);
 
@@ -102,7 +103,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				operations.Add(buildOperation);
 
 				// Add our module interface back in for the downstream compilers
-				internalModules.Add(interfaceUnitArguments.ModuleInterfaceTarget);
+				internalModules.Add(arguments.TargetRootDirectory + interfaceUnitArguments.ModuleInterfaceTarget);
 			}
 
 			foreach (var implementationUnitArguments in arguments.ImplementationUnits)
