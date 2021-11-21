@@ -12,8 +12,8 @@
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>SoupView</DisplayName>
-    <PublisherDisplayName>mwasp</PublisherDisplayName>
+    <DisplayName>Soup View</DisplayName>
+    <PublisherDisplayName>Soup Build</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -31,8 +31,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="SoupView"
-        Description="SoupView"
+        DisplayName="Soup View"
+        Description="Visualize soup project build structures."
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">

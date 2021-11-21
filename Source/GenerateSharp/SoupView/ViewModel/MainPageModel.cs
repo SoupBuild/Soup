@@ -150,8 +150,15 @@ namespace SoupView.ViewModel
             var processInfo = new ProcessStartInfo("soup.exe", $"target {packageDirectory}")
             {
                 RedirectStandardOutput = true,
+                CreateNoWindow = true,
             };
-            var process = Process.Start(processInfo);
+            var process = new Process()
+            {
+                StartInfo = processInfo,
+            };
+
+            process.Start();
+
             await process.WaitForExitAsync();
 
             if (process.ExitCode != 0)
