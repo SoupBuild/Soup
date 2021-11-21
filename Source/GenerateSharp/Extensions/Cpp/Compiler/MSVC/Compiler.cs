@@ -68,6 +68,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			// Initialize a shared input set
 			var sharedInputFiles = arguments.IncludeModules;
 
+			var absoluteResponseFile = arguments.TargetRootDirectory + responseFile;
+
 			// Generate the interface build operation if present
 			var internalModules = new List<Path>();
 			if (arguments.InterfaceUnit is not null)
@@ -77,17 +79,17 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				// Build up the input/output sets
 				var inputFiles = sharedInputFiles.ToList();
 				inputFiles.Add(interfaceUnitArguments.SourceFile);
-				inputFiles.Add(responseFile);
+				inputFiles.Add(absoluteResponseFile);
 				var outputFiles = new List<Path>()
 				{
-					interfaceUnitArguments.TargetFile,
-					interfaceUnitArguments.ModuleInterfaceTarget,
+					arguments.TargetRootDirectory + interfaceUnitArguments.TargetFile,
+					arguments.TargetRootDirectory + interfaceUnitArguments.ModuleInterfaceTarget,
 				};
 
 				// Build the unique arguments for this translation unit
 				var commandArguments = ArgumentBuilder.BuildInterfaceUnitCompilerArguments(
 					interfaceUnitArguments,
-					responseFile);
+					absoluteResponseFile);
 
 				// Generate the operation
 				var buildOperation = new BuildOperation(
@@ -108,16 +110,17 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				// Build up the input/output sets
 				var inputFiles = sharedInputFiles.ToList();
 				inputFiles.Add(implementationUnitArguments.SourceFile);
-				inputFiles.Add(responseFile);
+				inputFiles.Add(absoluteResponseFile);
 				var outputFiles = new List<Path>()
 				{
-					implementationUnitArguments.TargetFile,
+					arguments.TargetRootDirectory + implementationUnitArguments.TargetFile,
 				};
 
 				// Build the unique arguments for this translation unit
 				var commandArguments = ArgumentBuilder.BuildTranslationUnitCompilerArguments(
+					arguments.TargetRootDirectory,
 					implementationUnitArguments,
-					responseFile,
+					absoluteResponseFile,
 					internalModules);
 
 				// Generate the operation
@@ -161,7 +164,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			inputFiles.AddRange(arguments.ObjectFiles);
 			var outputFiles = new List<Path>()
 			{
-				arguments.TargetFile,
+				arguments.TargetRootDirectory + arguments.TargetFile,
 			};
 			var commandarguments = ArgumentBuilder.BuildLinkerArguments(arguments);
 

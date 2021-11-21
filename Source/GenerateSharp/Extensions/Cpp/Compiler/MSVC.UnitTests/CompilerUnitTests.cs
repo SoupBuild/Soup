@@ -69,15 +69,15 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 					"./File.cpp",
 					new Path("C:/source/"),
 					new Path("C:/bin/mock.cl.exe"),
-					"@./ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"./obj/File.obj\"",
+					"@C:/target/ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"C:/target/obj/File.obj\"",
 					new List<Path>()
 					{
 						new Path("File.cpp"),
-						new Path("./ObjectDir/SharedCompileArguments.rsp"),
+						new Path("C:/target/ObjectDir/SharedCompileArguments.rsp"),
 					},
 					new List<Path>()
 					{
-						new Path("obj/File.obj"),
+						new Path("C:/target/obj/File.obj"),
 					}),
 				};
 
@@ -136,17 +136,17 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 					"./File.cpp",
 					new Path("C:/source/"),
 					new Path("C:/bin/mock.cl.exe"),
-					"@./ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"./obj/File.obj\" /interface /ifcOutput \"./obj/File.pcm\"",
+					"@C:/target/ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"./obj/File.obj\" /interface /ifcOutput \"./obj/File.pcm\"",
 					new List<Path>()
 					{
 						new Path("Module.pcm"),
 						new Path("File.cpp"),
-						new Path("./ObjectDir/SharedCompileArguments.rsp"),
+						new Path("C:/target/ObjectDir/SharedCompileArguments.rsp"),
 					},
 					new List<Path>()
 					{
-						new Path("obj/File.obj"),
-						new Path("obj/File.pcm"),
+						new Path("C:/target/obj/File.obj"),
+						new Path("C:/target/obj/File.pcm"),
 					}),
 				};
 
@@ -185,7 +185,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				},
 				new List<Path>()
 				{
-					new Path("Library.mock.a"),
+					new Path("C:/target/Library.mock.a"),
 				});
 
 			Assert.Equal(expected, result);
@@ -228,7 +228,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				},
 				new List<Path>()
 				{
-					new Path("Something.exe"),
+					new Path("C:/target/Something.exe"),
 				});
 
 			Assert.Equal(expected, result);

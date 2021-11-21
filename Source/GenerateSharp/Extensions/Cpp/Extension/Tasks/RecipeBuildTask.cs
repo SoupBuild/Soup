@@ -142,8 +142,8 @@ namespace Soup.Build.Cpp
 
             // Build up arguments to build this individual recipe
             var targetDirectory = new Path(parametersTable["TargetDirectory"].AsString());
-            var binaryDirectory = targetDirectory + new Path("bin/");
-            var objectDirectory = targetDirectory + new Path("obj/");
+            var binaryDirectory = new Path("bin/");
+            var objectDirectory = new Path("obj/");
 
             // Load the module interface file if present
             var moduleInterfaceSourceFile = string.Empty;

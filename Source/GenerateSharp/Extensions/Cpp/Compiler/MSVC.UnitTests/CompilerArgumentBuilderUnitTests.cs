@@ -414,6 +414,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 		[Fact]
 		public void BuildTranslationUnitCompilerArguments_Simple()
 		{
+			var targetRootDirectory = new Path("C:/target/");
 			var arguments = new TranslationUnitCompileArguments()
 			{
 				SourceFile = new Path("module.cpp"),
@@ -424,6 +425,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			var internalModules = new List<Path>();
 
 			var actualArguments = ArgumentBuilder.BuildTranslationUnitCompilerArguments(
+				targetRootDirectory,
 				arguments,
 				responseFile,
 				internalModules);
@@ -432,7 +434,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			{
 				"@./ResponseFile.txt",
 				"./module.cpp",
-				"/Fo\"./module.obj\"",
+				"/Fo\"C:/target/module.obj\"",
 			};
 
 			Assert.Equal(expectedArguments, actualArguments);
@@ -441,6 +443,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 		[Fact]
 		public void BuildTranslationUnitCompilerArguments_InternalModules()
 		{
+			var targetRootDirectory = new Path("C:/target/");
 			var arguments = new TranslationUnitCompileArguments()
 			{
 				SourceFile = new Path("module.cpp"),
@@ -455,6 +458,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			};
 
 			var actualArguments = ArgumentBuilder.BuildTranslationUnitCompilerArguments(
+				targetRootDirectory,
 				arguments,
 				responseFile,
 				internalModules);
@@ -467,7 +471,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				"/reference",
 				"\"./Module2.ifc\"",
 				"./module.cpp",
-				"/Fo\"./module.obj\"",
+				"/Fo\"C:/target/module.obj\"",
 			};
 
 			Assert.Equal(expectedArguments, actualArguments);
