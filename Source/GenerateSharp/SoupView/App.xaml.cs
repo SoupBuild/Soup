@@ -4,6 +4,7 @@
 
 using Microsoft.UI.Xaml;
 using Opal;
+using Opal.System;
 using SoupView.View;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -23,6 +24,7 @@ namespace SoupView
         {
             // Register the runtime services
             Log.RegisterListener(new ConsoleTraceListener());
+            LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
 
             this.InitializeComponent();
         }

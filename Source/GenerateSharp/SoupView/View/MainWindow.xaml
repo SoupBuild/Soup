@@ -4,41 +4,35 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:view="using:SoupView.View"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:viewmodel="using:SoupView.ViewModel"
     mc:Ignorable="d">
 
-    <Grid Name="Root" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.DataContext>
-            <viewmodel:MainPageModel />
-        </Grid.DataContext>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <CommandBar Grid.Row="0">
-            <AppBarButton Icon="Add" Label="Load" Click="AppBarButton_Load_Click" />
-            <CommandBar.SecondaryCommands>
-                <AppBarButton Icon="Setting" Label="Settings">
-                    <AppBarButton.KeyboardAccelerators>
-                        <KeyboardAccelerator Modifiers="Control" Key="I" />
-                    </AppBarButton.KeyboardAccelerators>
-                </AppBarButton>
-            </CommandBar.SecondaryCommands>
-        </CommandBar>
-
-        <view:GraphViewer
-            Grid.Row="1"
-            Graph="{Binding Graph}" />
-
-        <StackPanel Grid.Row="1">
-            <controls:InfoBar
-                Severity="Error"
-                Title="Error"
-                IsOpen="{Binding IsErrorBarOpen}"
-                Message="{Binding ErrorBarMessage}" />
-        </StackPanel>
-    </Grid>
+    <controls:NavigationView
+        Name="RootNavigation"
+        SelectionChanged="NavigationView_SelectionChanged"
+        IsPaneOpen="False"
+        IsBackButtonVisible="Collapsed">
+        <controls:NavigationView.DataContext>
+            <viewmodel:MainWindowModel />
+        </controls:NavigationView.DataContext>
+        <controls:NavigationView.MenuItems>
+            <controls:NavigationViewItem
+                Name="DependencyGraphNavigationItem"
+                Icon="Home"
+                Content="Dependency Graph"
+                Tag="DependencyGraph" />
+            <controls:NavigationViewItem
+                Name="OperationGraphNavigationItem"
+                Icon="Tag"
+                Content="Operation Graph"
+                Tag="OperationGraph" />
+            <controls:NavigationViewItem
+                Name="OpenFileNavigationItem"
+                Icon="OpenFile"
+                Content="Open File"
+                Tag="OpenFile" />
+        </controls:NavigationView.MenuItems>
+        <Frame x:Name="ContentFrame"/>
+    </controls:NavigationView>
 </Window>
