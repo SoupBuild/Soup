@@ -3,7 +3,6 @@
 // </copyright>
 
 using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -20,32 +19,19 @@ namespace SoupView.View
 	/// </summary>
 	public sealed partial class MainWindow : Window
 	{
-		private MainWindowModel ViewModel => (MainWindowModel)this.RootNavigation.DataContext;
+		private MainWindowModel ViewModel => (MainWindowModel)this.Root.DataContext;
 
 		public MainWindow()
 		{
 			this.InitializeComponent();
 
+			this.ExtendsContentIntoTitleBar = true;
+			this.SetTitleBar(AppTitleBar);
+
 			this.Title = "Soup View";
 			LoadIcon("Assets/Soup.ico");
 
-			RootNavigation.SelectedItem = DependencyGraphNavigationItem;
-			this.ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-		}
-
-		private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == nameof(ViewModel.RecipeFile))
-			{
-				if (ViewModel.RecipeFile == null || ViewModel.RecipeFile.IsEmpty)
-				{
-					this.Title = "Soup View";
-				}
-				else
-				{
-					this.Title = $"Soup View - {ViewModel.RecipeFile}";
-				}
-			}
+			Navigation.SelectedItem = DependencyGraphNavigationItem;
 		}
 
 		private void LoadIcon(string iconName)
@@ -83,7 +69,7 @@ namespace SoupView.View
 				else if (selectedItem == OpenFileNavigationItem)
 				{
 					await LoadFileAsync();
-					this.RootNavigation.SelectedItem = DependencyGraphNavigationItem;
+					this.Navigation.SelectedItem = DependencyGraphNavigationItem;
 				}
 				else
 				{

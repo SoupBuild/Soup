@@ -8,14 +8,35 @@
     xmlns:viewmodel="using:SoupView.ViewModel"
     mc:Ignorable="d">
 
-    <controls:NavigationView
-        Name="RootNavigation"
-        SelectionChanged="NavigationView_SelectionChanged"
-        IsPaneOpen="False"
-        IsBackButtonVisible="Collapsed">
-        <controls:NavigationView.DataContext>
+    <Grid Name="Root">
+        <Grid.DataContext>
             <viewmodel:MainWindowModel />
-        </controls:NavigationView.DataContext>
+        </Grid.DataContext>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid x:Name="AppTitleBar" Grid.Row="0"  >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="144" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Text="{Binding Title}"
+                    FontSize="{ThemeResource PivotTitleFontSize}"
+                    Padding="10,0,20,0"
+                    VerticalAlignment="Center"
+                    HorizontalTextAlignment="Center"
+                    HorizontalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+        <controls:NavigationView 
+            Grid.Row="1"
+            Name="Navigation"
+            SelectionChanged="NavigationView_SelectionChanged"
+            IsPaneOpen="False"
+            IsBackButtonVisible="Collapsed">
         <controls:NavigationView.MenuItems>
             <controls:NavigationViewItem
                 Name="DependencyGraphNavigationItem"
@@ -35,4 +56,5 @@
         </controls:NavigationView.MenuItems>
         <Frame x:Name="ContentFrame"/>
     </controls:NavigationView>
+    </Grid>
 </Window>

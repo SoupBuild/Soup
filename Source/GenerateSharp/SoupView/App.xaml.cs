@@ -37,6 +37,10 @@ namespace SoupView
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             m_window = new MainWindow();
+
+            //m_window.ExtendsContentIntoTitleBar = true;
+           // m_window.SetTitleBar(new TextBlock());
+
             m_window.Activate();
         }
 

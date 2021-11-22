@@ -3,36 +3,47 @@
 // </copyright>
 
 using Opal;
-using Soup.Build.Runtime;
-using Soup.Build.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SoupView.ViewModel
 {
-    internal class MainWindowModel : Observable
-    {
-        private Path recipeFile = new Path();
+	internal class MainWindowModel : Observable
+	{
+		private Path recipeFile = new Path();
 
-        public Path RecipeFile
-        {
-            get { return recipeFile; }
-            set
-            {
-                if (value != recipeFile)
-                {
-                    recipeFile = value;
-                    NotifyPropertyChanged();
-                    _ = DependencyGraph.LoadProjectAsync(recipeFile);
-                    _ = OperationGraph.LoadProjectAsync(recipeFile);
-                }
-            }
-        }
+		public Path RecipeFile
+		{
+			get { return recipeFile; }
+			set
+			{
+				if (value != recipeFile)
+				{
+					recipeFile = value;
+					NotifyPropertyChanged();
+					NotifyPropertyChanged("Title");
+					_ = DependencyGraph.LoadProjectAsync(recipeFile);
+					_ = OperationGraph.LoadProjectAsync(recipeFile);
+				}
+			}
+		}
 
-        public DependencyGraphPageModel DependencyGraph { get; private set; } = new DependencyGraphPageModel();
-        public OperationGraphPageModel OperationGraph { get; private set; } = new OperationGraphPageModel();
-    }
+		public string Title
+		{
+			get
+			{
+				if (RecipeFile == null || RecipeFile.IsEmpty)
+				{
+					return "Soup View";
+				}
+				else
+				{
+
+
+					return $"Soup View - {RecipeFile}";
+				}
+			}
+		}
+
+		public DependencyGraphPageModel DependencyGraph { get; private set; } = new DependencyGraphPageModel();
+		public OperationGraphPageModel OperationGraph { get; private set; } = new OperationGraphPageModel();
+	}
 }
