@@ -32,13 +32,13 @@ namespace SoupView.ViewModel
 			{
 				if (RecipeFile == null || RecipeFile.IsEmpty)
 				{
-					return "Soup View";
+					return string.Empty;
 				}
 				else
 				{
 
 
-					return $"Soup View - {RecipeFile}";
+					return RecipeFile.ToString();
 				}
 			}
 		}
