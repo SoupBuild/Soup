@@ -77,11 +77,6 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public bool IsDetailsPaneOpen
-		{
-			get { return SelectedProject != null; }
-		}
-
 		public ProjectDetailsViewModel SelectedProject
 		{
 			get { return selectedProject; }
@@ -91,16 +86,8 @@ namespace SoupView.ViewModel
 				{
 					selectedProject = value;
 					NotifyPropertyChanged();
-					NotifyPropertyChanged("IsDetailsPaneOpen");
 				}
 			}
-		}
-
-		public ICommand ClickNode => new RelayCommand(this.OnClickNode);
-
-		private void OnClickNode()
-		{
-
 		}
 
 		public async Task LoadProjectAsync(Path recipeFilePath)
@@ -153,9 +140,8 @@ namespace SoupView.ViewModel
 				this.projectDetailsLookup.Add(
 					recipeFile.Id,
 					new ProjectDetailsViewModel(
-						recipe.Name,
-						recipe.Version.ToString(),
-						packageFolder.ToString()));
+						recipe,
+						packageFolder));
 
 				childRecipeFiles.AddRange(currentChildRecipes);
 			}

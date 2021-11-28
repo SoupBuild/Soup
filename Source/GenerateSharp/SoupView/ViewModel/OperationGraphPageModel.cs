@@ -15,9 +15,12 @@ namespace SoupView.ViewModel
 {
     internal class OperationGraphPageModel : Observable
     {
+        private GraphNode selectedNode = null;
+        private OperationDetailsViewModel selectedOperation = null;
         private string errorBarMessage = string.Empty;
         private bool isErrorBarOpen = false;
         private IList<IList<GraphNode>> graph = null;
+        private Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = new Dictionary<uint, OperationDetailsViewModel>();
 
         public string ErrorBarMessage
         {
@@ -40,6 +43,33 @@ namespace SoupView.ViewModel
                 if (value != graph)
                 {
                     graph = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public GraphNode SelectedNode
+        {
+            get { return selectedNode; }
+            set
+            {
+                if (value != selectedNode)
+                {
+                    selectedNode = value;
+                    NotifyPropertyChanged();
+                    SelectedOperation = this.operationDetailsLookup[selectedNode.Id];
+                }
+            }
+        }
+
+        public OperationDetailsViewModel SelectedOperation
+        {
+            get { return selectedOperation; }
+            set
+            {
+                if (value != selectedOperation)
+                {
+                    selectedOperation = value;
                     NotifyPropertyChanged();
                 }
             }
@@ -92,6 +122,7 @@ namespace SoupView.ViewModel
 
         private IList<IList<GraphNode>> BuildGraph(OperationGraph evaluateGraph)
         {
+            this.operationDetailsLookup.Clear();
             var activeIds = evaluateGraph.GetRootOperationIds();
             var activeGraph = new List<IList<GraphNode>>();
             var knownIds = new HashSet<OperationId>();
@@ -138,6 +169,8 @@ namespace SoupView.ViewModel
 
                     knownIds.Add(operationId);
                     column.Add(node);
+
+                    this.operationDetailsLookup.Add(operationId.value, new OperationDetailsViewModel(operation));
                 }
             }
 

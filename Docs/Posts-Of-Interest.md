@@ -8,6 +8,7 @@
 * [CppCon 2019: Boris Kolpackov “Practical C++ Modules”](https://www.youtube.com/watch?v=szHV6RdQdg8)
 * [CppCon 2019: Nathan Sidwell “Converting to C++20 Modules”](https://www.youtube.com/watch?v=KVsWIEw3TTw)
 * [CppCon 2019: Michael Spencer “Building Modules”](https://www.youtube.com/watch?v=L0SHHkBenss)
+* [C++ MODULES: A BRIEF TOUR](https://accu.org/journals/overload/28/159/sidwell/)
 
 ## Hooking OS Calls
 * [Detours](https://www.microsoft.com/en-us/research/project/detours/?from=http%3A%2F%2Fresearch.microsoft.com%2Fsn%2Fdetours)

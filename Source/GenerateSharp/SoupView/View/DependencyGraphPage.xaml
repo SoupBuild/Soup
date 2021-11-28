@@ -41,6 +41,7 @@
             Grid.Column="1"
             Margin="16,0,0,0"
             CanUserReorderColumns="False"
+            IsReadOnly="True"
             DataContext="{Binding SelectedProject}"
             ItemsSource="{Binding Properties}" />
     </Grid>
