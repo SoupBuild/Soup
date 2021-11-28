@@ -2,25 +2,27 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Microsoft.Toolkit.Mvvm.Input;
 using Opal;
 using Opal.System;
 using Soup.Build;
-using Soup.Build.Runtime;
 using Soup.Build.Utilities;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace SoupView.ViewModel
 {
 	internal class DependencyGraphPageModel : Observable
 	{
+		private GraphNode selectedNode = null;
+		private ProjectDetailsViewModel selectedProject = null;
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
 		private IList<IList<GraphNode>> graph = null;
 		private uint uniqueId = 0;
+		private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
 
 		public string ErrorBarMessage
 		{
@@ -48,6 +50,20 @@ namespace SoupView.ViewModel
 			}
 		}
 
+		public GraphNode SelectedNode
+		{
+			get { return selectedNode; }
+			set
+			{
+				if (value != selectedNode)
+				{
+					selectedNode = value;
+					NotifyPropertyChanged();
+					SelectedProject = this.projectDetailsLookup[selectedNode.Id];
+				}
+			}
+		}
+
 		public bool IsErrorBarOpen
 		{
 			get { return isErrorBarOpen; }
@@ -61,9 +77,36 @@ namespace SoupView.ViewModel
 			}
 		}
 
+		public bool IsDetailsPaneOpen
+		{
+			get { return SelectedProject != null; }
+		}
+
+		public ProjectDetailsViewModel SelectedProject
+		{
+			get { return selectedProject; }
+			set
+			{
+				if (value != selectedProject)
+				{
+					selectedProject = value;
+					NotifyPropertyChanged();
+					NotifyPropertyChanged("IsDetailsPaneOpen");
+				}
+			}
+		}
+
+		public ICommand ClickNode => new RelayCommand(this.OnClickNode);
+
+		private void OnClickNode()
+		{
+
+		}
+
 		public async Task LoadProjectAsync(Path recipeFilePath)
 		{
 			this.uniqueId = 1;
+			this.projectDetailsLookup.Clear();
 			var activeGraph = new List<IList<GraphNode>>();
 			var recipeFiles = new List<(Path Path, uint Id)>()
 			{
@@ -106,6 +149,13 @@ namespace SoupView.ViewModel
 				{
 					ChildNodes = currentChildRecipes.Select(value => value.Id).ToList(),
 				});
+
+				this.projectDetailsLookup.Add(
+					recipeFile.Id,
+					new ProjectDetailsViewModel(
+						recipe.Name,
+						recipe.Version.ToString(),
+						packageFolder.ToString()));
 
 				childRecipeFiles.AddRange(currentChildRecipes);
 			}

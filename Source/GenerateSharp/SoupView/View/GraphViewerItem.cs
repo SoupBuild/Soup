@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace SoupView.View
 {
-    public sealed class GraphViewerItem : Control
+    public sealed class GraphViewerItem : Button
     {
         /// <summary>
         /// Identifies the <see cref="Title"/> dependency property.

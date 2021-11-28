@@ -5,7 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:view="using:SoupView.View"
-    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:viewmodel="using:SoupView.ViewModel"
     mc:Ignorable="d">
 
@@ -13,17 +14,34 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
         <view:GraphViewer
             Grid.Row="0"
-            Graph="{Binding Graph}" />
+            Grid.Column="0"
+            Graph="{Binding Graph}"
+            SelectedNode="{Binding SelectedNode, Mode=TwoWay}"/>
 
-        <StackPanel Grid.Row="0">
-            <controls:InfoBar
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <muxc:InfoBar
                 Severity="Error"
                 Title="Error"
                 IsOpen="{Binding IsErrorBarOpen}"
                 Message="{Binding ErrorBarMessage}" />
         </StackPanel>
+
+        <toolkit:GridSplitter
+            HorizontalAlignment="Left"
+            Grid.Column="1" />
+
+        <toolkit:DataGrid
+            Grid.Column="1"
+            Margin="16,0,0,0"
+            CanUserReorderColumns="False"
+            DataContext="{Binding SelectedProject}"
+            ItemsSource="{Binding Properties}" />
     </Grid>
 </Page>
