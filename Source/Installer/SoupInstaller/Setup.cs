@@ -7,6 +7,8 @@ class Script
     {
         var soupScriptsFolder = @"..\..\..\Scripts\Install\";
         var soupBinFolder = @"..\..\..\out\C++\Soup\1281a639dd5d393781f4188942c6bc05544b7c2c0124eae4cc59236248e36\bin\";
+        var soupExtensionCppBinFolder = @"..\..\..\out\C#\Soup.Cpp\1281a639dd5d393781f4188942c6bc05544b7c2c0124eae4cc59236248e36\bin\";
+        var soupExtensionCSharpBinFolder = @"..\..\..\out\C#\Soup.CSharp\1281a639dd5d393781f4188942c6bc05544b7c2c0124eae4cc59236248e36\bin\";
         var soupBinGenerateFolder = @"..\..\..\out\msbuild\bin\Soup.Build.Generate\Release\net5.0\";
         var soupBinPackageManagerFolder = @"..\..\..\out\msbuild\bin\Soup.Build.PackageManager\Release\net5-windows10.0.17763.0\";
         var soupBinSwhereFolder = @"..\..\..\out\msbuild\bin\Swhere\Release\net5-windows10.0.17763.0\";
@@ -23,10 +25,10 @@ class Script
                         @"Extensions",
                         new Dir(
                             @"Soup.Cpp",
-                            new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, @"Extensions\Soup.Cpp\", "*.*"))),
+                            new DirFiles(System.IO.Path.Combine(soupExtensionCppBinFolder, "*.*"))),
                         new Dir(
                             @"Soup.CSharp",
-                            new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, @"Extensions\Soup.CSharp\", "*.*"))))),
+                            new DirFiles(System.IO.Path.Combine(soupExtensionCSharpBinFolder, "*.*"))))),
                 new Dir(
                     @"PackageManager",
                     new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, "*.*")),
@@ -67,7 +69,7 @@ class Script
         };
 
         // Upgrade values
-        project.Version = new Version(0, 15, 1);
+        project.Version = new Version(0, 16, 0);
 
         Compiler.BuildMsi(project);
     }
