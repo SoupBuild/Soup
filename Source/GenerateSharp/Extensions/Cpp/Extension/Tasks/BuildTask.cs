@@ -1,4 +1,6 @@
-﻿
+﻿// <copyright file="BuildTask.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
 
 using Opal;
 using Opal.System;
