@@ -83,12 +83,10 @@ namespace Soup::Client
 			globalParameters.SetValue("System", Build::Runtime::Value(std::string(system)));
 
 			// Load the value table to get the exe path
-			auto isHostBuild = false;
 			auto targetDirectory = Build::RecipeBuildRunner::GetOutputDirectory(
 				workingDirectory,
 				recipe,
 				globalParameters,
-				isHostBuild,
 				buildManager);
 			
 			std::cout << targetDirectory.ToString() << std::flush;
