@@ -1,6 +1,6 @@
 Name = "Soup"
 Language = "C++"
-Version = "0.15.1"
+Version = "0.16.0"
 Type = "Executable"
 
 Source = [
@@ -23,7 +23,7 @@ Runtime = [
 	"../../Monitor/Host/",
 ]
 Build = [
-	# TODO: "Soup.Test.Cpp@0.1.1",
+	# TODO: "Soup.Test.Cpp@0.1.2",
 ]
 Test = [
 	"Soup.Test.Assert@0.1.8",
