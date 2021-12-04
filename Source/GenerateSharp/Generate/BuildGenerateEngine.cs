@@ -111,7 +111,7 @@ namespace Soup.Build.Generate
 					_fileSystemState,
 					readAccessList,
 					writeAccessList);
-				buildTaskManager.Execute(buildState);
+				buildTaskManager.Execute(buildState, soupTargetDirectory);
 
 				// Grab the build results so the dependency libraries can be released asap
 				evaluateGraph = buildState.BuildOperationGraph();

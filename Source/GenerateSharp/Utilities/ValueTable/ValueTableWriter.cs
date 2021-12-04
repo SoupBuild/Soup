@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The value table state writer
