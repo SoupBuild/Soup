@@ -46,17 +46,10 @@ namespace Soup::Build
 			const Path& packageRoot,
 			Runtime::Recipe& recipe,
 			const Runtime::ValueTable& globalParameters,
-			bool isHostBuild,
 			RecipeBuildManager& buildManager)
 		{
 			// Set the default output directory to be relative to the package
 			auto rootOutput = packageRoot + Path("out/");
-
-			// Add unique location for host builds
-			if (isHostBuild)
-			{
-				rootOutput = rootOutput + Path("HostBuild/");
-			}
 
 			// Check for root recipe file with overrides
 			Path rootRecipeFile;
@@ -76,12 +69,6 @@ namespace Soup::Build
 				{
 					// Relative to the root recipe file itself
 					rootOutput = rootRecipe.GetOutputRoot();
-
-					// Add unique location for host builds
-					if (isHostBuild)
-					{
-						rootOutput = rootOutput + Path("HostBuild/");
-					}
 
 					// Add the language sub folder
 					rootOutput = rootOutput + Path(recipe.GetLanguage() + "/");
@@ -388,7 +375,6 @@ namespace Soup::Build
 				packageRoot,
 				recipe,
 				globalParameters,
-				isHostBuild,
 				_buildManager);
 			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
 

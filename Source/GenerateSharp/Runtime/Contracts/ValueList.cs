@@ -15,6 +15,12 @@ namespace Soup.Build.Runtime
 
 		public SyntaxNode? MirrorSyntax { get; set; }
 
+		private ValueList(IEnumerable<IValue> collection, SyntaxNode? mirrorSyntax)
+		{
+			_impl = new List<IValue>(collection);
+			MirrorSyntax = mirrorSyntax;
+		}
+
 		public ValueList()
 		{
 			_impl = new List<IValue>();
@@ -38,6 +44,11 @@ namespace Soup.Build.Runtime
 		public void Clear()
 		{
 			this._impl.Clear();
+		}
+
+		public ValueList Clone()
+		{
+			return new ValueList(_impl, MirrorSyntax);
 		}
 
 		public IEnumerator<IValue> GetEnumerator()

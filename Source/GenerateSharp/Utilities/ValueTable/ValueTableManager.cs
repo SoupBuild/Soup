@@ -6,12 +6,12 @@ using Opal;
 using Soup.Build.Runtime;
 using System;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The Value Table state manager
 	/// </summary>
-	internal static class ValueTableManager
+	public static class ValueTableManager
 	{
 		/// <summary>
 		/// Load the value table from the target file

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Opal;
 using Soup.Build.Runtime;
+using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -110,7 +111,7 @@ namespace Soup.Build.Generate
 		/// <summary>
 		/// Get the set of added include paths
 		/// </summary>
-		public void Execute(BuildState state)
+		public void Execute(BuildState state, Path soupTargetDirectory)
 		{
 			// Setup each task to have a complete list of tasks that must run before itself
 			// Note: this is required to combine other tasks run before lists with the tasks
@@ -130,6 +131,9 @@ namespace Soup.Build.Generate
 					}
 				}
 			}
+
+			var runtimeOrderList = new ValueList();
+			var taskInfoTable = new ValueTable();
 
 			// Run all tasks in the order they were registered
 			// ensuring they are run in the correct dependency order
@@ -151,11 +155,31 @@ namespace Soup.Build.Generate
 
 				Log.Info("TaskDone: " + currentTask.Name);
 
-				Log.Diag($"{(ValueTable)state.ActiveState}");
+				// Write the output from the task to be used for debugging
+				var activeStateFile = soupTargetDirectory + new Path($"ActiveState_{currentTask.Name}.bvt");
+				var sharedStateFile = soupTargetDirectory + new Path($"SharedState_{currentTask.Name}.bvt");
+				ValueTableManager.SaveState(activeStateFile, state.ActiveState);
+				ValueTableManager.SaveState(sharedStateFile, state.SharedState);
 
-				// TODO : state.LogActive();
+				// Build the task info
+				var taskInfo = new ValueTable();
+				taskInfo.Add("ActiveState", new Value(state.ActiveStateImpl.Clone()));
+				taskInfo.Add("SharedState", new Value(state.SharedStateImpl.Clone()));
+
+				taskInfoTable.Add(currentTask.Name, new Value(taskInfo));
+				runtimeOrderList.Add(new Value(currentTask.Name));
+
 				currentTask.HasRun = true;
 			}
+
+			var generateInfoTable = new ValueTable();
+			generateInfoTable.Add("Version", new Value("0.1"));
+			generateInfoTable.Add("RuntimeOrder", new Value(runtimeOrderList));
+			generateInfoTable.Add("TaskInfo", new Value(taskInfoTable));
+
+			// Save the runtime information
+			var generateInfoStateFile = soupTargetDirectory + new Path($"GenerateInfo.bvt");
+			ValueTableManager.SaveState(generateInfoStateFile, generateInfoTable);
 		}
 
 		/// <summary>

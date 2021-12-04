@@ -12,6 +12,12 @@ namespace Soup.Build.Runtime
 
 		public object RawValue { get; private set; }
 
+		private Value(ValueType type, object rawValue)
+		{
+			Type = type;
+			RawValue = rawValue;
+		}
+
 		public Value(bool value)
 		{
 			Type = ValueType.Boolean;
@@ -46,6 +52,11 @@ namespace Soup.Build.Runtime
 		{
 			Type = ValueType.List;
 			RawValue = value;
+		}
+
+		public Value Clone()
+		{
+			return new Value(Type, RawValue);
 		}
 
 		public override string ToString()
