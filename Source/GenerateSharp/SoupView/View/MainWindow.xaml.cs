@@ -62,6 +62,10 @@ namespace SoupView.View
 				{
 					ContentFrame.Navigate(typeof(DependencyGraphPage), ViewModel.DependencyGraph);
 				}
+				else if (selectedItem == TaskGraphNavigationItem)
+				{
+					ContentFrame.Navigate(typeof(TaskGraphPage), ViewModel.TaskGraph);
+				}
 				else if (selectedItem == OperationGraphNavigationItem)
 				{
 					ContentFrame.Navigate(typeof(OperationGraphPage), ViewModel.OperationGraph);

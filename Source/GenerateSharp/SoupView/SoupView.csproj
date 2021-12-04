@@ -15,6 +15,9 @@
     <Content Remove="Assets\Soup.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="View\TaskGraphPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Assets\Soup.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -46,6 +49,9 @@
   <ItemGroup>
     <Page Update="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="View\TaskGraphPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿// <copyright file="ProductDetailsViewModel.cs" company="Soup">
+﻿// <copyright file="OperationDetailsViewModel.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 

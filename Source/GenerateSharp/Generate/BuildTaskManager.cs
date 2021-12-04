@@ -178,7 +178,7 @@ namespace Soup.Build.Generate
 			generateInfoTable.Add("TaskInfo", new Value(taskInfoTable));
 
 			// Save the runtime information
-			var generateInfoStateFile = soupTargetDirectory + new Path($"GenerateInfo.bvt");
+			var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateTaskInfoFileName;
 			ValueTableManager.SaveState(generateInfoStateFile, generateInfoTable);
 		}
 

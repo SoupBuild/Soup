@@ -48,18 +48,19 @@
                 <controls:NavigationViewItem
                     Name="DependencyGraphNavigationItem"
                     Icon="Home"
-                    Content="Dependency Graph"
-                    Tag="DependencyGraph" />
+                    Content="Dependency Graph" />
+                <controls:NavigationViewItem
+                    Name="TaskGraphNavigationItem"
+                    Icon="Filter"
+                    Content="Task Graph" />
                 <controls:NavigationViewItem
                     Name="OperationGraphNavigationItem"
                     Icon="Tag"
-                    Content="Operation Graph"
-                    Tag="OperationGraph" />
+                    Content="Operation Graph" />
                 <controls:NavigationViewItem
                     Name="OpenFileNavigationItem"
                     Icon="OpenFile"
-                    Content="Open File"
-                    Tag="OpenFile" />
+                    Content="Open File" />
             </controls:NavigationView.MenuItems>
             <Frame x:Name="ContentFrame"/>
         </controls:NavigationView>

@@ -21,6 +21,7 @@ namespace SoupView.ViewModel
 					NotifyPropertyChanged();
 					NotifyPropertyChanged("Title");
 					_ = DependencyGraph.LoadProjectAsync(recipeFile);
+					_ = TaskGraph.LoadProjectAsync(recipeFile);
 					_ = OperationGraph.LoadProjectAsync(recipeFile);
 				}
 			}
@@ -44,6 +45,7 @@ namespace SoupView.ViewModel
 		}
 
 		public DependencyGraphPageModel DependencyGraph { get; private set; } = new DependencyGraphPageModel();
+		public TaskGraphPageModel TaskGraph { get; private set; } = new TaskGraphPageModel();
 		public OperationGraphPageModel OperationGraph { get; private set; } = new OperationGraphPageModel();
 	}
 }
