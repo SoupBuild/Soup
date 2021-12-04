@@ -5,6 +5,7 @@
 using Opal;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Soup.Build.Runtime
 {
@@ -156,18 +157,21 @@ namespace Soup.Build.Runtime
 		{
 			if (ReferenceEquals(rhs, null))
 				return false;
-			return Id == rhs.Id &&
+
+			var result = Id == rhs.Id &&
 				Title == rhs.Title &&
 				Command == rhs.Command &&
-				DeclaredInput == rhs.DeclaredInput &&
-				DeclaredOutput == rhs.DeclaredOutput &&
-				ReadAccess == rhs.ReadAccess &&
-				WriteAccess == rhs.WriteAccess &&
-				Children == rhs.Children &&
+				Enumerable.SequenceEqual(DeclaredInput, rhs.DeclaredInput) &&
+				Enumerable.SequenceEqual(DeclaredOutput, rhs.DeclaredOutput) &&
+				Enumerable.SequenceEqual(ReadAccess, rhs.ReadAccess) &&
+				Enumerable.SequenceEqual(WriteAccess, rhs.WriteAccess) &&
+				Enumerable.SequenceEqual(Children, rhs.Children) &&
 				DependencyCount == rhs.DependencyCount &&
 				WasSuccessfulRun == rhs.WasSuccessfulRun &&
-				ObservedInput == rhs.ObservedInput &&
-				ObservedOutput == rhs.ObservedOutput;
+				Enumerable.SequenceEqual(ObservedInput, rhs.ObservedInput) &&
+				Enumerable.SequenceEqual(ObservedOutput, rhs.ObservedOutput);
+
+			return result;
 		}
 
 		public override bool Equals(object? rhs)

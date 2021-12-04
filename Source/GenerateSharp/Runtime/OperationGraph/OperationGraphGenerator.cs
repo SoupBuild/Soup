@@ -190,7 +190,67 @@ namespace Soup.Build.Runtime
 
 			this.graph.SetRootOperationIds(rootOperations);
 
+			// Remove extra dependency references that are already covered by upstream references
+			var recursiveChildren = new Dictionary<OperationId, HashSet<OperationId>>();
+			BuildRecursiveChildSets(recursiveChildren, rootOperations);
+			foreach (var operation in this.graph.GetOperations().Values)
+			{
+				// Check each child to see if it is already covered by another child
+				var removeList = new List<OperationId>();
+				foreach (var childId in operation.Children)
+				{
+					var isDuplicate = operation.Children.Any(secondChildId =>
+					{
+						if (secondChildId != childId)
+						{
+							var childRecursiveSet = recursiveChildren[secondChildId];
+							return childRecursiveSet.Contains(childId);
+						}
+						else
+						{
+							return false;
+						}
+					});
+
+					if (isDuplicate)
+					{
+						// Cache the item to remove outside the iterator
+						removeList.Add(childId);
+					}
+				}
+
+				foreach (var childId in removeList)
+				{
+					operation.Children.Remove(childId);
+					var childOperation = this.graph.GetOperationInfo(childId);
+					childOperation.DependencyCount--;
+				}
+			}	
+
 			return this.graph;
+		}
+
+		private void BuildRecursiveChildSets(Dictionary<OperationId, HashSet<OperationId>> recursiveChildren, IList<OperationId> operations)
+		{
+			foreach (var operationId in operations)
+			{
+				var operation = this.graph.GetOperationInfo(operationId);
+				BuildRecursiveChildSets(recursiveChildren, operation.Children);
+
+				// Check if this node was already handled in a different branch
+				if (!recursiveChildren.ContainsKey(operationId))
+				{
+					var childSet = new HashSet<OperationId>();
+					childSet.UnionWith(operation.Children);
+					foreach (var childId in operation.Children)
+					{
+						var childRecursiveSet = recursiveChildren[childId];
+						childSet.UnionWith(childRecursiveSet);
+					}
+
+					recursiveChildren.Add(operationId, childSet);
+				}
+			}
 		}
 
 		private bool IsAllowedAccess(

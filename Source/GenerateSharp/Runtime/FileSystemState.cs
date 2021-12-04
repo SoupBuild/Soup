@@ -65,7 +65,7 @@ namespace Soup.Build.Runtime
 		/// <summary>
 		/// Convert a set of file paths to file ids
 		/// </summary>
-		public IList<FileId> ToFileIds(IReadOnlyList<Path> files, Path workingDirectory)
+		public List<FileId> ToFileIds(IReadOnlyList<Path> files, Path workingDirectory)
 		{
 			var result = new List<FileId>();
 			foreach (var file in files)
