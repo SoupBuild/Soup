@@ -16,6 +16,12 @@ namespace Soup.Build.Runtime
 
 		public SyntaxNode? MirrorSyntax { get; set; }
 
+		public ValueTable(IDictionary<string, IValue> values, SyntaxNode? mirrorSyntax)
+		{
+			_impl = new Dictionary<string, IValue>(values);
+			MirrorSyntax = mirrorSyntax;
+		}
+
 		public ValueTable()
 		{
 			_impl = new Dictionary<string, IValue>();
@@ -42,6 +48,11 @@ namespace Soup.Build.Runtime
 		public bool ContainsKey(string key)
 		{
 			return this._impl.ContainsKey(key);
+		}
+
+		public ValueTable Clone()
+		{
+			return new ValueTable(_impl, MirrorSyntax);
 		}
 
 		public IEnumerator<KeyValuePair<string, IValue>> GetEnumerator()

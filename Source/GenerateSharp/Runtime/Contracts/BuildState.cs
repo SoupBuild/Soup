@@ -25,8 +25,8 @@ namespace Soup.Build.Runtime
 			IList<Path> readAccessList,
 			IList<Path> writeAccessList)
 		{
-			this.ActiveState = activeState;
-			this.SharedState = new ValueTable();
+			this.ActiveStateImpl = activeState;
+			this.SharedStateImpl = new ValueTable();
 
 			this.graphGenerator = new OperationGraphGenerator(
 				fileSystemState,
@@ -37,13 +37,17 @@ namespace Soup.Build.Runtime
 		/// <summary>
 		/// Get a reference to the active state
 		/// </summary>
-		public IValueTable ActiveState { get; init; }
+		public IValueTable ActiveState => ActiveStateImpl;
 
 		/// <summary>
 		/// Get a reference to the shared state. All of these properties will be 
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
-		public IValueTable SharedState { get; init; }
+		public IValueTable SharedState => SharedStateImpl;
+
+		public ValueTable ActiveStateImpl { get; init; }
+
+		public ValueTable SharedStateImpl { get; init; }
 
 		/// <summary>
 		/// Create a build operation

@@ -5,7 +5,7 @@
 using Soup.Build.Runtime;
 using System;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The value table state reader
