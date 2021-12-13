@@ -41,22 +41,28 @@ namespace SoupView.ViewModel
 				{
 					case ValueType.Boolean:
 						viewModel.Title = $"{value.Key} - {value.Value.AsBoolean()}";
+						viewModel.Type = ValueTableItemType.Value;
 						break;
 					case ValueType.String:
 						viewModel.Title = $"{value.Key} - {value.Value.AsString()}";
+						viewModel.Type = ValueTableItemType.Value;
 						break;
 					case ValueType.Float:
 						viewModel.Title = $"{value.Key} - {value.Value.AsFloat()}";
+						viewModel.Type = ValueTableItemType.Value;
 						break;
 					case ValueType.Integer:
 						viewModel.Title = $"{value.Key} - {value.Value.AsInteger()}";
+						viewModel.Type = ValueTableItemType.Value;
 						break;
 					case ValueType.List:
 						viewModel.Title = $"{value.Key}";
+						viewModel.Type = ValueTableItemType.List;
 						BuildValueList(value.Value.AsList(), viewModel.Children);
 						break;
 					case ValueType.Table:
 						viewModel.Title = $"{value.Key}";
+						viewModel.Type = ValueTableItemType.Table;
 						BuildValueTable(value.Value.AsTable(), viewModel.Children);
 						break;
 					default:
@@ -80,22 +86,28 @@ namespace SoupView.ViewModel
 				{
 					case ValueType.Boolean:
 						viewModel.Title = $"{value.AsBoolean()}";
+						viewModel.Type = ValueTableItemType.Value;
 						break;
 					case ValueType.String:
 						viewModel.Title = $"{value.AsString()}";
+						viewModel.Type = ValueTableItemType.Value;
 						break;
 					case ValueType.Float:
 						viewModel.Title = $"{value.AsFloat()}";
+						viewModel.Type = ValueTableItemType.Value;
 						break;
 					case ValueType.Integer:
 						viewModel.Title = $"{value.AsInteger()}";
+						viewModel.Type = ValueTableItemType.Value;
 						break;
 					case ValueType.List:
-						viewModel.Title = $"LIST";
+						viewModel.Title = string.Empty;
+						viewModel.Type = ValueTableItemType.List;
 						BuildValueList(value.AsList(), viewModel.Children);
 						break;
 					case ValueType.Table:
-						viewModel.Title = $"TABLE";
+						viewModel.Title = string.Empty;
+						viewModel.Type = ValueTableItemType.Table;
 						BuildValueTable(value.AsTable(), viewModel.Children);
 						break;
 					default:

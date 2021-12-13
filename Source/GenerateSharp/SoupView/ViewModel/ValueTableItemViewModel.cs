@@ -6,13 +6,18 @@ using System.Collections.ObjectModel;
 
 namespace SoupView.ViewModel
 {
+	public enum ValueTableItemType
+	{
+		Table,
+		List,
+		Value,
+	};
+
 	class ValueTableItemViewModel : Observable
 	{
-		public enum ExplorerItemType { Folder, File };
-
 		public string Title { get; set; }
 
-		public ExplorerItemType Type { get; set; }
+		public ValueTableItemType Type { get; set; }
 
 		private ObservableCollection<ValueTableItemViewModel> m_children = new ObservableCollection<ValueTableItemViewModel>();
 		public ObservableCollection<ValueTableItemViewModel> Children

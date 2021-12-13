@@ -8,7 +8,56 @@
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:viewmodel="using:SoupView.ViewModel"
+    d:DataContext="{d:DesignInstance Type=viewmodel:TaskGraphPageModel}"
     mc:Ignorable="d">
+    <Page.Resources>
+        <DataTemplate
+            x:Key="TableTemplate"
+            x:DataType="viewmodel:ValueTableItemViewModel">
+            <controls:TreeViewItem
+                AutomationProperties.Name="{x:Bind Title}"
+                ItemsSource="{x:Bind Children}"
+                IsExpanded="True">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Width="20" Symbol="Library" />
+                    <TextBlock Margin="0,0,10,0"/>
+                    <TextBlock Text="{x:Bind Title}" />
+                </StackPanel>
+            </controls:TreeViewItem>
+        </DataTemplate>
+
+        <DataTemplate
+            x:Key="ListTemplate"
+            x:DataType="viewmodel:ValueTableItemViewModel">
+            <controls:TreeViewItem
+                AutomationProperties.Name="{x:Bind Title}"
+                ItemsSource="{x:Bind Children}"
+                IsExpanded="True">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Width="20" Symbol="List" />
+                    <TextBlock Margin="0,0,10,0"/>
+                    <TextBlock Text="{x:Bind Title}"/>
+                </StackPanel>
+            </controls:TreeViewItem>
+        </DataTemplate>
+
+        <DataTemplate
+            x:Key="ValueTemplate"
+            x:DataType="viewmodel:ValueTableItemViewModel">
+            <controls:TreeViewItem
+                AutomationProperties.Name="{x:Bind Title}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Bind Title}"/>
+                </StackPanel>
+            </controls:TreeViewItem>
+        </DataTemplate>
+
+        <view:ValueTableItemTemplateSelector
+            x:Key="ValueTableItemTemplateSelector"
+            TableTemplate="{StaticResource TableTemplate}"
+            ListTemplate="{StaticResource ListTemplate}"
+            ValueTemplate="{StaticResource ValueTemplate}" />
+    </Page.Resources>
 
     <Grid Name="Root" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -49,17 +98,10 @@
             </PivotItem>
             <PivotItem Header="State">
                 <controls:TreeView
-                    ItemsSource="{x:Bind ViewModel.SelectedTask.State, Mode=OneWay}" 
+                    ItemsSource="{x:Bind ViewModel.SelectedTask.State, Mode=OneWay}"
+                    ItemTemplateSelector="{StaticResource ValueTableItemTemplateSelector}"
                     CanReorderItems="False"
-                    CanDragItems="False">
-                    <controls:TreeView.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodel:ValueTableItemViewModel">
-                            <controls:TreeViewItem
-                                ItemsSource="{x:Bind Children}"
-                                Content="{x:Bind Title}"/>
-                        </DataTemplate>
-                    </controls:TreeView.ItemTemplate>
-                </controls:TreeView>
+                    CanDragItems="False" />
             </PivotItem>
         </Pivot>
     </Grid>
