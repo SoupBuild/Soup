@@ -22,27 +22,45 @@
         <view:GraphViewer
             Grid.Row="0"
             Grid.Column="0"
-            Graph="{Binding Graph}"
-            SelectedNode="{Binding SelectedNode, Mode=TwoWay}" />
+            Graph="{x:Bind ViewModel.Graph}"
+            SelectedNode="{x:Bind ViewModel.SelectedNode, Mode=TwoWay}" />
 
         <StackPanel Grid.Row="0" Grid.Column="0">
             <controls:InfoBar
                 Severity="Error"
                 Title="Error"
-                IsOpen="{Binding IsErrorBarOpen}"
-                Message="{Binding ErrorBarMessage}" />
+                IsOpen="{x:Bind ViewModel.IsErrorBarOpen}"
+                Message="{x:Bind ViewModel.ErrorBarMessage}" />
         </StackPanel>
 
         <toolkit:GridSplitter
             HorizontalAlignment="Left"
             Grid.Column="1" />
 
-        <toolkit:DataGrid
-            Grid.Column="1"
+        <Pivot
+            Title="Task Details"
             Margin="16,0,0,0"
-            CanUserReorderColumns="False"
-            IsReadOnly="True"
-            DataContext="{Binding SelectedTask}"
-            ItemsSource="{Binding Properties}" />
+            Grid.Column="1">
+            <PivotItem Header="Properties">
+                <toolkit:DataGrid
+                    CanUserReorderColumns="False"
+                    IsReadOnly="True"
+                    ItemsSource="{x:Bind ViewModel.SelectedTask.Properties, Mode=OneWay}" />
+            </PivotItem>
+            <PivotItem Header="State">
+                <controls:TreeView
+                    ItemsSource="{x:Bind ViewModel.SelectedTask.State, Mode=OneWay}" 
+                    CanReorderItems="False"
+                    CanDragItems="False">
+                    <controls:TreeView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodel:ValueTableItemViewModel">
+                            <controls:TreeViewItem
+                                ItemsSource="{x:Bind Children}"
+                                Content="{x:Bind Title}"/>
+                        </DataTemplate>
+                    </controls:TreeView.ItemTemplate>
+                </controls:TreeView>
+            </PivotItem>
+        </Pivot>
     </Grid>
 </Page>

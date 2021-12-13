@@ -8,19 +8,21 @@ using SoupView.ViewModel;
 
 namespace SoupView.View
 {
-    /// <summary>
-    /// The task graph page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class TaskGraphPage : Page
-    {
-        public TaskGraphPage()
-        {
-            this.InitializeComponent();
-        }
+	/// <summary>
+	/// The task graph page that can be used on its own or navigated to within a Frame.
+	/// </summary>
+	public sealed partial class TaskGraphPage : Page
+	{
+		public TaskGraphPage()
+		{
+			this.InitializeComponent();
+		}
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            DataContext = (TaskGraphPageModel)e.Parameter;
-        }
-    }
+		protected override void OnNavigatedTo(NavigationEventArgs e)
+		{
+			DataContext = (TaskGraphPageModel)e.Parameter;
+		}
+
+		private TaskGraphPageModel ViewModel => (TaskGraphPageModel)DataContext;
+	}
 }
