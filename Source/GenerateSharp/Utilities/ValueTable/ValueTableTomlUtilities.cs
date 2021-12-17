@@ -4,7 +4,6 @@
 
 using Opal;
 using Soup.Build.Runtime;
-using System;
 using System.Threading.Tasks;
 using Tomlyn;
 using Tomlyn.Syntax;

@@ -1,0 +1,68 @@
+﻿<Window
+    x:Class="SoupView.View.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:viewmodel="using:SoupView.ViewModel"
+    mc:Ignorable="d">
+
+    <Grid Name="Root">
+        <Grid.DataContext>
+            <viewmodel:MainWindowModel />
+        </Grid.DataContext>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid x:Name="AppTitleBar" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="160" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="2"></Grid>
+            <Grid Grid.Column="0">
+                <TextBlock
+                    Text="Soup View"
+                    FontSize="{ThemeResource PivotTitleFontSize}"
+                    Padding="10,0,0,0"
+                    VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock
+                Grid.Column="1"
+                Text="{Binding Title}"
+                FontSize="{ThemeResource PivotTitleFontSize}"
+                TextTrimming="CharacterEllipsis"
+                TextAlignment="Center"
+                VerticalAlignment="Center" />
+        </Grid>
+        <controls:NavigationView 
+            Grid.Row="1"
+            Name="Navigation"
+            SelectionChanged="NavigationView_SelectionChanged"
+            IsPaneOpen="False"
+            IsBackButtonVisible="Collapsed">
+            <controls:NavigationView.MenuItems>
+                <controls:NavigationViewItem
+                    Name="DependencyGraphNavigationItem"
+                    Icon="Home"
+                    Content="Dependency Graph" />
+                <controls:NavigationViewItem
+                    Name="TaskGraphNavigationItem"
+                    Icon="Filter"
+                    Content="Task Graph" />
+                <controls:NavigationViewItem
+                    Name="OperationGraphNavigationItem"
+                    Icon="Tag"
+                    Content="Operation Graph" />
+                <controls:NavigationViewItem
+                    Name="OpenFileNavigationItem"
+                    Icon="OpenFile"
+                    Content="Open File" />
+            </controls:NavigationView.MenuItems>
+            <Frame x:Name="ContentFrame"/>
+        </controls:NavigationView>
+    </Grid>
+</Window>

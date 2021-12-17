@@ -7,7 +7,7 @@ using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The operation graph state reader
@@ -83,7 +83,7 @@ namespace Soup.Build.Generate
 			var operations = new List<OperationInfo>();
 			for (var i = 0; i < operationCount; i++)
 			{
-				operations[i] = ReadOperationInfo(reader);
+				operations.Add(ReadOperationInfo(reader));
 			}
 
 			if (reader.BaseStream.Position != reader.BaseStream.Length)
@@ -180,7 +180,7 @@ namespace Soup.Build.Generate
 			var result = new List<FileId>((int)size);
 			for (var i = 0; i < size; i++)
 			{
-				result[i] = new FileId(reader.ReadUInt32());
+				result.Add(new FileId(reader.ReadUInt32()));
 			}
 
 			return result;
@@ -192,7 +192,7 @@ namespace Soup.Build.Generate
 			var result = new List<OperationId>((int)size);
 			for (var i = 0; i < size; i++)
 			{
-				result[i] = new OperationId(reader.ReadUInt32());
+				result.Add(new OperationId(reader.ReadUInt32()));
 			}
 
 			return result;

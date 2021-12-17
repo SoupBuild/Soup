@@ -17,7 +17,7 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Attempt to load from file
 		/// </summary>
-		public static async Task<(bool IsSuccess, Recipe result)> TryLoadRecipeFromFileAsync(Path recipeFile)
+		public static async Task<(bool IsSuccess, Recipe Result)> TryLoadRecipeFromFileAsync(Path recipeFile)
 		{
 			// Verify the requested file exists
 			Log.Diag("Load Recipe: " + recipeFile.ToString());

@@ -4,29 +4,28 @@
 
 using Opal;
 using Soup.Build.Runtime;
-using Soup.Build.Utilities;
-using System;
 using System.Collections.Generic;
 
-namespace Soup.Build.Generate
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The operation state manager
 	/// </summary>
-	internal static class OperationGraphManager
+	public static class OperationGraphManager
 	{
 		/// <summary>
 		/// Load the operation state from the provided directory
 		/// </summary>
 		public static bool TryLoadState(
 			Path operationGraphFile,
-			OperationGraph result,
-			FileSystemState fileSystemState)
+			FileSystemState fileSystemState,
+			out OperationGraph result)
 		{
 			// Verify the requested file exists
 			if (!System.IO.File.Exists(operationGraphFile.ToString()))
 			{
 				Log.Info("Operation graph file does not exist");
+				result = new OperationGraph();
 				return false;
 			}
 
@@ -67,6 +66,7 @@ namespace Soup.Build.Generate
 				catch
 				{
 					Log.Error("Failed to parse operation graph");
+					result = new OperationGraph();
 					return false;
 				}
 			}

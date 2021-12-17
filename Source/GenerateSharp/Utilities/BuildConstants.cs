@@ -40,5 +40,10 @@ namespace Soup.Build.Utilities
 		/// Gets the Generate Parameters Value Table file name
 		/// </summary>
 		public static Path GenerateEvaluateOperationGraphFileName => new Path("GenerateEvaluateGraph.bog");
+
+		/// <summary>
+		/// Gets the Generate task info Value Table file name
+		/// </summary>
+		public static Path GenerateTaskInfoFileName => new Path("GenerateTaskInfo.bvt");
 	}
 }

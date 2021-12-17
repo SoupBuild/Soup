@@ -155,12 +155,6 @@ namespace Soup.Build.Generate
 
 				Log.Info("TaskDone: " + currentTask.Name);
 
-				// Write the output from the task to be used for debugging
-				var activeStateFile = soupTargetDirectory + new Path($"ActiveState_{currentTask.Name}.bvt");
-				var sharedStateFile = soupTargetDirectory + new Path($"SharedState_{currentTask.Name}.bvt");
-				ValueTableManager.SaveState(activeStateFile, state.ActiveState);
-				ValueTableManager.SaveState(sharedStateFile, state.SharedState);
-
 				// Build the task info
 				var taskInfo = new ValueTable();
 				taskInfo.Add("ActiveState", new Value(state.ActiveStateImpl.Clone()));
@@ -178,7 +172,7 @@ namespace Soup.Build.Generate
 			generateInfoTable.Add("TaskInfo", new Value(taskInfoTable));
 
 			// Save the runtime information
-			var generateInfoStateFile = soupTargetDirectory + new Path($"GenerateInfo.bvt");
+			var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateTaskInfoFileName;
 			ValueTableManager.SaveState(generateInfoStateFile, generateInfoTable);
 		}
 
