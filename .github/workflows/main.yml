@@ -20,19 +20,16 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
     - name: Setup Soup Build
       uses: soupbuild/setup-soup@v1
       with:
         version: latest
 
     # Build DotNet
-    - name: DotNet Restore GenerateSharp
+    - name: DotNet Restore
       run: dotnet restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
-    # WinUI requires msbuild, convert to dotnet when switch to MAUI
-    - name: Build GenerateSharp
-      run: msbuild -property:Configuration=${{matrix.config}} ./Soup/Source/GenerateSharp/GenerateSharp.sln
+    - name: DotNet Build
+      run: dotnet build -c ${{matrix.config}} --no-restore ./Soup/Source/GenerateSharp/GenerateSharp.sln
     - name: DotNet Test
       run: dotnet test -c ${{matrix.config}} --no-build --verbosity normal ./Soup/Source/GenerateSharp/GenerateSharp.sln
 
