@@ -1,4 +1,4 @@
-Name = "Samples.SimpleBuildExtension.Extension"
+Name = "Samples.Cpp.BuildExtension.Extension"
 Language = "C#"
 Version = "1.0.0"
 Source = [

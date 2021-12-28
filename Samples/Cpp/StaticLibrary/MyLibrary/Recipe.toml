@@ -1,0 +1,5 @@
+Name = "Samples.Cpp.StaticLibrary.MyLibrary"
+Language = "C++"
+Version = "1.0.0"
+Interface = "Module.cpp"
+Type = "StaticLibrary"

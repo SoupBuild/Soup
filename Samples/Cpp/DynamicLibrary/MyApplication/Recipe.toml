@@ -1,4 +1,4 @@
-Name = "MyApplication"
+Name = "Samples.Cpp.DynamicLibrary.MyApplication"
 Language = "C++"
 Type = "Executable"
 Version = "1.0.0"

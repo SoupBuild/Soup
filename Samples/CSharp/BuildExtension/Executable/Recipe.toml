@@ -1,4 +1,4 @@
-Name = "Samples.SimpleBuildExtension.Executable"
+Name = "Samples.CSharp.BuildExtension.Executable"
 Language = "C#"
 Type = "Executable"
 Version = "1.0.1"

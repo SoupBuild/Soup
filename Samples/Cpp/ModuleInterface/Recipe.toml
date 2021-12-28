@@ -1,4 +1,4 @@
-Name = "ModuleConsoleApplication"
+Name = "Samples.Cpp.ModuleInterface"
 Language = "C++"
 Type = "Executable"
 Version = "1.2.5"

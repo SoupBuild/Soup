@@ -2,7 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace SimpleBuildExtension.Executable
+namespace BuildExtension.Executable
 {
 	using System;
 

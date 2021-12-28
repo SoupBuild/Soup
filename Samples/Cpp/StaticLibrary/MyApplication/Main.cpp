@@ -1,6 +1,7 @@
 #include <iostream>
 
-import ModuleConsoleApplication;
+import MyLibrary;
+using namespace MyLibrary;
 
 int main()
 {

@@ -1,0 +1,12 @@
+Name = "Samples.Cpp.StaticLibrary.MyApplication"
+Language = "C++"
+Type = "Executable"
+Version = "1.0.0"
+Source = [
+	"Main.cpp"
+]
+
+[Dependencies]
+Runtime = [
+	"../MyLibrary/"
+]
