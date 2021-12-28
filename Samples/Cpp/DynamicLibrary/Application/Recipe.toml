@@ -1,4 +1,4 @@
-Name = "Samples.Cpp.DynamicLibrary.MyApplication"
+Name = "Samples.Cpp.DynamicLibrary.Application"
 Language = "C++"
 Type = "Executable"
 Version = "1.0.0"
@@ -8,5 +8,5 @@ Source = [
 
 [Dependencies]
 Runtime = [
-	"../MyLibrary/"
+	"../Library/"
 ]

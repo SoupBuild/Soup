@@ -1,7 +1,7 @@
 #include <iostream>
 
-import MyLibrary;
-using namespace MyLibrary;
+import Samples.Cpp.DynamicLibrary.Library;
+using namespace Samples.Cpp.DynamicLibrary.Library;
 
 int main()
 {

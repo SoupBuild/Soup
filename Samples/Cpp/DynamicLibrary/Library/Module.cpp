@@ -3,9 +3,10 @@ module;
 // Include all standard library headers in the global module
 #include <string>
 
-export module MyLibrary;
+export module Samples.Cpp.DynamicLibrary.Library;
 
-export namespace MyLibrary
+// Note: The namespace does not have to match the module name
+export namespace Samples.Cpp.DynamicLibrary.Library
 {
 	class Helper
 	{

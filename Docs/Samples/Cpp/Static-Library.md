@@ -1,18 +1,18 @@
 # Static Library Reference
 This is a console application that has a single static library dependency.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/StaticLibraryReference)
+[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/StaticLibrary)
 
-## MyLibrary/Recipe.toml
-The Recipe file that defines the static library "MyLibrary".
+## Library/Recipe.toml
+The Recipe file that defines the static library "Samples.Cpp.StaticLibrary.Library".
 ```
-Name = "MyLibrary"
+Name = "Samples.Cpp.StaticLibrary.Library"
 Language = "C++"
 Version = "1.0.0"
 Interface = "Module.cpp"
 ```
 
-## MyLibrary/Module.cpp
+## Library/Module.cpp
 A module interface file that exports a single sample class.
 ```
 module;
@@ -20,9 +20,10 @@ module;
 // Include all standard library headers in the global module
 #include <string>
 
-export module MyLibrary;
+export module Samples.Cpp.StaticLibrary.Library;
 
-export namespace MyLibrary
+// Note: The namespace does not have to match the module name
+export namespace Samples.Cpp.StaticLibrary.Library
 {
     class Helper
     {
@@ -35,10 +36,10 @@ export namespace MyLibrary
 }
 ```
 
-## MyApplication/Recipe.toml
-The Recipe file that defines the executable "MyApplication".
+## Application/Recipe.toml
+The Recipe file that defines the executable "Samples.Cpp.StaticLibrary.Application".
 ```
-Name = "MyApplication"
+Name = "Samples.Cpp.StaticLibrary.Application"
 Language = "C++"
 Type = "Executable"
 Version = "1.0.0"
@@ -48,7 +49,7 @@ Source = [
 
 [Dependencies]
 Runtime = [
-    "../MyLibrary/"
+    "../Library/"
 ]
 ```
 
@@ -57,8 +58,8 @@ A simple main method that prints our "Hello World, Soup Style!" by using the mod
 ```
 #include <iostream>
 
-import MyLibrary;
-using namespace MyLibrary;
+import Samples.Cpp.StaticLibrary.Library;
+using namespace Samples.Cpp.StaticLibrary.Library;
 
 int main()
 {

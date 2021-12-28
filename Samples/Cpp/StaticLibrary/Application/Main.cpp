@@ -1,7 +1,7 @@
 #include <iostream>
 
-import MyLibrary;
-using namespace MyLibrary;
+import Samples.Cpp.StaticLibrary.Library;
+using namespace Samples.Cpp.StaticLibrary.Library;
 
 int main()
 {

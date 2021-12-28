@@ -2,7 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace BuildExtension.Extension
+namespace Samples.Cpp.BuildExtension.Extension
 {
 	using System.Collections.Generic;
 	using Soup.Build;

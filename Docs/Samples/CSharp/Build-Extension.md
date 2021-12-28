@@ -1,12 +1,12 @@
-# Simple Build Extension
+# C# Build Extension
 This is a console application that has a custom build extension that alters the build state. The custom build Tasks will run before and after the core Build Task and will simply print a nice hello message.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/SimpleBuildExtension)
+[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/CSharp/SimpleBuildExtension)
 
 ## Extension/Recipe.toml
 The Recipe file that defines the build extension dynamic library "Samples.SimpleBuildExtension.Extension" that will register new build tasks.
 ```
-Name = "Samples.SimpleBuildExtension.Extension"
+Name = "Samples.CSharp.BuildExtension.Extension"
 Language = "C#"
 Version = "1.0.0"
 Source = [
@@ -28,7 +28,7 @@ A C# file defining a custom build Task that will run before the build definition
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace SimpleBuildExtension.Extension
+namespace Samples.CSharp.BuildExtension.Extension
 {
     using System.Collections.Generic;
     using Soup.Build;
@@ -81,36 +81,44 @@ namespace SimpleBuildExtension.Extension
 ## Executable/Recipe.toml
 The Recipe file that defines the executable "SimpleBuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```
-Name = "Samples.SimpleBuildExtension.Executable"
-Language = "C++"
+Name = "Samples.CSharp.BuildExtension.Executable"
+Language = "C#"
 Type = "Executable"
 Version = "1.0.1"
 Source = [
-    "Main.cpp"
+    "Program.cs"
 ]
 
 [Dependencies]
 Build = [
     "../Extension/"
 ]
-
 ```
 
-## Executable/Main.cpp
-A simple main method that prints our "Hello World, Soup Style!" only if the build extension was able to set the custom preprocessor definition "SPECIAL_BUILD".
+## Executable/Program.cs
+A simple C# Program method that prints our "Hello World, Soup Style!" only if the build extension was able to set the custom preprocessor definition "SPECIAL_BUILD".
 ```
-#include <iostream>
+// <copyright file="Program.cs" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
 
-int main()
+namespace Samples.CSharp.BuildExtension.Executable
 {
-#ifdef SPECIAL_BUILD
-    std::cout << "Hello World, Soup Style!" << std::endl;
-#else
-    std::cout << "Hello World..." << std::endl;
-#endif
+    using System;
 
-    return 0;
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            #if SPECIAL_BUILD
+                Console.WriteLine("Hello World, Soup Style!");
+            #else
+                Console.WriteLine("Hello World...");
+            #endif
+        }
+    }
 }
+
 
 ```
 

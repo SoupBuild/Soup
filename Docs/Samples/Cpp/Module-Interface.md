@@ -1,12 +1,12 @@
-# Module Console Application
+# C++ Module Interface
 A console application that uses a single module interface file used inside the same projects.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ModuleConsoleApplication)
+[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ModuleInterface)
 
 ## Recipe.toml
 The Recipe file that sets the name, type, version, the public interface module and the single source file.
 ```
-Name = "ModuleConsoleApplication"
+Name = "Samples.Cpp.ModuleInterface"
 Language = "C++"
 Type = "Executable"
 Version = "1.2.5"
@@ -24,7 +24,7 @@ module;
 // Include all standard library headers in the global module
 #include <string>
 
-export module ModuleConsoleApplication;
+export module Samples.Cpp.ModuleInterface;
 
 export class Helper
 {
@@ -41,7 +41,7 @@ A simple main method that prints our "Hello World, Soup Style!" by using the mod
 ```
 #include <iostream>
 
-import ModuleConsoleApplication;
+import Samples.Cpp.ModuleInterface;
 
 int main()
 {
