@@ -28,7 +28,7 @@ export namespace Samples.Cpp.DynamicLibrary.Library
     class Helper
     {
     public:
-        static std::string GetName()
+        __declspec(dllexport) static std::string GetName()
         {
             return "Soup";
         }
