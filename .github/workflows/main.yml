@@ -45,7 +45,7 @@ jobs:
     - name: Soup Install Cpp BuildExtension
       run: soup install ./Soup/Samples/Cpp/BuildExtension/Executable/
     - name: Soup Build Cpp BuildExtension
-      run: soup build ./Soup/Samples/Cpp/BuildExtension/ -flavor ${{matrix.config}}
+      run: soup build ./Soup/Samples/Cpp/BuildExtension/Executable/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp ConsoleApplication
       run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}}
     - name: Soup Build Cpp DynamicLibrary
