@@ -1,0 +1,7 @@
+Name = "Samples.CSharp.ConsoleApplication"
+Language = "C#"
+Type = "Executable"
+Version = "1.1.4"
+Source = [
+	"Program.cs",
+]
