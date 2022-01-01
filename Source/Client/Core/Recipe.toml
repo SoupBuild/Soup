@@ -3,20 +3,39 @@ Language = "C++"
 Version = "0.1.1"
 Defines = [
 	# "LOCAL_DEBUG",
+	# "TRACE_SYSTEM_ACCESS",
 ]
-Interface = "Source/Module.cpp"
 IncludePaths = [
 	"Source/",
 	"Source/Compiler/",
 	"Source/Utils/",
+	"../../../Dependencies/OpenSSL/include/",
+]
+Interface = "Source/Module.cpp"
+Source = [
+	"Source/ValueTable/Value.cpp",
+]
+
+LinkLibraries = [
+	# Link against the dynamic libraries
+	"../../../Dependencies/OpenSSL/libcrypto.lib",
+	"../../../Dependencies/OpenSSL/libssl.lib",
+]
+RuntimeDependencies = [
+	# Copy the dynamic libraries
+	"../../../Dependencies/OpenSSL/libcrypto-3.dll",
+	"../../../Dependencies/OpenSSL/libssl-3.dll",
 ]
 
 [Dependencies]
-Runtime = [
-	"../../Build/Runtime/",
-]
 Build = [
 	# TODO: "Soup.Test.Cpp@0.1.2",
+]
+Runtime = [
+	"json11@1.0.1",
+	"Opal@0.3.0",
+	"toml11@1.0.1",
+	"../../Monitor/Host/",
 ]
 Test = [
 	"Soup.Test.Assert@0.1.8",
