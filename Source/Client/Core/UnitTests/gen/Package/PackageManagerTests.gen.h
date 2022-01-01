@@ -2,7 +2,7 @@
 #include "Package/PackageManagerTests.h"
 
 TestState RunPackageManagerTests() 
- {
+{
 	auto className = "PackageManagerTests";
 	auto testClass = std::make_shared<Soup::UnitTests::PackageManagerTests>();
 	TestState state = { 0, 0 };
