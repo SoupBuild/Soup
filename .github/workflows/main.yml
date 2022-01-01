@@ -45,23 +45,23 @@ jobs:
     - name: Soup Install Cpp BuildExtension
       run: soup install ./Soup/Samples/Cpp/BuildExtension/Executable/
     - name: Soup Build Cpp BuildExtension
-      run: soup build ./Soup/Samples/Cpp/BuildExtension/Executable/ -flavor ${{matrix.config}}
+      run: soup build ./Soup/Samples/Cpp/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp ConsoleApplication
-      run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}}
+      run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp DynamicLibrary
-      run: soup build ./Soup/Samples/Cpp/DynamicLibrary/Application/ -flavor ${{matrix.config}}
+      run: soup build ./Soup/Samples/Cpp/DynamicLibrary/Application/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp ModuleInterface
-      run: soup build ./Soup/Samples/Cpp/ModuleInterface/ -flavor ${{matrix.config}}
+      run: soup build ./Soup/Samples/Cpp/ModuleInterface/ -flavor ${{matrix.config}} -v:d
     - name: Soup Install Cpp ParseJsonFile
       run: soup install ./Soup/Samples/Cpp/ParseJsonFile/
     - name: Soup Build Cpp ParseJsonFile
-      run: soup build ./Soup/Samples/Cpp/ParseJsonFile/ -flavor ${{matrix.config}}
+      run: soup build ./Soup/Samples/Cpp/ParseJsonFile/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp StaticLibrary
-      run: soup build ./Soup/Samples/Cpp/StaticLibrary/Application/ -flavor ${{matrix.config}}
+      run: soup build ./Soup/Samples/Cpp/StaticLibrary/Application/ -flavor ${{matrix.config}} -v:d
 
     - name: Soup Install CSharp BuildExtension
       run: soup install ./Soup/Samples/CSharp/BuildExtension/Executable/
     - name: Soup Build CSharp BuildExtension
-      run: soup build ./Soup/Samples/CSharp/BuildExtension/Executable/ -flavor ${{matrix.config}}
+      run: soup build ./Soup/Samples/CSharp/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build CSharp ConsoleApplication
-      run: soup build ./Soup/Samples/CSharp/ConsoleApplication/ -flavor ${{matrix.config}}
+      run: soup build ./Soup/Samples/CSharp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
