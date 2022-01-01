@@ -110,15 +110,15 @@ namespace Soup.Build.Runtime
 		public bool TryFindFileId(Path file, out FileId fileId)
 		{
 			if (_fileLookup.TryGetValue(file.ToString(), out var value))
-            {
+			{
 				fileId = value;
 				return true;
 			}
 			else
-            {
+			{
 				fileId = new FileId(0);
 				return false;
-            }
+			}
 		}
 
 		/// <summary>
@@ -127,6 +127,20 @@ namespace Soup.Build.Runtime
 		public Path GetFilePath(FileId fileId)
 		{
 			return _files[fileId];
+		}
+
+		/// <summary>
+		/// Find a file paths
+		/// </summary>
+		public List<Path> GetFilePaths(IEnumerable<FileId> fileIds)
+		{
+			var result = new List<Path>();
+			foreach (var fileId in fileIds)
+			{
+				result.Add(GetFilePath(fileId));
+			}
+
+			return result;
 		}
 
 		// The maximum id that has been used for files

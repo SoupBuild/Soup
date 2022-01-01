@@ -106,7 +106,7 @@ namespace SoupView.ViewModel
                     return;
                 }
 
-                Graph = BuildGraph(evaluateGraph);
+                Graph = BuildGraph(fileSystemState, evaluateGraph);
             }
             else
             {
@@ -120,18 +120,19 @@ namespace SoupView.ViewModel
             IsErrorBarOpen = true;
         }
 
-        private IList<IList<GraphNode>> BuildGraph(OperationGraph evaluateGraph)
+        private IList<IList<GraphNode>> BuildGraph(FileSystemState fileSystemState, OperationGraph evaluateGraph)
         {
             this.operationDetailsLookup.Clear();
             var activeIds = evaluateGraph.GetRootOperationIds();
             var activeGraph = new List<IList<GraphNode>>();
             var knownIds = new HashSet<OperationId>();
-            BuildGraphColumn(evaluateGraph, activeGraph, activeIds, knownIds);
+            BuildGraphColumn(fileSystemState, evaluateGraph, activeGraph, activeIds, knownIds);
 
             return activeGraph;
         }
 
         private void BuildGraphColumn(
+            FileSystemState fileSystemState,
             OperationGraph evaluateGraph,
             IList<IList<GraphNode>> activeGraph,
             IList<OperationId> activeIds,
@@ -151,7 +152,7 @@ namespace SoupView.ViewModel
             // Find the depest level first
             if (nextIds.Count > 0)
             {
-                BuildGraphColumn(evaluateGraph, activeGraph, nextIds, knownIds);
+                BuildGraphColumn(fileSystemState, evaluateGraph, activeGraph, nextIds, knownIds);
             }
 
             // Build up all the nodes at this level that have not already been added
@@ -170,7 +171,7 @@ namespace SoupView.ViewModel
                     knownIds.Add(operationId);
                     column.Add(node);
 
-                    this.operationDetailsLookup.Add(operationId.value, new OperationDetailsViewModel(operation));
+                    this.operationDetailsLookup.Add(operationId.value, new OperationDetailsViewModel(fileSystemState, operation));
                 }
             }
 

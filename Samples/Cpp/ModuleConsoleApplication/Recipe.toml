@@ -1,8 +1,0 @@
-Name = "ModuleConsoleApplication"
-Language = "C++"
-Type = "Executable"
-Version = "1.2.5"
-Interface = "Module.cpp"
-Source = [
-	"Main.cpp"
-]

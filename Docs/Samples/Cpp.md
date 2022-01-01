@@ -1,17 +1,20 @@
 # Samples
 The set of C++ samples.
 
-## [Simple Console Application](Cpp/Simple-Console-Application.md)
+## [Build Extension](Cpp/Build-Extension.md)
+This is a console application that uses a custom build extension to set a preprocessor definition to show how a user can easily author their own custom build logic that can be shared with others.
+
+## [Console Application](Cpp/Console-Application.md)
 This is the smallest amount of code to get a console application building using Soup.
 
-## [Module Console Application](Cpp/Module-Console-Application.md)
-This is a console application that uses a single module interface file used inside the same projects.
+## [Dynamic Library](Cpp/Dynamic-Library.md)
+This is a console application that has a single dynamic library dependency.
 
-## [Static Library Reference](Cpp/Static-Library-Reference.md)
-This is a console application that has a single static library dependency.
+## [Module Interface](Cpp/Module-Interface.md)
+This is a console application that uses a single module interface file used inside the same projects.
 
 ## [Parse Json File](Cpp/Parse-Json-File.md)
 This is a console application that reads in a json file using the an external module and prints a single known property value.
 
-## [Simple Build Extension](Cpp/Simple-Build-Extension.md)
-This is a console application that uses a custom build extension to set a preprocessor definition to show how a user can easily author their own custom build logic that can be shared with others.
+## [Static Library](Cpp/Static-Library.md)
+This is a console application that has a single static library dependency.
