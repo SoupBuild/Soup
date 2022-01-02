@@ -1,5 +1,5 @@
 #pragma once
-#include "Contracts/ValueTableWriterTests.h"
+#include "ValueTable/ValueTableWriterTests.h"
 
 TestState RunValueTableWriterTests() 
 {

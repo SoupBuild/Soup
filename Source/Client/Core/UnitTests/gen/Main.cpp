@@ -24,9 +24,9 @@ using namespace Soup::Test;
 #include "BuildEvaluateEngineTests.gen.h"
 #include "FileSystemStateTests.gen.h"
 
-#include "Contracts/ValueTableManagerTests.gen.h"
-#include "Contracts/ValueTableReaderTests.gen.h"
-#include "Contracts/ValueTableWriterTests.gen.h"
+#include "ValueTable/ValueTableManagerTests.gen.h"
+#include "ValueTable/ValueTableReaderTests.gen.h"
+#include "ValueTable/ValueTableWriterTests.gen.h"
 
 #include "LocalUserConfig/LocalUserConfigExtensionsTests.gen.h"
 #include "LocalUserConfig/LocalUserConfigTests.gen.h"
