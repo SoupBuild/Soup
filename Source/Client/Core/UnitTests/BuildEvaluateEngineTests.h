@@ -14,9 +14,15 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto operationGraph = OperationGraph();
+			auto temporaryDirectory = Path();
+			auto globalAllowedReadAccess = std::vector<Path>();
+			auto globalAllowedWriteAccess = std::vector<Path>();
 			auto uut = BuildEvaluateEngine(
 				fileSystemState,
-				operationGraph);
+				operationGraph,
+				temporaryDirectory,
+				globalAllowedReadAccess,
+				globalAllowedWriteAccess);
 		}
 
 		// [[Fact]]
@@ -37,7 +43,15 @@ namespace Soup::Build::Runtime::UnitTests
 
 			// Setup the input build state
 			auto operationGraph = OperationGraph();
-			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
+			auto temporaryDirectory = Path();
+			auto globalAllowedReadAccess = std::vector<Path>();
+			auto globalAllowedWriteAccess = std::vector<Path>();
+			auto uut = BuildEvaluateEngine(
+				fileSystemState,
+				operationGraph,
+				temporaryDirectory,
+				globalAllowedReadAccess,
+				globalAllowedWriteAccess);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -99,12 +113,22 @@ namespace Soup::Build::Runtime::UnitTests
 						{ 1, },
 						{ 2, },
 						{ },
+						{ },
+						{ },
 						1,
 						false,
 						{ },
 						{ }),
 				});
-			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
+			auto temporaryDirectory = Path();
+			auto globalAllowedReadAccess = std::vector<Path>();
+			auto globalAllowedWriteAccess = std::vector<Path>();
+			auto uut = BuildEvaluateEngine(
+				fileSystemState,
+				operationGraph,
+				temporaryDirectory,
+				globalAllowedReadAccess,
+				globalAllowedWriteAccess);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -117,6 +141,8 @@ namespace Soup::Build::Runtime::UnitTests
 					"INFO: Operation has no successful previous invocation",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
+					"DIAG: Allowed Read Access:",
+					"DIAG: Allowed Write Access:",
 					"DIAG: Build evaluation end",
 				}),
 				testListener->GetMessages(),
@@ -131,7 +157,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -180,12 +206,22 @@ namespace Soup::Build::Runtime::UnitTests
 						{ 1, },
 						{ 2, },
 						{ },
+						{ },
+						{ },
 						1,
 						true,
 						{ 1, },
 						{ 2, }),
 				});
-			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
+			auto temporaryDirectory = Path();
+			auto globalAllowedReadAccess = std::vector<Path>();
+			auto globalAllowedWriteAccess = std::vector<Path>();
+			auto uut = BuildEvaluateEngine(
+				fileSystemState,
+				operationGraph,
+				temporaryDirectory,
+				globalAllowedReadAccess,
+				globalAllowedWriteAccess);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -198,6 +234,8 @@ namespace Soup::Build::Runtime::UnitTests
 					"INFO: Output target does not exist: C:/TestWorkingDirectory/OutputFile.out",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
+					"DIAG: Allowed Read Access:",
+					"DIAG: Allowed Write Access:",
 					"DIAG: Build evaluation end",
 				}),
 				testListener->GetMessages(),
@@ -214,7 +252,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -270,13 +308,22 @@ namespace Soup::Build::Runtime::UnitTests
 						{ 1, },
 						{ 2, },
 						{ },
+						{ },
+						{ },
 						1,
 						true,
 						{ 1, },
 						{ 2, }),
 				});
-
-			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
+			auto temporaryDirectory = Path();
+			auto globalAllowedReadAccess = std::vector<Path>();
+			auto globalAllowedWriteAccess = std::vector<Path>();
+			auto uut = BuildEvaluateEngine(
+				fileSystemState,
+				operationGraph,
+				temporaryDirectory,
+				globalAllowedReadAccess,
+				globalAllowedWriteAccess);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -289,6 +336,8 @@ namespace Soup::Build::Runtime::UnitTests
 					"INFO: Output target does not exist: C:/TestWorkingDirectory/OutputFile.out",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
+					"DIAG: Allowed Read Access:",
+					"DIAG: Allowed Write Access:",
 					"DIAG: Build evaluation end",
 				}),
 				testListener->GetMessages(),
@@ -303,7 +352,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -360,12 +409,22 @@ namespace Soup::Build::Runtime::UnitTests
 						{ 1, },
 						{ 2, },
 						{ },
+						{ },
+						{ },
 						1,
 						true,
 						{ 1, },
 						{ 2, }),
 				});
-			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
+			auto temporaryDirectory = Path();
+			auto globalAllowedReadAccess = std::vector<Path>();
+			auto globalAllowedWriteAccess = std::vector<Path>();
+			auto uut = BuildEvaluateEngine(
+				fileSystemState,
+				operationGraph,
+				temporaryDirectory,
+				globalAllowedReadAccess,
+				globalAllowedWriteAccess);
 
 			// Evaluate the build
 			uut.Evaluate();
@@ -378,6 +437,8 @@ namespace Soup::Build::Runtime::UnitTests
 					"INFO: Input altered after target [C:/TestWorkingDirectory/InputFile.in] -> [C:/TestWorkingDirectory/OutputFile.out]",
 					"HIGH: TestCommand: 1",
 					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
+					"DIAG: Allowed Read Access:",
+					"DIAG: Allowed Write Access:",
 					"DIAG: Build evaluation end",
 				}),
 				testListener->GetMessages(),
@@ -392,7 +453,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments",
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -449,12 +510,22 @@ namespace Soup::Build::Runtime::UnitTests
 						{ 1, },
 						{ 2, },
 						{ },
+						{ },
+						{ },
 						1,
 						true,
 						{ 1, },
 						{ 2, }),
 				});
-			auto uut = BuildEvaluateEngine(fileSystemState, operationGraph);
+			auto temporaryDirectory = Path();
+			auto globalAllowedReadAccess = std::vector<Path>();
+			auto globalAllowedWriteAccess = std::vector<Path>();
+			auto uut = BuildEvaluateEngine(
+				fileSystemState,
+				operationGraph,
+				temporaryDirectory,
+				globalAllowedReadAccess,
+				globalAllowedWriteAccess);
 
 			// Evaluate the build
 			uut.Evaluate();

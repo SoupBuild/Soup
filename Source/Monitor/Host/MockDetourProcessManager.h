@@ -60,8 +60,8 @@ namespace Monitor
 			message << "CreateDetourProcess: " << id << " [" << workingDirectory.ToString() << "] " << executable.ToString() << " " << arguments;
 			message << " Environment [" << environmentVariables.size() << "]";
 			message << " " << enableAccessChecks;
-			message << " AlowedRead [" << allowedReadAccess.size() << "]";
-			message << " AlowedWrite [" << allowedWriteAccess.size() << "]";
+			message << " AllowedRead [" << allowedReadAccess.size() << "]";
+			message << " AllowedWrite [" << allowedWriteAccess.size() << "]";
 
 			_requests.push_back(message.str());
 

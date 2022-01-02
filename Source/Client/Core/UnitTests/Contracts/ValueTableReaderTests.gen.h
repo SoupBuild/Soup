@@ -12,7 +12,6 @@ TestState RunValueTableReaderTests()
 	state += Soup::Test::RunTest(className, "Deserialize_InvalidValueTypeThrows", [&testClass]() { testClass->Deserialize_InvalidValueTypeThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_ExtraContentThrows", [&testClass]() { testClass->Deserialize_ExtraContentThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_Empty", [&testClass]() { testClass->Deserialize_Empty(); });
-	state += Soup::Test::RunTest(className, "Deserialize_SingleEmpty", [&testClass]() { testClass->Deserialize_SingleEmpty(); });
 	state += Soup::Test::RunTest(className, "Deserialize_SingleTable", [&testClass]() { testClass->Deserialize_SingleTable(); });
 	state += Soup::Test::RunTest(className, "Deserialize_SingleList", [&testClass]() { testClass->Deserialize_SingleList(); });
 	state += Soup::Test::RunTest(className, "Deserialize_SingleString", [&testClass]() { testClass->Deserialize_SingleString(); });

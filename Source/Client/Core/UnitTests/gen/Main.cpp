@@ -7,11 +7,13 @@
 #include <queue>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 import Opal;
 import Soup.Core;
 import json11;
+import Monitor.Host;
 import Soup.Test.Assert;
 
 using namespace Opal;
@@ -20,7 +22,6 @@ using namespace Soup::Test;
 
 #include "BuildHistoryCheckerTests.gen.h"
 #include "BuildEvaluateEngineTests.gen.h"
-#include "BuildGenerateEngineTests.gen.h"
 #include "FileSystemStateTests.gen.h"
 
 #include "Contracts/ValueTableManagerTests.gen.h"
@@ -56,7 +57,6 @@ int main()
 
 	state += RunBuildHistoryCheckerTests();
 	state += RunBuildEvaluateEngineTests();
-	state += RunBuildGenerateEngineTests();
 	state += RunFileSystemStateTests();
 
 	state += RunLocalUserConfigExtensionsTests();
@@ -74,7 +74,7 @@ int main()
 	state += RunPackageReferenceTests();
 	state += RunRecipeExtensionsTests();
 	state += RunRecipeTests();
-	state += RuneRecipeTomlTests();
+	state += RunRecipeTomlTests();
 
 	std::cout << state.PassCount << " PASSED." << std::endl;
 	std::cout << state.FailCount << " FAILED." << std::endl;

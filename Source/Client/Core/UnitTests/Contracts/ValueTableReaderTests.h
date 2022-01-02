@@ -44,7 +44,7 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '2',
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
@@ -60,7 +60,7 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
 				0x00, 0x00, 0x00, 0x00,
@@ -78,7 +78,7 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 			});
@@ -95,7 +95,7 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x00, 0x00, 0x00, 0x00,
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
@@ -109,40 +109,14 @@ namespace Soup::Build::Runtime::UnitTests
 		}
 
 		// [[Fact]]
-		void Deserialize_SingleEmpty()
-		{
-			auto binaryFileContent = std::vector<char>(
-			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
-				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
-				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
-				0x01, 0x00, 0x00, 0x00,
-			});
-			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
-
-			auto actual = ValueTableReader::Deserialize(content);
-
-			Assert::AreEqual(
-				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(),
-						},
-					})),
-				actual,
-				"Verify value table matches expected.");
-		}
-
-		// [[Fact]]
 		void Deserialize_SingleTable()
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
-				0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
@@ -165,10 +139,10 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
-				0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
@@ -191,10 +165,10 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
-				0x04, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 'V', 'a', 'l', 'u', 'e',
+				0x03, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 'V', 'a', 'l', 'u', 'e',
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
@@ -217,10 +191,10 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<unsigned char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
-				0x05, 0x00, 0x00, 0x00, 0x85, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+				0x04, 0x00, 0x00, 0x00, 0x85, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 			});
 			auto content = std::stringstream(
 				std::string(reinterpret_cast<char*>(binaryFileContent.data()), binaryFileContent.size()));
@@ -244,10 +218,10 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<unsigned char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
-				0x06, 0x00, 0x00, 0x00, 0xAE, 0x47, 0xE1, 0x7A, 0x14, 0xAE, 0xF3, 0x3F,
+				0x05, 0x00, 0x00, 0x00, 0xAE, 0x47, 0xE1, 0x7A, 0x14, 0xAE, 0xF3, 0x3F,
 			});
 			auto content = std::stringstream(
 				std::string(reinterpret_cast<char*>(binaryFileContent.data()), binaryFileContent.size()));
@@ -271,10 +245,10 @@ namespace Soup::Build::Runtime::UnitTests
 		{
 			auto binaryFileContent = std::vector<unsigned char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
-				0x07, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+				0x06, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
 			});
 			auto content = std::stringstream(
 				std::string(reinterpret_cast<char*>(binaryFileContent.data()), binaryFileContent.size()));
