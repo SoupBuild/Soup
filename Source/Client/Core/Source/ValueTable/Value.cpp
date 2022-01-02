@@ -11,7 +11,7 @@ module;
 #include <string>
 #include <vector>
 
-module Soup.Build.Runtime;
+module Soup.Core;
 
 using namespace Opal;
 

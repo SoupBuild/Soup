@@ -19,7 +19,7 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x03, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x00, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
@@ -44,13 +44,15 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({}),
-						std::vector<FileId>({}),
-						std::vector<OperationId>({}),
+						{ },
+						{ },
+						{ },
+						{ },
+						{ },
 						1,
 						false,
-						std::vector<FileId>({}),
-						std::vector<FileId>({})),
+						{ },
+						{ }),
 				}));
 			auto content = std::stringstream();
 
@@ -58,7 +60,7 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x03, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -68,6 +70,8 @@ namespace Soup::Build::Runtime::UnitTests
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0D, 0x00, 0x00, 0x00, '.', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
@@ -96,13 +100,15 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({ 1, }),
-						std::vector<FileId>({ 2, }),
-						std::vector<OperationId>({}),
+						{ 1, },
+						{ 2, },
+						{ },
+						{ },
+						{ },
 						1,
 						true,
-						std::vector<FileId>({ 1, 3, }),
-						std::vector<FileId>({ 2, 4, })),
+						{ 1, 3, },
+						{ 2, 4, }),
 				}));
 			auto content = std::stringstream();
 
@@ -110,7 +116,7 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x03, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -122,6 +128,8 @@ namespace Soup::Build::Runtime::UnitTests
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',
 				0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
@@ -148,13 +156,15 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff1.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({ 1, }),
-						std::vector<FileId>({ 2, }),
-						std::vector<OperationId>({}),
+						{ 1, },
+						{ 2, },
+						{ },
+						{ },
+						{ },
 						2,
 						true,
-						std::vector<FileId>({ 1, 3, }),
-						std::vector<FileId>({ 2, 4, })),
+						{ 1, 3, },
+						{ 2, 4, }),
 					OperationInfo(
 						6,
 						"TestOperation2",
@@ -162,13 +172,15 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff2.exe"),
 							"arg3 arg4"),
-						std::vector<FileId>({ 5, }),
-						std::vector<FileId>({ 6, }),
-						std::vector<OperationId>({ 5, }),
+						{ 5, },
+						{ 6, },
+						{ 5, },
+						{ },
+						{ },
 						1,
 						true,
-						std::vector<FileId>({ 5, 7, }),
-						std::vector<FileId>({ 6, 8, })),
+						{ 5, 7, },
+						{ 6, 8, }),
 				}));
 			auto content = std::stringstream();
 
@@ -176,7 +188,7 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x03, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x06, 0x00, 0x00, 0x00,
@@ -188,6 +200,8 @@ namespace Soup::Build::Runtime::UnitTests
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',
 				0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x02, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
@@ -201,11 +215,14 @@ namespace Soup::Build::Runtime::UnitTests
 				0x01, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
 				0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00,
 				0x02, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
 			});
+
 			Assert::AreEqual(
 				std::string(binaryFileContent.data(), binaryFileContent.size()),
 				content.str(),

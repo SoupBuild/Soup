@@ -113,7 +113,8 @@ namespace Soup::Build
 			_fileSystemState(std::make_shared<Runtime::FileSystemState>())
 		{
 			_hostBuildGlobalParameters = Runtime::ValueTable();
-			
+
+			// TODO: Default parameters need to come from the build extension
 			auto flavor = std::string("release");
 			auto system = std::string("win32");
 			auto architecture = std::string("x64");
@@ -125,6 +126,7 @@ namespace Soup::Build
 			_hostBuildGlobalParameters.SetValue("System", Runtime::Value(std::string(system)));
 
 			// Allow reading from system
+			// TODO: Windows specific
 			_systemReadAccess.push_back(
 				Path("C:/Windows/"));
 

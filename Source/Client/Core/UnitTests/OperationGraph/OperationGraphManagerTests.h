@@ -96,7 +96,7 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x03, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -106,6 +106,8 @@ namespace Soup::Build::Runtime::UnitTests
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0D, 0x00, 0x00, 0x00, '.', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
@@ -143,13 +145,15 @@ namespace Soup::Build::Runtime::UnitTests
 								Path("C:/Root/"),
 								Path("DoStuff.exe"),
 								"arg1 arg2"),
-							std::vector<FileId>({}),
-							std::vector<FileId>({}),
-							std::vector<OperationId>({}),
+							{ },
+							{ },
+							{ },
+							{ },
+							{ },
 							1,
 							false,
-							std::vector<FileId>({}),
-							std::vector<FileId>({})),
+							{ },
+							{ }),
 					}
 				}),
 				actual.GetOperations(),
@@ -197,13 +201,15 @@ namespace Soup::Build::Runtime::UnitTests
 							Path("C:/Root/"),
 							Path("DoStuff.exe"),
 							"arg1 arg2"),
-						std::vector<FileId>({}),
-						std::vector<FileId>({}),
-						std::vector<OperationId>({}),
+						{ },
+						{ },
+						{ },
+						{ },
+						{ },
 						1,
 						false,
-						std::vector<FileId>({}),
-						std::vector<FileId>({})),
+						{ },
+						{ }),
 				}));
 			OperationGraphManager::SaveState(filePath, operationGraph, *fileSystemState);
 
@@ -228,7 +234,7 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify the file content
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'O', 'G', '\0', 0x02, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x03, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -238,6 +244,8 @@ namespace Soup::Build::Runtime::UnitTests
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
 				0x0D, 0x00, 0x00, 0x00, '.', '/', 'D', 'o', 'S', 't', 'u', 'f', 'f', '.', 'e', 'x', 'e',
 				0x09, 0x00, 0x00, 0x00, 'a', 'r', 'g', '1', ' ', 'a', 'r', 'g', '2',
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,

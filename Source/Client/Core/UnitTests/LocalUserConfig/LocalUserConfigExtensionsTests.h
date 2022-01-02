@@ -37,8 +37,8 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load LocalUserConfig: ./TestFiles/NoFile/LocalUserConfig.toml",
-					"INFO: LocalUserConfig file does not exist.",
+					"DIAG: Load Local User Config: ./TestFiles/NoFile/LocalUserConfig.toml",
+					"WARN: Local User Config file does not exist.",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -76,9 +76,9 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load LocalUserConfig: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml",
-					"ERRO: Deserialize Threw: Parsing the LocalUserConfig Toml failed: [error] toml::parse_key_value_pair: missing key-value separator `=`\n --> ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml\n   | \n 1 | garbage\n   |        ^ should be `=`",
-					"INFO: Failed to parse LocalUserConfig.",
+					"DIAG: Load Local User Config: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml",
+					"ERRO: Deserialize Threw: Parsing the Recipe Toml failed: [error] toml::parse_key_value_pair: missing key-value separator `=`\n --> ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml\n   | \n 1 | garbage\n   |        ^ should be `=`",
+					"INFO: Failed to parse local user config.",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");
@@ -97,9 +97,7 @@ namespace Soup::Build::Runtime::UnitTests
 			fileSystem->CreateMockFile(
 				Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++"
-				)")));
+					)")));
 
 			auto directory = Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml");
 			LocalUserConfig actual;
@@ -107,9 +105,7 @@ namespace Soup::Build::Runtime::UnitTests
 
 			Assert::IsTrue(result, "Verify result is false.");
 
-			auto expected = LocalUserConfig(
-				"MyPackage",
-				"C++");
+			auto expected = LocalUserConfig();
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 
@@ -125,71 +121,10 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load LocalUserConfig: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml",
+					"DIAG: Load Local User Config: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");
-		}
-
-		// [[Fact]]
-		void SaveToFile_SimpleFile()
-		{
-			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
-
-			// Register the test file system
-			auto fileSystem = std::make_shared<MockFileSystem>();
-			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
-
-			auto directory = Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml");
-			auto LocalUserConfig = LocalUserConfig(
-				"MyPackage",
-				"C++");
-			LocalUserConfigExtensions::SaveToFile(directory, LocalUserConfig);
-
-			// Verify expected file system requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"OpenWrite: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml",
-				}),
-				fileSystem->GetRequests(),
-				"Verify file system requests match expected.");
-
-			// Verify expected logs
-			Assert::AreEqual(
-				std::vector<std::string>({
-				}), 
-				testListener->GetMessages(),
-				"Verify messages match expected.");
-
-			// Verify the contents of the build file
-			std::string expectedBuildFile = 
-R"(Name = "MyPackage"
-Language = "C++"
-)";
-			auto mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml"));
-			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");
-		}
-
-		// [[Fact]]
-		void GetPackageReferencePath_IsRooted()
-		{
-			auto reference = Path("Root/Sub/");
-			auto binaryDirectory = PackageReference(Path("C:/Other/Reference/"));
-			auto result = LocalUserConfigExtensions::GetPackageReferencePath(reference, binaryDirectory);
-
-			Assert::AreEqual(result, Path("C:/Other/Reference/"), "Verify the result matches expected.");
-		}
-
-		// [[Fact]]
-		void GetPackageReferencePath_NotRooted()
-		{
-			auto reference = Path("Root/Sub/");
-			auto binaryDirectory = PackageReference(Path("../Reference/"));
-			auto result = LocalUserConfigExtensions::GetPackageReferencePath(reference, binaryDirectory);
-
-			Assert::AreEqual(result, Path("Root/Reference/"), "Verify the result matches expected.");
 		}
 	};
 }

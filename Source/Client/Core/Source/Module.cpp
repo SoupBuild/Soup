@@ -1,11 +1,17 @@
 ﻿module;
 
+// TODO: Add a converter level to Opal?
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 #include <any>
 #include <array>
 #include <chrono>
+#include <codecvt>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <locale>
+#include <map>
 #include <regex>
 #include <optional>
 #include <set>
@@ -16,13 +22,44 @@
 #include <unordered_set>
 #include <vector>
 
+#include <Windows.h>
+
+#ifdef max
+#undef max
+#endif
+#ifdef CreateProcess
+#undef CreateProcess
+#endif
+
+#include <openssl/evp.h>
+
 export module Soup.Core;
 
-import Opal;
-import Soup.Build.Runtime;
+import json11;
 import toml11;
+import Monitor.Host;
+import Opal;
 
 using namespace Opal;
+
+#include "LocalUserConfig/LocalUserConfig.h"
+#include "LocalUserConfig/LocalUserConfigExtensions.h"
+
+#include "PathList/PathListManager.h"
+
+#include "ValueTable/ValuePrimitive.h"
+#include "ValueTable/ValueTableManager.h"
+
+#include "OperationGraph/OperationGraphManager.h"
+
+#include "Recipe/Recipe.h"
+#include "Recipe/RecipeBuildStateConverter.h"
+#include "Recipe/RecipeExtensions.h"
+#include "Recipe/RecipeToml.h"
+
+#include "BuildConstants.h"
+#include "BuildEvaluateEngine.h"
+#include "Sha3_256.h"
 
 #include "Utils/Helpers.h"
 #include "Utils/HandledException.h"
