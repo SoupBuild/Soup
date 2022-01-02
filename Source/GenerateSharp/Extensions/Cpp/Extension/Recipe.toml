@@ -6,7 +6,6 @@ Source = [
 	"Tasks/RecipeBuildTask.cs",
 	"Tasks/ResolveDependenciesTask.cs",
 	"Tasks/ResolveToolsTask.cs",
-	"Tasks/standardLibraryIncludeTask.cs",
 ]
 
 [Dependencies]
