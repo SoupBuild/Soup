@@ -94,10 +94,10 @@ namespace Soup::Build::Runtime::UnitTests
 
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
-				0x01, 0x00, 0x00, 0x00,
+				0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			});
 			fileSystem->CreateMockFile(
 				Path("TestFiles/SimpleValueTable/.soup/ValueTable.bin"),
@@ -115,7 +115,7 @@ namespace Soup::Build::Runtime::UnitTests
 					std::map<std::string, Value>({
 						{
 							"TestValue",
-							Value(),
+							Value(false),
 						},
 					})),
 				actual,
@@ -153,7 +153,7 @@ namespace Soup::Build::Runtime::UnitTests
 				std::map<std::string, Value>({
 					{
 						"TestValue",
-						Value(),
+						Value(false),
 					},
 				}));
 			ValueTableManager::SaveState(valueTableFile, valueTable);
@@ -179,10 +179,10 @@ namespace Soup::Build::Runtime::UnitTests
 			// Verify the file content
 			auto binaryFileContent = std::vector<char>(
 			{
-				'B', 'V', 'T', '\0', 0x01, 0x00, 0x00, 0x00,
+				'B', 'V', 'T', '\0', 0x02, 0x00, 0x00, 0x00,
 				'T', 'B', 'L', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x09, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'V', 'a', 'l', 'u', 'e',
-				0x01, 0x00, 0x00, 0x00,
+				0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			});
 			auto mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/ValueTable.bin"));
 			Assert::AreEqual(
