@@ -5,7 +5,7 @@
 #pragma once
 #include "FileSystemState.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	export class BuildHistoryChecker
 	{

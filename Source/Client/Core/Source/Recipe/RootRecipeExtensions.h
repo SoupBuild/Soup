@@ -4,8 +4,9 @@
 
 #pragma once
 #include "RootRecipe.h"
+#include "RecipeToml.h"
 
-namespace Soup::Build
+namespace Soup::Core
 {
 	/// <summary>
 	/// The root recipe extensions
@@ -35,7 +36,7 @@ namespace Soup::Build
 			try
 			{
 				result = RootRecipe(
-					Runtime::RecipeToml::Deserialize(
+					RecipeToml::Deserialize(
 						recipeFile,
 						file->GetInStream()));
 				return true;

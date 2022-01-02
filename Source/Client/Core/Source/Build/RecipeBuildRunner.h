@@ -3,10 +3,20 @@
 // </copyright>
 
 #pragma once
+#include "BuildEvaluateEngine.h"
+#include "BuildConstants.h"
 #include "RecipeBuildManager.h"
 #include "RecipeBuildArguments.h"
+#include "FileSystemState.h"
+#include "LocalUserConfig/LocalUserConfig.h"
+#include "OperationGraph/OperationGraphManager.h"
+#include "Utils/HandledException.h"
+#include "ValueTable/ValueTableManager.h"
+#include "Sha3_256.h"
+#include "Recipe/RecipeBuildStateConverter.h"
+#include "PathList/PathListManager.h"
 
-namespace Soup::Build
+namespace Soup::Core
 {
 	class RecipeBuildCacheState
 	{
@@ -44,8 +54,8 @@ namespace Soup::Build
 
 		static Path GetOutputDirectory(
 			const Path& packageRoot,
-			Runtime::Recipe& recipe,
-			const Runtime::ValueTable& globalParameters,
+			Recipe& recipe,
+			const ValueTable& globalParameters,
 			RecipeBuildManager& buildManager)
 		{
 			// Set the default output directory to be relative to the package
@@ -88,8 +98,8 @@ namespace Soup::Build
 
 			// Add unique folder name for parameters
 			auto parametersStream = std::stringstream();
-			Runtime::ValueTableWriter::Serialize(globalParameters, parametersStream);
-			auto hashParameters = Runtime::Sha3_256::HashBase64(parametersStream.str());
+			ValueTableWriter::Serialize(globalParameters, parametersStream);
+			auto hashParameters = Sha3_256::HashBase64(parametersStream.str());
 			auto uniqueParametersFolder = Path(hashParameters + "/");
 			rootOutput = rootOutput + uniqueParametersFolder;
 
@@ -100,7 +110,7 @@ namespace Soup::Build
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuildRunner"/> class.
 		/// </summary>
-		RecipeBuildRunner(RecipeBuildArguments arguments, Runtime::LocalUserConfig localUserConfig) :
+		RecipeBuildRunner(RecipeBuildArguments arguments, LocalUserConfig localUserConfig) :
 			_arguments(std::move(arguments)),
 			_sdkParameters(),
 			_buildManager(),
@@ -110,9 +120,9 @@ namespace Soup::Build
 			_hostBuildCache(),
 			_systemReadAccess(),
 			_sdkReadAccess(),
-			_fileSystemState(std::make_shared<Runtime::FileSystemState>())
+			_fileSystemState(std::make_shared<FileSystemState>())
 		{
-			_hostBuildGlobalParameters = Runtime::ValueTable();
+			_hostBuildGlobalParameters = ValueTable();
 
 			// TODO: Default parameters need to come from the build extension
 			auto flavor = std::string("release");
@@ -120,10 +130,10 @@ namespace Soup::Build
 			auto architecture = std::string("x64");
 			auto compiler = std::string("MSVC");
 
-			_hostBuildGlobalParameters.SetValue("Architecture", Runtime::Value(std::string(architecture)));
-			_hostBuildGlobalParameters.SetValue("Compiler", Runtime::Value(std::string(compiler)));
-			_hostBuildGlobalParameters.SetValue("Flavor", Runtime::Value(std::string(flavor)));
-			_hostBuildGlobalParameters.SetValue("System", Runtime::Value(std::string(system)));
+			_hostBuildGlobalParameters.SetValue("Architecture", Value(std::string(architecture)));
+			_hostBuildGlobalParameters.SetValue("Compiler", Value(std::string(compiler)));
+			_hostBuildGlobalParameters.SetValue("Flavor", Value(std::string(flavor)));
+			_hostBuildGlobalParameters.SetValue("System", Value(std::string(system)));
 
 			// Allow reading from system
 			// TODO: Windows specific
@@ -148,11 +158,11 @@ namespace Soup::Build
 						}
 					}
 
-					auto sdkParameters = Runtime::ValueTable();
-					sdkParameters.SetValue("Name", Runtime::Value(sdkName));
+					auto sdkParameters = ValueTable();
+					sdkParameters.SetValue("Name", Value(sdkName));
 					if (sdk.HasProperties())
 					{
-						sdkParameters.SetValue("Properties", Runtime::RecipeBuildStateConverter::ConvertToBuildState(sdk.GetProperties()));
+						sdkParameters.SetValue("Properties", RecipeBuildStateConverter::ConvertToBuildState(sdk.GetProperties()));
 					}
 
 					_sdkParameters.GetValues().push_back(std::move(sdkParameters));
@@ -173,8 +183,8 @@ namespace Soup::Build
 				bool isHostBuild = false;
 				Log::EnsureListener().SetShowEventId(true);
 
-				auto recipePath = workingDirectory + Runtime::BuildConstants::RecipeFileName();
-				Runtime::Recipe recipe = {};
+				auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
+				Recipe recipe = {};
 				if (!_buildManager.TryGetRecipe(recipePath, recipe))
 				{
 					Log::Error("The target Recipe does not exist: " + recipePath.ToString());
@@ -208,7 +218,7 @@ namespace Soup::Build
 		int BuildRecipeAndDependencies(
 			int projectId,
 			const Path& workingDirectory,
-			Runtime::Recipe& recipe,
+			Recipe& recipe,
 			bool isHostBuild,
 			const std::set<std::string>& parentSet)
 		{
@@ -239,8 +249,8 @@ namespace Soup::Build
 					{
 						// Load this package recipe
 						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
-						auto packageRecipePath = packagePath + Runtime::BuildConstants::RecipeFileName();
-						Runtime::Recipe dependencyRecipe = {};
+						auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
+						Recipe dependencyRecipe = {};
 						if (!_buildManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
 						{
 							if (dependency.IsLocal())
@@ -295,7 +305,7 @@ namespace Soup::Build
 		int CheckBuildRecipe(
 			int projectId,
 			const Path& workingDirectory,
-			Runtime::Recipe& recipe,
+			Recipe& recipe,
 			bool isHostBuild)
 		{
 			// TODO: RAII for active id
@@ -358,7 +368,7 @@ namespace Soup::Build
 		/// </summary>
 		void RunBuild(
 			const Path& packageRoot,
-			Runtime::Recipe& recipe,
+			Recipe& recipe,
 			bool isHostBuild)
 		{
 			if (isHostBuild)
@@ -418,31 +428,31 @@ namespace Soup::Build
 		/// Run an incremental generate phase
 		/// </summary>
 		void RunIncrementalGenerate(
-			Runtime::Recipe& recipe,
+			Recipe& recipe,
 			const Path& packageDirectory,
 			const Path& targetDirectory,
 			const Path& soupTargetDirectory,
-			const Runtime::ValueTable& globalParameters,
+			const ValueTable& globalParameters,
 			bool isHostBuild,
 			const std::set<Path>& directChildTargetDirectories,
 			const std::set<Path>& recursiveChildTargetDirectories)
 		{
 			// Clone the global parameters
-			auto parametersTable = Runtime::ValueTable(globalParameters.GetValues());
+			auto parametersTable = ValueTable(globalParameters.GetValues());
 
 			// Set the input parameters
-			parametersTable.SetValue("PackageDirectory", Runtime::Value(packageDirectory.ToString()));
-			parametersTable.SetValue("TargetDirectory", Runtime::Value(targetDirectory.ToString()));
-			parametersTable.SetValue("SoupTargetDirectory", Runtime::Value(soupTargetDirectory.ToString()));
+			parametersTable.SetValue("PackageDirectory", Value(packageDirectory.ToString()));
+			parametersTable.SetValue("TargetDirectory", Value(targetDirectory.ToString()));
+			parametersTable.SetValue("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
 			parametersTable.SetValue("Dependencies", BuildParametersDependenciesValueTable(recipe, packageDirectory, isHostBuild));
 			parametersTable.SetValue("SDKs", _sdkParameters);
 
-			auto parametersFile = soupTargetDirectory + Runtime::BuildConstants::GenerateParametersFileName();
+			auto parametersFile = soupTargetDirectory + BuildConstants::GenerateParametersFileName();
 			Log::Info("Check outdated parameters file: " + parametersFile.ToString());
 			if (_arguments.ForceRebuild || IsOutdated(parametersTable, parametersFile))
 			{
 				Log::Info("Save Parameters file");
-				Runtime::ValueTableManager::SaveState(parametersFile, parametersTable);
+				ValueTableManager::SaveState(parametersFile, parametersTable);
 			}
 
 			// Initialize the read access with the shared global set
@@ -468,37 +478,37 @@ namespace Soup::Build
 			// Only allow writing to the target directory
 			evaluateAllowedWriteAccess.push_back(targetDirectory);
 
-			auto readAccessFile = soupTargetDirectory + Runtime::BuildConstants::GenerateReadAccessFileName();
+			auto readAccessFile = soupTargetDirectory + BuildConstants::GenerateReadAccessFileName();
 			Log::Info("Check outdated read access file: " + readAccessFile.ToString());
 			if (_arguments.ForceRebuild || IsOutdated(evaluateAllowedReadAccess, readAccessFile))
 			{
 				Log::Info("Save Read Access file");
-				Runtime::PathListManager::Save(readAccessFile, evaluateAllowedReadAccess);
+				PathListManager::Save(readAccessFile, evaluateAllowedReadAccess);
 			}
 
-			auto writeAccessFile = soupTargetDirectory + Runtime::BuildConstants::GenerateWriteAccessFileName();
+			auto writeAccessFile = soupTargetDirectory + BuildConstants::GenerateWriteAccessFileName();
 			Log::Info("Check outdated write access file: " + writeAccessFile.ToString());
 			if (_arguments.ForceRebuild || IsOutdated(evaluateAllowedWriteAccess, writeAccessFile))
 			{
 				Log::Info("Save Write Access file");
-				Runtime::PathListManager::Save(writeAccessFile, evaluateAllowedWriteAccess);
+				PathListManager::Save(writeAccessFile, evaluateAllowedWriteAccess);
 			}
 
 			// Run the incremental generate
-			auto generateGraph = Runtime::OperationGraph();
+			auto generateGraph = OperationGraph();
 
 			// Add the single root operation to perform the generate
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
 			auto generateFolder = moduleFolder + Path("Generate/");
 			auto generateExecutable = generateFolder + Path("Soup.Build.Generate.exe");
-			Runtime::OperationId generateOperatioId = 1;
+			OperationId generateOperatioId = 1;
 			auto generateArguments = std::stringstream();
 			generateArguments << soupTargetDirectory.ToString();
-			auto generateOperation = Runtime::OperationInfo(
+			auto generateOperation = OperationInfo(
 				generateOperatioId,
 				"Generate Phase",
-				Runtime::CommandInfo(
+				CommandInfo(
 					packageDirectory,
 					generateExecutable,
 					generateArguments.str()),
@@ -544,7 +554,7 @@ namespace Soup::Build
 			auto temporaryDirectory = targetDirectory + GetTemporaryFolderName();
 
 			// Evaluate the Generate phase
-			auto evaluateGenerateEngine = Runtime::BuildEvaluateEngine(
+			auto evaluateGenerateEngine = BuildEvaluateEngine(
 				_fileSystemState,
 				generateGraph,
 				std::move(temporaryDirectory),
@@ -553,15 +563,15 @@ namespace Soup::Build
 			evaluateGenerateEngine.Evaluate();
 
 			// Save the operation graph for future incremental builds
-			Runtime::OperationGraphManager::SaveState(generateGraphFile, generateGraph, *_fileSystemState);
+			OperationGraphManager::SaveState(generateGraphFile, generateGraph, *_fileSystemState);
 		}
 
-		bool IsOutdated(const Runtime::ValueTable& parametersTable, const Path& parametersFile)
+		bool IsOutdated(const ValueTable& parametersTable, const Path& parametersFile)
 		{
 			// Load up the existing parameters file and check if our state matches the previous
 			// to ensure incremental builds function correctly
-			auto previousParametersState = Runtime::ValueTable();
-			if (Runtime::ValueTableManager::TryLoadState(parametersFile, previousParametersState))
+			auto previousParametersState = ValueTable();
+			if (ValueTableManager::TryLoadState(parametersFile, previousParametersState))
 			{
 				return previousParametersState != parametersTable;
 			}
@@ -576,7 +586,7 @@ namespace Soup::Build
 			// Load up the existing path list file and check if our state matches the previous
 			// to ensure incremental builds function correctly
 			auto previousFileList = std::vector<Path>();
-			if (Runtime::PathListManager::TryLoad(pathListFile, previousFileList))
+			if (PathListManager::TryLoad(pathListFile, previousFileList))
 			{
 				return previousFileList != fileList;
 			}
@@ -591,12 +601,12 @@ namespace Soup::Build
 			const Path& soupTargetDirectory)
 		{
 			// Load and run the previous stored state directly
-			auto generateEvaluateGraphFile = soupTargetDirectory + Runtime::BuildConstants::GenerateEvaluateOperationGraphFileName();
+			auto generateEvaluateGraphFile = soupTargetDirectory + BuildConstants::GenerateEvaluateOperationGraphFileName();
 			auto evaluateResultGraphFile = soupTargetDirectory + GetEvaluateResultGraphFileName();
 
 			Log::Info("Loading generate evaluate operation graph");
-			auto evaluateGraph = Runtime::OperationGraph();
-			if (!Runtime::OperationGraphManager::TryLoadState(
+			auto evaluateGraph = OperationGraph();
+			if (!OperationGraphManager::TryLoadState(
 				generateEvaluateGraphFile,
 				evaluateGraph,
 				*_fileSystemState))
@@ -643,7 +653,7 @@ namespace Soup::Build
 			try
 			{
 				// Evaluate the build
-				auto evaluateEngine = Runtime::BuildEvaluateEngine(
+				auto evaluateEngine = BuildEvaluateEngine(
 					_fileSystemState,
 					evaluateGraph,
 					std::move(temporaryDirectory),
@@ -651,10 +661,10 @@ namespace Soup::Build
 					std::move(allowedWriteAccess));
 				evaluateEngine.Evaluate();
 			}
-			catch(const Runtime::BuildFailedException&)
+			catch(const BuildFailedException&)
 			{
 				Log::Info("Saving partial build state");
-				Runtime::OperationGraphManager::SaveState(
+				OperationGraphManager::SaveState(
 					evaluateResultGraphFile,
 					evaluateGraph,
 					*_fileSystemState);
@@ -662,7 +672,7 @@ namespace Soup::Build
 			}
 
 			Log::Info("Saving updated build state");
-			Runtime::OperationGraphManager::SaveState(
+			OperationGraphManager::SaveState(
 				evaluateResultGraphFile,
 				evaluateGraph,
 				*_fileSystemState);
@@ -679,7 +689,7 @@ namespace Soup::Build
 
 		Path GetPackageReferencePath(
 			const Path& workingDirectory,
-			const Runtime::PackageReference& reference,
+			const PackageReference& reference,
 			const std::string& parentPackageLangauge) const
 		{
 			// If the path is relative then combine with the working directory
@@ -709,11 +719,11 @@ namespace Soup::Build
 		/// </summary>
 		void TryMergeExisting(
 			const Path& operationGraphFile,
-			Runtime::OperationGraph& operationGraph)
+			OperationGraph& operationGraph)
 		{
 			Log::Diag("Loading previous operation graph");
-			auto previousOperationGraph = Runtime::OperationGraph();
-			if (Runtime::OperationGraphManager::TryLoadState(
+			auto previousOperationGraph = OperationGraph();
+			if (OperationGraphManager::TryLoadState(
 				operationGraphFile,
 				previousOperationGraph,
 				*_fileSystemState))
@@ -722,7 +732,7 @@ namespace Soup::Build
 				for (auto& activeOperationEntry : operationGraph.GetOperations())
 				{
 					auto& activeOperationInfo = activeOperationEntry.second;
-					Runtime::OperationInfo* previousOperationInfo = nullptr;
+					OperationInfo* previousOperationInfo = nullptr;
 					if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
 					{
 						activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
@@ -737,8 +747,8 @@ namespace Soup::Build
 			}
 		}
 
-		Runtime::ValueTable BuildParametersDependenciesValueTable(
-			Runtime::Recipe& recipe,
+		ValueTable BuildParametersDependenciesValueTable(
+			Recipe& recipe,
 			const Path& workingDirectory,
 			bool isHostBuild)
 		{
@@ -748,7 +758,7 @@ namespace Soup::Build
 				"Build",
 			});
 
-			auto result = Runtime::ValueTable();
+			auto result = ValueTable();
 			for (auto dependecyType : knownDependecyTypes)
 			{
 				if (recipe.HasNamedDependencies(dependecyType))
@@ -762,7 +772,7 @@ namespace Soup::Build
 						implicitLanguage = "C#";
 					}
 
-					auto& dependencyTypeTable = result.SetValue(dependecyType, Runtime::Value(Runtime::ValueTable())).AsTable();
+					auto& dependencyTypeTable = result.SetValue(dependecyType, Value(ValueTable())).AsTable();
 					for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 					{
 						// Load this package recipe
@@ -778,18 +788,18 @@ namespace Soup::Build
 							auto& dependencyState = findBuildCache->second;
 							dependencyTypeTable.SetValue(
 								dependencyState.Name,
-								Runtime::Value(Runtime::ValueTable({
+								Value(ValueTable({
 									{
 										"Reference",
-										Runtime::Value(dependency.ToString())
+										Value(dependency.ToString())
 									},
 									{
 										"TargetDirectory",
-										Runtime::Value(dependencyState.TargetDirectory.ToString())
+										Value(dependencyState.TargetDirectory.ToString())
 									},
 									{
 										"SoupTargetDirectory",
-										Runtime::Value(dependencyState.SoupTargetDirectory.ToString())
+										Value(dependencyState.SoupTargetDirectory.ToString())
 									},
 								})));
 						}
@@ -806,7 +816,7 @@ namespace Soup::Build
 		}
 
 		std::pair<std::set<Path>, std::set<Path>> BuildChildDependenciesTargetDirectorySet(
-			Runtime::Recipe& recipe,
+			Recipe& recipe,
 			const Path& workingDirectory,
 			bool isHostBuild)
 		{
@@ -882,9 +892,9 @@ namespace Soup::Build
 
 	private:
 		RecipeBuildArguments _arguments;
-		Runtime::ValueTable _hostBuildGlobalParameters;
+		ValueTable _hostBuildGlobalParameters;
 
-		Runtime::ValueList _sdkParameters;
+		ValueList _sdkParameters;
 
 		RecipeBuildManager _buildManager;
 
@@ -900,6 +910,6 @@ namespace Soup::Build
 		std::map<Path, RecipeBuildCacheState> _buildCache;
 		std::map<Path, RecipeBuildCacheState> _hostBuildCache;
 
-		std::shared_ptr<Runtime::FileSystemState> _fileSystemState;
+		std::shared_ptr<FileSystemState> _fileSystemState;
 	};
 }

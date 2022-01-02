@@ -7,7 +7,7 @@
 #include "OperationGraphReader.h"
 #include "OperationGraphWriter.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The operation state manager

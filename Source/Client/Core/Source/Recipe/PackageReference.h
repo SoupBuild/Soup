@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// A package reference object which will consist of a name version pair that

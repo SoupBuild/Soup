@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	class SystemAccessTracker : public Monitor::IDetourCallback
 	{

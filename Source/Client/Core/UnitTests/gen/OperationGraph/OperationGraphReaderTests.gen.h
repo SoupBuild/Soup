@@ -4,7 +4,7 @@
 TestState RunOperationGraphReaderTests() 
 {
 	auto className = "OperationGraphReaderTests";
-	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::OperationGraphReaderTests>();
+	auto testClass = std::make_shared<Soup::Core::UnitTests::OperationGraphReaderTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Deserialize_InvalidFileHeaderThrows", [&testClass]() { testClass->Deserialize_InvalidFileHeaderThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_InvalidFileVersionThrows", [&testClass]() { testClass->Deserialize_InvalidFileVersionThrows(); });

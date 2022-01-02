@@ -5,7 +5,7 @@
 #pragma once
 #include "OperationGraph.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The operation graph state reader

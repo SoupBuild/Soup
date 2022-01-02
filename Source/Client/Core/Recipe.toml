@@ -7,8 +7,6 @@ Defines = [
 ]
 IncludePaths = [
 	"Source/",
-	"Source/Compiler/",
-	"Source/Utils/",
 	"../../../Dependencies/OpenSSL/include/",
 ]
 Interface = "Source/Module.cpp"

@@ -48,12 +48,12 @@ namespace Soup::Client
 
 			if (_options.PackageReference.empty())
 			{
-				PackageManager::InstallPackages(
+				Core::PackageManager::InstallPackages(
 					workingDirectory);
 			}
 			else
 			{
-				PackageManager::InstallPackageReference(
+				Core::PackageManager::InstallPackageReference(
 					workingDirectory,
 					_options.PackageReference);
 			}

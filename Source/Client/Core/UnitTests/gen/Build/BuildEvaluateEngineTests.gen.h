@@ -1,10 +1,10 @@
 #pragma once
-#include "BuildEvaluateEngineTests.h"
+#include "Build/BuildEvaluateEngineTests.h"
 
 TestState RunBuildEvaluateEngineTests() 
  {
 	auto className = "BuildEvaluateEngineTests";
-	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::BuildEvaluateEngineTests>();
+	auto testClass = std::make_shared<Soup::Core::UnitTests::BuildEvaluateEngineTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Initialize", [&testClass]() { testClass->Initialize(); });
 	state += Soup::Test::RunTest(className, "Execute_OneOperation_FirstRun", [&testClass]() { testClass->Execute_OneOperation_FirstRun(); });

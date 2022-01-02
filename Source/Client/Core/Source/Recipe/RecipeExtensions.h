@@ -6,7 +6,7 @@
 #include "Recipe.h"
 #include "RecipeToml.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The recipe extensions

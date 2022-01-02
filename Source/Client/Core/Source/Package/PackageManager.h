@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup
+namespace Soup::Core
 {
 	/// <summary>
 	/// The package manager

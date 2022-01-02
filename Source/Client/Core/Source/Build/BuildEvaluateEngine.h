@@ -9,7 +9,7 @@
 #include "OperationGraph/OperationGraph.h"
 #include "SystemAccessTracker.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The core build evaluation engine that knows how to perform a build from a provided Operation Graph.

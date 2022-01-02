@@ -6,7 +6,7 @@
 #include "LocalUserConfig.h"
 #include "Recipe/RecipeToml.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The local user config extensions
@@ -36,7 +36,7 @@ namespace Soup::Build::Runtime
 			try
 			{
 				result = LocalUserConfig(
-					Runtime::RecipeToml::Deserialize(
+					RecipeToml::Deserialize(
 						localUserConfigFile,
 						file->GetInStream()));
 				return true;

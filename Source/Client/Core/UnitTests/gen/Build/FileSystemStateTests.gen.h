@@ -1,10 +1,10 @@
 #pragma once
-#include "FileSystemStateTests.h"
+#include "Build/FileSystemStateTests.h"
 
 TestState RunFileSystemStateTests() 
  {
 	auto className = "FileSystemStateTests";
-	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::FileSystemStateTests>();
+	auto testClass = std::make_shared<Soup::Core::UnitTests::FileSystemStateTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Initialize_Default", [&testClass]() { testClass->Initialize_Default(); });
 	state += Soup::Test::RunTest(className, "Initialize_ListOperations_Single", [&testClass]() { testClass->Initialize_ListOperations_Single(); });

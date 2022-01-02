@@ -5,7 +5,7 @@
 #pragma once
 #include "ValueTable.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The value table state reader

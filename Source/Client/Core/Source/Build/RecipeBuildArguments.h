@@ -3,8 +3,9 @@
 // </copyright>
 
 #pragma once
+#include "ValueTable/ValueTable.h"
 
-namespace Soup
+namespace Soup::Core
 {
 	/// <summary>
 	/// The set of build arguments for building a recipe
@@ -14,7 +15,7 @@ namespace Soup
 		/// <summary>
 		/// Gets or sets set of global arguments
 		/// </summary>
-		Build::Runtime::ValueTable GlobalParameters;
+		ValueTable GlobalParameters;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip running the build generate phase
