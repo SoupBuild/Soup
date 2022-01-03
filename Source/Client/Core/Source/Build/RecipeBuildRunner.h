@@ -226,64 +226,55 @@ namespace Soup::Core
 			auto activeParentSet = parentSet;
 			activeParentSet.insert(std::string(recipe.GetName()));
 
-			auto knownDependecyTypes = std::array<std::string_view, 3>({
-				"Runtime",
-				"Test",
-				"Build",
-			});
-
-			for (auto dependecyType : knownDependecyTypes)
+			for (auto dependecyType : recipe.GetDependencyTypes())
 			{
-				if (recipe.HasNamedDependencies(dependecyType))
+				// Same language as parent is implied
+				auto implicitLanguage = recipe.GetLanguage();
+				if (dependecyType == "Build")
 				{
-					// Same language as parent is implied
-					auto implicitLanguage = recipe.GetLanguage();
-					if (dependecyType == "Build")
-					{
-						// Build dependencies do not inherit the parent language
-						// Instead, they default to C#
-						implicitLanguage = "C#";
-					}
+					// Build dependencies do not inherit the parent language
+					// Instead, they default to C#
+					implicitLanguage = "C#";
+				}
 
-					for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				{
+					// Load this package recipe
+					auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
+					auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
+					Recipe dependencyRecipe = {};
+					if (!_projectManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
 					{
-						// Load this package recipe
-						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
-						auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
-						Recipe dependencyRecipe = {};
-						if (!_projectManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
+						if (dependency.IsLocal())
 						{
-							if (dependency.IsLocal())
-							{
-								Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
-								Log::HighPriority("Make sure the path is correct and try again");
-							}
-							else
-							{
-								Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " [" + workingDirectory.ToString() + "]");
-								Log::HighPriority("Run `install` and try again");
-							}
-
-							// Nothing we can do, exit
-							throw HandledException(1234);
+							Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+							Log::HighPriority("Make sure the path is correct and try again");
+						}
+						else
+						{
+							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " [" + workingDirectory.ToString() + "]");
+							Log::HighPriority("Run `install` and try again");
 						}
 
-						// Ensure we do not have any circular dependencies
-						if (activeParentSet.contains(dependencyRecipe.GetName()))
-						{
-							Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
-							throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
-						}
-
-						// Build all recursive dependencies
-						bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
-						projectId = BuildRecipeAndDependencies(
-							projectId,
-							packagePath,
-							dependencyRecipe,
-							isDependencyHostBuild,
-							activeParentSet);
+						// Nothing we can do, exit
+						throw HandledException(1234);
 					}
+
+					// Ensure we do not have any circular dependencies
+					if (activeParentSet.contains(dependencyRecipe.GetName()))
+					{
+						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
+						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
+					}
+
+					// Build all recursive dependencies
+					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
+					projectId = BuildRecipeAndDependencies(
+						projectId,
+						packagePath,
+						dependencyRecipe,
+						isDependencyHostBuild,
+						activeParentSet);
 				}
 			}
 
@@ -752,62 +743,53 @@ namespace Soup::Core
 			const Path& workingDirectory,
 			bool isHostBuild)
 		{
-			auto knownDependecyTypes = std::array<std::string_view, 3>({
-				"Runtime",
-				"Test",
-				"Build",
-			});
-
 			auto result = ValueTable();
-			for (auto dependecyType : knownDependecyTypes)
+			for (auto dependecyType : recipe.GetDependencyTypes())
 			{
-				if (recipe.HasNamedDependencies(dependecyType))
+				// Same language as parent is implied
+				auto implicitLanguage = recipe.GetLanguage();
+				if (dependecyType == "Build")
 				{
-					// Same language as parent is implied
-					auto implicitLanguage = recipe.GetLanguage();
-					if (dependecyType == "Build")
+					// Build dependencies do not inherit the parent language
+					// Instead, they default to C#
+					implicitLanguage = "C#";
+				}
+
+				auto& dependencyTypeTable = result.SetValue(dependecyType, Value(ValueTable())).AsTable();
+				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				{
+					// Load this package recipe
+					auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
+
+					// Cache the build state for upstream dependencies
+					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
+					auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
+
+					auto findBuildCache = buildCache.find(packagePath);
+					if (findBuildCache != buildCache.end())
 					{
-						// Build dependencies do not inherit the parent language
-						// Instead, they default to C#
-						implicitLanguage = "C#";
+						auto& dependencyState = findBuildCache->second;
+						dependencyTypeTable.SetValue(
+							dependencyState.Name,
+							Value(ValueTable({
+								{
+									"Reference",
+									Value(dependency.ToString())
+								},
+								{
+									"TargetDirectory",
+									Value(dependencyState.TargetDirectory.ToString())
+								},
+								{
+									"SoupTargetDirectory",
+									Value(dependencyState.SoupTargetDirectory.ToString())
+								},
+							})));
 					}
-
-					auto& dependencyTypeTable = result.SetValue(dependecyType, Value(ValueTable())).AsTable();
-					for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+					else
 					{
-						// Load this package recipe
-						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
-
-						// Cache the build state for upstream dependencies
-						bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
-						auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
-
-						auto findBuildCache = buildCache.find(packagePath);
-						if (findBuildCache != buildCache.end())
-						{
-							auto& dependencyState = findBuildCache->second;
-							dependencyTypeTable.SetValue(
-								dependencyState.Name,
-								Value(ValueTable({
-									{
-										"Reference",
-										Value(dependency.ToString())
-									},
-									{
-										"TargetDirectory",
-										Value(dependencyState.TargetDirectory.ToString())
-									},
-									{
-										"SoupTargetDirectory",
-										Value(dependencyState.SoupTargetDirectory.ToString())
-									},
-								})));
-						}
-						else
-						{
-							Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
-							throw std::runtime_error("Dependency does not exist in build cache");
-						}
+						Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
+						throw std::runtime_error("Dependency does not exist in build cache");
 					}
 				}
 			}
@@ -820,50 +802,41 @@ namespace Soup::Core
 			const Path& workingDirectory,
 			bool isHostBuild)
 		{
-			auto knownDependecyTypes = std::array<std::string_view, 3>({
-				"Runtime",
-				"Test",
-				"Build",
-			});
-
 			auto directDirectories = std::set<Path>();
 			auto recursiveDirectories = std::set<Path>();
-			for (auto dependecyType : knownDependecyTypes)
+			for (auto dependecyType : recipe.GetDependencyTypes())
 			{
-				if (recipe.HasNamedDependencies(dependecyType))
+				// Same language as parent is implied
+				auto implicitLanguage = recipe.GetLanguage();
+				if (dependecyType == "Build")
 				{
-					// Same language as parent is implied
-					auto implicitLanguage = recipe.GetLanguage();
-					if (dependecyType == "Build")
+					// Build dependencies do not inherit the parent language
+					// Instead, they default to C#
+					implicitLanguage = "C#";
+				}
+
+				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				{
+					// Load this package recipe
+					auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
+
+					// Cache the build state for upstream dependencies
+					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
+					auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
+
+					auto findBuildCache = buildCache.find(packagePath);
+					if (findBuildCache != buildCache.end())
 					{
-						// Build dependencies do not inherit the parent language
-						// Instead, they default to C#
-						implicitLanguage = "C#";
+						// Combine the child dependency target and the recursive children
+						auto& dependencyState = findBuildCache->second;
+						directDirectories.insert(dependencyState.TargetDirectory);
+						recursiveDirectories.insert(dependencyState.TargetDirectory);
+						recursiveDirectories.insert(dependencyState.RecursiveChildTargetDirectorySet.begin(), dependencyState.RecursiveChildTargetDirectorySet.end());
 					}
-
-					for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+					else
 					{
-						// Load this package recipe
-						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
-
-						// Cache the build state for upstream dependencies
-						bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
-						auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
-
-						auto findBuildCache = buildCache.find(packagePath);
-						if (findBuildCache != buildCache.end())
-						{
-							// Combine the child dependency target and the recursive children
-							auto& dependencyState = findBuildCache->second;
-							directDirectories.insert(dependencyState.TargetDirectory);
-							recursiveDirectories.insert(dependencyState.TargetDirectory);
-							recursiveDirectories.insert(dependencyState.RecursiveChildTargetDirectorySet.begin(), dependencyState.RecursiveChildTargetDirectorySet.end());
-						}
-						else
-						{
-							Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
-							throw std::runtime_error("Dependency does not exist in build cache");
-						}
+						Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
+						throw std::runtime_error("Dependency does not exist in build cache");
 					}
 				}
 			}

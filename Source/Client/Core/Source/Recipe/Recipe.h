@@ -158,6 +158,20 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the list of named dependency packages
 		/// </summary>
+		std::vector<std::string> GetDependencyTypes()
+		{
+			auto result = std::vector<std::string>();
+			if (HasDependencies())
+			{
+				for (auto value : GetDependencies())
+				{
+					result.push_back(value.first);
+				}
+			}
+
+			return result;
+		}
+
 		bool HasNamedDependencies(std::string_view name)
 		{
 			return HasDependencies() && HasValue(GetDependencies(), name);
