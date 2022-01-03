@@ -1,4 +1,4 @@
-﻿// <copyright file="RecipeBuildManager.h" company="Soup">
+﻿// <copyright file="ProjectManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -10,15 +10,15 @@
 namespace Soup::Core
 {
 	/// <summary>
-	/// The recipe build manager that maintains the in memory representation of all incremental build state
+	/// The project manager that maintains the in memory representation of all build state
 	/// </summary>
-	export class RecipeBuildManager
+	export class ProjectManager
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RecipeBuildManager"/> class.
+		/// Initializes a new instance of the <see cref="ProjectManager"/> class.
 		/// </summary>
-		RecipeBuildManager() :
+		ProjectManager() :
 			_knownRecipes(),
 			_knownRootRecipes()
 		{

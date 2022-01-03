@@ -5,7 +5,7 @@
 #pragma once
 #include "BuildEvaluateEngine.h"
 #include "BuildConstants.h"
-#include "RecipeBuildManager.h"
+#include "ProjectManager.h"
 #include "RecipeBuildArguments.h"
 #include "FileSystemState.h"
 #include "LocalUserConfig/LocalUserConfig.h"
@@ -56,7 +56,7 @@ namespace Soup::Core
 			const Path& packageRoot,
 			Recipe& recipe,
 			const ValueTable& globalParameters,
-			RecipeBuildManager& buildManager)
+			ProjectManager& projectManager)
 		{
 			// Set the default output directory to be relative to the package
 			auto rootOutput = packageRoot + Path("out/");
@@ -67,7 +67,7 @@ namespace Soup::Core
 			{
 				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
 				RootRecipe rootRecipe;
-				if (!buildManager.TryGetRootRecipe(rootRecipeFile, rootRecipe))
+				if (!projectManager.TryGetRootRecipe(rootRecipeFile, rootRecipe))
 				{
 					// Nothing we can do, exit
 					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
@@ -113,7 +113,7 @@ namespace Soup::Core
 		RecipeBuildRunner(RecipeBuildArguments arguments, LocalUserConfig localUserConfig) :
 			_arguments(std::move(arguments)),
 			_sdkParameters(),
-			_buildManager(),
+			_projectManager(),
 			_buildSet(),
 			_hostBuildSet(),
 			_buildCache(),
@@ -185,7 +185,7 @@ namespace Soup::Core
 
 				auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
 				Recipe recipe = {};
-				if (!_buildManager.TryGetRecipe(recipePath, recipe))
+				if (!_projectManager.TryGetRecipe(recipePath, recipe))
 				{
 					Log::Error("The target Recipe does not exist: " + recipePath.ToString());
 					Log::HighPriority("Make sure the path is correct and try again");
@@ -251,7 +251,7 @@ namespace Soup::Core
 						auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
 						auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
 						Recipe dependencyRecipe = {};
-						if (!_buildManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
+						if (!_projectManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
 						{
 							if (dependency.IsLocal())
 							{
@@ -387,7 +387,7 @@ namespace Soup::Core
 				packageRoot,
 				recipe,
 				globalParameters,
-				_buildManager);
+				_projectManager);
 			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
 
 			// Build up the child target directory set
@@ -896,7 +896,7 @@ namespace Soup::Core
 
 		ValueList _sdkParameters;
 
-		RecipeBuildManager _buildManager;
+		ProjectManager _projectManager;
 
 		// Global read access
 		std::vector<Path> _systemReadAccess;
