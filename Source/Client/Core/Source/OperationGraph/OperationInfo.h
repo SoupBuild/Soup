@@ -5,7 +5,7 @@
 #pragma once
 #include "FileSystemState.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	export class CommandInfo
 	{
@@ -165,9 +165,9 @@ namespace Soup::Build::Runtime
 
 namespace std
 {
-	template<> struct hash<Soup::Build::Runtime::CommandInfo>
+	template<> struct hash<Soup::Core::CommandInfo>
 	{
-		std::size_t operator()(Soup::Build::Runtime::CommandInfo const& value) const noexcept
+		std::size_t operator()(Soup::Core::CommandInfo const& value) const noexcept
 		{
 			std::size_t hashWorkingDirectory = std::hash<std::string>{}(value.WorkingDirectory.ToString());
 			std::size_t hashExecutable = std::hash<std::string>{}(value.Executable.ToString());

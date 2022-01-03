@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup
+namespace Soup::Core
 {
 	/// <summary>
 	/// A special exception overload that indicates an early exit for the application that was handled

@@ -1,4 +1,4 @@
-// <copyright file="BuildPropertyBag.h" company="Soup">
+// <copyright file="ValueTable.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@
 #include "Value.h"
 #include "ValueList.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// Build State Extension interface

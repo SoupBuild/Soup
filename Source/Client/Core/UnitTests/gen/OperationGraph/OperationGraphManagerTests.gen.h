@@ -4,7 +4,7 @@
 TestState RunOperationGraphManagerTests() 
  {
 	auto className = "OperationGraphManagerTests";
-	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::OperationGraphManagerTests>();
+	auto testClass = std::make_shared<Soup::Core::UnitTests::OperationGraphManagerTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "TryLoadFromFile_MissingFile", [&testClass]() { testClass->TryLoadFromFile_MissingFile(); });
 	state += Soup::Test::RunTest(className, "TryLoadFromFile_GarbageFile", [&testClass]() { testClass->TryLoadFromFile_GarbageFile(); });

@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup
+namespace Soup::Core
 {
 	export std::string EscapeString(std::string_view value)
 	{

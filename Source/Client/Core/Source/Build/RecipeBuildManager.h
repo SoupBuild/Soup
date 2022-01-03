@@ -4,9 +4,10 @@
 
 #pragma once
 #include "RecipeBuildArguments.h"
-#include "RootRecipeExtensions.h"
+#include "Recipe/RecipeExtensions.h"
+#include "Recipe/RootRecipeExtensions.h"
 
-namespace Soup::Build
+namespace Soup::Core
 {
 	/// <summary>
 	/// The recipe build manager that maintains the in memory representation of all incremental build state
@@ -57,7 +58,7 @@ namespace Soup::Build
 
 		bool TryGetRecipe(
 			const Path& recipeFile,
-			Runtime::Recipe& result)
+			Recipe& result)
 		{
 			// Check if the recipe was already loaded
 			auto findRecipe = _knownRecipes.find(recipeFile.ToString());
@@ -68,8 +69,8 @@ namespace Soup::Build
 			}
 			else
 			{
-				Runtime::Recipe loadRecipe = {};
-				if (Runtime::RecipeExtensions::TryLoadRecipeFromFile(recipeFile, loadRecipe))
+				Recipe loadRecipe = {};
+				if (RecipeExtensions::TryLoadRecipeFromFile(recipeFile, loadRecipe))
 				{
 					// Save the recipe for later
 					auto insertRecipe = _knownRecipes.emplace(
@@ -88,7 +89,7 @@ namespace Soup::Build
 		}
 
 	private:
-		std::map<std::string, Runtime::Recipe> _knownRecipes;
+		std::map<std::string, Recipe> _knownRecipes;
 		std::map<std::string, RootRecipe> _knownRootRecipes;
 	};
 }

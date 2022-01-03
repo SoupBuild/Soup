@@ -5,7 +5,7 @@
 #pragma once
 #include "ValuePrimitive.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	export class ValueTable;
 	export class ValueList;

@@ -1,10 +1,10 @@
 #pragma once
-#include "BuildHistoryCheckerTests.h"
+#include "Build/BuildHistoryCheckerTests.h"
 
 TestState RunBuildHistoryCheckerTests() 
 {
 	auto className = "BuildHistoryCheckerTests";
-	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::BuildHistoryCheckerTests>();
+	auto testClass = std::make_shared<Soup::Core::UnitTests::BuildHistoryCheckerTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "IsOutdated_ZeroInput", [&testClass]() { testClass->IsOutdated_ZeroInput(); });
 	state += Soup::Test::RunTest(className, "IsOutdated_SingleInput_UnknownTarget", [&testClass]() { testClass->IsOutdated_SingleInput_UnknownTarget(); });

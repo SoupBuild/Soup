@@ -1,10 +1,10 @@
-// <copyright file="Helpers.h" company="Soup">
+// <copyright file="TestHelpers.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 
-namespace Soup::Build::Runtime::UnitTests
+namespace Soup::Core::UnitTests
 {
 	std::time_t CreateDateTime(int year, int month, int day, int hour, int minutes)
 	{

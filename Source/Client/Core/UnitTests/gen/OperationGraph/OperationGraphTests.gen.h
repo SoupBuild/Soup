@@ -4,7 +4,7 @@
 TestState RunOperationGraphTests() 
  {
 	auto className = "OperationGraphTests";
-	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::OperationGraphTests>();
+	auto testClass = std::make_shared<Soup::Core::UnitTests::OperationGraphTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Initialize_Default", [&testClass]() { testClass->Initialize_Default(); });
 	state += Soup::Test::RunTest(className, "Initialize_ListOperations_Single", [&testClass]() { testClass->Initialize_ListOperations_Single(); });

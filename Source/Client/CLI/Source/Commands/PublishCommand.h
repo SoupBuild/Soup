@@ -46,7 +46,7 @@ namespace Soup::Client
 				}
 			}
 
-			PackageManager::PublishPackage(workingDirectory);
+			Core::PackageManager::PublishPackage(workingDirectory);
 		}
 
 	private:

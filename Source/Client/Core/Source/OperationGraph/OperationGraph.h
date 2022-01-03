@@ -5,7 +5,7 @@
 #pragma once
 #include "OperationInfo.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The cached operation graph that is used to track input/output mappings for previous build

@@ -5,7 +5,7 @@
 #pragma once
 #include "Recipe/RecipeValue.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The SDK config container
@@ -119,7 +119,7 @@ namespace Soup::Build::Runtime
 			return _table.contains(key.data());
 		}
 
-		Runtime::RecipeValue& GetValue(std::string_view key)
+		RecipeValue& GetValue(std::string_view key)
 		{
 			auto findItr = _table.find(key.data());
 			if (findItr != _table.end())

@@ -47,7 +47,7 @@ namespace Soup::Client
 			}
 
 			// Setup the build arguments
-			auto arguments = RecipeBuildArguments();
+			auto arguments = Core::RecipeBuildArguments();
 			arguments.ForceRebuild = _options.Force;
 			arguments.SkipGenerate = _options.SkipGenerate;
 			arguments.SkipEvaluate = _options.SkipEvaluate;
@@ -66,15 +66,15 @@ namespace Soup::Client
 
 			auto compiler = std::string("MSVC");
 
-			arguments.GlobalParameters.SetValue("Architecture", Build::Runtime::Value(std::string(architecture)));
-			arguments.GlobalParameters.SetValue("Compiler", Build::Runtime::Value(std::string(compiler)));
-			arguments.GlobalParameters.SetValue("Flavor", Build::Runtime::Value(std::string(flavor)));
-			arguments.GlobalParameters.SetValue("System", Build::Runtime::Value(std::string(system)));
+			arguments.GlobalParameters.SetValue("Architecture", Core::Value(std::string(architecture)));
+			arguments.GlobalParameters.SetValue("Compiler", Core::Value(std::string(compiler)));
+			arguments.GlobalParameters.SetValue("Flavor", Core::Value(std::string(flavor)));
+			arguments.GlobalParameters.SetValue("System", Core::Value(std::string(system)));
 
 			auto localUserConfigPath = System::IFileSystem::Current().GetUserProfileDirectory() +
 				Path(".soup/LocalUserConfig.toml");
-			Build::Runtime::LocalUserConfig localUserConfig = {};
-			if (!Build::Runtime::LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
+			Core::LocalUserConfig localUserConfig = {};
+			if (!Core::LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
 			{
 				Log::Warning("Local User Config invalid.");
 			}
@@ -83,7 +83,7 @@ namespace Soup::Client
 			Log::Info("Begin Build:");
 			auto startTime = std::chrono::high_resolution_clock::now();
 
-			auto buildRunner = Build::RecipeBuildRunner(
+			auto buildRunner = Core::RecipeBuildRunner(
 				std::move(arguments),
 				std::move(localUserConfig));
 			buildRunner.Execute(workingDirectory);

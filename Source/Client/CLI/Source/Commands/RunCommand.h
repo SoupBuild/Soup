@@ -47,18 +47,18 @@ namespace Soup::Client
 			}
 
 			// Load the recipe
-			auto buildManager = Build::RecipeBuildManager();
+			auto buildManager = Core::RecipeBuildManager();
 			auto recipePath =
 				workingDirectory +
-				Build::Runtime::BuildConstants::RecipeFileName();
-			Build::Runtime::Recipe recipe = {};
+				Core::BuildConstants::RecipeFileName();
+			Core::Recipe recipe = {};
 			if (!buildManager.TryGetRecipe(recipePath, recipe))
 			{
 				Log::Error("The Recipe does not exist: " + recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
 
 				// Nothing we can do, exit
-				throw HandledException(1234);
+				throw Core::HandledException(1234);
 			}
 
 			// Setup the build parameters
@@ -76,24 +76,24 @@ namespace Soup::Client
 
 			auto compiler = std::string("MSVC");
 
-			auto globalParameters = Build::Runtime::ValueTable();
-			globalParameters.SetValue("Architecture", Build::Runtime::Value(std::string(architecture)));
-			globalParameters.SetValue("Compiler", Build::Runtime::Value(std::string(compiler)));
-			globalParameters.SetValue("Flavor", Build::Runtime::Value(std::string(flavor)));
-			globalParameters.SetValue("System", Build::Runtime::Value(std::string(system)));
+			auto globalParameters = Core::ValueTable();
+			globalParameters.SetValue("Architecture", Core::Value(std::string(architecture)));
+			globalParameters.SetValue("Compiler", Core::Value(std::string(compiler)));
+			globalParameters.SetValue("Flavor", Core::Value(std::string(flavor)));
+			globalParameters.SetValue("System", Core::Value(std::string(system)));
 
 			// Load the value table to get the exe path
-			auto targetDirectory = Build::RecipeBuildRunner::GetOutputDirectory(
+			auto targetDirectory = Core::RecipeBuildRunner::GetOutputDirectory(
 				workingDirectory,
 				recipe,
 				globalParameters,
 				buildManager);
-			auto soupTargetDirectory = targetDirectory + Build::RecipeBuildRunner::GetSoupTargetDirectory();
-			auto sharedStateFile = soupTargetDirectory + Build::Runtime::BuildConstants::GenerateSharedStateFileName();
+			auto soupTargetDirectory = targetDirectory + Core::RecipeBuildRunner::GetSoupTargetDirectory();
+			auto sharedStateFile = soupTargetDirectory + Core::BuildConstants::GenerateSharedStateFileName();
 
 			// Load the shared state file
-			auto sharedStateTable = Build::Runtime::ValueTable();
-			if (!Build::Runtime::ValueTableManager::TryLoadState(sharedStateFile, sharedStateTable))
+			auto sharedStateTable = Core::ValueTable();
+			if (!Core::ValueTableManager::TryLoadState(sharedStateFile, sharedStateTable))
 			{
 				Log::Error("Failed to load the shared state file: " + sharedStateFile.ToString());
 				return;
@@ -161,7 +161,7 @@ namespace Soup::Client
 			}
 
 			if (exitCode != 0)
-				throw HandledException(exitCode);
+				throw Core::HandledException(exitCode);
 		}
 
 	private:

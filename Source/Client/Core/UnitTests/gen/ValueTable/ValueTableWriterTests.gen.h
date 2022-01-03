@@ -4,7 +4,7 @@
 TestState RunValueTableWriterTests() 
 {
 	auto className = "ValueTableWriterTests";
-	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::ValueTableWriterTests>();
+	auto testClass = std::make_shared<Soup::Core::UnitTests::ValueTableWriterTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Serialize_Empty", [&testClass]() { testClass->Serialize_Empty(); });
 	state += Soup::Test::RunTest(className, "Serialize_SingleTable", [&testClass]() { testClass->Serialize_SingleTable(); });

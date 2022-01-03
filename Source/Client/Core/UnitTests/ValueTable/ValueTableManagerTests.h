@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::Runtime::UnitTests
+namespace Soup::Core::UnitTests
 {
 	class ValueTableManagerTests
 	{

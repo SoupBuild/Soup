@@ -6,7 +6,7 @@
 #include "PackageReference.h"
 #include "RecipeValue.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The recipe container

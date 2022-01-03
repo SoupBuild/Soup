@@ -15,7 +15,7 @@ module Soup.Core;
 
 using namespace Opal;
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 
 Value::Value() :

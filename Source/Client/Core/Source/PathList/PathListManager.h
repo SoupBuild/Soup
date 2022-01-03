@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The path list manager

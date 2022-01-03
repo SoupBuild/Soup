@@ -3,9 +3,8 @@
 // </copyright>
 
 #pragma once
-// #define LOCAL
 
-namespace Soup
+namespace Soup::Core
 {
 	/// <summary>
 	/// The constants used throughout the application
@@ -14,19 +13,9 @@ namespace Soup
 	{
 	public:
 		/// <summary>
-		/// Gets the app folder name
-		/// </summary>
-		static constexpr std::string_view AppDataFolderName = "Soup";
-
-		/// <summary>
 		/// Gets the generated build file name
 		/// </summary>
 		static constexpr std::string_view GenerateBuildFileName = "Build.cpp";
-
-		/// <summary>
-		/// Gets the app data folder path
-		/// </summary>
-		// static constexpr std::string_view AppDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDataFolderName);
 
 		/// <summary>
 		/// Gets the archive file extension

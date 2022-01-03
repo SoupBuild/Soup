@@ -7,7 +7,7 @@
 #include "ValueTableReader.h"
 #include "ValueTableWriter.h"
 
-namespace Soup::Build::Runtime
+namespace Soup::Core
 {
 	/// <summary>
 	/// The Value Table state manager

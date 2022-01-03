@@ -4,7 +4,7 @@
 TestState RunPackageReferenceTests() 
  {
 	auto className = "PackageReferenceTests";
-	auto testClass = std::make_shared<Soup::Build::Runtime::UnitTests::PackageReferenceTests>();
+	auto testClass = std::make_shared<Soup::Core::UnitTests::PackageReferenceTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "InitializeNameVersion", [&testClass]() { testClass->InitializeNameVersion(); });
 	state += Soup::Test::RunTest(className, "InitializePath", [&testClass]() { testClass->InitializePath(); });

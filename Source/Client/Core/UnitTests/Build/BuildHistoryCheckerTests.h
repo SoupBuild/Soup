@@ -3,9 +3,8 @@
 // </copyright>
 
 #pragma once
-#include "Helpers.h"
 
-namespace Soup::Build::Runtime::UnitTests
+namespace Soup::Core::UnitTests
 {
 	class BuildHistoryCheckerTests
 	{

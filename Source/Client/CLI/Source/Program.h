@@ -97,7 +97,7 @@ namespace Soup::Client
 
 				return 0;
 			}
-			catch (const HandledException& ex)
+			catch (const Core::HandledException& ex)
 			{
 				Log::Diag("Exception Handled: Exiting");
 				return ex.GetExitCode();
