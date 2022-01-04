@@ -17,32 +17,34 @@ class Script
             new Dir(
                 @"%ProgramFiles%\SoupBuild\Soup",
                 new DirFiles(System.IO.Path.Combine(soupScriptsFolder, "*.*")),
-                new DirFiles(System.IO.Path.Combine(soupBinFolder, "*.*")),
                 new Dir(
-                    @"Generate",
-                    new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, "*.*")),
+                    @"Soup",
+                    new DirFiles(System.IO.Path.Combine(soupBinFolder, "*.*")),
                     new Dir(
-                        @"Extensions",
+                        @"Generate",
+                        new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, "*.*")),
                         new Dir(
-                            @"Soup.Cpp",
-                            new DirFiles(System.IO.Path.Combine(soupExtensionCppBinFolder, "*.*"))),
-                        new Dir(
-                            @"Soup.CSharp",
-                            new DirFiles(System.IO.Path.Combine(soupExtensionCSharpBinFolder, "*.*"))))),
-                new Dir(
-                    @"PackageManager",
-                    new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, "*.*")),
+                            @"Extensions",
+                            new Dir(
+                                @"Soup.Cpp",
+                                new DirFiles(System.IO.Path.Combine(soupExtensionCppBinFolder, "*.*"))),
+                            new Dir(
+                                @"Soup.CSharp",
+                                new DirFiles(System.IO.Path.Combine(soupExtensionCSharpBinFolder, "*.*"))))),
                     new Dir(
-                        @"runtimes",
+                        @"PackageManager",
+                        new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, "*.*")),
                         new Dir(
-                            @"win-arm64\native",
-                            new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-arm64\native\", "*.*"))),
-                        new Dir(
-                            @"win-x64\native",
-                            new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-x64\native\", "*.*"))),
-                        new Dir(
-                            @"win-x86\native",
-                            new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-x86\native\", "*.*"))))),
+                            @"runtimes",
+                            new Dir(
+                                @"win-arm64\native",
+                                new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-arm64\native\", "*.*"))),
+                            new Dir(
+                                @"win-x64\native",
+                                new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-x64\native\", "*.*"))),
+                            new Dir(
+                                @"win-x86\native",
+                                new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-x86\native\", "*.*")))))),
                 new Dir(
                     @"Swhere",
                     new DirFiles(System.IO.Path.Combine(soupBinSwhereFolder, "*.*")))),
@@ -69,7 +71,7 @@ class Script
         };
 
         // Upgrade values
-        project.Version = new Version(0, 16, 0);
+        project.Version = new Version(0, 16, 2);
 
         Compiler.BuildMsi(project);
     }
