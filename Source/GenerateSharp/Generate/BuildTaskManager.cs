@@ -173,6 +173,7 @@ namespace Soup.Build.Generate
 
 			// Save the runtime information
 			var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateTaskInfoFileName;
+			Log.Info($"Save Generate Info State: {generateInfoStateFile}");
 			ValueTableManager.SaveState(generateInfoStateFile, generateInfoTable);
 		}
 
@@ -224,5 +225,5 @@ namespace Soup.Build.Generate
 		}
 
 		private IDictionary<string, BuildTaskContainer> _tasks;
-	};
+	}
 }
