@@ -21,8 +21,8 @@ LinkLibraries = [
 ]
 RuntimeDependencies = [
 	# Copy the dynamic libraries
-	"../../../Dependencies/OpenSSL/libcrypto-3.dll",
-	"../../../Dependencies/OpenSSL/libssl-3.dll",
+	"../../../Dependencies/OpenSSL/libcrypto-3-x64.dll",
+	"../../../Dependencies/OpenSSL/libssl-3-x64.dll",
 ]
 
 [Dependencies]
