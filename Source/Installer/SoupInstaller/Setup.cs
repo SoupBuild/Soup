@@ -5,47 +5,43 @@ class Script
 {
     static public void Main()
     {
-        var soupScriptsFolder = @"..\..\..\Scripts\Install\";
-        var soupBinFolder = @"..\..\..\out\C++\Soup\1281a639dd5d393781f4188942c6bc05544b7c2c0124eae4cc59236248e36\bin\";
-        var soupExtensionCppBinFolder = @"..\..\..\out\C#\Soup.Cpp\1281a639dd5d393781f4188942c6bc05544b7c2c0124eae4cc59236248e36\bin\";
-        var soupExtensionCSharpBinFolder = @"..\..\..\out\C#\Soup.CSharp\1281a639dd5d393781f4188942c6bc05544b7c2c0124eae4cc59236248e36\bin\";
-        var soupBinGenerateFolder = @"..\..\..\out\msbuild\bin\Soup.Build.Generate\Release\net5.0\";
-        var soupBinPackageManagerFolder = @"..\..\..\out\msbuild\bin\Soup.Build.PackageManager\Release\net5-windows10.0.17763.0\";
-        var soupBinSwhereFolder = @"..\..\..\out\msbuild\bin\Swhere\Release\net5-windows10.0.17763.0\";
+        var soupRunFolder = @"../../../out/run";
         var project = new Project(
             "Soup Build",
             new Dir(
                 @"%ProgramFiles%\SoupBuild\Soup",
-                new DirFiles(System.IO.Path.Combine(soupScriptsFolder, "*.*")),
-                new DirFiles(System.IO.Path.Combine(soupBinFolder, "*.*")),
+                new DirFiles($"{soupRunFolder}/*.*"),
                 new Dir(
-                    @"Generate",
-                    new DirFiles(System.IO.Path.Combine(soupBinGenerateFolder, "*.*")),
+                    @"Soup",
+                    new DirFiles($"{soupRunFolder}/Soup/*.*"),
                     new Dir(
-                        @"Extensions",
+                        @"Generate",
+                        new DirFiles($"{soupRunFolder}/Soup/Generate/*.*"),
                         new Dir(
-                            @"Soup.Cpp",
-                            new DirFiles(System.IO.Path.Combine(soupExtensionCppBinFolder, "*.*"))),
-                        new Dir(
-                            @"Soup.CSharp",
-                            new DirFiles(System.IO.Path.Combine(soupExtensionCSharpBinFolder, "*.*"))))),
-                new Dir(
-                    @"PackageManager",
-                    new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, "*.*")),
+                            @"Extensions",
+                            new Dir(
+                                @"Soup.Cpp",
+                                new DirFiles($"{soupRunFolder}/Soup/Generate/Extensions/Soup.Cpp/*.*")),
+                            new Dir(
+                                @"Soup.CSharp",
+                                new DirFiles($"{soupRunFolder}/Soup/Generate/Extensions/Soup.CSharp/*.*")))),
                     new Dir(
-                        @"runtimes",
+                        @"PackageManager",
+                        new DirFiles($"{soupRunFolder}/Soup/PackageManager/*.*"),
                         new Dir(
-                            @"win-arm64\native",
-                            new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-arm64\native\", "*.*"))),
-                        new Dir(
-                            @"win-x64\native",
-                            new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-x64\native\", "*.*"))),
-                        new Dir(
-                            @"win-x86\native",
-                            new DirFiles(System.IO.Path.Combine(soupBinPackageManagerFolder, @"runtimes\win-x86\native\", "*.*"))))),
+                            @"runtimes",
+                            new Dir(
+                                @"win-arm64\native",
+                                new DirFiles($"{soupRunFolder}/Soup/PackageManager/runtimes/win-arm64/native/*.*")),
+                            new Dir(
+                                @"win-x64\native",
+                                new DirFiles($"{soupRunFolder}/Soup/PackageManager/runtimes/win-x64/native/*.*")),
+                            new Dir(
+                                @"win-x86\native",
+                                new DirFiles($"{soupRunFolder}/Soup/PackageManager/runtimes/win-x86/native/*.*"))))),
                 new Dir(
                     @"Swhere",
-                    new DirFiles(System.IO.Path.Combine(soupBinSwhereFolder, "*.*")))),
+                    new DirFiles($"{soupRunFolder}/Swhere/*.*"))),
             new EnvironmentVariable("PATH", "[INSTALLDIR]")
             {
                 System = true,
@@ -69,7 +65,7 @@ class Script
         };
 
         // Upgrade values
-        project.Version = new Version(0, 16, 0);
+        project.Version = new Version(0, 16, 2);
 
         Compiler.BuildMsi(project);
     }
