@@ -89,12 +89,17 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
+		const RecipeValue& GetNameValue() const
+		{
+			return GetValue(_table, Property_Name);
+		}
+
 		RecipeValue& GetNameValue()
 		{
 			return GetValue(_table, Property_Name);
 		}
 
-		const std::string& GetName()
+		const std::string& GetName() const
 		{
 			auto& nameValue = GetNameValue();
 			if (nameValue.IsString())
@@ -158,7 +163,7 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the list of named dependency packages
 		/// </summary>
-		std::vector<std::string> GetDependencyTypes()
+		std::vector<std::string> GetDependencyTypes() const
 		{
 			auto result = std::vector<std::string>();
 			if (HasDependencies())
@@ -172,12 +177,12 @@ namespace Soup::Core
 			return result;
 		}
 
-		bool HasNamedDependencies(std::string_view name)
+		bool HasNamedDependencies(std::string_view name) const
 		{
 			return HasDependencies() && HasValue(GetDependencies(), name);
 		}
 
-		std::vector<PackageReference> GetNamedDependencies(std::string_view name)
+		std::vector<PackageReference> GetNamedDependencies(std::string_view name) const
 		{
 			if (!HasNamedDependencies(name))
 				throw std::runtime_error("No named dependencies.");
@@ -308,12 +313,12 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the table of dependency packages
 		/// </summary>
-		bool HasDependencies()
+		bool HasDependencies() const
 		{
 			return HasValue(_table, Property_Dependencies);
 		}
 
-		RecipeTable& GetDependencies()
+		const RecipeTable& GetDependencies() const
 		{
 			if (!HasDependencies())
 				throw std::runtime_error("No dependencies.");
@@ -340,7 +345,7 @@ namespace Soup::Core
 			return value.AsTable();
 		}
 
-		bool HasValue(RecipeTable& table, std::string_view key)
+		bool HasValue(const RecipeTable& table, std::string_view key) const
 		{
 			return table.contains(key.data());
 		}

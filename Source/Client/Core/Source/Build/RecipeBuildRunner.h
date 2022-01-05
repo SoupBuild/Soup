@@ -135,7 +135,7 @@ namespace Soup::Core
 			_hostBuildGlobalParameters.SetValue("Flavor", Value(std::string(flavor)));
 			_hostBuildGlobalParameters.SetValue("System", Value(std::string(system)));
 
-			// Allow reading from system
+			// Allow read access from system directories
 			// TODO: Windows specific
 			_systemReadAccess.push_back(
 				Path("C:/Windows/"));
@@ -182,6 +182,8 @@ namespace Soup::Core
 				int projectId = 1;
 				bool isHostBuild = false;
 				Log::EnsureListener().SetShowEventId(true);
+
+				_projectManager.LoadClosure(workingDirectory);
 
 				auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
 				Recipe recipe = {};
