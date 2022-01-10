@@ -24,9 +24,9 @@ namespace Soup.Build.PackageManager
 		private static string SoupApiEndpoint => "https://api.soupbuild.com";
 
 		/// <summary>
-		/// Install packages
+		/// Restore packages
 		/// </summary>
-		public static async Task InstallPackagesAsync(Path workingDirectory)
+		public static async Task RestorePackagesAsync(Path workingDirectory)
 		{
 			var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 				new Path(".soup/packages/");
@@ -37,7 +37,7 @@ namespace Soup.Build.PackageManager
 
 			try
 			{
-				await InstallRecursiveDependenciesAsync(
+				await RestoreRecursiveDependenciesAsync(
 					workingDirectory,
 					packageStore,
 					stagingPath);
@@ -388,7 +388,7 @@ namespace Soup.Build.PackageManager
 				LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
 
 				// Install recursive dependencies
-				await InstallRecursiveDependenciesAsync(
+				await RestoreRecursiveDependenciesAsync(
 					packageVersionFolder,
 					packagesDirectory,
 					stagingDirectory);
@@ -396,9 +396,9 @@ namespace Soup.Build.PackageManager
 		}
 
 		/// <summary>
-		/// Recursively install all dependencies
+		/// Recursively restore all dependencies
 		/// </summary>
-		static async Task InstallRecursiveDependenciesAsync(
+		static async Task RestoreRecursiveDependenciesAsync(
 			Path recipeDirectory,
 			Path packagesDirectory,
 			Path stagingDirectory)
@@ -412,14 +412,7 @@ namespace Soup.Build.PackageManager
 				throw new InvalidOperationException("Could not load the recipe file.");
 			}
 
-			var knownDependecyTypes = new List<string>()
-			{
-				"Runtime",
-				"Test",
-				"Build",
-			};
-
-			foreach (var dependecyType in knownDependecyTypes)
+			foreach (var dependecyType in recipe.GetDependencyTypes())
 			{
 				if (recipe.HasNamedDependencies(dependecyType))
 				{
@@ -439,7 +432,7 @@ namespace Soup.Build.PackageManager
 						if (dependency.IsLocal)
 						{
 							var dependencyPath = recipeDirectory + dependency.Path;
-							await InstallRecursiveDependenciesAsync(
+							await RestoreRecursiveDependenciesAsync(
 								dependencyPath,
 								packagesDirectory,
 								stagingDirectory);

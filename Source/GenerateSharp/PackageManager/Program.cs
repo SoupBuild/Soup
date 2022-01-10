@@ -43,7 +43,7 @@ namespace Soup.Build.PackageManager
 								return -1;
 							}
 
-							await PackageManager.InstallPackagesAsync(workingDirectory);
+							await PackageManager.RestorePackagesAsync(workingDirectory);
 						}
 						break;
 					case "install-package":
