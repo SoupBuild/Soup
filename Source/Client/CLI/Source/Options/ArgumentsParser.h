@@ -7,6 +7,7 @@
 #include "InitializeOptions.h"
 #include "InstallOptions.h"
 #include "PublishOptions.h"
+#include "RestoreOptions.h"
 #include "RunOptions.h"
 #include "TargetOptions.h"
 #include "VersionOptions.h"
@@ -95,13 +96,15 @@ namespace Soup::Client
 				auto argument = std::string();
 				if (TryGetIndexArgument(unusedArgs, argument))
 				{
-					options->Path = std::move(argument);
+					options->PackageReference = std::move(argument);
 				}
 
+				// If there is a second index then the first was the path
 				auto PackageReference = std::string();
-				if (TryGetValueArgument("p", unusedArgs, PackageReference))
+				if (TryGetIndexArgument(unusedArgs, argument))
 				{
-					options->PackageReference = std::move(PackageReference);
+					options->Path = std::move(options->PackageReference);
+					options->PackageReference = std::move(argument);
 				}
 
 				options->Verbosity = CheckVerbosity(unusedArgs);
@@ -121,6 +124,23 @@ namespace Soup::Client
 					options->Path = std::move(argument);
 				}
 				
+				options->Verbosity = CheckVerbosity(unusedArgs);
+
+				result = std::move(options);
+			}
+			else if (commandType == "restore")
+			{
+				Log::Diag("Parse restore");
+
+				auto options = std::make_unique<RestoreOptions>();
+
+				// Check for required index argument
+				auto argument = std::string();
+				if (TryGetIndexArgument(unusedArgs, argument))
+				{
+					options->Path = std::move(argument);
+				}
+
 				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);

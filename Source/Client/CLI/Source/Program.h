@@ -8,6 +8,7 @@
 #include "InitializeCommand.h"
 #include "InstallCommand.h"
 #include "PublishCommand.h"
+#include "RestoreCommand.h"
 #include "RunCommand.h"
 #include "TargetCommand.h"
 #include "VersionCommand.h"
@@ -84,6 +85,8 @@ namespace Soup::Client
 					command = Setup(arguments.ExtractResult<InstallOptions>());
 				else if (arguments.IsA<PublishOptions>())
 					command = Setup(arguments.ExtractResult<PublishOptions>());
+				else if (arguments.IsA<RestoreOptions>())
+					command = Setup(arguments.ExtractResult<RestoreOptions>());
 				else if (arguments.IsA<TargetOptions>())
 					command = Setup(arguments.ExtractResult<TargetOptions>());
 				else if (arguments.IsA<VersionOptions>())
@@ -123,8 +126,8 @@ namespace Soup::Client
 			Log::Info("	run - Run the provided recipe.");
 			Log::Info("	initialize - Initialize wizard for creating a new recipe.");
 			Log::Info("	install - Install a dependency to the target recipes.");
-			Log::Info("	pack - Pack the contents of a recipe.");
 			Log::Info("	publish - Publish the contents of a recipe to the target feed.");
+			Log::Info("	restore - Install al dependencies in the target recipes.");
 			Log::Info("	version - Display the version of the command line application.");
 		}
 
@@ -171,6 +174,14 @@ namespace Soup::Client
 			Log::Diag("Setup PublishCommand");
 			SetupShared(options);
 			return std::make_shared<PublishCommand>(
+				std::move(options));
+		}
+
+		std::shared_ptr<ICommand> Setup(RestoreOptions options)
+		{
+			Log::Diag("Setup RestoreCommand");
+			SetupShared(options);
+			return std::make_shared<RestoreCommand>(
 				std::move(options));
 		}
 
