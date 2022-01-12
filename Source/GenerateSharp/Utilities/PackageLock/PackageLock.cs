@@ -25,7 +25,8 @@ namespace Soup.Build.Utilities
 		public PackageLock()
 		{
 			_table = new ValueTable();
-			_mirrorSyntax = null;
+			_mirrorSyntax = new DocumentSyntax();
+			_table.MirrorSyntax = _mirrorSyntax;
 		}
 
 		/// <summary>
@@ -54,6 +55,12 @@ namespace Soup.Build.Utilities
 			return values;
 		}
 
+		public void AddProject(string value)
+		{
+			var projects = EnsureHasList(_table, Property_Projects);
+
+			projects.AddItemWithSyntax(value);
+		}
 
 		/// <summary>
 		/// Raw access
@@ -91,6 +98,24 @@ namespace Soup.Build.Utilities
 			}
 
 			return value;
+		}
+
+		private ValueList EnsureHasList(ValueTable table, string name)
+		{
+			if (table.ContainsKey(name))
+			{
+				var value = _table[name];
+				if (value.Type != ValueType.List)
+					throw new InvalidOperationException($"The package lock already has a non-list {name} property");
+
+				// Find the Syntax for the table
+				return (ValueList)value.AsList();
+			}
+			else
+			{
+				// Create a new list
+				return table.AddListWithSyntax(name);
+			}
 		}
 	}
 }

@@ -30,25 +30,22 @@ namespace Soup.Build.PackageManager
 		{
 			var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 				new Path(".soup/packages/");
-			Log.Info("Using Package Store: " + packageStore.ToString());
+			Log.Diag("Using Package Store: " + packageStore.ToString());
 
 			// Create the staging directory
 			var stagingPath = EnsureStagingDirectoryExists(packageStore);
 
+			var closure = new Dictionary<string, PackageReference>();
 			try
 			{
-				var closure = new Dictionary<string, PackageReference>();
 				await RestoreRecursiveDependenciesAsync(
 					workingDirectory,
 					packageStore,
 					stagingPath,
 					closure);
 
-				foreach (var package in closure)
-					Console.WriteLine($"{package.Key} -> {package.Value}");
-
 				// Cleanup the working directory
-				Log.Info("Deleting staging directory");
+				Log.Diag("Deleting staging directory");
 				LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingPath, true);
 			}
 			catch (Exception)
@@ -57,6 +54,19 @@ namespace Soup.Build.PackageManager
 				LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingPath, true);
 				throw;
 			}
+
+			// Build up the package lock file
+			var packageLock = new PackageLock();
+			foreach (var package in closure)
+			{
+				Console.WriteLine($"{package.Key} -> {package.Value}");
+				packageLock.AddProject($"{package.Key} -> {package.Value}");
+			}
+
+			var packageLockPath =
+				workingDirectory +
+				BuildConstants.PackageLockFileName;
+			await PackageLockExtensions.SaveToFileAsync(packageLockPath, packageLock);
 		}
 
 		/// <summary>

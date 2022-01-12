@@ -17,6 +17,11 @@ namespace Soup.Build.Utilities
 		public static Path RecipeFileName => new Path("Recipe.toml");
 
 		/// <summary>
+		/// Gets the Package Lock file name
+		/// </summary>
+		public static Path PackageLockFileName => new Path("PackageLock.toml");
+
+		/// <summary>
 		/// Gets the Generate Parameters Value Table file name
 		/// </summary>
 		public static Path GenerateParametersFileName => new Path("GenerateParameters.bvt");

@@ -174,7 +174,7 @@ namespace Soup.Build.Utilities
 			var dependencies = EnsureHasTable(_table, Property_Dependencies);
 			var runtimeDependencies = EnsureHasList(dependencies, Property_Runtime);
 
-			AddItemWithSyntax(runtimeDependencies, value);
+			runtimeDependencies.AddItemWithSyntax(value);
 		}
 
 		/// <summary>
@@ -245,7 +245,7 @@ namespace Soup.Build.Utilities
 			else
 			{
 				// Create a new table
-				return AddTableWithSyntax(table, name);
+				return table.AddTableWithSyntax(name);
 			}
 		}
 
@@ -263,95 +263,8 @@ namespace Soup.Build.Utilities
 			else
 			{
 				// Create a new list
-				return AddListWithSyntax(table, name);
+				return table.AddListWithSyntax(name);
 			}
-		}
-
-		private void AddItemWithSyntax(ValueList list, string value)
-		{
-			// Create a new item and matching syntax
-			var newSyntaxValue = new StringValueSyntax(value);
-			var newValue = new Value(value)
-			{
-				// TODO: MirrorSyntax = newSyntaxTable,
-			};
-
-			// Add the model to the parent table model
-			list.Add(newValue);
-
-			// Add the new syntax to the parent table syntax
-			var arrayItemSyntax = new ArrayItemSyntax()
-			{
-				Value = newSyntaxValue,
-				Comma = SyntaxFactory.Token(TokenKind.Comma),
-			};
-			arrayItemSyntax.Comma.AddTrailingWhitespace();
-			switch (list.MirrorSyntax)
-			{
-				case ArraySyntax arraySyntax:
-					arraySyntax.Items.Add(arrayItemSyntax);
-					break;
-				default:
-					throw new InvalidOperationException("Unknown Syntax on ValueList");
-			}
-		}
-
-		private ValueTable AddTableWithSyntax(ValueTable table, string name)
-		{
-			// Create a new table and matching syntax
-			var newSyntaxTable = new TableSyntax(name);
-			var newTable = new ValueTable()
-			{
-				MirrorSyntax = newSyntaxTable,
-			};
-
-			// Add the model to the parent table model
-			table.Add(name, new Value(newTable));
-
-			// Add the new syntax to the parent table syntax
-			switch (table.MirrorSyntax)
-			{
-				case DocumentSyntax documentSyntax:
-					documentSyntax.Tables.Add(newSyntaxTable);
-					break;
-				default:
-					throw new InvalidOperationException("Unknown Syntax on ValueTable");
-			}
-
-			return newTable;
-		}
-
-		private ValueList AddListWithSyntax(ValueTable table, string name)
-		{
-			// Create a new list and matching syntax
-			var newSyntaxList = new ArraySyntax()
-			{
-				OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
-				CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket),
-			};
-			newSyntaxList.OpenBracket.AddTrailingWhitespace();
-			var newList = new ValueList()
-			{
-				MirrorSyntax = newSyntaxList,
-			};
-
-			// Add the model to the parent table model
-			table.Add(name, new Value(newList));
-
-			// Add the new syntax to the parent table syntax
-			switch (table.MirrorSyntax)
-			{
-				case DocumentSyntax documentSyntax:
-					documentSyntax.KeyValues.Add(new KeyValueSyntax(name, newSyntaxList));
-					break;
-				case TableSyntaxBase tableSyntax:
-					tableSyntax.Items.Add(new KeyValueSyntax(name, newSyntaxList));
-					break;
-				default:
-					throw new InvalidOperationException("Unknown Syntax on ValueTable");
-			}
-
-			return newList;
 		}
 
 		private bool HasValue(IValueTable table, string key)
