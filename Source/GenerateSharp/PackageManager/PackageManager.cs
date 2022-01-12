@@ -37,10 +37,15 @@ namespace Soup.Build.PackageManager
 
 			try
 			{
+				var closure = new Dictionary<string, PackageReference>();
 				await RestoreRecursiveDependenciesAsync(
 					workingDirectory,
 					packageStore,
-					stagingPath);
+					stagingPath,
+					closure);
+
+				foreach (var package in closure)
+					Console.WriteLine($"{package.Key} -> {package.Value}");
 
 				// Cleanup the working directory
 				Log.Info("Deleting staging directory");
@@ -112,12 +117,14 @@ namespace Soup.Build.PackageManager
 					targetPackageReference = new PackageReference(packageModel.Name, latestVersion);
 				}
 
+				var closure = new Dictionary<string, PackageReference>();
 				await EnsurePackageDownloadedAsync(
 					recipe.Language,
 					targetPackageReference.GetName,
 					targetPackageReference.Version,
 					packageStore,
-					stagingPath);
+					stagingPath,
+					closure);
 
 				// Cleanup the working directory
 				Log.Info("Deleting staging directory");
@@ -318,80 +325,92 @@ namespace Soup.Build.PackageManager
 			string packageName,
 			 SemanticVersion packageVersion,
 			 Path packagesDirectory,
-			 Path stagingDirectory)
+			 Path stagingDirectory,
+			 IDictionary<string, PackageReference> closure)
 		{
-			Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
-
-			var languageRootFolder = packagesDirectory + new Path(languageName);
-			var packageRootFolder = languageRootFolder + new Path(packageName);
-			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
-
-			// Check if the package version already exists
-			if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
+			if (closure.ContainsKey(packageName))
 			{
-				Log.HighPriority("Found local version");
+				Log.Diag("Recipe already processed.");
 			}
 			else
 			{
-				// Download the archive
-				Log.HighPriority("Downloading package");
-				var archivePath = stagingDirectory + new Path(packageName + ".zip");
-				using (var httpClient = new HttpClient())
+				// Add the new package to the closure
+				closure.Add(packageName, new PackageReference(packageName, packageVersion));
+
+				Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
+
+				var languageRootFolder = packagesDirectory + new Path(languageName);
+				var packageRootFolder = languageRootFolder + new Path(packageName);
+				var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
+
+				// Check if the package version already exists
+				if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
 				{
-					var client = new Api.Client.PackageVersionClient(httpClient)
+					Log.HighPriority("Found local version");
+				}
+				else
+				{
+					// Download the archive
+					Log.HighPriority("Downloading package");
+					var archivePath = stagingDirectory + new Path(packageName + ".zip");
+					using (var httpClient = new HttpClient())
 					{
-						BaseUrl = SoupApiEndpoint,
-					};
-
-					try
-					{
-						var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
-
-						// Write the contents to disk, scope cleanup
-						using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
+						var client = new Api.Client.PackageVersionClient(httpClient)
 						{
-							await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
+							BaseUrl = SoupApiEndpoint,
+						};
+
+						try
+						{
+							var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
+
+							// Write the contents to disk, scope cleanup
+							using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
+							{
+								await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
+							}
+						}
+						catch (Api.Client.ApiException ex)
+						{
+							if (ex.StatusCode == 404)
+							{
+								Log.HighPriority("Package Version Missing");
+								throw new HandledException();
+							}
+							else
+							{
+								throw;
+							}
 						}
 					}
-					catch (Api.Client.ApiException ex)
+
+					// Create the package folder to extract to
+					var stagingVersionFolder = stagingDirectory + new Path($"{languageName}_{packageName}_{packageVersion}/");
+					LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingVersionFolder);
+
+					// Unpack the contents of the archive
+					ZipFile.ExtractToDirectory(archivePath.ToString(), stagingVersionFolder.ToString());
+
+					// Delete the archive file
+					LifetimeManager.Get<IFileSystem>().DeleteFile(archivePath);
+
+					// Ensure the package root folder exists
+					if (!LifetimeManager.Get<IFileSystem>().Exists(packageRootFolder))
 					{
-						if (ex.StatusCode == 404)
-						{
-							Log.HighPriority("Package Version Missing");
-							throw new HandledException();
-						}
-						else
-						{
-							throw;
-						}
+						// Create the folder
+						LifetimeManager.Get<IFileSystem>().CreateDirectory2(packageRootFolder);
 					}
+
+					// Move the extracted contents into the version folder
+					LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
+
+					// Install recursive dependencies
+					await RestoreRecursiveDependenciesAsync(
+						packageVersionFolder,
+						packagesDirectory,
+						stagingDirectory,
+						closure);
 				}
-
-				// Create the package folder to extract to
-				var stagingVersionFolder = stagingDirectory + new Path($"{languageName}_{packageName}_{packageVersion}/");
-				LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingVersionFolder);
-
-				// Unpack the contents of the archive
-				ZipFile.ExtractToDirectory(archivePath.ToString(), stagingVersionFolder.ToString());
-
-				// Delete the archive file
-				LifetimeManager.Get<IFileSystem>().DeleteFile(archivePath);
-
-				// Ensure the package root folder exists
-				if (!LifetimeManager.Get<IFileSystem>().Exists(packageRootFolder))
-				{
-					// Create the folder
-					LifetimeManager.Get<IFileSystem>().CreateDirectory2(packageRootFolder);
-				}
-
-				// Move the extracted contents into the version folder
-				LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
-
-				// Install recursive dependencies
-				await RestoreRecursiveDependenciesAsync(
-					packageVersionFolder,
-					packagesDirectory,
-					stagingDirectory);
 			}
 		}
 
@@ -401,7 +420,8 @@ namespace Soup.Build.PackageManager
 		static async Task RestoreRecursiveDependenciesAsync(
 			Path recipeDirectory,
 			Path packagesDirectory,
-			Path stagingDirectory)
+			Path stagingDirectory,
+			IDictionary<string, PackageReference> closure)
 		{
 			var recipePath =
 				recipeDirectory +
@@ -412,100 +432,57 @@ namespace Soup.Build.PackageManager
 				throw new InvalidOperationException("Could not load the recipe file.");
 			}
 
-			foreach (var dependecyType in recipe.GetDependencyTypes())
+			if (closure.ContainsKey(recipe.Name))
 			{
-				if (recipe.HasNamedDependencies(dependecyType))
+				Log.Diag("Recipe already processed.");
+			}
+			else
+			{ 
+				// Add the project to the closure
+				closure.Add(recipe.Name, new PackageReference(recipeDirectory));
+
+				foreach (var dependecyType in recipe.GetDependencyTypes())
 				{
-					// Same language as parent is implied
-					var implicitLanguage = recipe.Language;
-					if (dependecyType == "Build")
+					if (recipe.HasNamedDependencies(dependecyType))
 					{
+						// Same language as parent is implied
+						var implicitLanguage = recipe.Language;
+
 						// Build dependencies do not inherit the parent language
 						// Instead, they default to C#
-						implicitLanguage = "C#";
-					}
-
-					foreach (var dependency in recipe.GetNamedDependencies(dependecyType))
-					{
-						// If local then check children for external package references
-						// Otherwise install the external package reference and its dependencies
-						if (dependency.IsLocal)
+						if (dependecyType == "Build")
 						{
-							var dependencyPath = recipeDirectory + dependency.Path;
-							await RestoreRecursiveDependenciesAsync(
-								dependencyPath,
-								packagesDirectory,
-								stagingDirectory);
+							implicitLanguage = "C#";
 						}
-						else
+
+						foreach (var dependency in recipe.GetNamedDependencies(dependecyType))
 						{
-							await EnsurePackageDownloadedAsync(
-								implicitLanguage,
-								dependency.GetName,
-								dependency.Version,
-								packagesDirectory,
-								stagingDirectory);
+							// If local then check children for external package references
+							// Otherwise install the external package reference and its dependencies
+							if (dependency.IsLocal)
+							{
+								var dependencyPath = recipeDirectory + dependency.Path;
+								await RestoreRecursiveDependenciesAsync(
+									dependencyPath,
+									packagesDirectory,
+									stagingDirectory,
+									closure);
+							}
+							else
+							{
+								await EnsurePackageDownloadedAsync(
+									implicitLanguage,
+									dependency.GetName,
+									dependency.Version,
+									packagesDirectory,
+									stagingDirectory,
+									closure);
+							}
 						}
 					}
 				}
 			}
 		}
-
-		///// <summary>
-		///// Build the kitchen library path
-		///// </summary>
-		//// static string BuildKitchenLibraryPath()
-		//// {
-		//// 	return Path(Constants.StoreLibraryFolderName);
-		//// }
-
-		//// /// <summary>
-		//// /// Build the kitchen build path
-		//// /// </summary>
-		//// static string BuildKitchenBuildPath(Recipe recipe)
-		//// {
-		//// 	return BuildKitchenBuildPath(recipe.Name, recipe.Version);
-		//// }
-
-		//// /// <summary>
-		//// /// Build the kitchen build path
-		//// /// </summary>
-		//// static string BuildKitchenBuildPath(PackageReference reference)
-		//// {
-		//// 	return BuildKitchenBuildPath(reference.Name, reference.Version);
-		//// }
-
-		//// /// <summary>
-		//// /// Build the kitchen package path
-		//// /// </summary>
-		//// static string BuildKitchenPackagePath(Recipe recipe)
-		//// {
-		//// 	return BuildKitchenPackagePath(recipe.Name, recipe.Version);
-		//// }
-
-		//// /// <summary>
-		//// /// Build the kitchen package path
-		//// /// </summary>
-		//// static string BuildKitchenPackagePath(PackageReference reference)
-		//// {
-		//// 	return BuildKitchenPackagePath(reference.Name, reference.Version);
-		//// }
-
-		//// /// <summary>
-		//// /// Build the kitchen package path
-		//// /// </summary>
-		//// static string BuildKitchenIncludePath(Recipe recipe)
-		//// {
-		//// 	return BuildKitchenIncludePath(recipe.Name, recipe.Version);
-		//// }
-
-		//// /// <summary>
-		//// /// Build the kitchen include path
-		//// /// </summary>
-		//// static string BuildKitchenIncludePath(PackageReference reference)
-		//// {
-		//// 	return BuildKitchenIncludePath(reference.Name, reference.Version);
-		//// }
 
 		/// <summary>
 		/// Ensure the staging directory exists
@@ -524,59 +501,5 @@ namespace Soup.Build.PackageManager
 
 			return stagingDirectory;
 		}
-
-		// /// <summary>
-		// /// Verify the archive
-		// /// </summary>
-		// static async Task<Recipe> VerifyArchiveAsync(Stream stream)
-		// {
-		// 	using (var gzipStream = new GZipStream(stream, CompressionMode.Decompress, true))
-		// 	using (var archive = new TarInputStream(gzipStream))
-		// 	{
-		// 		Recipe recipe = null;
-		// 		TarEntry entry = archive.GetNextEntry();
-		// 		while (entry != null)
-		// 		{
-		// 			if (string.Compare(entry.Name, Constants.RecipeFileName, true) == 0)
-		// 			{
-		// 				recipe = await RecipeManager.LoadFromStreamAsync(archive);
-		// 				break;
-		// 			}
-
-		// 			entry = archive.GetNextEntry();
-		// 		}
-
-		// 		return recipe;
-		// 	}
-		// }
-
-		// private static string BuildPackageVersionDirectory(string projectName, SemanticVersion version)
-		// {
-		// 	return Path.Combine(projectName, $"{version}");
-		// }
-
-		// private static string BuildKitchenPackagePath(string projectName, SemanticVersion version)
-		// {
-		// 	var kitchenPath = config.PackageStore;
-		// 	var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
-		// 	var path = Path.Combine(kitchenPath, Constants.StorePackageFolderName, packageVersionDirectory);
-		// 	return path;
-		// }
-
-		// private static string BuildKitchenBuildPath(string projectName, SemanticVersion version)
-		// {
-		// 	var kitchenPath = config.PackageStore;
-		// 	var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
-		// 	var path = Path.Combine(kitchenPath, Constants.StoreBuildFolderName, packageVersionDirectory);
-		// 	return path;
-		// }
-
-		// private static string BuildKitchenIncludePath(string projectName, SemanticVersion version)
-		// {
-		// 	var kitchenPath = config.PackageStore;
-		// 	var packageVersionDirectory = BuildPackageVersionDirectory(projectName, version);
-		// 	var path = Path.Combine(kitchenPath, Constants.StoreIncludeRootFolderName, packageVersionDirectory);
-		// 	return path;
-		// }
 	}
 }
