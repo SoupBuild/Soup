@@ -240,6 +240,8 @@ namespace Soup.Build.Cpp
         {
             if (value == "Executable")
                 return BuildTargetType.Executable;
+            if (value == "Windows")
+                return BuildTargetType.WindowsApplication;
             else if (value == "StaticLibrary")
                 return BuildTargetType.StaticLibrary;
             else if (value == "DynamicLibrary")

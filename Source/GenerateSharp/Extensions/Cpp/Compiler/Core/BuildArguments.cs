@@ -34,6 +34,11 @@ namespace Soup.Build.Cpp.Compiler
 	public enum BuildTargetType
 	{
 		/// <summary>
+		/// Windows Application
+		/// </summary>
+		WindowsApplication,
+
+		/// <summary>
 		/// Executable
 		/// </summary>
 		Executable,

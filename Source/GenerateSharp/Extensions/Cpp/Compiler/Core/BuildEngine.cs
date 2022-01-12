@@ -179,6 +179,7 @@ namespace Soup.Build.Cpp.Compiler
 						new Path(arguments.TargetName + "." + _compiler.StaticLibraryFileExtension);
 					break;
 				case BuildTargetType.Executable:
+				case BuildTargetType.WindowsApplication:
 					targetFile = 
 						arguments.BinaryDirectory + 
 						new Path(arguments.TargetName + ".exe");
@@ -253,6 +254,20 @@ namespace Soup.Build.Cpp.Compiler
 					result.TargetFile = absoluteTargetFile;
 					break;
 				}
+				case BuildTargetType.WindowsApplication:
+				{
+					linkArguments.TargetType = LinkTarget.WindowsApplication;
+
+					// Add the Executable as a runtime dependency
+					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.TargetRootDirectory + linkArguments.TargetFile;
+					result.RuntimeDependencies.Add(absoluteTargetFile);
+
+					// All link dependencies stop here.
+
+					// Set the targe file
+					result.TargetFile = absoluteTargetFile;
+					break;
+				}
 				default:
 				{
 					throw new InvalidOperationException("Unknown build target type.");
@@ -297,6 +312,7 @@ namespace Soup.Build.Cpp.Compiler
 			BuildResult result)
 		{
 			if (arguments.TargetType == BuildTargetType.Executable ||
+				arguments.TargetType == BuildTargetType.WindowsApplication ||
 				arguments.TargetType == BuildTargetType.DynamicLibrary)
 			{
 				foreach (var source in arguments.RuntimeDependencies)
