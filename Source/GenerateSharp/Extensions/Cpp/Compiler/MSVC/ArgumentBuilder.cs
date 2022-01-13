@@ -315,6 +315,15 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 
 					break;
 				}
+				case LinkTarget.WindowsApplication:
+				{
+					// TODO: May want to specify the exact value
+					// set the default lib to multithreaded
+					// AddParameter(commandArguments, "defaultlib", "libcmt");
+					AddParameter(commandArguments, "subsystem", "windows");
+
+					break;
+				}
 				default:
 				{
 					throw new InvalidOperationException("Unknown LinkTarget.");

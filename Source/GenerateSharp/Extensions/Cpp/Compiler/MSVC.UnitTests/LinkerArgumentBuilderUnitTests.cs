@@ -163,5 +163,36 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 
 			Assert.Equal(expectedArguments, actualArguments);
 		}
+
+		[Fact]
+		public void WindowsApplication()
+		{
+			var arguments = new LinkArguments();
+			arguments.TargetType = LinkTarget.WindowsApplication;
+			arguments.TargetArchitecture = "x64";
+			arguments.TargetFile = new Path("out/Something.exe");
+			arguments.ObjectFiles = new List<Path>()
+			{
+				new Path("File.mock.obj"),
+			};
+			arguments.LibraryFiles = new List<Path>()
+			{
+				new Path("Library.mock.lib"),
+			};
+
+			var actualArguments = ArgumentBuilder.BuildLinkerArguments(arguments);
+
+			var expectedArguments = new List<string>()
+			{
+				"/nologo",
+				"/subsystem:windows",
+				"/machine:X64",
+				"/out:\"./out/Something.exe\"",
+				"./Library.mock.lib",
+				"./File.mock.obj",
+			};
+
+			Assert.Equal(expectedArguments, actualArguments);
+		}
 	}
 }

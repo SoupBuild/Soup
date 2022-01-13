@@ -1,6 +1,6 @@
 Name = "Soup.Cpp.Compiler"
 Language = "C#"
-Version = "0.1.6"
+Version = "0.1.7"
 Source = [
 	"BuildArguments.cs",
 	"BuildEngine.cs",

@@ -153,6 +153,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 					break;
 				case LinkTarget.DynamicLibrary:
 				case LinkTarget.Executable:
+				case LinkTarget.WindowsApplication:
 					executablePath = _linkerExecutable;
 					break;
 				default:

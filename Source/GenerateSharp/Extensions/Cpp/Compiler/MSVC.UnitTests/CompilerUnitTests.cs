@@ -233,5 +233,48 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 
 			Assert.Equal(expected, result);
 		}
+
+		[Fact]
+		public void LinkWindowsApplication_Simple()
+		{
+			var uut = new Compiler(
+				new Path("C:/bin/mock.cl.exe"),
+				new Path("C:/bin/mock.link.exe"),
+				new Path("C:/bin/mock.lib.exe"));
+
+			var arguments = new LinkArguments();
+			arguments.TargetType = LinkTarget.WindowsApplication;
+			arguments.TargetArchitecture = "x64";
+			arguments.TargetFile = new Path("Something.exe");
+			arguments.TargetRootDirectory = new Path("C:/target/");
+			arguments.ObjectFiles = new List<Path>()
+			{
+				new Path("File.mock.obj"),
+			};
+			arguments.LibraryFiles = new List<Path>()
+			{
+				new Path("Library.mock.a"),
+			};
+
+			var result = uut.CreateLinkOperation(arguments);
+
+			// Verify result
+			var expected = new BuildOperation(
+				"./Something.exe",
+				new Path("C:/target/"),
+				new Path("C:/bin/mock.link.exe"),
+				"/nologo /subsystem:windows /machine:X64 /out:\"./Something.exe\" ./Library.mock.a ./File.mock.obj",
+				new List<Path>()
+				{
+					new Path("Library.mock.a"),
+					new Path("File.mock.obj"),
+				},
+				new List<Path>()
+				{
+					new Path("C:/target/Something.exe"),
+				});
+
+			Assert.Equal(expected, result);
+		}
 	}
 }
