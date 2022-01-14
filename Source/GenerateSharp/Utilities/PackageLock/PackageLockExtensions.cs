@@ -37,7 +37,7 @@ namespace Soup.Build.Utilities
 					var result = ValueTableTomlUtilities.Deserialize(
 						packageLockFile,
 						await reader.ReadToEndAsync());
-					return (true, new PackageLock(result.Table, result.Root));
+					return (true, new PackageLock(result));
 				}
 				catch (Exception ex)
 				{

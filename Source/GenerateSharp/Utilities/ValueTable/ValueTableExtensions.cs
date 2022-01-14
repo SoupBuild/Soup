@@ -4,6 +4,7 @@
 
 using Soup.Build.Runtime;
 using System;
+using System.Collections.Generic;
 using Tomlyn.Syntax;
 
 namespace Soup.Build.Utilities
@@ -22,13 +23,23 @@ namespace Soup.Build.Utilities
 			// Add the model to the parent table model
 			list.Add(newValue);
 
+			newSyntaxValue.LeadingTrivia = new List<SyntaxTrivia>()
+			{
+				new SyntaxTrivia(TokenKind.Whitespaces, "\t"),
+			};
+
 			// Add the new syntax to the parent table syntax
 			var arrayItemSyntax = new ArrayItemSyntax()
 			{
 				Value = newSyntaxValue,
 				Comma = SyntaxFactory.Token(TokenKind.Comma),
 			};
-			arrayItemSyntax.Comma.AddTrailingWhitespace();
+
+			arrayItemSyntax.Comma.TrailingTrivia = new List<SyntaxTrivia>()
+			{
+				SyntaxFactory.NewLineTrivia(),
+			};
+
 			switch (list.MirrorSyntax)
 			{
 				case ArraySyntax arraySyntax:
@@ -50,7 +61,12 @@ namespace Soup.Build.Utilities
 				OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
 				CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket),
 			};
-			newSyntaxList.OpenBracket.AddTrailingWhitespace();
+
+			newSyntaxList.OpenBracket.TrailingTrivia = new List<SyntaxTrivia>()
+			{
+				SyntaxFactory.NewLineTrivia(),
+			};
+
 			var newList = new ValueList()
 			{
 				MirrorSyntax = newSyntaxList,

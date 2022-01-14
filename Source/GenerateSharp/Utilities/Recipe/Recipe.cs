@@ -55,10 +55,10 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
-		public Recipe(ValueTable table, DocumentSyntax mirrorSystax)
+		public Recipe(ValueTable table)
 		{
 			_table = table;
-			_mirrorSyntax = mirrorSystax;
+			_mirrorSyntax = table.MirrorSyntax as DocumentSyntax;
 
 			if (!HasValue(_table, Property_Name))
 				throw new ArgumentException("Missing required property Name");

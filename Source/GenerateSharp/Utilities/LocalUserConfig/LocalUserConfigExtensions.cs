@@ -40,7 +40,7 @@ namespace Soup.Build.Utilities
 					var result = ValueTableTomlUtilities.Deserialize(
 						localUserConfigFile,
 						await reader.ReadToEndAsync());
-					return (true, new LocalUserConfig(result.Table, result.Root));
+					return (true, new LocalUserConfig(result));
 				}
 				catch (Exception ex)
 				{

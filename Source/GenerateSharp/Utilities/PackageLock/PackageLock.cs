@@ -32,10 +32,10 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PackageLock"/> class.
 		/// </summary>
-		public PackageLock(ValueTable table, DocumentSyntax mirrorSystax)
+		public PackageLock(ValueTable table)
 		{
 			_table = table;
-			_mirrorSyntax = mirrorSystax;
+			_mirrorSyntax = table.MirrorSyntax as DocumentSyntax;
 		}
 
 		/// <summary>

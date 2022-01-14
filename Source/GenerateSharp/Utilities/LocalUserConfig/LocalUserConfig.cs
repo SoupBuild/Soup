@@ -34,10 +34,10 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
 		/// </summary>
-		public LocalUserConfig(ValueTable table, DocumentSyntax mirrorSystax)
+		public LocalUserConfig(ValueTable table)
 		{
 			_table = table;
-			_mirrorSyntax = mirrorSystax;
+			_mirrorSyntax = table.MirrorSyntax as DocumentSyntax ?? new DocumentSyntax();
 		}
 
 		/// <summary>

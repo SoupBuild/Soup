@@ -13,12 +13,12 @@ namespace Soup.Build.Utilities
     /// <summary>
     /// The recipe Toml serialize manager
     /// </summary>
-    internal static class ValueTableTomlUtilities
+    public static class ValueTableTomlUtilities
     {
         /// <summary>
         /// Load from stream
         /// </summary>
-        public static (ValueTable Table, DocumentSyntax Root) Deserialize(
+        public static ValueTable Deserialize(
             Path tomlFile,
             string content)
         {
@@ -33,7 +33,7 @@ namespace Soup.Build.Utilities
             var visitor = new ValueTableTomlVisitor(valueTable);
             documentSyntax.Accept(visitor);
 
-            return (valueTable, documentSyntax);
+            return valueTable;
         }
 
         /// <summary>
