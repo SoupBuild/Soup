@@ -26,15 +26,11 @@ int APIENTRY wWinMain(
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
+	// Perform application initialization:
 	if (MyRegisterClass(hInstance) == 0)
 		return GetLastError();
-
-	// Perform application initialization:
 	if (!InitInstance(hInstance, nCmdShow))
-	{
-		auto error = GetLastError();
-		return error;
-	}
+		return GetLastError();
 
 	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWSPROJECT));
 
