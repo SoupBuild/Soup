@@ -60,7 +60,7 @@ namespace Soup.Build.PackageManager
 			foreach (var package in closure)
 			{
 				Console.WriteLine($"{package.Key} -> {package.Value}");
-				packageLock.AddProject($"{package.Key} -> {package.Value}");
+				packageLock.AddProject(package.Key, package.Value.ToString());
 			}
 
 			var packageLockPath =

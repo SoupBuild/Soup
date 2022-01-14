@@ -55,11 +55,13 @@ namespace Soup.Build.Utilities
 			return values;
 		}
 
-		public void AddProject(string value)
+		public void AddProject(string name, string version)
 		{
 			var projects = EnsureHasList(_table, Property_Projects);
 
-			projects.AddItemWithSyntax(value);
+			var projectTable = projects.AddTableWithSyntax();
+			projectTable.AddItemWithSyntax("Name", name);
+			projectTable.AddItemWithSyntax("Version", version);
 		}
 
 		/// <summary>

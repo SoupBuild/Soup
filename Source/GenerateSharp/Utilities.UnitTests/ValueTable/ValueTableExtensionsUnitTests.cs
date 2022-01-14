@@ -3,8 +3,6 @@
 // </copyright>
 
 using Soup.Build.Runtime;
-using System.IO;
-using System.Threading.Tasks;
 using Tomlyn.Syntax;
 using Xunit;
 
@@ -39,6 +37,54 @@ namespace Soup.Build.Utilities.UnitTests
 
 			var content = uut.MirrorSyntax.ToString();
 			Assert.Equal("NewList = [\n\t\"NewItem\",\n]\n", content);
+		}
+
+		[Fact]
+		public void AddListAndTableWithSyntax()
+		{
+			var uut = new ValueTable()
+			{
+				MirrorSyntax = new DocumentSyntax(),
+			};
+
+			var newList = uut.AddListWithSyntax("NewList");
+			newList.AddTableWithSyntax();
+
+			var content = uut.MirrorSyntax.ToString();
+			Assert.Equal("NewList = [\n\t{ },\n]\n", content);
+		}
+
+		[Fact]
+		public void AddListAndTableAndItemWithSyntax()
+		{
+			var uut = new ValueTable()
+			{
+				MirrorSyntax = new DocumentSyntax(),
+			};
+
+			var newList = uut.AddListWithSyntax("NewList");
+			var newTable = newList.AddTableWithSyntax();
+			newTable.AddItemWithSyntax("NewItem", "NewValue");
+
+			var content = uut.MirrorSyntax.ToString();
+			Assert.Equal("NewList = [\n\t{ NewItem = \"NewValue\" },\n]\n", content);
+		}
+
+		[Fact]
+		public void AddListAndTableAndTwoItemsWithSyntax()
+		{
+			var uut = new ValueTable()
+			{
+				MirrorSyntax = new DocumentSyntax(),
+			};
+
+			var newList = uut.AddListWithSyntax("NewList");
+			var newTable = newList.AddTableWithSyntax();
+			newTable.AddItemWithSyntax("NewItem1", "NewValue1");
+			newTable.AddItemWithSyntax("NewItem2", "NewValue2");
+
+			var content = uut.MirrorSyntax.ToString();
+			Assert.Equal("NewList = [\n\t{ NewItem1 = \"NewValue1\", NewItem2 = \"NewValue2\" },\n]\n", content);
 		}
 	}
 }

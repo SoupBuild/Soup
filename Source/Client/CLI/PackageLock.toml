@@ -1,0 +1,14 @@
+Projects = [
+	{ Name = "Soup", Version = "C:/Users/mwasp/source/repos/Soup/Source/Client/CLI" },
+	{ Name = "Soup.Core", Version = "C:/Users/mwasp/source/repos/Soup/Source/Client/Core/" },
+	{ Name = "Soup.Test.Cpp", Version = "Soup.Test.Cpp@0.1.3" },
+	{ Name = "json11", Version = "json11@1.0.1" },
+	{ Name = "Opal", Version = "Opal@0.3.0" },
+	{ Name = "toml11", Version = "toml11@1.0.1" },
+	{ Name = "Monitor.Host", Version = "C:/Users/mwasp/source/repos/Soup/Source/Monitor/Host/" },
+	{ Name = "Detours", Version = "C:/Users/mwasp/source/repos/Soup/Dependencies/Detours/src/" },
+	{ Name = "Monitor.Shared", Version = "C:/Users/mwasp/source/repos/Soup/Source/Monitor/Shared/" },
+	{ Name = "Soup.Test.Assert", Version = "Soup.Test.Assert@0.1.8" },
+	{ Name = "copy", Version = "C:/Users/mwasp/source/repos/Soup/Source/Tools/Copy/" },
+	{ Name = "mkdir", Version = "C:/Users/mwasp/source/repos/Soup/Source/Tools/Mkdir/" },
+]
