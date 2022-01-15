@@ -35,14 +35,44 @@ namespace Soup.Build.PackageManager
 			// Create the staging directory
 			var stagingPath = EnsureStagingDirectoryExists(packageStore);
 
-			var closure = new Dictionary<string, PackageReference>();
 			try
 			{
-				await RestoreRecursiveDependenciesAsync(
-					workingDirectory,
-					packageStore,
-					stagingPath,
-					closure);
+				var packageLockPath =
+					workingDirectory +
+					BuildConstants.PackageLockFileName;
+				var loadPackageLock = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
+				if (loadPackageLock.IsSuccess)
+				{
+					Log.Info("Restore from package lock");
+					await RestorePackageLockAsync(
+						packageStore,
+						stagingPath,
+						loadPackageLock.Result);
+				}
+				else
+				{
+					Log.Info("Discovering full closure");
+					var closure = new Dictionary<string, IDictionary<string, PackageReference>>();
+					await RestoreRecursiveDependenciesAsync(
+						workingDirectory,
+						packageStore,
+						stagingPath,
+						closure);
+
+					// Build up the package lock file
+					var packageLock = new PackageLock();
+					foreach (var languageClosure in closure)
+					{
+						foreach (var package in languageClosure.Value)
+						{
+							Log.Diag($"{languageClosure.Key} {package.Key} -> {package.Value}");
+							packageLock.AddProject(languageClosure.Key, package.Key, package.Value.ToString());
+						}
+					}
+
+					// Save the updated package lock
+					await PackageLockExtensions.SaveToFileAsync(packageLockPath, packageLock);
+				}
 
 				// Cleanup the working directory
 				Log.Diag("Deleting staging directory");
@@ -54,19 +84,6 @@ namespace Soup.Build.PackageManager
 				LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingPath, true);
 				throw;
 			}
-
-			// Build up the package lock file
-			var packageLock = new PackageLock();
-			foreach (var package in closure)
-			{
-				Console.WriteLine($"{package.Key} -> {package.Value}");
-				packageLock.AddProject(package.Key, package.Value.ToString());
-			}
-
-			var packageLockPath =
-				workingDirectory +
-				BuildConstants.PackageLockFileName;
-			await PackageLockExtensions.SaveToFileAsync(packageLockPath, packageLock);
 		}
 
 		/// <summary>
@@ -127,8 +144,8 @@ namespace Soup.Build.PackageManager
 					targetPackageReference = new PackageReference(packageModel.Name, latestVersion);
 				}
 
-				var closure = new Dictionary<string, PackageReference>();
-				await EnsurePackageDownloadedAsync(
+				var closure = new Dictionary<string, IDictionary<string, PackageReference>>();
+				await CheckRecursiveEnsurePackageDownloadedAsync(
 					recipe.Language,
 					targetPackageReference.GetName,
 					targetPackageReference.Version,
@@ -330,22 +347,24 @@ namespace Soup.Build.PackageManager
 		/// <summary>
 		/// Ensure a package version is downloaded
 		/// </summary>
-		private static async Task EnsurePackageDownloadedAsync(
+		private static async Task CheckRecursiveEnsurePackageDownloadedAsync(
 			string languageName,
 			string packageName,
 			 SemanticVersion packageVersion,
 			 Path packagesDirectory,
 			 Path stagingDirectory,
-			 IDictionary<string, PackageReference> closure)
+			 IDictionary<string, IDictionary<string, PackageReference>> closure)
 		{
-			if (closure.ContainsKey(packageName))
+			if (closure.ContainsKey(languageName) && closure[languageName].ContainsKey(packageName))
 			{
 				Log.Diag("Recipe already processed.");
 			}
 			else
 			{
 				// Add the new package to the closure
-				closure.Add(packageName, new PackageReference(packageName, packageVersion));
+				if (!closure.ContainsKey(languageName))
+					closure.Add(languageName, new Dictionary<string, PackageReference>());
+				closure[languageName].Add(packageName, new PackageReference(packageName, packageVersion));
 
 				Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
 
@@ -425,13 +444,120 @@ namespace Soup.Build.PackageManager
 		}
 
 		/// <summary>
+		/// Ensure a package version is downloaded
+		/// </summary>
+		private static async Task EnsurePackageDownloadedAsync(
+			string languageName,
+			string packageName,
+			 SemanticVersion packageVersion,
+			 Path packagesDirectory,
+			 Path stagingDirectory)
+		{
+			Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
+
+			var languageRootFolder = packagesDirectory + new Path(languageName);
+			var packageRootFolder = languageRootFolder + new Path(packageName);
+			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
+
+			// Check if the package version already exists
+			if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
+			{
+				Log.HighPriority("Found local version");
+			}
+			else
+			{
+				// Download the archive
+				Log.HighPriority("Downloading package");
+				var archivePath = stagingDirectory + new Path(packageName + ".zip");
+				using (var httpClient = new HttpClient())
+				{
+					var client = new Api.Client.PackageVersionClient(httpClient)
+					{
+						BaseUrl = SoupApiEndpoint,
+					};
+
+					try
+					{
+						var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
+
+						// Write the contents to disk, scope cleanup
+						using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
+						{
+							await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
+						}
+					}
+					catch (Api.Client.ApiException ex)
+					{
+						if (ex.StatusCode == 404)
+						{
+							Log.HighPriority("Package Version Missing");
+							throw new HandledException();
+						}
+						else
+						{
+							throw;
+						}
+					}
+				}
+
+				// Create the package folder to extract to
+				var stagingVersionFolder = stagingDirectory + new Path($"{languageName}_{packageName}_{packageVersion}/");
+				LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingVersionFolder);
+
+				// Unpack the contents of the archive
+				ZipFile.ExtractToDirectory(archivePath.ToString(), stagingVersionFolder.ToString());
+
+				// Delete the archive file
+				LifetimeManager.Get<IFileSystem>().DeleteFile(archivePath);
+
+				// Ensure the package root folder exists
+				if (!LifetimeManager.Get<IFileSystem>().Exists(packageRootFolder))
+				{
+					// Create the folder
+					LifetimeManager.Get<IFileSystem>().CreateDirectory2(packageRootFolder);
+				}
+
+				// Move the extracted contents into the version folder
+				LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
+			}
+		}
+
+		/// <summary>
+		/// Restore package lock
+		/// </summary>
+		static async Task RestorePackageLockAsync(
+			Path packagesDirectory,
+			Path stagingDirectory,
+			PackageLock packageLock)
+		{
+
+			foreach (var languageProjects in packageLock.GetProjects())
+			{
+				foreach (var project in languageProjects.Value.AsList())
+				{
+					var projectTable = project.AsTable();
+					var packageReference = PackageReference.Parse(projectTable["Version"].AsString());
+					if (!packageReference.IsLocal)
+					{
+						await EnsurePackageDownloadedAsync(
+							languageProjects.Key,
+							packageReference.GetName,
+							packageReference.Version,
+							packagesDirectory,
+							stagingDirectory);
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Recursively restore all dependencies
 		/// </summary>
 		static async Task RestoreRecursiveDependenciesAsync(
 			Path recipeDirectory,
 			Path packagesDirectory,
 			Path stagingDirectory,
-			IDictionary<string, PackageReference> closure)
+			IDictionary<string, IDictionary<string, PackageReference>> closure)
 		{
 			var recipePath =
 				recipeDirectory +
@@ -442,14 +568,16 @@ namespace Soup.Build.PackageManager
 				throw new InvalidOperationException("Could not load the recipe file.");
 			}
 
-			if (closure.ContainsKey(recipe.Name))
+			if (closure.ContainsKey(recipe.Language) && closure[recipe.Language].ContainsKey(recipe.Name))
 			{
 				Log.Diag("Recipe already processed.");
 			}
 			else
-			{ 
+			{
 				// Add the project to the closure
-				closure.Add(recipe.Name, new PackageReference(recipeDirectory));
+				if (!closure.ContainsKey(recipe.Language))
+					closure.Add(recipe.Language, new Dictionary<string, PackageReference>());
+				closure[recipe.Language].Add(recipe.Name, new PackageReference(recipeDirectory));
 
 				foreach (var dependecyType in recipe.GetDependencyTypes())
 				{
@@ -480,7 +608,7 @@ namespace Soup.Build.PackageManager
 							}
 							else
 							{
-								await EnsurePackageDownloadedAsync(
+								await CheckRecursiveEnsurePackageDownloadedAsync(
 									implicitLanguage,
 									dependency.GetName,
 									dependency.Version,

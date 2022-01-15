@@ -46,20 +46,21 @@ namespace Soup.Build.Utilities
 			return HasValue(_table, Property_Projects);
 		}
 
-		public IValueList GetProjects()
+		public IValueTable GetProjects()
 		{
 			if (!HasProjects())
 				throw new InvalidOperationException("No projects.");
 
-			var values = GetValue(_table, Property_Projects).AsList();
+			var values = GetValue(_table, Property_Projects).AsTable();
 			return values;
 		}
 
-		public void AddProject(string name, string version)
+		public void AddProject(string language, string name, string version)
 		{
-			var projects = EnsureHasList(_table, Property_Projects);
-
-			var projectTable = projects.AddTableWithSyntax();
+			var projects = EnsureHasTable(_table, Property_Projects);
+			var projectLanguageList = EnsureHasList(projects, language);
+			
+			var projectTable = projectLanguageList.AddTableWithSyntax();
 			projectTable.AddItemWithSyntax("Name", name);
 			projectTable.AddItemWithSyntax("Version", version);
 		}
@@ -102,11 +103,29 @@ namespace Soup.Build.Utilities
 			return value;
 		}
 
-		private ValueList EnsureHasList(ValueTable table, string name)
+		private ValueTable EnsureHasTable(ValueTable table, string name)
 		{
 			if (table.ContainsKey(name))
 			{
 				var value = _table[name];
+				if (value.Type != ValueType.Table)
+					throw new InvalidOperationException("The package lock already has a non-table dependencies property");
+
+				// Find the Syntax for the table
+				return (ValueTable)value.AsTable();
+			}
+			else
+			{
+				// Create a new table
+				return table.AddTableWithSyntax(name);
+			}
+		}
+
+		private ValueList EnsureHasList(ValueTable table, string name)
+		{
+			if (table.ContainsKey(name))
+			{
+				var value = table[name];
 				if (value.Type != ValueType.List)
 					throw new InvalidOperationException($"The package lock already has a non-list {name} property");
 

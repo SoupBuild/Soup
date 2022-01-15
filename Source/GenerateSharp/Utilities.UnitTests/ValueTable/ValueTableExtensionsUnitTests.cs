@@ -86,5 +86,51 @@ namespace Soup.Build.Utilities.UnitTests
 			var content = uut.MirrorSyntax.ToString();
 			Assert.Equal("NewList = [\n\t{ NewItem1 = \"NewValue1\", NewItem2 = \"NewValue2\" },\n]\n", content);
 		}
+
+		[Fact]
+		public void AddTableWithSyntax()
+		{
+			var uut = new ValueTable()
+			{
+				MirrorSyntax = new DocumentSyntax(),
+			};
+
+			uut.AddTableWithSyntax("NewTable");
+
+			var content = uut.MirrorSyntax.ToString();
+			Assert.Equal("[NewTable]\n", content);
+		}
+
+		[Fact]
+		public void AddTableAndListWithSyntax()
+		{
+			var uut = new ValueTable()
+			{
+				MirrorSyntax = new DocumentSyntax(),
+			};
+
+			var newTable = uut.AddTableWithSyntax("NewTable");
+			newTable.AddListWithSyntax("NewList");
+
+			var content = uut.MirrorSyntax.ToString();
+			Assert.Equal("[NewTable]\nNewList = [\n]\n", content);
+		}
+
+		[Fact]
+		public void AddTableAndListAndTableWithSyntax()
+		{
+			var uut = new ValueTable()
+			{
+				MirrorSyntax = new DocumentSyntax(),
+			};
+
+			var newTable = uut.AddTableWithSyntax("NewTable");
+			var newList = newTable.AddListWithSyntax("NewList");
+			var newTable2 = newList.AddTableWithSyntax();
+			newTable2.AddItemWithSyntax("NewItem", "NewValue");
+
+			var content = uut.MirrorSyntax.ToString();
+			Assert.Equal("[NewTable]\nNewList = [\n\t{ NewItem = \"NewValue\" },\n]\n", content);
+		}
 	}
 }
