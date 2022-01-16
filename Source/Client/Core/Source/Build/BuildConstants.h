@@ -22,6 +22,15 @@ namespace Soup::Core
 		}
 
 		/// <summary>
+		/// Gets the Package Lock file name
+		/// </summary>
+		static const Path& PackageLockFileName()
+		{
+			static const Path value = Path("PackageLock.toml");
+			return value;
+		}
+
+		/// <summary>
 		/// Gets the Generate Parameters Value Table file name
 		/// </summary>
 		static const Path GenerateParametersFileName()

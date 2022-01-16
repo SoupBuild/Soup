@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "PackageLock/PackageLockExtensions.h"
 #include "RecipeBuildArguments.h"
 #include "Recipe/RecipeExtensions.h"
 #include "Recipe/RootRecipeExtensions.h"
@@ -27,6 +28,14 @@ namespace Soup::Core
 
 		void LoadClosure(const Path& projectRoot)
 		{
+			// Load the package lock if present
+			auto packageLockPath = projectRoot + BuildConstants::PackageLockFileName();
+			PackageLock packageLock = {};
+			if (PackageLockExtensions::TryLoadFromFile(packageLockPath, packageLock))
+			{
+				Log::Info("Package lock loaded");
+			}
+
 			int projectId = 1;
 			auto parentSet = std::set<std::string>();
 
