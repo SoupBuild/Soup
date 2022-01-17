@@ -16,11 +16,19 @@ namespace Soup::Core
 	/// </summary>
 	export class ProjectManager
 	{
+	private:
+		bool _hasPackageLock;
+		std::map<std::string, std::map<std::string, PackageReference>> _packageLanguageLock;
+		std::map<std::string, Recipe> _knownRecipes;
+		std::map<std::string, RootRecipe> _knownRootRecipes;
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProjectManager"/> class.
 		/// </summary>
 		ProjectManager() :
+			_hasPackageLock(false),
+			_packageLanguageLock(),
 			_knownRecipes(),
 			_knownRootRecipes()
 		{
@@ -30,10 +38,14 @@ namespace Soup::Core
 		{
 			// Load the package lock if present
 			auto packageLockPath = projectRoot + BuildConstants::PackageLockFileName();
-			PackageLock packageLock = {};
+			_hasPackageLock = false;
+			PackageLock packageLock = { };
 			if (PackageLockExtensions::TryLoadFromFile(packageLockPath, packageLock))
 			{
 				Log::Info("Package lock loaded");
+
+				_packageLanguageLock = packageLock.GetProjects();
+				_hasPackageLock = true;
 			}
 
 			int projectId = 1;
@@ -184,7 +196,7 @@ namespace Soup::Core
 		Path GetPackageReferencePath(
 			const Path& workingDirectory,
 			const PackageReference& reference,
-			const std::string& parentPackageLangauge) const
+			const std::string& packageLangauge) const
 		{
 			// If the path is relative then combine with the working directory
 			Path packagePath;
@@ -199,10 +211,38 @@ namespace Soup::Core
 			else
 			{
 				auto packageStore = GetSoupUserDataPath() + Path("packages/");
-				packagePath = packageStore +
-					Path(parentPackageLangauge) +
-					Path(reference.GetName()) +
-					Path(reference.GetVersion().ToString());
+				if (_hasPackageLock)
+				{
+					// Find the package version in the lock
+					auto packageLock = _packageLanguageLock.find(packageLangauge);
+					if (packageLock == _packageLanguageLock.end())
+						throw std::runtime_error("Language [" + packageLangauge + "] not found in lock");
+					auto packageVersion = packageLock->second.find(reference.GetName());
+					if (packageVersion == packageLock->second.end())
+						throw std::runtime_error("Package [" + packageLangauge + "] [" + reference.GetName() + "] not found in lock");
+
+					if (packageVersion->second.IsLocal())
+					{
+						// Allow overload to local version
+						packagePath = packageVersion->second.GetPath();
+					}
+					else
+					{
+						// Use the package version in the lock
+						packagePath = packageStore +
+							Path(packageLangauge) +
+							Path(reference.GetName()) +
+							Path(packageVersion->second.GetVersion().ToString());
+					}
+				}
+				else
+				{
+					// Without a package lock, use the exact version specified
+					packagePath = packageStore +
+						Path(packageLangauge) +
+						Path(reference.GetName()) +
+						Path(reference.GetVersion().ToString());
+				}
 			}
 
 			return packagePath;
@@ -214,9 +254,5 @@ namespace Soup::Core
 				Path(".soup/");
 			return result;
 		}
-
-	private:
-		std::map<std::string, Recipe> _knownRecipes;
-		std::map<std::string, RootRecipe> _knownRootRecipes;
 	};
 }

@@ -4,6 +4,7 @@
 
 #pragma once
 #include "Recipe/RecipeValue.h"
+#include "Recipe/PackageReference.h"
 
 namespace Soup::Core
 {
@@ -42,13 +43,35 @@ namespace Soup::Core
 			return HasValue(_table, Property_Projects);
 		}
 
-		RecipeTable GetProjects()
+		std::map<std::string, std::map<std::string, PackageReference>> GetProjects()
 		{
 			if (!HasProjects())
 				throw std::runtime_error("No projects.");
 
-			auto values = GetValue(_table, Property_Projects).AsTable();
-			return values;
+			auto& values = GetValue(_table, Property_Projects).AsTable();
+			auto result = std::map<std::string, std::map<std::string, PackageReference>>();
+			for (auto& languageValue : values)
+			{
+				auto languageLock = std::map<std::string, PackageReference>();
+				for (auto& projectValue : languageValue.second.AsList())
+				{
+					auto& projectTable = projectValue.AsTable();
+
+					if (!HasValue(projectTable, Property_Name))
+						throw std::runtime_error("No Name on project table.");
+					auto& name = GetValue(projectTable, Property_Name).AsString();
+
+					if (!HasValue(projectTable, Property_Version))
+						throw std::runtime_error("No Version on project table.");
+					auto version = PackageReference::Parse(GetValue(projectTable, Property_Version).AsString());
+
+					languageLock.emplace(name, std::move(version));
+				}
+
+				result.emplace(languageValue.first, std::move(languageLock));
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -90,7 +113,7 @@ namespace Soup::Core
 			}
 			else
 			{
-				throw std::runtime_error("Requested recipe value does not exist in the table.");
+				throw std::runtime_error("Requested package lock value does not exist in the table.");
 			}
 		}
 

@@ -53,7 +53,7 @@ namespace Soup.Build.PackageManager
 				{
 					Log.Info("Discovering full closure");
 					var closure = new Dictionary<string, IDictionary<string, PackageReference>>();
-					await RestoreRecursiveDependenciesAsync(
+					await CheckRestoreRecursiveDependenciesAsync(
 						workingDirectory,
 						packageStore,
 						stagingPath,
@@ -432,14 +432,24 @@ namespace Soup.Build.PackageManager
 
 					// Move the extracted contents into the version folder
 					LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
-
-					// Install recursive dependencies
-					await RestoreRecursiveDependenciesAsync(
-						packageVersionFolder,
-						packagesDirectory,
-						stagingDirectory,
-						closure);
 				}
+
+				var recipePath =
+					packageVersionFolder +
+					BuildConstants.RecipeFileName;
+				var (isSuccess, recipe) = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipePath);
+				if (!isSuccess)
+				{
+					throw new InvalidOperationException("Could not load the recipe file.");
+				}
+
+				// Install recursive dependencies
+				await RestoreRecursiveDependenciesAsync(
+					packageVersionFolder,
+					recipe,
+					packagesDirectory,
+					stagingDirectory,
+					closure);
 			}
 		}
 
@@ -553,7 +563,7 @@ namespace Soup.Build.PackageManager
 		/// <summary>
 		/// Recursively restore all dependencies
 		/// </summary>
-		static async Task RestoreRecursiveDependenciesAsync(
+		static async Task CheckRestoreRecursiveDependenciesAsync(
 			Path recipeDirectory,
 			Path packagesDirectory,
 			Path stagingDirectory,
@@ -579,43 +589,62 @@ namespace Soup.Build.PackageManager
 					closure.Add(recipe.Language, new Dictionary<string, PackageReference>());
 				closure[recipe.Language].Add(recipe.Name, new PackageReference(recipeDirectory));
 
-				foreach (var dependecyType in recipe.GetDependencyTypes())
+				await RestoreRecursiveDependenciesAsync(
+					recipeDirectory,
+					recipe,
+					packagesDirectory,
+					stagingDirectory,
+					closure);
+			}
+		}
+
+
+		/// <summary>
+		/// Recursively restore all dependencies, assume that the closure has been updated correctly for current recipe
+		/// </summary>
+		static async Task RestoreRecursiveDependenciesAsync(
+			Path recipeDirectory,
+			Recipe recipe,
+			Path packagesDirectory,
+			Path stagingDirectory,
+			IDictionary<string, IDictionary<string, PackageReference>> closure)
+		{
+			foreach (var dependecyType in recipe.GetDependencyTypes())
+			{
+				if (recipe.HasNamedDependencies(dependecyType))
 				{
-					if (recipe.HasNamedDependencies(dependecyType))
+					// Same language as parent is implied
+					var implicitLanguage = recipe.Language;
+
+					// Build dependencies do not inherit the parent language
+					// Instead, they default to C#
+					if (dependecyType == "Build")
 					{
-						// Same language as parent is implied
-						var implicitLanguage = recipe.Language;
+						implicitLanguage = "C#";
+					}
 
-						// Build dependencies do not inherit the parent language
-						// Instead, they default to C#
-						if (dependecyType == "Build")
+					foreach (var dependency in recipe.GetNamedDependencies(dependecyType))
+					{
+						// If local then check children for external package references
+						// Otherwise install the external package reference and its dependencies
+						if (dependency.IsLocal)
 						{
-							implicitLanguage = "C#";
+							var dependencyPath = recipeDirectory + dependency.Path;
+							await CheckRestoreRecursiveDependenciesAsync(
+								dependencyPath,
+								packagesDirectory,
+								stagingDirectory,
+								closure);
 						}
-
-						foreach (var dependency in recipe.GetNamedDependencies(dependecyType))
+						else
 						{
-							// If local then check children for external package references
-							// Otherwise install the external package reference and its dependencies
-							if (dependency.IsLocal)
-							{
-								var dependencyPath = recipeDirectory + dependency.Path;
-								await RestoreRecursiveDependenciesAsync(
-									dependencyPath,
-									packagesDirectory,
-									stagingDirectory,
-									closure);
-							}
-							else
-							{
-								await CheckRecursiveEnsurePackageDownloadedAsync(
-									implicitLanguage,
-									dependency.GetName,
-									dependency.Version,
-									packagesDirectory,
-									stagingDirectory,
-									closure);
-							}
+							await CheckRecursiveEnsurePackageDownloadedAsync(
+								implicitLanguage,
+								dependency.GetName,
+								dependency.Version,
+								packagesDirectory,
+								stagingDirectory,
+								closure);
 						}
 					}
 				}
