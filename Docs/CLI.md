@@ -9,9 +9,11 @@ soup <command> [arguments]
 
 * [Initialize](CLI/Initialize.md) - Initialize a new Package with default properties.
 
-* [Install](CLI/Install.md) - Install dependencies for a specified Package and all recursive references.
+* [Install](CLI/Install.md) - Install a new dependency for a specified Package.
 
 * [Publish](CLI/Publish.md) - Publish a given package to the public feed.
+
+* [Restore](CLI/Restore.md) - Restore all external package references in the target project closure.
 
 * [Run](CLI/Run.md) - Invoke the executable result (if applicable) for a specified package.
 

@@ -1,23 +1,23 @@
-﻿// <copyright file="InstallCommand.h" company="Soup">
+﻿// <copyright file="RestoreCommand.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 #include "ICommand.h"
-#include "InstallOptions.h"
+#include "RestoreOptions.h"
 
 namespace Soup::Client
 {
 	/// <summary>
-	/// Install Command
+	/// Restore Command
 	/// </summary>
-	class InstallCommand : public ICommand
+	class RestoreCommand : public ICommand
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="InstallCommand"/> class.
+		/// Initializes a new instance of the <see cref="RestoreCommand"/> class.
 		/// </summary>
-		InstallCommand(InstallOptions options) :
+		RestoreCommand(RestoreOptions options) :
 			_options(std::move(options))
 		{
 		}
@@ -27,7 +27,7 @@ namespace Soup::Client
 		/// </summary>
 		virtual void Run() override final
 		{
-			Log::Diag("InstallCommand::Run");
+			Log::Diag("RestoreCommand::Run");
 
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
@@ -46,12 +46,11 @@ namespace Soup::Client
 				}
 			}
 
-			Core::PackageManager::InstallPackageReference(
-				workingDirectory,
-				_options.PackageReference);
+			Core::PackageManager::RestorePackages(
+				workingDirectory);
 		}
 
 	private:
-		InstallOptions _options;
+		RestoreOptions _options;
 	};
 }

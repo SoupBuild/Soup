@@ -37,7 +37,7 @@ namespace Soup.Build.Utilities
 					var result = ValueTableTomlUtilities.Deserialize(
 						recipeFile,
 						await reader.ReadToEndAsync());
-					return (true, new Recipe(result.Table, result.Root));
+					return (true, new Recipe(result));
 				}
 				catch (Exception ex)
 				{

@@ -1,0 +1,22 @@
+[Projects]
+"C++" = [
+	{ Name = "Soup", Version = "C:/Users/mwasp/source/repos/Soup/Source/Client/CLI" },
+	{ Name = "Soup.Core", Version = "C:/Users/mwasp/source/repos/Soup/Source/Client/Core/" },
+	{ Name = "json11", Version = "json11@1.0.1" },
+	{ Name = "Opal", Version = "Opal@0.3.0" },
+	{ Name = "toml11", Version = "toml11@1.0.1" },
+	{ Name = "Monitor.Host", Version = "C:/Users/mwasp/source/repos/Soup/Source/Monitor/Host/" },
+	{ Name = "Detours", Version = "C:/Users/mwasp/source/repos/Soup/Dependencies/Detours/src/" },
+	{ Name = "Monitor.Shared", Version = "C:/Users/mwasp/source/repos/Soup/Source/Monitor/Shared/" },
+	{ Name = "Soup.Test.Assert", Version = "Soup.Test.Assert@0.1.8" },
+	{ Name = "copy", Version = "C:/Users/mwasp/source/repos/Soup/Source/Tools/Copy/" },
+	{ Name = "mkdir", Version = "C:/Users/mwasp/source/repos/Soup/Source/Tools/Mkdir/" },
+]
+"C#" = [
+	{ Name = "Soup.Test.Cpp", Version = "Soup.Test.Cpp@0.1.3" },
+	{ Name = "Opal", Version = "Opal@1.0.1" },
+	{ Name = "Soup.Build", Version = "Soup.Build@0.1.3" },
+	{ Name = "Soup.Build.Extensions", Version = "Soup.Build.Extensions@0.1.7" },
+	{ Name = "Soup.Cpp.Compiler", Version = "Soup.Cpp.Compiler@0.1.5" },
+	{ Name = "Soup.Cpp.Compiler.MSVC", Version = "Soup.Cpp.Compiler.MSVC@0.1.6" },
+]

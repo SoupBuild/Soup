@@ -10,7 +10,7 @@ namespace Soup::Core::UnitTests
 	{
 	public:
 		// [[Fact]]
-		void InstallPackages()
+		void RestorePackages()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -21,12 +21,12 @@ namespace Soup::Core::UnitTests
 			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
 
 			auto workingDirectory = Path("C:/TestLocation");
-			PackageManager::InstallPackages(workingDirectory);
+			PackageManager::RestorePackages(workingDirectory);
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"INFO: InstallPackages",
-					"INFO: Running PackageManager: install-packages C:/TestLocation",
+					"INFO: RestorePackages",
+					"INFO: Running PackageManager: restore-packages C:/TestLocation",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -34,7 +34,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
-					"CreateProcess: 1 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-packages C:/TestLocation",
+					"CreateProcess: 1 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe restore-packages C:/TestLocation",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",

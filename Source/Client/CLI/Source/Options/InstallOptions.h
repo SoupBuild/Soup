@@ -32,8 +32,8 @@ namespace Soup::Client
 		static void ShowUsage()
 		{
 			std::cout << std::endl;
-			std::cout << "Usage: soup install <package_file>" << std::endl;
-			std::cout << "\tpackage_file: Must be a zip file." << std::endl;
+			std::cout << "Usage: soup install <package_file> <package_reference>" << std::endl;
+			std::cout << "\tpackage_file: ." << std::endl;
 		}
 
 	private:

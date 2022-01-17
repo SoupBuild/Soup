@@ -35,7 +35,7 @@ namespace Soup.Build.PackageManager
 
 				switch (command)
 				{
-					case "install-packages":
+					case "restore-packages":
 						{
 							if (args.Length != 2)
 							{
@@ -43,7 +43,7 @@ namespace Soup.Build.PackageManager
 								return -1;
 							}
 
-							await PackageManager.InstallPackagesAsync(workingDirectory);
+							await PackageManager.RestorePackagesAsync(workingDirectory);
 						}
 						break;
 					case "install-package":
@@ -91,7 +91,7 @@ namespace Soup.Build.PackageManager
 		{
 			Log.Info("Soup.Build.PackageManager.exe [command] [directory]");
 			Log.Info("\tinstall-package [directory] [packageReference]");
-			Log.Info("\tinstall-packages [directory]");
+			Log.Info("\trestore-packages [directory]");
 			Log.Info("\tpublish-package [directory]");
 		}
 	}
