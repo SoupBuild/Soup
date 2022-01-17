@@ -13,14 +13,14 @@ namespace Soup::Core
 	{
 	public:
 		/// <summary>
-		/// Install packages
+		/// Restore packages
 		/// </summary>
-		static void InstallPackages(const Path& workingDirectory)
+		static void RestorePackages(const Path& workingDirectory)
 		{
-			Log::Info("InstallPackages");
+			Log::Info("RestorePackages");
 
 			auto arguments = std::stringstream();
-			arguments << "install-packages " << workingDirectory.ToString();
+			arguments << "restore-packages " << workingDirectory.ToString();
 
 			RunCommand(arguments.str());
 		}

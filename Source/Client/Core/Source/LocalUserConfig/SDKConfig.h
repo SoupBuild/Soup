@@ -37,12 +37,12 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the Name
 		/// </summary>
-		bool HasName()
+		bool HasName() const
 		{
 			return HasValue(Property_Name);
 		}
 
-		std::string GetName()
+		std::string GetName() const
 		{
 			if (!HasName())
 				throw std::runtime_error("No Name.");
@@ -114,9 +114,22 @@ namespace Soup::Core
 		}
 
 	private:
-		bool HasValue(std::string_view key)
+		bool HasValue(std::string_view key) const
 		{
 			return _table.contains(key.data());
+		}
+
+		const RecipeValue& GetValue(std::string_view key) const
+		{
+			auto findItr = _table.find(key.data());
+			if (findItr != _table.end())
+			{
+				return findItr->second;
+			}
+			else
+			{
+				throw std::runtime_error("Requested recipe value does not exist in the root table.");
+			}
 		}
 
 		RecipeValue& GetValue(std::string_view key)

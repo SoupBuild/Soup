@@ -2,7 +2,7 @@
   "profiles": {
     "Soup.Build.PackageManager": {
       "commandName": "Project",
-      "commandLineArgs": "install-packages C:\\Users\\mwasp\\source\\repos\\Soup\\Source\\Client\\CLI"
+      "commandLineArgs": "restore-packages C:\\Users\\mwasp\\source\\repos\\Soup\\Source\\Client\\CLI"
     }
   }
 }
