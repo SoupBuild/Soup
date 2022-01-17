@@ -39,6 +39,11 @@ namespace Soup.Build.Cpp.Compiler
 		string DynamicLibraryFileExtension { get; }
 
 		/// <summary>
+		/// Gets the resource file extension for the compiler
+		/// </summary>
+		string ResourceFileExtension { get; }
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		IList<BuildOperation> CreateCompileOperations(SharedCompileArguments arguments);

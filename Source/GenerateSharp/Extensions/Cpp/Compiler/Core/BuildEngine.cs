@@ -86,10 +86,34 @@ namespace Soup.Build.Cpp.Compiler
 					CustomProperties = arguments.CustomProperties,
 				};
 
+				// Compile the resource file if present
+				if (!arguments.ResourceFile.IsEmpty)
+				{
+					buildState.LogTrace(TraceLevel.Information, "Generate Resource File Compile: " + arguments.ResourceFile.ToString());
+
+					var compiledResourceFile =
+						arguments.ObjectDirectory +
+						new Path(arguments.ResourceFile.GetFileName());
+					compiledResourceFile.SetFileExtension(_compiler.ResourceFileExtension);
+
+					var compileResourceFileArguments = new ResourceCompileArguments()
+					{
+						SourceFile = arguments.ResourceFile,
+						TargetFile = compiledResourceFile,
+					};
+
+					// Add the resource file arguments to the shared build definition
+					compileArguments.ResourceFile = compileResourceFileArguments;
+
+					// Add output resource to the list of link dependencies
+					result.InternalLinkDependencies.Add(
+							arguments.TargetRootDirectory + compileResourceFileArguments.TargetFile);
+				}
+
 				// Compile the module interface unit if present
 				if (!arguments.ModuleInterfaceSourceFile.IsEmpty)
 				{
-					buildState.LogTrace(TraceLevel.Information, "Generate Module Unit Compile: " + arguments.ModuleInterfaceSourceFile.ToString());
+					buildState.LogTrace(TraceLevel.Information, "Generate Module Interface Unit Compile: " + arguments.ModuleInterfaceSourceFile.ToString());
 
 					var objectModuleInterfaceFile =
 						arguments.ObjectDirectory +

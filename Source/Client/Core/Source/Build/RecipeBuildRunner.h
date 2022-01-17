@@ -45,6 +45,28 @@ namespace Soup::Core
 	/// </summary>
 	export class RecipeBuildRunner
 	{
+	private:
+		RecipeBuildArguments _arguments;
+		ValueTable _hostBuildGlobalParameters;
+
+		ValueList _sdkParameters;
+
+		ProjectManager _projectManager;
+
+		// Global read access
+		std::vector<Path> _systemReadAccess;
+		std::vector<Path> _sdkReadAccess;
+
+		// Mapping from name to build folder to check for duplicate names with different packages
+		std::map<std::string, Path> _buildSet;
+		std::map<std::string, Path> _hostBuildSet;
+
+		// Mapping from package root path to the name and target folder to be used with dependencies parameters
+		std::map<Path, RecipeBuildCacheState> _buildCache;
+		std::map<Path, RecipeBuildCacheState> _hostBuildCache;
+
+		std::shared_ptr<FileSystemState> _fileSystemState;
+
 	public:
 		static Path GetSoupTargetDirectory()
 		{
@@ -242,7 +264,10 @@ namespace Soup::Core
 				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 				{
 					// Load this package recipe
-					auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
+					auto packagePath = _projectManager.GetPackageReferencePath(
+						workingDirectory,
+						dependency,
+						implicitLanguage);
 					auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
 					Recipe dependencyRecipe = {};
 					if (!_projectManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
@@ -254,8 +279,8 @@ namespace Soup::Core
 						}
 						else
 						{
-							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " [" + workingDirectory.ToString() + "]");
-							Log::HighPriority("Run `install` and try again");
+							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + packagePath.ToString() + " [" + workingDirectory.ToString() + "]");
+							Log::HighPriority("Run `restore` and try again");
 						}
 
 						// Nothing we can do, exit
@@ -680,33 +705,6 @@ namespace Soup::Core
 			return result;
 		}
 
-		Path GetPackageReferencePath(
-			const Path& workingDirectory,
-			const PackageReference& reference,
-			const std::string& parentPackageLangauge) const
-		{
-			// If the path is relative then combine with the working directory
-			Path packagePath;
-			if (reference.IsLocal())
-			{
-				packagePath = reference.GetPath();
-				if (!packagePath.HasRoot())
-				{
-					packagePath = workingDirectory + packagePath;
-				}
-			}
-			else
-			{
-				auto packageStore = GetSoupUserDataPath() + Path("packages/");
-				packagePath = packageStore +
-					Path(parentPackageLangauge) +
-					Path(reference.GetName()) +
-					Path(reference.GetVersion().ToString());
-			}
-
-			return packagePath;
-		}
-
 		/// <summary>
 		/// Attempt to merge the existing operation graph if it exists
 		/// </summary>
@@ -761,7 +759,10 @@ namespace Soup::Core
 				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 				{
 					// Load this package recipe
-					auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
+					auto packagePath = _projectManager.GetPackageReferencePath(
+						workingDirectory,
+						dependency,
+						implicitLanguage);
 
 					// Cache the build state for upstream dependencies
 					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
@@ -820,7 +821,10 @@ namespace Soup::Core
 				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 				{
 					// Load this package recipe
-					auto packagePath = GetPackageReferencePath(workingDirectory, dependency, implicitLanguage);
+					auto packagePath = _projectManager.GetPackageReferencePath(
+						workingDirectory,
+						dependency,
+						implicitLanguage);
 
 					// Cache the build state for upstream dependencies
 					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
@@ -864,27 +868,5 @@ namespace Soup::Core
 			static const auto value = Path("temp/");
 			return value;
 		}
-
-	private:
-		RecipeBuildArguments _arguments;
-		ValueTable _hostBuildGlobalParameters;
-
-		ValueList _sdkParameters;
-
-		ProjectManager _projectManager;
-
-		// Global read access
-		std::vector<Path> _systemReadAccess;
-		std::vector<Path> _sdkReadAccess;
-
-		// Mapping from name to build folder to check for duplicate names with different packages
-		std::map<std::string, Path> _buildSet;
-		std::map<std::string, Path> _hostBuildSet;
-
-		// Mapping from package root path to the name and target folder to be used with dependencies parameters
-		std::map<Path, RecipeBuildCacheState> _buildCache;
-		std::map<Path, RecipeBuildCacheState> _hostBuildCache;
-
-		std::shared_ptr<FileSystemState> _fileSystemState;
 	};
 }

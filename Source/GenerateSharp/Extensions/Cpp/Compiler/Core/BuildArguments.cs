@@ -114,6 +114,12 @@ namespace Soup.Build.Cpp.Compiler
 		public Path ModuleInterfaceSourceFile { get; set; } = new Path();
 
 		/// <summary>
+		/// Gets or sets the MSVC Resrouce file
+		/// TODO: Abstract for multi-compiler/platform support
+		/// </summary>
+		public Path ResourceFile { get; set; } = new Path();
+
+		/// <summary>
 		/// Gets or sets the list of source files
 		/// Note: These files can be plain old translation units 
 		/// or they can be module implementation units

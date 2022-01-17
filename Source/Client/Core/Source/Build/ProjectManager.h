@@ -18,6 +18,7 @@ namespace Soup::Core
 	{
 	private:
 		bool _hasPackageLock;
+		Path _packageLockRoot;
 		std::map<std::string, std::map<std::string, PackageReference>> _packageLanguageLock;
 		std::map<std::string, Recipe> _knownRecipes;
 		std::map<std::string, RootRecipe> _knownRootRecipes;
@@ -44,6 +45,7 @@ namespace Soup::Core
 			{
 				Log::Info("Package lock loaded");
 
+				_packageLockRoot = projectRoot;
 				_packageLanguageLock = packageLock.GetProjects();
 				_hasPackageLock = true;
 			}
@@ -101,8 +103,8 @@ namespace Soup::Core
 						}
 						else
 						{
-							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " [" + projectRoot.ToString() + "]");
-							Log::HighPriority("Run `install` and try again");
+							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
+							Log::HighPriority("Run `restore` and try again");
 						}
 
 						// Nothing we can do, exit
@@ -192,7 +194,6 @@ namespace Soup::Core
 			}
 		}
 
-	private:
 		Path GetPackageReferencePath(
 			const Path& workingDirectory,
 			const PackageReference& reference,
@@ -225,6 +226,10 @@ namespace Soup::Core
 					{
 						// Allow overload to local version
 						packagePath = packageVersion->second.GetPath();
+						if (!packagePath.HasRoot())
+						{
+							packagePath = _packageLockRoot + packagePath;
+						}
 					}
 					else
 					{
@@ -248,6 +253,7 @@ namespace Soup::Core
 			return packagePath;
 		}
 
+	private:
 		Path GetSoupUserDataPath() const
 		{
 			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +

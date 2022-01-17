@@ -675,7 +675,7 @@ namespace Soup.Build.Cpp.UnitTests
 				Assert.Equal(
 					new List<string>()
 					{
-						"INFO: Generate Module Unit Compile: ./Public.cpp",
+						"INFO: Generate Module Interface Unit Compile: ./Public.cpp",
 						"INFO: Generate Compile Operation: ./TestFile1.cpp",
 						"INFO: Generate Compile Operation: ./TestFile2.cpp",
 						"INFO: Generate Compile Operation: ./TestFile3.cpp",
@@ -946,7 +946,7 @@ namespace Soup.Build.Cpp.UnitTests
 				Assert.Equal(
 					new List<string>
 					{
-						"INFO: Generate Module Unit Compile: ./Public.cpp",
+						"INFO: Generate Module Interface Unit Compile: ./Public.cpp",
 						"INFO: CoreLink",
 						"INFO: Linking target",
 						"INFO: Generate Link Operation: ./bin/Library.mock.lib",

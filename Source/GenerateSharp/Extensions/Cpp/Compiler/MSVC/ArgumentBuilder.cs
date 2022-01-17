@@ -192,6 +192,36 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			return commandArguments;
 		}
 
+		public static IList<string> BuildResourceCompilerArguments(
+			Path targetRootDirectory,
+			ResourceCompileArguments arguments)
+		{
+			// Build the arguments for a standard translation unit
+			var commandArguments = new List<string>();
+
+			// Disable the logo
+			AddFlag(commandArguments, ArgumentFlag_NoLogo);
+
+			// TODO: Defines?
+			AddFlagValue(commandArguments, Compiler_ArgumentParameter_PreprocessorDefine, "_UNICODE");
+			AddFlagValue(commandArguments, Compiler_ArgumentParameter_PreprocessorDefine, "UNICODE");
+
+			// Specify default language using language identifier
+			AddFlagValueWithQuotes(commandArguments, "l", "0x0409");
+
+			// Add the target file as outputs
+			var absoluteTargetFile = targetRootDirectory + arguments.TargetFile;
+			AddFlagValueWithQuotes(
+				commandArguments,
+				Compiler_ArgumentParameter_ObjectFile,
+				absoluteTargetFile.ToString());
+
+			// Add the source file as input
+			commandArguments.Add(arguments.SourceFile.ToString());
+
+			return commandArguments;
+		}
+
 		public static IList<string> BuildInterfaceUnitCompilerArguments(
 			Path targetRootDirectory,
 			InterfaceUnitCompileArguments arguments,

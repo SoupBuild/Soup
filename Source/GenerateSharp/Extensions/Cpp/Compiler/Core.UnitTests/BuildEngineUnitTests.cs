@@ -198,6 +198,195 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
         }
 
         [Fact]
+        public void Build_WindowsApplicationWithResource()
+        {
+            // Register the test process manager
+            var processManager = new MockProcessManager();
+
+            // Register the test listener
+            var testListener = new TestTraceListener();
+            using (var scopedTraceListener = new ScopedTraceListenerRegister(testListener))
+            using (var scopedProcesManager = new ScopedSingleton<IProcessManager>(processManager))
+            {
+                // Register the mock compiler
+                var compiler = new Mock.Compiler();
+
+                // Register the test process manager
+
+                // Setup the build arguments
+                var arguments = new BuildArguments();
+                arguments.TargetName = "Program";
+                arguments.TargetType = BuildTargetType.WindowsApplication;
+                arguments.LanguageStandard = LanguageStandard.CPP20;
+                arguments.SourceRootDirectory = new Path("C:/source/");
+                arguments.TargetRootDirectory = new Path("C:/target/");
+                arguments.ObjectDirectory = new Path("obj/");
+                arguments.BinaryDirectory = new Path("bin/");
+                arguments.SourceFiles = new List<Path>()
+                {
+                    new Path("TestFile.cpp"),
+                };
+                arguments.ResourceFile = new Path("Resources.rc");
+                arguments.OptimizationLevel = BuildOptimizationLevel.None;
+                arguments.LinkDependencies = new List<Path>()
+                {
+                    new Path("../Other/bin/OtherModule1.mock.a"),
+                    new Path("../OtherModule2.mock.a"),
+                };
+
+                var uut = new BuildEngine(compiler);
+                var fileSystemState = new FileSystemState();
+                var readAccessList = new List<Path>();
+                var writeAccessList = new List<Path>();
+                var buildState = new BuildState(new ValueTable(), fileSystemState, readAccessList, writeAccessList);
+                var result = uut.Execute(buildState, arguments);
+
+                // Verify expected process manager requests
+                Assert.Equal(
+                    new List<string>()
+                    {
+                        "GetCurrentProcessFileName",
+                        "GetCurrentProcessFileName",
+                    },
+                    processManager.GetRequests());
+
+                // Verify expected logs
+                Assert.Equal(
+                    new List<string>()
+                    {
+                        "INFO: Generate Resource File Compile: ./Resources.rc",
+                        "INFO: Generate Compile Operation: ./TestFile.cpp",
+                        "INFO: CoreLink",
+                        "INFO: Linking target",
+                        "INFO: Generate Link Operation: ./bin/Program.exe",
+                    },
+                    testListener.GetMessages());
+
+                var expectedCompileArguments = new SharedCompileArguments()
+                {
+                    Standard = LanguageStandard.CPP20,
+                    Optimize = OptimizationLevel.None,
+                    ObjectDirectory = new Path("obj/"),
+                    SourceRootDirectory = new Path("C:/source/"),
+                    TargetRootDirectory = new Path("C:/target/"),
+                };
+
+                var expectedTranslationUnitArguments = new TranslationUnitCompileArguments()
+                {
+                    SourceFile = new Path("TestFile.cpp"),
+                    TargetFile = new Path("obj/TestFile.mock.obj"),
+                };
+                expectedCompileArguments.ImplementationUnits = new List<TranslationUnitCompileArguments>()
+                {
+                    expectedTranslationUnitArguments,
+                };
+
+                expectedCompileArguments.ResourceFile = new ResourceCompileArguments()
+                {
+                    SourceFile = new Path("Resources.rc"),
+                    TargetFile = new Path("obj/Resources.mock.res"),
+                };
+
+                var expectedLinkArguments = new LinkArguments();
+                expectedLinkArguments.TargetType = LinkTarget.WindowsApplication;
+                expectedLinkArguments.TargetFile = new Path("bin/Program.exe");
+                expectedLinkArguments.TargetRootDirectory = new Path("C:/target/");
+                expectedLinkArguments.ObjectFiles = new List<Path>()
+                {
+                    new Path("obj/TestFile.mock.obj"),
+                };
+                expectedLinkArguments.LibraryFiles = new List<Path>()
+                {
+                    new Path("../Other/bin/OtherModule1.mock.a"),
+                    new Path("../OtherModule2.mock.a"),
+                };
+
+                // Verify expected compiler calls
+                Assert.Equal(
+                    new List<SharedCompileArguments>()
+                    {
+                        expectedCompileArguments,
+                    },
+                    compiler.GetCompileRequests());
+                Assert.Equal(
+                    new List<LinkArguments>()
+                    {
+                        expectedLinkArguments,
+                    },
+                    compiler.GetLinkRequests());
+
+                var expectedBuildOperations = new List<BuildOperation>()
+                {
+                    new BuildOperation(
+                        "MakeDir [./obj/]",
+                        new Path("C:/target/"),
+                        new Path("C:/mkdir.exe"),
+                        "\"./obj/\"",
+                        new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./obj/"),
+                        }),
+                    new BuildOperation(
+                        "MakeDir [./bin/]",
+                        new Path("C:/target/"),
+                        new Path("C:/mkdir.exe"),
+                        "\"./bin/\"",
+                        new List<Path>(),
+                        new List<Path>()
+                        {
+                            new Path("./bin/"),
+                        }),
+                    new BuildOperation(
+                        "MockCompile: 1",
+                        new Path("MockWorkingDirectory"),
+                        new Path("MockCompiler.exe"),
+                        "Arguments",
+                        new List<Path>()
+                        {
+                            new Path("TestFile.cpp"),
+                        },
+                        new List<Path>()
+                        {
+                            new Path("obj/TestFile.mock.obj"),
+                        }),
+                    new BuildOperation(
+                        "MockLink: 1",
+                        new Path("MockWorkingDirectory"),
+                        new Path("MockLinker.exe"),
+                        "Arguments",
+                        new List<Path>()
+                        {
+                            new Path("InputFile.in"),
+                        },
+                        new List<Path>()
+                        {
+                            new Path("OutputFile.out"),
+                        }),
+                };
+
+                Assert.Equal(
+                    expectedBuildOperations,
+                    result.BuildOperations);
+
+                Assert.Equal(
+                    new List<Path>(),
+                    result.ModuleDependencies);
+
+                Assert.Equal(
+                    new List<Path>(),
+                    result.LinkDependencies);
+
+                Assert.Equal(
+                    new List<Path>()
+                    {
+                        new Path("C:/target/bin/Program.exe"),
+                    },
+                    result.RuntimeDependencies);
+            }
+        }
+
+        [Fact]
         public void Build_Executable()
         {
             // Register the test process manager
@@ -697,7 +886,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                 Assert.Equal(
                     new List<string>()
                     {
-                        "INFO: Generate Module Unit Compile: ./Public.cpp",
+                        "INFO: Generate Module Interface Unit Compile: ./Public.cpp",
                         "INFO: Generate Compile Operation: ./TestFile1.cpp",
                         "INFO: Generate Compile Operation: ./TestFile2.cpp",
                         "INFO: Generate Compile Operation: ./TestFile3.cpp",
@@ -982,7 +1171,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                 Assert.Equal(
                     new List<string>()
                     {
-                        "INFO: Generate Module Unit Compile: ./Public.cpp",
+                        "INFO: Generate Module Interface Unit Compile: ./Public.cpp",
                         "INFO: CoreLink",
                         "INFO: Linking target",
                         "INFO: Generate Link Operation: ./bin/Library.mock.lib",

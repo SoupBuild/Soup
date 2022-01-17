@@ -40,7 +40,8 @@ namespace Soup.Build.Cpp
 				var clToolPath = new Path(activeState["MSVC.ClToolPath"].AsString());
 				var linkToolPath = new Path(activeState["MSVC.LinkToolPath"].AsString());
 				var libToolPath = new Path(activeState["MSVC.LibToolPath"].AsString());
-				return new Compiler.MSVC.Compiler(clToolPath, linkToolPath, libToolPath);
+				var rcToolPath = new Path(activeState["MSVC.RCToolPath"].AsString());
+				return new Compiler.MSVC.Compiler(clToolPath, linkToolPath, libToolPath, rcToolPath);
 			});
 		}
 
