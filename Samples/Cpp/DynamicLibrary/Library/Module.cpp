@@ -6,7 +6,7 @@ module;
 export module Samples.Cpp.DynamicLibrary.Library;
 
 // Note: The namespace does not have to match the module name
-export namespace Samples.Cpp.DynamicLibrary.Library
+export namespace Samples::Cpp::DynamicLibrary::Library
 {
 	class Helper
 	{
