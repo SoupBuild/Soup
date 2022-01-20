@@ -1,27 +1,6 @@
-[submodule "Dependencies/SoupTest"]
-	path = Dependencies/SoupTest
-	url = https://github.com/mwasplund/SoupTest.git
-[submodule "Dependencies/SoupSyntax"]
-	path = Dependencies/SoupSyntax
-	url = https://github.com/mwasplund/SoupSyntax.git
-[submodule "Dependencies/Antlr4"]
-	path = Dependencies/Antlr4
-	url = https://github.com/mwasplund/Antlr4.git
-[submodule "Dependencies/cpp-httplib"]
-	path = Dependencies/cpp-httplib
-	url = https://github.com/mwasplund/cpp-httplib.git
-[submodule "Dependencies/LzmaSdk"]
-	path = Dependencies/LzmaSdk
-	url = https://github.com/mwasplund/LzmaSdk.git
-[submodule "Dependencies/botan"]
-	path = Dependencies/botan
-	url = https://github.com/mwasplund/botan.git
 [submodule "Dependencies/openssl"]
 	path = Dependencies/openssl
 	url = https://github.com/openssl/openssl.git
-[submodule "Dependencies/Opal"]
-	path = Dependencies/Opal
-	url = https://github.com/mwasplund/Opal.git
 [submodule "Dependencies/Detours"]
 	path = Dependencies/Detours
 	url = https://github.com/mwasplund/Detours.git
