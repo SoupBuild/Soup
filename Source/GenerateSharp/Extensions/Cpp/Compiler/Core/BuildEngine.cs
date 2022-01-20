@@ -86,10 +86,30 @@ namespace Soup.Build.Cpp.Compiler
 					CustomProperties = arguments.CustomProperties,
 				};
 
+				// Compile the resource file if present
+				if (!arguments.ResourceFile.IsEmpty)
+				{
+					buildState.LogTrace(TraceLevel.Information, "Generate Resource File Compile: " + arguments.ResourceFile.ToString());
+
+					var compiledResourceFile =
+						arguments.ObjectDirectory +
+						new Path(arguments.ResourceFile.GetFileName());
+					compiledResourceFile.SetFileExtension(_compiler.ResourceFileExtension);
+
+					var compileResourceFileArguments = new ResourceCompileArguments()
+					{
+						SourceFile = arguments.ResourceFile,
+						TargetFile = compiledResourceFile,
+					};
+
+					// Add the resource file arguments to the shared build definition
+					compileArguments.ResourceFile = compileResourceFileArguments;
+				}
+
 				// Compile the module interface unit if present
 				if (!arguments.ModuleInterfaceSourceFile.IsEmpty)
 				{
-					buildState.LogTrace(TraceLevel.Information, "Generate Module Unit Compile: " + arguments.ModuleInterfaceSourceFile.ToString());
+					buildState.LogTrace(TraceLevel.Information, "Generate Module Interface Unit Compile: " + arguments.ModuleInterfaceSourceFile.ToString());
 
 					var objectModuleInterfaceFile =
 						arguments.ObjectDirectory +
@@ -179,6 +199,7 @@ namespace Soup.Build.Cpp.Compiler
 						new Path(arguments.TargetName + "." + _compiler.StaticLibraryFileExtension);
 					break;
 				case BuildTargetType.Executable:
+				case BuildTargetType.WindowsApplication:
 					targetFile = 
 						arguments.BinaryDirectory + 
 						new Path(arguments.TargetName + ".exe");
@@ -253,6 +274,20 @@ namespace Soup.Build.Cpp.Compiler
 					result.TargetFile = absoluteTargetFile;
 					break;
 				}
+				case BuildTargetType.WindowsApplication:
+				{
+					linkArguments.TargetType = LinkTarget.WindowsApplication;
+
+					// Add the Executable as a runtime dependency
+					var absoluteTargetFile = linkArguments.TargetFile.HasRoot ? linkArguments.TargetFile : linkArguments.TargetRootDirectory + linkArguments.TargetFile;
+					result.RuntimeDependencies.Add(absoluteTargetFile);
+
+					// All link dependencies stop here.
+
+					// Set the targe file
+					result.TargetFile = absoluteTargetFile;
+					break;
+				}
 				default:
 				{
 					throw new InvalidOperationException("Unknown build target type.");
@@ -266,6 +301,17 @@ namespace Soup.Build.Cpp.Compiler
 				var objectFile = arguments.ObjectDirectory + new Path(sourceFile.GetFileName());
 				objectFile.SetFileExtension(_compiler.ObjectFileExtension);
 				objectFiles.Add(objectFile);
+			}
+
+			// Add the resource file if present
+			if (!arguments.ResourceFile.IsEmpty)
+			{
+				var compiledResourceFile =
+					arguments.ObjectDirectory +
+					new Path(arguments.ResourceFile.GetFileName());
+				compiledResourceFile.SetFileExtension(_compiler.ResourceFileExtension);
+
+				objectFiles.Add(compiledResourceFile);
 			}
 
 			// Add the module interface object file if present
@@ -297,6 +343,7 @@ namespace Soup.Build.Cpp.Compiler
 			BuildResult result)
 		{
 			if (arguments.TargetType == BuildTargetType.Executable ||
+				arguments.TargetType == BuildTargetType.WindowsApplication ||
 				arguments.TargetType == BuildTargetType.DynamicLibrary)
 			{
 				foreach (var source in arguments.RuntimeDependencies)

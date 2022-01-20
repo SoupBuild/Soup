@@ -34,6 +34,11 @@ namespace Soup.Build.Cpp.Compiler
 	public enum BuildTargetType
 	{
 		/// <summary>
+		/// Windows Application
+		/// </summary>
+		WindowsApplication,
+
+		/// <summary>
 		/// Executable
 		/// </summary>
 		Executable,
@@ -107,6 +112,12 @@ namespace Soup.Build.Cpp.Compiler
 		/// Gets or sets the single module interface source file
 		/// </summary>
 		public Path ModuleInterfaceSourceFile { get; set; } = new Path();
+
+		/// <summary>
+		/// Gets or sets the MSVC Resrouce file
+		/// TODO: Abstract for multi-compiler/platform support
+		/// </summary>
+		public Path ResourceFile { get; set; } = new Path();
 
 		/// <summary>
 		/// Gets or sets the list of source files

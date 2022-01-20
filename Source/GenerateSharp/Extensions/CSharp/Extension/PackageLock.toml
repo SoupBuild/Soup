@@ -1,6 +1,6 @@
 [Projects]
 "C#" = [
-	{ Name = "Soup.CSharp", Version = "C:/Users/mwasp/source/repos/Soup/Source/GenerateSharp/Extensions/CSharp/Extension" },
+	{ Name = "Soup.CSharp", Version = "./" },
 	{ Name = "Opal", Version = "Opal@1.0.1" },
 	{ Name = "Soup.Build", Version = "Soup.Build@0.1.3" },
 	{ Name = "Soup.Build.Extensions", Version = "Soup.Build.Extensions@0.1.8" },

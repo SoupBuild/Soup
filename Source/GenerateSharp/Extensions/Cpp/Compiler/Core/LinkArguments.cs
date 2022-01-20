@@ -28,6 +28,11 @@ namespace Soup.Build.Cpp.Compiler
 		/// Executable
 		/// </summary>
 		Executable,
+
+		/// <summary>
+		/// Windows Application
+		/// </summary>
+		WindowsApplication,
 	}
 
 	/// <summary>

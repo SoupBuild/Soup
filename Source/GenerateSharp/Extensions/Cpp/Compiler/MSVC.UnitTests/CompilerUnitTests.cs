@@ -16,12 +16,14 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			var uut = new Compiler(
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
-				new Path("C:/bin/mock.lib.exe"));
+				new Path("C:/bin/mock.lib.exe"),
+				new Path("C:/bin/mock.rc.exe"));
 			Assert.Equal("MSVC", uut.Name);
 			Assert.Equal("obj", uut.ObjectFileExtension);
 			Assert.Equal("ifc", uut.ModuleFileExtension);
 			Assert.Equal("lib", uut.StaticLibraryFileExtension);
 			Assert.Equal("dll", uut.DynamicLibraryFileExtension);
+			Assert.Equal("res", uut.ResourceFileExtension);
 		}
 
 		[Fact]
@@ -30,7 +32,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			var uut = new Compiler(
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
-				new Path("C:/bin/mock.lib.exe"));
+				new Path("C:/bin/mock.lib.exe"),
+				new Path("C:/bin/mock.rc.exe"));
 
 			var arguments = new SharedCompileArguments()
 			{
@@ -90,7 +93,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			var uut = new Compiler(
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
-				new Path("C:/bin/mock.lib.exe"));
+				new Path("C:/bin/mock.lib.exe"),
+				new Path("C:/bin/mock.rc.exe"));
 
 			var arguments = new SharedCompileArguments()
 			{
@@ -154,12 +158,81 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 		}
 
 		[Fact]
+		public void Compile_Resource()
+		{
+			var uut = new Compiler(
+				new Path("C:/bin/mock.cl.exe"),
+				new Path("C:/bin/mock.link.exe"),
+				new Path("C:/bin/mock.lib.exe"),
+				new Path("C:/bin/mock.rc.exe"));
+
+			var arguments = new SharedCompileArguments()
+			{
+				SourceRootDirectory = new Path("C:/source/"),
+				TargetRootDirectory = new Path("C:/target/"),
+				ObjectDirectory = new Path("ObjectDir/"),
+				IncludeDirectories = new List<Path>()
+				{
+					new Path("Includes"),
+				},
+				IncludeModules = new List<Path>()
+				{
+					new Path("Module.pcm"),
+				},
+				PreprocessorDefinitions = new List<string>()
+				{
+					"DEBUG"
+				},
+				ResourceFile = new ResourceCompileArguments()
+				{
+					SourceFile = new Path("Resources.rc"),
+					TargetFile = new Path("obj/Resources.res"),
+				},
+			};
+
+			var result = uut.CreateCompileOperations(arguments);
+
+			// Verify result
+			var expected = new List<BuildOperation>()
+			{
+				new BuildOperation(
+					"WriteFile [./ObjectDir/SharedCompileArguments.rsp]",
+					new Path("C:/target/"),
+					new Path("./writefile.exe"),
+					"\"./ObjectDir/SharedCompileArguments.rsp\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /bigobj /c\"",
+					new List<Path>(),
+					new List<Path>()
+					{
+						new Path("./ObjectDir/SharedCompileArguments.rsp"),
+					}),
+				new BuildOperation(
+					"./Resources.rc",
+					new Path("C:/source/"),
+					new Path("C:/bin/mock.rc.exe"),
+					"/nologo /D_UNICODE /DUNICODE /l\"0x0409\" /I\"./Includes\" /Fo\"C:/target/obj/Resources.res\" ./Resources.rc",
+					new List<Path>()
+					{
+						new Path("Module.pcm"),
+						new Path("Resources.rc"),
+						new Path("C:/target/fake_file"),
+					},
+					new List<Path>()
+					{
+						new Path("C:/target/obj/Resources.res"),
+					}),
+				};
+
+			Assert.Equal(expected, result);
+		}
+
+		[Fact]
 		public void LinkStaticLibrary_Simple()
 		{
 			var uut = new Compiler(
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
-				new Path("C:/bin/mock.lib.exe"));
+				new Path("C:/bin/mock.lib.exe"),
+				new Path("C:/bin/mock.rc.exe"));
 
 			var arguments = new LinkArguments();
 			arguments.TargetType = LinkTarget.StaticLibrary;
@@ -197,7 +270,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			var uut = new Compiler(
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
-				new Path("C:/bin/mock.lib.exe"));
+				new Path("C:/bin/mock.lib.exe"),
+				new Path("C:/bin/mock.rc.exe"));
 
 			var arguments = new LinkArguments();
 			arguments.TargetType = LinkTarget.Executable;
@@ -221,6 +295,50 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/target/"),
 				new Path("C:/bin/mock.link.exe"),
 				"/nologo /subsystem:console /machine:X64 /out:\"./Something.exe\" ./Library.mock.a ./File.mock.obj",
+				new List<Path>()
+				{
+					new Path("Library.mock.a"),
+					new Path("File.mock.obj"),
+				},
+				new List<Path>()
+				{
+					new Path("C:/target/Something.exe"),
+				});
+
+			Assert.Equal(expected, result);
+		}
+
+		[Fact]
+		public void LinkWindowsApplication_Simple()
+		{
+			var uut = new Compiler(
+				new Path("C:/bin/mock.cl.exe"),
+				new Path("C:/bin/mock.link.exe"),
+				new Path("C:/bin/mock.lib.exe"),
+				new Path("C:/bin/mock.rc.exe"));
+
+			var arguments = new LinkArguments();
+			arguments.TargetType = LinkTarget.WindowsApplication;
+			arguments.TargetArchitecture = "x64";
+			arguments.TargetFile = new Path("Something.exe");
+			arguments.TargetRootDirectory = new Path("C:/target/");
+			arguments.ObjectFiles = new List<Path>()
+			{
+				new Path("File.mock.obj"),
+			};
+			arguments.LibraryFiles = new List<Path>()
+			{
+				new Path("Library.mock.a"),
+			};
+
+			var result = uut.CreateLinkOperation(arguments);
+
+			// Verify result
+			var expected = new BuildOperation(
+				"./Something.exe",
+				new Path("C:/target/"),
+				new Path("C:/bin/mock.link.exe"),
+				"/nologo /subsystem:windows /machine:X64 /out:\"./Something.exe\" ./Library.mock.a ./File.mock.obj",
 				new List<Path>()
 				{
 					new Path("Library.mock.a"),

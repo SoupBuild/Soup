@@ -40,7 +40,8 @@ namespace Soup.Build.Cpp
 				var clToolPath = new Path(activeState["MSVC.ClToolPath"].AsString());
 				var linkToolPath = new Path(activeState["MSVC.LinkToolPath"].AsString());
 				var libToolPath = new Path(activeState["MSVC.LibToolPath"].AsString());
-				return new Compiler.MSVC.Compiler(clToolPath, linkToolPath, libToolPath);
+				var rcToolPath = new Path(activeState["MSVC.RCToolPath"].AsString());
+				return new Compiler.MSVC.Compiler(clToolPath, linkToolPath, libToolPath, rcToolPath);
 			});
 		}
 
@@ -76,6 +77,11 @@ namespace Soup.Build.Cpp
 			arguments.TargetRootDirectory = new Path(buildTable["TargetRootDirectory"].AsString());
 			arguments.ObjectDirectory = new Path(buildTable["ObjectDirectory"].AsString());
 			arguments.BinaryDirectory = new Path(buildTable["BinaryDirectory"].AsString());
+
+			if (buildTable.TryGetValue("ResourcesFile", out var resourcesFile))
+			{
+				arguments.ResourceFile = new Path(resourcesFile.AsString());
+			}
 
 			if (buildTable.TryGetValue("ModuleInterfaceSourceFile", out var moduleInterfaceSourceFile))
 			{

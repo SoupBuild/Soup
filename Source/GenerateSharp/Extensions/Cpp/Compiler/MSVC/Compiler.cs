@@ -14,11 +14,17 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 	/// </summary>
 	public class Compiler : ICompiler
 	{
-		public Compiler(Path compilerExecutable, Path linkerExecutable, Path libraryExecutable)
+		private Path _compilerExecutable;
+		private Path _linkerExecutable;
+		private Path _libraryExecutable;
+		private Path _rcExecutable;
+
+		public Compiler(Path compilerExecutable, Path linkerExecutable, Path libraryExecutable, Path rcExecutable)
 		{
 			_compilerExecutable = compilerExecutable;
 			_linkerExecutable = linkerExecutable;
 			_libraryExecutable = libraryExecutable;
+			_rcExecutable = rcExecutable;
 		}
 
 		/// <summary>
@@ -49,6 +55,11 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 		public string DynamicLibraryFileExtension => "dll";
 
 		/// <summary>
+		/// Gets the resource file extension for the compiler
+		/// </summary>
+		public string ResourceFileExtension => "res";
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		public IList<BuildOperation> CreateCompileOperations(
@@ -69,6 +80,37 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			var sharedInputFiles = arguments.IncludeModules;
 
 			var absoluteResponseFile = arguments.TargetRootDirectory + responseFile;
+
+			// Generate the resource build operation if present
+			if (arguments.ResourceFile is not null)
+			{
+				var resourceFileArguments = arguments.ResourceFile;
+
+				// Build up the input/output sets
+				var inputFiles = sharedInputFiles.ToList();
+				inputFiles.Add(resourceFileArguments.SourceFile);
+				// TODO: The temp files require read access, need a way to tell build operation
+				inputFiles.Add(arguments.TargetRootDirectory + new Path("fake_file"));
+				var outputFiles = new List<Path>()
+				{
+					arguments.TargetRootDirectory + resourceFileArguments.TargetFile,
+				};
+
+				// Build the unique arguments for this resource file
+				var commandArguments = ArgumentBuilder.BuildResourceCompilerArguments(
+					arguments.TargetRootDirectory,
+					arguments);
+
+				// Generate the operation
+				var buildOperation = new BuildOperation(
+					resourceFileArguments.SourceFile.ToString(),
+					arguments.SourceRootDirectory,
+					_rcExecutable,
+					CombineArguments(commandArguments),
+					inputFiles,
+					outputFiles);
+				operations.Add(buildOperation);
+			}
 
 			// Generate the interface build operation if present
 			var internalModules = new List<Path>();
@@ -153,6 +195,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 					break;
 				case LinkTarget.DynamicLibrary:
 				case LinkTarget.Executable:
+				case LinkTarget.WindowsApplication:
 					executablePath = _linkerExecutable;
 					break;
 				default:
@@ -184,9 +227,5 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 		{
 			return string.Join(" ", arguments);
 		}
-
-		private Path _compilerExecutable;
-		private Path _linkerExecutable;
-		private Path _libraryExecutable;
 	}
 }

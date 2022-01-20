@@ -66,6 +66,11 @@ namespace Soup.Build.Cpp.Compiler.Mock
 		public string DynamicLibraryFileExtension =>  "mock.dll";
 
 		/// <summary>
+		/// Gets the resource file extension for the compiler
+		/// </summary>
+		public string ResourceFileExtension => "mock.res";
+
+		/// <summary>
 		/// Compile
 		/// </summary>
 		public IList<BuildOperation> CreateCompileOperations(SharedCompileArguments arguments)

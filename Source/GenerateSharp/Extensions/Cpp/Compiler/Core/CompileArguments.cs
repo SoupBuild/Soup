@@ -216,6 +216,11 @@ namespace Soup.Build.Cpp.Compiler
 		public IReadOnlyList<TranslationUnitCompileArguments> ImplementationUnits { get; set; } = new List<TranslationUnitCompileArguments>();
 
 		/// <summary>
+		/// Gets or sets the single optional resource file to compile
+		/// </summary>
+		public ResourceCompileArguments? ResourceFile { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to enable warnings as errors
 		/// </summary>
 		public bool EnableWarningsAsErrors { get; init; }
@@ -257,6 +262,7 @@ namespace Soup.Build.Cpp.Compiler
 				Enumerable.SequenceEqual(this.IncludeModules, rhs.IncludeModules) &&
 				this.GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
 				this.InterfaceUnit == rhs.InterfaceUnit &&
+				this.ResourceFile == rhs.ResourceFile &&
 				Enumerable.SequenceEqual(this.ImplementationUnits, rhs.ImplementationUnits) &&
 				this.EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
 				Enumerable.SequenceEqual(this.DisabledWarnings, rhs.DisabledWarnings) &&
@@ -283,7 +289,57 @@ namespace Soup.Build.Cpp.Compiler
 
 		public override string ToString()
 		{
-			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, SourceRootDirectory=\"{SourceRootDirectory}\", TargetRootDirectory=\"{TargetRootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], IncludeDirectories=[{string.Join(",", IncludeDirectories)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, SourceRootDirectory=\"{SourceRootDirectory}\", TargetRootDirectory=\"{TargetRootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], IncludeDirectories=[{string.Join(",", IncludeDirectories)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], ResourceFile={ResourceFile}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
 		}
+	}
+
+
+	/// <summary>
+	/// The set of resource file specific compiler arguments
+	/// </summary>
+	public class ResourceCompileArguments : IEquatable<ResourceCompileArguments>
+	{
+		/// <summary>
+		/// Gets or sets the resource file
+		/// </summary>
+		public Path SourceFile { get; set; } = new Path();
+
+		/// <summary>
+		/// Gets or sets the target file
+		/// </summary>
+		public Path TargetFile { get; set; } = new Path();
+
+		public override bool Equals(object? obj) => this.Equals(obj as ResourceCompileArguments);
+
+		public bool Equals(ResourceCompileArguments? rhs)
+		{
+			if (rhs is null)
+				return false;
+
+			// Optimization for a common success case.
+			if (object.ReferenceEquals(this, rhs))
+				return true;
+
+			// Return true if the fields match.
+			return this.SourceFile == rhs.SourceFile &&
+				this.TargetFile == rhs.TargetFile;
+		}
+
+		public override int GetHashCode() => (SourceFile, TargetFile).GetHashCode();
+
+		public static bool operator ==(ResourceCompileArguments? lhs, ResourceCompileArguments? rhs)
+		{
+			if (lhs is null)
+			{
+				if (rhs is null)
+					return true;
+				else
+					return false;
+			}
+
+			return lhs.Equals(rhs);
+		}
+
+		public static bool operator !=(ResourceCompileArguments? lhs, ResourceCompileArguments? rhs) => !(lhs == rhs);
 	}
 }
