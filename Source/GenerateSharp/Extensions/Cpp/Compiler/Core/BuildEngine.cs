@@ -104,10 +104,6 @@ namespace Soup.Build.Cpp.Compiler
 
 					// Add the resource file arguments to the shared build definition
 					compileArguments.ResourceFile = compileResourceFileArguments;
-
-					// Add output resource to the list of link dependencies
-					result.InternalLinkDependencies.Add(
-							arguments.TargetRootDirectory + compileResourceFileArguments.TargetFile);
 				}
 
 				// Compile the module interface unit if present
@@ -305,6 +301,17 @@ namespace Soup.Build.Cpp.Compiler
 				var objectFile = arguments.ObjectDirectory + new Path(sourceFile.GetFileName());
 				objectFile.SetFileExtension(_compiler.ObjectFileExtension);
 				objectFiles.Add(objectFile);
+			}
+
+			// Add the resource file if present
+			if (!arguments.ResourceFile.IsEmpty)
+			{
+				var compiledResourceFile =
+					arguments.ObjectDirectory +
+					new Path(arguments.ResourceFile.GetFileName());
+				compiledResourceFile.SetFileExtension(_compiler.ResourceFileExtension);
+
+				objectFiles.Add(compiledResourceFile);
 			}
 
 			// Add the module interface object file if present

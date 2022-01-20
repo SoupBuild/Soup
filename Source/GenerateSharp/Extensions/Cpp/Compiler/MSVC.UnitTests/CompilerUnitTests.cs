@@ -209,10 +209,12 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 					"./Resources.rc",
 					new Path("C:/source/"),
 					new Path("C:/bin/mock.rc.exe"),
-					"/nologo /D_UNICODE /DUNICODE /l\"0x0409\" /Fo\"C:/target/obj/Resources.res\" ./Resources.rc",
+					"/nologo /D_UNICODE /DUNICODE /l\"0x0409\" /I\"./Includes\" /Fo\"C:/target/obj/Resources.res\" ./Resources.rc",
 					new List<Path>()
 					{
+						new Path("Module.pcm"),
 						new Path("Resources.rc"),
+						new Path("C:/target/fake_file"),
 					},
 					new List<Path>()
 					{

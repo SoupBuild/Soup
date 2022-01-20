@@ -7,9 +7,9 @@
 #define MAX_LOADSTRING 100
 
 // Global Variables:
-HINSTANCE hInst;
-PCWCH Title = L"WindowsProject";
-PCWCH WindowClass = L"WINDOWSPROJECT";
+HINSTANCE hInst; // current instance
+WCHAR szTitle[MAX_LOADSTRING]; // The title bar text
+WCHAR szWindowClass[MAX_LOADSTRING]; // the main window class name
 
 // Forward declarations of functions included in this code module:
 ATOM MyRegisterClass(HINSTANCE hInstance);
@@ -18,19 +18,24 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPWSTR lpCmdLine,
-	int nCmdShow)
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR lpCmdLine,
+	_In_ int nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
+	// Initialize global strings
+	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDC_WINDOWSPROJECT, szWindowClass, MAX_LOADSTRING);
+	MyRegisterClass(hInstance);
+
 	// Perform application initialization:
-	if (MyRegisterClass(hInstance) == 0)
-		return GetLastError();
-	if (!InitInstance(hInstance, nCmdShow))
-		return GetLastError();
+	if (!InitInstance (hInstance, nCmdShow))
+	{
+		return FALSE;
+	}
 
 	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWSPROJECT));
 
@@ -46,7 +51,7 @@ int APIENTRY wWinMain(
 		}
 	}
 
-	return (int)msg.wParam;
+	return (int) msg.wParam;
 }
 
 
@@ -61,12 +66,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
-	wcex.hIcon = 0; // TODO: LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WINDOWSPROJECT));
+	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WINDOWSPROJECT));
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_WINDOWSPROJECT);
-	wcex.lpszClassName = WindowClass;
-	wcex.hIconSm = 0; // TODO: LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.lpszClassName = szWindowClass;
+	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassExW(&wcex);
 }
@@ -83,12 +88,11 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-	// Store instance handle in our global variable
-	hInst = hInstance;
+	hInst = hInstance; // Store instance handle in our global variable
 
 	HWND hWnd = CreateWindowW(
-		WindowClass,
-		Title,
+		szWindowClass,
+		szTitle,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		0,
@@ -100,7 +104,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		nullptr);
 
 	if (!hWnd)
+	{
 		return FALSE;
+	}
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -175,5 +181,6 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
+
 	return (INT_PTR)FALSE;
 }

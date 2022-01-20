@@ -294,6 +294,7 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
                 expectedLinkArguments.ObjectFiles = new List<Path>()
                 {
                     new Path("obj/TestFile.mock.obj"),
+                    new Path("obj/Resources.mock.res"),
                 };
                 expectedLinkArguments.LibraryFiles = new List<Path>()
                 {
