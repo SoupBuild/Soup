@@ -181,7 +181,7 @@ namespace SoupView.ViewModel
 
         private async Task<Path> GetTargetPathAsync(Path packageDirectory)
         {
-            var processInfo = new ProcessStartInfo("soup.exe", $"target {packageDirectory}")
+            var processInfo = new ProcessStartInfo("C:\\Program Files\\SoupBuild\\Soup\\Soup\\Soup.exe", $"target {packageDirectory}")
             {
                 RedirectStandardOutput = true,
                 CreateNoWindow = true,
