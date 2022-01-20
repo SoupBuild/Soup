@@ -14,10 +14,14 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 		public void BuildResourceCompilerArguments_Simple()
 		{
 			var targetRootDirectory = new Path("C:/target/");
-			var arguments = new ResourceCompileArguments()
+
+			var arguments = new SharedCompileArguments()
 			{
-				SourceFile = new Path("Resources.rc"),
-				TargetFile = new Path("Resources.mock.res"),
+				ResourceFile = new ResourceCompileArguments()
+				{
+					SourceFile = new Path("Resources.rc"),
+					TargetFile = new Path("Resources.mock.res"),
+				},
 			};
 
 			var actualArguments = ArgumentBuilder.BuildResourceCompilerArguments(

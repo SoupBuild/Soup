@@ -87,10 +87,10 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				var resourceFileArguments = arguments.ResourceFile;
 
 				// Build up the input/output sets
-				var inputFiles = new List<Path>()
-				{
-					resourceFileArguments.SourceFile,
-				};
+				var inputFiles = sharedInputFiles.ToList();
+				inputFiles.Add(resourceFileArguments.SourceFile);
+				// TODO: The temp files require read access, need a way to tell build operation
+				inputFiles.Add(arguments.TargetRootDirectory + new Path("fake_file"));
 				var outputFiles = new List<Path>()
 				{
 					arguments.TargetRootDirectory + resourceFileArguments.TargetFile,
@@ -99,7 +99,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				// Build the unique arguments for this resource file
 				var commandArguments = ArgumentBuilder.BuildResourceCompilerArguments(
 					arguments.TargetRootDirectory,
-					resourceFileArguments);
+					arguments);
 
 				// Generate the operation
 				var buildOperation = new BuildOperation(

@@ -78,6 +78,11 @@ namespace Soup.Build.Cpp
 			arguments.ObjectDirectory = new Path(buildTable["ObjectDirectory"].AsString());
 			arguments.BinaryDirectory = new Path(buildTable["BinaryDirectory"].AsString());
 
+			if (buildTable.TryGetValue("ResourcesFile", out var resourcesFile))
+			{
+				arguments.ResourceFile = new Path(resourcesFile.AsString());
+			}
+
 			if (buildTable.TryGetValue("ModuleInterfaceSourceFile", out var moduleInterfaceSourceFile))
 			{
 				arguments.ModuleInterfaceSourceFile = new Path(moduleInterfaceSourceFile.AsString());

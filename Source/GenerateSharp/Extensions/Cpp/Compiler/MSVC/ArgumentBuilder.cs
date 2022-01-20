@@ -194,8 +194,11 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 
 		public static IList<string> BuildResourceCompilerArguments(
 			Path targetRootDirectory,
-			ResourceCompileArguments arguments)
+			SharedCompileArguments arguments)
 		{
+			if (arguments.ResourceFile == null)
+				throw new ArgumentNullException(nameof(arguments));
+
 			// Build the arguments for a standard translation unit
 			var commandArguments = new List<string>();
 
@@ -209,15 +212,21 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			// Specify default language using language identifier
 			AddFlagValueWithQuotes(commandArguments, "l", "0x0409");
 
+			// Set the include paths
+			foreach (var directory in arguments.IncludeDirectories)
+			{
+				AddFlagValueWithQuotes(commandArguments, Compiler_ArgumentParameter_Include, directory.ToString());
+			}
+
 			// Add the target file as outputs
-			var absoluteTargetFile = targetRootDirectory + arguments.TargetFile;
+			var absoluteTargetFile = targetRootDirectory + arguments.ResourceFile.TargetFile;
 			AddFlagValueWithQuotes(
 				commandArguments,
 				Compiler_ArgumentParameter_ObjectFile,
 				absoluteTargetFile.ToString());
 
 			// Add the source file as input
-			commandArguments.Add(arguments.SourceFile.ToString());
+			commandArguments.Add(arguments.ResourceFile.SourceFile.ToString());
 
 			return commandArguments;
 		}
