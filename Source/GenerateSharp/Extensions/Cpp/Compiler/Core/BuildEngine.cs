@@ -66,7 +66,9 @@ namespace Soup.Build.Cpp.Compiler
 			BuildResult result)
 		{
 			// Ensure there are actually files to build
-			if (!arguments.ModuleInterfaceSourceFile.IsEmpty || arguments.SourceFiles.Count != 0)
+			if (arguments.ModuleInterfacePartitionSourceFiles.Count != 0 ||
+				!arguments.ModuleInterfaceSourceFile.IsEmpty ||
+				arguments.SourceFiles.Count != 0)
 			{
 				// Setup the shared properties
 				var compileArguments = new SharedCompileArguments()
@@ -106,6 +108,33 @@ namespace Soup.Build.Cpp.Compiler
 					compileArguments.ResourceFile = compileResourceFileArguments;
 				}
 
+				// Compile the individual module interface partition translation units
+				var compileInterfacePartitionUnits = new List<InterfaceUnitCompileArguments>();
+				var allPartitionInterfaces = new List<Path>();
+				foreach (var file in arguments.ModuleInterfacePartitionSourceFiles)
+				{
+					buildState.LogTrace(TraceLevel.Information, "Generate Module Interface Partition Compile Operation: " + file.ToString());
+
+					var objectModuleInterfaceFile =
+						arguments.ObjectDirectory +
+						new Path(file.GetFileName());
+					objectModuleInterfaceFile.SetFileExtension(_compiler.ModuleFileExtension);
+
+					var compileFileArguments = new InterfaceUnitCompileArguments()
+					{
+						SourceFile = file,
+						TargetFile = arguments.ObjectDirectory + new Path(file.GetFileName()),
+						ModuleInterfaceTarget = objectModuleInterfaceFile,
+					};
+
+					compileFileArguments.TargetFile.SetFileExtension(_compiler.ObjectFileExtension);
+
+					compileInterfacePartitionUnits.Add(compileFileArguments);
+					allPartitionInterfaces.Add(arguments.TargetRootDirectory + objectModuleInterfaceFile);
+				}
+
+				compileArguments.InterfacePartitionUnits = compileInterfacePartitionUnits;
+
 				// Compile the module interface unit if present
 				if (!arguments.ModuleInterfaceSourceFile.IsEmpty)
 				{
@@ -123,6 +152,7 @@ namespace Soup.Build.Cpp.Compiler
 					{
 						SourceFile = arguments.ModuleInterfaceSourceFile,
 						TargetFile = arguments.ObjectDirectory + new Path(arguments.ModuleInterfaceSourceFile.GetFileName()),
+						IncludeModules = allPartitionInterfaces,
 						ModuleInterfaceTarget = objectModuleInterfaceFile,
 					};
 
@@ -296,12 +326,6 @@ namespace Soup.Build.Cpp.Compiler
 
 			// Build up the set of object files
 			var objectFiles = new List<Path>();
-			foreach (var sourceFile in arguments.SourceFiles)
-			{
-				var objectFile = arguments.ObjectDirectory + new Path(sourceFile.GetFileName());
-				objectFile.SetFileExtension(_compiler.ObjectFileExtension);
-				objectFiles.Add(objectFile);
-			}
 
 			// Add the resource file if present
 			if (!arguments.ResourceFile.IsEmpty)
@@ -314,10 +338,26 @@ namespace Soup.Build.Cpp.Compiler
 				objectFiles.Add(compiledResourceFile);
 			}
 
+			// Add the partition object files
+			foreach (var sourceFile in arguments.ModuleInterfacePartitionSourceFiles)
+			{
+				var objectFile = arguments.ObjectDirectory + new Path(sourceFile.GetFileName());
+				objectFile.SetFileExtension(_compiler.ObjectFileExtension);
+				objectFiles.Add(objectFile);
+			}
+
 			// Add the module interface object file if present
 			if (!arguments.ModuleInterfaceSourceFile.IsEmpty)
 			{
 				var objectFile = arguments.ObjectDirectory + new Path(arguments.ModuleInterfaceSourceFile.GetFileName());
+				objectFile.SetFileExtension(_compiler.ObjectFileExtension);
+				objectFiles.Add(objectFile);
+			}
+
+			// Add the implementation unit object files
+			foreach (var sourceFile in arguments.SourceFiles)
+			{
+				var objectFile = arguments.ObjectDirectory + new Path(sourceFile.GetFileName());
 				objectFile.SetFileExtension(_compiler.ObjectFileExtension);
 				objectFiles.Add(objectFile);
 			}

@@ -88,7 +88,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 		}
 
 		[Fact]
-		public void Compile_Module()
+		public void Compile_Module_Partition()
 		{
 			var uut = new Compiler(
 				new Path("C:/bin/mock.cl.exe"),
@@ -111,15 +111,22 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				},
 				PreprocessorDefinitions = new List<string>()
 				{
-					"DEBUG"
+					"DEBUG",
+				},
+				InterfacePartitionUnits = new List<InterfaceUnitCompileArguments>()
+				{
+					new InterfaceUnitCompileArguments()
+					{
+						SourceFile = new Path("File.cpp"),
+						TargetFile = new Path("obj/File.obj"),
+						ModuleInterfaceTarget = new Path("obj/File.pcm"),
+						IncludeModules = new List<Path>()
+						{
+							new Path("obj/Other.pcm"),
+						},
+					},
 				},
 			};
-
-			var compileModuleArguments = new InterfaceUnitCompileArguments();
-			compileModuleArguments.SourceFile = new Path("File.cpp");
-			compileModuleArguments.TargetFile = new Path("obj/File.obj");
-			compileModuleArguments.ModuleInterfaceTarget = new Path("obj/File.pcm");
-			arguments.InterfaceUnit = compileModuleArguments;
 
 			var result = uut.CreateCompileOperations(arguments);
 
@@ -140,17 +147,229 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 					"./File.cpp",
 					new Path("C:/source/"),
 					new Path("C:/bin/mock.cl.exe"),
-					"@C:/target/ObjectDir/SharedCompileArguments.rsp ./File.cpp /Fo\"C:/target/obj/File.obj\" /interface /ifcOutput \"C:/target/obj/File.pcm\"",
+					"@C:/target/ObjectDir/SharedCompileArguments.rsp /reference \"./obj/Other.pcm\" ./File.cpp /Fo\"C:/target/obj/File.obj\" /interface /ifcOutput \"C:/target/obj/File.pcm\"",
 					new List<Path>()
 					{
 						new Path("Module.pcm"),
 						new Path("File.cpp"),
 						new Path("C:/target/ObjectDir/SharedCompileArguments.rsp"),
+						new Path("obj/Other.pcm"),
 					},
 					new List<Path>()
 					{
 						new Path("C:/target/obj/File.obj"),
 						new Path("C:/target/obj/File.pcm"),
+					}),
+				};
+
+			Assert.Equal(expected, result);
+		}
+
+		[Fact]
+		public void Compile_Module_Interface()
+		{
+			var uut = new Compiler(
+				new Path("C:/bin/mock.cl.exe"),
+				new Path("C:/bin/mock.link.exe"),
+				new Path("C:/bin/mock.lib.exe"),
+				new Path("C:/bin/mock.rc.exe"));
+
+			var arguments = new SharedCompileArguments()
+			{
+				SourceRootDirectory = new Path("C:/source/"),
+				TargetRootDirectory = new Path("C:/target/"),
+				ObjectDirectory = new Path("ObjectDir/"),
+				IncludeDirectories = new List<Path>()
+				{
+					new Path("Includes"),
+				},
+				IncludeModules = new List<Path>()
+				{
+					new Path("Module.pcm"),
+				},
+				PreprocessorDefinitions = new List<string>()
+				{
+					"DEBUG",
+				},
+			};
+
+			arguments.InterfaceUnit = new InterfaceUnitCompileArguments()
+			{
+				SourceFile = new Path("File.cpp"),
+				TargetFile = new Path("obj/File.obj"),
+				ModuleInterfaceTarget = new Path("obj/File.pcm"),
+				IncludeModules = new List<Path>()
+				{
+					new Path("obj/Other.pcm")
+				},
+			};
+
+			var result = uut.CreateCompileOperations(arguments);
+
+			// Verify result
+			var expected = new List<BuildOperation>()
+			{
+				new BuildOperation(
+					"WriteFile [./ObjectDir/SharedCompileArguments.rsp]",
+					new Path("C:/target/"),
+					new Path("./writefile.exe"),
+					"\"./ObjectDir/SharedCompileArguments.rsp\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /bigobj /c\"",
+					new List<Path>(),
+					new List<Path>()
+					{
+						new Path("./ObjectDir/SharedCompileArguments.rsp"),
+					}),
+				new BuildOperation(
+					"./File.cpp",
+					new Path("C:/source/"),
+					new Path("C:/bin/mock.cl.exe"),
+					"@C:/target/ObjectDir/SharedCompileArguments.rsp /reference \"./obj/Other.pcm\" ./File.cpp /Fo\"C:/target/obj/File.obj\" /interface /ifcOutput \"C:/target/obj/File.pcm\"",
+					new List<Path>()
+					{
+						new Path("Module.pcm"),
+						new Path("File.cpp"),
+						new Path("C:/target/ObjectDir/SharedCompileArguments.rsp"),
+						new Path("obj/Other.pcm"),
+					},
+					new List<Path>()
+					{
+						new Path("C:/target/obj/File.obj"),
+						new Path("C:/target/obj/File.pcm"),
+					}),
+				};
+
+			Assert.Equal(expected, result);
+		}
+
+
+		[Fact]
+		public void Compile_Module_PartitionInterfaceAndImplementation()
+		{
+			var uut = new Compiler(
+				new Path("C:/bin/mock.cl.exe"),
+				new Path("C:/bin/mock.link.exe"),
+				new Path("C:/bin/mock.lib.exe"),
+				new Path("C:/bin/mock.rc.exe"));
+
+			var arguments = new SharedCompileArguments()
+			{
+				SourceRootDirectory = new Path("C:/source/"),
+				TargetRootDirectory = new Path("C:/target/"),
+				ObjectDirectory = new Path("ObjectDir/"),
+				IncludeDirectories = new List<Path>()
+				{
+					new Path("Includes"),
+				},
+				IncludeModules = new List<Path>()
+				{
+					new Path("Module.pcm"),
+				},
+				PreprocessorDefinitions = new List<string>()
+				{
+					"DEBUG",
+				},
+				InterfacePartitionUnits = new List<InterfaceUnitCompileArguments>()
+				{
+					new InterfaceUnitCompileArguments()
+					{
+						SourceFile = new Path("File1.cpp"),
+						TargetFile = new Path("obj/File1.obj"),
+						ModuleInterfaceTarget = new Path("obj/File1.pcm"),
+						IncludeModules = new List<Path>()
+						{
+							new Path("obj/Other1.pcm")
+						},
+					},
+				},
+				InterfaceUnit = new InterfaceUnitCompileArguments()
+				{
+					SourceFile = new Path("File2.cpp"),
+					TargetFile = new Path("obj/File2.obj"),
+					ModuleInterfaceTarget = new Path("obj/File2.pcm"),
+					IncludeModules = new List<Path>()
+					{
+						new Path("obj/Other2.pcm")
+					},
+				},
+				ImplementationUnits = new List<TranslationUnitCompileArguments>()
+				{
+					new TranslationUnitCompileArguments()
+					{
+						SourceFile = new Path("File3.cpp"),
+						TargetFile = new Path("obj/File3.obj"),
+						IncludeModules = new List<Path>()
+						{
+							new Path("obj/Other3.pcm")
+						},
+					},
+				},
+			};
+
+			var result = uut.CreateCompileOperations(arguments);
+
+			// Verify result
+			var expected = new List<BuildOperation>()
+			{
+				new BuildOperation(
+					"WriteFile [./ObjectDir/SharedCompileArguments.rsp]",
+					new Path("C:/target/"),
+					new Path("./writefile.exe"),
+					"\"./ObjectDir/SharedCompileArguments.rsp\" \"/nologo /FC /permissive- /Zc:__cplusplus /Zc:externConstexpr /Zc:inline /Zc:throwingNew /W4 /std:c++11 /Od /I\"./Includes\" /DDEBUG /X /RTC1 /EHsc /MT /reference \"./Module.pcm\" /bigobj /c\"",
+					new List<Path>(),
+					new List<Path>()
+					{
+						new Path("./ObjectDir/SharedCompileArguments.rsp"),
+					}),
+				new BuildOperation(
+					"./File1.cpp",
+					new Path("C:/source/"),
+					new Path("C:/bin/mock.cl.exe"),
+					"@C:/target/ObjectDir/SharedCompileArguments.rsp /reference \"./obj/Other1.pcm\" ./File1.cpp /Fo\"C:/target/obj/File1.obj\" /interface /ifcOutput \"C:/target/obj/File1.pcm\"",
+					new List<Path>()
+					{
+						new Path("Module.pcm"),
+						new Path("File1.cpp"),
+						new Path("C:/target/ObjectDir/SharedCompileArguments.rsp"),
+						new Path("obj/Other1.pcm"),
+					},
+					new List<Path>()
+					{
+						new Path("C:/target/obj/File1.obj"),
+						new Path("C:/target/obj/File1.pcm"),
+					}),
+				new BuildOperation(
+					"./File2.cpp",
+					new Path("C:/source/"),
+					new Path("C:/bin/mock.cl.exe"),
+					"@C:/target/ObjectDir/SharedCompileArguments.rsp /reference \"./obj/Other2.pcm\" ./File2.cpp /Fo\"C:/target/obj/File2.obj\" /interface /ifcOutput \"C:/target/obj/File2.pcm\"",
+					new List<Path>()
+					{
+						new Path("Module.pcm"),
+						new Path("File2.cpp"),
+						new Path("C:/target/ObjectDir/SharedCompileArguments.rsp"),
+						new Path("obj/Other2.pcm"),
+					},
+					new List<Path>()
+					{
+						new Path("C:/target/obj/File2.obj"),
+						new Path("C:/target/obj/File2.pcm"),
+					}),
+				new BuildOperation(
+					"./File3.cpp",
+					new Path("C:/source/"),
+					new Path("C:/bin/mock.cl.exe"),
+					"@C:/target/ObjectDir/SharedCompileArguments.rsp /reference \"./obj/Other3.pcm\" /reference \"C:/target/obj/File2.pcm\" ./File3.cpp /Fo\"C:/target/obj/File3.obj\"",
+					new List<Path>()
+					{
+						new Path("Module.pcm"),
+						new Path("File3.cpp"),
+						new Path("C:/target/ObjectDir/SharedCompileArguments.rsp"),
+						new Path("obj/Other3.pcm"),
+						new Path("C:/target/obj/File2.pcm"),
+					},
+					new List<Path>()
+					{
+						new Path("C:/target/obj/File3.obj"),
 					}),
 				};
 

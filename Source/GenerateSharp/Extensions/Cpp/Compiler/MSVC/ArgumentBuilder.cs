@@ -242,6 +242,13 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			// Add the response file
 			commandArguments.Add("@" + responseFile.ToString());
 
+			// Add the module references as input
+			foreach (var moduleFile in arguments.IncludeModules)
+			{
+				AddFlag(commandArguments, "reference");
+				AddValueWithQuotes(commandArguments, moduleFile.ToString());
+			}
+
 			// Add the source file as input
 			commandArguments.Add(arguments.SourceFile.ToString());
 
@@ -275,6 +282,13 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 
 			// Add the response file
 			commandArguments.Add("@" + responseFile.ToString());
+
+			// Add the internal module references as input
+			foreach (var moduleFile in arguments.IncludeModules)
+			{
+				AddFlag(commandArguments, "reference");
+				AddValueWithQuotes(commandArguments, moduleFile.ToString());
+			}
 
 			// Add the internal module references as input
 			foreach (var moduleFile in internalModules)

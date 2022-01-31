@@ -154,6 +154,14 @@ namespace Soup.Build.Cpp
 				resourcesFile = resourcesFilePath.ToString();
 			}
 
+			// Load the module interface partition files if present
+			var moduleInterfacePartitionSourceFiles = new List<string>();
+			if (recipeTable.TryGetValue("Partitions", out var partitionsValue))
+			{
+				moduleInterfacePartitionSourceFiles =
+					partitionsValue.AsList().Select(value => value.AsString()).ToList();
+			}
+
 			// Load the module interface file if present
 			var moduleInterfaceSourceFile = string.Empty;
 			if (recipeTable.TryGetValue("Interface", out var interfaceValue))
@@ -214,6 +222,7 @@ namespace Soup.Build.Cpp
 			buildTable["ObjectDirectory"] = this.factory.Create(objectDirectory.ToString());
 			buildTable["BinaryDirectory"] = this.factory.Create(binaryDirectory.ToString());
 			buildTable["ResourcesFile"] = this.factory.Create(resourcesFile);
+			buildTable.EnsureValueList(this.factory, "ModuleInterfacePartitionSourceFiles").Append(this.factory, moduleInterfacePartitionSourceFiles);
 			buildTable["ModuleInterfaceSourceFile"] = this.factory.Create(moduleInterfaceSourceFile);
 			buildTable["OptimizationLevel"] = this.factory.Create((long)optimizationLevel);
 			buildTable["GenerateSourceDebugInfo"] = this.factory.Create(generateSourceDebugInfo);

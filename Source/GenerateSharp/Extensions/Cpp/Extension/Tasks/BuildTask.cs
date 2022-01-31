@@ -83,6 +83,11 @@ namespace Soup.Build.Cpp
 				arguments.ResourceFile = new Path(resourcesFile.AsString());
 			}
 
+			if (buildTable.TryGetValue("ModuleInterfacePartitionSourceFiles", out var moduleInterfacePartitionSourceFiles))
+			{
+				arguments.ModuleInterfacePartitionSourceFiles = moduleInterfacePartitionSourceFiles.AsList().Select(value => new Path(value.AsString())).ToList();
+			}
+
 			if (buildTable.TryGetValue("ModuleInterfaceSourceFile", out var moduleInterfaceSourceFile))
 			{
 				arguments.ModuleInterfaceSourceFile = new Path(moduleInterfaceSourceFile.AsString());

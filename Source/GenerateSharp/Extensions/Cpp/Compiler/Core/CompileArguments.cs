@@ -71,6 +71,11 @@ namespace Soup.Build.Cpp.Compiler
 		/// </summary>
 		public Path TargetFile { get; set; } = new Path();
 
+		/// <summary>
+		/// Gets or sets the list of modules
+		/// </summary>
+		public IReadOnlyList<Path> IncludeModules { get; init; } = new List<Path>();
+
 		public override bool Equals(object? obj) => this.Equals(obj as TranslationUnitCompileArguments);
 
 		public bool Equals(TranslationUnitCompileArguments? rhs)
@@ -84,7 +89,8 @@ namespace Soup.Build.Cpp.Compiler
 
 			// Return true if the fields match.
 			return this.SourceFile == rhs.SourceFile &&
-				this.TargetFile == rhs.TargetFile;
+				this.TargetFile == rhs.TargetFile &&
+				Enumerable.SequenceEqual(IncludeModules, rhs.IncludeModules);
 		}
 
 		public override int GetHashCode() => (SourceFile, TargetFile).GetHashCode();
@@ -103,6 +109,11 @@ namespace Soup.Build.Cpp.Compiler
 		}
 
 		public static bool operator !=(TranslationUnitCompileArguments? lhs, TranslationUnitCompileArguments? rhs) => !(lhs == rhs);
+
+		public override string ToString()
+		{
+			return $"TranslationUnitCompileArguments {{ SourceFile=\"{SourceFile}\", TargetFile=\"{TargetFile}\", IncludeModules=[{string.Join(",", IncludeModules)}] }}";
+		}
 	}
 
 	/// <summary>
@@ -129,10 +140,11 @@ namespace Soup.Build.Cpp.Compiler
 			// Return true if the fields match.
 			return this.SourceFile == rhs.SourceFile &&
 				this.TargetFile == rhs.TargetFile && 
+				Enumerable.SequenceEqual(IncludeModules, rhs.IncludeModules) &&
 				this.ModuleInterfaceTarget == rhs.ModuleInterfaceTarget;
 		}
 
-		public override int GetHashCode() => (SourceFile, TargetFile).GetHashCode();
+		public override int GetHashCode() => (SourceFile, TargetFile, ModuleInterfaceTarget).GetHashCode();
 
 		public static bool operator ==(InterfaceUnitCompileArguments? lhs, InterfaceUnitCompileArguments? rhs)
 		{
@@ -151,7 +163,7 @@ namespace Soup.Build.Cpp.Compiler
 
 		public override string ToString()
 		{
-			return $"InterfaceUnitCompileArguments {{ SourceFile=\"{SourceFile}\", TargetFile=\"{TargetFile}\", ModuleInterfaceTarget=\"{ModuleInterfaceTarget}\" }}";
+			return $"InterfaceUnitCompileArguments {{ SourceFile=\"{SourceFile}\", TargetFile=\"{TargetFile}\", IncludeModules=[{string.Join(",", IncludeModules)}], ModuleInterfaceTarget=\"{ModuleInterfaceTarget}\" }}";
 		}
 	}
 
@@ -204,6 +216,11 @@ namespace Soup.Build.Cpp.Compiler
 		/// Gets or sets a value indicating whether to generate source debug information
 		/// </summary>
 		public bool GenerateSourceDebugInfo { get; init; }
+
+		/// <summary>
+		/// Gets or sets the list of interface partition translation units to compile
+		/// </summary>
+		public IReadOnlyList<InterfaceUnitCompileArguments> InterfacePartitionUnits { get; set; } = new List<InterfaceUnitCompileArguments>();
 
 		/// <summary>
 		/// Gets or sets the single optional interface unit to compile
@@ -261,6 +278,7 @@ namespace Soup.Build.Cpp.Compiler
 				Enumerable.SequenceEqual(this.IncludeDirectories, rhs.IncludeDirectories) &&
 				Enumerable.SequenceEqual(this.IncludeModules, rhs.IncludeModules) &&
 				this.GenerateSourceDebugInfo == rhs.GenerateSourceDebugInfo &&
+				Enumerable.SequenceEqual(this.InterfacePartitionUnits, rhs.InterfacePartitionUnits) &&
 				this.InterfaceUnit == rhs.InterfaceUnit &&
 				this.ResourceFile == rhs.ResourceFile &&
 				Enumerable.SequenceEqual(this.ImplementationUnits, rhs.ImplementationUnits) &&
@@ -289,7 +307,7 @@ namespace Soup.Build.Cpp.Compiler
 
 		public override string ToString()
 		{
-			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, SourceRootDirectory=\"{SourceRootDirectory}\", TargetRootDirectory=\"{TargetRootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], IncludeDirectories=[{string.Join(",", IncludeDirectories)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], ResourceFile={ResourceFile}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, SourceRootDirectory=\"{SourceRootDirectory}\", TargetRootDirectory=\"{TargetRootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], IncludeDirectories=[{string.Join(",", IncludeDirectories)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfacePartitionUnits=[{string.Join(",", InterfacePartitionUnits)}], InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], ResourceFile={ResourceFile}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
 		}
 	}
 

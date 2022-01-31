@@ -77,7 +77,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			operations.Add(writeSharedArgumentsOperation);
 
 			// Initialize a shared input set
-			var sharedInputFiles = arguments.IncludeModules;
+			var sharedInputFiles = new List<Path>();
+			sharedInputFiles.AddRange(arguments.IncludeModules);
 
 			var absoluteResponseFile = arguments.TargetRootDirectory + responseFile;
 
@@ -112,6 +113,37 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				operations.Add(buildOperation);
 			}
 
+			foreach (var partitionUnitArguments in arguments.InterfacePartitionUnits)
+			{
+				// Build up the input/output sets
+				var inputFiles = sharedInputFiles.ToList();
+				inputFiles.Add(partitionUnitArguments.SourceFile);
+				inputFiles.Add(absoluteResponseFile);
+				inputFiles.AddRange(partitionUnitArguments.IncludeModules);
+
+				var outputFiles = new List<Path>()
+				{
+					arguments.TargetRootDirectory + partitionUnitArguments.TargetFile,
+					arguments.TargetRootDirectory + partitionUnitArguments.ModuleInterfaceTarget,
+				};
+
+				// Build the unique arguments for this translation unit
+				var commandArguments = ArgumentBuilder.BuildInterfaceUnitCompilerArguments(
+					arguments.TargetRootDirectory,
+					partitionUnitArguments,
+					absoluteResponseFile);
+
+				// Generate the operation
+				var buildOperation = new BuildOperation(
+					partitionUnitArguments.SourceFile.ToString(),
+					arguments.SourceRootDirectory,
+					_compilerExecutable,
+					CombineArguments(commandArguments),
+					inputFiles.ToArray(),
+					outputFiles);
+				operations.Add(buildOperation);
+			}
+
 			// Generate the interface build operation if present
 			var internalModules = new List<Path>();
 			if (arguments.InterfaceUnit is not null)
@@ -122,6 +154,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				var inputFiles = sharedInputFiles.ToList();
 				inputFiles.Add(interfaceUnitArguments.SourceFile);
 				inputFiles.Add(absoluteResponseFile);
+				inputFiles.AddRange(interfaceUnitArguments.IncludeModules);
+
 				var outputFiles = new List<Path>()
 				{
 					arguments.TargetRootDirectory + interfaceUnitArguments.TargetFile,
@@ -154,6 +188,9 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				var inputFiles = sharedInputFiles.ToList();
 				inputFiles.Add(implementationUnitArguments.SourceFile);
 				inputFiles.Add(absoluteResponseFile);
+				inputFiles.AddRange(implementationUnitArguments.IncludeModules);
+				inputFiles.AddRange(internalModules);
+
 				var outputFiles = new List<Path>()
 				{
 					arguments.TargetRootDirectory + implementationUnitArguments.TargetFile,

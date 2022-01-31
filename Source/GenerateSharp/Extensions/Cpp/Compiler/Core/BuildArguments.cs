@@ -109,6 +109,13 @@ namespace Soup.Build.Cpp.Compiler
 		public Path BinaryDirectory { get; set; } = new Path();
 
 		/// <summary>
+		/// Gets or sets the list of module interface partition source files
+		/// Note: These files can be plain old translation units 
+		/// or they can be module implementation units
+		/// </summary>
+		public IReadOnlyList<Path> ModuleInterfacePartitionSourceFiles { get; set; } = new List<Path>();
+
+		/// <summary>
 		/// Gets or sets the single module interface source file
 		/// </summary>
 		public Path ModuleInterfaceSourceFile { get; set; } = new Path();
