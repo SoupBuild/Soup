@@ -1133,10 +1133,20 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				arguments.TargetRootDirectory = new Path("C:/target/");
 				arguments.ObjectDirectory = new Path("obj/");
 				arguments.BinaryDirectory = new Path("bin/");
-				arguments.ModuleInterfacePartitionSourceFiles = new List<Path>()
+				arguments.ModuleInterfacePartitionSourceFiles = new List<PartitionSourceFile>()
 				{
-					new Path("TestFile1.cpp"),
-					new Path("TestFile2.cpp"),
+					new PartitionSourceFile()
+					{
+						File = new Path("TestFile1.cpp"),
+					},
+					new PartitionSourceFile()
+					{
+						File = new Path("TestFile2.cpp"),
+						Imports = new List<Path>()
+						{
+							new Path("TestFile1.cpp"),
+						}
+					},
 				};
 				arguments.ModuleInterfaceSourceFile = new Path("Public.cpp");
 				arguments.SourceFiles = new List<Path>()
@@ -1233,6 +1243,10 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 						{
 							SourceFile = new Path("TestFile2.cpp"),
 							TargetFile = new Path("obj/TestFile2.mock.obj"),
+							IncludeModules = new List<Path>()
+							{
+								new Path("C:/target/obj/TestFile1.mock.bmi")
+							},
 							ModuleInterfaceTarget = new Path("obj/TestFile2.mock.bmi"),
 						},
 					},

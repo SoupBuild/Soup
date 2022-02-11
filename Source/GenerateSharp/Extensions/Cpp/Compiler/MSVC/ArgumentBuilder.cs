@@ -271,6 +271,46 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			return commandArguments;
 		}
 
+		public static IList<string> BuildPartitionUnitCompilerArguments(
+			Path targetRootDirectory,
+			InterfaceUnitCompileArguments arguments,
+			Path responseFile)
+		{
+			// Build the arguments for a standard translation unit
+			var commandArguments = new List<string>();
+
+			// Add the response file
+			commandArguments.Add("@" + responseFile.ToString());
+
+			// Add the module references as input
+			foreach (var moduleFile in arguments.IncludeModules)
+			{
+				AddFlag(commandArguments, "reference");
+				AddValueWithQuotes(commandArguments, moduleFile.ToString());
+			}
+
+			// Add the source file as input
+			commandArguments.Add(arguments.SourceFile.ToString());
+
+			// Add the target file as outputs
+			var absoluteTargetFile = targetRootDirectory + arguments.TargetFile;
+			AddFlagValueWithQuotes(
+				commandArguments,
+				Compiler_ArgumentParameter_ObjectFile,
+				absoluteTargetFile.ToString());
+
+			// Add the unique arguments for an partition unit
+			AddFlag(commandArguments, "interface");
+
+			// Specify the module interface file output
+			AddFlag(commandArguments, "ifcOutput");
+
+			var absoluteModuleInterfaceFile = targetRootDirectory + arguments.ModuleInterfaceTarget;
+			AddValueWithQuotes(commandArguments, absoluteModuleInterfaceFile.ToString());
+
+			return commandArguments;
+		}
+
 		public static IList<string> BuildTranslationUnitCompilerArguments(
 			Path targetRootDirectory,
 			TranslationUnitCompileArguments arguments,

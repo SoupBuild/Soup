@@ -85,7 +85,25 @@ namespace Soup.Build.Cpp
 
 			if (buildTable.TryGetValue("ModuleInterfacePartitionSourceFiles", out var moduleInterfacePartitionSourceFiles))
 			{
-				arguments.ModuleInterfacePartitionSourceFiles = moduleInterfacePartitionSourceFiles.AsList().Select(value => new Path(value.AsString())).ToList();
+				var paritionTargets = new List<PartitionSourceFile>();
+				foreach (var partition in moduleInterfacePartitionSourceFiles.AsList())
+				{
+					var partitionTable = partition.AsTable();
+
+					var partitionImports = new List<Path>();
+					if (partitionTable.TryGetValue("Imports", out var partitionImportsValue))
+					{
+						partitionImports = partitionImportsValue.AsList().Select(value => new Path(value.AsString())).ToList();
+					}
+
+					paritionTargets.Add(new PartitionSourceFile()
+					{
+						File = new Path(partitionTable["Source"].AsString()),
+						Imports = partitionImports,
+					});
+				}
+
+				arguments.ModuleInterfacePartitionSourceFiles = paritionTargets;
 			}
 
 			if (buildTable.TryGetValue("ModuleInterfaceSourceFile", out var moduleInterfaceSourceFile))

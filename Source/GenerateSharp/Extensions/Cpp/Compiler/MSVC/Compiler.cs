@@ -128,7 +128,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				};
 
 				// Build the unique arguments for this translation unit
-				var commandArguments = ArgumentBuilder.BuildInterfaceUnitCompilerArguments(
+				var commandArguments = ArgumentBuilder.BuildPartitionUnitCompilerArguments(
 					arguments.TargetRootDirectory,
 					partitionUnitArguments,
 					absoluteResponseFile);

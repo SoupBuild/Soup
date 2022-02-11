@@ -900,8 +900,15 @@ namespace Soup.Build.Cpp.UnitTests
 				buildTable.Add("BinaryDirectory", new Value("bin/"));
 				buildTable.Add("ModuleInterfacePartitionSourceFiles", new Value(new ValueList()
 				{
-					new Value("TestFile1.cpp"),
-					new Value("TestFile2.cpp"),
+					new Value(new ValueTable()
+					{
+						{ "Source", new Value("TestFile1.cpp") },
+					}),
+					new Value(new ValueTable()
+					{
+						{ "Source", new Value("TestFile2.cpp") },
+						{ "Imports", new Value(new ValueList() { new Value("TestFile1.cpp"), }) },
+					}),
 				}));
 				buildTable.Add("ModuleInterfaceSourceFile", new Value("Public.cpp"));
 				buildTable.Add("Source", new Value(new ValueList()
@@ -1003,6 +1010,10 @@ namespace Soup.Build.Cpp.UnitTests
 						{
 							SourceFile = new Path("TestFile2.cpp"),
 							TargetFile = new Path("obj/TestFile2.mock.obj"),
+							IncludeModules = new List<Path>()
+							{
+								new Path("C:/target/obj/TestFile1.mock.bmi"),
+							},
 							ModuleInterfaceTarget = new Path("obj/TestFile2.mock.bmi"),
 						},
 					},

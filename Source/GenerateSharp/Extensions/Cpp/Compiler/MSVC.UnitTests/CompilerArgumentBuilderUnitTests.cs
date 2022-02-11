@@ -385,6 +385,35 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 		}
 
 		[Fact]
+		public void BuildPartitionUnitCompilerArguments()
+		{
+			var targetRootDirectory = new Path("C:/target/");
+			var arguments = new InterfaceUnitCompileArguments();
+			arguments.SourceFile = new Path("module.cpp");
+			arguments.TargetFile = new Path("module.obj");
+			arguments.ModuleInterfaceTarget = new Path("module.ifc");
+
+			var responseFile = new Path("ResponseFile.txt");
+
+			var actualArguments = ArgumentBuilder.BuildPartitionUnitCompilerArguments(
+				targetRootDirectory,
+				arguments,
+				responseFile);
+
+			var expectedArguments = new List<string>()
+			{
+				"@./ResponseFile.txt",
+				"./module.cpp",
+				"/Fo\"C:/target/module.obj\"",
+				"/interface",
+				"/ifcOutput",
+				"\"C:/target/module.ifc\"",
+			};
+
+			Assert.Equal(expectedArguments, actualArguments);
+		}
+
+		[Fact]
 		public void BuildInterfaceUnitCompilerArguments()
 		{
 			var targetRootDirectory = new Path("C:/target/");
