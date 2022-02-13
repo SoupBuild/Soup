@@ -1432,6 +1432,8 @@ namespace Soup.Build.Cpp.Compiler.UnitTests
 				Assert.Equal(
 					new List<Path>()
 					{
+						new Path("C:/target/obj/TestFile1.mock.bmi"),
+						new Path("C:/target/obj/TestFile2.mock.bmi"),
 						new Path("C:/target/bin/Library.mock.bmi"),
 					},
 					result.ModuleDependencies);

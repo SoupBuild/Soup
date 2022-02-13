@@ -142,6 +142,13 @@ namespace Soup.Build.Cpp.Compiler
 					allPartitionInterfaces.Add(arguments.TargetRootDirectory + objectModuleInterfaceFile);
 				}
 
+				// Add all partition unit interface files as module dependencies since MSVC does not
+				// combine the interfaces into the final interface unit
+				foreach (var module in allPartitionInterfaces)
+				{
+					result.ModuleDependencies.Add(module);
+				}
+
 				compileArguments.InterfacePartitionUnits = compileInterfacePartitionUnits;
 
 				// Compile the module interface unit if present
