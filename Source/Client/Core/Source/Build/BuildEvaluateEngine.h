@@ -106,10 +106,21 @@ namespace Soup::Core
 			auto buildRequired = false;
 			if (operationInfo.WasSuccessfulRun)
 			{
+				// Check if the executable has changed since the last run
+				bool executableOutOfDate = false;
+				if (operationInfo.Command.Executable != Path("writefile.exe"))
+				{
+					// Only check for "real" executables
+					auto executableFileId = _fileSystemState->ToFileId(operationInfo.Command.Executable, operationInfo.Command.WorkingDirectory);
+					if (_stateChecker.IsOutdated(operationInfo.EvaluateTime, executableFileId))
+					{
+						executableOutOfDate = true;
+					}
+				}
+
 				// Perform the incremental build checks
-				if (_stateChecker.IsOutdated(
-					operationInfo.ObservedOutput,
-					operationInfo.ObservedInput))
+				if (executableOutOfDate ||
+					_stateChecker.IsOutdated(operationInfo.ObservedOutput, operationInfo.ObservedInput))
 				{
 					buildRequired = true;
 				}
@@ -185,6 +196,7 @@ namespace Soup::Core
 
 			// Mark this operation as successful to enable future incremental builds
 			operationInfo.WasSuccessfulRun = true;
+			operationInfo.EvaluateTime = std::chrono::system_clock::now();
 
 			// Ensure the File System State is notified of any output files that have changed
 			_fileSystemState->CheckFileWriteTimes(operationInfo.ObservedOutput);
@@ -282,11 +294,9 @@ namespace Soup::Core
 				operationInfo.ObservedInput = _fileSystemState->ToFileIds(input, operationInfo.Command.WorkingDirectory);
 				operationInfo.ObservedOutput = _fileSystemState->ToFileIds(output, operationInfo.Command.WorkingDirectory);
 
-				// Add the executable as actual input too
-				// TODO: operationInfo.ObservedInput.push_back(_fileSystemState->ToFileId(operationInfo.Command.Executable, operationInfo.Command.WorkingDirectory));
-
 				// Mark this operation as successful to enable future incremental builds
 				operationInfo.WasSuccessfulRun = true;
+				operationInfo.EvaluateTime = std::chrono::system_clock::now();
 
 				// Ensure the File System State is notified of any output files that have changed
 				_fileSystemState->CheckFileWriteTimes(operationInfo.ObservedOutput);

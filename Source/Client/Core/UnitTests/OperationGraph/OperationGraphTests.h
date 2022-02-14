@@ -49,6 +49,7 @@ namespace Soup::Core::UnitTests
 						{ },
 						1,
 						false,
+						std::chrono::time_point<std::chrono::system_clock>::min(),
 						{ },
 						{ }),
 				}));
@@ -77,6 +78,7 @@ namespace Soup::Core::UnitTests
 							{ },
 							1,
 							false,
+							std::chrono::time_point<std::chrono::system_clock>::min(),
 							{ },
 							{ }),
 					},
@@ -108,6 +110,7 @@ namespace Soup::Core::UnitTests
 						{ },
 						1,
 						false,
+						std::chrono::time_point<std::chrono::system_clock>::min(),
 						{ },
 						{ }),
 				}));
@@ -177,6 +180,7 @@ namespace Soup::Core::UnitTests
 						{ },
 						1,
 						false,
+						std::chrono::time_point<std::chrono::system_clock>::min(),
 						{ },
 						{ }),
 				}));
@@ -206,6 +210,7 @@ namespace Soup::Core::UnitTests
 					{ },
 					1,
 					false,
+					std::chrono::time_point<std::chrono::system_clock>::min(),
 					{ },
 					{ }),
 				*operationInfo,
@@ -253,6 +258,7 @@ namespace Soup::Core::UnitTests
 						{ },
 						1,
 						false,
+						std::chrono::time_point<std::chrono::system_clock>::min(),
 						{ },
 						{ }),
 				}));
@@ -274,6 +280,7 @@ namespace Soup::Core::UnitTests
 					{ },
 					1,
 					false,
+					std::chrono::time_point<std::chrono::system_clock>::min(),
 					{ },
 					{ }),
 				operationInfo,
@@ -305,6 +312,7 @@ namespace Soup::Core::UnitTests
 					{ },
 					1,
 					false,
+					std::chrono::time_point<std::chrono::system_clock>::min(),
 					{ },
 					{ }));
 
@@ -326,6 +334,7 @@ namespace Soup::Core::UnitTests
 							{ },
 							1,
 							false,
+							std::chrono::time_point<std::chrono::system_clock>::min(),
 							{ },
 							{ }),
 					}

@@ -4,6 +4,7 @@
 
 #pragma once
 #include "FileSystemState.h"
+using namespace std::chrono_literals;
 
 namespace Soup::Core
 {
@@ -67,6 +68,7 @@ namespace Soup::Core
 			Children(),
 			DependencyCount(0),
 			WasSuccessfulRun(false),
+			EvaluateTime(std::chrono::time_point<std::chrono::system_clock>::min()),
 			ObservedInput(),
 			ObservedOutput()
 		{
@@ -93,6 +95,7 @@ namespace Soup::Core
 			Children(),
 			DependencyCount(0),
 			WasSuccessfulRun(false),
+			EvaluateTime(std::chrono::time_point<std::chrono::system_clock>::min()),
 			ObservedInput(),
 			ObservedOutput()
 		{
@@ -112,6 +115,7 @@ namespace Soup::Core
 			std::vector<OperationId> children,
 			uint32_t dependencyCount,
 			bool wasSuccessfulRun,
+			std::chrono::time_point<std::chrono::system_clock> evaluateTime,
 			std::vector<FileId> observedInput,
 			std::vector<FileId> observedOutput) :
 			Id(id),
@@ -124,6 +128,7 @@ namespace Soup::Core
 			Children(std::move(children)),
 			DependencyCount(dependencyCount),
 			WasSuccessfulRun(wasSuccessfulRun),
+			EvaluateTime(evaluateTime),
 			ObservedInput(std::move(observedInput)),
 			ObservedOutput(std::move(observedOutput))
 		{
@@ -144,6 +149,7 @@ namespace Soup::Core
 				Children == rhs.Children &&
 				DependencyCount == rhs.DependencyCount &&
 				WasSuccessfulRun == rhs.WasSuccessfulRun &&
+				EvaluateTime == rhs.EvaluateTime &&
 				ObservedInput == rhs.ObservedInput &&
 				ObservedOutput == rhs.ObservedOutput;
 		}
@@ -158,6 +164,7 @@ namespace Soup::Core
 		std::vector<OperationId> Children;
 		uint32_t DependencyCount;
 		bool WasSuccessfulRun;
+		std::chrono::time_point<std::chrono::system_clock> EvaluateTime;
 		std::vector<FileId> ObservedInput;
 		std::vector<FileId> ObservedOutput;
 	};

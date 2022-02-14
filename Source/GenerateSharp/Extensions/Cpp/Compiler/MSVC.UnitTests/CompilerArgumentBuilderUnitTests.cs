@@ -3,6 +3,7 @@
 // </copyright>
 
 using Opal;
+using System;
 using System.Collections.Generic;
 using Xunit;
 

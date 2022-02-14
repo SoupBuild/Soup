@@ -11,6 +11,7 @@ TestState RunBuildEvaluateEngineTests()
 	state += Soup::Test::RunTest(className, "Evaluate_OneOperation_Incremental_MissingFileInfo", [&testClass]() { testClass->Evaluate_OneOperation_Incremental_MissingFileInfo(); });
 	state += Soup::Test::RunTest(className, "Evaluate_OneOperation_Incremental_MissingTargetFile", [&testClass]() { testClass->Evaluate_OneOperation_Incremental_MissingTargetFile(); });
 	state += Soup::Test::RunTest(className, "Evaluate_OneOperation_Incremental_OutOfDate", [&testClass]() { testClass->Evaluate_OneOperation_Incremental_OutOfDate(); });
+	state += Soup::Test::RunTest(className, "Evaluate_OneOperation_Incremental_Executable_OutOfDate", [&testClass]() { testClass->Evaluate_OneOperation_Incremental_Executable_OutOfDate(); });
 	state += Soup::Test::RunTest(className, "Evaluate_OneOperation_Incremental_UpToDate", [&testClass]() { testClass->Evaluate_OneOperation_Incremental_UpToDate(); });
 
 	return state;

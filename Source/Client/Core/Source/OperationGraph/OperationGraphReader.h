@@ -14,7 +14,10 @@ namespace Soup::Core
 	{
 	private:
 		// Binary Operation Graph file format
-		static constexpr uint32_t FileVersion = 3;
+		static constexpr uint32_t FileVersion = 4;
+
+		// The offset from January 1, 1970 at 00:00:00.000 to January 1, 0001 at 00:00:00.000 in the Gregorian calendar
+		static constexpr long long UnixEpochOffset = 62135596800000;
 
 	public:
 		static OperationGraph Deserialize(std::istream& stream)
@@ -139,6 +142,11 @@ namespace Soup::Core
 			// Write out the value indicating if there was a successful run
 			auto wasSuccessfulRun = ReadBoolean(stream);
 
+			// Read the utc tick since January 1, 0001 at 00:00:00.000 in the Gregorian calendar
+			auto evaluateTimeMilliseconds = ReadInt64(stream);
+			auto unixEvaluateTimeMilliseconds = std::chrono::milliseconds(evaluateTimeMilliseconds - UnixEpochOffset);
+			auto evaluateTime = std::chrono::time_point<std::chrono::system_clock>(unixEvaluateTimeMilliseconds);
+
 			// Write out the observed input files
 			auto observedInput = ReadFileIdList(stream);
 
@@ -159,6 +167,7 @@ namespace Soup::Core
 				std::move(children),
 				dependecyCount,
 				wasSuccessfulRun,
+				evaluateTime,
 				std::move(observedInput),
 				std::move(observedOutput));
 		}
@@ -170,6 +179,18 @@ namespace Soup::Core
 			if (stream.fail())
 			{
 				throw std::runtime_error("OperationGraphReader Failed to read unsigned integer value");
+			}
+
+			return result;
+		}
+
+		static int64_t ReadInt64(std::istream& stream)
+		{
+			int64_t result = 0;
+			stream.read(reinterpret_cast<char*>(&result), sizeof(int64_t));
+			if (stream.fail())
+			{
+				throw std::runtime_error("OperationGraphReader Failed to read 64 bit integer value");
 			}
 
 			return result;
