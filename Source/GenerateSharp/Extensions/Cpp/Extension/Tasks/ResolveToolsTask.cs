@@ -128,6 +128,7 @@ namespace Soup.Build.Cpp
 					visualCompilerVersionFolder + new Path("/include/"),
 					windows10KitVersionIncludePath + new Path("/ucrt/"),
 					windows10KitVersionIncludePath + new Path("/um/"),
+					windows10KitVersionIncludePath + new Path("/winrt/"),
 					windows10KitVersionIncludePath + new Path("/shared/"),
 				};
 			}

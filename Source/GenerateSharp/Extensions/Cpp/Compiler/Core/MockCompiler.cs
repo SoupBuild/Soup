@@ -78,6 +78,26 @@ namespace Soup.Build.Cpp.Compiler.Mock
 			_compileRequests.Add(arguments);
 
 			var result = new List<BuildOperation>();
+
+			foreach (var fileArguments in arguments.InterfacePartitionUnits)
+			{
+				result.Add(
+					new BuildOperation(
+						$"MockCompilePartition: {_compileRequests.Count}",
+						new Path("MockWorkingDirectory"),
+						new Path("MockCompiler.exe"),
+						"Arguments",
+						new List<Path>()
+						{
+							fileArguments.SourceFile,
+						},
+						new List<Path>()
+						{
+							fileArguments.TargetFile,
+							fileArguments.ModuleInterfaceTarget,
+						}));
+			}
+
 			if (!ReferenceEquals(arguments.InterfaceUnit, null))
 			{
 				result.Add(
@@ -88,11 +108,12 @@ namespace Soup.Build.Cpp.Compiler.Mock
 						"Arguments",
 						new List<Path>()
 						{
-							new Path("InputFile.in"),
+							arguments.InterfaceUnit.SourceFile,
 						},
 						new List<Path>()
 						{
-							new Path("OutputFile.out"),
+							arguments.InterfaceUnit.TargetFile,
+							arguments.InterfaceUnit.ModuleInterfaceTarget,
 						}));
 			}
 

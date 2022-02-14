@@ -64,6 +64,15 @@ namespace Soup.Build.Cpp.Compiler
 	}
 
 	/// <summary>
+	/// The partition source file definition
+	/// </summary>
+	public class PartitionSourceFile
+	{
+		public Path File { get; set; } = new Path();
+		public IReadOnlyList<Path> Imports { get; set; } = new List<Path>();
+	}
+
+	/// <summary>
 	/// The set of build arguments
 	/// </summary>
 	public class BuildArguments
@@ -107,6 +116,13 @@ namespace Soup.Build.Cpp.Compiler
 		/// Gets or sets the output binary directory
 		/// </summary>
 		public Path BinaryDirectory { get; set; } = new Path();
+
+		/// <summary>
+		/// Gets or sets the list of module interface partition source files
+		/// Note: These files can be plain old translation units 
+		/// or they can be module implementation units
+		/// </summary>
+		public IReadOnlyList<PartitionSourceFile> ModuleInterfacePartitionSourceFiles { get; set; } = new List<PartitionSourceFile>();
 
 		/// <summary>
 		/// Gets or sets the single module interface source file

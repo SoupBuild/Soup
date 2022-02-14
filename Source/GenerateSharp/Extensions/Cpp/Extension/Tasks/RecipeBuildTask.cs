@@ -154,6 +154,50 @@ namespace Soup.Build.Cpp
 				resourcesFile = resourcesFilePath.ToString();
 			}
 
+			// Load the module interface partition files if present
+			var moduleInterfacePartitionSourceFiles = new List<IValue>();
+			if (recipeTable.TryGetValue("Partitions", out var partitionsValue))
+			{
+				foreach (var partition in partitionsValue.AsList())
+				{
+					var targetPartitionTable = this.factory.CreateTable();
+					if (partition.IsString())
+					{
+						targetPartitionTable.Add(
+							"Source",
+							this.factory.Create(partition.AsString()));
+					}
+					else if (partition.IsTable())
+					{
+						var partitionTable = partition.AsTable();
+						if (partitionTable.TryGetValue("Source", out var partitionSourceValue))
+						{
+							targetPartitionTable.Add(
+								"Source",
+								this.factory.Create(partitionSourceValue.AsString()));
+						}
+						else
+						{
+							throw new InvalidOperationException("Partition table missing Source");
+						}
+
+						if (partitionTable.TryGetValue("Imports", out var partitionImportsValue))
+						{
+							var partitionImports = partitionImportsValue.AsList().Select(value => this.factory.Create(value.AsString()));
+							targetPartitionTable.Add(
+								"Imports",
+								this.factory.Create(this.factory.CreateList().Append(partitionImports)));
+						}
+					}
+					else
+					{
+						throw new InvalidOperationException("Unknown partition type.");
+					}
+
+					moduleInterfacePartitionSourceFiles.Add(this.factory.Create(targetPartitionTable));
+				}
+			}
+
 			// Load the module interface file if present
 			var moduleInterfaceSourceFile = string.Empty;
 			if (recipeTable.TryGetValue("Interface", out var interfaceValue))
@@ -214,6 +258,7 @@ namespace Soup.Build.Cpp
 			buildTable["ObjectDirectory"] = this.factory.Create(objectDirectory.ToString());
 			buildTable["BinaryDirectory"] = this.factory.Create(binaryDirectory.ToString());
 			buildTable["ResourcesFile"] = this.factory.Create(resourcesFile);
+			buildTable.EnsureValueList(this.factory, "ModuleInterfacePartitionSourceFiles").Append(moduleInterfacePartitionSourceFiles);
 			buildTable["ModuleInterfaceSourceFile"] = this.factory.Create(moduleInterfaceSourceFile);
 			buildTable["OptimizationLevel"] = this.factory.Create((long)optimizationLevel);
 			buildTable["GenerateSourceDebugInfo"] = this.factory.Create(generateSourceDebugInfo);

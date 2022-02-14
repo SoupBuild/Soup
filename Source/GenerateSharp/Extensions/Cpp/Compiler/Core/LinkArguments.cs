@@ -131,9 +131,9 @@ namespace Soup.Build.Cpp.Compiler
 
 		public static bool operator !=(LinkArguments? lhs, LinkArguments? rhs) => !(lhs == rhs);
 
-        public override string ToString()
-        {
+		public override string ToString()
+		{
 			return $"LinkArguments {{ TargetFile=\"{TargetFile}\", TargetType={TargetType}, ImplementationFile=\"{ImplementationFile}\", TargetRootDirectory=\"{TargetRootDirectory}\", TargetArchitecture=\"{TargetArchitecture}\", ObjectFiles=[{string.Join(",", ObjectFiles)}], LibraryFiles=[{string.Join(",", LibraryFiles)}], ExternalLibraryFiles=[{string.Join(",", ExternalLibraryFiles)}], LibraryPaths=[{string.Join(",", LibraryPaths)}], GenerateSourceDebugInfo={GenerateSourceDebugInfo} }}";
 		}
-    }
+	}
 }

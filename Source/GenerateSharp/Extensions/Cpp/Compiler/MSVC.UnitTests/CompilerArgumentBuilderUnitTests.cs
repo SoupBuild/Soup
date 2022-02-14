@@ -385,6 +385,35 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 		}
 
 		[Fact]
+		public void BuildPartitionUnitCompilerArguments()
+		{
+			var targetRootDirectory = new Path("C:/target/");
+			var arguments = new InterfaceUnitCompileArguments();
+			arguments.SourceFile = new Path("module.cpp");
+			arguments.TargetFile = new Path("module.obj");
+			arguments.ModuleInterfaceTarget = new Path("module.ifc");
+
+			var responseFile = new Path("ResponseFile.txt");
+
+			var actualArguments = ArgumentBuilder.BuildPartitionUnitCompilerArguments(
+				targetRootDirectory,
+				arguments,
+				responseFile);
+
+			var expectedArguments = new List<string>()
+			{
+				"@./ResponseFile.txt",
+				"./module.cpp",
+				"/Fo\"C:/target/module.obj\"",
+				"/interface",
+				"/ifcOutput",
+				"\"C:/target/module.ifc\"",
+			};
+
+			Assert.Equal(expectedArguments, actualArguments);
+		}
+
+		[Fact]
 		public void BuildInterfaceUnitCompilerArguments()
 		{
 			var targetRootDirectory = new Path("C:/target/");
@@ -450,13 +479,18 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 			{
 				SourceFile = new Path("module.cpp"),
 				TargetFile = new Path("module.obj"),
+				IncludeModules = new List<Path>()
+				{
+					new Path("Module1.ifc"),
+					new Path("Module2.ifc"),
+				},
 			};
 
 			var responseFile = new Path("ResponseFile.txt");
 			var internalModules = new List<Path>()
 			{
-				new Path("Module1.ifc"),
-				new Path("Module2.ifc"),
+				new Path("Module3.ifc"),
+				new Path("Module4.ifc"),
 			};
 
 			var actualArguments = ArgumentBuilder.BuildTranslationUnitCompilerArguments(
@@ -472,6 +506,10 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				"\"./Module1.ifc\"",
 				"/reference",
 				"\"./Module2.ifc\"",
+				"/reference",
+				"\"./Module3.ifc\"",
+				"/reference",
+				"\"./Module4.ifc\"",
 				"./module.cpp",
 				"/Fo\"C:/target/module.obj\"",
 			};
