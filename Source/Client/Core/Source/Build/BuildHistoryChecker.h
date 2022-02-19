@@ -16,6 +16,39 @@ namespace Soup::Core
 		}
 
 		/// <summary>
+		/// Perform a check if the last evaluate time is outdated with
+		/// respect to the input files
+		/// </summary>
+		bool IsOutdated(
+			std::chrono::time_point<std::chrono::system_clock> lastEvaluateTime,
+			FileId inputFile)
+		{
+			auto lastWriteTime = _fileSystemState->GetLastWriteTime(inputFile);
+
+			// Perform the final check
+			if (!lastWriteTime.has_value())
+			{
+				// The input was missing
+				auto targetFilePath = _fileSystemState->GetFilePath(inputFile);
+				Log::Info("Input Missing [" + targetFilePath.ToString() + "]");
+				return true;
+			}
+			else
+			{
+				if (lastWriteTime.value() > lastEvaluateTime)
+				{
+					auto targetFilePath = _fileSystemState->GetFilePath(inputFile);
+					Log::Info("Input altered after last evaluate [" + targetFilePath.ToString() + "]");
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Perform a check if the requested target is outdated with
 		/// respect to the input files
 		/// </summary>
@@ -48,7 +81,7 @@ namespace Soup::Core
 			const std::vector<FileId>& inputFiles)
 		{
 			// Get the output file last write time
-			std::optional<time_t> targetFileLastWriteTime = _fileSystemState->GetLastWriteTime(targetFile);
+			auto targetFileLastWriteTime = _fileSystemState->GetLastWriteTime(targetFile);
 
 			if (!targetFileLastWriteTime.has_value())
 			{
@@ -70,10 +103,13 @@ namespace Soup::Core
 			return false;
 		}
 
-		bool IsOutdated(FileId inputFile, FileId outputFile, std::time_t outputFileLastWriteTime)
+		bool IsOutdated(
+			FileId inputFile,
+			FileId outputFile,
+			std::chrono::time_point<std::chrono::system_clock> outputFileLastWriteTime)
 		{
 			// Get the file state from the cache
-			std::optional<time_t> lastWriteTime = _fileSystemState->GetLastWriteTime(inputFile);
+			auto lastWriteTime = _fileSystemState->GetLastWriteTime(inputFile);
 
 			// Perform the final check
 			if (!lastWriteTime.has_value())

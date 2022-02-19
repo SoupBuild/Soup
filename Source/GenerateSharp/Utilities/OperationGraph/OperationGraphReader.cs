@@ -15,7 +15,7 @@ namespace Soup.Build.Utilities
 	internal static class OperationGraphReader
 	{
 		// Binary Operation Graph file format
-		private static uint FileVersion => 3;
+		private static uint FileVersion => 4;
 
 		public static OperationGraph Deserialize(System.IO.BinaryReader reader)
 		{
@@ -100,46 +100,49 @@ namespace Soup.Build.Utilities
 
 		private static OperationInfo ReadOperationInfo(System.IO.BinaryReader reader)
 		{
-			// Write out the operation id
+			// Read the operation id
 			var id = new OperationId(reader.ReadUInt32());
 
-			// Write the operation title
+			// Read the operation title
 			var title = ReadString(reader);
 
-			// Write the command working directory
+			// Read the command working directory
 			var workingDirectory = ReadString(reader);
 
-			// Write the command executable
+			// Read the command executable
 			var executable = ReadString(reader);
 
-			// Write the command arguments
+			// Read the command arguments
 			var arguments = ReadString(reader);
 
-			// Write out the declared input files
+			// Read the declared input files
 			var declaredInput = ReadFileIdList(reader);
 
-			// Write out the declared output files
+			// Read the declared output files
 			var declaredOutput = ReadFileIdList(reader);
 
-			// Write out the read access list
+			// Read the read access list
 			var readAccess = ReadFileIdList(reader);
 
-			// Write out the write access list
+			// Read the write access list
 			var writeAccess = ReadFileIdList(reader);
 
-			// Write out the child operation ids
+			// Read the child operation ids
 			var children = ReadOperationIdList(reader);
 
-			// Write out the dependency count
+			// Read the dependency count
 			var dependecyCount = reader.ReadUInt32();
 
-			// Write out the value indicating if there was a successful run
+			// Read the value indicating if there was a successful run
 			var wasSuccessfulRun = ReadBoolean(reader);
 
-			// Write out the observed input files
+			// Read the utc tick since January 1, 0001 at 00:00:00.000 in the Gregorian calendar
+			var evaluateTime = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);
+
+			// Read the observed input files
 			var observedInput = ReadFileIdList(reader);
 
-			// Write out the observed output files
+			// Read the observed output files
 			var observedOutput = ReadFileIdList(reader);
 
 			return new OperationInfo(
@@ -156,6 +159,7 @@ namespace Soup.Build.Utilities
 				children,
 				dependecyCount,
 				wasSuccessfulRun,
+				evaluateTime,
 				observedInput,
 				observedOutput);
 		}

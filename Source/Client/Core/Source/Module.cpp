@@ -24,12 +24,9 @@
 
 #include <Windows.h>
 
-#ifdef max
 #undef max
-#endif
-#ifdef CreateProcess
+#undef min
 #undef CreateProcess
-#endif
 
 #include <openssl/evp.h>
 

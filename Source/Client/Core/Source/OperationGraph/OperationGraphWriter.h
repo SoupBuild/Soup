@@ -14,7 +14,10 @@ namespace Soup::Core
 	{
 	private:
 		// Binary Operation graph file format
-		static constexpr uint32_t FileVersion = 3;
+		static constexpr uint32_t FileVersion = 4;
+
+		// The offset from January 1, 1970 at 00:00:00.000 to January 1, 0001 at 00:00:00.000 in the Gregorian calendar
+		static constexpr long long UnixEpochOffset = 62135596800000;
 
 	public:
 		static void Serialize(const OperationGraph& state, std::ostream& stream)
@@ -87,6 +90,11 @@ namespace Soup::Core
 			// Write out the value indicating if there was a successful run
 			WriteValue(stream, operation.WasSuccessfulRun);
 
+			// Write out the utc milliseconds since January 1, 0001 at 00:00:00.000 in the Gregorian calendar
+			auto unixEvaluateTimeMilliseconds = std::chrono::time_point_cast<std::chrono::milliseconds>(operation.EvaluateTime).time_since_epoch().count();
+			auto evaluateTimeMilliseconds = unixEvaluateTimeMilliseconds + UnixEpochOffset;
+			WriteValue(stream, evaluateTimeMilliseconds);
+
 			// Write out the observed input files
 			WriteValues(stream, operation.ObservedInput);
 
@@ -97,6 +105,11 @@ namespace Soup::Core
 		static void WriteValue(std::ostream& stream, uint32_t value)
 		{
 			stream.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
+		}
+
+		static void WriteValue(std::ostream& stream, int64_t value)
+		{
+			stream.write(reinterpret_cast<char*>(&value), sizeof(int64_t));
 		}
 
 		static void WriteValue(std::ostream& stream, bool value)

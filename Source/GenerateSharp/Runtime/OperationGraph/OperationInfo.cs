@@ -90,6 +90,7 @@ namespace Soup.Build.Runtime
 				new List<OperationId>(),
 				0,
 				false,
+				DateTime.MinValue,
 				new List<FileId>(),
 				new List<FileId>())
 		{
@@ -117,6 +118,7 @@ namespace Soup.Build.Runtime
 				new List<OperationId>(),
 				0,
 				false,
+				DateTime.MinValue,
 				new List<FileId>(),
 				new List<FileId>())
 		{
@@ -136,6 +138,7 @@ namespace Soup.Build.Runtime
 			IList<OperationId> children,
 			uint dependencyCount,
 			bool wasSuccessfulRun,
+			DateTime evaluateTime,
 			IList<FileId> observedInput,
 			IList<FileId> observedOutput)
 		{
@@ -149,6 +152,7 @@ namespace Soup.Build.Runtime
 			Children = children;
 			DependencyCount = dependencyCount;
 			WasSuccessfulRun = wasSuccessfulRun;
+			EvaluateTime = evaluateTime;
 			ObservedInput = observedInput;
 			ObservedOutput = observedOutput;
 		}
@@ -168,6 +172,7 @@ namespace Soup.Build.Runtime
 				Enumerable.SequenceEqual(Children, rhs.Children) &&
 				DependencyCount == rhs.DependencyCount &&
 				WasSuccessfulRun == rhs.WasSuccessfulRun &&
+				EvaluateTime == rhs.EvaluateTime &&
 				Enumerable.SequenceEqual(ObservedInput, rhs.ObservedInput) &&
 				Enumerable.SequenceEqual(ObservedOutput, rhs.ObservedOutput);
 
@@ -206,7 +211,9 @@ namespace Soup.Build.Runtime
 		public IList<OperationId> Children { get; init; }
 		public uint DependencyCount { get; set; }
 		public bool WasSuccessfulRun { get; init; }
+		public DateTime EvaluateTime { get; init; }
 		public IList<FileId> ObservedInput { get; init; }
 		public IList<FileId> ObservedOutput { get; init; }
+
 	}
 }

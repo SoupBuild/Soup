@@ -94,9 +94,9 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto binaryFileContent = std::vector<char>(
+			auto binaryFileContent = std::vector<uint8_t>(
 			{
-				'B', 'O', 'G', '\0', 0x03, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x04, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -113,12 +113,13 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
+				0x9b, 0x4f, 0xc9, 0xb4, 0xa6, 0xf1, 0xfc, 0xff,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 			});
 			fileSystem->CreateMockFile(
 				Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin"),
-				std::make_shared<MockFile>(std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()))));
+				std::make_shared<MockFile>(std::stringstream(std::string((char*)binaryFileContent.data(), binaryFileContent.size()))));
 
 			auto filePath = Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin");
 			auto fileSystemState = std::make_shared<FileSystemState>();
@@ -152,6 +153,7 @@ namespace Soup::Core::UnitTests
 							{ },
 							1,
 							false,
+							std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::time_point<std::chrono::system_clock>::min()),
 							{ },
 							{ }),
 					}
@@ -208,6 +210,7 @@ namespace Soup::Core::UnitTests
 						{ },
 						1,
 						false,
+						std::chrono::time_point<std::chrono::system_clock>::min(),
 						{ },
 						{ }),
 				}));
@@ -232,9 +235,9 @@ namespace Soup::Core::UnitTests
 				"Verify messages match expected.");
 
 			// Verify the file content
-			auto binaryFileContent = std::vector<char>(
+			auto binaryFileContent = std::vector<uint8_t>(
 			{
-				'B', 'O', 'G', '\0', 0x03, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x04, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -251,12 +254,13 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
+				0x9b, 0x4f, 0xc9, 0xb4, 0xa6, 0xf1, 0xfc, 0xff,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 			});
 			auto mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/OperationGraph.bin"));
 			Assert::AreEqual(
-				std::string(binaryFileContent.data(), binaryFileContent.size()),
+				std::string((char*)binaryFileContent.data(), binaryFileContent.size()),
 				mockFile->Content.str(),
 				"Verify file content match expected.");
 		}

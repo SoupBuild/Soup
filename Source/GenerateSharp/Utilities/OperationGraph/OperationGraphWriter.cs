@@ -3,6 +3,7 @@
 // </copyright>
 
 using Soup.Build.Runtime;
+using System;
 using System.Collections.Generic;
 
 namespace Soup.Build.Utilities
@@ -13,7 +14,7 @@ namespace Soup.Build.Utilities
 	internal static class OperationGraphWriter
 	{
 		// Binary Operation graph file format
-		private static uint FileVersion => 3;
+		private static uint FileVersion => 4;
 
 		public static void Serialize(OperationGraph state, System.IO.BinaryWriter writer)
 		{
@@ -83,6 +84,10 @@ namespace Soup.Build.Utilities
 
 			// Write out the value indicating if there was a successful run
 			WriteValue(writer, operation.WasSuccessfulRun);
+
+			// Write out the utc milliseconds since January 1, 0001 at 00:00:00.000 in the Gregorian calendar
+			var evaluateTimeMilliseconds = operation.EvaluateTime.ToUniversalTime().Ticks / 10;
+			writer.Write(evaluateTimeMilliseconds);
 
 			// Write out the observed input files
 			WriteValues(writer, operation.ObservedInput);

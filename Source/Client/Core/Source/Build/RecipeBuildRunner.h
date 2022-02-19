@@ -727,6 +727,7 @@ namespace Soup::Core
 					if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
 					{
 						activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
+						activeOperationInfo.EvaluateTime = previousOperationInfo->EvaluateTime;
 						activeOperationInfo.ObservedInput = previousOperationInfo->ObservedInput;
 						activeOperationInfo.ObservedOutput = previousOperationInfo->ObservedOutput;
 					}
