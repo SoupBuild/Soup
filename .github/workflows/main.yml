@@ -48,6 +48,8 @@ jobs:
       run: soup build ./Soup/Samples/Cpp/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp ConsoleApplication
       run: soup build ./Soup/Samples/Cpp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Build Cpp DirectX
+      run: soup build ./Soup/Samples/Cpp/DirectX/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp DynamicLibrary
       run: soup build ./Soup/Samples/Cpp/DynamicLibrary/Application/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp ModuleInterface

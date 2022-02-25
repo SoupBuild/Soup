@@ -358,13 +358,14 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 					"./File3.cpp",
 					new Path("C:/source/"),
 					new Path("C:/bin/mock.cl.exe"),
-					"@C:/target/ObjectDir/SharedCompileArguments.rsp /reference \"./obj/Other3.pcm\" /reference \"C:/target/obj/File2.pcm\" ./File3.cpp /Fo\"C:/target/obj/File3.obj\"",
+					"@C:/target/ObjectDir/SharedCompileArguments.rsp /reference \"./obj/Other3.pcm\" /reference \"C:/target/obj/File1.pcm\" /reference \"C:/target/obj/File2.pcm\" ./File3.cpp /Fo\"C:/target/obj/File3.obj\"",
 					new List<Path>()
 					{
 						new Path("Module.pcm"),
 						new Path("File3.cpp"),
 						new Path("C:/target/ObjectDir/SharedCompileArguments.rsp"),
 						new Path("obj/Other3.pcm"),
+						new Path("C:/target/obj/File1.pcm"),
 						new Path("C:/target/obj/File2.pcm"),
 					},
 					new List<Path>()
