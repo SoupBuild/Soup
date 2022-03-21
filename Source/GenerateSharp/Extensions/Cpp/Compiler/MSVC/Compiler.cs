@@ -113,6 +113,7 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 				operations.Add(buildOperation);
 			}
 
+			var internalModules = new List<Path>();
 			foreach (var partitionUnitArguments in arguments.InterfacePartitionUnits)
 			{
 				// Build up the input/output sets
@@ -142,10 +143,12 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 					inputFiles.ToArray(),
 					outputFiles);
 				operations.Add(buildOperation);
+
+				// Add our module interface back in for the downstream compilers
+				internalModules.Add(arguments.TargetRootDirectory + partitionUnitArguments.ModuleInterfaceTarget);
 			}
 
 			// Generate the interface build operation if present
-			var internalModules = new List<Path>();
 			if (arguments.InterfaceUnit is not null)
 			{
 				var interfaceUnitArguments = arguments.InterfaceUnit;

@@ -32,7 +32,7 @@ int APIENTRY wWinMain(
 	MyRegisterClass(hInstance);
 
 	// Perform application initialization:
-	if (!InitInstance (hInstance, nCmdShow))
+	if (!InitInstance(hInstance, nCmdShow))
 	{
 		return FALSE;
 	}
