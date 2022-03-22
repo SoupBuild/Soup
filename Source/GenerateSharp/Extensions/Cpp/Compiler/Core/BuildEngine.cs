@@ -27,13 +27,8 @@ namespace Soup.Build.Cpp.Compiler
 		{
 			var result = new BuildResult();
 
-			// There is a bug in MSVC that requires all input module interface files,
-			// Add a copy back into the parent list for now...
-			// TODO: MSVC requires the entire closure of interfaces
-			if (_compiler.Name == "MSVC")
-			{
-				result.ModuleDependencies = new List<Path>(arguments.ModuleDependencies);
-			}
+			// All dependencies must include the entire interface dependency closure
+			result.ModuleDependencies = new List<Path>(arguments.ModuleDependencies);
 
 			// Ensure the output directories exists as the first step
 			result.BuildOperations.Add(
@@ -108,6 +103,13 @@ namespace Soup.Build.Cpp.Compiler
 					compileArguments.ResourceFile = compileResourceFileArguments;
 				}
 
+				// Build up the entire Interface Dependency Closure for each file
+				var partitionInterfaceDependencyLookup = new Dictionary<Path, IReadOnlyList<Path>>();
+				foreach (var file in arguments.ModuleInterfacePartitionSourceFiles)
+				{
+					partitionInterfaceDependencyLookup.Add(file.File, file.Imports);
+				}
+
 				// Compile the individual module interface partition translation units
 				var compileInterfacePartitionUnits = new List<InterfaceUnitCompileArguments>();
 				var allPartitionInterfaces = new List<Path>();
@@ -120,8 +122,15 @@ namespace Soup.Build.Cpp.Compiler
 						new Path(file.File.GetFileName());
 					objectModuleInterfaceFile.SetFileExtension(_compiler.ModuleFileExtension);
 
+					var interfaceDependencyClosure = new HashSet<Path>();
+					BuildClosure(interfaceDependencyClosure, file.File, partitionInterfaceDependencyLookup);
+					if (interfaceDependencyClosure.Contains(file.File))
+					{
+						throw new InvalidOperationException($"Circular partition references in: {file.File}");
+					}
+
 					var partitionImports = new List<Path>();
-					foreach (var import in file.Imports)
+					foreach (var import in interfaceDependencyClosure)
 					{
 						var importInterface = arguments.ObjectDirectory + new Path(import.GetFileName());
 						importInterface.SetFileExtension(_compiler.ModuleFileExtension);
@@ -422,6 +431,18 @@ namespace Soup.Build.Cpp.Compiler
 				{
 					result.RuntimeDependencies.Add(source);
 				}
+			}
+		}
+
+		private void BuildClosure(
+			ISet<Path> closure,
+			Path file,
+			IDictionary<Path, IReadOnlyList<Path>> partitionInterfaceDependencyLookup)
+		{
+			foreach (var childFile in partitionInterfaceDependencyLookup[file])
+			{
+				closure.Add(childFile);
+				BuildClosure(closure, childFile, partitionInterfaceDependencyLookup);
 			}
 		}
 
