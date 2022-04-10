@@ -128,6 +128,13 @@ namespace Soup.Build.CSharp
 					linkDependenciesValue.AsList().Select(value => new Path(value.AsString())));
 			}
 
+			// Load the Net Module dependencies
+			if (buildTable.TryGetValue("NetModuleDependencies", out var netModuleDependenciesValue))
+			{
+				arguments.NetModuleDependencies = MakeUnique(
+					netModuleDependenciesValue.AsList().Select(value => new Path(value.AsString())));
+			}
+
 			// Load the list of disabled warnings
 			if (buildTable.TryGetValue("EnableWarningsAsErrors", out var enableWarningsAsErrorsValue))
 			{
@@ -170,6 +177,7 @@ namespace Soup.Build.CSharp
 			var sharedBuildTable = sharedState.EnsureValueTable(this.factory, "Build");
 			sharedBuildTable.EnsureValueList(this.factory, "RuntimeDependencies").SetAll(this.factory, buildResult.RuntimeDependencies);
 			sharedBuildTable.EnsureValueList(this.factory, "LinkDependencies").SetAll(this.factory, buildResult.LinkDependencies);
+			sharedBuildTable.EnsureValueList(this.factory, "NetModuleDependencies").SetAll(this.factory, buildResult.NetModuleDependencies);
 
 			if (!buildResult.TargetFile.IsEmpty)
 			{

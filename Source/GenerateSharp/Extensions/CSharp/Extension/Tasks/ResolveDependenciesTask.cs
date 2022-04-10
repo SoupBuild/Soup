@@ -84,6 +84,12 @@ namespace Soup.Build.CSharp
                                 var linkDependencies = linkDependenciesValue.AsList();
                                 buildTable.EnsureValueList(this.factory, "LinkDependencies").Append(linkDependencies);
                             }
+
+                            if (dependencyBuildTable.TryGetValue("NetModuleDependencies", out var netModuleDependenciesValue))
+                            {
+                                var netModuleDependencies = netModuleDependenciesValue.AsList();
+                                buildTable.EnsureValueList(this.factory, "NetModuleDependencies").Append(netModuleDependencies);
+                            }
                         }
                     }
                 }

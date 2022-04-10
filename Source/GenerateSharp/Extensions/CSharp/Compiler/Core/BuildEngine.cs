@@ -105,15 +105,10 @@ namespace Soup.Build.CSharp.Compiler
 						targetFile =
 							arguments.BinaryDirectory +
 							new Path(arguments.TargetName + "." + _compiler.ModuleFileExtension);
-						referenceTargetFile =
-							referenceDirectory +
-							new Path(arguments.TargetName + "." + _compiler.ModuleFileExtension);
+						referenceTargetFile = new Path();
 
-						// Add the DLL as a runtime dependency
-						result.RuntimeDependencies.Add(arguments.TargetRootDirectory + targetFile);
-
-						// Link against the reference target
-						result.LinkDependencies.Add(arguments.TargetRootDirectory + referenceTargetFile);
+						// Add the net module reference
+						result.NetModuleDependencies.Add(arguments.TargetRootDirectory + targetFile);
 
 						break;
 					default:
@@ -158,6 +153,7 @@ namespace Soup.Build.CSharp.Compiler
 					NullableState = nullableState,
 					CustomProperties = arguments.CustomProperties,
 					ReferenceLibraries = arguments.LinkDependencies,
+					NetModules = arguments.NetModuleDependencies,
 				};
 
 				// Compile all source files as a single call

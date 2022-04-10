@@ -33,6 +33,11 @@ namespace Soup.Build.CSharp.Compiler
 		public IList<Path> RuntimeDependencies { get; set; } = new List<Path>();
 
 		/// <summary>
+		/// Gets or sets the list of net module dependencies
+		/// </summary>
+		public IList<Path> NetModuleDependencies { get; set; } = new List<Path>();
+
+		/// <summary>
 		/// Gets or sets the target file for the build
 		/// </summary>
 		public Path TargetFile { get; set; } = new Path();
