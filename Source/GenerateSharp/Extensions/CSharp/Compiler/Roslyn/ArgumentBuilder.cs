@@ -86,6 +86,12 @@ namespace Soup.Build.CSharp.Compiler.Roslyn
 				AddParameterWithQuotes(commandArguments, "reference", file.ToString());
 			}
 
+			// Add the net modules
+			foreach (var file in arguments.NetModules)
+			{
+				AddParameterWithQuotes(commandArguments, "addmodule", file.ToString());
+			}
+
 			// Emit debugging information
 			AddFlag(commandArguments, "debug+");
 			AddParameter(commandArguments, "debug", "portable");

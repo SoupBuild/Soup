@@ -92,6 +92,45 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 		}
 
 		[Fact]
+		public void BuildSharedCompilerArguments_SingleArgument_NetModule()
+		{
+			var arguments = new CompileArguments()
+			{
+				Target = new Path("bin/Target.netmodule"),
+				TargetType = LinkTarget.Module,
+			};
+
+			var actualArguments = ArgumentBuilder.BuildSharedCompilerArguments(
+				arguments);
+
+			var expectedArguments = new List<string>()
+			{
+				"/unsafe-",
+				"/checked-",
+				"/fullpaths",
+				"/nostdlib+",
+				"/errorreport:prompt",
+				"/warn:5",
+				"/errorendlocation",
+				"/preferreduilang:en-US",
+				"/highentropyva+",
+				"/nullable:enable",
+				"/debug+",
+				"/debug:portable",
+				"/filealign:512",
+				"/optimize-",
+				"/out:\"./bin/Target.netmodule\"",
+				"/target:module",
+				"/warnaserror-",
+				"/utf8output",
+				"/deterministic+",
+				"/langversion:9.0",
+			};
+
+			Assert.Equal(expectedArguments, actualArguments);
+		}
+
+		[Fact]
 		public void BuildSharedCompilerArguments_SingleArgument_EnableWarningsAsErrors()
 		{
 			var arguments = new CompileArguments()
