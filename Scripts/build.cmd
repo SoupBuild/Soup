@@ -7,8 +7,8 @@ SET ClientCLIDir=%SourceDir%\Client\CLI
 SET ExtensionCppDir=%SourceDir%\GenerateSharp\Extensions\Cpp\Extension
 SET ExtensionCSharpDir=%SourceDir%\GenerateSharp\Extensions\CSharp\Extension
 SET MonitorClientDir=%SourceDir%\Monitor\Client
-if %Flavor% == release (SET OutputX64DirectorPath=1281a639dd5d393781f4188942c6bc05544b7c2c0124eae4cc59236248e36) else (SET OutputX64DirectorPath=3d80717e7d2695f0a7aa5c38e2849624beeaa5714331ca96898fe4b8b8023fe)
-if %Flavor% == release (SET OutputX86DirectorPath=a15736f28dbf78415c82858ab76573eb6efdf98c85e3d67b3984210f54747) else (SET OutputX86DirectorPath=9e1e87dea39eeb349e44752a9a37cdf3ed1c2e7aea3044a45ed8bb44609efd)
+if %Flavor% == release (SET OutputX64DirectorPath=txTMowfPh1V3rPmbvNBmBW9Z8Jg) else (SET OutputX64DirectorPath=J3mu4cpISw6nDaCPED8gkqZ-q84)
+if %Flavor% == release (SET OutputX86DirectorPath=ci_UJP5zJKyF-O0VVSVDMNi1Wwg) else (SET OutputX86DirectorPath=9e1e87dea39eeb349e44752a9a37cdf3ed1c2e7aea3044a45ed8bb44609efd)
 SET ClientCLIOutputDirectory=%OutputDir%\C++\Soup\%OutputX64DirectorPath%
 SET MonitorClientOutputX64Directory=%OutputDir%\C++\Monitor.Client\%OutputX64DirectorPath%
 SET MonitorClientOutputX86Directory=%OutputDir%\C++\Monitor.Client\%OutputX86DirectorPath%
