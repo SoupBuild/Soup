@@ -38,8 +38,8 @@ jobs:
       run: swhere
     - name: Soup Restore
       run: soup restore ./Soup/Source/Client/CLI/ -v:d
-    # TODO: Disabled for openssl - name: Soup Build
-    #  run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
+    - name: Soup Build
+      run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
 
     # Build Samples
     - name: Soup Restore Cpp BuildExtension
