@@ -233,6 +233,11 @@ namespace Soup.Build.Cpp.Compiler
 		public IReadOnlyList<TranslationUnitCompileArguments> ImplementationUnits { get; set; } = new List<TranslationUnitCompileArguments>();
 
 		/// <summary>
+		/// Gets or sets the list of individual assembly units to compile
+		/// </summary>
+		public IReadOnlyList<TranslationUnitCompileArguments> AssemblyUnits { get; set; } = new List<TranslationUnitCompileArguments>();
+
+		/// <summary>
 		/// Gets or sets the single optional resource file to compile
 		/// </summary>
 		public ResourceCompileArguments? ResourceFile { get; set; }
@@ -282,6 +287,7 @@ namespace Soup.Build.Cpp.Compiler
 				this.InterfaceUnit == rhs.InterfaceUnit &&
 				this.ResourceFile == rhs.ResourceFile &&
 				Enumerable.SequenceEqual(this.ImplementationUnits, rhs.ImplementationUnits) &&
+				Enumerable.SequenceEqual(this.AssemblyUnits, rhs.AssemblyUnits) &&
 				this.EnableWarningsAsErrors == rhs.EnableWarningsAsErrors &&
 				Enumerable.SequenceEqual(this.DisabledWarnings, rhs.DisabledWarnings) &&
 				Enumerable.SequenceEqual(this.EnabledWarnings, rhs.EnabledWarnings) &&
@@ -307,7 +313,7 @@ namespace Soup.Build.Cpp.Compiler
 
 		public override string ToString()
 		{
-			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, SourceRootDirectory=\"{SourceRootDirectory}\", TargetRootDirectory=\"{TargetRootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], IncludeDirectories=[{string.Join(",", IncludeDirectories)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfacePartitionUnits=[{string.Join(",", InterfacePartitionUnits)}], InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], ResourceFile={ResourceFile}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
+			return $"SharedCompileArguments {{ Standard={Standard}, Optimize={Optimize}, SourceRootDirectory=\"{SourceRootDirectory}\", TargetRootDirectory=\"{TargetRootDirectory}\", ObjectDirectory=\"{ObjectDirectory}\", PreprocessorDefinitions=[{string.Join(",", PreprocessorDefinitions)}], IncludeDirectories=[{string.Join(",", IncludeDirectories)}], IncludeModules=[{string.Join(",", IncludeModules)}], GenerateSourceDebugInfo=\"{GenerateSourceDebugInfo}\", InterfacePartitionUnits=[{string.Join(",", InterfacePartitionUnits)}], InterfaceUnit={InterfaceUnit}, ImplementationUnits=[{string.Join(",", ImplementationUnits)}], AssemblyUnits=[{string.Join(",", AssemblyUnits)}], ResourceFile={ResourceFile}, EnableWarningsAsErrors=\"{EnableWarningsAsErrors}\", DisabledWarnings=[{string.Join(",", DisabledWarnings)}], EnabledWarnings=[{string.Join(",", EnabledWarnings)}], CustomProperties=[{string.Join(",", CustomProperties)}]}}";
 		}
 	}
 

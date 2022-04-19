@@ -143,6 +143,11 @@ namespace Soup.Build.Cpp.Compiler
 		public IReadOnlyList<Path> SourceFiles { get; set; } = new List<Path>();
 
 		/// <summary>
+		/// Gets or sets the list of assembly source files
+		/// </summary>
+		public IReadOnlyList<Path> AssemblySourceFiles { get; set; } = new List<Path>();
+
+		/// <summary>
 		/// Gets or sets the list of include directories
 		/// </summary>
 		public IReadOnlyList<Path> IncludeDirectories { get; set; } = new List<Path>();
