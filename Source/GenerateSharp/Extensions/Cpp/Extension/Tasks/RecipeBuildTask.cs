@@ -220,6 +220,13 @@ namespace Soup.Build.Cpp
 				sourceFiles = sourceValue.AsList().Select(value => value.AsString()).ToList();
 			}
 
+			// Load the assembly source files if present
+			var assemblySourceFiles = new List<string>();
+			if (recipeTable.TryGetValue("AssemblySource", out var assemblySourceValue))
+			{
+				assemblySourceFiles = assemblySourceValue.AsList().Select(value => value.AsString()).ToList();
+			}
+
 			// Check for warning settings
 			bool enableWarningsAsErrors = true;
 			if (recipeTable.TryGetValue("EnableWarningsAsErrors", out var enableWarningsAsErrorsValue))
@@ -269,6 +276,7 @@ namespace Soup.Build.Cpp
 			buildTable.EnsureValueList(this.factory, "IncludeDirectories").Append(this.factory, includePaths);
 			buildTable.EnsureValueList(this.factory, "LibraryPaths").Append(this.factory, libraryPaths);
 			buildTable.EnsureValueList(this.factory, "Source").Append(this.factory, sourceFiles);
+			buildTable.EnsureValueList(this.factory, "AssemblySource").Append(this.factory, assemblySourceFiles);
 
 			buildTable["EnableWarningsAsErrors"] = this.factory.Create(enableWarningsAsErrors);
 

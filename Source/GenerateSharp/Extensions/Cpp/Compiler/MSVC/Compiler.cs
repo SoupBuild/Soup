@@ -18,13 +18,20 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 		private Path _linkerExecutable;
 		private Path _libraryExecutable;
 		private Path _rcExecutable;
+		private Path _mlExecutable;
 
-		public Compiler(Path compilerExecutable, Path linkerExecutable, Path libraryExecutable, Path rcExecutable)
+		public Compiler(
+			Path compilerExecutable,
+			Path linkerExecutable,
+			Path libraryExecutable,
+			Path rcExecutable,
+			Path mlExecutable)
 		{
 			_compilerExecutable = compilerExecutable;
 			_linkerExecutable = linkerExecutable;
 			_libraryExecutable = libraryExecutable;
 			_rcExecutable = rcExecutable;
+			_mlExecutable = mlExecutable;
 		}
 
 		/// <summary>
@@ -211,6 +218,34 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 					implementationUnitArguments.SourceFile.ToString(),
 					arguments.SourceRootDirectory,
 					_compilerExecutable,
+					CombineArguments(commandArguments),
+					inputFiles.ToArray(),
+					outputFiles);
+				operations.Add(buildOperation);
+			}
+
+			foreach (var assemblyUnitArguments in arguments.AssemblyUnits)
+			{
+				// Build up the input/output sets
+				var inputFiles = sharedInputFiles.ToList();
+				inputFiles.Add(assemblyUnitArguments.SourceFile);
+
+				var outputFiles = new List<Path>()
+				{
+					arguments.TargetRootDirectory + assemblyUnitArguments.TargetFile,
+				};
+
+				// Build the unique arguments for this assembly unit
+				var commandArguments = ArgumentBuilder.BuildAssemblyUnitCompilerArguments(
+					arguments.TargetRootDirectory,
+					arguments,
+					assemblyUnitArguments);
+
+				// Generate the operation
+				var buildOperation = new BuildOperation(
+					assemblyUnitArguments.SourceFile.ToString(),
+					arguments.SourceRootDirectory,
+					_mlExecutable,
 					CombineArguments(commandArguments),
 					inputFiles.ToArray(),
 					outputFiles);

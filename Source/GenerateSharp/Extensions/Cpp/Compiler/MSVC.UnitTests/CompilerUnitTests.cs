@@ -17,7 +17,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
 				new Path("C:/bin/mock.lib.exe"),
-				new Path("C:/bin/mock.rc.exe"));
+				new Path("C:/bin/mock.rc.exe"),
+				new Path("C:/bin/mock.ml.exe"));
 			Assert.Equal("MSVC", uut.Name);
 			Assert.Equal("obj", uut.ObjectFileExtension);
 			Assert.Equal("ifc", uut.ModuleFileExtension);
@@ -33,7 +34,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
 				new Path("C:/bin/mock.lib.exe"),
-				new Path("C:/bin/mock.rc.exe"));
+				new Path("C:/bin/mock.rc.exe"),
+				new Path("C:/bin/mock.ml.exe"));
 
 			var arguments = new SharedCompileArguments()
 			{
@@ -94,7 +96,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
 				new Path("C:/bin/mock.lib.exe"),
-				new Path("C:/bin/mock.rc.exe"));
+				new Path("C:/bin/mock.rc.exe"),
+				new Path("C:/bin/mock.ml.exe"));
 
 			var arguments = new SharedCompileArguments()
 			{
@@ -172,7 +175,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
 				new Path("C:/bin/mock.lib.exe"),
-				new Path("C:/bin/mock.rc.exe"));
+				new Path("C:/bin/mock.rc.exe"),
+				new Path("C:/bin/mock.ml.exe"));
 
 			var arguments = new SharedCompileArguments()
 			{
@@ -249,7 +253,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
 				new Path("C:/bin/mock.lib.exe"),
-				new Path("C:/bin/mock.rc.exe"));
+				new Path("C:/bin/mock.rc.exe"),
+				new Path("C:/bin/mock.ml.exe"));
 
 			var arguments = new SharedCompileArguments()
 			{
@@ -384,7 +389,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
 				new Path("C:/bin/mock.lib.exe"),
-				new Path("C:/bin/mock.rc.exe"));
+				new Path("C:/bin/mock.rc.exe"),
+				new Path("C:/bin/mock.ml.exe"));
 
 			var arguments = new SharedCompileArguments()
 			{
@@ -452,7 +458,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
 				new Path("C:/bin/mock.lib.exe"),
-				new Path("C:/bin/mock.rc.exe"));
+				new Path("C:/bin/mock.rc.exe"),
+				new Path("C:/bin/mock.ml.exe"));
 
 			var arguments = new LinkArguments();
 			arguments.TargetType = LinkTarget.StaticLibrary;
@@ -491,7 +498,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
 				new Path("C:/bin/mock.lib.exe"),
-				new Path("C:/bin/mock.rc.exe"));
+				new Path("C:/bin/mock.rc.exe"),
+				new Path("C:/bin/mock.ml.exe"));
 
 			var arguments = new LinkArguments();
 			arguments.TargetType = LinkTarget.Executable;
@@ -535,7 +543,8 @@ namespace Soup.Build.Cpp.Compiler.MSVC.UnitTests
 				new Path("C:/bin/mock.cl.exe"),
 				new Path("C:/bin/mock.link.exe"),
 				new Path("C:/bin/mock.lib.exe"),
-				new Path("C:/bin/mock.rc.exe"));
+				new Path("C:/bin/mock.rc.exe"),
+				new Path("C:/bin/mock.ml.exe"));
 
 			var arguments = new LinkArguments();
 			arguments.TargetType = LinkTarget.WindowsApplication;

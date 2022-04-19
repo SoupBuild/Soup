@@ -63,7 +63,8 @@ namespace Soup.Build.Cpp.Compiler
 			// Ensure there are actually files to build
 			if (arguments.ModuleInterfacePartitionSourceFiles.Count != 0 ||
 				!arguments.ModuleInterfaceSourceFile.IsEmpty ||
-				arguments.SourceFiles.Count != 0)
+				arguments.SourceFiles.Count != 0 ||
+				arguments.AssemblySourceFiles.Count != 0)
 			{
 				// Setup the shared properties
 				var compileArguments = new SharedCompileArguments()
@@ -204,7 +205,7 @@ namespace Soup.Build.Cpp.Compiler
 				}
 
 				// Compile the individual translation units
-				var compileImplementationUnits = new List<TranslationUnitCompileArguments>(compileArguments.ImplementationUnits);
+				var compileImplementationUnits = new List<TranslationUnitCompileArguments>();
 				foreach (var file in arguments.SourceFiles)
 				{
 					buildState.LogTrace(TraceLevel.Information, "Generate Compile Operation: " + file.ToString());
@@ -218,6 +219,22 @@ namespace Soup.Build.Cpp.Compiler
 				}
 
 				compileArguments.ImplementationUnits = compileImplementationUnits;
+
+				// Compile the individual assembly units
+				var compileAssemblyUnits = new List<TranslationUnitCompileArguments>();
+				foreach (var file in arguments.AssemblySourceFiles)
+				{
+					buildState.LogTrace(TraceLevel.Information, "Generate Compile Assembly Operation: " + file.ToString());
+
+					var compileFileArguments = new TranslationUnitCompileArguments();
+					compileFileArguments.SourceFile = file;
+					compileFileArguments.TargetFile = arguments.ObjectDirectory + new Path(file.GetFileName());
+					compileFileArguments.TargetFile.SetFileExtension(_compiler.ObjectFileExtension);
+
+					compileAssemblyUnits.Add(compileFileArguments);
+				}
+
+				compileArguments.AssemblyUnits = compileAssemblyUnits;
 
 				// Compile all source files as a single call
 				var compileOperations = _compiler.CreateCompileOperations(compileArguments);
@@ -381,6 +398,14 @@ namespace Soup.Build.Cpp.Compiler
 
 			// Add the implementation unit object files
 			foreach (var sourceFile in arguments.SourceFiles)
+			{
+				var objectFile = arguments.ObjectDirectory + new Path(sourceFile.GetFileName());
+				objectFile.SetFileExtension(_compiler.ObjectFileExtension);
+				objectFiles.Add(objectFile);
+			}
+
+			// Add the assembly unit object files
+			foreach (var sourceFile in arguments.AssemblySourceFiles)
 			{
 				var objectFile = arguments.ObjectDirectory + new Path(sourceFile.GetFileName());
 				objectFile.SetFileExtension(_compiler.ObjectFileExtension);

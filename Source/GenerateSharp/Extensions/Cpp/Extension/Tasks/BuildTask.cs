@@ -41,7 +41,13 @@ namespace Soup.Build.Cpp
 				var linkToolPath = new Path(activeState["MSVC.LinkToolPath"].AsString());
 				var libToolPath = new Path(activeState["MSVC.LibToolPath"].AsString());
 				var rcToolPath = new Path(activeState["MSVC.RCToolPath"].AsString());
-				return new Compiler.MSVC.Compiler(clToolPath, linkToolPath, libToolPath, rcToolPath);
+				var mlToolPath = new Path(activeState["MSVC.MLToolPath"].AsString());
+				return new Compiler.MSVC.Compiler(
+					clToolPath,
+					linkToolPath,
+					libToolPath,
+					rcToolPath,
+					mlToolPath);
 			});
 		}
 
@@ -114,6 +120,11 @@ namespace Soup.Build.Cpp
 			if (buildTable.TryGetValue("Source", out var sourceValue))
 			{
 				arguments.SourceFiles = sourceValue.AsList().Select(value => new Path(value.AsString())).ToList();
+			}
+
+			if (buildTable.TryGetValue("AssemblySource", out var assemblySourceValue))
+			{
+				arguments.AssemblySourceFiles = assemblySourceValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
 			if (buildTable.TryGetValue("IncludeDirectories", out var includeDirectoriesValue))

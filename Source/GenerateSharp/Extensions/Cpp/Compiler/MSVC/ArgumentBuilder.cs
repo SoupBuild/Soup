@@ -271,6 +271,45 @@ namespace Soup.Build.Cpp.Compiler.MSVC
 			return commandArguments;
 		}
 
+		public static IList<string> BuildAssemblyUnitCompilerArguments(
+			Path targetRootDirectory,
+			SharedCompileArguments sharedArguments,
+			TranslationUnitCompileArguments arguments)
+		{
+			// Build the arguments for a standard translation unit
+			var commandArguments = new List<string>();
+
+			// Disable the logo
+			AddFlag(commandArguments, ArgumentFlag_NoLogo);
+
+			// Add the target file as outputs
+			var absoluteTargetFile = targetRootDirectory + arguments.TargetFile;
+			AddFlagValueWithQuotes(
+				commandArguments,
+				Compiler_ArgumentParameter_ObjectFile,
+				absoluteTargetFile.ToString());
+
+			// Only run preprocessor, compile and assemble
+			AddFlag(commandArguments, Compiler_ArgumentFlag_CompileOnly);
+
+			// Generate debug information
+			AddFlag(commandArguments, Compiler_ArgumentFlag_GenerateDebugInformation);
+
+			// Enable warnings
+			AddFlag(commandArguments, "W3");
+
+			// Set the include paths
+			foreach (var directory in sharedArguments.IncludeDirectories)
+			{
+				AddFlagValueWithQuotes(commandArguments, Compiler_ArgumentParameter_Include, directory.ToString());
+			}
+
+			// Add the source file as input
+			commandArguments.Add(arguments.SourceFile.ToString());
+
+			return commandArguments;
+		}
+		
 		public static IList<string> BuildPartitionUnitCompilerArguments(
 			Path targetRootDirectory,
 			InterfaceUnitCompileArguments arguments,
