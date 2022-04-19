@@ -143,6 +143,11 @@ namespace Soup.Build.CSharp.Compiler
 		public IReadOnlyList<Path> RuntimeDependencies { get; set; } = new List<Path>();
 
 		/// <summary>
+		/// Gets or sets the list of net module dependencies
+		/// </summary>
+		public IReadOnlyList<Path> NetModuleDependencies { get; set; } = new List<Path>();
+
+		/// <summary>
 		/// Gets or sets the optimization level
 		/// </summary>
 		public BuildOptimizationLevel OptimizationLevel { get; set; }

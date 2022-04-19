@@ -68,8 +68,8 @@ namespace Soup.Build.CSharp.Compiler.Roslyn.UnitTests
 					new List<Path>()
 					{
 						new Path("C:/target/bin/Target.dll"),
-						new Path("C:/target/ref/Target.dll"),
 						new Path("C:/target/bin/Target.pdb"),
+						new Path("C:/target/ref/Target.dll"),
 					}),
 				};
 

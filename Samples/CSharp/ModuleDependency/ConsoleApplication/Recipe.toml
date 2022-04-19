@@ -1,0 +1,12 @@
+Name = "Samples.CSharp.ModuleDependency.ConsoleApplication"
+Language = "C#"
+Type = "Executable"
+Version = "1.1.4"
+Source = [
+	"Program.cs",
+]
+
+[Dependencies]
+Runtime = [
+	"../Module/"
+]
