@@ -349,7 +349,8 @@ namespace Soup.Build.Runtime
 		{
 			if (this.outputFileLookup.ContainsKey(file))
 			{
-				throw new InvalidOperationException("Operation output file already exists");
+				var filePath = this.fileSystemState.GetFilePath(file);
+				throw new InvalidOperationException($"Operation output file already exists: {filePath}");
 			}
 			else
 			{

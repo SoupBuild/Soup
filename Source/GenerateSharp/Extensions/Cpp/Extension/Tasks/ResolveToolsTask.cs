@@ -105,15 +105,18 @@ namespace Soup.Build.Cpp
 			var clToolPath = vcToolsBinaryFolder + new Path("cl.exe");
 			var linkToolPath = vcToolsBinaryFolder + new Path("link.exe");
 			var libToolPath = vcToolsBinaryFolder + new Path("lib.exe");
+			var mlToolPath = vcToolsBinaryFolder + new Path("ml64.exe");
 			var rcToolPath = windosKitsBinaryFolder + new Path("rc.exe");
 
 			// Save the build properties
 			state["MSVC.Version"] = this.factory.Create(visualCompilerVersion);
 			state["MSVC.VCToolsRoot"] = this.factory.Create(visualCompilerVersionFolder.ToString());
 			state["MSVC.VCToolsBinaryRoot"] = this.factory.Create(vcToolsBinaryFolder.ToString());
+			state["MSVC.WindosKitsBinaryRoot"] = this.factory.Create(windosKitsBinaryFolder.ToString());
 			state["MSVC.LinkToolPath"] = this.factory.Create(linkToolPath.ToString());
 			state["MSVC.LibToolPath"] = this.factory.Create(libToolPath.ToString());
 			state["MSVC.RCToolPath"] = this.factory.Create(rcToolPath.ToString());
+			state["MSVC.MLToolPath"] = this.factory.Create(mlToolPath.ToString());
 
 			// Allow custom overrides for the compiler path
 			if (!state.ContainsKey("MSVC.ClToolPath"))

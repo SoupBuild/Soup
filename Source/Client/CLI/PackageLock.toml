@@ -16,8 +16,8 @@
 "C#" = [
 	{ Name = "Soup.Test.Cpp", Version = "Soup.Test.Cpp@0.1.3" },
 	{ Name = "Opal", Version = "Opal@1.0.1" },
-	{ Name = "Soup.Build", Version = "Soup.Build@0.1.3" },
-	{ Name = "Soup.Build.Extensions", Version = "Soup.Build.Extensions@0.1.7" },
-	{ Name = "Soup.Cpp.Compiler", Version = "Soup.Cpp.Compiler@0.1.5" },
-	{ Name = "Soup.Cpp.Compiler.MSVC", Version = "Soup.Cpp.Compiler.MSVC@0.1.6" },
+	{ Name = "Soup.Build", Version = "../../GenerateSharp/Build/" },
+	{ Name = "Soup.Build.Extensions", Version = "../../GenerateSharp/Build.Extensions/" },
+	{ Name = "Soup.Cpp.Compiler", Version = "../../GenerateSharp/Extensions/Cpp/Compiler/Core/" },
+	{ Name = "Soup.Cpp.Compiler.MSVC", Version = "../../GenerateSharp/Extensions/Cpp/Compiler/MSVC/" },
 ]
