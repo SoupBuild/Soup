@@ -2,6 +2,7 @@
 "C++" = [
 	{ Name = "Soup", Version = "./" },
 	{ Name = "Soup.Core", Version = "../Core/" },
+	{ Name = "CryptoPP", Version = "CryptoPP@1.0.1" },
 	{ Name = "json11", Version = "json11@1.0.1" },
 	{ Name = "Opal", Version = "Opal@0.3.0" },
 	{ Name = "toml11", Version = "toml11@1.0.1" },

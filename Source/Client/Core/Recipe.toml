@@ -7,22 +7,10 @@ Defines = [
 ]
 IncludePaths = [
 	"Source/",
-	"../../../Dependencies/OpenSSL/include/",
 ]
 Interface = "Source/Module.cpp"
 Source = [
 	"Source/ValueTable/Value.cpp",
-]
-
-LinkLibraries = [
-	# Link against the dynamic libraries
-	"../../../Dependencies/OpenSSL/libcrypto.lib",
-	"../../../Dependencies/OpenSSL/libssl.lib",
-]
-RuntimeDependencies = [
-	# Copy the dynamic libraries
-	"../../../Dependencies/OpenSSL/libcrypto-3-x64.dll",
-	"../../../Dependencies/OpenSSL/libssl-3-x64.dll",
 ]
 
 [Dependencies]
@@ -34,6 +22,7 @@ Runtime = [
 	"Opal@0.3.0",
 	"toml11@1.0.1",
 	"../../Monitor/Host/",
+	"CryptoPP@1.0.1",
 ]
 Test = [
 	"Soup.Test.Assert@0.1.8",

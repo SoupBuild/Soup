@@ -116,6 +116,11 @@ namespace Soup.Build.Cpp
 				arguments.SourceFiles = sourceValue.AsList().Select(value => new Path(value.AsString())).ToList();
 			}
 
+			if (buildTable.TryGetValue("AssemblySource", out var assemblySourceValue))
+			{
+				arguments.AssemblySourceFiles = assemblySourceValue.AsList().Select(value => new Path(value.AsString())).ToList();
+			}
+
 			if (buildTable.TryGetValue("IncludeDirectories", out var includeDirectoriesValue))
 			{
 				arguments.IncludeDirectories = includeDirectoriesValue.AsList().Select(value => new Path(value.AsString())).ToList();

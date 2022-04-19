@@ -28,10 +28,9 @@
 #undef min
 #undef CreateProcess
 
-#include <openssl/evp.h>
-
 export module Soup.Core;
 
+import CryptoPP;
 import json11;
 import toml11;
 import Monitor.Host;

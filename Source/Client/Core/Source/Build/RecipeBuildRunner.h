@@ -12,7 +12,6 @@
 #include "OperationGraph/OperationGraphManager.h"
 #include "Utils/HandledException.h"
 #include "ValueTable/ValueTableManager.h"
-#include "Sha3_256.h"
 #include "Recipe/RecipeBuildStateConverter.h"
 #include "PathList/PathListManager.h"
 
@@ -121,7 +120,7 @@ namespace Soup::Core
 			// Add unique folder name for parameters
 			auto parametersStream = std::stringstream();
 			ValueTableWriter::Serialize(globalParameters, parametersStream);
-			auto hashParameters = Sha3_256::HashBase64(parametersStream.str());
+			auto hashParameters = CryptoPP::Sha1::HashBase64(parametersStream.str());
 			auto uniqueParametersFolder = Path(hashParameters + "/");
 			rootOutput = rootOutput + uniqueParametersFolder;
 

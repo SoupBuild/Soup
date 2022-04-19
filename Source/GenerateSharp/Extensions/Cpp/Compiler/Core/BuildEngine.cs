@@ -63,7 +63,8 @@ namespace Soup.Build.Cpp.Compiler
 			// Ensure there are actually files to build
 			if (arguments.ModuleInterfacePartitionSourceFiles.Count != 0 ||
 				!arguments.ModuleInterfaceSourceFile.IsEmpty ||
-				arguments.SourceFiles.Count != 0)
+				arguments.SourceFiles.Count != 0 ||
+				arguments.AssemblySourceFiles.Count != 0)
 			{
 				// Setup the shared properties
 				var compileArguments = new SharedCompileArguments()
