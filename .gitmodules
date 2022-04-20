@@ -1,6 +1,0 @@
-[submodule "Dependencies/openssl"]
-	path = Dependencies/openssl
-	url = https://github.com/openssl/openssl.git
-[submodule "Dependencies/Detours"]
-	path = Dependencies/Detours
-	url = https://github.com/mwasplund/Detours.git

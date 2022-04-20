@@ -2,11 +2,12 @@
 "C++" = [
 	{ Name = "Soup", Version = "./" },
 	{ Name = "Soup.Core", Version = "../Core/" },
+	{ Name = "CryptoPP", Version = "CryptoPP@1.0.1" },
 	{ Name = "json11", Version = "json11@1.0.1" },
 	{ Name = "Opal", Version = "Opal@0.3.0" },
 	{ Name = "toml11", Version = "toml11@1.0.1" },
 	{ Name = "Monitor.Host", Version = "../../Monitor/Host/" },
-	{ Name = "Detours", Version = "../../../Dependencies/Detours/src/" },
+	{ Name = "Detours", Version = "Detours@4.0.1" },
 	{ Name = "Monitor.Shared", Version = "../../../Monitor/Shared/" },
 	{ Name = "Soup.Test.Assert", Version = "Soup.Test.Assert@0.1.8" },
 	{ Name = "copy", Version = "../../Tools/Copy/" },
