@@ -1,20 +1,25 @@
 module;
 
+#ifdef WIN32
+
 #include <windows.h>
 
 #ifdef CreateProcess
 #undef CreateProcess
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
 #pragma warning(push)
 #if _MSC_VER > 1400
 #pragma warning(disable:6102 6103)
 #endif
 #include <strsafe.h>
 #pragma warning(pop)
+
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 #include <atomic>
@@ -41,6 +46,8 @@ export constexpr const char* TBLOG_PIPE_NAME = TBLOG_PIPE_NAMEA;
 #include "Message.h"
 #include "ProcessPayload.h"
 
+#ifdef WIN32
+
 export void ThrowIfFailed(int32_t result, std::string_view message)
 {
 	if (result != NO_ERROR)
@@ -48,3 +55,5 @@ export void ThrowIfFailed(int32_t result, std::string_view message)
 		throw std::runtime_error(message.data());
 	}
 }
+
+#endif

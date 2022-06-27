@@ -8,7 +8,7 @@ namespace Monitor
 	public:
 		MessageType Type;
 		uint32_t ContentSize;
-		byte Content[2048 - sizeof(Type) - sizeof(ContentSize)];
+		uint8_t Content[2048 - sizeof(Type) - sizeof(ContentSize)];
 
 	public:
 		void AppendValue(const char* value)

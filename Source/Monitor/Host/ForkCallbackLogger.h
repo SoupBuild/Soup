@@ -2,6 +2,8 @@
 
 namespace Monitor
 {
+	#ifdef WIN32
+
 	export class ForkCallbackLogger : public IDetourCallback
 	{
 	public:
@@ -1231,4 +1233,6 @@ namespace Monitor
 		std::shared_ptr<IDetourCallback> _callback1;
 		std::shared_ptr<IDetourCallback> _callback2;
 	};
+
+	#endif
 }

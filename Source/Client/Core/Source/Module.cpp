@@ -22,11 +22,13 @@
 #include <unordered_set>
 #include <vector>
 
+#ifdef WIN32
 #include <Windows.h>
 
 #undef max
 #undef min
 #undef CreateProcess
+#endif
 
 export module Soup.Core;
 
