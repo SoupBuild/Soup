@@ -34,6 +34,8 @@ namespace Soup.Build.Discover
 					return -1;
 				}
 
+				bool includePrerelease = true;
+
 				// Load up the Local User Config
 				var localUserConfigPath = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 					new Path(".soup/LocalUserConfig.toml");
@@ -44,7 +46,7 @@ namespace Soup.Build.Discover
 				}
 
 				// Find the Roslyn SDKs
-				var roslynInstallPath = await VSWhereUtilities.FindRoslynInstallAsync();
+				var roslynInstallPath = await VSWhereUtilities.FindRoslynInstallAsync(includePrerelease);
 
 				var roslynSDK = userConfig.EnsureSDK("Roslyn");
 				roslynSDK.SourceDirectories = new List<Path>()
@@ -68,7 +70,7 @@ namespace Soup.Build.Discover
 					{
 					});
 
-				var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync();
+				var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync(includePrerelease);
 				var msvcSDK = userConfig.EnsureSDK("MSVC");
 				msvcSDK.SourceDirectories = new List<Path>()
 				{

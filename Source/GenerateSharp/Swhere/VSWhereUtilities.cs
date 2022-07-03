@@ -15,10 +15,12 @@ namespace Soup.Build.Discover
 		/// <summary>
 		/// Attempt to find Roslyn compiler installation 
 		/// </summary>
-		public static async Task<Path> FindRoslynInstallAsync()
+		public static async Task<Path> FindRoslynInstallAsync(bool includePrerelease)
 		{
 			// Find the location of the Windows SDK
-			var visualStudioInstallRoot = await FindVSInstallRootAsync("Microsoft.VisualStudio.Component.Roslyn.Compiler");
+			var visualStudioInstallRoot = await FindVSInstallRootAsync(
+				"Microsoft.VisualStudio.Component.Roslyn.Compiler",
+				includePrerelease);
 			Log.HighPriority("Using VS Installation: " + visualStudioInstallRoot.ToString());
 
 			// Calculate the final Roslyn binaries folder
@@ -31,10 +33,12 @@ namespace Soup.Build.Discover
 		/// <summary>
 		/// Attempt to find MSVC compiler installation 
 		/// </summary>
-		public static async Task<(string Version, Path Path)> FindMSVCInstallAsync()
+		public static async Task<(string Version, Path Path)> FindMSVCInstallAsync(bool includePrerelease)
 		{
 			// Find the location of the Windows SDK
-			var visualStudioInstallRoot = await FindVSInstallRootAsync("Microsoft.VisualStudio.Component.VC.Tools.x86.x64");
+			var visualStudioInstallRoot = await FindVSInstallRootAsync(
+				"Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+				includePrerelease);
 			Log.HighPriority("Using VS Installation: " + visualStudioInstallRoot.ToString());
 
 			// Use the default version
@@ -48,7 +52,7 @@ namespace Soup.Build.Discover
 			return (visualCompilerVersion, visualCompilerVersionFolder);
 		}
 
-		private static async Task<Path> FindVSInstallRootAsync(string requires)
+		private static async Task<Path> FindVSInstallRootAsync(string requires, bool includePrerelease)
 		{
 			// Find a copy of visual studio that has the required VisualCompiler
 			var executablePath = new Path("C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe");
@@ -65,7 +69,6 @@ namespace Soup.Build.Discover
 			};
 
 			// Check if we should include pre-release versions
-			bool includePrerelease = true;
 			if (includePrerelease)
 			{
 				argumentList.Add("-prerelease");
