@@ -190,8 +190,8 @@ namespace Soup.Build.Utilities
 						});
 
 					inlineTableItemSyntax.AddLeadingWhitespace();
-					inlineTableItemSyntax.KeyValue.EqualToken.AddLeadingWhitespace();
-					inlineTableItemSyntax.KeyValue.EqualToken.AddTrailingWhitespace();
+					inlineTableItemSyntax.KeyValue?.EqualToken?.AddLeadingWhitespace();
+					inlineTableItemSyntax.KeyValue?.EqualToken?.AddTrailingWhitespace();
 
 					// A comma can not be on the last item
 					// Add a comma to the previous item

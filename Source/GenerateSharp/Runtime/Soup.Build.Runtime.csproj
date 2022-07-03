@@ -5,7 +5,7 @@
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Tomlyn" Version="0.1.2" />
+		<PackageReference Include="Tomlyn" Version="0.15.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Build\Soup.Build.csproj" />

@@ -30,7 +30,7 @@ namespace Soup.Build.Utilities
 				throw new InvalidOperationException("An KeyValue value must not have an active value.");
 
 			// Visit the key value, which will place the converted value into the current value
-			keyValue.Value.Accept(this);
+			keyValue.Value?.Accept(this);
 			if (_currentValue == null)
 				throw new InvalidOperationException("The current value must be set for KeyValue");
 
@@ -84,7 +84,7 @@ namespace Soup.Build.Utilities
 		{
 			if (_currentValue != null)
 				throw new InvalidOperationException("A String value must be at a leaf.");
-			_currentValue = new Value(stringValue.Value);
+			_currentValue = new Value(stringValue.Value ?? string.Empty);
 		}
 
 		public override void Visit(DateTimeValueSyntax dateTimeValueSyntax)
@@ -118,10 +118,10 @@ namespace Soup.Build.Utilities
 			var items = array.Items;
 			for (int i = 0; i < items.ChildrenCount; i++)
 			{
-				var item = items.GetChildren(i);
+				var item = items.GetChild(i);
 
 				// Visit the child which will set the current value
-				item.Accept(this);
+				item?.Accept(this);
 				if (_currentValue == null)
 					throw new InvalidOperationException("The current value must be set for Array item");
 
@@ -146,8 +146,11 @@ namespace Soup.Build.Utilities
 			_currentTable = parentTable;
 		}
 
-		private (ValueTable Table, string Name) ResolveKey(KeySyntax key)
+		private (ValueTable Table, string Name) ResolveKey(KeySyntax? key)
 		{
+			if (key == null)
+				throw new ArgumentNullException(nameof(key));
+
 			var currentTable = _currentTable;
 			var name = GetStringFromBasic(key.Key);
 
@@ -156,7 +159,7 @@ namespace Soup.Build.Utilities
 			for (int i = 0; i < items.ChildrenCount; i++)
 			{
 				currentTable = GetTable(currentTable, name, false);
-				name = GetStringFromBasic(items.GetChildren(i).Key);
+				name = GetStringFromBasic(items.GetChild(i)?.Key);
 			}
 
 			return (currentTable, name);
@@ -202,14 +205,14 @@ namespace Soup.Build.Utilities
 			return newTable;
 		}
 
-		private string GetStringFromBasic(BareKeyOrStringValueSyntax value)
+		private string GetStringFromBasic(BareKeyOrStringValueSyntax? value)
 		{
 			switch (value)
 			{
 				case BareKeySyntax basicKey:
-					return basicKey.Key.Text;
+					return basicKey.Key?.Text ?? string.Empty;
 				case StringValueSyntax stringValue:
-					return stringValue.Value;
+					return stringValue.Value ?? string.Empty;
 				default:
 					throw new InvalidOperationException("Unknown type of BareKeyOrStringValueSyntax");
 			}
