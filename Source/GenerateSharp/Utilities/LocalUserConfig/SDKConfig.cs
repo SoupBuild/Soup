@@ -142,7 +142,7 @@ namespace Soup.Build.Utilities
 					case ArraySyntax arraySyntax:
 						// Replace all items
 						while (arraySyntax.Items.ChildrenCount > 0)
-							arraySyntax.Items.RemoveChildrenAt(0);
+							arraySyntax.Items.RemoveChildAt(0);
 
 						foreach (var item in value)
 						{
@@ -223,7 +223,7 @@ namespace Soup.Build.Utilities
 				case InlineTableSyntax tableSyntax:
 					// Replace all items
 					while (tableSyntax.Items.ChildrenCount > 0)
-						tableSyntax.Items.RemoveChildrenAt(0);
+						tableSyntax.Items.RemoveChildAt(0);
 
 					var index = 0;
 					foreach (var item in value)

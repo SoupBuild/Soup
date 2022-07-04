@@ -168,10 +168,13 @@ namespace Soup.Build.CSharp.UnitTests
 						new Path("./writefile.exe"),
 						@"""./bin/Program.runtimeconfig.json"" ""{
   ""runtimeOptions"": {
-    ""tfm"": ""net5.0"",
+    ""tfm"": ""net6.0"",
     ""framework"": {
       ""name"": ""Microsoft.NETCore.App"",
-      ""version"": ""5.0.0""
+      ""version"": ""6.0.0""
+    },
+    ""configProperties"": {
+      ""System.Reflection.Metadata.MetadataUpdater.IsSupported"": false
     }
   }
 }""",
