@@ -114,7 +114,7 @@ namespace Soup.Build.PackageManager
 				string packageName = packageReference;
 				if (!targetPackageReference.IsLocal)
 				{
-					packageName = targetPackageReference.GetName;
+					packageName = targetPackageReference.Name;
 				}
 
 				// Check if the package is already installed
@@ -125,7 +125,7 @@ namespace Soup.Build.PackageManager
 					{
 						if (!dependency.IsLocal)
 						{
-							var dependencyNameNormalized = dependency.GetName.ToUpperInvariant();
+							var dependencyNameNormalized = dependency.Name.ToUpperInvariant();
 							if (dependencyNameNormalized == packageNameNormalized)
 							{
 								Log.Warning("Package already installed.");
@@ -141,13 +141,13 @@ namespace Soup.Build.PackageManager
 					var packageModel = await GetPackageModelAsync(recipe.Language, packageName);
 					var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
 					Log.HighPriority("Latest Version: " + latestVersion.ToString());
-					targetPackageReference = new PackageReference(packageModel.Name, latestVersion);
+					targetPackageReference = new PackageReference(string.Empty, packageModel.Name, latestVersion);
 				}
 
 				var closure = new Dictionary<string, IDictionary<string, PackageReference>>();
 				await CheckRecursiveEnsurePackageDownloadedAsync(
 					recipe.Language,
-					targetPackageReference.GetName,
+					targetPackageReference.Name,
 					targetPackageReference.Version,
 					packageStore,
 					stagingPath,
@@ -364,7 +364,7 @@ namespace Soup.Build.PackageManager
 				// Add the new package to the closure
 				if (!closure.ContainsKey(languageName))
 					closure.Add(languageName, new Dictionary<string, PackageReference>());
-				closure[languageName].Add(packageName, new PackageReference(packageName, packageVersion));
+				closure[languageName].Add(packageName, new PackageReference(string.Empty, packageName, packageVersion));
 
 				Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
 
@@ -551,7 +551,7 @@ namespace Soup.Build.PackageManager
 					{
 						await EnsurePackageDownloadedAsync(
 							languageProjects.Key,
-							packageReference.GetName,
+							packageReference.Name,
 							packageReference.Version,
 							packagesDirectory,
 							stagingDirectory);
@@ -640,7 +640,7 @@ namespace Soup.Build.PackageManager
 						{
 							await CheckRecursiveEnsurePackageDownloadedAsync(
 								implicitLanguage,
-								dependency.GetName,
+								dependency.Name,
 								dependency.Version,
 								packagesDirectory,
 								stagingDirectory,

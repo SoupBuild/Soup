@@ -4,8 +4,8 @@ SET ScriptsDir=%~dp0
 SET SourceDir=%ScriptsDir%..\Source
 SET OutputDir=%ScriptsDir%..\out
 SET ClientCLIDir=%SourceDir%\Client\CLI
-SET ExtensionCppDir=%SourceDir%\GenerateSharp\Extensions\Cpp\Extension
-SET ExtensionCSharpDir=%SourceDir%\GenerateSharp\Extensions\CSharp\Extension
+SET ExtensionCppDir=C:\Users\mwasp\source\repos\SoupCpp\Source\Extension
+SET ExtensionCSharpDir=C:\Users\mwasp\source\repos\SoupCSharp\Source\Extension
 SET MonitorClientDir=%SourceDir%\Monitor\Client
 if %Flavor% == release (SET OutputX64DirectorPath=txTMowfPh1V3rPmbvNBmBW9Z8Jg) else (SET OutputX64DirectorPath=J3mu4cpISw6nDaCPED8gkqZ-q84)
 if %Flavor% == release (SET OutputX86DirectorPath=ci_UJP5zJKyF-O0VVSVDMNi1Wwg) else (SET OutputX86DirectorPath=9e1e87dea39eeb349e44752a9a37cdf3ed1c2e7aea3044a45ed8bb44609efd)

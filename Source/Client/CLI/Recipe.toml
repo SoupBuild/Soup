@@ -1,6 +1,6 @@
 Name = "Soup"
 Language = "C++"
-Version = "0.18.0"
+Version = "0.18.1"
 Type = "Executable"
 
 Source = [
@@ -18,8 +18,8 @@ Runtime = [
 	# "../../Build/Generate/",
 	"../../Tools/Copy/",
 	"../../Tools/Mkdir/",
-	# "../../Extensions/Cpp/Extension/",
-	# "../../Extensions/CSharp/Extension/",
+	# "C#|Soup.Cpp@0.1.0",
+	# "C#|Soup.CSharp@0.1.0",
 	"../../Monitor/Host/",
 ]
 Build = [
