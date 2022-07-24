@@ -44,7 +44,7 @@ namespace Soup.Build
 		/// </summary>
 		public static PackageReference Parse(string value)
 		{
-			var nameRegex = new Regex(@"^(?:(?<Language>[\w#+]+)\|)?(?<Name>[A-Za-z]\w*)(?:@(?<Version>\d+.\d+.\d+))?$");
+			var nameRegex = new Regex(@"^(?:(?<Language>[\w#+]+)\|)?(?<Name>[A-Za-z][\w.]*)(?:@(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$");
 			var matchName = nameRegex.Match(value);
 			if(matchName.Success)
 			{

@@ -18,8 +18,8 @@ Runtime = [
 	# "../../Build/Generate/",
 	"../../Tools/Copy/",
 	"../../Tools/Mkdir/",
-	"C#|Soup.Cpp@0.1.0",
-	"C#|Soup.CSharp@0.1.0",
+	#"C#|Soup.Cpp@0.1.0",
+	#"C#|Soup.CSharp@0.1.0",
 	"../../Monitor/Host/",
 ]
 Build = [

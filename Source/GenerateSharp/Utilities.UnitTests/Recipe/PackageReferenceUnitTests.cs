@@ -35,11 +35,11 @@ namespace Soup.Build.Utilities.UnitTests
 		[Fact]
 		public void Parse_Public()
 		{
-			var uut = PackageReference.Parse("Other@1.0.0");
+			var uut = PackageReference.Parse("Other.Package@1.0.0");
 			Assert.False(uut.IsLocal);
 			Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
 			Assert.Null(uut.Language);
-			Assert.Equal("Other", uut.Name);
+			Assert.Equal("Other.Package", uut.Name);
 			Assert.Equal(new SemanticVersion(1, 0, 0), uut.Version);
 		}
 
