@@ -66,14 +66,14 @@ namespace Opal
 
         private static string RelativeParentDirectory => "..";
 
-        public static bool operator ==(Path lhs, Path rhs)
+        public static bool operator ==(Path? lhs, Path? rhs)
         {
             if (ReferenceEquals(lhs, null))
                 return ReferenceEquals(rhs, null);
             return lhs.Equals(rhs);
         }
 
-        public static bool operator !=(Path lhs, Path rhs)
+        public static bool operator !=(Path? lhs, Path? rhs)
         {
             return !(lhs == rhs);
         }

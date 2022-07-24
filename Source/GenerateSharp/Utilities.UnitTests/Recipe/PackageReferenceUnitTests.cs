@@ -3,6 +3,7 @@
 // </copyright>
 
 using Opal;
+using System;
 using Xunit;
 
 namespace Soup.Build.Utilities.UnitTests
@@ -14,7 +15,10 @@ namespace Soup.Build.Utilities.UnitTests
 		{
 			var uut = new PackageReference();
 			Assert.True(uut.IsLocal);
-			Assert.Equal(new Path(), uut.Path);
+			Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
+			Assert.Throws<InvalidOperationException>(() => { _ = uut.Language; });
+			Assert.Throws<InvalidOperationException>(() => { _ = uut.Name; });
+			Assert.Throws<InvalidOperationException>(() => { _ = uut.Version; });
 		}
 
 		[Fact]
@@ -23,6 +27,9 @@ namespace Soup.Build.Utilities.UnitTests
 			var uut = PackageReference.Parse("../OtherFolder/");
 			Assert.True(uut.IsLocal);
 			Assert.Equal(new Path("../OtherFolder/"), uut.Path);
+			Assert.Throws<InvalidOperationException>(() => { _ = uut.Language; });
+			Assert.Throws<InvalidOperationException>(() => { _ = uut.Name; });
+			Assert.Throws<InvalidOperationException>(() => { _ = uut.Version; });
 		}
 
 		[Fact]
@@ -30,7 +37,8 @@ namespace Soup.Build.Utilities.UnitTests
 		{
 			var uut = PackageReference.Parse("Other@1.0.0");
 			Assert.False(uut.IsLocal);
-			Assert.Equal(string.Empty, uut.Language);
+			Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
+			Assert.Null(uut.Language);
 			Assert.Equal("Other", uut.Name);
 			Assert.Equal(new SemanticVersion(1, 0, 0), uut.Version);
 		}
@@ -40,6 +48,7 @@ namespace Soup.Build.Utilities.UnitTests
 		{
 			var uut = PackageReference.Parse("C#|Other@1.0.0");
 			Assert.False(uut.IsLocal);
+			Assert.Throws<InvalidOperationException>(() => { _ = uut.Path; });
 			Assert.Equal("C#", uut.Language);
 			Assert.Equal("Other", uut.Name);
 			Assert.Equal(new SemanticVersion(1, 0, 0), uut.Version);
