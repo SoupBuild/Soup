@@ -141,7 +141,7 @@ namespace Soup.Build.PackageManager
 					var packageModel = await GetPackageModelAsync(recipe.Language, packageName);
 					var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
 					Log.HighPriority("Latest Version: " + latestVersion.ToString());
-					targetPackageReference = new PackageReference(string.Empty, packageModel.Name, latestVersion);
+					targetPackageReference = new PackageReference(null, packageModel.Name, latestVersion);
 				}
 
 				var closure = new Dictionary<string, IDictionary<string, PackageReference>>();
@@ -364,7 +364,7 @@ namespace Soup.Build.PackageManager
 				// Add the new package to the closure
 				if (!closure.ContainsKey(languageName))
 					closure.Add(languageName, new Dictionary<string, PackageReference>());
-				closure[languageName].Add(packageName, new PackageReference(string.Empty, packageName, packageVersion));
+				closure[languageName].Add(packageName, new PackageReference(null, packageName, packageVersion));
 
 				Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
 
@@ -459,9 +459,9 @@ namespace Soup.Build.PackageManager
 		private static async Task EnsurePackageDownloadedAsync(
 			string languageName,
 			string packageName,
-			 SemanticVersion packageVersion,
-			 Path packagesDirectory,
-			 Path stagingDirectory)
+			SemanticVersion packageVersion,
+			Path packagesDirectory,
+			Path stagingDirectory)
 		{
 			Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
 
@@ -540,7 +540,6 @@ namespace Soup.Build.PackageManager
 			Path stagingDirectory,
 			PackageLock packageLock)
 		{
-
 			foreach (var languageProjects in packageLock.GetProjects())
 			{
 				foreach (var project in languageProjects.Value.AsList())
@@ -638,8 +637,9 @@ namespace Soup.Build.PackageManager
 						}
 						else
 						{
+							var language = dependency.Language != null ? dependency.Language : implicitLanguage;
 							await CheckRecursiveEnsurePackageDownloadedAsync(
-								implicitLanguage,
+								language,
 								dependency.Name,
 								dependency.Version,
 								packagesDirectory,
