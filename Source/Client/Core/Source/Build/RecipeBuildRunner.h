@@ -329,23 +329,24 @@ namespace Soup::Core
 			try
 			{
 				Log::SetActiveId(projectId);
-				Log::Diag("Running Build");
+				auto languagePackageName = recipe.GetLanguage() + "|" + recipe.GetName();
+				Log::Diag("Running Build: " + languagePackageName);
 
 				// Select the correct build set to ensure that the different build properties 
 				// required the same project to be build twice
 				auto& buildSet = isHostBuild ? _hostBuildSet : _buildSet;
-				auto findBuildState = buildSet.find(recipe.GetName());
+				auto findBuildState = buildSet.find(languagePackageName);
 				if (findBuildState != buildSet.end())
 				{
 					// Verify the project name is unique
 					if (findBuildState->second != workingDirectory)
 					{
-						Log::Error("Recipe with this name already exists: " + recipe.GetName() + " [" + workingDirectory.ToString() + "] [" + findBuildState->second.ToString() + "]");
+						Log::Error("Recipe with this name already exists: " + languagePackageName + " [" + workingDirectory.ToString() + "] [" + findBuildState->second.ToString() + "]");
 						throw std::runtime_error("Recipe name not unique");
 					}
 					else
 					{
-						Log::Diag("Recipe already built: " + recipe.GetName());
+						Log::Diag("Recipe already built: " + languagePackageName);
 					}
 				}
 				else
@@ -524,7 +525,7 @@ namespace Soup::Core
 			generateArguments << soupTargetDirectory.ToString();
 			auto generateOperation = OperationInfo(
 				generateOperatioId,
-				"Generate Phase",
+				"Generate Phase: " + recipe.GetLanguage() + "|" + recipe.GetName(),
 				CommandInfo(
 					packageDirectory,
 					generateExecutable,

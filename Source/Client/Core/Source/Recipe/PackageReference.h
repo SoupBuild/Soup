@@ -38,15 +38,30 @@ namespace Soup::Core
 		/// </summary>
 		static PackageReference Parse(const std::string& value)
 		{
-			// Check if there is the @ separator
-			auto separatorLocation = value.find('@');
-			if (separatorLocation != std::string::npos)
+			auto nameRegex = std::regex(R"(^(?:([\w#+]+)\|)?([A-Za-z][\w.]*)(?:@(\d+(?:.\d+)?(?:.\d+)?))?$)");
+
+			// Attempt to parse Named reference
+			auto nameMatch = std::smatch();
+			if (std::regex_match(value, nameMatch, nameRegex))
 			{
 				// The package is a published reference
-				auto name = value.substr(0, separatorLocation);
-				auto versionString = value.substr(separatorLocation + 1);
-				auto version = SemanticVersion::Parse(versionString);
-				return PackageReference(std::move(name), version);
+				std::optional<std::string> language = std::nullopt;
+				auto languageMatch = nameMatch[1];
+				if (languageMatch.matched)
+				{
+					language = languageMatch.str();
+				}
+
+				auto name = nameMatch[2].str();
+
+				std::optional<SemanticVersion> version = std::nullopt;
+				auto versionMatch = nameMatch[3];
+				if (versionMatch.matched)
+				{
+					version = SemanticVersion::Parse(versionMatch.str());
+				}
+
+				return PackageReference(std::move(language), std::move(name), version);
 			}
 			else
 			{
@@ -60,19 +75,24 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="PackageReference"/> class.
 		/// </summary>
 		PackageReference() :
-			_name(""),
-			_version(),
-			_path("")
+			_language(std::nullopt),
+			_name(std::nullopt),
+			_version(std::nullopt),
+			_path(std::nullopt)
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PackageReference"/> class.
 		/// </summary>
-		PackageReference(std::string name, SemanticVersion version) :
+		PackageReference(
+			std::optional<std::string> language,
+			std::string name,
+			std::optional<SemanticVersion> version) :
+			_language(std::move(language)),
 			_name(std::move(name)),
 			_version(version),
-			_path()
+			_path(std::nullopt)
 		{
 		}
 
@@ -80,8 +100,9 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="PackageReference"/> class.
 		/// </summary>
 		PackageReference(Path path) :
-			_name(""),
-			_version(),
+			_language(std::nullopt),
+			_name(std::nullopt),
+			_version(std::nullopt),
 			_path(std::move(path))
 		{
 		}
@@ -91,7 +112,25 @@ namespace Soup::Core
 		/// </summary>
 		bool IsLocal() const
 		{
-			return _name.empty();
+			return _path.has_value();
+		}
+
+		/// <summary>
+		/// Gets or sets the Language.
+		/// </summary>
+		bool HasLanguage() const
+		{
+			return _language.has_value();
+		}
+
+		/// <summary>
+		/// Gets or sets the Language.
+		/// </summary>
+		const std::string& GetLanguage() const
+		{
+			if (!_language.has_value())
+				throw std::runtime_error("PackageReference does not have a Language value.");
+			return _language.value();
 		}
 
 		/// <summary>
@@ -99,9 +138,9 @@ namespace Soup::Core
 		/// </summary>
 		const std::string& GetName() const
 		{
-			if (IsLocal())
+			if (!_name.has_value())
 				throw std::runtime_error("Cannot get the name of a local reference.");
-			return _name;
+			return _name.value();
 		}
 
 		/// <summary>
@@ -109,9 +148,9 @@ namespace Soup::Core
 		/// </summary>
 		const SemanticVersion& GetVersion() const
 		{
-			if (IsLocal())
-				throw std::runtime_error("Cannot get the version of a local reference.");
-			return _version;
+			if (!_version.has_value())
+				throw std::runtime_error("PackageReference does not have a Version value.");
+			return _version.value();
 		}
 
 		/// <summary>
@@ -119,9 +158,9 @@ namespace Soup::Core
 		/// </summary>
 		const Path& GetPath() const
 		{
-			if (!IsLocal())
+			if (!_path.has_value())
 				throw std::runtime_error("Cannot get the path of a non-local reference.");
-			return _path;
+			return _path.value();
 		}
 
 		/// <summary>
@@ -129,7 +168,8 @@ namespace Soup::Core
 		/// </summary>
 		bool operator ==(const PackageReference& rhs) const
 		{
-			return _name == rhs. _name &&
+			return _language == rhs. _language &&
+				_name == rhs. _name &&
 				_version == rhs. _version &&
 				_path == rhs. _path;
 		}
@@ -139,7 +179,8 @@ namespace Soup::Core
 		/// </summary>
 		bool operator !=(const PackageReference& rhs) const
 		{
-			return _name != rhs. _name ||
+			return _language != rhs. _language ||
+				_name != rhs. _name ||
 				_version != rhs. _version ||
 				_path != rhs. _path;
 		}
@@ -152,22 +193,33 @@ namespace Soup::Core
 			// If the reference is a path then just return that
 			if (IsLocal())
 			{
-				return _path.ToString();
+				return _path.value().ToString();
 			}
 			else
 			{
-				// Build up the name/version reference
-				// "{Name}@{Version}"
+				// Build up the language/name/version reference
 				std::stringstream stringBuilder;
-				stringBuilder << _name << '@';
-				stringBuilder << _version.ToString();
+
+				if (_language.has_value())
+				{
+					stringBuilder << _language.value() << '|';
+				}
+
+				stringBuilder << _name.value();
+
+				if (_version.has_value())
+				{
+					stringBuilder << '@' << _version.value().ToString();
+				}
+
 				return stringBuilder.str();
 			}
 		}
 
 	private:
-		std::string _name;
-		SemanticVersion _version;
-		Path _path;
+		std::optional<std::string> _language;
+		std::optional<std::string> _name;
+		std::optional<SemanticVersion> _version;
+		std::optional<Path> _path;
 	};
 }

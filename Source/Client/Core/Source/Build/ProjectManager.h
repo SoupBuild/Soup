@@ -211,16 +211,18 @@ namespace Soup::Core
 			}
 			else
 			{
+				auto referenceLanguage = reference.HasLanguage() ? reference.GetLanguage() : packageLangauge;
+
 				auto packageStore = GetSoupUserDataPath() + Path("packages/");
 				if (_hasPackageLock)
 				{
 					// Find the package version in the lock
-					auto packageLock = _packageLanguageLock.find(packageLangauge);
+					auto packageLock = _packageLanguageLock.find(referenceLanguage);
 					if (packageLock == _packageLanguageLock.end())
-						throw std::runtime_error("Language [" + packageLangauge + "] not found in lock");
+						throw std::runtime_error("Language [" + referenceLanguage + "] not found in lock");
 					auto packageVersion = packageLock->second.find(reference.GetName());
 					if (packageVersion == packageLock->second.end())
-						throw std::runtime_error("Package [" + packageLangauge + "] [" + reference.GetName() + "] not found in lock");
+						throw std::runtime_error("Package [" + referenceLanguage + "] [" + reference.GetName() + "] not found in lock");
 
 					if (packageVersion->second.IsLocal())
 					{
@@ -235,7 +237,7 @@ namespace Soup::Core
 					{
 						// Use the package version in the lock
 						packagePath = packageStore +
-							Path(packageLangauge) +
+							Path(referenceLanguage) +
 							Path(reference.GetName()) +
 							Path(packageVersion->second.GetVersion().ToString());
 					}
@@ -244,7 +246,7 @@ namespace Soup::Core
 				{
 					// Without a package lock, use the exact version specified
 					packagePath = packageStore +
-						Path(packageLangauge) +
+						Path(referenceLanguage) +
 						Path(reference.GetName()) +
 						Path(reference.GetVersion().ToString());
 				}

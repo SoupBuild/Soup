@@ -55,7 +55,7 @@ namespace Soup.Build.Utilities.UnitTests
 			Assert.Equal(
 				new List<PackageReference>()
 				{
-					new PackageReference(new Path("SomeDependency")),
+					new PackageReference(null, "SomeDependency", null),
 				},
 				uut.RuntimeDependencies);
 		}

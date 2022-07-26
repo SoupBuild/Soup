@@ -18,7 +18,7 @@ namespace Soup.Build
 			string arguments,
 			IList<Path> declaredInput,
 			IList<Path> declaredOutput)
-        {
+		{
 			Title = title;
 			WorkingDirectory = workingDirectory;
 			Executable = executable;

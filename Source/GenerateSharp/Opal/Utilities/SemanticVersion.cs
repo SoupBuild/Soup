@@ -87,8 +87,14 @@ namespace Opal
             var intValues = new List<int>();
             foreach (var stringValue in stringValues)
             {
-                var intValue = int.Parse(stringValue);
-                intValues.Add(intValue);
+                if (int.TryParse(stringValue, out var intValue))
+                {
+                    intValues.Add(intValue);
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid version string: {value}");
+                }
             }
 
             return new SemanticVersion(
@@ -116,14 +122,14 @@ namespace Opal
             return (this.Major * 0x100000) + (this.Minor * 0x1000) + this.Patch;
         }
 
-        public static bool operator ==(SemanticVersion lhs, SemanticVersion rhs)
+        public static bool operator ==(SemanticVersion? lhs, SemanticVersion? rhs)
         {
             if (ReferenceEquals(lhs, null))
                 return ReferenceEquals(rhs, null);
             return lhs.Equals(rhs);
         }
 
-        public static bool operator !=(SemanticVersion lhs, SemanticVersion rhs)
+        public static bool operator !=(SemanticVersion? lhs, SemanticVersion? rhs)
         {
             return !(lhs == rhs);
         }

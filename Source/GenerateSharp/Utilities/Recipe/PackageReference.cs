@@ -4,6 +4,7 @@
 
 using Opal;
 using System;
+using System.Text.RegularExpressions;
 
 namespace Soup.Build
 {
@@ -13,6 +14,11 @@ namespace Soup.Build
 	/// </summary>
 	public class PackageReference : IEquatable<PackageReference>
 	{
+		private string? _language;
+		private string? _name;
+		private SemanticVersion? _version;
+		private Path? _path;
+
 		/// <summary>
 		/// Try parse a package reference from the provided string
 		/// </summary>
@@ -38,15 +44,17 @@ namespace Soup.Build
 		/// </summary>
 		public static PackageReference Parse(string value)
 		{
-			// Check if there is the @ separator
-			var separatorLocation = value.IndexOf('@');
-			if (separatorLocation != -1)
+			var nameRegex = new Regex(@"^(?:(?<Language>[\w#+]+)\|)?(?<Name>[A-Za-z][\w.]*)(?:@(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$");
+			var matchName = nameRegex.Match(value);
+			if(matchName.Success)
 			{
 				// The package is a published reference
-				var name = value.Substring(0, separatorLocation);
-				var versionString = value.Substring(separatorLocation + 1);
-				var version = SemanticVersion.Parse(versionString);
-				return new PackageReference(name, version);
+				var language = matchName.Groups.ContainsKey("Language") && matchName.Groups["Language"].Success ? matchName.Groups["Language"].Value : null;
+				var name = matchName.Groups["Name"].Value;
+				var version = matchName.Groups.ContainsKey("Version") && matchName.Groups["Version"].Success ?
+						SemanticVersion.Parse(matchName.Groups["Version"].Value) :
+						null;
+				return new PackageReference(language, name, version);
 			}
 			else
 			{
@@ -60,19 +68,21 @@ namespace Soup.Build
 		/// </summary>
 		public PackageReference()
 		{
-			_name = string.Empty;
-			_version = new SemanticVersion();
-			_path = new Path();
+			_language = null;
+			_name = null;
+			_version = null;
+			_path = null;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PackageReference"/> class.
 		/// </summary>
-		public PackageReference(string name, SemanticVersion version)
+		public PackageReference(string? language, string name, SemanticVersion? version)
 		{
+			_language = language;
 			_name = name;
 			_version = version;
-			_path = new Path();
+			_path = null;
 		}
 
 		/// <summary>
@@ -80,8 +90,9 @@ namespace Soup.Build
 		/// </summary>
 		public PackageReference(Path path)
 		{
-			_name = string.Empty;
-			_version = new SemanticVersion();
+			_language = null;
+			_name = null;
+			_version = null;
 			_path = path;
 		}
 
@@ -91,13 +102,26 @@ namespace Soup.Build
 		public bool IsLocal => string.IsNullOrEmpty(_name);
 
 		/// <summary>
-		/// Gets or sets the Name.
+		/// Gets or sets the Language.
 		/// </summary>
-		public string GetName
+		public string? Language
 		{
 			get
 			{
 				if (IsLocal)
+					throw new InvalidOperationException("Cannot get the language of a local reference.");
+				return _language;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the Name.
+		/// </summary>
+		public string Name
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_name))
 					throw new InvalidOperationException("Cannot get the name of a local reference.");
 				return _name;
 			}
@@ -106,14 +130,12 @@ namespace Soup.Build
 		/// <summary>
 		/// Gets or sets the Version.
 		/// </summary>
-		public SemanticVersion Version
+		public SemanticVersion? Version
 		{
 			get
 			{
 				if (IsLocal)
 					throw new InvalidOperationException("Cannot get the version of a local reference.");
-				if (ReferenceEquals(_version, null))
-					throw new InvalidOperationException("No version.");
 				return _version;
 			}
 		}
@@ -125,9 +147,9 @@ namespace Soup.Build
 		{
 			get
 			{
-				if (!IsLocal)
+				if (ReferenceEquals(_path, null))
 					throw new InvalidOperationException("Cannot get the path of a non-local reference.");
-				return _path; 
+				return _path;
 			}
 		}
 
@@ -150,17 +172,20 @@ namespace Soup.Build
 
 		public override int GetHashCode()
 		{
-			return (_name.GetHashCode() * 0x100000) + (_version.GetHashCode() * 0x1000) + _path.GetHashCode();
+			var nameHash = string.IsNullOrEmpty(_name) ? 0 : _name.GetHashCode() * 0x100000;
+			var versionHash = ReferenceEquals(_version, null) ? 0 : _version.GetHashCode() * 0x1000;
+			var pathHash = ReferenceEquals(_path, null) ? 0 : _path.GetHashCode();
+			return nameHash + versionHash + pathHash;
 		}
 
-		public static bool operator ==(PackageReference lhs, PackageReference rhs)
+		public static bool operator ==(PackageReference? lhs, PackageReference? rhs)
 		{
 			if (ReferenceEquals(lhs, null))
 				return ReferenceEquals(rhs, null);
 			return lhs.Equals(rhs);
 		}
 
-		public static bool operator !=(PackageReference lhs, PackageReference rhs)
+		public static bool operator !=(PackageReference? lhs, PackageReference? rhs)
 		{
 			return !(lhs == rhs);
 		}
@@ -171,19 +196,36 @@ namespace Soup.Build
 		public override string ToString()
 		{
 			// If the reference is a path then just return that
-			if (IsLocal)
+			if (!ReferenceEquals(_path, null))
 			{
 				return _path.ToString();
 			}
 			else
 			{
-				// Build up the name/version reference
-				return $"{_name}@{_version}";
+				// Build up the language/name/version reference
+				if (!ReferenceEquals(_language, null))
+				{
+					if (!ReferenceEquals(_version, null))
+					{
+						return $"{_language}|{_name}@{_version}";
+					}
+					else
+					{
+						return $"{_language}|{_name}";
+					}
+				}
+				else
+				{
+					if (!ReferenceEquals(_version, null))
+					{
+						return $"{_name}@{_version}";
+					}
+					else
+					{
+						return $"{_name}";
+					}
+				}
 			}
 		}
-
-		private string _name;
-		private SemanticVersion _version;
-		private Path _path;
 	}
 }
