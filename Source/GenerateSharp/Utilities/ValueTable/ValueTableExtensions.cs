@@ -165,6 +165,64 @@ namespace Soup.Build.Utilities
 		}
 
 
+		public static void AddItemWithSyntax(this ValueTable table, string key, long value)
+		{
+			// Create a new item and matching syntax
+			var newSyntaxValue = new IntegerValueSyntax(value);
+			var newValue = new Value(value)
+			{
+				// TODO: MirrorSyntax = newSyntaxTable,
+			};
+
+			// Add the model to the parent table model
+			table.Add(key, newValue);
+
+			switch (table.MirrorSyntax)
+			{
+				case DocumentSyntax documentSyntax:
+					// Add the new syntax to the parent table syntax
+					var keyValueSyntax = new KeyValueSyntax()
+					{
+						EqualToken = SyntaxFactory.Token(TokenKind.Equal),
+						Key = new KeySyntax(key),
+						Value = newSyntaxValue,
+					};
+
+					keyValueSyntax.EqualToken?.AddLeadingWhitespace();
+					keyValueSyntax.EqualToken?.AddTrailingWhitespace();
+					keyValueSyntax.AddTrailingTriviaNewLine();
+
+					documentSyntax.KeyValues.Add(keyValueSyntax);
+					break;
+				case InlineTableSyntax inlineTableSyntax:
+					// Add the new syntax to the parent table syntax
+					var inlineTableItemSyntax = new InlineTableItemSyntax(
+						new KeyValueSyntax()
+						{
+							EqualToken = SyntaxFactory.Token(TokenKind.Equal),
+							Key = new KeySyntax(key),
+							Value = newSyntaxValue,
+						});
+
+					inlineTableItemSyntax.AddLeadingWhitespace();
+					inlineTableItemSyntax.KeyValue?.EqualToken?.AddLeadingWhitespace();
+					inlineTableItemSyntax.KeyValue?.EqualToken?.AddTrailingWhitespace();
+
+					// A comma can not be on the last item
+					// Add a comma to the previous item
+					var previousItem = inlineTableSyntax.Items.LastOrDefault();
+					if (previousItem != null)
+					{
+						previousItem.Comma = SyntaxFactory.Token(TokenKind.Comma);
+					}
+
+					inlineTableSyntax.Items.Add(inlineTableItemSyntax);
+					break;
+				default:
+					throw new InvalidOperationException($"Unknown Syntax on ValueList: {table.MirrorSyntax?.GetType()}");
+			}
+		}
+
 		public static void AddItemWithSyntax(this ValueTable table, string key, string value)
 		{
 			// Create a new item and matching syntax

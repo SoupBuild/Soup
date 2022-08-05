@@ -24,7 +24,7 @@ NuGetPackages = [
 
 [Dependencies]
 Runtime = [
-	"../Contracts/",
+	"../Build/",
 	"../Opal/",
 	"../Runtime/",
 	"../Utilities/",

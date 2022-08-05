@@ -36,6 +36,23 @@ namespace Soup::Core
 		}
 
 		/// <summary>
+		/// Gets or sets the version
+		/// </summary>
+		bool HasVersion()
+		{
+			return HasValue(_table, Property_Version);
+		}
+
+		int64_t GetVersion()
+		{
+			if (!HasVersion())
+				throw std::runtime_error("No version.");
+
+			auto value = GetValue(_table, Property_Version).AsInteger();
+			return value;
+		}
+
+		/// <summary>
 		/// Gets or sets the table of projects
 		/// </summary>
 		bool HasProjects()

@@ -13,6 +13,7 @@ namespace Soup.Build.Utilities
 	/// </summary>
 	public class PackageLock
 	{
+		private static string Property_Version => "Version";
 		private static string Property_Projects => "Projects";
 
 		private ValueTable _table;
@@ -36,6 +37,28 @@ namespace Soup.Build.Utilities
 		{
 			_table = table;
 			_mirrorSyntax = table.MirrorSyntax as DocumentSyntax;
+		}
+
+		/// <summary>
+		/// Gets or sets the version
+		/// </summary>
+		public bool HasVersion()
+		{
+			return HasValue(_table, Property_Version);
+		}
+
+		public long GetVersion()
+		{
+			if (!HasVersion())
+				throw new InvalidOperationException("No version.");
+
+			var value = GetValue(_table, Property_Version).AsInteger();
+			return value;
+		}
+
+		public void SetVersion(long value)
+		{
+			_table.AddItemWithSyntax(Property_Version, value);
 		}
 
 		/// <summary>
@@ -93,7 +116,7 @@ namespace Soup.Build.Utilities
 		{
 			if (table.ContainsKey(key))
 			{
-				table.Add(key, value);
+				table[key] = value;
 			}
 			else
 			{
@@ -109,7 +132,7 @@ namespace Soup.Build.Utilities
 			{
 				var value = _table[name];
 				if (value.Type != ValueType.Table)
-					throw new InvalidOperationException("The package lock already has a non-table dependencies property");
+					throw new InvalidOperationException($"The package lock already has a non-table dependencies property: {name}");
 
 				// Find the Syntax for the table
 				return (ValueTable)value.AsTable();

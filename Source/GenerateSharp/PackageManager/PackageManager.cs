@@ -61,12 +61,23 @@ namespace Soup.Build.PackageManager
 
 					// Build up the package lock file
 					var packageLock = new PackageLock();
+					packageLock.SetVersion(1);
 					foreach (var languageClosure in closure)
 					{
 						foreach (var package in languageClosure.Value)
 						{
-							Log.Diag($"{languageClosure.Key} {package.Key} -> {package.Value}");
-							packageLock.AddProject(languageClosure.Key, package.Key, package.Value.ToString());
+							var value = string.Empty;
+							if (package.Value.IsLocal)
+							{
+								value = package.Value.Path.GetRelativeTo(workingDirectory).ToString();
+							}
+							else
+							{
+								value = package.Value.Version.ToString();
+							}
+
+							Log.Diag($"{languageClosure.Key} {package.Key} -> {value}");
+							packageLock.AddProject(languageClosure.Key, package.Key, value);
 						}
 					}
 
@@ -350,10 +361,10 @@ namespace Soup.Build.PackageManager
 		private static async Task CheckRecursiveEnsurePackageDownloadedAsync(
 			string languageName,
 			string packageName,
-			 SemanticVersion packageVersion,
-			 Path packagesDirectory,
-			 Path stagingDirectory,
-			 IDictionary<string, IDictionary<string, PackageReference>> closure)
+			SemanticVersion packageVersion,
+			Path packagesDirectory,
+			Path stagingDirectory,
+			IDictionary<string, IDictionary<string, PackageReference>> closure)
 		{
 			if (closure.ContainsKey(languageName) && closure[languageName].ContainsKey(packageName))
 			{
