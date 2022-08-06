@@ -44,7 +44,7 @@ namespace Soup::Core
 			if (PackageLockExtensions::TryLoadFromFile(packageLockPath, packageLock))
 			{
 				Log::Info("Package lock loaded");
-				if (packageLock.GetVersion() != 1)
+				if (packageLock.GetVersion() == 1)
 				{
 					_packageLockRoot = projectRoot;
 					_packageLanguageLock = packageLock.GetProjects();

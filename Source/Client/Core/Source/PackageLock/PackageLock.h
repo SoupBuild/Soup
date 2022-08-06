@@ -80,9 +80,21 @@ namespace Soup::Core
 
 					if (!HasValue(projectTable, Property_Version))
 						throw std::runtime_error("No Version on project table.");
-					auto version = PackageReference::Parse(GetValue(projectTable, Property_Version).AsString());
 
-					languageLock.emplace(name, std::move(version));
+					auto& versionValue = GetValue(projectTable, Property_Version).AsString();
+					SemanticVersion version;
+					PackageReference reference;
+					if (SemanticVersion::TryParse(versionValue, version))
+					{
+						reference = PackageReference(std::nullopt, name, version);
+					}
+					else
+					{
+						// Assume that the version value is a path
+						reference = PackageReference(Path(versionValue));
+					}
+
+					languageLock.emplace(name, std::move(reference));
 				}
 
 				result.emplace(languageValue.first, std::move(languageLock));
