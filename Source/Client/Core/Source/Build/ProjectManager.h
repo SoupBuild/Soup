@@ -17,6 +17,7 @@ namespace Soup::Core
 	export class ProjectManager
 	{
 	private:
+		const std::string _buildInCSharpLanguage = "C#";
 		bool _hasPackageLock;
 		Path _packageLockRoot;
 		std::map<std::string, std::map<std::string, PackageReference>> _packageLanguageLock;
@@ -86,12 +87,12 @@ namespace Soup::Core
 			for (auto dependecyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage();
+				auto implicitLanguage = recipe.GetLanguage().GetName();
 				if (dependecyType == "Build")
 				{
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
-					implicitLanguage = "C#";
+					implicitLanguage = _buildInCSharpLanguage;
 				}
 
 				for (auto dependency : recipe.GetNamedDependencies(dependecyType))

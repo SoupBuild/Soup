@@ -36,7 +36,7 @@ namespace Soup.Build.Utilities
 			_table = new ValueTable();
 			_mirrorSyntax = null;
 			Name = string.Empty;
-			Language = string.Empty;
+			Language = new LanguageReference();
 		}
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public Recipe(
 			string name,
-			string language)
+			LanguageReference language)
 		{
 			_table = new ValueTable();
 			_mirrorSyntax = null;
@@ -82,10 +82,10 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public IValue LanguageValue => GetValue(_table, Property_Language);
 
-		public string Language
+		public LanguageReference Language
 		{
-			get { return LanguageValue.AsString(); }
-			set { EnsureValue(_table, Property_Language, new Value(value)); }
+			get { return LanguageReference.Parse(LanguageValue.AsString()); }
+			set { EnsureValue(_table, Property_Language, new Value(value.ToString())); }
 		}
 
 		/// <summary>

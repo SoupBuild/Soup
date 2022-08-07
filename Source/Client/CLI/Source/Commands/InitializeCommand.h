@@ -38,7 +38,7 @@ namespace Soup::Client
 
 			auto recipe = Core::Recipe(
 				workingDirectory.GetFileName(),
-				"C++",
+				Core::LanguageReference("C++", SemanticVersion(0, 1, 0)),
 				SemanticVersion(1, 0, 0),
 				std::nullopt,
 				std::nullopt,

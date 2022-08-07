@@ -149,7 +149,7 @@ namespace Soup.Build.PackageManager
 				// Get the latest version if no version provided
 				if (targetPackageReference.IsLocal)
 				{
-					var packageModel = await GetPackageModelAsync(recipe.Language, packageName);
+					var packageModel = await GetPackageModelAsync(recipe.Language.Name, packageName);
 					var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
 					Log.HighPriority("Latest Version: " + latestVersion.ToString());
 					targetPackageReference = new PackageReference(null, packageModel.Name, latestVersion);
@@ -157,7 +157,7 @@ namespace Soup.Build.PackageManager
 
 				var closure = new Dictionary<string, IDictionary<string, PackageReference>>();
 				await CheckRecursiveEnsurePackageDownloadedAsync(
-					recipe.Language,
+					recipe.Language.Name,
 					targetPackageReference.Name,
 					targetPackageReference.Version,
 					packageStore,
@@ -235,7 +235,7 @@ namespace Soup.Build.PackageManager
 					bool packageExists = false;
 					try
 					{
-						var package = await packageClient.GetPackageAsync(recipe.Language, recipe.Name);
+						var package = await packageClient.GetPackageAsync(recipe.Language.Name, recipe.Name);
 						packageExists = true;
 					}
 					catch (Api.Client.ApiException ex)
@@ -257,7 +257,7 @@ namespace Soup.Build.PackageManager
 						{
 							Description = string.Empty,
 						};
-						await packageClient.CreateOrUpdatePackageAsync(recipe.Language, recipe.Name, createPackageModel);
+						await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
 					}
 
 					var packageVersionClient = new Api.Client.PackageVersionClient(httpClient)
@@ -271,7 +271,7 @@ namespace Soup.Build.PackageManager
 						try
 						{
 							await packageVersionClient.PublishPackageVersionAsync(
-								recipe.Language,
+								recipe.Language.Name,
 								recipe.Name,
 								recipe.Version.ToString(),
 								new Api.Client.FileParameter(readArchiveFile.GetInStream(), string.Empty, "application/zip"));
@@ -588,16 +588,16 @@ namespace Soup.Build.PackageManager
 				throw new InvalidOperationException("Could not load the recipe file.");
 			}
 
-			if (closure.ContainsKey(recipe.Language) && closure[recipe.Language].ContainsKey(recipe.Name))
+			if (closure.ContainsKey(recipe.Language.Name) && closure[recipe.Language.Name].ContainsKey(recipe.Name))
 			{
 				Log.Diag("Recipe already processed.");
 			}
 			else
 			{
 				// Add the project to the closure
-				if (!closure.ContainsKey(recipe.Language))
-					closure.Add(recipe.Language, new Dictionary<string, PackageReference>());
-				closure[recipe.Language].Add(recipe.Name, new PackageReference(recipeDirectory));
+				if (!closure.ContainsKey(recipe.Language.Name))
+					closure.Add(recipe.Language.Name, new Dictionary<string, PackageReference>());
+				closure[recipe.Language.Name].Add(recipe.Name, new PackageReference(recipeDirectory));
 
 				await RestoreRecursiveDependenciesAsync(
 					recipeDirectory,
@@ -624,7 +624,7 @@ namespace Soup.Build.PackageManager
 				if (recipe.HasNamedDependencies(dependecyType))
 				{
 					// Same language as parent is implied
-					var implicitLanguage = recipe.Language;
+					var implicitLanguage = recipe.Language.Name;
 
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#

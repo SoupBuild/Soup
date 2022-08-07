@@ -226,7 +226,7 @@ namespace Soup.Build.Generate
 
 			// Run the RecipeBuild extension to inject core build tasks
 			var recipeBuildExtensionPath = new Path();
-			var language = recipe.Language;
+			var language = recipe.Language.Name;
 			if (language == "C++")
 			{
 				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
