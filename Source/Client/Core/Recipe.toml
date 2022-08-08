@@ -19,7 +19,7 @@ Build = [
 ]
 Runtime = [
 	"json11@1.0.1",
-	"Opal@0.3.0",
+	"Opal@0.3.1",
 	"toml11@1.0.1",
 	"../../Monitor/Host/",
 	"CryptoPP@1.0.1",
