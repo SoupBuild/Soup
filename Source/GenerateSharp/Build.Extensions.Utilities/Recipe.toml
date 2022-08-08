@@ -1,5 +1,5 @@
 Name = "Soup.Build.Extensions.Utilities"
-Language = "C#"
+Language = "C#|0.1"
 Version = "0.2.0"
 Source = [
 	"Recipe/PackageReference.cs",

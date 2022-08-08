@@ -1,5 +1,5 @@
 Name = "Opal"
-Language = "C#"
+Language = "C#|0.1"
 Version = "1.0.3"
 Source = [
 	"IO/IConsoleInputStream.cs",

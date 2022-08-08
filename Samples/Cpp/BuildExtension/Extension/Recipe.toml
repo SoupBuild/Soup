@@ -1,5 +1,5 @@
 Name = "Samples.Cpp.BuildExtension.Extension"
-Language = "C#"
+Language = "C#|0.1"
 Version = "1.0.0"
 Source = [
 	"CustomBuildTask.cs"

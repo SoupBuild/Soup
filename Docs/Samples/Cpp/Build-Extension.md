@@ -82,7 +82,7 @@ namespace Samples.Cpp.BuildExtension.Extension
 The Recipe file that defines the executable "Samples.Cpp.BuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```
 Name = "Samples.Cpp.BuildExtension.Executable"
-Language = "C++|0.1.0"
+Language = "C++|0.1"
 Type = "Executable"
 Version = "1.0.1"
 Source = [

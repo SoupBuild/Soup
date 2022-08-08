@@ -1,5 +1,5 @@
 Name = "Soup.Build.Utilities"
-Language = "C#"
+Language = "C#|0.1"
 Version = "1.0.0"
 Source = [
 	"BuildOperation.cs",

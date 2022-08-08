@@ -1,6 +1,6 @@
 Name = "Monitor.Client"
 Description = "The Detours dynamic library that is injected into a child process to intercept system calls."
-Language = "C++"
+Language = "C++|0.1"
 Version = "1.0.0"
 Type = "DynamicLibrary"
 Defines = [

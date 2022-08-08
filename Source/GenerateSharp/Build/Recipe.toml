@@ -1,5 +1,5 @@
 Name = "Soup.Build"
-Language = "C#"
+Language = "C#|0.1"
 Version = "0.1.4"
 Source = [
 	"IBuildState.cs",
