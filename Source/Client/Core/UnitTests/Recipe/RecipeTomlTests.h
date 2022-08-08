@@ -98,7 +98,7 @@ namespace Soup::Core::UnitTests
 
 			auto expected = 
 R"(Name = "MyPackage"
-Language = "C++"
+Language = "C++|0.1.0"
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");
@@ -120,7 +120,7 @@ Language = "C++"
 			auto expected =
 R"(# This is an awesome package
 Name = "MyPackage"
-Language = "C++"
+Language = "C++|0.1.0"
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");
@@ -143,7 +143,7 @@ Language = "C++"
 
 			auto expected = 
 R"(Name = "MyPackage"
-Language = "C++"
+Language = "C++|0.1.0"
 Version = "1.2.3"
 [Dependencies]
 Runtime = []

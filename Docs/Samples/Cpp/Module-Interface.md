@@ -7,7 +7,7 @@ A console application that uses a single module interface file used inside the s
 The Recipe file that sets the name, type, version, the public interface module and the single source file.
 ```
 Name = "Samples.Cpp.ModuleInterface"
-Language = "C++"
+Language = "C++|0.1.0"
 Type = "Executable"
 Version = "1.2.5"
 Interface = "Module.cpp"

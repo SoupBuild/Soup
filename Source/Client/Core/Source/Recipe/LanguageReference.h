@@ -38,7 +38,7 @@ namespace Soup::Core
 		/// </summary>
 		static LanguageReference Parse(const std::string& value)
 		{
-			auto nameRegex = std::regex(R"(^([A-Za-z][\w#]*)\|(\d+(?:.\d+)?(?:.\d+)?)$)");
+			auto nameRegex = std::regex(R"(^([A-Za-z][\w#+.]*)(?:\|(\d+(?:.\d+)?(?:.\d+)?))?$)");
 
 			// Attempt to parse Named reference
 			auto nameMatch = std::smatch();
@@ -46,8 +46,12 @@ namespace Soup::Core
 			{
 				auto name = nameMatch[1].str();
 
-				auto versionMatch = nameMatch[2].str();
-				auto version = SemanticVersion::Parse(versionMatch);
+				auto versionMatch = nameMatch[2];
+				auto version = SemanticVersion(0, 1, 0);
+				if (versionMatch.matched)
+				{
+					version = SemanticVersion::Parse(versionMatch.str());
+				}
 
 				return LanguageReference(std::move(name), version);
 			}

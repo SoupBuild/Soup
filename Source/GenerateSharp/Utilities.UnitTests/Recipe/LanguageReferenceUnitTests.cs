@@ -26,6 +26,14 @@ namespace Soup.Build.Utilities.UnitTests
 		}
 
 		[Fact]
+		public void Parse_SimpleDot()
+		{
+			var uut = LanguageReference.Parse("Language.Test|1.2.3");
+			Assert.Equal("Language.Test", uut.Name);
+			Assert.Equal(new SemanticVersion(1, 2, 3), uut.Version);
+		}
+
+		[Fact]
 		public void Parse_CSharp()
 		{
 			var uut = LanguageReference.Parse("C#|1.2.3");

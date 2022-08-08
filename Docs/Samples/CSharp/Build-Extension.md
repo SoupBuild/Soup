@@ -7,7 +7,7 @@ This is a console application that has a custom build extension that alters the 
 The Recipe file that defines the build extension dynamic library "Samples.SimpleBuildExtension.Extension" that will register new build tasks.
 ```
 Name = "Samples.CSharp.BuildExtension.Extension"
-Language = "C#"
+Language = "C#|0.1"
 Version = "1.0.0"
 Source = [
     "CustomBuildTask.cs"
@@ -17,7 +17,7 @@ Source = [
 Runtime = [
     { Reference = "Soup.Build@0.1.3", ExcludeRuntime = true },
     { Reference = "Soup.Build.Extensions@0.1.8" },
-    { Reference = "Opal@1.0.1" },
+    { Reference = "Opal@1.0.3" },
 ]
 ```
 
@@ -82,7 +82,7 @@ namespace Samples.CSharp.BuildExtension.Extension
 The Recipe file that defines the executable "SimpleBuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```
 Name = "Samples.CSharp.BuildExtension.Executable"
-Language = "C#"
+Language = "C#|0.1"
 Type = "Executable"
 Version = "1.0.1"
 Source = [

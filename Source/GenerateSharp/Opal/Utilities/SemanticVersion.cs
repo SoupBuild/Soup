@@ -16,7 +16,7 @@ namespace Opal
         /// Initializes a new instance of the <see cref="SemanticVersion"/> class.
         /// </summary>
         public SemanticVersion()
-            : this(0, 0, 0)
+            : this(0, null, null)
         {
         }
 
@@ -26,7 +26,7 @@ namespace Opal
         /// <param name="major">The major version.</param>
         /// <param name="minor">The minor version.</param>
         /// <param name="patch">The patch version.</param>
-        public SemanticVersion(int major, int minor, int patch)
+        public SemanticVersion(int major, int? minor, int? patch)
         {
             this.Major = major;
             this.Minor = minor;
@@ -41,12 +41,12 @@ namespace Opal
         /// <summary>
         /// Gets or sets the version minor.
         /// </summary>
-        public int Minor { get; set; }
+        public int? Minor { get; set; }
 
         /// <summary>
         /// Gets or sets the version patch.
         /// </summary>
-        public int Patch { get; set; }
+        public int? Patch { get; set; }
 
         /// <summary>
         /// Try parse the value.
@@ -79,9 +79,9 @@ namespace Opal
             // Parse the integer values
             // TODO: Perform my own search to save string creation
             var stringValues = value.Split('.');
-            if (stringValues.Length != 3)
+            if (stringValues.Length < 1 || stringValues.Length > 3)
             {
-                throw new ArgumentException("The version string must have three values.");
+                throw new ArgumentException("The version string must have one to three values.");
             }
 
             var intValues = new List<int>();
@@ -93,14 +93,24 @@ namespace Opal
                 }
                 else
                 {
-                    throw new ArgumentException($"Invalid version string: {value}");
+                    throw new ArgumentException($"Invalid version string: \"{value}\"");
                 }
             }
 
+            var major = intValues[0];
+
+            int? minor = null;
+            if (intValues.Count >= 2)
+                minor = intValues[1];
+
+            int? patch = null;
+            if (intValues.Count >= 3)
+                patch = intValues[2];
+                
             return new SemanticVersion(
-                intValues[0],
-                intValues[1],
-                intValues[2]);
+                major,
+                minor,
+                patch);
         }
 
         public bool Equals(SemanticVersion? rhs)
@@ -119,7 +129,10 @@ namespace Opal
 
         public override int GetHashCode()
         {
-            return (this.Major * 0x100000) + (this.Minor * 0x1000) + this.Patch;
+            var value = this.Major * 0x100000;
+            value += this.Minor * 0x1000 ?? 0;
+            value += this.Patch ?? 0;
+            return value;
         }
 
         public static bool operator ==(SemanticVersion? lhs, SemanticVersion? rhs)

@@ -87,6 +87,9 @@ namespace Soup::Core
 			for (auto dependecyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
+				if (!recipe.HasLanguage())
+					throw std::runtime_error("Recipe does not have a language reference.");
+
 				auto implicitLanguage = recipe.GetLanguage().GetName();
 				if (dependecyType == "Build")
 				{

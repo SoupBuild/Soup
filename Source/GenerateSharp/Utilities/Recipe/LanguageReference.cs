@@ -41,13 +41,15 @@ namespace Soup.Build
 		/// </summary>
 		public static LanguageReference Parse(string value)
 		{
-			var nameRegex = new Regex(@"^(?<Name>[A-Za-z][\w#+]*)\|(?<Version>\d+(?:.\d+)?(?:.\d+)?)$");
+			var nameRegex = new Regex(@"^(?<Name>[A-Za-z][\w#+.]*)(?:\|(?<Version>\d+(?:.\d+)?(?:.\d+)?))?$");
 			var matchName = nameRegex.Match(value);
 			if(matchName.Success)
 			{
 				// The language is a published reference
 				var name = matchName.Groups["Name"].Value;
-				var version = SemanticVersion.Parse(matchName.Groups["Version"].Value);
+				var version = matchName.Groups.ContainsKey("Version") && matchName.Groups["Version"].Success ?
+						SemanticVersion.Parse(matchName.Groups["Version"].Value) :
+						new SemanticVersion();
 				return new LanguageReference(name, version);
 			}
 			else

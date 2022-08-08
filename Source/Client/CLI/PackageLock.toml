@@ -15,12 +15,12 @@ Version = 1
 	{ Name = "mkdir", Version = "../../Tools/Mkdir/" },
 ]
 "C#" = [
-	{ Name = "Soup.Cpp", Version = "0.2.0" },
+	{ Name = "Soup.Cpp", Version = "0.2.1" },
 	{ Name = "Opal", Version = "1.0.3" },
 	{ Name = "Soup.Build", Version = "0.1.3" },
 	{ Name = "Soup.Build.Extensions", Version = "0.2.0" },
 	{ Name = "Soup.Cpp.Compiler", Version = "0.3.0" },
-	{ Name = "Soup.Build.Extensions.Utilities", Version = "0.1.0" },
+	{ Name = "Soup.Build.Extensions.Utilities", Version = "0.2.0" },
 	{ Name = "Soup.Cpp.Compiler.MSVC", Version = "0.3.0" },
 	{ Name = "Soup.CSharp", Version = "0.4.0" },
 	{ Name = "Soup.CSharp.Compiler", Version = "0.4.0" },

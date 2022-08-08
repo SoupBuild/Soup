@@ -8,6 +8,6 @@ Source = [
 
 [Dependencies]
 Runtime = [
-	"Opal@0.3.0",
+	"Opal@0.3.1",
 	"../../Build/Runtime/"
 ]

@@ -15,5 +15,5 @@ Source = [
 Runtime = [
 	"Detours@4.0.1",
 	"../Shared/",
-	"Opal@0.3.0"
+	"Opal@0.3.1"
 ]

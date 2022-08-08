@@ -553,18 +553,24 @@ namespace Soup.Build.PackageManager
 		{
 			foreach (var languageProjects in packageLock.GetProjects())
 			{
+				Log.Info($"Restore Packages for Language {languageProjects.Key}");
 				foreach (var project in languageProjects.Value.AsList())
 				{
 					var projectTable = project.AsTable();
-					var packageReference = PackageReference.Parse(projectTable["Version"].AsString());
-					if (!packageReference.IsLocal)
+					var projectName = projectTable["Name"].AsString();
+					var projectVersion = projectTable["Version"].AsString();
+					if (SemanticVersion.TryParse(projectVersion, out var version))
 					{
 						await EnsurePackageDownloadedAsync(
 							languageProjects.Key,
-							packageReference.Name,
-							packageReference.Version,
+							projectName,
+							version,
 							packagesDirectory,
 							stagingDirectory);
+					}
+					else
+					{
+						Log.Info($"Skip Package: {projectName} -> {projectVersion}");
 					}
 				}
 			}

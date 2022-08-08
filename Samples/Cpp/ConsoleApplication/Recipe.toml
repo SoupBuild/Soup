@@ -1,5 +1,5 @@
 Name = "Samples.Cpp.ConsoleApplication"
-Language = "C++"
+Language = "C++|0.1.0"
 Type = "Executable"
 Version = "1.1.3"
 Source = [

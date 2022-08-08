@@ -117,6 +117,11 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the package language
 		/// </summary>
+		bool HasLanguage() const
+		{
+			return HasValue(_table, Property_Language);
+		}
+
 		const RecipeValue& GetLanguageValue() const
 		{
 			return GetValue(_table, Property_Language);
@@ -126,9 +131,17 @@ namespace Soup::Core
 		{
 			auto& languageValue = GetLanguageValue();
 			if (languageValue.IsString())
-				return LanguageReference::Parse(languageValue.AsString());
+			{
+				LanguageReference result;
+				if (LanguageReference::TryParse(languageValue.AsString(), result))
+					return result;
+				else
+					throw std::runtime_error("Invalid Language format in Recipe: " + languageValue.AsString());
+			}
 			else
+			{
 				throw std::runtime_error("The Recipe language must be of type String");
+			}
 		}
 
 		void SetLanguage(const LanguageReference& value)
