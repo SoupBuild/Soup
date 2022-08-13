@@ -59,7 +59,7 @@ namespace Soup.Build.Discover
 						{ "ToolsRoot", roslynInstallPath.ToString() },
 					});
 
-				var dotnetSDKInstallPath = new Path("C:/Program Files/dotnet/");
+				var (dotnetRuntimeVersion, dotnetSDKInstallPath) = DotNetSDKUtilities.FindDotNet6Refs();
 				var dotnetSDK = userConfig.EnsureSDK("DotNet");
 				dotnetSDK.SourceDirectories = new List<Path>()
 				{
@@ -68,6 +68,8 @@ namespace Soup.Build.Discover
 				dotnetSDK.SetProperties(
 					new Dictionary<string, string>()
 					{
+						{ "RuntimeVersion", dotnetRuntimeVersion },
+						{ "RootPath", dotnetSDKInstallPath.ToString() },
 					});
 
 				var (msvcVersion, msvcInstallPath) = await VSWhereUtilities.FindMSVCInstallAsync(includePrerelease);
