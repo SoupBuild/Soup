@@ -38,7 +38,8 @@ namespace Soup::Core
 		/// </summary>
 		static LanguageReference Parse(const std::string& value)
 		{
-			auto nameRegex = std::regex(R"(^([A-Za-z][\w#+.]*)(?:\|(\d+(?:.\d+)?(?:.\d+)?))?$)");
+			// Reuse regex between runs
+			static auto nameRegex = std::regex(R"(^([A-Za-z][\w#+.]*)(?:\|(\d+(?:.\d+)?(?:.\d+)?))?$)");
 
 			// Attempt to parse Named reference
 			auto nameMatch = std::smatch();

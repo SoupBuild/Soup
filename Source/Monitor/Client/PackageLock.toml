@@ -1,0 +1,8 @@
+Version = 1
+[Projects]
+"C++" = [
+	{ Name = "Monitor.Client", Version = "../Client" },
+	{ Name = "Detours", Version = "4.0.1" },
+	{ Name = "Monitor.Shared", Version = "../Shared/" },
+	{ Name = "Opal", Version = "0.3.1" },
+]
