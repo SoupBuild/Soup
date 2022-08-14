@@ -45,10 +45,11 @@ namespace Soup::Core
 			if (PackageLockExtensions::TryLoadFromFile(packageLockPath, packageLock))
 			{
 				Log::Info("Package lock loaded");
-				if (packageLock.GetVersion() == 1)
+				if (packageLock.GetVersion() == 2)
 				{
 					_packageLockRoot = projectRoot;
-					_packageLanguageLock = packageLock.GetProjects();
+					auto closures = packageLock.GetClosures();
+					_packageLanguageLock = closures["Root"];
 					_hasPackageLock = true;
 				}
 				else

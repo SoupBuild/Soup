@@ -14,7 +14,7 @@ namespace Soup::Core
 	export class PackageLock
 	{
 	private:
-		static constexpr const char* Property_Projects = "Projects";
+		static constexpr const char* Property_Closures = "Closures";
 		static constexpr const char* Property_Name = "Name";
 		static constexpr const char* Property_Version = "Version";
 
@@ -53,51 +53,57 @@ namespace Soup::Core
 		}
 
 		/// <summary>
-		/// Gets or sets the table of projects
+		/// Gets or sets the table of closures
 		/// </summary>
-		bool HasProjects()
+		bool HasClosures()
 		{
-			return HasValue(_table, Property_Projects);
+			return HasValue(_table, Property_Closures);
 		}
 
-		std::map<std::string, std::map<std::string, PackageReference>> GetProjects()
+		std::map<std::string, std::map<std::string, std::map<std::string, PackageReference>>> GetClosures()
 		{
-			if (!HasProjects())
-				throw std::runtime_error("No projects.");
+			if (!HasClosures())
+				throw std::runtime_error("No closures.");
 
-			auto& values = GetValue(_table, Property_Projects).AsTable();
-			auto result = std::map<std::string, std::map<std::string, PackageReference>>();
-			for (auto& languageValue : values)
+			auto& values = GetValue(_table, Property_Closures).AsTable();
+			auto result = std::map<std::string, std::map<std::string, std::map<std::string, PackageReference>>>();
+			for (auto& closureValue : values)
 			{
-				auto languageLock = std::map<std::string, PackageReference>();
-				for (auto& projectValue : languageValue.second.AsList())
+				auto closureLock = std::map<std::string, std::map<std::string, PackageReference>>();
+				for (auto& languageValue : closureValue.second.AsTable())
 				{
-					auto& projectTable = projectValue.AsTable();
-
-					if (!HasValue(projectTable, Property_Name))
-						throw std::runtime_error("No Name on project table.");
-					auto& name = GetValue(projectTable, Property_Name).AsString();
-
-					if (!HasValue(projectTable, Property_Version))
-						throw std::runtime_error("No Version on project table.");
-
-					auto& versionValue = GetValue(projectTable, Property_Version).AsString();
-					SemanticVersion version;
-					PackageReference reference;
-					if (SemanticVersion::TryParse(versionValue, version))
+					auto languageLock = std::map<std::string, PackageReference>();
+					for (auto& projectValue : languageValue.second.AsList())
 					{
-						reference = PackageReference(std::nullopt, name, version);
-					}
-					else
-					{
-						// Assume that the version value is a path
-						reference = PackageReference(Path(versionValue));
+						auto& projectTable = projectValue.AsTable();
+
+						if (!HasValue(projectTable, Property_Name))
+							throw std::runtime_error("No Name on project table.");
+						auto& name = GetValue(projectTable, Property_Name).AsString();
+
+						if (!HasValue(projectTable, Property_Version))
+							throw std::runtime_error("No Version on project table.");
+
+						auto& versionValue = GetValue(projectTable, Property_Version).AsString();
+						SemanticVersion version;
+						PackageReference reference;
+						if (SemanticVersion::TryParse(versionValue, version))
+						{
+							reference = PackageReference(std::nullopt, name, version);
+						}
+						else
+						{
+							// Assume that the version value is a path
+							reference = PackageReference(Path(versionValue));
+						}
+
+						languageLock.emplace(name, std::move(reference));
 					}
 
-					languageLock.emplace(name, std::move(reference));
+					closureLock.emplace(languageValue.first, std::move(languageLock));
 				}
 
-				result.emplace(languageValue.first, std::move(languageLock));
+				result.emplace(closureValue.first, std::move(closureLock));
 			}
 
 			return result;

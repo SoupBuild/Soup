@@ -61,7 +61,8 @@ namespace Soup.Build.PackageManager
 
 					// Build up the package lock file
 					var packageLock = new PackageLock();
-					packageLock.SetVersion(1);
+					packageLock.SetVersion(2);
+					var rootClosureName = "Root";
 					foreach (var languageClosure in closure)
 					{
 						foreach (var package in languageClosure.Value)
@@ -76,8 +77,8 @@ namespace Soup.Build.PackageManager
 								value = package.Value.Version.ToString();
 							}
 
-							Log.Diag($"{languageClosure.Key} {package.Key} -> {value}");
-							packageLock.AddProject(languageClosure.Key, package.Key, value);
+							Log.Diag($"{rootClosureName}:{languageClosure.Key} {package.Key} -> {value}");
+							packageLock.AddProject(rootClosureName, languageClosure.Key, package.Key, value);
 						}
 					}
 
@@ -551,26 +552,30 @@ namespace Soup.Build.PackageManager
 			Path stagingDirectory,
 			PackageLock packageLock)
 		{
-			foreach (var languageProjects in packageLock.GetProjects())
+			foreach (var closure in packageLock.GetClosures())
 			{
-				Log.Info($"Restore Packages for Language {languageProjects.Key}");
-				foreach (var project in languageProjects.Value.AsList())
+				Log.Info($"Restore Packages for Closure {closure.Key}");
+				foreach (var languageProjects in closure.Value.AsTable())
 				{
-					var projectTable = project.AsTable();
-					var projectName = projectTable["Name"].AsString();
-					var projectVersion = projectTable["Version"].AsString();
-					if (SemanticVersion.TryParse(projectVersion, out var version))
+					Log.Info($"Restore Packages for Language {languageProjects.Key}");
+					foreach (var project in languageProjects.Value.AsList())
 					{
-						await EnsurePackageDownloadedAsync(
-							languageProjects.Key,
-							projectName,
-							version,
-							packagesDirectory,
-							stagingDirectory);
-					}
-					else
-					{
-						Log.Info($"Skip Package: {projectName} -> {projectVersion}");
+						var projectTable = project.AsTable();
+						var projectName = projectTable["Name"].AsString();
+						var projectVersion = projectTable["Version"].AsString();
+						if (SemanticVersion.TryParse(projectVersion, out var version))
+						{
+							await EnsurePackageDownloadedAsync(
+								languageProjects.Key,
+								projectName,
+								version,
+								packagesDirectory,
+								stagingDirectory);
+						}
+						else
+						{
+							Log.Info($"Skip Package: {projectName} -> {projectVersion}");
+						}
 					}
 				}
 			}

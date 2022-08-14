@@ -141,29 +141,44 @@ namespace Soup.Build.Utilities
 
 		public static ValueTable AddTableWithSyntax(this ValueTable table, string name)
 		{
-			// Create a new table and matching syntax
-			var newSyntaxTable = new TableSyntax(name);
-			var newTable = new ValueTable()
-			{
-				MirrorSyntax = newSyntaxTable,
-			};
+			// Create a new table
+			var newTable = new ValueTable();
 
 			// Add the model to the parent table model
 			table.Add(name, new Value(newTable));
 
-			// Add the new syntax to the parent table syntax
-			switch (table.MirrorSyntax)
+			// Add the new syntax to the root document syntax
+			var currentSyntax = table.MirrorSyntax;
+			var fullTableName = name;
+			while (currentSyntax is not DocumentSyntax)
+			{
+				switch (currentSyntax)
+				{
+					case TableSyntax tableSyntax:
+						// Append the parent table syntax name
+						fullTableName = $"{tableSyntax.Name}.{fullTableName}";
+						currentSyntax = currentSyntax.Parent?.Parent;
+						break;
+					default:
+						throw new InvalidOperationException($"Unknown Syntax on ValueTable: {currentSyntax?.GetType()}");
+				}
+			}
+
+			switch (currentSyntax)
 			{
 				case DocumentSyntax documentSyntax:
+					// Attach the syntax to the new table
+					var newSyntaxTable = new TableSyntax(fullTableName);
+					newTable.MirrorSyntax = newSyntaxTable;
+
 					documentSyntax.Tables.Add(newSyntaxTable);
 					break;
 				default:
-					throw new InvalidOperationException("Unknown Syntax on ValueTable");
+					throw new InvalidOperationException($"Unknown Syntax on ValueTable: {currentSyntax?.GetType()}");
 			}
 
 			return newTable;
 		}
-
 
 		public static void AddItemWithSyntax(this ValueTable table, string key, long value)
 		{
