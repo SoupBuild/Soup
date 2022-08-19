@@ -78,7 +78,13 @@ namespace Soup.Build.Utilities
 			return values;
 		}
 
-		public void AddProject(string closure, string language, string name, string version)
+		public void EnsureClosure(string closure)
+		{
+			var closures = EnsureHasTable(_table, Property_Closures);
+			_ = EnsureHasTable(closures, closure);
+		}
+
+		public void AddProject(string closure, string language, string name, string version, string buildClosure)
 		{
 			var closures = EnsureHasTable(_table, Property_Closures);
 			var closureTable = EnsureHasTable(closures, closure);
@@ -87,6 +93,10 @@ namespace Soup.Build.Utilities
 			var projectTable = projectLanguageList.AddTableWithSyntax();
 			projectTable.AddItemWithSyntax("Name", name);
 			projectTable.AddItemWithSyntax("Version", version);
+			if (buildClosure != null)
+			{
+				projectTable.AddItemWithSyntax("Build", buildClosure);
+			}
 		}
 
 		/// <summary>

@@ -37,13 +37,18 @@ namespace Soup.Build.PackageManager
 				{
 					case "restore-packages":
 						{
-							if (args.Length != 2)
+							bool forceRestore = false;
+							if (args.Length == 3 && args[2] == "--force")
+							{
+								forceRestore = true;
+							}
+							else if (args.Length != 2)
 							{
 								PrintUsage();
 								return -1;
 							}
 
-							await PackageManager.RestorePackagesAsync(workingDirectory);
+							await PackageManager.RestorePackagesAsync(workingDirectory, forceRestore);
 						}
 						break;
 					case "install-package":

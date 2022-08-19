@@ -148,15 +148,17 @@ namespace Soup.Build.Utilities
 			table.Add(name, new Value(newTable));
 
 			// Add the new syntax to the root document syntax
+			var nameList = new List<string>();
+			nameList.Add(name);
 			var currentSyntax = table.MirrorSyntax;
-			var fullTableName = name;
 			while (currentSyntax is not DocumentSyntax)
 			{
 				switch (currentSyntax)
 				{
 					case TableSyntax tableSyntax:
-						// Append the parent table syntax name
-						fullTableName = $"{tableSyntax.Name}.{fullTableName}";
+						if (tableSyntax.Name is null)
+							throw new ArgumentNullException(nameof(tableSyntax));
+						nameList.Add(tableSyntax.Name.ToString());
 						currentSyntax = currentSyntax.Parent?.Parent;
 						break;
 					default:
@@ -168,7 +170,13 @@ namespace Soup.Build.Utilities
 			{
 				case DocumentSyntax documentSyntax:
 					// Attach the syntax to the new table
-					var newSyntaxTable = new TableSyntax(fullTableName);
+					var nameKey = new KeySyntax(nameList.Last());
+					foreach (var value in nameList.SkipLast(1))
+					{
+						nameKey.DotKeys.Add(new DottedKeyItemSyntax(value));
+					}
+
+					var newSyntaxTable = new TableSyntax(nameKey);
 					newTable.MirrorSyntax = newSyntaxTable;
 
 					documentSyntax.Tables.Add(newSyntaxTable);
