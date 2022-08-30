@@ -1,7 +1,7 @@
 #  C++ Console Application
 This is the smallest amount of code to get a console application building using Soup.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/SimpleConsoleApplication)
+[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ConsoleApplication)
 
 ## Recipe.toml
 The Recipe file that sets the name, type, version and the single source file.

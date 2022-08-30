@@ -20,7 +20,7 @@ A C# Program file that implements the main method.
 ```
 using System;
 
-namespace SimpleConsoleApplication
+namespace ConsoleApplication
 {
     public class Program
     {
