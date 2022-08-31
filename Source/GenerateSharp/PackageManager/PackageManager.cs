@@ -13,7 +13,6 @@ namespace Soup.Build.PackageManager
 	using Opal;
 	using Opal.System;
 	using Soup.Build.Utilities;
-	using Windows.Globalization;
 
 	/// <summary>
 	/// The package manager
@@ -288,6 +287,7 @@ namespace Soup.Build.PackageManager
 					{
 						if (ex.StatusCode == 404)
 						{
+							Log.Info("Package does not exist");
 							packageExists = false;
 						}
 						else
@@ -299,6 +299,7 @@ namespace Soup.Build.PackageManager
 					// Create the package if it does not exist
 					if (!packageExists)
 					{
+						Log.Info("Creating package");
 						var createPackageModel = new Api.Client.PackageCreateOrUpdateModel()
 						{
 							Description = string.Empty,
@@ -329,6 +330,10 @@ namespace Soup.Build.PackageManager
 							if (ex.StatusCode == 409)
 							{
 								Log.Info("Package version already exists");
+							}
+							else if (ex.StatusCode == 403)
+							{
+								Log.Error("You do not have permission to edit this package");
 							}
 							else
 							{
@@ -365,12 +370,17 @@ namespace Soup.Build.PackageManager
 
 		private static void AddPackageFiles(Path workingDirectory, ZipArchive archive)
 		{
+			var ignoreFolderList = new string[]
+			{
+				"out",
+				".git",
+			};
 			foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(workingDirectory))
 			{
 				if (child.IsDirectory)
 				{
-					// Ignore output folder
-					if (child.Path.GetFileName() != "out")
+					// Ignore undesirables
+					if (!ignoreFolderList.Contains(child.Path.GetFileName()))
 					{
 						AddAllFilesRecursive(child.Path, workingDirectory, archive);
 					}

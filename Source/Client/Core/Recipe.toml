@@ -18,11 +18,11 @@ Build = [
 	# "Soup.Test.Cpp@0.2.0",
 ]
 Runtime = [
-	"json11@1.0.1",
-	"Opal@0.4.0",
-	"toml11@1.0.1",
+	"json11@1.0.2",
+	"Opal@0.4.1",
+	"toml11@1.0.2",
 	"../../Monitor/Host/",
-	"CryptoPP@1.0.1",
+	"CryptoPP@1.0.2",
 ]
 Test = [
 	"Soup.Test.Assert@0.1.8",

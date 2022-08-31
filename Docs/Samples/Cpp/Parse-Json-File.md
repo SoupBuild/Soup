@@ -16,7 +16,7 @@ Source = [
 
 [Dependencies]
 Runtime = [
-    "json11@1.0.1",
+    "json11@1.0.2",
 ]
 ```
 

@@ -6,9 +6,9 @@ Note: While Clang will work, there is still work to auto-detect an installation 
 ## Requirements
 * Windows 10
 * Build Tools
-  * [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/) with "Desktop development with c++" workload.
+  * [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/) with "Desktop development with c++" workload.
   * OR
-  * [Build Tools For Visual Studio 2019](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) with "c++ build tools" workload.
+  * [Build Tools For Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with "c++ build tools" workload.
 * [Latest Release](https://github.com/mwasplund/Soup/releases/latest)
 
 ## Setup
@@ -32,7 +32,6 @@ You can either install Soup or download a reference the archive.
   Or add it to the "Path" System Environment Variable to always have it available!
 
 ## Setup SDKs
-
 Use the SWhere tool to find the latest installed version of the SDKs on your local machine (listed in the dependencies list).
 
 ```

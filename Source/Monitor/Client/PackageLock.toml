@@ -3,19 +3,11 @@ Version = 2
 [Closures.Root]
 "C++" = [
 	{ Name = "Monitor.Client", Version = "../Client", Build = "Build0" },
-	{ Name = "Detours", Version = "4.0.1", Build = "Build1" },
+	{ Name = "Detours", Version = "4.0.3", Build = "Build0" },
 	{ Name = "Monitor.Shared", Version = "../Shared/", Build = "Build0" },
-	{ Name = "Opal", Version = "0.3.1", Build = "Build2" },
+	{ Name = "Opal", Version = "0.4.1", Build = "Build0" },
 ]
 [Closures.Build0]
 "C#" = [
 	{ Name = "C++", Version = "0.1." },
-]
-[Closures.Build1]
-"C#" = [
-	{ Name = "C++", Version = "0.." },
-]
-[Closures.Build2]
-"C#" = [
-	{ Name = "C++", Version = "0.1.0" },
 ]
