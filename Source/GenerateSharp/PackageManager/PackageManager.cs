@@ -429,73 +429,16 @@ namespace Soup.Build.PackageManager
 			}
 			else
 			{
-				Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
+				await EnsurePackageDownloadedAsync(
+					languageName,
+					packageName,
+					packageVersion,
+					packagesDirectory,
+					stagingDirectory);
 
 				var languageRootFolder = packagesDirectory + new Path(languageName);
 				var packageRootFolder = languageRootFolder + new Path(packageName);
 				var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
-
-				// Check if the package version already exists
-				if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
-				{
-					Log.HighPriority("Found local version");
-				}
-				else
-				{
-					// Download the archive
-					Log.HighPriority("Downloading package");
-					var archivePath = stagingDirectory + new Path(packageName + ".zip");
-					using (var httpClient = new HttpClient())
-					{
-						var client = new Api.Client.PackageVersionClient(httpClient)
-						{
-							BaseUrl = SoupApiEndpoint,
-						};
-
-						try
-						{
-							var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
-
-							// Write the contents to disk, scope cleanup
-							using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
-							{
-								await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
-							}
-						}
-						catch (Api.Client.ApiException ex)
-						{
-							if (ex.StatusCode == 404)
-							{
-								Log.HighPriority("Package Version Missing");
-								throw new HandledException();
-							}
-							else
-							{
-								throw;
-							}
-						}
-					}
-
-					// Create the package folder to extract to
-					var stagingVersionFolder = stagingDirectory + new Path($"{languageName}_{packageName}_{packageVersion}/");
-					LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingVersionFolder);
-
-					// Unpack the contents of the archive
-					ZipFile.ExtractToDirectory(archivePath.ToString(), stagingVersionFolder.ToString());
-
-					// Delete the archive file
-					LifetimeManager.Get<IFileSystem>().DeleteFile(archivePath);
-
-					// Ensure the package root folder exists
-					if (!LifetimeManager.Get<IFileSystem>().Exists(packageRootFolder))
-					{
-						// Create the folder
-						LifetimeManager.Get<IFileSystem>().CreateDirectory2(packageRootFolder);
-					}
-
-					// Move the extracted contents into the version folder
-					LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
-				}
 
 				var recipePath =
 					packageVersionFolder +
@@ -554,7 +497,11 @@ namespace Soup.Build.PackageManager
 			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
 
 			// Check if the package version already exists
-			if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
+			if (packageName == "C#" || packageName == "C++")
+			{
+				Log.HighPriority("Skip build logic for now");
+			}
+			else if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
 			{
 				Log.HighPriority("Found local version");
 			}
@@ -717,7 +664,9 @@ namespace Soup.Build.PackageManager
 
 			// Add the language build extension
 			buildClosure.Add(implicitLanguage, new Dictionary<string, PackageReference>());
-			buildClosure[implicitLanguage].Add(recipe.Language.Name, new PackageReference(implicitLanguage, recipe.Language.Name, recipe.Language.Version));
+			buildClosure[implicitLanguage].Add(
+				recipe.Language.Name,
+				FillDefaultVersion(new PackageReference(implicitLanguage, recipe.Language.Name, recipe.Language.Version)));
 
 			// Discover any dependency build references
 			if (recipe.HasNamedDependencies("Build"))
@@ -745,11 +694,35 @@ namespace Soup.Build.PackageManager
 					if (!buildClosure.ContainsKey(language))
 						buildClosure.Add(language, new Dictionary<string, PackageReference>());
 
-					buildClosure[language].Add(dependencyPackage.Name, dependencyPackage);
+					buildClosure[language].Add(dependencyPackage.Name, FillDefaultVersion(dependencyPackage));
 				}
 			}
 
 			return buildClosure;
+		}
+
+		private static PackageReference FillDefaultVersion(PackageReference package)
+		{
+			// TODO: Discover the latest available version
+			// For now auto assume missing values are zero
+			if (package.Version.Minor is null)
+			{
+				return new PackageReference(
+					package.Language,
+					package.Name,
+					new SemanticVersion(package.Version.Major, 0, 0));
+			}
+			else if (package.Version.Patch is null)
+			{
+				return new PackageReference(
+					package.Language,
+					package.Name,
+					new SemanticVersion(package.Version.Major, package.Version.Minor, 0));
+			}
+			else
+			{
+				return package;
+			}	
 		}
 
 		/// <summary>

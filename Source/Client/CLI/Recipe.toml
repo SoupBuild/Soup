@@ -22,14 +22,14 @@ Runtime = [
 ]
 Other = [
 	# "../../GenerateSharp/Generate/",
-	"C#|Soup.Cpp@0.2.1",
-	"C#|Soup.CSharp@0.5.0",
+	"C#|Soup.Cpp@0.2.2",
+	"C#|Soup.CSharp@0.5.1",
 ]
 Build = [
 	# TODO: "Soup.Test.Cpp@0.2.0",
 ]
 Test = [
-	"Soup.Test.Assert@0.1.8",
+	"Soup.Test.Assert@0.2.1",
 ]
 
 [Tests]
