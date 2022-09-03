@@ -7,7 +7,7 @@ This is a console application that has a single static library dependency.
 The Recipe file that defines the static library "Samples.Cpp.StaticLibrary.Library".
 ```
 Name = "Samples.Cpp.StaticLibrary.Library"
-Language = "C++"
+Language = "C++|0.1"
 Version = "1.0.0"
 Interface = "Module.cpp"
 ```
@@ -40,7 +40,7 @@ export namespace Samples.Cpp.StaticLibrary.Library
 The Recipe file that defines the executable "Samples.Cpp.StaticLibrary.Application".
 ```
 Name = "Samples.Cpp.StaticLibrary.Application"
-Language = "C++"
+Language = "C++|0.1"
 Type = "Executable"
 Version = "1.0.0"
 Source = [

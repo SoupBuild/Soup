@@ -141,29 +141,110 @@ namespace Soup.Build.Utilities
 
 		public static ValueTable AddTableWithSyntax(this ValueTable table, string name)
 		{
-			// Create a new table and matching syntax
-			var newSyntaxTable = new TableSyntax(name);
-			var newTable = new ValueTable()
-			{
-				MirrorSyntax = newSyntaxTable,
-			};
+			// Create a new table
+			var newTable = new ValueTable();
 
 			// Add the model to the parent table model
 			table.Add(name, new Value(newTable));
 
-			// Add the new syntax to the parent table syntax
-			switch (table.MirrorSyntax)
+			// Add the new syntax to the root document syntax
+			var nameList = new List<string>();
+			nameList.Add(name);
+			var currentSyntax = table.MirrorSyntax;
+			while (currentSyntax is not DocumentSyntax)
+			{
+				switch (currentSyntax)
+				{
+					case TableSyntax tableSyntax:
+						if (tableSyntax.Name is null)
+							throw new ArgumentNullException(nameof(tableSyntax));
+						nameList.Add(tableSyntax.Name.ToString());
+						currentSyntax = currentSyntax.Parent?.Parent;
+						break;
+					default:
+						throw new InvalidOperationException($"Unknown Syntax on ValueTable: {currentSyntax?.GetType()}");
+				}
+			}
+
+			switch (currentSyntax)
 			{
 				case DocumentSyntax documentSyntax:
+					// Attach the syntax to the new table
+					var nameKey = new KeySyntax(nameList.Last());
+					foreach (var value in nameList.SkipLast(1))
+					{
+						nameKey.DotKeys.Add(new DottedKeyItemSyntax(value));
+					}
+
+					var newSyntaxTable = new TableSyntax(nameKey);
+					newTable.MirrorSyntax = newSyntaxTable;
+
 					documentSyntax.Tables.Add(newSyntaxTable);
 					break;
 				default:
-					throw new InvalidOperationException("Unknown Syntax on ValueTable");
+					throw new InvalidOperationException($"Unknown Syntax on ValueTable: {currentSyntax?.GetType()}");
 			}
 
 			return newTable;
 		}
 
+		public static void AddItemWithSyntax(this ValueTable table, string key, long value)
+		{
+			// Create a new item and matching syntax
+			var newSyntaxValue = new IntegerValueSyntax(value);
+			var newValue = new Value(value)
+			{
+				// TODO: MirrorSyntax = newSyntaxTable,
+			};
+
+			// Add the model to the parent table model
+			table.Add(key, newValue);
+
+			switch (table.MirrorSyntax)
+			{
+				case DocumentSyntax documentSyntax:
+					// Add the new syntax to the parent table syntax
+					var keyValueSyntax = new KeyValueSyntax()
+					{
+						EqualToken = SyntaxFactory.Token(TokenKind.Equal),
+						Key = new KeySyntax(key),
+						Value = newSyntaxValue,
+					};
+
+					keyValueSyntax.EqualToken?.AddLeadingWhitespace();
+					keyValueSyntax.EqualToken?.AddTrailingWhitespace();
+					keyValueSyntax.AddTrailingTriviaNewLine();
+
+					documentSyntax.KeyValues.Add(keyValueSyntax);
+					break;
+				case InlineTableSyntax inlineTableSyntax:
+					// Add the new syntax to the parent table syntax
+					var inlineTableItemSyntax = new InlineTableItemSyntax(
+						new KeyValueSyntax()
+						{
+							EqualToken = SyntaxFactory.Token(TokenKind.Equal),
+							Key = new KeySyntax(key),
+							Value = newSyntaxValue,
+						});
+
+					inlineTableItemSyntax.AddLeadingWhitespace();
+					inlineTableItemSyntax.KeyValue?.EqualToken?.AddLeadingWhitespace();
+					inlineTableItemSyntax.KeyValue?.EqualToken?.AddTrailingWhitespace();
+
+					// A comma can not be on the last item
+					// Add a comma to the previous item
+					var previousItem = inlineTableSyntax.Items.LastOrDefault();
+					if (previousItem != null)
+					{
+						previousItem.Comma = SyntaxFactory.Token(TokenKind.Comma);
+					}
+
+					inlineTableSyntax.Items.Add(inlineTableItemSyntax);
+					break;
+				default:
+					throw new InvalidOperationException($"Unknown Syntax on ValueList: {table.MirrorSyntax?.GetType()}");
+			}
+		}
 
 		public static void AddItemWithSyntax(this ValueTable table, string key, string value)
 		{

@@ -102,7 +102,7 @@ namespace Soup::Core
 					rootOutput = rootRecipe.GetOutputRoot();
 
 					// Add the language sub folder
-					rootOutput = rootOutput + Path(recipe.GetLanguage() + "/");
+					rootOutput = rootOutput + Path(recipe.GetLanguage().GetName() + "/");
 
 					// Add the unique recipe name
 					rootOutput = rootOutput + Path(recipe.GetName() + "/");
@@ -252,7 +252,7 @@ namespace Soup::Core
 			for (auto dependecyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage();
+				auto implicitLanguage = recipe.GetLanguage().GetName();
 				if (dependecyType == "Build")
 				{
 					// Build dependencies do not inherit the parent language
@@ -329,7 +329,7 @@ namespace Soup::Core
 			try
 			{
 				Log::SetActiveId(projectId);
-				auto languagePackageName = recipe.GetLanguage() + "|" + recipe.GetName();
+				auto languagePackageName = recipe.GetLanguage().GetName() + "|" + recipe.GetName();
 				Log::Diag("Running Build: " + languagePackageName);
 
 				// Select the correct build set to ensure that the different build properties 
@@ -525,7 +525,7 @@ namespace Soup::Core
 			generateArguments << soupTargetDirectory.ToString();
 			auto generateOperation = OperationInfo(
 				generateOperatioId,
-				"Generate Phase: " + recipe.GetLanguage() + "|" + recipe.GetName(),
+				"Generate Phase: " + recipe.GetLanguage().GetName() + "|" + recipe.GetName(),
 				CommandInfo(
 					packageDirectory,
 					generateExecutable,
@@ -748,7 +748,7 @@ namespace Soup::Core
 			for (auto dependecyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage();
+				auto implicitLanguage = recipe.GetLanguage().GetName();
 				if (dependecyType == "Build")
 				{
 					// Build dependencies do not inherit the parent language
@@ -811,7 +811,7 @@ namespace Soup::Core
 			for (auto dependecyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage();
+				auto implicitLanguage = recipe.GetLanguage().GetName();
 				if (dependecyType == "Build")
 				{
 					// Build dependencies do not inherit the parent language

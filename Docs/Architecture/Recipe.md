@@ -11,9 +11,9 @@ Name = "MyAwesomePackage"
 ```
 
 ### Language
-The **Language** property is required for all packages. It consists of a string value that contains the language type. This language tells Soup what default [Build Tasks](Build-Task.md) to inject into the build.
+The **Language** property is required for all packages. It consists of a string value that contains the language type and minimum build version. This language tells Soup what default [Build Tasks](Build-Task.md) to inject into the build.
 ```
-Language = "C#"
+Language = "C#|0.1"
 ```
 
 ### Version

@@ -7,6 +7,7 @@ namespace Soup.Build.PackageManager
 	using System;
 	using System.Collections.Generic;
 	using System.IO.Compression;
+	using System.Linq;
 	using System.Net.Http;
 	using System.Threading.Tasks;
 	using Opal;
@@ -26,7 +27,7 @@ namespace Soup.Build.PackageManager
 		/// <summary>
 		/// Restore packages
 		/// </summary>
-		public static async Task RestorePackagesAsync(Path workingDirectory)
+		public static async Task RestorePackagesAsync(Path workingDirectory, bool forceRestore)
 		{
 			var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 				new Path(".soup/packages/");
@@ -40,33 +41,86 @@ namespace Soup.Build.PackageManager
 				var packageLockPath =
 					workingDirectory +
 					BuildConstants.PackageLockFileName;
-				var loadPackageLock = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
-				if (loadPackageLock.IsSuccess)
+				bool wasRestored = false;
+				if (!forceRestore)
 				{
-					Log.Info("Restore from package lock");
-					await RestorePackageLockAsync(
-						packageStore,
-						stagingPath,
-						loadPackageLock.Result);
+					var loadPackageLock = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
+					if (loadPackageLock.IsSuccess)
+					{
+						Log.Info("Restore from package lock");
+						await RestorePackageLockAsync(
+							packageStore,
+							stagingPath,
+							loadPackageLock.Result);
+						wasRestored = true;
+					}
 				}
-				else
+				
+				if (!wasRestored)
 				{
 					Log.Info("Discovering full closure");
-					var closure = new Dictionary<string, IDictionary<string, PackageReference>>();
+					var closure = new Dictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>>();
+					var buildClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
 					await CheckRestoreRecursiveDependenciesAsync(
 						workingDirectory,
 						packageStore,
 						stagingPath,
-						closure);
+						closure,
+						buildClosures);
 
 					// Build up the package lock file
 					var packageLock = new PackageLock();
+					packageLock.SetVersion(2);
+					var rootClosureName = "Root";
 					foreach (var languageClosure in closure)
 					{
-						foreach (var package in languageClosure.Value)
+						foreach (var (key, (package, buildClosure)) in languageClosure.Value)
 						{
-							Log.Diag($"{languageClosure.Key} {package.Key} -> {package.Value}");
-							packageLock.AddProject(languageClosure.Key, package.Key, package.Value.ToString());
+							var value = string.Empty;
+							if (package.IsLocal)
+							{
+								value = package.Path.GetRelativeTo(workingDirectory).ToString();
+							}
+							else
+							{
+								value = package.Version.ToString();
+							}
+
+							Log.Diag($"{rootClosureName}:{languageClosure.Key} {key} -> {value}");
+							packageLock.AddProject(
+								rootClosureName,
+								languageClosure.Key,
+								key,
+								value,
+								buildClosure);
+						}
+					}
+
+					foreach (var buildClosure in buildClosures)
+					{
+						packageLock.EnsureClosure(buildClosure.Key);
+						foreach (var languageClosure in buildClosure.Value)
+						{
+							foreach (var (key, package) in languageClosure.Value)
+							{
+								var value = string.Empty;
+								if (package.IsLocal)
+								{
+									value = package.Path.GetRelativeTo(workingDirectory).ToString();
+								}
+								else
+								{
+									value = package.Version.ToString();
+								}
+
+								Log.Diag($"{buildClosure.Key}:{languageClosure.Key} {key} -> {value}");
+								packageLock.AddProject(
+									buildClosure.Key,
+									languageClosure.Key,
+									key,
+									value,
+									null);
+							}
 						}
 					}
 
@@ -138,20 +192,22 @@ namespace Soup.Build.PackageManager
 				// Get the latest version if no version provided
 				if (targetPackageReference.IsLocal)
 				{
-					var packageModel = await GetPackageModelAsync(recipe.Language, packageName);
+					var packageModel = await GetPackageModelAsync(recipe.Language.Name, packageName);
 					var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
 					Log.HighPriority("Latest Version: " + latestVersion.ToString());
 					targetPackageReference = new PackageReference(null, packageModel.Name, latestVersion);
 				}
 
-				var closure = new Dictionary<string, IDictionary<string, PackageReference>>();
+				var closure = new Dictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>>();
+				var buildClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
 				await CheckRecursiveEnsurePackageDownloadedAsync(
-					recipe.Language,
+					recipe.Language.Name,
 					targetPackageReference.Name,
 					targetPackageReference.Version,
 					packageStore,
 					stagingPath,
-					closure);
+					closure,
+					buildClosures);
 
 				// Cleanup the working directory
 				Log.Info("Deleting staging directory");
@@ -224,13 +280,14 @@ namespace Soup.Build.PackageManager
 					bool packageExists = false;
 					try
 					{
-						var package = await packageClient.GetPackageAsync(recipe.Language, recipe.Name);
+						var package = await packageClient.GetPackageAsync(recipe.Language.Name, recipe.Name);
 						packageExists = true;
 					}
 					catch (Api.Client.ApiException ex)
 					{
 						if (ex.StatusCode == 404)
 						{
+							Log.Info("Package does not exist");
 							packageExists = false;
 						}
 						else
@@ -242,11 +299,12 @@ namespace Soup.Build.PackageManager
 					// Create the package if it does not exist
 					if (!packageExists)
 					{
+						Log.Info("Creating package");
 						var createPackageModel = new Api.Client.PackageCreateOrUpdateModel()
 						{
 							Description = string.Empty,
 						};
-						await packageClient.CreateOrUpdatePackageAsync(recipe.Language, recipe.Name, createPackageModel);
+						await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
 					}
 
 					var packageVersionClient = new Api.Client.PackageVersionClient(httpClient)
@@ -260,7 +318,7 @@ namespace Soup.Build.PackageManager
 						try
 						{
 							await packageVersionClient.PublishPackageVersionAsync(
-								recipe.Language,
+								recipe.Language.Name,
 								recipe.Name,
 								recipe.Version.ToString(),
 								new Api.Client.FileParameter(readArchiveFile.GetInStream(), string.Empty, "application/zip"));
@@ -272,6 +330,10 @@ namespace Soup.Build.PackageManager
 							if (ex.StatusCode == 409)
 							{
 								Log.Info("Package version already exists");
+							}
+							else if (ex.StatusCode == 403)
+							{
+								Log.Error("You do not have permission to edit this package");
 							}
 							else
 							{
@@ -308,12 +370,17 @@ namespace Soup.Build.PackageManager
 
 		private static void AddPackageFiles(Path workingDirectory, ZipArchive archive)
 		{
+			var ignoreFolderList = new string[]
+			{
+				"out",
+				".git",
+			};
 			foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(workingDirectory))
 			{
 				if (child.IsDirectory)
 				{
-					// Ignore output folder
-					if (child.Path.GetFileName() != "out")
+					// Ignore undesirables
+					if (!ignoreFolderList.Contains(child.Path.GetFileName()))
 					{
 						AddAllFilesRecursive(child.Path, workingDirectory, archive);
 					}
@@ -350,10 +417,11 @@ namespace Soup.Build.PackageManager
 		private static async Task CheckRecursiveEnsurePackageDownloadedAsync(
 			string languageName,
 			string packageName,
-			 SemanticVersion packageVersion,
-			 Path packagesDirectory,
-			 Path stagingDirectory,
-			 IDictionary<string, IDictionary<string, PackageReference>> closure)
+			SemanticVersion packageVersion,
+			Path packagesDirectory,
+			Path stagingDirectory,
+			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
 		{
 			if (closure.ContainsKey(languageName) && closure[languageName].ContainsKey(packageName))
 			{
@@ -361,78 +429,16 @@ namespace Soup.Build.PackageManager
 			}
 			else
 			{
-				// Add the new package to the closure
-				if (!closure.ContainsKey(languageName))
-					closure.Add(languageName, new Dictionary<string, PackageReference>());
-				closure[languageName].Add(packageName, new PackageReference(null, packageName, packageVersion));
-
-				Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
+				await EnsurePackageDownloadedAsync(
+					languageName,
+					packageName,
+					packageVersion,
+					packagesDirectory,
+					stagingDirectory);
 
 				var languageRootFolder = packagesDirectory + new Path(languageName);
 				var packageRootFolder = languageRootFolder + new Path(packageName);
 				var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
-
-				// Check if the package version already exists
-				if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
-				{
-					Log.HighPriority("Found local version");
-				}
-				else
-				{
-					// Download the archive
-					Log.HighPriority("Downloading package");
-					var archivePath = stagingDirectory + new Path(packageName + ".zip");
-					using (var httpClient = new HttpClient())
-					{
-						var client = new Api.Client.PackageVersionClient(httpClient)
-						{
-							BaseUrl = SoupApiEndpoint,
-						};
-
-						try
-						{
-							var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
-
-							// Write the contents to disk, scope cleanup
-							using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
-							{
-								await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
-							}
-						}
-						catch (Api.Client.ApiException ex)
-						{
-							if (ex.StatusCode == 404)
-							{
-								Log.HighPriority("Package Version Missing");
-								throw new HandledException();
-							}
-							else
-							{
-								throw;
-							}
-						}
-					}
-
-					// Create the package folder to extract to
-					var stagingVersionFolder = stagingDirectory + new Path($"{languageName}_{packageName}_{packageVersion}/");
-					LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingVersionFolder);
-
-					// Unpack the contents of the archive
-					ZipFile.ExtractToDirectory(archivePath.ToString(), stagingVersionFolder.ToString());
-
-					// Delete the archive file
-					LifetimeManager.Get<IFileSystem>().DeleteFile(archivePath);
-
-					// Ensure the package root folder exists
-					if (!LifetimeManager.Get<IFileSystem>().Exists(packageRootFolder))
-					{
-						// Create the folder
-						LifetimeManager.Get<IFileSystem>().CreateDirectory2(packageRootFolder);
-					}
-
-					// Move the extracted contents into the version folder
-					LifetimeManager.Get<IFileSystem>().Rename(stagingVersionFolder, packageVersionFolder);
-				}
 
 				var recipePath =
 					packageVersionFolder +
@@ -443,13 +449,34 @@ namespace Soup.Build.PackageManager
 					throw new InvalidOperationException("Could not load the recipe file.");
 				}
 
+				// Create the unique build closure
+				var buildClosure = await CreateBuildClosureAsync(recipe, packageVersionFolder);
+
+				var buildClosureName = string.Empty;
+				var match = buildClosures.FirstOrDefault(value => AreEqual(value.Value, buildClosure));
+				if (match.Key != null)
+				{
+					buildClosureName = match.Key;
+				}
+				else
+				{
+					buildClosureName = $"Build{buildClosures.Count}";
+					buildClosures.Add(buildClosureName, buildClosure);
+				}
+
+				// Add the new package to the closure
+				if (!closure.ContainsKey(languageName))
+					closure.Add(languageName, new Dictionary<string, (PackageReference Package, string BuildClosure)>());
+				closure[languageName].Add(packageName, (new PackageReference(null, packageName, packageVersion), buildClosureName));
+
 				// Install recursive dependencies
 				await RestoreRecursiveDependenciesAsync(
 					packageVersionFolder,
 					recipe,
 					packagesDirectory,
 					stagingDirectory,
-					closure);
+					closure,
+					buildClosures);
 			}
 		}
 
@@ -470,7 +497,11 @@ namespace Soup.Build.PackageManager
 			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
 
 			// Check if the package version already exists
-			if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
+			if (packageName == "C#" || packageName == "C++")
+			{
+				Log.HighPriority("Skip build logic for now");
+			}
+			else if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
 			{
 				Log.HighPriority("Found local version");
 			}
@@ -540,20 +571,30 @@ namespace Soup.Build.PackageManager
 			Path stagingDirectory,
 			PackageLock packageLock)
 		{
-			foreach (var languageProjects in packageLock.GetProjects())
+			foreach (var closure in packageLock.GetClosures())
 			{
-				foreach (var project in languageProjects.Value.AsList())
+				Log.Info($"Restore Packages for Closure {closure.Key}");
+				foreach (var languageProjects in closure.Value.AsTable())
 				{
-					var projectTable = project.AsTable();
-					var packageReference = PackageReference.Parse(projectTable["Version"].AsString());
-					if (!packageReference.IsLocal)
+					Log.Info($"Restore Packages for Language {languageProjects.Key}");
+					foreach (var project in languageProjects.Value.AsList())
 					{
-						await EnsurePackageDownloadedAsync(
-							languageProjects.Key,
-							packageReference.Name,
-							packageReference.Version,
-							packagesDirectory,
-							stagingDirectory);
+						var projectTable = project.AsTable();
+						var projectName = projectTable["Name"].AsString();
+						var projectVersion = projectTable["Version"].AsString();
+						if (SemanticVersion.TryParse(projectVersion, out var version))
+						{
+							await EnsurePackageDownloadedAsync(
+								languageProjects.Key,
+								projectName,
+								version,
+								packagesDirectory,
+								stagingDirectory);
+						}
+						else
+						{
+							Log.Info($"Skip Package: {projectName} -> {projectVersion}");
+						}
 					}
 				}
 			}
@@ -566,7 +607,8 @@ namespace Soup.Build.PackageManager
 			Path recipeDirectory,
 			Path packagesDirectory,
 			Path stagingDirectory,
-			IDictionary<string, IDictionary<string, PackageReference>> closure)
+			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
 		{
 			var recipePath =
 				recipeDirectory +
@@ -577,26 +619,111 @@ namespace Soup.Build.PackageManager
 				throw new InvalidOperationException("Could not load the recipe file.");
 			}
 
-			if (closure.ContainsKey(recipe.Language) && closure[recipe.Language].ContainsKey(recipe.Name))
+			if (closure.ContainsKey(recipe.Language.Name) && closure[recipe.Language.Name].ContainsKey(recipe.Name))
 			{
 				Log.Diag("Recipe already processed.");
 			}
 			else
 			{
+				// Create the unique build closure
+				var buildClosure = await CreateBuildClosureAsync(recipe, recipeDirectory);
+
+				var buildClosureName = string.Empty;
+				var match = buildClosures.FirstOrDefault(value => AreEqual(value.Value, buildClosure));
+				if (match.Key != null)
+				{
+					buildClosureName = match.Key;
+				}
+				else
+				{
+					buildClosureName = $"Build{buildClosures.Count}";
+					buildClosures.Add(buildClosureName, buildClosure);
+				}
+
 				// Add the project to the closure
-				if (!closure.ContainsKey(recipe.Language))
-					closure.Add(recipe.Language, new Dictionary<string, PackageReference>());
-				closure[recipe.Language].Add(recipe.Name, new PackageReference(recipeDirectory));
+				if (!closure.ContainsKey(recipe.Language.Name))
+					closure.Add(recipe.Language.Name, new Dictionary<string, (PackageReference Package, string BuildClosure)>());
+				closure[recipe.Language.Name].Add(recipe.Name, (new PackageReference(recipeDirectory), buildClosureName));
 
 				await RestoreRecursiveDependenciesAsync(
 					recipeDirectory,
 					recipe,
 					packagesDirectory,
 					stagingDirectory,
-					closure);
+					closure,
+					buildClosures);
 			}
 		}
 
+		private static async Task<IDictionary<string, IDictionary<string, PackageReference>>> CreateBuildClosureAsync(
+			Recipe recipe,
+			Path recipeDirectory)
+		{
+			var buildClosure = new Dictionary<string, IDictionary<string, PackageReference>>();
+			var implicitLanguage = "C#";
+
+			// Add the language build extension
+			buildClosure.Add(implicitLanguage, new Dictionary<string, PackageReference>());
+			buildClosure[implicitLanguage].Add(
+				recipe.Language.Name,
+				FillDefaultVersion(new PackageReference(implicitLanguage, recipe.Language.Name, recipe.Language.Version)));
+
+			// Discover any dependency build references
+			if (recipe.HasNamedDependencies("Build"))
+			{
+				foreach (var dependency in recipe.GetNamedDependencies("Build"))
+				{
+					var dependencyPackage = dependency;
+					if (dependency.IsLocal)
+					{
+						var dependencyPath = recipeDirectory + dependency.Path;
+						var dependencyRecipePath =
+							dependencyPath +
+							BuildConstants.RecipeFileName;
+						var (isDependencySuccess, dependencyRecipe) = await RecipeExtensions.TryLoadRecipeFromFileAsync(dependencyRecipePath);
+						if (!isDependencySuccess)
+						{
+							throw new InvalidOperationException("Could not load dependency recipe file.");
+						}
+
+						dependencyPackage = new PackageReference(dependencyRecipe.Language.Name, dependencyRecipe.Name, dependencyRecipe.Version);
+					}
+
+					var language = dependencyPackage.Language != null ? dependencyPackage.Language : implicitLanguage;
+
+					if (!buildClosure.ContainsKey(language))
+						buildClosure.Add(language, new Dictionary<string, PackageReference>());
+
+					buildClosure[language].Add(dependencyPackage.Name, FillDefaultVersion(dependencyPackage));
+				}
+			}
+
+			return buildClosure;
+		}
+
+		private static PackageReference FillDefaultVersion(PackageReference package)
+		{
+			// TODO: Discover the latest available version
+			// For now auto assume missing values are zero
+			if (package.Version.Minor is null)
+			{
+				return new PackageReference(
+					package.Language,
+					package.Name,
+					new SemanticVersion(package.Version.Major, 0, 0));
+			}
+			else if (package.Version.Patch is null)
+			{
+				return new PackageReference(
+					package.Language,
+					package.Name,
+					new SemanticVersion(package.Version.Major, package.Version.Minor, 0));
+			}
+			else
+			{
+				return package;
+			}	
+		}
 
 		/// <summary>
 		/// Recursively restore all dependencies, assume that the closure has been updated correctly for current recipe
@@ -606,14 +733,15 @@ namespace Soup.Build.PackageManager
 			Recipe recipe,
 			Path packagesDirectory,
 			Path stagingDirectory,
-			IDictionary<string, IDictionary<string, PackageReference>> closure)
+			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
 		{
 			foreach (var dependecyType in recipe.GetDependencyTypes())
 			{
 				if (recipe.HasNamedDependencies(dependecyType))
 				{
 					// Same language as parent is implied
-					var implicitLanguage = recipe.Language;
+					var implicitLanguage = recipe.Language.Name;
 
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
@@ -633,7 +761,8 @@ namespace Soup.Build.PackageManager
 								dependencyPath,
 								packagesDirectory,
 								stagingDirectory,
-								closure);
+								closure,
+								buildClosures);
 						}
 						else
 						{
@@ -644,11 +773,31 @@ namespace Soup.Build.PackageManager
 								dependency.Version,
 								packagesDirectory,
 								stagingDirectory,
-								closure);
+								closure,
+								buildClosures);
 						}
 					}
 				}
 			}
+		}
+
+		private static bool AreEqual(
+			IDictionary<string, IDictionary<string, PackageReference>> lhs,
+			IDictionary<string, IDictionary<string, PackageReference>> rhs)
+		{
+			return lhs.Keys.Count == rhs.Keys.Count &&
+				lhs.Keys.All(value => rhs.Keys.Contains(value)) &&
+				lhs.All(value => AreEqual(value.Value, rhs[value.Key]));
+		}
+
+		private static bool AreEqual(
+			IDictionary<string, PackageReference> lhs,
+			IDictionary<string, PackageReference> rhs)
+		{
+
+			return lhs.Keys.Count == rhs.Keys.Count &&
+				lhs.Keys.All(value => rhs.Keys.Contains(value)) &&
+				lhs.All(value => value.Value == rhs[value.Key]);
 		}
 
 		/// <summary>

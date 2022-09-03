@@ -98,7 +98,7 @@ namespace Soup::Core::UnitTests
 				Path("TestFiles/SimpleRecipe/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
-					Language = "C++"
+					Language = "C++|0.1"
 				)")));
 
 			auto directory = Path("TestFiles/SimpleRecipe/Recipe.toml");
@@ -166,7 +166,7 @@ namespace Soup::Core::UnitTests
 			// Verify the contents of the build file
 			std::string expectedBuildFile = 
 R"(Name = "MyPackage"
-Language = "C++"
+Language = "C++|0.1"
 )";
 			auto mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.toml"));
 			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");

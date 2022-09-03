@@ -7,7 +7,7 @@ A console application that reads in a json file using the an external module and
 The Recipe file that sets the standard name, type, version, as well as the single external dependency of the [json11](https://github.com/dropbox/json11) project.
 ```
 Name = "Samples.Cpp.ParseJsonFile"
-Language = "C++"
+Language = "C++|0.1"
 Version = "1.0.0"
 Type = "Executable"
 Source = [
@@ -16,7 +16,7 @@ Source = [
 
 [Dependencies]
 Runtime = [
-    "json11@1.0.1",
+    "json11@1.0.2",
 ]
 ```
 

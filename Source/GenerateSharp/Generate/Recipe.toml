@@ -1,5 +1,5 @@
 Name = "Soup.Build.Generate"
-Language = "C#"
+Language = "C#|0.1"
 Version = "1.0.0"
 Type = "Executable"
 Source = [
@@ -24,7 +24,7 @@ NuGetPackages = [
 
 [Dependencies]
 Runtime = [
-	"../Contracts/",
+	"../Build/",
 	"../Opal/",
 	"../Runtime/",
 	"../Utilities/",

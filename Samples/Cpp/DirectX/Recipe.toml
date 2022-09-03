@@ -1,5 +1,5 @@
 Name = "Samples.Cpp.DirectX"
-Language = "C++"
+Language = "C++|0.1"
 Type = "Windows"
 Version = "1.0.0"
 Partitions = [

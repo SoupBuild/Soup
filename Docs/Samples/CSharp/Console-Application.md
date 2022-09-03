@@ -7,7 +7,7 @@ This is a console application with the minimal amount of code to get up and runn
 The Recipe file that defines the static library ""Samples.CSharp.ConsoleApplication".
 ```
 Name = "Samples.CSharp.ConsoleApplication"
-Language = "C#"
+Language = "C#|0.1"
 Type = "Executable"
 Version = "1.1.4"
 Source = [

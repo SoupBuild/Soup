@@ -13,7 +13,8 @@ namespace Soup.Build.Utilities
 	/// </summary>
 	public class PackageLock
 	{
-		private static string Property_Projects => "Projects";
+		private static string Property_Version => "Version";
+		private static string Property_Closures => "Closures";
 
 		private ValueTable _table;
 
@@ -39,30 +40,63 @@ namespace Soup.Build.Utilities
 		}
 
 		/// <summary>
-		/// Gets or sets the table of projects
+		/// Gets or sets the version
 		/// </summary>
-		public bool HasProjects()
+		public bool HasVersion()
 		{
-			return HasValue(_table, Property_Projects);
+			return HasValue(_table, Property_Version);
 		}
 
-		public IValueTable GetProjects()
+		public long GetVersion()
 		{
-			if (!HasProjects())
-				throw new InvalidOperationException("No projects.");
+			if (!HasVersion())
+				throw new InvalidOperationException("No version.");
 
-			var values = GetValue(_table, Property_Projects).AsTable();
+			var value = GetValue(_table, Property_Version).AsInteger();
+			return value;
+		}
+
+		public void SetVersion(long value)
+		{
+			_table.AddItemWithSyntax(Property_Version, value);
+		}
+
+		/// <summary>
+		/// Gets or sets the table of closures
+		/// </summary>
+		public bool HasClosures()
+		{
+			return HasValue(_table, Property_Closures);
+		}
+
+		public IValueTable GetClosures()
+		{
+			if (!HasClosures())
+				throw new InvalidOperationException("No closures.");
+
+			var values = GetValue(_table, Property_Closures).AsTable();
 			return values;
 		}
 
-		public void AddProject(string language, string name, string version)
+		public void EnsureClosure(string closure)
 		{
-			var projects = EnsureHasTable(_table, Property_Projects);
-			var projectLanguageList = EnsureHasList(projects, language);
+			var closures = EnsureHasTable(_table, Property_Closures);
+			_ = EnsureHasTable(closures, closure);
+		}
+
+		public void AddProject(string closure, string language, string name, string version, string buildClosure)
+		{
+			var closures = EnsureHasTable(_table, Property_Closures);
+			var closureTable = EnsureHasTable(closures, closure);
+			var projectLanguageList = EnsureHasList(closureTable, language);
 			
 			var projectTable = projectLanguageList.AddTableWithSyntax();
 			projectTable.AddItemWithSyntax("Name", name);
 			projectTable.AddItemWithSyntax("Version", version);
+			if (buildClosure != null)
+			{
+				projectTable.AddItemWithSyntax("Build", buildClosure);
+			}
 		}
 
 		/// <summary>
@@ -93,7 +127,7 @@ namespace Soup.Build.Utilities
 		{
 			if (table.ContainsKey(key))
 			{
-				table.Add(key, value);
+				table[key] = value;
 			}
 			else
 			{
@@ -107,9 +141,9 @@ namespace Soup.Build.Utilities
 		{
 			if (table.ContainsKey(name))
 			{
-				var value = _table[name];
+				var value = table[name];
 				if (value.Type != ValueType.Table)
-					throw new InvalidOperationException("The package lock already has a non-table dependencies property");
+					throw new InvalidOperationException($"The package lock already has a non-table dependencies property: {name}");
 
 				// Find the Syntax for the table
 				return (ValueTable)value.AsTable();

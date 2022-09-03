@@ -1,6 +1,7 @@
 Name = "Soup"
-Language = "C++"
-Version = "0.18.1"
+Version = "0.19.2"
+Language = "C++|0.1"
+
 Type = "Executable"
 
 Source = [
@@ -15,20 +16,20 @@ IncludePaths = [
 # Ensure the core build extensions are runtime dependencies
 Runtime = [
 	"../Core/",
-	# "../../Build/Generate/",
 	"../../Tools/Copy/",
 	"../../Tools/Mkdir/",
 	"../../Monitor/Host/",
 ]
 Other = [
-	"C#|Soup.Cpp@0.1.0",
-	"C#|Soup.CSharp@0.3.1",
+	# "../../GenerateSharp/Generate/",
+	"C#|Soup.Cpp@0.2.2",
+	"C#|Soup.CSharp@0.5.1",
 ]
 Build = [
 	# TODO: "Soup.Test.Cpp@0.2.0",
 ]
 Test = [
-	"Soup.Test.Assert@0.1.8",
+	"Soup.Test.Assert@0.2.1",
 ]
 
 [Tests]

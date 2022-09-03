@@ -1,5 +1,5 @@
 Name = "Soup.Core"
-Language = "C++"
+Language = "C++|0.1"
 Version = "0.1.1"
 Defines = [
 	# "LOCAL_DEBUG",
@@ -15,17 +15,17 @@ Source = [
 
 [Dependencies]
 Build = [
-	"Soup.Test.Cpp@0.2.0",
+	# "Soup.Test.Cpp@0.2.0",
 ]
 Runtime = [
-	"json11@1.0.1",
-	"Opal@0.3.0",
-	"toml11@1.0.1",
+	"json11@1.0.2",
+	"Opal@0.4.1",
+	"toml11@1.0.2",
 	"../../Monitor/Host/",
-	"CryptoPP@1.0.1",
+	"CryptoPP@1.0.2",
 ]
 Test = [
-	"Soup.Test.Assert@0.1.8",
+	"Soup.Test.Assert@0.2.1",
 ]
 
 [Tests]

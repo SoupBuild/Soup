@@ -37,7 +37,15 @@ namespace Soup.Build.Utilities
 					var result = ValueTableTomlUtilities.Deserialize(
 						packageLockFile,
 						await reader.ReadToEndAsync());
-					return (true, new PackageLock(result));
+
+					var packageLock = new PackageLock(result);
+					if (!packageLock.HasVersion() || packageLock.GetVersion() != 2)
+					{
+						Log.Info("Package Lock version is incorrect.");
+						return (false, new PackageLock());
+					}
+
+					return (true, packageLock);
 				}
 				catch (Exception ex)
 				{
