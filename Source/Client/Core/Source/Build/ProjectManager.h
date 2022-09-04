@@ -8,6 +8,7 @@
 #include "Recipe/RecipeExtensions.h"
 #include "Recipe/RootRecipeExtensions.h"
 #include "Utils/HandledException.h"
+#include "BuildConstants.h"
 
 namespace Soup::Core
 {

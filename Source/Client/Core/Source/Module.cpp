@@ -38,6 +38,7 @@ import Opal;
 
 using namespace Opal;
 
+#include "Build/RecipeBuildLocationManager.h"
 #include "Build/RecipeBuildRunner.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"
 #include "Package/PackageManager.h"

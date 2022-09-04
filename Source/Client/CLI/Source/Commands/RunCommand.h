@@ -83,12 +83,12 @@ namespace Soup::Client
 			globalParameters.SetValue("System", Core::Value(std::string(system)));
 
 			// Load the value table to get the exe path
-			auto targetDirectory = Core::RecipeBuildRunner::GetOutputDirectory(
+			auto targetDirectory = Core::RecipeBuildLocationManager::GetOutputDirectory(
 				workingDirectory,
 				recipe,
 				globalParameters,
 				projectManager);
-			auto soupTargetDirectory = targetDirectory + Core::RecipeBuildRunner::GetSoupTargetDirectory();
+			auto soupTargetDirectory = targetDirectory + Core::BuildConstants::GetSoupTargetDirectory();
 			auto sharedStateFile = soupTargetDirectory + Core::BuildConstants::GenerateSharedStateFileName();
 
 			// Load the shared state file

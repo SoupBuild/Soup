@@ -67,67 +67,6 @@ namespace Soup::Core
 		std::shared_ptr<FileSystemState> _fileSystemState;
 
 	public:
-		static Path GetSoupTargetDirectory()
-		{
-			static const auto value = Path(".soup/");
-			return value;
-		}
-
-		static Path GetOutputDirectory(
-			const Path& packageRoot,
-			Recipe& recipe,
-			const ValueTable& globalParameters,
-			ProjectManager& projectManager)
-		{
-			// Set the default output directory to be relative to the package
-			auto rootOutput = packageRoot + Path("out/");
-
-			// Check for root recipe file with overrides
-			Path rootRecipeFile;
-			if (RootRecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
-			{
-				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
-				RootRecipe rootRecipe;
-				if (!projectManager.TryGetRootRecipe(rootRecipeFile, rootRecipe))
-				{
-					// Nothing we can do, exit
-					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
-					throw HandledException(222);
-				}
-
-				// Check if there was a root output set
-				if (rootRecipe.HasOutputRoot())
-				{
-					// Relative to the root recipe file itself
-					rootOutput = rootRecipe.GetOutputRoot();
-
-					// Add the language sub folder
-					rootOutput = rootOutput + Path(recipe.GetLanguage().GetName() + "/");
-
-					// Add the unique recipe name/version
-					rootOutput = rootOutput + Path(recipe.GetName() + "/") + Path(recipe.GetVersion().ToString() + "/");
-
-					// Ensure there is a root relative to the file itself
-					if (!rootOutput.HasRoot())
-					{
-						rootOutput = rootRecipeFile.GetParent() + rootOutput;
-					}
-
-					Log::Info("Override root output: " + rootOutput.ToString());
-				}
-			}
-
-			// Add unique folder name for parameters
-			auto parametersStream = std::stringstream();
-			ValueTableWriter::Serialize(globalParameters, parametersStream);
-			auto hashParameters = CryptoPP::Sha1::HashBase64(parametersStream.str());
-			auto uniqueParametersFolder = Path(hashParameters + "/");
-			rootOutput = rootOutput + uniqueParametersFolder;
-
-			return rootOutput;
-		}
-
-	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuildRunner"/> class.
 		/// </summary>
@@ -401,12 +340,12 @@ namespace Soup::Core
 			auto& globalParameters = isHostBuild ? _hostBuildGlobalParameters : _arguments.GlobalParameters;
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto targetDirectory = GetOutputDirectory(
+			auto targetDirectory = RecipeBuildLocationManager::GetOutputDirectory(
 				packageRoot,
 				recipe,
 				globalParameters,
 				_projectManager);
-			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
+			auto soupTargetDirectory = targetDirectory + BuildConstants::GetSoupTargetDirectory();
 
 			// Build up the child target directory set
 			auto childTargetDirectorySets = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);

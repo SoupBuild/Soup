@@ -74,5 +74,33 @@ namespace Soup::Core
 			static const Path value = Path("GenerateEvaluateGraph.bog");
 			return value;
 		}
+
+		/// <summary>
+		/// Gets the soup target directory
+		/// </summary>
+		static Path GetSoupTargetDirectory()
+		{
+			static const auto value = Path(".soup/");
+			return value;
+		}
+
+		
+		static Path GetGenerateGraphFileName()
+		{
+			static const auto value = Path("GenerateGraph.bog");
+			return value;
+		}
+
+		static Path GetEvaluateResultGraphFileName()
+		{
+			static const auto value = Path("EvaluateResultGraph.bog");
+			return value;
+		}
+
+		static Path GetTemporaryFolderName()
+		{
+			static const auto value = Path("temp/");
+			return value;
+		}
 	};
 }

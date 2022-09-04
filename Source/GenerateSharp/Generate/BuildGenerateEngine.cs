@@ -18,6 +18,10 @@ namespace Soup.Build.Generate
 	/// </summary>
 	internal class BuildGenerateEngine
 	{
+		private readonly SemanticVersion BuiltInCppExtensionVersion = new SemanticVersion(0, 2, 2);
+
+		private readonly SemanticVersion BuiltInCSharpExtensionVersion = new SemanticVersion(0, 5, 1);
+
 		public BuildGenerateEngine()
 		{
 			_fileSystemState = new FileSystemState();
@@ -225,21 +229,27 @@ namespace Soup.Build.Generate
 			var buildExtensionLibraries = new List<Path>();
 
 			// Run the RecipeBuild extension to inject core build tasks
-			var recipeBuildExtensionPath = new Path();
-			var language = recipe.Language.Name;
-			if (language == "C++")
+			Path recipeBuildExtensionPath;
+			switch (recipe.Language.Name)
 			{
-				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
-				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll");
-			}
-			else if (language == "C#")
-			{
-				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
-				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.CSharp/0.5.1/Soup.CSharp.dll");
-			}
-			else
-			{
-				throw new InvalidOperationException("Unknown language.");
+				case "C++":
+					{
+						var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
+						recipeBuildExtensionPath = moduleFolder + new Path($"Extensions/Soup.Cpp/{BuiltInCppExtensionVersion}/Soup.Cpp.dll");
+
+						break;
+					}
+				case "C#":
+					{
+						var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
+						recipeBuildExtensionPath = moduleFolder + new Path($"Extensions/Soup.CSharp/{BuiltInCSharpExtensionVersion}/Soup.CSharp.dll");
+
+						break;
+					}
+				default:
+					{
+						throw new InvalidOperationException("Unknown language.");
+					}
 			}
 
 			buildExtensionLibraries.Add(recipeBuildExtensionPath);
