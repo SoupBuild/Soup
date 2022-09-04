@@ -6,6 +6,7 @@ SET OutputDir=%ScriptsDir%..\out
 SET ClientCLIDir=%SourceDir%\Client\CLI
 SET MonitorClientDir=%SourceDir%\Monitor\Client
 SET SWhereDir=%SourceDir%\GenerateSharp\Swhere
+SET PackageManagerDir=%SourceDir%\GenerateSharp\PackageManager
 if %Flavor% == release (SET OutputX64DirectorPath=txTMowfPh1V3rPmbvNBmBW9Z8Jg) else (SET OutputX64DirectorPath=J3mu4cpISw6nDaCPED8gkqZ-q84)
 if %Flavor% == release (SET OutputX86DirectorPath=ci_UJP5zJKyF-O0VVSVDMNi1Wwg) else (SET OutputX86DirectorPath=9fr4dmE4CrAXgS2yFzcvYJXkGDg)
 SET ClientCLIOutputDirectory=%OutputDir%\C++\Soup\%OutputX64DirectorPath%
@@ -34,4 +35,9 @@ copy "%MonitorClientOutputX86Directory%\bin\Monitor.Client.dll" "%ClientCLIOutpu
 REM - Build SWhere tool
 echo dotnet publish %SWhereDir% -c %Flavor%
 call dotnet publish %SWhereDir% -c %Flavor%
+if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
+
+REM - Build PackageManager tool
+echo dotnet publish %PackageManagerDir% -c %Flavor%
+call dotnet publish %PackageManagerDir% -c %Flavor%
 if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
