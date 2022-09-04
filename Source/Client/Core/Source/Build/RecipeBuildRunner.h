@@ -104,8 +104,8 @@ namespace Soup::Core
 					// Add the language sub folder
 					rootOutput = rootOutput + Path(recipe.GetLanguage().GetName() + "/");
 
-					// Add the unique recipe name
-					rootOutput = rootOutput + Path(recipe.GetName() + "/");
+					// Add the unique recipe name/version
+					rootOutput = rootOutput + Path(recipe.GetName() + "/") + Path(recipe.GetVersion().ToString() + "/");
 
 					// Ensure there is a root relative to the file itself
 					if (!rootOutput.HasRoot())
