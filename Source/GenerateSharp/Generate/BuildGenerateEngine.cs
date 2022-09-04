@@ -229,12 +229,12 @@ namespace Soup.Build.Generate
 			var language = recipe.Language.Name;
 			if (language == "C++")
 			{
-				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
+				var moduleFolder = new Path(AppContext.BaseDirectory);
 				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll");
 			}
 			else if (language == "C#")
 			{
-				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
+				var moduleFolder = new Path(AppContext.BaseDirectory);
 				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.CSharp/0.5.1/Soup.CSharp.dll");
 			}
 			else
