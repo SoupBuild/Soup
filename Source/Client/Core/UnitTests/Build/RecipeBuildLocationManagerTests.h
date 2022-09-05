@@ -12,11 +12,11 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void GetOutputDirectory_Simple()
 		{
-			auto targetDirectory = Core::RecipeBuildLocationManager::GetOutputDirectory(
-				workingDirectory,
-				recipe,
-				globalParameters,
-				projectManager);
+			// auto targetDirectory = Core::RecipeBuildLocationManager::GetOutputDirectory(
+			// 	workingDirectory,
+			// 	recipe,
+			// 	globalParameters,
+			// 	projectManager);
 		}
 	};
 }
