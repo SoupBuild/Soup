@@ -28,6 +28,7 @@ using namespace Soup::Test;
 #include "Build/FileSystemStateTests.gen.h"
 #include "Build/ProjectManagerTests.gen.h"
 #include "Build/RecipeBuilderTests.gen.h"
+#include "Build/RecipeBuildLocationManagerTests.gen.h"
 
 #include "LocalUserConfig/LocalUserConfigExtensionsTests.gen.h"
 #include "LocalUserConfig/LocalUserConfigTests.gen.h"
@@ -59,6 +60,7 @@ int main()
 	state += RunFileSystemStateTests();
 	state += RunProjectManagerTests();
 	state += RunRecipeBuilderTests();
+	state += RunRecipeBuildLocationManagerTests();
 
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigTests();

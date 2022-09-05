@@ -116,6 +116,9 @@ namespace SoupView.ViewModel
 
         private void NotifyError(string message)
         {
+            if (Debugger.IsAttached)
+                Debugger.Break();
+
             ErrorBarMessage = message;
             IsErrorBarOpen = true;
         }

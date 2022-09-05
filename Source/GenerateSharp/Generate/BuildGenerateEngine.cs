@@ -20,7 +20,7 @@ namespace Soup.Build.Generate
 	{
 		private readonly SemanticVersion BuiltInCppExtensionVersion = new SemanticVersion(0, 2, 2);
 
-		private readonly SemanticVersion BuiltInCSharpExtensionVersion = new SemanticVersion(0, 5, 1);
+		private readonly SemanticVersion BuiltInCSharpExtensionVersion = new SemanticVersion(0, 5, 2);
 
 		public BuildGenerateEngine()
 		{
