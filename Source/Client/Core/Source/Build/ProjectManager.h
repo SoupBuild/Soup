@@ -271,7 +271,7 @@ namespace Soup::Core
 		Path GetSoupUserDataPath() const
 		{
 			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
-				Path(".soup/");
+				BuildConstants::GetSoupLocalStoreDirectory();
 			return result;
 		}
 	};

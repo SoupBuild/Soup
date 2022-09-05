@@ -76,15 +76,29 @@ namespace Soup::Core
 		}
 
 		/// <summary>
+		/// Gets the Local User Config file name
+		/// </summary>
+		static const Path LocalUserConfigFileName()
+		{
+			static const Path value = Path("LocalUserConfig.toml");
+			return value;
+		}
+
+		/// <summary>
 		/// Gets the soup target directory
 		/// </summary>
+		static Path GetSoupLocalStoreDirectory()
+		{
+			static const auto value = Path(".soup/");
+			return value;
+		}
+
 		static Path GetSoupTargetDirectory()
 		{
 			static const auto value = Path(".soup/");
 			return value;
 		}
 
-		
 		static Path GetGenerateGraphFileName()
 		{
 			static const auto value = Path("GenerateGraph.bog");

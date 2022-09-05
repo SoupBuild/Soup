@@ -17,27 +17,6 @@
 
 namespace Soup::Core
 {
-	class RecipeBuildCacheState
-	{
-	public:
-		RecipeBuildCacheState(
-			std::string name,
-			Path targetDirectory,
-			Path soupTargetDirectory,
-			std::set<Path> recursiveChildTargetDirectorySet) :
-			Name(std::move(name)),
-			TargetDirectory(std::move(targetDirectory)),
-			SoupTargetDirectory(std::move(soupTargetDirectory)),
-			RecursiveChildTargetDirectorySet(std::move(recursiveChildTargetDirectorySet))
-		{
-		}
-
-		std::string Name;
-		Path TargetDirectory;
-		Path SoupTargetDirectory;
-		std::set<Path> RecursiveChildTargetDirectorySet;
-	};
-
 	/// <summary>
 	/// The recipe build runner that knows how to perform the correct build for a recipe
 	/// and all of its development and runtime dependencies
@@ -487,6 +466,8 @@ namespace Soup::Core
 
 			// Allow read access to the generate executable folder, Windows and the DotNet install
 			generateAllowedReadAccess.push_back(generateFolder);
+
+			// TODO: Windows specific
 			generateAllowedReadAccess.push_back(Path("C:/Windows/"));
 			generateAllowedReadAccess.push_back(Path("C:/Program Files/dotnet/"));
 
@@ -635,13 +616,6 @@ namespace Soup::Core
 				*_fileSystemState);
 
 			Log::Info("Done");
-		}
-
-		Path GetSoupUserDataPath() const
-		{
-			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
-				Path(".soup/");
-			return result;
 		}
 
 		/// <summary>
