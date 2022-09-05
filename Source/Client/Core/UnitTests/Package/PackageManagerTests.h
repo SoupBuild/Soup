@@ -18,7 +18,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			auto workingDirectory = Path("C:/TestLocation");
 			PackageManager::RestorePackages(workingDirectory);
@@ -54,7 +54,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			auto workingDirectory = Path("C:/TestLocation");
 			auto packageName = "TheirPackage@2.2.2";
@@ -91,7 +91,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			auto workingDirectory = Path("C:/TestLocation");
 			auto packageName = "TheirPackage";
@@ -128,7 +128,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			auto workingDirectory = Path("C:/TestLocation");
 			PackageManager::PublishPackage(workingDirectory);
