@@ -377,6 +377,7 @@ namespace Soup::Core
 			auto parametersTable = ValueTable(globalParameters.GetValues());
 
 			// Set the input parameters
+			parametersTable.SetValue("LanguageExtensionPath", Value(_projectManager.GetLanguageExtensionPath(recipe).ToString()));
 			parametersTable.SetValue("PackageDirectory", Value(packageDirectory.ToString()));
 			parametersTable.SetValue("TargetDirectory", Value(targetDirectory.ToString()));
 			parametersTable.SetValue("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
