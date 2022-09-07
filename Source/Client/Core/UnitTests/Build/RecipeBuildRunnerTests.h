@@ -170,6 +170,71 @@ namespace Soup::Core::UnitTests
 				}),
 				detourProcessManager->GetRequests(),
 				"Verify detour process manager requests match expected.");
+
+			// Verify files
+			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt"));
+			Assert::AreEqual(
+				ValueTable(std::map<std::string, Value>({
+					{ "Dependencies", Value(ValueTable()), },
+					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
+					{ "SDKs", Value(ValueList()), },
+					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
+					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/")), },
+				})),
+				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
+				"Verify file content match expected.");
+
+			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateReadAccess.txt"));
+			Assert::AreEqual(
+				"C:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
+				myPackageGenerateReadAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto myPackageGenerateWriteAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateWriteAccess.txt"));
+			Assert::AreEqual(
+				"C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
+				myPackageGenerateWriteAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto myPackageGenerateGraphMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateGraph.bog"));
+			auto myPackageGenerateGraph = OperationGraphReader::Deserialize(myPackageGenerateGraphMockFile->Content);
+
+			// TODO: Clear time for now until mocked
+			for (auto& operation : myPackageGenerateGraph.GetOperations())
+				operation.second.EvaluateTime = std::chrono::time_point<std::chrono::system_clock>::min();
+
+			Assert::AreEqual(
+				OperationGraph(
+					{
+					},
+					std::vector<OperationId>({
+						1,
+					}),
+					std::vector<OperationInfo>({
+						OperationInfo(
+							1,
+							"Generate Phase: C++|MyPackage",
+							CommandInfo(
+								Path("C:/WorkingDirectory/MyPackage/"),
+								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
+								"C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/"),
+							{},
+							{},
+							{},
+							{},
+							{},
+							1,
+							true,
+							std::chrono::time_point<std::chrono::system_clock>::min(),
+							{},
+							{}),
+					})),
+				myPackageGenerateGraph,
+				"Verify file content match expected.");
 		}
 
 		// [[Fact]]
@@ -436,6 +501,147 @@ namespace Soup::Core::UnitTests
 				}),
 				detourProcessManager->GetRequests(),
 				"Verify detour process manager requests match expected.");
+
+			// Verify files
+			auto testBuildGenerateParametersMockFile = fileSystem->GetMockFile(
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt"));
+			Assert::AreEqual(
+				ValueTable(std::map<std::string, Value>({
+					{ "Architecture", Value(std::string("x64")), },
+					{ "Compiler", Value(std::string("MSVC")), },
+					{ "Dependencies", Value(ValueTable()), },
+					{ "Flavor", Value(std::string("release")), },
+					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3")), },
+					{ "SDKs", Value(ValueList()), },
+					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/")), },
+					{ "System", Value(std::string("win32")), },
+					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/")), },
+				})),
+				ValueTableReader::Deserialize(testBuildGenerateParametersMockFile->Content),
+				"Verify file content match expected.");
+
+			auto testBuildGenerateReadAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateReadAccess.txt"));
+			Assert::AreEqual(
+				"C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3\nC:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/\n",
+				testBuildGenerateReadAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto testBuildGenerateWriteAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateWriteAccess.txt"));
+			Assert::AreEqual(
+				"C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/\n",
+				testBuildGenerateWriteAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto testBuildGenerateGraphMockFile = fileSystem->GetMockFile(
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateGraph.bog"));
+			auto testBuildGenerateGraph = OperationGraphReader::Deserialize(testBuildGenerateGraphMockFile->Content);
+
+			// TODO: Clear time for now until mocked
+			for (auto& operation : testBuildGenerateGraph.GetOperations())
+				operation.second.EvaluateTime = std::chrono::time_point<std::chrono::system_clock>::min();
+
+			Assert::AreEqual(
+				OperationGraph(
+					{
+					},
+					std::vector<OperationId>({
+						1,
+					}),
+					std::vector<OperationInfo>({
+						OperationInfo(
+							1,
+							"Generate Phase: C#|TestBuild",
+							CommandInfo(
+								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3"),
+								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
+								"C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/"),
+							{},
+							{},
+							{},
+							{},
+							{},
+							1,
+							true,
+							std::chrono::time_point<std::chrono::system_clock>::min(),
+							{},
+							{}),
+					})),
+				testBuildGenerateGraph,
+				"Verify file content match expected.");
+
+			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt"));
+			Assert::AreEqual(
+				ValueTable(std::map<std::string, Value>({
+					{ "Dependencies", Value(ValueTable(std::map<std::string, Value>({
+						{ "Build", Value(ValueTable(std::map<std::string, Value>({
+							{ "TestBuild", Value(ValueTable(std::map<std::string, Value>({
+								{ "Reference", Value(std::string("TestBuild@1.2.3")), },
+								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/")), },
+								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/")), },
+							}))), },
+						}))), },
+					}))), },
+					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
+					{ "SDKs", Value(ValueList()), },
+					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
+					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/")), },
+				})),
+				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
+				"Verify file content match expected.");
+
+			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateReadAccess.txt"));
+			Assert::AreEqual(
+				"C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
+				myPackageGenerateReadAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto myPackageGenerateWriteAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateWriteAccess.txt"));
+			Assert::AreEqual(
+				"C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
+				myPackageGenerateWriteAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto myPackageGenerateGraphMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateGraph.bog"));
+			auto myPackageGenerateGraph = OperationGraphReader::Deserialize(myPackageGenerateGraphMockFile->Content);
+
+			// TODO: Clear time for now until mocked
+			for (auto& operation : myPackageGenerateGraph.GetOperations())
+				operation.second.EvaluateTime = std::chrono::time_point<std::chrono::system_clock>::min();
+
+			Assert::AreEqual(
+				OperationGraph(
+					{
+					},
+					std::vector<OperationId>({
+						1,
+					}),
+					std::vector<OperationInfo>({
+						OperationInfo(
+							1,
+							"Generate Phase: C++|MyPackage",
+							CommandInfo(
+								Path("C:/WorkingDirectory/MyPackage/"),
+								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
+								"C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/"),
+							{},
+							{},
+							{},
+							{},
+							{},
+							1,
+							true,
+							std::chrono::time_point<std::chrono::system_clock>::min(),
+							{},
+							{}),
+					})),
+				myPackageGenerateGraph,
+				"Verify file content match expected.");
 		}
 		
 		// [[Fact]]
@@ -727,6 +933,147 @@ namespace Soup::Core::UnitTests
 				}),
 				detourProcessManager->GetRequests(),
 				"Verify detour process manager requests match expected.");
+
+			// Verify files
+			auto testBuildGenerateParametersMockFile = fileSystem->GetMockFile(
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt"));
+			Assert::AreEqual(
+				ValueTable(std::map<std::string, Value>({
+					{ "Architecture", Value(std::string("x64")), },
+					{ "Compiler", Value(std::string("MSVC")), },
+					{ "Dependencies", Value(ValueTable()), },
+					{ "Flavor", Value(std::string("release")), },
+					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0")), },
+					{ "SDKs", Value(ValueList()), },
+					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/")), },
+					{ "System", Value(std::string("win32")), },
+					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/")), },
+				})),
+				ValueTableReader::Deserialize(testBuildGenerateParametersMockFile->Content),
+				"Verify file content match expected.");
+
+			auto testBuildGenerateReadAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateReadAccess.txt"));
+			Assert::AreEqual(
+				"C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0\nC:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/\n",
+				testBuildGenerateReadAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto testBuildGenerateWriteAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateWriteAccess.txt"));
+			Assert::AreEqual(
+				"C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/\n",
+				testBuildGenerateWriteAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto testBuildGenerateGraphMockFile = fileSystem->GetMockFile(
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateGraph.bog"));
+			auto testBuildGenerateGraph = OperationGraphReader::Deserialize(testBuildGenerateGraphMockFile->Content);
+
+			// TODO: Clear time for now until mocked
+			for (auto& operation : testBuildGenerateGraph.GetOperations())
+				operation.second.EvaluateTime = std::chrono::time_point<std::chrono::system_clock>::min();
+
+			Assert::AreEqual(
+				OperationGraph(
+					{
+					},
+					std::vector<OperationId>({
+						1,
+					}),
+					std::vector<OperationInfo>({
+						OperationInfo(
+							1,
+							"Generate Phase: C#|TestBuild",
+							CommandInfo(
+								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0"),
+								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
+								"C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/"),
+							{},
+							{},
+							{},
+							{},
+							{},
+							1,
+							true,
+							std::chrono::time_point<std::chrono::system_clock>::min(),
+							{},
+							{}),
+					})),
+				testBuildGenerateGraph,
+				"Verify file content match expected.");
+
+			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt"));
+			Assert::AreEqual(
+				ValueTable(std::map<std::string, Value>({
+					{ "Dependencies", Value(ValueTable(std::map<std::string, Value>({
+						{ "Build", Value(ValueTable(std::map<std::string, Value>({
+							{ "TestBuild", Value(ValueTable(std::map<std::string, Value>({
+								{ "Reference", Value(std::string("TestBuild@1.2.3")), },
+								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/")), },
+								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/")), },
+							}))), },
+						}))), },
+					}))), },
+					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
+					{ "SDKs", Value(ValueList()), },
+					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
+					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/")), },
+				})),
+				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
+				"Verify file content match expected.");
+
+			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateReadAccess.txt"));
+			Assert::AreEqual(
+				"C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
+				myPackageGenerateReadAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto myPackageGenerateWriteAccessMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateWriteAccess.txt"));
+			Assert::AreEqual(
+				"C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
+				myPackageGenerateWriteAccessMockFile->Content.str(),
+				"Verify file content match expected.");
+
+			auto myPackageGenerateGraphMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateGraph.bog"));
+			auto myPackageGenerateGraph = OperationGraphReader::Deserialize(myPackageGenerateGraphMockFile->Content);
+
+			// TODO: Clear time for now until mocked
+			for (auto& operation : myPackageGenerateGraph.GetOperations())
+				operation.second.EvaluateTime = std::chrono::time_point<std::chrono::system_clock>::min();
+
+			Assert::AreEqual(
+				OperationGraph(
+					{
+					},
+					std::vector<OperationId>({
+						1,
+					}),
+					std::vector<OperationInfo>({
+						OperationInfo(
+							1,
+							"Generate Phase: C++|MyPackage",
+							CommandInfo(
+								Path("C:/WorkingDirectory/MyPackage/"),
+								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
+								"C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/"),
+							{},
+							{},
+							{},
+							{},
+							{},
+							1,
+							true,
+							std::chrono::time_point<std::chrono::system_clock>::min(),
+							{},
+							{}),
+					})),
+				myPackageGenerateGraph,
+				"Verify file content match expected.");
 		}
 	};
 }

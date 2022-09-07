@@ -161,6 +161,24 @@ namespace Soup::Core
 			return insertResult.first->second;
 		}
 
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const OperationGraph& rhs) const
+		{
+			return _referencedFiles == rhs._referencedFiles &&
+				_rootOperations == rhs._rootOperations &&
+				_operations == rhs._operations;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const OperationGraph& rhs) const
+		{
+			return !(*this == rhs);
+		}
+
 	private:
 		std::vector<std::pair<FileId, Path>> _referencedFiles;
 		std::vector<OperationId> _rootOperations;
