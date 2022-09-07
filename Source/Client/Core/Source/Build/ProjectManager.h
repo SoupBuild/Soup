@@ -18,12 +18,15 @@ namespace Soup::Core
 	export class ProjectManager
 	{
 	private:
+		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _builtInCppLanguage = "C++";
 		const std::string _builtInCppExtensionVersion = "0.2.2";
-		const Path _builtInCppExtensionPath = Path("Soup.Cpp.dll");
+		const Path _builtInCppExtensionPath = Path("Soup.Cpp/");
+		const Path _builtInCppExtensionFilename = Path("Soup.Cpp.dll");
 		const std::string _builtInCSharpLanguage = "C#";
 		const std::string _builtInCSharpExtensionVersion = "0.5.2";
-		const Path _builtInCSharpExtensionPath = Path("Soup.CSharp.dll");
+		const Path _builtInCSharpExtensionPath = Path("Soup.CSharp/");
+		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
 
 		bool _hasPackageLock;
 		Path _packageLockRoot;
@@ -277,9 +280,9 @@ namespace Soup::Core
 		{
 			auto name = recipe.GetLanguage().GetName();
 			if (name ==  _builtInCSharpLanguage)
-				return Path(_builtInCSharpExtensionVersion) + _builtInCSharpExtensionPath;
+				return _builtInExtensionPath + _builtInCSharpExtensionPath + Path(_builtInCSharpExtensionVersion) + _builtInCSharpExtensionFilename;
 			else if (name == _builtInCppLanguage)
-				return Path(_builtInCppExtensionVersion) + _builtInCppExtensionPath;
+				return _builtInExtensionPath + _builtInCppExtensionPath + Path(_builtInCppExtensionVersion) + _builtInCppExtensionFilename;
 			else
 					throw std::runtime_error("Unknown language extension path");
 		}
