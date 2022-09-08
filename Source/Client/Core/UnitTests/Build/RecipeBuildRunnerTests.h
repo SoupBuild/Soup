@@ -93,6 +93,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.2.2/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
@@ -123,7 +124,6 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.toml",
 					"Exists: C:/WorkingDirectory/RootRecipe.toml",
 					"Exists: C:/RootRecipe.toml",
-					"GetCurrentDirectory",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
@@ -156,13 +156,14 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [5] AllowedWrite [1]",
+					"CreateDetourProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -178,13 +179,13 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				ValueTable(std::map<std::string, Value>({
 					{ "Dependencies", Value(ValueTable()), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Current/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
 					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/")), },
-				})),
-				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
+				})).ToString(),
+				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content).ToString(),
 				"Verify file content match expected.");
 
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
@@ -339,6 +340,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.CSharp/0.5.2/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3",
@@ -381,6 +383,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 2>Allowed Read Access:",
 					"DIAG: 2>C:/testlocation/Generate/",
+					"DIAG: 2>C:/testlocation/Extensions/Soup.Cpp/0.2.2/",
 					"DIAG: 2>C:/Windows/",
 					"DIAG: 2>C:/Program Files/dotnet/",
 					"DIAG: 2>C:/WorkingDirectory/MyPackage/",
@@ -421,7 +424,6 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/RootRecipe.toml",
 					"Exists: C:/Users/RootRecipe.toml",
 					"Exists: C:/RootRecipe.toml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
@@ -448,7 +450,6 @@ namespace Soup::Core::UnitTests
 					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/EvaluateResultGraph.bog",
 					"Exists: C:/WorkingDirectory/RootRecipe.toml",
 					"Exists: C:/RootRecipe.toml",
-					"GetCurrentDirectory",
 					"GetCurrentDirectory",
 					"GetCurrentDirectory",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
@@ -484,19 +485,21 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/ Environment [2] 1 AllowedRead [5] AllowedWrite [1]",
+					"CreateDetourProcess: 1 [C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
-					"CreateDetourProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
+					"CreateDetourProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
 					"ProcessStart: 2",
 					"WaitForExit: 2",
 					"GetStandardOutput: 2",
@@ -515,7 +518,7 @@ namespace Soup::Core::UnitTests
 					{ "Compiler", Value(std::string("MSVC")), },
 					{ "Dependencies", Value(ValueTable()), },
 					{ "Flavor", Value(std::string("release")), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Current/Extensions/Soup.CSharp/0.5.2/Soup.CSharp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.CSharp/0.5.2/Soup.CSharp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/")), },
@@ -589,7 +592,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Current/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
@@ -774,6 +777,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.CSharp/0.5.2/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0",
@@ -816,6 +820,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 2>Allowed Read Access:",
 					"DIAG: 2>C:/testlocation/Generate/",
+					"DIAG: 2>C:/testlocation/Extensions/Soup.Cpp/0.2.2/",
 					"DIAG: 2>C:/Windows/",
 					"DIAG: 2>C:/Program Files/dotnet/",
 					"DIAG: 2>C:/WorkingDirectory/MyPackage/",
@@ -857,7 +862,6 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/RootRecipe.toml",
 					"Exists: C:/Users/RootRecipe.toml",
 					"Exists: C:/RootRecipe.toml",
-					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
@@ -884,7 +888,6 @@ namespace Soup::Core::UnitTests
 					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/EvaluateResultGraph.bog",
 					"Exists: C:/WorkingDirectory/RootRecipe.toml",
 					"Exists: C:/RootRecipe.toml",
-					"GetCurrentDirectory",
 					"GetCurrentDirectory",
 					"GetCurrentDirectory",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
@@ -920,19 +923,21 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/ Environment [2] 1 AllowedRead [5] AllowedWrite [1]",
+					"CreateDetourProcess: 1 [C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
-					"CreateDetourProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
+					"CreateDetourProcess: 2 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [7] AllowedWrite [1]",
 					"ProcessStart: 2",
 					"WaitForExit: 2",
 					"GetStandardOutput: 2",
@@ -951,7 +956,7 @@ namespace Soup::Core::UnitTests
 					{ "Compiler", Value(std::string("MSVC")), },
 					{ "Dependencies", Value(ValueTable()), },
 					{ "Flavor", Value(std::string("release")), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Current/Extensions/Soup.CSharp/0.5.2/Soup.CSharp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.CSharp/0.5.2/Soup.CSharp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/")), },
@@ -1025,7 +1030,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Current/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },

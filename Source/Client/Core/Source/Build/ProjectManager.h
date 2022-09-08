@@ -280,19 +280,29 @@ namespace Soup::Core
 		{
 			auto name = recipe.GetLanguage().GetName();
 			if (name ==  _builtInCSharpLanguage)
-				return System::IFileSystem::Current().GetCurrentDirectory2() +
+			{
+				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+				auto processDirectory = processFilename.GetParent();
+				return processDirectory +
 					_builtInExtensionPath +
 					_builtInCSharpExtensionPath +
 					Path(_builtInCSharpExtensionVersion) +
 					_builtInCSharpExtensionFilename;
+			}
 			else if (name == _builtInCppLanguage)
-				return System::IFileSystem::Current().GetCurrentDirectory2() +
+			{
+				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+				auto processDirectory = processFilename.GetParent();
+				return processDirectory +
 					_builtInExtensionPath +
 					_builtInCppExtensionPath +
 					Path(_builtInCppExtensionVersion) +
 					_builtInCppExtensionFilename;
+			}
 			else
-					throw std::runtime_error("Unknown language extension path");
+			{
+				throw std::runtime_error("Unknown language extension path");
+			}
 		}
 
 	private:

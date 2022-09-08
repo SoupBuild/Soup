@@ -18,10 +18,6 @@ namespace Soup.Build.Generate
 	/// </summary>
 	internal class BuildGenerateEngine
 	{
-		private readonly SemanticVersion BuiltInCppExtensionVersion = new SemanticVersion(0, 2, 2);
-
-		private readonly SemanticVersion BuiltInCSharpExtensionVersion = new SemanticVersion(0, 5, 2);
-
 		public BuildGenerateEngine()
 		{
 			_fileSystemState = new FileSystemState();
@@ -62,6 +58,7 @@ namespace Soup.Build.Generate
 			}
 
 			// Get the required input state from the parameters
+			var languageExtensionPath = new Path(parametersState["LanguageExtensionPath"].AsString().ToString());
 			var targetDirectory = new Path(parametersState["TargetDirectory"].AsString().ToString());
 			var packageDirectory = new Path(parametersState["PackageDirectory"].AsString().ToString());
 
@@ -78,7 +75,7 @@ namespace Soup.Build.Generate
 			var dependenciesSharedState = LoadDependenciesSharedState(parametersState);
 
 			// Generate the set of build extension libraries
-			var buildExtensionLibraries = GenerateBuildExtensionSet(recipe, dependenciesSharedState);
+			var buildExtensionLibraries = GenerateBuildExtensionSet(languageExtensionPath, dependenciesSharedState);
 
 			// Start a new active state that is initialized to the recipe itself
 			var activeState = new ValueTable();
@@ -223,36 +220,13 @@ namespace Soup.Build.Generate
 		/// Generate the collection of build extensions
 		/// </summary>
 		private IList<Path> GenerateBuildExtensionSet(
-			Recipe recipe,
+			Path languageExtensionPath,
 			ValueTable dependenciesSharedState)
 		{
 			var buildExtensionLibraries = new List<Path>();
 
 			// Run the RecipeBuild extension to inject core build tasks
-			Path recipeBuildExtensionPath;
-			switch (recipe.Language.Name)
-			{
-				case "C++":
-					{
-						var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
-						recipeBuildExtensionPath = moduleFolder + new Path($"Extensions/Soup.Cpp/{BuiltInCppExtensionVersion}/Soup.Cpp.dll");
-
-						break;
-					}
-				case "C#":
-					{
-						var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
-						recipeBuildExtensionPath = moduleFolder + new Path($"Extensions/Soup.CSharp/{BuiltInCSharpExtensionVersion}/Soup.CSharp.dll");
-
-						break;
-					}
-				default:
-					{
-						throw new InvalidOperationException("Unknown language.");
-					}
-			}
-
-			buildExtensionLibraries.Add(recipeBuildExtensionPath);
+			buildExtensionLibraries.Add(languageExtensionPath);
 
 			// Check for any dynamic libraries in the shared state
 			if (dependenciesSharedState.TryGetValue("Build", out var buildDependenciesValue))

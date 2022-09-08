@@ -376,8 +376,10 @@ namespace Soup::Core
 			// Clone the global parameters
 			auto parametersTable = ValueTable(globalParameters.GetValues());
 
+			auto languageExtensionPath = _projectManager.GetLanguageExtensionPath(recipe);
+
 			// Set the input parameters
-			parametersTable.SetValue("LanguageExtensionPath", Value(_projectManager.GetLanguageExtensionPath(recipe).ToString()));
+			parametersTable.SetValue("LanguageExtensionPath", Value(languageExtensionPath.ToString()));
 			parametersTable.SetValue("PackageDirectory", Value(packageDirectory.ToString()));
 			parametersTable.SetValue("TargetDirectory", Value(targetDirectory.ToString()));
 			parametersTable.SetValue("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
@@ -467,6 +469,9 @@ namespace Soup::Core
 
 			// Allow read access to the generate executable folder, Windows and the DotNet install
 			generateAllowedReadAccess.push_back(generateFolder);
+
+			// Allow read from the language extension directory
+			generateAllowedReadAccess.push_back(languageExtensionPath.GetParent());
 
 			// TODO: Windows specific
 			generateAllowedReadAccess.push_back(Path("C:/Windows/"));
