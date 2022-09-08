@@ -5,6 +5,9 @@ SET SourceDir=%ScriptsDir%..\Source
 SET OutputDir=%ScriptsDir%..\out
 SET ClientCLIDir=%SourceDir%\Client\CLI
 SET MonitorClientDir=%SourceDir%\Monitor\Client
+SET SWhereDir=%SourceDir%\GenerateSharp\Swhere
+SET PackageManagerDir=%SourceDir%\GenerateSharp\PackageManager
+SET GenerateDir=%SourceDir%\GenerateSharp\Generate
 if %Flavor% == release (SET OutputX64DirectorPath=txTMowfPh1V3rPmbvNBmBW9Z8Jg) else (SET OutputX64DirectorPath=J3mu4cpISw6nDaCPED8gkqZ-q84)
 if %Flavor% == release (SET OutputX86DirectorPath=ci_UJP5zJKyF-O0VVSVDMNi1Wwg) else (SET OutputX86DirectorPath=9fr4dmE4CrAXgS2yFzcvYJXkGDg)
 SET ClientCLIOutputDirectory=%OutputDir%\C++\Soup\0.19.4\%OutputX64DirectorPath%
@@ -29,3 +32,18 @@ echo copy "%MonitorClientOutputX64Directory%\bin\Monitor.Client.dll" "%ClientCLI
 copy "%MonitorClientOutputX64Directory%\bin\Monitor.Client.dll" "%ClientCLIOutputDirectory%\bin\Monitor.Client.64.dll"
 echo copy "%MonitorClientOutputX86Directory%\bin\Monitor.Client.dll" "%ClientCLIOutputDirectory%\bin\Monitor.Client.32.dll"
 copy "%MonitorClientOutputX86Directory%\bin\Monitor.Client.dll" "%ClientCLIOutputDirectory%\bin\Monitor.Client.32.dll"
+
+REM - Build SWhere tool
+echo dotnet publish %SWhereDir% -c %Flavor%
+call dotnet publish %SWhereDir% -c %Flavor%
+if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
+
+REM - Build PackageManager
+echo dotnet publish %PackageManagerDir% -c %Flavor%
+call dotnet publish %PackageManagerDir% -c %Flavor%
+if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
+
+REM - Build Generate
+echo dotnet publish %GenerateDir% -c %Flavor%
+call dotnet publish %GenerateDir% -c %Flavor%
+if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
