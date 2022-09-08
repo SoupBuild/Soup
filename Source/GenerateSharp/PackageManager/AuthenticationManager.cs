@@ -9,7 +9,6 @@ namespace Soup.Build.PackageManager
 	using System.Text;
 	using System.Threading.Tasks;
 	using Microsoft.Identity.Client;
-	using Newtonsoft.Json.Linq;
 	using Opal;
 
 	internal class AuthenticationManager
@@ -67,47 +66,5 @@ namespace Soup.Build.PackageManager
 			string logs = $"{level} {message}";
 			Log.Diag(logs);
 		}
-
-		private static void DisplayUserInfo(AuthenticationResult authResult)
-		{
-			if (authResult != null)
-			{
-				JObject user = ParseIdToken(authResult.IdToken);
-
-				Log.Diag("");
-				Log.Diag($"Name: {user["name"]?.ToString()}");
-				Log.Diag($"User Identifier: {user["oid"]?.ToString()}");
-				Log.Diag($"Street Address: {user["streetAddress"]?.ToString()}");
-				Log.Diag($"City: {user["city"]?.ToString()}");
-				Log.Diag($"State: {user["state"]?.ToString()}");
-				Log.Diag($"Country: {user["country"]?.ToString()}");
-				Log.Diag($"Job Title: {user["jobTitle"]?.ToString()}");
-
-				if (user["emails"] is JArray emails)
-				{
-					Log.Diag($"Emails: {emails[0]}");
-				}
-
-				Log.Diag($"Identity Provider: {user["iss"]?.ToString()}");
-			}
-		}
-
-		private static JObject ParseIdToken(string idToken)
-		{
-			// Parse the idToken to get user info
-			idToken = idToken.Split('.')[1];
-			idToken = Base64UrlDecode(idToken);
-			return JObject.Parse(idToken);
-		}
-
-		private static string Base64UrlDecode(string s)
-		{
-			s = s.Replace('-', '+').Replace('_', '/');
-			s = s.PadRight(s.Length + (4 - s.Length % 4) % 4, '=');
-			var byteArray = Convert.FromBase64String(s);
-			var decoded = Encoding.UTF8.GetString(byteArray, 0, byteArray.Count());
-			return decoded;
-		}
 	}
-
 }
