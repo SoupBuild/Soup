@@ -40,7 +40,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			// Setup the input build state
 			auto operationGraph = OperationGraph();
@@ -95,7 +95,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
 			auto operationGraph = OperationGraph(
@@ -195,7 +195,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
 			auto operationGraph = OperationGraph(
@@ -301,7 +301,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Create the build state
 			auto operationGraph = OperationGraph(
@@ -406,7 +406,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
 			auto operationGraph = OperationGraph(
@@ -511,7 +511,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcesManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
 			auto operationGraph = OperationGraph(
@@ -616,7 +616,7 @@ namespace Soup::Core::UnitTests
 
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcesManager = ScopedProcessManagerRegister(processManager);
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			// Create the initial build state
 			auto operationGraph = OperationGraph(

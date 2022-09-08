@@ -149,7 +149,7 @@ namespace Soup::Core::UnitTests
 
 		// [[Theory]]
 		// [[InlineData("Package@1.2.3", true)]] // Success
-		// [[InlineData("Package@2", false)]] // Fails invalid version
+		// [[InlineData("Package@2", true)]] // Success
 		void TryParseValues(std::string value, bool expectedResult)
 		{
 			PackageReference uut;

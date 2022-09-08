@@ -72,9 +72,9 @@ namespace Soup.Build.PackageManager
 					var packageLock = new PackageLock();
 					packageLock.SetVersion(2);
 					var rootClosureName = "Root";
-					foreach (var languageClosure in closure)
+					foreach (var languageClosure in closure.OrderBy(value => value.Key))
 					{
-						foreach (var (key, (package, buildClosure)) in languageClosure.Value)
+						foreach (var (key, (package, buildClosure)) in languageClosure.Value.OrderBy(value => value.Key))
 						{
 							var value = string.Empty;
 							if (package.IsLocal)
@@ -96,10 +96,10 @@ namespace Soup.Build.PackageManager
 						}
 					}
 
-					foreach (var buildClosure in buildClosures)
+					foreach (var buildClosure in buildClosures.OrderBy(value => value.Key))
 					{
 						packageLock.EnsureClosure(buildClosure.Key);
-						foreach (var languageClosure in buildClosure.Value)
+						foreach (var languageClosure in buildClosure.Value.OrderBy(value => value.Key))
 						{
 							foreach (var (key, package) in languageClosure.Value)
 							{

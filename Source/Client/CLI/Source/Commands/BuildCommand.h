@@ -72,7 +72,8 @@ namespace Soup::Client
 			arguments.GlobalParameters.SetValue("System", Core::Value(std::string(system)));
 
 			auto localUserConfigPath = System::IFileSystem::Current().GetUserProfileDirectory() +
-				Path(".soup/LocalUserConfig.toml");
+				Core::BuildConstants::GetSoupLocalStoreDirectory() +
+				Core::BuildConstants::LocalUserConfigFileName();
 			Core::LocalUserConfig localUserConfig = {};
 			if (!Core::LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
 			{

@@ -10,9 +10,9 @@ SET PackageManagerDir=%SourceDir%\GenerateSharp\PackageManager
 SET GenerateDir=%SourceDir%\GenerateSharp\Generate
 if %Flavor% == release (SET OutputX64DirectorPath=txTMowfPh1V3rPmbvNBmBW9Z8Jg) else (SET OutputX64DirectorPath=J3mu4cpISw6nDaCPED8gkqZ-q84)
 if %Flavor% == release (SET OutputX86DirectorPath=ci_UJP5zJKyF-O0VVSVDMNi1Wwg) else (SET OutputX86DirectorPath=9fr4dmE4CrAXgS2yFzcvYJXkGDg)
-SET ClientCLIOutputDirectory=%OutputDir%\C++\Soup\%OutputX64DirectorPath%
-SET MonitorClientOutputX64Directory=%OutputDir%\C++\Monitor.Client\%OutputX64DirectorPath%
-SET MonitorClientOutputX86Directory=%OutputDir%\C++\Monitor.Client\%OutputX86DirectorPath%
+SET ClientCLIOutputDirectory=%OutputDir%\C++\Soup\0.19.4\%OutputX64DirectorPath%
+SET MonitorClientOutputX64Directory=%OutputDir%\C++\Monitor.Client\1.0.0\%OutputX64DirectorPath%
+SET MonitorClientOutputX86Directory=%OutputDir%\C++\Monitor.Client\1.0.0\%OutputX86DirectorPath%
 
 REM - Build each version of the monitor client dll
 echo soup build %MonitorClientDir% -architecture x64 -flavor %Flavor%

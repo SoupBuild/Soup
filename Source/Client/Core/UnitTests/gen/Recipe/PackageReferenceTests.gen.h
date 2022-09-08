@@ -20,7 +20,7 @@ TestState RunPackageReferenceTests()
 	state += Soup::Test::RunTest(className, "ParseNamedValues(\"C#|Name@1.2.3\", \"C#\", \"Name\", SemanticVersion(1, 2, 3))", [&testClass]() { testClass->ParseNamedValues("C#|Name@1.2.3", "C#", "Name", SemanticVersion(1, 2, 3)); });
 	state += Soup::Test::RunTest(className, "ParsePathValues(\"../Path\")", [&testClass]() { testClass->ParsePathValues("../Path"); });
 	state += Soup::Test::RunTest(className, "TryParseValues(\"Package@1.2.3\", true)", [&testClass]() { testClass->TryParseValues("Package@1.2.3", true); });
-	state += Soup::Test::RunTest(className, "TryParseValues(\"Package@2\", false)", [&testClass]() { testClass->TryParseValues("Package@2", false); });
+	state += Soup::Test::RunTest(className, "TryParseValues(\"Package@2\", true)", [&testClass]() { testClass->TryParseValues("Package@2", true); });
 	state += Soup::Test::RunTest(className, "ToStringNamedValues(std::nullopt, \"Name\", std::nullopt, \"Name\")", [&testClass]() { testClass->ToStringNamedValues(std::nullopt, "Name", std::nullopt, "Name"); });
 	state += Soup::Test::RunTest(className, "ToStringNamedValues(std::nullopt, \"Name\", SemanticVersion(1, 2, 3), \"Name@1.2.3\")", [&testClass]() { testClass->ToStringNamedValues(std::nullopt, "Name", SemanticVersion(1, 2, 3), "Name@1.2.3"); });
 	state += Soup::Test::RunTest(className, "ToStringNamedValues(\"C#\", \"Name\", std::nullopt, \"C#|Name\")", [&testClass]() { testClass->ToStringNamedValues("C#", "Name", std::nullopt, "C#|Name"); });

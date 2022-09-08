@@ -17,27 +17,6 @@
 
 namespace Soup::Core
 {
-	class RecipeBuildCacheState
-	{
-	public:
-		RecipeBuildCacheState(
-			std::string name,
-			Path targetDirectory,
-			Path soupTargetDirectory,
-			std::set<Path> recursiveChildTargetDirectorySet) :
-			Name(std::move(name)),
-			TargetDirectory(std::move(targetDirectory)),
-			SoupTargetDirectory(std::move(soupTargetDirectory)),
-			RecursiveChildTargetDirectorySet(std::move(recursiveChildTargetDirectorySet))
-		{
-		}
-
-		std::string Name;
-		Path TargetDirectory;
-		Path SoupTargetDirectory;
-		std::set<Path> RecursiveChildTargetDirectorySet;
-	};
-
 	/// <summary>
 	/// The recipe build runner that knows how to perform the correct build for a recipe
 	/// and all of its development and runtime dependencies
@@ -65,67 +44,6 @@ namespace Soup::Core
 		std::map<Path, RecipeBuildCacheState> _hostBuildCache;
 
 		std::shared_ptr<FileSystemState> _fileSystemState;
-
-	public:
-		static Path GetSoupTargetDirectory()
-		{
-			static const auto value = Path(".soup/");
-			return value;
-		}
-
-		static Path GetOutputDirectory(
-			const Path& packageRoot,
-			Recipe& recipe,
-			const ValueTable& globalParameters,
-			ProjectManager& projectManager)
-		{
-			// Set the default output directory to be relative to the package
-			auto rootOutput = packageRoot + Path("out/");
-
-			// Check for root recipe file with overrides
-			Path rootRecipeFile;
-			if (RootRecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
-			{
-				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
-				RootRecipe rootRecipe;
-				if (!projectManager.TryGetRootRecipe(rootRecipeFile, rootRecipe))
-				{
-					// Nothing we can do, exit
-					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
-					throw HandledException(222);
-				}
-
-				// Check if there was a root output set
-				if (rootRecipe.HasOutputRoot())
-				{
-					// Relative to the root recipe file itself
-					rootOutput = rootRecipe.GetOutputRoot();
-
-					// Add the language sub folder
-					rootOutput = rootOutput + Path(recipe.GetLanguage().GetName() + "/");
-
-					// Add the unique recipe name
-					rootOutput = rootOutput + Path(recipe.GetName() + "/");
-
-					// Ensure there is a root relative to the file itself
-					if (!rootOutput.HasRoot())
-					{
-						rootOutput = rootRecipeFile.GetParent() + rootOutput;
-					}
-
-					Log::Info("Override root output: " + rootOutput.ToString());
-				}
-			}
-
-			// Add unique folder name for parameters
-			auto parametersStream = std::stringstream();
-			ValueTableWriter::Serialize(globalParameters, parametersStream);
-			auto hashParameters = CryptoPP::Sha1::HashBase64(parametersStream.str());
-			auto uniqueParametersFolder = Path(hashParameters + "/");
-			rootOutput = rootOutput + uniqueParametersFolder;
-
-			return rootOutput;
-		}
 
 	public:
 		/// <summary>
@@ -401,12 +319,12 @@ namespace Soup::Core
 			auto& globalParameters = isHostBuild ? _hostBuildGlobalParameters : _arguments.GlobalParameters;
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto targetDirectory = GetOutputDirectory(
+			auto targetDirectory = RecipeBuildLocationManager::GetOutputDirectory(
 				packageRoot,
 				recipe,
 				globalParameters,
 				_projectManager);
-			auto soupTargetDirectory = targetDirectory + GetSoupTargetDirectory();
+			auto soupTargetDirectory = targetDirectory + BuildConstants::GetSoupTargetDirectory();
 
 			// Build up the child target directory set
 			auto childTargetDirectorySets = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
@@ -458,7 +376,10 @@ namespace Soup::Core
 			// Clone the global parameters
 			auto parametersTable = ValueTable(globalParameters.GetValues());
 
+			auto languageExtensionPath = _projectManager.GetLanguageExtensionPath(recipe);
+
 			// Set the input parameters
+			parametersTable.SetValue("LanguageExtensionPath", Value(languageExtensionPath.ToString()));
 			parametersTable.SetValue("PackageDirectory", Value(packageDirectory.ToString()));
 			parametersTable.SetValue("TargetDirectory", Value(targetDirectory.ToString()));
 			parametersTable.SetValue("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
@@ -548,6 +469,11 @@ namespace Soup::Core
 
 			// Allow read access to the generate executable folder, Windows and the DotNet install
 			generateAllowedReadAccess.push_back(generateFolder);
+
+			// Allow read from the language extension directory
+			generateAllowedReadAccess.push_back(languageExtensionPath.GetParent());
+
+			// TODO: Windows specific
 			generateAllowedReadAccess.push_back(Path("C:/Windows/"));
 			generateAllowedReadAccess.push_back(Path("C:/Program Files/dotnet/"));
 
@@ -696,13 +622,6 @@ namespace Soup::Core
 				*_fileSystemState);
 
 			Log::Info("Done");
-		}
-
-		Path GetSoupUserDataPath() const
-		{
-			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
-				Path(".soup/");
-			return result;
 		}
 
 		/// <summary>

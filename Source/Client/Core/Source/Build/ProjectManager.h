@@ -8,6 +8,7 @@
 #include "Recipe/RecipeExtensions.h"
 #include "Recipe/RootRecipeExtensions.h"
 #include "Utils/HandledException.h"
+#include "BuildConstants.h"
 
 namespace Soup::Core
 {
@@ -17,7 +18,16 @@ namespace Soup::Core
 	export class ProjectManager
 	{
 	private:
-		const std::string _buildInCSharpLanguage = "C#";
+		const Path _builtInExtensionPath = Path("Extensions/");
+		const std::string _builtInCppLanguage = "C++";
+		const std::string _builtInCppExtensionVersion = "0.2.2";
+		const Path _builtInCppExtensionPath = Path("Soup.Cpp/");
+		const Path _builtInCppExtensionFilename = Path("Soup.Cpp.dll");
+		const std::string _builtInCSharpLanguage = "C#";
+		const std::string _builtInCSharpExtensionVersion = "0.5.2";
+		const Path _builtInCSharpExtensionPath = Path("Soup.CSharp/");
+		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
+
 		bool _hasPackageLock;
 		Path _packageLockRoot;
 		std::map<std::string, std::map<std::string, PackageReference>> _packageLanguageLock;
@@ -96,7 +106,7 @@ namespace Soup::Core
 				{
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
-					implicitLanguage = _buildInCSharpLanguage;
+					implicitLanguage = _builtInCSharpLanguage;
 				}
 
 				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
@@ -266,11 +276,40 @@ namespace Soup::Core
 			return packagePath;
 		}
 
+		Path GetLanguageExtensionPath(Recipe& recipe)
+		{
+			auto name = recipe.GetLanguage().GetName();
+			if (name ==  _builtInCSharpLanguage)
+			{
+				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+				auto processDirectory = processFilename.GetParent();
+				return processDirectory +
+					_builtInExtensionPath +
+					_builtInCSharpExtensionPath +
+					Path(_builtInCSharpExtensionVersion) +
+					_builtInCSharpExtensionFilename;
+			}
+			else if (name == _builtInCppLanguage)
+			{
+				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+				auto processDirectory = processFilename.GetParent();
+				return processDirectory +
+					_builtInExtensionPath +
+					_builtInCppExtensionPath +
+					Path(_builtInCppExtensionVersion) +
+					_builtInCppExtensionFilename;
+			}
+			else
+			{
+				throw std::runtime_error("Unknown language extension path");
+			}
+		}
+
 	private:
 		Path GetSoupUserDataPath() const
 		{
 			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
-				Path(".soup/");
+				BuildConstants::GetSoupLocalStoreDirectory();
 			return result;
 		}
 	};

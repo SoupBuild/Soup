@@ -15,7 +15,7 @@ Source = [
 
 [Dependencies]
 Build = [
-	# "Soup.Test.Cpp@0.2.0",
+	"Soup.Test.Cpp@0.2.1",
 ]
 Runtime = [
 	"json11@1.0.2",

@@ -15,20 +15,20 @@ class Script
 					@"Soup",
 					new DirFiles($"{soupRunFolder}/Soup/*.*"),
 					new Dir(
-						@"Generate",
-						new DirFiles($"{soupRunFolder}/Soup/Generate/*.*"),
-						new Dir(
 							@"Extensions",
 							new Dir(
 								@"Soup.Cpp",
 								new Dir(
 									"0.2.2",
-								new DirFiles($"{soupRunFolder}/Soup/Generate/Extensions/Soup.Cpp/0.2.2/*.*"))),
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.Cpp/0.2.2/*.*"))),
 							new Dir(
 								@"Soup.CSharp",
 								new Dir(
-									"0.5.1",
-								new DirFiles($"{soupRunFolder}/Soup/Generate/Extensions/Soup.CSharp/0.5.1/*.*"))))),
+									"0.5.2",
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.CSharp/0.5.2/*.*")))),
+					new Dir(
+						@"Generate",
+						new DirFiles($"{soupRunFolder}/Soup/Generate/*.*")),
 					new Dir(
 						@"PackageManager",
 						new DirFiles($"{soupRunFolder}/Soup/PackageManager/*.*"),
@@ -69,7 +69,7 @@ class Script
 		};
 
 		// Upgrade values
-		project.Version = new Version(0, 19, 2);
+		project.Version = new Version(0, 19, 4);
 
 		Compiler.BuildMsi(project);
 	}
