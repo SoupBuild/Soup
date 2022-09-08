@@ -18,26 +18,6 @@ namespace Soup::Core
 		/// </summary>
 		static bool TryParse(const std::string& value, LanguageReference& result)
 		{
-			// TODO: Invert try parse to be the default and parse to add the exception
-			// Way faster on the failed case and this could eat OOM
-			try
-			{
-				result = Parse(value);
-				return true;
-			}
-			catch (...)
-			{
-			}
-
-			result = LanguageReference();
-			return false;
-		}
-
-		/// <summary>
-		/// Parse a language reference from the provided string.
-		/// </summary>
-		static LanguageReference Parse(const std::string& value)
-		{
 			// Reuse regex between runs
 			static auto nameRegex = std::regex(R"(^([A-Za-z][\w#+.]*)(?:\|(\d+(?:.\d+)?(?:.\d+)?))?$)");
 
@@ -54,7 +34,25 @@ namespace Soup::Core
 					version = SemanticVersion::Parse(versionMatch.str());
 				}
 
-				return LanguageReference(std::move(name), version);
+				result = LanguageReference(std::move(name), version);
+				return true;
+			}
+			else
+			{
+				result = LanguageReference();
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Parse a language reference from the provided string.
+		/// </summary>
+		static LanguageReference Parse(const std::string& value)
+		{
+			LanguageReference result;
+			if (TryParse(value, result))
+			{
+				return result;
 			}
 			else
 			{
