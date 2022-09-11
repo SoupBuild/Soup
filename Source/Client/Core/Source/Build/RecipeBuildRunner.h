@@ -278,7 +278,7 @@ namespace Soup::Core
 
 					// Keep track of the packages we have already built
 					auto insertBuildState = buildSet.emplace(
-						recipe.GetName(),
+						languagePackageName,
 						workingDirectory);
 
 					// Replace the find iterator so it can be used to update the shared table state
