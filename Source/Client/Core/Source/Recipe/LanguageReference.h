@@ -16,33 +16,7 @@ namespace Soup::Core
 		/// <summary>
 		/// Try parse a language reference from the provided string
 		/// </summary>
-		static bool TryParse(const std::string& value, LanguageReference& result)
-		{
-			// Reuse regex between runs
-			static auto nameRegex = std::regex(R"(^([A-Za-z][\w#+.]*)(?:\|(\d+(?:.\d+)?(?:.\d+)?))?$)");
-
-			// Attempt to parse Named reference
-			auto nameMatch = std::smatch();
-			if (std::regex_match(value, nameMatch, nameRegex))
-			{
-				auto name = nameMatch[1].str();
-
-				auto versionMatch = nameMatch[2];
-				auto version = SemanticVersion(0, 1, 0);
-				if (versionMatch.matched)
-				{
-					version = SemanticVersion::Parse(versionMatch.str());
-				}
-
-				result = LanguageReference(std::move(name), version);
-				return true;
-			}
-			else
-			{
-				result = LanguageReference();
-				return false;
-			}
-		}
+		static bool TryParse(const std::string& value, LanguageReference& result);
 
 		/// <summary>
 		/// Parse a language reference from the provided string.
@@ -127,6 +101,13 @@ namespace Soup::Core
 
 			return stringBuilder.str();
 		}
+
+	private:
+		static bool IsCharacter(const char value)
+		{
+			return value >='a' && value <='z' ||
+				value >='A' && value <='Z';
+		} 
 
 	private:
 		std::string _name;
