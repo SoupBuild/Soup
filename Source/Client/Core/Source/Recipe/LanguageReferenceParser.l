@@ -25,7 +25,7 @@ enum class LanguageReferenceToken : int
 
 }
 
-%option fast unicode noline nodefault namespace=Soup::Core
+%option fast unicode noline nodefault namespace=Soup::Core::LR
 
 name            [A-Za-z][\w#+.]*
 divider         \|
@@ -43,7 +43,7 @@ decimal         \.\d+
 namespace Soup::Core
 {
 
-class LanguageReferenceParser : public Lexer
+class LanguageReferenceParser : public LR::Lexer
 {
 public:
     LanguageReferenceParser(const reflex::Input& input) :
@@ -144,8 +144,6 @@ public:
 private:
     LanguageReferenceToken MoveNext()
     {
-        if (currentToken == LanguageReferenceToken::EndOfFile)
-            throw std::runtime_error("Attempt to read past end of content"); 
         currentToken = (LanguageReferenceToken)lex();
 
         #ifdef SHOW_TOKENS

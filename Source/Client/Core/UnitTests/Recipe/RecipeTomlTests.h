@@ -57,7 +57,6 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}
 
-
 		// [[Fact]]
 		void Deserialize_AllProperties()
 		{
@@ -67,10 +66,11 @@ namespace Soup::Core::UnitTests
 					Name="MyPackage"
 					Language="C++|1"
 					Version="1.2.3"
-					[Dependencies]
-					Runtime=[]
-					Build=[]
-					Test=[]
+					Dependencies={
+						Runtime=[]
+						Build=[]
+						Test=[]
+					}
 				)");
 			auto actual = Recipe(RecipeToml::Deserialize(recipeFile, recipe));
 
@@ -145,10 +145,10 @@ Language = "C++|1"
 R"(Name = "MyPackage"
 Language = "C++|1"
 Version = "1.2.3"
-[Dependencies]
-Runtime = []
+Dependencies = {Runtime = []
 Build = []
 Test = []
+}
 )";
 
 			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");

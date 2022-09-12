@@ -4,13 +4,10 @@
 
 #pragma once
 #include "Recipe.h"
+#include "SML/SML.h"
 
 namespace Soup::Core
 {
-	using TomlValue = toml::basic_value<toml::preserve_comments>;
-	using TomlArray = std::vector<TomlValue>;
-	using TomlTable = std::unordered_map<toml::key, TomlValue>;
-
 	/// <summary>
 	/// The recipe Toml serialize manager
 	/// </summary>
@@ -27,19 +24,17 @@ namespace Soup::Core
 			try
 			{
 				// Read the contents of the recipe file
-				auto root = toml::parse<toml::preserve_comments>(stream, recipeFile.ToString());
-				if (!root.is_table())
-					throw std::runtime_error("Recipe Toml file root must be a table.");
+				auto root = SMLDocument::Parse(stream);
 
 				// Load the entire root table
 				auto table = RecipeTable();
-				Parse(table, root.as_table());
+				Parse(table, root.GetRoot());
 
 				return table;
 			}
-			catch(const toml::exception& ex)
+			catch(const std::exception& ex)
 			{
-				throw std::runtime_error(std::string("Parsing the Recipe Toml failed: ") + ex.what());
+				throw std::runtime_error(std::string("Parsing the Recipe SML failed: ") + ex.what() + " " + recipeFile.ToString());
 			}
 		}
 
@@ -49,79 +44,72 @@ namespace Soup::Core
 		static void Serialize(RecipeTable& recipeTable, std::ostream& stream)
 		{
 			// Serialize the contents of the recipe
-			auto root = Build(recipeTable);
+			auto document = SMLDocument(Build(recipeTable));
 
 			// Write out the entire root table
-			stream << root;
+			stream << document;
 		}
 
 	private:
-		static void Parse(RecipeValue& target, const TomlValue& source)
+		static void Parse(RecipeValue& target, const SMLValue& source)
 		{
 			// Copy over all of the comments
-			target.GetComments().insert(
-				target.GetComments().end(),
-				source.comments().begin(),
-				source.comments().end());
+			// // target.GetComments().insert(
+			// // 	target.GetComments().end(),
+			// // 	source.comments().begin(),
+			// // 	source.comments().end());
 
-			switch (source.type())
+			switch (source.GetType())
 			{
-				case toml::value_t::empty:
+				case SMLValueType::Empty:
 				{
 					// Leave empty
 					break;
 				}
-				case toml::value_t::boolean:
+				case SMLValueType::Boolean:
 				{
-					target.SetValueBoolean(source.as_boolean());
+					target.SetValueBoolean(source.AsBoolean());
 					break;
 				}
-				case toml::value_t::integer:
+				case SMLValueType::Integer:
 				{
-					target.SetValueInteger(source.as_integer());
+					target.SetValueInteger(source.AsInteger());
 					break;
 				}
-				case toml::value_t::floating:
+				case SMLValueType::Float:
 				{
-					target.SetValueFloat(source.as_floating());
+					target.SetValueFloat(source.AsFloat());
 					break;
 				}
-				case toml::value_t::string:
+				case SMLValueType::String:
 				{
-					target.SetValueString(source.as_string().str);
+					target.SetValueString(source.AsString());
 					break;
 				}
-				case toml::value_t::offset_datetime:
-				case toml::value_t::local_datetime:
-				case toml::value_t::local_date:
-				case toml::value_t::local_time:
-				{
-					throw std::runtime_error("TODO: What to do with datetime?");
-				}
-				case toml::value_t::array:
+				case SMLValueType::Array:
 				{
 					auto valueList = RecipeList();
-					Parse(valueList, source.as_array());
+					Parse(valueList, source.AsArray());
 					target.SetValueList(std::move(valueList));
 					break;
 				}
-				case toml::value_t::table:
+				case SMLValueType::Table:
 				{
 					auto valueTable = RecipeTable();
-					Parse(valueTable, source.as_table());
+					Parse(valueTable, source.AsTable());
 					target.SetValueTable(std::move(valueTable));
 					break;
 				}
 				default:
 				{
-					throw std::runtime_error("Unknown toml type.");
+					throw std::runtime_error("Unknown SML type.");
 				}
 			}
 		}
 
-		static void Parse(RecipeTable& target, const TomlTable& source)
+		static void Parse(RecipeTable& target, const SMLTable& source)
 		{
-			for (auto& item : source)
+			for (auto& item : source.GetValue())
 			{
 				auto value = RecipeValue();
 				Parse(value, item.second);
@@ -129,10 +117,10 @@ namespace Soup::Core
 			}
 		}
 
-		static void Parse(RecipeList& target, const TomlArray& source)
+		static void Parse(RecipeList& target, const SMLArray& source)
 		{
-			target.reserve(source.size());
-			for (size_t i = 0; i < source.size(); i++)
+			target.reserve(source.GetSize());
+			for (size_t i = 0; i < source.GetSize(); i++)
 			{
 				auto value = RecipeValue();
 				Parse(value, source[i]);
@@ -140,9 +128,9 @@ namespace Soup::Core
 			}
 		}
 
-		static TomlValue Build(RecipeValue& value)
+		static SMLValue Build(RecipeValue& value)
 		{
-			auto result = TomlValue();
+			auto result = SMLValue();
 			switch (value.GetType())
 			{
 				case RecipeValueType::Empty:
@@ -155,48 +143,48 @@ namespace Soup::Core
 					result = Build(value.AsList());
 					break;
 				case RecipeValueType::String:
-					result = TomlValue(value.AsString());
+					result = SMLValue(value.AsString());
 					break;
 				case RecipeValueType::Integer:
-					result = TomlValue(value.AsInteger());
+					result = SMLValue(value.AsInteger());
 					break;
 				case RecipeValueType::Float:
-					result = TomlValue(value.AsFloat());
+					result = SMLValue(value.AsFloat());
 					break;
 				case RecipeValueType::Boolean:
-					result = TomlValue(value.AsBoolean());
+					result = SMLValue(value.AsBoolean());
 					break;
 				default:
 					throw std::runtime_error("Unknown value type.");
 			}
 
-			result.comments() = value.GetComments();
+			// TODO: result.comments() = value.GetComments();
 
 			return result;
 		}
 
-		static TomlValue Build(RecipeTable& table)
+		static SMLTable Build(RecipeTable& table)
 		{
-			TomlTable result = {};
+			auto result = std::unordered_map<std::string, SMLValue>();
 
 			for (auto& value : table)
 			{
 				result.emplace(value.first, Build(value.second));
 			}
 
-			return result;
+			return SMLTable(std::move(result));
 		}
 
-		static TomlValue Build(RecipeList& list)
+		static SMLArray Build(RecipeList& list)
 		{
-			TomlArray result = {};
+			auto result = std::vector<SMLValue>();
 
 			for (auto& value : list)
 			{
 				result.push_back(Build(value));
 			}
 
-			return result;
+			return SMLArray(std::move(result));
 		}
 	};
 }

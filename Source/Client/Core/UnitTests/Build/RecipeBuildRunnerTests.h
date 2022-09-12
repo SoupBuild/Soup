@@ -257,10 +257,11 @@ namespace Soup::Core::UnitTests
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Language = "C++|1"
-					[Dependencies]
-					Build = [
-						"TestBuild@1.2.3",
-					]
+					Dependencies = {
+						Build = [
+							"TestBuild@1.2.3",
+						]
+					}
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -670,21 +671,23 @@ namespace Soup::Core::UnitTests
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Language = "C++|1"
-					[Dependencies]
-					Runtime = [
-						"PackageA@1.2.3",
-						"PackageB@1.1.1",
-					]
+					Dependencies = {
+						Runtime = [
+							"PackageA@1.2.3",
+							"PackageB@1.1.1",
+						]
+					}
 				)")));
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "PackageA"
 					Language = "C++|1"
-					[Dependencies]
-					Runtime = [
-						"PackageB@1.1.1",
-					]
+					Dependencies = {
+						Runtime = [
+							"PackageB@1.1.1",
+						]
+					}
 				)")));
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.toml"),
@@ -1268,10 +1271,11 @@ namespace Soup::Core::UnitTests
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name = "MyPackage"
 					Language = "C++|1"
-					[Dependencies]
-					Build = [
-						"TestBuild@1.2.3",
-					]
+					Dependencies = {
+						Build = [
+							"TestBuild@1.2.3",
+						]
+					}
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -1286,23 +1290,27 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.toml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Version = 2
-					[Closures]
-					[Closures.Root]
-					"C#" = [
-						{ Name = "TestBuild", Version = "1.3.0", Build = "Build1" },
-					]
-					"C++" = [
-						{ Name = "MyPackage", Version = "../MyPackage/", Build = "Build0" },
-					]
-					[Closures.Build0]
-					"C#" = [
-						{ Name = "C++", Version = "1.0.2" },
-						{ Name = "TestBuild", Version = "1.3.0" },
-					]
-					[Closures.Build1]
-					"C#" = [
-						{ Name = "C#", Version = "1.0.1" },
-					]
+					Closures = {
+						Root = {
+							C# = [
+								{ Name = "TestBuild" Version = "1.3.0" Build = "Build1" },
+							]
+							C++ = [
+								{ Name = "MyPackage" Version = "../MyPackage/" Build = "Build0" },
+							]
+						}
+						Build0 = {
+							C# = [
+								{ Name = "C++" Version = "1.0.2" },
+								{ Name = "TestBuild" Version = "1.3.0" },
+							]
+						}
+						Build1 = {
+							C# = [
+								{ Name = "C#" Version = "1.0.1" },
+							]
+						}
+					}
 				)")));
 
 			auto myProjectOperationGraph = OperationGraph(
