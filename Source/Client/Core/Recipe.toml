@@ -22,7 +22,6 @@ Build = [
 Runtime = [
 	"json11@1.0.2",
 	"Opal@0.4.1",
-	"toml11@1.0.2",
 	"../../../../RE-Flex/",
 	"../../Monitor/Host/",
 	"CryptoPP@1.0.2",

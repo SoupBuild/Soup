@@ -3,7 +3,7 @@ This is a console application that has a single dynamic library dependency.
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/DynamicLibrary)
 
-## Library/Recipe.toml
+## Library/Recipe.sml
 The Recipe file that defines the static library "Samples.Cpp.DynamicLibrary.Library".
 ```
 Name = "Samples.Cpp.DynamicLibrary.Library"
@@ -36,7 +36,7 @@ export namespace Samples.Cpp.DynamicLibrary.Library
 }
 ```
 
-## Application/Recipe.toml
+## Application/Recipe.sml
 The Recipe file that defines the executable "Samples.Cpp.DynamicLibrary.Application".
 ```
 Name = "Samples.Cpp.DynamicLibrary.Application"

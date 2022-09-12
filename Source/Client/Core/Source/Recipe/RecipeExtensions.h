@@ -4,7 +4,7 @@
 
 #pragma once
 #include "Recipe.h"
-#include "RecipeToml.h"
+#include "RecipeSML.h"
 
 namespace Soup::Core
 {
@@ -36,7 +36,7 @@ namespace Soup::Core
 			try
 			{
 				result = Recipe(
-					RecipeToml::Deserialize(
+					RecipeSML::Deserialize(
 						recipeFile,
 						file->GetInStream()));
 				return true;
@@ -78,7 +78,7 @@ namespace Soup::Core
 			auto file = System::IFileSystem::Current().OpenWrite(recipeFile, false);
 
 			// Write the recipe to the file stream
-			RecipeToml::Serialize(recipe.GetTable(), file->GetOutStream());
+			RecipeSML::Serialize(recipe.GetTable(), file->GetOutStream());
 		}
 
 		/// <summary>

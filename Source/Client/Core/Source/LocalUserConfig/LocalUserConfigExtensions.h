@@ -4,7 +4,7 @@
 
 #pragma once
 #include "LocalUserConfig.h"
-#include "Recipe/RecipeToml.h"
+#include "Recipe/RecipeSML.h"
 
 namespace Soup::Core
 {
@@ -36,7 +36,7 @@ namespace Soup::Core
 			try
 			{
 				result = LocalUserConfig(
-					RecipeToml::Deserialize(
+					RecipeSML::Deserialize(
 						localUserConfigFile,
 						file->GetInStream()));
 				return true;

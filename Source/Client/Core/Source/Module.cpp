@@ -33,7 +33,6 @@ export module Soup.Core;
 import reflex;
 import CryptoPP;
 import json11;
-import toml11;
 import Monitor.Host;
 import Opal;
 

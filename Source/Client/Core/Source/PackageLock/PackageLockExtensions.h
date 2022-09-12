@@ -4,7 +4,7 @@
 
 #pragma once
 #include "PackageLock.h"
-#include "Recipe/RecipeToml.h"
+#include "Recipe/RecipeSML.h"
 
 namespace Soup::Core
 {
@@ -36,7 +36,7 @@ namespace Soup::Core
 			try
 			{
 				result = PackageLock(
-					RecipeToml::Deserialize(
+					RecipeSML::Deserialize(
 						packageLockFile,
 						file->GetInStream()));
 				return true;

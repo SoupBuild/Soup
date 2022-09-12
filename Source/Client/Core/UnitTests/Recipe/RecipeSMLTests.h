@@ -1,4 +1,4 @@
-// <copyright file="RecipeTomlTests.h" company="Soup">
+// <copyright file="RecipeSMLTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,29 +6,29 @@
 
 namespace Soup::Core::UnitTests
 {
-	class RecipeTomlTests
+	class RecipeSMLTests
 	{
 	public:
 		// [[Fact]]
 		void Deserialize_GarbageThrows()
 		{
-			auto recipeFile = Path("Recipe.toml");
+			auto recipeFile = Path("Recipe.sml");
 			auto recipe = std::stringstream("garbage");
 			Assert::ThrowsRuntimeError([&recipeFile, &recipe]() {
-				auto actual = RecipeToml::Deserialize(recipeFile, recipe);
+				auto actual = RecipeSML::Deserialize(recipeFile, recipe);
 			});
 		}
 
 		// [[Fact]]
 		void Deserialize_Simple()
 		{
-			auto recipeFile = Path("Recipe.toml");
+			auto recipeFile = Path("Recipe.sml");
 			auto recipe = std::stringstream(
 				R"(
 					Name="MyPackage"
 					Language="C++|1"
 				)");
-			auto actual = Recipe(RecipeToml::Deserialize(recipeFile, recipe));
+			auto actual = Recipe(RecipeSML::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(
 				"MyPackage",
@@ -40,14 +40,14 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Deserialize_Comments()
 		{
-			auto recipeFile = Path("Recipe.toml");
+			auto recipeFile = Path("Recipe.sml");
 			auto recipe = std::stringstream(
 				R"(
 					# This is an awesome project
 					Name="MyPackage"
 					Language="C++|1"
 				)");
-			auto actual = Recipe(RecipeToml::Deserialize(recipeFile, recipe));
+			auto actual = Recipe(RecipeSML::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(
 				"MyPackage",
@@ -60,7 +60,7 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Deserialize_AllProperties()
 		{
-			auto recipeFile = Path("Recipe.toml");
+			auto recipeFile = Path("Recipe.sml");
 			auto recipe = std::stringstream(
 				R"(
 					Name="MyPackage"
@@ -72,7 +72,7 @@ namespace Soup::Core::UnitTests
 						Test=[]
 					}
 				)");
-			auto actual = Recipe(RecipeToml::Deserialize(recipeFile, recipe));
+			auto actual = Recipe(RecipeSML::Deserialize(recipeFile, recipe));
 
 			auto expected = Recipe(
 				"MyPackage",
@@ -88,26 +88,26 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Serialize_Simple()
 		{
-			auto recipeFile = Path("Recipe.toml");
+			auto recipeFile = Path("Recipe.sml");
 			auto recipe = Recipe(
 				"MyPackage",
 				LanguageReference("C++", SemanticVersion(1)));
 
 			std::stringstream actual;
-			RecipeToml::Serialize(recipe.GetTable(), actual);
+			RecipeSML::Serialize(recipe.GetTable(), actual);
 
 			auto expected = 
 R"(Name = "MyPackage"
 Language = "C++|1"
 )";
 
-			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");
+			VerifysmlEquals(expected, actual.str(), "Verify matches expected.");
 		}
 
 		// [[Fact]]
 		void Serialize_Comments()
 		{
-			auto recipeFile = Path("Recipe.toml");
+			auto recipeFile = Path("Recipe.sml");
 			auto recipe = Recipe(
 				"MyPackage",
 				LanguageReference("C++", SemanticVersion(1)));
@@ -115,7 +115,7 @@ Language = "C++|1"
 			recipe.GetNameValue().GetComments().push_back(" This is an awesome package");
 
 			std::stringstream actual;
-			RecipeToml::Serialize(recipe.GetTable(), actual);
+			RecipeSML::Serialize(recipe.GetTable(), actual);
 
 			auto expected =
 R"(# This is an awesome package
@@ -123,13 +123,13 @@ Name = "MyPackage"
 Language = "C++|1"
 )";
 
-			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");
+			VerifysmlEquals(expected, actual.str(), "Verify matches expected.");
 		}
 
 		// [[Fact]]
 		void Serialize_AllProperties()
 		{
-			auto recipeFile = Path("Recipe.toml");
+			auto recipeFile = Path("Recipe.sml");
 			auto recipe = Recipe(
 				"MyPackage",
 				LanguageReference("C++", SemanticVersion(1)),
@@ -139,7 +139,7 @@ Language = "C++|1"
 				std::vector<PackageReference>());
 
 			std::stringstream actual;
-			RecipeToml::Serialize(recipe.GetTable(), actual);
+			RecipeSML::Serialize(recipe.GetTable(), actual);
 
 			auto expected = 
 R"(Name = "MyPackage"
@@ -151,11 +151,11 @@ Test = []
 }
 )";
 
-			VerifyTomlEquals(expected, actual.str(), "Verify matches expected.");
+			VerifysmlEquals(expected, actual.str(), "Verify matches expected.");
 		}
 
 	private:
-		static void VerifyTomlEquals(
+		static void VerifysmlEquals(
 			const std::string& expected,
 			const std::string& actual,
 			const std::string& message)

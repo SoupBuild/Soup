@@ -90,13 +90,6 @@ mkdir -p $JSON11_OUT_DIR
 eval $BINDIR/$CXX $CXX_COMPILE_INTERFACE_FLAGS -c $JSON11_DIR/json11.cpp -o $JSON11_OUT_DIR/json11.pcm
 eval $BINDIR/$CXX $CXX_FLAGS -c $JSON11_OUT_DIR/json11.pcm -o $JSON11_OUT_DIR/json11.o
 
-echo Build Toml11
-TOML11_DIR=$PWD/Dependencies/toml11
-TOML11_OUT_DIR=$TOML11_DIR/out/obj/Clang
-mkdir -p $TOML11_OUT_DIR
-eval $BINDIR/$CXX $CXX_COMPILE_INTERFACE_FLAGS -c $TOML11_DIR/toml.cpp -o $TOML11_OUT_DIR/toml11.pcm
-eval $BINDIR/$CXX $CXX_FLAGS -c $TOML11_OUT_DIR/toml11.pcm -o $TOML11_OUT_DIR/toml11.o
-
 echo Build Opal
 OPAL_DIR=$PWD/Dependencies/Opal/Source
 OPAL_OUT_DIR=$OPAL_DIR/out/obj/Clang

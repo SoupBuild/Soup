@@ -1,4 +1,4 @@
-﻿// <copyright file="RecipeToml.h" company="Soup">
+﻿// <copyright file="RecipeSML.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -9,9 +9,9 @@
 namespace Soup::Core
 {
 	/// <summary>
-	/// The recipe Toml serialize manager
+	/// The recipe SML serialize manager
 	/// </summary>
-	export class RecipeToml
+	export class RecipeSML
 	{
 	public:
 		/// <summary>

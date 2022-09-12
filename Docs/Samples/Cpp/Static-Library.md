@@ -3,7 +3,7 @@ This is a console application that has a single static library dependency.
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/StaticLibrary)
 
-## Library/Recipe.toml
+## Library/Recipe.sml
 The Recipe file that defines the static library "Samples.Cpp.StaticLibrary.Library".
 ```
 Name = "Samples.Cpp.StaticLibrary.Library"
@@ -36,7 +36,7 @@ export namespace Samples.Cpp.StaticLibrary.Library
 }
 ```
 
-## Application/Recipe.toml
+## Application/Recipe.sml
 The Recipe file that defines the executable "Samples.Cpp.StaticLibrary.Application".
 ```
 Name = "Samples.Cpp.StaticLibrary.Application"

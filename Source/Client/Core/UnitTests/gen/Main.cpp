@@ -43,7 +43,7 @@ using namespace Soup::Test;
 #include "Recipe/PackageReferenceTests.gen.h"
 #include "Recipe/RecipeExtensionsTests.gen.h"
 #include "Recipe/RecipeTests.gen.h"
-#include "Recipe/RecipeTomlTests.gen.h"
+#include "Recipe/RecipeSMLTests.gen.h"
 
 #include "ValueTable/ValueTableManagerTests.gen.h"
 #include "ValueTable/ValueTableReaderTests.gen.h"
@@ -75,7 +75,7 @@ int main()
 	state += RunPackageReferenceTests();
 	state += RunRecipeExtensionsTests();
 	state += RunRecipeTests();
-	state += RunRecipeTomlTests();
+	state += RunRecipeSMLTests();
 
 	state += RunValueTableManagerTests();
 	state += RunValueTableReaderTests();

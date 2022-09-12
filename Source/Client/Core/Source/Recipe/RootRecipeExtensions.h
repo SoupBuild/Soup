@@ -4,7 +4,7 @@
 
 #pragma once
 #include "RootRecipe.h"
-#include "RecipeToml.h"
+#include "RecipeSML.h"
 
 namespace Soup::Core
 {
@@ -36,7 +36,7 @@ namespace Soup::Core
 			try
 			{
 				result = RootRecipe(
-					RecipeToml::Deserialize(
+					RecipeSML::Deserialize(
 						recipeFile,
 						file->GetInStream()));
 				return true;
@@ -58,7 +58,7 @@ namespace Soup::Core
 			auto done = false;
 			while (!done)
 			{
-				auto checkRootRecipeFile = parentDirectory + Path("RootRecipe.toml");
+				auto checkRootRecipeFile = parentDirectory + Path("RootRecipe.sml");
 				if (System::IFileSystem::Current().Exists(checkRootRecipeFile))
 				{
 					// We found one!

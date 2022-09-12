@@ -1,7 +1,7 @@
 # Create Release
 
 ## Bump Client version
-Ensure that the client build number is updated in recipe.toml, VersionCommand.h and in the Script.cs.
+Ensure that the client build number is updated in Recipe.sml, VersionCommand.h and in the Script.cs.
 
 Create a PR with this change.
 

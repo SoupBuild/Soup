@@ -3,7 +3,7 @@ This is a console application that has a custom build extension that alters the 
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/BuildExtension)
 
-## Extension/Recipe.toml
+## Extension/Recipe.sml
 The Recipe file that defines the build extension dynamic library "Samples.Cpp.BuildExtension.Extension" that will register new build tasks.
 ```
 Name = "Samples.Cpp.BuildExtension.Extension"
@@ -78,7 +78,7 @@ namespace Samples.Cpp.BuildExtension.Extension
 }
 ```
 
-## Executable/Recipe.toml
+## Executable/Recipe.sml
 The Recipe file that defines the executable "Samples.Cpp.BuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```
 Name = "Samples.Cpp.BuildExtension.Executable"

@@ -5,7 +5,6 @@
 		{ Name = "Soup.Core", Version = "../Core/" },
 		{ Name = "json11", Version = "1.0.1" },
 		{ Name = "Opal", Version = "0.3.1" },
-		{ Name = "toml11", Version = "1.0.1" },
 		{ Name = "Monitor.Host", Version = "../../Monitor/Host/" },
 		{ Name = "Detours", Version = "4.0.2" },
 		{ Name = "Monitor.Shared", Version = "../../../Monitor/Shared/" },

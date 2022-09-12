@@ -1,10 +1,10 @@
 #pragma once
-#include "Recipe/RecipeTomlTests.h"
+#include "Recipe/RecipeSMLTests.h"
 
-TestState RunRecipeTomlTests()
+TestState RunRecipeSMLTests()
  {
-	auto className = "RecipeTomlTests";
-	auto testClass = std::make_shared<Soup::Core::UnitTests::RecipeTomlTests>();
+	auto className = "RecipeSMLTests";
+	auto testClass = std::make_shared<Soup::Core::UnitTests::RecipeSMLTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Deserialize_GarbageThrows", [&testClass]() { testClass->Deserialize_GarbageThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_Simple", [&testClass]() { testClass->Deserialize_Simple(); });
