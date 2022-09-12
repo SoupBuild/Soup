@@ -38,7 +38,7 @@ namespace Soup.Build.Discover
 
 				// Load up the Local User Config
 				var localUserConfigPath = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-					new Path(".soup/LocalUserConfig.toml");
+					new Path(".soup/LocalUserConfig.sml");
 				var (loadConfigResult, userConfig) = await LocalUserConfigExtensions.TryLoadLocalUserConfigFromFileAsync(localUserConfigPath);
 				if (!loadConfigResult)
 				{
