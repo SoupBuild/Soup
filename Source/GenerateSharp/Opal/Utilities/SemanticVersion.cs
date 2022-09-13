@@ -24,6 +24,15 @@ namespace Opal
 		/// Initializes a new instance of the <see cref="SemanticVersion"/> class.
 		/// </summary>
 		/// <param name="major">The major version.</param>
+		public SemanticVersion(int major)
+			: this(major, null, null)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SemanticVersion"/> class.
+		/// </summary>
+		/// <param name="major">The major version.</param>
 		/// <param name="minor">The minor version.</param>
 		/// <param name="patch">The patch version.</param>
 		public SemanticVersion(int major, int? minor, int? patch)

@@ -47,9 +47,26 @@ namespace Soup.Build.Utilities
 			throw new NotSupportedException();
 		}
 
-		public virtual Value VisitValue(SMLParser.ValueContext context)
+		public virtual Value VisitValueInteger(SMLParser.ValueIntegerContext context)
 		{
-			return VisitChildren(context);
+			return new Value(long.Parse(context.INTEGER().GetText()));
+		}
+
+		public virtual Value VisitValueString(SMLParser.ValueStringContext context)
+		{
+			var literal = context.STRING_LITERAL().GetText();
+			var content = literal.Substring(1, literal.Length - 2);
+			return new Value(content);
+		}
+
+		public virtual Value VisitValueTable(SMLParser.ValueTableContext context)
+		{
+			return context.table().Accept(this);
+		}
+
+		public virtual Value VisitValueArray(SMLParser.ValueArrayContext context)
+		{
+			return context.array().Accept(this);
 		}
 
 		public virtual Value VisitTable(SMLParser.TableContext context)

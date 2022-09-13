@@ -1,12 +1,17 @@
-grammar SML; 
+grammar SML;
+
 /*
  * Parser Rules
  */
-document            : table_content EOF;
+document            : table_content EOF ;
 table_content       : assign_value* ;
 array_content       : value (COMMA value)* COMMA? ;
 assign_value        : KEY EQUALS value ;
-value               : INTEGER | STRING_LITERAL | table | array ;
+value               : INTEGER # valueInteger
+                    | STRING_LITERAL # valueString
+                    | table # valueTable
+                    | array # valueArray
+                    ;
 table               : OPEN_BRACE table_content CLOSE_BRACE ;
 array               : OPEN_BRACKET array_content CLOSE_BRACKET ;
 

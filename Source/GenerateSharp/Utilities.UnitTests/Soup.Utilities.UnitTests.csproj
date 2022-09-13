@@ -19,4 +19,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="SML\" />
+	</ItemGroup>
 </Project>

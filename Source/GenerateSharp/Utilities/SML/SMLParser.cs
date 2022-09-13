@@ -304,23 +304,58 @@ public partial class SMLParser : Parser {
 	}
 
 	public partial class ValueContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INTEGER() { return GetToken(SMLParser.INTEGER, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_LITERAL() { return GetToken(SMLParser.STRING_LITERAL, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public TableContext table() {
-			return GetRuleContext<TableContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ArrayContext array() {
-			return GetRuleContext<ArrayContext>(0);
-		}
 		public ValueContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
 		public override int RuleIndex { get { return RULE_value; } }
+	 
+		public ValueContext() { }
+		public virtual void CopyFrom(ValueContext context) {
+			base.CopyFrom(context);
+		}
+	}
+	public partial class ValueStringContext : ValueContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_LITERAL() { return GetToken(SMLParser.STRING_LITERAL, 0); }
+		public ValueStringContext(ValueContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitValue(this);
+			if (typedVisitor != null) return typedVisitor.VisitValueString(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ValueTableContext : ValueContext {
+		[System.Diagnostics.DebuggerNonUserCode] public TableContext table() {
+			return GetRuleContext<TableContext>(0);
+		}
+		public ValueTableContext(ValueContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitValueTable(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ValueArrayContext : ValueContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ArrayContext array() {
+			return GetRuleContext<ArrayContext>(0);
+		}
+		public ValueArrayContext(ValueContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitValueArray(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ValueIntegerContext : ValueContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INTEGER() { return GetToken(SMLParser.INTEGER, 0); }
+		public ValueIntegerContext(ValueContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitValueInteger(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -334,6 +369,7 @@ public partial class SMLParser : Parser {
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case INTEGER:
+				_localctx = new ValueIntegerContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
 				State = 38;
@@ -341,6 +377,7 @@ public partial class SMLParser : Parser {
 				}
 				break;
 			case STRING_LITERAL:
+				_localctx = new ValueStringContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
 				State = 39;
@@ -348,6 +385,7 @@ public partial class SMLParser : Parser {
 				}
 				break;
 			case OPEN_BRACE:
+				_localctx = new ValueTableContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
 				State = 40;
@@ -355,6 +393,7 @@ public partial class SMLParser : Parser {
 				}
 				break;
 			case OPEN_BRACKET:
+				_localctx = new ValueArrayContext(_localctx);
 				EnterOuterAlt(_localctx, 4);
 				{
 				State = 41;

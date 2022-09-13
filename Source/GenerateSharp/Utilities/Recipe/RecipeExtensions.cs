@@ -2,14 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Antlr4.Runtime;
 using Opal;
 using Opal.System;
-using Soup.Build.Runtime;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Soup.Build.Utilities
 {
@@ -39,17 +35,9 @@ namespace Soup.Build.Utilities
 				try
 				{
 					var content = await reader.ReadToEndAsync();
-					var inputStream = new CodePointCharStream(content);
-					var lexer = new SMLLexer(inputStream);
-					var commonTokenStream = new CommonTokenStream(lexer);
-					var parser = new SMLParser(commonTokenStream);
+					var result = RecipeSML.Deserialize(content);
 
-					var document = parser.document();
-
-					var visitor = new SMLValueTableVisitor();
-					var valueTable = (ValueTable)visitor.Visit(document).RawValue;
-
-					return (true, new Recipe(valueTable));
+					return (true, result);
 				}
 				catch (Exception ex)
 				{

@@ -56,11 +56,33 @@ public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitAssign_value([NotNull] SMLParser.Assign_valueContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SMLParser.value"/>.
+	/// Visit a parse tree produced by the <c>valueInteger</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitValue([NotNull] SMLParser.ValueContext context);
+	Result VisitValueInteger([NotNull] SMLParser.ValueIntegerContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>valueString</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValueString([NotNull] SMLParser.ValueStringContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>valueTable</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValueTable([NotNull] SMLParser.ValueTableContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>valueArray</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValueArray([NotNull] SMLParser.ValueArrayContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="SMLParser.table"/>.
 	/// </summary>
