@@ -31,6 +31,7 @@ using Antlr4.Runtime.Tree;
 using DFA = Antlr4.Runtime.Dfa.DFA;
 
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.11.1")]
+[System.CLSCompliant(false)]
 public partial class SMLParser : Parser {
 	protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
@@ -91,14 +92,10 @@ public partial class SMLParser : Parser {
 		}
 		public override int RuleIndex { get { return RULE_prog; } }
 		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			ISMLListener typedListener = listener as ISMLListener;
-			if (typedListener != null) typedListener.EnterProg(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			ISMLListener typedListener = listener as ISMLListener;
-			if (typedListener != null) typedListener.ExitProg(this);
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitProg(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
@@ -140,14 +137,10 @@ public partial class SMLParser : Parser {
 		}
 		public override int RuleIndex { get { return RULE_expr; } }
 		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			ISMLListener typedListener = listener as ISMLListener;
-			if (typedListener != null) typedListener.EnterExpr(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			ISMLListener typedListener = listener as ISMLListener;
-			if (typedListener != null) typedListener.ExitExpr(this);
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitExpr(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 

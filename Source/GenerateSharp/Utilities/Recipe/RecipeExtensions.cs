@@ -2,10 +2,12 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using Antlr4.Runtime;
 using Opal;
 using Opal.System;
 using System;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Soup.Build.Utilities
 {
@@ -29,15 +31,20 @@ namespace Soup.Build.Utilities
 
 			// Open the file to read from
 			using (var fileStream = System.IO.File.OpenRead(recipeFile.ToString()))
-			using (var reader = new System.IO.StreamReader(fileStream))
 			{
 				// Read the contents of the recipe file
 				try
 				{
-					var result = ValueTableTomlUtilities.Deserialize(
-						recipeFile,
-						await reader.ReadToEndAsync());
-					return (true, new Recipe(result));
+					var inputStream = new AntlrInputStream(fileStream);
+					var lexer = new SMLLexer(inputStream);
+					var commonTokenStream = new CommonTokenStream(lexer);
+					var parser = new SMLParser(commonTokenStream);
+
+					await Task.CompletedTask;
+
+					var chatContext = parser.expr();
+
+					return (true, new Recipe());
 				}
 				catch (Exception ex)
 				{

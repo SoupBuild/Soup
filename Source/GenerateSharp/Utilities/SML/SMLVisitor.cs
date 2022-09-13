@@ -20,33 +20,27 @@
 #pragma warning disable 419
 
 using Antlr4.Runtime.Misc;
-using IParseTreeListener = Antlr4.Runtime.Tree.IParseTreeListener;
+using Antlr4.Runtime.Tree;
 using IToken = Antlr4.Runtime.IToken;
 
 /// <summary>
-/// This interface defines a complete listener for a parse tree produced by
-/// <see cref="SMLParser"/>.
+/// This interface defines a complete generic visitor for a parse tree produced
+/// by <see cref="SMLParser"/>.
 /// </summary>
+/// <typeparam name="Result">The return type of the visit operation.</typeparam>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.11.1")]
-public interface ISMLListener : IParseTreeListener {
+[System.CLSCompliant(false)]
+public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="SMLParser.prog"/>.
+	/// Visit a parse tree produced by <see cref="SMLParser.prog"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterProg([NotNull] SMLParser.ProgContext context);
+	/// <return>The visitor result.</return>
+	Result VisitProg([NotNull] SMLParser.ProgContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="SMLParser.prog"/>.
+	/// Visit a parse tree produced by <see cref="SMLParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitProg([NotNull] SMLParser.ProgContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="SMLParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterExpr([NotNull] SMLParser.ExprContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="SMLParser.expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitExpr([NotNull] SMLParser.ExprContext context);
+	/// <return>The visitor result.</return>
+	Result VisitExpr([NotNull] SMLParser.ExprContext context);
 }
