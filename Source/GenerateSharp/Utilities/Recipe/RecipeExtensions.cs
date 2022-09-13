@@ -5,7 +5,9 @@
 using Antlr4.Runtime;
 using Opal;
 using Opal.System;
+using Soup.Build.Runtime;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -31,20 +33,23 @@ namespace Soup.Build.Utilities
 
 			// Open the file to read from
 			using (var fileStream = System.IO.File.OpenRead(recipeFile.ToString()))
+			using (var reader = new System.IO.StreamReader(fileStream))
 			{
 				// Read the contents of the recipe file
 				try
 				{
-					var inputStream = new AntlrInputStream(fileStream);
+					var content = await reader.ReadToEndAsync();
+					var inputStream = new CodePointCharStream(content);
 					var lexer = new SMLLexer(inputStream);
 					var commonTokenStream = new CommonTokenStream(lexer);
 					var parser = new SMLParser(commonTokenStream);
 
-					await Task.CompletedTask;
+					var document = parser.document();
 
-					var chatContext = parser.expr();
+					var visitor = new SMLValueTableVisitor();
+					var valueTable = (ValueTable)visitor.Visit(document).RawValue;
 
-					return (true, new Recipe());
+					return (true, new Recipe(valueTable));
 				}
 				catch (Exception ex)
 				{

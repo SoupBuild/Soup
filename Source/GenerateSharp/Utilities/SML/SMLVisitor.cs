@@ -32,15 +32,45 @@ using IToken = Antlr4.Runtime.IToken;
 [System.CLSCompliant(false)]
 public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SMLParser.prog"/>.
+	/// Visit a parse tree produced by <see cref="SMLParser.document"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitProg([NotNull] SMLParser.ProgContext context);
+	Result VisitDocument([NotNull] SMLParser.DocumentContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SMLParser.expr"/>.
+	/// Visit a parse tree produced by <see cref="SMLParser.table_content"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitExpr([NotNull] SMLParser.ExprContext context);
+	Result VisitTable_content([NotNull] SMLParser.Table_contentContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.array_content"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArray_content([NotNull] SMLParser.Array_contentContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.assign_value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAssign_value([NotNull] SMLParser.Assign_valueContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValue([NotNull] SMLParser.ValueContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.table"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTable([NotNull] SMLParser.TableContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.array"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArray([NotNull] SMLParser.ArrayContext context);
 }
