@@ -2,11 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Opal;
-using Soup.Build.Runtime;
-using System;
 using System.Collections.Generic;
-using Tomlyn.Syntax;
 using Xunit;
 
 namespace Soup.Build.Utilities.UnitTests

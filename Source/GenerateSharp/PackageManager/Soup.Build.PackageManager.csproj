@@ -14,7 +14,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<TrimmableAssembly Include="Microsoft.Identity.Client" />
-		<TrimmableAssembly Include="Tomlyn" />
 		<ProjectReference Include="..\Api.Client\Soup.Build.Api.Client.csproj" />
 		<ProjectReference Include="..\Opal\Opal.csproj" />
 		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />

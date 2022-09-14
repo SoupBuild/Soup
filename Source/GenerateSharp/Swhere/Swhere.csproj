@@ -9,7 +9,6 @@
 		<PublishTrimmed>true</PublishTrimmed>
 	</PropertyGroup>
 	<ItemGroup>
-		<TrimmableAssembly Include="Tomlyn" />
 		<ProjectReference Include="..\Opal\Opal.csproj" />
 		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
 	</ItemGroup>

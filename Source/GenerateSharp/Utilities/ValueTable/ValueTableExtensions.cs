@@ -18,7 +18,7 @@ namespace Soup.Build.Utilities
 				values.Add(item.Key, item.Value.ToBuildValue());
 			}
 
-			return new ValueTable(values, null);
+			return new ValueTable(values);
 		}
 
 		public static IValueList ToBuildValue(this SMLArray value)

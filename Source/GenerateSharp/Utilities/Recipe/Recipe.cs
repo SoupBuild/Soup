@@ -5,7 +5,6 @@
 using Opal;
 using System;
 using System.Collections.Generic;
-using Tomlyn.Syntax;
 
 namespace Soup.Build.Utilities
 {

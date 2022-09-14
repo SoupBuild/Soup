@@ -3,7 +3,6 @@
 // </copyright>
 
 using System;
-using Tomlyn.Syntax;
 
 namespace Soup.Build.Utilities
 {

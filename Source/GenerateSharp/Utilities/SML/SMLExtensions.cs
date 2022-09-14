@@ -2,11 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Tomlyn.Syntax;
-
 namespace Soup.Build.Utilities
 {
 	public static class SMLExtensions
@@ -14,7 +9,7 @@ namespace Soup.Build.Utilities
 		public static void AddItemWithSyntax(this SMLArray list, string value)
 		{
 			// Create a new item and matching syntax
-			var newSyntaxValue = new StringValueSyntax(value);
+			////var newSyntaxValue = new StringValueSyntax(value);
 			var newValue = new SMLValue(value)
 			{
 				// TODO: MirrorSyntax = newSyntaxTable,
@@ -54,17 +49,17 @@ namespace Soup.Build.Utilities
 		public static SMLTable AddTableWithSyntax(this SMLArray list)
 		{
 			// Create a new item and matching syntax
-			var newSyntaxTable = new InlineTableSyntax()
-			{
-				OpenBrace = SyntaxFactory.Token(TokenKind.OpenBrace),
-				CloseBrace = SyntaxFactory.Token(TokenKind.CloseBrace),
-			};
+			////var newSyntaxTable = new InlineTableSyntax()
+			////{
+			////	OpenBrace = SyntaxFactory.Token(TokenKind.OpenBrace),
+			////	CloseBrace = SyntaxFactory.Token(TokenKind.CloseBrace),
+			////};
 			var newTable = new SMLTable()
 			{
 				// TODO: MirrorSyntax = newSyntaxTable,
 			};
 
-			newSyntaxTable.CloseBrace.AddLeadingWhitespace();
+			////newSyntaxTable.CloseBrace.AddLeadingWhitespace();
 
 			// Add the model to the parent table model
 			list.GetValue().Add(new SMLValue(newTable));
@@ -105,16 +100,16 @@ namespace Soup.Build.Utilities
 			////	throw new ArgumentException("Table must have syntax", nameof(table));
 
 			// Create a new list and matching syntax
-			var newSyntaxList = new ArraySyntax()
-			{
-				OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
-				CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket),
-			};
+			////var newSyntaxList = new ArraySyntax()
+			////{
+			////	OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
+			////	CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket),
+			////};
 
-			newSyntaxList.OpenBracket.TrailingTrivia = new List<SyntaxTrivia>()
-			{
-				SyntaxFactory.NewLineTrivia(),
-			};
+			////newSyntaxList.OpenBracket.TrailingTrivia = new List<SyntaxTrivia>()
+			////{
+			////	SyntaxFactory.NewLineTrivia(),
+			////};
 
 			var newList = new SMLArray()
 			{
@@ -194,7 +189,7 @@ namespace Soup.Build.Utilities
 		public static void AddItemWithSyntax(this SMLTable table, string key, long value)
 		{
 			// Create a new item and matching syntax
-			var newSyntaxValue = new IntegerValueSyntax(value);
+			////var newSyntaxValue = new IntegerValueSyntax(value);
 			var newValue = new SMLValue(value)
 			{
 				// TODO: MirrorSyntax = newSyntaxTable,
@@ -253,7 +248,7 @@ namespace Soup.Build.Utilities
 		public static void AddItemWithSyntax(this SMLTable table, string key, string value)
 		{
 			// Create a new item and matching syntax
-			var newSyntaxValue = new StringValueSyntax(value);
+			////var newSyntaxValue = new StringValueSyntax(value);
 			var newValue = new SMLValue(value)
 			{
 				// TODO: MirrorSyntax = newSyntaxTable,

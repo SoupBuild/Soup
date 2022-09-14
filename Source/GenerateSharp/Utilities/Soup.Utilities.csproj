@@ -8,7 +8,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
-		<PackageReference Include="Tomlyn" Version="0.15.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Build.Extensions.Utilities\Soup.Build.Extensions.Utilities.csproj" />
