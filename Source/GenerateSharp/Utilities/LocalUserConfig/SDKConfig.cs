@@ -3,10 +3,8 @@
 // </copyright>
 
 using Opal;
-using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
-using Tomlyn.Syntax;
 
 namespace Soup.Build.Utilities
 {
@@ -19,20 +17,20 @@ namespace Soup.Build.Utilities
 		private static string Property_SourceDirectories => "SourceDirectories";
 		private static string Property_Properties => "Properties";
 
-		private ValueTable _table;
+		private SMLTable _table;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SDKConfig"/> class.
 		/// </summary>
 		public SDKConfig() :
-			this(new ValueTable())
+			this(new SMLTable())
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SDKConfig"/> class.
 		/// </summary>
-		public SDKConfig(ValueTable table)
+		public SDKConfig(SMLTable table)
 		{
 			_table = table;
 		}
@@ -42,14 +40,14 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public bool HasName()
 		{
-			return _table.ContainsKey(Property_Name);
+			return _table.GetValue().ContainsKey(Property_Name);
 		}
 
 		public string Name
 		{
 			get
 			{
-				if (_table.TryGetValue(Property_Name, out var nameValue))
+				if (_table.GetValue().TryGetValue(Property_Name, out var nameValue))
 				{
 					return nameValue.AsString();
 				}
@@ -60,18 +58,18 @@ namespace Soup.Build.Utilities
 			}
 			set
 			{
-				var valueSyntax = new StringValueSyntax(value);
-				_table[Property_Name] = new Value(value);
+				////var valueSyntax = new StringValueSyntax(value);
+				_table.GetValue()[Property_Name] = new SMLValue(value);
 
 				// Add the new syntax to the parent table syntax
-				switch (_table.MirrorSyntax)
-				{
-					case TableSyntaxBase tableSyntax:
-						tableSyntax.Items.Add(new KeyValueSyntax(Property_Name, valueSyntax));
-						break;
-					default:
-						throw new InvalidOperationException("Unknown Syntax on ValueTable");
-				}
+				////switch (_table.MirrorSyntax)
+				////{
+				////	case TableSyntaxBase tableSyntax:
+				////		tableSyntax.Items.Add(new KeyValueSyntax(Property_Name, valueSyntax));
+				////		break;
+				////	default:
+				////		throw new InvalidOperationException("Unknown Syntax on ValueTable");
+				////}
 			}
 		}
 
@@ -80,18 +78,18 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public bool HasSourceDirectories()
 		{
-			return _table.ContainsKey(Property_SourceDirectories);
+			return _table.GetValue().ContainsKey(Property_SourceDirectories);
 		}
 
 		public IList<Path> SourceDirectories
 		{
 			get
 			{
-				if (_table.TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
+				if (_table.GetValue().TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
 				{
-					var values = sourceDirectoriesValue.AsList();
+					var values = sourceDirectoriesValue.AsArray();
 					var result = new List<Path>();
-					foreach (var value in values)
+					foreach (var value in values.GetValue())
 					{
 						result.Add(new Path(value.AsString()));
 					}
@@ -105,60 +103,60 @@ namespace Soup.Build.Utilities
 			}
 			set
 			{
-				ValueList? values;
-				if (_table.TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
+				SMLArray? values;
+				if (_table.GetValue().TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
 				{
-					values = (ValueList)sourceDirectoriesValue.AsList();
+					values = sourceDirectoriesValue.AsArray();
 				}
 				else
 				{
-					var arraySyntax = new ArraySyntax()
+					////var arraySyntax = new ArraySyntax()
+					////{
+					////	OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
+					////	CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket),
+					////};
+					////arraySyntax.OpenBracket.TrailingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.NewLineTrivia() };
+					values = new SMLArray()
 					{
-						OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
-						CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket),
+						// TODO: MirrorSyntax = arraySyntax,
 					};
-					arraySyntax.OpenBracket.TrailingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.NewLineTrivia() };
-					values = new ValueList()
-					{
-						MirrorSyntax = arraySyntax,
-					};
-					_table[Property_SourceDirectories] = new Value(values);
+					_table.GetValue()[Property_SourceDirectories] = new SMLValue(values);
 
 					// Add the new syntax to the parent table syntax
-					switch (_table.MirrorSyntax)
-					{
-						case TableSyntaxBase tableSyntax:
-							tableSyntax.Items.Add(new KeyValueSyntax(Property_SourceDirectories, arraySyntax));
-							break;
-						default:
-							throw new InvalidOperationException("Unknown Syntax on ValueTable");
-					}
+					////switch (_table.MirrorSyntax)
+					////{
+					////	case TableSyntaxBase tableSyntax:
+					////		tableSyntax.Items.Add(new KeyValueSyntax(Property_SourceDirectories, arraySyntax));
+					////		break;
+					////	default:
+					////		throw new InvalidOperationException("Unknown Syntax on ValueTable");
+					////}
 				}
 
 				// Add the new syntax to the parent table syntax
-				values.Clear();
-				switch (values.MirrorSyntax)
-				{
-					case ArraySyntax arraySyntax:
-						// Replace all items
-						while (arraySyntax.Items.ChildrenCount > 0)
-							arraySyntax.Items.RemoveChildAt(0);
+				values.GetValue().Clear();
+				////switch (values.MirrorSyntax)
+				////{
+				////	case ArraySyntax arraySyntax:
+				////		// Replace all items
+				////		while (arraySyntax.Items.ChildrenCount > 0)
+				////			arraySyntax.Items.RemoveChildAt(0);
 
-						foreach (var item in value)
-						{
-							var arrayItemSyntax = new ArrayItemSyntax()
-							{
-								Value = new StringValueSyntax(item.ToString()),
-								Comma = SyntaxFactory.Token(TokenKind.Comma),
-							};
-							// arrayItemSyntax.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
-							arrayItemSyntax.Comma.TrailingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.NewLineTrivia() };
-							arraySyntax.Items.Add(arrayItemSyntax);
-						}
-						break;
-					default:
-						throw new InvalidOperationException("Unknown Syntax on ValueList");
-				}
+				////		foreach (var item in value)
+				////		{
+				////			var arrayItemSyntax = new ArrayItemSyntax()
+				////			{
+				////				Value = new StringValueSyntax(item.ToString()),
+				////				Comma = SyntaxFactory.Token(TokenKind.Comma),
+				////			};
+				////			// arrayItemSyntax.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
+				////			arrayItemSyntax.Comma.TrailingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.NewLineTrivia() };
+				////			arraySyntax.Items.Add(arrayItemSyntax);
+				////		}
+				////		break;
+				////	default:
+				////		throw new InvalidOperationException("Unknown Syntax on ValueList");
+				////}
 			}
 		}
 
@@ -167,14 +165,14 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public bool HasProperties()
 		{
-			return _table.ContainsKey(Property_Properties);
+			return _table.GetValue().ContainsKey(Property_Properties);
 		}
 
-		public IValueTable Properties
+		public SMLTable Properties
 		{
 			get
 			{
-				if (_table.TryGetValue(Property_Properties, out var propertiesValue))
+				if (_table.GetValue().TryGetValue(Property_Properties, out var propertiesValue))
 				{
 					return propertiesValue.AsTable();
 				}
@@ -187,79 +185,79 @@ namespace Soup.Build.Utilities
 
 		public void SetProperties(IDictionary<string, string> value)
 		{
-			ValueTable? values;
-			if (_table.TryGetValue(Property_Properties, out var propertiesValues))
+			SMLTable? values;
+			if (_table.GetValue().TryGetValue(Property_Properties, out var propertiesValues))
 			{
-				values = (ValueTable)propertiesValues.AsTable();
+				values = propertiesValues.AsTable();
 			}
 			else
 			{
-				var newTableSyntax = new InlineTableSyntax()
+				////var newTableSyntax = new InlineTableSyntax()
+				////{
+				////	OpenBrace = SyntaxFactory.Token(TokenKind.OpenBrace),
+				////	CloseBrace = SyntaxFactory.Token(TokenKind.CloseBrace),
+				////};
+				values = new SMLTable()
 				{
-					OpenBrace = SyntaxFactory.Token(TokenKind.OpenBrace),
-					CloseBrace = SyntaxFactory.Token(TokenKind.CloseBrace),
+					// TODO: MirrorSyntax = newTableSyntax,
 				};
-				values = new ValueTable()
-				{
-					MirrorSyntax = newTableSyntax,
-				};
-				_table[Property_Properties] = new Value(values);
+				_table.GetValue()[Property_Properties] = new SMLValue(values);
 
 				// Add the new syntax to the parent table syntax
-				switch (_table.MirrorSyntax)
-				{
-					case TableSyntaxBase tableSyntax:
-						tableSyntax.Items.Add(new KeyValueSyntax(Property_Properties, newTableSyntax));
-						break;
-					default:
-						throw new InvalidOperationException("Unknown Syntax on ValueTable");
-				}
+				////switch (_table.MirrorSyntax)
+				////{
+				////	case TableSyntaxBase tableSyntax:
+				////		tableSyntax.Items.Add(new KeyValueSyntax(Property_Properties, newTableSyntax));
+				////		break;
+				////	default:
+				////		throw new InvalidOperationException("Unknown Syntax on ValueTable");
+				////}
 			}
 
 			// Add the new syntax to the parent table syntax
 			// values.();
-			switch (values.MirrorSyntax)
-			{
-				case InlineTableSyntax tableSyntax:
-					// Replace all items
-					while (tableSyntax.Items.ChildrenCount > 0)
-						tableSyntax.Items.RemoveChildAt(0);
+			////switch (values.MirrorSyntax)
+			////{
+			////	case InlineTableSyntax tableSyntax:
+			////		// Replace all items
+			////		while (tableSyntax.Items.ChildrenCount > 0)
+			////			tableSyntax.Items.RemoveChildAt(0);
 
-					var index = 0;
-					foreach (var item in value)
-					{
-						bool isLastItem = index == value.Keys.Count - 1;
-						var equalToken = SyntaxFactory.Token(TokenKind.Equal);
-						equalToken.AddLeadingWhitespace();
-						equalToken.AddTrailingWhitespace();
-						var newKeyValue = new KeyValueSyntax()
-						{
-							Key = new KeySyntax(item.Key),
-							EqualToken = equalToken,
-							Value = new StringValueSyntax(item.Value),
-						};
-						var newInlineTableItem = new InlineTableItemSyntax(newKeyValue)
-						{
-						};
-						if (!isLastItem)
-						{
-							newInlineTableItem.Comma = SyntaxFactory.Token(TokenKind.Comma);
-						}
+			////		var index = 0;
+			////		foreach (var item in value)
+			////		{
+			////			bool isLastItem = index == value.Keys.Count - 1;
+			////			var equalToken = SyntaxFactory.Token(TokenKind.Equal);
+			////			equalToken.AddLeadingWhitespace();
+			////			equalToken.AddTrailingWhitespace();
+			////			var newKeyValue = new KeyValueSyntax()
+			////			{
+			////				Key = new KeySyntax(item.Key),
+			////				EqualToken = equalToken,
+			////				Value = new StringValueSyntax(item.Value),
+			////			};
+			////			var newInlineTableItem = new InlineTableItemSyntax(newKeyValue)
+			////			{
+			////			};
+			////			if (!isLastItem)
+			////			{
+			////				newInlineTableItem.Comma = SyntaxFactory.Token(TokenKind.Comma);
+			////			}
 
-						// newInlineTableItem.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
-						tableSyntax.Items.Add(newInlineTableItem);
-						index++;
-					}
-					break;
-				default:
-					throw new InvalidOperationException("Unknown Syntax on ValueList");
-			}
+			////			// newInlineTableItem.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
+			////			tableSyntax.Items.Add(newInlineTableItem);
+			////			index++;
+			////		}
+			////		break;
+			////	default:
+			////		throw new InvalidOperationException("Unknown Syntax on ValueList");
+			////}
 		}
 
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		public IValueTable GetTable()
+		public SMLTable GetTable()
 		{
 			return _table;
 		}

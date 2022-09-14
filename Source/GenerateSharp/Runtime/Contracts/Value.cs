@@ -10,12 +10,18 @@ namespace Soup.Build.Runtime
 	{
 		public ValueType Type { get; private set; }
 
-		public object RawValue { get; private set; }
+		public object? RawValue { get; private set; }
 
-		private Value(ValueType type, object rawValue)
+		private Value(ValueType type, object? rawValue)
 		{
 			Type = type;
 			RawValue = rawValue;
+		}
+
+		public Value()
+		{
+			Type = ValueType.Empty;
+			RawValue = null;
 		}
 
 		public Value(bool value)

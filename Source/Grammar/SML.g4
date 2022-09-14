@@ -5,7 +5,7 @@ grammar SML;
  */
 document            : table_content EOF ;
 table_content       : assign_value* ;
-array_content       : value (COMMA value)* COMMA? ;
+array_content       : (value (COMMA value)* COMMA?)? ;
 assign_value        : KEY EQUALS value ;
 value               : INTEGER # valueInteger
                     | STRING_LITERAL # valueString

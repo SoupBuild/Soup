@@ -24,30 +24,15 @@ namespace Soup.Build.Utilities.UnitTests
 		}
 
 		[Fact]
-		public void AddRuntimeDependency_NoMirrorSyntax_Throws()
-		{
-			var uut = new Recipe();
-
-			Assert.Throws<InvalidOperationException>(() =>
-			{
-				uut.AddRuntimeDependency("SomeDependency");
-			});
-
-			Assert.False(uut.HasRuntimeDependencies);
-		}
-
-
-		[Fact]
 		public void AddRuntimeDependency_Success()
 		{
 			var uut = new Recipe(
-				new ValueTable(
-					new Dictionary<string, IValue>()
+				new SMLTable(
+					new Dictionary<string, SMLValue>()
 					{
-						{ "Name", new Value("TestProject") },
-						{ "Language",  new Value("C#") },
-					},
-					new DocumentSyntax()));
+						{ "Name", new SMLValue("TestProject") },
+						{ "Language",  new SMLValue("C#") },
+					}));
 
 			uut.AddRuntimeDependency("SomeDependency");
 

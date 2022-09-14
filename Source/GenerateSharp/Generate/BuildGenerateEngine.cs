@@ -59,7 +59,6 @@ namespace Soup.Build.Generate
 
 			// Get the required input state from the parameters
 			var languageExtensionPath = new Path(parametersState["LanguageExtensionPath"].AsString().ToString());
-			var targetDirectory = new Path(parametersState["TargetDirectory"].AsString().ToString());
 			var packageDirectory = new Path(parametersState["PackageDirectory"].AsString().ToString());
 
 			// Load the recipe file
@@ -81,7 +80,7 @@ namespace Soup.Build.Generate
 			var activeState = new ValueTable();
 
 			// Initialize the Recipe Root Table
-			var recipeState = recipe.Table;
+			var recipeState = recipe.Table.ToBuildValue();
 			activeState.Add("Recipe", new Value(recipeState));
 
 			// Initialize the Parameters Root Table
@@ -92,8 +91,8 @@ namespace Soup.Build.Generate
 
 			// Keep the extension libraries open while running the build system
 			// to ensure their memory is kept alive
-			var evaluateGraph = new OperationGraph();
-			IValueTable sharedState = new ValueTable();
+			OperationGraph evaluateGraph;
+			IValueTable sharedState;
 
 			{
 				// Create a new build system for the requested build

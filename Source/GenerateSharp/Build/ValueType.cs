@@ -35,5 +35,10 @@ namespace Soup.Build
         /// Boolean
         /// </summary>
         Boolean = 6,
-    }
+
+		/// <summary>
+		/// Empty
+		/// </summary>
+		Empty = 7,
+	}
 }

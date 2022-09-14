@@ -215,33 +215,41 @@ public partial class SMLParser : Parser {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 23;
-			value();
-			State = 28;
-			ErrorHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(TokenStream,1,Context);
-			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					{
-					{
-					State = 24;
-					Match(COMMA);
-					State = 25;
-					value();
-					}
-					} 
-				}
-				State = 30;
-				ErrorHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(TokenStream,1,Context);
-			}
-			State = 32;
+			State = 34;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==COMMA) {
+			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 1172L) != 0) {
 				{
-				State = 31;
-				Match(COMMA);
+				State = 23;
+				value();
+				State = 28;
+				ErrorHandler.Sync(this);
+				_alt = Interpreter.AdaptivePredict(TokenStream,1,Context);
+				while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
+					if ( _alt==1 ) {
+						{
+						{
+						State = 24;
+						Match(COMMA);
+						State = 25;
+						value();
+						}
+						} 
+					}
+					State = 30;
+					ErrorHandler.Sync(this);
+					_alt = Interpreter.AdaptivePredict(TokenStream,1,Context);
+				}
+				State = 32;
+				ErrorHandler.Sync(this);
+				_la = TokenStream.LA(1);
+				if (_la==COMMA) {
+					{
+					State = 31;
+					Match(COMMA);
+					}
+				}
+
 				}
 			}
 
@@ -284,11 +292,11 @@ public partial class SMLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 34;
-			Match(KEY);
-			State = 35;
-			Match(EQUALS);
 			State = 36;
+			Match(KEY);
+			State = 37;
+			Match(EQUALS);
+			State = 38;
 			value();
 			}
 		}
@@ -365,14 +373,14 @@ public partial class SMLParser : Parser {
 		ValueContext _localctx = new ValueContext(Context, State);
 		EnterRule(_localctx, 8, RULE_value);
 		try {
-			State = 42;
+			State = 44;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case INTEGER:
 				_localctx = new ValueIntegerContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 38;
+				State = 40;
 				Match(INTEGER);
 				}
 				break;
@@ -380,7 +388,7 @@ public partial class SMLParser : Parser {
 				_localctx = new ValueStringContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 39;
+				State = 41;
 				Match(STRING_LITERAL);
 				}
 				break;
@@ -388,7 +396,7 @@ public partial class SMLParser : Parser {
 				_localctx = new ValueTableContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 40;
+				State = 42;
 				table();
 				}
 				break;
@@ -396,7 +404,7 @@ public partial class SMLParser : Parser {
 				_localctx = new ValueArrayContext(_localctx);
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 41;
+				State = 43;
 				array();
 				}
 				break;
@@ -441,11 +449,11 @@ public partial class SMLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 44;
-			Match(OPEN_BRACE);
-			State = 45;
-			table_content();
 			State = 46;
+			Match(OPEN_BRACE);
+			State = 47;
+			table_content();
+			State = 48;
 			Match(CLOSE_BRACE);
 			}
 		}
@@ -486,11 +494,11 @@ public partial class SMLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 48;
-			Match(OPEN_BRACKET);
-			State = 49;
-			array_content();
 			State = 50;
+			Match(OPEN_BRACKET);
+			State = 51;
+			array_content();
+			State = 52;
 			Match(CLOSE_BRACKET);
 			}
 		}
@@ -506,21 +514,21 @@ public partial class SMLParser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,11,53,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,1,0,
+		4,1,11,55,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,1,0,
 		1,0,1,0,1,1,5,1,19,8,1,10,1,12,1,22,9,1,1,2,1,2,1,2,5,2,27,8,2,10,2,12,
-		2,30,9,2,1,2,3,2,33,8,2,1,3,1,3,1,3,1,3,1,4,1,4,1,4,1,4,3,4,43,8,4,1,5,
-		1,5,1,5,1,5,1,6,1,6,1,6,1,6,1,6,0,0,7,0,2,4,6,8,10,12,0,0,51,0,14,1,0,
-		0,0,2,20,1,0,0,0,4,23,1,0,0,0,6,34,1,0,0,0,8,42,1,0,0,0,10,44,1,0,0,0,
-		12,48,1,0,0,0,14,15,3,2,1,0,15,16,5,0,0,1,16,1,1,0,0,0,17,19,3,6,3,0,18,
-		17,1,0,0,0,19,22,1,0,0,0,20,18,1,0,0,0,20,21,1,0,0,0,21,3,1,0,0,0,22,20,
-		1,0,0,0,23,28,3,8,4,0,24,25,5,6,0,0,25,27,3,8,4,0,26,24,1,0,0,0,27,30,
-		1,0,0,0,28,26,1,0,0,0,28,29,1,0,0,0,29,32,1,0,0,0,30,28,1,0,0,0,31,33,
-		5,6,0,0,32,31,1,0,0,0,32,33,1,0,0,0,33,5,1,0,0,0,34,35,5,8,0,0,35,36,5,
-		1,0,0,36,37,3,8,4,0,37,7,1,0,0,0,38,43,5,7,0,0,39,43,5,10,0,0,40,43,3,
-		10,5,0,41,43,3,12,6,0,42,38,1,0,0,0,42,39,1,0,0,0,42,40,1,0,0,0,42,41,
-		1,0,0,0,43,9,1,0,0,0,44,45,5,4,0,0,45,46,3,2,1,0,46,47,5,5,0,0,47,11,1,
-		0,0,0,48,49,5,2,0,0,49,50,3,4,2,0,50,51,5,3,0,0,51,13,1,0,0,0,4,20,28,
-		32,42
+		2,30,9,2,1,2,3,2,33,8,2,3,2,35,8,2,1,3,1,3,1,3,1,3,1,4,1,4,1,4,1,4,3,4,
+		45,8,4,1,5,1,5,1,5,1,5,1,6,1,6,1,6,1,6,1,6,0,0,7,0,2,4,6,8,10,12,0,0,54,
+		0,14,1,0,0,0,2,20,1,0,0,0,4,34,1,0,0,0,6,36,1,0,0,0,8,44,1,0,0,0,10,46,
+		1,0,0,0,12,50,1,0,0,0,14,15,3,2,1,0,15,16,5,0,0,1,16,1,1,0,0,0,17,19,3,
+		6,3,0,18,17,1,0,0,0,19,22,1,0,0,0,20,18,1,0,0,0,20,21,1,0,0,0,21,3,1,0,
+		0,0,22,20,1,0,0,0,23,28,3,8,4,0,24,25,5,6,0,0,25,27,3,8,4,0,26,24,1,0,
+		0,0,27,30,1,0,0,0,28,26,1,0,0,0,28,29,1,0,0,0,29,32,1,0,0,0,30,28,1,0,
+		0,0,31,33,5,6,0,0,32,31,1,0,0,0,32,33,1,0,0,0,33,35,1,0,0,0,34,23,1,0,
+		0,0,34,35,1,0,0,0,35,5,1,0,0,0,36,37,5,8,0,0,37,38,5,1,0,0,38,39,3,8,4,
+		0,39,7,1,0,0,0,40,45,5,7,0,0,41,45,5,10,0,0,42,45,3,10,5,0,43,45,3,12,
+		6,0,44,40,1,0,0,0,44,41,1,0,0,0,44,42,1,0,0,0,44,43,1,0,0,0,45,9,1,0,0,
+		0,46,47,5,4,0,0,47,48,3,2,1,0,48,49,5,5,0,0,49,11,1,0,0,0,50,51,5,2,0,
+		0,51,52,3,4,2,0,52,53,5,3,0,0,53,13,1,0,0,0,5,20,28,32,34,44
 	};
 
 	public static readonly ATN _ATN =

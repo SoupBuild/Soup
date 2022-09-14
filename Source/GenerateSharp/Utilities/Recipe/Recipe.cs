@@ -3,7 +3,6 @@
 // </copyright>
 
 using Opal;
-using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
 using Tomlyn.Syntax;
@@ -24,17 +23,14 @@ namespace Soup.Build.Utilities
 		private static string Property_Version => "Version";
 		private static string Property_Reference => "Reference";
 
-		private ValueTable _table;
-
-		private DocumentSyntax? _mirrorSyntax;
+		private SMLTable _table;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
 		public Recipe()
 		{
-			_table = new ValueTable();
-			_mirrorSyntax = null;
+			_table = new SMLTable();
 			Name = string.Empty;
 			Language = new LanguageReference();
 		}
@@ -46,8 +42,7 @@ namespace Soup.Build.Utilities
 			string name,
 			LanguageReference language)
 		{
-			_table = new ValueTable();
-			_mirrorSyntax = null;
+			_table = new SMLTable();
 			Name = name;
 			Language = language;
 		}
@@ -55,10 +50,9 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
-		public Recipe(ValueTable table)
+		public Recipe(SMLTable table)
 		{
 			_table = table;
-			_mirrorSyntax = table.MirrorSyntax as DocumentSyntax;
 
 			if (!HasValue(_table, Property_Name))
 				throw new ArgumentException("Missing required property Name");
@@ -69,23 +63,23 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
-		public IValue NameValue => GetValue(_table, Property_Name);
+		public SMLValue NameValue => GetValue(_table, Property_Name);
 
 		public string Name
 		{
 			get { return NameValue.AsString(); }
-			set { EnsureValue(_table, Property_Name, new Value(value)); }
+			set { EnsureValue(_table, Property_Name, new SMLValue(value)); }
 		}
 
 		/// <summary>
 		/// Gets or sets the package language
 		/// </summary>
-		public IValue LanguageValue => GetValue(_table, Property_Language);
+		public SMLValue LanguageValue => GetValue(_table, Property_Language);
 
 		public LanguageReference Language
 		{
 			get { return LanguageReference.Parse(LanguageValue.AsString()); }
-			set { EnsureValue(_table, Property_Language, new Value(value.ToString())); }
+			set { EnsureValue(_table, Property_Language, new SMLValue(value.ToString())); }
 		}
 
 		/// <summary>
@@ -105,7 +99,7 @@ namespace Soup.Build.Utilities
 			}
 			set
 			{
-				EnsureValue(_table, Property_Version, new Value(value.ToString()));
+				EnsureValue(_table, Property_Version, new SMLValue(value.ToString()));
 			}
 		}
 
@@ -117,7 +111,7 @@ namespace Soup.Build.Utilities
 			var result = new List<string>();
 			if (HasDependencies())
 			{
-				foreach (var value in GetDependencies())
+				foreach (var value in GetDependencies().GetValue())
 				{
 					result.Add(value.Key);
 				}
@@ -136,22 +130,22 @@ namespace Soup.Build.Utilities
 			if (!HasNamedDependencies(name))
 				throw new InvalidOperationException("No named dependencies.");
 
-			var values = GetValue(GetDependencies(), name).AsList();
+			var values = GetValue(GetDependencies(), name).AsArray();
 			var result = new List<PackageReference>();
-			foreach (var value in values)
+			foreach (var value in values.GetValue())
 			{
 				// A dependency can either be a string or a table with reference key
-				if (value.IsString())
+				if (value.Type == SMLValueType.String)
 				{
 					result.Add(PackageReference.Parse(value.AsString()));
 				}
-				else if (value.IsTable())
+				else if (value.Type == SMLValueType.Table)
 				{
 					var valueTable = value.AsTable();
 					if (!HasValue(valueTable, Property_Reference))
 						throw new InvalidOperationException("Recipe dependency table missing required Reference value.");
 					var referenceValue = GetValue(valueTable, Property_Reference);
-					if (referenceValue.IsString())
+					if (referenceValue.Type == SMLValueType.String)
 					{
 						result.Add(PackageReference.Parse(referenceValue.AsString()));
 					}
@@ -210,9 +204,7 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		public ValueTable Table => _table;
-
-		public DocumentSyntax? MirrorSyntax => _mirrorSyntax;
+		public SMLTable Table => _table;
 
 		/// <summary>
 		/// Gets or sets the table of dependency packages
@@ -222,7 +214,7 @@ namespace Soup.Build.Utilities
 			return HasValue(_table, Property_Dependencies);
 		}
 
-		private IValueTable GetDependencies()
+		private SMLTable GetDependencies()
 		{
 			if (!HasDependencies())
 				throw new InvalidOperationException("No dependencies.");
@@ -231,16 +223,16 @@ namespace Soup.Build.Utilities
 			return values;
 		}
 
-		private ValueTable EnsureHasTable(ValueTable table, string name)
+		private SMLTable EnsureHasTable(SMLTable table, string name)
 		{
-			if (table.ContainsKey(name))
+			if (table.GetValue().ContainsKey(name))
 			{
 				var value = _table[name];
-				if (value.Type != ValueType.Table)
+				if (value.Type != SMLValueType.Table)
 					throw new InvalidOperationException("The recipe already has a non-table dependencies property");
 
 				// Find the Syntax for the table
-				return (ValueTable)value.AsTable();
+				return value.AsTable();
 			}
 			else
 			{
@@ -249,16 +241,16 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		private ValueList EnsureHasList(ValueTable table, string name)
+		private SMLArray EnsureHasList(SMLTable table, string name)
 		{
-			if (table.ContainsKey(name))
+			if (table.GetValue().ContainsKey(name))
 			{
 				var value = _table[name];
-				if (value.Type != ValueType.List)
+				if (value.Type != SMLValueType.Array)
 					throw new InvalidOperationException("The recipe already has a non-list dependencies property");
 
 				// Find the Syntax for the table
-				return (ValueList)value.AsList();
+				return value.AsArray();
 			}
 			else
 			{
@@ -267,14 +259,14 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		private bool HasValue(IValueTable table, string key)
+		private bool HasValue(SMLTable table, string key)
 		{
-			return table.ContainsKey(key);
+			return table.GetValue().ContainsKey(key);
 		}
 
-		private IValue GetValue(IValueTable table, string key)
+		private SMLValue GetValue(SMLTable table, string key)
 		{
-			if (table.TryGetValue(key, out var value))
+			if (table.GetValue().TryGetValue(key, out var value))
 			{
 				return value;
 			}
@@ -284,15 +276,15 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		private IValue EnsureValue(IValueTable table, string key, IValue value)
+		private SMLValue EnsureValue(SMLTable table, string key, SMLValue value)
 		{
-			if (table.ContainsKey(key))
+			if (table.GetValue().ContainsKey(key))
 			{
-				table.Add(key, value);
+				table.GetValue().Add(key, value);
 			}
 			else
 			{
-				table.Add(key, value);
+				table.GetValue().Add(key, value);
 			}
 
 			return value;

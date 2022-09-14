@@ -27,7 +27,7 @@ namespace Soup.Build.Runtime
 			MirrorSyntax = null;
 		}
 
-		public ValueList(IEnumerable<Value> collection)
+		public ValueList(IEnumerable<IValue> collection)
 		{
 			_impl = new List<IValue>(collection);
 		}

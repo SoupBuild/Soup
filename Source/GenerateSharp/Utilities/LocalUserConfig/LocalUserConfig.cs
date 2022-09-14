@@ -2,10 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
-using Tomlyn.Syntax;
 
 namespace Soup.Build.Utilities
 {
@@ -16,28 +14,22 @@ namespace Soup.Build.Utilities
 	{
 		public static string Property_SDKs => "SDKs";
 
-		private ValueTable _table;
-
-		private DocumentSyntax _mirrorSyntax;
-
-		public DocumentSyntax MirrorSyntax => _mirrorSyntax;
+		private SMLTable _table;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
 		/// </summary>
 		public LocalUserConfig()
 		{
-			_table = new ValueTable();
-			_mirrorSyntax = new DocumentSyntax();
+			_table = new SMLTable();
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LocalUserConfig"/> class.
 		/// </summary>
-		public LocalUserConfig(ValueTable table)
+		public LocalUserConfig(SMLTable table)
 		{
 			_table = table;
-			_mirrorSyntax = table.MirrorSyntax as DocumentSyntax ?? new DocumentSyntax();
 		}
 
 		/// <summary>
@@ -45,18 +37,18 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public bool HasSDKs()
 		{
-			return _table.ContainsKey(Property_SDKs);
+			return _table.GetValue().ContainsKey(Property_SDKs);
 		}
 
 		public IList<SDKConfig> GetSDKs()
 		{
-			if (_table.TryGetValue(Property_SDKs, out var sdksValue))
+			if (_table.GetValue().TryGetValue(Property_SDKs, out var sdksValue))
 			{
-				var values = sdksValue.AsList();
+				var values = sdksValue.AsArray();
 				var result = new List<SDKConfig>();
-				foreach (var value in values)
+				foreach (var value in values.GetValue())
 				{
-					result.Add(new SDKConfig((ValueTable)value.AsTable()));
+					result.Add(new SDKConfig(value.AsTable()));
 				}
 
 				return result;
@@ -70,32 +62,32 @@ namespace Soup.Build.Utilities
 		public SDKConfig EnsureSDK(string name)
 		{
 			// Check the existing entries
-			IValueList? values;
-			if (_table.TryGetValue(Property_SDKs, out var sdksValue))
+			SMLArray? values;
+			if (_table.GetValue().TryGetValue(Property_SDKs, out var sdksValue))
 			{
-				values = sdksValue.AsList();
-				foreach (var value in values)
+				values = sdksValue.AsArray();
+				foreach (var value in values.GetValue())
 				{
-					var config = new SDKConfig((ValueTable)value.AsTable());
+					var config = new SDKConfig(value.AsTable());
 					if (config.HasName() && config.Name == name)
 						return config;
 				}
 			}
 			else
 			{
-				values = new ValueList();
-				_table.Add(Property_SDKs, new Value(values));
+				values = new SMLArray();
+				_table.GetValue().Add(Property_SDKs, new SMLValue(values));
 			}
 
 			// No matching SDK as a table array entry
-			var sdkSyntax = new TableArraySyntax(Property_SDKs);
-			_mirrorSyntax.Tables.Add(sdkSyntax);
+			////var sdkSyntax = new TableArraySyntax(Property_SDKs);
+			////_mirrorSyntax.Tables.Add(sdkSyntax);
 
-			var sdkValueTable = new ValueTable()
+			var sdkValueTable = new SMLTable()
 			{
-				MirrorSyntax = sdkSyntax,
+				// TODO: MirrorSyntax = sdkSyntax,
 			};
-			values.Add(new Value(sdkValueTable));
+			values.GetValue().Add(new SMLValue(sdkValueTable));
 
 			return new SDKConfig(sdkValueTable)
 			{
@@ -106,7 +98,7 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		public ValueTable GetTable()
+		public SMLTable GetTable()
 		{
 			return _table;
 		}

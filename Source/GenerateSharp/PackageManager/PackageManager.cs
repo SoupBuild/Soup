@@ -571,13 +571,13 @@ namespace Soup.Build.PackageManager
 			Path stagingDirectory,
 			PackageLock packageLock)
 		{
-			foreach (var closure in packageLock.GetClosures())
+			foreach (var closure in packageLock.GetClosures().GetValue())
 			{
 				Log.Info($"Restore Packages for Closure {closure.Key}");
-				foreach (var languageProjects in closure.Value.AsTable())
+				foreach (var languageProjects in closure.Value.AsTable().GetValue())
 				{
 					Log.Info($"Restore Packages for Language {languageProjects.Key}");
-					foreach (var project in languageProjects.Value.AsList())
+					foreach (var project in languageProjects.Value.AsArray().GetValue())
 					{
 						var projectTable = project.AsTable();
 						var projectName = projectTable["Name"].AsString();
