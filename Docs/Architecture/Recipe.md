@@ -7,7 +7,7 @@ The Recipe file is the definition for a code package and will always be located 
 ### Name
 The **Name** property is required for all packages. It consists of a string value for the unique package name. Note: Unique here is within a build context. When local this is set of packages within a single language dependency graph. When published this is globally unique for a language.
 ```
-Name = "MyAwesomePackage"
+Name: "MyAwesomePackage"
 ```
 
 ### Language

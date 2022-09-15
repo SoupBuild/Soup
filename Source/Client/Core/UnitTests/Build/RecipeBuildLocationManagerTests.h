@@ -58,7 +58,7 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/RootRecipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					OutputRoot = "BuildOut/"
+					OutputRoot: "BuildOut/"
 				)")));
 
 			auto workingDirectory = Path("C:/WorkingDirectory/");

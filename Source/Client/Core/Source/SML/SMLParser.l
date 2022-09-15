@@ -17,10 +17,11 @@ module Soup.Core;
 enum class SMLToken : int
 {
     EndOfFile = 0,
+    Newline,
     Key,
     Integer,
     Decimal,
-    Equals,
+    Colon,
     Comma,
     OpenBracket,
     CloseBracket,
@@ -75,7 +76,8 @@ private:
 
 %x QUOTE
 basic_char      [\t\p{L}\p{N}\p{M}\p{P}\p{S}\p{Z}]{-}["\\]
-whitespace      [ \t\n\r]+
+whitespace      [ \t]+
+newline         \r?\n
 comment         "//".*?\r?\n
 key             [\p{L}\p{N}\+#]+
 integer         \d+
@@ -85,12 +87,13 @@ basic_string    {basic_char}+
 %%
 {whitespace}    { /* ignore whitespace */ }
 {comment}       { /* ignore comments */ }
+{newline}       return (int)SMLToken::Newline;
 {integer}       return (int)SMLToken::Integer;
 "true"          return (int)SMLToken::True;
 "false"         return (int)SMLToken::False;
 {key}           return (int)SMLToken::Key;
 {decimal}       return (int)SMLToken::Decimal;
-"="             return (int)SMLToken::Equals;
+":"             return (int)SMLToken::Colon;
 "["             return (int)SMLToken::OpenBracket;
 "]"             return (int)SMLToken::CloseBracket;
 "{"             return (int)SMLToken::OpenBrace;
@@ -156,10 +159,19 @@ public:
 private:
     bool TryParseTableContents(std::unordered_map<std::string, SMLValue>& tableValue)
     {
+        // Odd move next to allow for optional extra delimiter checks at end
+        MoveNext();
+
+        // Allow zero or more newlines at the start of a table
+        while (_currentToken == SMLToken::Newline)
+        {
+            MoveNext();
+        }
+
         while (true)
         {
             // Parse the next value
-            MoveNext();
+            // Note: The delimiter check will read the first token of next item
             switch (_currentToken)
             {
                 case SMLToken::Integer:
@@ -171,20 +183,20 @@ private:
 
                     // Verify match assign
                     MoveNext();
-                    if (_currentToken != SMLToken::Equals)
+                    if (_currentToken != SMLToken::Colon)
                         return false;
 
                     // Parse the value
                     MoveNext();
                     SMLValue value;
-                    if (TryParseValue(value))
-                    {
-                        tableValue.emplace(std::move(key), std::move(value));
-                    }
-                    else
-                    {
+                    if (!TryParseValue(value))
                         return false;
-                    }
+
+                    tableValue.emplace(std::move(key), std::move(value));
+
+                    // Check for trailing delimiter
+                    if (!TryParseDelimiter())
+                        return false;
 
                     break;
                 }
@@ -199,12 +211,19 @@ private:
 
     bool TryParseArray(std::vector<SMLValue>& arrayValue)
     {
-        // Odd move next to allow for checks for optional comma at end
+        // Odd move next to allow for optional extra delimiter checks at end
         MoveNext();
+
+        // Allow zero or more newlines at the start of a table
+        while (_currentToken == SMLToken::Newline)
+        {
+            MoveNext();
+        }
 
         while (true)
         {
             // Parse the value if not at end
+            // Note: The delimiter check will read the first token of next item
             switch (_currentToken)
             {
                 case SMLToken::CloseBracket:
@@ -216,36 +235,18 @@ private:
                 {
                     // Assume that it is a value
                     SMLValue value;
-                    if (TryParseValue(value))
-                    {
-                        arrayValue.push_back(std::move(value));
-
-                        // Check for optional trailing comma
-                        MoveNext();
-                        switch (_currentToken)
-                        {
-                            case SMLToken::Comma:
-                            {
-                                // Comma is optional, skip over
-                                MoveNext();
-                                break;
-                            }
-                            case SMLToken::CloseBrace:
-                            {
-                                // If no comma then we can early exit at end
-                                return true;
-                            }
-                            default:
-                            {
-                                // If no comma then we must be at the end of the array
-                                return false;
-                            }
-                        }
-                    }
-                    else
-                    {
+                    if (!TryParseValue(value))
                         return false;
-                    }
+
+                    arrayValue.push_back(std::move(value));
+
+                    // Check for trailing delimiter
+                    if (!TryParseDelimiter())
+                        return false;
+
+                    // Check if end of array
+                    if (_currentToken == SMLToken::CloseBrace)
+                            return true;
                 }
             }
         }
@@ -315,6 +316,35 @@ private:
         }
     }
 
+    bool TryParseDelimiter()
+    {
+        MoveNext();
+        switch (_currentToken)
+        {
+            case SMLToken::Comma:
+            {
+                // Move next to match multiple newline delimiter result
+                MoveNext();
+                return true;
+            }
+            case SMLToken::Newline:
+            {
+                // Newline delimiter is one or more
+                while (_currentToken == SMLToken::Newline)
+                {
+                    MoveNext();
+                }
+
+                return true;
+            }
+            default:
+            {
+                // Some form of delimiter is required
+                return false;
+            }
+        }
+    }
+
     SMLToken MoveNext()
     {
         _currentToken = (SMLToken)lex();
@@ -325,6 +355,9 @@ private:
                 case SMLToken::EndOfFile:
                     std::cout << "Token: " << "EndOfFile" << '\n';
                     break;
+                case SMLToken::Newline:
+                    std::cout << "Token: " << "Newline" << '\n';
+                    break;
                 case SMLToken::Key:
                     std::cout << "Token: " << "Key" << '\n';
                     break;
@@ -334,8 +367,8 @@ private:
                 case SMLToken::Decimal:
                     std::cout << "Token: " << "Decimal" << '\n';
                     break;
-                case SMLToken::Equals:
-                    std::cout << "Token: " << "Equals" << '\n';
+                case SMLToken::Colon:
+                    std::cout << "Token: " << "Colon" << '\n';
                     break;
                 case SMLToken::Comma:
                     std::cout << "Token: " << "Comma" << '\n';

@@ -21,11 +21,29 @@ namespace Soup.Build.Utilities.UnitTests
 		}
 
 		[Fact]
-		public void Deserialize_Simple()
+		public void Deserialize_Simple_Flat()
 		{
 			var recipe =
-				@"Name = ""MyPackage""
-				Language = ""C++|1""";
+				@"Name: ""MyPackage""
+				Language: ""C++|1""
+				";
+			var actual = SMLManager.Deserialize(recipe);
+
+			var expected = new SMLTable(
+				new Dictionary<string, SMLValue>()
+				{
+					{ "Name", new SMLValue("MyPackage") },
+					{ "Language", new SMLValue("C++|1") },
+				});
+
+			Assert.Equal(expected, actual);
+		}
+
+		[Fact]
+		public void Deserialize_Simple_Inline()
+		{
+			var recipe =
+				@"Name: ""MyPackage"", Language: ""C++|1"",";
 			var actual = SMLManager.Deserialize(recipe);
 
 			var expected = new SMLTable(
@@ -42,17 +60,20 @@ namespace Soup.Build.Utilities.UnitTests
 		public void Deserialize_AllProperties()
 		{
 			var recipe =
-				@"Name = ""MyPackage""
+				@"Name: ""MyPackage""
+
 				// A Comment in the file
-				Language = ""C++|1""
-				Version = ""1.2.3""
-				EnableErrorsAsWarnings = false
-				EnableCoolFeature = true
-				Dependencies = {
-					Runtime =[]
-					Build =[]
-					Test =[]
-				}";
+				Language: ""C++|1""
+				Version: ""1.2.3""
+				EnableErrorsAsWarnings: false
+				EnableCoolFeature: true
+				Dependencies: {
+					Runtime:[], Build:[]
+
+					Test :[
+						123
+						false, ""string"", ]
+				},";
 			var actual = SMLManager.Deserialize(recipe);
 
 			var expected = new SMLTable(
@@ -69,7 +90,15 @@ namespace Soup.Build.Utilities.UnitTests
 						{
 							{ "Runtime", new SMLValue(new SMLArray()) },
 							{ "Build", new SMLValue(new SMLArray()) },
-							{ "Test", new SMLValue(new SMLArray()) },
+							{ 
+								"Test",
+								new SMLValue(new SMLArray(new List<SMLValue>()
+								{
+									new SMLValue(123),
+									new SMLValue(false),
+									new SMLValue("string"),
+								}))
+							},
 						}))
 					},
 				});

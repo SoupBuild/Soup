@@ -32,8 +32,8 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++|1"
+					Name: "MyPackage"
+					Language: "C++|1"
 				)")));
 
 			auto operationGraph = OperationGraph(
@@ -255,11 +255,11 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++|1"
-					Dependencies = {
-						Build = [
-							"TestBuild@1.2.3",
+					Name: "MyPackage"
+					Language: "C++|1"
+					Dependencies: {
+						Build: [
+							"TestBuild@1.2.3"
 						]
 					}
 				)")));
@@ -267,8 +267,8 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "TestBuild"
-					Language = "C#|1"
+					Name: "TestBuild"
+					Language: "C#|1"
 				)")));
 
 			auto myProjectOperationGraph = OperationGraph(
@@ -669,31 +669,31 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++|1"
-					Dependencies = {
-						Runtime = [
-							"PackageA@1.2.3",
-							"PackageB@1.1.1",
+					Name: "MyPackage"
+					Language: "C++|1"
+					Dependencies: {
+						Runtime: [
+							"PackageA@1.2.3"
+							"PackageB@1.1.1"
 						]
 					}
 				)")));
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "PackageA"
-					Language = "C++|1"
-					Dependencies = {
-						Runtime = [
-							"PackageB@1.1.1",
+					Name: "PackageA"
+					Language: "C++|1"
+					Dependencies: {
+						Runtime: [
+							"PackageB@1.1.1"
 						]
 					}
 				)")));
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "PackageB"
-					Language = "C++|1"
+					Name: "PackageB"
+					Language: "C++|1"
 				)")));
 
 			auto myProjectOperationGraph = OperationGraph(
@@ -1269,11 +1269,11 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++|1"
-					Dependencies = {
-						Build = [
-							"TestBuild@1.2.3",
+					Name: "MyPackage"
+					Language: "C++|1"
+					Dependencies: {
+						Build: [
+							"TestBuild@1.2.3"
 						]
 					}
 				)")));
@@ -1281,33 +1281,33 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "TestBuild"
-					Language = "C#|1"
+					Name: "TestBuild"
+					Language: "C#|1"
 				)")));
 
 			// Create the package lock
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version = 2
-					Closures = {
-						Root = {
-							C# = [
-								{ Name = "TestBuild" Version = "1.3.0" Build = "Build1" },
+					Version: 2
+					Closures: {
+						Root: {
+							C#: [
+								{ Name: "TestBuild", Version: "1.3.0", Build: "Build1", }
 							]
-							C++ = [
-								{ Name = "MyPackage" Version = "../MyPackage/" Build = "Build0" },
-							]
-						}
-						Build0 = {
-							C# = [
-								{ Name = "C++" Version = "1.0.2" },
-								{ Name = "TestBuild" Version = "1.3.0" },
+							C++: [
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", }
 							]
 						}
-						Build1 = {
-							C# = [
-								{ Name = "C#" Version = "1.0.1" },
+						Build0: {
+							C#: [
+								{ Name: "C++", Version: "1.0.2", }
+								{ Name: "TestBuild", Version: "1.3.0", }
+							]
+						}
+						Build1: {
+							C#: [
+								{ Name: "C#", Version: "1.0.1", }
 							]
 						}
 					}

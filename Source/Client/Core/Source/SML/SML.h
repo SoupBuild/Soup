@@ -203,7 +203,7 @@ namespace Soup::Core
 	{
 		for (const auto& tableValue : value.GetRoot().GetValue())
 		{
-			stream << tableValue.first << " = " << tableValue.second << "\n";
+			stream << tableValue.first << ": " << tableValue.second << "\n";
 		}
 
 		return stream;
@@ -214,7 +214,7 @@ namespace Soup::Core
 		stream << '{';
 		for (const auto& tableValue : value.GetValue())
 		{
-			stream << tableValue.first << " = " << tableValue.second << "\n";
+			stream << tableValue.first << ": " << tableValue.second << "\n";
 		}
 
 		stream << '}';
@@ -227,7 +227,7 @@ namespace Soup::Core
 		stream << '[';
 		for (const auto& arrayValue : value.GetValue())
 		{
-			stream << arrayValue << ',\n';
+			stream << arrayValue << '\n';
 		}
 
 		stream << ']';

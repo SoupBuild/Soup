@@ -6,10 +6,10 @@ This is a console application that has a single static library dependency.
 ## Library/Recipe.sml
 The Recipe file that defines the static library "Samples.Cpp.StaticLibrary.Library".
 ```
-Name = "Samples.Cpp.StaticLibrary.Library"
-Language = "C++|0.1"
-Version = "1.0.0"
-Interface = "Module.cpp"
+Name: "Samples.Cpp.StaticLibrary.Library"
+Language: "C++|0.1"
+Version: "1.0.0"
+Interface: "Module.cpp"
 ```
 
 ## Library/Module.cpp
@@ -39,18 +39,19 @@ export namespace Samples.Cpp.StaticLibrary.Library
 ## Application/Recipe.sml
 The Recipe file that defines the executable "Samples.Cpp.StaticLibrary.Application".
 ```
-Name = "Samples.Cpp.StaticLibrary.Application"
-Language = "C++|0.1"
-Type = "Executable"
-Version = "1.0.0"
-Source = [
+Name: "Samples.Cpp.StaticLibrary.Application"
+Language: "C++|0.1"
+Type: "Executable"
+Version: "1.0.0"
+Source: [
     "Main.cpp"
 ]
 
-[Dependencies]
-Runtime = [
-    "../Library/"
-]
+Dependencies: {
+    Runtime: [
+        "../Library/"
+    ]
+}
 ```
 
 ## MyApplication/Main.cpp

@@ -18,13 +18,18 @@ namespace Soup.Build.Utilities
 	{
 		public virtual SMLValue VisitDocument(SMLParser.DocumentContext context)
 		{
-			return context.table_content().Accept(this);
+			return context.tableContent().Accept(this);
 		}
 
-		public virtual SMLValue VisitTable_content(SMLParser.Table_contentContext context)
+		public virtual SMLValue VisitTable(SMLParser.TableContext context)
+		{
+			return context.tableContent().Accept(this);
+		}
+
+		public virtual SMLValue VisitTableContent(SMLParser.TableContentContext context)
 		{
 			var tableContent = new Dictionary<string, SMLValue>();
-			foreach (var value in context.assign_value())
+			foreach (var value in context.tableValue())
 			{
 				tableContent.Add(value.KEY().GetText(), value.value().Accept(this));
 			}
@@ -32,10 +37,20 @@ namespace Soup.Build.Utilities
 			return new SMLValue(new SMLTable(tableContent));
 		}
 
-		public virtual SMLValue VisitArray_content(SMLParser.Array_contentContext context)
+		public virtual SMLValue VisitTableValue(SMLParser.TableValueContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		public virtual SMLValue VisitArray(SMLParser.ArrayContext context)
+		{
+			return context.arrayContent().Accept(this);
+		}
+
+		public virtual SMLValue VisitArrayContent(SMLParser.ArrayContentContext context)
 		{
 			var arrayContent = new List<SMLValue>();
-			foreach (var value in context.value())
+			foreach (var value in context.arrayValue())
 			{
 				arrayContent.Add(value.Accept(this));
 			}
@@ -43,9 +58,9 @@ namespace Soup.Build.Utilities
 			return new SMLValue(new SMLArray(arrayContent));
 		}
 
-		public virtual SMLValue VisitAssign_value(SMLParser.Assign_valueContext context)
+		public virtual SMLValue VisitArrayValue(SMLParser.ArrayValueContext context)
 		{
-			throw new NotSupportedException();
+			return context.value().Accept(this);
 		}
 
 		public virtual SMLValue VisitValueInteger(SMLParser.ValueIntegerContext context)
@@ -80,14 +95,9 @@ namespace Soup.Build.Utilities
 			return context.array().Accept(this);
 		}
 
-		public virtual SMLValue VisitTable(SMLParser.TableContext context)
+		public virtual SMLValue VisitDelimiter(SMLParser.DelimiterContext context)
 		{
-			return context.table_content().Accept(this);
-		}
-
-		public virtual SMLValue VisitArray(SMLParser.ArrayContext context)
-		{
-			return context.array_content().Accept(this);
+			throw new NotImplementedException();
 		}
 	}
 }
