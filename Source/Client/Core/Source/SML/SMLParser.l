@@ -27,6 +27,8 @@ enum class SMLToken : int
     OpenBrace,
     CloseBrace,
     StringLiteral,
+    True,
+    False,
     Error,
 };
 
@@ -74,6 +76,7 @@ private:
 %x QUOTE
 basic_char      [\t\p{L}\p{N}\p{M}\p{P}\p{S}\p{Z}]{-}["\\]
 whitespace      [ \t\n\r]+
+comment         "//".*?\r?\n
 key             [\p{L}\p{N}\+#]+
 integer         \d+
 decimal         \.\d+
@@ -81,7 +84,10 @@ basic_string    {basic_char}+
 
 %%
 {whitespace}    { /* ignore whitespace */ }
+{comment}       { /* ignore comments */ }
 {integer}       return (int)SMLToken::Integer;
+"true"          return (int)SMLToken::True;
+"false"         return (int)SMLToken::False;
 {key}           return (int)SMLToken::Key;
 {decimal}       return (int)SMLToken::Decimal;
 "="             return (int)SMLToken::Equals;
@@ -262,6 +268,16 @@ private:
                 value = SMLValue(integer);
                 return true;
             }
+            case SMLToken::True:
+            {
+                value = SMLValue(true);
+                return true;
+            }
+            case SMLToken::False:
+            {
+                value = SMLValue(false);
+                return true;
+            }
             case SMLToken::OpenBrace:
             {
                 std::unordered_map<std::string, SMLValue> tableValue;
@@ -338,6 +354,12 @@ private:
                     break;
                 case SMLToken::StringLiteral:
                     std::cout << "Token: " << "StringLiteral" << '\n';
+                    break;
+                case SMLToken::True:
+                    std::cout << "Token: " << "True" << '\n';
+                    break;
+                case SMLToken::False:
+                    std::cout << "Token: " << "False" << '\n';
                     break;
                 case SMLToken::Error:
                     std::cout << "Token: " << "Error" << '\n';

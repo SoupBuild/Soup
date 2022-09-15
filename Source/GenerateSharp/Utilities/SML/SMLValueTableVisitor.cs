@@ -6,6 +6,7 @@ using Antlr4.Runtime.Tree;
 using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 
 namespace Soup.Build.Utilities
 {
@@ -57,6 +58,16 @@ namespace Soup.Build.Utilities
 			var literal = context.STRING_LITERAL().GetText();
 			var content = literal.Substring(1, literal.Length - 2);
 			return new SMLValue(content);
+		}
+
+		public virtual SMLValue VisitValueTrue(SMLParser.ValueTrueContext context)
+		{
+			return new SMLValue(true);
+		}
+
+		public virtual SMLValue VisitValueFalse(SMLParser.ValueFalseContext context)
+		{
+			return new SMLValue(false);
 		}
 
 		public virtual SMLValue VisitValueTable(SMLParser.ValueTableContext context)

@@ -37,7 +37,8 @@ public partial class SMLParser : Parser {
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
 		EQUALS=1, OPEN_BRACKET=2, CLOSE_BRACKET=3, OPEN_BRACE=4, CLOSE_BRACE=5, 
-		COMMA=6, INTEGER=7, KEY=8, WORD=9, STRING_LITERAL=10, WHITESPACE=11;
+		COMMA=6, TRUE=7, FALSE=8, COMMENT=9, INTEGER=10, KEY=11, WORD=12, STRING_LITERAL=13, 
+		WHITESPACE=14;
 	public const int
 		RULE_document = 0, RULE_table_content = 1, RULE_array_content = 2, RULE_assign_value = 3, 
 		RULE_value = 4, RULE_table = 5, RULE_array = 6;
@@ -47,11 +48,12 @@ public partial class SMLParser : Parser {
 	};
 
 	private static readonly string[] _LiteralNames = {
-		null, "'='", "'['", "']'", "'{'", "'}'", "','"
+		null, "'='", "'['", "']'", "'{'", "'}'", "','", "'true'", "'false'"
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, "EQUALS", "OPEN_BRACKET", "CLOSE_BRACKET", "OPEN_BRACE", "CLOSE_BRACE", 
-		"COMMA", "INTEGER", "KEY", "WORD", "STRING_LITERAL", "WHITESPACE"
+		"COMMA", "TRUE", "FALSE", "COMMENT", "INTEGER", "KEY", "WORD", "STRING_LITERAL", 
+		"WHITESPACE"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -218,7 +220,7 @@ public partial class SMLParser : Parser {
 			State = 34;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 1172L) != 0) {
+			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 9620L) != 0) {
 				{
 				State = 23;
 				value();
@@ -323,6 +325,26 @@ public partial class SMLParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
+	public partial class ValueTrueContext : ValueContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode TRUE() { return GetToken(SMLParser.TRUE, 0); }
+		public ValueTrueContext(ValueContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitValueTrue(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ValueFalseContext : ValueContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode FALSE() { return GetToken(SMLParser.FALSE, 0); }
+		public ValueFalseContext(ValueContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitValueFalse(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
 	public partial class ValueStringContext : ValueContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_LITERAL() { return GetToken(SMLParser.STRING_LITERAL, 0); }
 		public ValueStringContext(ValueContext context) { CopyFrom(context); }
@@ -373,7 +395,7 @@ public partial class SMLParser : Parser {
 		ValueContext _localctx = new ValueContext(Context, State);
 		EnterRule(_localctx, 8, RULE_value);
 		try {
-			State = 44;
+			State = 46;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case INTEGER:
@@ -392,19 +414,35 @@ public partial class SMLParser : Parser {
 				Match(STRING_LITERAL);
 				}
 				break;
-			case OPEN_BRACE:
-				_localctx = new ValueTableContext(_localctx);
+			case TRUE:
+				_localctx = new ValueTrueContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
 				State = 42;
+				Match(TRUE);
+				}
+				break;
+			case FALSE:
+				_localctx = new ValueFalseContext(_localctx);
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 43;
+				Match(FALSE);
+				}
+				break;
+			case OPEN_BRACE:
+				_localctx = new ValueTableContext(_localctx);
+				EnterOuterAlt(_localctx, 5);
+				{
+				State = 44;
 				table();
 				}
 				break;
 			case OPEN_BRACKET:
 				_localctx = new ValueArrayContext(_localctx);
-				EnterOuterAlt(_localctx, 4);
+				EnterOuterAlt(_localctx, 6);
 				{
-				State = 43;
+				State = 45;
 				array();
 				}
 				break;
@@ -449,11 +487,11 @@ public partial class SMLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 46;
-			Match(OPEN_BRACE);
-			State = 47;
-			table_content();
 			State = 48;
+			Match(OPEN_BRACE);
+			State = 49;
+			table_content();
+			State = 50;
 			Match(CLOSE_BRACE);
 			}
 		}
@@ -494,11 +532,11 @@ public partial class SMLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 50;
-			Match(OPEN_BRACKET);
-			State = 51;
-			array_content();
 			State = 52;
+			Match(OPEN_BRACKET);
+			State = 53;
+			array_content();
+			State = 54;
 			Match(CLOSE_BRACKET);
 			}
 		}
@@ -514,21 +552,22 @@ public partial class SMLParser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,11,55,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,1,0,
+		4,1,14,57,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,1,0,
 		1,0,1,0,1,1,5,1,19,8,1,10,1,12,1,22,9,1,1,2,1,2,1,2,5,2,27,8,2,10,2,12,
-		2,30,9,2,1,2,3,2,33,8,2,3,2,35,8,2,1,3,1,3,1,3,1,3,1,4,1,4,1,4,1,4,3,4,
-		45,8,4,1,5,1,5,1,5,1,5,1,6,1,6,1,6,1,6,1,6,0,0,7,0,2,4,6,8,10,12,0,0,54,
-		0,14,1,0,0,0,2,20,1,0,0,0,4,34,1,0,0,0,6,36,1,0,0,0,8,44,1,0,0,0,10,46,
-		1,0,0,0,12,50,1,0,0,0,14,15,3,2,1,0,15,16,5,0,0,1,16,1,1,0,0,0,17,19,3,
-		6,3,0,18,17,1,0,0,0,19,22,1,0,0,0,20,18,1,0,0,0,20,21,1,0,0,0,21,3,1,0,
-		0,0,22,20,1,0,0,0,23,28,3,8,4,0,24,25,5,6,0,0,25,27,3,8,4,0,26,24,1,0,
-		0,0,27,30,1,0,0,0,28,26,1,0,0,0,28,29,1,0,0,0,29,32,1,0,0,0,30,28,1,0,
-		0,0,31,33,5,6,0,0,32,31,1,0,0,0,32,33,1,0,0,0,33,35,1,0,0,0,34,23,1,0,
-		0,0,34,35,1,0,0,0,35,5,1,0,0,0,36,37,5,8,0,0,37,38,5,1,0,0,38,39,3,8,4,
-		0,39,7,1,0,0,0,40,45,5,7,0,0,41,45,5,10,0,0,42,45,3,10,5,0,43,45,3,12,
-		6,0,44,40,1,0,0,0,44,41,1,0,0,0,44,42,1,0,0,0,44,43,1,0,0,0,45,9,1,0,0,
-		0,46,47,5,4,0,0,47,48,3,2,1,0,48,49,5,5,0,0,49,11,1,0,0,0,50,51,5,2,0,
-		0,51,52,3,4,2,0,52,53,5,3,0,0,53,13,1,0,0,0,5,20,28,32,34,44
+		2,30,9,2,1,2,3,2,33,8,2,3,2,35,8,2,1,3,1,3,1,3,1,3,1,4,1,4,1,4,1,4,1,4,
+		1,4,3,4,47,8,4,1,5,1,5,1,5,1,5,1,6,1,6,1,6,1,6,1,6,0,0,7,0,2,4,6,8,10,
+		12,0,0,58,0,14,1,0,0,0,2,20,1,0,0,0,4,34,1,0,0,0,6,36,1,0,0,0,8,46,1,0,
+		0,0,10,48,1,0,0,0,12,52,1,0,0,0,14,15,3,2,1,0,15,16,5,0,0,1,16,1,1,0,0,
+		0,17,19,3,6,3,0,18,17,1,0,0,0,19,22,1,0,0,0,20,18,1,0,0,0,20,21,1,0,0,
+		0,21,3,1,0,0,0,22,20,1,0,0,0,23,28,3,8,4,0,24,25,5,6,0,0,25,27,3,8,4,0,
+		26,24,1,0,0,0,27,30,1,0,0,0,28,26,1,0,0,0,28,29,1,0,0,0,29,32,1,0,0,0,
+		30,28,1,0,0,0,31,33,5,6,0,0,32,31,1,0,0,0,32,33,1,0,0,0,33,35,1,0,0,0,
+		34,23,1,0,0,0,34,35,1,0,0,0,35,5,1,0,0,0,36,37,5,11,0,0,37,38,5,1,0,0,
+		38,39,3,8,4,0,39,7,1,0,0,0,40,47,5,10,0,0,41,47,5,13,0,0,42,47,5,7,0,0,
+		43,47,5,8,0,0,44,47,3,10,5,0,45,47,3,12,6,0,46,40,1,0,0,0,46,41,1,0,0,
+		0,46,42,1,0,0,0,46,43,1,0,0,0,46,44,1,0,0,0,46,45,1,0,0,0,47,9,1,0,0,0,
+		48,49,5,4,0,0,49,50,3,2,1,0,50,51,5,5,0,0,51,11,1,0,0,0,52,53,5,2,0,0,
+		53,54,3,4,2,0,54,55,5,3,0,0,55,13,1,0,0,0,5,20,28,32,34,46
 	};
 
 	public static readonly ATN _ATN =

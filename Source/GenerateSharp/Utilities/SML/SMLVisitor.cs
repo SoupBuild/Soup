@@ -70,6 +70,20 @@ public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitValueString([NotNull] SMLParser.ValueStringContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>valueTrue</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValueTrue([NotNull] SMLParser.ValueTrueContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>valueFalse</c>
+	/// labeled alternative in <see cref="SMLParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValueFalse([NotNull] SMLParser.ValueFalseContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>valueTable</c>
 	/// labeled alternative in <see cref="SMLParser.value"/>.
 	/// </summary>

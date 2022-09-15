@@ -9,6 +9,8 @@ array_content       : (value (COMMA value)* COMMA?)? ;
 assign_value        : KEY EQUALS value ;
 value               : INTEGER # valueInteger
                     | STRING_LITERAL # valueString
+                    | TRUE # valueTrue
+                    | FALSE # valueFalse
                     | table # valueTable
                     | array # valueArray
                     ;
@@ -29,6 +31,9 @@ CLOSE_BRACKET       : ']' ;
 OPEN_BRACE          : '{' ;
 CLOSE_BRACE         : '}' ;
 COMMA               : ',' ;
+TRUE                : 'true' ;
+FALSE               : 'false' ;
+COMMENT             : '//'.*?'\r'?'\n' -> skip ;
 INTEGER             : DIGIT+ ;
 KEY                 : [\p{L}\p{N}+#]+ ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;

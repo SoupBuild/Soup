@@ -43,8 +43,11 @@ namespace Soup.Build.Utilities.UnitTests
 		{
 			var recipe =
 				@"Name = ""MyPackage""
+				// A Comment in the file
 				Language = ""C++|1""
 				Version = ""1.2.3""
+				EnableErrorsAsWarnings = false
+				EnableCoolFeature = true
 				Dependencies = {
 					Runtime =[]
 					Build =[]
@@ -58,6 +61,8 @@ namespace Soup.Build.Utilities.UnitTests
 					{ "Name", new SMLValue("MyPackage") },
 					{ "Language", new SMLValue("C++|1") },
 					{ "Version", new SMLValue("1.2.3") },
+					{ "EnableErrorsAsWarnings", new SMLValue(false) },
+					{ "EnableCoolFeature", new SMLValue(true) },
 					{ 
 						"Dependencies",
 						new SMLValue(new SMLTable(new Dictionary<string, SMLValue>()

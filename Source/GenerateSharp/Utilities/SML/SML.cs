@@ -182,6 +182,12 @@ namespace Soup.Build.Utilities
 			RawValue = value;
 		}
 
+		public SMLValue(bool value)
+		{
+			Type = SMLValueType.Boolean;
+			RawValue = value;
+		}
+
 		public SMLValue(string value)
 		{
 			Type = SMLValueType.String;
