@@ -9,7 +9,7 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		"Detours@4.0.3"
+		"Detours@4.0.4"
 		"Opal@0.5.0"
 		"../Shared/"
 	]

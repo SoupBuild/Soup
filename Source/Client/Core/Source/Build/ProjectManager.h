@@ -20,11 +20,11 @@ namespace Soup::Core
 	private:
 		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _builtInCppLanguage = "C++";
-		const std::string _builtInCppExtensionVersion = "0.2.2";
+		const std::string _builtInCppExtensionVersion = "0.3.0";
 		const Path _builtInCppExtensionPath = Path("Soup.Cpp/");
 		const Path _builtInCppExtensionFilename = Path("Soup.Cpp.dll");
 		const std::string _builtInCSharpLanguage = "C#";
-		const std::string _builtInCSharpExtensionVersion = "0.5.2";
+		const std::string _builtInCSharpExtensionVersion = "0.6.0";
 		const Path _builtInCSharpExtensionPath = Path("Soup.CSharp/");
 		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
 

@@ -44,12 +44,12 @@ Build: "Build2"
 }
 {
 Name: "Soup.CSharp.Compiler"
-Version: "0.4.2"
+Version: "0.5.0"
 Build: "Build2"
 }
 {
 Name: "Soup.CSharp.Compiler.Roslyn"
-Version: "0.4.1"
+Version: "0.5.0"
 Build: "Build2"
 }
 {
@@ -71,7 +71,7 @@ Build: "Build0"
 }
 {
 Name: "Detours"
-Version: "4.0.3"
+Version: "4.0.4"
 Build: "Build0"
 }
 {
