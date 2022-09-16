@@ -3,7 +3,7 @@ Closures: {
 	Root: {
 		C#: [
 			{ Name: "Opal", Version: "1.0.3", Build: "Build2", }
-			{ Name: "Soup.Build", Version: "0.1.4", Build: "Build2", }
+			{ Name: "Soup.Build", Version: "0.2.0", Build: "Build2", }
 			{ Name: "Soup.Build.Extensions", Version: "0.2.0", Build: "Build2", }
 			{ Name: "Soup.Build.Extensions.Utilities", Version: "0.2.1", Build: "Build3", }
 			{ Name: "Soup.Cpp", Version: "0.2.2", Build: "Build2", }

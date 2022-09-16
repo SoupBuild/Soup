@@ -12,5 +12,5 @@ Source = [
 [Dependencies]
 Runtime = [
 	{ Reference = "Opal@1.0.3" },
-	{ Reference = "Soup.Build@0.1.4", ExcludeRuntime = true },
+	{ Reference = "Soup.Build@0.2.0", ExcludeRuntime = true },
 ]
