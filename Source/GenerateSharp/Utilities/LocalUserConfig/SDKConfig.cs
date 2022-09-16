@@ -221,43 +221,10 @@ namespace Soup.Build.Utilities
 			}
 
 			// Add the new syntax to the parent table syntax
-			// values.();
-			////switch (values.MirrorSyntax)
-			////{
-			////	case InlineTableSyntax tableSyntax:
-			////		// Replace all items
-			////		while (tableSyntax.Items.ChildrenCount > 0)
-			////			tableSyntax.Items.RemoveChildAt(0);
-
-			////		var index = 0;
-			////		foreach (var item in value)
-			////		{
-			////			bool isLastItem = index == value.Keys.Count - 1;
-			////			var equalToken = SyntaxFactory.Token(TokenKind.Equal);
-			////			equalToken.AddLeadingWhitespace();
-			////			equalToken.AddTrailingWhitespace();
-			////			var newKeyValue = new KeyValueSyntax()
-			////			{
-			////				Key = new KeySyntax(item.Key),
-			////				EqualToken = equalToken,
-			////				Value = new StringValueSyntax(item.Value),
-			////			};
-			////			var newInlineTableItem = new InlineTableItemSyntax(newKeyValue)
-			////			{
-			////			};
-			////			if (!isLastItem)
-			////			{
-			////				newInlineTableItem.Comma = SyntaxFactory.Token(TokenKind.Comma);
-			////			}
-
-			////			// newInlineTableItem.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
-			////			tableSyntax.Items.Add(newInlineTableItem);
-			////			index++;
-			////		}
-			////		break;
-			////	default:
-			////		throw new InvalidOperationException("Unknown Syntax on ValueList");
-			////}
+			foreach (var item in value)
+			{
+				values.GetValue().Add(item.Key, new SMLValue(item.Value));
+			}
 		}
 
 		/// <summary>
