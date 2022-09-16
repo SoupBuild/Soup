@@ -10,6 +10,6 @@ Dependencies: {
 	Runtime: [
 		"Detours@4.0.3"
 		"../Shared/"
-		"Opal@0.4.1"
+		"Opal@0.5.0"
 	]
 }

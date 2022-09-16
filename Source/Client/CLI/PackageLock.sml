@@ -66,17 +66,12 @@ Build: "Build0"
 }
 {
 Name: "CryptoPP"
-Version: "1.0.2"
+Version: "1.1.0"
 Build: "Build0"
 }
 {
 Name: "Detours"
 Version: "4.0.3"
-Build: "Build0"
-}
-{
-Name: "json11"
-Version: "1.0.2"
 Build: "Build0"
 }
 {
@@ -96,7 +91,7 @@ Build: "Build0"
 }
 {
 Name: "Opal"
-Version: "0.4.1"
+Version: "0.5.0"
 Build: "Build0"
 }
 {
@@ -116,7 +111,7 @@ Build: "Build1"
 }
 {
 Name: "Soup.Test.Assert"
-Version: "0.2.1"
+Version: "0.3.0"
 Build: "Build0"
 }
 ]
