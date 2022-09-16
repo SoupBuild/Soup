@@ -8,7 +8,7 @@ Source: [
 Dependencies: {
 	Runtime: [
 		{ Reference: "Soup.Build@0.2.0", ExcludeRuntime: true, }
-		{ Reference: "Soup.Build.Extensions@0.2.0", }
+		{ Reference: "Soup.Build.Extensions@0.3.0", }
 		{ Reference: "Opal@1.1.0", }
 	]
 }

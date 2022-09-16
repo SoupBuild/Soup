@@ -13,7 +13,6 @@
 
 import Opal;
 import Soup.Core;
-import json11;
 import Monitor.Host;
 import Soup.Test.Assert;
 

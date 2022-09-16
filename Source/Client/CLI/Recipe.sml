@@ -22,14 +22,14 @@ Dependencies: {
 	]
 	Other: [
 		// "../../GenerateSharp/Generate/"
-		"C#|Soup.Cpp@0.2.2"
-		"C#|Soup.CSharp@0.5.2"
+		"C#|Soup.Cpp@0.3.0"
+		"C#|Soup.CSharp@0.6.0"
 	]
 	Build: [
-		// TODO: "Soup.Test.Cpp@0.2.1"
+		// TODO: "Soup.Test.Cpp@0.3.0"
 	]
 	Test: [
-		"Soup.Test.Assert@0.2.1"
+		"Soup.Test.Assert@0.3.0"
 	]
 }
 

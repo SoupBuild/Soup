@@ -17,10 +17,9 @@ Source: [
 
 Dependencies: {
 	Build: [
-		"Soup.Test.Cpp@0.2.1"
+		"Soup.Test.Cpp@0.3.0"
 	]
 	Runtime: [
-		"json11@1.0.2"
 		"Opal@0.4.1"
 		"reflex@1.0.1"
 		"../../Monitor/Host/"
