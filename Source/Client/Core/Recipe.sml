@@ -22,7 +22,7 @@ Dependencies: {
 	Runtime: [
 		"json11@1.0.2"
 		"Opal@0.4.1"
-		"../../../../RE-Flex/"
+		"reflex@1.0.1"
 		"../../Monitor/Host/"
 		"CryptoPP@1.0.2"
 	]
