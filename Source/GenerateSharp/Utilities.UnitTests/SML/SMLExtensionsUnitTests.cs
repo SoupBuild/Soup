@@ -18,7 +18,11 @@ namespace Soup.Build.Utilities.UnitTests
 			uut.AddListWithSyntax("NewList");
 
 			var content = await SerializeAsync(uut);
-			Assert.Equal("{NewList = []}", content);
+			var expected =
+@"NewList: [
+]
+";
+			Assert.Equal(expected, content);
 		}
 
 		[Fact]
@@ -30,7 +34,12 @@ namespace Soup.Build.Utilities.UnitTests
 			newList.AddItemWithSyntax("NewItem");
 
 			var content = await SerializeAsync(uut);
-			Assert.Equal("{NewList = [\"NewItem\", ]}", content);
+			var expected =
+@"NewList: [
+""NewItem""
+]
+";
+			Assert.Equal(expected, content);
 		}
 
 		[Fact]
@@ -42,7 +51,13 @@ namespace Soup.Build.Utilities.UnitTests
 			newList.AddTableWithSyntax();
 
 			var content = await SerializeAsync(uut);
-			Assert.Equal("{NewList = [{}, ]}", content);
+			var expected =
+@"NewList: [
+{
+}
+]
+";
+			Assert.Equal(expected, content);
 		}
 
 		[Fact]
@@ -55,7 +70,14 @@ namespace Soup.Build.Utilities.UnitTests
 			newTable.AddItemWithSyntax("NewItem", "NewValue");
 
 			var content = await SerializeAsync(uut);
-			Assert.Equal("{NewList = [{NewItem = \"NewValue\"}, ]}", content);
+			var expected =
+@"NewList: [
+{
+NewItem: ""NewValue""
+}
+]
+";
+			Assert.Equal(expected, content);
 		}
 
 		[Fact]
@@ -69,7 +91,15 @@ namespace Soup.Build.Utilities.UnitTests
 			newTable.AddItemWithSyntax("NewItem2", "NewValue2");
 
 			var content = await SerializeAsync(uut);
-			Assert.Equal("{NewList = [{NewItem1 = \"NewValue1\"NewItem2 = \"NewValue2\"}, ]}", content);
+			var expected =
+@"NewList: [
+{
+NewItem1: ""NewValue1""
+NewItem2: ""NewValue2""
+}
+]
+";
+			Assert.Equal(expected, content);
 		}
 
 		[Fact]
@@ -80,7 +110,11 @@ namespace Soup.Build.Utilities.UnitTests
 			uut.AddTableWithSyntax("NewTable");
 
 			var content = await SerializeAsync(uut);
-			Assert.Equal("{NewTable = {}}", content);
+			var expected =
+@"NewTable: {
+}
+";
+			Assert.Equal(expected, content);
 		}
 
 		[Fact]
@@ -92,7 +126,13 @@ namespace Soup.Build.Utilities.UnitTests
 			newTable.AddListWithSyntax("NewList");
 
 			var content = await SerializeAsync(uut);
-			Assert.Equal("{NewTable = {NewList = []}}", content);
+			var expected =
+@"NewTable: {
+NewList: [
+]
+}
+";
+			Assert.Equal(expected, content);
 		}
 
 		[Fact]
@@ -106,13 +146,24 @@ namespace Soup.Build.Utilities.UnitTests
 			newTable2.AddItemWithSyntax("NewItem", "NewValue");
 
 			var content = await SerializeAsync(uut);
-			Assert.Equal("{NewTable = {NewList = [{NewItem = \"NewValue\"}, ]}}", content);
+			var expected =
+@"NewTable: {
+NewList: [
+{
+NewItem: ""NewValue""
+}
+]
+}
+";
+			Assert.Equal(expected, content);
 		}
 
 		private async Task<string> SerializeAsync(SMLTable table)
 		{
 			using var stream = new MemoryStream();
-			await SMLManager.SerializeAsync(table, stream);
+			await SMLManager.SerializeAsync(
+				new SMLDocument(table),
+				stream);
 
 			stream.Seek(0, SeekOrigin.Begin);
 			using var reader = new StreamReader(stream);

@@ -66,7 +66,9 @@ namespace Soup.Build.Utilities
 			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(packageLockFile, true);
 
 			// Write the recipe to the file stream
-			await SMLManager.SerializeAsync(packageLock.Table, file.GetOutStream());
+			await SMLManager.SerializeAsync(
+				new SMLDocument(packageLock.Table),
+				file.GetOutStream());
 		}
 	}
 }

@@ -43,39 +43,51 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Save the document syntax to the root file
 		/// </summary>
-		public static async Task SerializeAsync(SMLTable table, System.IO.Stream stream)
+		public static async Task SerializeAsync(SMLDocument document, System.IO.Stream stream)
 		{
 			// Write out the entire root table
 			using var writer = new System.IO.StreamWriter(stream, null, -1, true);
 
-			await SerializeAsync(table, writer);
+			await SerializeAsync(document, writer);
+		}
+
+		private static async Task SerializeAsync(SMLDocument document, System.IO.StreamWriter writer)
+		{
+			foreach (var value in document.GetRoot().GetValue())
+			{
+				await writer.WriteAsync(value.Key);
+				await writer.WriteAsync(": ");
+				await SerializeAsync(value.Value, writer);
+				await writer.WriteLineAsync();
+			}
 		}
 
 		private static async Task SerializeAsync(SMLTable table, System.IO.StreamWriter writer)
 		{
-			await writer.WriteAsync('{');
+			await writer.WriteLineAsync("{");
 
 			foreach (var value in table.GetValue())
 			{
 				await writer.WriteAsync(value.Key);
-				await writer.WriteAsync(" = ");
+				await writer.WriteAsync(": ");
 				await SerializeAsync(value.Value, writer);
+				await writer.WriteLineAsync();
 			}
 
-			await writer.WriteAsync('}');
+			await writer.WriteAsync("}");
 		}
 
 		private static async Task SerializeAsync(SMLArray array, System.IO.StreamWriter writer)
 		{
-			await writer.WriteAsync('[');
+			await writer.WriteLineAsync("[");
 
 			foreach (var value in array.GetValue())
 			{
 				await SerializeAsync(value, writer);
-				await writer.WriteAsync(", ");
+				await writer.WriteLineAsync();
 			}
 
-			await writer.WriteAsync(']');
+			await writer.WriteAsync("]");
 		}
 
 		private static async Task SerializeAsync(SMLValue value, System.IO.StreamWriter writer)

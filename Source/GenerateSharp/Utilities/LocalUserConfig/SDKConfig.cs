@@ -135,6 +135,12 @@ namespace Soup.Build.Utilities
 
 				// Add the new syntax to the parent table syntax
 				values.GetValue().Clear();
+
+				foreach (var item in value)
+				{
+					values.GetValue().Add(new SMLValue(item.ToString()));
+				}
+
 				////switch (values.MirrorSyntax)
 				////{
 				////	case ArraySyntax arraySyntax:
