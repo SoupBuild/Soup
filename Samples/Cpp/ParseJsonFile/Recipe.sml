@@ -8,6 +8,6 @@ Source: [
 
 Dependencies: {
 	Runtime: [
-		"json11@1.0.2"
+		"json11@1.1.0"
 	]
 }

@@ -221,6 +221,7 @@ namespace Soup.Build.Utilities
 			}
 
 			// Add the new syntax to the parent table syntax
+			values.GetValue().Clear();
 			foreach (var item in value)
 			{
 				values.GetValue().Add(item.Key, new SMLValue(item.Value));
