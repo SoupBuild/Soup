@@ -28,6 +28,7 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Diag("BuildCommand::Run");
+			auto startTime = std::chrono::high_resolution_clock::now();
 
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
@@ -82,7 +83,6 @@ namespace Soup::Client
 
 			// Now build the current project
 			Log::Info("Begin Build:");
-			auto startTime = std::chrono::high_resolution_clock::now();
 
 			auto buildRunner = Core::RecipeBuildRunner(
 				std::move(arguments),

@@ -2,41 +2,34 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Runtime;
 using System;
-using Tomlyn.Syntax;
 
 namespace Soup.Build.Utilities
 {
-	/// <summary>
-	/// The package lock container
-	/// </summary>
-	public class PackageLock
+    /// <summary>
+    /// The package lock container
+    /// </summary>
+    public class PackageLock
 	{
 		private static string Property_Version => "Version";
 		private static string Property_Closures => "Closures";
 
-		private ValueTable _table;
-
-		private DocumentSyntax? _mirrorSyntax;
+		private SMLTable _table;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PackageLock"/> class.
 		/// </summary>
 		public PackageLock()
 		{
-			_table = new ValueTable();
-			_mirrorSyntax = new DocumentSyntax();
-			_table.MirrorSyntax = _mirrorSyntax;
+			_table = new SMLTable();
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PackageLock"/> class.
 		/// </summary>
-		public PackageLock(ValueTable table)
+		public PackageLock(SMLTable table)
 		{
 			_table = table;
-			_mirrorSyntax = table.MirrorSyntax as DocumentSyntax;
 		}
 
 		/// <summary>
@@ -69,7 +62,7 @@ namespace Soup.Build.Utilities
 			return HasValue(_table, Property_Closures);
 		}
 
-		public IValueTable GetClosures()
+		public SMLTable GetClosures()
 		{
 			if (!HasClosures())
 				throw new InvalidOperationException("No closures.");
@@ -102,18 +95,16 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		public ValueTable Table => _table;
+		public SMLTable Table => _table;
 
-		public DocumentSyntax? MirrorSyntax => _mirrorSyntax;
-
-		private bool HasValue(IValueTable table, string key)
+		private bool HasValue(SMLTable table, string key)
 		{
-			return table.ContainsKey(key);
+			return table.GetValue().ContainsKey(key);
 		}
 
-		private IValue GetValue(IValueTable table, string key)
+		private SMLValue GetValue(SMLTable table, string key)
 		{
-			if (table.TryGetValue(key, out var value))
+			if (table.GetValue().TryGetValue(key, out var value))
 			{
 				return value;
 			}
@@ -137,16 +128,16 @@ namespace Soup.Build.Utilities
 			return value;
 		}
 
-		private ValueTable EnsureHasTable(ValueTable table, string name)
+		private SMLTable EnsureHasTable(SMLTable table, string name)
 		{
-			if (table.ContainsKey(name))
+			if (table.GetValue().ContainsKey(name))
 			{
 				var value = table[name];
-				if (value.Type != ValueType.Table)
+				if (value.Type != SMLValueType.Table)
 					throw new InvalidOperationException($"The package lock already has a non-table dependencies property: {name}");
 
 				// Find the Syntax for the table
-				return (ValueTable)value.AsTable();
+				return value.AsTable();
 			}
 			else
 			{
@@ -155,16 +146,16 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		private ValueList EnsureHasList(ValueTable table, string name)
+		private SMLArray EnsureHasList(SMLTable table, string name)
 		{
-			if (table.ContainsKey(name))
+			if (table.GetValue().ContainsKey(name))
 			{
 				var value = table[name];
-				if (value.Type != ValueType.List)
+				if (value.Type != SMLValueType.Array)
 					throw new InvalidOperationException($"The package lock already has a non-list {name} property");
 
 				// Find the Syntax for the table
-				return (ValueList)value.AsList();
+				return value.AsArray();
 			}
 			else
 			{

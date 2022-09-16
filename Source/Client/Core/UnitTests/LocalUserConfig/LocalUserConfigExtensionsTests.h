@@ -20,7 +20,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto directory = Path("TestFiles/NoFile/LocalUserConfig.toml");
+			auto directory = Path("TestFiles/NoFile/LocalUserConfig.sml");
 			LocalUserConfig actual;
 			auto result = LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(directory, actual);
 
@@ -29,7 +29,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/NoFile/LocalUserConfig.toml",
+					"Exists: ./TestFiles/NoFile/LocalUserConfig.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -37,7 +37,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Local User Config: ./TestFiles/NoFile/LocalUserConfig.toml",
+					"DIAG: Load Local User Config: ./TestFiles/NoFile/LocalUserConfig.sml",
 					"WARN: Local User Config file does not exist.",
 				}), 
 				testListener->GetMessages(),
@@ -55,10 +55,10 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml"),
+				Path("TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto directory = Path("TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml");
+			auto directory = Path("TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml");
 			LocalUserConfig actual;
 			auto result = LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(directory, actual);
 
@@ -67,8 +67,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml",
-					"OpenReadBinary: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml",
+					"Exists: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
+					"OpenReadBinary: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -76,8 +76,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Local User Config: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml",
-					"ERRO: Deserialize Threw: Parsing the Recipe Toml failed: [error] toml::parse_key_value_pair: missing key-value separator `=`\n --> ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.toml\n   | \n 1 | garbage\n   |        ^ should be `=`",
+					"DIAG: Load Local User Config: ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
+					"ERRO: Deserialize Threw: Parsing the Recipe SML failed: Failed to parse at 1:7  ./TestFiles/GarbageLocalUserConfig/LocalUserConfig.sml",
 					"INFO: Failed to parse local user config.",
 				}), 
 				testListener->GetMessages(),
@@ -95,11 +95,11 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml"),
+				Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					)")));
 
-			auto directory = Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml");
+			auto directory = Path("TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml");
 			LocalUserConfig actual;
 			auto result = LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(directory, actual);
 
@@ -112,8 +112,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml",
-					"OpenReadBinary: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml",
+					"Exists: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml",
+					"OpenReadBinary: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -121,7 +121,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: Load Local User Config: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.toml",
+					"DIAG: Load Local User Config: ./TestFiles/SimpleLocalUserConfig/LocalUserConfig.sml",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");

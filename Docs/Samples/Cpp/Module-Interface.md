@@ -3,15 +3,15 @@ A console application that uses a single module interface file used inside the s
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ModuleInterface)
 
-## Recipe.toml
+## Recipe.sml
 The Recipe file that sets the name, type, version, the public interface module and the single source file.
 ```
-Name = "Samples.Cpp.ModuleInterface"
-Language = "C++|0.1"
-Type = "Executable"
-Version = "1.2.5"
-Interface = "Module.cpp"
-Source = [
+Name: "Samples.Cpp.ModuleInterface"
+Language: "C++|0.1"
+Type: "Executable"
+Version: "1.2.5"
+Interface: "Module.cpp"
+Source: [
     "Main.cpp"
 ]
 ```

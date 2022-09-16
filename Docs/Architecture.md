@@ -11,7 +11,7 @@ There are four ways to declare the state for an invocation of a build. Through t
 The [Command Line Interface (CLI)](CLI.md) is the first thing a user will see when they interact with the Soup build system. The CLI is primarily there to take user input through a set of parameters and flags to pass temporary configuration values into the build execution. The command parameters will be used to generate a unique output folder for the given build to allow for individual builds to coexist for the same package (i.e. Release vs Debug). The argument properties will be combined with a set of generated properties from the application that are passed into the next phase of the build through a [Parameters Table](Architecture/Parameters-Table.md).
 
 ### Recipe
-The build definition will use a declarative **Recipe** configuration file is how the user will configure their project. The Recipe file will utilize the [toml](https://github.com/toml-lang/toml) language (and possibly a custom config language in the future) as a clean, human readable, configuration definition that supports a core set of data types. The file can be thought of as a simple property bag for setting shared parameters into the build system for an individual package.
+The build definition will use a declarative **Recipe** configuration file is how the user will configure their project. The Recipe file will utilize the SML (Simple Markup Language) language (and possibly a custom config language in the future) as a clean, human readable, configuration definition that supports a core set of data types. The file can be thought of as a simple property bag for setting shared parameters into the build system for an individual package.
 
 There are a few "known" property values that will be used within the build engine itself; however, the entire contents will be provided as initial input to the build engine.
 
@@ -43,7 +43,7 @@ This work can be broken down into five phases:
     * Default parameters are set for "Build" dependencies. This allows the build runtime to be different from the target of the build itself (ie. building for Debug/Linux, while using Release/Windows.) Generate unique output folder for this build configuration.
 
 1. **Parse Declaration**
-    * The Recipe toml file is read from disk and parsed into a property bag.
+    * The Recipe SML file is read from disk and parsed into a property bag.
     * Search for a Root Recipe file, and read from disk if present. Update the output directory if specified.
 
 1. **Build Dependencies** -

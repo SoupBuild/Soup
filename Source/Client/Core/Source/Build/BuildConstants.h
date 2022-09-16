@@ -17,7 +17,7 @@ namespace Soup::Core
 		/// </summary>
 		static const Path& RecipeFileName()
 		{
-			static const Path value = Path("Recipe.toml");
+			static const Path value = Path("Recipe.sml");
 			return value;
 		}
 
@@ -26,7 +26,7 @@ namespace Soup::Core
 		/// </summary>
 		static const Path& PackageLockFileName()
 		{
-			static const Path value = Path("PackageLock.toml");
+			static const Path value = Path("PackageLock.sml");
 			return value;
 		}
 
@@ -80,7 +80,7 @@ namespace Soup::Core
 		/// </summary>
 		static const Path LocalUserConfigFileName()
 		{
-			static const Path value = Path("LocalUserConfig.toml");
+			static const Path value = Path("LocalUserConfig.sml");
 			return value;
 		}
 

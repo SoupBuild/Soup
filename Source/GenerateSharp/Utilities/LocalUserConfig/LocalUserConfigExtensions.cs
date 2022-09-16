@@ -37,8 +37,7 @@ namespace Soup.Build.Utilities
 				// Read the contents of the local user config file
 				try
 				{
-					var result = ValueTableTomlUtilities.Deserialize(
-						localUserConfigFile,
+					var result = SMLManager.Deserialize(
 						await reader.ReadToEndAsync());
 					return (true, new LocalUserConfig(result));
 				}
@@ -69,13 +68,10 @@ namespace Soup.Build.Utilities
 			// Open the file to write to
 			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(configFile, true);
 
-			// Serialize the contents of the recipe
-			var documentSyntax = config.MirrorSyntax;
-			if (documentSyntax == null)
-				throw new ArgumentException("The provided config does not have a mirrored syntax tree.", nameof(config));
-
 			// Write the recipe to the file stream
-			await ValueTableTomlUtilities.SerializeAsync(documentSyntax, file.GetOutStream());
+			await SMLManager.SerializeAsync(
+				new SMLDocument(config.GetTable()),
+				file.GetOutStream());
 		}
 	}
 }

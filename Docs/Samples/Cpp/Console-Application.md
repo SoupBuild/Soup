@@ -3,10 +3,10 @@ This is the smallest amount of code to get a console application building using 
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ConsoleApplication)
 
-## Recipe.toml
+## Recipe.sml
 The Recipe file that sets the name, type, version and the single source file.
 ```
-Name = "Samples.Cpp.ConsoleApplication"
+Name: "Samples.Cpp.ConsoleApplication"
 Language = "C++|0.1"
 Type = "Executable"
 Version = "1.1.3"

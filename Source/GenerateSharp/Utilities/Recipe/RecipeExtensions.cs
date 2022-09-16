@@ -34,9 +34,9 @@ namespace Soup.Build.Utilities
 				// Read the contents of the recipe file
 				try
 				{
-					var result = ValueTableTomlUtilities.Deserialize(
-						recipeFile,
-						await reader.ReadToEndAsync());
+					var content = await reader.ReadToEndAsync();
+					var result = SMLManager.Deserialize(content);
+
 					return (true, new Recipe(result));
 				}
 				catch (Exception ex)
@@ -93,13 +93,10 @@ namespace Soup.Build.Utilities
 			// Open the file to write to
 			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(recipeFile, true);
 
-			// Serialize the contents of the recipe
-			var documentSyntax = recipe.MirrorSyntax;
-			if (documentSyntax == null)
-				throw new ArgumentException("The provided recipe does not have a mirrored syntax tree.", nameof(recipe));
-
 			// Write the recipe to the file stream
-			await ValueTableTomlUtilities.SerializeAsync(documentSyntax, file.GetOutStream());
+			await SMLManager.SerializeAsync(
+				new SMLDocument(recipe.Table),
+				file.GetOutStream());
 		}
 	}
 }

@@ -30,10 +30,10 @@ namespace Soup::Core::UnitTests
 
 			// Create the Recipe to build
 			fileSystem->CreateMockFile(
-				Path("C:/WorkingDirectory/MyPackage/Recipe.toml"),
+				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++|1"
+					Name: "MyPackage"
+					Language: "C++|1"
 				)")));
 
 			auto operationGraph = OperationGraph(
@@ -66,9 +66,9 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.toml",
+					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: 0>PackageLock file does not exist.",
-					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.toml",
+					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Check outdated parameters file: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
@@ -93,7 +93,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.2.2/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.3.0/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
@@ -119,11 +119,11 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.toml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.toml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.toml",
-					"Exists: C:/WorkingDirectory/RootRecipe.toml",
-					"Exists: C:/RootRecipe.toml",
+					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"Exists: C:/WorkingDirectory/RootRecipe.sml",
+					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
@@ -179,7 +179,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				ValueTable(std::map<std::string, Value>({
 					{ "Dependencies", Value(ValueTable()), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.3.0/Soup.Cpp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
@@ -253,21 +253,22 @@ namespace Soup::Core::UnitTests
 
 			// Create the Recipe to build
 			fileSystem->CreateMockFile(
-				Path("C:/WorkingDirectory/MyPackage/Recipe.toml"),
+				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++|1"
-					[Dependencies]
-					Build = [
-						"TestBuild@1.2.3",
-					]
+					Name: "MyPackage"
+					Language: "C++|1"
+					Dependencies: {
+						Build: [
+							"TestBuild@1.2.3"
+						]
+					}
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.toml"),
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "TestBuild"
-					Language = "C#|1"
+					Name: "TestBuild"
+					Language: "C#|1"
 				)")));
 
 			auto myProjectOperationGraph = OperationGraph(
@@ -312,10 +313,10 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.toml",
+					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: 0>PackageLock file does not exist.",
-					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.toml",
-					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.toml",
+					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml",
 					"DIAG: 1>Running Build: C#|TestBuild",
 					"INFO: 1>Host Build 'TestBuild'",
 					"INFO: 1>Check outdated parameters file: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
@@ -340,7 +341,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.CSharp/0.5.2/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.CSharp/0.6.0/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3",
@@ -383,7 +384,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 2>Allowed Read Access:",
 					"DIAG: 2>C:/testlocation/Generate/",
-					"DIAG: 2>C:/testlocation/Extensions/Soup.Cpp/0.2.2/",
+					"DIAG: 2>C:/testlocation/Extensions/Soup.Cpp/0.3.0/",
 					"DIAG: 2>C:/Windows/",
 					"DIAG: 2>C:/Program Files/dotnet/",
 					"DIAG: 2>C:/WorkingDirectory/MyPackage/",
@@ -410,20 +411,20 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.toml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.toml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.toml",
+					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.toml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/packages/C#/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/packages/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/RootRecipe.toml",
-					"Exists: C:/Users/Me/RootRecipe.toml",
-					"Exists: C:/Users/RootRecipe.toml",
-					"Exists: C:/RootRecipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/C#/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/RootRecipe.sml",
+					"Exists: C:/Users/Me/RootRecipe.sml",
+					"Exists: C:/Users/RootRecipe.sml",
+					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
@@ -448,8 +449,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/EvaluateResultGraph.bog",
-					"Exists: C:/WorkingDirectory/RootRecipe.toml",
-					"Exists: C:/RootRecipe.toml",
+					"Exists: C:/WorkingDirectory/RootRecipe.sml",
+					"Exists: C:/RootRecipe.sml",
 					"GetCurrentDirectory",
 					"GetCurrentDirectory",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
@@ -518,7 +519,7 @@ namespace Soup::Core::UnitTests
 					{ "Compiler", Value(std::string("MSVC")), },
 					{ "Dependencies", Value(ValueTable()), },
 					{ "Flavor", Value(std::string("release")), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.CSharp/0.5.2/Soup.CSharp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.CSharp/0.6.0/Soup.CSharp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/")), },
@@ -592,7 +593,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.3.0/Soup.Cpp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
@@ -666,31 +667,33 @@ namespace Soup::Core::UnitTests
 
 			// Create the Recipe to build
 			fileSystem->CreateMockFile(
-				Path("C:/WorkingDirectory/MyPackage/Recipe.toml"),
+				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++|1"
-					[Dependencies]
-					Runtime = [
-						"PackageA@1.2.3",
-						"PackageB@1.1.1",
-					]
+					Name: "MyPackage"
+					Language: "C++|1"
+					Dependencies: {
+						Runtime: [
+							"PackageA@1.2.3"
+							"PackageB@1.1.1"
+						]
+					}
 				)")));
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.toml"),
+				Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "PackageA"
-					Language = "C++|1"
-					[Dependencies]
-					Runtime = [
-						"PackageB@1.1.1",
-					]
+					Name: "PackageA"
+					Language: "C++|1"
+					Dependencies: {
+						Runtime: [
+							"PackageB@1.1.1"
+						]
+					}
 				)")));
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.toml"),
+				Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "PackageB"
-					Language = "C++|1"
+					Name: "PackageB"
+					Language: "C++|1"
 				)")));
 
 			auto myProjectOperationGraph = OperationGraph(
@@ -739,11 +742,11 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.toml",
+					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: 0>PackageLock file does not exist.",
-					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.toml",
-					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.toml",
-					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.toml",
+					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml",
+					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml",
 					"DIAG: 1>Running Build: C++|PackageB",
 					"INFO: 1>Build 'PackageB'",
 					"INFO: 1>Check outdated parameters file: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",     
@@ -768,7 +771,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/Users/Me/.soup/packages/C++/PackageB/1.1.1] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.2.2/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.3.0/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/Users/Me/.soup/packages/C++/PackageB/1.1.1",
@@ -811,7 +814,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>Execute: [C:/Users/Me/.soup/packages/C++/PackageA/1.2.3] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 2>Allowed Read Access:",
 					"DIAG: 2>C:/testlocation/Generate/",
-					"DIAG: 2>C:/testlocation/Extensions/Soup.Cpp/0.2.2/",
+					"DIAG: 2>C:/testlocation/Extensions/Soup.Cpp/0.3.0/",
 					"DIAG: 2>C:/Windows/",
 					"DIAG: 2>C:/Program Files/dotnet/",
 					"DIAG: 2>C:/Users/Me/.soup/packages/C++/PackageA/1.2.3",
@@ -857,7 +860,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 3>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 3>Allowed Read Access:",
 					"DIAG: 3>C:/testlocation/Generate/",
-					"DIAG: 3>C:/testlocation/Extensions/Soup.Cpp/0.2.2/",
+					"DIAG: 3>C:/testlocation/Extensions/Soup.Cpp/0.3.0/",
 					"DIAG: 3>C:/Windows/",
 					"DIAG: 3>C:/Program Files/dotnet/",
 					"DIAG: 3>C:/WorkingDirectory/MyPackage/",
@@ -885,25 +888,25 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.toml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.toml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.toml",
+					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.toml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.toml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml",
 					"GetCurrentDirectory",
 					"GetCurrentDirectory",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/packages/C++/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/packages/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/RootRecipe.toml",
-					"Exists: C:/Users/Me/RootRecipe.toml",
-					"Exists: C:/Users/RootRecipe.toml",
-					"Exists: C:/RootRecipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/C++/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/RootRecipe.sml",
+					"Exists: C:/Users/Me/RootRecipe.sml",
+					"Exists: C:/Users/RootRecipe.sml",
+					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
 					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
@@ -928,13 +931,13 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/EvaluateResultGraph.bog",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/packages/C++/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/packages/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/RootRecipe.toml",
-					"Exists: C:/Users/Me/RootRecipe.toml",
-					"Exists: C:/Users/RootRecipe.toml",
-					"Exists: C:/RootRecipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/C++/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/RootRecipe.sml",
+					"Exists: C:/Users/Me/RootRecipe.sml",
+					"Exists: C:/Users/RootRecipe.sml",
+					"Exists: C:/RootRecipe.sml",
 					"GetCurrentDirectory",
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
@@ -962,8 +965,8 @@ namespace Soup::Core::UnitTests
 					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/EvaluateResultGraph.bog",
 					"GetCurrentDirectory",
-					"Exists: C:/WorkingDirectory/RootRecipe.toml",
-					"Exists: C:/RootRecipe.toml",
+					"Exists: C:/WorkingDirectory/RootRecipe.sml",
+					"Exists: C:/RootRecipe.sml",
 					"GetCurrentDirectory",
 					"GetCurrentDirectory",
 					"GetCurrentDirectory",
@@ -1047,7 +1050,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.3.0/Soup.Cpp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
@@ -1112,7 +1115,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				ValueTable(std::map<std::string, Value>({
 					{ "Dependencies", Value(ValueTable()), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.3.0/Soup.Cpp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
@@ -1190,7 +1193,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.3.0/Soup.Cpp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
@@ -1264,45 +1267,50 @@ namespace Soup::Core::UnitTests
 
 			// Create the Recipe to build
 			fileSystem->CreateMockFile(
-				Path("C:/WorkingDirectory/MyPackage/Recipe.toml"),
+				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "MyPackage"
-					Language = "C++|1"
-					[Dependencies]
-					Build = [
-						"TestBuild@1.2.3",
-					]
+					Name: "MyPackage"
+					Language: "C++|1"
+					Dependencies: {
+						Build: [
+							"TestBuild@1.2.3"
+						]
+					}
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.toml"),
+				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Name = "TestBuild"
-					Language = "C#|1"
+					Name: "TestBuild"
+					Language: "C#|1"
 				)")));
 
 			// Create the package lock
 			fileSystem->CreateMockFile(
-				Path("C:/WorkingDirectory/MyPackage/PackageLock.toml"),
+				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version = 2
-					[Closures]
-					[Closures.Root]
-					"C#" = [
-						{ Name = "TestBuild", Version = "1.3.0", Build = "Build1" },
-					]
-					"C++" = [
-						{ Name = "MyPackage", Version = "../MyPackage/", Build = "Build0" },
-					]
-					[Closures.Build0]
-					"C#" = [
-						{ Name = "C++", Version = "1.0.2" },
-						{ Name = "TestBuild", Version = "1.3.0" },
-					]
-					[Closures.Build1]
-					"C#" = [
-						{ Name = "C#", Version = "1.0.1" },
-					]
+					Version: 2
+					Closures: {
+						Root: {
+							C#: [
+								{ Name: "TestBuild", Version: "1.3.0", Build: "Build1", }
+							]
+							C++: [
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", }
+							]
+						}
+						Build0: {
+							C#: [
+								{ Name: "C++", Version: "1.0.2", }
+								{ Name: "TestBuild", Version: "1.3.0", }
+							]
+						}
+						Build1: {
+							C#: [
+								{ Name: "C#", Version: "1.0.1", }
+							]
+						}
+					}
 				)")));
 
 			auto myProjectOperationGraph = OperationGraph(
@@ -1347,10 +1355,10 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.toml",
+					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: 0>Package lock loaded",
-					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.toml",
-					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.toml",
+					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml",
 					"DIAG: 1>Running Build: C#|TestBuild",
 					"INFO: 1>Host Build 'TestBuild'",
 					"INFO: 1>Check outdated parameters file: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
@@ -1375,7 +1383,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.CSharp/0.5.2/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.CSharp/0.6.0/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0",
@@ -1418,7 +1426,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 2>Allowed Read Access:",
 					"DIAG: 2>C:/testlocation/Generate/",
-					"DIAG: 2>C:/testlocation/Extensions/Soup.Cpp/0.2.2/",
+					"DIAG: 2>C:/testlocation/Extensions/Soup.Cpp/0.3.0/",
 					"DIAG: 2>C:/Windows/",
 					"DIAG: 2>C:/Program Files/dotnet/",
 					"DIAG: 2>C:/WorkingDirectory/MyPackage/",
@@ -1445,21 +1453,21 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.toml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.toml",
-					"Exists: C:/WorkingDirectory/MyPackage/Recipe.toml",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.toml",
+					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.toml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/packages/C#/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/packages/RootRecipe.toml",
-					"Exists: C:/Users/Me/.soup/RootRecipe.toml",
-					"Exists: C:/Users/Me/RootRecipe.toml",
-					"Exists: C:/Users/RootRecipe.toml",
-					"Exists: C:/RootRecipe.toml",
+					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/C#/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/RootRecipe.sml",
+					"Exists: C:/Users/Me/RootRecipe.sml",
+					"Exists: C:/Users/RootRecipe.sml",
+					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
@@ -1484,8 +1492,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/EvaluateResultGraph.bog",
-					"Exists: C:/WorkingDirectory/RootRecipe.toml",
-					"Exists: C:/RootRecipe.toml",
+					"Exists: C:/WorkingDirectory/RootRecipe.sml",
+					"Exists: C:/RootRecipe.sml",
 					"GetCurrentDirectory",
 					"GetCurrentDirectory",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
@@ -1554,7 +1562,7 @@ namespace Soup::Core::UnitTests
 					{ "Compiler", Value(std::string("MSVC")), },
 					{ "Dependencies", Value(ValueTable()), },
 					{ "Flavor", Value(std::string("release")), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.CSharp/0.5.2/Soup.CSharp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.CSharp/0.6.0/Soup.CSharp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/")), },
@@ -1628,7 +1636,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.2.2/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.3.0/Soup.Cpp.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },

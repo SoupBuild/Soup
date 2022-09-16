@@ -37,7 +37,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/RootRecipe.toml",
+					"Exists: C:/RootRecipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -56,9 +56,9 @@ namespace Soup::Core::UnitTests
 
 			// Create a root recipe
 			fileSystem->CreateMockFile(
-				Path("C:/RootRecipe.toml"),
+				Path("C:/RootRecipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					OutputRoot = "BuildOut/"
+					OutputRoot: "BuildOut/"
 				)")));
 
 			auto workingDirectory = Path("C:/WorkingDirectory/");
@@ -82,8 +82,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"INFO: Found Root Recipe: 'C:/RootRecipe.toml'",
-					"DIAG: Load Root Recipe: C:/RootRecipe.toml",
+					"INFO: Found Root Recipe: 'C:/RootRecipe.sml'",
+					"DIAG: Load Root Recipe: C:/RootRecipe.sml",
 					"INFO: Override root output: C:/BuildOut/C++/MyPackage/1.2.3/",
 				}),
 				testListener->GetMessages(),
@@ -92,9 +92,9 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/RootRecipe.toml",
-					"Exists: C:/RootRecipe.toml",
-					"OpenReadBinary: C:/RootRecipe.toml",
+					"Exists: C:/RootRecipe.sml",
+					"Exists: C:/RootRecipe.sml",
+					"OpenReadBinary: C:/RootRecipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

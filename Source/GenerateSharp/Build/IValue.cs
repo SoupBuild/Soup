@@ -8,6 +8,6 @@ namespace Soup.Build
     {
         ValueType Type { get; }
 
-        object RawValue { get; }
+        object? RawValue { get; }
     }
 }

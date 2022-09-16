@@ -34,8 +34,7 @@ namespace Soup.Build.Utilities
 				// Read the contents of the recipe file
 				try
 				{
-					var result = ValueTableTomlUtilities.Deserialize(
-						packageLockFile,
+					var result = SMLManager.Deserialize(
 						await reader.ReadToEndAsync());
 
 					var packageLock = new PackageLock(result);
@@ -66,13 +65,10 @@ namespace Soup.Build.Utilities
 			// Open the file to write to
 			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(packageLockFile, true);
 
-			// Serialize the contents of the recipe
-			var documentSyntax = packageLock.MirrorSyntax;
-			if (documentSyntax == null)
-				throw new ArgumentException("The provided package lock does not have a mirrored syntax tree.", nameof(packageLock));
-
 			// Write the recipe to the file stream
-			await ValueTableTomlUtilities.SerializeAsync(documentSyntax, file.GetOutStream());
+			await SMLManager.SerializeAsync(
+				new SMLDocument(packageLock.Table),
+				file.GetOutStream());
 		}
 	}
 }
