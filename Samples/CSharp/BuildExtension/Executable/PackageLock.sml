@@ -6,7 +6,7 @@ Closures: {
 			{ Name: "Samples.CSharp.BuildExtension.Executable", Version: "../Executable", Build: "Build0" }
 			{ Name: "Samples.CSharp.BuildExtension.Extension", Version: "../Extension/", Build: "Build1" }
 			{ Name: "Soup.Build", Version: "0.2.0", Build: "Build1" }
-			{ Name: "Soup.Build.Extensions", Version: "0.3.0", Build: "Build1" }
+			{ Name: "Soup.Build.Extensions", Version: "0.4.0", Build: "Build1" }
 		]
 	}
 	Build0: {

@@ -14,47 +14,47 @@ Build: "Build2"
 }
 {
 Name: "Soup.Build.Extensions"
-Version: "0.3.0"
+Version: "0.4.0"
 Build: "Build2"
 }
 {
 Name: "Soup.Build.Extensions.Utilities"
-Version: "0.3.0"
+Version: "0.4.0"
 Build: "Build2"
 }
 {
 Name: "Soup.Cpp"
-Version: "0.3.0"
+Version: "0.4.0"
 Build: "Build2"
 }
 {
 Name: "Soup.Cpp.Compiler"
-Version: "0.4.0"
+Version: "0.5.0"
 Build: "Build2"
 }
 {
 Name: "Soup.Cpp.Compiler.MSVC"
-Version: "0.4.0"
+Version: "0.5.0"
 Build: "Build2"
 }
 {
 Name: "Soup.CSharp"
-Version: "0.6.0"
+Version: "0.7.0"
 Build: "Build2"
 }
 {
 Name: "Soup.CSharp.Compiler"
-Version: "0.5.0"
+Version: "0.6.0"
 Build: "Build2"
 }
 {
 Name: "Soup.CSharp.Compiler.Roslyn"
-Version: "0.5.0"
+Version: "0.6.0"
 Build: "Build2"
 }
 {
 Name: "Soup.Test.Cpp"
-Version: "0.3.0"
+Version: "0.4.0"
 Build: "Build2"
 }
 ]
@@ -132,7 +132,7 @@ Version: "0.1.0"
 }
 {
 Name: "Soup.Test.Cpp"
-Version: "0.3.0"
+Version: "0.4.0"
 }
 ]
 }
