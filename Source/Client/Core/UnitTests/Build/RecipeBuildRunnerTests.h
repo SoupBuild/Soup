@@ -1293,21 +1293,21 @@ namespace Soup::Core::UnitTests
 					Closures: {
 						Root: {
 							C#: [
-								{ Name: "TestBuild", Version: "1.3.0", Build: "Build1", }
+								{ Name: "TestBuild", Version: "1.3.0", Build: "Build1" }
 							]
 							C++: [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", }
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
 						}
 						Build0: {
 							C#: [
-								{ Name: "C++", Version: "1.0.2", }
-								{ Name: "TestBuild", Version: "1.3.0", }
+								{ Name: "C++", Version: "1.0.2" }
+								{ Name: "TestBuild", Version: "1.3.0" }
 							]
 						}
 						Build1: {
 							C#: [
-								{ Name: "C#", Version: "1.0.1", }
+								{ Name: "C#", Version: "1.0.1" }
 							]
 						}
 					}

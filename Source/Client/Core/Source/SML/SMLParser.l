@@ -157,7 +157,25 @@ public:
     }
 
 private:
-    bool TryParseTableContents(std::unordered_map<std::string, SMLValue>& tableValue)
+    bool TryParseTable(SMLTable& table)
+    {
+        std::unordered_map<std::string, SMLValue> tableValues;
+        if (TryParseTableContents(tableValues))
+        {
+            // Verify we are at the end of the content
+            if (_currentToken != SMLToken::CloseBrace)
+                return false;
+
+            table = SMLTable(std::move(tableValues));
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool TryParseTableContents(std::unordered_map<std::string, SMLValue>& tableValues)
     {
         // Odd move next to allow for optional extra delimiter checks at end
         MoveNext();
@@ -168,48 +186,106 @@ private:
             MoveNext();
         }
 
+        // Check for the optional first value
+        bool hasValue;
+        std::string key;
+        SMLValue tableValue;
+        if (!TryParseTableValue(hasValue, key, tableValue))
+            return false;
+
+        // Let the caller verify the end token is correct when zero values
+        if (!hasValue)
+            return true;
+
+        tableValues.emplace(std::move(key), std::move(tableValue));
+
+        // Check for zero or more optional values
         while (true)
         {
-            // Parse the next value
-            // Note: The delimiter check will read the first token of next item
-            switch (_currentToken)
+            // Check for trailing delimiter
+            bool hasDelimiter;
+            bool isComma;
+            CheckDelimiter(hasDelimiter, isComma);
+
+            // Let the caller verify the end token is correct when zero values
+            if (!hasDelimiter)
+                return true;
+
+            if (!TryParseTableValue(hasValue, key, tableValue))
+                return false;
+
+            if (!hasValue)
             {
-                case SMLToken::Integer:
-                    // Integer is a special case of Key and should be allowed
-                case SMLToken::Key:
-                {
-                    // Key token already matched 
-                    auto key = str();
-
-                    // Verify match assign
-                    MoveNext();
-                    if (_currentToken != SMLToken::Colon)
-                        return false;
-
-                    // Parse the value
-                    MoveNext();
-                    SMLValue value;
-                    if (!TryParseValue(value))
-                        return false;
-
-                    tableValue.emplace(std::move(key), std::move(value));
-
-                    // Check for trailing delimiter
-                    if (!TryParseDelimiter())
-                        return false;
-
-                    break;
-                }
-                default:
-                {
-                    // Caller will verify final token
+                // If a comma was used then the next value is required
+                if (isComma)
+                    return false;
+                else
                     return true;
-                }
+            }
+
+            tableValues.emplace(std::move(key), std::move(tableValue));
+        }
+    }
+
+    bool TryParseTableValue(bool& hasValue, std::string& key, SMLValue& tableValue)
+    {
+        // Parse the next value
+        // Note: The delimiter check will read the first token of next item
+        switch (_currentToken)
+        {
+            case SMLToken::Integer:
+                // Integer is a special case of Key and should be allowed
+            case SMLToken::Key:
+            {
+                // Key token already matched 
+                key = str();
+
+                // Verify match assign
+                MoveNext();
+                if (_currentToken != SMLToken::Colon)
+                    return false;
+
+                // Parse the value
+                MoveNext();
+                bool internalHasValue;
+                if (!TryParseValue(internalHasValue, tableValue))
+                    return false;
+
+                // The value is required here
+                if (!internalHasValue)
+                    return false;
+
+                hasValue = true;
+                return true;
+            }
+            default:
+            {
+                // Caller will verify final token
+                hasValue = false;
+                return true;
             }
         }
     }
 
-    bool TryParseArray(std::vector<SMLValue>& arrayValue)
+    bool TryParseArray(SMLArray& array)
+    {
+        std::vector<SMLValue> arrayValues;
+        if (TryParseArrayContent(arrayValues))
+        {
+            // Verify we are at the end of the content
+            if (_currentToken != SMLToken::CloseBracket)
+                return false;
+
+            array = SMLArray(std::move(arrayValues));
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool TryParseArrayContent(std::vector<SMLValue>& arrayValues)
     {
         // Odd move next to allow for optional extra delimiter checks at end
         MoveNext();
@@ -220,39 +296,46 @@ private:
             MoveNext();
         }
 
+        // Check for the optional first value
+        bool hasValue;
+        SMLValue value;
+        if (!TryParseValue(hasValue, value))
+            return false;
+
+        // Let the caller verify the end token is correct when zero values
+        if (!hasValue)
+            return true;
+
+        arrayValues.push_back(std::move(value));
+
         while (true)
         {
-            // Parse the value if not at end
-            // Note: The delimiter check will read the first token of next item
-            switch (_currentToken)
+            // Check for trailing delimiter
+            bool hasDelimiter;
+            bool isComma;
+            CheckDelimiter(hasDelimiter, isComma);
+
+            // Let the caller verify the end token is correct when zero values
+            if (!hasDelimiter)
+                return true;
+
+            if (!TryParseValue(hasValue, value))
+                return false;
+
+            if (!hasValue)
             {
-                case SMLToken::CloseBracket:
-                {
-                    // At the end of the array
+                // If a comma was used then the next value is required
+                if (isComma)
+                    return false;
+                else
                     return true;
-                }
-                default:
-                {
-                    // Assume that it is a value
-                    SMLValue value;
-                    if (!TryParseValue(value))
-                        return false;
-
-                    arrayValue.push_back(std::move(value));
-
-                    // Check for trailing delimiter
-                    if (!TryParseDelimiter())
-                        return false;
-
-                    // Check if end of array
-                    if (_currentToken == SMLToken::CloseBrace)
-                            return true;
-                }
             }
+
+            arrayValues.push_back(std::move(value));
         }
     }
 
-    bool TryParseValue(SMLValue& value)
+    bool TryParseValue(bool& hasValue, SMLValue& value)
     {
         // Check the type of the value
         switch (_currentToken)
@@ -261,62 +344,58 @@ private:
             {
                 auto string = GetString();
                 value = SMLValue(std::move(string));
+                hasValue = true;
                 return true;
             }
             case SMLToken::Integer:
             {
                 auto integer = std::stoi(text());
                 value = SMLValue(integer);
+                hasValue = true;
                 return true;
             }
             case SMLToken::True:
             {
                 value = SMLValue(true);
+                hasValue = true;
                 return true;
             }
             case SMLToken::False:
             {
                 value = SMLValue(false);
+                hasValue = true;
                 return true;
             }
             case SMLToken::OpenBrace:
             {
-                std::unordered_map<std::string, SMLValue> tableValue;
-                if (TryParseTableContents(tableValue))
-                {
-                    // Verify we are at the end of the content
-                    if (_currentToken != SMLToken::CloseBrace)
-                        return false;
-
-                    value = SMLValue(SMLTable(std::move(tableValue)));
-                    return true;
-                }
-                else
-                {
+                SMLTable table;
+                if (!TryParseTable(table))
                     return false;
-                }
+
+                value = SMLValue(std::move(table));
+                hasValue = true;
+                return true;
             }
             case SMLToken::OpenBracket:
             {
-                std::vector<SMLValue> arrayValue;
-                if (TryParseArray(arrayValue))
-                {
-                    value = SMLValue(SMLArray(std::move(arrayValue)));
-                    return true;
-                }
-                else
-                {
+                SMLArray array;
+                if (!TryParseArray(array))
                     return false;
-                }
+
+                value = SMLValue(std::move(array));
+                hasValue = true;
+                return true;
             }
             default:
             {
-                return false;
+                // We didn't see a value, let the caller continue if possible
+                hasValue = false;
+                return true;
             }
         }
     }
 
-    bool TryParseDelimiter()
+    void CheckDelimiter(bool& hasDelimiter, bool& isComma)
     {
         MoveNext();
         switch (_currentToken)
@@ -325,7 +404,9 @@ private:
             {
                 // Move next to match multiple newline delimiter result
                 MoveNext();
-                return true;
+                hasDelimiter = true;
+                isComma = true;
+                break;
             }
             case SMLToken::Newline:
             {
@@ -335,12 +416,15 @@ private:
                     MoveNext();
                 }
 
-                return true;
+                hasDelimiter = true;
+                isComma = false;
+                break;
             }
             default:
             {
-                // Some form of delimiter is required
-                return false;
+                hasDelimiter = false;
+                isComma = false;
+                break;
             }
         }
     }
