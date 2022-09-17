@@ -5,11 +5,10 @@ grammar SML;
  */
 document            : tableContent EOF ;
 table               : OPEN_BRACE tableContent CLOSE_BRACE ;
-tableContent        : NEWLINE* tableValue* ;
-tableValue          : KEY COLON value delimiter ;
+tableContent        : NEWLINE* (tableValue (delimiter tableValue)* NEWLINE*)? ;
+tableValue          : KEY COLON value ;
 array               : OPEN_BRACKET arrayContent CLOSE_BRACKET ;
-arrayContent        : NEWLINE* arrayValue* ;
-arrayValue          : value delimiter ;
+arrayContent        : NEWLINE* (value (delimiter value)* NEWLINE*)? ;
 value               : INTEGER # valueInteger
                     | STRING_LITERAL # valueString
                     | TRUE # valueTrue

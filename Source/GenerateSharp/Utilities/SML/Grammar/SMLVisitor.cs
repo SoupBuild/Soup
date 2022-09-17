@@ -68,12 +68,6 @@ public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitArrayContent([NotNull] SMLParser.ArrayContentContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SMLParser.arrayValue"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArrayValue([NotNull] SMLParser.ArrayValueContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>valueInteger</c>
 	/// labeled alternative in <see cref="SMLParser.value"/>.
 	/// </summary>

@@ -12,10 +12,10 @@ soup install <path> name<@version>
 ## Examples
 Install the latest `json11` package and register it in the MyProject Recipe file.
 ```
-soup install MyProject/ json11
+soup install ./Code/MyProject/ json11
 ```
 
-Install version `1.0.2` of the `json11` package and register it in the current folder Recipe file.
+Install version `1.1.0` of the `json11` package and register it in the current folder Recipe file.
 ```
-soup install json11@1.0.2
+soup install json11@1.1.0
 ```

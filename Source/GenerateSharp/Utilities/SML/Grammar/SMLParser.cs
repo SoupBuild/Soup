@@ -41,11 +41,10 @@ public partial class SMLParser : Parser {
 		STRING_LITERAL=14, WHITESPACE=15;
 	public const int
 		RULE_document = 0, RULE_table = 1, RULE_tableContent = 2, RULE_tableValue = 3, 
-		RULE_array = 4, RULE_arrayContent = 5, RULE_arrayValue = 6, RULE_value = 7, 
-		RULE_delimiter = 8;
+		RULE_array = 4, RULE_arrayContent = 5, RULE_value = 6, RULE_delimiter = 7;
 	public static readonly string[] ruleNames = {
 		"document", "table", "tableContent", "tableValue", "array", "arrayContent", 
-		"arrayValue", "value", "delimiter"
+		"value", "delimiter"
 	};
 
 	private static readonly string[] _LiteralNames = {
@@ -113,9 +112,9 @@ public partial class SMLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 18;
+			State = 16;
 			tableContent();
-			State = 19;
+			State = 17;
 			Match(Eof);
 			}
 		}
@@ -156,11 +155,11 @@ public partial class SMLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 21;
+			State = 19;
 			Match(OPEN_BRACE);
-			State = 22;
+			State = 20;
 			tableContent();
-			State = 23;
+			State = 21;
 			Match(CLOSE_BRACE);
 			}
 		}
@@ -186,6 +185,12 @@ public partial class SMLParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public TableValueContext tableValue(int i) {
 			return GetRuleContext<TableValueContext>(i);
 		}
+		[System.Diagnostics.DebuggerNonUserCode] public DelimiterContext[] delimiter() {
+			return GetRuleContexts<DelimiterContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DelimiterContext delimiter(int i) {
+			return GetRuleContext<DelimiterContext>(i);
+		}
 		public TableContentContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -205,36 +210,65 @@ public partial class SMLParser : Parser {
 		EnterRule(_localctx, 4, RULE_tableContent);
 		int _la;
 		try {
+			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 28;
+			State = 26;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==NEWLINE) {
 				{
 				{
-				State = 25;
+				State = 23;
 				Match(NEWLINE);
 				}
 				}
-				State = 30;
+				State = 28;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
-			State = 34;
+			State = 44;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while (_la==KEY) {
+			if (_la==KEY) {
 				{
-				{
-				State = 31;
+				State = 29;
 				tableValue();
+				State = 35;
+				ErrorHandler.Sync(this);
+				_alt = Interpreter.AdaptivePredict(TokenStream,1,Context);
+				while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
+					if ( _alt==1 ) {
+						{
+						{
+						State = 30;
+						delimiter();
+						State = 31;
+						tableValue();
+						}
+						} 
+					}
+					State = 37;
+					ErrorHandler.Sync(this);
+					_alt = Interpreter.AdaptivePredict(TokenStream,1,Context);
 				}
-				}
-				State = 36;
+				State = 41;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
+				while (_la==NEWLINE) {
+					{
+					{
+					State = 38;
+					Match(NEWLINE);
+					}
+					}
+					State = 43;
+					ErrorHandler.Sync(this);
+					_la = TokenStream.LA(1);
+				}
+				}
 			}
+
 			}
 		}
 		catch (RecognitionException re) {
@@ -253,9 +287,6 @@ public partial class SMLParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode COLON() { return GetToken(SMLParser.COLON, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ValueContext value() {
 			return GetRuleContext<ValueContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public DelimiterContext delimiter() {
-			return GetRuleContext<DelimiterContext>(0);
 		}
 		public TableValueContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -277,14 +308,12 @@ public partial class SMLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 37;
+			State = 46;
 			Match(KEY);
-			State = 38;
+			State = 47;
 			Match(COLON);
-			State = 39;
+			State = 48;
 			value();
-			State = 40;
-			delimiter();
 			}
 		}
 		catch (RecognitionException re) {
@@ -324,11 +353,11 @@ public partial class SMLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 42;
+			State = 50;
 			Match(OPEN_BRACKET);
-			State = 43;
+			State = 51;
 			arrayContent();
-			State = 44;
+			State = 52;
 			Match(CLOSE_BRACKET);
 			}
 		}
@@ -348,11 +377,17 @@ public partial class SMLParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode NEWLINE(int i) {
 			return GetToken(SMLParser.NEWLINE, i);
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public ArrayValueContext[] arrayValue() {
-			return GetRuleContexts<ArrayValueContext>();
+		[System.Diagnostics.DebuggerNonUserCode] public ValueContext[] value() {
+			return GetRuleContexts<ValueContext>();
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public ArrayValueContext arrayValue(int i) {
-			return GetRuleContext<ArrayValueContext>(i);
+		[System.Diagnostics.DebuggerNonUserCode] public ValueContext value(int i) {
+			return GetRuleContext<ValueContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DelimiterContext[] delimiter() {
+			return GetRuleContexts<DelimiterContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DelimiterContext delimiter(int i) {
+			return GetRuleContext<DelimiterContext>(i);
 		}
 		public ArrayContentContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -373,80 +408,65 @@ public partial class SMLParser : Parser {
 		EnterRule(_localctx, 10, RULE_arrayContent);
 		int _la;
 		try {
+			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 49;
+			State = 57;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==NEWLINE) {
 				{
 				{
-				State = 46;
+				State = 54;
 				Match(NEWLINE);
 				}
 				}
-				State = 51;
+				State = 59;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
-			State = 55;
+			State = 75;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while (((_la) & ~0x3f) == 0 && ((1L << _la) & 18836L) != 0) {
+			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 18836L) != 0) {
 				{
-				{
-				State = 52;
-				arrayValue();
+				State = 60;
+				value();
+				State = 66;
+				ErrorHandler.Sync(this);
+				_alt = Interpreter.AdaptivePredict(TokenStream,5,Context);
+				while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
+					if ( _alt==1 ) {
+						{
+						{
+						State = 61;
+						delimiter();
+						State = 62;
+						value();
+						}
+						} 
+					}
+					State = 68;
+					ErrorHandler.Sync(this);
+					_alt = Interpreter.AdaptivePredict(TokenStream,5,Context);
 				}
-				}
-				State = 57;
+				State = 72;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
+				while (_la==NEWLINE) {
+					{
+					{
+					State = 69;
+					Match(NEWLINE);
+					}
+					}
+					State = 74;
+					ErrorHandler.Sync(this);
+					_la = TokenStream.LA(1);
+				}
+				}
 			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			ErrorHandler.ReportError(this, re);
-			ErrorHandler.Recover(this, re);
-		}
-		finally {
-			ExitRule();
-		}
-		return _localctx;
-	}
 
-	public partial class ArrayValueContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ValueContext value() {
-			return GetRuleContext<ValueContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public DelimiterContext delimiter() {
-			return GetRuleContext<DelimiterContext>(0);
-		}
-		public ArrayValueContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int RuleIndex { get { return RULE_arrayValue; } }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitArrayValue(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-
-	[RuleVersion(0)]
-	public ArrayValueContext arrayValue() {
-		ArrayValueContext _localctx = new ArrayValueContext(Context, State);
-		EnterRule(_localctx, 12, RULE_arrayValue);
-		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 58;
-			value();
-			State = 59;
-			delimiter();
 			}
 		}
 		catch (RecognitionException re) {
@@ -540,16 +560,16 @@ public partial class SMLParser : Parser {
 	[RuleVersion(0)]
 	public ValueContext value() {
 		ValueContext _localctx = new ValueContext(Context, State);
-		EnterRule(_localctx, 14, RULE_value);
+		EnterRule(_localctx, 12, RULE_value);
 		try {
-			State = 67;
+			State = 83;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case INTEGER:
 				_localctx = new ValueIntegerContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 61;
+				State = 77;
 				Match(INTEGER);
 				}
 				break;
@@ -557,7 +577,7 @@ public partial class SMLParser : Parser {
 				_localctx = new ValueStringContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 62;
+				State = 78;
 				Match(STRING_LITERAL);
 				}
 				break;
@@ -565,7 +585,7 @@ public partial class SMLParser : Parser {
 				_localctx = new ValueTrueContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 63;
+				State = 79;
 				Match(TRUE);
 				}
 				break;
@@ -573,7 +593,7 @@ public partial class SMLParser : Parser {
 				_localctx = new ValueFalseContext(_localctx);
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 64;
+				State = 80;
 				Match(FALSE);
 				}
 				break;
@@ -581,7 +601,7 @@ public partial class SMLParser : Parser {
 				_localctx = new ValueTableContext(_localctx);
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 65;
+				State = 81;
 				table();
 				}
 				break;
@@ -589,7 +609,7 @@ public partial class SMLParser : Parser {
 				_localctx = new ValueArrayContext(_localctx);
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 66;
+				State = 82;
 				array();
 				}
 				break;
@@ -630,26 +650,26 @@ public partial class SMLParser : Parser {
 	[RuleVersion(0)]
 	public DelimiterContext delimiter() {
 		DelimiterContext _localctx = new DelimiterContext(Context, State);
-		EnterRule(_localctx, 16, RULE_delimiter);
+		EnterRule(_localctx, 14, RULE_delimiter);
 		int _la;
 		try {
-			State = 75;
+			State = 91;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case NEWLINE:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 70;
+				State = 86;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				do {
 					{
 					{
-					State = 69;
+					State = 85;
 					Match(NEWLINE);
 					}
 					}
-					State = 72;
+					State = 88;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 				} while ( _la==NEWLINE );
@@ -658,7 +678,7 @@ public partial class SMLParser : Parser {
 			case COMMA:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 74;
+				State = 90;
 				Match(COMMA);
 				}
 				break;
@@ -678,28 +698,34 @@ public partial class SMLParser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,15,78,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
-		7,7,2,8,7,8,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,2,5,2,27,8,2,10,2,12,2,30,9,
-		2,1,2,5,2,33,8,2,10,2,12,2,36,9,2,1,3,1,3,1,3,1,3,1,3,1,4,1,4,1,4,1,4,
-		1,5,5,5,48,8,5,10,5,12,5,51,9,5,1,5,5,5,54,8,5,10,5,12,5,57,9,5,1,6,1,
-		6,1,6,1,7,1,7,1,7,1,7,1,7,1,7,3,7,68,8,7,1,8,4,8,71,8,8,11,8,12,8,72,1,
-		8,3,8,76,8,8,1,8,0,0,9,0,2,4,6,8,10,12,14,16,0,0,79,0,18,1,0,0,0,2,21,
-		1,0,0,0,4,28,1,0,0,0,6,37,1,0,0,0,8,42,1,0,0,0,10,49,1,0,0,0,12,58,1,0,
-		0,0,14,67,1,0,0,0,16,75,1,0,0,0,18,19,3,4,2,0,19,20,5,0,0,1,20,1,1,0,0,
-		0,21,22,5,4,0,0,22,23,3,4,2,0,23,24,5,5,0,0,24,3,1,0,0,0,25,27,5,9,0,0,
-		26,25,1,0,0,0,27,30,1,0,0,0,28,26,1,0,0,0,28,29,1,0,0,0,29,34,1,0,0,0,
-		30,28,1,0,0,0,31,33,3,6,3,0,32,31,1,0,0,0,33,36,1,0,0,0,34,32,1,0,0,0,
-		34,35,1,0,0,0,35,5,1,0,0,0,36,34,1,0,0,0,37,38,5,12,0,0,38,39,5,1,0,0,
-		39,40,3,14,7,0,40,41,3,16,8,0,41,7,1,0,0,0,42,43,5,2,0,0,43,44,3,10,5,
-		0,44,45,5,3,0,0,45,9,1,0,0,0,46,48,5,9,0,0,47,46,1,0,0,0,48,51,1,0,0,0,
-		49,47,1,0,0,0,49,50,1,0,0,0,50,55,1,0,0,0,51,49,1,0,0,0,52,54,3,12,6,0,
-		53,52,1,0,0,0,54,57,1,0,0,0,55,53,1,0,0,0,55,56,1,0,0,0,56,11,1,0,0,0,
-		57,55,1,0,0,0,58,59,3,14,7,0,59,60,3,16,8,0,60,13,1,0,0,0,61,68,5,11,0,
-		0,62,68,5,14,0,0,63,68,5,7,0,0,64,68,5,8,0,0,65,68,3,2,1,0,66,68,3,8,4,
-		0,67,61,1,0,0,0,67,62,1,0,0,0,67,63,1,0,0,0,67,64,1,0,0,0,67,65,1,0,0,
-		0,67,66,1,0,0,0,68,15,1,0,0,0,69,71,5,9,0,0,70,69,1,0,0,0,71,72,1,0,0,
-		0,72,70,1,0,0,0,72,73,1,0,0,0,73,76,1,0,0,0,74,76,5,6,0,0,75,70,1,0,0,
-		0,75,74,1,0,0,0,76,17,1,0,0,0,7,28,34,49,55,67,72,75
+		4,1,15,94,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
+		7,7,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,2,5,2,25,8,2,10,2,12,2,28,9,2,1,2,1,
+		2,1,2,1,2,5,2,34,8,2,10,2,12,2,37,9,2,1,2,5,2,40,8,2,10,2,12,2,43,9,2,
+		3,2,45,8,2,1,3,1,3,1,3,1,3,1,4,1,4,1,4,1,4,1,5,5,5,56,8,5,10,5,12,5,59,
+		9,5,1,5,1,5,1,5,1,5,5,5,65,8,5,10,5,12,5,68,9,5,1,5,5,5,71,8,5,10,5,12,
+		5,74,9,5,3,5,76,8,5,1,6,1,6,1,6,1,6,1,6,1,6,3,6,84,8,6,1,7,4,7,87,8,7,
+		11,7,12,7,88,1,7,3,7,92,8,7,1,7,0,0,8,0,2,4,6,8,10,12,14,0,0,100,0,16,
+		1,0,0,0,2,19,1,0,0,0,4,26,1,0,0,0,6,46,1,0,0,0,8,50,1,0,0,0,10,57,1,0,
+		0,0,12,83,1,0,0,0,14,91,1,0,0,0,16,17,3,4,2,0,17,18,5,0,0,1,18,1,1,0,0,
+		0,19,20,5,4,0,0,20,21,3,4,2,0,21,22,5,5,0,0,22,3,1,0,0,0,23,25,5,9,0,0,
+		24,23,1,0,0,0,25,28,1,0,0,0,26,24,1,0,0,0,26,27,1,0,0,0,27,44,1,0,0,0,
+		28,26,1,0,0,0,29,35,3,6,3,0,30,31,3,14,7,0,31,32,3,6,3,0,32,34,1,0,0,0,
+		33,30,1,0,0,0,34,37,1,0,0,0,35,33,1,0,0,0,35,36,1,0,0,0,36,41,1,0,0,0,
+		37,35,1,0,0,0,38,40,5,9,0,0,39,38,1,0,0,0,40,43,1,0,0,0,41,39,1,0,0,0,
+		41,42,1,0,0,0,42,45,1,0,0,0,43,41,1,0,0,0,44,29,1,0,0,0,44,45,1,0,0,0,
+		45,5,1,0,0,0,46,47,5,12,0,0,47,48,5,1,0,0,48,49,3,12,6,0,49,7,1,0,0,0,
+		50,51,5,2,0,0,51,52,3,10,5,0,52,53,5,3,0,0,53,9,1,0,0,0,54,56,5,9,0,0,
+		55,54,1,0,0,0,56,59,1,0,0,0,57,55,1,0,0,0,57,58,1,0,0,0,58,75,1,0,0,0,
+		59,57,1,0,0,0,60,66,3,12,6,0,61,62,3,14,7,0,62,63,3,12,6,0,63,65,1,0,0,
+		0,64,61,1,0,0,0,65,68,1,0,0,0,66,64,1,0,0,0,66,67,1,0,0,0,67,72,1,0,0,
+		0,68,66,1,0,0,0,69,71,5,9,0,0,70,69,1,0,0,0,71,74,1,0,0,0,72,70,1,0,0,
+		0,72,73,1,0,0,0,73,76,1,0,0,0,74,72,1,0,0,0,75,60,1,0,0,0,75,76,1,0,0,
+		0,76,11,1,0,0,0,77,84,5,11,0,0,78,84,5,14,0,0,79,84,5,7,0,0,80,84,5,8,
+		0,0,81,84,3,2,1,0,82,84,3,8,4,0,83,77,1,0,0,0,83,78,1,0,0,0,83,79,1,0,
+		0,0,83,80,1,0,0,0,83,81,1,0,0,0,83,82,1,0,0,0,84,13,1,0,0,0,85,87,5,9,
+		0,0,86,85,1,0,0,0,87,88,1,0,0,0,88,86,1,0,0,0,88,89,1,0,0,0,89,92,1,0,
+		0,0,90,92,5,6,0,0,91,86,1,0,0,0,91,90,1,0,0,0,92,15,1,0,0,0,11,26,35,41,
+		44,57,66,72,75,83,88,91
 	};
 
 	public static readonly ATN _ATN =

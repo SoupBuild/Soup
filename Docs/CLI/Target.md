@@ -1,6 +1,6 @@
-# Run
+# Target
 ## Overview
-Run a recipe that was previously built using the provided configuration parameters.
+Print the unique target directory for a recipe that would be built using the provided configuration parameters.
 ```
 soup run <path> [-flavor <name>] [-args <arg1> <arg2> etc.]
 ```
@@ -12,12 +12,12 @@ soup run <path> [-flavor <name>] [-args <arg1> <arg2> etc.]
 `-args` - An optional parameter signals that all of the following arguments are meant to be passed into the child executable.
 
 ## Examples
-Run a Recipe in the current directory for debug with default configurations.
+Print the target directory for a Recipe in the current directory for debug with default configurations.
 ```
-soup run
+soup target
 ```
 
-Run a release Recipe in a different directory and pass in a single parameter to the child executable.
+Print the target directory for a release Recipe in a different directory with the release flavor.
 ```
-soup run ./Code/MyProject/ -flavor release -args MyParameter
+soup target ./Code/MyProject/ -flavor release
 ```
