@@ -58,18 +58,7 @@ namespace Soup.Build.Utilities
 			}
 			set
 			{
-				////var valueSyntax = new StringValueSyntax(value);
 				_table.GetValue()[Property_Name] = new SMLValue(value);
-
-				// Add the new syntax to the parent table syntax
-				////switch (_table.MirrorSyntax)
-				////{
-				////	case TableSyntaxBase tableSyntax:
-				////		tableSyntax.Items.Add(new KeyValueSyntax(Property_Name, valueSyntax));
-				////		break;
-				////	default:
-				////		throw new InvalidOperationException("Unknown Syntax on ValueTable");
-				////}
 			}
 		}
 
@@ -110,27 +99,8 @@ namespace Soup.Build.Utilities
 				}
 				else
 				{
-					////var arraySyntax = new ArraySyntax()
-					////{
-					////	OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
-					////	CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket),
-					////};
-					////arraySyntax.OpenBracket.TrailingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.NewLineTrivia() };
-					values = new SMLArray()
-					{
-						// TODO: MirrorSyntax = arraySyntax,
-					};
+					values = new SMLArray();
 					_table.GetValue()[Property_SourceDirectories] = new SMLValue(values);
-
-					// Add the new syntax to the parent table syntax
-					////switch (_table.MirrorSyntax)
-					////{
-					////	case TableSyntaxBase tableSyntax:
-					////		tableSyntax.Items.Add(new KeyValueSyntax(Property_SourceDirectories, arraySyntax));
-					////		break;
-					////	default:
-					////		throw new InvalidOperationException("Unknown Syntax on ValueTable");
-					////}
 				}
 
 				// Add the new syntax to the parent table syntax
@@ -140,29 +110,6 @@ namespace Soup.Build.Utilities
 				{
 					values.GetValue().Add(new SMLValue(item.ToString()));
 				}
-
-				////switch (values.MirrorSyntax)
-				////{
-				////	case ArraySyntax arraySyntax:
-				////		// Replace all items
-				////		while (arraySyntax.Items.ChildrenCount > 0)
-				////			arraySyntax.Items.RemoveChildAt(0);
-
-				////		foreach (var item in value)
-				////		{
-				////			var arrayItemSyntax = new ArrayItemSyntax()
-				////			{
-				////				Value = new StringValueSyntax(item.ToString()),
-				////				Comma = SyntaxFactory.Token(TokenKind.Comma),
-				////			};
-				////			// arrayItemSyntax.LeadingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.Whitespace() };
-				////			arrayItemSyntax.Comma.TrailingTrivia = new List<SyntaxTrivia>() { SyntaxFactory.NewLineTrivia() };
-				////			arraySyntax.Items.Add(arrayItemSyntax);
-				////		}
-				////		break;
-				////	default:
-				////		throw new InvalidOperationException("Unknown Syntax on ValueList");
-				////}
 			}
 		}
 
@@ -198,26 +145,8 @@ namespace Soup.Build.Utilities
 			}
 			else
 			{
-				////var newTableSyntax = new InlineTableSyntax()
-				////{
-				////	OpenBrace = SyntaxFactory.Token(TokenKind.OpenBrace),
-				////	CloseBrace = SyntaxFactory.Token(TokenKind.CloseBrace),
-				////};
-				values = new SMLTable()
-				{
-					// TODO: MirrorSyntax = newTableSyntax,
-				};
+				values = new SMLTable();
 				_table.GetValue()[Property_Properties] = new SMLValue(values);
-
-				// Add the new syntax to the parent table syntax
-				////switch (_table.MirrorSyntax)
-				////{
-				////	case TableSyntaxBase tableSyntax:
-				////		tableSyntax.Items.Add(new KeyValueSyntax(Property_Properties, newTableSyntax));
-				////		break;
-				////	default:
-				////		throw new InvalidOperationException("Unknown Syntax on ValueTable");
-				////}
 			}
 
 			// Add the new syntax to the parent table syntax
