@@ -71,7 +71,7 @@ namespace Soup.Build.Utilities
 		{
 			var literal = context.STRING_LITERAL().GetText();
 			var content = literal.Substring(1, literal.Length - 2);
-			return new SMLValue(content);
+			return new SMLValue(new SMLStringValue(content));
 		}
 
 		public virtual object VisitValueTrue(SMLParser.ValueTrueContext context)

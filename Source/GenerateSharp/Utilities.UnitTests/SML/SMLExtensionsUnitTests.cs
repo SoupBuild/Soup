@@ -49,9 +49,8 @@ ANewList2: []";
 			var content = await SerializeAsync(uut);
 			var expected =
 @"NewList: [
-	""NewItem""
-]
-";
+""NewItem""
+]";
 			Assert.Equal(expected, content);
 		}
 
@@ -66,9 +65,8 @@ ANewList2: []";
 			var content = await SerializeAsync(uut);
 			var expected =
 @"NewList: [
-	{}
-]
-";
+{}
+]";
 			Assert.Equal(expected, content);
 		}
 
@@ -87,8 +85,7 @@ ANewList2: []";
 {
 NewItem: ""NewValue""
 }
-]
-";
+]";
 			Assert.Equal(expected, content);
 		}
 
@@ -109,8 +106,7 @@ NewItem: ""NewValue""
 NewItem1: ""NewValue1""
 NewItem2: ""NewValue2""
 }
-]
-";
+]";
 			Assert.Equal(expected, content);
 		}
 
@@ -153,7 +149,7 @@ ANewTable2: {}";
 			var content = await SerializeAsync(uut);
 			var expected =
 @"NewTable: {
-	NewList: []
+NewList: []
 }";
 			Assert.Equal(expected, content);
 		}
@@ -176,8 +172,7 @@ NewList: [
 NewItem: ""NewValue""
 }
 ]
-}
-";
+}";
 			Assert.Equal(expected, content);
 		}
 

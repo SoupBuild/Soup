@@ -56,7 +56,7 @@ namespace Soup.Build.Utilities
 				case SMLValueType.Float:
 					return new Value(value.AsFloat());
 				case SMLValueType.String:
-					return new Value(value.AsString());
+					return new Value(value.AsString().Content);
 				case SMLValueType.Table:
 					return new Value(value.AsTable().ToBuildValue());
 				case SMLValueType.Array:

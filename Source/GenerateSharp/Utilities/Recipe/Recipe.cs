@@ -66,8 +66,8 @@ namespace Soup.Build.Utilities
 
 		public string Name
 		{
-			get { return NameValue.AsString(); }
-			set { EnsureValue(_document, Property_Name, new SMLValue(value)); }
+			get { return NameValue.AsString().Content; }
+			set { EnsureValue(_document, Property_Name, new SMLValue(new SMLStringValue(value))); }
 		}
 
 		/// <summary>
@@ -77,8 +77,8 @@ namespace Soup.Build.Utilities
 
 		public LanguageReference Language
 		{
-			get { return LanguageReference.Parse(LanguageValue.AsString()); }
-			set { EnsureValue(_document, Property_Language, new SMLValue(value.ToString())); }
+			get { return LanguageReference.Parse(LanguageValue.AsString().Content); }
+			set { EnsureValue(_document, Property_Language, new SMLValue(new SMLStringValue(value.ToString()))); }
 		}
 
 		/// <summary>
@@ -94,11 +94,11 @@ namespace Soup.Build.Utilities
 					throw new InvalidOperationException("No version.");
 
 				return SemanticVersion.Parse(
-					GetValue(_document, Property_Version).AsString());
+					GetValue(_document, Property_Version).AsString().Content);
 			}
 			set
 			{
-				EnsureValue(_document, Property_Version, new SMLValue(value.ToString()));
+				EnsureValue(_document, Property_Version, new SMLValue(new SMLStringValue(value.ToString())));
 			}
 		}
 
@@ -136,7 +136,7 @@ namespace Soup.Build.Utilities
 				// A dependency can either be a string or a table with reference key
 				if (value.Type == SMLValueType.String)
 				{
-					result.Add(PackageReference.Parse(value.AsString()));
+					result.Add(PackageReference.Parse(value.AsString().Content));
 				}
 				else if (value.Type == SMLValueType.Table)
 				{
@@ -146,7 +146,7 @@ namespace Soup.Build.Utilities
 					var referenceValue = GetValue(valueTable, Property_Reference);
 					if (referenceValue.Type == SMLValueType.String)
 					{
-						result.Add(PackageReference.Parse(referenceValue.AsString()));
+						result.Add(PackageReference.Parse(referenceValue.AsString().Content));
 					}
 					else
 					{

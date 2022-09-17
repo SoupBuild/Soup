@@ -41,7 +41,7 @@ namespace Soup.Build.Utilities
 			RawValue = value;
 		}
 
-		public SMLValue(string value)
+		public SMLValue(SMLStringValue value)
 		{
 			Type = SMLValueType.String;
 			RawValue = value;
@@ -79,11 +79,11 @@ namespace Soup.Build.Utilities
 				throw new InvalidOperationException("Underlying type was incorrect: Table");
 		}
 
-		public string AsString()
+		public SMLStringValue AsString()
 		{
 			if (Type != SMLValueType.String)
 				throw new InvalidCastException("Incorrect access type: Value is not String");
-			else if (RawValue is string value)
+			else if (RawValue is SMLStringValue value)
 				return value;
 			else
 				throw new InvalidOperationException("Underlying type was incorrect: String");

@@ -103,9 +103,7 @@ namespace Soup.Build.Utilities
 					await writer.WriteAsync(value.AsFloat().ToString());
 					break;
 				case SMLValueType.String:
-					await writer.WriteAsync('"');
-					await writer.WriteAsync(value.AsString());
-					await writer.WriteAsync('"');
+					await SerializeAsync(value.AsString(), writer);
 					break;
 				case SMLValueType.Table:
 					await SerializeAsync(value.AsTable(), writer);
@@ -116,6 +114,13 @@ namespace Soup.Build.Utilities
 				default:
 					throw new InvalidOperationException("Unknown SMLValueType");
 			}
+		}
+
+		private static async Task SerializeAsync(SMLStringValue value, System.IO.StreamWriter writer)
+		{
+			await SerializeAsync(value.OpenQuote, writer);
+			await SerializeAsync(value.Value, writer);
+			await SerializeAsync(value.CloseQuote, writer);
 		}
 
 		private static async Task SerializeAsync(SMLToken token, System.IO.StreamWriter writer)

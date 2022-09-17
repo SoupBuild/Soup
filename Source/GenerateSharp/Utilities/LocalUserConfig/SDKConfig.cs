@@ -49,7 +49,7 @@ namespace Soup.Build.Utilities
 			{
 				if (_table.Values.TryGetValue(Property_Name, out var nameValue))
 				{
-					return nameValue.Value.AsString();
+					return nameValue.Value.AsString().Content;
 				}
 				else
 				{
@@ -58,7 +58,7 @@ namespace Soup.Build.Utilities
 			}
 			set
 			{
-				_table.Values[Property_Name] = new SMLTableValue(new SMLToken(Property_Name), new SMLValue(value));
+				_table.Values[Property_Name] = new SMLTableValue(new SMLToken(Property_Name), new SMLValue(new SMLStringValue(value)));
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace Soup.Build.Utilities
 					var result = new List<Path>();
 					foreach (var value in values.Values)
 					{
-						result.Add(new Path(value.AsString()));
+						result.Add(new Path(value.AsString().Content));
 					}
 
 					return result;
@@ -108,7 +108,7 @@ namespace Soup.Build.Utilities
 
 				foreach (var item in value)
 				{
-					values.Values.Add(new SMLValue(item.ToString()));
+					values.Values.Add(new SMLValue(new SMLStringValue(item.ToString())));
 				}
 			}
 		}
@@ -153,7 +153,7 @@ namespace Soup.Build.Utilities
 			values.Values.Clear();
 			foreach (var item in value)
 			{
-				values.Values.Add(item.Key, new SMLTableValue(new SMLToken(item.Key), new SMLValue(item.Value)));
+				values.Values.Add(item.Key, new SMLTableValue(new SMLToken(item.Key), new SMLValue(new SMLStringValue(item.Value))));
 			}
 		}
 

@@ -82,13 +82,7 @@ namespace Soup.Build.Utilities
 			}
 
 			// No matching SDK as a table array entry
-			////var sdkSyntax = new TableArraySyntax(Property_SDKs);
-			////_mirrorSyntax.Tables.Add(sdkSyntax);
-
-			var sdkValueTable = new SMLTable()
-			{
-				// TODO: MirrorSyntax = sdkSyntax,
-			};
+			var sdkValueTable = new SMLTable();
 			values.Values.Add(new SMLValue(sdkValueTable));
 
 			return new SDKConfig(sdkValueTable)

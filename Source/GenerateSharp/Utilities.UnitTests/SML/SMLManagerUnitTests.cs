@@ -33,8 +33,14 @@ namespace Soup.Build.Utilities.UnitTests
 			var expected = new SMLDocument(
 				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue("MyPackage")) },
-					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue("C++|1")) },
+					{ 
+						"Name",
+						new SMLTableValue(new SMLToken("Name"), new SMLValue(new SMLStringValue("MyPackage")))
+					},
+					{
+						"Language",
+						new SMLTableValue(new SMLToken("Language"), new SMLValue(new SMLStringValue("C++|1")))
+					},
 				});
 
 			Assert.Equal(expected, actual);
@@ -50,8 +56,8 @@ namespace Soup.Build.Utilities.UnitTests
 			var expected = new SMLDocument(
 				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue("MyPackage")) },
-					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue("C++|1")) },
+					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue(new SMLStringValue("MyPackage"))) },
+					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue(new SMLStringValue("C++|1"))) },
 				});
 
 			Assert.Equal(expected, actual);
@@ -80,9 +86,9 @@ namespace Soup.Build.Utilities.UnitTests
 			var expected = new SMLDocument(
 				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue("MyPackage")) },
-					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue("C++|1")) },
-					{ "Version", new SMLTableValue(new SMLToken("Version"), new SMLValue("1.2.3")) },
+					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue(new SMLStringValue("MyPackage"))) },
+					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue(new SMLStringValue("C++|1"))) },
+					{ "Version", new SMLTableValue(new SMLToken("Version"), new SMLValue(new SMLStringValue("1.2.3"))) },
 					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLToken("EnableErrorsAsWarnings"), new SMLValue(false)) },
 					{ "EnableCoolFeature", new SMLTableValue(new SMLToken("EnableCoolFeature"), new SMLValue(true)) },
 					{ 
@@ -97,7 +103,7 @@ namespace Soup.Build.Utilities.UnitTests
 								{
 									new SMLValue(123),
 									new SMLValue(false),
-									new SMLValue("string"),
+									new SMLValue(new SMLStringValue("string")),
 								})))
 							},
 						})))
