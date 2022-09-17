@@ -5,7 +5,6 @@
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using System;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Soup.Build.Utilities
@@ -18,7 +17,7 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Attempt to load from file
 		/// </summary>
-		public static SMLTable Deserialize(string content)
+		public static SMLDocument Deserialize(string content)
 		{
 			var inputStream = new CodePointCharStream(content);
 			var lexer = new SMLLexer(inputStream);
@@ -31,7 +30,7 @@ namespace Soup.Build.Utilities
 				var document = parser.document();
 
 				var visitor = new SMLValueTableVisitor();
-				var result = visitor.Visit(document).AsTable();
+				var result = (SMLDocument)visitor.Visit(document);
 				return result;
 			}
 			catch (ParseCanceledException ex)
@@ -53,11 +52,11 @@ namespace Soup.Build.Utilities
 
 		private static async Task SerializeAsync(SMLDocument document, System.IO.StreamWriter writer)
 		{
-			foreach (var value in document.GetRoot().GetValue())
+			foreach (var value in document.Values)
 			{
 				await writer.WriteAsync(value.Key);
-				await writer.WriteAsync(": ");
-				await SerializeAsync(value.Value, writer);
+				await writer.WriteAsync(":");
+				await SerializeAsync(value.Value.Value, writer);
 				await writer.WriteLineAsync();
 			}
 		}
@@ -66,11 +65,11 @@ namespace Soup.Build.Utilities
 		{
 			await writer.WriteLineAsync("{");
 
-			foreach (var value in table.GetValue())
+			foreach (var value in table.Values)
 			{
 				await writer.WriteAsync(value.Key);
 				await writer.WriteAsync(": ");
-				await SerializeAsync(value.Value, writer);
+				await SerializeAsync(value.Value.Value, writer);
 				await writer.WriteLineAsync();
 			}
 
@@ -81,7 +80,7 @@ namespace Soup.Build.Utilities
 		{
 			await writer.WriteLineAsync("[");
 
-			foreach (var value in array.GetValue())
+			foreach (var value in array.Values)
 			{
 				await SerializeAsync(value, writer);
 				await writer.WriteLineAsync();

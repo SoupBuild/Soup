@@ -3,99 +3,98 @@
 // </copyright>
 
 using Antlr4.Runtime.Tree;
-using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 
 namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// This class provides an implementation of <see cref="ISMLVisitor{Result}"/>,
-	/// which converts the input SML into a <see cref="Value"/>
+	/// which converts the input SML into a <see cref="SMLValue"/>
 	/// </summary>
-	public class SMLValueTableVisitor : AbstractParseTreeVisitor<SMLValue>, ISMLVisitor<SMLValue>
+	public class SMLValueTableVisitor : AbstractParseTreeVisitor<object>, ISMLVisitor<object>
 	{
-		public virtual SMLValue VisitDocument(SMLParser.DocumentContext context)
+		public virtual object VisitDocument(SMLParser.DocumentContext context)
 		{
-			return context.tableContent().Accept(this);
+			var tableContent = (Dictionary<string, SMLTableValue>)context.tableContent().Accept(this);
+			return new SMLDocument(tableContent);
 		}
 
-		public virtual SMLValue VisitTable(SMLParser.TableContext context)
+		public virtual object VisitTable(SMLParser.TableContext context)
 		{
-			return context.tableContent().Accept(this);
+			var tableContent = (Dictionary<string, SMLTableValue>)context.tableContent().Accept(this);
+			return new SMLTable(tableContent);
 		}
 
-		public virtual SMLValue VisitTableContent(SMLParser.TableContentContext context)
+		public virtual object VisitTableContent(SMLParser.TableContentContext context)
 		{
-			var tableContent = new Dictionary<string, SMLValue>();
+			var tableContent = new Dictionary<string, SMLTableValue>();
 			foreach (var value in context.tableValue())
 			{
-				tableContent.Add(value.KEY().GetText(), value.value().Accept(this));
+				tableContent.Add(value.KEY().GetText(), (SMLTableValue)value.value().Accept(this));
 			}
 
-			return new SMLValue(new SMLTable(tableContent));
+			return tableContent;
 		}
 
-		public virtual SMLValue VisitTableValue(SMLParser.TableValueContext context)
+		public virtual object VisitTableValue(SMLParser.TableValueContext context)
 		{
-			throw new NotImplementedException();
+			var value = (SMLValue)context.value().Accept(this);
+			return new SMLTableValue(value);
 		}
 
-		public virtual SMLValue VisitArray(SMLParser.ArrayContext context)
+		public virtual object VisitArray(SMLParser.ArrayContext context)
 		{
-			return context.arrayContent().Accept(this);
+			var arrayContent = (List<SMLValue>)context.arrayContent().Accept(this);
+			return new SMLArray(arrayContent);
 		}
 
-		public virtual SMLValue VisitArrayContent(SMLParser.ArrayContentContext context)
+		public virtual object VisitArrayContent(SMLParser.ArrayContentContext context)
 		{
 			var arrayContent = new List<SMLValue>();
-			foreach (var value in context.arrayValue())
+			foreach (var value in context.value())
 			{
-				arrayContent.Add(value.Accept(this));
+				arrayContent.Add((SMLValue)value.Accept(this));
 			}
 
-			return new SMLValue(new SMLArray(arrayContent));
+			return arrayContent;
 		}
 
-		public virtual SMLValue VisitArrayValue(SMLParser.ArrayValueContext context)
-		{
-			return context.value().Accept(this);
-		}
-
-		public virtual SMLValue VisitValueInteger(SMLParser.ValueIntegerContext context)
+		public virtual object VisitValueInteger(SMLParser.ValueIntegerContext context)
 		{
 			return new SMLValue(long.Parse(context.INTEGER().GetText()));
 		}
 
-		public virtual SMLValue VisitValueString(SMLParser.ValueStringContext context)
+		public virtual object VisitValueString(SMLParser.ValueStringContext context)
 		{
 			var literal = context.STRING_LITERAL().GetText();
 			var content = literal.Substring(1, literal.Length - 2);
 			return new SMLValue(content);
 		}
 
-		public virtual SMLValue VisitValueTrue(SMLParser.ValueTrueContext context)
+		public virtual object VisitValueTrue(SMLParser.ValueTrueContext context)
 		{
 			return new SMLValue(true);
 		}
 
-		public virtual SMLValue VisitValueFalse(SMLParser.ValueFalseContext context)
+		public virtual object VisitValueFalse(SMLParser.ValueFalseContext context)
 		{
 			return new SMLValue(false);
 		}
 
-		public virtual SMLValue VisitValueTable(SMLParser.ValueTableContext context)
+		public virtual object VisitValueTable(SMLParser.ValueTableContext context)
 		{
-			return context.table().Accept(this);
+			var table = (SMLTable)context.table().Accept(this);
+			return new SMLValue(table);
 		}
 
-		public virtual SMLValue VisitValueArray(SMLParser.ValueArrayContext context)
+		public virtual object VisitValueArray(SMLParser.ValueArrayContext context)
 		{
-			return context.array().Accept(this);
+			var array = (SMLArray)context.array().Accept(this);
+			return new SMLValue(array);
 		}
 
-		public virtual SMLValue VisitDelimiter(SMLParser.DelimiterContext context)
+		public virtual object VisitDelimiter(SMLParser.DelimiterContext context)
 		{
 			throw new NotImplementedException();
 		}

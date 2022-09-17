@@ -31,11 +31,11 @@ namespace Soup.Build.Utilities.UnitTests
 				";
 			var actual = SMLManager.Deserialize(recipe);
 
-			var expected = new SMLTable(
-				new Dictionary<string, SMLValue>()
+			var expected = new SMLDocument(
+				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLValue("MyPackage") },
-					{ "Language", new SMLValue("C++|1") },
+					{ "Name", new SMLTableValue(new SMLValue("MyPackage")) },
+					{ "Language", new SMLTableValue(new SMLValue("C++|1")) },
 				});
 
 			Assert.Equal(expected, actual);
@@ -45,14 +45,14 @@ namespace Soup.Build.Utilities.UnitTests
 		public void Deserialize_Simple_Inline()
 		{
 			var recipe =
-				@"Name: ""MyPackage"", Language: ""C++|1"",";
+				@"Name: ""MyPackage"", Language: ""C++|1""";
 			var actual = SMLManager.Deserialize(recipe);
 
-			var expected = new SMLTable(
-				new Dictionary<string, SMLValue>()
+			var expected = new SMLDocument(
+				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLValue("MyPackage") },
-					{ "Language", new SMLValue("C++|1") },
+					{ "Name", new SMLTableValue(new SMLValue("MyPackage")) },
+					{ "Language", new SMLTableValue(new SMLValue("C++|1")) },
 				});
 
 			Assert.Equal(expected, actual);
@@ -74,34 +74,34 @@ namespace Soup.Build.Utilities.UnitTests
 
 					Test :[
 						123
-						false, ""string"", ]
-				},";
+						false, ""string"" ]
+				}";
 			var actual = SMLManager.Deserialize(recipe);
 
-			var expected = new SMLTable(
-				new Dictionary<string, SMLValue>()
+			var expected = new SMLDocument(
+				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLValue("MyPackage") },
-					{ "Language", new SMLValue("C++|1") },
-					{ "Version", new SMLValue("1.2.3") },
-					{ "EnableErrorsAsWarnings", new SMLValue(false) },
-					{ "EnableCoolFeature", new SMLValue(true) },
+					{ "Name", new SMLTableValue(new SMLValue("MyPackage")) },
+					{ "Language", new SMLTableValue(new SMLValue("C++|1")) },
+					{ "Version", new SMLTableValue(new SMLValue("1.2.3")) },
+					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLValue(false)) },
+					{ "EnableCoolFeature", new SMLTableValue(new SMLValue(true)) },
 					{ 
 						"Dependencies",
-						new SMLValue(new SMLTable(new Dictionary<string, SMLValue>()
+						new SMLTableValue(new SMLValue(new SMLTable(new Dictionary<string, SMLTableValue>()
 						{
-							{ "Runtime", new SMLValue(new SMLArray()) },
-							{ "Build", new SMLValue(new SMLArray()) },
+							{ "Runtime", new SMLTableValue(new SMLValue(new SMLArray())) },
+							{ "Build", new SMLTableValue(new SMLValue(new SMLArray())) },
 							{ 
 								"Test",
-								new SMLValue(new SMLArray(new List<SMLValue>()
+								new SMLTableValue(new SMLValue(new SMLArray(new List<SMLValue>()
 								{
 									new SMLValue(123),
 									new SMLValue(false),
 									new SMLValue("string"),
-								}))
+								})))
 							},
-						}))
+						})))
 					},
 				});
 
@@ -111,32 +111,32 @@ namespace Soup.Build.Utilities.UnitTests
 		[Fact]
 		public async Task Serialize_AllProperties()
 		{
-			var uut = new SMLDocument(new SMLTable(
-				new Dictionary<string, SMLValue>()
+			var uut = new SMLDocument(
+				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLValue("MyPackage") },
-					{ "Language", new SMLValue("C++|1") },
-					{ "Version", new SMLValue("1.2.3") },
-					{ "EnableErrorsAsWarnings", new SMLValue(false) },
-					{ "EnableCoolFeature", new SMLValue(true) },
+					{ "Name", new SMLTableValue(new SMLValue("MyPackage")) },
+					{ "Language", new SMLTableValue(new SMLValue("C++|1")) },
+					{ "Version", new SMLTableValue(new SMLValue("1.2.3")) },
+					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLValue(false)) },
+					{ "EnableCoolFeature", new SMLTableValue(new SMLValue(true)) },
 					{
 						"Dependencies",
-						new SMLValue(new SMLTable(new Dictionary<string, SMLValue>()
+						new SMLTableValue(new SMLValue(new SMLTable(new Dictionary<string, SMLTableValue>()
 						{
-							{ "Runtime", new SMLValue(new SMLArray()) },
-							{ "Build", new SMLValue(new SMLArray()) },
+							{ "Runtime", new SMLTableValue(new SMLValue(new SMLArray())) },
+							{ "Build", new SMLTableValue(new SMLValue(new SMLArray())) },
 							{
 								"Test",
-								new SMLValue(new SMLArray(new List<SMLValue>()
+								new SMLTableValue(new SMLValue(new SMLArray(new List<SMLValue>()
 								{
 									new SMLValue(123),
 									new SMLValue(false),
 									new SMLValue("string"),
-								}))
+								})))
 							},
-						}))
+						})))
 					},
-				}));
+				});
 
 			var actual = await SerializeAsync(uut);
 

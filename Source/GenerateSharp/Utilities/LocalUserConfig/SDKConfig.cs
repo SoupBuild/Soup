@@ -40,16 +40,16 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public bool HasName()
 		{
-			return _table.GetValue().ContainsKey(Property_Name);
+			return _table.Values.ContainsKey(Property_Name);
 		}
 
 		public string Name
 		{
 			get
 			{
-				if (_table.GetValue().TryGetValue(Property_Name, out var nameValue))
+				if (_table.Values.TryGetValue(Property_Name, out var nameValue))
 				{
-					return nameValue.AsString();
+					return nameValue.Value.AsString();
 				}
 				else
 				{
@@ -58,7 +58,7 @@ namespace Soup.Build.Utilities
 			}
 			set
 			{
-				_table.GetValue()[Property_Name] = new SMLValue(value);
+				_table.Values[Property_Name] = new SMLTableValue(new SMLValue(value));
 			}
 		}
 
@@ -67,18 +67,18 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public bool HasSourceDirectories()
 		{
-			return _table.GetValue().ContainsKey(Property_SourceDirectories);
+			return _table.Values.ContainsKey(Property_SourceDirectories);
 		}
 
 		public IList<Path> SourceDirectories
 		{
 			get
 			{
-				if (_table.GetValue().TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
+				if (_table.Values.TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
 				{
-					var values = sourceDirectoriesValue.AsArray();
+					var values = sourceDirectoriesValue.Value.AsArray();
 					var result = new List<Path>();
-					foreach (var value in values.GetValue())
+					foreach (var value in values.Values)
 					{
 						result.Add(new Path(value.AsString()));
 					}
@@ -93,22 +93,22 @@ namespace Soup.Build.Utilities
 			set
 			{
 				SMLArray? values;
-				if (_table.GetValue().TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
+				if (_table.Values.TryGetValue(Property_SourceDirectories, out var sourceDirectoriesValue))
 				{
-					values = sourceDirectoriesValue.AsArray();
+					values = sourceDirectoriesValue.Value.AsArray();
 				}
 				else
 				{
 					values = new SMLArray();
-					_table.GetValue()[Property_SourceDirectories] = new SMLValue(values);
+					_table.Values[Property_SourceDirectories] = new SMLTableValue(new SMLValue(values));
 				}
 
 				// Add the new syntax to the parent table syntax
-				values.GetValue().Clear();
+				values.Values.Clear();
 
 				foreach (var item in value)
 				{
-					values.GetValue().Add(new SMLValue(item.ToString()));
+					values.Values.Add(new SMLValue(item.ToString()));
 				}
 			}
 		}
@@ -118,16 +118,16 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public bool HasProperties()
 		{
-			return _table.GetValue().ContainsKey(Property_Properties);
+			return _table.Values.ContainsKey(Property_Properties);
 		}
 
 		public SMLTable Properties
 		{
 			get
 			{
-				if (_table.GetValue().TryGetValue(Property_Properties, out var propertiesValue))
+				if (_table.Values.TryGetValue(Property_Properties, out var propertiesValue))
 				{
-					return propertiesValue.AsTable();
+					return propertiesValue.Value.AsTable();
 				}
 				else
 				{
@@ -139,21 +139,21 @@ namespace Soup.Build.Utilities
 		public void SetProperties(IDictionary<string, string> value)
 		{
 			SMLTable? values;
-			if (_table.GetValue().TryGetValue(Property_Properties, out var propertiesValues))
+			if (_table.Values.TryGetValue(Property_Properties, out var propertiesValues))
 			{
-				values = propertiesValues.AsTable();
+				values = propertiesValues.Value.AsTable();
 			}
 			else
 			{
 				values = new SMLTable();
-				_table.GetValue()[Property_Properties] = new SMLValue(values);
+				_table.Values[Property_Properties] = new SMLTableValue(new SMLValue(values));
 			}
 
 			// Add the new syntax to the parent table syntax
-			values.GetValue().Clear();
+			values.Values.Clear();
 			foreach (var item in value)
 			{
-				values.GetValue().Add(item.Key, new SMLValue(item.Value));
+				values.Values.Add(item.Key, new SMLTableValue(new SMLValue(item.Value)));
 			}
 		}
 

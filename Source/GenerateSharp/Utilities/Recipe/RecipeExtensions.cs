@@ -95,7 +95,7 @@ namespace Soup.Build.Utilities
 
 			// Write the recipe to the file stream
 			await SMLManager.SerializeAsync(
-				new SMLDocument(recipe.Table),
+				recipe.Document,
 				file.GetOutStream());
 		}
 	}

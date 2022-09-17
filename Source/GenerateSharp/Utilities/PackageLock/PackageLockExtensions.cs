@@ -67,7 +67,7 @@ namespace Soup.Build.Utilities
 
 			// Write the recipe to the file stream
 			await SMLManager.SerializeAsync(
-				new SMLDocument(packageLock.Table),
+				packageLock.Document,
 				file.GetOutStream());
 		}
 	}

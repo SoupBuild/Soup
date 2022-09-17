@@ -571,17 +571,17 @@ namespace Soup.Build.PackageManager
 			Path stagingDirectory,
 			PackageLock packageLock)
 		{
-			foreach (var closure in packageLock.GetClosures().GetValue())
+			foreach (var closure in packageLock.GetClosures().Values)
 			{
 				Log.Info($"Restore Packages for Closure {closure.Key}");
-				foreach (var languageProjects in closure.Value.AsTable().GetValue())
+				foreach (var languageProjects in closure.Value.Value.AsTable().Values)
 				{
 					Log.Info($"Restore Packages for Language {languageProjects.Key}");
-					foreach (var project in languageProjects.Value.AsArray().GetValue())
+					foreach (var project in languageProjects.Value.Value.AsArray().Values)
 					{
 						var projectTable = project.AsTable();
-						var projectName = projectTable["Name"].AsString();
-						var projectVersion = projectTable["Version"].AsString();
+						var projectName = projectTable.Values["Name"].Value.AsString();
+						var projectVersion = projectTable.Values["Version"].Value.AsString();
 						if (SemanticVersion.TryParse(projectVersion, out var version))
 						{
 							await EnsurePackageDownloadedAsync(

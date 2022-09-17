@@ -11,26 +11,24 @@ namespace Soup.Build.Utilities.UnitTests
 	public class SMLExtensionsUnitTests
 	{
 		[Fact]
-		public async Task AddListWithSyntax()
+		public async Task AddArrayWithSyntax()
 		{
-			var uut = new SMLTable();
+			var uut = new SMLDocument();
 
-			uut.AddListWithSyntax("NewList");
+			uut.AddArrayWithSyntax("NewList");
 
 			var content = await SerializeAsync(uut);
 			var expected =
-@"NewList: [
-]
-";
+@"NewList: []";
 			Assert.Equal(expected, content);
 		}
 
 		[Fact]
-		public async Task AddListAndItemWithSyntax()
+		public async Task AddArrayAndItemWithSyntax()
 		{
-			var uut = new SMLTable();
+			var uut = new SMLDocument();
 
-			var newList = uut.AddListWithSyntax("NewList");
+			var newList = uut.AddArrayWithSyntax("NewList");
 			newList.AddItemWithSyntax("NewItem");
 
 			var content = await SerializeAsync(uut);
@@ -43,11 +41,11 @@ namespace Soup.Build.Utilities.UnitTests
 		}
 
 		[Fact]
-		public async Task AddListAndTableWithSyntax()
+		public async Task AddArrayAndTableWithSyntax()
 		{
-			var uut = new SMLTable();
+			var uut = new SMLDocument();
 
-			var newList = uut.AddListWithSyntax("NewList");
+			var newList = uut.AddArrayWithSyntax("NewList");
 			newList.AddTableWithSyntax();
 
 			var content = await SerializeAsync(uut);
@@ -61,11 +59,11 @@ namespace Soup.Build.Utilities.UnitTests
 		}
 
 		[Fact]
-		public async Task AddListAndTableAndItemWithSyntax()
+		public async Task AddArrayAndTableAndItemWithSyntax()
 		{
-			var uut = new SMLTable();
+			var uut = new SMLDocument();
 
-			var newList = uut.AddListWithSyntax("NewList");
+			var newList = uut.AddArrayWithSyntax("NewList");
 			var newTable = newList.AddTableWithSyntax();
 			newTable.AddItemWithSyntax("NewItem", "NewValue");
 
@@ -81,11 +79,11 @@ NewItem: ""NewValue""
 		}
 
 		[Fact]
-		public async Task AddListAndTableAndTwoItemsWithSyntax()
+		public async Task AddArrayAndTableAndTwoItemsWithSyntax()
 		{
-			var uut = new SMLTable();
+			var uut = new SMLDocument();
 
-			var newList = uut.AddListWithSyntax("NewList");
+			var newList = uut.AddArrayWithSyntax("NewList");
 			var newTable = newList.AddTableWithSyntax();
 			newTable.AddItemWithSyntax("NewItem1", "NewValue1");
 			newTable.AddItemWithSyntax("NewItem2", "NewValue2");
@@ -105,7 +103,7 @@ NewItem2: ""NewValue2""
 		[Fact]
 		public async Task AddTableWithSyntax()
 		{
-			var uut = new SMLTable();
+			var uut = new SMLDocument();
 
 			uut.AddTableWithSyntax("NewTable");
 
@@ -118,12 +116,12 @@ NewItem2: ""NewValue2""
 		}
 
 		[Fact]
-		public async Task AddTableAndListWithSyntax()
+		public async Task AddTableAndArrayWithSyntax()
 		{
-			var uut = new SMLTable();
+			var uut = new SMLDocument();
 
 			var newTable = uut.AddTableWithSyntax("NewTable");
-			newTable.AddListWithSyntax("NewList");
+			newTable.AddArrayWithSyntax("NewList");
 
 			var content = await SerializeAsync(uut);
 			var expected =
@@ -136,12 +134,12 @@ NewList: [
 		}
 
 		[Fact]
-		public async Task AddTableAndListAndTableWithSyntax()
+		public async Task AddTableAndArrayAndTableWithSyntax()
 		{
-			var uut = new SMLTable();
+			var uut = new SMLDocument();
 
 			var newTable = uut.AddTableWithSyntax("NewTable");
-			var newList = newTable.AddListWithSyntax("NewList");
+			var newList = newTable.AddArrayWithSyntax("NewList");
 			var newTable2 = newList.AddTableWithSyntax();
 			newTable2.AddItemWithSyntax("NewItem", "NewValue");
 
@@ -158,11 +156,11 @@ NewItem: ""NewValue""
 			Assert.Equal(expected, content);
 		}
 
-		private async Task<string> SerializeAsync(SMLTable table)
+		private async Task<string> SerializeAsync(SMLDocument document)
 		{
 			using var stream = new MemoryStream();
 			await SMLManager.SerializeAsync(
-				new SMLDocument(table),
+				document,
 				stream);
 
 			stream.Seek(0, SeekOrigin.Begin);

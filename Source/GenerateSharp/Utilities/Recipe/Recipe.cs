@@ -5,6 +5,7 @@
 using Opal;
 using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 
 namespace Soup.Build.Utilities
 {
@@ -22,14 +23,14 @@ namespace Soup.Build.Utilities
 		private static string Property_Version => "Version";
 		private static string Property_Reference => "Reference";
 
-		private SMLTable _table;
+		private SMLDocument _document;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
 		public Recipe()
 		{
-			_table = new SMLTable();
+			_document = new SMLDocument();
 			Name = string.Empty;
 			Language = new LanguageReference();
 		}
@@ -41,7 +42,7 @@ namespace Soup.Build.Utilities
 			string name,
 			LanguageReference language)
 		{
-			_table = new SMLTable();
+			_document = new SMLDocument();
 			Name = name;
 			Language = language;
 		}
@@ -49,42 +50,42 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Recipe"/> class.
 		/// </summary>
-		public Recipe(SMLTable table)
+		public Recipe(SMLDocument document)
 		{
-			_table = table;
+			_document = document;
 
-			if (!HasValue(_table, Property_Name))
+			if (!HasValue(_document, Property_Name))
 				throw new ArgumentException("Missing required property Name");
-			if (!HasValue(_table, Property_Language))
+			if (!HasValue(_document, Property_Language))
 				throw new ArgumentException("Missing required property Language");
 		}
 
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
-		public SMLValue NameValue => GetValue(_table, Property_Name);
+		public SMLValue NameValue => GetValue(_document, Property_Name);
 
 		public string Name
 		{
 			get { return NameValue.AsString(); }
-			set { EnsureValue(_table, Property_Name, new SMLValue(value)); }
+			set { EnsureValue(_document, Property_Name, new SMLValue(value)); }
 		}
 
 		/// <summary>
 		/// Gets or sets the package language
 		/// </summary>
-		public SMLValue LanguageValue => GetValue(_table, Property_Language);
+		public SMLValue LanguageValue => GetValue(_document, Property_Language);
 
 		public LanguageReference Language
 		{
 			get { return LanguageReference.Parse(LanguageValue.AsString()); }
-			set { EnsureValue(_table, Property_Language, new SMLValue(value.ToString())); }
+			set { EnsureValue(_document, Property_Language, new SMLValue(value.ToString())); }
 		}
 
 		/// <summary>
 		/// Gets or sets the package version
 		/// </summary>
-		public bool HasVersion => HasValue(_table, Property_Version);
+		public bool HasVersion => HasValue(_document, Property_Version);
 
 		public SemanticVersion Version
 		{
@@ -94,11 +95,11 @@ namespace Soup.Build.Utilities
 					throw new InvalidOperationException("No version.");
 
 				return SemanticVersion.Parse(
-					GetValue(_table, Property_Version).AsString());
+					GetValue(_document, Property_Version).AsString());
 			}
 			set
 			{
-				EnsureValue(_table, Property_Version, new SMLValue(value.ToString()));
+				EnsureValue(_document, Property_Version, new SMLValue(value.ToString()));
 			}
 		}
 
@@ -110,7 +111,7 @@ namespace Soup.Build.Utilities
 			var result = new List<string>();
 			if (HasDependencies())
 			{
-				foreach (var value in GetDependencies().GetValue())
+				foreach (var value in GetDependencies().Values)
 				{
 					result.Add(value.Key);
 				}
@@ -131,7 +132,7 @@ namespace Soup.Build.Utilities
 
 			var values = GetValue(GetDependencies(), name).AsArray();
 			var result = new List<PackageReference>();
-			foreach (var value in values.GetValue())
+			foreach (var value in values.Values)
 			{
 				// A dependency can either be a string or a table with reference key
 				if (value.Type == SMLValueType.String)
@@ -164,7 +165,7 @@ namespace Soup.Build.Utilities
 
 		public void AddRuntimeDependency(string value)
 		{
-			var dependencies = EnsureHasTable(_table, Property_Dependencies);
+			var dependencies = EnsureHasTable(_document, Property_Dependencies);
 			var runtimeDependencies = EnsureHasList(dependencies, Property_Runtime);
 
 			runtimeDependencies.AddItemWithSyntax(value);
@@ -203,14 +204,14 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		public SMLTable Table => _table;
+		public SMLDocument Document => _document;
 
 		/// <summary>
 		/// Gets or sets the table of dependency packages
 		/// </summary>
 		private bool HasDependencies()
 		{
-			return HasValue(_table, Property_Dependencies);
+			return HasValue(_document, Property_Dependencies);
 		}
 
 		private SMLTable GetDependencies()
@@ -218,56 +219,79 @@ namespace Soup.Build.Utilities
 			if (!HasDependencies())
 				throw new InvalidOperationException("No dependencies.");
 
-			var values = GetValue(_table, Property_Dependencies).AsTable();
+			var values = GetValue(_document, Property_Dependencies).AsTable();
 			return values;
 		}
 
-		private SMLTable EnsureHasTable(SMLTable table, string name)
+		private static SMLTable EnsureHasTable(SMLDocument document, string name)
 		{
-			if (table.GetValue().ContainsKey(name))
+			if (document.Values.ContainsKey(name))
 			{
-				var value = _table[name];
-				if (value.Type != SMLValueType.Table)
+				var value = document.Values[name];
+				if (value.Value.Type != SMLValueType.Table)
 					throw new InvalidOperationException("The recipe already has a non-table dependencies property");
 
 				// Find the Syntax for the table
-				return value.AsTable();
+				return value.Value.AsTable();
 			}
 			else
 			{
 				// Create a new table
-				return table.AddTableWithSyntax(name);
+				return document.AddTableWithSyntax(name);
 			}
 		}
 
-		private SMLArray EnsureHasList(SMLTable table, string name)
+		private static SMLArray EnsureHasList(SMLTable table, string name)
 		{
-			if (table.GetValue().ContainsKey(name))
+			if (table.Values.ContainsKey(name))
 			{
-				var value = _table[name];
-				if (value.Type != SMLValueType.Array)
+				var value = table.Values[name];
+				if (value.Value.Type != SMLValueType.Array)
 					throw new InvalidOperationException("The recipe already has a non-list dependencies property");
 
 				// Find the Syntax for the table
-				return value.AsArray();
+				return value.Value.AsArray();
 			}
 			else
 			{
 				// Create a new list
-				return table.AddListWithSyntax(name);
+				return table.AddArrayWithSyntax(name);
 			}
 		}
 
-		private bool HasValue(SMLTable table, string key)
+		private static SMLArray EnsureHasList(SMLDocument document, string name)
 		{
-			return table.GetValue().ContainsKey(key);
+			if (document.Values.ContainsKey(name))
+			{
+				var value = document.Values[name];
+				if (value.Value.Type != SMLValueType.Array)
+					throw new InvalidOperationException("The recipe already has a non-list dependencies property");
+
+				// Find the Syntax for the table
+				return value.Value.AsArray();
+			}
+			else
+			{
+				// Create a new list
+				return document.AddArrayWithSyntax(name);
+			}
 		}
 
-		private SMLValue GetValue(SMLTable table, string key)
+		private static bool HasValue(SMLTable table, string key)
 		{
-			if (table.GetValue().TryGetValue(key, out var value))
+			return table.Values.ContainsKey(key);
+		}
+
+		private static bool HasValue(SMLDocument document, string key)
+		{
+			return document.Values.ContainsKey(key);
+		}
+
+		private static SMLValue GetValue(SMLTable table, string key)
+		{
+			if (table.Values.TryGetValue(key, out var value))
 			{
-				return value;
+				return value.Value;
 			}
 			else
 			{
@@ -275,15 +299,41 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		private SMLValue EnsureValue(SMLTable table, string key, SMLValue value)
+		private static SMLValue GetValue(SMLDocument document, string key)
 		{
-			if (table.GetValue().ContainsKey(key))
+			if (document.Values.TryGetValue(key, out var value))
 			{
-				table.GetValue().Add(key, value);
+				return value.Value;
 			}
 			else
 			{
-				table.GetValue().Add(key, value);
+				throw new InvalidOperationException("Requested recipe value does not exist in the table.");
+			}
+		}
+
+		private static SMLValue EnsureValue(SMLDocument document, string key, SMLValue value)
+		{
+			if (document.Values.ContainsKey(key))
+			{
+				document.Values.Add(key, new SMLTableValue(value));
+			}
+			else
+			{
+				document.Values.Add(key, new SMLTableValue(value));
+			}
+
+			return value;
+		}
+
+		private static SMLValue EnsureValue(SMLTable table, string key, SMLValue value)
+		{
+			if (table.Values.ContainsKey(key))
+			{
+				table.Values.Add(key, new SMLTableValue(value));
+			}
+			else
+			{
+				table.Values.Add(key, new SMLTableValue(value));
 			}
 
 			return value;

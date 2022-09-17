@@ -23,11 +23,11 @@ namespace Soup.Build.Utilities.UnitTests
 		public void AddRuntimeDependency_Success()
 		{
 			var uut = new Recipe(
-				new SMLTable(
-					new Dictionary<string, SMLValue>()
+				new SMLDocument(
+					new Dictionary<string, SMLTableValue>()
 					{
-						{ "Name", new SMLValue("TestProject") },
-						{ "Language",  new SMLValue("C#") },
+						{ "Name", new SMLTableValue(new SMLValue("TestProject")) },
+						{ "Language",  new SMLTableValue(new SMLValue("C#")) },
 					}));
 
 			uut.AddRuntimeDependency("SomeDependency");

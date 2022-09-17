@@ -10,29 +10,16 @@ namespace Soup.Build.Utilities
 {
 	public class SMLTable : IEquatable<SMLTable>
 	{
-		private Dictionary<string, SMLValue> _value;
+		public Dictionary<string, SMLTableValue> Values { get; set; }
 
 		public SMLTable()
 		{
-			_value = new Dictionary<string, SMLValue>();
+			Values = new Dictionary<string, SMLTableValue>();
 		}
 
-		public SMLTable(Dictionary<string, SMLValue> value)
+		public SMLTable(Dictionary<string, SMLTableValue> values)
 		{
-			_value = value;
-		}
-
-		public SMLValue this[string key]
-		{
-			get
-			{
-				return _value[key];
-			}
-		}
-
-		public Dictionary<string, SMLValue> GetValue()
-		{
-			return _value;
+			Values = values;
 		}
 
 		public override bool Equals(object? obj) => this.Equals(obj as SMLTable);
@@ -47,10 +34,10 @@ namespace Soup.Build.Utilities
 				return true;
 
 			// Return true if the fields match.
-			return Enumerable.SequenceEqual(this._value, rhs._value);
+			return Enumerable.SequenceEqual(this.Values, rhs.Values);
 		}
 
-		public override int GetHashCode() => (_value).GetHashCode();
+		public override int GetHashCode() => (Values).GetHashCode();
 
 		public static bool operator ==(SMLTable? lhs, SMLTable? rhs)
 		{

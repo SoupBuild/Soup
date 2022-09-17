@@ -10,35 +10,16 @@ namespace Soup.Build.Utilities
 {
 	public class SMLArray : IEquatable<SMLArray>
 	{
-		private List<SMLValue> _value;
+		public List<SMLValue> Values { get; set; }
 
 		public SMLArray()
 		{
-			_value = new List<SMLValue>();
+			Values = new List<SMLValue>();
 		}
 
-		public SMLArray(List<SMLValue> value)
-
+		public SMLArray(List<SMLValue> values)
 		{
-			_value = value;
-		}
-
-		public SMLValue this[int key]
-		{
-			get
-			{
-				return _value[key];
-			}
-		}
-
-		public int GetSize()
-		{
-			return _value.Count;
-		}
-
-		public List<SMLValue> GetValue()
-		{
-			return _value;
+			Values = values;
 		}
 
 		public override bool Equals(object? obj) => this.Equals(obj as SMLArray);
@@ -53,10 +34,10 @@ namespace Soup.Build.Utilities
 				return true;
 
 			// Return true if the fields match.
-			return Enumerable.SequenceEqual(this._value, rhs._value);
+			return Enumerable.SequenceEqual(this.Values, rhs.Values);
 		}
 
-		public override int GetHashCode() => (_value).GetHashCode();
+		public override int GetHashCode() => (Values).GetHashCode();
 
 		public static bool operator ==(SMLArray? lhs, SMLArray? rhs)
 		{

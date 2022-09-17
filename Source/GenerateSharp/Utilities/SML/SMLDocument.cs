@@ -2,23 +2,56 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Soup.Build.Utilities
 {
-	/// <summary>
-	/// The SML Document
-	/// </summary>
-	public class SMLDocument
+	public class SMLDocument : IEquatable<SMLDocument>
 	{
-		private SMLTable _root;
+		public Dictionary<string, SMLTableValue> Values { get; set; }
 
-		public SMLDocument(SMLTable root)
+		public SMLDocument()
 		{
-			_root = root;
+			Values = new Dictionary<string, SMLTableValue>();
 		}
 
-		public SMLTable GetRoot()
+		public SMLDocument(Dictionary<string, SMLTableValue> values)
 		{
-			return _root;
+			Values = values;
 		}
+
+		public override bool Equals(object? obj) => this.Equals(obj as SMLDocument);
+
+		public bool Equals(SMLDocument? rhs)
+		{
+			if (rhs is null)
+				return false;
+
+			// Optimization for a common success case.
+			if (object.ReferenceEquals(this, rhs))
+				return true;
+
+			// Return true if the fields match.
+			return Enumerable.SequenceEqual(this.Values, rhs.Values);
+		}
+
+		public override int GetHashCode() => (Values).GetHashCode();
+
+		public static bool operator ==(SMLDocument? lhs, SMLDocument? rhs)
+		{
+			if (lhs is null)
+			{
+				if (rhs is null)
+					return true;
+				else
+					return false;
+			}
+
+			return lhs.Equals(rhs);
+		}
+
+		public static bool operator !=(SMLDocument? lhs, SMLDocument? rhs) => !(lhs == rhs);
 	}
 }

@@ -10,12 +10,23 @@ namespace Soup.Build.Utilities
 {
 	public static class ValueTableExtensions
 	{
+		public static IValueTable ToBuildValue(this SMLDocument value)
+		{
+			var values = new Dictionary<string, IValue>();
+			foreach (var item in value.Values)
+			{
+				values.Add(item.Key, item.Value.Value.ToBuildValue());
+			}
+
+			return new ValueTable(values);
+		}
+
 		public static IValueTable ToBuildValue(this SMLTable value)
 		{
 			var values = new Dictionary<string, IValue>();
-			foreach (var item in value.GetValue())
+			foreach (var item in value.Values)
 			{
-				values.Add(item.Key, item.Value.ToBuildValue());
+				values.Add(item.Key, item.Value.Value.ToBuildValue());
 			}
 
 			return new ValueTable(values);
@@ -24,7 +35,7 @@ namespace Soup.Build.Utilities
 		public static IValueList ToBuildValue(this SMLArray value)
 		{
 			var values = new List<IValue>();
-			foreach (var item in value.GetValue())
+			foreach (var item in value.Values)
 			{
 				values.Add(item.ToBuildValue());
 			}
