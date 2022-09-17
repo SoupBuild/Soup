@@ -58,7 +58,7 @@ namespace Soup.Build.Utilities
 			}
 			set
 			{
-				_table.Values[Property_Name] = new SMLTableValue(new SMLValue(value));
+				_table.Values[Property_Name] = new SMLTableValue(new SMLToken(Property_Name), new SMLValue(value));
 			}
 		}
 
@@ -100,7 +100,7 @@ namespace Soup.Build.Utilities
 				else
 				{
 					values = new SMLArray();
-					_table.Values[Property_SourceDirectories] = new SMLTableValue(new SMLValue(values));
+					_table.Values[Property_SourceDirectories] = new SMLTableValue(new SMLToken(Property_SourceDirectories), new SMLValue(values));
 				}
 
 				// Add the new syntax to the parent table syntax
@@ -146,14 +146,14 @@ namespace Soup.Build.Utilities
 			else
 			{
 				values = new SMLTable();
-				_table.Values[Property_Properties] = new SMLTableValue(new SMLValue(values));
+				_table.Values[Property_Properties] = new SMLTableValue(new SMLToken(Property_Properties), new SMLValue(values));
 			}
 
 			// Add the new syntax to the parent table syntax
 			values.Values.Clear();
 			foreach (var item in value)
 			{
-				values.Values.Add(item.Key, new SMLTableValue(new SMLValue(item.Value)));
+				values.Values.Add(item.Key, new SMLTableValue(new SMLToken(item.Key), new SMLValue(item.Value)));
 			}
 		}
 

@@ -3,8 +3,6 @@
 // </copyright>
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Soup.Build.Utilities
 {
@@ -13,8 +11,10 @@ namespace Soup.Build.Utilities
     /// </summary>
     public class PackageLock
 	{
-		private static string Property_Version => "Version";
+		public static string Property_Version => "Version";
+		public static string Property_Name => "Name";
 		private static string Property_Closures => "Closures";
+		private static string Property_Build => "Build";
 
 		private SMLDocument _document;
 
@@ -86,11 +86,11 @@ namespace Soup.Build.Utilities
 			var projectLanguageList = EnsureHasList(closureTable, language);
 			
 			var projectTable = projectLanguageList.AddTableWithSyntax();
-			projectTable.AddItemWithSyntax("Name", name);
-			projectTable.AddItemWithSyntax("Version", version);
+			projectTable.AddItemWithSyntax(Property_Name, name);
+			projectTable.AddItemWithSyntax(Property_Version, version);
 			if (buildClosure != null)
 			{
-				projectTable.AddItemWithSyntax("Build", buildClosure);
+				projectTable.AddItemWithSyntax(Property_Build, buildClosure);
 			}
 		}
 
@@ -114,20 +114,6 @@ namespace Soup.Build.Utilities
 			{
 				throw new InvalidOperationException("Requested recipe value does not exist in the table.");
 			}
-		}
-
-		private IValue EnsureValue(IValueTable table, string key, IValue value)
-		{
-			if (table.ContainsKey(key))
-			{
-				table[key] = value;
-			}
-			else
-			{
-				table.Add(key, value);
-			}
-
-			return value;
 		}
 
 		private SMLTable EnsureHasTable(SMLDocument document, string name)

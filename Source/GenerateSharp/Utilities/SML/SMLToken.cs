@@ -3,16 +3,24 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Soup.Build.Utilities
 {
 	public class SMLToken : IEquatable<SMLToken>
 	{
-		private string Text { get; set; }
+		public List<string> LeadingTrivia { get; set; }
+		public string Text { get; set; }
+		public List<string> TrailingTrivia { get; set; }
+
+		public static SMLToken Empty => new SMLToken(string.Empty);
 
 		public SMLToken(string text)
 		{
+			LeadingTrivia = new List<string>();
 			Text = text;
+			TrailingTrivia = new List<string>();
 		}
 
 		public override bool Equals(object? obj) => this.Equals(obj as SMLToken);
@@ -27,9 +35,12 @@ namespace Soup.Build.Utilities
 				return true;
 
 			// Return true if the fields match.
-			return this.Text == rhs.Text;
+			return this.Text == rhs.Text &&
+				Enumerable.SequenceEqual(LeadingTrivia, rhs.LeadingTrivia) &&
+				Enumerable.SequenceEqual(TrailingTrivia, rhs.TrailingTrivia);
 		}
 
+		// Only use the text to allow for mapping to same bins
 		public override int GetHashCode() => (Text).GetHashCode();
 
 		public static bool operator ==(SMLToken? lhs, SMLToken? rhs)

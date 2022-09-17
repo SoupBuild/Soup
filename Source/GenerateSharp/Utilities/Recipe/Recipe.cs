@@ -5,7 +5,6 @@
 using Opal;
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
 
 namespace Soup.Build.Utilities
 {
@@ -14,9 +13,9 @@ namespace Soup.Build.Utilities
 	/// </summary>
 	public class Recipe
 	{
+		public static string Property_Build => "Build";
 		private static string Property_Dependencies => "Dependencies";
 		private static string Property_Runtime => "Runtime";
-		private static string Property_Build => "Build";
 		private static string Property_Test => "Test";
 		private static string Property_Language => "Language";
 		private static string Property_Name => "Name";
@@ -315,11 +314,11 @@ namespace Soup.Build.Utilities
 		{
 			if (document.Values.ContainsKey(key))
 			{
-				document.Values.Add(key, new SMLTableValue(value));
+				document.Values.Add(key, new SMLTableValue(new SMLToken(key), value));
 			}
 			else
 			{
-				document.Values.Add(key, new SMLTableValue(value));
+				document.Values.Add(key, new SMLTableValue(new SMLToken(key), value));
 			}
 
 			return value;
@@ -329,11 +328,11 @@ namespace Soup.Build.Utilities
 		{
 			if (table.Values.ContainsKey(key))
 			{
-				table.Values.Add(key, new SMLTableValue(value));
+				table.Values.Add(key, new SMLTableValue(new SMLToken(key), value));
 			}
 			else
 			{
-				table.Values.Add(key, new SMLTableValue(value));
+				table.Values.Add(key, new SMLTableValue(new SMLToken(key), value));
 			}
 
 			return value;

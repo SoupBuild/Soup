@@ -31,7 +31,8 @@ namespace Soup.Build.Utilities
 			var tableContent = new Dictionary<string, SMLTableValue>();
 			foreach (var value in context.tableValue())
 			{
-				tableContent.Add(value.KEY().GetText(), (SMLTableValue)value.value().Accept(this));
+				var tableValue = (SMLTableValue)value.Accept(this);
+				tableContent.Add(tableValue.Key.Text, tableValue);
 			}
 
 			return tableContent;
@@ -39,8 +40,9 @@ namespace Soup.Build.Utilities
 
 		public virtual object VisitTableValue(SMLParser.TableValueContext context)
 		{
-			var value = (SMLValue)context.value().Accept(this);
-			return new SMLTableValue(value);
+			return new SMLTableValue(
+				new SMLToken(context.KEY().GetText()),
+				(SMLValue)context.value().Accept(this));
 		}
 
 		public virtual object VisitArray(SMLParser.ArrayContext context)

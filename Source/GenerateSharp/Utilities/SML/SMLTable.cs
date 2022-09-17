@@ -10,16 +10,33 @@ namespace Soup.Build.Utilities
 {
 	public class SMLTable : IEquatable<SMLTable>
 	{
+		public SMLToken OpenBrace { get; set; }
 		public Dictionary<string, SMLTableValue> Values { get; set; }
+		public SMLToken CloseBrace { get; set; }
 
 		public SMLTable()
 		{
+			OpenBrace = SMLToken.Empty;
 			Values = new Dictionary<string, SMLTableValue>();
+			CloseBrace = SMLToken.Empty;
 		}
 
-		public SMLTable(Dictionary<string, SMLTableValue> values)
+		public SMLTable(
+			Dictionary<string, SMLTableValue> values)
 		{
+			OpenBrace = SMLToken.Empty;
 			Values = values;
+			CloseBrace = SMLToken.Empty;
+		}
+
+		public SMLTable(
+			SMLToken openBrace,
+			Dictionary<string, SMLTableValue> values,
+			SMLToken closeBrace)
+		{
+			OpenBrace = openBrace;
+			Values = values;
+			CloseBrace = closeBrace;
 		}
 
 		public override bool Equals(object? obj) => this.Equals(obj as SMLTable);
@@ -34,7 +51,9 @@ namespace Soup.Build.Utilities
 				return true;
 
 			// Return true if the fields match.
-			return Enumerable.SequenceEqual(this.Values, rhs.Values);
+			return OpenBrace == rhs.OpenBrace &&
+				Enumerable.SequenceEqual(this.Values, rhs.Values) &&
+				CloseBrace == rhs.OpenBrace;
 		}
 
 		public override int GetHashCode() => (Values).GetHashCode();

@@ -76,7 +76,9 @@ namespace Soup.Build.Utilities
 			else
 			{
 				values = new SMLArray();
-				_table.Values.Add(Property_SDKs, new SMLTableValue(new SMLValue(values)));
+				_table.Values.Add(
+					Property_SDKs,
+					new SMLTableValue(new SMLToken(Property_SDKs), new SMLValue(values)));
 			}
 
 			// No matching SDK as a table array entry

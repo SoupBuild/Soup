@@ -10,16 +10,32 @@ namespace Soup.Build.Utilities
 {
 	public class SMLArray : IEquatable<SMLArray>
 	{
+		public SMLToken OpenBracket { get; set; }
 		public List<SMLValue> Values { get; set; }
+		public SMLToken CloseBracket { get; set; }
 
 		public SMLArray()
 		{
+			OpenBracket = SMLToken.Empty;
 			Values = new List<SMLValue>();
+			CloseBracket = SMLToken.Empty;
 		}
 
 		public SMLArray(List<SMLValue> values)
 		{
+			OpenBracket = SMLToken.Empty;
 			Values = values;
+			CloseBracket = SMLToken.Empty;
+		}
+
+		public SMLArray(
+			SMLToken openBracket,
+			List<SMLValue> values,
+			SMLToken closeBracket)
+		{
+			OpenBracket = openBracket;
+			Values = values;
+			CloseBracket = closeBracket;
 		}
 
 		public override bool Equals(object? obj) => this.Equals(obj as SMLArray);
@@ -34,7 +50,9 @@ namespace Soup.Build.Utilities
 				return true;
 
 			// Return true if the fields match.
-			return Enumerable.SequenceEqual(this.Values, rhs.Values);
+			return OpenBracket == rhs.OpenBracket &&
+				Enumerable.SequenceEqual(this.Values, rhs.Values) &&
+				CloseBracket == rhs.CloseBracket;
 		}
 
 		public override int GetHashCode() => (Values).GetHashCode();

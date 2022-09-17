@@ -4,6 +4,7 @@
 
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Soup.Build.Runtime;
 using System;
 using System.Threading.Tasks;
 
@@ -54,39 +55,36 @@ namespace Soup.Build.Utilities
 		{
 			foreach (var value in document.Values)
 			{
-				await writer.WriteAsync(value.Key);
-				await writer.WriteAsync(":");
+				await SerializeAsync(value.Value.Key, writer);
+				await SerializeAsync(value.Value.Colon, writer);
 				await SerializeAsync(value.Value.Value, writer);
-				await writer.WriteLineAsync();
 			}
 		}
 
 		private static async Task SerializeAsync(SMLTable table, System.IO.StreamWriter writer)
 		{
-			await writer.WriteLineAsync("{");
+			await SerializeAsync(table.OpenBrace, writer);
 
 			foreach (var value in table.Values)
 			{
-				await writer.WriteAsync(value.Key);
-				await writer.WriteAsync(": ");
+				await SerializeAsync(value.Value.Key, writer);
+				await SerializeAsync(value.Value.Colon, writer);
 				await SerializeAsync(value.Value.Value, writer);
-				await writer.WriteLineAsync();
 			}
 
-			await writer.WriteAsync("}");
+			await SerializeAsync(table.CloseBrace, writer);
 		}
 
 		private static async Task SerializeAsync(SMLArray array, System.IO.StreamWriter writer)
 		{
-			await writer.WriteLineAsync("[");
+			await SerializeAsync(array.OpenBracket, writer);
 
 			foreach (var value in array.Values)
 			{
 				await SerializeAsync(value, writer);
-				await writer.WriteLineAsync();
 			}
 
-			await writer.WriteAsync("]");
+			await SerializeAsync(array.CloseBracket, writer);
 		}
 
 		private static async Task SerializeAsync(SMLValue value, System.IO.StreamWriter writer)
@@ -117,6 +115,21 @@ namespace Soup.Build.Utilities
 					break;
 				default:
 					throw new InvalidOperationException("Unknown SMLValueType");
+			}
+		}
+
+		private static async Task SerializeAsync(SMLToken token, System.IO.StreamWriter writer)
+		{
+			foreach (var value in token.LeadingTrivia)
+			{
+				await writer.WriteAsync(value);
+			}
+
+			await writer.WriteAsync(token.Text);
+
+			foreach (var value in token.TrailingTrivia)
+			{
+				await writer.WriteAsync(value);
 			}
 		}
 	}

@@ -580,8 +580,8 @@ namespace Soup.Build.PackageManager
 					foreach (var project in languageProjects.Value.Value.AsArray().Values)
 					{
 						var projectTable = project.AsTable();
-						var projectName = projectTable.Values["Name"].Value.AsString();
-						var projectVersion = projectTable.Values["Version"].Value.AsString();
+						var projectName = projectTable.Values[PackageLock.Property_Name].Value.AsString();
+						var projectVersion = projectTable.Values[PackageLock.Property_Version].Value.AsString();
 						if (SemanticVersion.TryParse(projectVersion, out var version))
 						{
 							await EnsurePackageDownloadedAsync(
@@ -669,9 +669,9 @@ namespace Soup.Build.PackageManager
 				FillDefaultVersion(new PackageReference(implicitLanguage, recipe.Language.Name, recipe.Language.Version)));
 
 			// Discover any dependency build references
-			if (recipe.HasNamedDependencies("Build"))
+			if (recipe.HasBuildDependencies)
 			{
-				foreach (var dependency in recipe.GetNamedDependencies("Build"))
+				foreach (var dependency in recipe.BuildDependencies)
 				{
 					var dependencyPackage = dependency;
 					if (dependency.IsLocal)
@@ -745,7 +745,7 @@ namespace Soup.Build.PackageManager
 
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
-					if (dependecyType == "Build")
+					if (dependecyType == Recipe.Property_Build)
 					{
 						implicitLanguage = "C#";
 					}

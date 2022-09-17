@@ -27,15 +27,14 @@ namespace Soup.Build.Utilities.UnitTests
 		{
 			var recipe =
 				@"Name: ""MyPackage""
-				Language: ""C++|1""
-				";
+				Language: ""C++|1""";
 			var actual = SMLManager.Deserialize(recipe);
 
 			var expected = new SMLDocument(
 				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLTableValue(new SMLValue("MyPackage")) },
-					{ "Language", new SMLTableValue(new SMLValue("C++|1")) },
+					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue("MyPackage")) },
+					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue("C++|1")) },
 				});
 
 			Assert.Equal(expected, actual);
@@ -51,8 +50,8 @@ namespace Soup.Build.Utilities.UnitTests
 			var expected = new SMLDocument(
 				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLTableValue(new SMLValue("MyPackage")) },
-					{ "Language", new SMLTableValue(new SMLValue("C++|1")) },
+					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue("MyPackage")) },
+					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue("C++|1")) },
 				});
 
 			Assert.Equal(expected, actual);
@@ -81,20 +80,20 @@ namespace Soup.Build.Utilities.UnitTests
 			var expected = new SMLDocument(
 				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLTableValue(new SMLValue("MyPackage")) },
-					{ "Language", new SMLTableValue(new SMLValue("C++|1")) },
-					{ "Version", new SMLTableValue(new SMLValue("1.2.3")) },
-					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLValue(false)) },
-					{ "EnableCoolFeature", new SMLTableValue(new SMLValue(true)) },
+					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue("MyPackage")) },
+					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue("C++|1")) },
+					{ "Version", new SMLTableValue(new SMLToken("Version"), new SMLValue("1.2.3")) },
+					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLToken("EnableErrorsAsWarnings"), new SMLValue(false)) },
+					{ "EnableCoolFeature", new SMLTableValue(new SMLToken("EnableCoolFeature"), new SMLValue(true)) },
 					{ 
 						"Dependencies",
-						new SMLTableValue(new SMLValue(new SMLTable(new Dictionary<string, SMLTableValue>()
+						new SMLTableValue(new SMLToken("Dependencies"), new SMLValue(new SMLTable(new Dictionary<string, SMLTableValue>()
 						{
-							{ "Runtime", new SMLTableValue(new SMLValue(new SMLArray())) },
-							{ "Build", new SMLTableValue(new SMLValue(new SMLArray())) },
+							{ "Runtime", new SMLTableValue(new SMLToken("Runtime"), new SMLValue(new SMLArray())) },
+							{ "Build", new SMLTableValue(new SMLToken("Build"), new SMLValue(new SMLArray())) },
 							{ 
 								"Test",
-								new SMLTableValue(new SMLValue(new SMLArray(new List<SMLValue>()
+								new SMLTableValue(new SMLToken("Test"), new SMLValue(new SMLArray(new List<SMLValue>()
 								{
 									new SMLValue(123),
 									new SMLValue(false),
@@ -106,71 +105,6 @@ namespace Soup.Build.Utilities.UnitTests
 				});
 
 			Assert.Equal(expected, actual);
-		}
-
-		[Fact]
-		public async Task Serialize_AllProperties()
-		{
-			var uut = new SMLDocument(
-				new Dictionary<string, SMLTableValue>()
-				{
-					{ "Name", new SMLTableValue(new SMLValue("MyPackage")) },
-					{ "Language", new SMLTableValue(new SMLValue("C++|1")) },
-					{ "Version", new SMLTableValue(new SMLValue("1.2.3")) },
-					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLValue(false)) },
-					{ "EnableCoolFeature", new SMLTableValue(new SMLValue(true)) },
-					{
-						"Dependencies",
-						new SMLTableValue(new SMLValue(new SMLTable(new Dictionary<string, SMLTableValue>()
-						{
-							{ "Runtime", new SMLTableValue(new SMLValue(new SMLArray())) },
-							{ "Build", new SMLTableValue(new SMLValue(new SMLArray())) },
-							{
-								"Test",
-								new SMLTableValue(new SMLValue(new SMLArray(new List<SMLValue>()
-								{
-									new SMLValue(123),
-									new SMLValue(false),
-									new SMLValue("string"),
-								})))
-							},
-						})))
-					},
-				});
-
-			var actual = await SerializeAsync(uut);
-
-			var expected =
-@"Name: ""MyPackage""
-Language: ""C++|1""
-Version: ""1.2.3""
-EnableErrorsAsWarnings: False
-EnableCoolFeature: True
-Dependencies: {
-Runtime: [
-]
-Build: [
-]
-Test: [
-123
-False
-""string""
-]
-}
-";
-
-			Assert.Equal(expected, actual);
-		}
-
-		private async Task<string> SerializeAsync(SMLDocument document)
-		{
-			using var stream = new MemoryStream();
-			await SMLManager.SerializeAsync(document, stream);
-
-			stream.Seek(0, SeekOrigin.Begin);
-			using var reader = new StreamReader(stream);
-
-			return await reader.ReadToEndAsync();
 		}
 	}
 }

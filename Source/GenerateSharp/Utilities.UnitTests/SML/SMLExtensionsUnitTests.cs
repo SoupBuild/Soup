@@ -24,6 +24,21 @@ namespace Soup.Build.Utilities.UnitTests
 		}
 
 		[Fact]
+		public async Task AddTwoArraysWithSyntax()
+		{
+			var uut = new SMLDocument();
+
+			uut.AddArrayWithSyntax("NewList");
+			uut.AddArrayWithSyntax("ANewList2");
+
+			var content = await SerializeAsync(uut);
+			var expected =
+@"NewList: []
+ANewList2: []";
+			Assert.Equal(expected, content);
+		}
+
+		[Fact]
 		public async Task AddArrayAndItemWithSyntax()
 		{
 			var uut = new SMLDocument();
@@ -34,7 +49,7 @@ namespace Soup.Build.Utilities.UnitTests
 			var content = await SerializeAsync(uut);
 			var expected =
 @"NewList: [
-""NewItem""
+	""NewItem""
 ]
 ";
 			Assert.Equal(expected, content);
@@ -51,8 +66,7 @@ namespace Soup.Build.Utilities.UnitTests
 			var content = await SerializeAsync(uut);
 			var expected =
 @"NewList: [
-{
-}
+	{}
 ]
 ";
 			Assert.Equal(expected, content);
@@ -109,9 +123,22 @@ NewItem2: ""NewValue2""
 
 			var content = await SerializeAsync(uut);
 			var expected =
-@"NewTable: {
-}
-";
+@"NewTable: {}";
+			Assert.Equal(expected, content);
+		}
+
+		[Fact]
+		public async Task AddTwoTablesWithSyntax()
+		{
+			var uut = new SMLDocument();
+
+			uut.AddTableWithSyntax("NewTable");
+			uut.AddTableWithSyntax("ANewTable2");
+
+			var content = await SerializeAsync(uut);
+			var expected =
+@"NewTable: {}
+ANewTable2: {}";
 			Assert.Equal(expected, content);
 		}
 
@@ -126,10 +153,8 @@ NewItem2: ""NewValue2""
 			var content = await SerializeAsync(uut);
 			var expected =
 @"NewTable: {
-NewList: [
-]
-}
-";
+	NewList: []
+}";
 			Assert.Equal(expected, content);
 		}
 
