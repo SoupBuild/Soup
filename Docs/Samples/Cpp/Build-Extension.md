@@ -10,15 +10,16 @@ Name: "Samples.Cpp.BuildExtension.Extension"
 Language: "C#|0.1"
 Version: "1.0.0"
 Source: [
-    "CustomBuildTask.cs"
+  "CustomBuildTask.cs"
 ]
 
-[Dependencies]
-Runtime = [
-    { Reference = "Soup.Build@0.2.0", ExcludeRuntime = true },
-    { Reference = "Soup.Build.Extensions@0.3.0" },
-    { Reference = "Opal@1.1.0" },
-]
+Dependencies: {
+    Runtime: [
+        { Reference: "Soup.Build@0.2.0", ExcludeRuntime: true, }
+        { Reference: "Soup.Build.Extensions@0.3.0", }
+        { Reference: "Opal@1.1.0", }
+    ]
+}
 ```
 
 ## Extension/CustomBuildTask.cs
@@ -81,20 +82,19 @@ namespace Samples.Cpp.BuildExtension.Extension
 ## Executable/Recipe.sml
 The Recipe file that defines the executable "Samples.Cpp.BuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```
-Name: "Samples.Cpp.BuildExtension.Executable"
+Name: "Samples.SimpleBuildExtension.Executable"
 Language: "C++|0.1"
 Type: "Executable"
 Version: "1.0.1"
 Source: [
-    "Main.cpp"
+	"Main.cpp"
 ]
 
 Dependencies: {
-    Build: [
-        "../Extension/"
-    ]
+	Build: [
+		"../Extension/"
+	]
 }
-
 ```
 
 ## Executable/Main.cpp

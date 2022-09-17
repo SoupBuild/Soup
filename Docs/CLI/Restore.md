@@ -1,6 +1,6 @@
 # Restore
 ## Overview
-Restore packages from the public feed.
+Restore packages from the public feed using an existing package lock or generates a new lock if none exists.
 ```
 soup restore <path>
 ```
@@ -15,5 +15,5 @@ soup restore
 
 Install all packages in the MyProject Recipe file.
 ```
-soup restore MyProject/
+soup restore ./Code/MyProject/
 ```

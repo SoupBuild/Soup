@@ -4,7 +4,7 @@ This is a console application with the minimal amount of code to get up and runn
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/CSharp/ConsoleApplication)
 
 ## Recipe.sml
-The Recipe file that defines the static library ""Samples.CSharp.ConsoleApplication".
+The Recipe file that defines the static library "Samples.CSharp.ConsoleApplication".
 ```
 Name: "Samples.CSharp.ConsoleApplication"
 Language: "C#|0.1"
