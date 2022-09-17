@@ -10,7 +10,7 @@ SET PackageManagerDir=%SourceDir%\GenerateSharp\PackageManager
 SET GenerateDir=%SourceDir%\GenerateSharp\Generate
 if %Flavor% == release (SET OutputX64DirectorPath=txTMowfPh1V3rPmbvNBmBW9Z8Jg) else (SET OutputX64DirectorPath=J3mu4cpISw6nDaCPED8gkqZ-q84)
 if %Flavor% == release (SET OutputX86DirectorPath=ci_UJP5zJKyF-O0VVSVDMNi1Wwg) else (SET OutputX86DirectorPath=9fr4dmE4CrAXgS2yFzcvYJXkGDg)
-SET ClientCLIOutputDirectory=%OutputDir%\C++\Soup\0.20.1\%OutputX64DirectorPath%
+SET ClientCLIOutputDirectory=%OutputDir%\C++\Soup\0.21.0\%OutputX64DirectorPath%
 SET MonitorClientOutputX64Directory=%OutputDir%\C++\Monitor.Client\1.0.0\%OutputX64DirectorPath%
 SET MonitorClientOutputX86Directory=%OutputDir%\C++\Monitor.Client\1.0.0\%OutputX86DirectorPath%
 
