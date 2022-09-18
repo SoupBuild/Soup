@@ -32,7 +32,7 @@ namespace Soup.Build.Utilities
 			var file = LifetimeManager.Get<IFileSystem>().OpenRead(localUserConfigFile);
 
 			// Open the file to read from
-			using (var reader = new System.IO.StreamReader(file.GetInStream()))
+			using (var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true))
 			{
 				// Read the contents of the local user config file
 				try
