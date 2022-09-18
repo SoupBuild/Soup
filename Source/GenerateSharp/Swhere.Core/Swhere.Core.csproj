@@ -3,20 +3,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-	<PropertyGroup>
-	  <NoWarn>1701;1702;3021</NoWarn>
-	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Build.Extensions.Utilities\Soup.Build.Extensions.Utilities.csproj" />
-		<ProjectReference Include="..\Build\Soup.Build.csproj">
-			<Private>false</Private>
-			<ExcludeAssets>runtime</ExcludeAssets>
-		</ProjectReference>
-		<ProjectReference Include="..\Opal\Opal.csproj" />
-		<ProjectReference Include="..\Runtime\Soup.Build.Runtime.csproj" />
 		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
 	</ItemGroup>
 </Project>

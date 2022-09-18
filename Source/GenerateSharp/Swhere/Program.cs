@@ -26,13 +26,19 @@ namespace Soup.Build.Discover
 
 				LifetimeManager.RegisterSingleton<IProcessManager, RuntimeProcessManager>();
 
-				if (args.Length != 0)
+				bool includePrerelease = false;
+				if (args.Length == 0)
+				{
+				}
+				else if (args.Length == 1 && args[0] == "-prerelease")
+				{
+					includePrerelease = true;
+				}
+				else
 				{
 					PrintUsage();
 					return -1;
 				}
-
-				bool includePrerelease = true;
 
 				await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -51,7 +57,7 @@ namespace Soup.Build.Discover
 
 		private static void PrintUsage()
 		{
-			Log.Info("Soup.Build.Discover.exe");
+			Log.Info("Swhere.exe [-prerelease]");
 		}
 	}
 }
