@@ -56,12 +56,17 @@ namespace Soup.Build.Utilities
 
 		public static SMLTable AddInlineTableWithSyntax(this SMLDocument document, string name)
 		{
-			return document.Values.AddInlineTableWithSyntax(name);
+			return document.Values.AddInlineTableWithSyntax(name, 0);
 		}
 
 		public static SMLTable AddTableWithSyntax(this SMLTable table, string name, int indentLevel)
 		{
 			return table.Values.AddTableWithSyntax(name, indentLevel);
+		}
+
+		public static SMLTable AddInlineTableWithSyntax(this SMLTable document, string name, int indentLevel)
+		{
+			return document.Values.AddInlineTableWithSyntax(name, indentLevel);
 		}
 
 		public static SMLTable AddTableWithSyntax(this SMLArray array, int indentLevel)
@@ -248,13 +253,15 @@ namespace Soup.Build.Utilities
 					LeadingTrivia = new List<string>()
 					{
 						indent,
+					},
+					TrailingTrivia = new List<string>()
+					{
+						"\r\n",
 					}
 				});
 
 			// If this is not the first item then place it on a newline
 			var keyLeadingTrivia = new List<string>();
-			if (values.Count > 0)
-				keyLeadingTrivia.Add("\r\n");
 
 			var keyToken = new SMLToken(name)
 			{
@@ -269,8 +276,11 @@ namespace Soup.Build.Utilities
 
 		public static SMLTable AddInlineTableWithSyntax(
 			this IDictionary<string, SMLTableValue> values,
-			string name)
+			string name,
+			int indentLevel)
 		{
+			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
+
 			// Create a new table
 			var newTable = new SMLTable(
 				new SMLToken("{"),
@@ -281,13 +291,18 @@ namespace Soup.Build.Utilities
 					LeadingTrivia = new List<string>()
 					{
 						" ",
+					},
+					TrailingTrivia = new List<string>()
+					{
+						"\r\n",
 					}
 				});
 
 			// If this is not the first item then place it on a newline
-			var keyLeadingTrivia = new List<string>();
-			if (values.Count > 0)
-				keyLeadingTrivia.Add("\r\n");
+			var keyLeadingTrivia = new List<string>()
+			{
+				indent,
+			};
 
 			var keyToken = new SMLToken(name)
 			{

@@ -50,7 +50,7 @@ namespace Soup.Build.Utilities
 			}
 			set
 			{
-				_table.AddItemWithSyntax(Property_Name, value, 1);
+				_table.AddItemWithSyntax(Property_Name, value, 2);
 			}
 		}
 
@@ -91,7 +91,7 @@ namespace Soup.Build.Utilities
 				}
 				else
 				{
-					values = _table.AddArrayWithSyntax(Property_SourceDirectories, 1);
+					values = _table.AddArrayWithSyntax(Property_SourceDirectories, 2);
 				}
 
 				// Add the new syntax to the parent table syntax
@@ -99,7 +99,7 @@ namespace Soup.Build.Utilities
 
 				foreach (var item in value)
 				{
-					values.AddItemWithSyntax(item.ToString(), 2);
+					values.AddItemWithSyntax(item.ToString(), 3);
 				}
 			}
 		}
@@ -136,7 +136,7 @@ namespace Soup.Build.Utilities
 			}
 			else
 			{
-				values = _table.AddTableWithSyntax(Property_Properties, 1);
+				values = _table.AddInlineTableWithSyntax(Property_Properties, 2);
 			}
 
 			// Add the new syntax to the parent table syntax

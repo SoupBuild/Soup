@@ -130,7 +130,8 @@ ANewList2: [
 			var content = await SerializeAsync(uut);
 			var expected =
 @"NewTable: {
-}";
+}
+";
 			Assert.Equal(expected, content);
 		}
 
@@ -143,9 +144,11 @@ ANewList2: [
 
 			var content = await SerializeAsync(uut);
 			var expected =
-@"NewTable: { }";
+@"NewTable: { }
+";
 			Assert.Equal(expected, content);
 		}
+
 		[Fact]
 		public async Task AddInlineTableWithItemsSyntax()
 		{
@@ -157,7 +160,8 @@ ANewList2: [
 
 			var content = await SerializeAsync(uut);
 			var expected =
-@"NewTable: { Item1: ""Value1"", Item2: ""Value2"" }";
+@"NewTable: { Item1: ""Value1"", Item2: ""Value2"" }
+";
 			Assert.Equal(expected, content);
 		}
 
@@ -174,7 +178,8 @@ ANewList2: [
 @"NewTable: {
 }
 ANewTable2: {
-}";
+}
+";
 			Assert.Equal(expected, content);
 		}
 
@@ -191,7 +196,8 @@ ANewTable2: {
 @"NewTable: {
 	NewList: [
 	]
-}";
+}
+";
 			Assert.Equal(expected, content);
 		}
 
@@ -213,7 +219,8 @@ ANewTable2: {
 			NewItem: ""NewValue""
 		}
 	]
-}";
+}
+";
 			Assert.Equal(expected, content);
 		}
 

@@ -79,7 +79,7 @@ namespace Soup.Build.Utilities
 			}
 
 			// No matching SDK as a table array entry
-			var sdkValueTable = values.AddTableWithSyntax(0);
+			var sdkValueTable = values.AddTableWithSyntax(1);
 
 			return new SDKConfig(sdkValueTable)
 			{
