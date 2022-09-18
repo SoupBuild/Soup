@@ -85,12 +85,12 @@ namespace Soup.Build.Utilities
 			var closureTable = EnsureHasTable(closures, closure);
 			var projectLanguageList = EnsureHasList(closureTable, language);
 			
-			var projectTable = projectLanguageList.AddTableWithSyntax();
-			projectTable.AddItemWithSyntax(Property_Name, name);
-			projectTable.AddItemWithSyntax(Property_Version, version);
+			var projectTable = projectLanguageList.AddTableWithSyntax(0);
+			projectTable.AddItemWithSyntax(Property_Name, name, 1);
+			projectTable.AddItemWithSyntax(Property_Version, version, 1);
 			if (buildClosure != null)
 			{
-				projectTable.AddItemWithSyntax(Property_Build, buildClosure);
+				projectTable.AddItemWithSyntax(Property_Build, buildClosure, 1);
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace Soup.Build.Utilities
 			else
 			{
 				// Create a new table
-				return table.AddTableWithSyntax(name);
+				return table.AddTableWithSyntax(name, 1);
 			}
 		}
 
@@ -166,7 +166,7 @@ namespace Soup.Build.Utilities
 			else
 			{
 				// Create a new list
-				return table.AddArrayWithSyntax(name);
+				return table.AddArrayWithSyntax(name, 1);
 			}
 		}
 	}

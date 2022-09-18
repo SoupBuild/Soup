@@ -22,14 +22,6 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SDKConfig"/> class.
 		/// </summary>
-		public SDKConfig() :
-			this(new SMLTable())
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SDKConfig"/> class.
-		/// </summary>
 		public SDKConfig(SMLTable table)
 		{
 			_table = table;
@@ -58,7 +50,7 @@ namespace Soup.Build.Utilities
 			}
 			set
 			{
-				_table.Values[Property_Name] = new SMLTableValue(new SMLToken(Property_Name), new SMLValue(new SMLStringValue(value)));
+				_table.AddItemWithSyntax(Property_Name, value, 2);
 			}
 		}
 
@@ -99,8 +91,7 @@ namespace Soup.Build.Utilities
 				}
 				else
 				{
-					values = new SMLArray();
-					_table.Values[Property_SourceDirectories] = new SMLTableValue(new SMLToken(Property_SourceDirectories), new SMLValue(values));
+					values = _table.AddArrayWithSyntax(Property_SourceDirectories, 2);
 				}
 
 				// Add the new syntax to the parent table syntax
@@ -108,7 +99,7 @@ namespace Soup.Build.Utilities
 
 				foreach (var item in value)
 				{
-					values.Values.Add(new SMLValue(new SMLStringValue(item.ToString())));
+					values.AddItemWithSyntax(item.ToString(), 3);
 				}
 			}
 		}
@@ -145,15 +136,14 @@ namespace Soup.Build.Utilities
 			}
 			else
 			{
-				values = new SMLTable();
-				_table.Values[Property_Properties] = new SMLTableValue(new SMLToken(Property_Properties), new SMLValue(values));
+				values = _table.AddInlineTableWithSyntax(Property_Properties, 2);
 			}
 
 			// Add the new syntax to the parent table syntax
 			values.Values.Clear();
 			foreach (var item in value)
 			{
-				values.Values.Add(item.Key, new SMLTableValue(new SMLToken(item.Key), new SMLValue(new SMLStringValue(item.Value))));
+				values.AddInlineItemWithSyntax(item.Key, item.Value);
 			}
 		}
 

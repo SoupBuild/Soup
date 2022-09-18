@@ -167,7 +167,7 @@ namespace Soup.Build.Utilities
 			var dependencies = EnsureHasTable(_document, Property_Dependencies);
 			var runtimeDependencies = EnsureHasList(dependencies, Property_Runtime);
 
-			runtimeDependencies.AddItemWithSyntax(value);
+			runtimeDependencies.AddItemWithSyntax(value, 1);
 		}
 
 		/// <summary>
@@ -254,7 +254,7 @@ namespace Soup.Build.Utilities
 			else
 			{
 				// Create a new list
-				return table.AddArrayWithSyntax(name);
+				return table.AddArrayWithSyntax(name, 1);
 			}
 		}
 
