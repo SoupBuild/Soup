@@ -99,59 +99,47 @@ namespace Soup.Build.Discover.UnitTests
 			var expected =
 @"SDKs: [
 {
-Name: ""Roslyn""
-SourceDirectories: [
-""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
-]
+	Name: ""Roslyn""
+	SourceDirectories: [
+		""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
+	]
 
-Properties: 
+Properties: {
+ ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""	}}
 {
-ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
-}}
-{
-Name: ""DotNet""
-SourceDirectories: [
-""C:/Program Files/dotnet/""
-]
+	Name: ""DotNet""
+	SourceDirectories: [
+		""C:/Program Files/dotnet/""
+	]
 
-Properties: 
+Properties: {
+ RuntimeVersion: ""6.0.9"", RootPath: ""C:/Program Files/dotnet/""	}}
 {
-RuntimeVersion: ""6.0.9""
-RootPath: ""C:/Program Files/dotnet/""
-}}
-{
-Name: ""MSVC""
-SourceDirectories: [
-""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
-]
+	Name: ""MSVC""
+	SourceDirectories: [
+		""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
+	]
 
-Properties: 
+Properties: {
+ Version: ""14.33.31629"", VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""	}}
 {
-Version: ""14.33.31629""
-VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
-}}
-{
-Name: ""Windows""
-SourceDirectories: [
-""C:/Program Files (x86)/Windows Kits/10/""
-]
+	Name: ""Windows""
+	SourceDirectories: [
+		""C:/Program Files (x86)/Windows Kits/10/""
+	]
 
-Properties: 
+Properties: {
+ Version: ""10.0.19041.0"", RootPath: ""C:/Program Files (x86)/Windows Kits/10/""	}}
 {
-Version: ""10.0.19041.0""
-RootPath: ""C:/Program Files (x86)/Windows Kits/10/""
-}}
-{
-Name: ""NetFXTools""
-SourceDirectories: [
-""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
-]
+	Name: ""NetFXTools""
+	SourceDirectories: [
+		""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+	]
 
-Properties: 
-{
-ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
-}}
-]";
+Properties: {
+ ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""	}}
+]
+";
 
 			Assert.Equal(expected, localUserConfigContent);
 		}

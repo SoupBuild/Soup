@@ -3,23 +3,17 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Soup.Build.Utilities
 {
 	public static class SMLExtensions
 	{
-		public static void AddItemWithSyntax(this SMLArray array, string value)
-		{
-			// If this is the first item then place it on a newline
-			var leadingTrivia = new List<string>();
-			if (array.Values.Count == 0)
-				leadingTrivia.Add("\r\n");
+		private static string Indent => "\t";
 
-			// Arrays items should always force closing on newline
-			var trailingTrivia = new List<string>()
-			{
-				"\r\n",
-			};
+		public static void AddItemWithSyntax(this SMLArray array, string value, int indentLevel)
+		{
+			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
 
 			// Create a new item and matching syntax
 			var newValue = new SMLValue(new SMLStringValue(
@@ -27,12 +21,18 @@ namespace Soup.Build.Utilities
 				new SMLToken("\"")
 				{
 					// Array items must have newline
-					LeadingTrivia = leadingTrivia,
+					LeadingTrivia = new List<string>()
+					{
+						indent,
+					},
 				},
 				new SMLToken(value),
 				new SMLToken("\"")
 				{
-					TrailingTrivia = trailingTrivia,
+					TrailingTrivia = new List<string>()
+					{
+						"\r\n",
+					},
 				}));
 
 			// Add the model to the parent table model
@@ -41,74 +41,57 @@ namespace Soup.Build.Utilities
 
 		public static SMLArray AddArrayWithSyntax(this SMLDocument document, string name)
 		{
-			// Document items should not be offset by default
-			var leadingTrivia = new List<string>();
-			var trailingTrivia = new List<string>();
-
-			// If this is not the first item then place it on a newline
-			if (document.Values.Count > 0)
-				leadingTrivia.Add("\r\n");
-
-			return document.Values.AddArrayWithSyntax(leadingTrivia, name, trailingTrivia);
+			return document.Values.AddArrayWithSyntax(name, 0);
 		}
 
-		public static SMLArray AddArrayWithSyntax(this SMLTable table, string name)
+		public static SMLArray AddArrayWithSyntax(this SMLTable table, string name, int indentLevel)
 		{
-			// If this is the first item then place it on a newline
-			var leadingTrivia = new List<string>();
-			if (table.Values.Count == 0)
-				leadingTrivia.Add("\r\n");
-
-			// Tables items should always force closing on newline
-			var trailingTrivia = new List<string>()
-			{
-				"\r\n",
-			};
-
-			return table.Values.AddArrayWithSyntax(leadingTrivia, name, trailingTrivia);
+			return table.Values.AddArrayWithSyntax(name, indentLevel);
 		}
 
 		public static SMLTable AddTableWithSyntax(this SMLDocument document, string name)
 		{
-			// Document items should not be offset
-			var leadingTrivia = new List<string>();
-
-			return document.Values.AddTableWithSyntax(name, leadingTrivia);
+			return document.Values.AddTableWithSyntax(name, 0);
 		}
 
-		public static SMLTable AddTableWithSyntax(this SMLTable table, string name)
+		public static SMLTable AddInlineTableWithSyntax(this SMLDocument document, string name)
 		{
-			// Tables items should be on newline
-			var leadingTrivia = new List<string>()
-			{
-				"\r\n",
-			};
-
-			return table.Values.AddTableWithSyntax(name, leadingTrivia);
+			return document.Values.AddInlineTableWithSyntax(name);
 		}
 
-		public static SMLTable AddTableWithSyntax(this SMLArray array)
+		public static SMLTable AddTableWithSyntax(this SMLTable table, string name, int indentLevel)
 		{
-			// If this is the first item then place it on a newline
-			var leadingTrivia = new List<string>();
-			if (array.Values.Count == 0)
-				leadingTrivia.Add("\r\n");
+			return table.Values.AddTableWithSyntax(name, indentLevel);
+		}
 
-			// Arrays items should always force closing on newline
-			var trailingTrivia = new List<string>()
-			{
-				"\r\n",
-			};
+		public static SMLTable AddTableWithSyntax(this SMLArray array, int indentLevel)
+		{
+			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
 
 			var newTable = new SMLTable(
 				new SMLToken("{")
 				{
-					LeadingTrivia = leadingTrivia,
+					LeadingTrivia = new List<string>()
+					{
+						indent,
+					},
+					TrailingTrivia = new List<string>()
+					{
+						"\r\n",
+					},
 				},
 				new Dictionary<string, SMLTableValue>(),
 				new SMLToken("}")
 				{
-					TrailingTrivia = trailingTrivia,
+					// Arrays items should always force closing on newline
+					LeadingTrivia = new List<string>()
+					{
+						indent,
+					},
+					TrailingTrivia = new List<string>()
+					{
+						"\r\n",
+					},
 				});
 
 			// Add the model to the parent table model
@@ -157,18 +140,53 @@ namespace Soup.Build.Utilities
 			table.Values.Add(key, CreateTableValue(keyToken, newValue));
 		}
 
-		public static void AddItemWithSyntax(this SMLTable table, string key, string value)
+		public static void AddItemWithSyntax(this SMLTable table, string key, string value, int indentLevel)
 		{
+			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
+
 			// If this is the first item then place it on a newline
-			var leadingTrivia = new List<string>();
-			if (table.Values.Count == 0)
-				leadingTrivia.Add("\r\n");
+			var leadingTrivia = new List<string>()
+			{
+				indent,
+			};
 
 			// Arrays items should always force closing on newline
 			var trailingTrivia = new List<string>()
 			{
 				"\r\n",
 			};
+
+			// Create a new item and matching syntax
+			var newValue = new SMLValue(new SMLStringValue(
+				value,
+				new SMLToken("\""),
+				new SMLToken(value),
+				new SMLToken("\"")
+				{
+					TrailingTrivia = trailingTrivia,
+				}));
+
+			// Tables items should be on newline
+			var keyToken = new SMLToken(key)
+			{
+				LeadingTrivia = leadingTrivia,
+			};
+
+			// Add the model to the parent table model
+			table.Values.Add(key, CreateTableValue(keyToken, newValue));
+		}
+
+		public static void AddInlineItemWithSyntax(this SMLTable table, string key, string value)
+		{
+			// If this is the first item add space, otherwise include a comma delimiter
+			var leadingTrivia = new List<string>();
+			if (table.Values.Count == 0)
+				leadingTrivia.Add(" ");
+			else
+				leadingTrivia.Add(", ");
+
+			// Arrays items should always force closing on newline
+			var trailingTrivia = new List<string>();
 
 			// Create a new item and matching syntax
 			var newValue = new SMLValue(new SMLStringValue(
@@ -209,16 +227,62 @@ namespace Soup.Build.Utilities
 		public static SMLTable AddTableWithSyntax(
 			this IDictionary<string, SMLTableValue> values,
 			string name,
-			List<string> leadingTrivia)
+			int indentLevel)
 		{
+			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
+
 			// Create a new table
 			var newTable = new SMLTable(
 				new SMLToken("{")
 				{
-					LeadingTrivia = leadingTrivia,
+					// Add the newline between the items
+					TrailingTrivia = new List<string>()
+					{
+						"\r\n",
+					}
 				},
 				new Dictionary<string, SMLTableValue>(),
-				new SMLToken("}"));
+				new SMLToken("}")
+				{
+					// Offset the closing brace
+					LeadingTrivia = new List<string>()
+					{
+						indent,
+					}
+				});
+
+			// If this is not the first item then place it on a newline
+			var keyLeadingTrivia = new List<string>();
+			if (values.Count > 0)
+				keyLeadingTrivia.Add("\r\n");
+
+			var keyToken = new SMLToken(name)
+			{
+				LeadingTrivia = keyLeadingTrivia,
+			};
+
+			// Add the model to the parent table model
+			values.Add(name, CreateTableValue(keyToken, new SMLValue(newTable)));
+
+			return newTable;
+		}
+
+		public static SMLTable AddInlineTableWithSyntax(
+			this IDictionary<string, SMLTableValue> values,
+			string name)
+		{
+			// Create a new table
+			var newTable = new SMLTable(
+				new SMLToken("{"),
+				new Dictionary<string, SMLTableValue>(),
+				new SMLToken("}")
+				{
+					// Space out the inline table
+					LeadingTrivia = new List<string>()
+					{
+						" ",
+					}
+				});
 
 			// If this is not the first item then place it on a newline
 			var keyLeadingTrivia = new List<string>();
@@ -238,21 +302,38 @@ namespace Soup.Build.Utilities
 
 		private static SMLArray AddArrayWithSyntax(
 			this IDictionary<string, SMLTableValue> values,
-			List<string> leadingTrivia,
 			string name,
-			List<string> trailingTrivia)
+			int indentLevel)
 		{
+			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
+
 			var newArray = new SMLArray(
-				new SMLToken("["),
+				new SMLToken("[")
+				{
+					TrailingTrivia = new List<string>()
+					{
+						"\r\n",
+					},
+				},
 				new List<SMLValue>(),
 				new SMLToken("]")
 				{
-					TrailingTrivia = trailingTrivia,
+					LeadingTrivia = new List<string>()
+					{
+						indent,
+					},
+					TrailingTrivia = new List<string>()
+					{
+						"\r\n",
+					},
 				});
 
 			var keyToken = new SMLToken(name)
 			{
-				LeadingTrivia = leadingTrivia,
+				LeadingTrivia = new List<string>()
+				{
+					indent,
+				},
 			};
 
 			// Add the model to the parent table model
