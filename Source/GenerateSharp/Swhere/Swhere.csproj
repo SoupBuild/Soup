@@ -12,6 +12,7 @@
 	<ItemGroup>
 		<TrimmableAssembly Include="Antlr4.Runtime.Standard" />
 		<ProjectReference Include="..\Opal\Opal.csproj" />
+		<ProjectReference Include="..\Swhere.Core\Swhere.Core.csproj" />
 		<ProjectReference Include="..\Utilities\Soup.Utilities.csproj" />
 	</ItemGroup>
 </Project>
