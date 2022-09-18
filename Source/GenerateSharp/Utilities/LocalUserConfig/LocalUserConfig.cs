@@ -75,15 +75,11 @@ namespace Soup.Build.Utilities
 			}
 			else
 			{
-				values = new SMLArray();
-				_table.Values.Add(
-					Property_SDKs,
-					new SMLTableValue(new SMLToken(Property_SDKs), new SMLValue(values)));
+				values = _table.AddArrayWithSyntax(Property_SDKs);
 			}
 
 			// No matching SDK as a table array entry
-			var sdkValueTable = new SMLTable();
-			values.Values.Add(new SMLValue(sdkValueTable));
+			var sdkValueTable = values.AddTableWithSyntax();
 
 			return new SDKConfig(sdkValueTable)
 			{
