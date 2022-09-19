@@ -328,9 +328,11 @@ namespace Soup.Build.Discover.UnitTests
 ]
 ";
 			using var originalContent = new System.IO.MemoryStream();
+			await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
+			originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Users/Me/.soup/LocalUserConfig.sml"),
-				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(original))));
+				new MockFile(originalContent));
 
 			mockProcessManager.RegisterExecuteResult(
 				"CreateProcess: 1 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
@@ -409,42 +411,42 @@ namespace Soup.Build.Discover.UnitTests
 		SourceDirectories: [
 			""C:/SomeWhere/""
 		]
-		Properties: { ToolsRoot: ""C:/SomeWhere/"" }
-	}
-	{
+		Properties: {ToolsRoot: ""C:/SomeWhere/"" }
+	}{
 		Name: ""Roslyn""
 		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
+						""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
+
 		]
-		Properties: { ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/"" }
-	}
-	{
+		Properties: { ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""}
+	}{
 		Name: ""DotNet""
 		SourceDirectories: [
-			""C:/Program Files/dotnet/""
+						""C:/Program Files/dotnet/""
+
 		]
-		Properties: { RuntimeVersion: ""6.0.9"", RootPath: ""C:/Program Files/dotnet/"" }
-	}
-	{
+		Properties: { RuntimeVersion: ""6.0.9"", RootPath: ""C:/Program Files/dotnet/""}
+	}{
 		Name: ""MSVC""
 		SourceDirectories: [
-			""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
+						""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
+
 		]
-		Properties: { Version: ""14.33.31629"", VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/"" }
-	}
-	{
+		Properties: { Version: ""14.33.31629"", VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""}
+	}{
 		Name: ""Windows""
 		SourceDirectories: [
-			""C:/Program Files (x86)/Windows Kits/10/""
+						""C:/Program Files (x86)/Windows Kits/10/""
+
 		]
-		Properties: { Version: ""10.0.19041.0"", RootPath: ""C:/Program Files (x86)/Windows Kits/10/"" }
-	}
-	{
+		Properties: { Version: ""10.0.19041.0"", RootPath: ""C:/Program Files (x86)/Windows Kits/10/""}
+	}{
 		Name: ""NetFXTools""
 		SourceDirectories: [
-			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+						""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
+
 		]
-		Properties: { ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/"" }
+		Properties: { ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""}
 	}
 ]
 ";

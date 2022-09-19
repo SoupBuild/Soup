@@ -25,9 +25,9 @@ namespace Soup.Build.Utilities
 
 		public SMLToken(List<string> leadingTrivia, string text, List<string> trailingTrivia)
 		{
-			LeadingTrivia = new List<string>();
+			LeadingTrivia = leadingTrivia;
 			Text = text;
-			TrailingTrivia = new List<string>();
+			TrailingTrivia = trailingTrivia;
 		}
 
 		public override bool Equals(object? obj) => this.Equals(obj as SMLToken);

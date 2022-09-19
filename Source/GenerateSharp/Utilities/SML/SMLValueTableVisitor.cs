@@ -25,6 +25,8 @@ namespace Soup.Build.Utilities
 
 		public virtual object VisitDocument(SMLParser.DocumentContext context)
 		{
+			// TODO: Handle leading trivia before first item...
+
 			var leadingNewlines = (List<SMLToken>)context.leadingNewlines().Accept(this);
 			var tableContent = (Dictionary<string, SMLTableValue>)context.tableContent().Accept(this);
 			var trailingNewlines = (List<SMLToken>)context.trailingNewlines().Accept(this);
@@ -72,11 +74,10 @@ namespace Soup.Build.Utilities
 
 		public virtual object VisitTableValue(SMLParser.TableValueContext context)
 		{
-			return new SMLTableValue(
-				BuildToken(context.KEY()),
-				BuildToken(context.COLON()),
-				(SMLValue)context.value().Accept(this),
-				new List<SMLToken>());
+			var key = BuildToken(context.KEY());
+			var colon = BuildToken(context.COLON());
+			var values = (SMLValue)context.value().Accept(this);
+			return new SMLTableValue(key, colon, values, new List<SMLToken>());
 		}
 
 		public virtual object VisitArray(SMLParser.ArrayContext context)
@@ -120,10 +121,7 @@ namespace Soup.Build.Utilities
 
 			return new SMLValue(new SMLStringValue(
 				content,
-				new SMLToken("\"")
-				{
-					LeadingTrivia = GetLeadingTrivia(context.STRING_LITERAL()),
-				},
+				new SMLToken("\""),
 				new SMLToken(content),
 				new SMLToken("\"")
 				{
@@ -182,10 +180,12 @@ namespace Soup.Build.Utilities
 
 		private SMLToken BuildToken(ITerminalNode node)
 		{
+			var leadingTrivia = new List<string>();
+			var trailingTrivia = GetTrailingTrivia(node);
 			return new SMLToken(
-				GetLeadingTrivia(node),
+				leadingTrivia,
 				node.Symbol.Text,
-				GetTrailingTrivia(node));
+				trailingTrivia);
 		}
 
 		private List<string> GetLeadingTrivia(ITerminalNode node)
