@@ -108,7 +108,7 @@ namespace Soup.Build.Utilities
 		public static void AddItemWithSyntax(this SMLDocument document, string key, long value)
 		{
 			// Create a new item and matching syntax
-			var newValue = new SMLValue(value);
+			var newValue = new SMLValue(new SMLIntegerValue(value));
 
 			// Add the model to the parent table model
 			document.Values.Add(key, CreateTableValue(key, newValue));
@@ -130,7 +130,7 @@ namespace Soup.Build.Utilities
 		public static void AddItemWithSyntax(this SMLTable table, string key, long value)
 		{
 			// Create a new item and matching syntax
-			var newValue = new SMLValue(value);
+			var newValue = new SMLValue(new SMLIntegerValue(value));
 
 			// Tables items should be on newline
 			var keyToken = new SMLToken(key)

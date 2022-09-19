@@ -50,13 +50,13 @@ namespace Soup.Build.Utilities
 				case SMLValueType.Empty:
 					return new Value();
 				case SMLValueType.Boolean:
-					return new Value(value.AsBoolean());
+					return new Value(value.AsBoolean().Value);
 				case SMLValueType.Integer:
-					return new Value(value.AsInteger());
+					return new Value(value.AsInteger().Value);
 				case SMLValueType.Float:
-					return new Value(value.AsFloat());
+					return new Value(value.AsFloat().Value);
 				case SMLValueType.String:
-					return new Value(value.AsString().Content);
+					return new Value(value.AsString().Value);
 				case SMLValueType.Table:
 					return new Value(value.AsTable().ToBuildValue());
 				case SMLValueType.Array:

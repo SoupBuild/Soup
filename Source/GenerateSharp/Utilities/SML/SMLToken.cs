@@ -23,6 +23,13 @@ namespace Soup.Build.Utilities
 			TrailingTrivia = new List<string>();
 		}
 
+		public SMLToken(List<string> leadingTrivia, string text, List<string> trailingTrivia)
+		{
+			LeadingTrivia = new List<string>();
+			Text = text;
+			TrailingTrivia = new List<string>();
+		}
+
 		public override bool Equals(object? obj) => this.Equals(obj as SMLToken);
 
 		public bool Equals(SMLToken? rhs)

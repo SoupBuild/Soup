@@ -41,7 +41,7 @@ namespace Soup.Build.Utilities
 			{
 				if (_table.Values.TryGetValue(Property_Name, out var nameValue))
 				{
-					return nameValue.Value.AsString().Content;
+					return nameValue.Value.AsString().Value;
 				}
 				else
 				{
@@ -72,7 +72,7 @@ namespace Soup.Build.Utilities
 					var result = new List<Path>();
 					foreach (var value in values.Values)
 					{
-						result.Add(new Path(value.AsString().Content));
+						result.Add(new Path(value.AsString().Value));
 					}
 
 					return result;

@@ -29,13 +29,19 @@ namespace Soup.Build.Utilities
 			RawValue = null;
 		}
 
-		public SMLValue(long value)
+		public SMLValue(SMLFloatValue value)
+		{
+			Type = SMLValueType.Float;
+			RawValue = value;
+		}
+
+		public SMLValue(SMLIntegerValue value)
 		{
 			Type = SMLValueType.Integer;
 			RawValue = value;
 		}
 
-		public SMLValue(bool value)
+		public SMLValue(SMLBooleanValue value)
 		{
 			Type = SMLValueType.Boolean;
 			RawValue = value;
@@ -89,31 +95,31 @@ namespace Soup.Build.Utilities
 				throw new InvalidOperationException("Underlying type was incorrect: String");
 		}
 
-		public long AsInteger()
+		public SMLIntegerValue AsInteger()
 		{
 			if (Type != SMLValueType.Integer)
 				throw new InvalidCastException("Incorrect access type: Value is not Integer");
-			else if (RawValue is long value)
+			else if (RawValue is SMLIntegerValue value)
 				return value;
 			else
 				throw new InvalidOperationException("Underlying type was incorrect: Integer");
 		}
 
-		public bool AsBoolean()
+		public SMLBooleanValue AsBoolean()
 		{
 			if (Type != SMLValueType.Boolean)
 				throw new InvalidCastException("Incorrect access type: Value is not Boolean");
-			else if (RawValue is bool value)
+			else if (RawValue is SMLBooleanValue value)
 				return value;
 			else
 				throw new InvalidOperationException("Underlying type was incorrect: Boolean");
 		}
 
-		public double AsFloat()
+		public SMLFloatValue AsFloat()
 		{
 			if (Type != SMLValueType.Float)
 				throw new InvalidCastException("Incorrect access type: Value is not Float");
-			else if (RawValue is double value)
+			else if (RawValue is SMLFloatValue value)
 				return value;
 			else
 				throw new InvalidOperationException("Underlying type was incorrect: Float");

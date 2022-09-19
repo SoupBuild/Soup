@@ -30,7 +30,7 @@ namespace Soup.Build.Utilities
 			{
 				var document = parser.document();
 
-				var visitor = new SMLValueTableVisitor();
+				var visitor = new SMLValueTableVisitor(commonTokenStream);
 				var result = (SMLDocument)visitor.Visit(document);
 				return result;
 			}
@@ -119,7 +119,7 @@ namespace Soup.Build.Utilities
 		private static async Task SerializeAsync(SMLStringValue value, System.IO.StreamWriter writer)
 		{
 			await SerializeAsync(value.OpenQuote, writer);
-			await SerializeAsync(value.Value, writer);
+			await SerializeAsync(value.Content, writer);
 			await SerializeAsync(value.CloseQuote, writer);
 		}
 

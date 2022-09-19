@@ -50,9 +50,7 @@ namespace Soup.Build.Utilities
 				return true;
 
 			// Return true if the fields match.
-			return OpenBracket == rhs.OpenBracket &&
-				Enumerable.SequenceEqual(this.Values, rhs.Values) &&
-				CloseBracket == rhs.CloseBracket;
+			return Enumerable.SequenceEqual(this.Values, rhs.Values);
 		}
 
 		public override int GetHashCode() => (Values).GetHashCode();

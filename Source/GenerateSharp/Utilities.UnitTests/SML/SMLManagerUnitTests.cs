@@ -89,8 +89,8 @@ namespace Soup.Build.Utilities.UnitTests
 					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue(new SMLStringValue("MyPackage"))) },
 					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue(new SMLStringValue("C++|1"))) },
 					{ "Version", new SMLTableValue(new SMLToken("Version"), new SMLValue(new SMLStringValue("1.2.3"))) },
-					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLToken("EnableErrorsAsWarnings"), new SMLValue(false)) },
-					{ "EnableCoolFeature", new SMLTableValue(new SMLToken("EnableCoolFeature"), new SMLValue(true)) },
+					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLToken("EnableErrorsAsWarnings"), new SMLValue(new SMLBooleanValue(false))) },
+					{ "EnableCoolFeature", new SMLTableValue(new SMLToken("EnableCoolFeature"), new SMLValue(new SMLBooleanValue(true))) },
 					{ 
 						"Dependencies",
 						new SMLTableValue(new SMLToken("Dependencies"), new SMLValue(new SMLTable(new Dictionary<string, SMLTableValue>()
@@ -101,8 +101,8 @@ namespace Soup.Build.Utilities.UnitTests
 								"Test",
 								new SMLTableValue(new SMLToken("Test"), new SMLValue(new SMLArray(new List<SMLValue>()
 								{
-									new SMLValue(123),
-									new SMLValue(false),
+									new SMLValue(new SMLIntegerValue(123)),
+									new SMLValue(new SMLBooleanValue(false)),
 									new SMLValue(new SMLStringValue("string")),
 								})))
 							},
