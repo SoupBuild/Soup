@@ -6,6 +6,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Soup.Build.Runtime;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Soup.Build.Utilities
@@ -70,6 +71,8 @@ namespace Soup.Build.Utilities
 				await SerializeAsync(value.Value.Key, writer);
 				await SerializeAsync(value.Value.Colon, writer);
 				await SerializeAsync(value.Value.Value, writer);
+				if (value.Value.Delimiter != null)
+					await SerializeAsync(value.Value.Delimiter, writer);
 			}
 
 			await SerializeAsync(table.CloseBrace, writer);
@@ -94,13 +97,13 @@ namespace Soup.Build.Utilities
 				case SMLValueType.Empty:
 					break;
 				case SMLValueType.Boolean:
-					await writer.WriteAsync(value.AsBoolean().ToString());
+					await SerializeAsync(value.AsBoolean(), writer);
 					break;
 				case SMLValueType.Integer:
-					await writer.WriteAsync(value.AsInteger().ToString());
+					await SerializeAsync(value.AsInteger(), writer);
 					break;
 				case SMLValueType.Float:
-					await writer.WriteAsync(value.AsFloat().ToString());
+					await SerializeAsync(value.AsFloat(), writer);
 					break;
 				case SMLValueType.String:
 					await SerializeAsync(value.AsString(), writer);
@@ -121,6 +124,27 @@ namespace Soup.Build.Utilities
 			await SerializeAsync(value.OpenQuote, writer);
 			await SerializeAsync(value.Content, writer);
 			await SerializeAsync(value.CloseQuote, writer);
+		}
+
+		private static async Task SerializeAsync(SMLIntegerValue value, System.IO.StreamWriter writer)
+		{
+			await SerializeAsync(value.Content, writer);
+		}
+
+		private static async Task SerializeAsync(SMLFloatValue value, System.IO.StreamWriter writer)
+		{
+			await SerializeAsync(value.Content, writer);
+		}
+
+		private static async Task SerializeAsync(SMLBooleanValue value, System.IO.StreamWriter writer)
+		{
+			await SerializeAsync(value.Content, writer);
+		}
+
+		private static async Task SerializeAsync(IEnumerable<SMLToken> tokens, System.IO.StreamWriter writer)
+		{
+			foreach (var token in tokens)
+				await SerializeAsync(token, writer);
 		}
 
 		private static async Task SerializeAsync(SMLToken token, System.IO.StreamWriter writer)

@@ -41,9 +41,20 @@ namespace Soup.Build.Utilities
 		public virtual object VisitTableContent(SMLParser.TableContentContext context)
 		{
 			var tableContent = new Dictionary<string, SMLTableValue>();
-			foreach (var value in context.tableValue())
+			var tableValues = context.tableValue();
+			var delimiters = context.delimiter();
+			for (var i = 0; i < tableValues.Length; i++)
 			{
+				var value = tableValues[i];
 				var tableValue = (SMLTableValue)value.Accept(this);
+
+				// Check for optional demimilter
+				if (delimiters.Length > i)
+				{
+					var delimiter = (List<SMLToken>)delimiters[i].Accept(this);
+					tableValue.Delimiter = delimiter;
+				}
+
 				tableContent.Add(tableValue.Key.Text, tableValue);
 			}
 
@@ -54,7 +65,9 @@ namespace Soup.Build.Utilities
 		{
 			return new SMLTableValue(
 				BuildToken(context.KEY()),
-				(SMLValue)context.value().Accept(this));
+				BuildToken(context.COLON()),
+				(SMLValue)context.value().Accept(this),
+				new List<SMLToken>());
 		}
 
 		public virtual object VisitArray(SMLParser.ArrayContext context)
@@ -79,10 +92,12 @@ namespace Soup.Build.Utilities
 
 		public virtual object VisitValueInteger(SMLParser.ValueIntegerContext context)
 		{
-			var integerToken = context.INTEGER().Symbol;
-			var value = long.Parse(integerToken.Text);
+			var integerNode = context.INTEGER();
+			var value = long.Parse(integerNode.Symbol.Text);
 			return new SMLValue(
-				new SMLIntegerValue(value));
+				new SMLIntegerValue(
+					value,
+					BuildToken(integerNode)));
 		}
 
 		public virtual object VisitValueString(SMLParser.ValueStringContext context)
@@ -105,12 +120,16 @@ namespace Soup.Build.Utilities
 
 		public virtual object VisitValueTrue(SMLParser.ValueTrueContext context)
 		{
-			return new SMLValue(new SMLBooleanValue(true));
+			return new SMLValue(new SMLBooleanValue(
+				true,
+				BuildToken(context.TRUE())));
 		}
 
 		public virtual object VisitValueFalse(SMLParser.ValueFalseContext context)
 		{
-			return new SMLValue(new SMLBooleanValue(false));
+			return new SMLValue(
+				new SMLBooleanValue(false,
+				BuildToken(context.FALSE())));
 		}
 
 		public virtual object VisitValueTable(SMLParser.ValueTableContext context)
@@ -125,9 +144,17 @@ namespace Soup.Build.Utilities
 			return new SMLValue(array);
 		}
 
-		public virtual object VisitDelimiter(SMLParser.DelimiterContext context)
+		public virtual object VisitNewlineDelimiter(SMLParser.NewlineDelimiterContext context)
 		{
-			throw new NotImplementedException();
+			return context.NEWLINE().Select(value => BuildToken(value)).ToList();
+		}
+
+		public virtual object VisitCommaDelimiter(SMLParser.CommaDelimiterContext context)
+		{
+			return new List<SMLToken>()
+			{
+				BuildToken(context.COMMA()),
+			};
 		}
 
 		private SMLToken BuildToken(ITerminalNode node)

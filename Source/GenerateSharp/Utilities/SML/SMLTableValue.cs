@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 
 namespace Soup.Build.Utilities
 {
@@ -11,22 +12,26 @@ namespace Soup.Build.Utilities
 		public SMLToken Key { get; set; }
 		public SMLToken Colon { get; set; }
 		public SMLValue Value { get; set; }
+		public List<SMLToken> Delimiter { get; set; }
 
 		public SMLTableValue(SMLToken key, SMLValue value)
 		{
 			Key = key;
 			Colon = SMLToken.Empty;
 			Value = value;
+			Delimiter = new List<SMLToken>();
 		}
 
 		public SMLTableValue(
 			SMLToken key,
 			SMLToken colon,
-			SMLValue value)
+			SMLValue value,
+			List<SMLToken> delimiter)
 		{
 			Key = key;
 			Colon = colon;
 			Value = value;
+			Delimiter = delimiter;
 		}
 
 		public override bool Equals(object? obj) => this.Equals(obj as SMLTableValue);

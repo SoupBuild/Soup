@@ -226,7 +226,8 @@ namespace Soup.Build.Utilities
 				{
 					TrailingTrivia = new List<string>() { " " },
 				},
-				value);
+				value,
+				new List<SMLToken>());
 		}
 
 		public static SMLTable AddTableWithSyntax(

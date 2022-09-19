@@ -629,20 +629,37 @@ public partial class SMLParser : Parser {
 	}
 
 	public partial class DelimiterContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode[] NEWLINE() { return GetTokens(SMLParser.NEWLINE); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode NEWLINE(int i) {
-			return GetToken(SMLParser.NEWLINE, i);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode COMMA() { return GetToken(SMLParser.COMMA, 0); }
 		public DelimiterContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
 		public override int RuleIndex { get { return RULE_delimiter; } }
+	 
+		public DelimiterContext() { }
+		public virtual void CopyFrom(DelimiterContext context) {
+			base.CopyFrom(context);
+		}
+	}
+	public partial class CommaDelimiterContext : DelimiterContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode COMMA() { return GetToken(SMLParser.COMMA, 0); }
+		public CommaDelimiterContext(DelimiterContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitDelimiter(this);
+			if (typedVisitor != null) return typedVisitor.VisitCommaDelimiter(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class NewlineDelimiterContext : DelimiterContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode[] NEWLINE() { return GetTokens(SMLParser.NEWLINE); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode NEWLINE(int i) {
+			return GetToken(SMLParser.NEWLINE, i);
+		}
+		public NewlineDelimiterContext(DelimiterContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ISMLVisitor<TResult> typedVisitor = visitor as ISMLVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNewlineDelimiter(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -657,6 +674,7 @@ public partial class SMLParser : Parser {
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case NEWLINE:
+				_localctx = new NewlineDelimiterContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
 				State = 86;
@@ -676,6 +694,7 @@ public partial class SMLParser : Parser {
 				}
 				break;
 			case COMMA:
+				_localctx = new CommaDelimiterContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
 				State = 90;

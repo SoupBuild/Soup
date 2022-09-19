@@ -16,7 +16,9 @@ value               : INTEGER # valueInteger
                     | table # valueTable
                     | array # valueArray
                     ;
-delimiter           : NEWLINE+ | COMMA ;
+delimiter           : NEWLINE+ # newlineDelimiter
+                    | COMMA # commaDelimiter
+                    ;
 
 /*
  * Lexer Rules

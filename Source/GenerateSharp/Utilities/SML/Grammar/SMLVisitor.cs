@@ -110,9 +110,17 @@ public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitValueArray([NotNull] SMLParser.ValueArrayContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SMLParser.delimiter"/>.
+	/// Visit a parse tree produced by the <c>newlineDelimiter</c>
+	/// labeled alternative in <see cref="SMLParser.delimiter"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitDelimiter([NotNull] SMLParser.DelimiterContext context);
+	Result VisitNewlineDelimiter([NotNull] SMLParser.NewlineDelimiterContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>commaDelimiter</c>
+	/// labeled alternative in <see cref="SMLParser.delimiter"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCommaDelimiter([NotNull] SMLParser.CommaDelimiterContext context);
 }
