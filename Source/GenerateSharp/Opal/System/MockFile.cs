@@ -8,6 +8,10 @@ namespace Opal.System
 
     public class MockFile
     {
+        public MemoryStream Content { get; set; }
+
+        public int LastWriteTime { get; set; }
+
         public MockFile(MemoryStream content, int lastWriteTime)
         {
             this.Content = content;
@@ -31,10 +35,6 @@ namespace Opal.System
             this.Content = new MemoryStream();
             this.LastWriteTime = 0;
         }
-
-        public MemoryStream Content { get; set; }
-
-        public int LastWriteTime { get; set; }
     }
 
     public class MockOutputFile : IOutputFile

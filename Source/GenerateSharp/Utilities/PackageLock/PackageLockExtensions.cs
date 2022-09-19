@@ -63,7 +63,7 @@ namespace Soup.Build.Utilities
 			PackageLock packageLock)
 		{
 			// Open the file to write to
-			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(packageLockFile, true);
+			using var file = LifetimeManager.Get<IFileSystem>().OpenWrite(packageLockFile, true);
 
 			// Write the recipe to the file stream
 			await SMLManager.SerializeAsync(

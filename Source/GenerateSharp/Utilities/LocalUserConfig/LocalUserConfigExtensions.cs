@@ -29,7 +29,7 @@ namespace Soup.Build.Utilities
 			}
 
 			// Open the file to read from
-			var file = LifetimeManager.Get<IFileSystem>().OpenRead(localUserConfigFile);
+			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(localUserConfigFile);
 
 			// Open the file to read from
 			using (var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true))
@@ -66,7 +66,7 @@ namespace Soup.Build.Utilities
 			}
 
 			// Open the file to write to
-			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(configFile, true);
+			using var file = LifetimeManager.Get<IFileSystem>().OpenWrite(configFile, true);
 
 			// Write the recipe to the file stream
 			await SMLManager.SerializeAsync(

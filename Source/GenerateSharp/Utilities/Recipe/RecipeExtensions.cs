@@ -91,7 +91,7 @@ namespace Soup.Build.Utilities
 			Recipe recipe)
 		{
 			// Open the file to write to
-			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(recipeFile, true);
+			using var file = LifetimeManager.Get<IFileSystem>().OpenWrite(recipeFile, true);
 
 			// Write the recipe to the file stream
 			await SMLManager.SerializeAsync(
