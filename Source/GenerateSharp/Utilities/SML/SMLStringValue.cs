@@ -3,45 +3,44 @@
 // </copyright>
 
 using System;
-using System.Reflection.Metadata;
 
 namespace Soup.Build.Utilities
 {
 	public class SMLStringValue : IEquatable<SMLStringValue>
 	{
-		public string Content { get; set; }
+		public string Value { get; set; }
 
 		public SMLToken OpenQuote { get; set; }
 
-		public SMLToken Value { get; set; }
+		public SMLToken Content { get; set; }
 
 		public SMLToken CloseQuote { get; set; }
 
 		public SMLStringValue()
 		{
-			Content = string.Empty;
+			Value = string.Empty;
 			OpenQuote = SMLToken.Empty;
-			Value = SMLToken.Empty;
+			Content = SMLToken.Empty;
 			CloseQuote = SMLToken.Empty;
 		}
 
 		public SMLStringValue(string content)
 		{
-			Content = content;
+			Value = content;
 			OpenQuote = SMLToken.Empty;
-			Value = new SMLToken(content);
+			Content = new SMLToken(content);
 			CloseQuote = SMLToken.Empty;
 		}
 
 		public SMLStringValue(
-			string content,
+			string value,
 			SMLToken openQuote,
-			SMLToken value,
+			SMLToken content,
 			SMLToken closeQuote)
 		{
-			Content = content;
-			OpenQuote = openQuote;
 			Value = value;
+			OpenQuote = openQuote;
+			Content = content;
 			CloseQuote = closeQuote;
 		}
 
@@ -57,10 +56,10 @@ namespace Soup.Build.Utilities
 				return true;
 
 			// Return true if the fields match.
-			return this.Content == rhs.Content;
+			return this.Value == rhs.Value;
 		}
 
-		public override int GetHashCode() => (Content).GetHashCode();
+		public override int GetHashCode() => (Value).GetHashCode();
 
 		public static bool operator ==(SMLStringValue? lhs, SMLStringValue? rhs)
 		{

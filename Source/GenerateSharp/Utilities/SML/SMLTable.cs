@@ -11,13 +11,17 @@ namespace Soup.Build.Utilities
 	public class SMLTable : IEquatable<SMLTable>
 	{
 		public SMLToken OpenBrace { get; set; }
+		public List<SMLToken> LeadingNewlines { get; set; }
 		public Dictionary<string, SMLTableValue> Values { get; set; }
+		public List<SMLToken> TrailingNewlines { get; set; }
 		public SMLToken CloseBrace { get; set; }
 
 		public SMLTable()
 		{
 			OpenBrace = SMLToken.Empty;
+			LeadingNewlines = new List<SMLToken>();
 			Values = new Dictionary<string, SMLTableValue>();
+			TrailingNewlines =	new List<SMLToken>();
 			CloseBrace = SMLToken.Empty;
 		}
 
@@ -25,7 +29,9 @@ namespace Soup.Build.Utilities
 			Dictionary<string, SMLTableValue> values)
 		{
 			OpenBrace = SMLToken.Empty;
+			LeadingNewlines = new List<SMLToken>();
 			Values = values;
+			TrailingNewlines = new List<SMLToken>();
 			CloseBrace = SMLToken.Empty;
 		}
 
@@ -35,7 +41,23 @@ namespace Soup.Build.Utilities
 			SMLToken closeBrace)
 		{
 			OpenBrace = openBrace;
+			LeadingNewlines = new List<SMLToken>();
 			Values = values;
+			TrailingNewlines = new List<SMLToken>();
+			CloseBrace = closeBrace;
+		}
+
+		public SMLTable(
+			SMLToken openBrace,
+			List<SMLToken> leadingNewlines,
+			Dictionary<string, SMLTableValue> values,
+			List<SMLToken> trailingNewlines,
+			SMLToken closeBrace)
+		{
+			OpenBrace = openBrace;
+			LeadingNewlines = leadingNewlines;
+			Values = values;
+			TrailingNewlines = trailingNewlines;
 			CloseBrace = closeBrace;
 		}
 
@@ -51,9 +73,7 @@ namespace Soup.Build.Utilities
 				return true;
 
 			// Return true if the fields match.
-			return OpenBrace == rhs.OpenBrace &&
-				Enumerable.SequenceEqual(this.Values, rhs.Values) &&
-				CloseBrace == rhs.OpenBrace;
+			return Enumerable.SequenceEqual(this.Values, rhs.Values);
 		}
 
 		public override int GetHashCode() => (Values).GetHashCode();

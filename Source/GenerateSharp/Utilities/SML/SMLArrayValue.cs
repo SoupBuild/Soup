@@ -1,4 +1,4 @@
-﻿// <copyright file="SMLTableValue.cs" company="Soup">
+﻿// <copyright file="SMLArrayValue.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -7,36 +7,28 @@ using System.Collections.Generic;
 
 namespace Soup.Build.Utilities
 {
-	public class SMLTableValue : IEquatable<SMLTableValue>
+	public class SMLArrayValue : IEquatable<SMLArrayValue>
 	{
-		public SMLToken Key { get; set; }
-		public SMLToken Colon { get; set; }
 		public SMLValue Value { get; set; }
 		public List<SMLToken> Delimiter { get; set; }
 
-		public SMLTableValue(SMLToken key, SMLValue value)
+		public SMLArrayValue(SMLValue value)
 		{
-			Key = key;
-			Colon = SMLToken.Empty;
 			Value = value;
 			Delimiter = new List<SMLToken>();
 		}
 
-		public SMLTableValue(
-			SMLToken key,
-			SMLToken colon,
+		public SMLArrayValue(
 			SMLValue value,
 			List<SMLToken> delimiter)
 		{
-			Key = key;
-			Colon = colon;
 			Value = value;
 			Delimiter = delimiter;
 		}
 
-		public override bool Equals(object? obj) => this.Equals(obj as SMLTableValue);
+		public override bool Equals(object? obj) => this.Equals(obj as SMLArrayValue);
 
-		public bool Equals(SMLTableValue? rhs)
+		public bool Equals(SMLArrayValue? rhs)
 		{
 			if (rhs is null)
 				return false;
@@ -51,7 +43,7 @@ namespace Soup.Build.Utilities
 
 		public override int GetHashCode() => (Value).GetHashCode();
 
-		public static bool operator ==(SMLTableValue? lhs, SMLTableValue? rhs)
+		public static bool operator ==(SMLArrayValue? lhs, SMLArrayValue? rhs)
 		{
 			if (lhs is null)
 			{
@@ -64,6 +56,6 @@ namespace Soup.Build.Utilities
 			return lhs.Equals(rhs);
 		}
 
-		public static bool operator !=(SMLTableValue? lhs, SMLTableValue? rhs) => !(lhs == rhs);
+		public static bool operator !=(SMLArrayValue? lhs, SMLArrayValue? rhs) => !(lhs == rhs);
 	}
 }

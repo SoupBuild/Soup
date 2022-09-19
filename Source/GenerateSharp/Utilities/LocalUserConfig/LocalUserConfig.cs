@@ -48,7 +48,7 @@ namespace Soup.Build.Utilities
 				var result = new List<SDKConfig>();
 				foreach (var value in values.Values)
 				{
-					result.Add(new SDKConfig(value.AsTable()));
+					result.Add(new SDKConfig(value.Value.AsTable()));
 				}
 
 				return result;
@@ -68,7 +68,7 @@ namespace Soup.Build.Utilities
 				values = sdksValue.Value.AsArray();
 				foreach (var value in values.Values)
 				{
-					var config = new SDKConfig(value.AsTable());
+					var config = new SDKConfig(value.Value.AsTable());
 					if (config.HasName() && config.Name == name)
 						return config;
 				}

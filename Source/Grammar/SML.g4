@@ -3,12 +3,12 @@ grammar SML;
 /*
  * Parser Rules
  */
-document            : tableContent EOF ;
-table               : OPEN_BRACE tableContent CLOSE_BRACE ;
-tableContent        : NEWLINE* (tableValue (delimiter tableValue)* NEWLINE*)? ;
+document            : leadingNewlines tableContent trailingNewlines  EOF ;
+table               : OPEN_BRACE leadingNewlines tableContent trailingNewlines CLOSE_BRACE ;
+tableContent        : (tableValue (delimiter tableValue)*)? ;
 tableValue          : KEY COLON value ;
-array               : OPEN_BRACKET arrayContent CLOSE_BRACKET ;
-arrayContent        : NEWLINE* (value (delimiter value)* NEWLINE*)? ;
+array               : OPEN_BRACKET leadingNewlines arrayContent trailingNewlines CLOSE_BRACKET ;
+arrayContent        : (value (delimiter value)*)? ;
 value               : INTEGER # valueInteger
                     | STRING_LITERAL # valueString
                     | TRUE # valueTrue
@@ -16,7 +16,11 @@ value               : INTEGER # valueInteger
                     | table # valueTable
                     | array # valueArray
                     ;
-delimiter           : NEWLINE+ | COMMA ;
+delimiter           : NEWLINE+ # newlineDelimiter
+                    | COMMA # commaDelimiter
+                    ;
+leadingNewlines     : NEWLINE* ;
+trailingNewlines    : NEWLINE* ;
 
 /*
  * Lexer Rules
@@ -35,9 +39,9 @@ COMMA               : ',' ;
 TRUE                : 'true' ;
 FALSE               : 'false' ;
 NEWLINE             : '\r'?'\n' ;
-COMMENT             : '//'.*?'\r'?'\n' -> skip ;
+COMMENT             : '//'.*?'\r'?'\n' -> channel(HIDDEN) ;
 INTEGER             : DIGIT+ ;
 KEY                 : [\p{L}\p{N}+#]+ ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;
 STRING_LITERAL      : '"' BASIC_CHAR*? '"' ;
-WHITESPACE          : (' '|'\t')+ -> skip ;
+WHITESPACE          : (' '|'\t')+ -> channel(HIDDEN) ;

@@ -4,8 +4,8 @@
 
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Soup.Build.Runtime;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Soup.Build.Utilities
@@ -30,7 +30,7 @@ namespace Soup.Build.Utilities
 			{
 				var document = parser.document();
 
-				var visitor = new SMLValueTableVisitor();
+				var visitor = new SMLValueTableVisitor(commonTokenStream);
 				var result = (SMLDocument)visitor.Visit(document);
 				return result;
 			}
@@ -53,37 +53,51 @@ namespace Soup.Build.Utilities
 
 		private static async Task SerializeAsync(SMLDocument document, System.IO.StreamWriter writer)
 		{
+			await SerializeAsync(document.LeadingNewlines, writer);
+
 			foreach (var value in document.Values)
 			{
 				await SerializeAsync(value.Value.Key, writer);
 				await SerializeAsync(value.Value.Colon, writer);
 				await SerializeAsync(value.Value.Value, writer);
+				if (value.Value.Delimiter != null)
+					await SerializeAsync(value.Value.Delimiter, writer);
 			}
+
+			await SerializeAsync(document.TrailingNewlines, writer);
 		}
 
 		private static async Task SerializeAsync(SMLTable table, System.IO.StreamWriter writer)
 		{
 			await SerializeAsync(table.OpenBrace, writer);
+			await SerializeAsync(table.LeadingNewlines, writer);
 
 			foreach (var value in table.Values)
 			{
 				await SerializeAsync(value.Value.Key, writer);
 				await SerializeAsync(value.Value.Colon, writer);
 				await SerializeAsync(value.Value.Value, writer);
+				if (value.Value.Delimiter != null)
+					await SerializeAsync(value.Value.Delimiter, writer);
 			}
 
+			await SerializeAsync(table.TrailingNewlines, writer);
 			await SerializeAsync(table.CloseBrace, writer);
 		}
 
 		private static async Task SerializeAsync(SMLArray array, System.IO.StreamWriter writer)
 		{
 			await SerializeAsync(array.OpenBracket, writer);
+			await SerializeAsync(array.LeadingNewlines, writer);
 
 			foreach (var value in array.Values)
 			{
-				await SerializeAsync(value, writer);
+				await SerializeAsync(value.Value, writer);
+				if (value.Delimiter != null)
+					await SerializeAsync(value.Delimiter, writer);
 			}
 
+			await SerializeAsync(array.TrailingNewlines, writer);
 			await SerializeAsync(array.CloseBracket, writer);
 		}
 
@@ -94,13 +108,13 @@ namespace Soup.Build.Utilities
 				case SMLValueType.Empty:
 					break;
 				case SMLValueType.Boolean:
-					await writer.WriteAsync(value.AsBoolean().ToString());
+					await SerializeAsync(value.AsBoolean(), writer);
 					break;
 				case SMLValueType.Integer:
-					await writer.WriteAsync(value.AsInteger().ToString());
+					await SerializeAsync(value.AsInteger(), writer);
 					break;
 				case SMLValueType.Float:
-					await writer.WriteAsync(value.AsFloat().ToString());
+					await SerializeAsync(value.AsFloat(), writer);
 					break;
 				case SMLValueType.String:
 					await SerializeAsync(value.AsString(), writer);
@@ -119,8 +133,29 @@ namespace Soup.Build.Utilities
 		private static async Task SerializeAsync(SMLStringValue value, System.IO.StreamWriter writer)
 		{
 			await SerializeAsync(value.OpenQuote, writer);
-			await SerializeAsync(value.Value, writer);
+			await SerializeAsync(value.Content, writer);
 			await SerializeAsync(value.CloseQuote, writer);
+		}
+
+		private static async Task SerializeAsync(SMLIntegerValue value, System.IO.StreamWriter writer)
+		{
+			await SerializeAsync(value.Content, writer);
+		}
+
+		private static async Task SerializeAsync(SMLFloatValue value, System.IO.StreamWriter writer)
+		{
+			await SerializeAsync(value.Content, writer);
+		}
+
+		private static async Task SerializeAsync(SMLBooleanValue value, System.IO.StreamWriter writer)
+		{
+			await SerializeAsync(value.Content, writer);
+		}
+
+		private static async Task SerializeAsync(IEnumerable<SMLToken> tokens, System.IO.StreamWriter writer)
+		{
+			foreach (var token in tokens)
+				await SerializeAsync(token, writer);
 		}
 
 		private static async Task SerializeAsync(SMLToken token, System.IO.StreamWriter writer)

@@ -89,8 +89,8 @@ namespace Soup.Build.Utilities.UnitTests
 					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue(new SMLStringValue("MyPackage"))) },
 					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue(new SMLStringValue("C++|1"))) },
 					{ "Version", new SMLTableValue(new SMLToken("Version"), new SMLValue(new SMLStringValue("1.2.3"))) },
-					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLToken("EnableErrorsAsWarnings"), new SMLValue(false)) },
-					{ "EnableCoolFeature", new SMLTableValue(new SMLToken("EnableCoolFeature"), new SMLValue(true)) },
+					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLToken("EnableErrorsAsWarnings"), new SMLValue(new SMLBooleanValue(false))) },
+					{ "EnableCoolFeature", new SMLTableValue(new SMLToken("EnableCoolFeature"), new SMLValue(new SMLBooleanValue(true))) },
 					{ 
 						"Dependencies",
 						new SMLTableValue(new SMLToken("Dependencies"), new SMLValue(new SMLTable(new Dictionary<string, SMLTableValue>()
@@ -99,11 +99,11 @@ namespace Soup.Build.Utilities.UnitTests
 							{ "Build", new SMLTableValue(new SMLToken("Build"), new SMLValue(new SMLArray())) },
 							{ 
 								"Test",
-								new SMLTableValue(new SMLToken("Test"), new SMLValue(new SMLArray(new List<SMLValue>()
+								new SMLTableValue(new SMLToken("Test"), new SMLValue(new SMLArray(new List<SMLArrayValue>()
 								{
-									new SMLValue(123),
-									new SMLValue(false),
-									new SMLValue(new SMLStringValue("string")),
+									new SMLArrayValue(new SMLValue(new SMLIntegerValue(123))),
+									new SMLArrayValue(new SMLValue(new SMLBooleanValue(false))),
+									new SMLArrayValue(new SMLValue(new SMLStringValue("string"))),
 								})))
 							},
 						})))
@@ -111,6 +111,44 @@ namespace Soup.Build.Utilities.UnitTests
 				});
 
 			Assert.Equal(expected, actual);
+		}
+
+		[Fact]
+		public async Task RoundTrip_AllProperties()
+		{
+			var expected =
+				@"Name: ""MyPackage""
+
+				// A Comment in the file
+				Language: ""C++|1""
+				Version: ""1.2.3""
+				EnableErrorsAsWarnings: false
+				EnableCoolFeature: true
+				Dependencies: {
+					Runtime:[], Build:[]
+
+					Test :[
+						123
+						false, ""string"" ]
+				}";
+			var document = SMLManager.Deserialize(expected);
+
+			var actual = await SerializeAsync(document);
+
+			Assert.Equal(expected, actual);
+		}
+
+		private async Task<string> SerializeAsync(SMLDocument document)
+		{
+			using var stream = new MemoryStream();
+			await SMLManager.SerializeAsync(
+				document,
+				stream);
+
+			stream.Seek(0, SeekOrigin.Begin);
+			using var reader = new StreamReader(stream);
+
+			return await reader.ReadToEndAsync();
 		}
 	}
 }

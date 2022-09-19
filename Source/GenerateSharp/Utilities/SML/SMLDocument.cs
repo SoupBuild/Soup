@@ -10,16 +10,35 @@ namespace Soup.Build.Utilities
 {
 	public class SMLDocument : IEquatable<SMLDocument>
 	{
+		public List<SMLToken> LeadingNewlines { get; set; }
+
 		public Dictionary<string, SMLTableValue> Values { get; set; }
+
+		public List<SMLToken> TrailingNewlines { get; set; }
 
 		public SMLDocument()
 		{
+			LeadingNewlines = new List<SMLToken>();
 			Values = new Dictionary<string, SMLTableValue>();
+			TrailingNewlines = new List<SMLToken>();
 		}
 
-		public SMLDocument(Dictionary<string, SMLTableValue> values)
+		public SMLDocument(
+			Dictionary<string, SMLTableValue> values)
 		{
+			LeadingNewlines = new List<SMLToken>();
 			Values = values;
+			TrailingNewlines = new List<SMLToken>();
+		}
+
+		public SMLDocument(
+			List<SMLToken> leadingNewlines,
+			Dictionary<string, SMLTableValue> values,
+			List<SMLToken> trailingNewlines)
+		{
+			LeadingNewlines = leadingNewlines;
+			Values = values;
+			TrailingNewlines = trailingNewlines;
 		}
 
 		public override bool Equals(object? obj) => this.Equals(obj as SMLDocument);

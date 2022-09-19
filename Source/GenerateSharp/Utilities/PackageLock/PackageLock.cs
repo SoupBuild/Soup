@@ -48,7 +48,7 @@ namespace Soup.Build.Utilities
 				throw new InvalidOperationException("No version.");
 
 			var value = GetValue(_document, Property_Version).AsInteger();
-			return value;
+			return value.Value;
 		}
 
 		public void SetVersion(long value)
