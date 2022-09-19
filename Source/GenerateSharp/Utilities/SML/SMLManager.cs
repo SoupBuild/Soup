@@ -60,6 +60,8 @@ namespace Soup.Build.Utilities
 				await SerializeAsync(value.Value.Key, writer);
 				await SerializeAsync(value.Value.Colon, writer);
 				await SerializeAsync(value.Value.Value, writer);
+				if (value.Value.Delimiter != null)
+					await SerializeAsync(value.Value.Delimiter, writer);
 			}
 
 			await SerializeAsync(document.TrailingNewlines, writer);
@@ -90,7 +92,9 @@ namespace Soup.Build.Utilities
 
 			foreach (var value in array.Values)
 			{
-				await SerializeAsync(value, writer);
+				await SerializeAsync(value.Value, writer);
+				if (value.Delimiter != null)
+					await SerializeAsync(value.Delimiter, writer);
 			}
 
 			await SerializeAsync(array.TrailingNewlines, writer);

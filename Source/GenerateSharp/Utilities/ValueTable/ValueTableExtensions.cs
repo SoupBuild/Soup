@@ -37,7 +37,7 @@ namespace Soup.Build.Utilities
 			var values = new List<IValue>();
 			foreach (var item in value.Values)
 			{
-				values.Add(item.ToBuildValue());
+				values.Add(item.Value.ToBuildValue());
 			}
 
 			return new ValueList(values);

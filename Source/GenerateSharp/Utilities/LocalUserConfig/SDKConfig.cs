@@ -72,7 +72,7 @@ namespace Soup.Build.Utilities
 					var result = new List<Path>();
 					foreach (var value in values.Values)
 					{
-						result.Add(new Path(value.AsString().Value));
+						result.Add(new Path(value.Value.AsString().Value));
 					}
 
 					return result;

@@ -12,7 +12,7 @@ namespace Soup.Build.Utilities
 	{
 		public SMLToken OpenBracket { get; set; }
 		public List<SMLToken> LeadingNewlines { get; set; }
-		public List<SMLValue> Values { get; set; }
+		public List<SMLArrayValue> Values { get; set; }
 		public List<SMLToken> TrailingNewlines { get; set; }
 		public SMLToken CloseBracket { get; set; }
 
@@ -20,12 +20,12 @@ namespace Soup.Build.Utilities
 		{
 			OpenBracket = SMLToken.Empty;
 			LeadingNewlines = new List<SMLToken>();
-			Values = new List<SMLValue>();
+			Values = new List<SMLArrayValue>();
 			TrailingNewlines = new List<SMLToken>();
 			CloseBracket = SMLToken.Empty;
 		}
 
-		public SMLArray(List<SMLValue> values)
+		public SMLArray(List<SMLArrayValue> values)
 		{
 			OpenBracket = SMLToken.Empty;
 			LeadingNewlines = new List<SMLToken>();
@@ -36,7 +36,7 @@ namespace Soup.Build.Utilities
 
 		public SMLArray(
 			SMLToken openBracket,
-			List<SMLValue> values,
+			List<SMLArrayValue> values,
 			SMLToken closeBracket)
 		{
 			OpenBracket = openBracket;
@@ -49,7 +49,7 @@ namespace Soup.Build.Utilities
 		public SMLArray(
 			SMLToken openBracket,
 			List<SMLToken> leadingNewlines,
-			List<SMLValue> values,
+			List<SMLArrayValue> values,
 			List<SMLToken> trailingNewlines,
 			SMLToken closeBracket)
 		{

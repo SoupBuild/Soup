@@ -579,7 +579,7 @@ namespace Soup.Build.PackageManager
 					Log.Info($"Restore Packages for Language {languageProjects.Key}");
 					foreach (var project in languageProjects.Value.Value.AsArray().Values)
 					{
-						var projectTable = project.AsTable();
+						var projectTable = project.Value.AsTable();
 						var projectName = projectTable.Values[PackageLock.Property_Name].Value.AsString().Value;
 						var projectVersion = projectTable.Values[PackageLock.Property_Version].Value.AsString().Value;
 						if (SemanticVersion.TryParse(projectVersion, out var version))

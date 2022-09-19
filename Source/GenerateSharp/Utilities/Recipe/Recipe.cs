@@ -134,13 +134,13 @@ namespace Soup.Build.Utilities
 			foreach (var value in values.Values)
 			{
 				// A dependency can either be a string or a table with reference key
-				if (value.Type == SMLValueType.String)
+				if (value.Value.Type == SMLValueType.String)
 				{
-					result.Add(PackageReference.Parse(value.AsString().Value));
+					result.Add(PackageReference.Parse(value.Value.AsString().Value));
 				}
-				else if (value.Type == SMLValueType.Table)
+				else if (value.Value.Type == SMLValueType.Table)
 				{
-					var valueTable = value.AsTable();
+					var valueTable = value.Value.AsTable();
 					if (!HasValue(valueTable, Property_Reference))
 						throw new InvalidOperationException("Recipe dependency table missing required Reference value.");
 					var referenceValue = GetValue(valueTable, Property_Reference);

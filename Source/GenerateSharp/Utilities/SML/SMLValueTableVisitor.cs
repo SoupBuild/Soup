@@ -4,7 +4,6 @@
 
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,35 +17,50 @@ namespace Soup.Build.Utilities
 	{
 		private CommonTokenStream _tokens;
 
+		private SMLToken? _lastToken;
+
 		public SMLValueTableVisitor(CommonTokenStream tokens)
 		{
 			_tokens = tokens;
+			_lastToken = null;
 		}
 
 		public virtual object VisitDocument(SMLParser.DocumentContext context)
 		{
-			// TODO: Handle leading trivia before first item...
-
 			var leadingNewlines = (List<SMLToken>)context.leadingNewlines().Accept(this);
 			var tableContent = (Dictionary<string, SMLTableValue>)context.tableContent().Accept(this);
 			var trailingNewlines = (List<SMLToken>)context.trailingNewlines().Accept(this);
+
+			// Attack any trailing content ot the last token
+			if (_lastToken != null)
+			{
+				var endTrailingContent = GetLeadingTrivia(context.Eof());
+				_lastToken.TrailingTrivia = endTrailingContent;
+			}
+
 			return new SMLDocument(
 				leadingNewlines,
 				tableContent,
-				trailingNewlines); ;
+				trailingNewlines);
 		}
 
 		public virtual object VisitTable(SMLParser.TableContext context)
 		{
+			var openBraceToken = BuildToken(context.OPEN_BRACE());
 			var leadingNewlines = (List<SMLToken>)context.leadingNewlines().Accept(this);
 			var tableContent = (Dictionary<string, SMLTableValue>)context.tableContent().Accept(this);
 			var trailingNewlines = (List<SMLToken>)context.trailingNewlines().Accept(this);
+			var closeBraceToken = BuildToken(context.CLOSE_BRACE());
+
+			// Cache the last seen token
+			_lastToken = closeBraceToken;
+
 			return new SMLTable(
-				new SMLToken(context.OPEN_BRACE().GetText()),
+				openBraceToken,
 				leadingNewlines,
 				tableContent,
 				trailingNewlines,
-				new SMLToken(context.CLOSE_BRACE().GetText()));
+				closeBraceToken);
 		}
 
 		public virtual object VisitTableContent(SMLParser.TableContentContext context)
@@ -77,28 +91,47 @@ namespace Soup.Build.Utilities
 			var key = BuildToken(context.KEY());
 			var colon = BuildToken(context.COLON());
 			var values = (SMLValue)context.value().Accept(this);
+
 			return new SMLTableValue(key, colon, values, new List<SMLToken>());
 		}
 
 		public virtual object VisitArray(SMLParser.ArrayContext context)
 		{
+			var openBracketToken = BuildToken(context.OPEN_BRACKET());
 			var leadingNewlines = (List<SMLToken>)context.leadingNewlines().Accept(this);
-			var arrayContent = (List<SMLValue>)context.arrayContent().Accept(this);
+			var arrayContent = (List<SMLArrayValue>)context.arrayContent().Accept(this);
 			var trailingNewlines = (List<SMLToken>)context.trailingNewlines().Accept(this);
+			var closeBracketToken = BuildToken(context.CLOSE_BRACKET());
+
+			// Cache the last seen token
+			_lastToken = closeBracketToken;
+
 			return new SMLArray(
-				BuildToken(context.OPEN_BRACKET()),
+				openBracketToken,
 				leadingNewlines,
 				arrayContent,
 				trailingNewlines,
-				BuildToken(context.CLOSE_BRACKET()));
+				closeBracketToken);
 		}
 
 		public virtual object VisitArrayContent(SMLParser.ArrayContentContext context)
 		{
-			var arrayContent = new List<SMLValue>();
-			foreach (var value in context.value())
+			var arrayContent = new List<SMLArrayValue>();
+			var arrayValues = context.value();
+			var delimiters = context.delimiter();
+			for (var i = 0; i < arrayValues.Length; i++)
 			{
-				arrayContent.Add((SMLValue)value.Accept(this));
+				var value = arrayValues[i];
+				var arrayValue = new SMLArrayValue((SMLValue)value.Accept(this));
+
+				// Check for optional demimilter
+				if (delimiters.Length > i)
+				{
+					var delimiter = (List<SMLToken>)delimiters[i].Accept(this);
+					arrayValue.Delimiter = delimiter;
+				}
+
+				arrayContent.Add(arrayValue);
 			}
 
 			return arrayContent;
@@ -108,10 +141,15 @@ namespace Soup.Build.Utilities
 		{
 			var integerNode = context.INTEGER();
 			var value = long.Parse(integerNode.Symbol.Text);
+			var integerToken = BuildToken(integerNode);
+
+			// Cache the last seen token
+			_lastToken = integerToken;
+
 			return new SMLValue(
 				new SMLIntegerValue(
 					value,
-					BuildToken(integerNode)));
+					integerToken));
 		}
 
 		public virtual object VisitValueString(SMLParser.ValueStringContext context)
@@ -119,28 +157,45 @@ namespace Soup.Build.Utilities
 			var literal = context.STRING_LITERAL().Symbol.Text;
 			var content = literal.Substring(1, literal.Length - 2);
 
+			var openQuoteToken = new SMLToken("\"")
+			{
+				LeadingTrivia = GetLeadingTrivia(context.STRING_LITERAL()),
+			};
+			var contentToken = new SMLToken(content);
+			var closeQuoteToken = new SMLToken("\"");
+
+			// Cache the last seen token
+			_lastToken = closeQuoteToken;
+
 			return new SMLValue(new SMLStringValue(
 				content,
-				new SMLToken("\""),
-				new SMLToken(content),
-				new SMLToken("\"")
-				{
-					TrailingTrivia = GetTrailingTrivia(context.STRING_LITERAL()),
-				}));
+				openQuoteToken,
+				contentToken,
+				closeQuoteToken));
 		}
 
 		public virtual object VisitValueTrue(SMLParser.ValueTrueContext context)
 		{
+			var booleanToken = BuildToken(context.TRUE());
+
+			// Cache the last seen token
+			_lastToken = booleanToken;
+
 			return new SMLValue(new SMLBooleanValue(
 				true,
-				BuildToken(context.TRUE())));
+				booleanToken));
 		}
 
 		public virtual object VisitValueFalse(SMLParser.ValueFalseContext context)
 		{
+			var booleanToken = BuildToken(context.FALSE());
+
+			// Cache the last seen token
+			_lastToken = booleanToken;
+
 			return new SMLValue(
 				new SMLBooleanValue(false,
-				BuildToken(context.FALSE())));
+				booleanToken));
 		}
 
 		public virtual object VisitValueTable(SMLParser.ValueTableContext context)
@@ -180,8 +235,8 @@ namespace Soup.Build.Utilities
 
 		private SMLToken BuildToken(ITerminalNode node)
 		{
-			var leadingTrivia = new List<string>();
-			var trailingTrivia = GetTrailingTrivia(node);
+			var leadingTrivia = GetLeadingTrivia(node);
+			var trailingTrivia = new List<string>();
 			return new SMLToken(
 				leadingTrivia,
 				node.Symbol.Text,
@@ -193,13 +248,6 @@ namespace Soup.Build.Utilities
 			var left = _tokens.GetHiddenTokensToLeft(node.Symbol.TokenIndex);
 			var leadingTrivia = left != null ? left.Select(value => value.Text).ToList() : new List<string>();
 			return leadingTrivia;
-		}
-
-		private List<string> GetTrailingTrivia(ITerminalNode node)
-		{
-			var right = _tokens.GetHiddenTokensToRight(node.Symbol.TokenIndex);
-			var trailingTrivia = right != null ? right.Select(value => value.Text).ToList() : new List<string>();
-			return trailingTrivia;
 		}
 	}
 }
