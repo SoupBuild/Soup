@@ -11,20 +11,26 @@ namespace Soup.Build.Utilities
 	public class SMLArray : IEquatable<SMLArray>
 	{
 		public SMLToken OpenBracket { get; set; }
+		public List<SMLToken> LeadingNewlines { get; set; }
 		public List<SMLValue> Values { get; set; }
+		public List<SMLToken> TrailingNewlines { get; set; }
 		public SMLToken CloseBracket { get; set; }
 
 		public SMLArray()
 		{
 			OpenBracket = SMLToken.Empty;
+			LeadingNewlines = new List<SMLToken>();
 			Values = new List<SMLValue>();
+			TrailingNewlines = new List<SMLToken>();
 			CloseBracket = SMLToken.Empty;
 		}
 
 		public SMLArray(List<SMLValue> values)
 		{
 			OpenBracket = SMLToken.Empty;
+			LeadingNewlines = new List<SMLToken>();
 			Values = values;
+			TrailingNewlines = new List<SMLToken>();
 			CloseBracket = SMLToken.Empty;
 		}
 
@@ -34,7 +40,23 @@ namespace Soup.Build.Utilities
 			SMLToken closeBracket)
 		{
 			OpenBracket = openBracket;
+			LeadingNewlines = new List<SMLToken>();
 			Values = values;
+			TrailingNewlines = new List<SMLToken>();
+			CloseBracket = closeBracket;
+		}
+
+		public SMLArray(
+			SMLToken openBracket,
+			List<SMLToken> leadingNewlines,
+			List<SMLValue> values,
+			List<SMLToken> trailingNewlines,
+			SMLToken closeBracket)
+		{
+			OpenBracket = openBracket;
+			LeadingNewlines = leadingNewlines;
+			Values = values;
+			TrailingNewlines = trailingNewlines;
 			CloseBracket = closeBracket;
 		}
 

@@ -25,16 +25,25 @@ namespace Soup.Build.Utilities
 
 		public virtual object VisitDocument(SMLParser.DocumentContext context)
 		{
+			var leadingNewlines = (List<SMLToken>)context.leadingNewlines().Accept(this);
 			var tableContent = (Dictionary<string, SMLTableValue>)context.tableContent().Accept(this);
-			return new SMLDocument(tableContent);
+			var trailingNewlines = (List<SMLToken>)context.trailingNewlines().Accept(this);
+			return new SMLDocument(
+				leadingNewlines,
+				tableContent,
+				trailingNewlines); ;
 		}
 
 		public virtual object VisitTable(SMLParser.TableContext context)
 		{
+			var leadingNewlines = (List<SMLToken>)context.leadingNewlines().Accept(this);
 			var tableContent = (Dictionary<string, SMLTableValue>)context.tableContent().Accept(this);
+			var trailingNewlines = (List<SMLToken>)context.trailingNewlines().Accept(this);
 			return new SMLTable(
 				new SMLToken(context.OPEN_BRACE().GetText()),
+				leadingNewlines,
 				tableContent,
+				trailingNewlines,
 				new SMLToken(context.CLOSE_BRACE().GetText()));
 		}
 
@@ -72,10 +81,14 @@ namespace Soup.Build.Utilities
 
 		public virtual object VisitArray(SMLParser.ArrayContext context)
 		{
+			var leadingNewlines = (List<SMLToken>)context.leadingNewlines().Accept(this);
 			var arrayContent = (List<SMLValue>)context.arrayContent().Accept(this);
+			var trailingNewlines = (List<SMLToken>)context.trailingNewlines().Accept(this);
 			return new SMLArray(
 				BuildToken(context.OPEN_BRACKET()),
+				leadingNewlines,
 				arrayContent,
+				trailingNewlines,
 				BuildToken(context.CLOSE_BRACKET()));
 		}
 
@@ -145,6 +158,16 @@ namespace Soup.Build.Utilities
 		}
 
 		public virtual object VisitNewlineDelimiter(SMLParser.NewlineDelimiterContext context)
+		{
+			return context.NEWLINE().Select(value => BuildToken(value)).ToList();
+		}
+
+		public virtual object VisitLeadingNewlines(SMLParser.LeadingNewlinesContext context)
+		{
+			return context.NEWLINE().Select(value => BuildToken(value)).ToList();
+		}
+
+		public virtual object VisitTrailingNewlines(SMLParser.TrailingNewlinesContext context)
 		{
 			return context.NEWLINE().Select(value => BuildToken(value)).ToList();
 		}

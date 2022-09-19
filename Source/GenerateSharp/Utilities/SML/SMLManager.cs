@@ -4,7 +4,6 @@
 
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -54,17 +53,22 @@ namespace Soup.Build.Utilities
 
 		private static async Task SerializeAsync(SMLDocument document, System.IO.StreamWriter writer)
 		{
+			await SerializeAsync(document.LeadingNewlines, writer);
+
 			foreach (var value in document.Values)
 			{
 				await SerializeAsync(value.Value.Key, writer);
 				await SerializeAsync(value.Value.Colon, writer);
 				await SerializeAsync(value.Value.Value, writer);
 			}
+
+			await SerializeAsync(document.TrailingNewlines, writer);
 		}
 
 		private static async Task SerializeAsync(SMLTable table, System.IO.StreamWriter writer)
 		{
 			await SerializeAsync(table.OpenBrace, writer);
+			await SerializeAsync(table.LeadingNewlines, writer);
 
 			foreach (var value in table.Values)
 			{
@@ -75,18 +79,21 @@ namespace Soup.Build.Utilities
 					await SerializeAsync(value.Value.Delimiter, writer);
 			}
 
+			await SerializeAsync(table.TrailingNewlines, writer);
 			await SerializeAsync(table.CloseBrace, writer);
 		}
 
 		private static async Task SerializeAsync(SMLArray array, System.IO.StreamWriter writer)
 		{
 			await SerializeAsync(array.OpenBracket, writer);
+			await SerializeAsync(array.LeadingNewlines, writer);
 
 			foreach (var value in array.Values)
 			{
 				await SerializeAsync(value, writer);
 			}
 
+			await SerializeAsync(array.TrailingNewlines, writer);
 			await SerializeAsync(array.CloseBracket, writer);
 		}
 

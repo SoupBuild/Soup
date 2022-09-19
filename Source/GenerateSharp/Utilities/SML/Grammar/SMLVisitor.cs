@@ -123,4 +123,16 @@ public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitCommaDelimiter([NotNull] SMLParser.CommaDelimiterContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.leadingNewlines"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLeadingNewlines([NotNull] SMLParser.LeadingNewlinesContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SMLParser.trailingNewlines"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTrailingNewlines([NotNull] SMLParser.TrailingNewlinesContext context);
 }
