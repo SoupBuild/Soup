@@ -134,8 +134,7 @@ namespace Soup.Build.Discover.UnitTests
 		]
 		Properties: { ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/"" }
 	}
-]
-";
+]";
 
 			Assert.Equal(expected, localUserConfigContent);
 		}
@@ -261,8 +260,7 @@ namespace Soup.Build.Discover.UnitTests
 		]
 		Properties: { ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/"" }
 	}
-]
-";
+]";
 
 			Assert.Equal(expected, localUserConfigContent);
 		}
@@ -417,7 +415,6 @@ namespace Soup.Build.Discover.UnitTests
 		Name: ""Roslyn""
 		SourceDirectories: [
 			""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/""
-
 		]
 		Properties: { ToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/Roslyn/"" }
 	}
@@ -425,7 +422,6 @@ namespace Soup.Build.Discover.UnitTests
 		Name: ""DotNet""
 		SourceDirectories: [
 			""C:/Program Files/dotnet/""
-
 		]
 		Properties: { RuntimeVersion: ""6.0.9"", RootPath: ""C:/Program Files/dotnet/"" }
 	}
@@ -433,7 +429,6 @@ namespace Soup.Build.Discover.UnitTests
 		Name: ""MSVC""
 		SourceDirectories: [
 			""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/""
-
 		]
 		Properties: { Version: ""14.33.31629"", VCToolsRoot: ""C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/"" }
 	}
@@ -441,7 +436,6 @@ namespace Soup.Build.Discover.UnitTests
 		Name: ""Windows""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Windows Kits/10/""
-
 		]
 		Properties: { Version: ""10.0.19041.0"", RootPath: ""C:/Program Files (x86)/Windows Kits/10/"" }
 	}
@@ -449,7 +443,6 @@ namespace Soup.Build.Discover.UnitTests
 		Name: ""NetFXTools""
 		SourceDirectories: [
 			""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/""
-
 		]
 		Properties: { ToolsRoot: ""C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/"" }
 	}

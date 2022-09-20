@@ -9,6 +9,10 @@ namespace Soup.Build.Utilities
 {
 	public static class SMLExtensions
 	{
+		private static SMLToken CommaToken => new SMLToken(",");
+
+		private static SMLToken NewlineToken => new SMLToken("\r\n");
+
 		private static string Indent => "\t";
 
 		public static void AddItemWithSyntax(this SMLArray array, string value, int indentLevel)
@@ -27,13 +31,8 @@ namespace Soup.Build.Utilities
 					},
 				},
 				new SMLToken(value),
-				new SMLToken("\"")
-				{
-					TrailingTrivia = new List<string>()
-					{
-						"\r\n",
-					},
-				})));
+				new SMLToken("\""))),
+				new List<SMLToken>());
 
 			// Add the model to the parent table model
 			array.Values.Add(newValue);
@@ -80,12 +79,16 @@ namespace Soup.Build.Utilities
 					{
 						indent,
 					},
-					TrailingTrivia = new List<string>()
-					{
-						"\r\n",
-					},
+				},
+				new List<SMLToken>()
+				{
+					NewlineToken
 				},
 				new Dictionary<string, SMLTableValue>(),
+				new List<SMLToken>()
+				{
+					NewlineToken
+				},
 				new SMLToken("}")
 				{
 					// Arrays items should always force closing on newline
@@ -93,14 +96,20 @@ namespace Soup.Build.Utilities
 					{
 						indent,
 					},
-					TrailingTrivia = new List<string>()
-					{
-						"\r\n",
-					},
 				});
+			var newItem = new SMLArrayValue(
+				new SMLValue(newTable),
+				new List<SMLToken>());
+
+			// Update the previous last item to have a comma delmiter
+			if (array.Values.Count > 0)
+			{
+				var lastItem = array.Values.Last();
+				lastItem.Delimiter.Add(NewlineToken);
+			}
 
 			// Add the model to the parent table model
-			array.Values.Add(new SMLArrayValue(new SMLValue(newTable)));
+			array.Values.Add(newItem);
 
 			return newTable;
 		}
@@ -133,13 +142,7 @@ namespace Soup.Build.Utilities
 			var newValue = new SMLValue(new SMLIntegerValue(value));
 
 			// Tables items should be on newline
-			var keyToken = new SMLToken(key)
-			{
-				LeadingTrivia = new List<string>()
-				{
-					"\r\n",
-				},
-			};
+			var keyToken = new SMLToken(key); ;
 
 			// Add the model to the parent table model
 			table.Values.Add(key, CreateTableValue(keyToken, newValue));
@@ -155,27 +158,25 @@ namespace Soup.Build.Utilities
 				indent,
 			};
 
-			// Arrays items should always force closing on newline
-			var trailingTrivia = new List<string>()
-			{
-				"\r\n",
-			};
-
 			// Create a new item and matching syntax
 			var newValue = new SMLValue(new SMLStringValue(
 				value,
 				new SMLToken("\""),
 				new SMLToken(value),
-				new SMLToken("\"")
-				{
-					TrailingTrivia = trailingTrivia,
-				}));
+				new SMLToken("\"")));
 
 			// Tables items should be on newline
 			var keyToken = new SMLToken(key)
 			{
 				LeadingTrivia = leadingTrivia,
 			};
+
+			// Update the previous last item to have a comma delmiter
+			if (table.Values.Count > 0)
+			{
+				var lastItem = table.Values.Last();
+				lastItem.Value.Delimiter.Add(NewlineToken);
+			}
 
 			// Add the model to the parent table model
 			table.Values.Add(key, CreateTableValue(keyToken, newValue));
@@ -183,39 +184,49 @@ namespace Soup.Build.Utilities
 
 		public static void AddInlineItemWithSyntax(this SMLTable table, string key, string value)
 		{
-			// If this is the first item add space, otherwise include a comma delimiter
-			var leadingTrivia = new List<string>();
-			if (table.Values.Count == 0)
-				leadingTrivia.Add(" ");
-			else
-				leadingTrivia.Add(", ");
-
-			// Arrays items should always force closing on newline
-			var trailingTrivia = new List<string>();
-
 			// Create a new item and matching syntax
 			var newValue = new SMLValue(new SMLStringValue(
 				value,
 				new SMLToken("\""),
 				new SMLToken(value),
-				new SMLToken("\"")
-				{
-					TrailingTrivia = trailingTrivia,
-				}));
+				new SMLToken("\"")));
 
 			// Tables items should be on newline
 			var keyToken = new SMLToken(key)
 			{
-				LeadingTrivia = leadingTrivia,
+				LeadingTrivia = new List<string>()
+				{
+					" ",
+				},
 			};
 
+			// Update the previous last item to have a comma delmiter
+			if (table.Values.Count > 0)
+			{
+				var lastItem = table.Values.Last();
+				lastItem.Value.Delimiter.Add(CommaToken);
+			}
+
 			// Add the model to the parent table model
-			table.Values.Add(key, CreateTableValue(keyToken, newValue));
+			table.Values.Add(key, CreateInlineTableValue(keyToken, newValue));
 		}
 
 		private static SMLTableValue CreateTableValue(string key, SMLValue value)
 		{
 			return CreateTableValue(new SMLToken(key), value);
+		}
+
+		private static SMLTableValue CreateInlineTableValue(SMLToken key, SMLValue value)
+		{
+			// The comma delimiter will be added when needed
+			return new SMLTableValue(
+				key,
+				new SMLToken(":")
+				{
+					TrailingTrivia = new List<string>() { " " },
+				},
+				value,
+				new List<SMLToken>());
 		}
 
 		private static SMLTableValue CreateTableValue(SMLToken key, SMLValue value)
@@ -239,15 +250,16 @@ namespace Soup.Build.Utilities
 
 			// Create a new table
 			var newTable = new SMLTable(
-				new SMLToken("{")
+				new SMLToken("{"),
+				new List<SMLToken>()
 				{
-					// Add the newline between the items
-					TrailingTrivia = new List<string>()
-					{
-						"\r\n",
-					}
+					NewlineToken,
 				},
 				new Dictionary<string, SMLTableValue>(),
+				new List<SMLToken>()
+				{
+					NewlineToken,
+				},
 				new SMLToken("}")
 				{
 					// Offset the closing brace
@@ -255,19 +267,16 @@ namespace Soup.Build.Utilities
 					{
 						indent,
 					},
-					TrailingTrivia = new List<string>()
-					{
-						"\r\n",
-					}
 				});
 
-			// If this is not the first item then place it on a newline
-			var keyLeadingTrivia = new List<string>();
+			var keyToken = new SMLToken(name);
 
-			var keyToken = new SMLToken(name)
+			// Update the previous last item to have a comma delmiter
+			if (values.Count > 0)
 			{
-				LeadingTrivia = keyLeadingTrivia,
-			};
+				var lastItem = values.Last();
+				lastItem.Value.Delimiter.Add(NewlineToken);
+			}
 
 			// Add the model to the parent table model
 			values.Add(name, CreateTableValue(keyToken, new SMLValue(newTable)));
@@ -275,7 +284,7 @@ namespace Soup.Build.Utilities
 			return newTable;
 		}
 
-		public static SMLTable AddInlineTableWithSyntax(
+		private static SMLTable AddInlineTableWithSyntax(
 			this IDictionary<string, SMLTableValue> values,
 			string name,
 			int indentLevel)
@@ -293,22 +302,22 @@ namespace Soup.Build.Utilities
 					{
 						" ",
 					},
-					TrailingTrivia = new List<string>()
-					{
-						"\r\n",
-					}
 				});
-
-			// If this is not the first item then place it on a newline
-			var keyLeadingTrivia = new List<string>()
-			{
-				indent,
-			};
 
 			var keyToken = new SMLToken(name)
 			{
-				LeadingTrivia = keyLeadingTrivia,
+				LeadingTrivia = new List<string>()
+				{
+					indent,
+				},
 			};
+
+			// Update the previous last item to have a comma delmiter
+			if (values.Count > 0)
+			{
+				var lastItem = values.Last();
+				lastItem.Value.Delimiter.Add(NewlineToken);
+			}
 
 			// Add the model to the parent table model
 			values.Add(name, CreateTableValue(keyToken, new SMLValue(newTable)));
@@ -324,23 +333,21 @@ namespace Soup.Build.Utilities
 			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
 
 			var newArray = new SMLArray(
-				new SMLToken("[")
+				new SMLToken("["),
+				new List<SMLToken>()
 				{
-					TrailingTrivia = new List<string>()
-					{
-						"\r\n",
-					},
+					NewlineToken,
 				},
 				new List<SMLArrayValue>(),
+				new List<SMLToken>()
+				{
+					NewlineToken,
+				},
 				new SMLToken("]")
 				{
 					LeadingTrivia = new List<string>()
 					{
 						indent,
-					},
-					TrailingTrivia = new List<string>()
-					{
-						"\r\n",
 					},
 				});
 
@@ -351,6 +358,13 @@ namespace Soup.Build.Utilities
 					indent,
 				},
 			};
+
+			// Update the previous last item to have a comma delmiter
+			if (values.Count > 0)
+			{
+				var lastItem = values.Last();
+				lastItem.Value.Delimiter.Add(NewlineToken);
+			}
 
 			// Add the model to the parent table model
 			values.Add(
