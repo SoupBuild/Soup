@@ -3,6 +3,7 @@
 // </copyright>
 
 using Opal;
+using Opal.System;
 
 namespace Soup.Build.Discover
 {
@@ -23,9 +24,9 @@ namespace Soup.Build.Discover
 			// Check the default tools version
 			Log.HighPriority("FindNewestDotNet6RuntimeVersion: " + dotnetAppRefsPath.ToString());
 			var currentVersion = new SemanticVersion(0, 0, 0);
-			foreach (var child in System.IO.Directory.EnumerateDirectories(dotnetAppRefsPath.ToString()))
+			foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(dotnetAppRefsPath))
 			{
-				var name = new Path(child).GetFileName();
+				var name = child.Path.GetFileName();
 				Log.Info("CheckFile: " + name);
 
 				// Parse the version string

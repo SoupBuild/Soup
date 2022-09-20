@@ -34,6 +34,27 @@ namespace Soup.Build.Discover.UnitTests
 				"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
 
+			mockFileSystem.RegisterDirectoryChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
+				new List<Path>()
+				{
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"),
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"),
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"),
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"),
+				});
+
+			mockFileSystem.RegisterDirectoryChildren(
+				new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
+				new List<Path>()
+				{
+					new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"),
+				});
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
+				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.33.31629\r\n"))));
+
 			bool includePrerelease = false;
 			await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -57,7 +78,6 @@ namespace Soup.Build.Discover.UnitTests
 					"HIGH: FindNewestWindows10KitVersion: C:/Program Files (x86)/Windows Kits/10/",
 					"INFO: CheckFile: 10.0.19041.0",
 					"INFO: Creating directory C:/Users/Me/.soup/",
-
 				},
 				testListener.GetMessages());
 
@@ -67,6 +87,10 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
+					"GetDirectoryChildren: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
+					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
+					"GetDirectoryChildren: C:/Program Files (x86)/Windows Kits/10/include/",
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
@@ -160,6 +184,27 @@ namespace Soup.Build.Discover.UnitTests
 				"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\n");
 
+			mockFileSystem.RegisterDirectoryChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
+				new List<Path>()
+				{
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"),
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"),
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"),
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"),
+				});
+
+			mockFileSystem.RegisterDirectoryChildren(
+				new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
+				new List<Path>()
+				{
+					new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"),
+				});
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
+				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.34.31823\r\n"))));
+
 			bool includePrerelease = true;
 			await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -192,10 +237,13 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
+					"GetDirectoryChildren: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
+					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
+					"GetDirectoryChildren: C:/Program Files (x86)/Windows Kits/10/include/",
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
-
 				},
 				mockFileSystem.GetRequests());
 
@@ -340,6 +388,27 @@ namespace Soup.Build.Discover.UnitTests
 				"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
 
+			mockFileSystem.RegisterDirectoryChildren(
+				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
+				new List<Path>()
+				{
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"),
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"),
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"),
+					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"),
+				});
+
+			mockFileSystem.RegisterDirectoryChildren(
+				new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
+				new List<Path>()
+				{
+					new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"),
+				});
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt"),
+				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("14.33.31629\r\n"))));
+
 			bool includePrerelease = false;
 			await SwhereManager.DiscoverAsync(includePrerelease);
 
@@ -372,6 +441,10 @@ namespace Soup.Build.Discover.UnitTests
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
+					"GetDirectoryChildren: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
+					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
+					"GetDirectoryChildren: C:/Program Files (x86)/Windows Kits/10/include/",
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",

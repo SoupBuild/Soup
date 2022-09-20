@@ -3,6 +3,8 @@
 // </copyright>
 
 using Opal;
+using Opal.System;
+using System.Linq;
 
 namespace Soup.Build.Discover
 {
@@ -28,9 +30,9 @@ namespace Soup.Build.Discover
 			// Check the default tools version
 			Log.HighPriority("FindNewestWindows10KitVersion: " + windowsSDKInstallPath.ToString());
 			var currentVersion = new SemanticVersion(0, 0, 0);
-			foreach (var child in System.IO.Directory.EnumerateDirectories(windowsSDKIncludePath.ToString()))
+			foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(windowsSDKIncludePath))
 			{
-				var name = new Path(child).GetFileName();
+				var name = child.Path.GetFileName();
 				Log.Info("CheckFile: " + name);
 				var platformVersion = name.Substring(0, 3);
 				if (platformVersion == "10.")

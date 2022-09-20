@@ -78,7 +78,7 @@ namespace Opal.System
 			global::System.IO.Directory.CreateDirectory(path.ToString());
 		}
 
-		public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path)
+		public IReadOnlyList<DirectoryEntry> GetChildren(Path path)
 		{
 			var result = new List<DirectoryEntry>();
 			foreach (var directory in global::System.IO.Directory.EnumerateDirectories(path.ToString()))
@@ -96,6 +96,21 @@ namespace Opal.System
 				{
 					Path = new Path(file),
 					IsDirectory = false,
+				});
+			}
+
+			return result;
+		}
+
+		public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path)
+		{
+			var result = new List<DirectoryEntry>();
+			foreach (var directory in global::System.IO.Directory.EnumerateDirectories(path.ToString()))
+			{
+				result.Add(new DirectoryEntry()
+				{
+					Path = new Path(directory),
+					IsDirectory = true,
 				});
 			}
 
