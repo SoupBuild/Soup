@@ -42,7 +42,7 @@ namespace Soup.Build.Discover
 			Log.HighPriority("Using VS Installation: " + visualStudioInstallRoot.ToString());
 
 			// Use the default version
-			var visualCompilerVersion = FindDefaultVCToolsVersion(visualStudioInstallRoot);
+			var visualCompilerVersion = await FindDefaultVCToolsVersionAsync(visualStudioInstallRoot);
 			Log.HighPriority("Using VC Version: " + visualCompilerVersion);
 
 			// Calculate the final VC tools folder
@@ -116,24 +116,24 @@ namespace Soup.Build.Discover
 			}
 		}
 
-		private static string FindDefaultVCToolsVersion(
+		private static async Task<string> FindDefaultVCToolsVersionAsync(
 			Path visualStudioInstallRoot)
 		{
 			// Check the default tools version
 			var visualCompilerToolsDefaultVersionFile =
 				visualStudioInstallRoot + new Path("VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt");
-			if (!System.IO.File.Exists(visualCompilerToolsDefaultVersionFile.ToString()))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(visualCompilerToolsDefaultVersionFile))
 			{
 				Log.Error("VisualCompilerToolsDefaultVersionFile file does not exist: " + visualCompilerToolsDefaultVersionFile.ToString());
 				throw new HandledException();
 			}
 
 			// Read the entire file into a string
-			using (var file = System.IO.File.OpenRead(visualCompilerToolsDefaultVersionFile.ToString()))
-			using (var reader = new System.IO.StreamReader(file))
+			using (var file = LifetimeManager.Get<IFileSystem>().OpenRead(visualCompilerToolsDefaultVersionFile))
+			using (var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true))
 			{
 				// The first line is the version
-				var version = reader.ReadLine();
+				var version = await reader.ReadLineAsync();
 				if (version is null)
 				{
 					Log.Error("Failed to parse version from file.");

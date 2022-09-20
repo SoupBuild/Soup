@@ -6,6 +6,7 @@ namespace Opal.System
 {
 	using global::System;
 	using global::System.Collections.Generic;
+	using global::System.Linq;
 
 	/// <summary>
 	/// The mock file system
@@ -15,6 +16,7 @@ namespace Opal.System
 	{
 		private List<string> requests;
 		private Dictionary<Path, MockFile> files;
+		private Dictionary<Path, IReadOnlyList<Path>> directoryChildren;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref='MockFileSystem'/> class.
@@ -23,6 +25,7 @@ namespace Opal.System
 		{
 			this.requests = new List<string>();
 			this.files = new Dictionary<Path, MockFile>();
+			this.directoryChildren = new Dictionary<Path, IReadOnlyList<Path>>();
 		}
 
 		/// <summary>
@@ -57,6 +60,11 @@ namespace Opal.System
 			{
 				throw new InvalidOperationException($"Cannot find file: {path}");
 			}
+		}
+
+		public void RegisterDirectoryChildren(Path path, IReadOnlyList<Path> response)
+		{
+			this.directoryChildren.Add(path, response);
 		}
 
 		/// <summary>
@@ -201,12 +209,39 @@ namespace Opal.System
 		/// Get the children of a directory.
 		/// </summary>
 		/// <param name="path">The path.</param>
+		public IReadOnlyList<DirectoryEntry> GetChildren(Path path)
+		{
+			this.requests.Add($"GetChildren: {path}");
+
+			var result = new List<DirectoryEntry>();
+			return result;
+		}
+
+		/// <summary>
+		/// Get the children of a directory.
+		/// </summary>
+		/// <param name="path">The path.</param>
 		public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path)
 		{
 			this.requests.Add($"GetDirectoryChildren: {path}");
 
-			var result = new List<DirectoryEntry>();
-			return result;
+			if (this.directoryChildren.TryGetValue(path, out var children))
+			{
+				// Reset the existing content offset and return it.
+				var result = children.Select(value =>
+					new DirectoryEntry()
+					{
+						Path = value,
+						IsDirectory = true,
+					}).ToList();
+				return result;
+			}
+			else
+			{
+				var result = new List<DirectoryEntry>();
+				return result;
+			}
+
 		}
 
 		/// <summary>
