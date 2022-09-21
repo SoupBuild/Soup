@@ -68,6 +68,32 @@ namespace Soup.Build.Utilities
 			return document.Values.AddInlineTableWithSyntax(name, indentLevel);
 		}
 
+		public static SMLTable AddInlineTableWithSyntax(this SMLArray array, int indentLevel)
+		{
+			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
+
+			var newTable = CreateInlineTable(new List<string>()
+			{
+				indent,
+			});
+
+			var newItem = new SMLArrayValue(
+				new SMLValue(newTable),
+				new List<SMLToken>());
+
+			// Update the previous last item to have a comma delmiter
+			if (array.Values.Count > 0)
+			{
+				var lastItem = array.Values.Last();
+				lastItem.Delimiter.Add(NewlineToken);
+			}
+
+			// Add the model to the parent table model
+			array.Values.Add(newItem);
+
+			return newTable;
+		}
+
 		public static SMLTable AddTableWithSyntax(this SMLArray array, int indentLevel)
 		{
 			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
@@ -269,7 +295,13 @@ namespace Soup.Build.Utilities
 					},
 				});
 
-			var keyToken = new SMLToken(name);
+			var keyToken = new SMLToken(name)
+			{
+				LeadingTrivia = new List<string>()
+				{
+					indent,
+				},
+			};
 
 			// Update the previous last item to have a comma delmiter
 			if (values.Count > 0)
@@ -284,16 +316,13 @@ namespace Soup.Build.Utilities
 			return newTable;
 		}
 
-		private static SMLTable AddInlineTableWithSyntax(
-			this IDictionary<string, SMLTableValue> values,
-			string name,
-			int indentLevel)
+		private static SMLTable CreateInlineTable(List<string> leadingTrivia)
 		{
-			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
-
-			// Create a new table
 			var newTable = new SMLTable(
-				new SMLToken("{"),
+				new SMLToken("{")
+				{
+					LeadingTrivia = leadingTrivia,
+				},
 				new Dictionary<string, SMLTableValue>(),
 				new SMLToken("}")
 				{
@@ -303,6 +332,18 @@ namespace Soup.Build.Utilities
 						" ",
 					},
 				});
+			return newTable;
+		}
+
+		private static SMLTable AddInlineTableWithSyntax(
+			this IDictionary<string, SMLTableValue> values,
+			string name,
+			int indentLevel)
+		{
+			var indent = string.Concat(Enumerable.Repeat(Indent, indentLevel));
+
+			// Create a new table
+			var newTable = CreateInlineTable(new List<string>());
 
 			var keyToken = new SMLToken(name)
 			{
