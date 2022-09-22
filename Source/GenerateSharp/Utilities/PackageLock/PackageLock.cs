@@ -76,21 +76,21 @@ namespace Soup.Build.Utilities
 		public void EnsureClosure(string closure)
 		{
 			var closures = EnsureHasTable(_document, Property_Closures);
-			_ = EnsureHasTable(closures, closure);
+			_ = EnsureHasTable(closures, closure, 1);
 		}
 
 		public void AddProject(string closure, string language, string name, string version, string buildClosure)
 		{
 			var closures = EnsureHasTable(_document, Property_Closures);
-			var closureTable = EnsureHasTable(closures, closure);
-			var projectLanguageList = EnsureHasList(closureTable, language);
+			var closureTable = EnsureHasTable(closures, closure, 1);
+			var projectLanguageList = EnsureHasList(closureTable, language, 2);
 			
-			var projectTable = projectLanguageList.AddTableWithSyntax(0);
-			projectTable.AddItemWithSyntax(Property_Name, name, 1);
-			projectTable.AddItemWithSyntax(Property_Version, version, 1);
+			var projectTable = projectLanguageList.AddInlineTableWithSyntax(3);
+			projectTable.AddInlineItemWithSyntax(Property_Name, name);
+			projectTable.AddInlineItemWithSyntax(Property_Version, version);
 			if (buildClosure != null)
 			{
-				projectTable.AddItemWithSyntax(Property_Build, buildClosure, 1);
+				projectTable.AddInlineItemWithSyntax(Property_Build, buildClosure);
 			}
 		}
 
@@ -134,7 +134,7 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		private SMLTable EnsureHasTable(SMLTable table, string name)
+		private SMLTable EnsureHasTable(SMLTable table, string name, int indentLevel)
 		{
 			if (table.Values.ContainsKey(name))
 			{
@@ -148,11 +148,11 @@ namespace Soup.Build.Utilities
 			else
 			{
 				// Create a new table
-				return table.AddTableWithSyntax(name, 1);
+				return table.AddTableWithSyntax(name, indentLevel);
 			}
 		}
 
-		private SMLArray EnsureHasList(SMLTable table, string name)
+		private SMLArray EnsureHasList(SMLTable table, string name, int indentLevel)
 		{
 			if (table.Values.ContainsKey(name))
 			{
@@ -166,7 +166,7 @@ namespace Soup.Build.Utilities
 			else
 			{
 				// Create a new list
-				return table.AddArrayWithSyntax(name, 1);
+				return table.AddArrayWithSyntax(name, indentLevel);
 			}
 		}
 	}

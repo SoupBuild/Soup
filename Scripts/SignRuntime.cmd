@@ -1,4 +1,5 @@
 @echo off
+SETLOCAL
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..
 SET OutDir=%RootDir%\out

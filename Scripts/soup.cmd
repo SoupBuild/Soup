@@ -1,8 +1,10 @@
 @echo off
+SETLOCAL
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..
 SET OutDir=%RootDir%\out
 SET RunDir=%OutDir%\run
+
 REM - Use a copy of the final binary in case we are re-buiding itself
 robocopy %ScriptsDir%\Install\ %RunDir%\ /MIR /NJH /NJS /NDL > NUL
 robocopy %OutDir%\C++\Soup\0.21.1\txTMowfPh1V3rPmbvNBmBW9Z8Jg\bin\ %RunDir%\Soup\ /MIR /NJH /NJS /NDL > NUL

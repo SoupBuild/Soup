@@ -1,4 +1,5 @@
 @echo off
+SETLOCAL
 SET Flavor=%1
 SET ScriptsDir=%~dp0
 SET RootDir=%ScriptsDir%..\
