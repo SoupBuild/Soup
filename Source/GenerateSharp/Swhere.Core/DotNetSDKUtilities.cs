@@ -7,7 +7,7 @@ using Opal.System;
 
 namespace Soup.Build.Discover
 {
-	internal static class DotNetSDKUtilities
+	public static class DotNetSDKUtilities
 	{
 		public static (string Version, Path Path) FindDotNet6Refs()
 		{
@@ -29,10 +29,12 @@ namespace Soup.Build.Discover
 				var name = child.Path.GetFileName();
 				Log.Info("CheckFile: " + name);
 
-				// Parse the version string
-				var version = SemanticVersion.Parse(name);
-				if (version.Major == 6 && version > currentVersion)
-					currentVersion = version;
+				// Attempt to parse the version string
+				if (SemanticVersion.TryParse(name, out var version))
+				{
+					if (version.Major == 6 && version > currentVersion)
+						currentVersion = version;
+				}
 			}
 
 			if (currentVersion == new SemanticVersion(0, 0, 0))
