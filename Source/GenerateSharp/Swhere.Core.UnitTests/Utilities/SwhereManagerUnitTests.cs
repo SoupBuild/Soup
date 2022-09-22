@@ -11,6 +11,7 @@ using Xunit;
 
 namespace Soup.Build.Discover.UnitTests
 {
+	[Collection("Opal")]
 	public class SwhereManagerUnitTests
 	{
 		[Fact]

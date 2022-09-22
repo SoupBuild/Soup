@@ -10,7 +10,7 @@ using Opal.System;
 
 namespace Soup.Build.Discover
 {
-	internal static class VSWhereUtilities
+	public static class VSWhereUtilities
 	{
 		/// <summary>
 		/// Attempt to find Roslyn compiler installation 
