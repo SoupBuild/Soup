@@ -23,7 +23,7 @@ Closures: {
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0" }
 			{ Name: "Opal", Version: "0.5.0", Build: "Build0" }
 			{ Name: "reflex", Version: "1.0.1", Build: "Build0" }
-			{ Name: "Soup", Version: "./", Build: "Build0" }
+			{ Name: "Soup", Version: "../CLI", Build: "Build0" }
 			{ Name: "Soup.Core", Version: "../Core/", Build: "Build1" }
 			{ Name: "Soup.Test.Assert", Version: "0.3.0", Build: "Build0" }
 		]
