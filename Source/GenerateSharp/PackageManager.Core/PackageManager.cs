@@ -24,10 +24,17 @@ namespace Soup.Build.PackageManager
 		//// private static string SoupApiEndpoint => "https://localhost:7071";
 		private static string SoupApiEndpoint => "https://api.soupbuild.com";
 
+		private HttpClient _httpClient;
+
+		public PackageManager(HttpClient httpClient)
+		{
+			_httpClient = httpClient;
+		}
+
 		/// <summary>
 		/// Restore packages
 		/// </summary>
-		public static async Task RestorePackagesAsync(Path workingDirectory, bool forceRestore)
+		public async Task RestorePackagesAsync(Path workingDirectory, bool forceRestore)
 		{
 			var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 				new Path(".soup/packages/");
@@ -55,7 +62,7 @@ namespace Soup.Build.PackageManager
 						wasRestored = true;
 					}
 				}
-				
+
 				if (!wasRestored)
 				{
 					Log.Info("Discovering full closure");
@@ -83,6 +90,8 @@ namespace Soup.Build.PackageManager
 							}
 							else
 							{
+								if (package.Version == null)
+									throw new InvalidOperationException("Package lock closure must have version");
 								value = package.Version.ToString();
 							}
 
@@ -110,6 +119,8 @@ namespace Soup.Build.PackageManager
 								}
 								else
 								{
+									if (package.Version == null)
+										throw new InvalidOperationException("Package lock closure must have version");
 									value = package.Version.ToString();
 								}
 
@@ -143,7 +154,7 @@ namespace Soup.Build.PackageManager
 		/// <summary>
 		/// Install a package
 		/// </summary>
-		public static async Task InstallPackageReferenceAsync(Path workingDirectory, string packageReference)
+		public async Task InstallPackageReferenceAsync(Path workingDirectory, string packageReference)
 		{
 			var recipePath =
 				workingDirectory +
@@ -190,13 +201,16 @@ namespace Soup.Build.PackageManager
 				}
 
 				// Get the latest version if no version provided
-				if (targetPackageReference.IsLocal)
+				if (targetPackageReference.Version == null)
 				{
 					var packageModel = await GetPackageModelAsync(recipe.Language.Name, packageName);
 					var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
 					Log.HighPriority("Latest Version: " + latestVersion.ToString());
 					targetPackageReference = new PackageReference(null, packageModel.Name, latestVersion);
 				}
+
+				if (targetPackageReference.Version == null)
+					throw new InvalidOperationException("Target package version was null");
 
 				var closure = new Dictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>>();
 				var buildClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
@@ -231,7 +245,7 @@ namespace Soup.Build.PackageManager
 		/// <summary>
 		/// Publish a package
 		/// </summary>
-		public static async Task PublishPackageAsync(Path workingDirectory)
+		public async Task PublishPackageAsync(Path workingDirectory)
 		{
 			Log.Info($"Publish Project: {workingDirectory}");
 
@@ -256,89 +270,85 @@ namespace Soup.Build.PackageManager
 				var archivePath = stagingPath + new Path(recipe.Name + ".zip");
 
 				// Create the archive of the package
-				using (var writeArchiveFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
-				using (var zipArchive = new ZipArchive(writeArchiveFile.GetOutStream(), ZipArchiveMode.Create, false))
+				using (var zipArchive = LifetimeManager.Get<IZipManager>().OpenCreate(archivePath))
 				{
 					AddPackageFiles(workingDirectory, zipArchive);
 				}
 
 				// Authenticate the user
 				Log.Info("Request Authentication Token");
-				var accessToken = await AuthenticationManager.EnsureSignInAsync();
+				var accessToken = await LifetimeManager.Get<IAuthenticationManager>().EnsureSignInAsync();
 
 				// Publish the archive
 				Log.Info("Publish package");
-				using (var httpClient = new HttpClient())
+				var packageClient = new Api.Client.PackageClient(_httpClient)
 				{
-					var packageClient = new Api.Client.PackageClient(httpClient)
-					{
-						BaseUrl = SoupApiEndpoint,
-						BearerToken = accessToken,
-					};
+					BaseUrl = SoupApiEndpoint,
+					BearerToken = accessToken,
+				};
 
-					// Check if the package exists
-					bool packageExists = false;
+				// Check if the package exists
+				bool packageExists = false;
+				try
+				{
+					var package = await packageClient.GetPackageAsync(recipe.Language.Name, recipe.Name);
+					packageExists = true;
+				}
+				catch (Api.Client.ApiException ex)
+				{
+					if (ex.StatusCode == 404)
+					{
+						Log.Info("Package does not exist");
+						packageExists = false;
+					}
+					else
+					{
+						throw;
+					}
+				}
+
+				// Create the package if it does not exist
+				if (!packageExists)
+				{
+					Log.Info("Creating package");
+					var createPackageModel = new Api.Client.PackageCreateOrUpdateModel()
+					{
+						Description = string.Empty,
+					};
+					await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
+				}
+
+				var packageVersionClient = new Api.Client.PackageVersionClient(_httpClient)
+				{
+					BaseUrl = SoupApiEndpoint,
+					BearerToken = accessToken,
+				};
+
+				using (var readArchiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(archivePath))
+				{
 					try
 					{
-						var package = await packageClient.GetPackageAsync(recipe.Language.Name, recipe.Name);
-						packageExists = true;
+						await packageVersionClient.PublishPackageVersionAsync(
+							recipe.Language.Name,
+							recipe.Name,
+							recipe.Version.ToString(),
+							new Api.Client.FileParameter(readArchiveFile.GetInStream(), string.Empty, "application/zip"));
+
+						Log.Info("Package published");
 					}
 					catch (Api.Client.ApiException ex)
 					{
-						if (ex.StatusCode == 404)
+						if (ex.StatusCode == 409)
 						{
-							Log.Info("Package does not exist");
-							packageExists = false;
+							Log.Info("Package version already exists");
+						}
+						else if (ex.StatusCode == 403)
+						{
+							Log.Error("You do not have permission to edit this package");
 						}
 						else
 						{
 							throw;
-						}
-					}
-
-					// Create the package if it does not exist
-					if (!packageExists)
-					{
-						Log.Info("Creating package");
-						var createPackageModel = new Api.Client.PackageCreateOrUpdateModel()
-						{
-							Description = string.Empty,
-						};
-						await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
-					}
-
-					var packageVersionClient = new Api.Client.PackageVersionClient(httpClient)
-					{
-						BaseUrl = SoupApiEndpoint,
-						BearerToken = accessToken,
-					};
-
-					using (var readArchiveFile = LifetimeManager.Get<IFileSystem>().OpenRead(archivePath))
-					{
-						try
-						{
-							await packageVersionClient.PublishPackageVersionAsync(
-								recipe.Language.Name,
-								recipe.Name,
-								recipe.Version.ToString(),
-								new Api.Client.FileParameter(readArchiveFile.GetInStream(), string.Empty, "application/zip"));
-
-							Log.Info("Package published");
-						}
-						catch (Api.Client.ApiException ex)
-						{
-							if (ex.StatusCode == 409)
-							{
-								Log.Info("Package version already exists");
-							}
-							else if (ex.StatusCode == 403)
-							{
-								Log.Error("You do not have permission to edit this package");
-							}
-							else
-							{
-								throw;
-							}
 						}
 					}
 				}
@@ -356,16 +366,14 @@ namespace Soup.Build.PackageManager
 			}
 		}
 
-		private static async Task<Api.Client.PackageModel> GetPackageModelAsync(string languageName, string packageName)
+		private async Task<Api.Client.PackageModel> GetPackageModelAsync(string languageName, string packageName)
 		{
-			using (var httpClient = new HttpClient())
+			var client = new Api.Client.PackageClient(_httpClient)
 			{
-				var client = new Api.Client.PackageClient(httpClient)
-				{
-					BaseUrl = SoupApiEndpoint,
-				};
-				return await client.GetPackageAsync(languageName, packageName);
-			}
+				BaseUrl = SoupApiEndpoint,
+			};
+
+			return await client.GetPackageAsync(languageName, packageName);
 		}
 
 		private static void AddPackageFiles(Path workingDirectory, ZipArchive archive)
@@ -414,7 +422,7 @@ namespace Soup.Build.PackageManager
 		/// <summary>
 		/// Ensure a package version is downloaded
 		/// </summary>
-		private static async Task CheckRecursiveEnsurePackageDownloadedAsync(
+		private async Task CheckRecursiveEnsurePackageDownloadedAsync(
 			string languageName,
 			string packageName,
 			SemanticVersion packageVersion,
@@ -483,7 +491,7 @@ namespace Soup.Build.PackageManager
 		/// <summary>
 		/// Ensure a package version is downloaded
 		/// </summary>
-		private static async Task EnsurePackageDownloadedAsync(
+		private async Task EnsurePackageDownloadedAsync(
 			string languageName,
 			string packageName,
 			SemanticVersion packageVersion,
@@ -510,34 +518,32 @@ namespace Soup.Build.PackageManager
 				// Download the archive
 				Log.HighPriority("Downloading package");
 				var archivePath = stagingDirectory + new Path(packageName + ".zip");
-				using (var httpClient = new HttpClient())
+
+				var client = new Api.Client.PackageVersionClient(_httpClient)
 				{
-					var client = new Api.Client.PackageVersionClient(httpClient)
-					{
-						BaseUrl = SoupApiEndpoint,
-					};
+					BaseUrl = SoupApiEndpoint,
+				};
 
-					try
-					{
-						var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
+				try
+				{
+					var result = await client.DownloadPackageVersionAsync(languageName, packageName, packageVersion.ToString());
 
-						// Write the contents to disk, scope cleanup
-						using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
-						{
-							await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
-						}
+					// Write the contents to disk, scope cleanup
+					using (var archiveWriteFile = LifetimeManager.Get<IFileSystem>().OpenWrite(archivePath, true))
+					{
+						await result.Stream.CopyToAsync(archiveWriteFile.GetOutStream());
 					}
-					catch (Api.Client.ApiException ex)
+				}
+				catch (Api.Client.ApiException ex)
+				{
+					if (ex.StatusCode == 404)
 					{
-						if (ex.StatusCode == 404)
-						{
-							Log.HighPriority("Package Version Missing");
-							throw new HandledException();
-						}
-						else
-						{
-							throw;
-						}
+						Log.HighPriority("Package Version Missing");
+						throw new HandledException();
+					}
+					else
+					{
+						throw;
 					}
 				}
 
@@ -546,7 +552,7 @@ namespace Soup.Build.PackageManager
 				LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingVersionFolder);
 
 				// Unpack the contents of the archive
-				ZipFile.ExtractToDirectory(archivePath.ToString(), stagingVersionFolder.ToString());
+				LifetimeManager.Get<IZipManager>().ExtractToDirectory(archivePath, stagingVersionFolder);
 
 				// Delete the archive file
 				LifetimeManager.Get<IFileSystem>().DeleteFile(archivePath);
@@ -566,7 +572,7 @@ namespace Soup.Build.PackageManager
 		/// <summary>
 		/// Restore package lock
 		/// </summary>
-		static async Task RestorePackageLockAsync(
+		private async Task RestorePackageLockAsync(
 			Path packagesDirectory,
 			Path stagingDirectory,
 			PackageLock packageLock)
@@ -603,7 +609,7 @@ namespace Soup.Build.PackageManager
 		/// <summary>
 		/// Recursively restore all dependencies
 		/// </summary>
-		static async Task CheckRestoreRecursiveDependenciesAsync(
+		private async Task CheckRestoreRecursiveDependenciesAsync(
 			Path recipeDirectory,
 			Path packagesDirectory,
 			Path stagingDirectory,
@@ -703,6 +709,9 @@ namespace Soup.Build.PackageManager
 
 		private static PackageReference FillDefaultVersion(PackageReference package)
 		{
+			if (package.Version == null)
+				throw new ArgumentException("Package version was null");
+
 			// TODO: Discover the latest available version
 			// For now auto assume missing values are zero
 			if (package.Version.Minor is null)
@@ -722,13 +731,13 @@ namespace Soup.Build.PackageManager
 			else
 			{
 				return package;
-			}	
+			}
 		}
 
 		/// <summary>
 		/// Recursively restore all dependencies, assume that the closure has been updated correctly for current recipe
 		/// </summary>
-		static async Task RestoreRecursiveDependenciesAsync(
+		private async Task RestoreRecursiveDependenciesAsync(
 			Path recipeDirectory,
 			Recipe recipe,
 			Path packagesDirectory,
@@ -766,6 +775,9 @@ namespace Soup.Build.PackageManager
 						}
 						else
 						{
+							if (dependency.Version == null)
+								throw new ArgumentException("Local package version was null");
+
 							var language = dependency.Language != null ? dependency.Language : implicitLanguage;
 							await CheckRecursiveEnsurePackageDownloadedAsync(
 								language,

@@ -3,8 +3,10 @@
 // </copyright>
 
 using Opal;
+using Opal.System;
 using Soup.Build.Runtime;
 using System;
+using System.Text;
 
 namespace Soup.Build.Utilities
 {
@@ -21,7 +23,7 @@ namespace Soup.Build.Utilities
 			out IValueTable result)
 		{
 			// Verify the requested file exists
-			if (!System.IO.File.Exists(valueTableFile.ToString()))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(valueTableFile))
 			{
 				Log.Info("Value Table file does not exist");
 				result = new ValueTable();
@@ -29,21 +31,20 @@ namespace Soup.Build.Utilities
 			}
 
 			// Open the file to read from
-			using (var fileStream = System.IO.File.OpenRead(valueTableFile.ToString()))
-			using (var reader = new System.IO.BinaryReader(fileStream))
+			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(valueTableFile);
+			using var reader = new System.IO.BinaryReader(file.GetInStream(), Encoding.UTF8, true);
+
+			// Read the contents of the build state file
+			try
 			{
-				// Read the contents of the build state file
-				try
-				{
-					result = ValueTableReader.Deserialize(reader);
-					return true;
-				}
-				catch (Exception ex)
-				{
-					Log.Error($"Failed to parse value table: {ex.Message}");
-					result = new ValueTable();
-					return false;
-				}
+				result = ValueTableReader.Deserialize(reader);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Failed to parse value table: {ex.Message}");
+				result = new ValueTable();
+				return false;
 			}
 		}
 
@@ -57,19 +58,18 @@ namespace Soup.Build.Utilities
 			var targetFolder = valueTableFile.GetParent();
 
 			// Ensure the target directories exists
-			if (!System.IO.Directory.Exists(targetFolder.ToString()))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(targetFolder))
 			{
 				Log.Info("Create Directory: " + targetFolder.ToString());
-				System.IO.Directory.CreateDirectory(targetFolder.ToString());
+				LifetimeManager.Get<IFileSystem>().CreateDirectory2(targetFolder);
 			}
 
 			// Open the file to write to
-			using (var fileStream = System.IO.File.Open(valueTableFile.ToString(), System.IO.FileMode.Create, System.IO.FileAccess.Write))
-			using (var writer = new System.IO.BinaryWriter(fileStream))
-			{
-				// Write the build state to the file stream
-				ValueTableWriter.Serialize(state, writer);
-			}
+			using var fileStream = System.IO.File.Open(valueTableFile.ToString(), System.IO.FileMode.Create, System.IO.FileAccess.Write);
+			using var writer = new System.IO.BinaryWriter(fileStream);
+
+			// Write the build state to the file stream
+			ValueTableWriter.Serialize(state, writer);
 		}
 	}
 }

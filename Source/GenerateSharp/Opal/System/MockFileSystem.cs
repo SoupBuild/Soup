@@ -95,7 +95,7 @@ namespace Opal.System
 		{
 			this.requests.Add($"Exists: {path}");
 
-			return this.files.ContainsKey(path);
+			return this.files.ContainsKey(path) || this.directoryChildren.Keys.Contains(path);
 		}
 
 		/// <summary>

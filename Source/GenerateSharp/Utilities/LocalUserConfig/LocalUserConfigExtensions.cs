@@ -30,23 +30,20 @@ namespace Soup.Build.Utilities
 
 			// Open the file to read from
 			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(localUserConfigFile);
+			using var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true);
 
-			// Open the file to read from
-			using (var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true))
+			// Read the contents of the local user config file
+			try
 			{
-				// Read the contents of the local user config file
-				try
-				{
-					var result = SMLManager.Deserialize(
-						await reader.ReadToEndAsync());
-					return (true, new LocalUserConfig(result));
-				}
-				catch (Exception ex)
-				{
-					Log.Error("Deserialize Threw: " + ex.Message);
-					Log.Info("Failed to parse local user config.");
-					return (false, new LocalUserConfig());
-				}
+				var result = SMLManager.Deserialize(
+					await reader.ReadToEndAsync());
+				return (true, new LocalUserConfig(result));
+			}
+			catch (Exception ex)
+			{
+				Log.Error("Deserialize Threw: " + ex.Message);
+				Log.Info("Failed to parse local user config.");
+				return (false, new LocalUserConfig());
 			}
 		}
 

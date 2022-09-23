@@ -7,10 +7,9 @@ namespace Soup.Build.PackageManager
 	using System.Linq;
 	using System.Threading.Tasks;
 	using Microsoft.Identity.Client;
-	using Microsoft.Identity.Client.Extensibility;
 	using Opal;
 
-	internal class AuthenticationManager
+	internal class AuthenticationManager : IAuthenticationManager
 	{
 		private static readonly string Tenant = $"soupbuild.com";
 		private static readonly string AzureAdB2CHostname = $"soupbuild.b2clogin.com";
@@ -30,7 +29,7 @@ namespace Soup.Build.PackageManager
 		/// Ensure the user is logged in
 		/// </summary>
 		/// <returns>The access token</returns>
-		public static async Task<string> EnsureSignInAsync()
+		public async Task<string> EnsureSignInAsync()
 		{
 			IPublicClientApplication publicClientApp = PublicClientApplicationBuilder.Create(ClientId)
 				.WithB2CAuthority(SignUpSignInAuthority)

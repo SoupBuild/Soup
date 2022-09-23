@@ -3,8 +3,7 @@
 // </copyright>
 
 using Opal;
-using Soup.Build.Runtime;
-using Soup.Build.Utilities;
+using Opal.System;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ namespace Soup.Build.Generate
 			IList<Path> pathList)
 		{
 			// Verify the requested file exists
-			if (!System.IO.File.Exists(pathListFile.ToString()))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(pathListFile))
 			{
 				Log.Info("Path list file does not exist");
 				return false;
