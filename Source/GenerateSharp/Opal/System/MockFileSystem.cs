@@ -232,7 +232,7 @@ namespace Opal.System
 					new DirectoryEntry()
 					{
 						Path = value,
-						IsDirectory = true,
+						IsDirectory = !value.HasFileName,
 					}).ToList();
 				return result;
 			}

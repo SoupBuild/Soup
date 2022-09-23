@@ -8,6 +8,7 @@ using Opal.System;
 using Soup.Build.Api.Client;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -780,6 +781,13 @@ Dependencies: {
 				new Path("C:/Users/Me/.soup/packages/.staging/MyPackage.zip"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("ZIP_FILE_CONTENT"))));
 
+			mockFileSystem.RegisterDirectoryChildren(
+				new Path("C:/Root/MyPackage/"),
+				new List<Path>()
+				{
+					new Path("C:/Root/MyPackage/Recipe.sml"),
+				});
+
 			// Setup the mock authentication manager
 			var mockAuthenticationManager = new Mock<IAuthenticationManager>();
 			using var scopedAuthenticationManager = new ScopedSingleton<IAuthenticationManager>(mockAuthenticationManager.Object);
@@ -787,6 +795,10 @@ Dependencies: {
 			// Setup the mock zip manager
 			var mockZipManager = new Mock<IZipManager>();
 			using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
+
+			// Create mock archive
+			var mockZipArchive = new Mock<IZipArchive>();
+			mockZipManager.Setup(zip => zip.OpenCreate(It.IsAny<Path>())).Returns(mockZipArchive.Object);
 
 			// Mock out the http
 			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
@@ -852,6 +864,8 @@ Dependencies: {
 
 			// Verify zip requests
 			mockZipManager.Verify(zip => zip.OpenCreate(new Path("C:/Users/Me/.soup/packages/.staging/MyPackage.zip")), Times.Once());
+			mockZipArchive.Verify(zip => zip.CreateEntryFromFile(new Path("C:/Root/MyPackage/Recipe.sml"), "Recipe.sml"), Times.Once());
+			mockZipArchive.Verify(zip => zip.Dispose(), Times.Once());
 			mockZipManager.VerifyNoOtherCalls();
 
 			// Verify http requests

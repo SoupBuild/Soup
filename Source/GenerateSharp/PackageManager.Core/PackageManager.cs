@@ -6,7 +6,6 @@ namespace Soup.Build.PackageManager
 {
 	using System;
 	using System.Collections.Generic;
-	using System.IO.Compression;
 	using System.Linq;
 	using System.Net.Http;
 	using System.Threading.Tasks;
@@ -376,7 +375,7 @@ namespace Soup.Build.PackageManager
 			return await client.GetPackageAsync(languageName, packageName);
 		}
 
-		private static void AddPackageFiles(Path workingDirectory, ZipArchive archive)
+		private static void AddPackageFiles(Path workingDirectory, IZipArchive archive)
 		{
 			var ignoreFolderList = new string[]
 			{
@@ -397,12 +396,12 @@ namespace Soup.Build.PackageManager
 				{
 					var relativePath = child.Path.GetRelativeTo(workingDirectory);
 					var relativeName = relativePath.ToString().Substring(2);
-					var fileEentry = archive.CreateEntryFromFile(child.Path.ToString(), relativeName);
+					archive.CreateEntryFromFile(child.Path, relativeName);
 				}
 			}
 		}
 
-		private static void AddAllFilesRecursive(Path directory, Path workingDirectory, ZipArchive archive)
+		private static void AddAllFilesRecursive(Path directory, Path workingDirectory, IZipArchive archive)
 		{
 			foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(directory))
 			{
@@ -414,7 +413,7 @@ namespace Soup.Build.PackageManager
 				{
 					var relativePath = child.Path.GetRelativeTo(workingDirectory);
 					var relativeName = relativePath.ToString().Substring(2);
-					var fileEentry = archive.CreateEntryFromFile(child.Path.ToString(), relativeName);
+					archive.CreateEntryFromFile(child.Path, relativeName);
 				}
 			}
 		}

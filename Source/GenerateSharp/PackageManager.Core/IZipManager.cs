@@ -3,7 +3,6 @@
 // </copyright>
 
 using Opal;
-using System.IO.Compression;
 
 namespace Soup.Build.PackageManager
 {
@@ -15,6 +14,6 @@ namespace Soup.Build.PackageManager
 	{
 		public void ExtractToDirectory(Path sourceArchiveFileName, Path destinationDirectoryName);
 
-		public ZipArchive OpenCreate(Path archivePath);
+		public IZipArchive OpenCreate(Path archivePath);
 	}
 }

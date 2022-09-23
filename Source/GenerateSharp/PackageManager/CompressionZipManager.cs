@@ -1,4 +1,4 @@
-﻿// <copyright file="ZipManager.cs" company="Soup">
+﻿// <copyright file="CompressionZipManager.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright
 
@@ -7,16 +7,17 @@ using System.IO.Compression;
 
 namespace Soup.Build.PackageManager
 {
-	internal class ZipManager : IZipManager
+	internal class CompressionZipManager : IZipManager
 	{
 		public void ExtractToDirectory(Path sourceArchiveFileName, Path destinationDirectoryName)
 		{
 			ZipFile.ExtractToDirectory(sourceArchiveFileName.ToString(), destinationDirectoryName.ToString());
 		}
 
-		public ZipArchive OpenCreate(Path archivePath)
+		public IZipArchive OpenCreate(Path archivePath)
 		{
-			return ZipFile.Open(archivePath.ToString(), ZipArchiveMode.Create);
+			return new CompressionZipArchive(
+				ZipFile.Open(archivePath.ToString(), ZipArchiveMode.Create));
 		}
 	}
 }
