@@ -25,6 +25,7 @@ namespace Soup.Build.PackageManager
 				Log.RegisterListener(new ConsoleTraceListener("", new EventTypeFilter(traceFlags), false, false));
 				LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
 				LifetimeManager.RegisterSingleton<IAuthenticationManager, AuthenticationManager>();
+				LifetimeManager.RegisterSingleton<IZipManager, CompressionZipManager>();
 
 				if (args.Length < 2)
 				{

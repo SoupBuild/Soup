@@ -22,14 +22,14 @@ namespace Soup.Build.Discover.UnitTests
 			var mockFileSystem = new MockFileSystem();
 			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
-				new List<Path>()
+				new List<DirectoryEntry>()
 				{
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"),
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
 				});
 
 			var result = DotNetSDKUtilities.FindDotNet6Refs();
@@ -53,7 +53,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetDirectoryChildren: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 				},
 				mockFileSystem.GetRequests());
 		}
@@ -68,15 +68,15 @@ namespace Soup.Build.Discover.UnitTests
 			var mockFileSystem = new MockFileSystem();
 			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
-				new List<Path>()
+				new List<DirectoryEntry>()
 				{
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.0-rc.1.22426.10"),
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.0-rc.1.22426.10"), IsDirectory = true, },
 				});
 
 			var result = DotNetSDKUtilities.FindDotNet6Refs();
@@ -101,7 +101,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetDirectoryChildren: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 				},
 				mockFileSystem.GetRequests());
 		}

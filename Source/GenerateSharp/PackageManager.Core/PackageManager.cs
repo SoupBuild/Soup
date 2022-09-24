@@ -382,7 +382,7 @@ namespace Soup.Build.PackageManager
 				"out",
 				".git",
 			};
-			foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(workingDirectory))
+			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildren(workingDirectory))
 			{
 				if (child.IsDirectory)
 				{
@@ -403,7 +403,7 @@ namespace Soup.Build.PackageManager
 
 		private static void AddAllFilesRecursive(Path directory, Path workingDirectory, IZipArchive archive)
 		{
-			foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(directory))
+			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildren(directory))
 			{
 				if (child.IsDirectory)
 				{

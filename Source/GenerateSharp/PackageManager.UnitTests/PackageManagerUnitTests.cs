@@ -419,12 +419,12 @@ Closures: {
 			var mockFileSystem = new MockFileSystem();
 			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Users/Me/.soup/packages/C++/Package1/1.2.4/"),
-				new List<Path>());
-			mockFileSystem.RegisterDirectoryChildren(
+				new List<DirectoryEntry>());
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Users/Me/.soup/packages/C++/Package2/3.2.1/"),
-				new List<Path>());
+				new List<DirectoryEntry>());
 
 			// Create the original file
 			var original =
@@ -781,11 +781,15 @@ Dependencies: {
 				new Path("C:/Users/Me/.soup/packages/.staging/MyPackage.zip"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes("ZIP_FILE_CONTENT"))));
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Root/MyPackage/"),
-				new List<Path>()
+				new List<DirectoryEntry>()
 				{
-					new Path("C:/Root/MyPackage/Recipe.sml"),
+					new DirectoryEntry()
+					{
+						Path = new Path("C:/Root/MyPackage/Recipe.sml"),
+						IsDirectory = false,
+					},
 				});
 
 			// Setup the mock authentication manager
@@ -852,7 +856,7 @@ Dependencies: {
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
-					"GetDirectoryChildren: C:/Root/MyPackage/",
+					"GetChildren: C:/Root/MyPackage/",
 					"OpenRead: C:/Users/Me/.soup/packages/.staging/MyPackage.zip",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
 				},
