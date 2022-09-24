@@ -8,7 +8,7 @@ Interface: "Module.cpp"
 
 Dependencies: {
 	Runtime: [
-		"Detours@4.0.4"
+		"Detours@4.0.7"
 		"../Shared/"
 		"Opal@0.5.0"
 	]

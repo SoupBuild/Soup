@@ -17,7 +17,7 @@ Closures: {
 		C++: [
 			{ Name: "copy", Version: "../../Tools/Copy/", Build: "Build0" }
 			{ Name: "CryptoPP", Version: "1.1.0", Build: "Build0" }
-			{ Name: "Detours", Version: "4.0.4", Build: "Build0" }
+			{ Name: "Detours", Version: "4.0.7", Build: "Build0" }
 			{ Name: "mkdir", Version: "../../Tools/Mkdir/", Build: "Build0" }
 			{ Name: "Monitor.Host", Version: "../../Monitor/Host/", Build: "Build0" }
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0" }

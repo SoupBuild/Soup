@@ -1,5 +1,6 @@
 ﻿
 using Opal;
+using Opal.System;
 using System.Threading.Tasks;
 
 namespace Soup.Build.Generate
@@ -10,6 +11,7 @@ namespace Soup.Build.Generate
 		{
 			// Register the runtime services
 			Log.RegisterListener(new ConsoleTraceListener());
+			LifetimeManager.RegisterSingleton<IFileSystem, RuntimeFileSystem>();
 
 			if (args.Length != 1)
 			{
