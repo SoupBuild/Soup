@@ -60,8 +60,8 @@ jobs:
       run: soup build ./Soup/Samples/Cpp/ParseJsonFile/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build Cpp StaticLibrary
       run: soup build ./Soup/Samples/Cpp/StaticLibrary/Application/ -flavor ${{matrix.config}} -v:d
-    - name: Soup Build Cpp WindowsProject
-      run: soup build ./Soup/Samples/Cpp/WindowsProject/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Build Cpp WindowsApplication
+      run: soup build ./Soup/Samples/Cpp/WindowsApplication/ -flavor ${{matrix.config}} -v:d
 
     - name: Soup Restore CSharp BuildExtension
       run: soup restore ./Soup/Samples/CSharp/BuildExtension/Executable/
