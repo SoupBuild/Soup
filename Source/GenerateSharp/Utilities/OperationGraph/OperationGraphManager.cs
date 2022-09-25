@@ -3,8 +3,10 @@
 // </copyright>
 
 using Opal;
+using Opal.System;
 using Soup.Build.Runtime;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Soup.Build.Utilities
 {
@@ -22,7 +24,7 @@ namespace Soup.Build.Utilities
 			out OperationGraph result)
 		{
 			// Verify the requested file exists
-			if (!System.IO.File.Exists(operationGraphFile.ToString()))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(operationGraphFile))
 			{
 				Log.Info("Operation graph file does not exist");
 				result = new OperationGraph();
@@ -30,45 +32,44 @@ namespace Soup.Build.Utilities
 			}
 
 			// Open the file to read from
-			using (var fileStream = System.IO.File.OpenRead(operationGraphFile.ToString()))
-			using (var reader = new System.IO.BinaryReader(fileStream))
+			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(operationGraphFile);
+			using var reader = new System.IO.BinaryReader(file.GetInStream(), Encoding.UTF8, true);
+
+			// Read the contents of the build state file
+			try
 			{
-				// Read the contents of the build state file
-				try
+				var loadedResult = OperationGraphReader.Deserialize(reader);
+
+				// Map up the incoming file ids to the active file system state ids
+				var activeFileIdMap = new Dictionary<FileId, FileId>();
+				for (var i = 0; i < loadedResult.GetReferencedFiles().Count; i++)
 				{
-					var loadedResult = OperationGraphReader.Deserialize(reader);
+					var fileReference = loadedResult.GetReferencedFiles()[i];
+					var activeFileId = fileSystemState.ToFileId(fileReference.Path);
+					activeFileIdMap.Add(fileReference.FileId, activeFileId);
 
-					// Map up the incoming file ids to the active file system state ids
-					var activeFileIdMap = new Dictionary<FileId, FileId>();
-					for (var i = 0; i < loadedResult.GetReferencedFiles().Count; i++)
-					{
-						var fileReference = loadedResult.GetReferencedFiles()[i];
-						var activeFileId = fileSystemState.ToFileId(fileReference.Path);
-						activeFileIdMap.Add(fileReference.FileId, activeFileId);
-
-						// Update the referenced id
-						fileReference.FileId = activeFileId;
-					}
-
-					// Update all of the operations
-					foreach (var operationReference in loadedResult.GetOperations())
-					{
-						var operation = operationReference.Value;
-						UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
-						UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
-						UpdateFileIds(operation.ObservedInput, activeFileIdMap);
-						UpdateFileIds(operation.ObservedOutput, activeFileIdMap);
-					}
-
-					result = loadedResult;
-					return true;
+					// Update the referenced id
+					fileReference.FileId = activeFileId;
 				}
-				catch
+
+				// Update all of the operations
+				foreach (var operationReference in loadedResult.GetOperations())
 				{
-					Log.Error("Failed to parse operation graph");
-					result = new OperationGraph();
-					return false;
+					var operation = operationReference.Value;
+					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
+					UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
+					UpdateFileIds(operation.ObservedInput, activeFileIdMap);
+					UpdateFileIds(operation.ObservedOutput, activeFileIdMap);
 				}
+
+				result = loadedResult;
+				return true;
+			}
+			catch
+			{
+				Log.Error("Failed to parse operation graph");
+				result = new OperationGraph();
+				return false;
 			}
 		}
 
@@ -104,19 +105,18 @@ namespace Soup.Build.Utilities
 			state.SetReferencedFiles(referencedFiles);
 
 			// Ensure the target directories exists
-			if (!System.IO.Directory.Exists(targetFolder.ToString()))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(targetFolder))
 			{
 				Log.Info("Create Directory: " + targetFolder.ToString());
-				System.IO.Directory.CreateDirectory(targetFolder.ToString());
+				LifetimeManager.Get<IFileSystem>().CreateDirectory2(targetFolder);
 			}
 
 			// Open the file to write to
-			using (var fileStream = System.IO.File.Open(operationGraphFile.ToString(), System.IO.FileMode.Create, System.IO.FileAccess.Write))
-			using (var writer = new System.IO.BinaryWriter(fileStream))
-			{
-				// Write the build state to the file stream
-				OperationGraphWriter.Serialize(state, writer);
-			}
+			using var fileStream = System.IO.File.Open(operationGraphFile.ToString(), System.IO.FileMode.Create, System.IO.FileAccess.Write);
+			using var writer = new System.IO.BinaryWriter(fileStream);
+
+			// Write the build state to the file stream
+			OperationGraphWriter.Serialize(state, writer);
 		}
 
 		private static void UpdateFileIds(IList<FileId> fileIds, IDictionary<FileId, FileId> activeFileIdMap)

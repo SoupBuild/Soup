@@ -79,7 +79,7 @@ namespace Soup.Build.Utilities
 			_ = EnsureHasTable(closures, closure, 1);
 		}
 
-		public void AddProject(string closure, string language, string name, string version, string buildClosure)
+		public void AddProject(string closure, string language, string name, string version, string? buildClosure)
 		{
 			var closures = EnsureHasTable(_document, Property_Closures);
 			var closureTable = EnsureHasTable(closures, closure, 1);

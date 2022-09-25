@@ -21,30 +21,29 @@ namespace Soup.Build.Utilities
 		{
 			// Verify the requested file exists
 			Log.Diag("Load Recipe: " + recipeFile.ToString());
-			if (!System.IO.File.Exists(recipeFile.ToString()))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(recipeFile))
 			{
 				Log.Info("Recipe file does not exist.");
 				return (false, new Recipe());
 			}
 
 			// Open the file to read from
-			using (var fileStream = System.IO.File.OpenRead(recipeFile.ToString()))
-			using (var reader = new System.IO.StreamReader(fileStream))
-			{
-				// Read the contents of the recipe file
-				try
-				{
-					var content = await reader.ReadToEndAsync();
-					var result = SMLManager.Deserialize(content);
+			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(recipeFile);
+			using var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true);
 
-					return (true, new Recipe(result));
-				}
-				catch (Exception ex)
-				{
-					Log.Error($"Deserialize Threw: {ex.Message}");
-					Log.Info("Failed to parse Recipe.");
-					return (false, new Recipe());
-				}
+			// Read the contents of the recipe file
+			try
+			{
+				var content = await reader.ReadToEndAsync();
+				var result = SMLManager.Deserialize(content);
+
+				return (true, new Recipe(result));
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Deserialize Threw: {ex.Message}");
+				Log.Info("Failed to parse Recipe.");
+				return (false, new Recipe());
 			}
 		}
 

@@ -21,37 +21,36 @@ namespace Soup.Build.Utilities
 		{
 			// Verify the requested file exists
 			Log.Diag("Load Package Lock: " + packageLockFile.ToString());
-			if (!System.IO.File.Exists(packageLockFile.ToString()))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(packageLockFile))
 			{
 				Log.Info("Package Lock file does not exist.");
 				return (false, new PackageLock());
 			}
 
 			// Open the file to read from
-			using (var fileStream = System.IO.File.OpenRead(packageLockFile.ToString()))
-			using (var reader = new System.IO.StreamReader(fileStream))
+			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(packageLockFile);
+			using var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true);
+
+			// Read the contents of the recipe file
+			try
 			{
-				// Read the contents of the recipe file
-				try
-				{
-					var result = SMLManager.Deserialize(
-						await reader.ReadToEndAsync());
+				var result = SMLManager.Deserialize(
+					await reader.ReadToEndAsync());
 
-					var packageLock = new PackageLock(result);
-					if (!packageLock.HasVersion() || packageLock.GetVersion() != 2)
-					{
-						Log.Info("Package Lock version is incorrect.");
-						return (false, new PackageLock());
-					}
-
-					return (true, packageLock);
-				}
-				catch (Exception ex)
+				var packageLock = new PackageLock(result);
+				if (!packageLock.HasVersion() || packageLock.GetVersion() != 2)
 				{
-					Log.Error($"Deserialize Threw: {ex.Message}");
-					Log.Info("Failed to parse Package Lock.");
+					Log.Info("Package Lock version is incorrect.");
 					return (false, new PackageLock());
 				}
+
+				return (true, packageLock);
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Deserialize Threw: {ex.Message}");
+				Log.Info("Failed to parse Package Lock.");
+				return (false, new PackageLock());
 			}
 		}
 

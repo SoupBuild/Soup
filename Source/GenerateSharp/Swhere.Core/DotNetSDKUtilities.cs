@@ -24,7 +24,7 @@ namespace Soup.Build.Discover
 			// Check the default tools version
 			Log.HighPriority("FindNewestDotNet6RuntimeVersion: " + dotnetAppRefsPath.ToString());
 			var currentVersion = new SemanticVersion(0, 0, 0);
-			foreach (var child in LifetimeManager.Get<IFileSystem>().GetDirectoryChildren(dotnetAppRefsPath))
+			foreach (var child in LifetimeManager.Get<IFileSystem>().GetChildDirectories(dotnetAppRefsPath))
 			{
 				var name = child.Path.GetFileName();
 				Log.Info("CheckFile: " + name);

@@ -56,7 +56,7 @@ namespace Soup.Build
 			Path workingDirectory,
 			Path directory)
 		{
-			if (directory.HasFileName())
+			if (directory.HasFileName)
 				throw new ArgumentException("Cannot create a directory with a filename.");
 
 			var title = $"MakeDir [{directory}]";
@@ -93,7 +93,7 @@ namespace Soup.Build
 			Path destination,
 			string content)
 		{
-			if (!destination.HasFileName())
+			if (!destination.HasFileName)
 				throw new ArgumentException("Cannot create a file with from a directory.");
 
 			var title = $"WriteFile [{destination}]";

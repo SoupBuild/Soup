@@ -35,21 +35,21 @@ namespace Soup.Build.Discover.UnitTests
 				"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
-				new List<Path>()
+				new List<DirectoryEntry>()
 				{
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"),
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
 				});
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
-				new List<Path>()
+				new List<DirectoryEntry>()
 				{
-					new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"),
+					new DirectoryEntry() { Path = new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"), IsDirectory = true, },
 				});
 
 			mockFileSystem.CreateMockFile(
@@ -88,10 +88,10 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"GetDirectoryChildren: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
-					"GetDirectoryChildren: C:/Program Files (x86)/Windows Kits/10/include/",
+					"GetChildDirectories: C:/Program Files (x86)/Windows Kits/10/include/",
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
@@ -185,21 +185,21 @@ namespace Soup.Build.Discover.UnitTests
 				"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -prerelease",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\n");
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
-				new List<Path>()
+				new List<DirectoryEntry>()
 				{
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"),
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
 				});
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
-				new List<Path>()
+				new List<DirectoryEntry>()
 				{
-					new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"),
+					new DirectoryEntry() { Path = new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"), IsDirectory = true, },
 				});
 
 			mockFileSystem.CreateMockFile(
@@ -238,10 +238,10 @@ namespace Soup.Build.Discover.UnitTests
 				{
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"GetDirectoryChildren: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
-					"GetDirectoryChildren: C:/Program Files (x86)/Windows Kits/10/include/",
+					"GetChildDirectories: C:/Program Files (x86)/Windows Kits/10/include/",
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",
@@ -389,21 +389,21 @@ namespace Soup.Build.Discover.UnitTests
 				"CreateProcess: 2 [./] C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath",
 				"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\n");
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/"),
-				new List<Path>()
+				new List<DirectoryEntry>()
 				{
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"),
-					new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"),
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.7"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.8"), IsDirectory = true, },
+					new DirectoryEntry() { Path = new Path("C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/6.0.9"), IsDirectory = true, },
 				});
 
-			mockFileSystem.RegisterDirectoryChildren(
+			mockFileSystem.RegisterChildren(
 				new Path("C:/Program Files (x86)/Windows Kits/10/include/"),
-				new List<Path>()
+				new List<DirectoryEntry>()
 				{
-					new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"),
+					new DirectoryEntry() { Path = new Path("C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0"), IsDirectory = true, },
 				});
 
 			mockFileSystem.CreateMockFile(
@@ -442,10 +442,10 @@ namespace Soup.Build.Discover.UnitTests
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"GetDirectoryChildren: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
+					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
 					"OpenRead: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
-					"GetDirectoryChildren: C:/Program Files (x86)/Windows Kits/10/include/",
+					"GetChildDirectories: C:/Program Files (x86)/Windows Kits/10/include/",
 					"Exists: C:/Users/Me/.soup/",
 					"CreateDirectory: C:/Users/Me/.soup/",
 					"OpenWriteTruncate: C:/Users/Me/.soup/LocalUserConfig.sml",

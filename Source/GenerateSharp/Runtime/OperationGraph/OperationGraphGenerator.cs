@@ -116,7 +116,7 @@ namespace Soup.Build.Runtime
 				foreach (var file in operationInfo.DeclaredOutput)
 				{
 					var filePath = this.fileSystemState.GetFilePath(file);
-					if (filePath.HasFileName())
+					if (filePath.HasFileName)
 					{
 						AddOutputFileOperations(file).Add(operationInfo);
 					}

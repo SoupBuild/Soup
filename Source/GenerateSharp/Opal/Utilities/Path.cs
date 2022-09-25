@@ -110,7 +110,7 @@ namespace Opal
             var resultDirectories = DecomposeDirectoriesString(lhs.GetDirectories());
 
             // Convert the left hand side filename to a directory
-            if (lhs.HasFileName())
+            if (lhs.HasFileName)
             {
                 resultDirectories.Add(lhs.GetFileName());
             }
@@ -150,7 +150,7 @@ namespace Opal
 
             // If there is a filename then return the directory
             // Otherwise return one less directory
-            if (this.HasFileName())
+            if (this.HasFileName)
             {
                 // Pass along the path minus the filename
                 result.value = this.value.Substring(0, this.fileNameStartLocation);
@@ -191,10 +191,7 @@ namespace Opal
         /// <summary>
         /// Gets a value indicating whether the path has a file name.
         /// </summary>
-        public bool HasFileName()
-        {
-            return this.fileNameStartLocation < this.value.Length;
-        }
+        public bool HasFileName => this.fileNameStartLocation < this.value.Length;
 
         /// <summary>
         /// Gets the file name.
@@ -210,10 +207,7 @@ namespace Opal
         /// <summary>
         /// Gets a value indicating whether the file name has a stem.
         /// </summary>
-        public bool HasFileStem()
-        {
-            return !string.IsNullOrEmpty(this.GetFileStem());
-        }
+        public bool HasFileStem => !string.IsNullOrEmpty(this.GetFileStem());
 
         /// <summary>
         /// Gets the file name minus the extension.
@@ -237,10 +231,7 @@ namespace Opal
         /// <summary>
         /// Gets a value indicating whether the file name has an extension.
         /// </summary>
-        public bool HasFileExtension()
-        {
-            return !string.IsNullOrEmpty(this.GetFileExtension());
-        }
+        public bool HasFileExtension => !string.IsNullOrEmpty(this.GetFileExtension());
 
         /// <summary>
         /// Gets the file extension.
@@ -299,7 +290,7 @@ namespace Opal
 
             // Force the base filenames as directories
             var baseDirectories = DecomposeDirectoriesString(basePath.GetDirectories());
-            if (basePath.HasFileName())
+            if (basePath.HasFileName)
             {
                 baseDirectories.Add(basePath.GetFileName());
             }

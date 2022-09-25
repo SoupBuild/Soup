@@ -4,17 +4,15 @@
 
 namespace Soup.Build.PackageManager
 {
-	using System;
 	using System.Linq;
-	using System.Text;
 	using System.Threading.Tasks;
 	using Microsoft.Identity.Client;
 	using Opal;
 
-	internal class AuthenticationManager
+	internal class AuthenticationManager : IAuthenticationManager
 	{
 		private static readonly string Tenant = $"soupbuild.com";
-		private static readonly string AzureAdB2CHostname = $"login.soupbuild.com";
+		private static readonly string AzureAdB2CHostname = $"soupbuild.b2clogin.com";
 		private static readonly string ClientId = "29b9e45c-332b-4f93-a41f-af525dee4730";
 		private static readonly string SignUpSignInPolicyId = "B2C_1_SignUp_SignIn";
 		private static readonly string SoupApiScope = "/ba178231-c318-435d-881a-25f9e00df20a/soup_build_api";
@@ -31,7 +29,7 @@ namespace Soup.Build.PackageManager
 		/// Ensure the user is logged in
 		/// </summary>
 		/// <returns>The access token</returns>
-		public static async Task<string> EnsureSignInAsync()
+		public async Task<string> EnsureSignInAsync()
 		{
 			IPublicClientApplication publicClientApp = PublicClientApplicationBuilder.Create(ClientId)
 				.WithB2CAuthority(SignUpSignInAuthority)
@@ -46,7 +44,7 @@ namespace Soup.Build.PackageManager
 
 			try
 			{
-				// Attempt to silently aquire the user token
+				// Attempt to silently acquire the user token
 				var accounts = await publicClientApp.GetAccountsAsync(SignUpSignInPolicyId);
 				authResult = await publicClientApp.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
 					.ExecuteAsync();

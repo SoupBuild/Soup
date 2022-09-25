@@ -102,10 +102,25 @@ namespace Opal.System
 			return result;
 		}
 
-		public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path)
+		public IReadOnlyList<DirectoryEntry> GetChildDirectories(Path path)
 		{
 			var result = new List<DirectoryEntry>();
 			foreach (var directory in global::System.IO.Directory.EnumerateDirectories(path.ToString()))
+			{
+				result.Add(new DirectoryEntry()
+				{
+					Path = new Path(directory),
+					IsDirectory = true,
+				});
+			}
+
+			return result;
+		}
+
+		public IReadOnlyList<DirectoryEntry> GetChildFiles(Path path)
+		{
+			var result = new List<DirectoryEntry>();
+			foreach (var directory in global::System.IO.Directory.EnumerateFiles(path.ToString()))
 			{
 				result.Add(new DirectoryEntry()
 				{
