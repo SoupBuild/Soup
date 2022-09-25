@@ -36,19 +36,21 @@ namespace Soup::Client
 				workingDirectory +
 				Core::BuildConstants::RecipeFileName();
 
+			// Todo: Opal path should have a way to get individual directories
+			auto workingFolderValue = workingDirectory.ToString();
+			workingFolderValue.pop_back(); // Remove directory separator
+			auto workingFolder = Path(workingFolderValue);
+
 			auto recipe = Core::Recipe(
-				workingDirectory.GetFileName(),
+				workingFolder.GetFileName(),
 				Core::LanguageReference("C++", SemanticVersion(0, 1, 0)),
 				SemanticVersion(1, 0, 0),
 				std::nullopt,
 				std::nullopt,
 				std::nullopt);
 
-			// TODO: 
-			// recipe.SetType("Executable");
-			// recipe.SetSource(std::vector<std::string>({
-			// 	"Main.cpp",
-			// }));
+			recipe.SetRootValue("Type", "Executable");
+			recipe.SetRootValue("Source", std::vector<std::string>({ "Main.cpp", }));
 
 			UpdateDefaultValues(recipe);
 
