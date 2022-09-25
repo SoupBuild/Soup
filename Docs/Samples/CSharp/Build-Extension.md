@@ -15,9 +15,9 @@ Source: [
 
 Dependencies: {
     Runtime: [
-        { Reference = "Soup.Build@0.2.0", ExcludeRuntime = true },
-        { Reference = "Soup.Build.Extensions@0.4.0" },
-        { Reference = "Opal@1.1.0" },
+        { Reference = "Soup.Build@0.2.0", ExcludeRuntime = true }
+        { Reference = "Soup.Build.Extensions@0.4.0" }
+        { Reference = "Opal@1.1.0" }
     ]
 }
 ```
@@ -85,7 +85,7 @@ The Recipe file that defines the executable "BuildExtension.Executable". The one
 Name: "Samples.CSharp.BuildExtension.Executable"
 Language: "C#|0.1"
 Type: "Executable"
-Version: "1.0.1"
+Version: "1.0.0"
 Source: [
     "Program.cs"
 ]

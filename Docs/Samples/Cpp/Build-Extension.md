@@ -85,15 +85,15 @@ The Recipe file that defines the executable "Samples.Cpp.BuildExtension.Executab
 Name: "Samples.SimpleBuildExtension.Executable"
 Language: "C++|0.1"
 Type: "Executable"
-Version: "1.0.1"
+Version: "1.0.0"
 Source: [
-	"Main.cpp"
+    "Main.cpp"
 ]
 
 Dependencies: {
-	Build: [
-		"../Extension/"
-	]
+    Build: [
+        "../Extension/"
+    ]
 }
 ```
 
@@ -111,6 +111,37 @@ int main()
 #endif
 
     return 0;
+}
+
+```
+
+## Executable/PackageLock.sml
+The package lock that was generated to capture the unique build dependencies required to build this project.
+```
+Version: 2
+Closures: {
+    Root: {
+        C#: [
+            { Name: "Opal", Version: "1.1.0", Build: "Build1" }
+            { Name: "Samples.Cpp.BuildExtension.Extension", Version: "../Extension/", Build: "Build1" }
+            { Name: "Soup.Build", Version: "0.2.0", Build: "Build1" }
+            { Name: "Soup.Build.Extensions", Version: "0.4.0", Build: "Build1" }
+        ]
+        C++: [
+            { Name: "Samples.SimpleBuildExtension.Executable", Version: "../Executable", Build: "Build0" }
+        ]
+    }
+    Build0: {
+        C#: [
+            { Name: "C++", Version: "0.1.0" }
+            { Name: "Samples.Cpp.BuildExtension.Extension", Version: "../Extension/" }
+        ]
+    }
+    Build1: {
+        C#: [
+            { Name: "C#", Version: "0.1.0" }
+        ]
+    }
 }
 
 ```
