@@ -2,7 +2,7 @@
 ## Overview
 Print the unique target directory for a recipe that would be built using the provided configuration parameters.
 ```
-soup run <path> [-flavor <name>] [-args <arg1> <arg2> etc.]
+soup target <path> [-flavor <name>] [-args <arg1> <arg2> etc.]
 ```
 
 `path` - An optional parameter that directly follows the build command. If present this specifies the directory to look for a Recipe file to build. If not present then the command will use the current active directory.

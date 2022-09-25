@@ -17,4 +17,6 @@ soup <command> [arguments]
 
 * [Run](CLI/Run.md) - Invoke the executable result (if applicable) for a specified package.
 
+* [Target](CLI/Target.md) - Prints the target directory for a specified package.
+
 * [Version](CLI/Version.md) - Print the version of the current installed Soup application.
