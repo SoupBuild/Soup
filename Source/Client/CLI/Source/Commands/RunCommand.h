@@ -47,12 +47,12 @@ namespace Soup::Client
 			}
 
 			// Load the recipe
-			auto projectManager = Core::ProjectManager();
+			auto packageProvider = Core::PackageProvider();
 			auto recipePath =
 				workingDirectory +
 				Core::BuildConstants::RecipeFileName();
 			Core::Recipe recipe = {};
-			if (!projectManager.TryGetRecipe(recipePath, recipe))
+			if (!packageProvider.TryGetRecipe(recipePath, recipe))
 			{
 				Log::Error("The Recipe does not exist: " + recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
@@ -87,7 +87,7 @@ namespace Soup::Client
 				workingDirectory,
 				recipe,
 				globalParameters,
-				projectManager);
+				packageProvider);
 			auto soupTargetDirectory = targetDirectory + Core::BuildConstants::GetSoupTargetDirectory();
 			auto sharedStateFile = soupTargetDirectory + Core::BuildConstants::GenerateSharedStateFileName();
 

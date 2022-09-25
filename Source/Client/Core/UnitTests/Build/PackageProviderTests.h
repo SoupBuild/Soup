@@ -1,4 +1,4 @@
-// <copyright file="ProjectManagerTests.h" company="Soup">
+// <copyright file="PackageProviderTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,13 +6,13 @@
 
 namespace Soup::Core::UnitTests
 {
-	class ProjectManagerTests
+	class PackageProviderTests
 	{
 	public:
 		// [[Fact]]
 		void Initialize()
 		{
-			auto uut = ProjectManager();
+			auto uut = PackageProvider();
 		}
 
 		// TODO: Way more of this

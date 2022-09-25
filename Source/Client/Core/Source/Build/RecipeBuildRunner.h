@@ -5,7 +5,7 @@
 #pragma once
 #include "BuildEvaluateEngine.h"
 #include "BuildConstants.h"
-#include "ProjectManager.h"
+#include "PackageProvider.h"
 #include "RecipeBuildArguments.h"
 #include "FileSystemState.h"
 #include "LocalUserConfig/LocalUserConfig.h"
@@ -29,7 +29,7 @@ namespace Soup::Core
 
 		ValueList _sdkParameters;
 
-		ProjectManager _projectManager;
+		PackageProvider _packageProvider;
 
 		// Global read access
 		std::vector<Path> _systemReadAccess;
@@ -52,7 +52,7 @@ namespace Soup::Core
 		RecipeBuildRunner(RecipeBuildArguments arguments, LocalUserConfig localUserConfig) :
 			_arguments(std::move(arguments)),
 			_sdkParameters(),
-			_projectManager(),
+			_packageProvider(),
 			_buildSet(),
 			_hostBuildSet(),
 			_buildCache(),
@@ -122,11 +122,11 @@ namespace Soup::Core
 				bool isHostBuild = false;
 				Log::EnsureListener().SetShowEventId(true);
 
-				_projectManager.LoadClosure(workingDirectory);
+				_packageProvider.LoadClosure(workingDirectory);
 
 				auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
 				Recipe recipe = {};
-				if (!_projectManager.TryGetRecipe(recipePath, recipe))
+				if (!_packageProvider.TryGetRecipe(recipePath, recipe))
 				{
 					Log::Error("The target Recipe does not exist: " + recipePath.ToString());
 					Log::HighPriority("Make sure the path is correct and try again");
@@ -181,13 +181,13 @@ namespace Soup::Core
 				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 				{
 					// Load this package recipe
-					auto packagePath = _projectManager.GetPackageReferencePath(
+					auto packagePath = _packageProvider.GetPackageReferencePath(
 						workingDirectory,
 						dependency,
 						implicitLanguage);
 					auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
 					Recipe dependencyRecipe = {};
-					if (!_projectManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
+					if (!_packageProvider.TryGetRecipe(packageRecipePath, dependencyRecipe))
 					{
 						if (dependency.IsLocal())
 						{
@@ -323,7 +323,7 @@ namespace Soup::Core
 				packageRoot,
 				recipe,
 				globalParameters,
-				_projectManager);
+				_packageProvider);
 			auto soupTargetDirectory = targetDirectory + BuildConstants::GetSoupTargetDirectory();
 
 			// Build up the child target directory set
@@ -376,7 +376,7 @@ namespace Soup::Core
 			// Clone the global parameters
 			auto parametersTable = ValueTable(globalParameters.GetValues());
 
-			auto languageExtensionPath = _projectManager.GetLanguageExtensionPath(recipe);
+			auto languageExtensionPath = _packageProvider.GetLanguageExtensionPath(recipe);
 
 			// Set the input parameters
 			parametersTable.SetValue("LanguageExtensionPath", Value(languageExtensionPath.ToString()));
@@ -679,7 +679,7 @@ namespace Soup::Core
 				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 				{
 					// Load this package recipe
-					auto packagePath = _projectManager.GetPackageReferencePath(
+					auto packagePath = _packageProvider.GetPackageReferencePath(
 						workingDirectory,
 						dependency,
 						implicitLanguage);
@@ -741,7 +741,7 @@ namespace Soup::Core
 				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
 				{
 					// Load this package recipe
-					auto packagePath = _projectManager.GetPackageReferencePath(
+					auto packagePath = _packageProvider.GetPackageReferencePath(
 						workingDirectory,
 						dependency,
 						implicitLanguage);

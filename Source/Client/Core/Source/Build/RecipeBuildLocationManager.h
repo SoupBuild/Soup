@@ -6,7 +6,7 @@
 #include "Recipe/Recipe.h"
 #include "ValueTable/ValueTable.h"
 #include "ValueTable/ValueTableWriter.h"
-#include "ProjectManager.h"
+#include "PackageProvider.h"
 #include "RecipeBuildCacheState.h"
 
 namespace Soup::Core
@@ -22,7 +22,7 @@ namespace Soup::Core
 			const Path& packageRoot,
 			Recipe& recipe,
 			const ValueTable& globalParameters,
-			ProjectManager& projectManager)
+			PackageProvider& packageProvider)
 		{
 			// Set the default output directory to be relative to the package
 			auto rootOutput = packageRoot + Path("out/");
@@ -33,7 +33,7 @@ namespace Soup::Core
 			{
 				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
 				RootRecipe rootRecipe;
-				if (!projectManager.TryGetRootRecipe(rootRecipeFile, rootRecipe))
+				if (!packageProvider.TryGetRootRecipe(rootRecipeFile, rootRecipe))
 				{
 					// Nothing we can do, exit
 					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());

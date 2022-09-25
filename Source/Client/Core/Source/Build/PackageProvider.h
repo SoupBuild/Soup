@@ -1,4 +1,4 @@
-﻿// <copyright file="ProjectManager.h" company="Soup">
+﻿// <copyright file="PackageProvider.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -13,9 +13,9 @@
 namespace Soup::Core
 {
 	/// <summary>
-	/// The project manager that maintains the in memory representation of all build state
+	/// The package provider that maintains the in memory representation of all build state
 	/// </summary>
-	export class ProjectManager
+	export class PackageProvider
 	{
 	private:
 		const Path _builtInExtensionPath = Path("Extensions/");
@@ -36,9 +36,9 @@ namespace Soup::Core
 
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProjectManager"/> class.
+		/// Initializes a new instance of the <see cref="PackageProvider"/> class.
 		/// </summary>
-		ProjectManager() :
+		PackageProvider() :
 			_hasPackageLock(false),
 			_packageLanguageLock(),
 			_knownRecipes(),
