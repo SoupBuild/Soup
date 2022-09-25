@@ -11,12 +11,12 @@ Language: "C++|0.1"
 Version: "1.0.0"
 Type: "Executable"
 Source: [
-    "Main.cpp",
+    "Main.cpp"
 ]
 
 Dependencies: {
     Runtime: [
-        "json11@1.0.2",
+        "json11@1.0.2"
     ]
 }
 ```

@@ -1,6 +1,6 @@
 # Install
 ## Overview
-Install packages from the public feed.
+Install a package from the public feed.
 ```
 soup install <path> name<@version>
 ```
