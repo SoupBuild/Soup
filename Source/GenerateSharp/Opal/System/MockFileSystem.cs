@@ -6,6 +6,7 @@ namespace Opal.System
 {
 	using global::System;
 	using global::System.Collections.Generic;
+	using global::System.Linq;
 
 	/// <summary>
 	/// The mock file system
@@ -15,6 +16,7 @@ namespace Opal.System
 	{
 		private List<string> requests;
 		private Dictionary<Path, MockFile> files;
+		private Dictionary<Path, IReadOnlyList<DirectoryEntry>> directoryChildren;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref='MockFileSystem'/> class.
@@ -23,6 +25,7 @@ namespace Opal.System
 		{
 			this.requests = new List<string>();
 			this.files = new Dictionary<Path, MockFile>();
+			this.directoryChildren = new Dictionary<Path, IReadOnlyList<DirectoryEntry>>();
 		}
 
 		/// <summary>
@@ -59,6 +62,11 @@ namespace Opal.System
 			}
 		}
 
+		public void RegisterChildren(Path path, IReadOnlyList<DirectoryEntry> response)
+		{
+			this.directoryChildren.Add(path, response);
+		}
+
 		/// <summary>
 		/// Gets the current user profile directory.
 		/// </summary>
@@ -87,7 +95,7 @@ namespace Opal.System
 		{
 			this.requests.Add($"Exists: {path}");
 
-			return this.files.ContainsKey(path);
+			return this.files.ContainsKey(path) || this.directoryChildren.Keys.Contains(path);
 		}
 
 		/// <summary>
@@ -201,12 +209,67 @@ namespace Opal.System
 		/// Get the children of a directory.
 		/// </summary>
 		/// <param name="path">The path.</param>
-		public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path)
+		public IReadOnlyList<DirectoryEntry> GetChildren(Path path)
 		{
-			this.requests.Add($"GetDirectoryChildren: {path}");
+			this.requests.Add($"GetChildren: {path}");
 
-			var result = new List<DirectoryEntry>();
-			return result;
+			if (this.directoryChildren.TryGetValue(path, out var children))
+			{
+				// Reset the existing content offset and return it.
+				var result = children.ToList();
+				return result;
+			}
+			else
+			{
+				var result = new List<DirectoryEntry>();
+				return result;
+			}
+		}
+
+		/// <summary>
+		/// Get the children of a directory.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		public IReadOnlyList<DirectoryEntry> GetChildDirectories(Path path)
+		{
+			this.requests.Add($"GetChildDirectories: {path}");
+
+			if (this.directoryChildren.TryGetValue(path, out var children))
+			{
+				// Reset the existing content offset and return it.
+				var result = children
+					.Where(value => value.IsDirectory)
+					.ToList();
+				return result;
+			}
+			else
+			{
+				var result = new List<DirectoryEntry>();
+				return result;
+			}
+		}
+
+		/// <summary>
+		/// Get the children of a directory.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		public IReadOnlyList<DirectoryEntry> GetChildFiles(Path path)
+		{
+			this.requests.Add($"GetChildFiles: {path}");
+
+			if (this.directoryChildren.TryGetValue(path, out var children))
+			{
+				// Reset the existing content offset and return it.
+				var result = children
+					.Where(value => !value.IsDirectory)
+					.ToList();
+				return result;
+			}
+			else
+			{
+				var result = new List<DirectoryEntry>();
+				return result;
+			}
 		}
 
 		/// <summary>

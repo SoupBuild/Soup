@@ -1,8 +1,0 @@
-[Projects]
-"C#" = [
-	{ Name = "Samples.CSharp.BuildExtension.Executable", Version = "C:/Users/mwasp/source/repos/Soup/Samples/CSharp/BuildExtension/Executable" },
-	{ Name = "Samples.CSharp.BuildExtension.Extension", Version = "C:/Users/mwasp/source/repos/Soup/Samples/CSharp/BuildExtension/Extension/" },
-	{ Name = "Soup.Build", Version = "Soup.Build@0.1.3" },
-	{ Name = "Soup.Build.Extensions", Version = "Soup.Build.Extensions@0.1.8" },
-	{ Name = "Opal", Version = "Opal@1.0.1" },
-]

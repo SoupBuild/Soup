@@ -3,22 +3,23 @@ This is a console application that has a custom build extension that alters the 
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/BuildExtension)
 
-## Extension/Recipe.toml
+## Extension/Recipe.sml
 The Recipe file that defines the build extension dynamic library "Samples.Cpp.BuildExtension.Extension" that will register new build tasks.
 ```
-Name = "Samples.Cpp.BuildExtension.Extension"
-Language = "C#"
-Version = "1.0.0"
-Source = [
-    "CustomBuildTask.cs"
+Name: "Samples.Cpp.BuildExtension.Extension"
+Language: "C#|0.1"
+Version: "1.0.0"
+Source: [
+  "CustomBuildTask.cs"
 ]
 
-[Dependencies]
-Runtime = [
-    { Reference = "Soup.Build@0.1.3", ExcludeRuntime = true },
-    { Reference = "Soup.Build.Extensions@0.1.8" },
-    { Reference = "Opal@1.0.1" },
-]
+Dependencies: {
+    Runtime: [
+        { Reference: "Soup.Build@0.2.0", ExcludeRuntime: true, }
+        { Reference: "Soup.Build.Extensions@0.4.0", }
+        { Reference: "Opal@1.1.0", }
+    ]
+}
 ```
 
 ## Extension/CustomBuildTask.cs
@@ -78,22 +79,22 @@ namespace Samples.Cpp.BuildExtension.Extension
 }
 ```
 
-## Executable/Recipe.toml
+## Executable/Recipe.sml
 The Recipe file that defines the executable "Samples.Cpp.BuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```
-Name = "Samples.Cpp.BuildExtension.Executable"
-Language = "C++"
-Type = "Executable"
-Version = "1.0.1"
-Source = [
-    "Main.cpp"
+Name: "Samples.SimpleBuildExtension.Executable"
+Language: "C++|0.1"
+Type: "Executable"
+Version: "1.0.1"
+Source: [
+	"Main.cpp"
 ]
 
-[Dependencies]
-Build = [
-    "../Extension/"
-]
-
+Dependencies: {
+	Build: [
+		"../Extension/"
+	]
+}
 ```
 
 ## Executable/Main.cpp

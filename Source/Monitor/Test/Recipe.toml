@@ -1,7 +1,0 @@
-Name = "Monitor.Test"
-Language = "C++"
-Version = "1.0.0"
-Type = "Executable"
-Source = [
-	"Main.cpp",
-]

@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Tomlyn.Syntax;
 
 namespace Soup.Build.Runtime
 {
@@ -14,18 +13,14 @@ namespace Soup.Build.Runtime
 	{
 		private Dictionary<string, IValue> _impl;
 
-		public SyntaxNode? MirrorSyntax { get; set; }
-
-		public ValueTable(IDictionary<string, IValue> values, SyntaxNode? mirrorSyntax)
+		public ValueTable(IDictionary<string, IValue> values)
 		{
 			_impl = new Dictionary<string, IValue>(values);
-			MirrorSyntax = mirrorSyntax;
 		}
 
 		public ValueTable()
 		{
 			_impl = new Dictionary<string, IValue>();
-			MirrorSyntax = null;
 		}
 
 		public IValue this[string key]
@@ -52,7 +47,7 @@ namespace Soup.Build.Runtime
 
 		public ValueTable Clone()
 		{
-			return new ValueTable(_impl, MirrorSyntax);
+			return new ValueTable(_impl);
 		}
 
 		public IEnumerator<KeyValuePair<string, IValue>> GetEnumerator()

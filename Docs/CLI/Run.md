@@ -17,7 +17,7 @@ Run a Recipe in the current directory for debug with default configurations.
 soup run
 ```
 
-Build a release Recipe in a different directory and pass in a single parameter to the child executable.
+Run a release Recipe in a different directory and pass in a single parameter to the child executable.
 ```
-soup build C:\Code\MyProject\ -flavor release -args MyParameter
+soup run ./Code/MyProject/ -flavor release -args MyParameter
 ```

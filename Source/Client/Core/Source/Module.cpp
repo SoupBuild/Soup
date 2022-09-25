@@ -30,14 +30,14 @@
 
 export module Soup.Core;
 
+import reflex;
 import CryptoPP;
-import json11;
-import toml11;
 import Monitor.Host;
 import Opal;
 
 using namespace Opal;
 
+#include "Build/RecipeBuildLocationManager.h"
 #include "Build/RecipeBuildRunner.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"
 #include "Package/PackageManager.h"

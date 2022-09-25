@@ -5,9 +5,6 @@
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Tomlyn" Version="0.15.0" />
-	</ItemGroup>
-	<ItemGroup>
 		<ProjectReference Include="..\Build\Soup.Build.csproj" />
 		<ProjectReference Include="..\Build.Extensions\Soup.Build.Extensions.csproj" />
 		<ProjectReference Include="..\Opal\Opal.csproj" />

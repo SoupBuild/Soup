@@ -15,8 +15,8 @@ namespace Soup.Build
 
         public static IValueTable AsTable(this IValue value)
         {
-            if (value.IsTable())
-                return (IValueTable)value.RawValue;
+            if (value.IsTable() && value.RawValue is IValueTable result)
+                return result;
             else
                 throw new InvalidOperationException("Attempt to get value as incorrect type: Table");
         }
@@ -28,8 +28,8 @@ namespace Soup.Build
 
         public static IValueList AsList(this IValue value)
         {
-            if (value.IsList())
-                return (IValueList)value.RawValue;
+            if (value.IsList() && value.RawValue is IValueList result)
+                return result;
             else
                 throw new InvalidOperationException("Attempt to get value as incorrect type: List");
         }
@@ -41,11 +41,12 @@ namespace Soup.Build
 
         public static string AsString(this IValue value)
         {
-            if (value.IsString())
-                return (string)value.RawValue;
+            if (value.IsString() && value.RawValue is string result)
+                return result;
             else
                 throw new InvalidOperationException("Attempt to get value as incorrect type: String");
         }
+
         public static bool IsInteger(this IValue value)
         {
             return value.Type == ValueType.Integer;
@@ -53,11 +54,12 @@ namespace Soup.Build
 
         public static long AsInteger(this IValue value)
         {
-            if (value.IsInteger())
-                return (long)value.RawValue;
+            if (value.IsInteger() && value.RawValue is long result)
+                return result;
             else
                 throw new InvalidOperationException("Attempt to get value as incorrect type: Integer");
         }
+
         public static bool IsFloat(this IValue value)
         {
             return value.Type == ValueType.Float;
@@ -65,11 +67,12 @@ namespace Soup.Build
 
         public static double AsFloat(this IValue value)
         {
-            if (value.IsFloat())
-                return (double)value.RawValue;
+            if (value.IsFloat() && value.RawValue is double result)
+                return result;
             else
                 throw new InvalidOperationException("Attempt to get value as incorrect type: Float");
         }
+
         public static bool IsBoolean(this IValue value)
         {
             return value.Type == ValueType.Boolean;
@@ -77,8 +80,8 @@ namespace Soup.Build
 
         public static bool AsBoolean(this IValue value)
         {
-            if (value.IsBoolean())
-                return (bool)value.RawValue;
+            if (value.IsBoolean() && value.RawValue is bool result)
+                return result;
             else
                 throw new InvalidOperationException("Attempt to get value as incorrect type: Boolean");
         }

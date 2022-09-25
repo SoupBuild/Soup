@@ -8,6 +8,7 @@
 #include "Recipe/RecipeExtensions.h"
 #include "Recipe/RootRecipeExtensions.h"
 #include "Utils/HandledException.h"
+#include "BuildConstants.h"
 
 namespace Soup::Core
 {
@@ -17,6 +18,16 @@ namespace Soup::Core
 	export class ProjectManager
 	{
 	private:
+		const Path _builtInExtensionPath = Path("Extensions/");
+		const std::string _builtInCppLanguage = "C++";
+		const std::string _builtInCppExtensionVersion = "0.3.0";
+		const Path _builtInCppExtensionPath = Path("Soup.Cpp/");
+		const Path _builtInCppExtensionFilename = Path("Soup.Cpp.dll");
+		const std::string _builtInCSharpLanguage = "C#";
+		const std::string _builtInCSharpExtensionVersion = "0.6.0";
+		const Path _builtInCSharpExtensionPath = Path("Soup.CSharp/");
+		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
+
 		bool _hasPackageLock;
 		Path _packageLockRoot;
 		std::map<std::string, std::map<std::string, PackageReference>> _packageLanguageLock;
@@ -44,10 +55,17 @@ namespace Soup::Core
 			if (PackageLockExtensions::TryLoadFromFile(packageLockPath, packageLock))
 			{
 				Log::Info("Package lock loaded");
-
-				_packageLockRoot = projectRoot;
-				_packageLanguageLock = packageLock.GetProjects();
-				_hasPackageLock = true;
+				if (packageLock.GetVersion() == 2)
+				{
+					_packageLockRoot = projectRoot;
+					auto closures = packageLock.GetClosures();
+					_packageLanguageLock = closures["Root"];
+					_hasPackageLock = true;
+				}
+				else
+				{
+					Log::Warning("Unknown package lock version.");
+				}
 			}
 
 			int projectId = 1;
@@ -80,12 +98,15 @@ namespace Soup::Core
 			for (auto dependecyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage();
+				if (!recipe.HasLanguage())
+					throw std::runtime_error("Recipe does not have a language reference.");
+
+				auto implicitLanguage = recipe.GetLanguage().GetName();
 				if (dependecyType == "Build")
 				{
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
-					implicitLanguage = "C#";
+					implicitLanguage = _builtInCSharpLanguage;
 				}
 
 				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
@@ -255,11 +276,40 @@ namespace Soup::Core
 			return packagePath;
 		}
 
+		Path GetLanguageExtensionPath(Recipe& recipe)
+		{
+			auto name = recipe.GetLanguage().GetName();
+			if (name ==  _builtInCSharpLanguage)
+			{
+				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+				auto processDirectory = processFilename.GetParent();
+				return processDirectory +
+					_builtInExtensionPath +
+					_builtInCSharpExtensionPath +
+					Path(_builtInCSharpExtensionVersion) +
+					_builtInCSharpExtensionFilename;
+			}
+			else if (name == _builtInCppLanguage)
+			{
+				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+				auto processDirectory = processFilename.GetParent();
+				return processDirectory +
+					_builtInExtensionPath +
+					_builtInCppExtensionPath +
+					Path(_builtInCppExtensionVersion) +
+					_builtInCppExtensionFilename;
+			}
+			else
+			{
+				throw std::runtime_error("Unknown language extension path");
+			}
+		}
+
 	private:
 		Path GetSoupUserDataPath() const
 		{
 			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
-				Path(".soup/");
+				BuildConstants::GetSoupLocalStoreDirectory();
 			return result;
 		}
 	};

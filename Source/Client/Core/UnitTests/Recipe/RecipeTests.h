@@ -15,7 +15,7 @@ namespace Soup::Core::UnitTests
 			auto uut = Recipe();
 
 			Assert::AreEqual<std::string_view>("", uut.GetName(), "Verify name matches expected.");
-			Assert::AreEqual<std::string_view>("", uut.GetLanguage(), "Verify language matches expected.");
+			// TODO: INVALID Assert::AreEqual(LanguageReference(), uut.GetLanguage(), "Verify language matches expected.");
 			Assert::IsFalse(uut.HasVersion(), "Verify has no version.");
 			Assert::IsFalse(uut.HasRuntimeDependencies(), "Verify has no runtime dependencies.");
 			Assert::IsFalse(uut.HasBuildDependencies(), "Verify has no build dependencies.");
@@ -27,7 +27,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -40,7 +40,7 @@ namespace Soup::Core::UnitTests
 				}));
 
 			Assert::AreEqual<std::string_view>("MyPackage", uut.GetName(), "Verify name matches expected.");
-			Assert::AreEqual<std::string_view>("C++", uut.GetLanguage(), "Verify language matches expected.");
+			Assert::AreEqual(LanguageReference("C++", SemanticVersion(1)), uut.GetLanguage(), "Verify language matches expected.");
 			Assert::IsTrue(uut.HasVersion(), "Verify has version.");
 			Assert::AreEqual(SemanticVersion(1, 2, 3), uut.GetVersion(), "Verify version is correct.");
 			Assert::IsTrue(uut.HasRuntimeDependencies(), "Verify has runtime dependencies.");
@@ -79,7 +79,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -94,7 +94,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				Recipe(
 					"MyPackage",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage/")),
@@ -114,7 +114,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -129,7 +129,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage2",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage/")),
@@ -149,7 +149,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -164,7 +164,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C#",
+					LanguageReference("C#", SemanticVersion(1)),
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage/")),
@@ -184,7 +184,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -199,7 +199,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					SemanticVersion(11, 2, 3),
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage/")),
@@ -219,7 +219,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -234,7 +234,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					std::nullopt,
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage/")),
@@ -254,7 +254,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -269,7 +269,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
 					}),
@@ -288,7 +288,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -303,7 +303,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					SemanticVersion(1, 2, 3),
 					std::nullopt,
 					std::vector<PackageReference>({
@@ -321,7 +321,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -336,7 +336,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage/")),
@@ -355,7 +355,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -370,7 +370,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage/")),
@@ -388,7 +388,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -403,7 +403,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage/")),
@@ -422,7 +422,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto uut = Recipe(
 				"MyPackage",
-				"C++",
+				LanguageReference("C++", SemanticVersion(1)),
 				SemanticVersion(1, 2, 3),
 				std::vector<PackageReference>({
 					PackageReference(Path("../OtherPackage/")),
@@ -437,7 +437,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreNotEqual(
 				Recipe(
 					"MyPackage",
-					"C++",
+					LanguageReference("C++", SemanticVersion(1)),
 					SemanticVersion(1, 2, 3),
 					std::vector<PackageReference>({
 						PackageReference(Path("../OtherPackage/")),

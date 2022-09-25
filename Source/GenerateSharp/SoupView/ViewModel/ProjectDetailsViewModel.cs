@@ -16,9 +16,13 @@ namespace SoupView.ViewModel
 		public ProjectDetailsViewModel(Recipe recipe, Path path)
 		{
 			properties.Clear();
-			properties.Add(new PropertyValue("Name", recipe.Name));
-			properties.Add(new PropertyValue("Version", recipe.Version.ToString()));
-			properties.Add(new PropertyValue("Language", recipe.Language));
+			if (recipe is not null)
+			{
+				properties.Add(new PropertyValue("Name", recipe.Name));
+				properties.Add(new PropertyValue("Version", recipe.Version.ToString()));
+				properties.Add(new PropertyValue("Language", recipe.Language.ToString()));
+			}
+
 			properties.Add(new PropertyValue("Path", path.ToString()));
 		}
 

@@ -13,7 +13,6 @@
 
 import Opal;
 import Soup.Core;
-import json11;
 import Monitor.Host;
 import Soup.Test.Assert;
 
@@ -27,7 +26,8 @@ using namespace Soup::Test;
 #include "Build/BuildHistoryCheckerTests.gen.h"
 #include "Build/FileSystemStateTests.gen.h"
 #include "Build/ProjectManagerTests.gen.h"
-#include "Build/RecipeBuilderTests.gen.h"
+#include "Build/RecipeBuildLocationManagerTests.gen.h"
+#include "Build/RecipeBuildRunnerTests.gen.h"
 
 #include "LocalUserConfig/LocalUserConfigExtensionsTests.gen.h"
 #include "LocalUserConfig/LocalUserConfigTests.gen.h"
@@ -42,7 +42,7 @@ using namespace Soup::Test;
 #include "Recipe/PackageReferenceTests.gen.h"
 #include "Recipe/RecipeExtensionsTests.gen.h"
 #include "Recipe/RecipeTests.gen.h"
-#include "Recipe/RecipeTomlTests.gen.h"
+#include "Recipe/RecipeSMLTests.gen.h"
 
 #include "ValueTable/ValueTableManagerTests.gen.h"
 #include "ValueTable/ValueTableReaderTests.gen.h"
@@ -58,7 +58,8 @@ int main()
 	state += RunBuildHistoryCheckerTests();
 	state += RunFileSystemStateTests();
 	state += RunProjectManagerTests();
-	state += RunRecipeBuilderTests();
+	state += RunRecipeBuildLocationManagerTests();
+	state += RunRecipeBuildRunnerTests();
 
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigTests();
@@ -73,7 +74,7 @@ int main()
 	state += RunPackageReferenceTests();
 	state += RunRecipeExtensionsTests();
 	state += RunRecipeTests();
-	state += RunRecipeTomlTests();
+	state += RunRecipeSMLTests();
 
 	state += RunValueTableManagerTests();
 	state += RunValueTableReaderTests();

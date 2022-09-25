@@ -21,30 +21,29 @@ namespace Soup.Build.Utilities
 		{
 			// Verify the requested file exists
 			Log.Diag("Load Recipe: " + recipeFile.ToString());
-			if (!System.IO.File.Exists(recipeFile.ToString()))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(recipeFile))
 			{
 				Log.Info("Recipe file does not exist.");
 				return (false, new Recipe());
 			}
 
 			// Open the file to read from
-			using (var fileStream = System.IO.File.OpenRead(recipeFile.ToString()))
-			using (var reader = new System.IO.StreamReader(fileStream))
+			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(recipeFile);
+			using var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true);
+
+			// Read the contents of the recipe file
+			try
 			{
-				// Read the contents of the recipe file
-				try
-				{
-					var result = ValueTableTomlUtilities.Deserialize(
-						recipeFile,
-						await reader.ReadToEndAsync());
-					return (true, new Recipe(result));
-				}
-				catch (Exception ex)
-				{
-					Log.Error($"Deserialize Threw: {ex.Message}");
-					Log.Info("Failed to parse Recipe.");
-					return (false, new Recipe());
-				}
+				var content = await reader.ReadToEndAsync();
+				var result = SMLManager.Deserialize(content);
+
+				return (true, new Recipe(result));
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Deserialize Threw: {ex.Message}");
+				Log.Info("Failed to parse Recipe.");
+				return (false, new Recipe());
 			}
 		}
 
@@ -91,15 +90,12 @@ namespace Soup.Build.Utilities
 			Recipe recipe)
 		{
 			// Open the file to write to
-			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(recipeFile, true);
-
-			// Serialize the contents of the recipe
-			var documentSyntax = recipe.MirrorSyntax;
-			if (documentSyntax == null)
-				throw new ArgumentException("The provided recipe does not have a mirrored syntax tree.", nameof(recipe));
+			using var file = LifetimeManager.Get<IFileSystem>().OpenWrite(recipeFile, true);
 
 			// Write the recipe to the file stream
-			await ValueTableTomlUtilities.SerializeAsync(documentSyntax, file.GetOutStream());
+			await SMLManager.SerializeAsync(
+				recipe.Document,
+				file.GetOutStream());
 		}
 	}
 }

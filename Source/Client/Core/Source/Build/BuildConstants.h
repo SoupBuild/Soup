@@ -17,7 +17,7 @@ namespace Soup::Core
 		/// </summary>
 		static const Path& RecipeFileName()
 		{
-			static const Path value = Path("Recipe.toml");
+			static const Path value = Path("Recipe.sml");
 			return value;
 		}
 
@@ -26,7 +26,7 @@ namespace Soup::Core
 		/// </summary>
 		static const Path& PackageLockFileName()
 		{
-			static const Path value = Path("PackageLock.toml");
+			static const Path value = Path("PackageLock.sml");
 			return value;
 		}
 
@@ -72,6 +72,48 @@ namespace Soup::Core
 		static const Path GenerateEvaluateOperationGraphFileName()
 		{
 			static const Path value = Path("GenerateEvaluateGraph.bog");
+			return value;
+		}
+
+		/// <summary>
+		/// Gets the Local User Config file name
+		/// </summary>
+		static const Path LocalUserConfigFileName()
+		{
+			static const Path value = Path("LocalUserConfig.sml");
+			return value;
+		}
+
+		/// <summary>
+		/// Gets the soup target directory
+		/// </summary>
+		static Path GetSoupLocalStoreDirectory()
+		{
+			static const auto value = Path(".soup/");
+			return value;
+		}
+
+		static Path GetSoupTargetDirectory()
+		{
+			static const auto value = Path(".soup/");
+			return value;
+		}
+
+		static Path GetGenerateGraphFileName()
+		{
+			static const auto value = Path("GenerateGraph.bog");
+			return value;
+		}
+
+		static Path GetEvaluateResultGraphFileName()
+		{
+			static const auto value = Path("EvaluateResultGraph.bog");
+			return value;
+		}
+
+		static Path GetTemporaryFolderName()
+		{
+			static const auto value = Path("temp/");
 			return value;
 		}
 	};

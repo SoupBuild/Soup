@@ -8,6 +8,7 @@ using Opal.System;
 using Soup.Build;
 using Soup.Build.Utilities;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -105,6 +106,9 @@ namespace SoupView.ViewModel
 
 		private void NotifyError(string message)
 		{
+			if (Debugger.IsAttached)
+				Debugger.Break();
+
 			ErrorBarMessage = message;
 			IsErrorBarOpen = true;
 		}
@@ -116,23 +120,30 @@ namespace SoupView.ViewModel
 			foreach (var recipeFile in recipeFiles)
 			{
 				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile.Path);
-				if (!loadResult.IsSuccess)
+				var currentChildRecipes = new List<(Path Path, uint Id)>();
+				string title;
+				Recipe recipe = null;
+				var packageFolder = recipeFile.Path.GetParent();
+
+				if (loadResult.IsSuccess)
 				{
-					NotifyError($"Failed to load Recipe file: {recipeFile.Path}");
+					recipe = loadResult.Result;
+
+					if (recipe.HasBuildDependencies)
+						AddRecipeFiles(recipe.BuildDependencies, "C#", packageFolder, currentChildRecipes);
+					if (recipe.HasTestDependencies)
+						AddRecipeFiles(recipe.TestDependencies, recipe.Language.Name, packageFolder, currentChildRecipes);
+					if (recipe.HasRuntimeDependencies)
+						AddRecipeFiles(recipe.RuntimeDependencies, recipe.Language.Name, packageFolder, currentChildRecipes);
+
+					title = recipe.Name;
+				}
+				else
+				{
+					title = "[MISSING]";
 				}
 
-				var packageFolder = recipeFile.Path.GetParent();
-				var recipe = loadResult.Result;
-
-				var currentChildRecipes = new List<(Path Path, uint Id)>();
-				if (recipe.HasBuildDependencies)
-					AddRecipeFiles(recipe.BuildDependencies, recipe.Language, packageFolder, currentChildRecipes);
-				if (recipe.HasTestDependencies)
-					AddRecipeFiles(recipe.TestDependencies, recipe.Language, packageFolder, currentChildRecipes);
-				if (recipe.HasRuntimeDependencies)
-					AddRecipeFiles(recipe.RuntimeDependencies, recipe.Language, packageFolder, currentChildRecipes);
-
-				column.Add(new GraphNode(recipe.Name, recipeFile.Id)
+				column.Add(new GraphNode(title, recipeFile.Id)
 				{
 					ChildNodes = currentChildRecipes.Select(value => value.Id).ToList(),
 				});
@@ -177,7 +188,7 @@ namespace SoupView.ViewModel
 					var packagesDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 						new Path(".soup/packages/");
 					var languageRootFolder = packagesDirectory + new Path(recipeLanguage);
-					var packageRootFolder = languageRootFolder + new Path(packageReference.GetName);
+					var packageRootFolder = languageRootFolder + new Path(packageReference.Name);
 					var packageVersionFolder = packageRootFolder + new Path(packageReference.Version.ToString()) + new Path("/");
 					var recipeFile = packageVersionFolder + BuildConstants.RecipeFileName;
 

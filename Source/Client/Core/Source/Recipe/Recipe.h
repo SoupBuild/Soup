@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "LanguageReference.h"
 #include "PackageReference.h"
 #include "RecipeValue.h"
 
@@ -31,7 +32,7 @@ namespace Soup::Core
 			_table()
 		{
 			SetName("");
-			SetLanguage("");
+			SetLanguage(LanguageReference());
 		}
 
 		/// <summary>
@@ -39,7 +40,7 @@ namespace Soup::Core
 		/// </summary>
 		Recipe(
 			std::string_view name,
-			std::string_view language) :
+			LanguageReference language) :
 			_table()
 		{
 			SetName(name);
@@ -51,7 +52,7 @@ namespace Soup::Core
 		/// </summary>
 		Recipe(
 			std::string_view name,
-			std::string_view language,
+			LanguageReference language,
 			std::optional<SemanticVersion> version,
 			std::optional<std::vector<PackageReference>> runtimeDependencies,
 			std::optional<std::vector<PackageReference>> buildDependencies,
@@ -116,23 +117,36 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the package language
 		/// </summary>
+		bool HasLanguage() const
+		{
+			return HasValue(_table, Property_Language);
+		}
+
 		const RecipeValue& GetLanguageValue() const
 		{
 			return GetValue(_table, Property_Language);
 		}
 
-		const std::string& GetLanguage() const
+		LanguageReference GetLanguage() const
 		{
 			auto& languageValue = GetLanguageValue();
 			if (languageValue.IsString())
-				return languageValue.AsString();
+			{
+				LanguageReference result;
+				if (LanguageReference::TryParse(languageValue.AsString(), result))
+					return result;
+				else
+					throw std::runtime_error("Invalid Language format in Recipe: " + languageValue.AsString());
+			}
 			else
+			{
 				throw std::runtime_error("The Recipe language must be of type String");
+			}
 		}
 
-		void SetLanguage(std::string_view value)
+		void SetLanguage(const LanguageReference& value)
 		{
-			EnsureValue(_table, Property_Language).SetValueString(std::string(value));
+			EnsureValue(_table, Property_Language).SetValueString(value.ToString());
 		}
 
 		/// <summary>

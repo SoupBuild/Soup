@@ -3,13 +3,13 @@ This is a console application that has a single dynamic library dependency.
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/DynamicLibrary)
 
-## Library/Recipe.toml
+## Library/Recipe.sml
 The Recipe file that defines the static library "Samples.Cpp.DynamicLibrary.Library".
 ```
-Name = "Samples.Cpp.DynamicLibrary.Library"
-Language = "C++"
-Version = "1.0.0"
-Interface = "Module.cpp"
+Name: "Samples.Cpp.DynamicLibrary.Library"
+Language: "C++|0.1"
+Version: "1.0.0"
+Interface: "Module.cpp"
 ```
 
 ## Library/Module.cpp
@@ -36,21 +36,22 @@ export namespace Samples.Cpp.DynamicLibrary.Library
 }
 ```
 
-## Application/Recipe.toml
+## Application/Recipe.sml
 The Recipe file that defines the executable "Samples.Cpp.DynamicLibrary.Application".
 ```
-Name = "Samples.Cpp.DynamicLibrary.Application"
-Language = "C++"
-Type = "Executable"
-Version = "1.0.0"
-Source = [
+Name: "Samples.Cpp.DynamicLibrary.Application"
+Language: "C++|0.1"
+Type: "Executable"
+Version: "1.0.0"
+Source: [
     "Main.cpp"
 ]
 
-[Dependencies]
-Runtime = [
-    "../Library/"
-]
+Dependencies: {
+    Runtime: [
+        "../Library/"
+    ]
+}
 ```
 
 ## Application/Main.cpp

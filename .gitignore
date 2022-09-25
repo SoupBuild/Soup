@@ -12,3 +12,6 @@ obj/
 # Wix
 msi/
 wix/
+
+# Antlr
+.antlr/

@@ -1,7 +1,7 @@
 # Developer Setup
 
 ## Requirements
-* Windows 10
+* Windows 11
 * Build Tools
   * [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/) with "Desktop development with c++" workload.
   * OR
@@ -19,6 +19,7 @@ git clone --recursive https://github.com/mwasplund/Soup.git
 
 ### Build the Client
 ```
-cd Source/Client
+cd Source/Client/CLI
+soup restore
 soup build
 ```

@@ -80,7 +80,19 @@ namespace Opal.System
 		/// Get the children of a directory.
 		/// </summary>
 		/// <param name="path">The path.</param>
-		public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path);
+		public IReadOnlyList<DirectoryEntry> GetChildren(Path path);
+
+		/// <summary>
+		/// Get the child directories of a directory.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		public IReadOnlyList<DirectoryEntry> GetChildDirectories(Path path);
+
+		/// <summary>
+		/// Get the child files of a directory.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		public IReadOnlyList<DirectoryEntry> GetChildFiles(Path path);
 
 		/// <summary>
 		/// Delete the directory.
