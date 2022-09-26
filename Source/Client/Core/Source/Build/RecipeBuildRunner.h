@@ -114,26 +114,27 @@ namespace Soup::Core
 		/// </summary>
 		void Execute(const Path& workingDirectory)
 		{
+			// Enable log event ids to track individual builds
+			int projectId = 1;
+			bool isHostBuild = false;
+
+			_packageProvider.LoadClosure(workingDirectory);
+
+			auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
+			Recipe recipe = {};
+			if (!_packageProvider.TryGetRecipe(recipePath, recipe))
+			{
+				Log::Error("The target Recipe does not exist: " + recipePath.ToString());
+				Log::HighPriority("Make sure the path is correct and try again");
+
+				// Nothing we can do, exit
+				throw HandledException(1123124);
+			}
+
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
-				// Enable log event ids to track individual builds
-				int projectId = 1;
-				bool isHostBuild = false;
 				Log::EnsureListener().SetShowEventId(true);
-
-				_packageProvider.LoadClosure(workingDirectory);
-
-				auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
-				Recipe recipe = {};
-				if (!_packageProvider.TryGetRecipe(recipePath, recipe))
-				{
-					Log::Error("The target Recipe does not exist: " + recipePath.ToString());
-					Log::HighPriority("Make sure the path is correct and try again");
-
-					// Nothing we can do, exit
-					throw HandledException(1123124);
-				}
 
 				auto rootParentSet = std::set<std::string>();
 				projectId = BuildRecipeAndDependencies(

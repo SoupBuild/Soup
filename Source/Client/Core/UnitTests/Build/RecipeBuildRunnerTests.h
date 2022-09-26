@@ -38,10 +38,8 @@ namespace Soup::Core::UnitTests
 
 			auto operationGraph = OperationGraph(
 				{},
-				std::vector<OperationId>({
-				}),
-				std::vector<OperationInfo>({
-				}));
+				std::vector<OperationId>(),
+				std::vector<OperationInfo>());
 			auto operationGraphContent = std::stringstream();
 			OperationGraphWriter::Serialize(operationGraph, operationGraphContent);
 			fileSystem->CreateMockFile(
@@ -66,9 +64,9 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"INFO: 0>PackageLock file does not exist.",
-					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"INFO: PackageLock file does not exist.",
+					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Check outdated parameters file: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
@@ -313,10 +311,10 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"INFO: 0>PackageLock file does not exist.",
-					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"INFO: PackageLock file does not exist.",
+					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml",
 					"DIAG: 1>Running Build: C#|TestBuild",
 					"INFO: 1>Host Build 'TestBuild'",
 					"INFO: 1>Check outdated parameters file: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
@@ -742,11 +740,11 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"INFO: 0>PackageLock file does not exist.",
-					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml",
-					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml",
+					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"INFO: PackageLock file does not exist.",
+					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml",
 					"DIAG: 1>Running Build: C++|PackageB",
 					"INFO: 1>Build 'PackageB'",
 					"INFO: 1>Check outdated parameters file: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",     
@@ -1315,10 +1313,8 @@ namespace Soup::Core::UnitTests
 
 			auto myProjectOperationGraph = OperationGraph(
 				{},
-				std::vector<OperationId>({
-				}),
-				std::vector<OperationInfo>({
-				}));
+				std::vector<OperationId>(),
+				std::vector<OperationInfo>());
 			auto myProjectOperationGraphContent = std::stringstream();
 			OperationGraphWriter::Serialize(myProjectOperationGraph, myProjectOperationGraphContent);
 			fileSystem->CreateMockFile(
@@ -1327,10 +1323,8 @@ namespace Soup::Core::UnitTests
 
 			auto testBuildOperationGraph = OperationGraph(
 				{},
-				std::vector<OperationId>({
-				}),
-				std::vector<OperationInfo>({
-				}));
+				std::vector<OperationId>(),
+				std::vector<OperationInfo>());
 			auto testBuildOperationGraphContent = std::stringstream();
 			OperationGraphWriter::Serialize(testBuildOperationGraph, testBuildOperationGraphContent);
 			fileSystem->CreateMockFile(
@@ -1355,10 +1349,10 @@ namespace Soup::Core::UnitTests
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"DIAG: 0>Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"INFO: 0>Package lock loaded",
-					"DIAG: 0>Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: 0>Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml",
+					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"INFO: Package lock loaded",
+					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml",
 					"DIAG: 1>Running Build: C#|TestBuild",
 					"INFO: 1>Host Build 'TestBuild'",
 					"INFO: 1>Check outdated parameters file: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
