@@ -744,21 +744,21 @@ namespace Soup.Build.PackageManager
 			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
 			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
 		{
-			foreach (var dependecyType in recipe.GetDependencyTypes())
+			foreach (var dependencyType in recipe.GetDependencyTypes())
 			{
-				if (recipe.HasNamedDependencies(dependecyType))
+				if (recipe.HasNamedDependencies(dependencyType))
 				{
 					// Same language as parent is implied
 					var implicitLanguage = recipe.Language.Name;
 
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
-					if (dependecyType == Recipe.Property_Build)
+					if (dependencyType == Recipe.Property_Build)
 					{
 						implicitLanguage = "C#";
 					}
 
-					foreach (var dependency in recipe.GetNamedDependencies(dependecyType))
+					foreach (var dependency in recipe.GetNamedDependencies(dependencyType))
 					{
 						// If local then check children for external package references
 						// Otherwise install the external package reference and its dependencies

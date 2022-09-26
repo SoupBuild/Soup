@@ -250,21 +250,21 @@ namespace Soup::Core
 			auto activeParentSet = parentSet;
 			activeParentSet.insert(std::string(recipe.GetName()));
 
-			for (auto dependecyType : recipe.GetDependencyTypes())
+			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
 				if (!recipe.HasLanguage())
 					throw std::runtime_error("Recipe does not have a language reference.");
 
 				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependecyType == "Build")
+				if (dependencyType == "Build")
 				{
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
 					implicitLanguage = _builtInCSharpLanguage;
 				}
 
-				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				for (auto dependency : recipe.GetNamedDependencies(dependencyType))
 				{
 					// Load this package recipe
 					auto dependencyProjectRoot = GetPackageReferencePath(projectRoot, dependency, implicitLanguage);

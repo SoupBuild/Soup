@@ -168,18 +168,18 @@ namespace Soup::Core
 			auto activeParentSet = parentSet;
 			activeParentSet.insert(std::string(recipe.GetName()));
 
-			for (auto dependecyType : recipe.GetDependencyTypes())
+			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
 				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependecyType == "Build")
+				if (dependencyType == "Build")
 				{
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
 					implicitLanguage = "C#";
 				}
 
-				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				for (auto dependency : recipe.GetNamedDependencies(dependencyType))
 				{
 					// Load this package recipe
 					auto packagePath = _packageProvider.GetPackageReferencePath(
@@ -213,7 +213,7 @@ namespace Soup::Core
 					}
 
 					// Build all recursive dependencies
-					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
+					bool isDependencyHostBuild = isHostBuild || dependencyType == "Build";
 					projectId = BuildRecipeAndDependencies(
 						projectId,
 						packagePath,
@@ -665,19 +665,19 @@ namespace Soup::Core
 			bool isHostBuild)
 		{
 			auto result = ValueTable();
-			for (auto dependecyType : recipe.GetDependencyTypes())
+			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
 				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependecyType == "Build")
+				if (dependencyType == "Build")
 				{
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
 					implicitLanguage = "C#";
 				}
 
-				auto& dependencyTypeTable = result.SetValue(dependecyType, Value(ValueTable())).AsTable();
-				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				auto& dependencyTypeTable = result.SetValue(dependencyType, Value(ValueTable())).AsTable();
+				for (auto dependency : recipe.GetNamedDependencies(dependencyType))
 				{
 					// Load this package recipe
 					auto packagePath = _packageProvider.GetPackageReferencePath(
@@ -686,7 +686,7 @@ namespace Soup::Core
 						implicitLanguage);
 
 					// Cache the build state for upstream dependencies
-					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
+					bool isDependencyHostBuild = isHostBuild || dependencyType == "Build";
 					auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
 
 					auto findBuildCache = buildCache.find(packagePath);
@@ -728,18 +728,18 @@ namespace Soup::Core
 		{
 			auto directDirectories = std::set<Path>();
 			auto recursiveDirectories = std::set<Path>();
-			for (auto dependecyType : recipe.GetDependencyTypes())
+			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
 				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependecyType == "Build")
+				if (dependencyType == "Build")
 				{
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
 					implicitLanguage = "C#";
 				}
 
-				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				for (auto dependency : recipe.GetNamedDependencies(dependencyType))
 				{
 					// Load this package recipe
 					auto packagePath = _packageProvider.GetPackageReferencePath(
@@ -748,7 +748,7 @@ namespace Soup::Core
 						implicitLanguage);
 
 					// Cache the build state for upstream dependencies
-					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
+					bool isDependencyHostBuild = isHostBuild || dependencyType == "Build";
 					auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
 
 					auto findBuildCache = buildCache.find(packagePath);
