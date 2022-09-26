@@ -1690,7 +1690,5 @@ namespace Soup::Core::UnitTests
 				myPackageGenerateGraph,
 				"Verify file content match expected.");
 		}
-
-		
 	};
 }
