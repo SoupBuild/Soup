@@ -85,72 +85,6 @@ namespace Soup::Core
 			projectId = LoadClosure(recipe, projectRoot, projectId, parentSet);
 		}
 
-		int LoadClosure(
-			const Recipe& recipe,
-			const Path& projectRoot,
-			int projectId,
-			const std::set<std::string>& parentSet)
-		{
-			// Add current package to the parent set when building child dependencies
-			auto activeParentSet = parentSet;
-			activeParentSet.insert(std::string(recipe.GetName()));
-
-			for (auto dependecyType : recipe.GetDependencyTypes())
-			{
-				// Same language as parent is implied
-				if (!recipe.HasLanguage())
-					throw std::runtime_error("Recipe does not have a language reference.");
-
-				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependecyType == "Build")
-				{
-					// Build dependencies do not inherit the parent language
-					// Instead, they default to C#
-					implicitLanguage = _builtInCSharpLanguage;
-				}
-
-				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
-				{
-					// Load this package recipe
-					auto dependencyProjectRoot = GetPackageReferencePath(projectRoot, dependency, implicitLanguage);
-					auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
-					Recipe dependencyRecipe = {};
-					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
-					{
-						if (dependency.IsLocal())
-						{
-							Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
-							Log::HighPriority("Make sure the path is correct and try again");
-						}
-						else
-						{
-							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
-							Log::HighPriority("Run `restore` and try again");
-						}
-
-						// Nothing we can do, exit
-						throw HandledException(1234);
-					}
-
-					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependencyRecipe.GetName()))
-					{
-						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
-						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
-					}
-
-					// Discover all recursive dependencies
-					projectId = LoadClosure(
-						dependencyRecipe,
-						dependencyProjectRoot,
-						projectId,
-						activeParentSet);
-				}
-			}
-
-			return projectId;
-		}
-
 		bool TryGetRootRecipe(
 			const Path& recipeFile,
 			RootRecipe& result)
@@ -306,6 +240,72 @@ namespace Soup::Core
 		}
 
 	private:
+		int LoadClosure(
+			const Recipe& recipe,
+			const Path& projectRoot,
+			int projectId,
+			const std::set<std::string>& parentSet)
+		{
+			// Add current package to the parent set when building child dependencies
+			auto activeParentSet = parentSet;
+			activeParentSet.insert(std::string(recipe.GetName()));
+
+			for (auto dependecyType : recipe.GetDependencyTypes())
+			{
+				// Same language as parent is implied
+				if (!recipe.HasLanguage())
+					throw std::runtime_error("Recipe does not have a language reference.");
+
+				auto implicitLanguage = recipe.GetLanguage().GetName();
+				if (dependecyType == "Build")
+				{
+					// Build dependencies do not inherit the parent language
+					// Instead, they default to C#
+					implicitLanguage = _builtInCSharpLanguage;
+				}
+
+				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				{
+					// Load this package recipe
+					auto dependencyProjectRoot = GetPackageReferencePath(projectRoot, dependency, implicitLanguage);
+					auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
+					Recipe dependencyRecipe = {};
+					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
+					{
+						if (dependency.IsLocal())
+						{
+							Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+							Log::HighPriority("Make sure the path is correct and try again");
+						}
+						else
+						{
+							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
+							Log::HighPriority("Run `restore` and try again");
+						}
+
+						// Nothing we can do, exit
+						throw HandledException(1234);
+					}
+
+					// Ensure we do not have any circular dependencies
+					if (activeParentSet.contains(dependencyRecipe.GetName()))
+					{
+						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
+						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
+					}
+
+					// Discover all recursive dependencies
+					projectId = LoadClosure(
+						dependencyRecipe,
+						dependencyProjectRoot,
+						projectId,
+						activeParentSet);
+				}
+			}
+
+			return projectId;
+		}
+
 		Path GetSoupUserDataPath() const
 		{
 			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
