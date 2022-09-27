@@ -16,7 +16,7 @@ namespace Soup::Core::UnitTests
 		}
 
 		// [[Fact]]
-		void LoadClosure_NoDependencies()
+		void Initialize_NoDependencies()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -37,7 +37,7 @@ namespace Soup::Core::UnitTests
 			auto uut = PackageProvider();
 
 			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			uut.LoadClosure(workingDirectory);
+			uut.Initialize(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -61,7 +61,7 @@ namespace Soup::Core::UnitTests
 		}
 		
 		// [[Fact]]
-		void LoadClosure_BuildDependency()
+		void Initialize_BuildDependency()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -94,7 +94,7 @@ namespace Soup::Core::UnitTests
 			auto uut = PackageProvider();
 
 			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			uut.LoadClosure(workingDirectory);
+			uut.Initialize(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -122,7 +122,7 @@ namespace Soup::Core::UnitTests
 		}
 
 		// [[Fact]]
-		void LoadClosure_TriangleDependency_NoRebuild()
+		void Initialize_TriangleDependency_NoRebuild()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -166,7 +166,7 @@ namespace Soup::Core::UnitTests
 			auto uut = PackageProvider();
 
 			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			uut.LoadClosure(workingDirectory);
+			uut.Initialize(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -199,7 +199,7 @@ namespace Soup::Core::UnitTests
 		}
 
 		// [[Fact]]
-		void LoadClosure_PackageLock_OverrideBuildDependency()
+		void Initialize_PackageLock_OverrideBuildDependency()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -260,7 +260,7 @@ namespace Soup::Core::UnitTests
 			auto uut = PackageProvider();
 
 			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			uut.LoadClosure(workingDirectory);
+			uut.Initialize(workingDirectory);
 
 			// Verify expected logs
 			Assert::AreEqual(

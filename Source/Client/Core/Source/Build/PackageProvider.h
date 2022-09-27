@@ -18,6 +18,7 @@ namespace Soup::Core
 	export class PackageProvider
 	{
 	private:
+		const std::string _buildDependencyType = "Build";
 		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _builtInCppLanguage = "C++";
 		const std::string _builtInCppExtensionVersion = "0.3.0";
@@ -46,7 +47,7 @@ namespace Soup::Core
 		{
 		}
 
-		void LoadClosure(const Path& projectRoot)
+		void Initialize(const Path& projectRoot)
 		{
 			// Load the package lock if present
 			auto packageLockPath = projectRoot + BuildConstants::PackageLockFileName();
@@ -73,7 +74,7 @@ namespace Soup::Core
 
 			auto recipePath = projectRoot + BuildConstants::RecipeFileName();
 			Recipe recipe = {};
-			if (!TryGetRecipe(recipePath, recipe))
+			if (!TryGetOrLoadRecipe(recipePath, recipe))
 			{
 				Log::Error("The target Recipe does not exist: " + recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
@@ -117,7 +118,21 @@ namespace Soup::Core
 			}
 		}
 
-		bool TryGetRecipe(
+		Recipe GetRecipe(const Path& recipeFile)
+		{
+			// The Recipe must already be loaded
+			auto findRecipe = _knownRecipes.find(recipeFile.ToString());
+			if (findRecipe != _knownRecipes.end())
+			{
+				return findRecipe->second;
+			}
+			else
+			{
+				throw std::runtime_error("Recipe [" + recipeFile.ToString() + "] not found in closure");
+			}
+		}
+
+		bool TryGetOrLoadRecipe(
 			const Path& recipeFile,
 			Recipe& result)
 		{
@@ -257,7 +272,7 @@ namespace Soup::Core
 					throw std::runtime_error("Recipe does not have a language reference.");
 
 				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependencyType == "Build")
+				if (dependencyType == _buildDependencyType)
 				{
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
@@ -270,7 +285,7 @@ namespace Soup::Core
 					auto dependencyProjectRoot = GetPackageReferencePath(projectRoot, dependency, implicitLanguage);
 					auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
 					Recipe dependencyRecipe = {};
-					if (!TryGetRecipe(packageRecipePath, dependencyRecipe))
+					if (!TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 					{
 						if (dependency.IsLocal())
 						{

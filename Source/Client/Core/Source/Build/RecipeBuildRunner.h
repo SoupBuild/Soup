@@ -118,31 +118,21 @@ namespace Soup::Core
 			int projectId = 1;
 			bool isHostBuild = false;
 
-			_packageProvider.LoadClosure(workingDirectory);
+			_packageProvider.Initialize(workingDirectory);
 
 			auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
-			Recipe recipe = {};
-			if (!_packageProvider.TryGetRecipe(recipePath, recipe))
-			{
-				Log::Error("The target Recipe does not exist: " + recipePath.ToString());
-				Log::HighPriority("Make sure the path is correct and try again");
-
-				// Nothing we can do, exit
-				throw HandledException(1123124);
-			}
+			auto recipe = _packageProvider.GetRecipe(recipePath);
 
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
 				Log::EnsureListener().SetShowEventId(true);
 
-				auto rootParentSet = std::set<std::string>();
 				projectId = BuildRecipeAndDependencies(
 					projectId,
 					workingDirectory,
 					recipe,
-					isHostBuild,
-					rootParentSet);
+					isHostBuild);
 
 				Log::EnsureListener().SetShowEventId(false);
 			}
@@ -161,13 +151,8 @@ namespace Soup::Core
 			int projectId,
 			const Path& workingDirectory,
 			Recipe& recipe,
-			bool isHostBuild,
-			const std::set<std::string>& parentSet)
+			bool isHostBuild)
 		{
-			// Add current package to the parent set when building child dependencies
-			auto activeParentSet = parentSet;
-			activeParentSet.insert(std::string(recipe.GetName()));
-
 			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
 				// Same language as parent is implied
@@ -187,30 +172,7 @@ namespace Soup::Core
 						dependency,
 						implicitLanguage);
 					auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
-					Recipe dependencyRecipe = {};
-					if (!_packageProvider.TryGetRecipe(packageRecipePath, dependencyRecipe))
-					{
-						if (dependency.IsLocal())
-						{
-							Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
-							Log::HighPriority("Make sure the path is correct and try again");
-						}
-						else
-						{
-							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + packagePath.ToString() + " [" + workingDirectory.ToString() + "]");
-							Log::HighPriority("Run `restore` and try again");
-						}
-
-						// Nothing we can do, exit
-						throw HandledException(1234);
-					}
-
-					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependencyRecipe.GetName()))
-					{
-						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
-						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
-					}
+					auto dependencyRecipe = _packageProvider.GetRecipe(packageRecipePath);
 
 					// Build all recursive dependencies
 					bool isDependencyHostBuild = isHostBuild || dependencyType == "Build";
@@ -218,8 +180,7 @@ namespace Soup::Core
 						projectId,
 						packagePath,
 						dependencyRecipe,
-						isDependencyHostBuild,
-						activeParentSet);
+						isDependencyHostBuild);
 				}
 			}
 
