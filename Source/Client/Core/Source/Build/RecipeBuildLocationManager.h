@@ -22,7 +22,7 @@ namespace Soup::Core
 			const Path& packageRoot,
 			Recipe& recipe,
 			const ValueTable& globalParameters,
-			PackageProvider& packageProvider)
+			RecipeCache& recipeCache)
 		{
 			// Set the default output directory to be relative to the package
 			auto rootOutput = packageRoot + Path("out/");
@@ -33,7 +33,7 @@ namespace Soup::Core
 			{
 				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
 				RootRecipe rootRecipe;
-				if (!packageProvider.TryGetRootRecipe(rootRecipeFile, rootRecipe))
+				if (!recipeCache.TryGetRootRecipe(rootRecipeFile, rootRecipe))
 				{
 					// Nothing we can do, exit
 					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());

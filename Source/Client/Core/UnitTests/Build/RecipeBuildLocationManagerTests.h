@@ -25,12 +25,12 @@ namespace Soup::Core::UnitTests
 				std::nullopt,
 				std::nullopt);
 			auto globalParameters = ValueTable();
-			auto packageProvider = PackageProvider();
+			auto recipeCache = RecipeCache();
 			auto targetDirectory = RecipeBuildLocationManager::GetOutputDirectory(
 				workingDirectory,
 				recipe,
 				globalParameters,
-				packageProvider);
+				recipeCache);
 
 			Assert::AreEqual(Path("C:/WorkingDirectory/out/J_HqSstV55vlb-x6RWC_hLRFRDU/"), targetDirectory, "Verify target directory matches expected.");
 
@@ -70,12 +70,12 @@ namespace Soup::Core::UnitTests
 				std::nullopt,
 				std::nullopt);
 			auto globalParameters = ValueTable();
-			auto packageProvider = PackageProvider();
+			auto recipeCache = RecipeCache();
 			auto targetDirectory = RecipeBuildLocationManager::GetOutputDirectory(
 				workingDirectory,
 				recipe,
 				globalParameters,
-				packageProvider);
+				recipeCache);
 
 			Assert::AreEqual(Path("C:/BuildOut/C++/MyPackage/1.2.3/J_HqSstV55vlb-x6RWC_hLRFRDU/"), targetDirectory, "Verify target directory matches expected.");
 

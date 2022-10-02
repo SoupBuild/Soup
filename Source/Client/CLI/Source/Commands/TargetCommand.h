@@ -47,12 +47,12 @@ namespace Soup::Client
 			}
 
 			// Load the recipe
-			auto packageProvider = Core::PackageProvider();
+			auto recipeCache = Core::RecipeCache();
 			auto recipePath =
 				workingDirectory +
 				Core::BuildConstants::RecipeFileName();
 			Core::Recipe recipe = {};
-			if (!packageProvider.TryGetOrLoadRecipe(recipePath, recipe))
+			if (!recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
 				Log::Error("The Recipe does not exist: " + recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
@@ -87,7 +87,7 @@ namespace Soup::Client
 				workingDirectory,
 				recipe,
 				globalParameters,
-				packageProvider);
+				recipeCache);
 
 			std::cout << targetDirectory.ToString() << std::flush;
 		}

@@ -121,7 +121,7 @@ namespace Soup::Core
 			_packageProvider.Initialize(workingDirectory);
 
 			auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
-			auto recipe = _packageProvider.GetRecipe(recipePath);
+			auto recipe = _packageProvider.GetRecipeCache().GetRecipe(recipePath);
 
 			// TODO: A scoped listener cleanup would be nice
 			try
@@ -172,7 +172,7 @@ namespace Soup::Core
 						dependency,
 						implicitLanguage);
 					auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
-					auto dependencyRecipe = _packageProvider.GetRecipe(packageRecipePath);
+					auto dependencyRecipe = _packageProvider.GetRecipeCache().GetRecipe(packageRecipePath);
 
 					// Build all recursive dependencies
 					bool isDependencyHostBuild = isHostBuild || dependencyType == "Build";
@@ -184,7 +184,7 @@ namespace Soup::Core
 				}
 			}
 
-			// Build the root recipe
+			// Build the target recipe
 			projectId = CheckBuildRecipe(
 				projectId,
 				workingDirectory,
@@ -285,7 +285,7 @@ namespace Soup::Core
 				packageRoot,
 				recipe,
 				globalParameters,
-				_packageProvider);
+				_packageProvider.GetRecipeCache());
 			auto soupTargetDirectory = targetDirectory + BuildConstants::GetSoupTargetDirectory();
 
 			// Build up the child target directory set

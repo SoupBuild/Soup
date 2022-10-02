@@ -5,8 +5,7 @@
 #pragma once
 #include "PackageLock/PackageLockExtensions.h"
 #include "RecipeBuildArguments.h"
-#include "Recipe/RecipeExtensions.h"
-#include "Recipe/RootRecipeExtensions.h"
+#include "Recipe/RecipeCache.h"
 #include "Utils/HandledException.h"
 #include "BuildConstants.h"
 
@@ -32,8 +31,7 @@ namespace Soup::Core
 		bool _hasPackageLock;
 		Path _packageLockRoot;
 		std::map<std::string, std::map<std::string, PackageReference>> _packageLanguageLock;
-		std::map<std::string, Recipe> _knownRecipes;
-		std::map<std::string, RootRecipe> _knownRootRecipes;
+		RecipeCache _recipeCache;
 
 	public:
 		/// <summary>
@@ -42,11 +40,14 @@ namespace Soup::Core
 		PackageProvider() :
 			_hasPackageLock(false),
 			_packageLanguageLock(),
-			_knownRecipes(),
-			_knownRootRecipes()
+			_recipeCache()
 		{
 		}
 
+		/// <summary>
+		/// Load the package lock and using it recursively load up all packages that are a part of the build closure
+		/// Validates that there are no circular dependencies and all required packages are available
+		/// </summary>
 		void Initialize(const Path& projectRoot)
 		{
 			// Load the package lock if present
@@ -74,7 +75,7 @@ namespace Soup::Core
 
 			auto recipePath = projectRoot + BuildConstants::RecipeFileName();
 			Recipe recipe = {};
-			if (!TryGetOrLoadRecipe(recipePath, recipe))
+			if (!_recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
 				Log::Error("The target Recipe does not exist: " + recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
@@ -86,82 +87,9 @@ namespace Soup::Core
 			projectId = LoadClosure(recipe, projectRoot, projectId, parentSet);
 		}
 
-		bool TryGetRootRecipe(
-			const Path& recipeFile,
-			RootRecipe& result)
+		RecipeCache& GetRecipeCache()
 		{
-			// Check if the recipe was already loaded
-			auto findRecipe = _knownRootRecipes.find(recipeFile.ToString());
-			if (findRecipe != _knownRootRecipes.end())
-			{
-				result = findRecipe->second;
-				return true;
-			}
-			else
-			{
-				RootRecipe loadRecipe;
-				if (RootRecipeExtensions::TryLoadRootRecipeFromFile(recipeFile, loadRecipe))
-				{
-					// Save the recipe for later
-					auto insertRecipe = _knownRootRecipes.emplace(
-						recipeFile.ToString(),
-						std::move(loadRecipe));
-
-					result = insertRecipe.first->second;
-					return true;
-				}
-				else
-				{
-					// Failed to load this recipe
-					return false;
-				}
-			}
-		}
-
-		Recipe GetRecipe(const Path& recipeFile)
-		{
-			// The Recipe must already be loaded
-			auto findRecipe = _knownRecipes.find(recipeFile.ToString());
-			if (findRecipe != _knownRecipes.end())
-			{
-				return findRecipe->second;
-			}
-			else
-			{
-				throw std::runtime_error("Recipe [" + recipeFile.ToString() + "] not found in closure");
-			}
-		}
-
-		bool TryGetOrLoadRecipe(
-			const Path& recipeFile,
-			Recipe& result)
-		{
-			// Check if the recipe was already loaded
-			auto findRecipe = _knownRecipes.find(recipeFile.ToString());
-			if (findRecipe != _knownRecipes.end())
-			{
-				result = findRecipe->second;
-				return true;
-			}
-			else
-			{
-				Recipe loadRecipe = {};
-				if (RecipeExtensions::TryLoadRecipeFromFile(recipeFile, loadRecipe))
-				{
-					// Save the recipe for later
-					auto insertRecipe = _knownRecipes.emplace(
-						recipeFile.ToString(),
-						std::move(loadRecipe));
-
-					result = insertRecipe.first->second;
-					return true;
-				}
-				else
-				{
-					// Failed to load this recipe
-					return false;
-				}
-			}
+			return _recipeCache;
 		}
 
 		Path GetPackageReferencePath(
@@ -265,12 +193,12 @@ namespace Soup::Core
 			auto activeParentSet = parentSet;
 			activeParentSet.insert(std::string(recipe.GetName()));
 
+			// Same language as parent is implied
+			if (!recipe.HasLanguage())
+				throw std::runtime_error("Recipe does not have a language reference.");
+
 			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
-				// Same language as parent is implied
-				if (!recipe.HasLanguage())
-					throw std::runtime_error("Recipe does not have a language reference.");
-
 				auto implicitLanguage = recipe.GetLanguage().GetName();
 				if (dependencyType == _buildDependencyType)
 				{
@@ -285,7 +213,7 @@ namespace Soup::Core
 					auto dependencyProjectRoot = GetPackageReferencePath(projectRoot, dependency, implicitLanguage);
 					auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
 					Recipe dependencyRecipe = {};
-					if (!TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
+					if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 					{
 						if (dependency.IsLocal())
 						{
