@@ -51,7 +51,7 @@ namespace Soup::Client
 			auto recipePath =
 				workingDirectory +
 				Core::BuildConstants::RecipeFileName();
-			Core::Recipe recipe = {};
+			const Core::Recipe* recipe;
 			if (!recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
 				Log::Error("The Recipe does not exist: " + recipePath.ToString());
@@ -85,7 +85,7 @@ namespace Soup::Client
 			// Load the value table to get the exe path
 			auto targetDirectory = Core::RecipeBuildLocationManager::GetOutputDirectory(
 				workingDirectory,
-				recipe,
+				*recipe,
 				globalParameters,
 				recipeCache);
 			auto soupTargetDirectory = targetDirectory + Core::BuildConstants::GetSoupTargetDirectory();

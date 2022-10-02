@@ -29,13 +29,13 @@ namespace Soup::Core
 
 		bool TryGetRootRecipe(
 			const Path& recipeFile,
-			RootRecipe& result)
+			const RootRecipe*& result)
 		{
 			// Check if the recipe was already loaded
 			auto findRecipe = _knownRootRecipes.find(recipeFile.ToString());
 			if (findRecipe != _knownRootRecipes.end())
 			{
-				result = findRecipe->second;
+				result = &findRecipe->second;
 				return true;
 			}
 			else
@@ -48,7 +48,7 @@ namespace Soup::Core
 						recipeFile.ToString(),
 						std::move(loadRecipe));
 
-					result = insertRecipe.first->second;
+					result = &insertRecipe.first->second;
 					return true;
 				}
 				else
@@ -59,7 +59,7 @@ namespace Soup::Core
 			}
 		}
 
-		Recipe GetRecipe(const Path& recipeFile)
+		const Recipe& GetRecipe(const Path& recipeFile)
 		{
 			// The Recipe must already be loaded
 			auto findRecipe = _knownRecipes.find(recipeFile.ToString());
@@ -75,18 +75,18 @@ namespace Soup::Core
 
 		bool TryGetOrLoadRecipe(
 			const Path& recipeFile,
-			Recipe& result)
+			const Recipe*& result)
 		{
 			// Check if the recipe was already loaded
 			auto findRecipe = _knownRecipes.find(recipeFile.ToString());
 			if (findRecipe != _knownRecipes.end())
 			{
-				result = findRecipe->second;
+				result = &findRecipe->second;
 				return true;
 			}
 			else
 			{
-				Recipe loadRecipe = {};
+				Recipe loadRecipe;
 				if (RecipeExtensions::TryLoadRecipeFromFile(recipeFile, loadRecipe))
 				{
 					// Save the recipe for later
@@ -94,7 +94,7 @@ namespace Soup::Core
 						recipeFile.ToString(),
 						std::move(loadRecipe));
 
-					result = insertRecipe.first->second;
+					result = &insertRecipe.first->second;
 					return true;
 				}
 				else

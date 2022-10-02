@@ -171,12 +171,12 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the package version
 		/// </summary>
-		bool HasVersion()
+		bool HasVersion() const
 		{
 			return HasValue(_table, Property_Version);
 		}
 
-		SemanticVersion GetVersion()
+		SemanticVersion GetVersion() const
 		{
 			if (!HasVersion())
 				throw std::runtime_error("No version.");

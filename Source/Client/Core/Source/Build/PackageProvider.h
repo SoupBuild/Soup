@@ -48,7 +48,7 @@ namespace Soup::Core
 		/// Load the package lock and using it recursively load up all packages that are a part of the build closure
 		/// Validates that there are no circular dependencies and all required packages are available
 		/// </summary>
-		void Initialize(const Path& projectRoot)
+		const Recipe& Initialize(const Path& projectRoot)
 		{
 			// Load the package lock if present
 			auto packageLockPath = projectRoot + BuildConstants::PackageLockFileName();
@@ -74,7 +74,7 @@ namespace Soup::Core
 			auto parentSet = std::set<std::string>();
 
 			auto recipePath = projectRoot + BuildConstants::RecipeFileName();
-			Recipe recipe = {};
+			const Recipe* recipe;
 			if (!_recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
 				Log::Error("The target Recipe does not exist: " + recipePath.ToString());
@@ -84,7 +84,9 @@ namespace Soup::Core
 				throw HandledException(1123124);
 			}
 
-			projectId = LoadClosure(recipe, projectRoot, projectId, parentSet);
+			projectId = LoadClosure(*recipe, projectRoot, projectId, parentSet);
+
+			return *recipe;
 		}
 
 		RecipeCache& GetRecipeCache()
@@ -212,7 +214,7 @@ namespace Soup::Core
 					// Load this package recipe
 					auto dependencyProjectRoot = GetPackageReferencePath(projectRoot, dependency, implicitLanguage);
 					auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
-					Recipe dependencyRecipe = {};
+					const Recipe* dependencyRecipe;
 					if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
 					{
 						if (dependency.IsLocal())
@@ -231,15 +233,15 @@ namespace Soup::Core
 					}
 
 					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependencyRecipe.GetName()))
+					if (activeParentSet.contains(dependencyRecipe->GetName()))
 					{
-						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
+						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe->GetName());
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 					}
 
 					// Discover all recursive dependencies
 					projectId = LoadClosure(
-						dependencyRecipe,
+						*dependencyRecipe,
 						dependencyProjectRoot,
 						projectId,
 						activeParentSet);

@@ -20,7 +20,7 @@ namespace Soup::Core
 	public:
 		static Path GetOutputDirectory(
 			const Path& packageRoot,
-			Recipe& recipe,
+			const Recipe& recipe,
 			const ValueTable& globalParameters,
 			RecipeCache& recipeCache)
 		{
@@ -32,7 +32,7 @@ namespace Soup::Core
 			if (RootRecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
 			{
 				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
-				RootRecipe rootRecipe;
+				const RootRecipe* rootRecipe;
 				if (!recipeCache.TryGetRootRecipe(rootRecipeFile, rootRecipe))
 				{
 					// Nothing we can do, exit
@@ -41,10 +41,10 @@ namespace Soup::Core
 				}
 
 				// Check if there was a root output set
-				if (rootRecipe.HasOutputRoot())
+				if (rootRecipe->HasOutputRoot())
 				{
 					// Relative to the root recipe file itself
-					rootOutput = rootRecipe.GetOutputRoot();
+					rootOutput = rootRecipe->GetOutputRoot();
 
 					// Add the language sub folder
 					rootOutput = rootOutput + Path(recipe.GetLanguage().GetName() + "/");
