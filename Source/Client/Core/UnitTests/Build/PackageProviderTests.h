@@ -176,6 +176,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml",
+					"DIAG: Recipe closure already loaded: C++|PackageB",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");

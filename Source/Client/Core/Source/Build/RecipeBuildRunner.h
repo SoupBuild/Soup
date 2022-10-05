@@ -115,23 +115,17 @@ namespace Soup::Core
 		void Execute(const Path& workingDirectory)
 		{
 			// Enable log event ids to track individual builds
-			int projectId = 1;
 			bool isHostBuild = false;
 
-			_packageProvider.Initialize(workingDirectory);
-
-			auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
-			auto recipe = _packageProvider.GetRecipeCache().GetRecipe(recipePath);
+			auto packageInfo = _packageProvider.Initialize(workingDirectory);
 
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
 				Log::EnsureListener().SetShowEventId(true);
 
-				projectId = BuildRecipeAndDependencies(
-					projectId,
-					workingDirectory,
-					recipe,
+				BuildPackageAndDependencies(
+					packageInfo,
 					isHostBuild);
 
 				Log::EnsureListener().SetShowEventId(false);
@@ -147,69 +141,46 @@ namespace Soup::Core
 		/// <summary>
 		/// Build the dependencies for the provided recipe recursively
 		/// </summary>
-		int BuildRecipeAndDependencies(
-			int projectId,
-			const Path& workingDirectory,
-			Recipe& recipe,
+		void BuildPackageAndDependencies(
+			const PackageInfo& packageInfo,
 			bool isHostBuild)
 		{
-			for (auto dependencyType : recipe.GetDependencyTypes())
+			for (auto dependencyType : packageInfo.Dependencies)
 			{
-				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependencyType == "Build")
+				for (auto dependency : dependencyType.second)
 				{
-					// Build dependencies do not inherit the parent language
-					// Instead, they default to C#
-					implicitLanguage = "C#";
-				}
+					auto dependencyId = dependency.second;
 
-				for (auto dependency : recipe.GetNamedDependencies(dependencyType))
-				{
 					// Load this package recipe
-					auto packagePath = _packageProvider.GetPackageReferencePath(
-						workingDirectory,
-						dependency,
-						implicitLanguage);
-					auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
-					auto dependencyRecipe = _packageProvider.GetRecipeCache().GetRecipe(packageRecipePath);
+					auto dependencyPackageInfo = _packageProvider.GetPackageInfo(dependencyId);
 
 					// Build all recursive dependencies
-					bool isDependencyHostBuild = isHostBuild || dependencyType == "Build";
-					projectId = BuildRecipeAndDependencies(
-						projectId,
-						packagePath,
-						dependencyRecipe,
+					bool isDependencyHostBuild = isHostBuild || dependencyType.first == "Build";
+					BuildPackageAndDependencies(
+						dependencyPackageInfo,
 						isDependencyHostBuild);
 				}
 			}
 
 			// Build the target recipe
-			projectId = CheckBuildRecipe(
-				projectId,
-				workingDirectory,
-				recipe,
+			CheckBuildPackage(
+				packageInfo,
 				isHostBuild);
-
-			// Return the updated project id after building all dependencies
-			return projectId;
 		}
 
 		/// <summary>
 		/// The core build that will either invoke the recipe builder directly
 		/// or load a previous state
 		/// </summary>
-		int CheckBuildRecipe(
-			int projectId,
-			const Path& workingDirectory,
-			Recipe& recipe,
+		void CheckBuildPackage(
+			const PackageInfo& packageInfo,
 			bool isHostBuild)
 		{
 			// TODO: RAII for active id
 			try
 			{
-				Log::SetActiveId(projectId);
-				auto languagePackageName = recipe.GetLanguage().GetName() + "|" + recipe.GetName();
+				Log::SetActiveId(packageInfo.ProjectId);
+				auto languagePackageName = packageInfo.Recipe.GetLanguage().GetName() + "|" + packageInfo.Recipe.GetName();
 				Log::Diag("Running Build: " + languagePackageName);
 
 				// Select the correct build set to ensure that the different build properties 
@@ -219,9 +190,9 @@ namespace Soup::Core
 				if (findBuildState != buildSet.end())
 				{
 					// Verify the project name is unique
-					if (findBuildState->second != workingDirectory)
+					if (findBuildState->second != packageInfo.PackageRoot)
 					{
-						Log::Error("Recipe with this name already exists: " + languagePackageName + " [" + workingDirectory.ToString() + "] [" + findBuildState->second.ToString() + "]");
+						Log::Error("Recipe with this name already exists: " + languagePackageName + " [" + packageInfo.PackageRoot.ToString() + "] [" + findBuildState->second.ToString() + "]");
 						throw std::runtime_error("Recipe name not unique");
 					}
 					else
@@ -234,20 +205,16 @@ namespace Soup::Core
 					// Run the required builds in process
 					// This will break the circular requirements for the core build libraries
 					RunBuild(
-						workingDirectory,
-						recipe,
+						packageInfo,
 						isHostBuild);
 
 					// Keep track of the packages we have already built
 					auto insertBuildState = buildSet.emplace(
 						languagePackageName,
-						workingDirectory);
+						packageInfo.PackageRoot);
 
 					// Replace the find iterator so it can be used to update the shared table state
 					findBuildState = insertBuildState.first;
-
-					// Move to the next build project id
-					projectId++;
 				}
 
 				Log::SetActiveId(0);
@@ -257,47 +224,43 @@ namespace Soup::Core
 				Log::SetActiveId(0);
 				throw;
 			}
-
-			return projectId;
 		}
 
 		/// <summary>
 		/// Setup and run the individual components of the Generate and Evaluate phases for a given package
 		/// </summary>
 		void RunBuild(
-			const Path& packageRoot,
-			Recipe& recipe,
+			const PackageInfo& packageInfo,
 			bool isHostBuild)
 		{
 			if (isHostBuild)
 			{
-				Log::Info("Host Build '" + recipe.GetName() + "'");
+				Log::Info("Host Build '" + packageInfo.Recipe.GetName() + "'");
 			}
 			else
 			{
-				Log::Info("Build '" + recipe.GetName() + "'");
+				Log::Info("Build '" + packageInfo.Recipe.GetName() + "'");
 			}
 
 			auto& globalParameters = isHostBuild ? _hostBuildGlobalParameters : _arguments.GlobalParameters;
 
 			// Build up the expected output directory for the build to be used to cache state
 			auto targetDirectory = RecipeBuildLocationManager::GetOutputDirectory(
-				packageRoot,
-				recipe,
+				packageInfo.PackageRoot,
+				packageInfo.Recipe,
 				globalParameters,
 				_packageProvider.GetRecipeCache());
 			auto soupTargetDirectory = targetDirectory + BuildConstants::GetSoupTargetDirectory();
 
 			// Build up the child target directory set
-			auto childTargetDirectorySets = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
+			auto childTargetDirectorySets = GenerateChildDependenciesTargetDirectorySet(packageInfo, isHostBuild);
 			auto& directChildTargetDirectories = childTargetDirectorySets.first;
 			auto& recursiveChildTargetDirectories = childTargetDirectorySets.second;
 
 			if (!_arguments.SkipGenerate)
 			{
 				RunIncrementalGenerate(
-					recipe,
-					packageRoot,
+					packageInfo,
 					targetDirectory,
 					soupTargetDirectory,
 					globalParameters,
@@ -314,9 +277,9 @@ namespace Soup::Core
 			// Cache the build state for upstream dependencies
 			auto& buildCache = isHostBuild ? _hostBuildCache : _buildCache;
 			buildCache.emplace(
-				packageRoot,
+				packageInfo.PackageRoot,
 				RecipeBuildCacheState(
-					recipe.GetName(),
+					packageInfo.Recipe.GetName(),
 					std::move(targetDirectory),
 					std::move(soupTargetDirectory),
 					std::move(recursiveChildTargetDirectories)));
@@ -326,8 +289,7 @@ namespace Soup::Core
 		/// Run an incremental generate phase
 		/// </summary>
 		void RunIncrementalGenerate(
-			Recipe& recipe,
-			const Path& packageDirectory,
+			const PackageInfo& packageInfo,
 			const Path& targetDirectory,
 			const Path& soupTargetDirectory,
 			const ValueTable& globalParameters,
@@ -338,14 +300,14 @@ namespace Soup::Core
 			// Clone the global parameters
 			auto parametersTable = ValueTable(globalParameters.GetValues());
 
-			auto languageExtensionPath = _packageProvider.GetLanguageExtensionPath(recipe);
+			auto languageExtensionPath = _packageProvider.GetLanguageExtensionPath(packageInfo.Recipe);
 
 			// Set the input parameters
 			parametersTable.SetValue("LanguageExtensionPath", Value(languageExtensionPath.ToString()));
-			parametersTable.SetValue("PackageDirectory", Value(packageDirectory.ToString()));
+			parametersTable.SetValue("PackageDirectory", Value(packageInfo.PackageRoot.ToString()));
 			parametersTable.SetValue("TargetDirectory", Value(targetDirectory.ToString()));
 			parametersTable.SetValue("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
-			parametersTable.SetValue("Dependencies", BuildParametersDependenciesValueTable(recipe, packageDirectory, isHostBuild));
+			parametersTable.SetValue("Dependencies", GenerateParametersDependenciesValueTable(packageInfo, isHostBuild));
 			parametersTable.SetValue("SDKs", _sdkParameters);
 
 			auto parametersFile = soupTargetDirectory + BuildConstants::GenerateParametersFileName();
@@ -373,7 +335,7 @@ namespace Soup::Core
 				std::back_inserter(evaluateAllowedReadAccess));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
-			evaluateAllowedReadAccess.push_back(packageDirectory);
+			evaluateAllowedReadAccess.push_back(packageInfo.PackageRoot);
 			evaluateAllowedReadAccess.push_back(targetDirectory);
 
 			// Only allow writing to the target directory
@@ -408,9 +370,9 @@ namespace Soup::Core
 			generateArguments << soupTargetDirectory.ToString();
 			auto generateOperation = OperationInfo(
 				generateOperatioId,
-				"Generate Phase: " + recipe.GetLanguage().GetName() + "|" + recipe.GetName(),
+				"Generate Phase: " + packageInfo.Recipe.GetLanguage().GetName() + "|" + packageInfo.Recipe.GetName(),
 				CommandInfo(
-					packageDirectory,
+					packageInfo.PackageRoot,
 					generateExecutable,
 					generateArguments.str()),
 				{},
@@ -440,7 +402,7 @@ namespace Soup::Core
 			generateAllowedReadAccess.push_back(Path("C:/Program Files/dotnet/"));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
-			generateAllowedReadAccess.push_back(packageDirectory);
+			generateAllowedReadAccess.push_back(packageInfo.PackageRoot);
 			generateAllowedReadAccess.push_back(targetDirectory);
 
 			// Allow read access for all direct dependencies target directories and write to own targets
@@ -620,37 +582,28 @@ namespace Soup::Core
 			}
 		}
 
-		ValueTable BuildParametersDependenciesValueTable(
-			Recipe& recipe,
-			const Path& workingDirectory,
+		ValueTable GenerateParametersDependenciesValueTable(
+			const PackageInfo& packageInfo,
 			bool isHostBuild)
 		{
 			auto result = ValueTable();
-			for (auto dependencyType : recipe.GetDependencyTypes())
-			{
-				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependencyType == "Build")
-				{
-					// Build dependencies do not inherit the parent language
-					// Instead, they default to C#
-					implicitLanguage = "C#";
-				}
 
-				auto& dependencyTypeTable = result.SetValue(dependencyType, Value(ValueTable())).AsTable();
-				for (auto dependency : recipe.GetNamedDependencies(dependencyType))
+			for (auto dependencyType : packageInfo.Dependencies)
+			{
+				auto& dependencyTypeTable = result.SetValue(dependencyType.first, Value(ValueTable())).AsTable();
+				for (auto dependency : dependencyType.second)
 				{
+					auto dependencyId = dependency.second;
+					auto& dependencyReference = dependency.first;
+
 					// Load this package recipe
-					auto packagePath = _packageProvider.GetPackageReferencePath(
-						workingDirectory,
-						dependency,
-						implicitLanguage);
+					auto dependencyPackageInfo = _packageProvider.GetPackageInfo(dependencyId);
 
 					// Cache the build state for upstream dependencies
-					bool isDependencyHostBuild = isHostBuild || dependencyType == "Build";
+					bool isDependencyHostBuild = isHostBuild || dependencyType.first == "Build";
 					auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
 
-					auto findBuildCache = buildCache.find(packagePath);
+					auto findBuildCache = buildCache.find(dependencyPackageInfo.PackageRoot);
 					if (findBuildCache != buildCache.end())
 					{
 						auto& dependencyState = findBuildCache->second;
@@ -659,7 +612,7 @@ namespace Soup::Core
 							Value(ValueTable({
 								{
 									"Reference",
-									Value(dependency.ToString())
+									Value(dependencyReference.ToString())
 								},
 								{
 									"TargetDirectory",
@@ -673,8 +626,8 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
-						throw std::runtime_error("Dependency does not exist in build cache");
+						Log::Error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
+						throw std::runtime_error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
 					}
 				}
 			}
@@ -682,37 +635,26 @@ namespace Soup::Core
 			return result;
 		}
 
-		std::pair<std::set<Path>, std::set<Path>> BuildChildDependenciesTargetDirectorySet(
-			Recipe& recipe,
-			const Path& workingDirectory,
+		std::pair<std::set<Path>, std::set<Path>> GenerateChildDependenciesTargetDirectorySet(
+			const PackageInfo& packageInfo,
 			bool isHostBuild)
 		{
 			auto directDirectories = std::set<Path>();
 			auto recursiveDirectories = std::set<Path>();
-			for (auto dependencyType : recipe.GetDependencyTypes())
+			for (auto dependencyType : packageInfo.Dependencies)
 			{
-				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependencyType == "Build")
+				for (auto dependency : dependencyType.second)
 				{
-					// Build dependencies do not inherit the parent language
-					// Instead, they default to C#
-					implicitLanguage = "C#";
-				}
+					auto dependencyId = dependency.second;
 
-				for (auto dependency : recipe.GetNamedDependencies(dependencyType))
-				{
 					// Load this package recipe
-					auto packagePath = _packageProvider.GetPackageReferencePath(
-						workingDirectory,
-						dependency,
-						implicitLanguage);
+					auto dependencyPackageInfo = _packageProvider.GetPackageInfo(dependencyId);
 
 					// Cache the build state for upstream dependencies
-					bool isDependencyHostBuild = isHostBuild || dependencyType == "Build";
+					bool isDependencyHostBuild = isHostBuild || dependencyType.first == "Build";
 					auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
 
-					auto findBuildCache = buildCache.find(packagePath);
+					auto findBuildCache = buildCache.find(dependencyPackageInfo.PackageRoot);
 					if (findBuildCache != buildCache.end())
 					{
 						// Combine the child dependency target and the recursive children
@@ -723,8 +665,8 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
-						throw std::runtime_error("Dependency does not exist in build cache");
+						Log::Error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
+						throw std::runtime_error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
 					}
 				}
 			}

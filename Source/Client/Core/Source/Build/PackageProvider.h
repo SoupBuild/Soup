@@ -11,6 +11,27 @@
 
 namespace Soup::Core
 {
+	export class PackageInfo
+	{
+	public:
+		PackageInfo(
+			int projectId,
+			Path packageRoot,
+			const Recipe& recipe,
+			std::map<std::string, std::vector<std::pair<PackageReference, int>>> dependencies) :
+			ProjectId(projectId),
+			PackageRoot(std::move(packageRoot)),
+			Recipe(recipe),
+			Dependencies(std::move(dependencies))
+		{
+		}
+
+		int ProjectId;
+		Path PackageRoot;
+		const Recipe& Recipe;
+		std::map<std::string, std::vector<std::pair<PackageReference, int>>> Dependencies;
+	};
+
 	/// <summary>
 	/// The package provider that maintains the in memory representation of all build state
 	/// </summary>
@@ -32,6 +53,8 @@ namespace Soup::Core
 		Path _packageLockRoot;
 		std::map<std::string, std::map<std::string, PackageReference>> _packageLanguageLock;
 		RecipeCache _recipeCache;
+		std::map<int, PackageInfo> _packageLookup;
+		std::map<std::string, std::pair<int, Path>> _knownSet;
 
 	public:
 		/// <summary>
@@ -40,7 +63,9 @@ namespace Soup::Core
 		PackageProvider() :
 			_hasPackageLock(false),
 			_packageLanguageLock(),
-			_recipeCache()
+			_recipeCache(),
+			_packageLookup(),
+			_knownSet()
 		{
 		}
 
@@ -48,7 +73,7 @@ namespace Soup::Core
 		/// Load the package lock and using it recursively load up all packages that are a part of the build closure
 		/// Validates that there are no circular dependencies and all required packages are available
 		/// </summary>
-		const Recipe& Initialize(const Path& projectRoot)
+		const PackageInfo& Initialize(const Path& projectRoot)
 		{
 			// Load the package lock if present
 			auto packageLockPath = projectRoot + BuildConstants::PackageLockFileName();
@@ -84,14 +109,29 @@ namespace Soup::Core
 				throw HandledException(1123124);
 			}
 
-			projectId = LoadClosure(*recipe, projectRoot, projectId, parentSet);
+			auto finalProjectId = LoadClosure(*recipe, projectRoot, projectId, parentSet);
+			(finalProjectId);
 
-			return *recipe;
+			return GetPackageInfo(projectId);
 		}
 
 		RecipeCache& GetRecipeCache()
 		{
 			return _recipeCache;
+		}
+
+		const PackageInfo& GetPackageInfo(int projectId)
+		{
+			// The PackageInfo must already be loaded
+			auto findPackageInfo = _packageLookup.find(projectId);
+			if (findPackageInfo != _packageLookup.end())
+			{
+				return findPackageInfo->second;
+			}
+			else
+			{
+				throw std::runtime_error("ProjectId [" + std::to_string(projectId) + "] not found in lookup");
+			}
 		}
 
 		Path GetPackageReferencePath(
@@ -155,7 +195,7 @@ namespace Soup::Core
 			return packagePath;
 		}
 
-		Path GetLanguageExtensionPath(Recipe& recipe)
+		Path GetLanguageExtensionPath(const Recipe& recipe)
 		{
 			auto name = recipe.GetLanguage().GetName();
 			if (name ==  _builtInCSharpLanguage)
@@ -199,16 +239,20 @@ namespace Soup::Core
 			if (!recipe.HasLanguage())
 				throw std::runtime_error("Recipe does not have a language reference.");
 
+			auto childProjectId = projectId;
+			auto dependencyProjects = std::map<std::string, std::vector<std::pair<PackageReference, int>>>();
 			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
+				bool isBuildDependency = dependencyType == _buildDependencyType;
 				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependencyType == _buildDependencyType)
+				if (isBuildDependency)
 				{
 					// Build dependencies do not inherit the parent language
 					// Instead, they default to C#
 					implicitLanguage = _builtInCSharpLanguage;
 				}
 
+				auto dependencyTypeProjects = std::vector<std::pair<PackageReference, int>>();
 				for (auto dependency : recipe.GetNamedDependencies(dependencyType))
 				{
 					// Load this package recipe
@@ -239,16 +283,54 @@ namespace Soup::Core
 						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
 					}
 
-					// Discover all recursive dependencies
-					projectId = LoadClosure(
-						*dependencyRecipe,
-						dependencyProjectRoot,
-						projectId,
-						activeParentSet);
+					// Check if the package has already been processed from another reference
+					auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + dependencyRecipe->GetName();
+					auto findKnown = _knownSet.find(languagePackageName);
+					if (findKnown != _knownSet.end())
+					{
+						// Verify the project name is unique
+						if (findKnown->second.second != dependencyProjectRoot)
+						{
+							Log::Error("Recipe with this name already exists: " + languagePackageName + " [" + projectRoot.ToString() + "] [" + findKnown->second.second.ToString() + "]");
+							throw std::runtime_error("Recipe name not unique");
+						}
+						else
+						{
+							Log::Diag("Recipe closure already loaded: " + languagePackageName);
+							dependencyTypeProjects.push_back(std::make_pair(dependency, findKnown->second.first));
+						}
+					}
+					else
+					{
+						// Load the closure for real
+						// Update the child project id
+						childProjectId++;
+						dependencyTypeProjects.push_back(std::make_pair(dependency, childProjectId));
+
+						// Keep track of the packages we have already built
+						auto insertKnown = _knownSet.emplace(
+							languagePackageName,
+							std::make_pair(childProjectId, dependencyProjectRoot));
+
+						// Discover all recursive dependencies
+						childProjectId = LoadClosure(
+							*dependencyRecipe,
+							dependencyProjectRoot,
+							childProjectId,
+							activeParentSet);
+					}
+
 				}
+
+				dependencyProjects.emplace(dependencyType, std::move(dependencyTypeProjects));
 			}
 
-			return projectId;
+			// Save the package info
+			_packageLookup.emplace(
+				projectId,
+				 PackageInfo(projectId, projectRoot, recipe, std::move(dependencyProjects)));
+
+			return childProjectId;
 		}
 
 		Path GetSoupUserDataPath() const
