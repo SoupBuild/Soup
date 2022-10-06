@@ -24,16 +24,19 @@ namespace Soup::Core
 	export class RecipeBuildRunner
 	{
 	private:
+		// Root arguments
 		RecipeBuildArguments _arguments;
-		ValueTable _hostBuildGlobalParameters;
 
+		// SDK Parameters
 		ValueList _sdkParameters;
-
-		PackageProvider _packageProvider;
-
-		// Global read access
-		std::vector<Path> _systemReadAccess;
 		std::vector<Path> _sdkReadAccess;
+
+		// System Parameters
+		ValueTable _hostBuildGlobalParameters;
+		std::vector<Path> _systemReadAccess;
+
+		// Package provider
+		PackageProvider _packageProvider;
 
 		// Mapping from name to build folder to check for duplicate names with different packages
 		std::map<std::string, Path> _buildSet;
@@ -49,81 +52,39 @@ namespace Soup::Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuildRunner"/> class.
 		/// </summary>
-		RecipeBuildRunner(RecipeBuildArguments arguments, LocalUserConfig localUserConfig) :
+		RecipeBuildRunner(
+			RecipeBuildArguments arguments,
+			ValueList sdkParameters,
+			std::vector<Path> sdkReadAccess,
+			ValueTable hostBuildGlobalParameters,
+			std::vector<Path> systemReadAccess,
+			PackageProvider packageProvider) :
 			_arguments(std::move(arguments)),
-			_sdkParameters(),
-			_packageProvider(),
+			_sdkParameters(std::move(sdkParameters)),
+			_sdkReadAccess(std::move(sdkReadAccess)),
+			_hostBuildGlobalParameters(std::move(hostBuildGlobalParameters)),
+			_systemReadAccess(std::move(systemReadAccess)),
+			_packageProvider(std::move(packageProvider)),
 			_buildSet(),
 			_hostBuildSet(),
 			_buildCache(),
 			_hostBuildCache(),
-			_systemReadAccess(),
-			_sdkReadAccess(),
 			_fileSystemState(std::make_shared<FileSystemState>())
 		{
-			_hostBuildGlobalParameters = ValueTable();
-
-			// TODO: Default parameters need to come from the build extension
-			auto flavor = std::string("release");
-			auto system = std::string("win32");
-			auto architecture = std::string("x64");
-			auto compiler = std::string("MSVC");
-
-			_hostBuildGlobalParameters.SetValue("Architecture", Value(std::string(architecture)));
-			_hostBuildGlobalParameters.SetValue("Compiler", Value(std::string(compiler)));
-			_hostBuildGlobalParameters.SetValue("Flavor", Value(std::string(flavor)));
-			_hostBuildGlobalParameters.SetValue("System", Value(std::string(system)));
-
-			// Allow read access from system directories
-			// TODO: Windows specific
-			_systemReadAccess.push_back(
-				Path("C:/Windows/"));
-
-			// Process the SDKs
-			if (localUserConfig.HasSDKs())
-			{
-				Log::Info("Checking SDKs for read access");
-				auto sdks = localUserConfig.GetSDKs();
-				for (auto& sdk : sdks)
-				{
-					auto sdkName = sdk.GetName();
-					Log::Info("Found SDK: " + sdkName);
-					if (sdk.HasSourceDirectories())
-					{
-						for (auto& sourceDirectory : sdk.GetSourceDirectories())
-						{
-							Log::Info("  Read Access: " + sourceDirectory.ToString());
-							_sdkReadAccess.push_back(sourceDirectory);
-						}
-					}
-
-					auto sdkParameters = ValueTable();
-					sdkParameters.SetValue("Name", Value(sdkName));
-					if (sdk.HasProperties())
-					{
-						sdkParameters.SetValue("Properties", RecipeBuildStateConverter::ConvertToBuildState(sdk.GetProperties()));
-					}
-
-					_sdkParameters.GetValues().push_back(std::move(sdkParameters));
-				}
-			}
 		}
 
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(const Path& workingDirectory)
+		void Execute(const PackageInfo& packageInfo)
 		{
-			// Enable log event ids to track individual builds
-			bool isHostBuild = false;
-
-			auto packageInfo = _packageProvider.Initialize(workingDirectory);
-
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
 				Log::EnsureListener().SetShowEventId(true);
 
+				// Enable log event ids to track individual builds
+				bool isHostBuild = false;
 				BuildPackageAndDependencies(
 					packageInfo,
 					isHostBuild);
@@ -415,11 +376,11 @@ namespace Soup::Core
 			generateAllowedWriteAccess.push_back(targetDirectory);
 
 			// Load the previous build graph if it exists and merge it with the new one
-			auto generateGraphFile = soupTargetDirectory + GetGenerateGraphFileName();
+			auto generateGraphFile = soupTargetDirectory + BuildConstants::GetGenerateGraphFileName();
 			TryMergeExisting(generateGraphFile, generateGraph);
 
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + GetTemporaryFolderName();
+			auto temporaryDirectory = targetDirectory + BuildConstants::GetTemporaryFolderName();
 
 			// Evaluate the Generate phase
 			auto evaluateGenerateEngine = BuildEvaluateEngine(
@@ -470,7 +431,7 @@ namespace Soup::Core
 		{
 			// Load and run the previous stored state directly
 			auto generateEvaluateGraphFile = soupTargetDirectory + BuildConstants::GenerateEvaluateOperationGraphFileName();
-			auto evaluateResultGraphFile = soupTargetDirectory + GetEvaluateResultGraphFileName();
+			auto evaluateResultGraphFile = soupTargetDirectory + BuildConstants::GetEvaluateResultGraphFileName();
 
 			Log::Info("Loading generate evaluate operation graph");
 			auto evaluateGraph = OperationGraph();
@@ -489,7 +450,7 @@ namespace Soup::Core
 			}
 
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + GetTemporaryFolderName();
+			auto temporaryDirectory = targetDirectory + BuildConstants::GetTemporaryFolderName();
 
 			// Initialize the read access with the shared global set
 			auto allowedReadAccess = std::vector<Path>();
@@ -672,25 +633,6 @@ namespace Soup::Core
 			}
 
 			return std::make_pair(std::move(directDirectories), std::move(recursiveDirectories));
-		}
-
-	private:
-		static Path GetGenerateGraphFileName()
-		{
-			static const auto value = Path("GenerateGraph.bog");
-			return value;
-		}
-
-		static Path GetEvaluateResultGraphFileName()
-		{
-			static const auto value = Path("EvaluateResultGraph.bog");
-			return value;
-		}
-
-		static Path GetTemporaryFolderName()
-		{
-			static const auto value = Path("temp/");
-			return value;
 		}
 	};
 }

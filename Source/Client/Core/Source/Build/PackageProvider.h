@@ -34,6 +34,8 @@ namespace Soup::Core
 
 	/// <summary>
 	/// The package provider that maintains the in memory representation of all build state
+	/// It is responsible for loading up the entire closure and validating build state to 
+	/// create a package graph that can be evaluated by the build runner.
 	/// </summary>
 	export class PackageProvider
 	{

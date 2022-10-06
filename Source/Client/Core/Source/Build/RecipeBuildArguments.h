@@ -18,6 +18,11 @@ namespace Soup::Core
 		ValueTable GlobalParameters;
 
 		/// <summary>
+		/// Gets or sets the working directory
+		/// </summary>
+		Path WorkingDirectory;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to skip running the build generate phase
 		/// </summary>
 		bool SkipGenerate;
@@ -38,6 +43,7 @@ namespace Soup::Core
 		bool operator ==(const RecipeBuildArguments& rhs) const
 		{
 			return GlobalParameters == rhs.GlobalParameters &&
+				WorkingDirectory == rhs.WorkingDirectory &&
 				SkipGenerate == rhs.SkipGenerate &&
 				SkipEvaluate == rhs.SkipEvaluate &&
 				ForceRebuild == rhs.ForceRebuild;
