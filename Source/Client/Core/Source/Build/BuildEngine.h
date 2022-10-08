@@ -19,19 +19,42 @@ namespace Soup::Core
 		/// </summary>
 		static void Execute(RecipeBuildArguments arguments)
 		{
+			auto startTime = std::chrono::high_resolution_clock::now();
+
 			// Load the local user config and any sdk content
 			auto sdkParameters = ValueList();
 			auto sdkReadAccess = std::vector<Path>();
 			LoadLocalUserConfig(sdkParameters, sdkReadAccess);
+
+			auto endTime = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
+
+			// std::cout << "LoadLocalUserConfig: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			
+			startTime = std::chrono::high_resolution_clock::now();
 
 			// Load the system specific state
 			auto hostBuildGlobalParameters = ValueTable();
 			auto systemReadAccess = std::vector<Path>();
 			LoadSystemState(hostBuildGlobalParameters, systemReadAccess);
 
+			endTime = std::chrono::high_resolution_clock::now();
+			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
+
+			// std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
+
+			startTime = std::chrono::high_resolution_clock::now();
+
 			// Generate the package build graph
 			auto packageProvider = PackageProvider();
 			auto packageInfo = packageProvider.Initialize(arguments.WorkingDirectory);
+
+			endTime = std::chrono::high_resolution_clock::now();
+			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
+
+			// std::cout << "PackageProvider: " << std::to_string(duration.count()) << " seconds." << std::endl;
+
+			startTime = std::chrono::high_resolution_clock::now();
 
 			// Initialize the build runner that will perform the generate and evaluate phase
 			// for each individual package
@@ -43,6 +66,11 @@ namespace Soup::Core
 				std::move(systemReadAccess),
 				std::move(packageProvider));
 			buildRunner.Execute(packageInfo);
+
+			endTime = std::chrono::high_resolution_clock::now();
+			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
+
+			// std::cout << "RecipeBuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
 		}
 
 	private:
@@ -62,7 +90,7 @@ namespace Soup::Core
 			{
 				Log::Warning("Local User Config invalid.");
 			}
-			
+
 			// Process the SDKs
 			if (localUserConfig.HasSDKs())
 			{
