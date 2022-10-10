@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "MockEvaluateEngine.h"
 
 namespace Soup::Core::UnitTests
 {
@@ -18,13 +19,17 @@ namespace Soup::Core::UnitTests
 			auto hostBuildGlobalParameters = ValueTable();
 			auto systemReadAccess = std::vector<Path>();
 			auto packageProvider = PackageProvider();
+			auto evaluateEngine = MockEvaluateEngine();
+			auto fileSystemState = FileSystemState();
 			auto uut = RecipeBuildRunner(
 				std::move(arguments),
 				std::move(sdkParameters),
 				std::move(sdkReadAccess),
 				std::move(hostBuildGlobalParameters),
 				std::move(systemReadAccess),
-				std::move(packageProvider));
+				packageProvider,
+				evaluateEngine,
+				fileSystemState);
 		}
 	};
 }

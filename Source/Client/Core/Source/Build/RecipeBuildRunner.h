@@ -3,8 +3,9 @@
 // </copyright>
 
 #pragma once
-#include "BuildEvaluateEngine.h"
+#include "IEvaluateEngine.h"
 #include "BuildConstants.h"
+#include "BuildFailedException.h"
 #include "PackageProvider.h"
 #include "RecipeBuildArguments.h"
 #include "FileSystemState.h"
@@ -35,8 +36,10 @@ namespace Soup::Core
 		ValueTable _hostBuildGlobalParameters;
 		std::vector<Path> _systemReadAccess;
 
-		// Package provider
-		PackageProvider _packageProvider;
+		// Shared Runtime
+		PackageProvider& _packageProvider;
+		IEvaluateEngine& _evaluateEngine;
+		FileSystemState& _fileSystemState;
 
 		// Mapping from name to build folder to check for duplicate names with different packages
 		std::map<std::string, Path> _buildSet;
@@ -45,8 +48,6 @@ namespace Soup::Core
 		// Mapping from package root path to the name and target folder to be used with dependencies parameters
 		std::map<Path, RecipeBuildCacheState> _buildCache;
 		std::map<Path, RecipeBuildCacheState> _hostBuildCache;
-
-		std::shared_ptr<FileSystemState> _fileSystemState;
 
 	public:
 		/// <summary>
@@ -58,18 +59,21 @@ namespace Soup::Core
 			std::vector<Path> sdkReadAccess,
 			ValueTable hostBuildGlobalParameters,
 			std::vector<Path> systemReadAccess,
-			PackageProvider packageProvider) :
+			PackageProvider& packageProvider,
+			IEvaluateEngine& evaluateEngine,
+			FileSystemState& fileSystemState) :
 			_arguments(std::move(arguments)),
 			_sdkParameters(std::move(sdkParameters)),
 			_sdkReadAccess(std::move(sdkReadAccess)),
 			_hostBuildGlobalParameters(std::move(hostBuildGlobalParameters)),
 			_systemReadAccess(std::move(systemReadAccess)),
-			_packageProvider(std::move(packageProvider)),
+			_packageProvider(packageProvider),
+			_evaluateEngine(evaluateEngine),
+			_fileSystemState(fileSystemState),
 			_buildSet(),
 			_hostBuildSet(),
 			_buildCache(),
-			_hostBuildCache(),
-			_fileSystemState(std::make_shared<FileSystemState>())
+			_hostBuildCache()
 		{
 		}
 
@@ -383,16 +387,14 @@ namespace Soup::Core
 			auto temporaryDirectory = targetDirectory + BuildConstants::GetTemporaryFolderName();
 
 			// Evaluate the Generate phase
-			auto evaluateGenerateEngine = BuildEvaluateEngine(
-				_fileSystemState,
+			_evaluateEngine.Evaluate(
 				generateGraph,
-				std::move(temporaryDirectory),
-				std::move(generateAllowedReadAccess),
-				std::move(generateAllowedWriteAccess));
-			evaluateGenerateEngine.Evaluate();
+				temporaryDirectory,
+				generateAllowedReadAccess,
+				generateAllowedWriteAccess);
 
 			// Save the operation graph for future incremental builds
-			OperationGraphManager::SaveState(generateGraphFile, generateGraph, *_fileSystemState);
+			OperationGraphManager::SaveState(generateGraphFile, generateGraph, _fileSystemState);
 		}
 
 		bool IsOutdated(const ValueTable& parametersTable, const Path& parametersFile)
@@ -438,7 +440,7 @@ namespace Soup::Core
 			if (!OperationGraphManager::TryLoadState(
 				generateEvaluateGraphFile,
 				evaluateGraph,
-				*_fileSystemState))
+				_fileSystemState))
 			{
 				throw std::runtime_error("Missing generated operation graph for evaluate phase.");
 			}
@@ -482,13 +484,11 @@ namespace Soup::Core
 			try
 			{
 				// Evaluate the build
-				auto evaluateEngine = BuildEvaluateEngine(
-					_fileSystemState,
+				_evaluateEngine.Evaluate(
 					evaluateGraph,
-					std::move(temporaryDirectory),
-					std::move(allowedReadAccess),
-					std::move(allowedWriteAccess));
-				evaluateEngine.Evaluate();
+					temporaryDirectory,
+					allowedReadAccess,
+					allowedWriteAccess);
 			}
 			catch(const BuildFailedException&)
 			{
@@ -496,7 +496,7 @@ namespace Soup::Core
 				OperationGraphManager::SaveState(
 					evaluateResultGraphFile,
 					evaluateGraph,
-					*_fileSystemState);
+					_fileSystemState);
 				throw;
 			}
 
@@ -504,7 +504,7 @@ namespace Soup::Core
 			OperationGraphManager::SaveState(
 				evaluateResultGraphFile,
 				evaluateGraph,
-				*_fileSystemState);
+				_fileSystemState);
 
 			Log::Info("Done");
 		}
@@ -521,7 +521,7 @@ namespace Soup::Core
 			if (OperationGraphManager::TryLoadState(
 				operationGraphFile,
 				previousOperationGraph,
-				*_fileSystemState))
+				_fileSystemState))
 			{
 				Log::Diag("Merge previous operation graph observed results");
 				for (auto& activeOperationEntry : operationGraph.GetOperations())

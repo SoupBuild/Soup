@@ -4,6 +4,7 @@
 
 #pragma once
 #include "RecipeBuildRunner.h"
+#include "BuildEvaluateEngine.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"
 
 namespace Soup::Core
@@ -56,6 +57,12 @@ namespace Soup::Core
 
 			startTime = std::chrono::high_resolution_clock::now();
 
+			// Initialize a shared File System State to cache file system access
+			auto fileSystemState = FileSystemState();
+
+			// Initialize a shared Evaluate Engine
+			auto evaluateEngine = BuildEvaluateEngine(fileSystemState);
+
 			// Initialize the build runner that will perform the generate and evaluate phase
 			// for each individual package
 			auto buildRunner = RecipeBuildRunner(
@@ -64,7 +71,9 @@ namespace Soup::Core
 				std::move(sdkReadAccess),
 				std::move(hostBuildGlobalParameters),
 				std::move(systemReadAccess),
-				std::move(packageProvider));
+				packageProvider,
+				evaluateEngine,
+				fileSystemState);
 			buildRunner.Execute(packageInfo);
 
 			endTime = std::chrono::high_resolution_clock::now();
