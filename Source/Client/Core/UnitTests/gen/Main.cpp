@@ -25,6 +25,7 @@ using namespace Soup::Test;
 #include "Build/BuildEngineTests.gen.h"
 #include "Build/BuildEvaluateEngineTests.gen.h"
 #include "Build/BuildHistoryCheckerTests.gen.h"
+#include "Build/BuildLoadEngineTests.gen.h"
 #include "Build/FileSystemStateTests.gen.h"
 #include "Build/PackageProviderTests.gen.h"
 #include "Build/RecipeBuildLocationManagerTests.gen.h"
@@ -58,6 +59,7 @@ int main()
 	state += RunBuildEngineTests();
 	state += RunBuildEvaluateEngineTests();
 	state += RunBuildHistoryCheckerTests();
+	state += RunBuildLoadEngineTests();
 	state += RunFileSystemStateTests();
 	state += RunPackageProviderTests();
 	state += RunRecipeBuildLocationManagerTests();

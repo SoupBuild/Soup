@@ -5,6 +5,7 @@
 #pragma once
 #include "RecipeBuildRunner.h"
 #include "BuildEvaluateEngine.h"
+#include "BuildLoadEngine.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"
 
 namespace Soup::Core
@@ -47,8 +48,9 @@ namespace Soup::Core
 			startTime = std::chrono::high_resolution_clock::now();
 
 			// Generate the package build graph
-			auto packageProvider = PackageProvider();
-			auto packageInfo = packageProvider.Initialize(arguments.WorkingDirectory);
+			auto recipeCache = RecipeCache();
+			auto loadEngine = BuildLoadEngine(recipeCache);
+			auto packageProvider = loadEngine.Load(arguments.WorkingDirectory);
 
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
@@ -71,10 +73,11 @@ namespace Soup::Core
 				std::move(sdkReadAccess),
 				std::move(hostBuildGlobalParameters),
 				std::move(systemReadAccess),
+				recipeCache,
 				packageProvider,
 				evaluateEngine,
 				fileSystemState);
-			buildRunner.Execute(packageInfo);
+			buildRunner.Execute(packageProvider.GetRootPackageInfo());
 
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);

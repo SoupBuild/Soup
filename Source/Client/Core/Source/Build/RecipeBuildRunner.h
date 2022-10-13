@@ -37,6 +37,7 @@ namespace Soup::Core
 		std::vector<Path> _systemReadAccess;
 
 		// Shared Runtime
+		RecipeCache& _recipeCache;
 		PackageProvider& _packageProvider;
 		IEvaluateEngine& _evaluateEngine;
 		FileSystemState& _fileSystemState;
@@ -59,6 +60,7 @@ namespace Soup::Core
 			std::vector<Path> sdkReadAccess,
 			ValueTable hostBuildGlobalParameters,
 			std::vector<Path> systemReadAccess,
+			RecipeCache& recipeCache,
 			PackageProvider& packageProvider,
 			IEvaluateEngine& evaluateEngine,
 			FileSystemState& fileSystemState) :
@@ -67,6 +69,7 @@ namespace Soup::Core
 			_sdkReadAccess(std::move(sdkReadAccess)),
 			_hostBuildGlobalParameters(std::move(hostBuildGlobalParameters)),
 			_systemReadAccess(std::move(systemReadAccess)),
+			_recipeCache(recipeCache),
 			_packageProvider(packageProvider),
 			_evaluateEngine(evaluateEngine),
 			_fileSystemState(fileSystemState),
@@ -214,7 +217,7 @@ namespace Soup::Core
 				packageInfo.PackageRoot,
 				packageInfo.Recipe,
 				globalParameters,
-				_packageProvider.GetRecipeCache());
+				_recipeCache);
 			auto soupTargetDirectory = targetDirectory + BuildConstants::GetSoupTargetDirectory();
 
 			// Build up the child target directory set

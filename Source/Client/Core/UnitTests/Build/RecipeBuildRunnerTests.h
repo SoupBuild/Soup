@@ -18,7 +18,8 @@ namespace Soup::Core::UnitTests
 			auto sdkReadAccess = std::vector<Path>();
 			auto hostBuildGlobalParameters = ValueTable();
 			auto systemReadAccess = std::vector<Path>();
-			auto packageProvider = PackageProvider();
+			auto recipeCache = RecipeCache();
+			auto packageProvider = PackageProvider(std::map<int, PackageInfo>(), 1);
 			auto evaluateEngine = MockEvaluateEngine();
 			auto fileSystemState = FileSystemState();
 			auto uut = RecipeBuildRunner(
@@ -27,6 +28,7 @@ namespace Soup::Core::UnitTests
 				std::move(sdkReadAccess),
 				std::move(hostBuildGlobalParameters),
 				std::move(systemReadAccess),
+				recipeCache,
 				packageProvider,
 				evaluateEngine,
 				fileSystemState);
