@@ -25,6 +25,9 @@ namespace Soup::Core
 		// Arguments
 		const RecipeBuildArguments& _arguments;
 
+		// System Parameters
+		const ValueTable& _hostBuildGlobalParameters;
+
 		// Shared Runtime State
 		RecipeCache& _recipeCache;
 
@@ -41,8 +44,10 @@ namespace Soup::Core
 		/// </summary>
 		BuildLoadEngine(
 			const RecipeBuildArguments& arguments,
+			const ValueTable& hostBuildGlobalParameters,
 			RecipeCache& recipeCache) :
 			_arguments(arguments),
+			_hostBuildGlobalParameters(hostBuildGlobalParameters),
 			_recipeCache(recipeCache),
 			_hasPackageLock(false),
 			_packageLanguageLock(),
@@ -100,7 +105,7 @@ namespace Soup::Core
 			// Save the package graph
 			_packageGraphLookup.emplace(
 				rootGraphId,
-				PackageGraph(rootGraphId, rootPackageId, ValueTable()));
+				PackageGraph(rootGraphId, rootPackageId, _arguments.GlobalParameters));
 
 			auto finalPackageId = LoadClosure(*recipe, projectRoot, rootPackageId, parentSet);
 			(finalPackageId);

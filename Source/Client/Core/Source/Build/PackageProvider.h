@@ -38,12 +38,7 @@ namespace Soup::Core
 		/// </summary>
 		bool operator ==(const PackageInfo& rhs) const
 		{
-			auto one = Id == rhs.Id;
-				auto one1 = PackageRoot == rhs.PackageRoot;
-				auto one2 = Recipe == rhs.Recipe;
-				auto one3 = Dependencies == rhs.Dependencies;
-
-			return  one && one1 && one2 && one3 && Id == rhs.Id &&
+			return Id == rhs.Id &&
 				PackageRoot == rhs.PackageRoot &&
 				Recipe == rhs.Recipe &&
 				Dependencies == rhs.Dependencies;
@@ -198,11 +193,7 @@ namespace Soup::Core
 		/// </summary>
 		bool operator ==(const PackageProvider& rhs) const
 		{
-			auto one = _rootPackageGraphId == rhs._rootPackageGraphId;
-				auto two = _packageGraphLookup == rhs._packageGraphLookup;
-				auto three = _packageLookup == rhs._packageLookup;
-
-			return one && two && three && _rootPackageGraphId == rhs._rootPackageGraphId &&
+			return _rootPackageGraphId == rhs._rootPackageGraphId &&
 				_packageGraphLookup == rhs._packageGraphLookup &&
 				_packageLookup == rhs._packageLookup;
 		}

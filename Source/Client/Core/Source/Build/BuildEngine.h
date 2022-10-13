@@ -49,7 +49,10 @@ namespace Soup::Core
 
 			// Generate the package build graph
 			auto recipeCache = RecipeCache();
-			auto loadEngine = BuildLoadEngine(arguments, recipeCache);
+			auto loadEngine = BuildLoadEngine(
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
 			auto packageProvider = loadEngine.Load();
 
 			endTime = std::chrono::high_resolution_clock::now();
