@@ -12,9 +12,21 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Initialize()
 		{
-			auto packageGraphLookup = PackageGraphLookupMap();
-			auto packageLookup = PackageLookupMap();
+			auto packageGraphLookup = PackageGraphLookupMap(
+				{
+					{ 1, PackageGraph(1, 1, ValueTable()) },
+				});
+			auto packageRecipe = Recipe();
+			auto packageLookup = PackageLookupMap(
+				{
+					{ 1, PackageInfo(1, Path(), packageRecipe, PackageChildrenMap()) },
+				});
 			auto uut = PackageProvider(1, packageGraphLookup, packageLookup);
+
+			Assert::AreEqual(
+				1,
+				uut.GetRootPackageGraph().Id,
+				"Verify root package graph matches expected.");
 		}
 	};
 }

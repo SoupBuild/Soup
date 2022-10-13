@@ -32,6 +32,30 @@ namespace Soup::Core
 		Path PackageRoot;
 		const Recipe& Recipe;
 		PackageChildrenMap Dependencies;
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const PackageInfo& rhs) const
+		{
+			auto one = Id == rhs.Id;
+				auto one1 = PackageRoot == rhs.PackageRoot;
+				auto one2 = Recipe == rhs.Recipe;
+				auto one3 = Dependencies == rhs.Dependencies;
+
+			return  one && one1 && one2 && one3 && Id == rhs.Id &&
+				PackageRoot == rhs.PackageRoot &&
+				Recipe == rhs.Recipe &&
+				Dependencies == rhs.Dependencies;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const PackageInfo& rhs) const
+		{
+			return !(*this == rhs);
+		}
 	};
 
 	export using PackageGraphId = int;
@@ -51,6 +75,24 @@ namespace Soup::Core
 		PackageGraphId Id;
 		PackageId RootPackageId;
 		ValueTable GlobalParameters;
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const PackageGraph& rhs) const
+		{
+			return Id == rhs.Id &&
+				RootPackageId == rhs.RootPackageId &&
+				GlobalParameters == rhs.GlobalParameters;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const PackageGraph& rhs) const
+		{
+			return !(*this == rhs);
+		}
 	};
 
 	/// <summary>
@@ -149,6 +191,28 @@ namespace Soup::Core
 			{
 				throw std::runtime_error("Unknown language extension path");
 			}
+		}
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const PackageProvider& rhs) const
+		{
+			auto one = _rootPackageGraphId == rhs._rootPackageGraphId;
+				auto two = _packageGraphLookup == rhs._packageGraphLookup;
+				auto three = _packageLookup == rhs._packageLookup;
+
+			return one && two && three && _rootPackageGraphId == rhs._rootPackageGraphId &&
+				_packageGraphLookup == rhs._packageGraphLookup &&
+				_packageLookup == rhs._packageLookup;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const PackageProvider& rhs) const
+		{
+			return !(*this == rhs);
 		}
 	};
 }

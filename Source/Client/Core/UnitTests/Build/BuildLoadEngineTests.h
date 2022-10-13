@@ -62,6 +62,28 @@ namespace Soup::Core::UnitTests
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
+
+			// Verify expected package graph
+			Assert::AreEqual(
+				PackageProvider(
+					1,
+					PackageGraphLookupMap(
+					{
+						{ 1, PackageGraph(1, 1, ValueTable()) },
+					}),
+					PackageLookupMap(
+					{
+						{
+							1,
+							PackageInfo(
+								1,
+								Path("C:/WorkingDirectory/MyPackage/"),
+								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								PackageChildrenMap())
+						},
+					})),
+				packageProvider,
+				"Verify package graph matches expected.");
 		}
 		
 		// [[Fact]]
@@ -125,6 +147,43 @@ namespace Soup::Core::UnitTests
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
+
+			// Verify expected package graph
+			Assert::AreEqual(
+				PackageProvider(
+					1,
+					PackageGraphLookupMap(
+					{
+						{ 1, PackageGraph(1, 1, ValueTable()) },
+					}),
+					PackageLookupMap(
+					{
+						{
+							1,
+							PackageInfo(
+								1,
+								Path("C:/WorkingDirectory/MyPackage/"),
+								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											std::make_pair(PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)), 2),
+										}
+									},
+								}))
+						},
+						{
+							2,
+							PackageInfo(
+								2,
+								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml")),
+								PackageChildrenMap())
+						},
+					})),
+				packageProvider,
+				"Verify package graph matches expected.");
 		}
 
 		// [[Fact]]
@@ -205,6 +264,59 @@ namespace Soup::Core::UnitTests
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
+
+			// Verify expected package graph
+			Assert::AreEqual(
+				PackageProvider(
+					1,
+					PackageGraphLookupMap(
+					{
+						{ 1, PackageGraph(1, 1, ValueTable()) },
+					}),
+					PackageLookupMap(
+					{
+						{
+							1,
+							PackageInfo(
+								1,
+								Path("C:/WorkingDirectory/MyPackage/"),
+								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Runtime",
+										{
+											std::make_pair(PackageReference(std::nullopt, "PackageA", SemanticVersion(1, 2, 3)), 2),
+											std::make_pair(PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)), 3),
+										}
+									},
+								}))
+						},
+						{
+							2,
+							PackageInfo(
+								2,
+								Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Runtime",
+										{
+											std::make_pair(PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)), 3),
+										}
+									},
+								}))
+						},
+						{
+							3,
+							PackageInfo(
+								3,
+								Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml")),
+								PackageChildrenMap())
+						},
+					})),
+				packageProvider,
+				"Verify package graph matches expected.");
 		}
 
 		// [[Fact]]
@@ -297,6 +409,43 @@ namespace Soup::Core::UnitTests
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
+
+			// Verify expected package graph
+			Assert::AreEqual(
+				PackageProvider(
+					1,
+					PackageGraphLookupMap(
+					{
+						{ 1, PackageGraph(1, 1, ValueTable()) },
+					}),
+					PackageLookupMap(
+					{
+						{
+							1,
+							PackageInfo(
+								1,
+								Path("C:/WorkingDirectory/MyPackage/"),
+								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											std::make_pair(PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)), 2),
+										}
+									},
+								}))
+						},
+						{
+							2,
+							PackageInfo(
+								2,
+								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml")),
+								PackageChildrenMap())
+						},
+					})),
+				packageProvider,
+				"Verify package graph matches expected.");
 		}
 	};
 }
