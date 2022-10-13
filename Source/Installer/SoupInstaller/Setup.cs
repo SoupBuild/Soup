@@ -19,13 +19,13 @@ class Script
 							new Dir(
 								@"Soup.Cpp",
 								new Dir(
-									"0.3.0",
-								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.Cpp/0.3.0/*.*"))),
+									"0.4.0",
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.Cpp/0.4.0/*.*"))),
 							new Dir(
 								@"Soup.CSharp",
 								new Dir(
-									"0.6.0",
-								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.CSharp/0.6.0/*.*")))),
+									"0.7.0",
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.CSharp/0.7.0/*.*")))),
 					new Dir(
 						@"Generate",
 						new DirFiles($"{soupRunFolder}/Soup/Generate/*.*")),
