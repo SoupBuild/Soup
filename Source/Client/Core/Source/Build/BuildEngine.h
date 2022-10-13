@@ -19,7 +19,7 @@ namespace Soup::Core
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		static void Execute(RecipeBuildArguments arguments)
+		static void Execute(const RecipeBuildArguments& arguments)
 		{
 			auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -31,7 +31,7 @@ namespace Soup::Core
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "LoadLocalUserConfig: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "LoadLocalUserConfig: " << std::to_string(duration.count()) << " seconds." << std::endl;
 			
 			startTime = std::chrono::high_resolution_clock::now();
 
@@ -43,19 +43,19 @@ namespace Soup::Core
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
 			startTime = std::chrono::high_resolution_clock::now();
 
 			// Generate the package build graph
 			auto recipeCache = RecipeCache();
-			auto loadEngine = BuildLoadEngine(recipeCache);
-			auto packageProvider = loadEngine.Load(arguments.WorkingDirectory);
+			auto loadEngine = BuildLoadEngine(arguments, recipeCache);
+			auto packageProvider = loadEngine.Load();
 
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "PackageProvider: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "BuildLoadEngine: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
 			startTime = std::chrono::high_resolution_clock::now();
 
@@ -68,21 +68,21 @@ namespace Soup::Core
 			// Initialize the build runner that will perform the generate and evaluate phase
 			// for each individual package
 			auto buildRunner = RecipeBuildRunner(
-				std::move(arguments),
-				std::move(sdkParameters),
-				std::move(sdkReadAccess),
-				std::move(hostBuildGlobalParameters),
-				std::move(systemReadAccess),
+				arguments,
+				sdkParameters,
+				sdkReadAccess,
+				hostBuildGlobalParameters,
+				systemReadAccess,
 				recipeCache,
 				packageProvider,
 				evaluateEngine,
 				fileSystemState);
-			buildRunner.Execute(packageProvider.GetRootPackageInfo());
+			buildRunner.Execute();
 
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "RecipeBuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "RecipeBuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
 		}
 
 	private:

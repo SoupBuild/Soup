@@ -19,7 +19,7 @@ namespace Soup::Core::UnitTests
 			auto hostBuildGlobalParameters = ValueTable();
 			auto systemReadAccess = std::vector<Path>();
 			auto recipeCache = RecipeCache();
-			auto packageProvider = PackageProvider(std::map<int, PackageInfo>(), 1);
+			auto packageProvider = PackageProvider(1, PackageGraphLookupMap(), PackageLookupMap());
 			auto evaluateEngine = MockEvaluateEngine();
 			auto fileSystemState = FileSystemState();
 			auto uut = RecipeBuildRunner(

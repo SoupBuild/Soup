@@ -11,30 +11,53 @@
 
 namespace Soup::Core
 {
+	export using PackageId = int;
+	export using PackageChildrenMap = std::map<std::string, std::vector<std::pair<PackageReference, PackageId>>>;
 	export class PackageInfo
 	{
 	public:
 		PackageInfo(
-			int projectId,
+			PackageId id,
 			Path packageRoot,
 			const Recipe& recipe,
-			std::map<std::string, std::vector<std::pair<PackageReference, int>>> dependencies) :
-			ProjectId(projectId),
+			PackageChildrenMap dependencies) :
+			Id(id),
 			PackageRoot(std::move(packageRoot)),
 			Recipe(recipe),
 			Dependencies(std::move(dependencies))
 		{
 		}
 
-		int ProjectId;
+		PackageId Id;
 		Path PackageRoot;
 		const Recipe& Recipe;
-		std::map<std::string, std::vector<std::pair<PackageReference, int>>> Dependencies;
+		PackageChildrenMap Dependencies;
+	};
+
+	export using PackageGraphId = int;
+	export class PackageGraph
+	{
+	public:
+		PackageGraph(
+			PackageGraphId id,
+			PackageId rootPackageId,
+			ValueTable globalParameters) :
+			Id(id),
+			RootPackageId(rootPackageId),
+			GlobalParameters(std::move(globalParameters))
+		{
+		}
+
+		PackageGraphId Id;
+		PackageId RootPackageId;
+		ValueTable GlobalParameters;
 	};
 
 	/// <summary>
 	/// The package provider that maintains the in memory representation of all build state
 	/// </summary>
+	export using PackageGraphLookupMap = std::map<PackageGraphId, PackageGraph>;
+	export using PackageLookupMap = std::map<PackageId, PackageInfo>;
 	export class PackageProvider
 	{
 	private:
@@ -48,35 +71,54 @@ namespace Soup::Core
 		const Path _builtInCSharpExtensionPath = Path("Soup.CSharp/");
 		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
 
-		std::map<int, PackageInfo> _packageLookup;
-		int _rootPackageId;
+		PackageGraphId _rootPackageGraphId;
+		PackageGraphLookupMap _packageGraphLookup;
+		PackageLookupMap _packageLookup;
 
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PackageProvider"/> class.
 		/// </summary>
-		PackageProvider(std::map<int, PackageInfo> packageLookup, int rootPackageId) :
-			_packageLookup(std::move(packageLookup)),
-			_rootPackageId(rootPackageId)
+		PackageProvider(
+			PackageGraphId rootPackageGraphId,
+			PackageGraphLookupMap packageGraphLookup,
+			PackageLookupMap packageLookup) :
+			_rootPackageGraphId(rootPackageGraphId),
+			_packageGraphLookup(std::move(packageGraphLookup)),
+			_packageLookup(std::move(packageLookup))
 		{
 		}
 
-		const PackageInfo& GetRootPackageInfo()
+		const PackageGraph& GetRootPackageGraph()
 		{
-			return GetPackageInfo(_rootPackageId);
+			return GetPackageGraph(_rootPackageGraphId);
 		}
 
-		const PackageInfo& GetPackageInfo(int projectId)
+		const PackageGraph& GetPackageGraph(PackageGraphId packageGraphId)
+		{
+			// The PackageGraph must already be loaded
+			auto findPackageGraph = _packageGraphLookup.find(packageGraphId);
+			if (findPackageGraph != _packageGraphLookup.end())
+			{
+				return findPackageGraph->second;
+			}
+			else
+			{
+				throw std::runtime_error("PackageGraphId [" + std::to_string(packageGraphId) + "] not found in lookup");
+			}
+		}
+
+		const PackageInfo& GetPackageInfo(PackageId packageId)
 		{
 			// The PackageInfo must already be loaded
-			auto findPackageInfo = _packageLookup.find(projectId);
+			auto findPackageInfo = _packageLookup.find(packageId);
 			if (findPackageInfo != _packageLookup.end())
 			{
 				return findPackageInfo->second;
 			}
 			else
 			{
-				throw std::runtime_error("ProjectId [" + std::to_string(projectId) + "] not found in lookup");
+				throw std::runtime_error("packageId [" + std::to_string(packageId) + "] not found in lookup");
 			}
 		}
 

@@ -12,8 +12,9 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Initialize()
 		{
+			auto arguments = RecipeBuildArguments();
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(recipeCache);
+			auto uut = BuildLoadEngine(arguments, recipeCache);
 		}
 
 		// [[Fact]]
@@ -35,11 +36,12 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1"
 				)")));
 
+			auto arguments = RecipeBuildArguments();
+			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(recipeCache);
+			auto uut = BuildLoadEngine(arguments, recipeCache);
 
-			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto packageProvider = uut.Load(workingDirectory);
+			auto packageProvider = uut.Load();
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -93,11 +95,12 @@ namespace Soup::Core::UnitTests
 					Language: "C#|1"
 				)")));
 
+			auto arguments = RecipeBuildArguments();
+			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(recipeCache);
+			auto uut = BuildLoadEngine(arguments, recipeCache);
 
-			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto packageProvider = uut.Load(workingDirectory);
+			auto packageProvider = uut.Load();
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -166,11 +169,12 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1"
 				)")));
 
+			auto arguments = RecipeBuildArguments();
+			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(recipeCache);
+			auto uut = BuildLoadEngine(arguments, recipeCache);
 
-			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto packageProvider = uut.Load(workingDirectory);
+			auto packageProvider = uut.Load();
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -262,11 +266,12 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 
+			auto arguments = RecipeBuildArguments();
+			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(recipeCache);
+			auto uut = BuildLoadEngine(arguments, recipeCache);
 
-			auto workingDirectory = Path("C:/WorkingDirectory/MyPackage/");
-			auto packageProvider = uut.Load(workingDirectory);
+			auto packageProvider = uut.Load();
 
 			// Verify expected logs
 			Assert::AreEqual(

@@ -12,8 +12,9 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Initialize()
 		{
-			auto packageLookup = std::map<int, PackageInfo>();
-			auto uut = PackageProvider(packageLookup, 0);
+			auto packageGraphLookup = PackageGraphLookupMap();
+			auto packageLookup = PackageLookupMap();
+			auto uut = PackageProvider(1, packageGraphLookup, packageLookup);
 		}
 	};
 }

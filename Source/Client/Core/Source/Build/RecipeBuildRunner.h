@@ -26,15 +26,15 @@ namespace Soup::Core
 	{
 	private:
 		// Root arguments
-		RecipeBuildArguments _arguments;
+		const RecipeBuildArguments& _arguments;
 
 		// SDK Parameters
-		ValueList _sdkParameters;
-		std::vector<Path> _sdkReadAccess;
+		const ValueList& _sdkParameters;
+		const std::vector<Path>& _sdkReadAccess;
 
 		// System Parameters
-		ValueTable _hostBuildGlobalParameters;
-		std::vector<Path> _systemReadAccess;
+		const ValueTable& _hostBuildGlobalParameters;
+		const std::vector<Path>& _systemReadAccess;
 
 		// Shared Runtime
 		RecipeCache& _recipeCache;
@@ -55,20 +55,20 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="RecipeBuildRunner"/> class.
 		/// </summary>
 		RecipeBuildRunner(
-			RecipeBuildArguments arguments,
-			ValueList sdkParameters,
-			std::vector<Path> sdkReadAccess,
-			ValueTable hostBuildGlobalParameters,
-			std::vector<Path> systemReadAccess,
+			const RecipeBuildArguments& arguments,
+			const ValueList& sdkParameters,
+			const std::vector<Path>& sdkReadAccess,
+			const ValueTable& hostBuildGlobalParameters,
+			const std::vector<Path>& systemReadAccess,
 			RecipeCache& recipeCache,
 			PackageProvider& packageProvider,
 			IEvaluateEngine& evaluateEngine,
 			FileSystemState& fileSystemState) :
-			_arguments(std::move(arguments)),
-			_sdkParameters(std::move(sdkParameters)),
-			_sdkReadAccess(std::move(sdkReadAccess)),
-			_hostBuildGlobalParameters(std::move(hostBuildGlobalParameters)),
-			_systemReadAccess(std::move(systemReadAccess)),
+			_arguments(arguments),
+			_sdkParameters(sdkParameters),
+			_sdkReadAccess(sdkReadAccess),
+			_hostBuildGlobalParameters(hostBuildGlobalParameters),
+			_systemReadAccess(systemReadAccess),
 			_recipeCache(recipeCache),
 			_packageProvider(packageProvider),
 			_evaluateEngine(evaluateEngine),
@@ -83,7 +83,7 @@ namespace Soup::Core
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(const PackageInfo& packageInfo)
+		void Execute()
 		{
 			// TODO: A scoped listener cleanup would be nice
 			try
@@ -91,6 +91,8 @@ namespace Soup::Core
 				Log::EnsureListener().SetShowEventId(true);
 
 				// Enable log event ids to track individual builds
+				auto& packageGraph = _packageProvider.GetRootPackageGraph();
+				auto& packageInfo = _packageProvider.GetPackageInfo(packageGraph.RootPackageId);
 				bool isHostBuild = false;
 				BuildPackageAndDependencies(
 					packageInfo,
@@ -147,7 +149,7 @@ namespace Soup::Core
 			// TODO: RAII for active id
 			try
 			{
-				Log::SetActiveId(packageInfo.ProjectId);
+				Log::SetActiveId(packageInfo.Id);
 				auto languagePackageName = packageInfo.Recipe.GetLanguage().GetName() + "|" + packageInfo.Recipe.GetName();
 				Log::Diag("Running Build: " + languagePackageName);
 
