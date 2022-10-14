@@ -12,7 +12,48 @@
 namespace Soup::Core
 {
 	export using PackageId = int;
-	export using PackageChildrenMap = std::map<std::string, std::vector<std::pair<PackageReference, PackageId>>>;
+	export using PackageGraphId = int;
+	export class PackageChildInfo
+	{
+	public:
+		PackageChildInfo(
+			PackageReference originalReference,
+			bool isSubGraph,
+			PackageId packageId,
+			PackageGraphId packageGraphId) :
+			OriginalReference(originalReference),
+			IsSubGraph(isSubGraph),
+			PackageId(packageId),
+			PackageGraphId(packageGraphId)
+		{
+		}
+
+		PackageReference OriginalReference;
+		bool IsSubGraph;
+		PackageId PackageId;
+		PackageGraphId PackageGraphId;
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const PackageChildInfo& rhs) const
+		{
+			return OriginalReference == rhs.OriginalReference &&
+				IsSubGraph == rhs.IsSubGraph &&
+				PackageId == rhs.PackageId &&
+				PackageGraphId == rhs.PackageGraphId;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const PackageChildInfo& rhs) const
+		{
+			return !(*this == rhs);
+		}
+	};
+
+	export using PackageChildrenMap = std::map<std::string, std::vector<PackageChildInfo>>;
 	export class PackageInfo
 	{
 	public:
@@ -53,23 +94,22 @@ namespace Soup::Core
 		}
 	};
 
-	export using PackageGraphId = int;
 	export class PackageGraph
 	{
 	public:
 		PackageGraph(
 			PackageGraphId id,
 			PackageId rootPackageId,
-			ValueTable globalParameters) :
+			const ValueTable& globalParameters) :
 			Id(id),
 			RootPackageId(rootPackageId),
-			GlobalParameters(std::move(globalParameters))
+			GlobalParameters(globalParameters)
 		{
 		}
 
 		PackageGraphId Id;
 		PackageId RootPackageId;
-		ValueTable GlobalParameters;
+		const ValueTable& GlobalParameters;
 
 		/// <summary>
 		/// Equality operator

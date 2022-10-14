@@ -16,7 +16,6 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			auto sdkParameters = ValueList();
 			auto sdkReadAccess = std::vector<Path>();
-			auto hostBuildGlobalParameters = ValueTable();
 			auto systemReadAccess = std::vector<Path>();
 			auto recipeCache = RecipeCache();
 			auto packageProvider = PackageProvider(1, PackageGraphLookupMap(), PackageLookupMap());
@@ -26,7 +25,6 @@ namespace Soup::Core::UnitTests
 				std::move(arguments),
 				std::move(sdkParameters),
 				std::move(sdkReadAccess),
-				std::move(hostBuildGlobalParameters),
 				std::move(systemReadAccess),
 				recipeCache,
 				packageProvider,

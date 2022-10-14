@@ -74,7 +74,6 @@ namespace Soup::Core
 				arguments,
 				sdkParameters,
 				sdkReadAccess,
-				hostBuildGlobalParameters,
 				systemReadAccess,
 				recipeCache,
 				packageProvider,

@@ -79,7 +79,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Check for previous operation invocation",
 					"INFO: 1>Operation has no successful previous invocation",
-					"HIGH: 1>Generate Phase: C++|MyPackage",
+					"HIGH: 1>Generate: C++|MyPackage",
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
@@ -212,7 +212,7 @@ namespace Soup::Core::UnitTests
 					std::vector<OperationInfo>({
 						OperationInfo(
 							1,
-							"Generate Phase: C++|MyPackage",
+							"Generate: C++|MyPackage",
 							CommandInfo(
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
@@ -312,7 +312,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml",
 					"DIAG: 2>Running Build: C#|TestBuild",
-					"INFO: 2>Host Build 'TestBuild'",
+					"INFO: 2>Build 'TestBuild'",
 					"INFO: 2>Check outdated parameters file: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
 					"INFO: 2>Value Table file does not exist",
 					"INFO: 2>Save Parameters file",
@@ -331,7 +331,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>Build evaluation start",
 					"DIAG: 2>Check for previous operation invocation",
 					"INFO: 2>Operation has no successful previous invocation",
-					"HIGH: 2>Generate Phase: C#|TestBuild",
+					"HIGH: 2>Generate: C#|TestBuild",
 					"DIAG: 2>Execute: [C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"DIAG: 2>Allowed Read Access:",
 					"DIAG: 2>C:/testlocation/Generate/",
@@ -374,7 +374,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Check for previous operation invocation",
 					"INFO: 1>Operation has no successful previous invocation",
-					"HIGH: 1>Generate Phase: C++|MyPackage",
+					"HIGH: 1>Generate: C++|MyPackage",
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
@@ -554,7 +554,7 @@ namespace Soup::Core::UnitTests
 					std::vector<OperationInfo>({
 						OperationInfo(
 							1,
-							"Generate Phase: C#|TestBuild",
+							"Generate: C#|TestBuild",
 							CommandInfo(
 								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3"),
 								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
@@ -627,7 +627,7 @@ namespace Soup::Core::UnitTests
 					std::vector<OperationInfo>({
 						OperationInfo(
 							1,
-							"Generate Phase: C++|MyPackage",
+							"Generate: C++|MyPackage",
 							CommandInfo(
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
@@ -763,7 +763,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 3>Build evaluation start",
 					"DIAG: 3>Check for previous operation invocation",
 					"INFO: 3>Operation has no successful previous invocation",
-					"HIGH: 3>Generate Phase: C++|PackageB",
+					"HIGH: 3>Generate: C++|PackageB",
 					"DIAG: 3>Execute: [C:/Users/Me/.soup/packages/C++/PackageB/1.1.1] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 3>Allowed Read Access:",
 					"DIAG: 3>C:/testlocation/Generate/",
@@ -806,7 +806,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>Build evaluation start",
 					"DIAG: 2>Check for previous operation invocation",
 					"INFO: 2>Operation has no successful previous invocation",
-					"HIGH: 2>Generate Phase: C++|PackageA",
+					"HIGH: 2>Generate: C++|PackageA",
 					"DIAG: 2>Execute: [C:/Users/Me/.soup/packages/C++/PackageA/1.2.3] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 2>Allowed Read Access:",
 					"DIAG: 2>C:/testlocation/Generate/",
@@ -852,7 +852,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Check for previous operation invocation",
 					"INFO: 1>Operation has no successful previous invocation",
-					"HIGH: 1>Generate Phase: C++|MyPackage",
+					"HIGH: 1>Generate: C++|MyPackage",
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
@@ -1080,7 +1080,7 @@ namespace Soup::Core::UnitTests
 					std::vector<OperationInfo>({
 						OperationInfo(
 							1,
-							"Generate Phase: C++|PackageA",
+							"Generate: C++|PackageA",
 							CommandInfo(
 								Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3"),
 								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
@@ -1145,7 +1145,7 @@ namespace Soup::Core::UnitTests
 					std::vector<OperationInfo>({
 						OperationInfo(
 							1,
-							"Generate Phase: C++|PackageB",
+							"Generate: C++|PackageB",
 							CommandInfo(
 								Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1"),
 								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
@@ -1223,7 +1223,7 @@ namespace Soup::Core::UnitTests
 					std::vector<OperationInfo>({
 						OperationInfo(
 							1,
-							"Generate Phase: C++|MyPackage",
+							"Generate: C++|MyPackage",
 							CommandInfo(
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
@@ -1347,7 +1347,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml",
 					"DIAG: 2>Running Build: C#|TestBuild",
-					"INFO: 2>Host Build 'TestBuild'",
+					"INFO: 2>Build 'TestBuild'",
 					"INFO: 2>Check outdated parameters file: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/GenerateParameters.bvt",
 					"INFO: 2>Value Table file does not exist",
 					"INFO: 2>Save Parameters file",
@@ -1366,7 +1366,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 2>Build evaluation start",
 					"DIAG: 2>Check for previous operation invocation",
 					"INFO: 2>Operation has no successful previous invocation",
-					"HIGH: 2>Generate Phase: C#|TestBuild",
+					"HIGH: 2>Generate: C#|TestBuild",
 					"DIAG: 2>Execute: [C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0] C:/testlocation/Generate/Soup.Build.Generate.exe C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/txTMowfPh1V3rPmbvNBmBW9Z8Jg/.soup/",
 					"DIAG: 2>Allowed Read Access:",
 					"DIAG: 2>C:/testlocation/Generate/",
@@ -1409,7 +1409,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Check for previous operation invocation",
 					"INFO: 1>Operation has no successful previous invocation",
-					"HIGH: 1>Generate Phase: C++|MyPackage",
+					"HIGH: 1>Generate: C++|MyPackage",
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
@@ -1590,7 +1590,7 @@ namespace Soup::Core::UnitTests
 					std::vector<OperationInfo>({
 						OperationInfo(
 							1,
-							"Generate Phase: C#|TestBuild",
+							"Generate: C#|TestBuild",
 							CommandInfo(
 								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0"),
 								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
@@ -1662,7 +1662,7 @@ namespace Soup::Core::UnitTests
 					std::vector<OperationInfo>({
 						OperationInfo(
 							1,
-							"Generate Phase: C++|MyPackage",
+							"Generate: C++|MyPackage",
 							CommandInfo(
 								Path("C:/WorkingDirectory/MyPackage/"),
 								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),

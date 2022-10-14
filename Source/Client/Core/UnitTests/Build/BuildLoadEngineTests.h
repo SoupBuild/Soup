@@ -208,6 +208,19 @@ namespace Soup::Core::UnitTests
 										},
 									})))
 						},
+						{
+							2,
+							PackageGraph(
+								2,
+								2,
+								ValueTable(
+									std::map<std::string, Value>({
+										{
+											"HostValue",
+											Value(true),
+										},
+									})))
+						},
 					}),
 					PackageLookupMap(
 					{
@@ -221,7 +234,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											std::make_pair(PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)), 2),
+											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)), true, -1, 2),
 										}
 									},
 								}))
@@ -364,8 +377,8 @@ namespace Soup::Core::UnitTests
 									{
 										"Runtime",
 										{
-											std::make_pair(PackageReference(std::nullopt, "PackageA", SemanticVersion(1, 2, 3)), 2),
-											std::make_pair(PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)), 3),
+											PackageChildInfo(PackageReference(std::nullopt, "PackageA", SemanticVersion(1, 2, 3)), false, 2, -1),
+											PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)), false, 3, -1),
 										}
 									},
 								}))
@@ -380,7 +393,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Runtime",
 										{
-											std::make_pair(PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)), 3),
+											PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)), false, 3, -1),
 										}
 									},
 								}))
@@ -522,6 +535,19 @@ namespace Soup::Core::UnitTests
 										},
 									})))
 						},
+						{
+							2,
+							PackageGraph(
+								2,
+								2,
+								ValueTable(
+									std::map<std::string, Value>({
+										{
+											"HostValue",
+											Value(true),
+										},
+									})))
+						},
 					}),
 					PackageLookupMap(
 					{
@@ -535,7 +561,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											std::make_pair(PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)), 2),
+											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)), true, -1, 2),
 										}
 									},
 								}))

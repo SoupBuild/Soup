@@ -13,9 +13,10 @@ namespace Soup::Core
 {
 	/// <summary>
 	/// The build load engine that loads the package build graph.
-	/// It is responsible for loading up the entire closure and validating build state to 
+	/// It is responsible for loading up the entire closure and validating build state to
 	/// create a package graph that can be evaluated by the build runner.
 	/// </summary>
+	using KnownPackageMap = std::map<std::string, std::pair<PackageId, Path>>;
 	export class BuildLoadEngine
 	{
 	private:
@@ -31,12 +32,19 @@ namespace Soup::Core
 		// Shared Runtime State
 		RecipeCache& _recipeCache;
 
+		int _uniquePackageId;
+		int _uniqueGraphId;
+
 		bool _hasPackageLock;
 		Path _packageLockRoot;
 		std::map<std::string, std::map<std::string, PackageReference>> _packageLanguageLock;
+
+		// The package build graph results
 		PackageGraphLookupMap _packageGraphLookup;
 		PackageLookupMap _packageLookup;
-		std::map<std::string, std::pair<int, Path>> _knownSet;
+
+		// Mapping from build dependency to Package path to graph id
+		std::map<Path, PackageGraphId> _knownGraphSet;
 
 	public:
 		/// <summary>
@@ -53,7 +61,7 @@ namespace Soup::Core
 			_packageLanguageLock(),
 			_packageGraphLookup(),
 			_packageLookup(),
-			_knownSet()
+			_knownGraphSet()
 		{
 		}
 
@@ -68,7 +76,7 @@ namespace Soup::Core
 			// Load the package lock if present
 			auto packageLockPath = projectRoot + BuildConstants::PackageLockFileName();
 			_hasPackageLock = false;
-			PackageLock packageLock = { };
+			PackageLock packageLock = {};
 			if (PackageLockExtensions::TryLoadFromFile(packageLockPath, packageLock))
 			{
 				Log::Info("Package lock loaded");
@@ -85,8 +93,6 @@ namespace Soup::Core
 				}
 			}
 
-			PackageId rootPackageId = 1;
-			auto parentSet = std::set<std::string>();
 
 			auto recipePath = projectRoot + BuildConstants::RecipeFileName();
 			const Recipe* recipe;
@@ -100,15 +106,27 @@ namespace Soup::Core
 			}
 
 			// Create the root build graph
-			PackageGraphId rootGraphId = 1;
+			_uniqueGraphId = 0;
+			_uniquePackageId = 0;
+			PackageGraphId rootGraphId = ++_uniqueGraphId;
+			PackageId rootPackageId = ++_uniquePackageId;
 
 			// Save the package graph
 			_packageGraphLookup.emplace(
 				rootGraphId,
 				PackageGraph(rootGraphId, rootPackageId, _arguments.GlobalParameters));
 
-			auto finalPackageId = LoadClosure(*recipe, projectRoot, rootPackageId, parentSet);
-			(finalPackageId);
+
+			auto languagePackageName = recipe->GetLanguage().GetName() + "|" + recipe->GetName();
+			auto parentSet = std::set<std::string>();
+			auto knownPackageSet = KnownPackageMap();
+			LoadClosure(
+				*recipe,
+				projectRoot,
+				languagePackageName,
+				rootPackageId,
+				parentSet,
+				knownPackageSet);
 
 			return PackageProvider(rootGraphId, std::move(_packageGraphLookup), std::move(_packageLookup));
 		}
@@ -117,7 +135,7 @@ namespace Soup::Core
 		Path GetPackageReferencePath(
 			const Path& workingDirectory,
 			const PackageReference& reference,
-			const std::string& packageLangauge) const
+			const std::string& packageLanguage) const
 		{
 			// If the path is relative then combine with the working directory
 			Path packagePath;
@@ -131,7 +149,7 @@ namespace Soup::Core
 			}
 			else
 			{
-				auto referenceLanguage = reference.HasLanguage() ? reference.GetLanguage() : packageLangauge;
+				auto referenceLanguage = reference.HasLanguage() ? reference.GetLanguage() : packageLanguage;
 
 				auto packageStore = GetSoupUserDataPath() + Path("packages/");
 				if (_hasPackageLock)
@@ -175,112 +193,202 @@ namespace Soup::Core
 			return packagePath;
 		}
 
-		int LoadClosure(
+		void LoadClosure(
 			const Recipe& recipe,
 			const Path& projectRoot,
-			int packageId,
-			const std::set<std::string>& parentSet)
+			const std::string& languagePackageName,
+			PackageId packageId,
+			const std::set<std::string>& parentSet,
+			KnownPackageMap& knownPackageSet)
 		{
 			// Add current package to the parent set when building child dependencies
 			auto activeParentSet = parentSet;
 			activeParentSet.insert(std::string(recipe.GetName()));
 
+			// Keep track of the packages we have already seen
+			auto insertKnown = knownPackageSet.emplace(
+				languagePackageName,
+				std::make_pair(packageId, projectRoot));
+
 			// Same language as parent is implied
 			if (!recipe.HasLanguage())
 				throw std::runtime_error("Recipe does not have a language reference.");
 
-			auto childPackageId = packageId;
-			auto dependencyProjects = std::map<std::string, std::vector<std::pair<PackageReference, int>>>();
+			auto dependencyProjects = std::map<std::string, std::vector<PackageChildInfo>>();
 			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
 				bool isBuildDependency = dependencyType == _buildDependencyType;
-				auto implicitLanguage = recipe.GetLanguage().GetName();
 				if (isBuildDependency)
 				{
-					// Build dependencies do not inherit the parent language
-					// Instead, they default to C#
-					implicitLanguage = _builtInCSharpLanguage;
+					auto dependencyTypeProjects = LoadBuildDependencies(recipe, projectRoot);
+					dependencyProjects.emplace(dependencyType, std::move(dependencyTypeProjects));
 				}
-
-				auto dependencyTypeProjects = std::vector<std::pair<PackageReference, int>>();
-				for (auto dependency : recipe.GetNamedDependencies(dependencyType))
+				else
 				{
-					// Load this package recipe
-					auto dependencyProjectRoot = GetPackageReferencePath(projectRoot, dependency, implicitLanguage);
-					auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
-					const Recipe* dependencyRecipe;
-					if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
-					{
-						if (dependency.IsLocal())
-						{
-							Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
-							Log::HighPriority("Make sure the path is correct and try again");
-						}
-						else
-						{
-							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
-							Log::HighPriority("Run `restore` and try again");
-						}
-
-						// Nothing we can do, exit
-						throw HandledException(1234);
-					}
-
-					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependencyRecipe->GetName()))
-					{
-						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe->GetName());
-						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
-					}
-
-					// Check if the package has already been processed from another reference
-					auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + dependencyRecipe->GetName();
-					auto findKnown = _knownSet.find(languagePackageName);
-					if (findKnown != _knownSet.end())
-					{
-						// Verify the project name is unique
-						if (findKnown->second.second != dependencyProjectRoot)
-						{
-							Log::Error("Recipe with this name already exists: " + languagePackageName + " [" + projectRoot.ToString() + "] [" + findKnown->second.second.ToString() + "]");
-							throw std::runtime_error("Recipe name not unique");
-						}
-						else
-						{
-							Log::Diag("Recipe closure already loaded: " + languagePackageName);
-							dependencyTypeProjects.push_back(std::make_pair(dependency, findKnown->second.first));
-						}
-					}
-					else
-					{
-						// Load the closure for real
-						// Update the child project id
-						childPackageId++;
-						dependencyTypeProjects.push_back(std::make_pair(dependency, childPackageId));
-
-						// Keep track of the packages we have already built
-						auto insertKnown = _knownSet.emplace(
-							languagePackageName,
-							std::make_pair(childPackageId, dependencyProjectRoot));
-
-						// Discover all recursive dependencies
-						childPackageId = LoadClosure(
-							*dependencyRecipe,
-							dependencyProjectRoot,
-							childPackageId,
-							activeParentSet);
-					}
-
+					auto dependencyTypeProjects = LoadRuntimeDependencies(
+						recipe,
+						projectRoot,
+						dependencyType,
+						activeParentSet,
+						knownPackageSet);
+					dependencyProjects.emplace(dependencyType, std::move(dependencyTypeProjects));
 				}
-
-				dependencyProjects.emplace(dependencyType, std::move(dependencyTypeProjects));
 			}
 
 			// Save the package info
 			_packageLookup.emplace(
 				packageId,
-				 PackageInfo(packageId, projectRoot, recipe, std::move(dependencyProjects)));
+				PackageInfo(packageId, projectRoot, recipe, std::move(dependencyProjects)));
+		}
 
-			return childPackageId;
+		std::vector<PackageChildInfo> LoadRuntimeDependencies(
+			const Recipe& recipe,
+			const Path& projectRoot,
+			const std::string& dependencyType,
+			const std::set<std::string>& activeParentSet,
+			KnownPackageMap& knownPackageSet)
+		{
+			auto implicitLanguage = recipe.GetLanguage().GetName();
+
+			auto dependencyTypeProjects = std::vector<PackageChildInfo>();
+			for (auto dependency : recipe.GetNamedDependencies(dependencyType))
+			{
+				// Load this package recipe
+				auto dependencyProjectRoot = GetPackageReferencePath(projectRoot, dependency, implicitLanguage);
+				auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
+				const Recipe* dependencyRecipe;
+				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
+				{
+					if (dependency.IsLocal())
+					{
+						Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+						Log::HighPriority("Make sure the path is correct and try again");
+					}
+					else
+					{
+						Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
+						Log::HighPriority("Run `restore` and try again");
+					}
+
+					// Nothing we can do, exit
+					throw HandledException(1234);
+				}
+
+				// Ensure we do not have any circular dependencies
+				if (activeParentSet.contains(dependencyRecipe->GetName()))
+				{
+					Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe->GetName());
+					throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
+				}
+
+				// Check if the package has already been processed from another reference
+				auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + dependencyRecipe->GetName();
+				auto findKnownPackage = knownPackageSet.find(languagePackageName);
+				if (findKnownPackage != knownPackageSet.end())
+				{
+					// Verify the project name is unique
+					if (findKnownPackage->second.second != dependencyProjectRoot)
+					{
+						Log::Error("Recipe with this name already exists: " + languagePackageName + " [" + projectRoot.ToString() + "] [" + findKnownPackage->second.second.ToString() + "]");
+						throw std::runtime_error("Recipe name not unique");
+					}
+					else
+					{
+						Log::Diag("Recipe closure already loaded: " + languagePackageName);
+						dependencyTypeProjects.push_back(PackageChildInfo(dependency, false, findKnownPackage->second.first, -1));
+					}
+				}
+				else
+				{
+					// Discover all recursive dependencies
+					auto childPackageId = ++_uniquePackageId;
+					LoadClosure(
+						*dependencyRecipe,
+						dependencyProjectRoot,
+						languagePackageName,
+						childPackageId,
+						activeParentSet,
+						knownPackageSet);
+						
+					// Update the child project id
+					dependencyTypeProjects.push_back(PackageChildInfo(dependency, false, childPackageId, -1));
+				}
+			}
+
+			return dependencyTypeProjects;
+		}
+
+		std::vector<PackageChildInfo> LoadBuildDependencies(
+			const Recipe& recipe,
+			const Path& projectRoot)
+		{
+			// Build dependencies do not inherit the parent language
+			// Instead, they default to C#
+			auto implicitLanguage = _builtInCSharpLanguage;
+
+			auto dependencyTypeProjects = std::vector<PackageChildInfo>();
+			for (auto dependency : recipe.GetNamedDependencies(_buildDependencyType))
+			{
+				// Load this package recipe
+				auto dependencyProjectRoot = GetPackageReferencePath(projectRoot, dependency, implicitLanguage);
+				auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
+				const Recipe* dependencyRecipe;
+				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
+				{
+					if (dependency.IsLocal())
+					{
+						Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+						Log::HighPriority("Make sure the path is correct and try again");
+					}
+					else
+					{
+						Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
+						Log::HighPriority("Run `restore` and try again");
+					}
+
+					// Nothing we can do, exit
+					throw HandledException(1234);
+				}
+
+				// Check if the package has already been processed from another graph
+				auto findKnownGraph = _knownGraphSet.find(dependencyProjectRoot);
+				if (findKnownGraph != _knownGraphSet.end())
+				{
+					// Verify the project name is unique
+					Log::Diag("Graph closure already loaded: " + dependencyProjectRoot.ToString());
+					dependencyTypeProjects.push_back(PackageChildInfo(dependency, true, -1, findKnownGraph->second));
+				}
+				else
+				{
+					// Reset parent set to allow uniqueness within sub graph
+					auto parentSet = std::set<std::string>();
+					auto knownPackageSet = KnownPackageMap();
+
+					// Discover all recursive dependencies
+					auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + dependencyRecipe->GetName();
+					auto childPackageId = ++_uniquePackageId;
+					LoadClosure(
+						*dependencyRecipe,
+						dependencyProjectRoot,
+						languagePackageName,
+						childPackageId,
+						parentSet,
+						knownPackageSet);
+
+					// Create the build graph
+					auto graphId = ++_uniqueGraphId;
+
+					// Save the package graph
+					_packageGraphLookup.emplace(
+						graphId,
+						PackageGraph(graphId, childPackageId, _hostBuildGlobalParameters));
+
+					// Update the child project id
+					dependencyTypeProjects.push_back(PackageChildInfo(dependency, true, -1, graphId));
+				}
+			}
+
+			return dependencyTypeProjects;
 		}
 
 		Path GetSoupUserDataPath() const
