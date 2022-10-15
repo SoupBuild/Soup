@@ -100,16 +100,16 @@ namespace Soup::Core
 		PackageGraph(
 			PackageGraphId id,
 			PackageId rootPackageId,
-			const ValueTable& globalParameters) :
+			ValueTable globalParameters) :
 			Id(id),
 			RootPackageId(rootPackageId),
-			GlobalParameters(globalParameters)
+			GlobalParameters(std::move(globalParameters))
 		{
 		}
 
 		PackageGraphId Id;
 		PackageId RootPackageId;
-		const ValueTable& GlobalParameters;
+		ValueTable GlobalParameters;
 
 		/// <summary>
 		/// Equality operator
