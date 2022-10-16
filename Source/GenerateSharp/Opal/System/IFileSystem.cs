@@ -20,7 +20,7 @@ namespace Opal.System
 		/// <summary>
 		/// Gets the current directory for the running processes.
 		/// </summary>
-		public Path GetCurrentDirectory2();
+		public Path GetCurrentDirectory();
 
 		/// <summary>
 		/// Gets a value indicating whether the directory/file exists.

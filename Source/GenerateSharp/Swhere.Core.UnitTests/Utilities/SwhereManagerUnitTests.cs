@@ -86,7 +86,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -236,7 +236,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -439,7 +439,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
