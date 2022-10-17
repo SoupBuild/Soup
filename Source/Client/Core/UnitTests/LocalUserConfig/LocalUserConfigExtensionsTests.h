@@ -38,7 +38,7 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Load Local User Config: ./TestFiles/NoFile/LocalUserConfig.sml",
-					"WARN: Local User Config file does not exist.",
+					"WARN: Local User Config file does not exist",
 				}), 
 				testListener->GetMessages(),
 				"Verify messages match expected.");

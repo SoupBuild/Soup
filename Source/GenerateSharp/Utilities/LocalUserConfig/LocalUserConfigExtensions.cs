@@ -24,7 +24,7 @@ namespace Soup.Build.Utilities
 			Log.Diag("Load Local User Config: " + localUserConfigFile.ToString());
 			if (!LifetimeManager.Get<IFileSystem>().Exists(localUserConfigFile))
 			{
-				Log.Warning("Local User Config file does not exist.");
+				Log.Warning("Local User Config file does not exist");
 				return (false, new LocalUserConfig());
 			}
 

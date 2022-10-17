@@ -25,7 +25,7 @@ namespace Soup::Core
 			Log::Diag("Load PackageLock: " + packageLockFile.ToString());
 			if (!System::IFileSystem::Current().Exists(packageLockFile))
 			{
-				Log::Info("PackageLock file does not exist.");
+				Log::Info("PackageLock file does not exist");
 				return false;
 			}
 

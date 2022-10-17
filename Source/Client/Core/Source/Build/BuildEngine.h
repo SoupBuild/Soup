@@ -102,7 +102,7 @@ namespace Soup::Core
 			LocalUserConfig localUserConfig = {};
 			if (!LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
 			{
-				Log::Warning("Local User Config invalid.");
+				Log::Warning("Local User Config invalid");
 			}
 
 			// Process the SDKs

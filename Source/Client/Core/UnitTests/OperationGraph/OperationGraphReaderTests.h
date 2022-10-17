@@ -19,10 +19,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = OperationGraphReader::Deserialize(content);
-			},
-			"Invalid operation graph file header");
+			});
+			
+			Assert::AreEqual("Invalid operation graph file header", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -34,10 +35,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = OperationGraphReader::Deserialize(content);
-			},
-			"Operation graph file version does not match expected");
+			});
+
+			Assert::AreEqual("Operation graph file version does not match expected", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -50,10 +52,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = OperationGraphReader::Deserialize(content);
-			},
-			"Invalid operation graph files header");
+			});
+			
+			Assert::AreEqual("Invalid operation graph files header", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -67,10 +70,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = OperationGraphReader::Deserialize(content);
-			},
-			"Invalid operation graph operations header");
+			});
+			
+			Assert::AreEqual("Invalid operation graph operations header", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -85,10 +89,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = OperationGraphReader::Deserialize(content);
-			},
-			"Invalid operation graph operations header");
+			});
+
+			Assert::AreEqual("Invalid operation graph operations header", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -103,10 +108,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = OperationGraphReader::Deserialize(content);
-			},
-			"Operation graph file corrupted - Did not read the entire file");
+			});
+			
+			Assert::AreEqual("Operation graph file corrupted - Did not read the entire file", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]

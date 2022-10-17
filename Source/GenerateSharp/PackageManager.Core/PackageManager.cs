@@ -932,10 +932,14 @@ namespace Soup.Build.PackageManager
 					var packageContentDirectory = packageStore + packageLanguageNameVersionPath;
 
 					// Place the lock in the lock store
-					var packageLockPath =
+					var packageLockDirectory =
 						lockStore +
-						packageLanguageNameVersionPath +
+						packageLanguageNameVersionPath;
+					var packageLockPath =
+						packageLockDirectory +
 						BuildConstants.PackageLockFileName;
+
+					EnsureDirectoryExists(packageLockDirectory);
 
 					await CheckRestorePackageClosureAsync(
 						packageContentDirectory,
@@ -983,6 +987,19 @@ namespace Soup.Build.PackageManager
 			LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingDirectory);
 
 			return stagingDirectory;
+		}
+
+		/// <summary>
+		/// Ensure the staging directory exists
+		/// </summary>
+		static void EnsureDirectoryExists(Path directory)
+		{
+			if (!LifetimeManager.Get<IFileSystem>().Exists(directory))
+			{
+				// Create the folder
+				Log.Diag($"Create Directory: {directory}");
+				LifetimeManager.Get<IFileSystem>().CreateDirectory2(directory);
+			}
 		}
 	}
 }

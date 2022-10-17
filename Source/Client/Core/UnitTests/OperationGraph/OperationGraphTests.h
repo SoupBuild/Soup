@@ -227,10 +227,11 @@ namespace Soup::Core::UnitTests
 				std::vector<OperationId>({}),
 				std::vector<OperationInfo>({}));
 
-			Assert::ThrowsRuntimeError([&uut]() {
+			auto exception = Assert::Throws<std::runtime_error>([&uut]() {
 				auto operationInfo = uut.GetOperationInfo(1);
-			},
-			"The provided operation id does not exist");
+			});
+			
+			Assert::AreEqual("The provided operation id does not exist", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]

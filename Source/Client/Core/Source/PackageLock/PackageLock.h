@@ -11,12 +11,14 @@ namespace Soup::Core
 	/// <summary>
 	/// The package lock container
 	/// </summary>
+	export using PackageClosures = std::map<std::string, std::map<std::string, std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>>>;
 	export class PackageLock
 	{
 	private:
 		static constexpr const char* Property_Closures = "Closures";
 		static constexpr const char* Property_Name = "Name";
 		static constexpr const char* Property_Version = "Version";
+		static constexpr const char* Property_Build = "Build";
 
 	public:
 		/// <summary>
@@ -60,19 +62,19 @@ namespace Soup::Core
 			return HasValue(_table, Property_Closures);
 		}
 
-		std::map<std::string, std::map<std::string, std::map<std::string, PackageReference>>> GetClosures()
+		PackageClosures GetClosures()
 		{
 			if (!HasClosures())
 				throw std::runtime_error("No closures.");
 
 			auto& values = GetValue(_table, Property_Closures).AsTable();
-			auto result = std::map<std::string, std::map<std::string, std::map<std::string, PackageReference>>>();
+			auto result = PackageClosures();
 			for (auto& closureValue : values)
 			{
-				auto closureLock = std::map<std::string, std::map<std::string, PackageReference>>();
+				auto closureLock = std::map<std::string, std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>>();
 				for (auto& languageValue : closureValue.second.AsTable())
 				{
-					auto languageLock = std::map<std::string, PackageReference>();
+					auto languageLock = std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>();
 					for (auto& projectValue : languageValue.second.AsList())
 					{
 						auto& projectTable = projectValue.AsTable();
@@ -83,8 +85,8 @@ namespace Soup::Core
 
 						if (!HasValue(projectTable, Property_Version))
 							throw std::runtime_error("No Version on project table.");
-
 						auto& versionValue = GetValue(projectTable, Property_Version).AsString();
+
 						SemanticVersion version;
 						PackageReference reference;
 						if (SemanticVersion::TryParse(versionValue, version))
@@ -97,7 +99,12 @@ namespace Soup::Core
 							reference = PackageReference(Path(versionValue));
 						}
 
-						languageLock.emplace(name, std::move(reference));
+						std::optional<std::string> buildValue = std::nullopt;
+						if (HasValue(projectTable, Property_Build))
+							buildValue = GetValue(projectTable, Property_Build).AsString();
+
+						auto lockValue = std::make_pair(std::move(reference), std::move(buildValue));
+						languageLock.emplace(name, std::move(lockValue));
 					}
 
 					closureLock.emplace(languageValue.first, std::move(languageLock));

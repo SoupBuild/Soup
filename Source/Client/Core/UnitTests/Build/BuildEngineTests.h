@@ -54,10 +54,10 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"WARN: Local User Config file does not exist.",
-					"WARN: Local User Config invalid.",
+					"WARN: Local User Config file does not exist",
+					"WARN: Local User Config invalid",
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
-					"INFO: PackageLock file does not exist.",
+					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
