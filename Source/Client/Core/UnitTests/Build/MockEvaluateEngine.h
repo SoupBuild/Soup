@@ -11,12 +11,24 @@ namespace Soup::Core
 	/// </summary>
 	class MockEvaluateEngine : public IEvaluateEngine
 	{
+	private:
+		std::atomic<int> m_uniqueId;
+		std::vector<std::string> _requests;
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MockEvaluateEngine"/> class.
 		/// </summary>
 		MockEvaluateEngine()
 		{
+		}
+
+		/// <summary>
+		/// Get the load requests
+		/// </summary>
+		const std::vector<std::string>& GetRequests() const
+		{
+			return _requests;
 		}
 
 		/// <summary>
@@ -28,6 +40,22 @@ namespace Soup::Core
 			const std::vector<Path>& globalAllowedReadAccess,
 			const std::vector<Path>& globalAllowedWriteAccess)
 		{
+			(operationGraph);
+			(globalAllowedReadAccess);
+			(globalAllowedWriteAccess);
+
+			std::stringstream message;
+			message << "Evaluate: " << temporaryDirectory.ToString();
+
+			_requests.push_back(message.str());
+
+			auto time = std::chrono::time_point<std::chrono::system_clock>::min();
+			for (auto& operation : operationGraph.GetOperations())
+			{
+				auto& operationInfo = operation.second;
+				operationInfo.WasSuccessfulRun = true;
+				operationInfo.EvaluateTime = time;
+			}
 		}
 	};
 }

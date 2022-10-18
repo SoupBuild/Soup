@@ -8,7 +8,6 @@ using Opal.System;
 using Soup.Build.Api.Client;
 using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -54,6 +53,7 @@ namespace Soup.Build.PackageManager.UnitTests
 				new List<string>()
 				{
 					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
@@ -68,7 +68,7 @@ namespace Soup.Build.PackageManager.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
@@ -88,7 +88,7 @@ namespace Soup.Build.PackageManager.UnitTests
 			using var reader = new System.IO.StreamReader(packageLock.Content);
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expected =
-@"Version: 2
+@"Version: 3
 Closures: {
 	Root: {
 		C++: [
@@ -177,6 +177,7 @@ Closures: {
 				new List<string>()
 				{
 					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
@@ -199,7 +200,7 @@ Closures: {
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
@@ -255,7 +256,7 @@ Closures: {
 			using var reader = new System.IO.StreamReader(packageLock.Content);
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expected =
-@"Version: 2
+@"Version: 3
 Closures: {
 	Root: {
 		C++: [
@@ -275,6 +276,300 @@ Closures: {
 		}
 
 		[Fact]
+		public async Task RestorePackagesAsync_HasPublicBuildDependencies()
+		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
+			// Setup the mock file system
+			var mockFileSystem = new MockFileSystem();
+			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Root/MyPackage/Recipe.sml"),
+				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+					@"Name: ""MyPackage""
+					Language: ""C++|0.1""
+					Version: ""1.0.0""
+					Dependencies: {
+						Build: [
+							{ Reference: ""Package1@1.2.3"" }
+						]
+					}"))));
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml"),
+				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+					@"Name: ""Package1""
+					Language: ""C#|0.1""
+					Version: ""1.2.3"""))));
+
+			// Setup the mock zip manager
+			var mockZipManager = new Mock<IZipManager>();
+			using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
+
+			// Mock out the http
+			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
+			using var httpClient = new HttpClient(mockMessageHandler.Object);
+
+			mockMessageHandler
+				.Setup(messageHandler => messageHandler.Send(
+					HttpMethod.Get,
+					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Package1/version/1.2.3/download"),
+					It.IsAny<string>(),
+					null))
+				.Returns(() => new HttpResponseMessage());
+
+			var uut = new PackageManager(httpClient);
+
+			var workingDirectory = new Path("C:/Root/MyPackage/");
+			bool forceRestore = false;
+			await uut.RestorePackagesAsync(workingDirectory, forceRestore);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
+					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+					"HIGH: Install Package: C# Package1@1.2.3",
+					"HIGH: Downloading package",
+					"DIAG: Create Directory: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/",
+					"DIAG: Load Package Lock: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
+					"DIAG: Root:C# Package1 -> ./",
+					"DIAG: Build0:C# C# -> 0.1.0",
+					"DIAG: Root:C++ MyPackage -> ./",
+					"DIAG: Build0:C# C++ -> 0.1.0",
+					"DIAG: Build0:C# Package1 -> 1.2.3",
+					"DIAG: Deleting staging directory",
+				},
+				testListener.GetMessages());
+
+			// Verify expected file system requests
+			Assert.Equal(
+				new List<string>()
+				{
+					"GetUserProfileDirectory",
+					"Exists: C:/Users/Me/.soup/packages/.staging/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
+					"Exists: C:/Root/MyPackage/PackageLock.sml",
+					"Exists: C:/Root/MyPackage/Recipe.sml",
+					"OpenRead: C:/Root/MyPackage/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/",
+					"OpenWriteTruncate: C:/Users/Me/.soup/packages/.staging/Package1.zip",
+					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/C#_Package1_1.2.3/",
+					"DeleteFile: C:/Users/Me/.soup/packages/.staging/Package1.zip",
+					"Exists: C:/Users/Me/.soup/packages/C#/Package1",
+					"CreateDirectory: C:/Users/Me/.soup/packages/C#/Package1",
+					"Rename: [C:/Users/Me/.soup/packages/.staging/C#_Package1_1.2.3/] -> [C:/Users/Me/.soup/packages/C#/Package1/1.2.3/]",
+					"Exists: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/",
+					"CreateDirectory: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/",
+					"Exists: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/PackageLock.sml",
+					"Exists: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
+					"OpenRead: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
+					"OpenWriteTruncate: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/PackageLock.sml",
+					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
+					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
+				},
+				mockFileSystem.GetRequests());
+
+			// Verify zip requests
+			mockZipManager.Verify(zip => zip.ExtractToDirectory(new Path("C:/Users/Me/.soup/packages/.staging/Package1.zip"), new Path("C:/Users/Me/.soup/packages/.staging/C#_Package1_1.2.3/")), Times.Once());
+			mockZipManager.VerifyNoOtherCalls();
+
+			// Verify http requests
+			mockMessageHandler.Verify(messageHandler =>
+				messageHandler.Send(
+					HttpMethod.Get,
+					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Package1/version/1.2.3/download"),
+					"{Accept: [application/zip]}",
+					null),
+				Times.Once());
+
+			// Verify the contents of the package lock file
+			var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
+			packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+			using var reader = new System.IO.StreamReader(packageLock.Content);
+			var packageLockContent = await reader.ReadToEndAsync();
+			var expected =
+@"Version: 3
+Closures: {
+	Root: {
+		C++: [
+			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
+		]
+	}
+	Build0: {
+		C#: [
+			{ Name: ""C++"", Version: ""0.1.0"" }
+			{ Name: ""Package1"", Version: ""1.2.3"" }
+		]
+	}
+}";
+
+			Assert.Equal(expected, packageLockContent);
+
+			var packageLock2 = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/locks/C#/Package1/1.2.3/PackageLock.sml"));
+			packageLock2.Content.Seek(0, System.IO.SeekOrigin.Begin);
+			using var reader2 = new System.IO.StreamReader(packageLock2.Content);
+			var packageLockContent2 = await reader2.ReadToEndAsync();
+			var expectedPackageLock2 =
+@"Version: 3
+Closures: {
+	Root: {
+		C#: [
+			{ Name: ""Package1"", Version: ""./"", Build: ""Build0"" }
+		]
+	}
+	Build0: {
+		C#: [
+			{ Name: ""C#"", Version: ""0.1.0"" }
+		]
+	}
+}";
+
+			Assert.Equal(expectedPackageLock2, packageLockContent2);
+		}
+
+		[Fact]
+		public async Task RestorePackagesAsync_HasLocalBuildDependency()
+		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
+			// Setup the mock file system
+			var mockFileSystem = new MockFileSystem();
+			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Root/MyPackage/Recipe.sml"),
+				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+					@"Name: ""MyPackage""
+					Language: ""C++|0.1""
+					Version: ""1.0.0""
+					Dependencies: {
+						Build: [
+							{ Reference: ""../Package1/"" }
+						]
+					}"))));
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Root/Package1/Recipe.sml"),
+				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+					@"Name: ""Package1""
+					Language: ""C#|0.1""
+					Version: ""1.2.3"""))));
+
+			// Mock out the http
+			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
+			using var httpClient = new HttpClient(mockMessageHandler.Object);
+
+			var uut = new PackageManager(httpClient);
+
+			var workingDirectory = new Path("C:/Root/MyPackage/");
+			bool forceRestore = false;
+			await uut.RestorePackagesAsync(workingDirectory, forceRestore);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
+					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
+					"DIAG: Load Package Lock: C:/Root/Package1/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
+					"DIAG: Root:C# Package1 -> ./",
+					"DIAG: Build0:C# C# -> 0.1.0",
+					"DIAG: Root:C++ MyPackage -> ./",
+					"DIAG: Build0:C# C++ -> 0.1.0",
+					"DIAG: Build0:C# Package1 -> 1.2.3",
+					"DIAG: Deleting staging directory",
+				},
+				testListener.GetMessages());
+
+			// Verify expected file system requests
+			Assert.Equal(
+				new List<string>()
+				{
+					"GetUserProfileDirectory",
+					"Exists: C:/Users/Me/.soup/packages/.staging/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
+					"Exists: C:/Root/MyPackage/PackageLock.sml",
+					"Exists: C:/Root/MyPackage/Recipe.sml",
+					"OpenRead: C:/Root/MyPackage/Recipe.sml",
+					"Exists: C:/Root/Package1/Recipe.sml",
+					"OpenRead: C:/Root/Package1/Recipe.sml",
+					"Exists: C:/Root/Package1/PackageLock.sml",
+					"Exists: C:/Root/Package1/Recipe.sml",
+					"OpenRead: C:/Root/Package1/Recipe.sml",
+					"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
+					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
+					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
+				},
+				mockFileSystem.GetRequests());
+
+			// Verify the contents of the package lock file
+			var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
+			packageLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
+			using var reader = new System.IO.StreamReader(packageLock.Content);
+			var packageLockContent = await reader.ReadToEndAsync();
+			var expectedPackageLock =
+@"Version: 3
+Closures: {
+	Root: {
+		C++: [
+			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
+		]
+	}
+	Build0: {
+		C#: [
+			{ Name: ""C++"", Version: ""0.1.0"" }
+			{ Name: ""Package1"", Version: ""1.2.3"" }
+		]
+	}
+}";
+
+			Assert.Equal(expectedPackageLock, packageLockContent);
+
+			var packageLock2 = mockFileSystem.GetMockFile(new Path("C:/Root/Package1/PackageLock.sml"));
+			packageLock2.Content.Seek(0, System.IO.SeekOrigin.Begin);
+			using var reader2 = new System.IO.StreamReader(packageLock2.Content);
+			var packageLockContent2 = await reader2.ReadToEndAsync();
+			var expectedPackageLock2 =
+@"Version: 3
+Closures: {
+	Root: {
+		C#: [
+			{ Name: ""Package1"", Version: ""./"", Build: ""Build0"" }
+		]
+	}
+	Build0: {
+		C#: [
+			{ Name: ""C#"", Version: ""0.1.0"" }
+		]
+	}
+}";
+
+			Assert.Equal(expectedPackageLock2, packageLockContent2);
+		}
+
+		[Fact]
 		public async Task RestorePackagesAsync_HasDependencies_HasPackageLock_OneOverride()
 		{
 			// Register the test listener
@@ -287,7 +582,7 @@ Closures: {
 
 			// Create the original file
 			var original =
-@"Version: 2
+@"Version: 3
 Closures: {
 	Root: {
 		C++: [
@@ -343,6 +638,7 @@ Closures: {
 				new List<string>()
 				{
 					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Restore from package lock",
 					"INFO: Restore Packages for Closure Root",
@@ -364,7 +660,7 @@ Closures: {
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
@@ -408,6 +704,7 @@ Closures: {
 					null),
 				Times.Once());
 		}
+
 		[Fact]
 		public async Task RestorePackagesAsync_HasDependencies_HasPackageLock_AllLocal()
 		{
@@ -428,7 +725,7 @@ Closures: {
 
 			// Create the original file
 			var original =
-@"Version: 2
+@"Version: 3
 Closures: {
 	Root: {
 		C++: [
@@ -465,6 +762,7 @@ Closures: {
 				new List<string>()
 				{
 					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Restore from package lock",
 					"INFO: Restore Packages for Closure Root",
@@ -487,7 +785,7 @@ Closures: {
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
@@ -554,7 +852,8 @@ Closures: {
 				new List<string>()
 				{
 					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 					"HIGH: Install Package: C++ OtherPackage@1.2.3",
 					"HIGH: Downloading package",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/OtherPackage/1.2.3/Recipe.sml",
@@ -569,7 +868,7 @@ Closures: {
 				{
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"Exists: C:/Users/Me/.soup/packages/C++/OtherPackage/1.2.3/",
@@ -684,7 +983,8 @@ Dependencies: {
 				new List<string>()
 				{
 					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"INFO: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
+					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 					"HIGH: Latest Version: 1.2.3",
 					"HIGH: Install Package: C++ OtherPackage@1.2.3",
 					"HIGH: Downloading package",
@@ -700,7 +1000,7 @@ Dependencies: {
 				{
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"Exists: C:/Users/Me/.soup/packages/C++/OtherPackage/1.2.3/",
@@ -853,7 +1153,7 @@ Dependencies: {
 				{
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"GetChildren: C:/Root/MyPackage/",

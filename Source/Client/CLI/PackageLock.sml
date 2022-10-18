@@ -1,4 +1,4 @@
-Version: 2
+Version: 3
 Closures: {
 	Root: {
 		C#: [
@@ -12,7 +12,6 @@ Closures: {
 			{ Name: "Soup.CSharp", Version: "0.7.0", Build: "Build2" }
 			{ Name: "Soup.CSharp.Compiler", Version: "0.6.0", Build: "Build2" }
 			{ Name: "Soup.CSharp.Compiler.Roslyn", Version: "0.6.0", Build: "Build2" }
-			{ Name: "Soup.Test.Cpp", Version: "0.4.0", Build: "Build2" }
 		]
 		C++: [
 			{ Name: "copy", Version: "../../Tools/Copy/", Build: "Build0" }
@@ -25,7 +24,7 @@ Closures: {
 			{ Name: "reflex", Version: "1.0.1", Build: "Build0" }
 			{ Name: "Soup", Version: "../CLI", Build: "Build0" }
 			{ Name: "Soup.Core", Version: "../Core/", Build: "Build1" }
-			{ Name: "Soup.Test.Assert", Version: "0.3.0", Build: "Build0" }
+			{ Name: "Soup.Test.Assert", Version: "0.3.1", Build: "Build0" }
 		]
 	}
 	Build0: {

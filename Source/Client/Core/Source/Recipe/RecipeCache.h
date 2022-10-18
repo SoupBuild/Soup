@@ -27,6 +27,12 @@ namespace Soup::Core
 		{
 		}
 
+		RecipeCache(std::map<std::string, Recipe> knownRecipes) :
+			_knownRecipes(std::move(knownRecipes)),
+			_knownRootRecipes()
+		{
+		}
+
 		bool TryGetRootRecipe(
 			const Path& recipeFile,
 			const RootRecipe*& result)

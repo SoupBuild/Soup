@@ -38,7 +38,7 @@ namespace Soup.Build.Utilities
 					await reader.ReadToEndAsync());
 
 				var packageLock = new PackageLock(result);
-				if (!packageLock.HasVersion() || packageLock.GetVersion() != 2)
+				if (!packageLock.HasVersion() || packageLock.GetVersion() != 3)
 				{
 					Log.Info("Package Lock version is incorrect.");
 					return (false, new PackageLock());

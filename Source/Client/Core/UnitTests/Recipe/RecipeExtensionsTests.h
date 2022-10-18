@@ -171,25 +171,5 @@ Language: "C++|1"
 			auto mockBuildFile = fileSystem->GetMockFile(Path("TestFiles/SimpleRecipe/Recipe.sml"));
 			Assert::AreEqual(expectedBuildFile, mockBuildFile->Content.str(), "Verify file contents.");
 		}
-
-		// [[Fact]]
-		void GetPackageReferencePath_IsRooted()
-		{
-			auto reference = Path("Root/Sub/");
-			auto binaryDirectory = PackageReference(Path("C:/Other/Reference/"));
-			auto result = RecipeExtensions::GetPackageReferencePath(reference, binaryDirectory);
-
-			Assert::AreEqual(result, Path("C:/Other/Reference/"), "Verify the result matches expected.");
-		}
-
-		// [[Fact]]
-		void GetPackageReferencePath_NotRooted()
-		{
-			auto reference = Path("Root/Sub/");
-			auto binaryDirectory = PackageReference(Path("../Reference/"));
-			auto result = RecipeExtensions::GetPackageReferencePath(reference, binaryDirectory);
-
-			Assert::AreEqual(result, Path("Root/Reference/"), "Verify the result matches expected.");
-		}
 	};
 }

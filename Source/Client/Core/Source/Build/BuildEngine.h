@@ -5,6 +5,7 @@
 #pragma once
 #include "RecipeBuildRunner.h"
 #include "BuildEvaluateEngine.h"
+#include "BuildLoadEngine.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"
 
 namespace Soup::Core
@@ -18,7 +19,7 @@ namespace Soup::Core
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		static void Execute(RecipeBuildArguments arguments)
+		static void Execute(const RecipeBuildArguments& arguments)
 		{
 			auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -30,7 +31,7 @@ namespace Soup::Core
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "LoadLocalUserConfig: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "LoadLocalUserConfig: " << std::to_string(duration.count()) << " seconds." << std::endl;
 			
 			startTime = std::chrono::high_resolution_clock::now();
 
@@ -42,18 +43,22 @@ namespace Soup::Core
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
 			startTime = std::chrono::high_resolution_clock::now();
 
 			// Generate the package build graph
-			auto packageProvider = PackageProvider();
-			auto packageInfo = packageProvider.Initialize(arguments.WorkingDirectory);
+			auto recipeCache = RecipeCache();
+			auto loadEngine = BuildLoadEngine(
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
+			auto packageProvider = loadEngine.Load();
 
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "PackageProvider: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "BuildLoadEngine: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
 			startTime = std::chrono::high_resolution_clock::now();
 
@@ -66,20 +71,20 @@ namespace Soup::Core
 			// Initialize the build runner that will perform the generate and evaluate phase
 			// for each individual package
 			auto buildRunner = RecipeBuildRunner(
-				std::move(arguments),
-				std::move(sdkParameters),
-				std::move(sdkReadAccess),
-				std::move(hostBuildGlobalParameters),
-				std::move(systemReadAccess),
+				arguments,
+				sdkParameters,
+				sdkReadAccess,
+				systemReadAccess,
+				recipeCache,
 				packageProvider,
 				evaluateEngine,
 				fileSystemState);
-			buildRunner.Execute(packageInfo);
+			buildRunner.Execute();
 
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "RecipeBuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			std::cout << "RecipeBuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
 		}
 
 	private:
@@ -97,7 +102,7 @@ namespace Soup::Core
 			LocalUserConfig localUserConfig = {};
 			if (!LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
 			{
-				Log::Warning("Local User Config invalid.");
+				Log::Warning("Local User Config invalid");
 			}
 
 			// Process the SDKs

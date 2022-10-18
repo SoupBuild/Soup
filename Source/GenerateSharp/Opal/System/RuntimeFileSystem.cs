@@ -27,7 +27,7 @@ namespace Opal.System
 			return new Path(userProfileFolder);
 		}
 
-		public Path GetCurrentDirectory2()
+		public Path GetCurrentDirectory()
 		{
 			throw new NotImplementedException();
 		}

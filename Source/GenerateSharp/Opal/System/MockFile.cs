@@ -88,6 +88,7 @@ namespace Opal.System
         /// </summary>
         public Stream GetInStream()
         {
+            this._file.Content.Seek(0, SeekOrigin.Begin);
             return this._file.Content;
         }
 

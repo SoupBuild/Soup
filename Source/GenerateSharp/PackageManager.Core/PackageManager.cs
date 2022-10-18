@@ -35,108 +35,30 @@ namespace Soup.Build.PackageManager
 		/// </summary>
 		public async Task RestorePackagesAsync(Path workingDirectory, bool forceRestore)
 		{
-			var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-				new Path(".soup/packages/");
+			var userProfileDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory();
+			var packageStore = userProfileDirectory + new Path(".soup/packages/");
+			var lockStore = userProfileDirectory + new Path(".soup/locks/");
+
 			Log.Diag("Using Package Store: " + packageStore.ToString());
+			Log.Diag("Using Lock Store: " + lockStore.ToString());
 
 			// Create the staging directory
 			var stagingPath = EnsureStagingDirectoryExists(packageStore);
 
 			try
 			{
+				// Place the lock in the local directory
 				var packageLockPath =
 					workingDirectory +
 					BuildConstants.PackageLockFileName;
-				bool wasRestored = false;
-				if (!forceRestore)
-				{
-					var loadPackageLock = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
-					if (loadPackageLock.IsSuccess)
-					{
-						Log.Info("Restore from package lock");
-						await RestorePackageLockAsync(
-							packageStore,
-							stagingPath,
-							loadPackageLock.Result);
-						wasRestored = true;
-					}
-				}
 
-				if (!wasRestored)
-				{
-					Log.Info("Discovering full closure");
-					var closure = new Dictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>>();
-					var buildClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
-					await CheckRestoreRecursiveDependenciesAsync(
-						workingDirectory,
-						packageStore,
-						stagingPath,
-						closure,
-						buildClosures);
-
-					// Build up the package lock file
-					var packageLock = new PackageLock();
-					packageLock.SetVersion(2);
-					var rootClosureName = "Root";
-					foreach (var languageClosure in closure.OrderBy(value => value.Key))
-					{
-						foreach (var (key, (package, buildClosure)) in languageClosure.Value.OrderBy(value => value.Key))
-						{
-							var value = string.Empty;
-							if (package.IsLocal)
-							{
-								value = package.Path.GetRelativeTo(workingDirectory).ToString();
-							}
-							else
-							{
-								if (package.Version == null)
-									throw new InvalidOperationException("Package lock closure must have version");
-								value = package.Version.ToString();
-							}
-
-							Log.Diag($"{rootClosureName}:{languageClosure.Key} {key} -> {value}");
-							packageLock.AddProject(
-								rootClosureName,
-								languageClosure.Key,
-								key,
-								value,
-								buildClosure);
-						}
-					}
-
-					foreach (var buildClosure in buildClosures.OrderBy(value => value.Key))
-					{
-						packageLock.EnsureClosure(buildClosure.Key);
-						foreach (var languageClosure in buildClosure.Value.OrderBy(value => value.Key))
-						{
-							foreach (var (key, package) in languageClosure.Value)
-							{
-								var value = string.Empty;
-								if (package.IsLocal)
-								{
-									value = package.Path.GetRelativeTo(workingDirectory).ToString();
-								}
-								else
-								{
-									if (package.Version == null)
-										throw new InvalidOperationException("Package lock closure must have version");
-									value = package.Version.ToString();
-								}
-
-								Log.Diag($"{buildClosure.Key}:{languageClosure.Key} {key} -> {value}");
-								packageLock.AddProject(
-									buildClosure.Key,
-									languageClosure.Key,
-									key,
-									value,
-									null);
-							}
-						}
-					}
-
-					// Save the updated package lock
-					await PackageLockExtensions.SaveToFileAsync(packageLockPath, packageLock);
-				}
+				await CheckRestorePackageClosureAsync(
+					workingDirectory,
+					packageLockPath,
+					forceRestore,
+					packageStore,
+					lockStore,
+					stagingPath);
 
 				// Cleanup the working directory
 				Log.Diag("Deleting staging directory");
@@ -164,12 +86,14 @@ namespace Soup.Build.PackageManager
 				throw new InvalidOperationException("Could not load the recipe file.");
 			}
 
-			var packageStore = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
-				new Path(".soup/packages/");
-			Log.Info("Using Package Store: " + packageStore.ToString());
+			var userProfileDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory();
+			var packageStore = userProfileDirectory + new Path(".soup/packages/");
+			var lockStore = userProfileDirectory + new Path(".soup/locks/");
+			Log.Diag("Using Package Store: " + packageStore.ToString());
+			Log.Diag("Using Lock Store: " + lockStore.ToString());
 
 			// Create the staging directory
-			var stagingPath = EnsureStagingDirectoryExists(packageStore);
+			var stagingDirectory = EnsureStagingDirectoryExists(packageStore);
 
 			try
 			{
@@ -217,14 +141,16 @@ namespace Soup.Build.PackageManager
 					recipe.Language.Name,
 					targetPackageReference.Name,
 					targetPackageReference.Version,
+					false,
 					packageStore,
-					stagingPath,
+					lockStore,
+					stagingDirectory,
 					closure,
 					buildClosures);
 
 				// Cleanup the working directory
 				Log.Info("Deleting staging directory");
-				LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingPath, true);
+				LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingDirectory, true);
 
 				// Register the package in the recipe
 				Log.Info("Adding reference to recipe");
@@ -236,7 +162,7 @@ namespace Soup.Build.PackageManager
 			catch (Exception)
 			{
 				// Cleanup the staging directory and accept that we failed
-				LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingPath, true);
+				LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingDirectory, true);
 				throw;
 			}
 		}
@@ -425,7 +351,9 @@ namespace Soup.Build.PackageManager
 			string languageName,
 			string packageName,
 			SemanticVersion packageVersion,
-			Path packagesDirectory,
+			bool forceRestore,
+			Path packageStore,
+			Path lockStore,
 			Path stagingDirectory,
 			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
 			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
@@ -440,10 +368,10 @@ namespace Soup.Build.PackageManager
 					languageName,
 					packageName,
 					packageVersion,
-					packagesDirectory,
+					packageStore,
 					stagingDirectory);
 
-				var languageRootFolder = packagesDirectory + new Path(languageName);
+				var languageRootFolder = packageStore + new Path(languageName);
 				var packageRootFolder = languageRootFolder + new Path(packageName);
 				var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
 
@@ -480,7 +408,9 @@ namespace Soup.Build.PackageManager
 				await RestoreRecursiveDependenciesAsync(
 					packageVersionFolder,
 					recipe,
-					packagesDirectory,
+					forceRestore,
+					packageStore,
+					lockStore,
 					stagingDirectory,
 					closure,
 					buildClosures);
@@ -494,12 +424,12 @@ namespace Soup.Build.PackageManager
 			string languageName,
 			string packageName,
 			SemanticVersion packageVersion,
-			Path packagesDirectory,
+			Path packageStore,
 			Path stagingDirectory)
 		{
 			Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
 
-			var languageRootFolder = packagesDirectory + new Path(languageName);
+			var languageRootFolder = packageStore + new Path(languageName);
 			var packageRootFolder = languageRootFolder + new Path(packageName);
 			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
 
@@ -572,7 +502,7 @@ namespace Soup.Build.PackageManager
 		/// Restore package lock
 		/// </summary>
 		private async Task RestorePackageLockAsync(
-			Path packagesDirectory,
+			Path packageStore,
 			Path stagingDirectory,
 			PackageLock packageLock)
 		{
@@ -593,7 +523,7 @@ namespace Soup.Build.PackageManager
 								languageProjects.Key,
 								projectName,
 								version,
-								packagesDirectory,
+								packageStore,
 								stagingDirectory);
 						}
 						else
@@ -606,11 +536,118 @@ namespace Soup.Build.PackageManager
 		}
 
 		/// <summary>
+		/// Restore packages
+		/// </summary>
+		public async Task CheckRestorePackageClosureAsync(
+			Path workingDirectory,
+			Path packageLockPath,
+			bool forceRestore,
+			Path packageStore,
+			Path lockStore,
+			Path stagingPath)
+		{
+			bool wasRestored = false;
+			if (!forceRestore)
+			{
+				var loadPackageLock = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
+				if (loadPackageLock.IsSuccess)
+				{
+					Log.Info("Restore from package lock");
+					await RestorePackageLockAsync(
+						packageStore,
+						stagingPath,
+						loadPackageLock.Result);
+					wasRestored = true;
+				}
+			}
+
+			if (!wasRestored)
+			{
+				Log.Info("Discovering full closure");
+				var closure = new Dictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>>();
+				var buildClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
+				await DiscoverRecursiveDependenciesAsync(
+					workingDirectory,
+					forceRestore,
+					packageStore,
+					lockStore,
+					stagingPath,
+					closure,
+					buildClosures);
+
+				// Build up the package lock file
+				var packageLock = new PackageLock();
+				packageLock.SetVersion(3);
+				var rootClosureName = "Root";
+				foreach (var languageClosure in closure.OrderBy(value => value.Key))
+				{
+					foreach (var (key, (package, buildClosure)) in languageClosure.Value.OrderBy(value => value.Key))
+					{
+						var value = string.Empty;
+						if (package.IsLocal)
+						{
+							value = package.Path.GetRelativeTo(workingDirectory).ToString();
+						}
+						else
+						{
+							if (package.Version == null)
+								throw new InvalidOperationException("Package lock closure must have version");
+							value = package.Version.ToString();
+						}
+
+						Log.Diag($"{rootClosureName}:{languageClosure.Key} {key} -> {value}");
+						packageLock.AddProject(
+							rootClosureName,
+							languageClosure.Key,
+							key,
+							value,
+							buildClosure);
+					}
+				}
+
+				foreach (var buildClosure in buildClosures.OrderBy(value => value.Key))
+				{
+					packageLock.EnsureClosure(buildClosure.Key);
+					foreach (var languageClosure in buildClosure.Value.OrderBy(value => value.Key))
+					{
+						foreach (var (key, package) in languageClosure.Value)
+						{
+							var value = string.Empty;
+							if (package.IsLocal)
+							{
+								value = package.Path.GetRelativeTo(workingDirectory).ToString();
+							}
+							else
+							{
+								if (package.Version == null)
+									throw new InvalidOperationException("Package lock closure must have version");
+								value = package.Version.ToString();
+							}
+
+							Log.Diag($"{buildClosure.Key}:{languageClosure.Key} {key} -> {value}");
+							packageLock.AddProject(
+								buildClosure.Key,
+								languageClosure.Key,
+								key,
+								value,
+								null);
+						}
+					}
+				}
+
+				// Save the updated package lock
+				await PackageLockExtensions.SaveToFileAsync(packageLockPath, packageLock);
+			}
+		}
+
+		/// <summary>
 		/// Recursively restore all dependencies
 		/// </summary>
-		private async Task CheckRestoreRecursiveDependenciesAsync(
+		private async Task DiscoverRecursiveDependenciesAsync(
 			Path recipeDirectory,
-			Path packagesDirectory,
+			bool forceRestore,
+			Path packageStore,
+			Path lockStore,
 			Path stagingDirectory,
 			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
 			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
@@ -653,7 +690,9 @@ namespace Soup.Build.PackageManager
 				await RestoreRecursiveDependenciesAsync(
 					recipeDirectory,
 					recipe,
-					packagesDirectory,
+					forceRestore,
+					packageStore,
+					lockStore,
 					stagingDirectory,
 					closure,
 					buildClosures);
@@ -691,7 +730,10 @@ namespace Soup.Build.PackageManager
 							throw new InvalidOperationException("Could not load dependency recipe file.");
 						}
 
-						dependencyPackage = new PackageReference(dependencyRecipe.Language.Name, dependencyRecipe.Name, dependencyRecipe.Version);
+						dependencyPackage = new PackageReference(
+							dependencyRecipe.Language.Name,
+							dependencyRecipe.Name,
+							dependencyRecipe.Version);
 					}
 
 					var language = dependencyPackage.Language != null ? dependencyPackage.Language : implicitLanguage;
@@ -739,55 +781,173 @@ namespace Soup.Build.PackageManager
 		private async Task RestoreRecursiveDependenciesAsync(
 			Path recipeDirectory,
 			Recipe recipe,
-			Path packagesDirectory,
+			bool forceRestore,
+			Path packageStore,
+			Path lockStore,
 			Path stagingDirectory,
 			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
 			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
 		{
 			foreach (var dependencyType in recipe.GetDependencyTypes())
 			{
-				if (recipe.HasNamedDependencies(dependencyType))
+				// Build dependencies do not inherit the parent language
+				// Instead, they default to C#
+				bool isBuildDependency = dependencyType == Recipe.Property_Build;
+				if (isBuildDependency)
 				{
-					// Same language as parent is implied
-					var implicitLanguage = recipe.Language.Name;
+					await RestoreBuildDependenciesAsync(
+						recipeDirectory,
+						recipe,
+						forceRestore,
+						packageStore,
+						lockStore,
+						stagingDirectory,
+						closure,
+						buildClosures);
+				}
+				else
+				{
+					await RestoreRuntimeDependenciesAsync(
+						recipeDirectory,
+						recipe,
+						dependencyType,
+						forceRestore,
+						packageStore,
+						lockStore,
+						stagingDirectory,
+						closure,
+						buildClosures);
+				}
+			}
+		}
 
-					// Build dependencies do not inherit the parent language
-					// Instead, they default to C#
-					if (dependencyType == Recipe.Property_Build)
-					{
-						implicitLanguage = "C#";
-					}
+		/// <summary>
+		/// Recursively restore all runtime dependencies
+		/// </summary>
+		private async Task RestoreRuntimeDependenciesAsync(
+			Path recipeDirectory,
+			Recipe recipe,
+			string dependencyType,
+			bool forceRestore,
+			Path packageStore,
+			Path lockStore,
+			Path stagingDirectory,
+			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
+		{
+			// Same language as parent is implied
+			var implicitLanguage = recipe.Language.Name;
 
-					foreach (var dependency in recipe.GetNamedDependencies(dependencyType))
-					{
-						// If local then check children for external package references
-						// Otherwise install the external package reference and its dependencies
-						if (dependency.IsLocal)
-						{
-							var dependencyPath = recipeDirectory + dependency.Path;
-							await CheckRestoreRecursiveDependenciesAsync(
-								dependencyPath,
-								packagesDirectory,
-								stagingDirectory,
-								closure,
-								buildClosures);
-						}
-						else
-						{
-							if (dependency.Version == null)
-								throw new ArgumentException("Local package version was null");
+			foreach (var dependency in recipe.GetNamedDependencies(dependencyType))
+			{
+				// If local then check children for external package references
+				// Otherwise install the external package reference and its dependencies
+				if (dependency.IsLocal)
+				{
+					var dependencyPath = recipeDirectory + dependency.Path;
+					await DiscoverRecursiveDependenciesAsync(
+						dependencyPath,
+						forceRestore,
+						packageStore,
+						lockStore,
+						stagingDirectory,
+						closure,
+						buildClosures);
+				}
+				else
+				{
+					if (dependency.Version == null)
+						throw new ArgumentException("Local package version was null");
 
-							var language = dependency.Language != null ? dependency.Language : implicitLanguage;
-							await CheckRecursiveEnsurePackageDownloadedAsync(
-								language,
-								dependency.Name,
-								dependency.Version,
-								packagesDirectory,
-								stagingDirectory,
-								closure,
-								buildClosures);
-						}
-					}
+					var language = dependency.Language != null ? dependency.Language : implicitLanguage;
+					await CheckRecursiveEnsurePackageDownloadedAsync(
+						language,
+						dependency.Name,
+						dependency.Version,
+						forceRestore,
+						packageStore,
+						lockStore,
+						stagingDirectory,
+						closure,
+						buildClosures);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Recursively restore all build dependencies
+		/// </summary>
+		private async Task RestoreBuildDependenciesAsync(
+			Path recipeDirectory,
+			Recipe recipe,
+			bool forceRestore,
+			Path packageStore,
+			Path lockStore,
+			Path stagingDirectory,
+			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
+		{
+			// Build dependencies do not inherit the parent language
+			// Instead, they default to C#
+			var implicitLanguage = "C#";
+
+			foreach (var dependency in recipe.GetNamedDependencies(Recipe.Property_Build))
+			{
+				// If local then check children for external package references
+				// Otherwise install the external package reference and its dependencies
+				if (dependency.IsLocal)
+				{
+					var dependencyPath = recipeDirectory + dependency.Path;
+
+					// Place the lock in the local directory
+					var packageLockPath =
+						dependencyPath +
+						BuildConstants.PackageLockFileName;
+
+					await CheckRestorePackageClosureAsync(
+						dependencyPath,
+						packageLockPath,
+						forceRestore,
+						packageStore,
+						lockStore,
+						stagingDirectory);
+				}
+				else
+				{
+					if (dependency.Version == null)
+						throw new ArgumentException("Local package version was null");
+
+					var language = dependency.Language != null ? dependency.Language : implicitLanguage;
+
+					await EnsurePackageDownloadedAsync(
+						language,
+						dependency.Name,
+						dependency.Version,
+						packageStore,
+						stagingDirectory);
+
+					var packageLanguageNameVersionPath = new Path(language) +
+						new Path(dependency.Name) +
+						new Path(dependency.Version.ToString()) + new Path("/");
+					var packageContentDirectory = packageStore + packageLanguageNameVersionPath;
+
+					// Place the lock in the lock store
+					var packageLockDirectory =
+						lockStore +
+						packageLanguageNameVersionPath;
+					var packageLockPath =
+						packageLockDirectory +
+						BuildConstants.PackageLockFileName;
+
+					EnsureDirectoryExists(packageLockDirectory);
+
+					await CheckRestorePackageClosureAsync(
+						packageContentDirectory,
+						packageLockPath,
+						forceRestore,
+						packageStore,
+						lockStore,
+						stagingDirectory);
 				}
 			}
 		}
@@ -827,6 +987,19 @@ namespace Soup.Build.PackageManager
 			LifetimeManager.Get<IFileSystem>().CreateDirectory2(stagingDirectory);
 
 			return stagingDirectory;
+		}
+
+		/// <summary>
+		/// Ensure the staging directory exists
+		/// </summary>
+		static void EnsureDirectoryExists(Path directory)
+		{
+			if (!LifetimeManager.Get<IFileSystem>().Exists(directory))
+			{
+				// Create the folder
+				Log.Diag($"Create Directory: {directory}");
+				LifetimeManager.Get<IFileSystem>().CreateDirectory2(directory);
+			}
 		}
 	}
 }
