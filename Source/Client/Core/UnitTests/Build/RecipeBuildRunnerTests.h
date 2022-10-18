@@ -1273,7 +1273,7 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 2
+					Version: 3
 					Closures: {
 						Root: {
 							C#: [

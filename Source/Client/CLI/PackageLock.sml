@@ -1,4 +1,4 @@
-Version: 2
+Version: 3
 Closures: {
 	Root: {
 		C#: [
@@ -12,7 +12,6 @@ Closures: {
 			{ Name: "Soup.CSharp", Version: "0.7.0", Build: "Build2" }
 			{ Name: "Soup.CSharp.Compiler", Version: "0.6.0", Build: "Build2" }
 			{ Name: "Soup.CSharp.Compiler.Roslyn", Version: "0.6.0", Build: "Build2" }
-			{ Name: "Soup.Test.Cpp", Version: "0.4.0", Build: "Build2" }
 		]
 		C++: [
 			{ Name: "copy", Version: "../../Tools/Copy/", Build: "Build0" }
