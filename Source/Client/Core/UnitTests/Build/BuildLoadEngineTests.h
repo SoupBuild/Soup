@@ -15,7 +15,12 @@ namespace Soup::Core::UnitTests
 			auto arguments = RecipeBuildArguments();
 			auto hostBuildGlobalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(arguments, hostBuildGlobalParameters, recipeCache);
+			auto uut = BuildLoadEngine(
+				SemanticVersion(1, 2, 3),
+				SemanticVersion(3, 2, 1),
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
 		}
 
 		// [[Fact]]
@@ -58,7 +63,12 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(arguments, hostBuildGlobalParameters, recipeCache);
+			auto uut = BuildLoadEngine(
+				SemanticVersion(1, 2, 3),
+				SemanticVersion(3, 2, 1),
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
 
 			auto packageProvider = uut.Load();
 
@@ -118,7 +128,7 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll"),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
 								PackageChildrenMap())
 						},
 					})),
@@ -189,7 +199,12 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(arguments, hostBuildGlobalParameters, recipeCache);
+			auto uut = BuildLoadEngine(
+				SemanticVersion(1, 2, 3),
+				SemanticVersion(3, 2, 1),
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
 
 			auto packageProvider = uut.Load();
 
@@ -261,7 +276,7 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll"),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
 								PackageChildrenMap({
 									{
 										"Runtime",
@@ -278,7 +293,7 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll"),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
 								PackageChildrenMap({
 									{
 										"Runtime",
@@ -294,7 +309,7 @@ namespace Soup::Core::UnitTests
 								3,
 								Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll"),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
 								PackageChildrenMap())
 						},
 					})),
@@ -354,7 +369,12 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(arguments, hostBuildGlobalParameters, recipeCache);
+			auto uut = BuildLoadEngine(
+				SemanticVersion(1, 2, 3),
+				SemanticVersion(3, 2, 1),
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
 
 			auto packageProvider = uut.Load();
 
@@ -436,7 +456,7 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll"),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -452,7 +472,7 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.CSharp/0.7.0/Soup.CSharp.dll"),
+								Path("C:/testlocation/Extensions/Soup.CSharp/3.2.1/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
 					})),
@@ -512,7 +532,12 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(arguments, hostBuildGlobalParameters, recipeCache);
+			auto uut = BuildLoadEngine(
+				SemanticVersion(1, 2, 3),
+				SemanticVersion(3, 2, 1),
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
 
 			auto packageProvider = uut.Load();
 
@@ -592,7 +617,7 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll"),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -608,7 +633,7 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/WorkingDirectory/TestBuild/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/TestBuild/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.CSharp/0.7.0/Soup.CSharp.dll"),
+								Path("C:/testlocation/Extensions/Soup.CSharp/3.2.1/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
 					})),
@@ -688,7 +713,12 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(arguments, hostBuildGlobalParameters, recipeCache);
+			auto uut = BuildLoadEngine(
+				SemanticVersion(1, 2, 3),
+				SemanticVersion(3, 2, 1),
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
 
 			auto packageProvider = uut.Load();
 
@@ -771,7 +801,7 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll"),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -787,7 +817,7 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.CSharp/0.7.0/Soup.CSharp.dll"),
+								Path("C:/testlocation/Extensions/Soup.CSharp/3.2.1/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
 					})),
@@ -867,7 +897,12 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto recipeCache = RecipeCache();
-			auto uut = BuildLoadEngine(arguments, hostBuildGlobalParameters, recipeCache);
+			auto uut = BuildLoadEngine(
+				SemanticVersion(1, 2, 3),
+				SemanticVersion(3, 2, 1),
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
 
 			auto packageProvider = uut.Load();
 
@@ -950,7 +985,7 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll"),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -966,7 +1001,7 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.CSharp/0.7.0/Soup.CSharp.dll"),
+								Path("C:/testlocation/Extensions/Soup.CSharp/3.2.1/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
 					})),

@@ -50,6 +50,8 @@ namespace Soup::Core
 			// Generate the package build graph
 			auto recipeCache = RecipeCache();
 			auto loadEngine = BuildLoadEngine(
+				SemanticVersion(0, 4, 0),
+				SemanticVersion(0, 7, 0),
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);

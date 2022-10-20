@@ -30,14 +30,15 @@ namespace Soup::Core
 		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _buildDependencyType = "Build";
 		const std::string _builtInCppLanguage = "C++";
-		const std::string _builtInCppExtensionVersion = "0.4.0";
 		const Path _builtInCppExtensionPath = Path("Soup.Cpp/");
 		const Path _builtInCppExtensionFilename = Path("Soup.Cpp.dll");
 		const std::string _builtInCSharpLanguage = "C#";
-		const std::string _builtInCSharpExtensionVersion = "0.7.0";
 		const Path _builtInCSharpExtensionPath = Path("Soup.CSharp/");
 		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
 		const std::string _rootClosureName = "Root";
+
+		SemanticVersion _builtInCppExtensionVersion;
+		SemanticVersion _builtInCSharpExtensionVersion;
 
 		// Arguments
 		const RecipeBuildArguments& _arguments;
@@ -63,9 +64,13 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="BuildLoadEngine"/> class.
 		/// </summary>
 		BuildLoadEngine(
+			SemanticVersion builtInCppExtensionVersion,
+			SemanticVersion builtInCSharpExtensionVersion,
 			const RecipeBuildArguments& arguments,
 			const ValueTable& hostBuildGlobalParameters,
 			RecipeCache& recipeCache) :
+			_builtInCppExtensionVersion(builtInCppExtensionVersion),
+			_builtInCSharpExtensionVersion(builtInCSharpExtensionVersion),
 			_arguments(arguments),
 			_hostBuildGlobalParameters(hostBuildGlobalParameters),
 			_recipeCache(recipeCache),
@@ -574,7 +579,7 @@ namespace Soup::Core
 				return processDirectory +
 					_builtInExtensionPath +
 					_builtInCSharpExtensionPath +
-					Path(_builtInCSharpExtensionVersion) +
+					Path(_builtInCSharpExtensionVersion.ToString()) +
 					_builtInCSharpExtensionFilename;
 			}
 			else if (name == _builtInCppLanguage)
@@ -584,7 +589,7 @@ namespace Soup::Core
 				return processDirectory +
 					_builtInExtensionPath +
 					_builtInCppExtensionPath +
-					Path(_builtInCppExtensionVersion) +
+					Path(_builtInCppExtensionVersion.ToString()) +
 					_builtInCppExtensionFilename;
 			}
 			else
