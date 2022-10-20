@@ -1285,13 +1285,13 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							C#: [
-								{ Name: "C++", Version: "1.0.2" }
+								{ Name: "Soup.Cpp", Version: "1.0.2" }
 								{ Name: "TestBuild", Version: "1.3.0" }
 							]
 						}
 						Build1: {
 							C#: [
-								{ Name: "C#", Version: "1.0.1" }
+								{ Name: "Soup.CSharp", Version: "1.0.1" }
 							]
 						}
 					}

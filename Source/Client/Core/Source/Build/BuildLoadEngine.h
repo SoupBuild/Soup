@@ -30,10 +30,10 @@ namespace Soup::Core
 		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _buildDependencyType = "Build";
 		const std::string _builtInCppLanguage = "C++";
-		const Path _builtInCppExtensionPath = Path("Soup.Cpp/");
+		const std::string _builtInCppExtensionName = "Soup.Cpp";
 		const Path _builtInCppExtensionFilename = Path("Soup.Cpp.dll");
 		const std::string _builtInCSharpLanguage = "C#";
-		const Path _builtInCSharpExtensionPath = Path("Soup.CSharp/");
+		const std::string _builtInCSharpExtensionName = "Soup.CSharp";
 		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
 		const std::string _rootClosureName = "Root";
 
@@ -231,7 +231,7 @@ namespace Soup::Core
 				{
 					// Build the global store location path
 					auto packageStore = GetSoupUserDataPath() + Path("packages/");
-					auto language = activeReference.HasLanguage() ? activeReference.GetLanguage() : implicitLanguage;
+					auto language = reference.HasLanguage() ? reference.GetLanguage() : implicitLanguage;
 					packagePath = packageStore +
 						Path(language) +
 						Path(activeReference.GetName()) +
@@ -275,7 +275,7 @@ namespace Soup::Core
 				{
 					// Build the global store location path
 					auto packageStore = GetSoupUserDataPath() + Path("locks/");
-					auto language = activeReference.HasLanguage() ? activeReference.GetLanguage() : implicitLanguage;
+					auto language = reference.HasLanguage() ? reference.GetLanguage() : implicitLanguage;
 					packagePath = packageStore +
 						Path(language) +
 						Path(activeReference.GetName()) +
@@ -340,6 +340,12 @@ namespace Soup::Core
 			if (!recipe.HasLanguage())
 				throw std::runtime_error("Recipe does not have a language reference.");
 
+			// Get the current package build closure
+			auto buildClosureName = GetPackageBuildClosure(
+				recipe.GetLanguage().GetName(),
+				recipe.GetName(),
+				packageLockState);
+
 			auto dependencyProjects = std::map<std::string, std::vector<PackageChildInfo>>();
 			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
@@ -349,6 +355,7 @@ namespace Soup::Core
 					auto dependencyTypeProjects = LoadBuildDependencies(
 						recipe,
 						projectRoot,
+						buildClosureName,
 						packageLockState);
 					dependencyProjects.emplace(dependencyType, std::move(dependencyTypeProjects));
 				}
@@ -366,7 +373,7 @@ namespace Soup::Core
 			}
 
 			// Add the language as a build dependency
-			auto languageExtension = LoadLanguageBuildDependency(recipe);
+			auto languageExtension = LoadLanguageBuildDependency(recipe, buildClosureName, packageLockState);
 			// TODO: dependencyProjects[_buildDependencyType].push_back(std::move(languageDependency));
 
 			// Save the package info
@@ -461,17 +468,12 @@ namespace Soup::Core
 		std::vector<PackageChildInfo> LoadBuildDependencies(
 			const Recipe& recipe,
 			const Path& projectRoot,
+			const std::string& buildClosureName,
 			const PackageLockState& packageLockState)
 		{
 			// Build dependencies do not inherit the parent language
 			// Instead, they default to C#
 			auto implicitLanguage = _builtInCSharpLanguage;
-
-			// Get the current package build closure
-			auto buildClosureName = GetPackageBuildClosure(
-				recipe.GetLanguage().GetName(),
-				recipe.GetName(),
-				packageLockState);
 
 			auto dependencyTypeProjects = std::vector<PackageChildInfo>();
 			for (auto dependency : recipe.GetNamedDependencies(_buildDependencyType))
@@ -553,36 +555,86 @@ namespace Soup::Core
 			return dependencyTypeProjects;
 		}
 
-		Path LoadLanguageBuildDependency(const Recipe& recipe)
+		Path LoadLanguageBuildDependency(
+			const Recipe& recipe,
+			const std::string& closureName,
+			const PackageLockState& packageLockState)
 		{
 			auto name = recipe.GetLanguage().GetName();
 
 			// Get the active version
-
 			if (name == _builtInCSharpLanguage)
 			{
-				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
-				auto processDirectory = processFilename.GetParent();
-				return processDirectory +
-					_builtInExtensionPath +
-					_builtInCSharpExtensionPath +
-					Path(_builtInCSharpExtensionVersion.ToString()) +
-					_builtInCSharpExtensionFilename;
+				return GetLanguageExtension(
+					_builtInCSharpExtensionName,
+					_builtInCSharpExtensionVersion,
+					_builtInCSharpExtensionFilename,
+					closureName,
+					packageLockState);
 			}
 			else if (name == _builtInCppLanguage)
 			{
-				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
-				auto processDirectory = processFilename.GetParent();
-				return processDirectory +
-					_builtInExtensionPath +
-					_builtInCppExtensionPath +
-					Path(_builtInCppExtensionVersion.ToString()) +
-					_builtInCppExtensionFilename;
+				return GetLanguageExtension(
+					_builtInCppExtensionName,
+					_builtInCppExtensionVersion,
+					_builtInCppExtensionFilename,
+					closureName,
+					packageLockState);
 			}
 			else
 			{
 				throw std::runtime_error("Unknown language extension path");
 			}
+		}
+
+		Path GetLanguageExtension(
+			const std::string& builtInExtensionName,
+			SemanticVersion builtInExtensionVersion,
+			const Path& builtInExtensionFilename,
+			const std::string& closureName,
+			const PackageLockState& packageLockState)
+		{
+			// Build dependencies do not inherit the parent language
+			// Instead, they default to C#
+			auto implicitLanguage = _builtInCSharpLanguage;
+
+			auto builtInExtensionReference = PackageReference(std::nullopt, builtInExtensionName, builtInExtensionVersion);
+			auto& activeReference = GetActivePackageReference(builtInExtensionReference, implicitLanguage, closureName, packageLockState);
+
+			Path packagePath;
+			if (activeReference.IsLocal())
+			{
+				// Use local reference relative to lock directory
+				packagePath = activeReference.GetPath();
+				if (!packagePath.HasRoot())
+				{
+					packagePath = packageLockState.RootDirectory + packagePath;
+				}
+			}
+			else
+			{
+				if (activeReference.GetVersion() == builtInExtensionVersion)
+				{
+					// Use the prebuilt version in the install folder
+					auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+					auto processDirectory = processFilename.GetParent();
+					packagePath = processDirectory +
+						_builtInExtensionPath +
+						Path(builtInExtensionName) +
+						Path(activeReference.GetVersion().ToString()) +
+						builtInExtensionFilename;
+				}
+				else
+				{
+					// Build the global store location path
+					packagePath = _builtInExtensionPath +
+						Path(implicitLanguage) +
+						Path(activeReference.GetName()) +
+						Path(activeReference.GetVersion().ToString());
+				}
+			}
+
+			return packagePath;
 		}
 
 		Path GetSoupUserDataPath() const

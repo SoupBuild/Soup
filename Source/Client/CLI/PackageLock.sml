@@ -29,18 +29,18 @@ Closures: {
 	}
 	Build0: {
 		C#: [
-			{ Name: "C++", Version: "0.1.0" }
+			{ Name: "Soup.Cpp", Version: "0.4.0" }
 		]
 	}
 	Build1: {
 		C#: [
-			{ Name: "C++", Version: "0.1.0" }
+			{ Name: "Soup.Cpp", Version: "0.4.0" }
 			{ Name: "Soup.Test.Cpp", Version: "0.4.0" }
 		]
 	}
 	Build2: {
 		C#: [
-			{ Name: "C#", Version: "0.1.0" }
+			{ Name: "Soup.CSharp", Version: "0.7.0" }
 		]
 	}
 }

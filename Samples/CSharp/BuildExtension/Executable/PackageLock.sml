@@ -7,7 +7,7 @@ Closures: {
 	}
 	Build0: {
 		C#: [
-			{ Name: "C#", Version: "0.1.0" }
+			{ Name: "Soup.CSharp", Version: "0.1.0" }
 			{ Name: "Samples.CSharp.BuildExtension.Extension", Version: "1.0.0" }
 		]
 	}

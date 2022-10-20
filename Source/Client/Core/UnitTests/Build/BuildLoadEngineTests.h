@@ -24,7 +24,7 @@ namespace Soup::Core::UnitTests
 		}
 
 		// [[Fact]]
-		void Load_NoDependencies()
+		void Load_NoDependencies_BuiltInLanguage()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -39,7 +39,120 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "MyPackage"
-					Language: "C++|1"
+					Language: "C++|1.2.3"
+				)")));
+
+			// Register the test process manager
+			auto processManager = std::make_shared<MockProcessManager>();
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
+
+			auto arguments = RecipeBuildArguments();
+			arguments.GlobalParameters = ValueTable(
+				std::map<std::string, Value>({
+					{
+						"ArgumentValue",
+						Value(true),
+					},
+				}));
+			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto hostBuildGlobalParameters = ValueTable(
+				std::map<std::string, Value>({
+					{
+						"HostValue",
+						Value(true),
+					},
+				}));
+			auto recipeCache = RecipeCache();
+			auto uut = BuildLoadEngine(
+				SemanticVersion(1, 2, 3),
+				SemanticVersion(3, 2, 1),
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
+
+			auto packageProvider = uut.Load();
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"INFO: PackageLock file does not exist",
+					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentProcessFileName",
+				}),
+				processManager->GetRequests(),
+				"Verify process manager requests match expected.");
+
+			// Verify expected package graph
+			Assert::AreEqual(
+				PackageProvider(
+					1,
+					PackageGraphLookupMap(
+					{
+						{
+							1,
+							PackageGraph(
+								1,
+								1,
+								ValueTable(
+									std::map<std::string, Value>({
+										{
+											"ArgumentValue",
+											Value(true),
+										},
+									})))
+						},
+					}),
+					PackageLookupMap(
+					{
+						{
+							1,
+							PackageInfo(
+								1,
+								Path("C:/WorkingDirectory/MyPackage/"),
+								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
+								PackageChildrenMap())
+						},
+					})),
+				packageProvider,
+				"Verify package graph matches expected.");
+		}
+
+		// [[Fact]]
+		void Load_NoDependencies_ExternalLanguage()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+
+			// Create the Recipe to build
+			fileSystem->CreateMockFile(
+				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "MyPackage"
+					Language: "C++|4.5.6"
 				)")));
 
 			// Register the test process manager
@@ -685,7 +798,7 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							C#: [
-								{ Name: "C++", Version: "1.0.2" }
+								{ Name: "Soup.Cpp", Version: "1.2.3" }
 								{ Name: "TestBuild", Version: "1.2.3" }
 							]
 						}
@@ -869,16 +982,29 @@ namespace Soup::Core::UnitTests
 						}
 						Build0: {
 							C#: [
-								{ Name: "C++", Version: "1.0.2" }
+								{ Name: "Soup.Cpp", Version: "1.0.2" }
 								{ Name: "TestBuild", Version: "1.3.0" }
 							]
 						}
 					}
 				)")));
-
-			// Register the test process manager
-			auto processManager = std::make_shared<MockProcessManager>();
-			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
+			fileSystem->CreateMockFile(
+				Path("C:/Users/Me/.soup/locks/C#/TestBuild/1.3.0/PackageLock.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Version: 3
+					Closures: {
+						Root: {
+							C#: [
+								{ Name: "TestBuild", Version: "../TestBuild/", Build: "Build0" }
+							]
+						}
+						Build0: {
+							C#: [
+								{ Name: "Soup.CSharp", Version: "1.0.3" }
+							]
+						}
+					}
+				)")));
 
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
@@ -914,7 +1040,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C#/TestBuild/1.3.0/PackageLock.sml",
-					"INFO: PackageLock file does not exist",
+					"INFO: Package lock loaded",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -931,18 +1057,10 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml",
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/C#/TestBuild/1.3.0/PackageLock.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/locks/C#/TestBuild/1.3.0/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
-
-			// Verify expected process requests
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-				}),
-				processManager->GetRequests(),
-				"Verify process manager requests match expected.");
 
 			// Verify expected package graph
 			Assert::AreEqual(
@@ -985,7 +1103,7 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
+								Path("./Extensions/C#/Soup.Cpp/1.0.2"),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -1001,6 +1119,180 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml")),
+								Path("./Extensions/C#/Soup.CSharp/1.0.3"),
+								PackageChildrenMap())
+						},
+					})),
+				packageProvider,
+				"Verify package graph matches expected.");
+		}
+
+		// [[Fact]]
+		void Load_OtherDependency_PackageLock_ExplicitLanguage()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+
+			// Create the Recipe to build
+			fileSystem->CreateMockFile(
+				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "MyPackage"
+					Language: "C++|1"
+					Dependencies: {
+						Other: [
+							"C#|Package1@1.2.3"
+						]
+					}
+				)")));
+
+			fileSystem->CreateMockFile(
+				Path("C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "Package1"
+					Language: "C#|1"
+				)")));
+
+			// Create the package lock
+			fileSystem->CreateMockFile(
+				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Version: 3
+					Closures: {
+						Root: {
+							C++: [
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
+							]
+							C#: [
+								{ Name: "Package1", Version: "1.2.3", Build: "Build1" }
+							]
+						}
+						Build0: {
+							C#: [
+								{ Name: "Soup.Cpp", Version: "1.2.3" }
+							]
+						}
+						Build1: {
+							C#: [
+								{ Name: "Soup.CSharp", Version: "3.2.1" }
+							]
+						}
+					}
+				)")));
+
+			// Register the test process manager
+			auto processManager = std::make_shared<MockProcessManager>();
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
+
+			auto arguments = RecipeBuildArguments();
+			arguments.GlobalParameters = ValueTable(
+				std::map<std::string, Value>({
+					{
+						"ArgumentValue",
+						Value(true),
+					},
+				}));
+			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto hostBuildGlobalParameters = ValueTable(
+				std::map<std::string, Value>({
+					{
+						"HostValue",
+						Value(true),
+					},
+				}));
+			auto recipeCache = RecipeCache();
+			auto uut = BuildLoadEngine(
+				SemanticVersion(1, 2, 3),
+				SemanticVersion(3, 2, 1),
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
+
+			auto packageProvider = uut.Load();
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"INFO: Package lock loaded",
+					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"GetCurrentDirectory",
+					"Exists: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+				}),
+				processManager->GetRequests(),
+				"Verify process manager requests match expected.");
+
+			// Verify expected package graph
+			Assert::AreEqual(
+				PackageProvider(
+					1,
+					PackageGraphLookupMap(
+					{
+						{
+							1,
+							PackageGraph(
+								1,
+								1,
+								ValueTable(
+									std::map<std::string, Value>({
+										{
+											"ArgumentValue",
+											Value(true),
+										},
+									})))
+						},
+					}),
+					PackageLookupMap(
+					{
+						{
+							1,
+							PackageInfo(
+								1,
+								Path("C:/WorkingDirectory/MyPackage/"),
+								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								Path("C:/testlocation/Extensions/Soup.Cpp/1.2.3/Soup.Cpp.dll"),
+								PackageChildrenMap({
+									{
+										"Other",
+										{
+											PackageChildInfo(PackageReference("C#", "Package1", SemanticVersion(1, 2, 3)), false, 2, -1),
+										}
+									},
+								}))
+						},
+						{
+							2,
+							PackageInfo(
+								2,
+								Path("C:/Users/Me/.soup/packages/C#/Package1/1.2.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml")),
 								Path("C:/testlocation/Extensions/Soup.CSharp/3.2.1/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
