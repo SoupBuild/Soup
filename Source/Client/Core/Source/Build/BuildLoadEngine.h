@@ -27,8 +27,17 @@ namespace Soup::Core
 	export class BuildLoadEngine
 	{
 	private:
+		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _buildDependencyType = "Build";
+		const std::string _builtInCppLanguage = "C++";
+		const std::string _builtInCppExtensionVersion = "0.4.0";
+		const Path _builtInCppExtensionPath = Path("Soup.Cpp/");
+		const Path _builtInCppExtensionFilename = Path("Soup.Cpp.dll");
 		const std::string _builtInCSharpLanguage = "C#";
+		const std::string _builtInCSharpExtensionVersion = "0.7.0";
+		const Path _builtInCSharpExtensionPath = Path("Soup.CSharp/");
+		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
+		const std::string _rootClosureName = "Root";
 
 		// Arguments
 		const RecipeBuildArguments& _arguments;
@@ -145,29 +154,27 @@ namespace Soup::Core
 			const std::string& packageName,
 			const PackageLockState& packageLockState) const
 		{
-			static auto rootClosureName = std::string("Root");
-
 			if (!packageLockState.HasPackageLock)
 			{
 				return "";
 			}
 
 			// Find the required closure
-			auto findClosure = packageLockState.Closures.find(rootClosureName);
+			auto findClosure = packageLockState.Closures.find(_rootClosureName);
 			if (findClosure == packageLockState.Closures.end())
-				throw std::runtime_error("Closure [" + rootClosureName + "] not found in lock");
+				throw std::runtime_error("Closure [" + _rootClosureName + "] not found in lock");
 
 			// Find the package version in the lock
 			auto findPackageLock = findClosure->second.find(packageLanguage);
 			if (findPackageLock == findClosure->second.end())
-				throw std::runtime_error("Language [" + rootClosureName + "] [" + packageLanguage + "] not found in lock");
+				throw std::runtime_error("Language [" + _rootClosureName + "] [" + packageLanguage + "] not found in lock");
 			auto packageVersion = findPackageLock->second.find(packageName);
 			if (packageVersion == findPackageLock->second.end())
-				throw std::runtime_error("Package [" + rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] not found in lock");
+				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] not found in lock");
 
 			auto& packageBuild = packageVersion->second.second;
 			if (!packageBuild.has_value())
-				throw std::runtime_error("Package [" + rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] does not have build closure");
+				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] does not have build closure");
 
 			return packageBuild.value();
 		}
@@ -178,12 +185,11 @@ namespace Soup::Core
 			const std::string& packageLanguage,
 			const PackageLockState& packageLockState) const
 		{
-			static auto rootClosureName = std::string("Root");
 			return GetPackageReferencePath(
 				workingDirectory,
 				reference,
 				packageLanguage,
-				rootClosureName,
+				_rootClosureName,
 				packageLockState);
 		}
 
@@ -370,10 +376,14 @@ namespace Soup::Core
 				}
 			}
 
+			// Add the language as a build dependency
+			auto languageExtension = LoadLanguageBuildDependency(recipe);
+			// TODO: dependencyProjects[_buildDependencyType].push_back(std::move(languageDependency));
+
 			// Save the package info
 			_packageLookup.emplace(
 				packageId,
-				PackageInfo(packageId, projectRoot, recipe, std::move(dependencyProjects)));
+				PackageInfo(packageId, projectRoot, recipe, std::move(languageExtension), std::move(dependencyProjects)));
 		}
 
 		std::vector<PackageChildInfo> LoadRuntimeDependencies(
@@ -552,6 +562,35 @@ namespace Soup::Core
 			}
 
 			return dependencyTypeProjects;
+		}
+
+		Path LoadLanguageBuildDependency(const Recipe& recipe)
+		{
+			auto name = recipe.GetLanguage().GetName();
+			if (name == _builtInCSharpLanguage)
+			{
+				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+				auto processDirectory = processFilename.GetParent();
+				return processDirectory +
+					_builtInExtensionPath +
+					_builtInCSharpExtensionPath +
+					Path(_builtInCSharpExtensionVersion) +
+					_builtInCSharpExtensionFilename;
+			}
+			else if (name == _builtInCppLanguage)
+			{
+				auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+				auto processDirectory = processFilename.GetParent();
+				return processDirectory +
+					_builtInExtensionPath +
+					_builtInCppExtensionPath +
+					Path(_builtInCppExtensionVersion) +
+					_builtInCppExtensionFilename;
+			}
+			else
+			{
+				throw std::runtime_error("Unknown language extension path");
+			}
 		}
 
 		Path GetSoupUserDataPath() const

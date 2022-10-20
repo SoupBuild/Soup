@@ -95,6 +95,7 @@ namespace Soup::Core::UnitTests
 							1,
 							Path("C:/WorkingDirectory/MyPackage/"),
 							recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap())
 					},
 				}));
@@ -181,7 +182,6 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -202,7 +202,7 @@ namespace Soup::Core::UnitTests
 				ValueTable(std::map<std::string, Value>({
 					{ "ArgumentValue", Value(true), },
 					{ "Dependencies", Value(ValueTable()), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
@@ -369,6 +369,7 @@ namespace Soup::Core::UnitTests
 							1,
 							Path("C:/WorkingDirectory/MyPackage/"),
 							recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap({
 								{
 									"Build",
@@ -384,6 +385,7 @@ namespace Soup::Core::UnitTests
 							2,
 							Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3"),
 							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml")),
+							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap())
 					},
 				}));
@@ -528,8 +530,6 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -552,7 +552,7 @@ namespace Soup::Core::UnitTests
 				ValueTable(std::map<std::string, Value>({
 					{ "Dependencies", Value(ValueTable()), },
 					{ "HostValue", Value(true) },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.CSharp/0.7.0/Soup.CSharp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
@@ -622,7 +622,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
@@ -794,6 +794,7 @@ namespace Soup::Core::UnitTests
 							1,
 							Path("C:/WorkingDirectory/MyPackage/"),
 							recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap({
 								{
 									"Runtime",
@@ -810,6 +811,7 @@ namespace Soup::Core::UnitTests
 							2,
 							Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3"),
 							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml")),
+							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap({
 								{
 									"Runtime",
@@ -825,6 +827,7 @@ namespace Soup::Core::UnitTests
 							3,
 							Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1"),
 							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml")),
+							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap())
 					},
 				}));
@@ -1029,9 +1032,6 @@ namespace Soup::Core::UnitTests
 					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -1064,7 +1064,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
@@ -1126,7 +1126,7 @@ namespace Soup::Core::UnitTests
 				ValueTable(std::map<std::string, Value>({
 					{ "ArgumentValue", Value(true), },
 					{ "Dependencies", Value(ValueTable()), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
@@ -1201,7 +1201,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
@@ -1393,6 +1393,7 @@ namespace Soup::Core::UnitTests
 							1,
 							Path("C:/WorkingDirectory/MyPackage/"),
 							recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap({
 								{
 									"Build",
@@ -1408,6 +1409,7 @@ namespace Soup::Core::UnitTests
 							2,
 							Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0"),
 							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml")),
+							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap())
 					},
 				}));
@@ -1552,8 +1554,6 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
-					"GetCurrentProcessFileName",
 				}),
 				processManager->GetRequests(),
 				"Verify process manager requests match expected.");
@@ -1576,7 +1576,7 @@ namespace Soup::Core::UnitTests
 				ValueTable(std::map<std::string, Value>({
 					{ "Dependencies", Value(ValueTable()), },
 					{ "HostValue", Value(true) },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.CSharp/0.7.0/Soup.CSharp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
@@ -1646,7 +1646,7 @@ namespace Soup::Core::UnitTests
 							}))), },
 						}))), },
 					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll")), },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
