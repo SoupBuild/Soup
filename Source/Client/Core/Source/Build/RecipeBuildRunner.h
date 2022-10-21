@@ -220,8 +220,14 @@ namespace Soup::Core
 			// Clone the global parameters
 			auto parametersTable = ValueTable(globalParameters.GetValues());
 
+			std::string languageExtensionPath = "";
+			if (packageInfo.LanguageExtension.has_value())
+			{
+				languageExtensionPath = packageInfo.LanguageExtension.value().ToString();
+			}
+
 			// Set the input parameters
-			parametersTable.SetValue("LanguageExtensionPath", Value(packageInfo.LanguageExtension.ToString()));
+			parametersTable.SetValue("LanguageExtensionPath", Value(std::move(languageExtensionPath)));
 			parametersTable.SetValue("PackageDirectory", Value(packageInfo.PackageRoot.ToString()));
 			parametersTable.SetValue("TargetDirectory", Value(targetDirectory.ToString()));
 			parametersTable.SetValue("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
@@ -313,7 +319,10 @@ namespace Soup::Core
 			generateAllowedReadAccess.push_back(generateFolder);
 
 			// Allow read from the language extension directory
-			generateAllowedReadAccess.push_back(packageInfo.LanguageExtension.GetParent());
+			if (packageInfo.LanguageExtension.has_value())
+			{
+				generateAllowedReadAccess.push_back(packageInfo.LanguageExtension.value().GetParent());
+			}
 
 			// TODO: Windows specific
 			generateAllowedReadAccess.push_back(Path("C:/Windows/"));

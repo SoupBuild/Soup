@@ -61,7 +61,7 @@ namespace Soup::Core
 			PackageId id,
 			Path packageRoot,
 			const Recipe& recipe,
-			Path languageExtension,
+			std::optional<Path> languageExtension,
 			PackageChildrenMap dependencies) :
 			Id(id),
 			PackageRoot(std::move(packageRoot)),
@@ -74,7 +74,7 @@ namespace Soup::Core
 		PackageId Id;
 		Path PackageRoot;
 		const Recipe& Recipe;
-		Path LanguageExtension;
+		std::optional<Path> LanguageExtension;
 		PackageChildrenMap Dependencies;
 
 		/// <summary>

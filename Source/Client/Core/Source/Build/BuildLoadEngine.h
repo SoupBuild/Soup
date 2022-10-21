@@ -382,12 +382,17 @@ namespace Soup::Core
 				projectRoot,
 				buildClosureName,
 				packageLockState);
-			// TODO: dependencyProjects[_buildDependencyType].push_back(std::move(languageDependency));
+			
+			// If the language extension is a direct path then use it, otherwise the language resolved to a package to build
+			if (languageExtension.second.has_value())
+			{
+				dependencyProjects[_buildDependencyType].push_back(std::move(languageExtension.second.value()));
+			}
 
 			// Save the package info
 			_packageLookup.emplace(
 				packageId,
-				PackageInfo(packageId, projectRoot, recipe, std::move(languageExtension), std::move(dependencyProjects)));
+				PackageInfo(packageId, projectRoot, recipe, std::move(languageExtension.first), std::move(dependencyProjects)));
 		}
 
 		std::vector<PackageChildInfo> LoadRuntimeDependencies(
@@ -577,7 +582,7 @@ namespace Soup::Core
 			}
 		}
 
-		Path LoadLanguageBuildDependency(
+		std::pair<std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageBuildDependency(
 			const Recipe& recipe,
 			const Path& projectRoot,
 			const std::string& closureName,
@@ -612,7 +617,7 @@ namespace Soup::Core
 			}
 		}
 
-		Path LoadLanguageExtension(
+		std::pair<std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageExtension(
 			const Path& projectRoot,
 			const std::string& builtInExtensionName,
 			SemanticVersion builtInExtensionVersion,
@@ -627,14 +632,15 @@ namespace Soup::Core
 			auto builtInExtensionReference = PackageReference(std::nullopt, builtInExtensionName, builtInExtensionVersion);
 			auto& activeReference = GetActivePackageReference(builtInExtensionReference, implicitLanguage, closureName, packageLockState);
 
-			Path packagePath;
+			std::optional<Path> packagePath;
+			std::optional<PackageChildInfo> packageChildInfo;
 			if (activeReference.IsLocal())
 			{
 				// Use local reference relative to lock directory
 				packagePath = activeReference.GetPath();
-				if (!packagePath.HasRoot())
+				if (!packagePath.value().HasRoot())
 				{
-					packagePath = packageLockState.RootDirectory + packagePath;
+					packagePath = packageLockState.RootDirectory + packagePath.value();
 				}
 			}
 			else
@@ -652,21 +658,15 @@ namespace Soup::Core
 				}
 				else
 				{
-					auto packageChildInfo = LoadBuildDependency(
+					packageChildInfo = LoadBuildDependency(
 						activeReference,
 						projectRoot,
 						closureName,
 						packageLockState);
-
-					// Build the global store location path
-					packagePath = _builtInExtensionPath +
-						Path(implicitLanguage) +
-						Path(activeReference.GetName()) +
-						Path(activeReference.GetVersion().ToString());
 				}
 			}
 
-			return packagePath;
+			return std::make_pair(std::move(packagePath), std::move(packageChildInfo));
 		}
 
 		const std::string& GetLanguageSafeName(const std::string& language) const

@@ -1172,12 +1172,13 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								Path("./Extensions/C#/Soup.Cpp/1.0.2"),
+								std::nullopt,
 								PackageChildrenMap({
 									{
 										"Build",
 										{
 											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 0, 2)), true, -1, 4),
 										}
 									},
 								}))
@@ -1188,8 +1189,15 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml")),
-								Path("./Extensions/C#/Soup.CSharp/1.0.3"),
-								PackageChildrenMap())
+								std::nullopt,
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.CSharp", SemanticVersion(1, 0, 3)), true, -1, 2),
+										}
+									},
+								}))
 						},
 						{
 							3,
