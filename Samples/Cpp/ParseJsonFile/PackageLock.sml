@@ -7,7 +7,7 @@ Closures: {
 		]
 	}
 	Build0: {
-		C#: [
+		CSharp: [
 			{ Name: "Soup.Cpp", Version: "0.4.0" }
 		]
 	}

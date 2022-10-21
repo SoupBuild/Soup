@@ -18,7 +18,14 @@ namespace Soup.Build.PackageManager
 	/// </summary>
 	public class PackageManager
 	{
-		private static string StagingFolderName => ".staging/";
+		private const string StagingFolderName = ".staging/";
+		private const string RootClosureName = "Root";
+		private const string BuiltInLanguageCSharp = "C#";
+		private const string BuiltInLanguageCpp = "C++";
+		private const string BuiltInLanguagePackageCSharp = "Soup.CSharp";
+		private const string BuiltInLanguagePackageCpp = "Soup.Cpp";
+		private const string BuiltInLanguageSafeNameCSharp = "CSharp";
+		private const string BuiltInLanguageSafeNameCpp = "Cpp";
 
 		//// private static string SoupApiEndpoint => "https://localhost:7071";
 		private static string SoupApiEndpoint => "https://api.soupbuild.com";
@@ -434,7 +441,7 @@ namespace Soup.Build.PackageManager
 			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
 
 			// Check if the package version already exists
-			if (packageName == "C#" || packageName == "C++")
+			if (packageName == BuiltInLanguagePackageCpp || packageName == BuiltInLanguagePackageCSharp)
 			{
 				Log.HighPriority("Skip build logic for now");
 			}
@@ -511,7 +518,8 @@ namespace Soup.Build.PackageManager
 				Log.Info($"Restore Packages for Closure {closure.Key}");
 				foreach (var languageProjects in closure.Value.Value.AsTable().Values)
 				{
-					Log.Info($"Restore Packages for Language {languageProjects.Key}");
+					var languageName = GetLanguageName(languageProjects.Key);
+					Log.Info($"Restore Packages for Language {languageName}");
 					foreach (var project in languageProjects.Value.Value.AsArray().Values)
 					{
 						var projectTable = project.Value.AsTable();
@@ -520,7 +528,7 @@ namespace Soup.Build.PackageManager
 						if (SemanticVersion.TryParse(projectVersion, out var version))
 						{
 							await EnsurePackageDownloadedAsync(
-								languageProjects.Key,
+								languageName,
 								projectName,
 								version,
 								packageStore,
@@ -578,9 +586,9 @@ namespace Soup.Build.PackageManager
 				// Build up the package lock file
 				var packageLock = new PackageLock();
 				packageLock.SetVersion(3);
-				var rootClosureName = "Root";
 				foreach (var languageClosure in closure.OrderBy(value => value.Key))
 				{
+					var languageSafeName = GetLanguageSafeName(languageClosure.Key);
 					foreach (var (key, (package, buildClosure)) in languageClosure.Value.OrderBy(value => value.Key))
 					{
 						var value = string.Empty;
@@ -595,10 +603,10 @@ namespace Soup.Build.PackageManager
 							value = package.Version.ToString();
 						}
 
-						Log.Diag($"{rootClosureName}:{languageClosure.Key} {key} -> {value}");
+						Log.Diag($"{RootClosureName}:{languageClosure.Key} {key} -> {value}");
 						packageLock.AddProject(
-							rootClosureName,
-							languageClosure.Key,
+							RootClosureName,
+							languageSafeName,
 							key,
 							value,
 							buildClosure);
@@ -610,6 +618,7 @@ namespace Soup.Build.PackageManager
 					packageLock.EnsureClosure(buildClosure.Key);
 					foreach (var languageClosure in buildClosure.Value.OrderBy(value => value.Key))
 					{
+						var languageSafeName = GetLanguageSafeName(languageClosure.Key);
 						foreach (var (key, package) in languageClosure.Value)
 						{
 							var value = string.Empty;
@@ -627,7 +636,7 @@ namespace Soup.Build.PackageManager
 							Log.Diag($"{buildClosure.Key}:{languageClosure.Key} {key} -> {value}");
 							packageLock.AddProject(
 								buildClosure.Key,
-								languageClosure.Key,
+								languageSafeName,
 								key,
 								value,
 								null);
@@ -661,7 +670,7 @@ namespace Soup.Build.PackageManager
 				throw new InvalidOperationException("Could not load the recipe file.");
 			}
 
-			if (closure.ContainsKey(recipe.Language.Name) && closure[recipe.Language.Name].ContainsKey(recipe.Name))
+			if (closure.TryGetValue(recipe.Language.Name, out var languageClosure) && languageClosure.ContainsKey(recipe.Name))
 			{
 				Log.Diag("Recipe already processed.");
 			}
@@ -704,13 +713,14 @@ namespace Soup.Build.PackageManager
 			Path recipeDirectory)
 		{
 			var buildClosure = new Dictionary<string, IDictionary<string, PackageReference>>();
-			var implicitLanguage = "C#";
+			var implicitLanguage = BuiltInLanguageCSharp;
 
 			// Add the language build extension
+			var recipeLanguagePackage = GetLanguagePackage(recipe.Language.Name);
 			buildClosure.Add(implicitLanguage, new Dictionary<string, PackageReference>());
 			buildClosure[implicitLanguage].Add(
-				recipe.Language.Name,
-				FillDefaultVersion(new PackageReference(implicitLanguage, recipe.Language.Name, recipe.Language.Version)));
+				recipeLanguagePackage,
+				FillDefaultVersion(new PackageReference(implicitLanguage, recipeLanguagePackage, recipe.Language.Version)));
 
 			// Discover any dependency build references
 			if (recipe.HasBuildDependencies)
@@ -724,7 +734,8 @@ namespace Soup.Build.PackageManager
 						var dependencyRecipePath =
 							dependencyPath +
 							BuildConstants.RecipeFileName;
-						var (isDependencySuccess, dependencyRecipe) = await RecipeExtensions.TryLoadRecipeFromFileAsync(dependencyRecipePath);
+						var (isDependencySuccess, dependencyRecipe) =
+							await RecipeExtensions.TryLoadRecipeFromFileAsync(dependencyRecipePath);
 						if (!isDependencySuccess)
 						{
 							throw new InvalidOperationException("Could not load dependency recipe file.");
@@ -737,7 +748,6 @@ namespace Soup.Build.PackageManager
 					}
 
 					var language = dependencyPackage.Language != null ? dependencyPackage.Language : implicitLanguage;
-
 					if (!buildClosure.ContainsKey(language))
 						buildClosure.Add(language, new Dictionary<string, PackageReference>());
 
@@ -746,6 +756,45 @@ namespace Soup.Build.PackageManager
 			}
 
 			return buildClosure;
+		}
+
+		private static string GetLanguageSafeName(string language)
+		{
+			switch (language)
+			{
+				case BuiltInLanguageCSharp:
+					return BuiltInLanguageSafeNameCSharp;
+				case BuiltInLanguageCpp:
+					return BuiltInLanguageSafeNameCpp;
+				default:
+					throw new InvalidOperationException("Unknown language");
+			}
+		}
+
+		private static string GetLanguagePackage(string language)
+		{
+			switch (language)
+			{
+				case BuiltInLanguageCSharp:
+					return BuiltInLanguagePackageCSharp;
+				case BuiltInLanguageCpp:
+					return BuiltInLanguagePackageCpp;
+				default:
+					throw new InvalidOperationException("Unknown language");
+			}
+		}
+
+		private static string GetLanguageName(string languageSafeName)
+		{
+			switch (languageSafeName)
+			{
+				case BuiltInLanguageSafeNameCSharp:
+					return BuiltInLanguageCSharp;
+				case BuiltInLanguageSafeNameCpp:
+					return BuiltInLanguageCpp;
+				default:
+					throw new InvalidOperationException("Unknown language safe name");
+			}
 		}
 
 		private static PackageReference FillDefaultVersion(PackageReference package)
@@ -801,9 +850,7 @@ namespace Soup.Build.PackageManager
 						forceRestore,
 						packageStore,
 						lockStore,
-						stagingDirectory,
-						closure,
-						buildClosures);
+						stagingDirectory);
 				}
 				else
 				{
@@ -883,13 +930,11 @@ namespace Soup.Build.PackageManager
 			bool forceRestore,
 			Path packageStore,
 			Path lockStore,
-			Path stagingDirectory,
-			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
-			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
+			Path stagingDirectory)
 		{
 			// Build dependencies do not inherit the parent language
 			// Instead, they default to C#
-			var implicitLanguage = "C#";
+			var implicitLanguage = BuiltInLanguageCSharp;
 
 			foreach (var dependency in recipe.GetNamedDependencies(Recipe.Property_Build))
 			{

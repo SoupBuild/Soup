@@ -59,7 +59,7 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Discovering full closure",
 					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:C# C++ -> 0.1.0",
+					"DIAG: Build0:C# Soup.Cpp -> 0.1.0",
 					"DIAG: Deleting staging directory",
 				},
 				testListener.GetMessages());
@@ -91,13 +91,13 @@ namespace Soup.Build.PackageManager.UnitTests
 @"Version: 3
 Closures: {
 	Root: {
-		C++: [
+		Cpp: [
 			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
 		]
 	}
 	Build0: {
-		C#: [
-			{ Name: ""C++"", Version: ""0.1.0"" }
+		CSharp: [
+			{ Name: ""Soup.Cpp"", Version: ""0.1.0"" }
 		]
 	}
 }";
@@ -191,7 +191,7 @@ Closures: {
 					"DIAG: Root:C++ MyPackage -> ./",
 					"DIAG: Root:C++ Package1 -> 1.2.3",
 					"DIAG: Root:C++ Package2 -> 3.2.1",
-					"DIAG: Build0:C# C++ -> 0.1.0",
+					"DIAG: Build0:C# Soup.Cpp -> 0.1.0",
 					"DIAG: Deleting staging directory",
 				},
 				testListener.GetMessages());
@@ -259,15 +259,15 @@ Closures: {
 @"Version: 3
 Closures: {
 	Root: {
-		C++: [
+		Cpp: [
 			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
 			{ Name: ""Package1"", Version: ""1.2.3"", Build: ""Build0"" }
 			{ Name: ""Package2"", Version: ""3.2.1"", Build: ""Build0"" }
 		]
 	}
 	Build0: {
-		C#: [
-			{ Name: ""C++"", Version: ""0.1.0"" }
+		CSharp: [
+			{ Name: ""Soup.Cpp"", Version: ""0.1.0"" }
 		]
 	}
 }";
@@ -345,9 +345,9 @@ Closures: {
 					"INFO: Discovering full closure",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
 					"DIAG: Root:C# Package1 -> ./",
-					"DIAG: Build0:C# C# -> 0.1.0",
+					"DIAG: Build0:C# Soup.CSharp -> 0.1.0",
 					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:C# C++ -> 0.1.0",
+					"DIAG: Build0:C# Soup.Cpp -> 0.1.0",
 					"DIAG: Build0:C# Package1 -> 1.2.3",
 					"DIAG: Deleting staging directory",
 				},
@@ -403,13 +403,13 @@ Closures: {
 @"Version: 3
 Closures: {
 	Root: {
-		C++: [
+		Cpp: [
 			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
 		]
 	}
 	Build0: {
-		C#: [
-			{ Name: ""C++"", Version: ""0.1.0"" }
+		CSharp: [
+			{ Name: ""Soup.Cpp"", Version: ""0.1.0"" }
 			{ Name: ""Package1"", Version: ""1.2.3"" }
 		]
 	}
@@ -425,13 +425,13 @@ Closures: {
 @"Version: 3
 Closures: {
 	Root: {
-		C#: [
+		CSharp: [
 			{ Name: ""Package1"", Version: ""./"", Build: ""Build0"" }
 		]
 	}
 	Build0: {
-		C#: [
-			{ Name: ""C#"", Version: ""0.1.0"" }
+		CSharp: [
+			{ Name: ""Soup.CSharp"", Version: ""0.1.0"" }
 		]
 	}
 }";
@@ -495,9 +495,9 @@ Closures: {
 					"INFO: Discovering full closure",
 					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
 					"DIAG: Root:C# Package1 -> ./",
-					"DIAG: Build0:C# C# -> 0.1.0",
+					"DIAG: Build0:C# Soup.CSharp -> 0.1.0",
 					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:C# C++ -> 0.1.0",
+					"DIAG: Build0:C# Soup.Cpp -> 0.1.0",
 					"DIAG: Build0:C# Package1 -> 1.2.3",
 					"DIAG: Deleting staging directory",
 				},
@@ -533,13 +533,13 @@ Closures: {
 @"Version: 3
 Closures: {
 	Root: {
-		C++: [
+		Cpp: [
 			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
 		]
 	}
 	Build0: {
-		C#: [
-			{ Name: ""C++"", Version: ""0.1.0"" }
+		CSharp: [
+			{ Name: ""Soup.Cpp"", Version: ""0.1.0"" }
 			{ Name: ""Package1"", Version: ""1.2.3"" }
 		]
 	}
@@ -555,13 +555,13 @@ Closures: {
 @"Version: 3
 Closures: {
 	Root: {
-		C#: [
+		CSharp: [
 			{ Name: ""Package1"", Version: ""./"", Build: ""Build0"" }
 		]
 	}
 	Build0: {
-		C#: [
-			{ Name: ""C#"", Version: ""0.1.0"" }
+		CSharp: [
+			{ Name: ""Soup.CSharp"", Version: ""0.1.0"" }
 		]
 	}
 }";
@@ -585,15 +585,15 @@ Closures: {
 @"Version: 3
 Closures: {
 	Root: {
-		C++: [
+		Cpp: [
 			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
 			{ Name: ""Package1"", Version: ""1.2.4"", Build: ""Build0"" }
 			{ Name: ""Package2"", Version: ""3.2.1"", Build: ""Build0"" }
 		]
 	}
 	Build0: {
-		C#: [
-			{ Name: ""C++"", Version: ""0.1.0"" }
+		CSharp: [
+			{ Name: ""Soup.Cpp"", Version: ""0.1.0"" }
 		]
 	}
 }";
@@ -650,7 +650,7 @@ Closures: {
 					"HIGH: Downloading package",
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# C++@0.1.0",
+					"HIGH: Install Package: C# Soup.Cpp@0.1.0",
 					"HIGH: Skip build logic for now",
 					"DIAG: Deleting staging directory",
 				},
@@ -728,15 +728,15 @@ Closures: {
 @"Version: 3
 Closures: {
 	Root: {
-		C++: [
+		Cpp: [
 			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
 			{ Name: ""Package1"", Version: ""1.2.4"", Build: ""Build0"" }
 			{ Name: ""Package2"", Version: ""3.2.1"", Build: ""Build0"" }
 		]
 	}
 	Build0: {
-		C#: [
-			{ Name: ""C++"", Version: ""0.1.0"" }
+		CSharp: [
+			{ Name: ""Soup.Cpp"", Version: ""0.1.0"" }
 		]
 	}
 }";
@@ -774,7 +774,7 @@ Closures: {
 					"HIGH: Found local version",
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# C++@0.1.0",
+					"HIGH: Install Package: C# Soup.Cpp@0.1.0",
 					"HIGH: Skip build logic for now",
 					"DIAG: Deleting staging directory",
 

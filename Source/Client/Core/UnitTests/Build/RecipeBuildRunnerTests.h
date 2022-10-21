@@ -1276,21 +1276,21 @@ namespace Soup::Core::UnitTests
 					Version: 3
 					Closures: {
 						Root: {
-							C#: [
+							CSharp: [
 								{ Name: "TestBuild", Version: "1.3.0", Build: "Build1" }
 							]
-							C++: [
+							Cpp: [
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
 						}
 						Build0: {
-							C#: [
+							CSharp: [
 								{ Name: "Soup.Cpp", Version: "1.0.2" }
 								{ Name: "TestBuild", Version: "1.3.0" }
 							]
 						}
 						Build1: {
-							C#: [
+							CSharp: [
 								{ Name: "Soup.CSharp", Version: "1.0.1" }
 							]
 						}

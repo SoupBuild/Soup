@@ -792,12 +792,12 @@ namespace Soup::Core::UnitTests
 					Version: 3
 					Closures: {
 						Root: {
-							C++: [
+							Cpp: [
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
 						}
 						Build0: {
-							C#: [
+							CSharp: [
 								{ Name: "Soup.Cpp", Version: "1.2.3" }
 								{ Name: "TestBuild", Version: "1.2.3" }
 							]
@@ -976,12 +976,12 @@ namespace Soup::Core::UnitTests
 					Version: 3
 					Closures: {
 						Root: {
-							C++: [
+							Cpp: [
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
 						}
 						Build0: {
-							C#: [
+							CSharp: [
 								{ Name: "Soup.Cpp", Version: "1.0.2" }
 								{ Name: "TestBuild", Version: "1.3.0" }
 							]
@@ -994,12 +994,12 @@ namespace Soup::Core::UnitTests
 					Version: 3
 					Closures: {
 						Root: {
-							C#: [
+							CSharp: [
 								{ Name: "TestBuild", Version: "../TestBuild/", Build: "Build0" }
 							]
 						}
 						Build0: {
-							C#: [
+							CSharp: [
 								{ Name: "Soup.CSharp", Version: "1.0.3" }
 							]
 						}
@@ -1165,20 +1165,20 @@ namespace Soup::Core::UnitTests
 					Version: 3
 					Closures: {
 						Root: {
-							C++: [
+							Cpp: [
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
-							C#: [
+							CSharp: [
 								{ Name: "Package1", Version: "1.2.3", Build: "Build1" }
 							]
 						}
 						Build0: {
-							C#: [
+							CSharp: [
 								{ Name: "Soup.Cpp", Version: "1.2.3" }
 							]
 						}
 						Build1: {
-							C#: [
+							CSharp: [
 								{ Name: "Soup.CSharp", Version: "3.2.1" }
 							]
 						}

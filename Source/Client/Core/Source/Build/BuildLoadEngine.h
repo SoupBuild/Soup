@@ -30,9 +30,11 @@ namespace Soup::Core
 		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _buildDependencyType = "Build";
 		const std::string _builtInCppLanguage = "C++";
+		const std::string _builtInCppLanguageSafeName = "Cpp";
 		const std::string _builtInCppExtensionName = "Soup.Cpp";
 		const Path _builtInCppExtensionFilename = Path("Soup.Cpp.dll");
 		const std::string _builtInCSharpLanguage = "C#";
+		const std::string _builtInCSharpLanguageSafeName = "CSharp";
 		const std::string _builtInCSharpExtensionName = "Soup.CSharp";
 		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
 		const std::string _rootClosureName = "Root";
@@ -167,19 +169,20 @@ namespace Soup::Core
 			// Find the required closure
 			auto findClosure = packageLockState.Closures.find(_rootClosureName);
 			if (findClosure == packageLockState.Closures.end())
-				throw std::runtime_error("Closure [" + _rootClosureName + "] not found in lock");
+				throw std::runtime_error("Closure [" + _rootClosureName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
 			// Find the package version in the lock
-			auto findPackageLock = findClosure->second.find(packageLanguage);
+			auto& languageSafeName = GetLanguageSafeName(packageLanguage);
+			auto findPackageLock = findClosure->second.find(languageSafeName);
 			if (findPackageLock == findClosure->second.end())
-				throw std::runtime_error("Language [" + _rootClosureName + "] [" + packageLanguage + "] not found in lock");
+				throw std::runtime_error("Language [" + _rootClosureName + "] [" + languageSafeName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 			auto packageVersion = findPackageLock->second.find(packageName);
 			if (packageVersion == findPackageLock->second.end())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] not found in lock");
+				throw std::runtime_error("Package [" + _rootClosureName + "] [" + languageSafeName + "] [" + packageName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
 			auto& packageBuild = packageVersion->second.second;
 			if (!packageBuild.has_value())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] does not have build closure");
+				throw std::runtime_error("Package [" + _rootClosureName + "] [" + languageSafeName + "] [" + packageName + "] does not have build closure [" + packageLockState.RootDirectory.ToString() + "]");
 
 			return packageBuild.value();
 		}
@@ -298,15 +301,16 @@ namespace Soup::Core
 				// Find the required closure
 				auto findClosure = packageLockState.Closures.find(closureName);
 				if (findClosure == packageLockState.Closures.end())
-					throw std::runtime_error("Closure [" + closureName + "] not found in lock");
+					throw std::runtime_error("Closure [" + closureName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
 				// Find the package version in the lock
-				auto findPackageLock = findClosure->second.find(language);
+				auto& languageSafeName = GetLanguageSafeName(language);
+				auto findPackageLock = findClosure->second.find(languageSafeName);
 				if (findPackageLock == findClosure->second.end())
-					throw std::runtime_error("Language [" + closureName + "] [" + language + "] not found in lock");
+					throw std::runtime_error("Language [" + closureName + "] [" + languageSafeName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 				auto packageVersion = findPackageLock->second.find(reference.GetName());
 				if (packageVersion == findPackageLock->second.end())
-					throw std::runtime_error("Package [" + closureName + "] [" + language + "] [" + reference.GetName() + "] not found in lock");
+					throw std::runtime_error("Package [" + closureName + "] [" + languageSafeName + "] [" + reference.GetName() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
 				auto& lockReference = packageVersion->second.first;
 				return lockReference;
@@ -635,6 +639,22 @@ namespace Soup::Core
 			}
 
 			return packagePath;
+		}
+
+		const std::string& GetLanguageSafeName(const std::string& language) const
+		{
+			if (language == _builtInCSharpLanguage)
+			{
+				return _builtInCSharpLanguageSafeName;
+			}
+			else if (language == _builtInCppLanguage)
+			{
+				return _builtInCppLanguageSafeName;
+			}
+			else
+			{
+				throw std::runtime_error("Unknown language");
+			}
 		}
 
 		Path GetSoupUserDataPath() const

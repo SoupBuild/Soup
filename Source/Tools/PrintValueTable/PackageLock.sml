@@ -1,7 +1,7 @@
 Version: 3
 Closures: {
 	Root: {
-		C++: [
+		Cpp: [
 			{ Name: "CryptoPP", Version: "1.1.0", Build: "Build0" }
 			{ Name: "Detours", Version: "4.0.9", Build: "Build0" }
 			{ Name: "Monitor.Host", Version: "../../Monitor/Host/", Build: "Build0" }
@@ -14,12 +14,12 @@ Closures: {
 		]
 	}
 	Build0: {
-		C#: [
+		CSharp: [
 			{ Name: "Soup.Cpp", Version: "0.4.0" }
 		]
 	}
 	Build1: {
-		C#: [
+		CSharp: [
 			{ Name: "Soup.Cpp", Version: "0.4.0" }
 			{ Name: "Soup.Test.Cpp", Version: "0.4.0" }
 		]

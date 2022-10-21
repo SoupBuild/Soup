@@ -1,7 +1,7 @@
 Version: 3
 Closures: {
 	Root: {
-		C#: [
+		CSharp: [
 			{ Name: "Opal", Version: "1.1.0", Build: "Build0" }
 			{ Name: "Samples.Cpp.BuildExtension.Extension", Version: "./", Build: "Build0" }
 			{ Name: "Soup.Build", Version: "0.2.0", Build: "Build0" }
@@ -9,7 +9,7 @@ Closures: {
 		]
 	}
 	Build0: {
-		C#: [
+		CSharp: [
 			{ Name: "Soup.CSharp", Version: "0.7.0" }
 		]
 	}
