@@ -1,5 +1,5 @@
 Name: "Samples.CSharp.BuildExtension.Extension"
-Language: "C#|0.1"
+Language: "C#|0.7.1"
 Version: "1.0.0"
 Source: [
 	"CustomBuildTask.cs"

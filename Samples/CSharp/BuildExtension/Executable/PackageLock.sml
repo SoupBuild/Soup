@@ -1,4 +1,4 @@
-Version: 3
+Version: 2
 Closures: {
 	Root: {
 		CSharp: [

@@ -7,8 +7,8 @@ TestState RunBuildLoadEngineTests()
 	auto testClass = std::make_shared<Soup::Core::UnitTests::BuildLoadEngineTests>();
 	TestState state = { 0, 0 };
 	state += Soup::Test::RunTest(className, "Initialize", [&testClass]() { testClass->Initialize(); });
-	state += Soup::Test::RunTest(className, "Load_NoDependencies_BuiltInLanguage", [&testClass]() { testClass->Load_NoDependencies_BuiltInLanguage(); });
-	state += Soup::Test::RunTest(className, "Load_NoDependencies_ExternalLanguage", [&testClass]() { testClass->Load_NoDependencies_ExternalLanguage(); });
+	state += Soup::Test::RunTest(className, "Load_LanguageExtension_BuiltInVersion", [&testClass]() { testClass->Load_LanguageExtension_BuiltInVersion(); });
+	state += Soup::Test::RunTest(className, "Load_LanguageExtension_ExternalLanguage_ExactMatch", [&testClass]() { testClass->Load_LanguageExtension_ExternalLanguage_ExactMatch(); });
 	state += Soup::Test::RunTest(className, "Load_TriangleDependency_NoRebuild", [&testClass]() { testClass->Load_TriangleDependency_NoRebuild(); });
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_NoPackageLock_ExternalReference", [&testClass]() { testClass->Load_BuildDependency_NoPackageLock_ExternalReference(); });
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_NoPackageLock_Local", [&testClass]() { testClass->Load_BuildDependency_NoPackageLock_Local(); });

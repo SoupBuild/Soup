@@ -11,6 +11,26 @@
 
 namespace Soup::Core
 {
+	export struct BuiltInLanguagePackage
+	{
+		BuiltInLanguagePackage(
+			std::string languageSafeName,
+			std::string extensionName,
+			SemanticVersion extensionVersion,
+			Path extensionFilename) :
+			LanguageSafeName(std::move(languageSafeName)),
+			ExtensionName(std::move(extensionName)),
+			ExtensionVersion(extensionVersion),
+			ExtensionFilename(std::move(extensionFilename))
+		{
+		}
+
+		std::string LanguageSafeName;
+		std::string ExtensionName;
+		SemanticVersion ExtensionVersion;
+		Path ExtensionFilename;
+	};
+
 	struct PackageLockState
 	{
 		bool HasPackageLock;
@@ -29,18 +49,11 @@ namespace Soup::Core
 	private:
 		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _buildDependencyType = "Build";
-		const std::string _builtInCppLanguage = "C++";
-		const std::string _builtInCppLanguageSafeName = "Cpp";
-		const std::string _builtInCppExtensionName = "Soup.Cpp";
-		const Path _builtInCppExtensionFilename = Path("Soup.Cpp.dll");
 		const std::string _builtInCSharpLanguage = "C#";
-		const std::string _builtInCSharpLanguageSafeName = "CSharp";
-		const std::string _builtInCSharpExtensionName = "Soup.CSharp";
-		const Path _builtInCSharpExtensionFilename = Path("Soup.CSharp.dll");
 		const std::string _rootClosureName = "Root";
 
-		SemanticVersion _builtInCppExtensionVersion;
-		SemanticVersion _builtInCSharpExtensionVersion;
+		// Built in languages
+		const std::map<std::string, BuiltInLanguagePackage>& _builtInLanguageLookup;
 
 		// Arguments
 		const RecipeBuildArguments& _arguments;
@@ -66,13 +79,11 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="BuildLoadEngine"/> class.
 		/// </summary>
 		BuildLoadEngine(
-			SemanticVersion builtInCppExtensionVersion,
-			SemanticVersion builtInCSharpExtensionVersion,
+			const std::map<std::string, BuiltInLanguagePackage>& builtInLanguageLookup,
 			const RecipeBuildArguments& arguments,
 			const ValueTable& hostBuildGlobalParameters,
 			RecipeCache& recipeCache) :
-			_builtInCppExtensionVersion(builtInCppExtensionVersion),
-			_builtInCSharpExtensionVersion(builtInCSharpExtensionVersion),
+			_builtInLanguageLookup(builtInLanguageLookup),
 			_arguments(arguments),
 			_hostBuildGlobalParameters(hostBuildGlobalParameters),
 			_recipeCache(recipeCache),
@@ -591,37 +602,20 @@ namespace Soup::Core
 			auto name = recipe.GetLanguage().GetName();
 
 			// Get the active version
-			if (name == _builtInCSharpLanguage)
-			{
-				return LoadLanguageExtension(
-					projectRoot,
-					_builtInCSharpExtensionName,
-					_builtInCSharpExtensionVersion,
-					_builtInCSharpExtensionFilename,
-					closureName,
-					packageLockState);
-			}
-			else if (name == _builtInCppLanguage)
-			{
-				return LoadLanguageExtension(
-					projectRoot,
-					_builtInCppExtensionName,
-					_builtInCppExtensionVersion,
-					_builtInCppExtensionFilename,
-					closureName,
-					packageLockState);
-			}
-			else
-			{
-				throw std::runtime_error("Unknown language extension path");
-			}
+			auto builtInLanguageResult = _builtInLanguageLookup.find(name);
+			if (builtInLanguageResult == _builtInLanguageLookup.end())
+				throw std::runtime_error("Unknown language: " + name);
+
+			return LoadLanguageExtension(
+				projectRoot,
+				builtInLanguageResult->second,
+				closureName,
+				packageLockState);
 		}
 
 		std::pair<std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageExtension(
 			const Path& projectRoot,
-			const std::string& builtInExtensionName,
-			SemanticVersion builtInExtensionVersion,
-			const Path& builtInExtensionFilename,
+			const BuiltInLanguagePackage& builtInLanguagePackage,
 			const std::string& closureName,
 			const PackageLockState& packageLockState)
 		{
@@ -629,8 +623,15 @@ namespace Soup::Core
 			// Instead, they default to C#
 			auto implicitLanguage = _builtInCSharpLanguage;
 
-			auto builtInExtensionReference = PackageReference(std::nullopt, builtInExtensionName, builtInExtensionVersion);
-			auto& activeReference = GetActivePackageReference(builtInExtensionReference, implicitLanguage, closureName, packageLockState);
+			auto builtInExtensionReference = PackageReference(
+				std::nullopt,
+				builtInLanguagePackage.ExtensionName,
+				builtInLanguagePackage.ExtensionVersion);
+			auto& activeReference = GetActivePackageReference(
+				builtInExtensionReference,
+				implicitLanguage,
+				closureName,
+				packageLockState);
 
 			std::optional<Path> packagePath;
 			std::optional<PackageChildInfo> packageChildInfo;
@@ -645,16 +646,16 @@ namespace Soup::Core
 			}
 			else
 			{
-				if (activeReference.GetVersion() == builtInExtensionVersion)
+				if (activeReference.GetVersion() == builtInLanguagePackage.ExtensionVersion)
 				{
 					// Use the prebuilt version in the install folder
 					auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
 					auto processDirectory = processFilename.GetParent();
 					packagePath = processDirectory +
 						_builtInExtensionPath +
-						Path(builtInExtensionName) +
+						Path(builtInLanguagePackage.ExtensionName) +
 						Path(activeReference.GetVersion().ToString()) +
-						builtInExtensionFilename;
+						builtInLanguagePackage.ExtensionFilename;
 				}
 				else
 				{
@@ -671,18 +672,12 @@ namespace Soup::Core
 
 		const std::string& GetLanguageSafeName(const std::string& language) const
 		{
-			if (language == _builtInCSharpLanguage)
-			{
-				return _builtInCSharpLanguageSafeName;
-			}
-			else if (language == _builtInCppLanguage)
-			{
-				return _builtInCppLanguageSafeName;
-			}
-			else
-			{
-				throw std::runtime_error("Unknown language");
-			}
+			// Get the active version
+			auto builtInLanguageResult = _builtInLanguageLookup.find(language);
+			if (builtInLanguageResult == _builtInLanguageLookup.end())
+				throw std::runtime_error("Unknown language: " + language);
+
+			return builtInLanguageResult->second.LanguageSafeName;
 		}
 
 		Path GetSoupUserDataPath() const

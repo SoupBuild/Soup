@@ -48,10 +48,28 @@ namespace Soup::Core
 			startTime = std::chrono::high_resolution_clock::now();
 
 			// Generate the package build graph
+			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			{
+				{
+					"C++",
+					 BuiltInLanguagePackage(
+						"Cpp",
+						"Soup.Cpp",
+						SemanticVersion(0, 4, 0),
+						Path("Soup.Cpp.dll"))
+				},
+				{
+					"C#",
+					BuiltInLanguagePackage(
+						"CSharp",
+						"Soup.CSharp",
+						SemanticVersion(0, 7, 0),
+						Path("Soup.CSharp.dll"))
+				},
+			});
 			auto recipeCache = RecipeCache();
 			auto loadEngine = BuildLoadEngine(
-				SemanticVersion(0, 4, 0),
-				SemanticVersion(0, 7, 0),
+				builtInLanguages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
