@@ -4,7 +4,7 @@
 #include <vector>
 
 import Opal;
-import Soup.Build.Runtime;
+import Soup.Core;
 
 void PrintUsage()
 {
@@ -31,7 +31,7 @@ std::string ToString(const std::vector<uint32_t>& valueList)
 	return builder.str();
 }
 
-void PrintFiles(Soup::Build::Runtime::OperationGraph& graph)
+void PrintFiles(Soup::Core::OperationGraph& graph)
 {
 	for (auto fileReference : graph.GetReferencedFiles())
 	{
@@ -39,7 +39,7 @@ void PrintFiles(Soup::Build::Runtime::OperationGraph& graph)
 	}
 }
 
-void PrintOperations(Soup::Build::Runtime::OperationGraph& graph)
+void PrintOperations(Soup::Core::OperationGraph& graph)
 {
 	for (auto operation : graph.GetOperations())
 	{
@@ -63,9 +63,9 @@ void PrintOperations(Soup::Build::Runtime::OperationGraph& graph)
 
 void PrintGraph(
 	const std::string& indent,
-	const std::vector<Soup::Build::Runtime::OperationId>& operationIds,
-	Soup::Build::Runtime::OperationGraph& graph,
-	const std::unordered_set<Soup::Build::Runtime::OperationId>& parentOperationSet)
+	const std::vector<Soup::Core::OperationId>& operationIds,
+	Soup::Core::OperationGraph& graph,
+	const std::unordered_set<Soup::Core::OperationId>& parentOperationSet)
 {
 	auto childIndent = indent + "  ";
 	for (auto operationId : operationIds)
@@ -78,17 +78,17 @@ void PrintGraph(
 		else
 		{
 			std::cout << indent << operationInfo.Title << std::endl;
-			auto updatedParentSet = std::unordered_set<Soup::Build::Runtime::OperationId>(parentOperationSet);
+			auto updatedParentSet = std::unordered_set<Soup::Core::OperationId>(parentOperationSet);
 			updatedParentSet.insert(operationId);
 			PrintGraph(childIndent, operationInfo.Children, graph, updatedParentSet);
 		}
 	}
 }
 
-void PrintGraph(Soup::Build::Runtime::OperationGraph& graph)
+void PrintGraph(Soup::Core::OperationGraph& graph)
 {
 	std::cout << "Graph:" << std::endl;
-	auto emptySet = std::unordered_set<Soup::Build::Runtime::OperationId>();
+	auto emptySet = std::unordered_set<Soup::Core::OperationId>();
 	PrintGraph("", graph.GetRootOperationIds(), graph, emptySet);
 }
 
@@ -103,7 +103,7 @@ void LoadAndPrintGraph(const Opal::Path& operationGraphFile)
 	auto file = Opal::System::IFileSystem::Current().OpenRead(operationGraphFile, true);
 
 	// Read the contents of the build state file
-	auto graph = Soup::Build::Runtime::OperationGraphReader::Deserialize(file->GetInStream());
+	auto graph = Soup::Core::OperationGraphReader::Deserialize(file->GetInStream());
 
 	PrintFiles(graph);
 	PrintOperations(graph);

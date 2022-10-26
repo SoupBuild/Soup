@@ -41,6 +41,16 @@ jobs:
     - name: Soup Build
       run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
 
+    # Build Tools
+    - name: Soup Restore PrintGraph
+      run: soup restore ./Soup/Tools/PrintGraph/
+    - name: Soup Build PrintGraph
+      run: soup build ./Soup/Tools/PrintGraph/ -flavor ${{matrix.config}} -v:d
+    - name: Soup Restore PrintValueTable
+      run: soup restore ./Soup/Tools/PrintValueTable/
+    - name: Soup Build PrintValueTable
+      run: soup build ./Soup/Tools/PrintValueTable/ -flavor ${{matrix.config}} -v:d
+
     # Build Samples
     - name: Soup Restore Cpp BuildExtension
       run: soup restore ./Soup/Samples/Cpp/BuildExtension/Executable/

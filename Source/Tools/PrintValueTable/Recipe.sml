@@ -9,6 +9,6 @@ Source: [
 Dependencies: {
 	Runtime: [
 		"Opal@0.5.0"
-		"../../Build/Runtime/"
+		"../../Client/Core/"
 	]
 }

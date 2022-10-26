@@ -121,13 +121,13 @@ The package lock that was generated to capture the unique build dependencies req
 Version: 3
 Closures: {
     Root: {
-        C++: [
+        Cpp: [
             { Name: "Samples.SimpleBuildExtension.Executable", Version: "../Executable", Build: "Build0" }
         ]
     }
     Build0: {
-        C#: [
-            { Name: "C++", Version: "0.1.0" }
+        CSharp: [
+            { Name: "Soup.Cpp", Version: "0.4.0" }
             { Name: "Samples.Cpp.BuildExtension.Extension", Version: "1.0.0" }
         ]
     }

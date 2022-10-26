@@ -58,7 +58,13 @@ namespace Soup.Build.Generate
 			}
 
 			// Get the required input state from the parameters
-			var languageExtensionPath = new Path(parametersState["LanguageExtensionPath"].AsString().ToString());
+			var languageExtensionContent = parametersState["LanguageExtensionPath"].AsString().ToString();
+			Path? languageExtensionPath = null;
+			if (!string.IsNullOrEmpty(languageExtensionContent))
+			{
+				languageExtensionPath = new Path(languageExtensionContent);
+			}
+
 			var packageDirectory = new Path(parametersState["PackageDirectory"].AsString().ToString());
 
 			// Load the recipe file
@@ -219,13 +225,16 @@ namespace Soup.Build.Generate
 		/// Generate the collection of build extensions
 		/// </summary>
 		private IList<Path> GenerateBuildExtensionSet(
-			Path languageExtensionPath,
+			Path? languageExtensionPath,
 			ValueTable dependenciesSharedState)
 		{
 			var buildExtensionLibraries = new List<Path>();
 
 			// Run the RecipeBuild extension to inject core build tasks
-			buildExtensionLibraries.Add(languageExtensionPath);
+			if (languageExtensionPath != null)
+			{
+				buildExtensionLibraries.Add(languageExtensionPath);
+			}
 
 			// Check for any dynamic libraries in the shared state
 			if (dependenciesSharedState.TryGetValue("Build", out var buildDependenciesValue))

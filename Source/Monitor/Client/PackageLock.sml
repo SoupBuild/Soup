@@ -1,7 +1,7 @@
 Version: 3
 Closures: {
 	Root: {
-		C++: [
+		Cpp: [
 			{ Name: "Detours", Version: "4.0.9", Build: "Build0" }
 			{ Name: "Monitor.Client", Version: "../Client", Build: "Build0" }
 			{ Name: "Monitor.Shared", Version: "../Shared/", Build: "Build0" }
@@ -9,8 +9,8 @@ Closures: {
 		]
 	}
 	Build0: {
-		C#: [
-			{ Name: "C++", Version: "0.1.0" }
+		CSharp: [
+			{ Name: "Soup.Cpp", Version: "0.4.0" }
 		]
 	}
 }
