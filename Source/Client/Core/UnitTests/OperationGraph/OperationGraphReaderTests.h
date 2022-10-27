@@ -97,25 +97,6 @@ namespace Soup::Core::UnitTests
 		}
 
 		// [[Fact]]
-		void Deserialize_ExtraContentThrows()
-		{
-			auto binaryFileContent = std::vector<char>(
-			{
-				'B', 'O', 'G', '\0', 0x04, 0x00, 0x00, 0x00,
-				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
-				'R', 'O', 'P', '\0', 0x00, 0x00, 0x00, 0x00,
-				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00, 'E',
-			});
-			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
-
-			auto exception = Assert::Throws<std::runtime_error>([&content]() {
-				auto actual = OperationGraphReader::Deserialize(content);
-			});
-			
-			Assert::AreEqual("Operation graph file corrupted - Did not read the entire file", exception.what(), "Verify Exception message");
-		}
-
-		// [[Fact]]
 		void Deserialize_Empty()
 		{
 			auto binaryFileContent = std::vector<char>(

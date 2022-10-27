@@ -22,9 +22,18 @@ namespace Soup::Core
 	public:
 		static OperationGraph Deserialize(std::istream& stream)
 		{
+			// Read the entire file for fastest read operation
+			stream.seekg(0, std::ios_base::end);
+			auto size = stream.tellg();
+			stream.seekg(0, std::ios_base::beg);
+
+			auto contentBuffer = std::vector<char>(size);
+			stream.read(contentBuffer.data(), size);
+			auto content = contentBuffer.data();
+
 			// Read the File Header with version
 			auto headerBuffer = std::array<char, 4>();
-			stream.read(headerBuffer.data(), 4);
+			Read(content, headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'B' ||
 				headerBuffer[1] != 'O' ||
 				headerBuffer[2] != 'G' ||
@@ -33,14 +42,14 @@ namespace Soup::Core
 				throw std::runtime_error("Invalid operation graph file header");
 			}
 
-			auto fileVersion = ReadUInt32(stream);
+			auto fileVersion = ReadUInt32(content);
 			if (fileVersion != FileVersion)
 			{
 				throw std::runtime_error("Operation graph file version does not match expected");
 			}
 
 			// Read the set of files
-			stream.read(headerBuffer.data(), 4);
+			Read(content, headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'F' ||
 				headerBuffer[1] != 'I' ||
 				headerBuffer[2] != 'S' ||
@@ -49,21 +58,21 @@ namespace Soup::Core
 				throw std::runtime_error("Invalid operation graph files header");
 			}
 
-			auto fileCount = ReadUInt32(stream);
+			auto fileCount = ReadUInt32(content);
 			auto files = std::vector<std::pair<FileId, Path>>();
 			for (auto i = 0u; i < fileCount; i++)
 			{
 				// Read the command working directory
-				auto fileId = ReadUInt32(stream);
+				auto fileId = ReadUInt32(content);
 
-				auto fileString = ReadString(stream);
+				auto fileString = ReadString(content);
 				auto file = Path::Load(std::move(fileString));
 
 				files.push_back({ fileId, std::move(file) });
 			}
 
 			// Read the set of operations
-			stream.read(headerBuffer.data(), 4);
+			Read(content, headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'R' ||
 				headerBuffer[1] != 'O' ||
 				headerBuffer[2] != 'P' ||
@@ -73,10 +82,10 @@ namespace Soup::Core
 			}
 
 			// Read the root operation ids
-			auto rootOperationIds = ReadOperationIdList(stream);
+			auto rootOperationIds = ReadOperationIdList(content);
 
 			// Read the set of operations
-			stream.read(headerBuffer.data(), 4);
+			Read(content, headerBuffer.data(), 4);
 			if (headerBuffer[0] != 'O' ||
 				headerBuffer[1] != 'P' ||
 				headerBuffer[2] != 'S' ||
@@ -85,11 +94,11 @@ namespace Soup::Core
 				throw std::runtime_error("Invalid operation graph operations header");
 			}
 
-			auto operationCount = ReadUInt32(stream);
+			auto operationCount = ReadUInt32(content);
 			auto operations = std::vector<OperationInfo>(operationCount);
 			for (auto i = 0u; i < operationCount; i++)
 			{
-				operations[i] = ReadOperationInfo(stream);
+				operations[i] = ReadOperationInfo(content);
 			}
 
 			if (stream.peek() != std::char_traits<char>::eof())
@@ -104,54 +113,54 @@ namespace Soup::Core
 		}
 
 	private:
-		static OperationInfo ReadOperationInfo(std::istream& stream)
+		static OperationInfo ReadOperationInfo(char*& content)
 		{
 			// Write out the operation id
-			auto id = ReadUInt32(stream);
+			auto id = ReadUInt32(content);
 
 			// Write the operation title
-			auto title = ReadString(stream);
+			auto title = ReadString(content);
 
 			// Write the command working directory
-			auto workingDirectory = ReadString(stream);
+			auto workingDirectory = ReadString(content);
 
 			// Write the command executable
-			auto executable = ReadString(stream);
+			auto executable = ReadString(content);
 
 			// Write the command arguments
-			auto arguments = ReadString(stream);
+			auto arguments = ReadString(content);
 
 			// Write out the declared input files
-			auto declaredInput = ReadFileIdList(stream);
+			auto declaredInput = ReadFileIdList(content);
 
 			// Write out the declared output files
-			auto declaredOutput = ReadFileIdList(stream);
+			auto declaredOutput = ReadFileIdList(content);
 
 			// Write out the read access list
-			auto readAccess = ReadFileIdList(stream);
+			auto readAccess = ReadFileIdList(content);
 
 			// Write out the write access list
-			auto writeAccess = ReadFileIdList(stream);
+			auto writeAccess = ReadFileIdList(content);
 
 			// Write out the child operation ids
-			auto children = ReadOperationIdList(stream);
+			auto children = ReadOperationIdList(content);
 
 			// Write out the dependency count
-			auto dependecyCount = ReadUInt32(stream);
+			auto dependencyCount = ReadUInt32(content);
 
 			// Write out the value indicating if there was a successful run
-			auto wasSuccessfulRun = ReadBoolean(stream);
+			auto wasSuccessfulRun = ReadBoolean(content);
 
 			// Read the utc tick since January 1, 0001 at 00:00:00.000 in the Gregorian calendar
-			auto evaluateTimeMilliseconds = ReadInt64(stream);
+			auto evaluateTimeMilliseconds = ReadInt64(content);
 			auto unixEvaluateTimeMilliseconds = std::chrono::milliseconds(evaluateTimeMilliseconds - UnixEpochOffset);
 			auto evaluateTime = std::chrono::time_point<std::chrono::system_clock>(unixEvaluateTimeMilliseconds);
 
 			// Write out the observed input files
-			auto observedInput = ReadFileIdList(stream);
+			auto observedInput = ReadFileIdList(content);
 
 			// Write out the observed output files
-			auto observedOutput = ReadFileIdList(stream);
+			auto observedOutput = ReadFileIdList(content);
 
 			return OperationInfo(
 				id,
@@ -165,84 +174,74 @@ namespace Soup::Core
 				std::move(readAccess),
 				std::move(writeAccess),
 				std::move(children),
-				dependecyCount,
+				dependencyCount,
 				wasSuccessfulRun,
 				evaluateTime,
 				std::move(observedInput),
 				std::move(observedOutput));
 		}
 
-		static uint32_t ReadUInt32(std::istream& stream)
+		static uint32_t ReadUInt32(char*& content)
 		{
 			uint32_t result = 0;
-			stream.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
-			if (stream.fail())
-			{
-				throw std::runtime_error("OperationGraphReader Failed to read unsigned integer value");
-			}
+			Read(content, reinterpret_cast<char*>(&result), sizeof(uint32_t));
 
 			return result;
 		}
 
-		static int64_t ReadInt64(std::istream& stream)
+		static int64_t ReadInt64(char*& content)
 		{
 			int64_t result = 0;
-			stream.read(reinterpret_cast<char*>(&result), sizeof(int64_t));
-			if (stream.fail())
-			{
-				throw std::runtime_error("OperationGraphReader Failed to read 64 bit integer value");
-			}
+			Read(content, reinterpret_cast<char*>(&result), sizeof(int64_t));
 
 			return result;
 		}
 
-		static boolean ReadBoolean(std::istream& stream)
+		static boolean ReadBoolean(char*& content)
 		{
 			uint32_t result = 0;
-			stream.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
-			if (stream.fail())
-			{
-				throw std::runtime_error("OperationGraphReader Failed to read boolean value");
-			}
+			Read(content, reinterpret_cast<char*>(&result), sizeof(uint32_t));
 
 			return result != 0;
 		}
 
-		static std::string ReadString(std::istream& stream)
+		static std::string ReadString(char*& content)
 		{
-			auto size = ReadUInt32(stream);
+			auto size = ReadUInt32(content);
 			auto result = std::string(size, '\0');
-			stream.read(result.data(), size);
-			if (stream.fail())
-			{
-				throw std::runtime_error("OperationGraphReader Failed to read string value");
-			}
+			Read(content, result.data(), size);
 
 			return result;
 		}
 
-		static std::vector<FileId> ReadFileIdList(std::istream& stream)
+		static std::vector<FileId> ReadFileIdList(char*& content)
 		{
-			auto size = ReadUInt32(stream);
+			auto size = ReadUInt32(content);
 			auto result = std::vector<FileId>(size);
 			for (auto i = 0u; i < size; i++)
 			{
-				result[i] = ReadUInt32(stream);
+				result[i] = ReadUInt32(content);
 			}
 
 			return result;
 		}
 
-		static std::vector<OperationId> ReadOperationIdList(std::istream& stream)
+		static std::vector<OperationId> ReadOperationIdList(char*& content)
 		{
-			auto size = ReadUInt32(stream);
+			auto size = ReadUInt32(content);
 			auto result = std::vector<OperationId>(size);
 			for (auto i = 0u; i < size; i++)
 			{
-				result[i] = ReadUInt32(stream);
+				result[i] = ReadUInt32(content);
 			}
 
 			return result;
+		}
+
+		static void Read(char*& data, char* buffer, size_t count)
+		{
+			memcpy(buffer, data, count);
+			data += count;
 		}
 	};
 }
