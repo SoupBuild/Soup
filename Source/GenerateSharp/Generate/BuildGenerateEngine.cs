@@ -125,7 +125,7 @@ namespace Soup.Build.Generate
 			}
 
 			// Save the operation graph so the evaluate phase can load it
-			var evaluateGraphFile = soupTargetDirectory + BuildConstants.GenerateEvaluateOperationGraphFileName;
+			var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
 			OperationGraphManager.SaveState(evaluateGraphFile, evaluateGraph, _fileSystemState);
 
 			// Save the shared state that is to be passed to the downstream builds

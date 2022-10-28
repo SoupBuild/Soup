@@ -67,11 +67,11 @@ namespace Soup::Core
 		}
 
 		/// <summary>
-		/// Gets the Generate Parameters Value Table file name
+		/// Gets the Evaluate Operation Graph file name
 		/// </summary>
-		static const Path GenerateEvaluateOperationGraphFileName()
+		static const Path EvaluateGraphFileName()
 		{
-			static const Path value = Path("GenerateEvaluateGraph.bog");
+			static const Path value = Path("Evaluate.bog");
 			return value;
 		}
 
@@ -101,13 +101,13 @@ namespace Soup::Core
 
 		static Path GetGenerateGraphFileName()
 		{
-			static const auto value = Path("GenerateGraph.bog");
+			static const auto value = Path("Generate.bog");
 			return value;
 		}
 
 		static Path GetEvaluateResultGraphFileName()
 		{
-			static const auto value = Path("EvaluateResultGraph.bog");
+			static const auto value = Path("EvaluateResult.bog");
 			return value;
 		}
 

@@ -394,13 +394,13 @@ namespace Soup::Core
 			const Path& soupTargetDirectory)
 		{
 			// Load and run the previous stored state directly
-			auto generateEvaluateGraphFile = soupTargetDirectory + BuildConstants::GenerateEvaluateOperationGraphFileName();
+			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateGraphFileName();
 			auto evaluateResultGraphFile = soupTargetDirectory + BuildConstants::GetEvaluateResultGraphFileName();
 
 			Log::Info("Loading generate evaluate operation graph");
 			auto evaluateGraph = OperationGraph();
 			if (!OperationGraphManager::TryLoadState(
-				generateEvaluateGraphFile,
+				evaluateGraphFile,
 				evaluateGraph,
 				_fileSystemState))
 			{
