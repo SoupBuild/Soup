@@ -117,7 +117,7 @@ namespace Soup::Core
 		{
 			// Load the local user config
 			auto localUserConfigPath = System::IFileSystem::Current().GetUserProfileDirectory() +
-				BuildConstants::GetSoupLocalStoreDirectory() +
+				BuildConstants::SoupLocalStoreDirectory() +
 				BuildConstants::LocalUserConfigFileName();
 			LocalUserConfig localUserConfig = {};
 			if (!LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))

@@ -36,34 +36,7 @@ namespace Soup::Core
 			// Read the contents of the build state file
 			try
 			{
-				auto loadedResult = OperationGraphReader::Deserialize(file->GetInStream());
-				
-				// Map up the incoming file ids to the active file system state ids
-				auto activeFileIdMap = std::unordered_map<FileId, FileId>();
-				for (auto& fileReference : loadedResult.GetReferencedFiles())
-				{
-					auto activeFileId = fileSystemState.ToFileId(fileReference.second);
-					auto insertResult = activeFileIdMap.emplace(fileReference.first, activeFileId);
-					if (!insertResult.second)
-						throw std::runtime_error("Failed to insert file id lookup");
-
-					// Update the referenced id
-					fileReference.first = activeFileId;
-				}
-
-				// Update all of the operations
-				for (auto& operationReference : loadedResult.GetOperations())
-				{
-					auto& operation = operationReference.second;
-					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
-					UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
-					UpdateFileIds(operation.ReadAccess, activeFileIdMap);
-					UpdateFileIds(operation.WriteAccess, activeFileIdMap);
-					UpdateFileIds(operation.ObservedInput, activeFileIdMap);
-					UpdateFileIds(operation.ObservedOutput, activeFileIdMap);
-				}
-
-				result = std::move(loadedResult);
+				result = OperationGraphReader::Deserialize(file->GetInStream(), fileSystemState);
 				return true;
 			}
 			catch(std::runtime_error& ex)
@@ -97,42 +70,13 @@ namespace Soup::Core
 				files.insert(operation.DeclaredOutput.begin(), operation.DeclaredOutput.end());
 				files.insert(operation.ReadAccess.begin(), operation.ReadAccess.end());
 				files.insert(operation.WriteAccess.begin(), operation.WriteAccess.end());
-				files.insert(operation.ObservedInput.begin(), operation.ObservedInput.end());
-				files.insert(operation.ObservedOutput.begin(), operation.ObservedOutput.end());
-			}
-
-			auto referencedFiles = std::vector<std::pair<FileId, Path>>();
-			for (auto fileId : files)
-			{
-				referencedFiles.push_back({ fileId, fileSystemState.GetFilePath(fileId) });
-			}
-
-			state.SetReferencedFiles(std::move(referencedFiles));
-
-			// Ensure the target directories exists
-			if (!System::IFileSystem::Current().Exists(targetFolder))
-			{
-				Log::Info("Create Directory: " + targetFolder.ToString());
-				System::IFileSystem::Current().CreateDirectory2(targetFolder);
 			}
 
 			// Open the file to write to
 			auto file = System::IFileSystem::Current().OpenWrite(operationGraphFile, true);
 
 			// Write the build state to the file stream
-			OperationGraphWriter::Serialize(state, file->GetOutStream());
-		}
-
-	private:
-		static void UpdateFileIds(std::vector<FileId>& fileIds, const std::unordered_map<FileId, FileId>& activeFileIdMap)
-		{
-			for (auto& fileId : fileIds)
-			{
-				auto findActiveFileId = activeFileIdMap.find(fileId);
-				if (findActiveFileId == activeFileIdMap.end())
-					throw std::runtime_error("Could not find operation file id in active map");
-				fileId = findActiveFileId->second;
-			}
+			OperationGraphWriter::Serialize(state, files, fileSystemState, file->GetOutStream());
 		}
 	};
 }

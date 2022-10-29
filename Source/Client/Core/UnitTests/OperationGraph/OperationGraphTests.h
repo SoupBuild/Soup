@@ -28,9 +28,6 @@ namespace Soup::Core::UnitTests
 		void Initialize_ListOperations_Single()
 		{
 			auto uut = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
 				std::vector<OperationId>({
 					1,
 				}),
@@ -47,11 +44,7 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
-						false,
-						std::chrono::time_point<std::chrono::system_clock>::min(),
-						{ },
-						{ }),
+						1),
 				}));
 
 			Assert::AreEqual(
@@ -76,11 +69,7 @@ namespace Soup::Core::UnitTests
 							{ },
 							{ },
 							{ },
-							1,
-							false,
-							std::chrono::time_point<std::chrono::system_clock>::min(),
-							{ },
-							{ }),
+							1),
 					},
 				}),
 				uut.GetOperations(),
@@ -91,10 +80,7 @@ namespace Soup::Core::UnitTests
 		void SetRootOperationIds()
 		{
 			auto uut = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
-				std::vector<OperationId>({}),
+				std::vector<OperationId>(),
 				std::vector<OperationInfo>({
 					OperationInfo(
 						1,
@@ -108,11 +94,7 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
-						false,
-						std::chrono::time_point<std::chrono::system_clock>::min(),
-						{ },
-						{ }),
+						1),
 				}));
 
 			Assert::AreEqual(
@@ -134,98 +116,11 @@ namespace Soup::Core::UnitTests
 		}
 
 		// [[Fact]]
-		void TryFindOperationInfo_Missing()
-		{
-			auto uut = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
-				std::vector<OperationId>({}),
-				std::vector<OperationInfo>({}));
-
-			OperationInfo* operationInfo = nullptr;
-			auto result = uut.TryFindOperationInfo(
-				CommandInfo(
-					Path("C:/Root/"),
-					Path("DoStuff.exe"),
-					"arg1 arg2"),
-				operationInfo);
-
-			Assert::IsFalse(result, "Verify result is false.");
-			Assert::IsNull(operationInfo, "Verify operationInfo is null.");
-		}
-
-		// [[Fact]]
-		void TryFindOperationInfo_Found()
-		{
-			auto uut = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
-				std::vector<OperationId>({
-					1
-				}),
-				std::vector<OperationInfo>({
-					OperationInfo(
-						1,
-						"TestOperation",
-						CommandInfo(
-							Path("C:/Root/"),
-							Path("DoStuff.exe"),
-							"arg1 arg2"),
-						{ 1, },
-						{ 2, },
-						{ },
-						{ },
-						{ },
-						1,
-						false,
-						std::chrono::time_point<std::chrono::system_clock>::min(),
-						{ },
-						{ }),
-				}));
-
-			OperationInfo* operationInfo;
-			auto result = uut.TryFindOperationInfo(
-				CommandInfo(
-					Path("C:/Root/"),
-					Path("DoStuff.exe"),
-					"arg1 arg2"),
-				operationInfo);
-
-			Assert::IsTrue(result, "Verify result is true.");
-			Assert::NotNull(operationInfo, "Verify operationInfo is not null.");
-			Assert::AreEqual(
-				OperationInfo(
-					1,
-					"TestOperation",
-					CommandInfo(
-						Path("C:/Root/"),
-						Path("DoStuff.exe"),
-						"arg1 arg2"),
-					{ 1, },
-					{ 2, },
-					{ },
-					{ },
-					{ },
-					1,
-					false,
-					std::chrono::time_point<std::chrono::system_clock>::min(),
-					{ },
-					{ }),
-				*operationInfo,
-				"Verify operationInfo is correct.");
-		}
-
-		// [[Fact]]
 		void GetOperationInfo_MissingThrows()
 		{
 			auto uut = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
-				std::vector<OperationId>({}),
-				std::vector<OperationInfo>({}));
+				std::vector<OperationId>(),
+				std::vector<OperationInfo>());
 
 			auto exception = Assert::Throws<std::runtime_error>([&uut]() {
 				auto operationInfo = uut.GetOperationInfo(1);
@@ -238,9 +133,6 @@ namespace Soup::Core::UnitTests
 		void GetOperationInfo_Found()
 		{
 			auto uut = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
 				std::vector<OperationId>({
 					1
 				}),
@@ -257,11 +149,7 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
-						false,
-						std::chrono::time_point<std::chrono::system_clock>::min(),
-						{ },
-						{ }),
+						1),
 				}));
 
 			auto operationInfo = uut.GetOperationInfo(1);
@@ -279,11 +167,7 @@ namespace Soup::Core::UnitTests
 					{ },
 					{ },
 					{ },
-					1,
-					false,
-					std::chrono::time_point<std::chrono::system_clock>::min(),
-					{ },
-					{ }),
+					1),
 				operationInfo,
 				"Verify operationInfo is correct.");
 		}
@@ -292,11 +176,8 @@ namespace Soup::Core::UnitTests
 		void AddOperation()
 		{
 			auto uut = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
-				std::vector<OperationId>({}),
-				std::vector<OperationInfo>({}));
+				std::vector<OperationId>(),
+				std::vector<OperationInfo>());
 
 			uut.AddOperation(
 				OperationInfo(
@@ -311,11 +192,7 @@ namespace Soup::Core::UnitTests
 					{ },
 					{ },
 					{ },
-					1,
-					false,
-					std::chrono::time_point<std::chrono::system_clock>::min(),
-					{ },
-					{ }));
+					1));
 
 			Assert::AreEqual(
 				std::unordered_map<OperationId, OperationInfo>({
@@ -333,11 +210,7 @@ namespace Soup::Core::UnitTests
 							{ },
 							{ },
 							{ },
-							1,
-							false,
-							std::chrono::time_point<std::chrono::system_clock>::min(),
-							{ },
-							{ }),
+							1),
 					}
 				}),
 				uut.GetOperations(),
