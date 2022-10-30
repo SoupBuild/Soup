@@ -11,6 +11,7 @@
 #include "FileSystemState.h"
 #include "LocalUserConfig/LocalUserConfig.h"
 #include "OperationGraph/OperationGraphManager.h"
+#include "OperationGraph/OperationResultsManager.h"
 #include "Utils/HandledException.h"
 #include "ValueTable/ValueTableManager.h"
 #include "Recipe/RecipeBuildStateConverter.h"
@@ -173,27 +174,116 @@ namespace Soup::Core
 				packageInfo.Recipe,
 				packageGraph.GlobalParameters,
 				_recipeCache);
-			auto soupTargetDirectory = targetDirectory + BuildConstants::GetSoupTargetDirectory();
+			auto soupTargetDirectory = targetDirectory + BuildConstants::SoupTargetDirectory();
 
 			// Build up the child target directory set
 			auto childTargetDirectorySets = GenerateChildDependenciesTargetDirectorySet(packageInfo);
 			auto& directChildTargetDirectories = childTargetDirectorySets.first;
 			auto& recursiveChildTargetDirectories = childTargetDirectorySets.second;
 
+			//////////////////////////////////////////////
+			// SETUP
+			/////////////////////////////////////////////
+
+			// Load the previous operation graph and results if they exist
+			Log::Info("Checking for existing Evaluate Operation Graph");
+			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateGraphFileName();
+			auto evaluateGraph = OperationGraph();
+			auto evaluateResults = OperationResults();
+			auto hasExistingGraph = OperationGraphManager::TryLoadState(
+				evaluateGraphFile,
+				evaluateGraph,
+				_fileSystemState);
+			
+			if (hasExistingGraph)
+			{
+				Log::Info("Previous graph found");
+
+				Log::Info("Checking for existing Evaluate Operation Results");
+				auto evaluateResultsFile = soupTargetDirectory + BuildConstants::EvaluateResultsFileName();
+				if (OperationResultsManager::TryLoadState(
+					evaluateResultsFile,
+					evaluateResults,
+					_fileSystemState))
+				{
+					Log::Info("Previous results found");
+				}
+				else
+				{
+					Log::Info("No previous results found");
+				}
+			}
+			else
+			{
+				Log::Info("No previous graph found");
+			}
+
+			//////////////////////////////////////////////
+			// GENERATE
+			/////////////////////////////////////////////
 			if (!_arguments.SkipGenerate)
 			{
-				RunIncrementalGenerate(
+				auto ranGenerate = RunIncrementalGenerate(
 					packageInfo,
 					targetDirectory,
 					soupTargetDirectory,
 					packageGraph.GlobalParameters,
 					directChildTargetDirectories,
 					recursiveChildTargetDirectories);
+
+				//////////////////////////////////////////////
+				// SETUP
+				/////////////////////////////////////////////
+
+				// Load the new Evaluate Operation Graph and merge any results that are still relevant
+				if (ranGenerate)
+				{
+					Log::Info("Loading new Evaluate Operation Graph");
+					auto updatedEvaluateGraph = OperationGraph();
+					if (!OperationGraphManager::TryLoadState(
+						evaluateGraphFile,
+						updatedEvaluateGraph,
+						_fileSystemState))
+					{
+						throw std::runtime_error("Missing required evaluate operation graph after generate evaluated.");
+					}
+
+					Log::Diag("Map previous operation graph observed results");
+					auto updatedEvaluateResults = OperationResults();
+					for (auto& updatedOperationEntry : updatedEvaluateGraph.GetOperations())
+					{
+						auto& updatedOperation = updatedOperationEntry.second;
+
+						// Check if the new operation command existing in the previous set too
+						OperationId previousOperationId;
+						if (evaluateGraph.TryFindOperation(updatedOperation.Command, previousOperationId))
+						{
+							// Check if there is an existing result for the previous operation
+							OperationResult* previousOperationResult;
+							if (evaluateResults.TryFindResult(previousOperationId, previousOperationResult))
+							{
+								// Move this result into the updated results store
+								updatedEvaluateResults.AddOrUpdateOperationResult(updatedOperation.Id, std::move(*previousOperationResult));
+							}
+						}
+					}
+
+					// Replace the previous operation graph and results
+					evaluateGraph = std::move(updatedEvaluateGraph);
+					evaluateResults = std::move(updatedEvaluateResults);
+				}
 			}
 
+			//////////////////////////////////////////////
+			// EVALUATE
+			/////////////////////////////////////////////
 			if (!_arguments.SkipEvaluate)
 			{
-				RunEvaluate(targetDirectory, soupTargetDirectory);
+				RunEvaluate(
+					evaluateGraph,
+					evaluateResults,
+					targetDirectory,
+					soupTargetDirectory);
 			}
 
 			// Cache the build state for upstream dependencies
@@ -209,7 +299,7 @@ namespace Soup::Core
 		/// <summary>
 		/// Run an incremental generate phase
 		/// </summary>
-		void RunIncrementalGenerate(
+		bool RunIncrementalGenerate(
 			const PackageInfo& packageInfo,
 			const Path& targetDirectory,
 			const Path& soupTargetDirectory,
@@ -341,22 +431,104 @@ namespace Soup::Core
 				std::back_inserter(generateAllowedReadAccess));
 			generateAllowedWriteAccess.push_back(targetDirectory);
 
-			// Load the previous build graph if it exists and merge it with the new one
-			auto generateGraphFile = soupTargetDirectory + BuildConstants::GetGenerateGraphFileName();
-			TryMergeExisting(generateGraphFile, generateGraph);
+			// Load the previous build results if it exists
+			Log::Info("Checking for existing Generate Operation Results");
+			auto generateResultsFile = soupTargetDirectory + BuildConstants::GenerateResultsFileName();
+			auto generateResults = OperationResults();
+			if (OperationResultsManager::TryLoadState(
+				generateResultsFile,
+				generateResults,
+				_fileSystemState))
+			{
+				Log::Info("Previous results found");
+			}
+			else
+			{
+				Log::Info("No previous results found");
+			}
 
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + BuildConstants::GetTemporaryFolderName();
+			auto temporaryDirectory = targetDirectory + BuildConstants::TemporaryFolderName();
 
 			// Evaluate the Generate phase
-			_evaluateEngine.Evaluate(
+			bool ranEvaluate = _evaluateEngine.Evaluate(
 				generateGraph,
+				generateResults,
 				temporaryDirectory,
 				generateAllowedReadAccess,
 				generateAllowedWriteAccess);
 
-			// Save the operation graph for future incremental builds
-			OperationGraphManager::SaveState(generateGraphFile, generateGraph, _fileSystemState);
+			if (ranEvaluate)
+			{
+				// Save the generate operation results for future incremental builds
+				OperationResultsManager::SaveState(generateResultsFile, generateResults, _fileSystemState);
+			}
+
+			return ranEvaluate;
+		}
+
+		void RunEvaluate(
+			const OperationGraph& evaluateGraph,
+			OperationResults& evaluateResults,
+			const Path& targetDirectory,
+			const Path& soupTargetDirectory)
+		{
+			// Set the temporary folder under the target folder
+			auto temporaryDirectory = targetDirectory + BuildConstants::TemporaryFolderName();
+
+			// Initialize the read access with the shared global set
+			auto allowedReadAccess = std::vector<Path>();
+			auto allowedWriteAccess = std::vector<Path>();
+
+			// Allow read access from system runtime directories
+			std::copy(
+				_systemReadAccess.begin(),
+				_systemReadAccess.end(),
+				std::back_inserter(allowedReadAccess));
+
+			// Allow read and write access to the temporary directory that is not explicitly declared
+			allowedReadAccess.push_back(temporaryDirectory);
+			allowedWriteAccess.push_back(temporaryDirectory);
+
+			// TODO: REMOVE - Allow read access from SDKs
+			std::copy(
+				_sdkReadAccess.begin(),
+				_sdkReadAccess.end(),
+				std::back_inserter(allowedReadAccess));
+
+			// Ensure the temporary directories exists
+			if (!System::IFileSystem::Current().Exists(temporaryDirectory))
+			{
+				Log::Info("Create Directory: " + temporaryDirectory.ToString());
+				System::IFileSystem::Current().CreateDirectory2(temporaryDirectory);
+			}
+
+			try
+			{
+				// Evaluate the build
+				auto ranEvaluate = _evaluateEngine.Evaluate(
+					evaluateGraph,
+					evaluateResults,
+					temporaryDirectory,
+					allowedReadAccess,
+					allowedWriteAccess);
+
+				if (ranEvaluate)
+				{
+					Log::Info("Saving updated build state");
+					auto evaluateResultsFile = soupTargetDirectory + BuildConstants::EvaluateResultsFileName();
+					OperationResultsManager::SaveState(evaluateResultsFile, evaluateResults, _fileSystemState);
+				}
+			}
+			catch(const BuildFailedException&)
+			{
+				Log::Info("Saving partial build state");
+				auto evaluateResultsFile = soupTargetDirectory + BuildConstants::EvaluateResultsFileName();
+				OperationResultsManager::SaveState(evaluateResultsFile, evaluateResults, _fileSystemState);
+				throw;
+			}
+
+			Log::Info("Done");
 		}
 
 		bool IsOutdated(const ValueTable& parametersTable, const Path& parametersFile)
@@ -386,122 +558,6 @@ namespace Soup::Core
 			else
 			{
 				return true;
-			}
-		}
-
-		void RunEvaluate(
-			const Path& targetDirectory,
-			const Path& soupTargetDirectory)
-		{
-			// Load and run the previous stored state directly
-			auto generateEvaluateGraphFile = soupTargetDirectory + BuildConstants::GenerateEvaluateOperationGraphFileName();
-			auto evaluateResultGraphFile = soupTargetDirectory + BuildConstants::GetEvaluateResultGraphFileName();
-
-			Log::Info("Loading generate evaluate operation graph");
-			auto evaluateGraph = OperationGraph();
-			if (!OperationGraphManager::TryLoadState(
-				generateEvaluateGraphFile,
-				evaluateGraph,
-				_fileSystemState))
-			{
-				throw std::runtime_error("Missing generated operation graph for evaluate phase.");
-			}
-
-			if (!_arguments.ForceRebuild)
-			{
-				// Load the previous build graph if it exists and merge it with the new one
-				TryMergeExisting(evaluateResultGraphFile, evaluateGraph);
-			}
-
-			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + BuildConstants::GetTemporaryFolderName();
-
-			// Initialize the read access with the shared global set
-			auto allowedReadAccess = std::vector<Path>();
-			auto allowedWriteAccess = std::vector<Path>();
-
-			// Allow read access from system runtime directories
-			std::copy(
-				_systemReadAccess.begin(),
-				_systemReadAccess.end(),
-				std::back_inserter(allowedReadAccess));
-
-			// Allow read and write access to the temparary directory that is not explicitly declared
-			allowedReadAccess.push_back(temporaryDirectory);
-			allowedWriteAccess.push_back(temporaryDirectory);
-
-			// TODO: REMOVE - Allow read access from SDKs
-			std::copy(
-				_sdkReadAccess.begin(),
-				_sdkReadAccess.end(),
-				std::back_inserter(allowedReadAccess));
-
-			// Ensure the temporary directories exists
-			if (!System::IFileSystem::Current().Exists(temporaryDirectory))
-			{
-				Log::Info("Create Directory: " + temporaryDirectory.ToString());
-				System::IFileSystem::Current().CreateDirectory2(temporaryDirectory);
-			}
-
-			try
-			{
-				// Evaluate the build
-				_evaluateEngine.Evaluate(
-					evaluateGraph,
-					temporaryDirectory,
-					allowedReadAccess,
-					allowedWriteAccess);
-			}
-			catch(const BuildFailedException&)
-			{
-				Log::Info("Saving partial build state");
-				OperationGraphManager::SaveState(
-					evaluateResultGraphFile,
-					evaluateGraph,
-					_fileSystemState);
-				throw;
-			}
-
-			Log::Info("Saving updated build state");
-			OperationGraphManager::SaveState(
-				evaluateResultGraphFile,
-				evaluateGraph,
-				_fileSystemState);
-
-			Log::Info("Done");
-		}
-
-		/// <summary>
-		/// Attempt to merge the existing operation graph if it exists
-		/// </summary>
-		void TryMergeExisting(
-			const Path& operationGraphFile,
-			OperationGraph& operationGraph)
-		{
-			Log::Diag("Loading previous operation graph");
-			auto previousOperationGraph = OperationGraph();
-			if (OperationGraphManager::TryLoadState(
-				operationGraphFile,
-				previousOperationGraph,
-				_fileSystemState))
-			{
-				Log::Diag("Merge previous operation graph observed results");
-				for (auto& activeOperationEntry : operationGraph.GetOperations())
-				{
-					auto& activeOperationInfo = activeOperationEntry.second;
-					OperationInfo* previousOperationInfo = nullptr;
-					if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
-					{
-						activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
-						activeOperationInfo.EvaluateTime = previousOperationInfo->EvaluateTime;
-						activeOperationInfo.ObservedInput = previousOperationInfo->ObservedInput;
-						activeOperationInfo.ObservedOutput = previousOperationInfo->ObservedOutput;
-					}
-				}
-			}
-			else
-			{
-				Log::Info("No valid previous build graph found");
 			}
 		}
 

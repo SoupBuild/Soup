@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "OperationGraph/OperationGraphWriter.h"
 
 namespace Soup::Core::UnitTests
 {
@@ -29,13 +30,14 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			auto operationGraph = OperationGraph(
-				{},
 				std::vector<OperationId>(),
 				std::vector<OperationInfo>());
+			auto files = std::set<FileId>();
+			auto fileSystemState = FileSystemState();
 			auto operationGraphContent = std::stringstream();
-			OperationGraphWriter::Serialize(operationGraph, operationGraphContent);
+			OperationGraphWriter::Serialize(operationGraph, files, fileSystemState, operationGraphContent);
 			fileSystem->CreateMockFile(
-				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateEvaluateGraph.bog"),
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog"),
 				std::make_shared<MockFile>(std::move(operationGraphContent)));
 
 			// Register the test process manager
@@ -61,6 +63,11 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
+					"INFO: 1>Checking for existing Evaluate Operation Graph",
+					"INFO: 1>Previous graph found",
+					"INFO: 1>Checking for existing Evaluate Operation Results",
+					"INFO: 1>Operation results file does not exist",
+					"INFO: 1>No previous results found",
 					"INFO: 1>Check outdated parameters file: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
 					"INFO: 1>Value Table file does not exist",
 					"INFO: 1>Save Parameters file",
@@ -73,9 +80,9 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Path list file does not exist",
 					"INFO: 1>Save Write Access file",
 					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"DIAG: 1>Loading previous operation graph",
-					"INFO: 1>Operation graph file does not exist",
-					"INFO: 1>No valid previous build graph found",
+					"INFO: 1>Checking for existing Generate Operation Results",
+					"INFO: 1>Operation results file does not exist",
+					"INFO: 1>No previous results found",
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Check for previous operation invocation",
 					"INFO: 1>Operation has no successful previous invocation",
@@ -91,16 +98,11 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Allowed Write Access:",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
 					"DIAG: 1>Build evaluation end",
-					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"INFO: 1>Loading generate evaluate operation graph",
-					"DIAG: 1>Loading previous operation graph",
-					"INFO: 1>Operation graph file does not exist",
-					"INFO: 1>No valid previous build graph found",
+					"INFO: 1>Loading new Evaluate Operation Graph",
+					"DIAG: 1>Map previous operation graph observed results",
 					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/temp/",
 					"DIAG: 1>Build evaluation start",
 					"DIAG: 1>Build evaluation end",
-					"INFO: 1>Saving updated build state",
-					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"INFO: 1>Done",
 				}),
 				testListener->GetMessages(),
@@ -116,6 +118,9 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
+					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
+					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bor",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
@@ -128,18 +133,12 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateGraph.bog",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateGraph.bog",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateEvaluateGraph.bog",
-					"OpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateEvaluateGraph.bog",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/EvaluateResultGraph.bog",
+					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor",
+					"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor",
+					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/temp/",
 					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/temp/",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/EvaluateResultGraph.bog",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -194,42 +193,27 @@ namespace Soup::Core::UnitTests
 				myPackageGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
-			auto myPackageGenerateGraphMockFile = fileSystem->GetMockFile(
-				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateGraph.bog"));
-			auto myPackageGenerateGraph = OperationGraphReader::Deserialize(myPackageGenerateGraphMockFile->Content);
+			auto myPackageGenerateResultsMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor"));
+			auto myPackageGenerateResults = OperationResultsReader::Deserialize(myPackageGenerateResultsMockFile->Content, fileSystemState);
 
 			// TODO: Clear time for now until mocked
-			for (auto& operation : myPackageGenerateGraph.GetOperations())
-				operation.second.EvaluateTime = std::chrono::time_point<std::chrono::system_clock>::min();
+			for (auto& result : myPackageGenerateResults.GetResults())
+				result.second.EvaluateTime = std::chrono::time_point<std::chrono::system_clock>::min();
 
 			Assert::AreEqual(
-				OperationGraph(
+				OperationResults({
 					{
-					},
-					std::vector<OperationId>({
 						1,
-					}),
-					std::vector<OperationInfo>({
-						OperationInfo(
-							1,
-							"Generate: C++|MyPackage",
-							CommandInfo(
-								Path("C:/WorkingDirectory/MyPackage/"),
-								Path("C:/testlocation/Generate/Soup.Build.Generate.exe"),
-								"C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/"),
-							{},
-							{},
-							{},
-							{},
-							{},
-							1,
+						OperationResult(
 							true,
 							std::chrono::time_point<std::chrono::system_clock>::min(),
 							{},
-							{}),
-					})),
-				myPackageGenerateGraph,
-				"Verify file content match expected.");
+							{})
+					},
+				}),
+				myPackageGenerateResults,
+				"Verify my package generate results content match expected.");
 		}
 	};
 }

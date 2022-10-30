@@ -34,8 +34,9 @@ namespace Soup::Core
 		/// <summary>
 		/// Execute the entire operation graph that is referenced by this build evaluate engine
 		/// </summary>
-		void Evaluate(
-			OperationGraph& operationGraph,
+		bool Evaluate(
+			const OperationGraph& operationGraph,
+			OperationResults& operationResults,
 			const Path& temporaryDirectory,
 			const std::vector<Path>& globalAllowedReadAccess,
 			const std::vector<Path>& globalAllowedWriteAccess)
@@ -53,9 +54,16 @@ namespace Soup::Core
 			for (auto& operation : operationGraph.GetOperations())
 			{
 				auto& operationInfo = operation.second;
-				operationInfo.WasSuccessfulRun = true;
-				operationInfo.EvaluateTime = time;
+				operationResults.AddOrUpdateOperationResult(
+					operationInfo.Id,
+					OperationResult(
+					true,
+					time,
+					{ },
+					{ }));
 			}
+
+			return true;
 		}
 	};
 }

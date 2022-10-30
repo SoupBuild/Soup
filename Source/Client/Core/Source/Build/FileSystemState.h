@@ -215,7 +215,7 @@ namespace Soup::Core
 
 	private:
 		// The maximum id that has been used for files
-		// Used to ensure unique ids are generated accross the entire system
+		// Used to ensure unique ids are generated across the entire system
 		FileId _maxFileId;
 
 		std::unordered_map<FileId, Path> _files;

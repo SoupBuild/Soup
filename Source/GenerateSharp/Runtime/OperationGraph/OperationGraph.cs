@@ -13,6 +13,11 @@ namespace Soup.Build.Runtime
 	/// </summary>
 	public class OperationGraph
 	{
+		private List<(FileId FileId, Path Path)> _referencedFiles;
+		private List<OperationId> _rootOperations;
+		private Dictionary<OperationId, OperationInfo> _operations;
+		private Dictionary<CommandInfo, OperationId> _operationLookup;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
@@ -124,10 +129,5 @@ namespace Soup.Build.Runtime
 			_operationLookup.Add(info.Command, info.Id);
 			_operations.Add(info.Id, info);
 		}
-
-		private List<(FileId FileId, Path Path)> _referencedFiles;
-		private List<OperationId> _rootOperations;
-		private Dictionary<OperationId, OperationInfo> _operations;
-		private Dictionary<CommandInfo, OperationId> _operationLookup;
 	}
 }

@@ -88,11 +88,7 @@ namespace Soup.Build.Runtime
 				new List<FileId>(),
 				new List<FileId>(),
 				new List<OperationId>(),
-				0,
-				false,
-				DateTime.MinValue,
-				new List<FileId>(),
-				new List<FileId>())
+				0)
 		{
 		}
 
@@ -116,11 +112,7 @@ namespace Soup.Build.Runtime
 				readAccess,
 				writeAccess,
 				new List<OperationId>(),
-				0,
-				false,
-				DateTime.MinValue,
-				new List<FileId>(),
-				new List<FileId>())
+				0)
 		{
 		}
 
@@ -136,11 +128,7 @@ namespace Soup.Build.Runtime
 			IList<FileId> readAccess,
 			IList<FileId> writeAccess,
 			IList<OperationId> children,
-			uint dependencyCount,
-			bool wasSuccessfulRun,
-			DateTime evaluateTime,
-			IList<FileId> observedInput,
-			IList<FileId> observedOutput)
+			uint dependencyCount)
 		{
 			Id = id;
 			Title = title;
@@ -151,10 +139,6 @@ namespace Soup.Build.Runtime
 			WriteAccess = writeAccess;
 			Children = children;
 			DependencyCount = dependencyCount;
-			WasSuccessfulRun = wasSuccessfulRun;
-			EvaluateTime = evaluateTime;
-			ObservedInput = observedInput;
-			ObservedOutput = observedOutput;
 		}
 
 		public bool Equals(OperationInfo? rhs)
@@ -170,11 +154,7 @@ namespace Soup.Build.Runtime
 				Enumerable.SequenceEqual(ReadAccess, rhs.ReadAccess) &&
 				Enumerable.SequenceEqual(WriteAccess, rhs.WriteAccess) &&
 				Enumerable.SequenceEqual(Children, rhs.Children) &&
-				DependencyCount == rhs.DependencyCount &&
-				WasSuccessfulRun == rhs.WasSuccessfulRun &&
-				EvaluateTime == rhs.EvaluateTime &&
-				Enumerable.SequenceEqual(ObservedInput, rhs.ObservedInput) &&
-				Enumerable.SequenceEqual(ObservedOutput, rhs.ObservedOutput);
+				DependencyCount == rhs.DependencyCount;
 
 			return result;
 		}
@@ -210,10 +190,5 @@ namespace Soup.Build.Runtime
 		public IList<FileId> WriteAccess { get; init; }
 		public IList<OperationId> Children { get; init; }
 		public uint DependencyCount { get; set; }
-		public bool WasSuccessfulRun { get; init; }
-		public DateTime EvaluateTime { get; init; }
-		public IList<FileId> ObservedInput { get; init; }
-		public IList<FileId> ObservedOutput { get; init; }
-
 	}
 }

@@ -38,14 +38,18 @@ namespace Soup::Core::UnitTests
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph();
+			auto operationResults = OperationResults();
 			auto temporaryDirectory = Path();
 			auto globalAllowedReadAccess = std::vector<Path>();
 			auto globalAllowedWriteAccess = std::vector<Path>();
-			uut.Evaluate(
+			auto ranOperations = uut.Evaluate(
 				operationGraph,
+				operationResults,
 				temporaryDirectory,
 				globalAllowedReadAccess,
 				globalAllowedWriteAccess);
+
+			Assert::IsFalse(ranOperations, "Verify no operations ran");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -92,9 +96,6 @@ namespace Soup::Core::UnitTests
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -109,20 +110,20 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
-						false,
-						std::chrono::time_point<std::chrono::system_clock>::min(),
-						{ },
-						{ }),
+						1),
 				});
+			auto operationResults = OperationResults();
 			auto temporaryDirectory = Path();
 			auto globalAllowedReadAccess = std::vector<Path>();
 			auto globalAllowedWriteAccess = std::vector<Path>();
-			uut.Evaluate(
+			auto ranOperations = uut.Evaluate(
 				operationGraph,
+				operationResults,
 				temporaryDirectory,
 				globalAllowedReadAccess,
 				globalAllowedWriteAccess);
+
+			Assert::IsTrue(ranOperations, "Verify ran operations");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -191,9 +192,6 @@ namespace Soup::Core::UnitTests
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -208,20 +206,29 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
+						1),
+				});
+			auto operationResults = OperationResults({
+				{
+					1,
+					OperationResult(
 						true,
 						std::chrono::sys_days(May/22/2015) + 9h + 10min,
 						{ 1, },
-						{ 2, }),
-				});
+						{ 2, })
+				},
+			});
 			auto temporaryDirectory = Path();
 			auto globalAllowedReadAccess = std::vector<Path>();
 			auto globalAllowedWriteAccess = std::vector<Path>();
-			uut.Evaluate(
+			auto ranOperations = uut.Evaluate(
 				operationGraph,
+				operationResults,
 				temporaryDirectory,
 				globalAllowedReadAccess,
 				globalAllowedWriteAccess);
+
+			Assert::IsTrue(ranOperations, "Verify ran operations");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -296,9 +303,6 @@ namespace Soup::Core::UnitTests
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -313,20 +317,29 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
+						1),
+				});
+			auto operationResults = OperationResults({
+				{
+					1,
+					OperationResult(
 						true,
 						std::chrono::sys_days(May/22/2015) + 9h + 10min,
 						{ 1, },
-						{ 2, }),
-				});
+						{ 2, })
+				},
+			});
 			auto temporaryDirectory = Path();
 			auto globalAllowedReadAccess = std::vector<Path>();
 			auto globalAllowedWriteAccess = std::vector<Path>();
-			uut.Evaluate(
+			auto ranOperations = uut.Evaluate(
 				operationGraph,
+				operationResults,
 				temporaryDirectory,
 				globalAllowedReadAccess,
 				globalAllowedWriteAccess);
+
+			Assert::IsTrue(ranOperations, "Verify ran operations");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -400,9 +413,6 @@ namespace Soup::Core::UnitTests
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -417,20 +427,29 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
+						1),
+				});
+			auto operationResults = OperationResults({
+				{
+					1,
+					OperationResult(
 						true,
 						std::chrono::sys_days(May/22/2015) + 9h + 10min,
 						{ 1, },
-						{ 2, }),
-				});
+						{ 2, })
+				},
+			});
 			auto temporaryDirectory = Path();
 			auto globalAllowedReadAccess = std::vector<Path>();
 			auto globalAllowedWriteAccess = std::vector<Path>();
-			uut.Evaluate(
+			auto ranOperations = uut.Evaluate(
 				operationGraph,
+				operationResults,
 				temporaryDirectory,
 				globalAllowedReadAccess,
 				globalAllowedWriteAccess);
+
+			Assert::IsTrue(ranOperations, "Verify ran operations");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -504,9 +523,6 @@ namespace Soup::Core::UnitTests
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -521,20 +537,29 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
+						1),
+				});
+			auto operationResults = OperationResults({
+				{
+					1,
+					OperationResult(
 						true,
 						std::chrono::sys_days(May/22/2015) + 9h + 0min,
 						{ 1, },
-						{ 2, }),
-				});
+						{ 2, })
+				},
+			});
 			auto temporaryDirectory = Path();
 			auto globalAllowedReadAccess = std::vector<Path>();
 			auto globalAllowedWriteAccess = std::vector<Path>();
-			uut.Evaluate(
+			auto ranOperations = uut.Evaluate(
 				operationGraph,
+				operationResults,
 				temporaryDirectory,
 				globalAllowedReadAccess,
 				globalAllowedWriteAccess);
+
+			Assert::IsTrue(ranOperations, "Verify ran operations");
 
 			// Verify expected logs
 			Assert::AreEqual(
@@ -608,9 +633,6 @@ namespace Soup::Core::UnitTests
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
-				{
-					{ 1, Path("C:/Folder/File.txt") },
-				},
 				{ 1, },
 				{
 					OperationInfo(
@@ -625,20 +647,29 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
+						1),
+				});
+			auto operationResults = OperationResults({
+				{
+					1,
+					OperationResult(
 						true,
 						std::chrono::sys_days(May/22/2015) + 9h + 15min,
 						{ 1, },
-						{ 2, }),
-				});
+						{ 2, })
+				},
+			});
 			auto temporaryDirectory = Path();
 			auto globalAllowedReadAccess = std::vector<Path>();
 			auto globalAllowedWriteAccess = std::vector<Path>();
-			uut.Evaluate(
+			auto ranOperations = uut.Evaluate(
 				operationGraph,
+				operationResults,
 				temporaryDirectory,
 				globalAllowedReadAccess,
 				globalAllowedWriteAccess);
+
+			Assert::IsFalse(ranOperations, "Verify did not run operations");
 
 			// Verify expected logs
 			Assert::AreEqual(

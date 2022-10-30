@@ -3,38 +3,37 @@
 // </copyright>
 
 #pragma once
-#include "OperationGraph.h"
 
 namespace Soup::Core
 {
 	/// <summary>
 	/// The operation graph state writer
 	/// </summary>
-	export class OperationGraphWriter
+	class OperationGraphWriter
 	{
 	private:
 		// Binary Operation graph file format
-		static constexpr uint32_t FileVersion = 4;
-
-		// The offset from January 1, 1970 at 00:00:00.000 to January 1, 0001 at 00:00:00.000 in the Gregorian calendar
-		static constexpr long long UnixEpochOffset = 62135596800000;
+		static constexpr uint32_t FileVersion = 5;
 
 	public:
-		static void Serialize(const OperationGraph& state, std::ostream& stream)
+		static void Serialize(
+			const OperationGraph& state,
+			const std::set<FileId>& files,
+			const FileSystemState& fileSystemState,
+			std::ostream& stream)
 		{
 			// Write the File Header with version
 			stream.write("BOG\0", 4);
 			WriteValue(stream, FileVersion);
 
 			// Write out the set of files
-			auto& files = state.GetReferencedFiles();
 			stream.write("FIS\0", 4);
 			WriteValue(stream, static_cast<uint32_t>(files.size()));
-			for (auto& file : files)
+			for (auto fileId : files)
 			{
 				// Write the file id + path length + path
-				WriteValue(stream, file.first);
-				WriteValue(stream, file.second.ToString());
+				WriteValue(stream, fileId);
+				WriteValue(stream, fileSystemState.GetFilePath(fileId).ToString());
 			}
 
 			// Write out the root operation ids
@@ -86,20 +85,6 @@ namespace Soup::Core
 
 			// Write out the dependency count
 			WriteValue(stream, operation.DependencyCount);
-
-			// Write out the value indicating if there was a successful run
-			WriteValue(stream, operation.WasSuccessfulRun);
-
-			// Write out the utc milliseconds since January 1, 0001 at 00:00:00.000 in the Gregorian calendar
-			auto unixEvaluateTimeMilliseconds = std::chrono::time_point_cast<std::chrono::milliseconds>(operation.EvaluateTime).time_since_epoch().count();
-			auto evaluateTimeMilliseconds = unixEvaluateTimeMilliseconds + UnixEpochOffset;
-			WriteValue(stream, evaluateTimeMilliseconds);
-
-			// Write out the observed input files
-			WriteValues(stream, operation.ObservedInput);
-
-			// Write out the observed output files
-			WriteValues(stream, operation.ObservedOutput);
 		}
 
 		static void WriteValue(std::ostream& stream, uint32_t value)

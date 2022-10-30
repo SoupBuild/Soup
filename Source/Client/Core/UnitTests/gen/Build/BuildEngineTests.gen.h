@@ -2,7 +2,7 @@
 #include "Build/BuildEngineTests.h"
 
 TestState RunBuildEngineTests() 
- {
+{
 	auto className = "BuildEngineTests";
 	auto testClass = std::make_shared<Soup::Core::UnitTests::BuildEngineTests>();
 	TestState state = { 0, 0 };

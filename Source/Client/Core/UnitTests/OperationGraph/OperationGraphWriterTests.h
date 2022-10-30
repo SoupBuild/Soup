@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-using namespace std::chrono;
 
 namespace Soup::Core::UnitTests
 {
@@ -13,14 +12,16 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Serialize_Empty()
 		{
-			auto operationGraph = OperationGraph({}, {}, {});
+			auto fileSystemState = FileSystemState();
+			auto files = std::set<FileId>();
+			auto operationGraph = OperationGraph({}, {});
 			auto content = std::stringstream();
 
-			OperationGraphWriter::Serialize(operationGraph, content);
+			OperationGraphWriter::Serialize(operationGraph, files, fileSystemState, content);
 
 			auto binaryFileContent = std::vector<uint8_t>(
 			{
-				'B', 'O', 'G', '\0', 0x04, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x05, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x00, 0x00, 0x00, 0x00,
 				'O', 'P', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
@@ -34,8 +35,9 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Serialize_SingleSimple()
 		{
+			auto fileSystemState = FileSystemState();
+			auto files = std::set<FileId>();
 			auto operationGraph = OperationGraph(
-				{ },
 				std::vector<OperationId>({ 5, }),
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -50,19 +52,15 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
-						false,
-						std::chrono::time_point<std::chrono::system_clock>::min(),
-						{ },
-						{ }),
+						1),
 				}));
 			auto content = std::stringstream();
 
-			OperationGraphWriter::Serialize(operationGraph, content);
+			OperationGraphWriter::Serialize(operationGraph, files, fileSystemState, content);
 
 			auto binaryFileContent = std::vector<uint8_t>(
 			{
-				'B', 'O', 'G', '\0', 0x04, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x05, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -78,10 +76,6 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00,
-				0x9b, 0x4f, 0xc9, 0xb4, 0xa6, 0xf1, 0xfc, 0xff,
-				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00,
 			});
 
 			Assert::AreEqual(
@@ -93,8 +87,9 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Serialize_SingleComplex()
 		{
+			auto fileSystemState = FileSystemState();
+			auto files = std::set<FileId>();
 			auto operationGraph = OperationGraph(
-				{ },
 				std::vector<OperationId>({ 5, }),
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -109,19 +104,15 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
-						true,
-						std::chrono::sys_days(March/5/2020) + 12h + 35min + 34s + 1ms,
-						{ 1, 3, },
-						{ 2, 4, }),
+						1),
 				}));
 			auto content = std::stringstream();
 
-			OperationGraphWriter::Serialize(operationGraph, content);
+			OperationGraphWriter::Serialize(operationGraph, files, fileSystemState, content);
 
 			auto binaryFileContent = std::vector<uint8_t>(
 			{
-				'B', 'O', 'G', '\0', 0x04, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x05, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -137,10 +128,6 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
-				0x01, 0x00, 0x00, 0x00,
-				0xf1, 0x7d, 0xde, 0xbc, 0xf3, 0x39, 0x00, 0x00,
-				0x02, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
-				0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
 			});
 			Assert::AreEqual(
 				std::string((char*)binaryFileContent.data(), binaryFileContent.size()),
@@ -151,8 +138,9 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Serialize_Multiple()
 		{
+			auto fileSystemState = FileSystemState();
+			auto files = std::set<FileId>();
 			auto operationGraph = OperationGraph(
-				{ },
 				std::vector<OperationId>({ 6, }),
 				std::vector<OperationInfo>({
 					OperationInfo(
@@ -167,11 +155,7 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						2,
-						true,
-						std::chrono::sys_days(March/5/2020) + 12h + 35min + 34s + 1ms,
-						{ 1, 3, },
-						{ 2, 4, }),
+						2),
 					OperationInfo(
 						6,
 						"TestOperation2",
@@ -184,19 +168,15 @@ namespace Soup::Core::UnitTests
 						{ 5, },
 						{ },
 						{ },
-						1,
-						true,
-						std::chrono::sys_days(March/5/2020) + 12h + 36min + 55s,
-						{ 5, 7, },
-						{ 6, 8, }),
+						1),
 				}));
 			auto content = std::stringstream();
 
-			OperationGraphWriter::Serialize(operationGraph, content);
+			OperationGraphWriter::Serialize(operationGraph, files, fileSystemState, content);
 
 			auto binaryFileContent = std::vector<uint8_t>(
 			{
-				'B', 'O', 'G', '\0', 0x04, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x05, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x06, 0x00, 0x00, 0x00,
@@ -212,10 +192,6 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x02, 0x00, 0x00, 0x00,
-				0x01, 0x00, 0x00, 0x00,
-				0xf1, 0x7d, 0xde, 0xbc, 0xf3, 0x39, 0x00, 0x00,
-				0x02, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
-				0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
 				0x06, 0x00, 0x00, 0x00,
 				0x0E, 0x00, 0x00, 0x00, 'T', 'e', 's', 't', 'O', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '2',
 				0x08, 0x00, 0x00, 0x00, 'C', ':', '/', 'R', 'o', 'o', 't', '/',
@@ -227,10 +203,6 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
-				0x01, 0x00, 0x00, 0x00,
-				0x58, 0xba, 0xdf, 0xbc, 0xf3, 0x39, 0x00, 0x00,
-				0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00,
-				0x02, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
 			});
 
 			Assert::AreEqual(

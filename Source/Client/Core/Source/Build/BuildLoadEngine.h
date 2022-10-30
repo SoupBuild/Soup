@@ -683,7 +683,7 @@ namespace Soup::Core
 		Path GetSoupUserDataPath() const
 		{
 			auto result = System::IFileSystem::Current().GetUserProfileDirectory() +
-				BuildConstants::GetSoupLocalStoreDirectory();
+				BuildConstants::SoupLocalStoreDirectory();
 			return result;
 		}
 	};

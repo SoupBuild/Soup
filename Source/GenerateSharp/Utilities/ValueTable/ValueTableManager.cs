@@ -55,15 +55,6 @@ namespace Soup.Build.Utilities
 			Path valueTableFile,
 			IValueTable state)
 		{
-			var targetFolder = valueTableFile.GetParent();
-
-			// Ensure the target directories exists
-			if (!LifetimeManager.Get<IFileSystem>().Exists(targetFolder))
-			{
-				Log.Info("Create Directory: " + targetFolder.ToString());
-				LifetimeManager.Get<IFileSystem>().CreateDirectory2(targetFolder);
-			}
-
 			// Open the file to write to
 			using var fileStream = System.IO.File.Open(valueTableFile.ToString(), System.IO.FileMode.Create, System.IO.FileAccess.Write);
 			using var writer = new System.IO.BinaryWriter(fileStream);

@@ -88,7 +88,7 @@ namespace Soup::Client
 				*recipe,
 				globalParameters,
 				recipeCache);
-			auto soupTargetDirectory = targetDirectory + Core::BuildConstants::GetSoupTargetDirectory();
+			auto soupTargetDirectory = targetDirectory + Core::BuildConstants::SoupTargetDirectory();
 			auto sharedStateFile = soupTargetDirectory + Core::BuildConstants::GenerateSharedStateFileName();
 
 			// Load the shared state file

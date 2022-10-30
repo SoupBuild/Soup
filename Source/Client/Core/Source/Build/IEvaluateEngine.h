@@ -4,6 +4,7 @@
 
 #pragma once
 #include "OperationGraph/OperationGraph.h"
+#include "OperationGraph/OperationResults.h"
 
 namespace Soup::Core
 {
@@ -15,9 +16,11 @@ namespace Soup::Core
 	public:
 		/// <summary>
 		/// Execute the entire operation graph that is referenced by this build evaluate engine
+		/// Returns true if any of the operations were evaluated
 		/// </summary>
-		virtual void Evaluate(
-			OperationGraph& operationGraph,
+		virtual bool Evaluate(
+			const OperationGraph& operationGraph,
+			OperationResults& operationResults,
 			const Path& temporaryDirectory,
 			const std::vector<Path>& globalAllowedReadAccess,
 			const std::vector<Path>& globalAllowedWriteAccess) = 0;

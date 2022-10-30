@@ -42,9 +42,9 @@ namespace Soup.Build.Utilities
 		public static Path GenerateSharedStateFileName => new Path("GenerateSharedState.bvt");
 
 		/// <summary>
-		/// Gets the Generate Parameters Value Table file name
+		/// Gets the Evaluate Graph file name
 		/// </summary>
-		public static Path GenerateEvaluateOperationGraphFileName => new Path("GenerateEvaluateGraph.bog");
+		public static Path EvaluateGraphFileName => new Path("Evaluate.bog");
 
 		/// <summary>
 		/// Gets the Generate task info Value Table file name

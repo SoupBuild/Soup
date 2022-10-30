@@ -39,35 +39,41 @@ namespace Soup::Core
 		/// <summary>
 		/// Execute the entire operation graph that is referenced by this build evaluate engine
 		/// </summary>
-		void Evaluate(
-			OperationGraph& operationGraph,
+		bool Evaluate(
+			const OperationGraph& operationGraph,
+			OperationResults& operationResults,
 			const Path& temporaryDirectory,
 			const std::vector<Path>& globalAllowedReadAccess,
-			const std::vector<Path>& globalAllowedWriteAccess)
+			const std::vector<Path>& globalAllowedWriteAccess) override
 		{
 			// Run all build operations in the correct order with incremental build checks
 			Log::Diag("Build evaluation start");
 			_remainingDependencyCounts.clear();
-			CheckExecuteOperations(
+			auto result = CheckExecuteOperations(
 				operationGraph,
+				operationResults,
 				temporaryDirectory,
 				globalAllowedReadAccess,
 				globalAllowedWriteAccess,
 				operationGraph.GetRootOperationIds());
 			Log::Diag("Build evaluation end");
+
+			return result;
 		}
 
 	private:
 		/// <summary>
 		/// Execute the collection of build operations
 		/// </summary>
-		void CheckExecuteOperations(
-			OperationGraph& operationGraph,
+		bool CheckExecuteOperations(
+			const OperationGraph& operationGraph,
+			OperationResults& operationResults,
 			const Path& temporaryDirectory,
 			const std::vector<Path>& globalAllowedReadAccess,
 			const std::vector<Path>& globalAllowedWriteAccess,
 			const std::vector<OperationId>& operations)
 		{
+			bool didAnyEvaluate = false;
 			for (auto operationId : operations)
 			{
 				// Check if the operation was already a child from a different path
@@ -91,15 +97,17 @@ namespace Soup::Core
 				if (remainingCount == 0)
 				{
 					// Run the single operation
-					CheckExecuteOperation(
+					didAnyEvaluate |= CheckExecuteOperation(
+						operationResults,
 						temporaryDirectory,
 						globalAllowedReadAccess,
 						globalAllowedWriteAccess,
 						operationInfo);
 					
 					// Recursively build all of the operation children
-					CheckExecuteOperations(
+					didAnyEvaluate |= CheckExecuteOperations(
 						operationGraph,
+						operationResults,
 						temporaryDirectory,
 						globalAllowedReadAccess,
 						globalAllowedWriteAccess,
@@ -114,23 +122,28 @@ namespace Soup::Core
 					// This operation will be executed from a different path
 				}
 			}
+
+			return didAnyEvaluate;
 		}
 
 		/// <summary>
 		/// Check if an individual operation has been run and execute if required
 		/// </summary>
-		void CheckExecuteOperation(
+		bool CheckExecuteOperation(
+			OperationResults& operationResults,
 			const Path& temporaryDirectory,
 			const std::vector<Path>& globalAllowedReadAccess,
 			const std::vector<Path>& globalAllowedWriteAccess,
-			OperationInfo& operationInfo)
+			const OperationInfo& operationInfo)
 		{
 			// Check if each source file is out of date and requires a rebuild
 			Log::Diag("Check for previous operation invocation");
 
 			// Check if this operation was run before
 			auto buildRequired = false;
-			if (operationInfo.WasSuccessfulRun)
+			OperationResult* previousResult;
+			if (operationResults.TryFindResult(operationInfo.Id, previousResult) &&
+				previousResult->WasSuccessfulRun)
 			{
 				// Check if the executable has changed since the last run
 				bool executableOutOfDate = false;
@@ -140,7 +153,7 @@ namespace Soup::Core
 					auto executableFileId = _fileSystemState.ToFileId(
 						operationInfo.Command.Executable,
 						operationInfo.Command.WorkingDirectory);
-					if (_stateChecker.IsOutdated(operationInfo.EvaluateTime, executableFileId))
+					if (_stateChecker.IsOutdated(previousResult->EvaluateTime, executableFileId))
 					{
 						executableOutOfDate = true;
 					}
@@ -148,7 +161,7 @@ namespace Soup::Core
 
 				// Perform the incremental build checks
 				if (executableOutOfDate ||
-					_stateChecker.IsOutdated(operationInfo.ObservedOutput, operationInfo.ObservedInput))
+					_stateChecker.IsOutdated(previousResult->ObservedOutput, previousResult->ObservedInput))
 				{
 					buildRequired = true;
 				}
@@ -173,10 +186,14 @@ namespace Soup::Core
 				messageBuilder << " " << operationInfo.Command.Arguments;
 				Log::Diag(messageBuilder.str());
 
+				auto operationResult = OperationResult();
+
 				// Check for special in-process write operations
 				if (operationInfo.Command.Executable == Path("writefile.exe"))
 				{
-					ExecuteWriteFileOperation(operationInfo);
+					ExecuteWriteFileOperation(
+						operationInfo,
+						operationResult);
 				}
 				else
 				{
@@ -184,20 +201,26 @@ namespace Soup::Core
 						temporaryDirectory,
 						globalAllowedReadAccess,
 						globalAllowedWriteAccess,
-						operationInfo);
+						operationInfo,
+						operationResult);
 				}
+
+				operationResults.AddOrUpdateOperationResult(operationInfo.Id, std::move(operationResult));
 			}
 			else
 			{
 				Log::Info(operationInfo.Title);
 			}
+
+			return buildRequired;
 		}
 
 		/// <summary>
 		/// Execute a single build operation
 		/// </summary>
 		void ExecuteWriteFileOperation(
-			OperationInfo& operationInfo)
+			const OperationInfo& operationInfo,
+			OperationResult& operationResult)
 		{
 			Log::Info("Execute InProcess WriteFile");
 
@@ -221,17 +244,17 @@ namespace Soup::Core
 			auto file = System::IFileSystem::Current().OpenWrite(filePath, false);
 			file->GetOutStream() << content;
 
-			operationInfo.ObservedInput = {};
-			operationInfo.ObservedOutput = {
+			operationResult.ObservedInput = {};
+			operationResult.ObservedOutput = {
 				_fileSystemState.ToFileId(filePath, operationInfo.Command.WorkingDirectory),
 			};
 
 			// Mark this operation as successful to enable future incremental builds
-			operationInfo.WasSuccessfulRun = true;
-			operationInfo.EvaluateTime = std::chrono::system_clock::now();
+			operationResult.WasSuccessfulRun = true;
+			operationResult.EvaluateTime = std::chrono::system_clock::now();
 
 			// Ensure the File System State is notified of any output files that have changed
-			_fileSystemState.CheckFileWriteTimes(operationInfo.ObservedOutput);
+			_fileSystemState.CheckFileWriteTimes(operationResult.ObservedOutput);
 		}
 
 		/// <summary>
@@ -241,7 +264,8 @@ namespace Soup::Core
 			const Path& temporaryDirectory,
 			const std::vector<Path>& globalAllowedReadAccess,
 			const std::vector<Path>& globalAllowedWriteAccess,
-			OperationInfo& operationInfo)
+			const OperationInfo& operationInfo,
+			OperationResult& operationResult)
 		{
 			auto callback = std::make_shared<SystemAccessTracker>();
 
@@ -326,15 +350,15 @@ namespace Soup::Core
 					output.push_back(std::move(path));
 				}
 
-				operationInfo.ObservedInput = _fileSystemState.ToFileIds(input, operationInfo.Command.WorkingDirectory);
-				operationInfo.ObservedOutput = _fileSystemState.ToFileIds(output, operationInfo.Command.WorkingDirectory);
+				operationResult.ObservedInput = _fileSystemState.ToFileIds(input, operationInfo.Command.WorkingDirectory);
+				operationResult.ObservedOutput = _fileSystemState.ToFileIds(output, operationInfo.Command.WorkingDirectory);
 
 				// Mark this operation as successful to enable future incremental builds
-				operationInfo.WasSuccessfulRun = true;
-				operationInfo.EvaluateTime = std::chrono::system_clock::now();
+				operationResult.WasSuccessfulRun = true;
+				operationResult.EvaluateTime = std::chrono::system_clock::now();
 
 				// Ensure the File System State is notified of any output files that have changed
-				_fileSystemState.CheckFileWriteTimes(operationInfo.ObservedOutput);
+				_fileSystemState.CheckFileWriteTimes(operationResult.ObservedOutput);
 			}
 			else
 			{

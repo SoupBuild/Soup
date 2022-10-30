@@ -31,9 +31,9 @@ std::string ToString(const std::vector<uint32_t>& valueList)
 	return builder.str();
 }
 
-void PrintFiles(Soup::Core::OperationGraph& graph)
+void PrintFiles(const Soup::Core::FileSystemState& fileSystemState)
 {
-	for (auto fileReference : graph.GetReferencedFiles())
+	for (auto fileReference : fileSystemState.GetFiles())
 	{
 		std::cout << "File: " << fileReference.first << " " << fileReference.second.ToString() << std::endl;
 	}
@@ -55,9 +55,6 @@ void PrintOperations(Soup::Core::OperationGraph& graph)
 		std::cout << "\tWriteAccess: " << ToString(operationInfo.WriteAccess) << std::endl;
 		std::cout << "\tChildren: " << ToString(operationInfo.Children) << std::endl;
 		std::cout << "\tDependencyCount: " << operationInfo.DependencyCount << std::endl;
-		std::cout << "\tWasSuccessfulRun: " << operationInfo.WasSuccessfulRun << std::endl;
-		std::cout << "\tObservedInput: " << ToString(operationInfo.ObservedInput) << std::endl;
-		std::cout << "\tObservedOutput: " << ToString(operationInfo.ObservedOutput) << std::endl;
 	}
 }
 
@@ -103,9 +100,10 @@ void LoadAndPrintGraph(const Opal::Path& operationGraphFile)
 	auto file = Opal::System::IFileSystem::Current().OpenRead(operationGraphFile, true);
 
 	// Read the contents of the build state file
-	auto graph = Soup::Core::OperationGraphReader::Deserialize(file->GetInStream());
+	auto fileSystemState = Soup::Core::FileSystemState();
+	auto graph = Soup::Core::OperationGraphReader::Deserialize(file->GetInStream(), fileSystemState);
 
-	PrintFiles(graph);
+	PrintFiles(fileSystemState);
 	PrintOperations(graph);
 	PrintGraph(graph);
 }
