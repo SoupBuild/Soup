@@ -98,7 +98,7 @@ namespace SoupView.ViewModel
 
                 var soupTargetDirectory = targetPath + new Path(".soup/");
 
-                var evaluateGraphFile = soupTargetDirectory + BuildConstants.GenerateEvaluateOperationGraphFileName;
+                var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
                 var fileSystemState = new FileSystemState();
                 if (!OperationGraphManager.TryLoadState(evaluateGraphFile, fileSystemState, out var evaluateGraph))
                 {

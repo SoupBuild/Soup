@@ -6,6 +6,7 @@ using Opal;
 using Opal.System;
 using Soup.Build.Runtime;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Soup.Build.Utilities
 {
@@ -14,6 +15,62 @@ namespace Soup.Build.Utilities
 	/// </summary>
 	public static class OperationGraphManager
 	{
+		/// <summary>
+		/// Load the operation state from the provided directory
+		/// </summary>
+		public static bool TryLoadState(
+			Path operationGraphFile,
+			FileSystemState fileSystemState,
+			out OperationGraph result)
+		{
+			// Verify the requested file exists
+			if (!LifetimeManager.Get<IFileSystem>().Exists(operationGraphFile))
+			{
+				Log.Info("Operation graph file does not exist");
+				result = new OperationGraph();
+				return false;
+			}
+
+			// Open the file to read from
+			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(operationGraphFile);
+			using var reader = new System.IO.BinaryReader(file.GetInStream(), Encoding.UTF8, true);
+
+			// Read the contents of the build state file
+			try
+			{
+				var loadedResult = OperationGraphReader.Deserialize(reader);
+
+				// Map up the incoming file ids to the active file system state ids
+				var activeFileIdMap = new Dictionary<FileId, FileId>();
+				for (var i = 0; i < loadedResult.GetReferencedFiles().Count; i++)
+				{
+					var fileReference = loadedResult.GetReferencedFiles()[i];
+					var activeFileId = fileSystemState.ToFileId(fileReference.Path);
+					activeFileIdMap.Add(fileReference.FileId, activeFileId);
+
+					// Update the referenced id
+					fileReference.FileId = activeFileId;
+				}
+
+				// Update all of the operations
+				foreach (var operationReference in loadedResult.GetOperations())
+				{
+					var operation = operationReference.Value;
+					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
+					UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
+				}
+
+				result = loadedResult;
+				return true;
+			}
+			catch
+			{
+				Log.Error("Failed to parse operation graph");
+				result = new OperationGraph();
+				return false;
+			}
+		}
+
 		/// <summary>
 		/// Save the operation state for the provided directory
 		/// </summary>

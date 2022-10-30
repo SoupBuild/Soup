@@ -43,7 +43,7 @@ namespace Soup::Core
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			// std::cout << "LoadSystemState: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
 			startTime = std::chrono::high_resolution_clock::now();
 
@@ -78,7 +78,7 @@ namespace Soup::Core
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			std::cout << "BuildLoadEngine: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			// std::cout << "BuildLoadEngine: " << std::to_string(duration.count()) << " seconds." << std::endl;
 
 			startTime = std::chrono::high_resolution_clock::now();
 
@@ -104,7 +104,7 @@ namespace Soup::Core
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			std::cout << "RecipeBuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			// std::cout << "RecipeBuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
 		}
 
 	private:
