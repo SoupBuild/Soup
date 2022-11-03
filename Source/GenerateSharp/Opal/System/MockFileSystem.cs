@@ -72,7 +72,7 @@ namespace Opal.System
 		/// </summary>
 		public Path GetUserProfileDirectory()
 		{
-			this.requests.Add("GetCurrentDirectory");
+			this.requests.Add("GetUserProfileDirectory");
 
 			return new Path("C:/Users/Me/");
 		}
@@ -80,7 +80,7 @@ namespace Opal.System
 		/// <summary>
 		/// Gets the current directory for the running processes.
 		/// </summary>
-		public Path GetCurrentDirectory2()
+		public Path GetCurrentDirectory()
 		{
 			this.requests.Add("GetCurrentDirectory");
 

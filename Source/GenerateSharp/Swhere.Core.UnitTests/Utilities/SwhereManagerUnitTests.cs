@@ -64,7 +64,7 @@ namespace Soup.Build.Discover.UnitTests
 				new List<string>()
 				{
 					"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"WARN: Local User Config file does not exist.",
+					"WARN: Local User Config file does not exist",
 					"INFO: No existing local user config.",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Community",
@@ -86,7 +86,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -214,7 +214,7 @@ namespace Soup.Build.Discover.UnitTests
 				new List<string>()
 				{
 					"DIAG: Load Local User Config: C:/Users/Me/.soup/LocalUserConfig.sml",
-					"WARN: Local User Config file does not exist.",
+					"WARN: Local User Config file does not exist",
 					"INFO: No existing local user config.",
 					"INFO: C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe -latest -products * -requires Microsoft.VisualStudio.Component.Roslyn.Compiler -property installationPath -prerelease",
 					"HIGH: Using VS Installation: C:/Program Files/Microsoft Visual Studio/2022/Preview",
@@ -236,7 +236,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",
 					"Exists: C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
@@ -439,7 +439,7 @@ namespace Soup.Build.Discover.UnitTests
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetCurrentDirectory",
+					"GetUserProfileDirectory",
 					"Exists: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"OpenRead: C:/Users/Me/.soup/LocalUserConfig.sml",
 					"GetChildDirectories: C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/",

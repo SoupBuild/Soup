@@ -9,9 +9,9 @@ The Recipe file that defines the static library "Samples.CSharp.ConsoleApplicati
 Name: "Samples.CSharp.ConsoleApplication"
 Language: "C#|0.1"
 Type: "Executable"
-Version: "1.1.4"
+Version: "1.0.0"
 Source: [
-    "Program.cs",
+    "Program.cs"
 ]
 ```
 

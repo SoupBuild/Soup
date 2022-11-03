@@ -9,7 +9,7 @@
 ## Overview
 Soup is a build system for developing software as a community, with a primary focus on developer velocity. Soup was built from the ground up to support guaranteed minimum incremental builds while allowing for reusability of both build logic and runtime code.
 
-Soup utilizes a three phased approach to building code. A **declarative** frontend [Recipe](./Docs/Architecture/Recipe.md) tells the build **what** to build. A **generate** layer uses C# [Extensions](./Docs/Architecture/Build-Extension.md) to define **how** to build. And finally, the **evaluate** engine runs the build [Operations](./Docs/Architecture/Build-Operation.md) to invoke the required build executables.
+Soup utilizes a three phased approach to building code. A **declarative** frontend [Recipe](./Docs/Architecture/Recipe.md) tells the build **what** to build. A **generate** layer uses [Extensions](./Docs/Architecture/Build-Extension.md) to define **how** to build. And finally, the **evaluate** engine runs the build [Operations](./Docs/Architecture/Build-Operation.md) to invoke the required build tooling.
 
 The clean isolation of individual projects and the ability to write custom build logic that will be integrated into the shared runtime work together to allow for easy authoring of a package that can be shared with other teams or organizations through a public source based [Package Manager](https://www.soupbuild.com/).
 

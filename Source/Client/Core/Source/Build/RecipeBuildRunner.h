@@ -3,13 +3,15 @@
 // </copyright>
 
 #pragma once
-#include "BuildEvaluateEngine.h"
+#include "IEvaluateEngine.h"
 #include "BuildConstants.h"
-#include "ProjectManager.h"
+#include "BuildFailedException.h"
+#include "PackageProvider.h"
 #include "RecipeBuildArguments.h"
 #include "FileSystemState.h"
 #include "LocalUserConfig/LocalUserConfig.h"
 #include "OperationGraph/OperationGraphManager.h"
+#include "OperationGraph/OperationResultsManager.h"
 #include "Utils/HandledException.h"
 #include "ValueTable/ValueTableManager.h"
 #include "Recipe/RecipeBuildStateConverter.h"
@@ -24,124 +26,64 @@ namespace Soup::Core
 	export class RecipeBuildRunner
 	{
 	private:
-		RecipeBuildArguments _arguments;
-		ValueTable _hostBuildGlobalParameters;
+		// Root arguments
+		const RecipeBuildArguments& _arguments;
 
-		ValueList _sdkParameters;
+		// SDK Parameters
+		const ValueList& _sdkParameters;
+		const std::vector<Path>& _sdkReadAccess;
 
-		ProjectManager _projectManager;
+		// System Parameters
+		const std::vector<Path>& _systemReadAccess;
 
-		// Global read access
-		std::vector<Path> _systemReadAccess;
-		std::vector<Path> _sdkReadAccess;
+		// Shared Runtime
+		RecipeCache& _recipeCache;
+		PackageProvider& _packageProvider;
+		IEvaluateEngine& _evaluateEngine;
+		FileSystemState& _fileSystemState;
 
-		// Mapping from name to build folder to check for duplicate names with different packages
-		std::map<std::string, Path> _buildSet;
-		std::map<std::string, Path> _hostBuildSet;
-
-		// Mapping from package root path to the name and target folder to be used with dependencies parameters
-		std::map<Path, RecipeBuildCacheState> _buildCache;
-		std::map<Path, RecipeBuildCacheState> _hostBuildCache;
-
-		std::shared_ptr<FileSystemState> _fileSystemState;
+		// Mapping from package id to the required information to be used with dependencies parameters
+		std::map<PackageId, RecipeBuildCacheState> _buildCache;
 
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuildRunner"/> class.
 		/// </summary>
-		RecipeBuildRunner(RecipeBuildArguments arguments, LocalUserConfig localUserConfig) :
-			_arguments(std::move(arguments)),
-			_sdkParameters(),
-			_projectManager(),
-			_buildSet(),
-			_hostBuildSet(),
-			_buildCache(),
-			_hostBuildCache(),
-			_systemReadAccess(),
-			_sdkReadAccess(),
-			_fileSystemState(std::make_shared<FileSystemState>())
+		RecipeBuildRunner(
+			const RecipeBuildArguments& arguments,
+			const ValueList& sdkParameters,
+			const std::vector<Path>& sdkReadAccess,
+			const std::vector<Path>& systemReadAccess,
+			RecipeCache& recipeCache,
+			PackageProvider& packageProvider,
+			IEvaluateEngine& evaluateEngine,
+			FileSystemState& fileSystemState) :
+			_arguments(arguments),
+			_sdkParameters(sdkParameters),
+			_sdkReadAccess(sdkReadAccess),
+			_systemReadAccess(systemReadAccess),
+			_recipeCache(recipeCache),
+			_packageProvider(packageProvider),
+			_evaluateEngine(evaluateEngine),
+			_fileSystemState(fileSystemState),
+			_buildCache()
 		{
-			_hostBuildGlobalParameters = ValueTable();
-
-			// TODO: Default parameters need to come from the build extension
-			auto flavor = std::string("release");
-			auto system = std::string("win32");
-			auto architecture = std::string("x64");
-			auto compiler = std::string("MSVC");
-
-			_hostBuildGlobalParameters.SetValue("Architecture", Value(std::string(architecture)));
-			_hostBuildGlobalParameters.SetValue("Compiler", Value(std::string(compiler)));
-			_hostBuildGlobalParameters.SetValue("Flavor", Value(std::string(flavor)));
-			_hostBuildGlobalParameters.SetValue("System", Value(std::string(system)));
-
-			// Allow read access from system directories
-			// TODO: Windows specific
-			_systemReadAccess.push_back(
-				Path("C:/Windows/"));
-
-			// Process the SDKs
-			if (localUserConfig.HasSDKs())
-			{
-				Log::Info("Checking SDKs for read access");
-				auto sdks = localUserConfig.GetSDKs();
-				for (auto& sdk : sdks)
-				{
-					auto sdkName = sdk.GetName();
-					Log::Info("Found SDK: " + sdkName);
-					if (sdk.HasSourceDirectories())
-					{
-						for (auto& sourceDirectory : sdk.GetSourceDirectories())
-						{
-							Log::Info("  Read Access: " + sourceDirectory.ToString());
-							_sdkReadAccess.push_back(sourceDirectory);
-						}
-					}
-
-					auto sdkParameters = ValueTable();
-					sdkParameters.SetValue("Name", Value(sdkName));
-					if (sdk.HasProperties())
-					{
-						sdkParameters.SetValue("Properties", RecipeBuildStateConverter::ConvertToBuildState(sdk.GetProperties()));
-					}
-
-					_sdkParameters.GetValues().push_back(std::move(sdkParameters));
-				}
-			}
 		}
 
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
-		void Execute(const Path& workingDirectory)
+		void Execute()
 		{
 			// TODO: A scoped listener cleanup would be nice
 			try
 			{
-				// Enable log event ids to track individual builds
-				int projectId = 1;
-				bool isHostBuild = false;
 				Log::EnsureListener().SetShowEventId(true);
 
-				_projectManager.LoadClosure(workingDirectory);
-
-				auto recipePath = workingDirectory + BuildConstants::RecipeFileName();
-				Recipe recipe = {};
-				if (!_projectManager.TryGetRecipe(recipePath, recipe))
-				{
-					Log::Error("The target Recipe does not exist: " + recipePath.ToString());
-					Log::HighPriority("Make sure the path is correct and try again");
-
-					// Nothing we can do, exit
-					throw HandledException(1123124);
-				}
-
-				auto rootParentSet = std::set<std::string>();
-				projectId = BuildRecipeAndDependencies(
-					projectId,
-					workingDirectory,
-					recipe,
-					isHostBuild,
-					rootParentSet);
+				// Enable log event ids to track individual builds
+				auto& packageGraph = _packageProvider.GetRootPackageGraph();
+				auto& packageInfo = _packageProvider.GetPackageInfo(packageGraph.RootPackageId);
+				BuildPackageAndDependencies(packageGraph, packageInfo);
 
 				Log::EnsureListener().SetShowEventId(false);
 			}
@@ -156,136 +98,58 @@ namespace Soup::Core
 		/// <summary>
 		/// Build the dependencies for the provided recipe recursively
 		/// </summary>
-		int BuildRecipeAndDependencies(
-			int projectId,
-			const Path& workingDirectory,
-			Recipe& recipe,
-			bool isHostBuild,
-			const std::set<std::string>& parentSet)
+		void BuildPackageAndDependencies(const PackageGraph& packageGraph, const PackageInfo& packageInfo)
 		{
-			// Add current package to the parent set when building child dependencies
-			auto activeParentSet = parentSet;
-			activeParentSet.insert(std::string(recipe.GetName()));
-
-			for (auto dependecyType : recipe.GetDependencyTypes())
+			for (auto& dependencyType : packageInfo.Dependencies)
 			{
-				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependecyType == "Build")
+				for (auto& dependency : dependencyType.second)
 				{
-					// Build dependencies do not inherit the parent language
-					// Instead, they default to C#
-					implicitLanguage = "C#";
-				}
-
-				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
-				{
-					// Load this package recipe
-					auto packagePath = _projectManager.GetPackageReferencePath(
-						workingDirectory,
-						dependency,
-						implicitLanguage);
-					auto packageRecipePath = packagePath + BuildConstants::RecipeFileName();
-					Recipe dependencyRecipe = {};
-					if (!_projectManager.TryGetRecipe(packageRecipePath, dependencyRecipe))
+					if (dependency.IsSubGraph)
 					{
-						if (dependency.IsLocal())
-						{
-							Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
-							Log::HighPriority("Make sure the path is correct and try again");
-						}
-						else
-						{
-							Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + packagePath.ToString() + " [" + workingDirectory.ToString() + "]");
-							Log::HighPriority("Run `restore` and try again");
-						}
+						// Load this package recipe
+						auto& dependencyPackageGraph = _packageProvider.GetPackageGraph(dependency.PackageGraphId);
+						auto& dependencyPackageInfo = _packageProvider.GetPackageInfo(dependencyPackageGraph.RootPackageId);
 
-						// Nothing we can do, exit
-						throw HandledException(1234);
+						// Build all recursive dependencies
+						BuildPackageAndDependencies(dependencyPackageGraph, dependencyPackageInfo);
 					}
-
-					// Ensure we do not have any circular dependencies
-					if (activeParentSet.contains(dependencyRecipe.GetName()))
+					else
 					{
-						Log::Error("Found circular dependency: " + recipe.GetName() + " -> " + dependencyRecipe.GetName());
-						throw std::runtime_error("BuildRecipeAndDependencies: Circular dependency.");
-					}
+						// Load this package recipe
+						auto& dependencyPackageInfo = _packageProvider.GetPackageInfo(dependency.PackageId);
 
-					// Build all recursive dependencies
-					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
-					projectId = BuildRecipeAndDependencies(
-						projectId,
-						packagePath,
-						dependencyRecipe,
-						isDependencyHostBuild,
-						activeParentSet);
+						// Build all recursive dependencies
+						BuildPackageAndDependencies(packageGraph, dependencyPackageInfo);
+					}
 				}
 			}
 
-			// Build the root recipe
-			projectId = CheckBuildRecipe(
-				projectId,
-				workingDirectory,
-				recipe,
-				isHostBuild);
-
-			// Return the updated project id after building all dependencies
-			return projectId;
+			// Build the target recipe
+			CheckBuildPackage(packageGraph, packageInfo);
 		}
 
 		/// <summary>
 		/// The core build that will either invoke the recipe builder directly
 		/// or load a previous state
 		/// </summary>
-		int CheckBuildRecipe(
-			int projectId,
-			const Path& workingDirectory,
-			Recipe& recipe,
-			bool isHostBuild)
+		void CheckBuildPackage(const PackageGraph& packageGraph, const PackageInfo& packageInfo)
 		{
 			// TODO: RAII for active id
 			try
 			{
-				Log::SetActiveId(projectId);
-				auto languagePackageName = recipe.GetLanguage().GetName() + "|" + recipe.GetName();
+				Log::SetActiveId(packageInfo.Id);
+				auto languagePackageName = packageInfo.Recipe.GetLanguage().GetName() + "|" + packageInfo.Recipe.GetName();
 				Log::Diag("Running Build: " + languagePackageName);
 
-				// Select the correct build set to ensure that the different build properties 
-				// required the same project to be build twice
-				auto& buildSet = isHostBuild ? _hostBuildSet : _buildSet;
-				auto findBuildState = buildSet.find(languagePackageName);
-				if (findBuildState != buildSet.end())
+				// Check if we already built this package down a different dependency path
+				if (_buildCache.contains(packageInfo.Id))
 				{
-					// Verify the project name is unique
-					if (findBuildState->second != workingDirectory)
-					{
-						Log::Error("Recipe with this name already exists: " + languagePackageName + " [" + workingDirectory.ToString() + "] [" + findBuildState->second.ToString() + "]");
-						throw std::runtime_error("Recipe name not unique");
-					}
-					else
-					{
-						Log::Diag("Recipe already built: " + languagePackageName);
-					}
+					Log::Diag("Recipe already built: " + languagePackageName);
 				}
 				else
 				{
 					// Run the required builds in process
-					// This will break the circular requirements for the core build libraries
-					RunBuild(
-						workingDirectory,
-						recipe,
-						isHostBuild);
-
-					// Keep track of the packages we have already built
-					auto insertBuildState = buildSet.emplace(
-						languagePackageName,
-						workingDirectory);
-
-					// Replace the find iterator so it can be used to update the shared table state
-					findBuildState = insertBuildState.first;
-
-					// Move to the next build project id
-					projectId++;
+					RunBuild(packageGraph, packageInfo);
 				}
 
 				Log::SetActiveId(0);
@@ -295,66 +159,138 @@ namespace Soup::Core
 				Log::SetActiveId(0);
 				throw;
 			}
-
-			return projectId;
 		}
 
 		/// <summary>
 		/// Setup and run the individual components of the Generate and Evaluate phases for a given package
 		/// </summary>
-		void RunBuild(
-			const Path& packageRoot,
-			Recipe& recipe,
-			bool isHostBuild)
+		void RunBuild(const PackageGraph& packageGraph, const PackageInfo& packageInfo)
 		{
-			if (isHostBuild)
-			{
-				Log::Info("Host Build '" + recipe.GetName() + "'");
-			}
-			else
-			{
-				Log::Info("Build '" + recipe.GetName() + "'");
-			}
-
-			auto& globalParameters = isHostBuild ? _hostBuildGlobalParameters : _arguments.GlobalParameters;
+			Log::Info("Build '" + packageInfo.Recipe.GetName() + "'");
 
 			// Build up the expected output directory for the build to be used to cache state
 			auto targetDirectory = RecipeBuildLocationManager::GetOutputDirectory(
-				packageRoot,
-				recipe,
-				globalParameters,
-				_projectManager);
-			auto soupTargetDirectory = targetDirectory + BuildConstants::GetSoupTargetDirectory();
+				packageInfo.PackageRoot,
+				packageInfo.Recipe,
+				packageGraph.GlobalParameters,
+				_recipeCache);
+			auto soupTargetDirectory = targetDirectory + BuildConstants::SoupTargetDirectory();
 
 			// Build up the child target directory set
-			auto childTargetDirectorySets = BuildChildDependenciesTargetDirectorySet(recipe, packageRoot, isHostBuild);
+			auto childTargetDirectorySets = GenerateChildDependenciesTargetDirectorySet(packageInfo);
 			auto& directChildTargetDirectories = childTargetDirectorySets.first;
 			auto& recursiveChildTargetDirectories = childTargetDirectorySets.second;
 
-			if (!_arguments.SkipGenerate)
+			//////////////////////////////////////////////
+			// SETUP
+			/////////////////////////////////////////////
+
+			// Load the previous operation graph and results if they exist
+			Log::Info("Checking for existing Evaluate Operation Graph");
+			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateGraphFileName();
+			auto evaluateGraph = OperationGraph();
+			auto evaluateResults = OperationResults();
+			auto hasExistingGraph = OperationGraphManager::TryLoadState(
+				evaluateGraphFile,
+				evaluateGraph,
+				_fileSystemState);
+			
+			if (hasExistingGraph)
 			{
-				RunIncrementalGenerate(
-					recipe,
-					packageRoot,
-					targetDirectory,
-					soupTargetDirectory,
-					globalParameters,
-					isHostBuild,
-					directChildTargetDirectories,
-					recursiveChildTargetDirectories);
+				Log::Info("Previous graph found");
+
+				Log::Info("Checking for existing Evaluate Operation Results");
+				auto evaluateResultsFile = soupTargetDirectory + BuildConstants::EvaluateResultsFileName();
+				if (OperationResultsManager::TryLoadState(
+					evaluateResultsFile,
+					evaluateResults,
+					_fileSystemState))
+				{
+					Log::Info("Previous results found");
+				}
+				else
+				{
+					Log::Info("No previous results found");
+				}
+			}
+			else
+			{
+				Log::Info("No previous graph found");
 			}
 
+			//////////////////////////////////////////////
+			// GENERATE
+			/////////////////////////////////////////////
+			if (!_arguments.SkipGenerate)
+			{
+				auto ranGenerate = RunIncrementalGenerate(
+					packageInfo,
+					targetDirectory,
+					soupTargetDirectory,
+					packageGraph.GlobalParameters,
+					directChildTargetDirectories,
+					recursiveChildTargetDirectories);
+
+				//////////////////////////////////////////////
+				// SETUP
+				/////////////////////////////////////////////
+
+				// Load the new Evaluate Operation Graph and merge any results that are still relevant
+				if (ranGenerate)
+				{
+					Log::Info("Loading new Evaluate Operation Graph");
+					auto updatedEvaluateGraph = OperationGraph();
+					if (!OperationGraphManager::TryLoadState(
+						evaluateGraphFile,
+						updatedEvaluateGraph,
+						_fileSystemState))
+					{
+						throw std::runtime_error("Missing required evaluate operation graph after generate evaluated.");
+					}
+
+					Log::Diag("Map previous operation graph observed results");
+					auto updatedEvaluateResults = OperationResults();
+					for (auto& updatedOperationEntry : updatedEvaluateGraph.GetOperations())
+					{
+						auto& updatedOperation = updatedOperationEntry.second;
+
+						// Check if the new operation command existing in the previous set too
+						OperationId previousOperationId;
+						if (evaluateGraph.TryFindOperation(updatedOperation.Command, previousOperationId))
+						{
+							// Check if there is an existing result for the previous operation
+							OperationResult* previousOperationResult;
+							if (evaluateResults.TryFindResult(previousOperationId, previousOperationResult))
+							{
+								// Move this result into the updated results store
+								updatedEvaluateResults.AddOrUpdateOperationResult(updatedOperation.Id, std::move(*previousOperationResult));
+							}
+						}
+					}
+
+					// Replace the previous operation graph and results
+					evaluateGraph = std::move(updatedEvaluateGraph);
+					evaluateResults = std::move(updatedEvaluateResults);
+				}
+			}
+
+			//////////////////////////////////////////////
+			// EVALUATE
+			/////////////////////////////////////////////
 			if (!_arguments.SkipEvaluate)
 			{
-				RunEvaluate(targetDirectory, soupTargetDirectory);
+				RunEvaluate(
+					evaluateGraph,
+					evaluateResults,
+					targetDirectory,
+					soupTargetDirectory);
 			}
 
 			// Cache the build state for upstream dependencies
-			auto& buildCache = isHostBuild ? _hostBuildCache : _buildCache;
-			buildCache.emplace(
-				packageRoot,
+			_buildCache.emplace(
+				packageInfo.Id,
 				RecipeBuildCacheState(
-					recipe.GetName(),
+					packageInfo.Recipe.GetName(),
 					std::move(targetDirectory),
 					std::move(soupTargetDirectory),
 					std::move(recursiveChildTargetDirectories)));
@@ -363,27 +299,29 @@ namespace Soup::Core
 		/// <summary>
 		/// Run an incremental generate phase
 		/// </summary>
-		void RunIncrementalGenerate(
-			Recipe& recipe,
-			const Path& packageDirectory,
+		bool RunIncrementalGenerate(
+			const PackageInfo& packageInfo,
 			const Path& targetDirectory,
 			const Path& soupTargetDirectory,
 			const ValueTable& globalParameters,
-			bool isHostBuild,
 			const std::set<Path>& directChildTargetDirectories,
 			const std::set<Path>& recursiveChildTargetDirectories)
 		{
 			// Clone the global parameters
 			auto parametersTable = ValueTable(globalParameters.GetValues());
 
-			auto languageExtensionPath = _projectManager.GetLanguageExtensionPath(recipe);
+			std::string languageExtensionPath = "";
+			if (packageInfo.LanguageExtension.has_value())
+			{
+				languageExtensionPath = packageInfo.LanguageExtension.value().ToString();
+			}
 
 			// Set the input parameters
-			parametersTable.SetValue("LanguageExtensionPath", Value(languageExtensionPath.ToString()));
-			parametersTable.SetValue("PackageDirectory", Value(packageDirectory.ToString()));
+			parametersTable.SetValue("LanguageExtensionPath", Value(std::move(languageExtensionPath)));
+			parametersTable.SetValue("PackageDirectory", Value(packageInfo.PackageRoot.ToString()));
 			parametersTable.SetValue("TargetDirectory", Value(targetDirectory.ToString()));
 			parametersTable.SetValue("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
-			parametersTable.SetValue("Dependencies", BuildParametersDependenciesValueTable(recipe, packageDirectory, isHostBuild));
+			parametersTable.SetValue("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
 			parametersTable.SetValue("SDKs", _sdkParameters);
 
 			auto parametersFile = soupTargetDirectory + BuildConstants::GenerateParametersFileName();
@@ -411,7 +349,7 @@ namespace Soup::Core
 				std::back_inserter(evaluateAllowedReadAccess));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
-			evaluateAllowedReadAccess.push_back(packageDirectory);
+			evaluateAllowedReadAccess.push_back(packageInfo.PackageRoot);
 			evaluateAllowedReadAccess.push_back(targetDirectory);
 
 			// Only allow writing to the target directory
@@ -441,14 +379,14 @@ namespace Soup::Core
 			auto moduleFolder = moduleName.GetParent();
 			auto generateFolder = moduleFolder + Path("Generate/");
 			auto generateExecutable = generateFolder + Path("Soup.Build.Generate.exe");
-			OperationId generateOperatioId = 1;
+			OperationId generateOperationId = 1;
 			auto generateArguments = std::stringstream();
 			generateArguments << soupTargetDirectory.ToString();
 			auto generateOperation = OperationInfo(
-				generateOperatioId,
-				"Generate Phase: " + recipe.GetLanguage().GetName() + "|" + recipe.GetName(),
+				generateOperationId,
+				"Generate: " + packageInfo.Recipe.GetLanguage().GetName() + "|" + packageInfo.Recipe.GetName(),
 				CommandInfo(
-					packageDirectory,
+					packageInfo.PackageRoot,
 					generateExecutable,
 					generateArguments.str()),
 				{},
@@ -460,7 +398,7 @@ namespace Soup::Core
 
 			// Set the Generate operation as the root
 			generateGraph.SetRootOperationIds({
-				generateOperatioId,
+				generateOperationId,
 			});
 
 			// Set Read and Write access fore the generate phase
@@ -471,14 +409,17 @@ namespace Soup::Core
 			generateAllowedReadAccess.push_back(generateFolder);
 
 			// Allow read from the language extension directory
-			generateAllowedReadAccess.push_back(languageExtensionPath.GetParent());
+			if (packageInfo.LanguageExtension.has_value())
+			{
+				generateAllowedReadAccess.push_back(packageInfo.LanguageExtension.value().GetParent());
+			}
 
 			// TODO: Windows specific
 			generateAllowedReadAccess.push_back(Path("C:/Windows/"));
 			generateAllowedReadAccess.push_back(Path("C:/Program Files/dotnet/"));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
-			generateAllowedReadAccess.push_back(packageDirectory);
+			generateAllowedReadAccess.push_back(packageInfo.PackageRoot);
 			generateAllowedReadAccess.push_back(targetDirectory);
 
 			// Allow read access for all direct dependencies target directories and write to own targets
@@ -490,24 +431,104 @@ namespace Soup::Core
 				std::back_inserter(generateAllowedReadAccess));
 			generateAllowedWriteAccess.push_back(targetDirectory);
 
-			// Load the previous build graph if it exists and merge it with the new one
-			auto generateGraphFile = soupTargetDirectory + GetGenerateGraphFileName();
-			TryMergeExisting(generateGraphFile, generateGraph);
+			// Load the previous build results if it exists
+			Log::Info("Checking for existing Generate Operation Results");
+			auto generateResultsFile = soupTargetDirectory + BuildConstants::GenerateResultsFileName();
+			auto generateResults = OperationResults();
+			if (OperationResultsManager::TryLoadState(
+				generateResultsFile,
+				generateResults,
+				_fileSystemState))
+			{
+				Log::Info("Previous results found");
+			}
+			else
+			{
+				Log::Info("No previous results found");
+			}
 
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + GetTemporaryFolderName();
+			auto temporaryDirectory = targetDirectory + BuildConstants::TemporaryFolderName();
 
 			// Evaluate the Generate phase
-			auto evaluateGenerateEngine = BuildEvaluateEngine(
-				_fileSystemState,
+			bool ranEvaluate = _evaluateEngine.Evaluate(
 				generateGraph,
-				std::move(temporaryDirectory),
-				std::move(generateAllowedReadAccess),
-				std::move(generateAllowedWriteAccess));
-			evaluateGenerateEngine.Evaluate();
+				generateResults,
+				temporaryDirectory,
+				generateAllowedReadAccess,
+				generateAllowedWriteAccess);
 
-			// Save the operation graph for future incremental builds
-			OperationGraphManager::SaveState(generateGraphFile, generateGraph, *_fileSystemState);
+			if (ranEvaluate)
+			{
+				// Save the generate operation results for future incremental builds
+				OperationResultsManager::SaveState(generateResultsFile, generateResults, _fileSystemState);
+			}
+
+			return ranEvaluate;
+		}
+
+		void RunEvaluate(
+			const OperationGraph& evaluateGraph,
+			OperationResults& evaluateResults,
+			const Path& targetDirectory,
+			const Path& soupTargetDirectory)
+		{
+			// Set the temporary folder under the target folder
+			auto temporaryDirectory = targetDirectory + BuildConstants::TemporaryFolderName();
+
+			// Initialize the read access with the shared global set
+			auto allowedReadAccess = std::vector<Path>();
+			auto allowedWriteAccess = std::vector<Path>();
+
+			// Allow read access from system runtime directories
+			std::copy(
+				_systemReadAccess.begin(),
+				_systemReadAccess.end(),
+				std::back_inserter(allowedReadAccess));
+
+			// Allow read and write access to the temporary directory that is not explicitly declared
+			allowedReadAccess.push_back(temporaryDirectory);
+			allowedWriteAccess.push_back(temporaryDirectory);
+
+			// TODO: REMOVE - Allow read access from SDKs
+			std::copy(
+				_sdkReadAccess.begin(),
+				_sdkReadAccess.end(),
+				std::back_inserter(allowedReadAccess));
+
+			// Ensure the temporary directories exists
+			if (!System::IFileSystem::Current().Exists(temporaryDirectory))
+			{
+				Log::Info("Create Directory: " + temporaryDirectory.ToString());
+				System::IFileSystem::Current().CreateDirectory2(temporaryDirectory);
+			}
+
+			try
+			{
+				// Evaluate the build
+				auto ranEvaluate = _evaluateEngine.Evaluate(
+					evaluateGraph,
+					evaluateResults,
+					temporaryDirectory,
+					allowedReadAccess,
+					allowedWriteAccess);
+
+				if (ranEvaluate)
+				{
+					Log::Info("Saving updated build state");
+					auto evaluateResultsFile = soupTargetDirectory + BuildConstants::EvaluateResultsFileName();
+					OperationResultsManager::SaveState(evaluateResultsFile, evaluateResults, _fileSystemState);
+				}
+			}
+			catch(const BuildFailedException&)
+			{
+				Log::Info("Saving partial build state");
+				auto evaluateResultsFile = soupTargetDirectory + BuildConstants::EvaluateResultsFileName();
+				OperationResultsManager::SaveState(evaluateResultsFile, evaluateResults, _fileSystemState);
+				throw;
+			}
+
+			Log::Info("Done");
 		}
 
 		bool IsOutdated(const ValueTable& parametersTable, const Path& parametersFile)
@@ -540,156 +561,29 @@ namespace Soup::Core
 			}
 		}
 
-		void RunEvaluate(
-			const Path& targetDirectory,
-			const Path& soupTargetDirectory)
-		{
-			// Load and run the previous stored state directly
-			auto generateEvaluateGraphFile = soupTargetDirectory + BuildConstants::GenerateEvaluateOperationGraphFileName();
-			auto evaluateResultGraphFile = soupTargetDirectory + GetEvaluateResultGraphFileName();
-
-			Log::Info("Loading generate evaluate operation graph");
-			auto evaluateGraph = OperationGraph();
-			if (!OperationGraphManager::TryLoadState(
-				generateEvaluateGraphFile,
-				evaluateGraph,
-				*_fileSystemState))
-			{
-				throw std::runtime_error("Missing generated operation graph for evaluate phase.");
-			}
-
-			if (!_arguments.ForceRebuild)
-			{
-				// Load the previous build graph if it exists and merge it with the new one
-				TryMergeExisting(evaluateResultGraphFile, evaluateGraph);
-			}
-
-			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + GetTemporaryFolderName();
-
-			// Initialize the read access with the shared global set
-			auto allowedReadAccess = std::vector<Path>();
-			auto allowedWriteAccess = std::vector<Path>();
-
-			// Allow read access from system runtime directories
-			std::copy(
-				_systemReadAccess.begin(),
-				_systemReadAccess.end(),
-				std::back_inserter(allowedReadAccess));
-
-			// Allow read and write access to the temparary directory that is not explicitly declared
-			allowedReadAccess.push_back(temporaryDirectory);
-			allowedWriteAccess.push_back(temporaryDirectory);
-
-			// TODO: REMOVE - Allow read access from SDKs
-			std::copy(
-				_sdkReadAccess.begin(),
-				_sdkReadAccess.end(),
-				std::back_inserter(allowedReadAccess));
-
-			// Ensure the temporary directories exists
-			if (!System::IFileSystem::Current().Exists(temporaryDirectory))
-			{
-				Log::Info("Create Directory: " + temporaryDirectory.ToString());
-				System::IFileSystem::Current().CreateDirectory2(temporaryDirectory);
-			}
-
-			try
-			{
-				// Evaluate the build
-				auto evaluateEngine = BuildEvaluateEngine(
-					_fileSystemState,
-					evaluateGraph,
-					std::move(temporaryDirectory),
-					std::move(allowedReadAccess),
-					std::move(allowedWriteAccess));
-				evaluateEngine.Evaluate();
-			}
-			catch(const BuildFailedException&)
-			{
-				Log::Info("Saving partial build state");
-				OperationGraphManager::SaveState(
-					evaluateResultGraphFile,
-					evaluateGraph,
-					*_fileSystemState);
-				throw;
-			}
-
-			Log::Info("Saving updated build state");
-			OperationGraphManager::SaveState(
-				evaluateResultGraphFile,
-				evaluateGraph,
-				*_fileSystemState);
-
-			Log::Info("Done");
-		}
-
-		/// <summary>
-		/// Attempt to merge the existing operation graph if it exists
-		/// </summary>
-		void TryMergeExisting(
-			const Path& operationGraphFile,
-			OperationGraph& operationGraph)
-		{
-			Log::Diag("Loading previous operation graph");
-			auto previousOperationGraph = OperationGraph();
-			if (OperationGraphManager::TryLoadState(
-				operationGraphFile,
-				previousOperationGraph,
-				*_fileSystemState))
-			{
-				Log::Diag("Merge previous operation graph observed results");
-				for (auto& activeOperationEntry : operationGraph.GetOperations())
-				{
-					auto& activeOperationInfo = activeOperationEntry.second;
-					OperationInfo* previousOperationInfo = nullptr;
-					if (previousOperationGraph.TryFindOperationInfo(activeOperationInfo.Command, previousOperationInfo))
-					{
-						activeOperationInfo.WasSuccessfulRun = previousOperationInfo->WasSuccessfulRun;
-						activeOperationInfo.EvaluateTime = previousOperationInfo->EvaluateTime;
-						activeOperationInfo.ObservedInput = previousOperationInfo->ObservedInput;
-						activeOperationInfo.ObservedOutput = previousOperationInfo->ObservedOutput;
-					}
-				}
-			}
-			else
-			{
-				Log::Info("No valid previous build graph found");
-			}
-		}
-
-		ValueTable BuildParametersDependenciesValueTable(
-			Recipe& recipe,
-			const Path& workingDirectory,
-			bool isHostBuild)
+		ValueTable GenerateParametersDependenciesValueTable(
+			const PackageInfo& packageInfo)
 		{
 			auto result = ValueTable();
-			for (auto dependecyType : recipe.GetDependencyTypes())
-			{
-				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependecyType == "Build")
-				{
-					// Build dependencies do not inherit the parent language
-					// Instead, they default to C#
-					implicitLanguage = "C#";
-				}
 
-				auto& dependencyTypeTable = result.SetValue(dependecyType, Value(ValueTable())).AsTable();
-				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+			for (auto& dependencyType : packageInfo.Dependencies)
+			{
+				auto& dependencyTypeTable = result.SetValue(dependencyType.first, Value(ValueTable())).AsTable();
+				for (auto& dependency : dependencyType.second)
 				{
 					// Load this package recipe
-					auto packagePath = _projectManager.GetPackageReferencePath(
-						workingDirectory,
-						dependency,
-						implicitLanguage);
+					auto dependencyPackageId = dependency.PackageId;
+					if (dependency.IsSubGraph)
+					{
+						auto& dependencyPackageGraph = _packageProvider.GetPackageGraph(dependency.PackageGraphId);
+						dependencyPackageId = dependencyPackageGraph.RootPackageId;
+					}
 
-					// Cache the build state for upstream dependencies
-					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
-					auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
+					auto& dependencyPackageInfo = _packageProvider.GetPackageInfo(dependencyPackageId);
 
-					auto findBuildCache = buildCache.find(packagePath);
-					if (findBuildCache != buildCache.end())
+					// Grab the build state for upstream dependencies
+					auto findBuildCache = _buildCache.find(dependencyPackageInfo.Id);
+					if (findBuildCache != _buildCache.end())
 					{
 						auto& dependencyState = findBuildCache->second;
 						dependencyTypeTable.SetValue(
@@ -697,7 +591,7 @@ namespace Soup::Core
 							Value(ValueTable({
 								{
 									"Reference",
-									Value(dependency.ToString())
+									Value(dependency.OriginalReference.ToString())
 								},
 								{
 									"TargetDirectory",
@@ -711,8 +605,8 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
-						throw std::runtime_error("Dependency does not exist in build cache");
+						Log::Error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
+						throw std::runtime_error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
 					}
 				}
 			}
@@ -720,38 +614,28 @@ namespace Soup::Core
 			return result;
 		}
 
-		std::pair<std::set<Path>, std::set<Path>> BuildChildDependenciesTargetDirectorySet(
-			Recipe& recipe,
-			const Path& workingDirectory,
-			bool isHostBuild)
+		std::pair<std::set<Path>, std::set<Path>> GenerateChildDependenciesTargetDirectorySet(
+			const PackageInfo& packageInfo)
 		{
 			auto directDirectories = std::set<Path>();
 			auto recursiveDirectories = std::set<Path>();
-			for (auto dependecyType : recipe.GetDependencyTypes())
+			for (auto& dependencyType : packageInfo.Dependencies)
 			{
-				// Same language as parent is implied
-				auto implicitLanguage = recipe.GetLanguage().GetName();
-				if (dependecyType == "Build")
-				{
-					// Build dependencies do not inherit the parent language
-					// Instead, they default to C#
-					implicitLanguage = "C#";
-				}
-
-				for (auto dependency : recipe.GetNamedDependencies(dependecyType))
+				for (auto& dependency : dependencyType.second)
 				{
 					// Load this package recipe
-					auto packagePath = _projectManager.GetPackageReferencePath(
-						workingDirectory,
-						dependency,
-						implicitLanguage);
+					auto dependencyPackageId = dependency.PackageId;
+					if (dependency.IsSubGraph)
+					{
+						auto& dependencyPackageGraph = _packageProvider.GetPackageGraph(dependency.PackageGraphId);
+						dependencyPackageId = dependencyPackageGraph.RootPackageId;
+					}
 
-					// Cache the build state for upstream dependencies
-					bool isDependencyHostBuild = isHostBuild || dependecyType == "Build";
-					auto& buildCache = isDependencyHostBuild ? _hostBuildCache : _buildCache;
+					auto& dependencyPackageInfo = _packageProvider.GetPackageInfo(dependencyPackageId);
 
-					auto findBuildCache = buildCache.find(packagePath);
-					if (findBuildCache != buildCache.end())
+					// Grab the build state for upstream dependencies
+					auto findBuildCache = _buildCache.find(dependencyPackageInfo.Id);
+					if (findBuildCache != _buildCache.end())
 					{
 						// Combine the child dependency target and the recursive children
 						auto& dependencyState = findBuildCache->second;
@@ -761,32 +645,13 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Error("Dependency does not exist in build cache: " + packagePath.ToString());
-						throw std::runtime_error("Dependency does not exist in build cache");
+						Log::Error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
+						throw std::runtime_error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
 					}
 				}
 			}
 
 			return std::make_pair(std::move(directDirectories), std::move(recursiveDirectories));
-		}
-
-	private:
-		static Path GetGenerateGraphFileName()
-		{
-			static const auto value = Path("GenerateGraph.bog");
-			return value;
-		}
-
-		static Path GetEvaluateResultGraphFileName()
-		{
-			static const auto value = Path("EvaluateResultGraph.bog");
-			return value;
-		}
-
-		static Path GetTemporaryFolderName()
-		{
-			static const auto value = Path("temp/");
-			return value;
 		}
 	};
 }

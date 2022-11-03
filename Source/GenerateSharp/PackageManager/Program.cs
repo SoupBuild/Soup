@@ -37,7 +37,10 @@ namespace Soup.Build.PackageManager
 				var workingDirectory = new Path(args[1]);
 
 				using var httpClient = new HttpClient();
-				var packageManager = new PackageManager(httpClient);
+				var packageManager = new PackageManager(
+					httpClient,
+					new SemanticVersion(0, 7, 0),
+					new SemanticVersion(0, 4, 0));
 
 				switch (command)
 				{

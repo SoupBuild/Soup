@@ -6,7 +6,7 @@
 #include "Recipe/Recipe.h"
 #include "ValueTable/ValueTable.h"
 #include "ValueTable/ValueTableWriter.h"
-#include "ProjectManager.h"
+#include "PackageProvider.h"
 #include "RecipeBuildCacheState.h"
 
 namespace Soup::Core
@@ -20,9 +20,9 @@ namespace Soup::Core
 	public:
 		static Path GetOutputDirectory(
 			const Path& packageRoot,
-			Recipe& recipe,
+			const Recipe& recipe,
 			const ValueTable& globalParameters,
-			ProjectManager& projectManager)
+			RecipeCache& recipeCache)
 		{
 			// Set the default output directory to be relative to the package
 			auto rootOutput = packageRoot + Path("out/");
@@ -32,8 +32,8 @@ namespace Soup::Core
 			if (RootRecipeExtensions::TryFindRootRecipeFile(packageRoot, rootRecipeFile))
 			{
 				Log::Info("Found Root Recipe: '" + rootRecipeFile.ToString() + "'");
-				RootRecipe rootRecipe;
-				if (!projectManager.TryGetRootRecipe(rootRecipeFile, rootRecipe))
+				const RootRecipe* rootRecipe;
+				if (!recipeCache.TryGetRootRecipe(rootRecipeFile, rootRecipe))
 				{
 					// Nothing we can do, exit
 					Log::Error("Failed to load the root recipe file: " + rootRecipeFile.ToString());
@@ -41,10 +41,10 @@ namespace Soup::Core
 				}
 
 				// Check if there was a root output set
-				if (rootRecipe.HasOutputRoot())
+				if (rootRecipe->HasOutputRoot())
 				{
 					// Relative to the root recipe file itself
-					rootOutput = rootRecipe.GetOutputRoot();
+					rootOutput = rootRecipe->GetOutputRoot();
 
 					// Add the language sub folder
 					rootOutput = rootOutput + Path(recipe.GetLanguage().GetName() + "/");

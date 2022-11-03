@@ -80,22 +80,5 @@ namespace Soup::Core
 			// Write the recipe to the file stream
 			RecipeSML::Serialize(recipe.GetTable(), file->GetOutStream());
 		}
-
-		/// <summary>
-		/// Get the package reference path
-		/// </summary>
-		static Path GetPackageReferencePath(
-			const Path& workingDirectory,
-			const PackageReference& reference)
-		{
-			// If the path is relative then combine with the working directory
-			auto packagePath = reference.GetPath();
-			if (!packagePath.HasRoot())
-			{
-				packagePath = workingDirectory + packagePath;
-			}
-
-			return packagePath;
-		}
 	};
 }

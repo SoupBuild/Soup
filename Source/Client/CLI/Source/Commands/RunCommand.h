@@ -47,12 +47,12 @@ namespace Soup::Client
 			}
 
 			// Load the recipe
-			auto projectManager = Core::ProjectManager();
+			auto recipeCache = Core::RecipeCache();
 			auto recipePath =
 				workingDirectory +
 				Core::BuildConstants::RecipeFileName();
-			Core::Recipe recipe = {};
-			if (!projectManager.TryGetRecipe(recipePath, recipe))
+			const Core::Recipe* recipe;
+			if (!recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
 				Log::Error("The Recipe does not exist: " + recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
@@ -85,10 +85,10 @@ namespace Soup::Client
 			// Load the value table to get the exe path
 			auto targetDirectory = Core::RecipeBuildLocationManager::GetOutputDirectory(
 				workingDirectory,
-				recipe,
+				*recipe,
 				globalParameters,
-				projectManager);
-			auto soupTargetDirectory = targetDirectory + Core::BuildConstants::GetSoupTargetDirectory();
+				recipeCache);
+			auto soupTargetDirectory = targetDirectory + Core::BuildConstants::SoupTargetDirectory();
 			auto sharedStateFile = soupTargetDirectory + Core::BuildConstants::GenerateSharedStateFileName();
 
 			// Load the shared state file

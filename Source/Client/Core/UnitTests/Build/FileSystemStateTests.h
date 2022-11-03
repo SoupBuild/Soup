@@ -58,10 +58,11 @@ namespace Soup::Core::UnitTests
 				10,
 				std::unordered_map<FileId, Path>({}));
 
-			Assert::ThrowsRuntimeError([&uut]() {
+			auto exception = Assert::Throws<std::runtime_error>([&uut]() {
 				auto actual = uut.GetFilePath(8);
-			},
-			"The provided file id does not exist in the files set.");
+			});
+
+			Assert::AreEqual("The provided file id does not exist in the files set.", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]

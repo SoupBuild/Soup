@@ -88,6 +88,25 @@ namespace Soup::Core
 		}
 
 		/// <summary>
+		/// Generic Helpers
+		/// </summary>
+		void SetRootValue(std::string_view key, std::string value)
+		{
+			EnsureValue(_table, key).SetValueString(std::move(value));
+		}
+
+		void SetRootValue(std::string_view key, const std::vector<std::string>& values)
+		{
+			auto stringValues = RecipeList();
+			for (auto& value : values)
+			{
+				stringValues.push_back(RecipeValue(value));
+			}
+
+			EnsureValue(_table, key).SetValueList(std::move(stringValues));
+		}
+
+		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
 		const RecipeValue& GetNameValue() const
@@ -111,7 +130,7 @@ namespace Soup::Core
 
 		void SetName(std::string_view value)
 		{
-			EnsureValue(_table, Property_Name).SetValueString(std::string(value));
+			SetRootValue(Property_Name, std::string(value));
 		}
 
 		/// <summary>
@@ -146,18 +165,18 @@ namespace Soup::Core
 
 		void SetLanguage(const LanguageReference& value)
 		{
-			EnsureValue(_table, Property_Language).SetValueString(value.ToString());
+			SetRootValue(Property_Language, value.ToString());
 		}
 
 		/// <summary>
 		/// Gets or sets the package version
 		/// </summary>
-		bool HasVersion()
+		bool HasVersion() const
 		{
 			return HasValue(_table, Property_Version);
 		}
 
-		SemanticVersion GetVersion()
+		SemanticVersion GetVersion() const
 		{
 			if (!HasVersion())
 				throw std::runtime_error("No version.");
@@ -171,7 +190,7 @@ namespace Soup::Core
 
 		void SetVersion(SemanticVersion value)
 		{
-			return EnsureValue(_table, Property_Version).SetValueString(value.ToString());
+			SetRootValue(Property_Version, value.ToString());
 		}
 
 		/// <summary>

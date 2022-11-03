@@ -157,11 +157,7 @@ namespace Soup.Build.Utilities
 				readAccess,
 				writeAccess,
 				children,
-				dependecyCount,
-				wasSuccessfulRun,
-				evaluateTime,
-				observedInput,
-				observedOutput);
+				dependecyCount);
 		}
 
 		private static bool ReadBoolean(System.IO.BinaryReader reader)

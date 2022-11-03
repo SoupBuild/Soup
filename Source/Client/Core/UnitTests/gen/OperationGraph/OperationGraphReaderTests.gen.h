@@ -10,7 +10,6 @@ TestState RunOperationGraphReaderTests()
 	state += Soup::Test::RunTest(className, "Deserialize_InvalidFileVersionThrows", [&testClass]() { testClass->Deserialize_InvalidFileVersionThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_InvalidFilesHeaderThrows", [&testClass]() { testClass->Deserialize_InvalidFilesHeaderThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_InvalidOperationsHeaderThrows", [&testClass]() { testClass->Deserialize_InvalidOperationsHeaderThrows(); });
-	state += Soup::Test::RunTest(className, "Deserialize_ExtraContentThrows", [&testClass]() { testClass->Deserialize_ExtraContentThrows(); });
 	state += Soup::Test::RunTest(className, "Deserialize_Empty", [&testClass]() { testClass->Deserialize_Empty(); });
 	state += Soup::Test::RunTest(className, "Deserialize_SingleSimple", [&testClass]() { testClass->Deserialize_SingleSimple(); });
 	state += Soup::Test::RunTest(className, "Deserialize_SingleComplex", [&testClass]() { testClass->Deserialize_SingleComplex(); });

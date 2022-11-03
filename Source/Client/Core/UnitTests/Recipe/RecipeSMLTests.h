@@ -14,7 +14,7 @@ namespace Soup::Core::UnitTests
 		{
 			auto recipeFile = Path("Recipe.sml");
 			auto recipe = std::stringstream("garbage");
-			Assert::ThrowsRuntimeError([&recipeFile, &recipe]() {
+			auto exception = Assert::Throws<std::runtime_error>([&recipeFile, &recipe]() {
 				auto actual = RecipeSML::Deserialize(recipeFile, recipe);
 			});
 		}

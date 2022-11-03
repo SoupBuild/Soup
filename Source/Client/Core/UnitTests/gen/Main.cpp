@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <set>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -22,10 +23,12 @@ using namespace Soup::Test;
 
 #include "Utils/TestHelpers.h"
 
+#include "Build/BuildEngineTests.gen.h"
 #include "Build/BuildEvaluateEngineTests.gen.h"
 #include "Build/BuildHistoryCheckerTests.gen.h"
+#include "Build/BuildLoadEngineTests.gen.h"
 #include "Build/FileSystemStateTests.gen.h"
-#include "Build/ProjectManagerTests.gen.h"
+#include "Build/PackageProviderTests.gen.h"
 #include "Build/RecipeBuildLocationManagerTests.gen.h"
 #include "Build/RecipeBuildRunnerTests.gen.h"
 
@@ -36,6 +39,10 @@ using namespace Soup::Test;
 #include "OperationGraph/OperationGraphManagerTests.gen.h"
 #include "OperationGraph/OperationGraphReaderTests.gen.h"
 #include "OperationGraph/OperationGraphWriterTests.gen.h"
+#include "OperationGraph/OperationResultsTests.gen.h"
+#include "OperationGraph/OperationResultsManagerTests.gen.h"
+#include "OperationGraph/OperationResultsReaderTests.gen.h"
+#include "OperationGraph/OperationResultsWriterTests.gen.h"
 
 #include "Package/PackageManagerTests.gen.h"
 
@@ -54,10 +61,12 @@ int main()
 
 	TestState state = { 0, 0 };
 
+	state += RunBuildEngineTests();
 	state += RunBuildEvaluateEngineTests();
 	state += RunBuildHistoryCheckerTests();
+	state += RunBuildLoadEngineTests();
 	state += RunFileSystemStateTests();
-	state += RunProjectManagerTests();
+	state += RunPackageProviderTests();
 	state += RunRecipeBuildLocationManagerTests();
 	state += RunRecipeBuildRunnerTests();
 
@@ -68,6 +77,10 @@ int main()
 	state += RunOperationGraphManagerTests();
 	state += RunOperationGraphReaderTests();
 	state += RunOperationGraphWriterTests();
+	state += RunOperationResultsTests();
+	state += RunOperationResultsManagerTests();
+	state += RunOperationResultsReaderTests();
+	state += RunOperationResultsWriterTests();
 
 	state += RunPackageManagerTests();
 

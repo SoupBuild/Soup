@@ -21,6 +21,16 @@ namespace Soup::Core
 		{
 		}
 
+		HandledException(const HandledException& other) :
+			std::exception(),
+			m_exitCode(other.m_exitCode)
+		{
+		}
+
+		virtual ~HandledException() noexcept
+		{
+		}
+
 		int GetExitCode() const
 		{
 			return m_exitCode;

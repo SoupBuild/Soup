@@ -58,8 +58,6 @@ namespace Soup.Build.Utilities
 					var operation = operationReference.Value;
 					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
 					UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
-					UpdateFileIds(operation.ObservedInput, activeFileIdMap);
-					UpdateFileIds(operation.ObservedOutput, activeFileIdMap);
 				}
 
 				result = loadedResult;
@@ -92,8 +90,6 @@ namespace Soup.Build.Utilities
 				files.UnionWith(operation.DeclaredOutput);
 				files.UnionWith(operation.ReadAccess);
 				files.UnionWith(operation.WriteAccess);
-				files.UnionWith(operation.ObservedInput);
-				files.UnionWith(operation.ObservedOutput);
 			}
 
 			var referencedFiles = new List<(FileId FileId, Path Path)>();
@@ -112,7 +108,10 @@ namespace Soup.Build.Utilities
 			}
 
 			// Open the file to write to
-			using var fileStream = System.IO.File.Open(operationGraphFile.ToString(), System.IO.FileMode.Create, System.IO.FileAccess.Write);
+			using var fileStream = System.IO.File.Open(
+				operationGraphFile.ToString(),
+				System.IO.FileMode.Create,
+				System.IO.FileAccess.Write);
 			using var writer = new System.IO.BinaryWriter(fileStream);
 
 			// Write the build state to the file stream
