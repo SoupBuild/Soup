@@ -122,6 +122,39 @@ namespace Opal
 				patch);
 		}
 
+		public static bool IsUpCompatible(SemanticVersion requested, SemanticVersion target)
+		{
+			// The target version must be fully qualified
+			if (!target.Minor.HasValue)
+				throw new ArgumentException("Target must have minor version");
+			if (!target.Patch.HasValue)
+				throw new ArgumentException("Target must have patch version");
+
+			if (requested.Major == target.Major)
+			{
+				if (!requested.Minor.HasValue || target.Minor > requested.Minor)
+				{
+					// If the Minor version is acceptable increase then allow it
+					return true;
+				}
+				else if (requested.Minor == target.Minor)
+				{
+					// Check that the patch is not backtracking
+					return !requested.Patch.HasValue || target.Patch >= requested.Patch;
+				}
+				else
+				{
+					// Minor version drops not allowed
+					return false;
+				}
+			}
+			else
+			{
+				// The Major version must match
+				return false;
+			}
+		}
+
 		public bool Equals(SemanticVersion? rhs)
 		{
 			if (ReferenceEquals(rhs, null))
