@@ -27,8 +27,7 @@ namespace Soup.Build.PackageManager
 		private const string BuiltInLanguageSafeNameCSharp = "CSharp";
 		private const string BuiltInLanguageSafeNameCpp = "Cpp";
 
-		//// private static string SoupApiEndpoint => "http://localhost:7070";
-		private static string SoupApiEndpoint => "https://api.soupbuild.com";
+		private Uri _apiEndpoint;
 
 		private HttpClient _httpClient;
 
@@ -36,10 +35,12 @@ namespace Soup.Build.PackageManager
 		private SemanticVersion _builtInLanguageVersionCpp;
 
 		public PackageManager(
+			Uri apiEndpoint,
 			HttpClient httpClient,
 			SemanticVersion builtInLanguageVersionCSharp,
 			SemanticVersion builtInLanguageVersionCpp)
 		{
+			_apiEndpoint = apiEndpoint;
 			_httpClient = httpClient;
 			_builtInLanguageVersionCSharp = builtInLanguageVersionCSharp;
 			_builtInLanguageVersionCpp = builtInLanguageVersionCpp;
@@ -223,7 +224,7 @@ namespace Soup.Build.PackageManager
 				Log.Info("Publish package");
 				var packageClient = new Api.Client.PackagesClient(_httpClient)
 				{
-					BaseUrl = SoupApiEndpoint,
+					BaseUrl = _apiEndpoint.ToString(),
 					BearerToken = accessToken,
 				};
 
@@ -260,7 +261,7 @@ namespace Soup.Build.PackageManager
 
 				var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient)
 				{
-					BaseUrl = SoupApiEndpoint,
+					BaseUrl = _apiEndpoint.ToString(),
 					BearerToken = accessToken,
 				};
 
@@ -310,7 +311,7 @@ namespace Soup.Build.PackageManager
 		{
 			var client = new Api.Client.PackagesClient(_httpClient)
 			{
-				BaseUrl = SoupApiEndpoint,
+				BaseUrl = _apiEndpoint.ToString(),
 			};
 
 			return await client.GetPackageAsync(languageName, packageName);
@@ -466,7 +467,7 @@ namespace Soup.Build.PackageManager
 
 				var client = new Api.Client.PackageVersionsClient(_httpClient)
 				{
-					BaseUrl = SoupApiEndpoint,
+					BaseUrl = _apiEndpoint.ToString(),
 				};
 
 				try

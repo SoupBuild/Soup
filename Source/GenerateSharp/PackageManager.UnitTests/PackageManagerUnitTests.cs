@@ -42,6 +42,7 @@ namespace Soup.Build.PackageManager.UnitTests
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
 			var uut = new PackageManager(
+				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
 				new SemanticVersion(3, 2, 1));
@@ -157,19 +158,20 @@ Closures: {
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/Package1/version/1.2.3/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/Package2/version/3.2.1/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
 
 			var uut = new PackageManager(
+				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
 				new SemanticVersion(3, 2, 1));
@@ -247,15 +249,15 @@ Closures: {
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/Package1/version/1.2.3/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/Package2/version/3.2.1/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 
@@ -339,7 +341,7 @@ Closures: {
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Package1/version/1.2.3/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Package1/versions/1.2.3/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
@@ -347,7 +349,7 @@ Closures: {
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Soup.Cpp/version/5.0.0/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.Cpp/versions/5.0.0/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
@@ -355,12 +357,13 @@ Closures: {
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Soup.CSharp/version/4.0.0/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.CSharp/versions/4.0.0/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
 
 			var uut = new PackageManager(
+				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
 				new SemanticVersion(3, 2, 1));
@@ -487,24 +490,24 @@ Closures: {
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Package1/version/1.2.3/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Package1/versions/1.2.3/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Soup.Cpp/version/5.0.0/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.Cpp/versions/5.0.0/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Soup.CSharp/version/4.0.0/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.CSharp/versions/4.0.0/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 
@@ -630,6 +633,7 @@ Closures: {
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
 			var uut = new PackageManager(
+				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
 				new SemanticVersion(3, 2, 1));
@@ -776,26 +780,27 @@ Closures: {
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/Package1/version/1.2.4/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.4/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/Package2/version/3.2.1/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Soup.Cpp/version/3.2.2/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.Cpp/versions/3.2.2/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
 
 			var uut = new PackageManager(
+				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
 				new SemanticVersion(3, 2, 1));
@@ -871,22 +876,22 @@ Closures: {
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/Package1/version/1.2.4/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.4/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/Package2/version/3.2.1/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%23/package/Soup.Cpp/version/3.2.2/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.Cpp/versions/3.2.2/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 		}
@@ -938,6 +943,7 @@ Closures: {
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
 			var uut = new PackageManager(
+				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
 				new SemanticVersion(3, 2, 1));
@@ -1023,6 +1029,7 @@ Closures: {
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
 			var uut = new PackageManager(
+				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
 				new SemanticVersion(3, 2, 1));
@@ -1030,7 +1037,7 @@ Closures: {
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/OtherPackage/version/1.2.3/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage/versions/1.2.3/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
@@ -1086,8 +1093,8 @@ Closures: {
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/OtherPackage/version/1.2.3/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage/versions/1.2.3/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 
@@ -1146,6 +1153,7 @@ Dependencies: {
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
 			var uut = new PackageManager(
+				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
 				new SemanticVersion(3, 2, 1));
@@ -1158,14 +1166,14 @@ Dependencies: {
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/OtherPackage"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage() { Content = new StringContent(getPackageResponse) });
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/OtherPackage/version/1.2.3/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage/versions/1.2.3/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
@@ -1222,15 +1230,15 @@ Dependencies: {
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/OtherPackage"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage"),
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/OtherPackage/version/1.2.3/download"),
-					"{Accept: [application/zip]}",
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage/versions/1.2.3/download"),
+					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 
@@ -1306,6 +1314,7 @@ Dependencies: {
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
 			var uut = new PackageManager(
+				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
 				new SemanticVersion(3, 2, 1));
@@ -1318,14 +1327,14 @@ Dependencies: {
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/MyPackage"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage() { Content = new StringContent(getPackageResponse) });
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Put,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/MyPackage/version/1.0.0"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage/versions/1.0.0"),
 					It.IsAny<string>(),
 					It.IsAny<string>()))
 				.Returns(() => new HttpResponseMessage(HttpStatusCode.Created));
@@ -1376,14 +1385,14 @@ Dependencies: {
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/MyPackage"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage"),
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Put,
-					new Uri("https://api.soupbuild.com/v1/language/C%2B%2B/package/MyPackage/version/1.0.0"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage/versions/1.0.0"),
 					"",
 					"ZIP_FILE_CONTENT"),
 				Times.Once());

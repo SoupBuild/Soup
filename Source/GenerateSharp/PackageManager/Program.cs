@@ -12,6 +12,9 @@ namespace Soup.Build.PackageManager
 
 	public class Program
 	{
+		//// private static Uri SoupApiEndpoint => new Uri("http://localhost:7070");
+		private static string SoupApiEndpoint => new Uri("https://api.soupbuild.com");
+
 		public static async Task<int> Main(string[] args)
 		{
 			try
@@ -38,6 +41,7 @@ namespace Soup.Build.PackageManager
 
 				using var httpClient = new HttpClient();
 				var packageManager = new PackageManager(
+					SoupApiEndpoint,
 					httpClient,
 					new SemanticVersion(0, 7, 0),
 					new SemanticVersion(0, 4, 0));
