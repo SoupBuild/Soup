@@ -27,7 +27,7 @@ namespace Soup.Build.PackageManager
 		private const string BuiltInLanguageSafeNameCSharp = "CSharp";
 		private const string BuiltInLanguageSafeNameCpp = "Cpp";
 
-		//// private static string SoupApiEndpoint => "https://localhost:7071";
+		//// private static string SoupApiEndpoint => "http://localhost:7070";
 		private static string SoupApiEndpoint => "https://api.soupbuild.com";
 
 		private HttpClient _httpClient;
@@ -221,7 +221,7 @@ namespace Soup.Build.PackageManager
 
 				// Publish the archive
 				Log.Info("Publish package");
-				var packageClient = new Api.Client.PackageClient(_httpClient)
+				var packageClient = new Api.Client.PackagesClient(_httpClient)
 				{
 					BaseUrl = SoupApiEndpoint,
 					BearerToken = accessToken,
@@ -258,7 +258,7 @@ namespace Soup.Build.PackageManager
 					await packageClient.CreateOrUpdatePackageAsync(recipe.Language.Name, recipe.Name, createPackageModel);
 				}
 
-				var packageVersionClient = new Api.Client.PackageVersionClient(_httpClient)
+				var packageVersionClient = new Api.Client.PackageVersionsClient(_httpClient)
 				{
 					BaseUrl = SoupApiEndpoint,
 					BearerToken = accessToken,
@@ -308,7 +308,7 @@ namespace Soup.Build.PackageManager
 
 		private async Task<Api.Client.PackageModel> GetPackageModelAsync(string languageName, string packageName)
 		{
-			var client = new Api.Client.PackageClient(_httpClient)
+			var client = new Api.Client.PackagesClient(_httpClient)
 			{
 				BaseUrl = SoupApiEndpoint,
 			};
@@ -464,7 +464,7 @@ namespace Soup.Build.PackageManager
 				Log.HighPriority("Downloading package");
 				var archivePath = stagingDirectory + new Path(packageName + ".zip");
 
-				var client = new Api.Client.PackageVersionClient(_httpClient)
+				var client = new Api.Client.PackageVersionsClient(_httpClient)
 				{
 					BaseUrl = SoupApiEndpoint,
 				};

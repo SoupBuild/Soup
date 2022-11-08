@@ -1,4 +1,4 @@
-﻿// <copyright file="PackageVersionClient.cs" company="Soup">
+﻿// <copyright file="LanguageClient.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -10,9 +10,9 @@ namespace Soup.Build.Api.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// The package version client.
+    /// The language client.
     /// </summary>
-    public partial class PackageVersionClient
+    public partial class LanguagesClient
     {
         public string BearerToken { get; set; }
 
