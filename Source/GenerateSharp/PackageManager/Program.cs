@@ -12,8 +12,8 @@ namespace Soup.Build.PackageManager
 
 	public class Program
 	{
-		//// private static Uri SoupApiEndpoint => new Uri("http://localhost:7070");
-		private static string SoupApiEndpoint => new Uri("https://api.soupbuild.com");
+		private static Uri SoupApiEndpoint => new Uri("http://localhost:7070");
+		//// private static string SoupApiEndpoint => new Uri("https://api.soupbuild.com");
 
 		public static async Task<int> Main(string[] args)
 		{
@@ -40,11 +40,17 @@ namespace Soup.Build.PackageManager
 				var workingDirectory = new Path(args[1]);
 
 				using var httpClient = new HttpClient();
+				SemanticVersion builtInLanguageVersionCSharp = new SemanticVersion(0, 7, 0);
+				SemanticVersion builtInLanguageVersionCpp = new SemanticVersion(0, 4, 0);
+				var closureManager = new ClosureManager(
+					SoupApiEndpoint,
+					httpClient,
+					builtInLanguageVersionCSharp,
+					builtInLanguageVersionCpp);
 				var packageManager = new PackageManager(
 					SoupApiEndpoint,
 					httpClient,
-					new SemanticVersion(0, 7, 0),
-					new SemanticVersion(0, 4, 0));
+					closureManager);
 
 				switch (command)
 				{
