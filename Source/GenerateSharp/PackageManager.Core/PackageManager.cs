@@ -52,7 +52,11 @@ namespace Soup.Build.PackageManager
 
 			try
 			{
-				await _closureManager.GenerateAndRestoreRecursiveLocksAsync(workingDirectory, packageStore, stagingPath);
+				await _closureManager.GenerateAndRestoreRecursiveLocksAsync(
+					workingDirectory,
+					packageStore,
+					lockStore,
+					stagingPath);
 
 				// Cleanup the working directory
 				Log.Diag("Deleting staging directory");

@@ -40,6 +40,7 @@ namespace Soup.Build.PackageManager.UnitTests
 				.Setup(manager => manager.GenerateAndRestoreRecursiveLocksAsync(
 					new Path("C:/Root/MyPackage/"),
 					new Path("C:/Users/Me/.soup/packages/"),
+					new Path("C:/Users/Me/.soup/locks/"),
 					new Path("C:/Users/Me/.soup/packages/.staging/")))
 				.Returns(() => Task.CompletedTask);
 
@@ -81,6 +82,7 @@ namespace Soup.Build.PackageManager.UnitTests
 				manager.GenerateAndRestoreRecursiveLocksAsync(
 					new Path("C:/Root/MyPackage/"),
 					new Path("C:/Users/Me/.soup/packages/"),
+					new Path("C:/Users/Me/.soup/locks/"),
 					new Path("C:/Users/Me/.soup/packages/.staging/")),
 				Times.Once());
 		}

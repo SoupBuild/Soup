@@ -51,6 +51,7 @@ namespace Soup.Build.PackageManager
 		public async Task GenerateAndRestoreRecursiveLocksAsync(
 			Path workingDirectory,
 			Path packageStoreDirectory,
+			Path packageLockStoreDirectory,
 			Path stagingDirectory)
 		{
 			// Place the lock in the local directory
@@ -58,10 +59,128 @@ namespace Soup.Build.PackageManager
 				workingDirectory +
 				BuildConstants.PackageLockFileName;
 
-			var packageLock = await EnsurePackageLockAsync(
+			var processedLocks = new HashSet<Path>();
+			await CheckGenerateAndRestoreRecursiveLocksAsync(
 				workingDirectory,
-				packageLockPath);
-			await RestorePackageLockAsync(packageStoreDirectory, stagingDirectory, packageLock);
+				packageLockPath,
+				packageStoreDirectory,
+				packageLockStoreDirectory,
+				stagingDirectory,
+				processedLocks);
+		}
+
+		private async Task CheckGenerateAndRestoreRecursiveLocksAsync(
+			Path workingDirectory,
+			Path packageLockPath,
+			Path packageStoreDirectory,
+			Path packageLockStoreDirectory,
+			Path stagingDirectory,
+			HashSet<Path> processedLocks)
+		{
+			if (processedLocks.Contains(packageLockPath))
+			{
+				Log.Info("Root already processed");
+			}
+			else
+			{
+				processedLocks.Add(packageLockPath);
+
+				var packageLock = await EnsurePackageLockAsync(
+					workingDirectory,
+					packageLockPath);
+				await RestorePackageLockAsync(
+					packageStoreDirectory,
+					stagingDirectory,
+					packageLock);
+
+				await CheckGenerateAndRestoreBuildDependencyLocksAsync(
+					workingDirectory,
+					packageStoreDirectory,
+					packageLockStoreDirectory,
+					stagingDirectory,
+					packageLock,
+					processedLocks);
+			}
+		}
+
+		private async Task CheckGenerateAndRestoreBuildDependencyLocksAsync(
+			Path workingDirectory,
+			Path packageStoreDirectory,
+			Path packageLockStoreDirectory,
+			Path stagingDirectory,
+			PackageLock packageLock,
+			HashSet<Path> processedLocks)
+		{
+			foreach (var closure in packageLock.GetClosures().Values)
+			{
+				// Skip the root closure and only generate locks for the build extensions
+				if (closure.Key != RootClosureName)
+				{
+					foreach (var languageProjects in closure.Value.Value.AsTable().Values)
+					{
+						var languageName = GetLanguageName(languageProjects.Key);
+						foreach (var project in languageProjects.Value.Value.AsArray().Values)
+						{
+							var projectTable = project.Value.AsTable();
+							var projectName = projectTable.Values[PackageLock.Property_Name].Value.AsString().Value;
+							var projectVersion = projectTable.Values[PackageLock.Property_Version].Value.AsString().Value;
+							if (SemanticVersion.TryParse(projectVersion, out var version))
+							{
+								// Check if the package version already exists
+								if ((projectName == BuiltInLanguagePackageCpp && version == _builtInLanguageVersionCpp) ||
+									(projectName == BuiltInLanguagePackageCSharp && version == _builtInLanguageVersionCSharp))
+								{
+									Log.HighPriority("Skip built in language version");
+								}
+								else
+								{
+									var packageLanguageNameVersionPath =
+										new Path(languageName) +
+										new Path(projectName) +
+										new Path(version.ToString()) +
+										new Path("/");
+									var packageContentDirectory = packageStoreDirectory + packageLanguageNameVersionPath;
+
+									// Place the lock in the lock store
+									var packageLockDirectory =
+										packageLockStoreDirectory +
+										packageLanguageNameVersionPath;
+									var packageLockPath =
+										packageLockDirectory +
+										BuildConstants.PackageLockFileName;
+
+									EnsureDirectoryExists(packageLockDirectory);
+
+									await CheckGenerateAndRestoreRecursiveLocksAsync(
+										packageContentDirectory,
+										packageLockPath,
+										packageStoreDirectory,
+										packageLockStoreDirectory,
+										stagingDirectory,
+										processedLocks);
+								}
+							}
+							else
+							{
+								// Process the local dependency and place the lock in the root
+								var referencePath = new Path(projectVersion);
+								var dependencyPath = workingDirectory + referencePath;
+								var dependencyLockPath =
+									workingDirectory +
+									BuildConstants.PackageLockFileName;
+
+								await CheckGenerateAndRestoreRecursiveLocksAsync(
+									dependencyPath,
+									dependencyLockPath,
+									packageStoreDirectory,
+									packageLockStoreDirectory,
+									stagingDirectory,
+									processedLocks);
+							}
+						}
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -71,6 +190,7 @@ namespace Soup.Build.PackageManager
 			Path workingDirectory,
 			Path packageLockPath)
 		{
+			Log.Info($"Ensure Package Lock Exists: {packageLockPath}");
 			var loadPackageLock = await PackageLockExtensions.TryLoadFromFileAsync(packageLockPath);
 			if (loadPackageLock.IsSuccess)
 			{
@@ -87,17 +207,9 @@ namespace Soup.Build.PackageManager
 					closure,
 					buildClosures);
 
-				// Attempt to resolve all dependencies to built in versions
-				if (!TryResolveDependencies(closure, buildClosures))
-				{
-					Log.Info("Closure has external references, resolving withe some help");
-
-					await GenerateServiceClosureAsync(closure);
-				}
-				else
-				{
-					Log.Info("Entire closure was local");
-				}
+				// Attempt to resolve all dependencies to compatible and up-to-date versions
+				Log.Info("Generate final service closure");
+				await GenerateServiceClosureAsync(closure);
 
 				// Build up the package lock file
 				var packageLock = BuildPackageLock(workingDirectory, closure, buildClosures);
@@ -109,42 +221,6 @@ namespace Soup.Build.PackageManager
 			}
 		}
 
-		private bool TryResolveDependencies(
-			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
-			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
-		{
-			bool hasExternalReference = false;
-			foreach (var languageClosure in closure.OrderBy(value => value.Key))
-			{
-				var languageSafeName = GetLanguageSafeName(languageClosure.Key);
-				foreach (var (key, (package, buildClosure)) in languageClosure.Value.OrderBy(value => value.Key))
-				{
-					if (!package.IsLocal)
-					{
-						// Any non-local runtime reference is external
-						hasExternalReference = true;
-					}
-				}
-			}
-
-			foreach (var buildClosure in buildClosures.OrderBy(value => value.Key))
-			{
-				foreach (var languageClosure in buildClosure.Value.OrderBy(value => value.Key))
-				{
-					foreach (var (key, package) in languageClosure.Value)
-					{
-						if (!package.IsLocal)
-						{
-							// Any non-local non-built-in build reference is external
-							hasExternalReference = true;
-						}
-					}
-				}
-			}
-
-			return !hasExternalReference;
-		}
-
 		private async Task GenerateServiceClosureAsync(
 			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure)
 		{
@@ -154,34 +230,37 @@ namespace Soup.Build.PackageManager
 				BaseUrl = _apiEndpoint.ToString(),
 			};
 
-			var packages = new List<Api.Client.PackageFeedReferenceModel>();
+			var rootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedReferenceWithBuildModel>>();
 			foreach (var languageClosure in closure.OrderBy(value => value.Key))
 			{
-				var language = languageClosure.Key;
+				var externalPackages = new List<Api.Client.PackageFeedReferenceWithBuildModel>();
 				foreach (var (key, (package, buildClosure)) in languageClosure.Value.OrderBy(value => value.Key))
 				{
 					if (!package.IsLocal)
 					{
 						if (package.Version == null)
 							throw new InvalidOperationException("External package reference version cannot be null");
-						packages.Add(new Api.Client.PackageFeedReferenceModel()
+						externalPackages.Add(new Api.Client.PackageFeedReferenceWithBuildModel()
 						{
-							Language = language,
 							Name = package.Name,
-							Version = new Api.Client.SemanticVersion()
+							Version = new Api.Client.SemanticVersionModel()
 							{
 								Major = package.Version.Major,
 								Minor = package.Version.Minor,
 								Patch = package.Version.Patch,
 							},
+							Build = buildClosure,
 						});
 					}
 				}
+
+				rootClosure.Add(languageClosure.Key, externalPackages);
 			}
 
 			var generateClosureRequest = new Api.Client.GenerateClosureRequestModel()
 			{
-				Packages = packages,
+				RootClosure = rootClosure,
+				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedReferenceModel>>>(),
 			};
 
 			Api.Client.GenerateClosureResultModel result;
@@ -196,14 +275,17 @@ namespace Soup.Build.PackageManager
 			}
 
 			// Update the closure to use the new values
-			foreach (var package in result.Packages)
+			foreach (var (language, languageClosure) in result.RootClosure)
 			{
-				var languageClosure = closure[package.Language];
-				var packageReference = new PackageReference(
-					null,
-					package.Name,
-					new SemanticVersion(package.Version.Major, package.Version.Minor, package.Version.Patch));
-				languageClosure[package.Name] = (packageReference, "");
+				var originalLanguageClosure = closure[language];
+				foreach (var package in languageClosure)
+				{
+					var packageReference = new PackageReference(
+						null,
+						package.Name,
+						new SemanticVersion(package.Version.Major, package.Version.Minor, package.Version.Patch));
+					originalLanguageClosure[package.Name] = (packageReference, "");
+				}
 			}
 		}
 
@@ -619,6 +701,19 @@ namespace Soup.Build.PackageManager
 			}
 		}
 
+		private SemanticVersion GetLanguagePackageBuiltInVersion(string language)
+		{
+			switch (language)
+			{
+				case BuiltInLanguageCSharp:
+					return _builtInLanguageVersionCSharp;
+				case BuiltInLanguageCpp:
+					return _builtInLanguageVersionCpp;
+				default:
+					throw new InvalidOperationException($"Unknown language name: {language}");
+			}
+		}
+
 		private static string GetLanguageName(string languageSafeName)
 		{
 			switch (languageSafeName)
@@ -649,6 +744,19 @@ namespace Soup.Build.PackageManager
 			return lhs.Keys.Count == rhs.Keys.Count &&
 				lhs.Keys.All(value => rhs.Keys.Contains(value)) &&
 				lhs.All(value => value.Value == rhs[value.Key]);
+		}
+
+		/// <summary>
+		/// Ensure the staging directory exists
+		/// </summary>
+		private static void EnsureDirectoryExists(Path directory)
+		{
+			if (!LifetimeManager.Get<IFileSystem>().Exists(directory))
+			{
+				// Create the folder
+				Log.Diag($"Create Directory: {directory}");
+				LifetimeManager.Get<IFileSystem>().CreateDirectory2(directory);
+			}
 		}
 	}
 }

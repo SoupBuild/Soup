@@ -16,6 +16,7 @@ namespace Soup.Build.PackageManager
 		public Task GenerateAndRestoreRecursiveLocksAsync(
 			Path workingDirectory,
 			Path packageStoreDirectory,
+			Path packageLockStoreDirectory,
 			Path stagingDirectory);
 	}
 }
