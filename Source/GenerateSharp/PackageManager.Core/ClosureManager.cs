@@ -274,6 +274,12 @@ namespace Soup.Build.PackageManager
 				throw;
 			}
 
+			if (result.Result != Api.Client.GenerateClosureResult.Success)
+			{
+				Log.Error($"Unable to create closure: {result.Message}");
+				throw new HandledException();
+			}
+
 			// Update the closure to use the new values
 			foreach (var (language, languageClosure) in result.RootClosure)
 			{

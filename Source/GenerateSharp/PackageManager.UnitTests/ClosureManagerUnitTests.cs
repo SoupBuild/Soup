@@ -42,7 +42,12 @@ namespace Soup.Build.PackageManager.UnitTests
 			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
-			var generateClosureResult = new Api.Client.GenerateClosureResultModel();
+			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+			{
+				Result = Api.Client.GenerateClosureResult.Success,
+				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
+				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
@@ -135,6 +140,115 @@ namespace Soup.Build.PackageManager.UnitTests
 		}
 
 		[Fact]
+		public async Task RestorePackagesAsync_HasDependencies_GenerateClosureRequestFailure()
+		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
+			// Setup the mock file system
+			var mockFileSystem = new MockFileSystem();
+			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/Root/MyPackage/Recipe.sml"),
+				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+					"""
+					Name: "MyPackage"
+					Language: "C++|3.2.1"
+					Version: "1.0.0"
+					Dependencies: {
+						Runtime: [
+							{ Reference: "Package1@1.2.3" }
+							{ Reference: "Package2@3.2.1" }
+						]
+					}
+					"""))));
+
+			// Mock out the http
+			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
+			using var httpClient = new HttpClient(mockMessageHandler.Object);
+
+			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+			{
+				Result = Api.Client.GenerateClosureResult.Failure,
+				Message = "Something went horribly wrong!",
+			};
+			mockMessageHandler
+				.Setup(messageHandler => messageHandler.Send(
+					HttpMethod.Get,
+					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+					It.IsAny<string>(),
+					It.IsAny<string>()))
+				.Returns(() => new HttpResponseMessage()
+				{
+					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
+				});
+			mockMessageHandler
+				.Setup(messageHandler => messageHandler.Send(
+					HttpMethod.Get,
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package1/versions/1.2.3/download"),
+					It.IsAny<string>(),
+					null))
+				.Returns(() => new HttpResponseMessage());
+			mockMessageHandler
+				.Setup(messageHandler => messageHandler.Send(
+					HttpMethod.Get,
+					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/Package2/versions/3.2.1/download"),
+					It.IsAny<string>(),
+					null))
+				.Returns(() => new HttpResponseMessage());
+
+			var uut = new ClosureManager(
+				new Uri("https://test.api.soupbuild.com/"),
+				httpClient,
+				new SemanticVersion(1, 2, 3),
+				new SemanticVersion(3, 2, 1));
+
+			_ = await Assert.ThrowsAsync<HandledException>(async () =>
+			{
+				await uut.GenerateAndRestoreRecursiveLocksAsync(
+					new Path("C:/Root/MyPackage/"),
+					new Path("C:/PackageStore/"),
+					new Path("C:/LockStore/"),
+					new Path("C:/Staging/"));
+			});
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
+					"INFO: Generate final service closure",
+					"ERRO: Unable to create closure: Something went horribly wrong!",
+				},
+				testListener.GetMessages());
+
+			// Verify expected file system requests
+			Assert.Equal(
+				new List<string>()
+				{
+					"Exists: C:/Root/MyPackage/PackageLock.sml",
+					"Exists: C:/Root/MyPackage/Recipe.sml",
+					"OpenRead: C:/Root/MyPackage/Recipe.sml",
+				},
+				mockFileSystem.GetRequests());
+
+			// Verify http requests
+			mockMessageHandler.Verify(messageHandler =>
+				messageHandler.Send(
+					HttpMethod.Get,
+					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+					"{Accept: [application/json]}",
+					"""{"rootClosure":{"C\u002B\u002B":[{"build":"","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"build":"","name":"Package2","version":{"major":3,"minor":2,"patch":1}}]},"buildClosures":{},"requestedVersions":{}}"""),
+				Times.Once());
+		}
+
+		[Fact]
 		public async Task RestorePackagesAsync_HasDependencies()
 		{
 			// Register the test listener
@@ -168,7 +282,12 @@ namespace Soup.Build.PackageManager.UnitTests
 			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
-			var generateClosureResult = new Api.Client.GenerateClosureResultModel();
+			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+			{
+				Result = Api.Client.GenerateClosureResult.Success,
+				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
+				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
@@ -382,7 +501,12 @@ namespace Soup.Build.PackageManager.UnitTests
 			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
-			var generateClosureResult = new Api.Client.GenerateClosureResultModel();
+			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+			{
+				Result = Api.Client.GenerateClosureResult.Success,
+				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
+				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
@@ -729,7 +853,12 @@ namespace Soup.Build.PackageManager.UnitTests
 			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
-			var generateClosureResult = new Api.Client.GenerateClosureResultModel();
+			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+			{
+				Result = Api.Client.GenerateClosureResult.Success,
+				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
+				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
@@ -946,7 +1075,12 @@ namespace Soup.Build.PackageManager.UnitTests
 					null))
 				.Returns(() => new HttpResponseMessage());
 
-			var generateClosureResult = new Api.Client.GenerateClosureResultModel();
+			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
+			{
+				Result = Api.Client.GenerateClosureResult.Success,
+				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
+				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,

@@ -1591,14 +1591,31 @@ namespace Soup.Build.Api.Client
 	public partial class GenerateClosureResultModel
 	{
 		/// <summary>
+		/// Gets or sets the result
+		/// </summary>
+
+		[System.Text.Json.Serialization.JsonPropertyName("result")]
+
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+		public GenerateClosureResult Result { get; set; }
+
+		/// <summary>
+		/// Gets or sets the message
+		/// </summary>
+
+		[System.Text.Json.Serialization.JsonPropertyName("message")]
+
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
+		public string Message { get; set; }
+
+		/// <summary>
 		/// Gets or sets the root closure.
 		/// </summary>
 
 		[System.Text.Json.Serialization.JsonPropertyName("rootClosure")]
 
-		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
-		[System.ComponentModel.DataAnnotations.Required]
-		public System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceWithBuildModel>> RootClosure { get; set; } = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceWithBuildModel>>();
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
+		public System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceWithBuildModel>> RootClosure { get; set; }
 
 		/// <summary>
 		/// Gets or sets the collection of build closures.
@@ -1606,9 +1623,18 @@ namespace Soup.Build.Api.Client
 
 		[System.Text.Json.Serialization.JsonPropertyName("buildClosures")]
 
-		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
-		[System.ComponentModel.DataAnnotations.Required]
-		public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceModel>>> BuildClosures { get; set; } = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceModel>>>();
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
+		public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceModel>>> BuildClosures { get; set; }
+
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public enum GenerateClosureResult
+	{
+
+		Success = 0,
+
+		Failure = 1,
 
 	}
 
