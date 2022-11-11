@@ -90,59 +90,65 @@ namespace Soup.Build.PackageManager
 			Log.Diag("Using Package Store: " + packageStore.ToString());
 			Log.Diag("Using Lock Store: " + lockStore.ToString());
 
+			// Parse the package reference to get the name
+			var targetPackageReference = PackageReference.Parse(packageReference);
+			string packageName = packageReference;
+			if (!targetPackageReference.IsLocal)
+			{
+				packageName = targetPackageReference.Name;
+			}
+
+			// Check if the package is already installed
+			var packageNameNormalized = packageName.ToUpperInvariant();
+			if (recipe.HasRuntimeDependencies)
+			{
+				foreach (var dependency in recipe.RuntimeDependencies)
+				{
+					if (!dependency.IsLocal)
+					{
+						var dependencyNameNormalized = dependency.Name.ToUpperInvariant();
+						if (dependencyNameNormalized == packageNameNormalized)
+						{
+							Log.Warning("Package already installed.");
+							return;
+						}
+					}
+				}
+			}
+
+			// Get the latest version if no version provided
+			if (targetPackageReference.Version == null)
+			{
+				var packageModel = await GetPackageModelAsync(recipe.Language.Name, packageName);
+				var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
+				Log.HighPriority("Latest Version: " + latestVersion.ToString());
+				targetPackageReference = new PackageReference(null, packageModel.Name, latestVersion);
+			}
+
+			if (targetPackageReference.Version == null)
+				throw new InvalidOperationException("Target package version was null");
+
+			// Register the package in the recipe
+			Log.Info("Adding reference to recipe");
+			recipe.AddRuntimeDependency(targetPackageReference.ToString());
+
+			// Save the state of the recipe
+			await RecipeExtensions.SaveToFileAsync(recipePath, recipe);
+
 			// Create the staging directory
 			var stagingDirectory = EnsureStagingDirectoryExists(packageStore);
 
 			try
 			{
-				// Parse the package reference to get the name
-				var targetPackageReference = PackageReference.Parse(packageReference);
-				string packageName = packageReference;
-				if (!targetPackageReference.IsLocal)
-				{
-					packageName = targetPackageReference.Name;
-				}
-
-				// Check if the package is already installed
-				var packageNameNormalized = packageName.ToUpperInvariant();
-				if (recipe.HasRuntimeDependencies)
-				{
-					foreach (var dependency in recipe.RuntimeDependencies)
-					{
-						if (!dependency.IsLocal)
-						{
-							var dependencyNameNormalized = dependency.Name.ToUpperInvariant();
-							if (dependencyNameNormalized == packageNameNormalized)
-							{
-								Log.Warning("Package already installed.");
-								return;
-							}
-						}
-					}
-				}
-
-				// Get the latest version if no version provided
-				if (targetPackageReference.Version == null)
-				{
-					var packageModel = await GetPackageModelAsync(recipe.Language.Name, packageName);
-					var latestVersion = new SemanticVersion(packageModel.Latest.Major, packageModel.Latest.Minor, packageModel.Latest.Patch);
-					Log.HighPriority("Latest Version: " + latestVersion.ToString());
-					targetPackageReference = new PackageReference(null, packageModel.Name, latestVersion);
-				}
-
-				if (targetPackageReference.Version == null)
-					throw new InvalidOperationException("Target package version was null");
+				await _closureManager.GenerateAndRestoreRecursiveLocksAsync(
+					workingDirectory,
+					packageStore,
+					lockStore,
+					stagingDirectory);
 
 				// Cleanup the working directory
 				Log.Info("Deleting staging directory");
 				LifetimeManager.Get<IFileSystem>().DeleteDirectory(stagingDirectory, true);
-
-				// Register the package in the recipe
-				Log.Info("Adding reference to recipe");
-				recipe.AddRuntimeDependency(targetPackageReference.ToString());
-
-				// Save the state of the recipe
-				await RecipeExtensions.SaveToFileAsync(recipePath, recipe);
 			}
 			catch (Exception)
 			{

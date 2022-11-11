@@ -119,29 +119,24 @@ namespace Soup.Build.PackageManager.UnitTests
 					Version: "1.2.3"
 					"""))));
 
-			// Setup the mock zip manager
-			var mockZipManager = new Mock<IZipManager>();
-			using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
-
 			// Mock out the http
 			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
 			// Mock out the closure manager
 			var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
+			mockClosureManager
+				.Setup(manager => manager.GenerateAndRestoreRecursiveLocksAsync(
+					new Path("C:/Root/MyPackage/"),
+					new Path("C:/Users/Me/.soup/packages/"),
+					new Path("C:/Users/Me/.soup/locks/"),
+					new Path("C:/Users/Me/.soup/packages/.staging/")))
+				.Returns(() => Task.CompletedTask);
 
 			var uut = new PackageManager(
 				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				mockClosureManager.Object);
-
-			mockMessageHandler
-				.Setup(messageHandler => messageHandler.Send(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage/versions/1.2.3/download"),
-					It.IsAny<string>(),
-					null))
-				.Returns(() => new HttpResponseMessage());
 
 			var workingDirectory = new Path("C:/Root/MyPackage/");
 			var packageReference = "OtherPackage@1.2.3";
@@ -154,8 +149,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
 					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
-					"INFO: Deleting staging directory",
 					"INFO: Adding reference to recipe",
+					"INFO: Deleting staging directory",
 				},
 				testListener.GetMessages());
 
@@ -166,27 +161,20 @@ namespace Soup.Build.PackageManager.UnitTests
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 					"GetUserProfileDirectory",
+					"OpenWriteTruncate: C:/Root/MyPackage/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-					"OpenWriteTruncate: C:/Root/MyPackage/Recipe.sml",
 				},
 				mockFileSystem.GetRequests());
 
-			// Verify zip requests
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Users/Me/.soup/packages/.staging/OtherPackage.zip"),
-				new Path("C:/Users/Me/.soup/packages/.staging/C++_OtherPackage_1.2.3/")),
-				Times.Once());
-			mockZipManager.VerifyNoOtherCalls();
-
-			// Verify http requests
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.Send(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage/versions/1.2.3/download"),
-					"{Accept: [application/json]}",
-					null),
+			// Verify closure manager requests
+			mockClosureManager.Verify(manager =>
+				manager.GenerateAndRestoreRecursiveLocksAsync(
+					new Path("C:/Root/MyPackage/"),
+					new Path("C:/Users/Me/.soup/packages/"),
+					new Path("C:/Users/Me/.soup/locks/"),
+					new Path("C:/Users/Me/.soup/packages/.staging/")),
 				Times.Once());
 
 			// Verify the contents of the recipe file
@@ -197,8 +185,8 @@ namespace Soup.Build.PackageManager.UnitTests
 			var expectedRecipe =
 				"""
 				Name: "MyPackage"
-								Language: "C++|3.2.1"
-								Version: "1.0.0"
+				Language: "C++|3.2.1"
+				Version: "1.0.0"
 				Dependencies: {
 					Runtime: [
 						"OtherPackage@1.2.3"
@@ -241,16 +229,19 @@ namespace Soup.Build.PackageManager.UnitTests
 					Version: "1.2.3"
 					"""))));
 
-			// Setup the mock zip manager
-			var mockZipManager = new Mock<IZipManager>();
-			using var scopedZipManager = new ScopedSingleton<IZipManager>(mockZipManager.Object);
-
 			// Mock out the http
 			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
 			using var httpClient = new HttpClient(mockMessageHandler.Object);
 
 			// Mock out the closure manager
 			var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
+			mockClosureManager
+				.Setup(manager => manager.GenerateAndRestoreRecursiveLocksAsync(
+					new Path("C:/Root/MyPackage/"),
+					new Path("C:/Users/Me/.soup/packages/"),
+					new Path("C:/Users/Me/.soup/locks/"),
+					new Path("C:/Users/Me/.soup/packages/.staging/")))
+				.Returns(() => Task.CompletedTask);
 
 			var uut = new PackageManager(
 				new Uri("https://test.api.soupbuild.com/"),
@@ -289,8 +280,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
 					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
 					"HIGH: Latest Version: 1.2.3",
-					"INFO: Deleting staging directory",
 					"INFO: Adding reference to recipe",
+					"INFO: Deleting staging directory",
 				},
 				testListener.GetMessages());
 
@@ -301,18 +292,12 @@ namespace Soup.Build.PackageManager.UnitTests
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 					"GetUserProfileDirectory",
+					"OpenWriteTruncate: C:/Root/MyPackage/Recipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/.staging/",
 					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
-					"OpenWriteTruncate: C:/Root/MyPackage/Recipe.sml",
 				},
 				mockFileSystem.GetRequests());
-
-			// Verify zip requests
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Users/Me/.soup/packages/.staging/OtherPackage.zip"),
-				new Path("C:/Users/Me/.soup/packages/.staging/C++_OtherPackage_1.2.3/")), Times.Once());
-			mockZipManager.VerifyNoOtherCalls();
 
 			// Verify http requests
 			mockMessageHandler.Verify(messageHandler =>
@@ -322,12 +307,14 @@ namespace Soup.Build.PackageManager.UnitTests
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
-			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.Send(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage/versions/1.2.3/download"),
-					"{Accept: [application/json]}",
-					null),
+
+			// Verify closure manager requests
+			mockClosureManager.Verify(manager =>
+				manager.GenerateAndRestoreRecursiveLocksAsync(
+					new Path("C:/Root/MyPackage/"),
+					new Path("C:/Users/Me/.soup/packages/"),
+					new Path("C:/Users/Me/.soup/locks/"),
+					new Path("C:/Users/Me/.soup/packages/.staging/")),
 				Times.Once());
 
 			// Verify the contents of the recipe file
@@ -338,8 +325,8 @@ namespace Soup.Build.PackageManager.UnitTests
 			var expectedRecipe =
 				"""
 				Name: "MyPackage"
-								Language: "C++|3.2.1"
-								Version: "1.0.0"
+				Language: "C++|3.2.1"
+				Version: "1.0.0"
 				Dependencies: {
 					Runtime: [
 						"OtherPackage@1.2.3"
