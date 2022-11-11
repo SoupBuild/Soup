@@ -166,7 +166,7 @@ namespace Soup.Build.PackageManager
 								var referencePath = new Path(projectVersion);
 								var dependencyPath = workingDirectory + referencePath;
 								var dependencyLockPath =
-									workingDirectory +
+									dependencyPath +
 									BuildConstants.PackageLockFileName;
 
 								await CheckGenerateAndRestoreRecursiveLocksAsync(

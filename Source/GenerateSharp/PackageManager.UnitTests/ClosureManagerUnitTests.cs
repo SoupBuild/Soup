@@ -32,9 +32,11 @@ namespace Soup.Build.PackageManager.UnitTests
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Root/MyPackage/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""MyPackage""
-					Language: ""C++|3.2.1""
-					Version: ""1.0.0"""))));
+					"""
+					Name: "MyPackage"
+					Language: "C++|3.2.1"
+					Version: "1.0.0"
+					"""))));
 
 			// Mock out the http
 			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
@@ -113,19 +115,21 @@ namespace Soup.Build.PackageManager.UnitTests
 			using var reader = new System.IO.StreamReader(packageLock.Content);
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expected =
-@"Version: 3
-Closures: {
-	Root: {
-		Cpp: [
-			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.Cpp"", Version: ""3.2.1"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						Cpp: [
+							{ Name: "MyPackage", Version: "./", Build: "Build0" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.Cpp", Version: "3.2.1" }
+						]
+					}
+				}
+				""";
 
 			Assert.Equal(expected, packageLockContent);
 		}
@@ -144,15 +148,17 @@ Closures: {
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Root/MyPackage/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""MyPackage""
-					Language: ""C++|3.2.1""
-					Version: ""1.0.0""
+					"""
+					Name: "MyPackage"
+					Language: "C++|3.2.1"
+					Version: "1.0.0"
 					Dependencies: {
 						Runtime: [
-							{ Reference: ""Package1@1.2.3"" }
-							{ Reference: ""Package2@3.2.1"" }
+							{ Reference: "Package1@1.2.3" }
+							{ Reference: "Package2@3.2.1" }
 						]
-					}"))));
+					}
+					"""))));
 
 			// Setup the mock zip manager
 			var mockZipManager = new Mock<IZipManager>();
@@ -295,21 +301,23 @@ Closures: {
 			using var reader = new System.IO.StreamReader(packageLock.Content);
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expected =
-@"Version: 3
-Closures: {
-	Root: {
-		Cpp: [
-			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
-			{ Name: ""Package1"", Version: ""1.2.3"", Build: """" }
-			{ Name: ""Package2"", Version: ""3.2.1"", Build: """" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.Cpp"", Version: ""3.2.1"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						Cpp: [
+							{ Name: "MyPackage", Version: "./", Build: "Build0" }
+							{ Name: "Package1", Version: "1.2.3", Build: "" }
+							{ Name: "Package2", Version: "3.2.1", Build: "" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.Cpp", Version: "3.2.1" }
+						]
+					}
+				}
+				""";
 
 			Assert.Equal(expected, packageLockContent);
 		}
@@ -328,35 +336,43 @@ Closures: {
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Root/MyPackage/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""MyPackage""
-					Language: ""C++|5""
-					Version: ""1.0.0""
+					"""
+					Name: "MyPackage"
+					Language: "C++|5"
+					Version: "1.0.0"
 					Dependencies: {
 						Build: [
-							{ Reference: ""Package1@1.2.3"" }
+							{ Reference: "Package1@1.2.3" }
 						]
-					}"))));
+					}
+					"""))));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml"),
+				new Path("C:/PackageStore/C#/Package1/1.2.3/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""Package1""
-					Language: ""C#|4""
-					Version: ""1.2.3"""))));
+					"""
+					Name: "Package1"
+					Language: "C#|4"
+					Version: "1.2.3"
+					"""))));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/Users/Me/.soup/packages/C#/Soup.Cpp/5.0.0/Recipe.sml"),
+				new Path("C:/PackageStore/C#/Soup.Cpp/5.0.0/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""Soup.Cpp""
-					Language: ""C#|1.2.3""
-					Version: ""5.0.0"""))));
+					"""
+					Name: "Soup.Cpp"
+					Language: "C#|1.2.3"
+					Version: "5.0.0"
+					"""))));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/Users/Me/.soup/packages/C#/Soup.CSharp/4.0.0/Recipe.sml"),
+				new Path("C:/PackageStore/C#/Soup.CSharp/4.0.0/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""Soup.CSharp""
-					Language: ""C#|1.2.3""
-					Version: ""4.0.0"""))));
+					"""
+					Name: "Soup.CSharp"
+					Language: "C#|1.2.3"
+					Version: "4.0.0"
+					"""))));
 
 			// Setup the mock zip manager
 			var mockZipManager = new Mock<IZipManager>();
@@ -415,47 +431,74 @@ Closures: {
 			Assert.Equal(
 				new List<string>()
 				{
-					"DIAG: Using Package Store: C:/Users/Me/.soup/packages/",
-					"DIAG: Using Lock Store: C:/Users/Me/.soup/locks/",
+					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
 					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
-					"INFO: Restore Language Build Dependency",
-					"HIGH: Install Package: C# Soup.Cpp@5.0.0",
-					"HIGH: Downloading package",
-					"DIAG: Create Directory: C:/Users/Me/.soup/locks/C#/Soup.Cpp/5.0.0/",
-					"DIAG: Load Package Lock: C:/Users/Me/.soup/locks/C#/Soup.Cpp/5.0.0/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Soup.Cpp/5.0.0/Recipe.sml",
-					"INFO: Skip Built In Language Build Dependency",
-					"DIAG: Root:C# Soup.Cpp -> ./",
-					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
-					"HIGH: Install Package: C# Package1@1.2.3",
-					"HIGH: Downloading package",
-					"DIAG: Create Directory: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/",
-					"DIAG: Load Package Lock: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
-					"INFO: Restore Language Build Dependency",
-					"HIGH: Install Package: C# Soup.CSharp@4.0.0",
-					"HIGH: Downloading package",
-					"DIAG: Create Directory: C:/Users/Me/.soup/locks/C#/Soup.CSharp/4.0.0/",
-					"DIAG: Load Package Lock: C:/Users/Me/.soup/locks/C#/Soup.CSharp/4.0.0/PackageLock.sml",
-					"INFO: Package Lock file does not exist.",
-					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Soup.CSharp/4.0.0/Recipe.sml",
-					"INFO: Skip Built In Language Build Dependency",
-					"DIAG: Root:C# Soup.CSharp -> ./",
-					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
-					"DIAG: Root:C# Package1 -> ./",
-					"DIAG: Build0:C# Soup.CSharp -> 4.0.0",
+					"INFO: Generate final service closure",
 					"DIAG: Root:C++ MyPackage -> ./",
 					"DIAG: Build0:C# Soup.Cpp -> 5.0.0",
 					"DIAG: Build0:C# Package1 -> 1.2.3",
-					"DIAG: Deleting staging directory",
+					"INFO: Restore Packages for Closure Root",
+					"INFO: Restore Packages for Language C++",
+					"INFO: Skip Package: MyPackage -> ./",
+					"INFO: Restore Packages for Closure Build0",
+					"INFO: Restore Packages for Language C#",
+					"HIGH: Install Package: C# Soup.Cpp@5.0.0",
+					"HIGH: Downloading package",
+					"HIGH: Install Package: C# Package1@1.2.3",
+					"HIGH: Downloading package",
+					"DIAG: Create Directory: C:/LockStore/C#/Soup.Cpp/5.0.0/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/PackageStore/C#/Soup.Cpp/5.0.0/Recipe.sml",
+					"INFO: Generate final service closure",
+					"DIAG: Root:C# Soup.Cpp -> ./",
+					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
+					"INFO: Restore Packages for Closure Root",
+					"INFO: Restore Packages for Language C#",
+					"INFO: Skip Package: Soup.Cpp -> ./",
+					"INFO: Restore Packages for Closure Build0",
+					"INFO: Restore Packages for Language C#",
+					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
+					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version",
+					"DIAG: Create Directory: C:/LockStore/C#/Package1/1.2.3/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/PackageStore/C#/Package1/1.2.3/Recipe.sml",
+					"INFO: Generate final service closure",
+					"DIAG: Root:C# Package1 -> ./",
+					"DIAG: Build0:C# Soup.CSharp -> 4.0.0",
+					"INFO: Restore Packages for Closure Root",
+					"INFO: Restore Packages for Language C#",
+					"INFO: Skip Package: Package1 -> ./",
+					"INFO: Restore Packages for Closure Build0",
+					"INFO: Restore Packages for Language C#",
+					"HIGH: Install Package: C# Soup.CSharp@4.0.0",
+					"HIGH: Downloading package",
+					"DIAG: Create Directory: C:/LockStore/C#/Soup.CSharp/4.0.0/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/PackageStore/C#/Soup.CSharp/4.0.0/Recipe.sml",
+					"INFO: Generate final service closure",
+					"DIAG: Root:C# Soup.CSharp -> ./",
+					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
+					"INFO: Restore Packages for Closure Root",
+					"INFO: Restore Packages for Language C#",
+					"INFO: Skip Package: Soup.CSharp -> ./",
+					"INFO: Restore Packages for Closure Build0",
+					"INFO: Restore Packages for Language C#",
+					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
+					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version",
 				},
 				testListener.GetMessages());
 
@@ -463,67 +506,65 @@ Closures: {
 			Assert.Equal(
 				new List<string>()
 				{
-					"GetUserProfileDirectory",
-					"Exists: C:/Users/Me/.soup/packages/.staging/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/",
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/Soup.Cpp/5.0.0/",
-					"OpenWriteTruncate: C:/Users/Me/.soup/packages/.staging/Soup.Cpp.zip",
-					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/C#_Soup.Cpp_5.0.0/",
-					"DeleteFile: C:/Users/Me/.soup/packages/.staging/Soup.Cpp.zip",
-					"Exists: C:/Users/Me/.soup/packages/C#/Soup.Cpp",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/Soup.Cpp",
-					"Rename: [C:/Users/Me/.soup/packages/.staging/C#_Soup.Cpp_5.0.0/] -> [C:/Users/Me/.soup/packages/C#/Soup.Cpp/5.0.0/]",
-					"Exists: C:/Users/Me/.soup/locks/C#/Soup.Cpp/5.0.0/",
-					"CreateDirectory: C:/Users/Me/.soup/locks/C#/Soup.Cpp/5.0.0/",
-					"Exists: C:/Users/Me/.soup/locks/C#/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenRead: C:/Users/Me/.soup/packages/C#/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenWriteTruncate: C:/Users/Me/.soup/locks/C#/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/",
-					"OpenWriteTruncate: C:/Users/Me/.soup/packages/.staging/Package1.zip",
-					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/C#_Package1_1.2.3/",
-					"DeleteFile: C:/Users/Me/.soup/packages/.staging/Package1.zip",
-					"Exists: C:/Users/Me/.soup/packages/C#/Package1",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/Package1",
-					"Rename: [C:/Users/Me/.soup/packages/.staging/C#_Package1_1.2.3/] -> [C:/Users/Me/.soup/packages/C#/Package1/1.2.3/]",
-					"Exists: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/",
-					"CreateDirectory: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/",
-					"Exists: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
-					"OpenRead: C:/Users/Me/.soup/packages/C#/Package1/1.2.3/Recipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/Soup.CSharp/4.0.0/",
-					"OpenWriteTruncate: C:/Users/Me/.soup/packages/.staging/Soup.CSharp.zip",
-					"CreateDirectory: C:/Users/Me/.soup/packages/.staging/C#_Soup.CSharp_4.0.0/",
-					"DeleteFile: C:/Users/Me/.soup/packages/.staging/Soup.CSharp.zip",
-					"Exists: C:/Users/Me/.soup/packages/C#/Soup.CSharp",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/Soup.CSharp",
-					"Rename: [C:/Users/Me/.soup/packages/.staging/C#_Soup.CSharp_4.0.0/] -> [C:/Users/Me/.soup/packages/C#/Soup.CSharp/4.0.0/]",
-					"Exists: C:/Users/Me/.soup/locks/C#/Soup.CSharp/4.0.0/",
-					"CreateDirectory: C:/Users/Me/.soup/locks/C#/Soup.CSharp/4.0.0/",
-					"Exists: C:/Users/Me/.soup/locks/C#/Soup.CSharp/4.0.0/PackageLock.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/Soup.CSharp/4.0.0/Recipe.sml",
-					"OpenRead: C:/Users/Me/.soup/packages/C#/Soup.CSharp/4.0.0/Recipe.sml",
-					"OpenWriteTruncate: C:/Users/Me/.soup/locks/C#/Soup.CSharp/4.0.0/PackageLock.sml",
-					"OpenWriteTruncate: C:/Users/Me/.soup/locks/C#/Package1/1.2.3/PackageLock.sml",
 					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
+					"Exists: C:/PackageStore/C#/Soup.Cpp/5.0.0/",
+					"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
+					"CreateDirectory: C:/Staging/C#_Soup.Cpp_5.0.0/",
+					"DeleteFile: C:/Staging/Soup.Cpp.zip",
+					"Exists: C:/PackageStore/C#/Soup.Cpp",
+					"CreateDirectory: C:/PackageStore/C#/Soup.Cpp",
+					"Rename: [C:/Staging/C#_Soup.Cpp_5.0.0/] -> [C:/PackageStore/C#/Soup.Cpp/5.0.0/]",
+					"Exists: C:/PackageStore/C#/Package1/1.2.3/",
+					"OpenWriteTruncate: C:/Staging/Package1.zip",
+					"CreateDirectory: C:/Staging/C#_Package1_1.2.3/",
+					"DeleteFile: C:/Staging/Package1.zip",
+					"Exists: C:/PackageStore/C#/Package1",
+					"CreateDirectory: C:/PackageStore/C#/Package1",
+					"Rename: [C:/Staging/C#_Package1_1.2.3/] -> [C:/PackageStore/C#/Package1/1.2.3/]",
+					"Exists: C:/LockStore/C#/Soup.Cpp/5.0.0/",
+					"CreateDirectory: C:/LockStore/C#/Soup.Cpp/5.0.0/",
+					"Exists: C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml",
+					"Exists: C:/PackageStore/C#/Soup.Cpp/5.0.0/Recipe.sml",
+					"OpenRead: C:/PackageStore/C#/Soup.Cpp/5.0.0/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml",
+					"Exists: C:/LockStore/C#/Package1/1.2.3/",
+					"CreateDirectory: C:/LockStore/C#/Package1/1.2.3/",
+					"Exists: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
+					"Exists: C:/PackageStore/C#/Package1/1.2.3/Recipe.sml",
+					"OpenRead: C:/PackageStore/C#/Package1/1.2.3/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
+					"Exists: C:/PackageStore/C#/Soup.CSharp/4.0.0/",
+					"OpenWriteTruncate: C:/Staging/Soup.CSharp.zip",
+					"CreateDirectory: C:/Staging/C#_Soup.CSharp_4.0.0/",
+					"DeleteFile: C:/Staging/Soup.CSharp.zip",
+					"Exists: C:/PackageStore/C#/Soup.CSharp",
+					"CreateDirectory: C:/PackageStore/C#/Soup.CSharp",
+					"Rename: [C:/Staging/C#_Soup.CSharp_4.0.0/] -> [C:/PackageStore/C#/Soup.CSharp/4.0.0/]",
+					"Exists: C:/LockStore/C#/Soup.CSharp/4.0.0/",
+					"CreateDirectory: C:/LockStore/C#/Soup.CSharp/4.0.0/",
+					"Exists: C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml",
+					"Exists: C:/PackageStore/C#/Soup.CSharp/4.0.0/Recipe.sml",
+					"OpenRead: C:/PackageStore/C#/Soup.CSharp/4.0.0/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml",
 				},
 				mockFileSystem.GetRequests());
 
 			// Verify zip requests
 			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Users/Me/.soup/packages/.staging/Package1.zip"),
-				new Path("C:/Users/Me/.soup/packages/.staging/C#_Package1_1.2.3/")), Times.Once());
+				new Path("C:/Staging/Soup.Cpp.zip"),
+				new Path("C:/Staging/C#_Soup.Cpp_5.0.0/")),
+				Times.Once());
 			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Users/Me/.soup/packages/.staging/Soup.Cpp.zip"),
-				new Path("C:/Users/Me/.soup/packages/.staging/C#_Soup.Cpp_5.0.0/")), Times.Once());
+				new Path("C:/Staging/Package1.zip"),
+				new Path("C:/Staging/C#_Package1_1.2.3/")),
+				Times.Once());
 			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Users/Me/.soup/packages/.staging/Soup.CSharp.zip"),
-				new Path("C:/Users/Me/.soup/packages/.staging/C#_Soup.CSharp_4.0.0/")), Times.Once());
-			mockZipManager.VerifyNoOtherCalls();
+				new Path("C:/Staging/Soup.CSharp.zip"),
+				new Path("C:/Staging/C#_Soup.CSharp_4.0.0/")),
+				Times.Once());
 
 			// Verify http requests
 			mockMessageHandler.Verify(messageHandler =>
@@ -540,7 +581,6 @@ Closures: {
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
-
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
@@ -548,7 +588,6 @@ Closures: {
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
-
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
@@ -556,7 +595,6 @@ Closures: {
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
-			mockMessageHandler.VerifyNoOtherCalls();
 
 			// Verify the contents of the package lock file
 			var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
@@ -564,83 +602,91 @@ Closures: {
 			using var reader = new System.IO.StreamReader(packageLock.Content);
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expected =
-@"Version: 3
-Closures: {
-	Root: {
-		Cpp: [
-			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.Cpp"", Version: ""5.0.0"" }
-			{ Name: ""Package1"", Version: ""1.2.3"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						Cpp: [
+							{ Name: "MyPackage", Version: "./", Build: "Build0" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.Cpp", Version: "5.0.0" }
+							{ Name: "Package1", Version: "1.2.3" }
+						]
+					}
+				}
+				""";
 
 			Assert.Equal(expected, packageLockContent);
 
-			var package1Lock = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/locks/C#/Package1/1.2.3/PackageLock.sml"));
+			var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/C#/Package1/1.2.3/PackageLock.sml"));
 			package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 			using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
 			var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
 			var expectedPackage1Lock =
-@"Version: 3
-Closures: {
-	Root: {
-		CSharp: [
-			{ Name: ""Package1"", Version: ""./"", Build: ""Build0"" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.CSharp"", Version: ""4.0.0"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						CSharp: [
+							{ Name: "Package1", Version: "./", Build: "Build0" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.CSharp", Version: "4.0.0" }
+						]
+					}
+				}
+				""";
 
 			Assert.Equal(expectedPackage1Lock, package1LockContent);
 
-			var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/locks/C#/Soup.Cpp/5.0.0/PackageLock.sml"));
+			var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml"));
 			soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 			using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
 			var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
 			var expectedSoupCppLock =
-@"Version: 3
-Closures: {
-	Root: {
-		CSharp: [
-			{ Name: ""Soup.Cpp"", Version: ""./"", Build: ""Build0"" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.CSharp"", Version: ""1.2.3"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						CSharp: [
+							{ Name: "Soup.Cpp", Version: "./", Build: "Build0" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.CSharp", Version: "1.2.3" }
+						]
+					}
+				}
+				""";
 
 			Assert.Equal(expectedSoupCppLock, soupCppLockContent);
 
-			var soupCSharpLock = mockFileSystem.GetMockFile(new Path("C:/Users/Me/.soup/locks/C#/Soup.CSharp/4.0.0/PackageLock.sml"));
+			var soupCSharpLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml"));
 			soupCSharpLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 			using var readerSoupCSharpLock = new System.IO.StreamReader(soupCSharpLock.Content);
 			var soupCSharpLockContent = await readerSoupCSharpLock.ReadToEndAsync();
 			var expectedSoupCSharpLock =
-@"Version: 3
-Closures: {
-	Root: {
-		CSharp: [
-			{ Name: ""Soup.CSharp"", Version: ""./"", Build: ""Build0"" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.CSharp"", Version: ""1.2.3"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						CSharp: [
+							{ Name: "Soup.CSharp", Version: "./", Build: "Build0" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.CSharp", Version: "1.2.3" }
+						]
+					}
+				}
+				""";
 
 			Assert.Equal(expectedSoupCSharpLock, soupCSharpLockContent);
 		}
@@ -659,21 +705,25 @@ Closures: {
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Root/MyPackage/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""MyPackage""
-					Language: ""C++|3.2.1""
-					Version: ""1.0.0""
+					"""
+					Name: "MyPackage"
+					Language: "C++|3.2.1"
+					Version: "1.0.0"
 					Dependencies: {
 						Build: [
-							{ Reference: ""../Package1/"" }
+							{ Reference: "../Package1/" }
 						]
-					}"))));
+					}
+					"""))));
 
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Root/Package1/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""Package1""
-					Language: ""C#|1.2.3""
-					Version: ""1.2.3"""))));
+					"""
+					Name: "Package1"
+					Language: "C#|1.2.3"
+					Version: "1.2.3"
+					"""))));
 
 			// Mock out the http
 			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
@@ -707,6 +757,7 @@ Closures: {
 			Assert.Equal(
 				new List<string>()
 				{
+					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
@@ -724,6 +775,23 @@ Closures: {
 					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
 					"HIGH: Skip built in language version",
 					"INFO: Skip Package: Package1 -> ../Package1/",
+					"HIGH: Skip built in language version",
+					"INFO: Ensure Package Lock Exists: C:/Root/Package1/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/Root/Package1/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
+					"INFO: Generate final service closure",
+					"DIAG: Root:C# Package1 -> ./",
+					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
+					"INFO: Restore Packages for Closure Root",
+					"INFO: Restore Packages for Language C#",
+					"INFO: Skip Package: Package1 -> ./",
+					"INFO: Restore Packages for Closure Build0",
+					"INFO: Restore Packages for Language C#",
+					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
+					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version",
 				},
 				testListener.GetMessages());
 
@@ -737,6 +805,10 @@ Closures: {
 					"Exists: C:/Root/Package1/Recipe.sml",
 					"OpenRead: C:/Root/Package1/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
+					"Exists: C:/Root/Package1/PackageLock.sml",
+					"Exists: C:/Root/Package1/Recipe.sml",
+					"OpenRead: C:/Root/Package1/Recipe.sml",
+					"OpenWriteTruncate: C:/Root/Package1/PackageLock.sml",
 				},
 				mockFileSystem.GetRequests());
 
@@ -755,20 +827,22 @@ Closures: {
 			using var reader = new System.IO.StreamReader(packageLock.Content);
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expectedPackageLock =
-@"Version: 3
-Closures: {
-	Root: {
-		Cpp: [
-			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.Cpp"", Version: ""3.2.1"" }
-			{ Name: ""Package1"", Version: ""../Package1/"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						Cpp: [
+							{ Name: "MyPackage", Version: "./", Build: "Build0" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.Cpp", Version: "3.2.1" }
+							{ Name: "Package1", Version: "../Package1/" }
+						]
+					}
+				}
+				""";
 
 			Assert.Equal(expectedPackageLock, packageLockContent);
 
@@ -777,19 +851,21 @@ Closures: {
 			using var reader2 = new System.IO.StreamReader(packageLock2.Content);
 			var packageLockContent2 = await reader2.ReadToEndAsync();
 			var expectedPackageLock2 =
-@"Version: 3
-Closures: {
-	Root: {
-		CSharp: [
-			{ Name: ""Package1"", Version: ""./"", Build: ""Build0"" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.CSharp"", Version: ""1.2.3"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						CSharp: [
+							{ Name: "Package1", Version: "./", Build: "Build0" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.CSharp", Version: "1.2.3" }
+						]
+					}
+				}
+				""";
 
 			Assert.Equal(expectedPackageLock2, packageLockContent2);
 		}
@@ -807,27 +883,38 @@ Closures: {
 
 			// Create the original file
 			var original =
-@"Version: 3
-Closures: {
-	Root: {
-		Cpp: [
-			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
-			{ Name: ""Package1"", Version: ""1.2.4"", Build: ""Build0"" }
-			{ Name: ""Package2"", Version: ""3.2.1"", Build: ""Build0"" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.Cpp"", Version: ""3.2.2"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						Cpp: [
+							{ Name: "MyPackage", Version: "./", Build: "Build0" }
+							{ Name: "Package1", Version: "1.2.4", Build: "Build0" }
+							{ Name: "Package2", Version: "3.2.1", Build: "Build0" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.Cpp", Version: "3.2.2" }
+						]
+					}
+				}
+				""";
 			using var originalContent = new System.IO.MemoryStream();
 			await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
 			originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Root/MyPackage/PackageLock.sml"),
 				new MockFile(originalContent));
+
+			mockFileSystem.CreateMockFile(
+				new Path("C:/PackageStore/C#/Soup.Cpp/3.2.2/Recipe.sml"),
+				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
+					"""
+					Name: "Soup.Cpp"
+					Language: "C#|1.2.3"
+					Version: "3.2.2"
+					"""))));
 
 			// Setup the mock zip manager
 			var mockZipManager = new Mock<IZipManager>();
@@ -859,6 +946,18 @@ Closures: {
 					null))
 				.Returns(() => new HttpResponseMessage());
 
+			var generateClosureResult = new Api.Client.GenerateClosureResultModel();
+			mockMessageHandler
+				.Setup(messageHandler => messageHandler.Send(
+					HttpMethod.Get,
+					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+					It.IsAny<string>(),
+					It.IsAny<string>()))
+				.Returns(() => new HttpResponseMessage()
+				{
+					Content = new StringContent(JsonSerializer.Serialize(generateClosureResult)),
+				});
+
 			var uut = new ClosureManager(
 				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
@@ -875,6 +974,7 @@ Closures: {
 			Assert.Equal(
 				new List<string>()
 				{
+					"INFO: Ensure Package Lock Exists: C:/Root/MyPackage/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/MyPackage/PackageLock.sml",
 					"INFO: Restore from package lock",
 					"INFO: Restore Packages for Closure Root",
@@ -888,6 +988,23 @@ Closures: {
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.Cpp@3.2.2",
 					"HIGH: Downloading package",
+					"DIAG: Create Directory: C:/LockStore/C#/Soup.Cpp/3.2.2/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/C#/Soup.Cpp/3.2.2/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/C#/Soup.Cpp/3.2.2/PackageLock.sml",
+					"INFO: Package Lock file does not exist.",
+					"INFO: Discovering full closure",
+					"DIAG: Load Recipe: C:/PackageStore/C#/Soup.Cpp/3.2.2/Recipe.sml",
+					"INFO: Generate final service closure",
+					"DIAG: Root:C# Soup.Cpp -> ./",
+					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
+					"INFO: Restore Packages for Closure Root",
+					"INFO: Restore Packages for Language C#",
+					"INFO: Skip Package: Soup.Cpp -> ./",
+					"INFO: Restore Packages for Closure Build0",
+					"INFO: Restore Packages for Language C#",
+					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
+					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version",
 				},
 				testListener.GetMessages());
 
@@ -918,6 +1035,12 @@ Closures: {
 					"Exists: C:/PackageStore/C#/Soup.Cpp",
 					"CreateDirectory: C:/PackageStore/C#/Soup.Cpp",
 					"Rename: [C:/Staging/C#_Soup.Cpp_3.2.2/] -> [C:/PackageStore/C#/Soup.Cpp/3.2.2/]",
+					"Exists: C:/LockStore/C#/Soup.Cpp/3.2.2/",
+					"CreateDirectory: C:/LockStore/C#/Soup.Cpp/3.2.2/",
+					"Exists: C:/LockStore/C#/Soup.Cpp/3.2.2/PackageLock.sml",
+					"Exists: C:/PackageStore/C#/Soup.Cpp/3.2.2/Recipe.sml",
+					"OpenRead: C:/PackageStore/C#/Soup.Cpp/3.2.2/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/C#/Soup.Cpp/3.2.2/PackageLock.sml",
 				},
 				mockFileSystem.GetRequests());
 
@@ -978,21 +1101,23 @@ Closures: {
 
 			// Create the original file
 			var original =
-@"Version: 3
-Closures: {
-	Root: {
-		Cpp: [
-			{ Name: ""MyPackage"", Version: ""./"", Build: ""Build0"" }
-			{ Name: ""Package1"", Version: ""1.2.4"", Build: ""Build0"" }
-			{ Name: ""Package2"", Version: ""3.2.1"", Build: ""Build0"" }
-		]
-	}
-	Build0: {
-		CSharp: [
-			{ Name: ""Soup.Cpp"", Version: ""3.2.1"" }
-		]
-	}
-}";
+				"""
+				Version: 3
+				Closures: {
+					Root: {
+						Cpp: [
+							{ Name: "MyPackage", Version: "./", Build: "Build0" }
+							{ Name: "Package1", Version: "1.2.4", Build: "Build0" }
+							{ Name: "Package2", Version: "3.2.1", Build: "Build0" }
+						]
+					}
+					Build0: {
+						CSharp: [
+							{ Name: "Soup.Cpp", Version: "3.2.1" }
+						]
+					}
+				}
+				""";
 			using var originalContent = new System.IO.MemoryStream();
 			await originalContent.WriteAsync(Encoding.UTF8.GetBytes(original));
 			originalContent.Seek(0, System.IO.SeekOrigin.Begin);

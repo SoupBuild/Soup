@@ -100,9 +100,11 @@ namespace Soup.Build.PackageManager.UnitTests
 
 			using var originalContent = new System.IO.MemoryStream();
 			await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
-				@"Name: ""MyPackage""
-				Language: ""C++|3.2.1""
-				Version: ""1.0.0"""));
+				"""
+				Name: "MyPackage"
+				Language: "C++|3.2.1"
+				Version: "1.0.0"
+				"""));
 			originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Root/MyPackage/Recipe.sml"),
@@ -111,9 +113,11 @@ namespace Soup.Build.PackageManager.UnitTests
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Users/Me/.soup/packages/C++/OtherPackage/1.2.3/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""Package1""
-					Language: ""C++|3.2.1""
-					Version: ""1.2.3"""))));
+					"""
+					Name: "Package1"
+					Language: "C++|3.2.1"
+					Version: "1.2.3"
+					"""))));
 
 			// Setup the mock zip manager
 			var mockZipManager = new Mock<IZipManager>();
@@ -191,14 +195,16 @@ namespace Soup.Build.PackageManager.UnitTests
 			using var recipeReader = new System.IO.StreamReader(recipeFile.Content);
 			var recipeContent = await recipeReader.ReadToEndAsync();
 			var expectedRecipe =
-@"Name: ""MyPackage""
-				Language: ""C++|3.2.1""
-				Version: ""1.0.0""
-Dependencies: {
-	Runtime: [
-		""OtherPackage@1.2.3""
-	]
-}";
+				"""
+				Name: "MyPackage"
+								Language: "C++|3.2.1"
+								Version: "1.0.0"
+				Dependencies: {
+					Runtime: [
+						"OtherPackage@1.2.3"
+					]
+				}
+				""";
 
 			Assert.Equal(expectedRecipe, recipeContent);
 		}
@@ -216,9 +222,11 @@ Dependencies: {
 
 			using var originalContent = new System.IO.MemoryStream();
 			await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
-				@"Name: ""MyPackage""
-				Language: ""C++|3.2.1""
-				Version: ""1.0.0"""));
+				"""
+				Name: "MyPackage"
+				Language: "C++|3.2.1"
+				Version: "1.0.0"
+				"""));
 			originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Root/MyPackage/Recipe.sml"),
@@ -227,9 +235,11 @@ Dependencies: {
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Users/Me/.soup/packages/C++/OtherPackage/1.2.3/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
-					@"Name: ""Package1""
-					Language: ""C++|3.2.1""
-					Version: ""1.2.3"""))));
+					"""
+					Name: "Package1"
+					Language: "C++|3.2.1"
+					Version: "1.2.3"
+					"""))));
 
 			// Setup the mock zip manager
 			var mockZipManager = new Mock<IZipManager>();
@@ -299,7 +309,9 @@ Dependencies: {
 				mockFileSystem.GetRequests());
 
 			// Verify zip requests
-			mockZipManager.Verify(zip => zip.ExtractToDirectory(new Path("C:/Users/Me/.soup/packages/.staging/OtherPackage.zip"), new Path("C:/Users/Me/.soup/packages/.staging/C++_OtherPackage_1.2.3/")), Times.Once());
+			mockZipManager.Verify(zip => zip.ExtractToDirectory(
+				new Path("C:/Users/Me/.soup/packages/.staging/OtherPackage.zip"),
+				new Path("C:/Users/Me/.soup/packages/.staging/C++_OtherPackage_1.2.3/")), Times.Once());
 			mockZipManager.VerifyNoOtherCalls();
 
 			// Verify http requests
@@ -324,14 +336,16 @@ Dependencies: {
 			using var recipeReader = new System.IO.StreamReader(recipeFile.Content);
 			var recipeContent = await recipeReader.ReadToEndAsync();
 			var expectedRecipe =
-@"Name: ""MyPackage""
-				Language: ""C++|3.2.1""
-				Version: ""1.0.0""
-Dependencies: {
-	Runtime: [
-		""OtherPackage@1.2.3""
-	]
-}";
+				"""
+				Name: "MyPackage"
+								Language: "C++|3.2.1"
+								Version: "1.0.0"
+				Dependencies: {
+					Runtime: [
+						"OtherPackage@1.2.3"
+					]
+				}
+				""";
 
 			Assert.Equal(expectedRecipe, recipeContent);
 		}
@@ -349,9 +363,11 @@ Dependencies: {
 
 			using var originalContent = new System.IO.MemoryStream();
 			await originalContent.WriteAsync(Encoding.UTF8.GetBytes(
-				@"Name: ""MyPackage""
-				Language: ""C++|0.1""
-				Version: ""1.0.0"""));
+				"""
+				Name: "MyPackage"
+				Language: "C++|0.1"
+				Version: "1.0.0"
+				"""));
 			originalContent.Seek(0, System.IO.SeekOrigin.Begin);
 			mockFileSystem.CreateMockFile(
 				new Path("C:/Root/MyPackage/Recipe.sml"),
