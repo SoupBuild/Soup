@@ -1615,7 +1615,7 @@ namespace Soup.Build.Api.Client
 		[System.Text.Json.Serialization.JsonPropertyName("rootClosure")]
 
 		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
-		public System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceWithBuildModel>> RootClosure { get; set; }
+		public System.Collections.Generic.ICollection<PackageFeedExactReferenceWithBuildModel> RootClosure { get; set; }
 
 		/// <summary>
 		/// Gets or sets the collection of build closures.
@@ -1624,7 +1624,7 @@ namespace Soup.Build.Api.Client
 		[System.Text.Json.Serialization.JsonPropertyName("buildClosures")]
 
 		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
-		public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceModel>>> BuildClosures { get; set; }
+		public System.Collections.Generic.ICollection<BuildClosureResultModel> BuildClosures { get; set; }
 
 	}
 
@@ -1662,6 +1662,16 @@ namespace Soup.Build.Api.Client
 	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
 	public partial class PackageFeedExactReferenceModel
 	{
+		/// <summary>
+		/// Gets or sets the language.
+		/// </summary>
+
+		[System.Text.Json.Serialization.JsonPropertyName("language")]
+
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		public string Language { get; set; }
+
 		/// <summary>
 		/// Gets or sets the name.
 		/// </summary>
@@ -1719,6 +1729,34 @@ namespace Soup.Build.Api.Client
 
 	}
 
+	/// <summary>
+	/// A container for the build closure result.
+	/// </summary>
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class BuildClosureResultModel
+	{
+		/// <summary>
+		/// Gets or sets the build closure name
+		/// </summary>
+
+		[System.Text.Json.Serialization.JsonPropertyName("name")]
+
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or sets the build closure.
+		/// </summary>
+
+		[System.Text.Json.Serialization.JsonPropertyName("closure")]
+
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+		[System.ComponentModel.DataAnnotations.Required]
+		public System.Collections.Generic.ICollection<PackageFeedExactReferenceModel> Closure { get; set; } = new System.Collections.ObjectModel.Collection<PackageFeedExactReferenceModel>();
+
+	}
+
 	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
 	public partial class ProblemDetails
 	{
@@ -1766,24 +1804,24 @@ namespace Soup.Build.Api.Client
 	public partial class GenerateClosureRequestModel
 	{
 		/// <summary>
-		/// Gets or sets the root closure.
+		/// Gets or sets the runtime dependencies.
 		/// </summary>
 
-		[System.Text.Json.Serialization.JsonPropertyName("rootClosure")]
+		[System.Text.Json.Serialization.JsonPropertyName("runtimePackages")]
 
 		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
 		[System.ComponentModel.DataAnnotations.Required]
-		public System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedReferenceWithBuildModel>> RootClosure { get; set; } = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.ICollection<PackageFeedReferenceWithBuildModel>>();
+		public System.Collections.Generic.ICollection<PackageFeedReferenceModel> RuntimePackages { get; set; } = new System.Collections.ObjectModel.Collection<PackageFeedReferenceModel>();
 
 		/// <summary>
-		/// Gets or sets the collection of build closures.
+		/// Gets or sets the collection of build packages.
 		/// </summary>
 
-		[System.Text.Json.Serialization.JsonPropertyName("buildClosures")]
+		[System.Text.Json.Serialization.JsonPropertyName("buildPackages")]
 
 		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
 		[System.ComponentModel.DataAnnotations.Required]
-		public System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedReferenceModel>>> BuildClosures { get; set; } = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedReferenceModel>>>();
+		public System.Collections.Generic.ICollection<PackageFeedReferenceModel> BuildPackages { get; set; } = new System.Collections.ObjectModel.Collection<PackageFeedReferenceModel>();
 
 		/// <summary>
 		/// Gets or sets the collection of requested versions
@@ -1793,25 +1831,7 @@ namespace Soup.Build.Api.Client
 
 		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
 		[System.ComponentModel.DataAnnotations.Required]
-		public System.Collections.Generic.IDictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceModel>> RequestedVersions { get; set; } = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.ICollection<PackageFeedExactReferenceModel>>();
-
-	}
-
-	/// <summary>
-	/// A class representing the package result.
-	/// </summary>
-	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
-	public partial class PackageFeedReferenceWithBuildModel : PackageFeedReferenceModel
-	{
-		/// <summary>
-		/// Gets or sets the build.
-		/// </summary>
-
-		[System.Text.Json.Serialization.JsonPropertyName("build")]
-
-		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
-		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-		public string Build { get; set; }
+		public System.Collections.Generic.ICollection<PackageFeedExactReferenceModel> RequestedVersions { get; set; } = new System.Collections.ObjectModel.Collection<PackageFeedExactReferenceModel>();
 
 	}
 
@@ -1821,6 +1841,16 @@ namespace Soup.Build.Api.Client
 	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
 	public partial class PackageFeedReferenceModel
 	{
+		/// <summary>
+		/// Gets or sets the language.
+		/// </summary>
+
+		[System.Text.Json.Serialization.JsonPropertyName("language")]
+
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		public string Language { get; set; }
+
 		/// <summary>
 		/// Gets or sets the name.
 		/// </summary>

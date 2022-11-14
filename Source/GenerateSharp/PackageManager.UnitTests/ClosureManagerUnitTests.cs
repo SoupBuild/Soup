@@ -45,8 +45,8 @@ namespace Soup.Build.PackageManager.UnitTests
 			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
 			{
 				Result = Api.Client.GenerateClosureResult.Success,
-				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
-				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+				RootClosure = new List<Api.Client.PackageFeedExactReferenceWithBuildModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureResultModel>(),
 			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
@@ -111,7 +111,7 @@ namespace Soup.Build.PackageManager.UnitTests
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"rootClosure":{"C\u002B\u002B":[]},"buildClosures":{},"requestedVersions":{}}"""),
+					"""{"runtimePackages":[],"buildPackages":[],"requestedVersions":[]}"""),
 				Times.Once());
 
 			// Verify the contents of the package lock file
@@ -244,7 +244,7 @@ namespace Soup.Build.PackageManager.UnitTests
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"rootClosure":{"C\u002B\u002B":[{"build":"","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"build":"","name":"Package2","version":{"major":3,"minor":2,"patch":1}}]},"buildClosures":{},"requestedVersions":{}}"""),
+					"""{"runtimePackages":[{"language":"C\u002B\u002B","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"language":"C\u002B\u002B","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"buildPackages":[],"requestedVersions":[]}"""),
 				Times.Once());
 		}
 
@@ -285,8 +285,8 @@ namespace Soup.Build.PackageManager.UnitTests
 			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
 			{
 				Result = Api.Client.GenerateClosureResult.Success,
-				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
-				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+				RootClosure = new List<Api.Client.PackageFeedExactReferenceWithBuildModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureResultModel>(),
 			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
@@ -397,7 +397,7 @@ namespace Soup.Build.PackageManager.UnitTests
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"rootClosure":{"C\u002B\u002B":[{"build":"","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"build":"","name":"Package2","version":{"major":3,"minor":2,"patch":1}}]},"buildClosures":{},"requestedVersions":{}}"""),
+					"""{"runtimePackages":[{"language":"C\u002B\u002B","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"language":"C\u002B\u002B","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"buildPackages":[],"requestedVersions":[]}"""),
 				Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
@@ -504,8 +504,8 @@ namespace Soup.Build.PackageManager.UnitTests
 			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
 			{
 				Result = Api.Client.GenerateClosureResult.Success,
-				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
-				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+				RootClosure = new List<Api.Client.PackageFeedExactReferenceWithBuildModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureResultModel>(),
 			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
@@ -696,8 +696,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"rootClosure":{"C\u002B\u002B":[]},"buildClosures":{},"requestedVersions":{}}"""),
-				Times.Once());
+					"""{"runtimePackages":[],"buildPackages":[],"requestedVersions":[]}"""),
+				Times.Exactly(4));
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
@@ -856,8 +856,8 @@ namespace Soup.Build.PackageManager.UnitTests
 			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
 			{
 				Result = Api.Client.GenerateClosureResult.Success,
-				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
-				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+				RootClosure = new List<Api.Client.PackageFeedExactReferenceWithBuildModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureResultModel>(),
 			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
@@ -947,8 +947,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"rootClosure":{"C\u002B\u002B":[]},"buildClosures":{},"requestedVersions":{}}"""),
-				Times.Once());
+					"""{"runtimePackages":[],"buildPackages":[],"requestedVersions":[]}"""),
+				Times.Exactly(2));
 
 			// Verify the contents of the package lock file
 			var packageLock = mockFileSystem.GetMockFile(new Path("C:/Root/MyPackage/PackageLock.sml"));
@@ -1078,8 +1078,8 @@ namespace Soup.Build.PackageManager.UnitTests
 			var generateClosureResult = new Api.Client.GenerateClosureResultModel()
 			{
 				Result = Api.Client.GenerateClosureResult.Success,
-				RootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedExactReferenceWithBuildModel>>(),
-				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedExactReferenceModel>>>(),
+				RootClosure = new List<Api.Client.PackageFeedExactReferenceWithBuildModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureResultModel>(),
 			};
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(

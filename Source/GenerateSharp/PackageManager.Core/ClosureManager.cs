@@ -230,18 +230,18 @@ namespace Soup.Build.PackageManager
 				BaseUrl = _apiEndpoint.ToString(),
 			};
 
-			var rootClosure = new Dictionary<string, ICollection<Api.Client.PackageFeedReferenceWithBuildModel>>();
-			foreach (var languageClosure in closure.OrderBy(value => value.Key))
+			var runtimePackages = new List<Api.Client.PackageFeedReferenceModel>();
+			foreach (var (language, languageClosure) in closure.OrderBy(value => value.Key))
 			{
-				var externalPackages = new List<Api.Client.PackageFeedReferenceWithBuildModel>();
-				foreach (var (key, (package, buildClosure)) in languageClosure.Value.OrderBy(value => value.Key))
+				foreach (var (packageName, (package, buildClosure)) in languageClosure.OrderBy(value => value.Key))
 				{
 					if (!package.IsLocal)
 					{
 						if (package.Version == null)
 							throw new InvalidOperationException("External package reference version cannot be null");
-						externalPackages.Add(new Api.Client.PackageFeedReferenceWithBuildModel()
+						runtimePackages.Add(new Api.Client.PackageFeedReferenceModel()
 						{
+							Language = language,
 							Name = package.Name,
 							Version = new Api.Client.SemanticVersionModel()
 							{
@@ -249,18 +249,15 @@ namespace Soup.Build.PackageManager
 								Minor = package.Version.Minor,
 								Patch = package.Version.Patch,
 							},
-							Build = buildClosure,
 						});
 					}
 				}
-
-				rootClosure.Add(languageClosure.Key, externalPackages);
 			}
 
 			var generateClosureRequest = new Api.Client.GenerateClosureRequestModel()
 			{
-				RootClosure = rootClosure,
-				BuildClosures = new Dictionary<string, IDictionary<string, ICollection<Api.Client.PackageFeedReferenceModel>>>(),
+				RuntimePackages = runtimePackages,
+				BuildPackages = new List<Api.Client.PackageFeedReferenceModel>(),
 			};
 
 			Api.Client.GenerateClosureResultModel result;
@@ -281,17 +278,15 @@ namespace Soup.Build.PackageManager
 			}
 
 			// Update the closure to use the new values
-			foreach (var (language, languageClosure) in result.RootClosure)
+			foreach (var package in result.RootClosure)
 			{
-				var originalLanguageClosure = closure[language];
-				foreach (var package in languageClosure)
-				{
-					var packageReference = new PackageReference(
-						null,
-						package.Name,
-						new SemanticVersion(package.Version.Major, package.Version.Minor, package.Version.Patch));
-					originalLanguageClosure[package.Name] = (packageReference, "");
-				}
+				var originalLanguageClosure = closure[package.Language];
+
+				var packageReference = new PackageReference(
+					null,
+					package.Name,
+					new SemanticVersion(package.Version.Major, package.Version.Minor, package.Version.Patch));
+				originalLanguageClosure[package.Name] = (packageReference, package.Build);
 			}
 		}
 
