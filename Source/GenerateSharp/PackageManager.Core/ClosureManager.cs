@@ -351,6 +351,41 @@ namespace Soup.Build.PackageManager
 					new SemanticVersion(package.Version.Major, package.Version.Minor, package.Version.Patch));
 				originalLanguageClosure[package.Name] = (packageReference, package.Build);
 			}
+
+			// Update the build closures to use the new values
+			foreach (var buildClosure in result.BuildClosures)
+			{
+				if (buildClosures.TryGetValue(buildClosure.Name, out var existingBuildClosure))
+				{
+					// Update the existing build closure
+					foreach (var package in buildClosure.Closure)
+					{
+						var packageReference = new PackageReference(
+							null,
+							package.Name,
+							new SemanticVersion(package.Version.Major, package.Version.Minor, package.Version.Patch));
+						existingBuildClosure[package.Language][package.Name] = packageReference;
+					}
+				}
+				else
+				{
+					// Copy over a new closure
+					var newBuildClosure = new Dictionary<string, IDictionary<string, PackageReference>>();
+					foreach (var package in buildClosure.Closure)
+					{
+						var packageReference = new PackageReference(
+							null,
+							package.Name,
+							new SemanticVersion(package.Version.Major, package.Version.Minor, package.Version.Patch));
+
+						if (!newBuildClosure.ContainsKey(package.Language))
+							newBuildClosure.Add(package.Language, new Dictionary<string, PackageReference>());
+						newBuildClosure[package.Language].Add(package.Name, packageReference);
+					}
+
+					buildClosures.Add(buildClosure.Name, newBuildClosure);
+				}
+			}
 		}
 
 		private PackageLock BuildPackageLock(
@@ -586,7 +621,18 @@ namespace Soup.Build.PackageManager
 						throw new ArgumentException("Local package version was null");
 
 					var language = dependency.Language != null ? dependency.Language : implicitLanguage;
-					closure[language].Add(dependency.Name, (dependency, string.Empty));
+
+					if (!closure.ContainsKey(language))
+						closure.Add(language, new Dictionary<string, (PackageReference, string)>());
+
+					if (closure[language].TryGetValue(dependency.Name, out var existingPackage))
+					{
+						// TODO: Verify compatible.
+					}
+					else
+					{
+						closure[language].Add(dependency.Name, (dependency, string.Empty));
+					}
 				}
 			}
 		}
