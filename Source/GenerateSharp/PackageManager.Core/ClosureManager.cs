@@ -209,7 +209,7 @@ namespace Soup.Build.PackageManager
 
 				// Attempt to resolve all dependencies to compatible and up-to-date versions
 				Log.Info("Generate final service closure");
-				await GenerateServiceClosureAsync(closure);
+				await GenerateServiceClosureAsync(closure, buildClosures);
 
 				// Build up the package lock file
 				var packageLock = BuildPackageLock(workingDirectory, closure, buildClosures);
@@ -222,7 +222,8 @@ namespace Soup.Build.PackageManager
 		}
 
 		private async Task GenerateServiceClosureAsync(
-			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure)
+			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> runtimeClosure,
+			Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
 		{
 			// Publish the archive
 			var packageClient = new Api.Client.ClosureClient(_httpClient)
@@ -230,8 +231,9 @@ namespace Soup.Build.PackageManager
 				BaseUrl = _apiEndpoint.ToString(),
 			};
 
+			// Pass in all non local runtime packages to build runtime closure
 			var runtimePackages = new List<Api.Client.PackageFeedReferenceModel>();
-			foreach (var (language, languageClosure) in closure.OrderBy(value => value.Key))
+			foreach (var (language, languageClosure) in runtimeClosure.OrderBy(value => value.Key))
 			{
 				foreach (var (packageName, (package, buildClosure)) in languageClosure.OrderBy(value => value.Key))
 				{
@@ -254,10 +256,71 @@ namespace Soup.Build.PackageManager
 				}
 			}
 
+			// Pass in known build closures so the service can resolve them to actual build packages
+			var requestBuildClosures = new List<Api.Client.BuildClosureModel>();
+			foreach (var (buildClosureName, buildClosure) in buildClosures.OrderBy(value => value.Key))
+			{
+				var buildPackages = new List<Api.Client.PackageFeedReferenceModel>();
+				foreach (var (language, languageClosure) in buildClosure.OrderBy(value => value.Key))
+				{
+					foreach (var (packageName, package) in languageClosure.OrderBy(value => value.Key))
+					{
+						if (!package.IsLocal)
+						{
+							if (package.Version == null)
+								throw new InvalidOperationException("External package reference version cannot be null");
+							buildPackages.Add(new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = language,
+								Name = package.Name,
+								Version = new Api.Client.SemanticVersionModel()
+								{
+									Major = package.Version.Major,
+									Minor = package.Version.Minor,
+									Patch = package.Version.Patch,
+								},
+							});
+						}
+					}
+				}
+
+				requestBuildClosures.Add(new Api.Client.BuildClosureModel()
+				{
+					Name = buildClosureName,
+					Closure = buildPackages,
+				});
+			}
+
+			// Request the built in versions for the language extensions
+			var requestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>();
+			requestedVersions.Add(new Api.Client.PackageFeedExactReferenceModel()
+			{
+				Language = BuiltInLanguageCSharp,
+				Name = BuiltInLanguagePackageCSharp,
+				Version = new Api.Client.SemanticVersionExactModel()
+				{
+					Major = _builtInLanguageVersionCSharp.Major,
+					Minor = _builtInLanguageVersionCSharp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+					Patch = _builtInLanguageVersionCSharp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+				},
+			});
+			requestedVersions.Add(new Api.Client.PackageFeedExactReferenceModel()
+			{
+				Language = BuiltInLanguageCSharp,
+				Name = BuiltInLanguagePackageCpp,
+				Version = new Api.Client.SemanticVersionExactModel()
+				{
+					Major = _builtInLanguageVersionCpp.Major,
+					Minor = _builtInLanguageVersionCpp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+					Patch = _builtInLanguageVersionCpp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+				},
+			});
+
 			var generateClosureRequest = new Api.Client.GenerateClosureRequestModel()
 			{
 				RuntimePackages = runtimePackages,
-				BuildPackages = new List<Api.Client.PackageFeedReferenceModel>(),
+				BuildClosures = requestBuildClosures,
+				RequestedVersions = requestedVersions,
 			};
 
 			Api.Client.GenerateClosureResultModel result;
@@ -278,9 +341,9 @@ namespace Soup.Build.PackageManager
 			}
 
 			// Update the closure to use the new values
-			foreach (var package in result.RootClosure)
+			foreach (var package in result.RuntimeClosure)
 			{
-				var originalLanguageClosure = closure[package.Language];
+				var originalLanguageClosure = runtimeClosure[package.Language];
 
 				var packageReference = new PackageReference(
 					null,

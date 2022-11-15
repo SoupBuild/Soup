@@ -254,17 +254,22 @@ namespace Soup.Build.PackageManager
 					}
 					catch (Api.Client.ApiException ex)
 					{
-						if (ex.StatusCode == 409)
+						switch (ex.StatusCode)
 						{
-							Log.Info("Package version already exists");
-						}
-						else if (ex.StatusCode == 403)
-						{
-							Log.Error("You do not have permission to edit this package");
-						}
-						else
-						{
-							throw;
+							case 400:
+								if (ex is Api.Client.ApiException<Api.Client.ProblemDetails> problemDetailsEx)
+									Log.Error(problemDetailsEx.Result.Detail);
+								else
+									Log.Error("Bad request");
+								break;
+							case 403:
+								Log.Error("You do not have permission to edit this package");
+								break;
+							case 409:
+								Log.Info("Package version already exists");
+								break;
+							default:
+								throw;
 						}
 					}
 				}

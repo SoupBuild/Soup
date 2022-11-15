@@ -1609,13 +1609,13 @@ namespace Soup.Build.Api.Client
 		public string Message { get; set; }
 
 		/// <summary>
-		/// Gets or sets the root closure.
+		/// Gets or sets the runtime closure.
 		/// </summary>
 
-		[System.Text.Json.Serialization.JsonPropertyName("rootClosure")]
+		[System.Text.Json.Serialization.JsonPropertyName("runtimeClosure")]
 
 		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
-		public System.Collections.Generic.ICollection<PackageFeedExactReferenceWithBuildModel> RootClosure { get; set; }
+		public System.Collections.Generic.ICollection<PackageFeedExactReferenceWithBuildModel> RuntimeClosure { get; set; }
 
 		/// <summary>
 		/// Gets or sets the collection of build closures.
@@ -1624,7 +1624,7 @@ namespace Soup.Build.Api.Client
 		[System.Text.Json.Serialization.JsonPropertyName("buildClosures")]
 
 		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
-		public System.Collections.Generic.ICollection<BuildClosureResultModel> BuildClosures { get; set; }
+		public System.Collections.Generic.ICollection<BuildClosureExactModel> BuildClosures { get; set; }
 
 	}
 
@@ -1733,7 +1733,7 @@ namespace Soup.Build.Api.Client
 	/// A container for the build closure result.
 	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
-	public partial class BuildClosureResultModel
+	public partial class BuildClosureExactModel
 	{
 		/// <summary>
 		/// Gets or sets the build closure name
@@ -1814,14 +1814,14 @@ namespace Soup.Build.Api.Client
 		public System.Collections.Generic.ICollection<PackageFeedReferenceModel> RuntimePackages { get; set; } = new System.Collections.ObjectModel.Collection<PackageFeedReferenceModel>();
 
 		/// <summary>
-		/// Gets or sets the collection of build packages.
+		/// Gets or sets the initial collection of known build closures that will be resolved.
 		/// </summary>
 
-		[System.Text.Json.Serialization.JsonPropertyName("buildPackages")]
+		[System.Text.Json.Serialization.JsonPropertyName("buildClosures")]
 
 		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
 		[System.ComponentModel.DataAnnotations.Required]
-		public System.Collections.Generic.ICollection<PackageFeedReferenceModel> BuildPackages { get; set; } = new System.Collections.ObjectModel.Collection<PackageFeedReferenceModel>();
+		public System.Collections.Generic.ICollection<BuildClosureModel> BuildClosures { get; set; } = new System.Collections.ObjectModel.Collection<BuildClosureModel>();
 
 		/// <summary>
 		/// Gets or sets the collection of requested versions
@@ -1905,6 +1905,34 @@ namespace Soup.Build.Api.Client
 
 		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
 		public int? Patch { get; set; }
+
+	}
+
+	/// <summary>
+	/// A container for the build closure result.
+	/// </summary>
+	[System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+	public partial class BuildClosureModel
+	{
+		/// <summary>
+		/// Gets or sets the build closure name
+		/// </summary>
+
+		[System.Text.Json.Serialization.JsonPropertyName("name")]
+
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+		[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or sets the build closure.
+		/// </summary>
+
+		[System.Text.Json.Serialization.JsonPropertyName("closure")]
+
+		[System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.Never)]
+		[System.ComponentModel.DataAnnotations.Required]
+		public System.Collections.Generic.ICollection<PackageFeedReferenceModel> Closure { get; set; } = new System.Collections.ObjectModel.Collection<PackageFeedReferenceModel>();
 
 	}
 
