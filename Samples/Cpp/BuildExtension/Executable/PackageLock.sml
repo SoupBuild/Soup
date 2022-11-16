@@ -8,7 +8,7 @@ Closures: {
 	Build0: {
 		CSharp: [
 			{ Name: "Soup.Cpp", Version: "0.4.0" }
-			{ Name: "Samples.Cpp.BuildExtension.Extension", Version: "1.0.0" }
+			{ Name: "Samples.Cpp.BuildExtension.Extension", Version: "../Extension/" }
 		]
 	}
 }
