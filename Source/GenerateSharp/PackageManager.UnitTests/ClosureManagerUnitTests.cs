@@ -89,8 +89,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version",
-					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version in build closure",
+					"HIGH: Skip built in language version in build closure",
 				},
 				testListener.GetMessages());
 
@@ -435,8 +435,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version",
-					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version in build closure",
+					"HIGH: Skip built in language version in build closure",
 				},
 				testListener.GetMessages());
 
@@ -724,8 +724,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
-					"HIGH: Skip built in language version",
-					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version in build closure",
+					"HIGH: Skip built in language version in build closure",
 					"DIAG: Create Directory: C:/LockStore/C#/Package1/1.2.3/",
 					"INFO: Ensure Package Lock Exists: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
@@ -757,8 +757,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
-					"HIGH: Skip built in language version",
-					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version in build closure",
+					"HIGH: Skip built in language version in build closure",
 				},
 				testListener.GetMessages());
 
@@ -1169,9 +1169,9 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version in build closure",
 					"INFO: Skip Package: Package1 -> ../Package1/",
-					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version in build closure",
 					"INFO: Ensure Package Lock Exists: C:/Root/Package1/PackageLock.sml",
 					"DIAG: Load Package Lock: C:/Root/Package1/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
@@ -1186,8 +1186,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
-					"HIGH: Skip built in language version",
-					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version in build closure",
+					"HIGH: Skip built in language version in build closure",
 				},
 				testListener.GetMessages());
 
@@ -1484,8 +1484,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
-					"HIGH: Skip built in language version",
-					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version in build closure",
+					"HIGH: Skip built in language version in build closure",
 				},
 				testListener.GetMessages());
 
@@ -1727,8 +1727,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Closure Build0",
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
-					"HIGH: Skip built in language version",
-					"HIGH: Skip built in language version",
+					"HIGH: Skip built in language version in build closure",
+					"HIGH: Skip built in language version in build closure",
 				},
 				testListener.GetMessages());
 
