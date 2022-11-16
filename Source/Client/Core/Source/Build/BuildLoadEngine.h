@@ -72,7 +72,7 @@ namespace Soup::Core
 		PackageLookupMap _packageLookup;
 
 		// Mapping from build dependency to Package path to graph id
-		std::map<Path, PackageGraphId> _knownGraphSet;
+		std::map<Path, PackageGraphId> _knownBuildGraphSet;
 
 	public:
 		/// <summary>
@@ -89,7 +89,7 @@ namespace Soup::Core
 			_recipeCache(recipeCache),
 			_packageGraphLookup(),
 			_packageLookup(),
-			_knownGraphSet()
+			_knownBuildGraphSet()
 		{
 		}
 
@@ -464,7 +464,7 @@ namespace Soup::Core
 					}
 					else
 					{
-						Log::Diag("Recipe closure already loaded: " + languagePackageName);
+						Log::Diag("Recipe already loaded: " + languagePackageName);
 						dependencyTypeProjects.push_back(PackageChildInfo(dependency, false, findKnownPackage->second.first, -1));
 					}
 				}
@@ -546,11 +546,11 @@ namespace Soup::Core
 			}
 
 			// Check if the package has already been processed from another graph
-			auto findKnownGraph = _knownGraphSet.find(dependencyProjectRoot);
-			if (findKnownGraph != _knownGraphSet.end())
+			auto findKnownGraph = _knownBuildGraphSet.find(dependencyProjectRoot);
+			if (findKnownGraph != _knownBuildGraphSet.end())
 			{
 				// Verify the project name is unique
-				Log::Diag("Graph closure already loaded: " + dependencyProjectRoot.ToString());
+				Log::Diag("Graph already loaded: " + dependencyProjectRoot.ToString());
 				return PackageChildInfo(dependency, true, -1, findKnownGraph->second);
 			}
 			else
@@ -587,6 +587,11 @@ namespace Soup::Core
 				_packageGraphLookup.emplace(
 					graphId,
 					PackageGraph(graphId, childPackageId, _hostBuildGlobalParameters));
+
+				// Keep track of the build graphs we have already seen
+				auto insertKnown = _knownBuildGraphSet.emplace(
+					dependencyProjectRoot,
+					graphId);
 
 				// Update the child project id
 				return PackageChildInfo(dependency, true, -1, graphId);
