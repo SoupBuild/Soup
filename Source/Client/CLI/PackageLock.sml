@@ -2,10 +2,10 @@ Version: 3
 Closures: {
 	Root: {
 		CSharp: [
-			{ Name: "Opal", Version: "1.1.0", Build: "Build2" }
+			{ Name: "Opal", Version: "1.2.0", Build: "Build2" }
 			{ Name: "Soup.Build", Version: "0.2.0", Build: "Build2" }
-			{ Name: "Soup.Build.Extensions", Version: "0.4.0", Build: "Build2" }
-			{ Name: "Soup.Build.Extensions.Utilities", Version: "0.4.0", Build: "Build2" }
+			{ Name: "Soup.Build.Extensions", Version: "0.4.1", Build: "Build2" }
+			{ Name: "Soup.Build.Extensions.Utilities", Version: "0.4.1", Build: "Build2" }
 			{ Name: "Soup.Cpp", Version: "0.4.0", Build: "Build2" }
 			{ Name: "Soup.Cpp.Compiler", Version: "0.5.0", Build: "Build2" }
 			{ Name: "Soup.Cpp.Compiler.MSVC", Version: "0.5.0", Build: "Build2" }

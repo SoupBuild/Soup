@@ -1,6 +1,6 @@
 Name: "Soup.Build.Extensions"
 Language: "C#|0.1"
-Version: "0.4.0"
+Version: "0.4.1"
 Source: [
 	"BuildOperation.cs"
 	"IBuildStateExtensions.cs"
