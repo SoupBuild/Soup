@@ -106,12 +106,48 @@ namespace Soup.Build.PackageManager.UnitTests
 				mockFileSystem.GetRequests());
 
 			// Verify http requests
+			var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name = "Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.Cpp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"runtimePackages":[],"buildClosures":[{"name":"Build0","closure":[{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}],"requestedVersions":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}},{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}"""),
+					expectedGenerateRequestValue),
 				Times.Once());
 
 			// Verify the contents of the package lock file
@@ -239,12 +275,62 @@ namespace Soup.Build.PackageManager.UnitTests
 				mockFileSystem.GetRequests());
 
 			// Verify http requests
+			var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>()
+				{
+					new Api.Client.PackageFeedReferenceModel()
+					{
+						Language = "C\u002B\u002B",
+						Name = "Package1",
+						Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedReferenceModel()
+					{
+						Language = "C\u002B\u002B",
+						Name = "Package2",
+						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name = "Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.Cpp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"runtimePackages":[{"language":"C\u002B\u002B","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"language":"C\u002B\u002B","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"buildClosures":[{"name":"Build0","closure":[{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}],"requestedVersions":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}},{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}"""),
+					expectedGenerateRequestValue),
 				Times.Once());
 		}
 
@@ -392,13 +478,63 @@ namespace Soup.Build.PackageManager.UnitTests
 			mockZipManager.VerifyNoOtherCalls();
 
 			// Verify http requests
+			var expectedGenerateRequest = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>()
+				{
+					new Api.Client.PackageFeedReferenceModel()
+					{
+						Language = "C\u002B\u002B",
+						Name = "Package1",
+						Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedReferenceModel()
+					{
+						Language = "C\u002B\u002B",
+						Name = "Package2",
+						Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name ="Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.Cpp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1 },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequestValue = JsonSerializer.Serialize(expectedGenerateRequest);
 			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.Send(
-					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
-					"{Accept: [application/json]}",
-					"""{"runtimePackages":[{"language":"C\u002B\u002B","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"language":"C\u002B\u002B","name":"Package2","version":{"major":3,"minor":2,"patch":1}}],"buildClosures":[{"name":"Build0","closure":[{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}],"requestedVersions":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}},{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}"""),
-				Times.Once());
+					messageHandler.Send(
+						HttpMethod.Get,
+						new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+						"{Accept: [application/json]}",
+						expectedGenerateRequestValue),
+					Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
@@ -691,27 +827,144 @@ namespace Soup.Build.PackageManager.UnitTests
 				Times.Once());
 
 			// Verify http requests
+			var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name = "Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Package1",
+								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+							},
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.Cpp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 5, Minor = 0, Patch = 0, },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"runtimePackages":[],"buildClosures":[{"name":"Build0","closure":[{"language":"C#","name":"Package1","version":{"major":1,"minor":2,"patch":3}},{"language":"C#","name":"Soup.Cpp","version":{"major":5,"minor":0,"patch":0}}]}],"requestedVersions":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}},{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}"""),
+					expectedGenerateRequest1Value),
 				Times.Once());
+
+			var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name = "Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.CSharp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"runtimePackages":[],"buildClosures":[{"name":"Build0","closure":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}}]}],"requestedVersions":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}},{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}"""),
+					expectedGenerateRequest2Value),
 				Times.Exactly(2));
+
+			var expectedGenerateRequest3 = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name = "Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.CSharp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequest3Value = JsonSerializer.Serialize(expectedGenerateRequest3);
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"runtimePackages":[],"buildClosures":[{"name":"Build0","closure":[{"language":"C#","name":"Soup.CSharp","version":{"major":4,"minor":0,"patch":0}}]}],"requestedVersions":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}},{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}"""),
-				Times.Once());
+					expectedGenerateRequest3Value),
+				Times.Exactly(2));
+
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
@@ -956,19 +1209,92 @@ namespace Soup.Build.PackageManager.UnitTests
 				mockFileSystem.GetRequests());
 
 			// Verify http requests
+			var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name = "Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.Cpp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"runtimePackages":[],"buildClosures":[{"name":"Build0","closure":[{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}],"requestedVersions":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}},{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}"""),
+					expectedGenerateRequest1Value),
 				Times.Once());
+
+			var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name = "Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.Cpp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
-					"""{"runtimePackages":[],"buildClosures":[{"name":"Build0","closure":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}}]}],"requestedVersions":[{"language":"C#","name":"Soup.CSharp","version":{"major":1,"minor":2,"patch":3}},{"language":"C#","name":"Soup.Cpp","version":{"major":3,"minor":2,"patch":1}}]}"""),
+					expectedGenerateRequest2Value),
 				Times.Once());
 
 			// Verify the contents of the package lock file
@@ -1213,6 +1539,94 @@ namespace Soup.Build.PackageManager.UnitTests
 				Times.Once());
 
 			// Verify http requests
+			var expectedGenerateRequest1 = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name = "Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.CSharp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequest1Value = JsonSerializer.Serialize(expectedGenerateRequest1);
+			mockMessageHandler.Verify(messageHandler =>
+				messageHandler.Send(
+					HttpMethod.Get,
+					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+					"{Accept: [application/json]}",
+					expectedGenerateRequest1Value),
+				Times.Once());
+
+			var expectedGenerateRequest2 = new Api.Client.GenerateClosureRequestModel()
+			{
+				RuntimePackages = new List<Api.Client.PackageFeedReferenceModel>(),
+				BuildClosures = new List<Api.Client.BuildClosureModel>()
+				{
+					new Api.Client.BuildClosureModel()
+					{
+						Name = "Build0",
+						Closure = new List<Api.Client.PackageFeedReferenceModel>()
+						{
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "C#",
+								Name = "Soup.CSharp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+							},
+						},
+					},
+				},
+				RequestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>()
+				{
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.CSharp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "C#",
+						Name = "Soup.Cpp",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+				},
+			};
+			var expectedGenerateRequest2Value = JsonSerializer.Serialize(expectedGenerateRequest2);
+			mockMessageHandler.Verify(messageHandler =>
+				messageHandler.Send(
+					HttpMethod.Get,
+					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
+					"{Accept: [application/json]}",
+					expectedGenerateRequest2Value),
+				Times.Once());
+
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
