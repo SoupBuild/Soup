@@ -162,12 +162,18 @@ namespace Soup.Build.Utilities
 			return result;
 		}
 
-		public void AddRuntimeDependency(string value)
+
+		public void AddNamedDependency(string type, string value)
 		{
 			var dependencies = EnsureHasTable(_document, Property_Dependencies);
-			var runtimeDependencies = EnsureHasList(dependencies, Property_Runtime);
+			var runtimeDependencies = EnsureHasList(dependencies, type);
 
 			runtimeDependencies.AddItemWithSyntax(value, 2);
+		}
+
+		public void AddRuntimeDependency(string value)
+		{
+			AddNamedDependency(Property_Runtime, value);
 		}
 
 		/// <summary>

@@ -12,8 +12,8 @@ namespace Soup.Build.Api.Client
     /// <summary>
     /// The package client.
     /// </summary>
-    public partial class PackageClient
-    {
+    public partial class PackagesClient
+	{
         public string BearerToken { get; set; }
 
         /// <summary>
