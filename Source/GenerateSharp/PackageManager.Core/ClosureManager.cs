@@ -130,7 +130,7 @@ namespace Soup.Build.PackageManager
 								if ((projectName == BuiltInLanguagePackageCpp && version == _builtInLanguageVersionCpp) ||
 									(projectName == BuiltInLanguagePackageCSharp && version == _builtInLanguageVersionCSharp))
 								{
-									Log.HighPriority("Skip built in language version");
+									Log.HighPriority("Skip built in language version in build closure");
 								}
 								else
 								{
@@ -649,6 +649,7 @@ namespace Soup.Build.PackageManager
 			foreach (var closure in packageLock.GetClosures().Values)
 			{
 				Log.Info($"Restore Packages for Closure {closure.Key}");
+				var isRuntime = closure.Key == RootClosureName;
 				foreach (var languageProjects in closure.Value.Value.AsTable().Values)
 				{
 					var languageName = GetLanguageName(languageProjects.Key);
@@ -661,6 +662,7 @@ namespace Soup.Build.PackageManager
 						if (SemanticVersion.TryParse(projectVersion, out var version))
 						{
 							await EnsurePackageDownloadedAsync(
+								isRuntime,
 								languageName,
 								projectName,
 								version,
@@ -680,6 +682,7 @@ namespace Soup.Build.PackageManager
 		/// Ensure a package version is downloaded
 		/// </summary>
 		private async Task EnsurePackageDownloadedAsync(
+			bool isRuntime,
 			string languageName,
 			string packageName,
 			SemanticVersion packageVersion,
@@ -693,10 +696,11 @@ namespace Soup.Build.PackageManager
 			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
 
 			// Check if the package version already exists
-			if ((packageName == BuiltInLanguagePackageCpp && packageVersion == _builtInLanguageVersionCpp) ||
-				(packageName == BuiltInLanguagePackageCSharp && packageVersion == _builtInLanguageVersionCSharp))
+			if (!isRuntime &&
+				((packageName == BuiltInLanguagePackageCpp && packageVersion == _builtInLanguageVersionCpp) ||
+				(packageName == BuiltInLanguagePackageCSharp && packageVersion == _builtInLanguageVersionCSharp)))
 			{
-				Log.HighPriority("Skip built in language version");
+				Log.HighPriority("Skip built in language version in build closure");
 			}
 			else if (LifetimeManager.Get<IFileSystem>().Exists(packageVersionFolder))
 			{
