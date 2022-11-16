@@ -12,8 +12,8 @@ namespace Soup.Build.PackageManager
 
 	public class Program
 	{
-		private static Uri SoupApiEndpoint => new Uri("http://localhost:7070");
-		//// private static string SoupApiEndpoint => new Uri("https://api.soupbuild.com");
+		//// private static Uri SoupApiEndpoint => new Uri("http://localhost:7070");
+		private static Uri SoupApiEndpoint => new Uri("https://api.soupbuild.com");
 
 		public static async Task<int> Main(string[] args)
 		{
