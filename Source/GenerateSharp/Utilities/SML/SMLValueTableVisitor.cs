@@ -80,7 +80,7 @@ namespace Soup.Build.Utilities
 					tableValue.Delimiter = delimiter;
 				}
 
-				tableContent.Add(tableValue.Key.Text, tableValue);
+				tableContent.Add(tableValue.KeyContent, tableValue);
 			}
 
 			return tableContent;
@@ -88,11 +88,28 @@ namespace Soup.Build.Utilities
 
 		public virtual object VisitTableValue(SMLParser.TableValueContext context)
 		{
-			var key = BuildToken(context.KEY());
+			var keyContext = context.key();
+			var key = (SMLToken)keyContext.Accept(this);
+			var keyContent = key.Text;
+			if (keyContext is SMLParser.KeyStringContext)
+			{
+				keyContent = keyContent.Substring(1, keyContent.Length - 2);
+			}
+
 			var colon = BuildToken(context.COLON());
 			var values = (SMLValue)context.value().Accept(this);
 
-			return new SMLTableValue(key, colon, values, new List<SMLToken>());
+			return new SMLTableValue(key, keyContent, colon, values, new List<SMLToken>());
+		}
+
+		public virtual object VisitKeyLiteral(SMLParser.KeyLiteralContext context)
+		{
+			return BuildToken(context.KEY_LITERAL());
+		}
+
+		public virtual object VisitKeyString(SMLParser.KeyStringContext context)
+		{
+			return BuildToken(context.STRING_LITERAL());
 		}
 
 		public virtual object VisitArray(SMLParser.ArrayContext context)

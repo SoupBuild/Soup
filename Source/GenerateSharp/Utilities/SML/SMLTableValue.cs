@@ -10,25 +10,33 @@ namespace Soup.Build.Utilities
 	public class SMLTableValue : IEquatable<SMLTableValue>
 	{
 		public SMLToken Key { get; set; }
+		public string KeyContent { get; set; }
 		public SMLToken Colon { get; set; }
 		public SMLValue Value { get; set; }
 		public List<SMLToken> Delimiter { get; set; }
 
-		public SMLTableValue(SMLToken key, SMLValue value)
+		public SMLTableValue(
+			SMLToken key,
+			string keyContent,
+			SMLToken colon,
+			SMLValue value)
 		{
 			Key = key;
-			Colon = SMLToken.Empty;
+			KeyContent = keyContent;
+			Colon = colon;
 			Value = value;
 			Delimiter = new List<SMLToken>();
 		}
 
 		public SMLTableValue(
 			SMLToken key,
+			string keyContent,
 			SMLToken colon,
 			SMLValue value,
 			List<SMLToken> delimiter)
 		{
 			Key = key;
+			KeyContent = keyContent;
 			Colon = colon;
 			Value = value;
 			Delimiter = delimiter;
@@ -46,7 +54,8 @@ namespace Soup.Build.Utilities
 				return true;
 
 			// Return true if the fields match.
-			return this.Value == rhs.Value;
+			return this.KeyContent == rhs.KeyContent &&
+				this.Value == rhs.Value;
 		}
 
 		public override int GetHashCode() => (Value).GetHashCode();

@@ -17,7 +17,8 @@ namespace Soup.Build.Utilities.UnitTests
 		public void Deserialize_GarbageThrows()
 		{
 			var recipe = "garbage";
-			Assert.Throws<InvalidOperationException>(() => {
+			Assert.Throws<InvalidOperationException>(() =>
+			{
 				var actual = SMLManager.Deserialize(recipe);
 			});
 		}
@@ -33,13 +34,44 @@ namespace Soup.Build.Utilities.UnitTests
 			var expected = new SMLDocument(
 				new Dictionary<string, SMLTableValue>()
 				{
-					{ 
+					{
 						"Name",
-						new SMLTableValue(new SMLToken("Name"), new SMLValue(new SMLStringValue("MyPackage")))
+						new SMLTableValue(
+							new SMLToken("Name"),
+							"Name",
+							new SMLToken(":"),
+							new SMLValue(new SMLStringValue("MyPackage")))
 					},
 					{
 						"Language",
-						new SMLTableValue(new SMLToken("Language"), new SMLValue(new SMLStringValue("C++|1")))
+						new SMLTableValue(
+							new SMLToken("Language"),
+							"Language",
+							new SMLToken(":"),
+							new SMLValue(new SMLStringValue("C++|1")))
+					},
+				});
+
+			Assert.Equal(expected, actual);
+		}
+
+		[Fact]
+		public void Deserialize_ComplexKey()
+		{
+			var recipe =
+				@"""#1%^`"": ""ComplexValue""";
+			var actual = SMLManager.Deserialize(recipe);
+
+			var expected = new SMLDocument(
+				new Dictionary<string, SMLTableValue>()
+				{
+					{
+						"#1%^`",
+						new SMLTableValue(
+							new SMLToken("\"#1%^`\""),
+							"#1%^`",
+							new SMLToken(":"),
+							new SMLValue(new SMLStringValue("ComplexValue")))
 					},
 				});
 
@@ -56,8 +88,22 @@ namespace Soup.Build.Utilities.UnitTests
 			var expected = new SMLDocument(
 				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue(new SMLStringValue("MyPackage"))) },
-					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue(new SMLStringValue("C++|1"))) },
+					{
+						"Name",
+						new SMLTableValue(
+							new SMLToken("Name"),
+							"Name",
+							new SMLToken(":"),
+							new SMLValue(new SMLStringValue("MyPackage")))
+					},
+					{
+						"Language",
+						new SMLTableValue(
+							new SMLToken("Language"),
+							"Language",
+							new SMLToken(":"),
+							new SMLValue(new SMLStringValue("C++|1")))
+					},
 				});
 
 			Assert.Equal(expected, actual);
@@ -69,7 +115,7 @@ namespace Soup.Build.Utilities.UnitTests
 			var recipe =
 				@"Name: ""MyPackage""
 
-				// A Comment in the file
+				# A Comment in the file
 				Language: ""C++|1""
 				Version: ""1.2.3""
 				EnableErrorsAsWarnings: false
@@ -86,27 +132,84 @@ namespace Soup.Build.Utilities.UnitTests
 			var expected = new SMLDocument(
 				new Dictionary<string, SMLTableValue>()
 				{
-					{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue(new SMLStringValue("MyPackage"))) },
-					{ "Language", new SMLTableValue(new SMLToken("Language"), new SMLValue(new SMLStringValue("C++|1"))) },
-					{ "Version", new SMLTableValue(new SMLToken("Version"), new SMLValue(new SMLStringValue("1.2.3"))) },
-					{ "EnableErrorsAsWarnings", new SMLTableValue(new SMLToken("EnableErrorsAsWarnings"), new SMLValue(new SMLBooleanValue(false))) },
-					{ "EnableCoolFeature", new SMLTableValue(new SMLToken("EnableCoolFeature"), new SMLValue(new SMLBooleanValue(true))) },
-					{ 
+					{
+						"Name",
+						new SMLTableValue(
+							new SMLToken("Name"),
+							"Name",
+							new SMLToken(":"),
+							new SMLValue(new SMLStringValue("MyPackage")))
+					},
+					{
+						"Language",
+						new SMLTableValue(
+							new SMLToken("Language"),
+							"Language",
+							new SMLToken(":"),
+							new SMLValue(new SMLStringValue("C++|1")))
+					},
+					{
+						"Version",
+						new SMLTableValue(
+							new SMLToken("Version"),
+							"Version",
+							new SMLToken(":"),
+							new SMLValue(new SMLStringValue("1.2.3")))
+					},
+					{
+						"EnableErrorsAsWarnings",
+						new SMLTableValue(
+							new SMLToken("EnableErrorsAsWarnings"),
+							"EnableErrorsAsWarnings",
+							new SMLToken(":"),
+							new SMLValue(new SMLBooleanValue(false)))
+					},
+					{
+						"EnableCoolFeature",
+						new SMLTableValue(
+							new SMLToken("EnableCoolFeature"),
+							"EnableCoolFeature",
+							new SMLToken(":"),
+							new SMLValue(new SMLBooleanValue(true)))
+					},
+					{
 						"Dependencies",
-						new SMLTableValue(new SMLToken("Dependencies"), new SMLValue(new SMLTable(new Dictionary<string, SMLTableValue>()
-						{
-							{ "Runtime", new SMLTableValue(new SMLToken("Runtime"), new SMLValue(new SMLArray())) },
-							{ "Build", new SMLTableValue(new SMLToken("Build"), new SMLValue(new SMLArray())) },
-							{ 
-								"Test",
-								new SMLTableValue(new SMLToken("Test"), new SMLValue(new SMLArray(new List<SMLArrayValue>()
+						new SMLTableValue(
+							new SMLToken("Dependencies"),
+							"Dependencies",
+							new SMLToken(":"),
+							new SMLValue(new SMLTable(new Dictionary<string, SMLTableValue>()
+							{
 								{
-									new SMLArrayValue(new SMLValue(new SMLIntegerValue(123))),
-									new SMLArrayValue(new SMLValue(new SMLBooleanValue(false))),
-									new SMLArrayValue(new SMLValue(new SMLStringValue("string"))),
-								})))
-							},
-						})))
+									"Runtime",
+									new SMLTableValue(
+										new SMLToken("Runtime"),
+										"Runtime",
+										new SMLToken(":"),
+										new SMLValue(new SMLArray()))
+								},
+								{
+									"Build",
+									new SMLTableValue(
+										new SMLToken("Build"),
+										"Build",
+										new SMLToken(":"),
+										new SMLValue(new SMLArray()))
+								},
+								{
+									"Test",
+									new SMLTableValue(
+										new SMLToken("Test"),
+										"Test",
+										new SMLToken(":"),
+										new SMLValue(new SMLArray(new List<SMLArrayValue>()
+										{
+											new SMLArrayValue(new SMLValue(new SMLIntegerValue(123))),
+											new SMLArrayValue(new SMLValue(new SMLBooleanValue(false))),
+											new SMLArrayValue(new SMLValue(new SMLStringValue("string"))),
+										})))
+								},
+							})))
 					},
 				});
 
@@ -119,11 +222,12 @@ namespace Soup.Build.Utilities.UnitTests
 			var expected =
 				@"Name: ""MyPackage""
 
-				// A Comment in the file
+				# A Comment in the file
 				Language: ""C++|1""
 				Version: ""1.2.3""
 				EnableErrorsAsWarnings: false
 				EnableCoolFeature: true
+				""Z@#1%"": ""Complex""
 				Dependencies: {
 					Runtime:[], Build:[]
 

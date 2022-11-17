@@ -26,8 +26,22 @@ namespace Soup.Build.Utilities.UnitTests
 				new SMLDocument(
 					new Dictionary<string, SMLTableValue>()
 					{
-						{ "Name", new SMLTableValue(new SMLToken("Name"), new SMLValue(new SMLStringValue("TestProject"))) },
-						{ "Language",  new SMLTableValue(new SMLToken("Language"), new SMLValue(new SMLStringValue("C#"))) },
+						{
+							"Name",
+							new SMLTableValue(
+								new SMLToken("Name"),
+								"Name",
+								new SMLToken(":"),
+								new SMLValue(new SMLStringValue("TestProject")))
+						},
+						{
+							"Language",
+							new SMLTableValue(
+								new SMLToken("Language"),
+								"Language",
+								new SMLToken(":"),
+								new SMLValue(new SMLStringValue("C#")))
+						},
 					}));
 
 			uut.AddRuntimeDependency("SomeDependency");
