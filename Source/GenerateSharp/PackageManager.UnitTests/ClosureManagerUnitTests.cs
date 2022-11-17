@@ -448,20 +448,20 @@ namespace Soup.Build.PackageManager.UnitTests
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/C++/Package1/1.2.3/",
+					"Exists: C:/PackageStore/Cpp/Package1/1.2.3/",
 					"OpenWriteTruncate: C:/Staging/Package1.zip",
 					"CreateDirectory: C:/Staging/C++_Package1_1.2.3/",
 					"DeleteFile: C:/Staging/Package1.zip",
-					"Exists: C:/PackageStore/C++/Package1",
-					"CreateDirectory: C:/PackageStore/C++/Package1",
-					"Rename: [C:/Staging/C++_Package1_1.2.3/] -> [C:/PackageStore/C++/Package1/1.2.3/]",
-					"Exists: C:/PackageStore/C++/Package2/3.2.1/",
+					"Exists: C:/PackageStore/Cpp/Package1",
+					"CreateDirectory: C:/PackageStore/Cpp/Package1",
+					"Rename: [C:/Staging/C++_Package1_1.2.3/] -> [C:/PackageStore/Cpp/Package1/1.2.3/]",
+					"Exists: C:/PackageStore/Cpp/Package2/3.2.1/",
 					"OpenWriteTruncate: C:/Staging/Package2.zip",
 					"CreateDirectory: C:/Staging/C++_Package2_3.2.1/",
 					"DeleteFile: C:/Staging/Package2.zip",
-					"Exists: C:/PackageStore/C++/Package2",
-					"CreateDirectory: C:/PackageStore/C++/Package2",
-					"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/C++/Package2/3.2.1/]",
+					"Exists: C:/PackageStore/Cpp/Package2",
+					"CreateDirectory: C:/PackageStore/Cpp/Package2",
+					"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/Cpp/Package2/3.2.1/]",
 
 				},
 				mockFileSystem.GetRequests());
@@ -603,7 +603,7 @@ namespace Soup.Build.PackageManager.UnitTests
 					"""))));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/C#/Package1/1.2.3/Recipe.sml"),
+				new Path("C:/PackageStore/CSharp/Package1/1.2.3/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 					"""
 					Name: "Package1"
@@ -612,7 +612,7 @@ namespace Soup.Build.PackageManager.UnitTests
 					"""))));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/C#/Soup.Cpp/5.0.0/Recipe.sml"),
+				new Path("C:/PackageStore/CSharp/Soup.Cpp/5.0.0/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 					"""
 					Name: "Soup.Cpp"
@@ -621,7 +621,7 @@ namespace Soup.Build.PackageManager.UnitTests
 					"""))));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/C#/Soup.CSharp/4.0.0/Recipe.sml"),
+				new Path("C:/PackageStore/CSharp/Soup.CSharp/4.0.0/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 					"""
 					Name: "Soup.CSharp"
@@ -709,12 +709,12 @@ namespace Soup.Build.PackageManager.UnitTests
 					"HIGH: Downloading package",
 					"HIGH: Install Package: C# Package1@1.2.3",
 					"HIGH: Downloading package",
-					"DIAG: Create Directory: C:/LockStore/C#/Soup.Cpp/5.0.0/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml",
+					"DIAG: Create Directory: C:/LockStore/CSharp/Soup.Cpp/5.0.0/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/C#/Soup.Cpp/5.0.0/Recipe.sml",
+					"DIAG: Load Recipe: C:/PackageStore/CSharp/Soup.Cpp/5.0.0/Recipe.sml",
 					"INFO: Generate final service closure",
 					"DIAG: Root:C# Soup.Cpp -> ./",
 					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
@@ -726,12 +726,12 @@ namespace Soup.Build.PackageManager.UnitTests
 					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
 					"HIGH: Skip built in language version in build closure",
 					"HIGH: Skip built in language version in build closure",
-					"DIAG: Create Directory: C:/LockStore/C#/Package1/1.2.3/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
+					"DIAG: Create Directory: C:/LockStore/CSharp/Package1/1.2.3/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/C#/Package1/1.2.3/Recipe.sml",
+					"DIAG: Load Recipe: C:/PackageStore/CSharp/Package1/1.2.3/Recipe.sml",
 					"INFO: Generate final service closure",
 					"DIAG: Root:C# Package1 -> ./",
 					"DIAG: Build0:C# Soup.CSharp -> 4.0.0",
@@ -742,12 +742,12 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.CSharp@4.0.0",
 					"HIGH: Downloading package",
-					"DIAG: Create Directory: C:/LockStore/C#/Soup.CSharp/4.0.0/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml",
+					"DIAG: Create Directory: C:/LockStore/CSharp/Soup.CSharp/4.0.0/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/C#/Soup.CSharp/4.0.0/Recipe.sml",
+					"DIAG: Load Recipe: C:/PackageStore/CSharp/Soup.CSharp/4.0.0/Recipe.sml",
 					"INFO: Generate final service closure",
 					"DIAG: Root:C# Soup.CSharp -> ./",
 					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
@@ -770,45 +770,45 @@ namespace Soup.Build.PackageManager.UnitTests
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/C#/Soup.Cpp/5.0.0/",
+					"Exists: C:/PackageStore/CSharp/Soup.Cpp/5.0.0/",
 					"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
 					"CreateDirectory: C:/Staging/C#_Soup.Cpp_5.0.0/",
 					"DeleteFile: C:/Staging/Soup.Cpp.zip",
-					"Exists: C:/PackageStore/C#/Soup.Cpp",
-					"CreateDirectory: C:/PackageStore/C#/Soup.Cpp",
-					"Rename: [C:/Staging/C#_Soup.Cpp_5.0.0/] -> [C:/PackageStore/C#/Soup.Cpp/5.0.0/]",
-					"Exists: C:/PackageStore/C#/Package1/1.2.3/",
+					"Exists: C:/PackageStore/CSharp/Soup.Cpp",
+					"CreateDirectory: C:/PackageStore/CSharp/Soup.Cpp",
+					"Rename: [C:/Staging/C#_Soup.Cpp_5.0.0/] -> [C:/PackageStore/CSharp/Soup.Cpp/5.0.0/]",
+					"Exists: C:/PackageStore/CSharp/Package1/1.2.3/",
 					"OpenWriteTruncate: C:/Staging/Package1.zip",
 					"CreateDirectory: C:/Staging/C#_Package1_1.2.3/",
 					"DeleteFile: C:/Staging/Package1.zip",
-					"Exists: C:/PackageStore/C#/Package1",
-					"CreateDirectory: C:/PackageStore/C#/Package1",
-					"Rename: [C:/Staging/C#_Package1_1.2.3/] -> [C:/PackageStore/C#/Package1/1.2.3/]",
-					"Exists: C:/LockStore/C#/Soup.Cpp/5.0.0/",
-					"CreateDirectory: C:/LockStore/C#/Soup.Cpp/5.0.0/",
-					"Exists: C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/PackageStore/C#/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenRead: C:/PackageStore/C#/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/LockStore/C#/Package1/1.2.3/",
-					"CreateDirectory: C:/LockStore/C#/Package1/1.2.3/",
-					"Exists: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
-					"Exists: C:/PackageStore/C#/Package1/1.2.3/Recipe.sml",
-					"OpenRead: C:/PackageStore/C#/Package1/1.2.3/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/C#/Package1/1.2.3/PackageLock.sml",
-					"Exists: C:/PackageStore/C#/Soup.CSharp/4.0.0/",
+					"Exists: C:/PackageStore/CSharp/Package1",
+					"CreateDirectory: C:/PackageStore/CSharp/Package1",
+					"Rename: [C:/Staging/C#_Package1_1.2.3/] -> [C:/PackageStore/CSharp/Package1/1.2.3/]",
+					"Exists: C:/LockStore/CSharp/Soup.Cpp/5.0.0/",
+					"CreateDirectory: C:/LockStore/CSharp/Soup.Cpp/5.0.0/",
+					"Exists: C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml",
+					"Exists: C:/PackageStore/CSharp/Soup.Cpp/5.0.0/Recipe.sml",
+					"OpenRead: C:/PackageStore/CSharp/Soup.Cpp/5.0.0/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml",
+					"Exists: C:/LockStore/CSharp/Package1/1.2.3/",
+					"CreateDirectory: C:/LockStore/CSharp/Package1/1.2.3/",
+					"Exists: C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml",
+					"Exists: C:/PackageStore/CSharp/Package1/1.2.3/Recipe.sml",
+					"OpenRead: C:/PackageStore/CSharp/Package1/1.2.3/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml",
+					"Exists: C:/PackageStore/CSharp/Soup.CSharp/4.0.0/",
 					"OpenWriteTruncate: C:/Staging/Soup.CSharp.zip",
 					"CreateDirectory: C:/Staging/C#_Soup.CSharp_4.0.0/",
 					"DeleteFile: C:/Staging/Soup.CSharp.zip",
-					"Exists: C:/PackageStore/C#/Soup.CSharp",
-					"CreateDirectory: C:/PackageStore/C#/Soup.CSharp",
-					"Rename: [C:/Staging/C#_Soup.CSharp_4.0.0/] -> [C:/PackageStore/C#/Soup.CSharp/4.0.0/]",
-					"Exists: C:/LockStore/C#/Soup.CSharp/4.0.0/",
-					"CreateDirectory: C:/LockStore/C#/Soup.CSharp/4.0.0/",
-					"Exists: C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml",
-					"Exists: C:/PackageStore/C#/Soup.CSharp/4.0.0/Recipe.sml",
-					"OpenRead: C:/PackageStore/C#/Soup.CSharp/4.0.0/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml",
+					"Exists: C:/PackageStore/CSharp/Soup.CSharp",
+					"CreateDirectory: C:/PackageStore/CSharp/Soup.CSharp",
+					"Rename: [C:/Staging/C#_Soup.CSharp_4.0.0/] -> [C:/PackageStore/CSharp/Soup.CSharp/4.0.0/]",
+					"Exists: C:/LockStore/CSharp/Soup.CSharp/4.0.0/",
+					"CreateDirectory: C:/LockStore/CSharp/Soup.CSharp/4.0.0/",
+					"Exists: C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml",
+					"Exists: C:/PackageStore/CSharp/Soup.CSharp/4.0.0/Recipe.sml",
+					"OpenRead: C:/PackageStore/CSharp/Soup.CSharp/4.0.0/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml",
 				},
 				mockFileSystem.GetRequests());
 
@@ -1012,7 +1012,7 @@ namespace Soup.Build.PackageManager.UnitTests
 
 			Assert.Equal(expected, packageLockContent);
 
-			var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/C#/Package1/1.2.3/PackageLock.sml"));
+			var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml"));
 			package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 			using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
 			var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
@@ -1035,7 +1035,7 @@ namespace Soup.Build.PackageManager.UnitTests
 
 			Assert.Equal(expectedPackage1Lock, package1LockContent);
 
-			var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/C#/Soup.Cpp/5.0.0/PackageLock.sml"));
+			var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml"));
 			soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 			using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
 			var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
@@ -1058,7 +1058,7 @@ namespace Soup.Build.PackageManager.UnitTests
 
 			Assert.Equal(expectedSoupCppLock, soupCppLockContent);
 
-			var soupCSharpLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/C#/Soup.CSharp/4.0.0/PackageLock.sml"));
+			var soupCSharpLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml"));
 			soupCSharpLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 			using var readerSoupCSharpLock = new System.IO.StreamReader(soupCSharpLock.Content);
 			var soupCSharpLockContent = await readerSoupCSharpLock.ReadToEndAsync();
@@ -1384,7 +1384,7 @@ namespace Soup.Build.PackageManager.UnitTests
 				new MockFile(originalContent));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/C#/Soup.Cpp/3.2.2/Recipe.sml"),
+				new Path("C:/PackageStore/CSharp/Soup.Cpp/3.2.2/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 					"""
 					Name: "Soup.Cpp"
@@ -1469,12 +1469,12 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Restore Packages for Language C#",
 					"HIGH: Install Package: C# Soup.Cpp@3.2.2",
 					"HIGH: Downloading package",
-					"DIAG: Create Directory: C:/LockStore/C#/Soup.Cpp/3.2.2/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/C#/Soup.Cpp/3.2.2/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/C#/Soup.Cpp/3.2.2/PackageLock.sml",
+					"DIAG: Create Directory: C:/LockStore/CSharp/Soup.Cpp/3.2.2/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/CSharp/Soup.Cpp/3.2.2/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/CSharp/Soup.Cpp/3.2.2/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/C#/Soup.Cpp/3.2.2/Recipe.sml",
+					"DIAG: Load Recipe: C:/PackageStore/CSharp/Soup.Cpp/3.2.2/Recipe.sml",
 					"INFO: Generate final service closure",
 					"DIAG: Root:C# Soup.Cpp -> ./",
 					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
@@ -1495,33 +1495,33 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"OpenRead: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/C++/Package1/1.2.4/",
+					"Exists: C:/PackageStore/Cpp/Package1/1.2.4/",
 					"OpenWriteTruncate: C:/Staging/Package1.zip",
 					"CreateDirectory: C:/Staging/C++_Package1_1.2.4/",
 					"DeleteFile: C:/Staging/Package1.zip",
-					"Exists: C:/PackageStore/C++/Package1",
-					"CreateDirectory: C:/PackageStore/C++/Package1",
-					"Rename: [C:/Staging/C++_Package1_1.2.4/] -> [C:/PackageStore/C++/Package1/1.2.4/]",
-					"Exists: C:/PackageStore/C++/Package2/3.2.1/",
+					"Exists: C:/PackageStore/Cpp/Package1",
+					"CreateDirectory: C:/PackageStore/Cpp/Package1",
+					"Rename: [C:/Staging/C++_Package1_1.2.4/] -> [C:/PackageStore/Cpp/Package1/1.2.4/]",
+					"Exists: C:/PackageStore/Cpp/Package2/3.2.1/",
 					"OpenWriteTruncate: C:/Staging/Package2.zip",
 					"CreateDirectory: C:/Staging/C++_Package2_3.2.1/",
 					"DeleteFile: C:/Staging/Package2.zip",
-					"Exists: C:/PackageStore/C++/Package2",
-					"CreateDirectory: C:/PackageStore/C++/Package2",
-					"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/C++/Package2/3.2.1/]",
-					"Exists: C:/PackageStore/C#/Soup.Cpp/3.2.2/",
+					"Exists: C:/PackageStore/Cpp/Package2",
+					"CreateDirectory: C:/PackageStore/Cpp/Package2",
+					"Rename: [C:/Staging/C++_Package2_3.2.1/] -> [C:/PackageStore/Cpp/Package2/3.2.1/]",
+					"Exists: C:/PackageStore/CSharp/Soup.Cpp/3.2.2/",
 					"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
 					"CreateDirectory: C:/Staging/C#_Soup.Cpp_3.2.2/",
 					"DeleteFile: C:/Staging/Soup.Cpp.zip",
-					"Exists: C:/PackageStore/C#/Soup.Cpp",
-					"CreateDirectory: C:/PackageStore/C#/Soup.Cpp",
-					"Rename: [C:/Staging/C#_Soup.Cpp_3.2.2/] -> [C:/PackageStore/C#/Soup.Cpp/3.2.2/]",
-					"Exists: C:/LockStore/C#/Soup.Cpp/3.2.2/",
-					"CreateDirectory: C:/LockStore/C#/Soup.Cpp/3.2.2/",
-					"Exists: C:/LockStore/C#/Soup.Cpp/3.2.2/PackageLock.sml",
-					"Exists: C:/PackageStore/C#/Soup.Cpp/3.2.2/Recipe.sml",
-					"OpenRead: C:/PackageStore/C#/Soup.Cpp/3.2.2/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/C#/Soup.Cpp/3.2.2/PackageLock.sml",
+					"Exists: C:/PackageStore/CSharp/Soup.Cpp",
+					"CreateDirectory: C:/PackageStore/CSharp/Soup.Cpp",
+					"Rename: [C:/Staging/C#_Soup.Cpp_3.2.2/] -> [C:/PackageStore/CSharp/Soup.Cpp/3.2.2/]",
+					"Exists: C:/LockStore/CSharp/Soup.Cpp/3.2.2/",
+					"CreateDirectory: C:/LockStore/CSharp/Soup.Cpp/3.2.2/",
+					"Exists: C:/LockStore/CSharp/Soup.Cpp/3.2.2/PackageLock.sml",
+					"Exists: C:/PackageStore/CSharp/Soup.Cpp/3.2.2/Recipe.sml",
+					"OpenRead: C:/PackageStore/CSharp/Soup.Cpp/3.2.2/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/CSharp/Soup.Cpp/3.2.2/PackageLock.sml",
 				},
 				mockFileSystem.GetRequests());
 
@@ -1662,10 +1662,10 @@ namespace Soup.Build.PackageManager.UnitTests
 			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
 			mockFileSystem.RegisterChildren(
-				new Path("C:/PackageStore/C++/Package1/1.2.4/"),
+				new Path("C:/PackageStore/Cpp/Package1/1.2.4/"),
 				new List<DirectoryEntry>());
 			mockFileSystem.RegisterChildren(
-				new Path("C:/PackageStore/C++/Package2/3.2.1/"),
+				new Path("C:/PackageStore/Cpp/Package2/3.2.1/"),
 				new List<DirectoryEntry>());
 
 			// Create the original file
@@ -1738,8 +1738,8 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					"Exists: C:/Root/MyPackage/PackageLock.sml",
 					"OpenRead: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/C++/Package1/1.2.4/",
-					"Exists: C:/PackageStore/C++/Package2/3.2.1/",
+					"Exists: C:/PackageStore/Cpp/Package1/1.2.4/",
+					"Exists: C:/PackageStore/Cpp/Package2/3.2.1/",
 				},
 				mockFileSystem.GetRequests());
 		}

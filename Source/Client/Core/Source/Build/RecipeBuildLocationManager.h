@@ -8,6 +8,7 @@
 #include "ValueTable/ValueTableWriter.h"
 #include "PackageProvider.h"
 #include "RecipeBuildCacheState.h"
+#include "BuiltInLanguagePackage.h"
 
 namespace Soup::Core
 {
@@ -17,8 +18,21 @@ namespace Soup::Core
 	/// </summary>
 	export class RecipeBuildLocationManager
 	{
+	private:
+		// Built in languages
+		const std::map<std::string, BuiltInLanguagePackage>& _builtInLanguageLookup;
+
 	public:
-		static Path GetOutputDirectory(
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RecipeBuildLocationManager"/> class.
+		/// </summary>
+		RecipeBuildLocationManager(
+			const std::map<std::string, BuiltInLanguagePackage>& builtInLanguageLookup) :
+			_builtInLanguageLookup(builtInLanguageLookup)
+		{
+		}
+
+		Path GetOutputDirectory(
 			const Path& packageRoot,
 			const Recipe& recipe,
 			const ValueTable& globalParameters,
@@ -47,7 +61,9 @@ namespace Soup::Core
 					rootOutput = rootRecipe->GetOutputRoot();
 
 					// Add the language sub folder
-					rootOutput = rootOutput + Path(recipe.GetLanguage().GetName() + "/");
+					auto language = recipe.GetLanguage().GetName();
+					auto languageSafeName = GetLanguageSafeName(language);
+					rootOutput = rootOutput + Path(languageSafeName + "/");
 
 					// Add the unique recipe name/version
 					rootOutput = rootOutput + Path(recipe.GetName() + "/") + Path(recipe.GetVersion().ToString() + "/");
@@ -70,6 +86,17 @@ namespace Soup::Core
 			rootOutput = rootOutput + uniqueParametersFolder;
 
 			return rootOutput;
+		}
+
+	private:
+		const std::string& GetLanguageSafeName(const std::string& language) const
+		{
+			// Get the active version
+			auto builtInLanguageResult = _builtInLanguageLookup.find(language);
+			if (builtInLanguageResult == _builtInLanguageLookup.end())
+				throw std::runtime_error("Unknown language: " + language);
+
+			return builtInLanguageResult->second.LanguageSafeName;
 		}
 	};
 }

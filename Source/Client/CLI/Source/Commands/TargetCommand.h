@@ -83,7 +83,9 @@ namespace Soup::Client
 			globalParameters.SetValue("System", Core::Value(std::string(system)));
 
 			// Load the value table to get the exe path
-			auto targetDirectory = Core::RecipeBuildLocationManager::GetOutputDirectory(
+			auto builtInLanguages = Core::BuildEngine::GetBuiltInLanguages();
+			auto locationManager = Core::RecipeBuildLocationManager(builtInLanguages);
+			auto targetDirectory = locationManager.GetOutputDirectory(
 				workingDirectory,
 				*recipe,
 				globalParameters,

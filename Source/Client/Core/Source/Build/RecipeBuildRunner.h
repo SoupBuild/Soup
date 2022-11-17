@@ -41,6 +41,7 @@ namespace Soup::Core
 		PackageProvider& _packageProvider;
 		IEvaluateEngine& _evaluateEngine;
 		FileSystemState& _fileSystemState;
+		RecipeBuildLocationManager& _locationManager;
 
 		// Mapping from package id to the required information to be used with dependencies parameters
 		std::map<PackageId, RecipeBuildCacheState> _buildCache;
@@ -57,7 +58,8 @@ namespace Soup::Core
 			RecipeCache& recipeCache,
 			PackageProvider& packageProvider,
 			IEvaluateEngine& evaluateEngine,
-			FileSystemState& fileSystemState) :
+			FileSystemState& fileSystemState,
+			RecipeBuildLocationManager& locationManager) :
 			_arguments(arguments),
 			_sdkParameters(sdkParameters),
 			_sdkReadAccess(sdkReadAccess),
@@ -66,6 +68,7 @@ namespace Soup::Core
 			_packageProvider(packageProvider),
 			_evaluateEngine(evaluateEngine),
 			_fileSystemState(fileSystemState),
+			_locationManager(locationManager),
 			_buildCache()
 		{
 		}
@@ -169,7 +172,7 @@ namespace Soup::Core
 			Log::Info("Build '" + packageInfo.Recipe.GetName() + "'");
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto targetDirectory = RecipeBuildLocationManager::GetOutputDirectory(
+			auto targetDirectory = _locationManager.GetOutputDirectory(
 				packageInfo.PackageRoot,
 				packageInfo.Recipe,
 				packageGraph.GlobalParameters,

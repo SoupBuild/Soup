@@ -16,6 +16,30 @@ namespace Soup::Core
 	export class BuildEngine
 	{
 	public:
+		static std::map<std::string, BuiltInLanguagePackage> GetBuiltInLanguages()
+		{
+			auto result = std::map<std::string, BuiltInLanguagePackage>(
+			{
+				{
+					"C++",
+					 BuiltInLanguagePackage(
+						"Cpp",
+						"Soup.Cpp",
+						SemanticVersion(0, 4, 0),
+						Path("Soup.Cpp.dll"))
+				},
+				{
+					"C#",
+					BuiltInLanguagePackage(
+						"CSharp",
+						"Soup.CSharp",
+						SemanticVersion(0, 7, 0),
+						Path("Soup.CSharp.dll"))
+				},
+			});
+			return result;
+		}
+
 		/// <summary>
 		/// The Core Execute task
 		/// </summary>
@@ -48,25 +72,7 @@ namespace Soup::Core
 			startTime = std::chrono::high_resolution_clock::now();
 
 			// Generate the package build graph
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
-			{
-				{
-					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(0, 4, 0),
-						Path("Soup.Cpp.dll"))
-				},
-				{
-					"C#",
-					BuiltInLanguagePackage(
-						"CSharp",
-						"Soup.CSharp",
-						SemanticVersion(0, 7, 0),
-						Path("Soup.CSharp.dll"))
-				},
-			});
+			auto builtInLanguages = GetBuiltInLanguages();
 			auto recipeCache = RecipeCache();
 			auto loadEngine = BuildLoadEngine(
 				builtInLanguages,
@@ -88,6 +94,9 @@ namespace Soup::Core
 			// Initialize a shared Evaluate Engine
 			auto evaluateEngine = BuildEvaluateEngine(fileSystemState);
 
+			// Initialize shared location manager
+			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+
 			// Initialize the build runner that will perform the generate and evaluate phase
 			// for each individual package
 			auto buildRunner = RecipeBuildRunner(
@@ -98,7 +107,8 @@ namespace Soup::Core
 				recipeCache,
 				packageProvider,
 				evaluateEngine,
-				fileSystemState);
+				fileSystemState,
+				locationManager);
 			buildRunner.Execute();
 
 			endTime = std::chrono::high_resolution_clock::now();
