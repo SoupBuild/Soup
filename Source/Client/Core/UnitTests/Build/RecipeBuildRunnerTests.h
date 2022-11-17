@@ -21,6 +21,8 @@ namespace Soup::Core::UnitTests
 			auto packageProvider = PackageProvider(1, PackageGraphLookupMap(), PackageLookupMap());
 			auto evaluateEngine = MockEvaluateEngine();
 			auto fileSystemState = FileSystemState();
+			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
+			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
 			auto uut = RecipeBuildRunner(
 				std::move(arguments),
 				std::move(sdkParameters),
@@ -29,7 +31,8 @@ namespace Soup::Core::UnitTests
 				recipeCache,
 				packageProvider,
 				evaluateEngine,
-				fileSystemState);
+				fileSystemState,
+				locationManager);
 		}
 
 		// [[Fact]]
@@ -101,6 +104,8 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
+			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
+			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
 			auto uut = RecipeBuildRunner(
 				arguments,
 				sdkParameters,
@@ -109,7 +114,8 @@ namespace Soup::Core::UnitTests
 				recipeCache,
 				packageProvider,
 				evaluateEngine,
-				fileSystemState);
+				fileSystemState,
+				locationManager);
 			uut.Execute();
 
 			// Verify expected logs
@@ -272,7 +278,7 @@ namespace Soup::Core::UnitTests
 			auto testBuildOperationGraphContent = std::stringstream();
 			OperationGraphWriter::Serialize(testBuildOperationGraph, testBuildOperationGraphFiles, fileSystemState,  testBuildOperationGraphContent);
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog"),
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog"),
 				std::make_shared<MockFile>(std::move(testBuildOperationGraphContent)));
 
 			// Register the test process manager
@@ -302,7 +308,7 @@ namespace Soup::Core::UnitTests
 						std::nullopt)
 				},
 				{
-					"C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml",
+					"C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/Recipe.sml",
 					Recipe(
 						"TestBuild",
 						LanguageReference("C#", SemanticVersion(1)),
@@ -365,13 +371,15 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
-							Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3"),
-							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/Recipe.sml")),
+							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3"),
+							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/Recipe.sml")),
 							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap())
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
+			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
+			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
 			auto uut = RecipeBuildRunner(
 				arguments,
 				sdkParameters,
@@ -380,7 +388,8 @@ namespace Soup::Core::UnitTests
 				recipeCache,
 				packageProvider,
 				evaluateEngine,
-				fileSystemState);
+				fileSystemState,
+				locationManager);
 			uut.Execute();
 
 			// Verify expected logs
@@ -393,24 +402,24 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Checking for existing Evaluate Operation Results",
 					"INFO: 2>Operation results file does not exist",
 					"INFO: 2>No previous results found",
-					"INFO: 2>Check outdated parameters file: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
+					"INFO: 2>Check outdated parameters file: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
 					"INFO: 2>Value Table file does not exist",
 					"INFO: 2>Save Parameters file",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"INFO: 2>Check outdated read access file: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"INFO: 2>Check outdated read access file: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
 					"INFO: 2>Path list file does not exist",
 					"INFO: 2>Save Read Access file",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"INFO: 2>Check outdated write access file: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"INFO: 2>Check outdated write access file: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
 					"INFO: 2>Path list file does not exist",
 					"INFO: 2>Save Write Access file",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
 					"INFO: 2>Checking for existing Generate Operation Results",
 					"INFO: 2>Operation results file does not exist",
 					"INFO: 2>No previous results found",
 					"INFO: 2>Loading new Evaluate Operation Graph",
 					"DIAG: 2>Map previous operation graph observed results",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
 					"INFO: 2>Saving updated build state",
 					"INFO: 2>Done",
 					"DIAG: 1>Running Build: C++|MyPackage",
@@ -447,35 +456,35 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/RootRecipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/RootRecipe.sml",
 					"Exists: C:/Users/Me/RootRecipe.sml",
 					"Exists: C:/Users/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bor",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bor",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bor",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bor",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -516,8 +525,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected evaluate requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Evaluate: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
-					"Evaluate: C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"Evaluate: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"Evaluate: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
 					"Evaluate: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"Evaluate: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					}),
@@ -526,36 +535,36 @@ namespace Soup::Core::UnitTests
 
 			// Verify files
 			auto testBuildGenerateParametersMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt"));
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
 				ValueTable(std::map<std::string, Value>({
 					{ "Dependencies", Value(ValueTable()), },
 					{ "HostValue", Value(true) },
 					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3")), },
+					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3")), },
 					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
+					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
+					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
 				})),
 				ValueTableReader::Deserialize(testBuildGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
 			auto testBuildGenerateReadAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt"));
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/C#/TestBuild/1.2.3\nC:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
 				testBuildGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto testBuildGenerateWriteAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt"));
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
+				"C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
 				testBuildGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto testBuildGenerateResultsMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor"));
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor"));
 			auto testBuildGenerateResults = OperationResultsReader::Deserialize(testBuildGenerateResultsMockFile->Content, fileSystemState);
 
 			Assert::AreEqual(
@@ -581,8 +590,8 @@ namespace Soup::Core::UnitTests
 						{ "Build", Value(ValueTable(std::map<std::string, Value>({
 							{ "TestBuild", Value(ValueTable(std::map<std::string, Value>({
 								{ "Reference", Value(std::string("TestBuild@1.2.3")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
+								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
+								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
 							}))), },
 						}))), },
 					}))), },
@@ -598,7 +607,7 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/C#/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -656,7 +665,7 @@ namespace Soup::Core::UnitTests
 			auto packageAOperationGraphContent = std::stringstream();
 			OperationGraphWriter::Serialize(packageAOperationGraph, packageAOperationGraphFiles, fileSystemState, packageAOperationGraphContent);
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog"),
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog"),
 				std::make_shared<MockFile>(std::move(packageAOperationGraphContent)));
 			auto packageBOperationGraph = OperationGraph(
 				std::vector<OperationId>(),
@@ -665,7 +674,7 @@ namespace Soup::Core::UnitTests
 			auto packageBOperationGraphContent = std::stringstream();
 			OperationGraphWriter::Serialize(packageBOperationGraph, packageBOperationGraphFiles, fileSystemState, packageBOperationGraphContent);
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog"),
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog"),
 				std::make_shared<MockFile>(std::move(packageBOperationGraphContent)));
 
 			// Register the test process manager
@@ -696,7 +705,7 @@ namespace Soup::Core::UnitTests
 						std::nullopt)
 				},
 				{
-					"C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml",
+					"C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/Recipe.sml",
 					Recipe(
 						"PackageA",
 						LanguageReference("C++", SemanticVersion(1)),
@@ -708,7 +717,7 @@ namespace Soup::Core::UnitTests
 						std::nullopt)
 				},
 				{
-					"C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml",
+					"C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/Recipe.sml",
 					Recipe(
 						"PackageB",
 						LanguageReference("C++", SemanticVersion(1)),
@@ -759,8 +768,8 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
-							Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3"),
-							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/Recipe.sml")),
+							Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3"),
+							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/Recipe.sml")),
 							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap({
 								{
@@ -775,13 +784,15 @@ namespace Soup::Core::UnitTests
 						3,
 						PackageInfo(
 							3,
-							Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1"),
-							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/Recipe.sml")),
+							Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1"),
+							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/Recipe.sml")),
 							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap())
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
+			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
+			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
 			auto uut = RecipeBuildRunner(
 				arguments,
 				sdkParameters,
@@ -790,7 +801,8 @@ namespace Soup::Core::UnitTests
 				recipeCache,
 				packageProvider,
 				evaluateEngine,
-				fileSystemState);
+				fileSystemState,
+				locationManager);
 			uut.Execute();
 
 			// Verify expected logs
@@ -803,24 +815,24 @@ namespace Soup::Core::UnitTests
 					"INFO: 3>Checking for existing Evaluate Operation Results",
 					"INFO: 3>Operation results file does not exist",
 					"INFO: 3>No previous results found",
-					"INFO: 3>Check outdated parameters file: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
+					"INFO: 3>Check outdated parameters file: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
 					"INFO: 3>Value Table file does not exist",
 					"INFO: 3>Save Parameters file",
-					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"INFO: 3>Check outdated read access file: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
+					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"INFO: 3>Check outdated read access file: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
 					"INFO: 3>Path list file does not exist",
 					"INFO: 3>Save Read Access file",
-					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"INFO: 3>Check outdated write access file: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
+					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"INFO: 3>Check outdated write access file: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
 					"INFO: 3>Path list file does not exist",
 					"INFO: 3>Save Write Access file",
-					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
 					"INFO: 3>Checking for existing Generate Operation Results",
 					"INFO: 3>Operation results file does not exist",
 					"INFO: 3>No previous results found",
 					"INFO: 3>Loading new Evaluate Operation Graph",
 					"DIAG: 3>Map previous operation graph observed results",
-					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 3>Saving updated build state",
 					"INFO: 3>Done",
 					"DIAG: 2>Running Build: C++|PackageA",
@@ -830,24 +842,24 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Checking for existing Evaluate Operation Results",
 					"INFO: 2>Operation results file does not exist",
 					"INFO: 2>No previous results found",
-					"INFO: 2>Check outdated parameters file: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
+					"INFO: 2>Check outdated parameters file: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
 					"INFO: 2>Value Table file does not exist",
 					"INFO: 2>Save Parameters file",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"INFO: 2>Check outdated read access file: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"INFO: 2>Check outdated read access file: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
 					"INFO: 2>Path list file does not exist",
 					"INFO: 2>Save Read Access file",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"INFO: 2>Check outdated write access file: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"INFO: 2>Check outdated write access file: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
 					"INFO: 2>Path list file does not exist",
 					"INFO: 2>Save Write Access file",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
 					"INFO: 2>Checking for existing Generate Operation Results",
 					"INFO: 2>Operation results file does not exist",
 					"INFO: 2>No previous results found",
 					"INFO: 2>Loading new Evaluate Operation Graph",
 					"DIAG: 2>Map previous operation graph observed results",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 2>Saving updated build state",
 					"INFO: 2>Done",
 					"DIAG: 3>Running Build: C++|PackageB",
@@ -886,64 +898,64 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/RootRecipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C++/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/RootRecipe.sml",
 					"Exists: C:/Users/Me/RootRecipe.sml",
 					"Exists: C:/Users/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bor",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bor",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/RootRecipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C++/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bor",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bor",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/RootRecipe.sml",
 					"Exists: C:/Users/Me/RootRecipe.sml",
 					"Exists: C:/Users/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bor",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bor",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bor",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bor",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -985,10 +997,10 @@ namespace Soup::Core::UnitTests
 			// Verify expected evaluate requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Evaluate: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
-					"Evaluate: C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
-					"Evaluate: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
-					"Evaluate: C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"Evaluate: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"Evaluate: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"Evaluate: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
+					"Evaluate: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"Evaluate: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"Evaluate: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 				}),
@@ -997,7 +1009,7 @@ namespace Soup::Core::UnitTests
 
 			// Verify files
 			auto packageAGenerateParametersMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
 				ValueTable(std::map<std::string, Value>({
 					{ "ArgumentValue", Value(true) },
@@ -1005,36 +1017,36 @@ namespace Soup::Core::UnitTests
 						{ "Runtime", Value(ValueTable(std::map<std::string, Value>({
 							{ "PackageB", Value(ValueTable(std::map<std::string, Value>({
 								{ "Reference", Value(std::string("PackageB@1.1.1")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
+								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
+								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
 							}))), },
 						}))), },
 					}))), },
 					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3")), },
+					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3")), },
 					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
+					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
+					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
 				})),
 				ValueTableReader::Deserialize(packageAGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
 			auto packageAGenerateReadAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/C++/PackageA/1.2.3\nC:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
 				packageAGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto packageAGenerateWriteAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
 				packageAGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto packageAGenerateResultsMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor"));
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor"));
 			auto packageAGenerateResults = OperationResultsReader::Deserialize(packageAGenerateResultsMockFile->Content, fileSystemState);
 
 			Assert::AreEqual(
@@ -1052,36 +1064,36 @@ namespace Soup::Core::UnitTests
 				"Verify package A generate results content match expected.");
 
 			auto packageBGenerateParametersMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
 				ValueTable(std::map<std::string, Value>({
 					{ "ArgumentValue", Value(true), },
 					{ "Dependencies", Value(ValueTable()), },
 					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1")), },
+					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1")), },
 					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
+					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
+					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
 				})),
 				ValueTableReader::Deserialize(packageBGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
 			auto packageBGenerateReadAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/C++/PackageB/1.1.1\nC:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
 				packageBGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto packageBGenerateWriteAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
 				packageBGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto packageBGenerateResultsMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor"));
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Generate.bor"));
 			auto packageBGenerateResults = OperationResultsReader::Deserialize(packageBGenerateResultsMockFile->Content, fileSystemState);
 
 			Assert::AreEqual(
@@ -1107,13 +1119,13 @@ namespace Soup::Core::UnitTests
 						{ "Runtime", Value(ValueTable(std::map<std::string, Value>({
 							{ "PackageA", Value(ValueTable(std::map<std::string, Value>({
 								{ "Reference", Value(std::string("PackageA@1.2.3")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
+								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
+								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
 							}))), },
 							{ "PackageB", Value(ValueTable(std::map<std::string, Value>({
 								{ "Reference", Value(std::string("PackageB@1.1.1")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
+								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
+								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
 							}))), },
 						}))), },
 					}))), },
@@ -1129,7 +1141,7 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/C++/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/C++/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -1175,24 +1187,24 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 3
+					Version: 4
 					Closures: {
 						Root: {
-							CSharp: [
+							"C#": [
 								{ Name: "TestBuild", Version: "1.3.0", Build: "Build1" }
 							]
-							Cpp: [
+							"C++": [
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
 						}
 						Build0: {
-							CSharp: [
+							"C#": [
 								{ Name: "Soup.Cpp", Version: "1.0.2" }
 								{ Name: "TestBuild", Version: "1.3.0" }
 							]
 						}
 						Build1: {
-							CSharp: [
+							"C#": [
 								{ Name: "Soup.CSharp", Version: "1.0.1" }
 							]
 						}
@@ -1216,7 +1228,7 @@ namespace Soup::Core::UnitTests
 			auto testBuildOperationGraphContent = std::stringstream();
 			OperationGraphWriter::Serialize(testBuildOperationGraph, testBuildOperationGraphFiles, fileSystemState, testBuildOperationGraphContent);
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog"),
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog"),
 				std::make_shared<MockFile>(std::move(testBuildOperationGraphContent)));
 
 			// Register the test process manager
@@ -1246,7 +1258,7 @@ namespace Soup::Core::UnitTests
 						std::nullopt)
 				},
 				{
-					"C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml",
+					"C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/Recipe.sml",
 					Recipe(
 						"TestBuild",
 						LanguageReference("C#", SemanticVersion(1)),
@@ -1309,13 +1321,15 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
-							Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0"),
-							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/Recipe.sml")),
+							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0"),
+							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/Recipe.sml")),
 							Path("C:/Extension/Language.Build.dll"),
 							PackageChildrenMap())
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
+			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
+			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
 			auto uut = RecipeBuildRunner(
 				arguments,
 				sdkParameters,
@@ -1324,7 +1338,8 @@ namespace Soup::Core::UnitTests
 				recipeCache,
 				packageProvider,
 				evaluateEngine,
-				fileSystemState);
+				fileSystemState,
+				locationManager);
 			uut.Execute();
 
 			// Verify expected logs
@@ -1337,24 +1352,24 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Checking for existing Evaluate Operation Results",
 					"INFO: 2>Operation results file does not exist",
 					"INFO: 2>No previous results found",
-					"INFO: 2>Check outdated parameters file: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
+					"INFO: 2>Check outdated parameters file: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
 					"INFO: 2>Value Table file does not exist",
 					"INFO: 2>Save Parameters file",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"INFO: 2>Check outdated read access file: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"INFO: 2>Check outdated read access file: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
 					"INFO: 2>Path list file does not exist",
 					"INFO: 2>Save Read Access file",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"INFO: 2>Check outdated write access file: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"INFO: 2>Check outdated write access file: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
 					"INFO: 2>Path list file does not exist",
 					"INFO: 2>Save Write Access file",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
 					"INFO: 2>Checking for existing Generate Operation Results",
 					"INFO: 2>Operation results file does not exist",
 					"INFO: 2>No previous results found",
 					"INFO: 2>Loading new Evaluate Operation Graph",
 					"DIAG: 2>Map previous operation graph observed results",
-					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
 					"INFO: 2>Saving updated build state",
 					"INFO: 2>Done",
 					"DIAG: 1>Running Build: C++|MyPackage",
@@ -1391,35 +1406,35 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/RootRecipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/RootRecipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/packages/RootRecipe.sml",
 					"Exists: C:/Users/Me/.soup/RootRecipe.sml",
 					"Exists: C:/Users/Me/RootRecipe.sml",
 					"Exists: C:/Users/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bor",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
-					"CreateDirectory: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
-					"OpenWriteBinary: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bor",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bor",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bog",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"CreateDirectory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"OpenWriteBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Evaluate.bor",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/Evaluate.bog",
@@ -1460,8 +1475,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected evaluate requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Evaluate: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
-					"Evaluate: C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"Evaluate: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
+					"Evaluate: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
 					"Evaluate: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"Evaluate: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 				}),
@@ -1470,36 +1485,36 @@ namespace Soup::Core::UnitTests
 
 			// Verify files
 			auto testBuildGenerateParametersMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt"));
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
 				ValueTable(std::map<std::string, Value>({
 					{ "Dependencies", Value(ValueTable()), },
 					{ "HostValue", Value(true) },
 					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0")), },
+					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0")), },
 					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
+					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
+					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
 				})),
 				ValueTableReader::Deserialize(testBuildGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
 			auto testBuildGenerateReadAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt"));
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/C#/TestBuild/1.3.0\nC:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
 				testBuildGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto testBuildGenerateWriteAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt"));
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
+				"C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
 				testBuildGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto testBuildGenerateResultsMockFile = fileSystem->GetMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor"));
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/Generate.bor"));
 			auto testBuildGenerateResults = OperationResultsReader::Deserialize(testBuildGenerateResultsMockFile->Content, fileSystemState);
 
 			Assert::AreEqual(
@@ -1525,8 +1540,8 @@ namespace Soup::Core::UnitTests
 						{ "Build", Value(ValueTable(std::map<std::string, Value>({
 							{ "TestBuild", Value(ValueTable(std::map<std::string, Value>({
 								{ "Reference", Value(std::string("TestBuild@1.2.3")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
+								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
+								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
 							}))), },
 						}))), },
 					}))), },
@@ -1542,7 +1557,7 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/C#/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 

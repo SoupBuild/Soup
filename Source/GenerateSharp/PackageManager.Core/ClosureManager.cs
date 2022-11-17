@@ -18,6 +18,7 @@ namespace Soup.Build.PackageManager
 	/// </summary>
 	public class ClosureManager : IClosureManager
 	{
+		private const int PackageLockVersion = 4;
 		private const string RootClosureName = "Root";
 		private const string BuiltInLanguageCSharp = "C#";
 		private const string BuiltInLanguageCpp = "C++";
@@ -116,10 +117,9 @@ namespace Soup.Build.PackageManager
 				// Skip the root closure and only generate locks for the build extensions
 				if (closure.Key != RootClosureName)
 				{
-					foreach (var languageProjects in closure.Value.Value.AsTable().Values)
+					foreach (var (languageName, languageProjects) in closure.Value.Value.AsTable().Values)
 					{
-						var languageName = GetLanguageName(languageProjects.Key);
-						foreach (var project in languageProjects.Value.Value.AsArray().Values)
+						foreach (var project in languageProjects.Value.AsArray().Values)
 						{
 							var projectTable = project.Value.AsTable();
 							var projectName = projectTable.Values[PackageLock.Property_Name].Value.AsString().Value;
@@ -134,8 +134,9 @@ namespace Soup.Build.PackageManager
 								}
 								else
 								{
+									var languageSafeName = GetLanguageSafeName(languageName);
 									var packageLanguageNameVersionPath =
-										new Path(languageName) +
+										new Path(languageSafeName) +
 										new Path(projectName) +
 										new Path(version.ToString()) +
 										new Path("/");
@@ -394,11 +395,10 @@ namespace Soup.Build.PackageManager
 			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
 		{
 			var packageLock = new PackageLock();
-			packageLock.SetVersion(3);
-			foreach (var languageClosure in closure.OrderBy(value => value.Key))
+			packageLock.SetVersion(PackageLockVersion);
+			foreach (var (languageName, languageClosure) in closure.OrderBy(value => value.Key))
 			{
-				var languageSafeName = GetLanguageSafeName(languageClosure.Key);
-				foreach (var (key, (package, buildClosure)) in languageClosure.Value.OrderBy(value => value.Key))
+				foreach (var (packageName, (package, buildClosure)) in languageClosure.OrderBy(value => value.Key))
 				{
 					var value = string.Empty;
 					if (package.IsLocal)
@@ -412,11 +412,11 @@ namespace Soup.Build.PackageManager
 						value = package.Version.ToString();
 					}
 
-					Log.Diag($"{RootClosureName}:{languageClosure.Key} {key} -> {value}");
+					Log.Diag($"{RootClosureName}:{languageName} {packageName} -> {value}");
 					packageLock.AddProject(
 						RootClosureName,
-						languageSafeName,
-						key,
+						languageName,
+						packageName,
 						value,
 						buildClosure);
 				}
@@ -425,10 +425,9 @@ namespace Soup.Build.PackageManager
 			foreach (var buildClosure in buildClosures.OrderBy(value => value.Key))
 			{
 				packageLock.EnsureClosure(buildClosure.Key);
-				foreach (var languageClosure in buildClosure.Value.OrderBy(value => value.Key))
+				foreach (var (languageName, languageClosure) in buildClosure.Value.OrderBy(value => value.Key))
 				{
-					var languageSafeName = GetLanguageSafeName(languageClosure.Key);
-					foreach (var (key, package) in languageClosure.Value)
+					foreach (var (packageName, package) in languageClosure)
 					{
 						var value = string.Empty;
 						if (package.IsLocal)
@@ -442,11 +441,11 @@ namespace Soup.Build.PackageManager
 							value = package.Version.ToString();
 						}
 
-						Log.Diag($"{buildClosure.Key}:{languageClosure.Key} {key} -> {value}");
+						Log.Diag($"{buildClosure.Key}:{languageName} {packageName} -> {value}");
 						packageLock.AddProject(
 							buildClosure.Key,
-							languageSafeName,
-							key,
+							languageName,
+							packageName,
 							value,
 							null);
 					}
@@ -650,11 +649,10 @@ namespace Soup.Build.PackageManager
 			{
 				Log.Info($"Restore Packages for Closure {closure.Key}");
 				var isRuntime = closure.Key == RootClosureName;
-				foreach (var languageProjects in closure.Value.Value.AsTable().Values)
+				foreach (var (languageName, languageProjects) in closure.Value.Value.AsTable().Values)
 				{
-					var languageName = GetLanguageName(languageProjects.Key);
 					Log.Info($"Restore Packages for Language {languageName}");
-					foreach (var project in languageProjects.Value.Value.AsArray().Values)
+					foreach (var project in languageProjects.Value.AsArray().Values)
 					{
 						var projectTable = project.Value.AsTable();
 						var projectName = projectTable.Values[PackageLock.Property_Name].Value.AsString().Value;
@@ -691,7 +689,8 @@ namespace Soup.Build.PackageManager
 		{
 			Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
 
-			var languageRootFolder = packageStore + new Path(languageName);
+			var languageSafeName = GetLanguageSafeName(languageName);
+			var languageRootFolder = packageStore + new Path(languageSafeName);
 			var packageRootFolder = languageRootFolder + new Path(packageName);
 			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
 
@@ -812,32 +811,6 @@ namespace Soup.Build.PackageManager
 					return BuiltInLanguagePackageCpp;
 				default:
 					throw new InvalidOperationException($"Unknown language name: {language}");
-			}
-		}
-
-		private SemanticVersion GetLanguagePackageBuiltInVersion(string language)
-		{
-			switch (language)
-			{
-				case BuiltInLanguageCSharp:
-					return _builtInLanguageVersionCSharp;
-				case BuiltInLanguageCpp:
-					return _builtInLanguageVersionCpp;
-				default:
-					throw new InvalidOperationException($"Unknown language name: {language}");
-			}
-		}
-
-		private static string GetLanguageName(string languageSafeName)
-		{
-			switch (languageSafeName)
-			{
-				case BuiltInLanguageSafeNameCSharp:
-					return BuiltInLanguageCSharp;
-				case BuiltInLanguageSafeNameCpp:
-					return BuiltInLanguageCpp;
-				default:
-					throw new InvalidOperationException($"Unknown language safe name: {languageSafeName}");
 			}
 		}
 

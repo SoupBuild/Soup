@@ -478,11 +478,7 @@ private:
             case SMLToken::StringLiteral:
             {
                 // Key token already matched
-                key = str();
-
-                // Remove Quotes
-                key.erase(0, 1);
-                key.erase(key.size() - 1);
+                key = GetString();
 
                 // Verify match assign
                 MoveNext();

@@ -26,7 +26,19 @@ namespace Soup::Core::UnitTests
 				std::nullopt);
 			auto globalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
-			auto targetDirectory = RecipeBuildLocationManager::GetOutputDirectory(
+			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			{
+				{
+					"C++",
+					 BuiltInLanguagePackage(
+						"Cpp",
+						"Soup.Cpp",
+						SemanticVersion(1, 1, 1),
+						Path("Soup.Cpp.dll"))
+				}
+			});
+			auto uut = RecipeBuildLocationManager(builtInLanguages);
+			auto targetDirectory = uut.GetOutputDirectory(
 				workingDirectory,
 				recipe,
 				globalParameters,
@@ -71,20 +83,32 @@ namespace Soup::Core::UnitTests
 				std::nullopt);
 			auto globalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
-			auto targetDirectory = RecipeBuildLocationManager::GetOutputDirectory(
+			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			{
+				{
+					"C++",
+					 BuiltInLanguagePackage(
+						"Cpp",
+						"Soup.Cpp",
+						SemanticVersion(1, 1, 1),
+						Path("Soup.Cpp.dll"))
+				}
+			});
+			auto uut = RecipeBuildLocationManager(builtInLanguages);
+			auto targetDirectory = uut.GetOutputDirectory(
 				workingDirectory,
 				recipe,
 				globalParameters,
 				recipeCache);
 
-			Assert::AreEqual(Path("C:/BuildOut/C++/MyPackage/1.2.3/J_HqSstV55vlb-x6RWC_hLRFRDU/"), targetDirectory, "Verify target directory matches expected.");
+			Assert::AreEqual(Path("C:/BuildOut/Cpp/MyPackage/1.2.3/J_HqSstV55vlb-x6RWC_hLRFRDU/"), targetDirectory, "Verify target directory matches expected.");
 
 			// Verify expected logs
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: Found Root Recipe: 'C:/RootRecipe.sml'",
 					"DIAG: Load Root Recipe: C:/RootRecipe.sml",
-					"INFO: Override root output: C:/BuildOut/C++/MyPackage/1.2.3/",
+					"INFO: Override root output: C:/BuildOut/Cpp/MyPackage/1.2.3/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");

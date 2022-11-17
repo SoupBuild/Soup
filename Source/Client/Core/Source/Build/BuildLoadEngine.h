@@ -8,29 +8,10 @@
 #include "Recipe/RecipeCache.h"
 #include "Utils/HandledException.h"
 #include "BuildConstants.h"
+#include "BuiltInLanguagePackage.h"
 
 namespace Soup::Core
 {
-	export struct BuiltInLanguagePackage
-	{
-		BuiltInLanguagePackage(
-			std::string languageSafeName,
-			std::string extensionName,
-			SemanticVersion extensionVersion,
-			Path extensionFilename) :
-			LanguageSafeName(std::move(languageSafeName)),
-			ExtensionName(std::move(extensionName)),
-			ExtensionVersion(extensionVersion),
-			ExtensionFilename(std::move(extensionFilename))
-		{
-		}
-
-		std::string LanguageSafeName;
-		std::string ExtensionName;
-		SemanticVersion ExtensionVersion;
-		Path ExtensionFilename;
-	};
-
 	struct PackageLockState
 	{
 		bool HasPackageLock;
@@ -47,6 +28,7 @@ namespace Soup::Core
 	export class BuildLoadEngine
 	{
 	private:
+		const int _packageLockVersion = 4;
 		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _buildDependencyType = "Build";
 		const std::string _builtInCSharpLanguage = "C#";
@@ -152,7 +134,7 @@ namespace Soup::Core
 			if (PackageLockExtensions::TryLoadFromFile(packageLockPath, packageLock))
 			{
 				Log::Info("Package lock loaded");
-				if (packageLock.GetVersion() == 3)
+				if (packageLock.GetVersion() == _packageLockVersion)
 				{
 					packageLockState.RootDirectory = projectRoot;
 					packageLockState.Closures = packageLock.GetClosures();
@@ -183,17 +165,16 @@ namespace Soup::Core
 				throw std::runtime_error("Closure [" + _rootClosureName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
 			// Find the package version in the lock
-			auto& languageSafeName = GetLanguageSafeName(packageLanguage);
-			auto findPackageLock = findClosure->second.find(languageSafeName);
+			auto findPackageLock = findClosure->second.find(packageLanguage);
 			if (findPackageLock == findClosure->second.end())
-				throw std::runtime_error("Language [" + _rootClosureName + "] [" + languageSafeName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+				throw std::runtime_error("Language [" + _rootClosureName + "] [" + packageLanguage + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 			auto packageVersion = findPackageLock->second.find(packageName);
 			if (packageVersion == findPackageLock->second.end())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + languageSafeName + "] [" + packageName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
 			auto& packageBuild = packageVersion->second.second;
 			if (!packageBuild.has_value())
-				throw std::runtime_error("Package [" + _rootClosureName + "] [" + languageSafeName + "] [" + packageName + "] does not have build closure [" + packageLockState.RootDirectory.ToString() + "]");
+				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] does not have build closure [" + packageLockState.RootDirectory.ToString() + "]");
 
 			return packageBuild.value();
 		}
@@ -246,8 +227,9 @@ namespace Soup::Core
 					// Build the global store location path
 					auto packageStore = GetSoupUserDataPath() + Path("packages/");
 					auto language = reference.HasLanguage() ? reference.GetLanguage() : implicitLanguage;
+					auto languageSafeName = GetLanguageSafeName(language);
 					packagePath = packageStore +
-						Path(language) +
+						Path(languageSafeName) +
 						Path(activeReference.GetName()) +
 						Path(activeReference.GetVersion().ToString());
 				}
@@ -290,8 +272,9 @@ namespace Soup::Core
 					// Build the global store location path
 					auto packageStore = GetSoupUserDataPath() + Path("locks/");
 					auto language = reference.HasLanguage() ? reference.GetLanguage() : implicitLanguage;
+					auto languageSafeName = GetLanguageSafeName(language);
 					packagePath = packageStore +
-						Path(language) +
+						Path(languageSafeName) +
 						Path(activeReference.GetName()) +
 						Path(activeReference.GetVersion().ToString());
 				}
@@ -315,13 +298,12 @@ namespace Soup::Core
 					throw std::runtime_error("Closure [" + closureName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
 				// Find the package version in the lock
-				auto& languageSafeName = GetLanguageSafeName(language);
-				auto findPackageLock = findClosure->second.find(languageSafeName);
+				auto findPackageLock = findClosure->second.find(language);
 				if (findPackageLock == findClosure->second.end())
-					throw std::runtime_error("Language [" + closureName + "] [" + languageSafeName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+					throw std::runtime_error("Language [" + closureName + "] [" + language + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 				auto packageVersion = findPackageLock->second.find(reference.GetName());
 				if (packageVersion == findPackageLock->second.end())
-					throw std::runtime_error("Package [" + closureName + "] [" + languageSafeName + "] [" + reference.GetName() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
+					throw std::runtime_error("Package [" + closureName + "] [" + language + "] [" + reference.GetName() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
 				auto& lockReference = packageVersion->second.first;
 				return lockReference;

@@ -310,7 +310,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageA/3.3.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "PackageA"
 					Language: "C++|1"
@@ -321,7 +321,7 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C++/PackageB/4.4.4/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "PackageB"
 					Language: "C++|1"
@@ -381,8 +381,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/PackageA/3.3.3/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C++/PackageB/4.4.4/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"DIAG: Recipe already loaded: C++|PackageB",
 				}),
 				testListener->GetMessages(),
@@ -395,11 +395,11 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageA/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageA/3.3.3/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C++/PackageB/4.4.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C++/PackageB/4.4.4/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
 					"GetCurrentDirectory",
 				}),
 				fileSystem->GetRequests(),
@@ -458,8 +458,8 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/C++/PackageA/3.3.3"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageA/3.3.3/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml")),
 								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Soup.Cpp.dll"),
 								PackageChildrenMap({
 									{
@@ -474,8 +474,8 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								Path("C:/Users/Me/.soup/packages/C++/PackageB/4.4.4"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C++/PackageB/4.4.4/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml")),
 								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Soup.Cpp.dll"),
 								PackageChildrenMap())
 						},
@@ -509,7 +509,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestBuild"
 					Language: "C#|1"
@@ -569,8 +569,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C#/TestBuild/3.3.3/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/CSharp/TestBuild/3.3.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 				}),
 				testListener->GetMessages(),
@@ -583,10 +583,10 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/locks/C#/TestBuild/3.3.3/PackageLock.sml",
+					"Exists: C:/Users/Me/.soup/locks/CSharp/TestBuild/3.3.3/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -655,8 +655,8 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml")),
 								Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
@@ -869,7 +869,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestBuild"
 					Language: "C#|1"
@@ -879,15 +879,15 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 3
+					Version: 4
 					Closures: {
 						Root: {
-							Cpp: [
+							"C++": [
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
 						}
 						Build0: {
-							CSharp: [
+							"C#": [
 								{ Name: "Soup.Cpp", Version: "1.1.1" }
 								{ Name: "TestBuild", Version: "3.3.3" }
 							]
@@ -949,8 +949,8 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C#/TestBuild/3.3.3/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/CSharp/TestBuild/3.3.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 				}),
 				testListener->GetMessages(),
@@ -964,10 +964,10 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/locks/C#/TestBuild/3.3.3/PackageLock.sml",
+					"Exists: C:/Users/Me/.soup/locks/CSharp/TestBuild/3.3.3/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1036,8 +1036,8 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/3.3.3/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml")),
 								Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
@@ -1071,21 +1071,21 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/TestBuild/3.3.4/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestBuild"
 					Language: "C#|1"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.CSharp"
 					Language: "C#|1"
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/Soup.Cpp/1.1.2/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/CSharp/Soup.Cpp/1.1.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "C#|1"
@@ -1095,15 +1095,15 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 3
+					Version: 4
 					Closures: {
 						Root: {
-							Cpp: [
+							"C++": [
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
 						}
 						Build0: {
-							CSharp: [
+							"C#": [
 								{ Name: "Soup.Cpp", Version: "1.1.2" }
 								{ Name: "TestBuild", Version: "3.3.4" }
 							]
@@ -1111,17 +1111,17 @@ namespace Soup::Core::UnitTests
 					}
 				)")));
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/locks/C#/TestBuild/3.3.4/PackageLock.sml"),
+				Path("C:/Users/Me/.soup/locks/CSharp/TestBuild/3.3.4/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 3
+					Version: 4
 					Closures: {
 						Root: {
-							CSharp: [
+							"C#": [
 								{ Name: "TestBuild", Version: "../TestBuild/", Build: "Build0" }
 							]
 						}
 						Build0: {
-							CSharp: [
+							"C#": [
 								{ Name: "Soup.CSharp", Version: "2.2.3" }
 							]
 						}
@@ -1182,14 +1182,14 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/TestBuild/3.3.4/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C#/TestBuild/3.3.4/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.4/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/CSharp/TestBuild/3.3.4/PackageLock.sml",
 					"INFO: Package lock loaded",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C#/Soup.CSharp/2.2.3/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/CSharp/Soup.CSharp/2.2.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Soup.Cpp/1.1.2/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C#/Soup.Cpp/1.1.2/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/Soup.Cpp/1.1.2/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/CSharp/Soup.Cpp/1.1.2/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 				}),
 				testListener->GetMessages(),
@@ -1203,21 +1203,21 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/TestBuild/3.3.4/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/TestBuild/3.3.4/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.4/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.4/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/locks/C#/TestBuild/3.3.4/PackageLock.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/locks/C#/TestBuild/3.3.4/PackageLock.sml",
+					"Exists: C:/Users/Me/.soup/locks/CSharp/TestBuild/3.3.4/PackageLock.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/locks/CSharp/TestBuild/3.3.4/PackageLock.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/locks/C#/Soup.CSharp/2.2.3/PackageLock.sml",
+					"Exists: C:/Users/Me/.soup/locks/CSharp/Soup.CSharp/2.2.3/PackageLock.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/Soup.Cpp/1.1.2/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/Soup.Cpp/1.1.2/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/Soup.Cpp/1.1.2/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/Soup.Cpp/1.1.2/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/locks/C#/Soup.Cpp/1.1.2/PackageLock.sml",
+					"Exists: C:/Users/Me/.soup/locks/CSharp/Soup.Cpp/1.1.2/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1313,8 +1313,8 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/C#/TestBuild/3.3.4"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/TestBuild/3.3.4/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.4"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.4/Recipe.sml")),
 								std::nullopt,
 								PackageChildrenMap({
 									{
@@ -1329,8 +1329,8 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								Path("C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml")),
 								Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
@@ -1338,8 +1338,8 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								Path("C:/Users/Me/.soup/packages/C#/Soup.Cpp/1.1.2"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/Soup.Cpp/1.1.2/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/CSharp/Soup.Cpp/1.1.2"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Soup.Cpp/1.1.2/Recipe.sml")),
 								Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
@@ -1374,7 +1374,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/Package1/3.3.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Package1"
 					Language: "C#|1"
@@ -1384,23 +1384,23 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 3
+					Version: 4
 					Closures: {
 						Root: {
-							Cpp: [
+							"C++": [
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
-							CSharp: [
+							"C#": [
 								{ Name: "Package1", Version: "3.3.3", Build: "Build1" }
 							]
 						}
 						Build0: {
-							CSharp: [
+							"C#": [
 								{ Name: "Soup.Cpp", Version: "1.1.1" }
 							]
 						}
 						Build1: {
-							CSharp: [
+							"C#": [
 								{ Name: "Soup.CSharp", Version: "2.2.2" }
 							]
 						}
@@ -1461,7 +1461,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Package1/3.3.3/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1474,8 +1474,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/Package1/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/Package1/3.3.3/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1531,8 +1531,8 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/C#/Package1/3.3.3"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/Package1/3.3.3/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml")),
 								Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},
@@ -1573,7 +1573,7 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.CSharp"
 					Language: "C#|1"
@@ -1583,16 +1583,16 @@ namespace Soup::Core::UnitTests
 			fileSystem->CreateMockFile(
 				Path("C:/WorkingDirectory/MyPackage/PackageLock.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
-					Version: 3
+					Version: 4
 					Closures: {
 						Root: {
-							CSharp: [
+							"C#": [
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 								{ Name: "Package1", Version: "../Package1/", Build: "Build0" }
 							]
 						}
 						Build0: {
-							CSharp: [
+							"C#": [
 								{ Name: "Soup.CSharp", Version: "2.2.3" }
 							]
 						}
@@ -1654,10 +1654,10 @@ namespace Soup::Core::UnitTests
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/WorkingDirectory/Package1/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml",
-					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/C#/Soup.CSharp/2.2.3/PackageLock.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/CSharp/Soup.CSharp/2.2.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Graph already loaded: C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3",
+					"DIAG: Graph already loaded: C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1672,10 +1672,10 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/Package1/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/Package1/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/locks/C#/Soup.CSharp/2.2.3/PackageLock.sml",
+					"Exists: C:/Users/Me/.soup/locks/CSharp/Soup.CSharp/2.2.3/PackageLock.sml",
 					"GetCurrentDirectory",
 				}),
 				fileSystem->GetRequests(),
@@ -1766,8 +1766,8 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								Path("C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/C#/Soup.CSharp/2.2.3/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml")),
 								Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Soup.CSharp.dll"),
 								PackageChildrenMap())
 						},

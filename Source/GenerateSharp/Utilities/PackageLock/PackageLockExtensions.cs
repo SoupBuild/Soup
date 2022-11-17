@@ -14,6 +14,8 @@ namespace Soup.Build.Utilities
 	/// </summary>
 	public static class PackageLockExtensions
 	{
+		private const int PackageLockVersion = 4;
+
 		/// <summary>
 		/// Attempt to load the package lock from file
 		/// </summary>
@@ -38,7 +40,7 @@ namespace Soup.Build.Utilities
 					await reader.ReadToEndAsync());
 
 				var packageLock = new PackageLock(result);
-				if (!packageLock.HasVersion() || packageLock.GetVersion() != 3)
+				if (!packageLock.HasVersion() || packageLock.GetVersion() != PackageLockVersion)
 				{
 					Log.Info("Package Lock version is incorrect.");
 					return (false, new PackageLock());

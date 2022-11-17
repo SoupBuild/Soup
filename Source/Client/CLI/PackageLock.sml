@@ -1,7 +1,7 @@
-Version: 3
+Version: 4
 Closures: {
 	Root: {
-		CSharp: [
+		"C#": [
 			{ Name: "Opal", Version: "1.3.0", Build: "Build2" }
 			{ Name: "Soup.Build", Version: "0.2.0", Build: "Build2" }
 			{ Name: "Soup.Build.Extensions", Version: "0.4.1", Build: "Build2" }
@@ -13,7 +13,7 @@ Closures: {
 			{ Name: "Soup.CSharp.Compiler", Version: "0.6.0", Build: "Build2" }
 			{ Name: "Soup.CSharp.Compiler.Roslyn", Version: "0.6.0", Build: "Build2" }
 		]
-		Cpp: [
+		"C++": [
 			{ Name: "copy", Version: "../../Tools/Copy/", Build: "Build0" }
 			{ Name: "CryptoPP", Version: "1.2.0", Build: "Build0" }
 			{ Name: "Detours", Version: "4.0.9", Build: "Build0" }
@@ -28,18 +28,18 @@ Closures: {
 		]
 	}
 	Build0: {
-		CSharp: [
+		"C#": [
 			{ Name: "Soup.Cpp", Version: "0.4.0" }
 		]
 	}
 	Build1: {
-		CSharp: [
+		"C#": [
 			{ Name: "Soup.Cpp", Version: "0.4.0" }
 			{ Name: "Soup.Test.Cpp", Version: "0.4.0" }
 		]
 	}
 	Build2: {
-		CSharp: [
+		"C#": [
 			{ Name: "Soup.CSharp", Version: "0.7.0" }
 		]
 	}
