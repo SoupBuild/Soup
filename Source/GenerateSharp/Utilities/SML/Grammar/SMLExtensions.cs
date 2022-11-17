@@ -247,6 +247,7 @@ namespace Soup.Build.Utilities
 			// The comma delimiter will be added when needed
 			return new SMLTableValue(
 				key,
+				key.Text,
 				new SMLToken(":")
 				{
 					TrailingTrivia = new List<string>() { " " },
@@ -259,6 +260,7 @@ namespace Soup.Build.Utilities
 		{
 			return new SMLTableValue(
 				key,
+				key.Text,
 				new SMLToken(":")
 				{
 					TrailingTrivia = new List<string>() { " " },

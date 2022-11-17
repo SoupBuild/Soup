@@ -13,7 +13,7 @@ IncludePaths: [
 ]
 
 Dependencies: {
-	// Ensure the core build extensions are runtime dependencies
+	# Ensure the core build extensions are runtime dependencies
 	Runtime: [
 		"../Core/"
 		"../../Tools/Copy/"
@@ -21,12 +21,12 @@ Dependencies: {
 		"../../Monitor/Host/"
 	]
 	Other: [
-		// "../../GenerateSharp/Generate/"
+		# "../../GenerateSharp/Generate/"
 		"C#|Soup.Cpp@0.4.0"
 		"C#|Soup.CSharp@0.7.0"
 	]
 	Build: [
-		// TODO: "Soup.Test.Cpp@0.4.0"
+		# TODO: "Soup.Test.Cpp@0.4.0"
 	]
 	Test: [
 		"Soup.Test.Assert@0.3.0"

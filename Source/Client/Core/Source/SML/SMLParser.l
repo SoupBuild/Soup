@@ -18,7 +18,7 @@ enum class SMLToken : int
 {
     EndOfFile = 0,
     Newline,
-    Key,
+    KeyLiteral,
     Integer,
     Decimal,
     Colon,
@@ -71,15 +71,15 @@ private:
 //      (Everything except controls)
 
 // KeyCharacter:
-//      Letter, Numbers, (TEMP: + #)
+//      Letter, Numbers
 // TODO: Remove extra symbols
 
 %x QUOTE
 basic_char      [\t\p{L}\p{N}\p{M}\p{P}\p{S}\p{Z}]{-}["\\]
 whitespace      [ \t]+
 newline         \r?\n
-comment         "//".*?\r?\n
-key             [\p{L}\p{N}\+#]+
+comment         "#".*?\r?\n
+key             [\p{L}\p{N}]+
 integer         \d+
 decimal         \.\d+
 basic_string    {basic_char}+
@@ -91,7 +91,7 @@ basic_string    {basic_char}+
 {integer}       return (int)SMLToken::Integer;
 "true"          return (int)SMLToken::True;
 "false"         return (int)SMLToken::False;
-{key}           return (int)SMLToken::Key;
+{key}           return (int)SMLToken::KeyLiteral;
 {decimal}       return (int)SMLToken::Decimal;
 ":"             return (int)SMLToken::Colon;
 "["             return (int)SMLToken::OpenBracket;
@@ -235,10 +235,37 @@ private:
         {
             case SMLToken::Integer:
                 // Integer is a special case of Key and should be allowed
-            case SMLToken::Key:
+            case SMLToken::KeyLiteral:
             {
                 // Key token already matched 
                 key = str();
+
+                // Verify match assign
+                MoveNext();
+                if (_currentToken != SMLToken::Colon)
+                    return false;
+
+                // Parse the value
+                MoveNext();
+                bool internalHasValue;
+                if (!TryParseValue(internalHasValue, tableValue))
+                    return false;
+
+                // The value is required here
+                if (!internalHasValue)
+                    return false;
+
+                hasValue = true;
+                return true;
+            }
+            case SMLToken::StringLiteral:
+            {
+                // Key token already matched
+                key = str();
+
+                // Remove Quotes
+                key.erase(0, 1);
+                key.erase(key.size() - 1);
 
                 // Verify match assign
                 MoveNext();

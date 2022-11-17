@@ -6,7 +6,10 @@ grammar SML;
 document            : leadingNewlines tableContent trailingNewlines  EOF ;
 table               : OPEN_BRACE leadingNewlines tableContent trailingNewlines CLOSE_BRACE ;
 tableContent        : (tableValue (delimiter tableValue)*)? ;
-tableValue          : KEY COLON value ;
+tableValue          : key COLON value ;
+key                 : KEY_LITERAL # keyLiteral
+                    | STRING_LITERAL # keyString
+                    ;
 array               : OPEN_BRACKET leadingNewlines arrayContent trailingNewlines CLOSE_BRACKET ;
 arrayContent        : (value (delimiter value)*)? ;
 value               : INTEGER # valueInteger
@@ -39,9 +42,9 @@ COMMA               : ',' ;
 TRUE                : 'true' ;
 FALSE               : 'false' ;
 NEWLINE             : '\r'?'\n' ;
-COMMENT             : '//'.*?'\r'?'\n' -> channel(HIDDEN) ;
+COMMENT             : '#'.*?'\r'?'\n' -> channel(HIDDEN) ;
 INTEGER             : DIGIT+ ;
-KEY                 : [\p{L}\p{N}+#]+ ;
+KEY_LITERAL         : [\p{L}\p{N}]+ ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;
 STRING_LITERAL      : '"' BASIC_CHAR*? '"' ;
 WHITESPACE          : (' '|'\t')+ -> channel(HIDDEN) ;

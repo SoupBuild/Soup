@@ -56,6 +56,20 @@ public interface ISMLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitTableValue([NotNull] SMLParser.TableValueContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>keyLiteral</c>
+	/// labeled alternative in <see cref="SMLParser.key"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitKeyLiteral([NotNull] SMLParser.KeyLiteralContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>keyString</c>
+	/// labeled alternative in <see cref="SMLParser.key"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitKeyString([NotNull] SMLParser.KeyStringContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SMLParser.array"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

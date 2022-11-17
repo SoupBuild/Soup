@@ -320,11 +320,11 @@ namespace Soup.Build.Utilities
 		{
 			if (document.Values.ContainsKey(key))
 			{
-				document.Values.Add(key, new SMLTableValue(new SMLToken(key), value));
+				document.Values.Add(key, new SMLTableValue(new SMLToken(key), key, new SMLToken(":"), value));
 			}
 			else
 			{
-				document.Values.Add(key, new SMLTableValue(new SMLToken(key), value));
+				document.Values.Add(key, new SMLTableValue(new SMLToken(key), key, new SMLToken(":"), value));
 			}
 
 			return value;
@@ -334,11 +334,11 @@ namespace Soup.Build.Utilities
 		{
 			if (table.Values.ContainsKey(key))
 			{
-				table.Values.Add(key, new SMLTableValue(new SMLToken(key), value));
+				table.Values.Add(key, new SMLTableValue(new SMLToken(key), key, new SMLToken(":"), value));
 			}
 			else
 			{
-				table.Values.Add(key, new SMLTableValue(new SMLToken(key), value));
+				table.Values.Add(key, new SMLTableValue(new SMLToken(key), key, new SMLToken(":"), value));
 			}
 
 			return value;

@@ -4,8 +4,8 @@ Language: "C++|0.1"
 Version: "1.0.0"
 Type: "DynamicLibrary"
 Defines: [
-	// "ENABLE_MONITOR_DEBUG"
-	// "TRACE_DETOUR_CLIENT"
+	# "ENABLE_MONITOR_DEBUG"
+	# "TRACE_DETOUR_CLIENT"
 ]
 Source: [
 	"Main.cpp"
