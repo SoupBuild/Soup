@@ -4,16 +4,19 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Soup.Build.Utilities
 {
 	public static class SMLExtensions
 	{
-		private static SMLToken CommaToken => new SMLToken(",");
+		private static readonly Regex SafeKeyRegex = new Regex(@"^([A-Za-z0-9]+)$");
 
-		private static SMLToken NewlineToken => new SMLToken("\r\n");
+		private static readonly SMLToken CommaToken = new SMLToken(",");
 
-		private static string Indent => "\t";
+		private static readonly SMLToken NewlineToken = new SMLToken("\r\n");
+
+		private static readonly string Indent = "\t";
 
 		public static void AddItemWithSyntax(this SMLArray array, string value, int indentLevel)
 		{
@@ -297,7 +300,12 @@ namespace Soup.Build.Utilities
 					},
 				});
 
-			var keyToken = new SMLToken(name)
+			// If the key contains unsafe characters, wrap in string key
+			var keyTokenText = name;
+			if (!SafeKeyRegex.IsMatch(keyTokenText))
+				keyTokenText = $"\"{keyTokenText}\"";
+
+			var keyToken = new SMLToken(keyTokenText)
 			{
 				LeadingTrivia = new List<string>()
 				{
@@ -394,7 +402,13 @@ namespace Soup.Build.Utilities
 					},
 				});
 
-			var keyToken = new SMLToken(name)
+
+			// If the key contains unsafe characters, wrap in string key
+			var keyTokenText = name;
+			if (!SafeKeyRegex.IsMatch(keyTokenText))
+				keyTokenText = $"\"{keyTokenText}\"";
+
+			var keyToken = new SMLToken(keyTokenText)
 			{
 				LeadingTrivia = new List<string>()
 				{

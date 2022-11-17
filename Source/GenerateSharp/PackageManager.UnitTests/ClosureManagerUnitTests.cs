@@ -157,15 +157,15 @@ namespace Soup.Build.PackageManager.UnitTests
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expected =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						Cpp: [
+						"C++": [
 							{ Name: "MyPackage", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.Cpp", Version: "3.2.1" }
 						]
 					}
@@ -557,17 +557,17 @@ namespace Soup.Build.PackageManager.UnitTests
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expected =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						Cpp: [
+						"C++": [
 							{ Name: "MyPackage", Version: "./", Build: "Build0" }
 							{ Name: "Package1", Version: "1.2.3", Build: "" }
 							{ Name: "Package2", Version: "3.2.1", Build: "" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.Cpp", Version: "3.2.1" }
 						]
 					}
@@ -994,15 +994,15 @@ namespace Soup.Build.PackageManager.UnitTests
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expected =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						Cpp: [
+						"C++": [
 							{ Name: "MyPackage", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.Cpp", Version: "5.0.0" }
 							{ Name: "Package1", Version: "1.2.3" }
 						]
@@ -1018,15 +1018,15 @@ namespace Soup.Build.PackageManager.UnitTests
 			var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
 			var expectedPackage1Lock =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						CSharp: [
+						"C#": [
 							{ Name: "Package1", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.CSharp", Version: "4.0.0" }
 						]
 					}
@@ -1041,15 +1041,15 @@ namespace Soup.Build.PackageManager.UnitTests
 			var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
 			var expectedSoupCppLock =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.Cpp", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.CSharp", Version: "1.2.3" }
 						]
 					}
@@ -1064,15 +1064,15 @@ namespace Soup.Build.PackageManager.UnitTests
 			var soupCSharpLockContent = await readerSoupCSharpLock.ReadToEndAsync();
 			var expectedSoupCSharpLock =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.CSharp", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.CSharp", Version: "1.2.3" }
 						]
 					}
@@ -1304,15 +1304,15 @@ namespace Soup.Build.PackageManager.UnitTests
 			var packageLockContent = await reader.ReadToEndAsync();
 			var expectedPackageLock =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						Cpp: [
+						"C++": [
 							{ Name: "MyPackage", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.Cpp", Version: "3.2.1" }
 							{ Name: "Package1", Version: "../Package1/" }
 						]
@@ -1328,15 +1328,15 @@ namespace Soup.Build.PackageManager.UnitTests
 			var packageLockContent2 = await reader2.ReadToEndAsync();
 			var expectedPackageLock2 =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						CSharp: [
+						"C#": [
 							{ Name: "Package1", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.CSharp", Version: "1.2.3" }
 						]
 					}
@@ -1360,17 +1360,17 @@ namespace Soup.Build.PackageManager.UnitTests
 			// Create the original file
 			var original =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						Cpp: [
+						"C++": [
 							{ Name: "MyPackage", Version: "./", Build: "Build0" }
 							{ Name: "Package1", Version: "1.2.4", Build: "Build0" }
 							{ Name: "Package2", Version: "3.2.1", Build: "Build0" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.Cpp", Version: "3.2.2" }
 						]
 					}
@@ -1671,17 +1671,17 @@ namespace Soup.Build.PackageManager.UnitTests
 			// Create the original file
 			var original =
 				"""
-				Version: 3
+				Version: 4
 				Closures: {
 					Root: {
-						Cpp: [
+						"C++": [
 							{ Name: "MyPackage", Version: "./", Build: "Build0" }
 							{ Name: "Package1", Version: "1.2.4", Build: "Build0" }
 							{ Name: "Package2", Version: "3.2.1", Build: "Build0" }
 						]
 					}
 					Build0: {
-						CSharp: [
+						"C#": [
 							{ Name: "Soup.Cpp", Version: "3.2.1" }
 						]
 					}

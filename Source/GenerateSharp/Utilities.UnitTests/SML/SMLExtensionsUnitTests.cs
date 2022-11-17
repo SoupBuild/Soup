@@ -26,6 +26,21 @@ namespace Soup.Build.Utilities.UnitTests
 		}
 
 		[Fact]
+		public async Task AddArrayWithSyntax_UnsafeKey()
+		{
+			var uut = new SMLDocument();
+
+			uut.AddArrayWithSyntax("#");
+
+			var content = await SerializeAsync(uut);
+			var expected =
+@"""#"": [
+
+]";
+			Assert.Equal(expected, content);
+		}
+
+		[Fact]
 		public async Task AddTwoArraysWithSyntax()
 		{
 			var uut = new SMLDocument();
@@ -128,6 +143,21 @@ ANewList2: [
 			var content = await SerializeAsync(uut);
 			var expected =
 @"NewTable: {
+
+}";
+			Assert.Equal(expected, content);
+		}
+
+		[Fact]
+		public async Task AddTableWithSyntax_UnsafeKey()
+		{
+			var uut = new SMLDocument();
+
+			uut.AddTableWithSyntax("#");
+
+			var content = await SerializeAsync(uut);
+			var expected =
+@"""#"": {
 
 }";
 			Assert.Equal(expected, content);
