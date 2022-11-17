@@ -24,6 +24,8 @@ namespace Soup.Build.PackageManager
 		private const string BuiltInLanguageCpp = "C++";
 		private const string BuiltInLanguagePackageCSharp = "Soup.CSharp";
 		private const string BuiltInLanguagePackageCpp = "Soup.Cpp";
+		private const string BuiltInLanguageSafeNameCSharp = "CSharp";
+		private const string BuiltInLanguageSafeNameCpp = "Cpp";
 
 		private Uri _apiEndpoint;
 
@@ -132,8 +134,9 @@ namespace Soup.Build.PackageManager
 								}
 								else
 								{
+									var languageSafeName = GetLanguageSafeName(languageName);
 									var packageLanguageNameVersionPath =
-										new Path(languageName) +
+										new Path(languageSafeName) +
 										new Path(projectName) +
 										new Path(version.ToString()) +
 										new Path("/");
@@ -686,7 +689,8 @@ namespace Soup.Build.PackageManager
 		{
 			Log.HighPriority($"Install Package: {languageName} {packageName}@{packageVersion}");
 
-			var languageRootFolder = packageStore + new Path(languageName);
+			var languageSafeName = GetLanguageSafeName(languageName);
+			var languageRootFolder = packageStore + new Path(languageSafeName);
 			var packageRootFolder = languageRootFolder + new Path(packageName);
 			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
 
@@ -784,6 +788,19 @@ namespace Soup.Build.PackageManager
 			}
 		}
 
+		private static string GetLanguageSafeName(string language)
+		{
+			switch (language)
+			{
+				case BuiltInLanguageCSharp:
+					return BuiltInLanguageSafeNameCSharp;
+				case BuiltInLanguageCpp:
+					return BuiltInLanguageSafeNameCpp;
+				default:
+					throw new InvalidOperationException($"Unknown language name: {language}");
+			}
+		}
+
 		private static string GetLanguagePackage(string language)
 		{
 			switch (language)
@@ -792,19 +809,6 @@ namespace Soup.Build.PackageManager
 					return BuiltInLanguagePackageCSharp;
 				case BuiltInLanguageCpp:
 					return BuiltInLanguagePackageCpp;
-				default:
-					throw new InvalidOperationException($"Unknown language name: {language}");
-			}
-		}
-
-		private SemanticVersion GetLanguagePackageBuiltInVersion(string language)
-		{
-			switch (language)
-			{
-				case BuiltInLanguageCSharp:
-					return _builtInLanguageVersionCSharp;
-				case BuiltInLanguageCpp:
-					return _builtInLanguageVersionCpp;
 				default:
 					throw new InvalidOperationException($"Unknown language name: {language}");
 			}

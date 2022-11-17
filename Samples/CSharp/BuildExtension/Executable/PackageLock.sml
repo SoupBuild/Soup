@@ -1,12 +1,12 @@
-Version: 3
+Version: 4
 Closures: {
 	Root: {
-		CSharp: [
+		"C#": [
 			{ Name: "Samples.CSharp.BuildExtension.Executable", Version: "../Executable", Build: "Build0" }
 		]
 	}
 	Build0: {
-		CSharp: [
+		"C#": [
 			{ Name: "Soup.CSharp", Version: "0.7.0" }
 			{ Name: "Samples.CSharp.BuildExtension.Extension", Version: "../Extension/" }
 		]
