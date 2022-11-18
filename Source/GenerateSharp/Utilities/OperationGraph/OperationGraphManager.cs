@@ -100,13 +100,6 @@ namespace Soup.Build.Utilities
 
 			state.SetReferencedFiles(referencedFiles);
 
-			// Ensure the target directories exists
-			if (!LifetimeManager.Get<IFileSystem>().Exists(targetFolder))
-			{
-				Log.Info("Create Directory: " + targetFolder.ToString());
-				LifetimeManager.Get<IFileSystem>().CreateDirectory2(targetFolder);
-			}
-
 			// Open the file to write to
 			using var fileStream = System.IO.File.Open(
 				operationGraphFile.ToString(),
