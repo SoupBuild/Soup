@@ -2,7 +2,6 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Microsoft.Toolkit.Mvvm.Input;
 using Opal;
 using Opal.System;
 using Soup.Build;

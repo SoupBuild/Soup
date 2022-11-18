@@ -4,18 +4,18 @@
 
 namespace Opal.System
 {
-    using global::System;
-    using global::System.IO;
+	using global::System;
+	using global::System.IO;
 
-    /// <summary>
-    /// The input file interface
-    /// Interface mainly used to allow for unit testing client code.
-    /// </summary>
-    public interface IInputFile : IDisposable
-    {
-        /// <summary>
-        /// Gets the input stream.
-        /// </summary>
-        Stream GetInStream();
-    }
+	/// <summary>
+	/// The input file interface
+	/// Interface mainly used to allow for unit testing client code.
+	/// </summary>
+	public interface IInputFile : IDisposable
+	{
+		/// <summary>
+		/// Gets the input stream.
+		/// </summary>
+		Stream GetInStream();
+	}
 }

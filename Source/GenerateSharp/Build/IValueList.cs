@@ -4,12 +4,12 @@
 
 namespace Soup.Build
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    public interface IValueList : IReadOnlyList<IValue>
-    {
-        void Add(IValue item);
+	public interface IValueList : IReadOnlyList<IValue>
+	{
+		void Add(IValue item);
 
-        void Clear();
-    }
+		void Clear();
+	}
 }
