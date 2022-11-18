@@ -2,7 +2,7 @@ Version: 4
 Closures: {
 	Root: {
 		"C++": [
-			{ Name: "CryptoPP", Version: "1.1.0", Build: "Build0" }
+			{ Name: "CryptoPP", Version: "1.2.0", Build: "Build0" }
 			{ Name: "Detours", Version: "4.0.9", Build: "Build0" }
 			{ Name: "Monitor.Host", Version: "../../Monitor/Host/", Build: "Build0" }
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0" }
