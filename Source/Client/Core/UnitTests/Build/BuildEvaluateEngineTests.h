@@ -167,7 +167,8 @@ namespace Soup::Core::UnitTests
 			auto testListener = std::make_shared<TestTraceListener>();
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
-			auto executableInputTime = std::chrono::sys_days(May/22/2015) + 9h + 9min;
+			auto executableInputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 9min);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -179,7 +180,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 3, executableInputTime },
 				}));
 
@@ -213,7 +214,7 @@ namespace Soup::Core::UnitTests
 					1,
 					OperationResult(
 						true,
-						std::chrono::sys_days(May/22/2015) + 9h + 10min,
+						std::chrono::clock_cast<std::chrono::file_clock>(std::chrono::sys_days(May/22/2015) + 9h + 10min),
 						{ 1, },
 						{ 2, })
 				},
@@ -275,8 +276,10 @@ namespace Soup::Core::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Setup the input file only
-			auto inputTime = std::chrono::sys_days(May/22/2015) + 9h + 11min;
-			auto executableInputTime = std::chrono::sys_days(May/22/2015) + 9h + 9min;
+			auto inputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 11min);
+			auto executableInputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 9min);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -288,7 +291,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, std::nullopt },
 					{ 3, executableInputTime },
@@ -324,7 +327,7 @@ namespace Soup::Core::UnitTests
 					1,
 					OperationResult(
 						true,
-						std::chrono::sys_days(May/22/2015) + 9h + 10min,
+						std::chrono::clock_cast<std::chrono::file_clock>(std::chrono::sys_days(May/22/2015) + 9h + 10min),
 						{ 1, },
 						{ 2, })
 				},
@@ -384,9 +387,12 @@ namespace Soup::Core::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Setup the input/output files to be out of date
-			auto outputTime = std::chrono::sys_days(May/22/2015) + 9h + 10min;
-			auto inputTime = std::chrono::sys_days(May/22/2015) + 9h + 11min;
-			auto executableInputTime = std::chrono::sys_days(May/22/2015) + 9h + 9min;
+			auto outputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 10min);
+			auto inputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 11min);
+			auto executableInputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 9min);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -398,7 +404,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, outputTime },
 					{ 3, executableInputTime },
@@ -434,7 +440,7 @@ namespace Soup::Core::UnitTests
 					1,
 					OperationResult(
 						true,
-						std::chrono::sys_days(May/22/2015) + 9h + 10min,
+						std::chrono::clock_cast<std::chrono::file_clock>(std::chrono::sys_days(May/22/2015) + 9h + 10min),
 						{ 1, },
 						{ 2, })
 				},
@@ -494,9 +500,12 @@ namespace Soup::Core::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Setup the input/output files to be out of date
-			auto outputTime = std::chrono::sys_days(May/22/2015) + 9h + 10min;
-			auto inputTime = std::chrono::sys_days(May/22/2015) + 9h + 9min;
-			auto executableInputTime = std::chrono::sys_days(May/22/2015) + 9h + 11min;
+			auto outputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 10min);
+			auto inputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 9min);
+			auto executableInputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 11min);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -508,7 +517,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, outputTime },
 					{ 3, executableInputTime },
@@ -544,7 +553,7 @@ namespace Soup::Core::UnitTests
 					1,
 					OperationResult(
 						true,
-						std::chrono::sys_days(May/22/2015) + 9h + 0min,
+						std::chrono::clock_cast<std::chrono::file_clock>(std::chrono::sys_days(May/22/2015) + 9h + 0min),
 						{ 1, },
 						{ 2, })
 				},
@@ -604,9 +613,12 @@ namespace Soup::Core::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Setup the input/output files to be up to date
-			auto outputTime = std::chrono::sys_days(May/22/2015) + 9h + 12min;
-			auto inputTime = std::chrono::sys_days(May/22/2015) + 9h + 11min;
-			auto executableInputTime = std::chrono::sys_days(May/22/2015) + 9h + 10min;
+			auto outputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 12min);
+			auto inputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 11min);
+			auto executableInputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 10min);
 
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
@@ -618,7 +630,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 					{ 3, Path("C:/TestWorkingDirectory/Command.exe") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, inputTime },
 					{ 2, outputTime },
 					{ 3, executableInputTime },
@@ -654,7 +666,7 @@ namespace Soup::Core::UnitTests
 					1,
 					OperationResult(
 						true,
-						std::chrono::sys_days(May/22/2015) + 9h + 15min,
+						std::chrono::clock_cast<std::chrono::file_clock>(std::chrono::sys_days(May/22/2015) + 9h + 15min),
 						{ 1, },
 						{ 2, })
 				},

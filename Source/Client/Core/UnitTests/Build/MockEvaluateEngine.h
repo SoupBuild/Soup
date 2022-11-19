@@ -50,7 +50,8 @@ namespace Soup::Core
 
 			_requests.push_back(message.str());
 
-			auto time = std::chrono::time_point<std::chrono::system_clock>::min();
+			auto time = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::time_point<std::chrono::system_clock>());
 			for (auto& operation : operationGraph.GetOperations())
 			{
 				auto& operationInfo = operation.second;

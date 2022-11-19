@@ -22,7 +22,7 @@ namespace Soup::Core::UnitTests
 				std::unordered_map<FileId, Path>({
 					{ 1, Path("C:/Root/Output.bin") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, std::nullopt },
 				}));
 
@@ -64,7 +64,7 @@ namespace Soup::Core::UnitTests
 					{ 1, Path("C:/Root/Output.bin") },
 					{ 2, Path("C:/Root/Input.cpp") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 2, std::nullopt },
 				}));
 
@@ -114,7 +114,7 @@ namespace Soup::Core::UnitTests
 					{ 1, Path("C:/Root/Output.bin") },
 					{ 2, Path("C:/Root/Input.cpp") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, std::nullopt },
 					{ 2, std::nullopt },
 				}));
@@ -155,7 +155,8 @@ namespace Soup::Core::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Create the file state
-			auto outputTime = std::chrono::sys_days(May/22/2015) + 9h + 12min;
+			auto outputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 12min);
 
 			// Initialize the file system state
 			auto fileSystemState = FileSystemState(
@@ -164,7 +165,7 @@ namespace Soup::Core::UnitTests
 					{ 1, Path("C:/Root/Output.bin") },
 					{ 2, Path("C:/Root/Input.cpp") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, outputTime },
 				}));
 
@@ -210,7 +211,8 @@ namespace Soup::Core::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			// Create the file state
-			auto outputTime = std::chrono::sys_days(May/22/2015) + 9h + 12min;
+			auto outputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 12min);
 
 			// Initialize the file system state
 			auto fileSystemState = FileSystemState(
@@ -219,7 +221,7 @@ namespace Soup::Core::UnitTests
 					{ 1, Path("C:/Root/Output.bin") },
 					{ 2, Path("C:/Root/Input.cpp") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, outputTime },
 					{ 2, std::nullopt },
 				}));
@@ -260,8 +262,10 @@ namespace Soup::Core::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Create the file state
-			auto outputTime = std::chrono::sys_days(May/22/2015) + 9h + 12min;
-			auto inputTime = std::chrono::sys_days(May/22/2015) + 9h + 13min;
+			auto outputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 12min);
+			auto inputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 13min);
 
 			// Initialize the file system state
 			auto fileSystemState = FileSystemState(
@@ -270,7 +274,7 @@ namespace Soup::Core::UnitTests
 					{ 1, Path("C:/Root/Output.bin") },
 					{ 2, Path("C:/Root/Input.cpp") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, outputTime },
 					{ 2, inputTime },
 				}));
@@ -307,8 +311,10 @@ namespace Soup::Core::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Create the file state
-			auto outputTime = std::chrono::sys_days(May/22/2015) + 9h + 12min;
-			auto inputTime = std::chrono::sys_days(May/22/2015) + 9h + 11min;
+			auto outputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 12min);
+			auto inputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 11min);
 
 			// Initialize the file system state
 			auto fileSystemState = FileSystemState(
@@ -317,7 +323,7 @@ namespace Soup::Core::UnitTests
 					{ 1, Path("C:/Root/Output.bin") },
 					{ 2, Path("C:/Root/Input.cpp") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, outputTime },
 					{ 2, inputTime },
 				}));
@@ -352,8 +358,10 @@ namespace Soup::Core::UnitTests
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
 			// Create the file state
-			auto outputTime = std::chrono::sys_days(May/22/2015) + 9h + 12min;
-			auto inputTime = std::chrono::sys_days(May/22/2015) + 9h + 11min;
+			auto outputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 12min);
+			auto inputTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 11min);
 
 			// Initialize the file system state
 			auto fileSystemState = FileSystemState(
@@ -363,7 +371,7 @@ namespace Soup::Core::UnitTests
 					{ 2, Path("C:/Root/Input.cpp") },
 					{ 3, Path("C:/Input.h") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 1, outputTime },
 					{ 2, inputTime },
 					{ 3, inputTime },

@@ -251,7 +251,7 @@ namespace Soup::Core
 
 			// Mark this operation as successful to enable future incremental builds
 			operationResult.WasSuccessfulRun = true;
-			operationResult.EvaluateTime = std::chrono::system_clock::now();
+			operationResult.EvaluateTime = std::chrono::file_clock::now();
 
 			// Ensure the File System State is notified of any output files that have changed
 			_fileSystemState.CheckFileWriteTimes(operationResult.ObservedOutput);
@@ -355,7 +355,7 @@ namespace Soup::Core
 
 				// Mark this operation as successful to enable future incremental builds
 				operationResult.WasSuccessfulRun = true;
-				operationResult.EvaluateTime = std::chrono::system_clock::now();
+				operationResult.EvaluateTime = std::chrono::file_clock::now();
 
 				// Ensure the File System State is notified of any output files that have changed
 				_fileSystemState.CheckFileWriteTimes(operationResult.ObservedOutput);

@@ -199,7 +199,10 @@ namespace Soup::Core::UnitTests
 
 			// TODO: Clear time for now until mocked
 			for (auto& result : myPackageGenerateResults.GetResults())
-				result.second.EvaluateTime = std::chrono::time_point<std::chrono::system_clock>::min();
+			{
+				result.second.EvaluateTime = std::chrono::clock_cast<std::chrono::file_clock>(
+					std::chrono::time_point<std::chrono::system_clock>());
+			}
 
 			Assert::AreEqual(
 				OperationResults({
@@ -207,7 +210,8 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							std::chrono::time_point<std::chrono::system_clock>::min(),
+							std::chrono::clock_cast<std::chrono::file_clock>(
+								std::chrono::time_point<std::chrono::system_clock>()),
 							{},
 							{})
 					},

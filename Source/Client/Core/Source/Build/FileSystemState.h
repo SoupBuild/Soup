@@ -41,7 +41,7 @@ namespace Soup::Core
 		FileSystemState(
 			FileId maxFileId,
 			std::unordered_map<FileId, Path> files,
-			std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>> writeCache) :
+			std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>> writeCache) :
 			_maxFileId(maxFileId),
 			_files(std::move(files)),
 			_fileLookup(),
@@ -86,7 +86,7 @@ namespace Soup::Core
 		/// <summary>
 		/// Find the write time for a given file id
 		/// </summary>
-		std::optional<std::chrono::time_point<std::chrono::system_clock>> GetLastWriteTime(FileId file)
+		std::optional<std::chrono::time_point<std::chrono::file_clock>> GetLastWriteTime(FileId file)
 		{
 			auto findResult = _writeCache.find(file);
 			if (findResult != _writeCache.end())
@@ -196,17 +196,16 @@ namespace Soup::Core
 		/// <summary>
 		/// Update the write times for the provided set of files
 		/// </summary>
-		std::optional<std::chrono::time_point<std::chrono::system_clock>> CheckFileWriteTime(FileId fileId)
+		std::optional<std::chrono::time_point<std::chrono::file_clock>> CheckFileWriteTime(FileId fileId)
 		{
 			auto& filePath = GetFilePath(fileId);
 
 			// The file does not exist in the cache
 			// Load the actual value and save it for later
-			std::optional<std::chrono::time_point<std::chrono::system_clock>> lastWriteTime = std::nullopt;
+			std::optional<std::chrono::time_point<std::chrono::file_clock>> lastWriteTime = std::nullopt;
 			if (System::IFileSystem::Current().Exists(filePath))
 			{
-				lastWriteTime = std::chrono::system_clock::from_time_t(
-					System::IFileSystem::Current().GetLastWriteTime(filePath));
+				lastWriteTime = System::IFileSystem::Current().GetLastWriteTime(filePath);
 			}
 
 			auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
@@ -221,6 +220,6 @@ namespace Soup::Core
 		std::unordered_map<FileId, Path> _files;
 		std::unordered_map<std::string, FileId> _fileLookup;
 
-		std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>> _writeCache;
+		std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>> _writeCache;
 	};
 }

@@ -23,7 +23,7 @@ namespace Soup::Core
 		/// respect to the input files
 		/// </summary>
 		bool IsOutdated(
-			std::chrono::time_point<std::chrono::system_clock> lastEvaluateTime,
+			std::chrono::time_point<std::chrono::file_clock> lastEvaluateTime,
 			FileId inputFile)
 		{
 			auto lastWriteTime = _fileSystemState.GetLastWriteTime(inputFile);
@@ -109,7 +109,7 @@ namespace Soup::Core
 		bool IsOutdated(
 			FileId inputFile,
 			FileId outputFile,
-			std::chrono::time_point<std::chrono::system_clock> outputFileLastWriteTime)
+			std::chrono::time_point<std::chrono::file_clock> outputFileLastWriteTime)
 		{
 			// Get the file state from the cache
 			auto lastWriteTime = _fileSystemState.GetLastWriteTime(inputFile);

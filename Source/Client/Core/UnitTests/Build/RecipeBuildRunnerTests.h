@@ -240,7 +240,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -573,7 +573,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -628,7 +628,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1055,7 +1055,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1102,7 +1102,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1162,7 +1162,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1523,7 +1523,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1578,7 +1578,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1588,10 +1588,10 @@ namespace Soup::Core::UnitTests
 		}
 
 	private:
-		static std::chrono::time_point<std::chrono::system_clock> GetMinMillisecondTime()
+		static std::chrono::time_point<std::chrono::file_clock> GetEpochTime()
 		{
-			return std::chrono::time_point_cast<std::chrono::milliseconds>(
-				std::chrono::time_point<std::chrono::system_clock>::min());
+			return std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::time_point<std::chrono::system_clock>());
 		}
 	};
 }

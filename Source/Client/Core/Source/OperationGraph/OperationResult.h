@@ -17,14 +17,14 @@ namespace Soup::Core
 	{
 	public:
 		bool WasSuccessfulRun;
-		std::chrono::time_point<std::chrono::system_clock> EvaluateTime;
+		std::chrono::time_point<std::chrono::file_clock> EvaluateTime;
 		std::vector<FileId> ObservedInput;
 		std::vector<FileId> ObservedOutput;
 
 	public:
 		OperationResult() :
 			WasSuccessfulRun(false),
-			EvaluateTime(std::chrono::time_point<std::chrono::system_clock>::min()),
+			EvaluateTime(std::chrono::time_point<std::chrono::file_clock>::min()),
 			ObservedInput(),
 			ObservedOutput()
 		{
@@ -32,7 +32,7 @@ namespace Soup::Core
 
 		OperationResult(
 			bool wasSuccessfulRun,
-			std::chrono::time_point<std::chrono::system_clock> evaluateTime,
+			std::chrono::time_point<std::chrono::file_clock> evaluateTime,
 			std::vector<FileId> observedInput,
 			std::vector<FileId> observedOutput) :
 			WasSuccessfulRun(wasSuccessfulRun),
