@@ -7,29 +7,29 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace SoupView.View
 {
-    public sealed class GraphViewerItem : Button
-    {
-        /// <summary>
-        /// Identifies the <see cref="Title"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
-            nameof(Title),
-            typeof(string),
-            typeof(GraphViewerItem),
-            new PropertyMetadata(string.Empty));
+	public sealed class GraphViewerItem : Button
+	{
+		/// <summary>
+		/// Identifies the <see cref="Title"/> dependency property.
+		/// </summary>
+		public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
+			nameof(Title),
+			typeof(string),
+			typeof(GraphViewerItem),
+			new PropertyMetadata(string.Empty));
 
-        public GraphViewerItem()
-        {
-            this.DefaultStyleKey = typeof(GraphViewerItem);
-        }
+		public GraphViewerItem()
+		{
+			this.DefaultStyleKey = typeof(GraphViewerItem);
+		}
 
-        /// <summary>
-        /// Gets or sets the title
-        /// </summary>
-        public string Title
-        {
-            get { return (string)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
-        }
-    }
+		/// <summary>
+		/// Gets or sets the title
+		/// </summary>
+		public string Title
+		{
+			get { return (string)GetValue(TitleProperty); }
+			set { SetValue(TitleProperty, value); }
+		}
+	}
 }

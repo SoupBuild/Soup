@@ -6,10 +6,10 @@ using System;
 
 namespace Soup.Build.Utilities
 {
-    /// <summary>
-    /// The package lock container
-    /// </summary>
-    public class PackageLock
+	/// <summary>
+	/// The package lock container
+	/// </summary>
+	public class PackageLock
 	{
 		public static string Property_Version => "Version";
 		public static string Property_Name => "Name";
@@ -89,7 +89,7 @@ namespace Soup.Build.Utilities
 			var closures = EnsureHasTable(_document, Property_Closures);
 			var closureTable = EnsureHasTable(closures, closure, 1);
 			var projectLanguageList = EnsureHasList(closureTable, language, 2);
-			
+
 			var projectTable = projectLanguageList.AddInlineTableWithSyntax(3);
 			projectTable.AddInlineItemWithSyntax(Property_Name, name);
 			projectTable.AddInlineItemWithSyntax(Property_Version, version);
