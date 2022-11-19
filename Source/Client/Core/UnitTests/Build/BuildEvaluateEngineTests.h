@@ -14,7 +14,9 @@ namespace Soup::Core::UnitTests
 		void Initialize()
 		{
 			auto fileSystemState = FileSystemState();
-			auto uut = BuildEvaluateEngine(fileSystemState);
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
 		}
 
 		// [[Fact]]
@@ -34,7 +36,9 @@ namespace Soup::Core::UnitTests
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			// Setup the input build state
-			auto uut = BuildEvaluateEngine(fileSystemState);
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph();
@@ -92,7 +96,9 @@ namespace Soup::Core::UnitTests
 			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
-			auto uut = BuildEvaluateEngine(fileSystemState);
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
@@ -189,7 +195,9 @@ namespace Soup::Core::UnitTests
 			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
-			auto uut = BuildEvaluateEngine(fileSystemState);
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
@@ -302,7 +310,9 @@ namespace Soup::Core::UnitTests
 			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Create the build state
-			auto uut = BuildEvaluateEngine(fileSystemState);
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
@@ -415,7 +425,9 @@ namespace Soup::Core::UnitTests
 			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
-			auto uut = BuildEvaluateEngine(fileSystemState);
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
@@ -528,7 +540,9 @@ namespace Soup::Core::UnitTests
 			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
 			// Setup the input build state
-			auto uut = BuildEvaluateEngine(fileSystemState);
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(
@@ -641,7 +655,9 @@ namespace Soup::Core::UnitTests
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			// Create the initial build state
-			auto uut = BuildEvaluateEngine(fileSystemState);
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
 
 			// Evaluate the build
 			auto operationGraph = OperationGraph(

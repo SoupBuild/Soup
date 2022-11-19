@@ -329,7 +329,7 @@ namespace Soup::Core
 
 			auto parametersFile = soupTargetDirectory + BuildConstants::GenerateParametersFileName();
 			Log::Info("Check outdated parameters file: " + parametersFile.ToString());
-			if (_arguments.ForceRebuild || IsOutdated(parametersTable, parametersFile))
+			if (IsOutdated(parametersTable, parametersFile))
 			{
 				Log::Info("Save Parameters file");
 				ValueTableManager::SaveState(parametersFile, parametersTable);
@@ -360,7 +360,7 @@ namespace Soup::Core
 
 			auto readAccessFile = soupTargetDirectory + BuildConstants::GenerateReadAccessFileName();
 			Log::Info("Check outdated read access file: " + readAccessFile.ToString());
-			if (_arguments.ForceRebuild || IsOutdated(evaluateAllowedReadAccess, readAccessFile))
+			if (IsOutdated(evaluateAllowedReadAccess, readAccessFile))
 			{
 				Log::Info("Save Read Access file");
 				PathListManager::Save(readAccessFile, evaluateAllowedReadAccess);
@@ -368,7 +368,7 @@ namespace Soup::Core
 
 			auto writeAccessFile = soupTargetDirectory + BuildConstants::GenerateWriteAccessFileName();
 			Log::Info("Check outdated write access file: " + writeAccessFile.ToString());
-			if (_arguments.ForceRebuild || IsOutdated(evaluateAllowedWriteAccess, writeAccessFile))
+			if (IsOutdated(evaluateAllowedWriteAccess, writeAccessFile))
 			{
 				Log::Info("Save Write Access file");
 				PathListManager::Save(writeAccessFile, evaluateAllowedWriteAccess);

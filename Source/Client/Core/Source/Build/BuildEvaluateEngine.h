@@ -18,6 +18,8 @@ namespace Soup::Core
 	export class BuildEvaluateEngine : public IEvaluateEngine
 	{
 	private:
+		bool _forceRebuild;
+
 		// Shared Runtime State
 		FileSystemState& _fileSystemState;
 
@@ -29,7 +31,9 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="BuildEvaluateEngine"/> class.
 		/// </summary>
 		BuildEvaluateEngine(
+			bool forceRebuild,
 			FileSystemState& fileSystemState) :
+			_forceRebuild(forceRebuild),
 			_fileSystemState(fileSystemState),
 			_remainingDependencyCounts(),
 			_stateChecker(fileSystemState)
@@ -167,7 +171,15 @@ namespace Soup::Core
 				}
 				else
 				{
-					Log::Info("Up to date");
+					if (_forceRebuild)
+					{
+						Log::HighPriority("Up to date: Force Build");
+						buildRequired = true;
+					}
+					else
+					{
+						Log::Info("Up to date");
+					}
 				}
 			}
 			else

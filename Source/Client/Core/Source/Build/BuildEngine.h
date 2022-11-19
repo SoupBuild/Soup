@@ -92,7 +92,9 @@ namespace Soup::Core
 			auto fileSystemState = FileSystemState();
 
 			// Initialize a shared Evaluate Engine
-			auto evaluateEngine = BuildEvaluateEngine(fileSystemState);
+			auto evaluateEngine = BuildEvaluateEngine(
+				arguments.ForceRebuild,
+				fileSystemState);
 
 			// Initialize shared location manager
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
