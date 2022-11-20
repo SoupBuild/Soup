@@ -30,14 +30,15 @@ namespace Soup.Build.Runtime
 		public OperationGraphGenerator(
 			FileSystemState fileSystemState,
 			IList<Path> readAccessList,
-			IList<Path> writeAccessList)
+			IList<Path> writeAccessList,
+			OperationGraph graph)
 		{
 			this.fileSystemState = fileSystemState;
 			this.readAccessList = readAccessList;
 			this.writeAccessList = writeAccessList;
+			this.graph = graph;
 
 			this.uniqueId = new OperationId(0);
-			this.graph = new OperationGraph();
 
 			this.inputFileLookup = new Dictionary<FileId, IList<OperationInfo>>();
 			this.outputFileLookup = new Dictionary<FileId, OperationInfo>();
@@ -114,84 +115,14 @@ namespace Soup.Build.Runtime
 				writeAccessFileIds);
 
 			StoreLookupInfo(operationInfo);
+			ResolveDependencies(operationInfo);
 
 			// Add the new operation to the graph
 			this.graph.AddOperation(operationInfo);
 		}
 
-		private void StoreLookupInfo(OperationInfo operationInfo)
+		public void FinalizeGraph()
 		{
-			// Store the operation in the required file lookups to ensure single target
-			// and help build up the dependency graph
-			foreach (var file in operationInfo.DeclaredOutput)
-			{
-				var filePath = this.fileSystemState.GetFilePath(file);
-				if (filePath.HasFileName)
-				{
-					CheckSetOutputFileOperation(file, operationInfo);
-				}
-				else
-				{
-					CheckSetOutputDirectoryOperation(file, operationInfo);
-				}
-			}
-
-			foreach (var file in operationInfo.DeclaredInput)
-			{
-				var filePath = this.fileSystemState.GetFilePath(file);
-				if (filePath.HasFileName)
-				{
-					AddInputFileOperation(file, operationInfo);
-				}
-			}
-		}
-
-		public OperationGraph BuildGraph()
-		{
-			// Build up the child dependencies based on the operations that use this operations output files
-			foreach (var activeOperationInfo in this.graph.Operations.Values)
-			{
-				// Check for inputs that match previous output files
-				foreach (var file in activeOperationInfo.DeclaredInput)
-				{
-					if (TryGetOutputFileOperation(file, out var matchedOperation))
-					{
-						// The active operation must run after the matched output operation
-						if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
-						{
-							activeOperationInfo.DependencyCount++;
-						}
-					}
-				}
-
-				// Check for output files that are under previous output directories
-				foreach (var file in activeOperationInfo.DeclaredOutput)
-				{
-					var filePath = this.fileSystemState.GetFilePath(file);
-					var parentDirectory = filePath.GetParent();
-					var done = false;
-					while (!done)
-					{
-						if (this.fileSystemState.TryFindFileId(parentDirectory, out var parentDirectoryId))
-						{
-							if (TryGetOutputDirectoryOperation(parentDirectoryId, out var matchedOperation))
-							{
-								// The matched directory output operation must run before the active operation
-								if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
-								{
-									activeOperationInfo.DependencyCount++;
-								}
-							}
-						}
-
-						// Get the next parent directory
-						var nextParentDirectory = parentDirectory.GetParent();
-						done = nextParentDirectory.ToString().Length == parentDirectory.ToString().Length;
-						parentDirectory = nextParentDirectory;
-					}
-				}
-			}
-
 			// Add any operation with zero dependencies to the root
 			var rootOperations = new List<OperationId>();
 			foreach (var activeOperationInfo in this.graph.Operations.Values)
@@ -241,8 +172,85 @@ namespace Soup.Build.Runtime
 					childOperation.DependencyCount--;
 				}
 			}
+		}
 
-			return this.graph;
+		private void StoreLookupInfo(OperationInfo operationInfo)
+		{
+			// Store the operation in the required file lookups to ensure single target
+			// and help build up the dependency graph
+			foreach (var file in operationInfo.DeclaredOutput)
+			{
+				var filePath = this.fileSystemState.GetFilePath(file);
+				if (filePath.HasFileName)
+				{
+					CheckSetOutputFileOperation(file, operationInfo);
+				}
+				else
+				{
+					CheckSetOutputDirectoryOperation(file, operationInfo);
+				}
+			}
+
+			foreach (var file in operationInfo.DeclaredInput)
+			{
+				var filePath = this.fileSystemState.GetFilePath(file);
+				if (filePath.HasFileName)
+				{
+					AddInputFileOperation(file, operationInfo);
+				}
+			}
+		}
+
+		private void ResolveDependencies(OperationInfo operationInfo)
+		{
+			// Build up the child dependencies based on the operations that use this operations output files
+
+			// Check for inputs that match previous output files
+			foreach (var file in operationInfo.DeclaredInput)
+			{
+				if (TryGetOutputFileOperation(file, out var matchedOperation))
+				{
+					// The active operation must run after the matched output operation
+					CheckAddChildOperation(matchedOperation, operationInfo);
+				}
+			}
+
+			// Check for outputs that match previous input files
+			foreach (var file in operationInfo.DeclaredOutput)
+			{
+				if (TryGetInputFileOperations(file, out var matchedOperations))
+				{
+					foreach (var matchedOperation in matchedOperations)
+					{
+						// The active operation must run before the matched output operation
+						CheckAddChildOperation(operationInfo, matchedOperation);
+					}
+				}
+			}
+
+			// Check for output files that are under previous output directories
+			foreach (var file in operationInfo.DeclaredOutput)
+			{
+				var filePath = this.fileSystemState.GetFilePath(file);
+				var parentDirectory = filePath.GetParent();
+				var done = false;
+				while (!done)
+				{
+					if (this.fileSystemState.TryFindFileId(parentDirectory, out var parentDirectoryId))
+					{
+						if (TryGetOutputDirectoryOperation(parentDirectoryId, out var matchedOperation))
+						{
+							// The matched directory output operation must run before the active operation
+							CheckAddChildOperation(matchedOperation, operationInfo);
+						}
+					}
+
+					// Get the next parent directory
+					var nextParentDirectory = parentDirectory.GetParent();
+					done = nextParentDirectory.ToString().Length == parentDirectory.ToString().Length;
+					parentDirectory = nextParentDirectory;
+				}
+			}
 		}
 
 		private void BuildRecursiveChildSets(Dictionary<OperationId, HashSet<OperationId>> recursiveChildren, IList<OperationId> operations)
@@ -314,15 +322,27 @@ namespace Soup.Build.Runtime
 			return null;
 		}
 
-		private bool UniqueAdd(IList<OperationId> operationList, OperationId operation)
+		private void CheckAddChildOperation(OperationInfo parentOperation, OperationInfo childOperation)
 		{
-			if (!operationList.Contains(operation))
+			if (!parentOperation.Children.Contains(childOperation.Id))
 			{
-				operationList.Add(operation);
+				parentOperation.Children.Add(childOperation.Id);
+				childOperation.DependencyCount++;
+			}
+		}
+
+		private bool TryGetInputFileOperations(
+			FileId file,
+			[MaybeNullWhen(false)] out IList<OperationInfo> operations)
+		{
+			if (this.inputFileLookup.TryGetValue(file, out var value))
+			{
+				operations = value;
 				return true;
 			}
 			else
 			{
+				operations = null;
 				return false;
 			}
 		}
