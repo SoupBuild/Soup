@@ -104,7 +104,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/Root/DoStuff.exe",
+					"GetLastWriteTime: C:/Root/DoStuff.exe",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

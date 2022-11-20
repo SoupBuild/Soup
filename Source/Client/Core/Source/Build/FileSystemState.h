@@ -203,9 +203,10 @@ namespace Soup::Core
 			// The file does not exist in the cache
 			// Load the actual value and save it for later
 			std::optional<std::chrono::time_point<std::chrono::file_clock>> lastWriteTime = std::nullopt;
-			if (System::IFileSystem::Current().Exists(filePath))
+			std::chrono::time_point<std::chrono::file_clock> lastWriteTimeValue;
+			if (System::IFileSystem::Current().TryGetLastWriteTime(filePath, lastWriteTimeValue))
 			{
-				lastWriteTime = System::IFileSystem::Current().GetLastWriteTime(filePath);
+				lastWriteTime = lastWriteTimeValue;
 			}
 
 			auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
