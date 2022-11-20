@@ -14,12 +14,12 @@ namespace SoupView.ViewModel
 {
 	internal class TaskGraphPageModel : Observable
 	{
-		private GraphNode selectedNode = null;
-		private TaskDetailsViewModel selectedTask = null;
+		private GraphNode? selectedNode = null;
+		private TaskDetailsViewModel? selectedTask = null;
 		private string errorBarMessage = string.Empty;
 		private uint uniqueId = 0;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNode>> graph = null;
+		private IList<IList<GraphNode>>? graph = null;
 		private Dictionary<uint, TaskDetailsViewModel> taskDetailsLookup = new Dictionary<uint, TaskDetailsViewModel>();
 
 		public string ErrorBarMessage
@@ -35,7 +35,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public IList<IList<GraphNode>> Graph
+		public IList<IList<GraphNode>>? Graph
 		{
 			get { return graph; }
 			set
@@ -48,7 +48,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public GraphNode SelectedNode
+		public GraphNode? SelectedNode
 		{
 			get { return selectedNode; }
 			set
@@ -57,12 +57,19 @@ namespace SoupView.ViewModel
 				{
 					selectedNode = value;
 					NotifyPropertyChanged();
-					SelectedTask = this.taskDetailsLookup[selectedNode.Id];
+					if (selectedNode!= null)
+					{
+						SelectedTask = this.taskDetailsLookup[selectedNode.Id];
+					}
+					else
+					{
+						SelectedTask = null;
+					}
 				}
 			}
 		}
 
-		public TaskDetailsViewModel SelectedTask
+		public TaskDetailsViewModel? SelectedTask
 		{
 			get { return selectedTask; }
 			set

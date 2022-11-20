@@ -15,11 +15,11 @@ namespace SoupView.ViewModel
 {
 	internal class OperationGraphPageModel : Observable
 	{
-		private GraphNode selectedNode = null;
-		private OperationDetailsViewModel selectedOperation = null;
+		private GraphNode? selectedNode = null;
+		private OperationDetailsViewModel? selectedOperation = null;
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNode>> graph = null;
+		private IList<IList<GraphNode>>? graph = null;
 		private Dictionary<uint, OperationDetailsViewModel> operationDetailsLookup = new Dictionary<uint, OperationDetailsViewModel>();
 
 		public string ErrorBarMessage
@@ -35,7 +35,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public IList<IList<GraphNode>> Graph
+		public IList<IList<GraphNode>>? Graph
 		{
 			get { return graph; }
 			set
@@ -48,7 +48,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public GraphNode SelectedNode
+		public GraphNode? SelectedNode
 		{
 			get { return selectedNode; }
 			set
@@ -57,12 +57,19 @@ namespace SoupView.ViewModel
 				{
 					selectedNode = value;
 					NotifyPropertyChanged();
-					SelectedOperation = this.operationDetailsLookup[selectedNode.Id];
+					if (selectedNode != null)
+					{
+						SelectedOperation = this.operationDetailsLookup[selectedNode.Id];
+					}
+					else
+					{
+						SelectedOperation = null;
+					}
 				}
 			}
 		}
 
-		public OperationDetailsViewModel SelectedOperation
+		public OperationDetailsViewModel? SelectedOperation
 		{
 			get { return selectedOperation; }
 			set
@@ -106,7 +113,15 @@ namespace SoupView.ViewModel
 					return;
 				}
 
-				Graph = BuildGraph(fileSystemState, evaluateGraph);
+				// Check for the optional results
+				var evaluateResultsFile = soupTargetDirectory + BuildConstants.EvaluateResultsFileName;
+				OperationResults? operationResults = null;
+				if (OperationResultsManager.TryLoadState(evaluateResultsFile, fileSystemState, out var loadOperationResults))
+				{
+					operationResults = loadOperationResults;
+				}
+
+				Graph = BuildGraph(fileSystemState, evaluateGraph, operationResults);
 			}
 			else
 			{
@@ -123,13 +138,22 @@ namespace SoupView.ViewModel
 			IsErrorBarOpen = true;
 		}
 
-		private IList<IList<GraphNode>> BuildGraph(FileSystemState fileSystemState, OperationGraph evaluateGraph)
+		private IList<IList<GraphNode>> BuildGraph(
+			FileSystemState fileSystemState,
+			OperationGraph evaluateGraph,
+			OperationResults? operationResults)
 		{
 			this.operationDetailsLookup.Clear();
 			var activeIds = evaluateGraph.GetRootOperationIds();
 			var activeGraph = new List<IList<GraphNode>>();
 			var knownIds = new HashSet<OperationId>();
-			BuildGraphColumn(fileSystemState, evaluateGraph, activeGraph, activeIds, knownIds);
+			BuildGraphColumn(
+				fileSystemState,
+				evaluateGraph,
+				operationResults,
+				activeGraph,
+				activeIds,
+				knownIds);
 
 			return activeGraph;
 		}
@@ -137,6 +161,7 @@ namespace SoupView.ViewModel
 		private void BuildGraphColumn(
 			FileSystemState fileSystemState,
 			OperationGraph evaluateGraph,
+			OperationResults? operationResults,
 			IList<IList<GraphNode>> activeGraph,
 			IList<OperationId> activeIds,
 			HashSet<OperationId> knownIds)
@@ -155,7 +180,13 @@ namespace SoupView.ViewModel
 			// Find the depest level first
 			if (nextIds.Count > 0)
 			{
-				BuildGraphColumn(fileSystemState, evaluateGraph, activeGraph, nextIds, knownIds);
+				BuildGraphColumn(
+					fileSystemState,
+					evaluateGraph,
+					operationResults,
+					activeGraph,
+					nextIds,
+					knownIds);
 			}
 
 			// Build up all the nodes at this level that have not already been added
@@ -174,7 +205,19 @@ namespace SoupView.ViewModel
 					knownIds.Add(operationId);
 					column.Add(node);
 
-					this.operationDetailsLookup.Add(operationId.value, new OperationDetailsViewModel(fileSystemState, operation));
+					// Check if there is a matching result
+					OperationResult? operationResult = null;
+					if (operationResults != null)
+					{
+						if (operationResults.TryFindResult(operationId, out var operationResultValue))
+						{
+							operationResult = operationResultValue;
+						}
+					}
+
+					this.operationDetailsLookup.Add(
+						operationId.value,
+						new OperationDetailsViewModel(fileSystemState, operation, operationResult));
 				}
 			}
 

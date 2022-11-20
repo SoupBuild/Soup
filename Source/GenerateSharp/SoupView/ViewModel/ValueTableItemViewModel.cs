@@ -53,5 +53,10 @@ namespace SoupView.ViewModel
 				}
 			}
 		}
+
+		public ValueTableItemViewModel(string title)
+		{
+			Title = title;
+		}
 	}
 }

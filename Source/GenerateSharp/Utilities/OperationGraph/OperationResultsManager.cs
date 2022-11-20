@@ -1,4 +1,4 @@
-﻿// <copyright file="OperationGraphManager.cs" company="Soup">
+﻿// <copyright file="OperationResultsManager.cs" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -14,38 +14,38 @@ namespace Soup.Build.Utilities
 	/// <summary>
 	/// The operation state manager
 	/// </summary>
-	public static class OperationGraphManager
+	public static class OperationResultsManager
 	{
 		/// <summary>
 		/// Load the operation state from the provided directory
 		/// </summary>
 		public static bool TryLoadState(
-			Path operationGraphFile,
+			Path operationResultsFile,
 			FileSystemState fileSystemState,
-			[MaybeNullWhen(false)] out OperationGraph result)
+			[MaybeNullWhen(false)] out OperationResults result)
 		{
 			// Verify the requested file exists
-			if (!LifetimeManager.Get<IFileSystem>().Exists(operationGraphFile))
+			if (!LifetimeManager.Get<IFileSystem>().Exists(operationResultsFile))
 			{
-				Log.Info("Operation graph file does not exist");
+				Log.Info("Operation results file does not exist");
 				result = null;
 				return false;
 			}
 
 			// Open the file to read from
-			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(operationGraphFile);
+			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(operationResultsFile);
 			using var reader = new System.IO.BinaryReader(file.GetInStream(), Encoding.UTF8, true);
 
 			// Read the contents of the build state file
 			try
 			{
-				var loadedResult = OperationGraphReader.Deserialize(reader);
+				var loadedResult = OperationResultsReader.Deserialize(reader);
 
 				// Map up the incoming file ids to the active file system state ids
 				var activeFileIdMap = new Dictionary<FileId, FileId>();
-				for (var i = 0; i < loadedResult.GetReferencedFiles().Count; i++)
+				for (var i = 0; i < loadedResult.ReferencedFiles.Count; i++)
 				{
-					var fileReference = loadedResult.GetReferencedFiles()[i];
+					var fileReference = loadedResult.ReferencedFiles[i];
 					var activeFileId = fileSystemState.ToFileId(fileReference.Path);
 					activeFileIdMap.Add(fileReference.FileId, activeFileId);
 
@@ -54,11 +54,11 @@ namespace Soup.Build.Utilities
 				}
 
 				// Update all of the operations
-				foreach (var operationReference in loadedResult.GetOperations())
+				foreach (var operationReference in loadedResult.Results)
 				{
 					var operation = operationReference.Value;
-					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
-					UpdateFileIds(operation.DeclaredOutput, activeFileIdMap);
+					UpdateFileIds(operation.ObservedInput, activeFileIdMap);
+					UpdateFileIds(operation.ObservedOutput, activeFileIdMap);
 				}
 
 				result = loadedResult;
@@ -66,7 +66,7 @@ namespace Soup.Build.Utilities
 			}
 			catch
 			{
-				Log.Error("Failed to parse operation graph");
+				Log.Error("Failed to parse operation results");
 				result = null;
 				return false;
 			}
@@ -80,6 +80,8 @@ namespace Soup.Build.Utilities
 			OperationGraph state,
 			FileSystemState fileSystemState)
 		{
+			var targetFolder = operationGraphFile.GetParent();
+
 			// Update the operation graph referenced files
 			var files = new HashSet<FileId>();
 			foreach (var operationReference in state.GetOperations())

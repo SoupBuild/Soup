@@ -35,39 +35,46 @@ namespace SoupView.ViewModel
 			viewModelList.Clear();
 			foreach (var value in table)
 			{
-				var viewModel = new ValueTableItemViewModel();
-
+				string title;
+				ValueTableItemType type;
+				var children = new ObservableCollection<ValueTableItemViewModel>();
 				switch (value.Value.Type)
 				{
 					case ValueType.Boolean:
-						viewModel.Title = $"{value.Key} - {value.Value.AsBoolean()}";
-						viewModel.Type = ValueTableItemType.Value;
+						title = $"{value.Key} - {value.Value.AsBoolean()}";
+						type = ValueTableItemType.Value;
 						break;
 					case ValueType.String:
-						viewModel.Title = $"{value.Key} - {value.Value.AsString()}";
-						viewModel.Type = ValueTableItemType.Value;
+						title = $"{value.Key} - {value.Value.AsString()}";
+						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Float:
-						viewModel.Title = $"{value.Key} - {value.Value.AsFloat()}";
-						viewModel.Type = ValueTableItemType.Value;
+						title = $"{value.Key} - {value.Value.AsFloat()}";
+						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Integer:
-						viewModel.Title = $"{value.Key} - {value.Value.AsInteger()}";
-						viewModel.Type = ValueTableItemType.Value;
+						title = $"{value.Key} - {value.Value.AsInteger()}";
+						type = ValueTableItemType.Value;
 						break;
 					case ValueType.List:
-						viewModel.Title = $"{value.Key}";
-						viewModel.Type = ValueTableItemType.List;
-						BuildValueList(value.Value.AsList(), viewModel.Children);
+						title = $"{value.Key}";
+						type = ValueTableItemType.List;
+						BuildValueList(value.Value.AsList(), children);
 						break;
 					case ValueType.Table:
-						viewModel.Title = $"{value.Key}";
-						viewModel.Type = ValueTableItemType.Table;
-						BuildValueTable(value.Value.AsTable(), viewModel.Children);
+						title = $"{value.Key}";
+						type = ValueTableItemType.Table;
+						BuildValueTable(value.Value.AsTable(), children);
 						break;
 					default:
 						throw new InvalidOperationException("Unknown Value type");
 				}
+
+				var viewModel = new ValueTableItemViewModel(title)
+				{
+					Type = type,
+					Children = children,
+				};
 
 				viewModelList.Add(viewModel);
 			}
@@ -80,39 +87,46 @@ namespace SoupView.ViewModel
 			viewModelList.Clear();
 			foreach (var value in list)
 			{
-				var viewModel = new ValueTableItemViewModel();
-
+				string title;
+				ValueTableItemType type;
+				var children = new ObservableCollection<ValueTableItemViewModel>(); ;
 				switch (value.Type)
 				{
 					case ValueType.Boolean:
-						viewModel.Title = $"{value.AsBoolean()}";
-						viewModel.Type = ValueTableItemType.Value;
+						title = $"{value.AsBoolean()}";
+						type = ValueTableItemType.Value;
 						break;
 					case ValueType.String:
-						viewModel.Title = $"{value.AsString()}";
-						viewModel.Type = ValueTableItemType.Value;
+						title = $"{value.AsString()}";
+						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Float:
-						viewModel.Title = $"{value.AsFloat()}";
-						viewModel.Type = ValueTableItemType.Value;
+						title = $"{value.AsFloat()}";
+						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Integer:
-						viewModel.Title = $"{value.AsInteger()}";
-						viewModel.Type = ValueTableItemType.Value;
+						title = $"{value.AsInteger()}";
+						type = ValueTableItemType.Value;
 						break;
 					case ValueType.List:
-						viewModel.Title = string.Empty;
-						viewModel.Type = ValueTableItemType.List;
-						BuildValueList(value.AsList(), viewModel.Children);
+						title = string.Empty;
+						type = ValueTableItemType.List;
+						BuildValueList(value.AsList(), children);
 						break;
 					case ValueType.Table:
-						viewModel.Title = string.Empty;
-						viewModel.Type = ValueTableItemType.Table;
-						BuildValueTable(value.AsTable(), viewModel.Children);
+						title = string.Empty;
+						type = ValueTableItemType.Table;
+						BuildValueTable(value.AsTable(), children);
 						break;
 					default:
 						throw new InvalidOperationException("Unknown Value type");
 				}
+
+				var viewModel = new ValueTableItemViewModel(title)
+				{
+					Type = type,
+					Children = children,
+				};
 
 				viewModelList.Add(viewModel);
 			}

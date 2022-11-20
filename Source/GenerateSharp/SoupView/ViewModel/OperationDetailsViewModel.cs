@@ -3,6 +3,7 @@
 // </copyright>
 
 using Soup.Build.Runtime;
+using Soup.Build.Utilities;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -12,7 +13,10 @@ namespace SoupView.ViewModel
 	{
 		private ObservableCollection<PropertyValue> properties = new ObservableCollection<PropertyValue>();
 
-		public OperationDetailsViewModel(FileSystemState fileSystemState, OperationInfo operation)
+		public OperationDetailsViewModel(
+			FileSystemState fileSystemState,
+			OperationInfo operation,
+			OperationResult? operationResult)
 		{
 			properties.Clear();
 			properties.Add(new PropertyValue("Title", operation.Title));
@@ -30,6 +34,16 @@ namespace SoupView.ViewModel
 			properties.Add(new PropertyValue("DeclaredOutput", string.Concat(declaredOutputFiles)));
 			properties.Add(new PropertyValue("ReadAccess", string.Concat(readAccessFiles)));
 			properties.Add(new PropertyValue("WriteAccess", string.Concat(writeAccessFiles)));
+
+			if (operationResult != null)
+			{
+				properties.Add(new PropertyValue("WasSuccessfulRun", operationResult.WasSuccessfulRun.ToString()));
+				properties.Add(new PropertyValue("EvaluateTime", operationResult.EvaluateTime.ToString()));
+				var observedInputFiles = fileSystemState.GetFilePaths(operationResult.ObservedInput);
+				var observedOutputFiles = fileSystemState.GetFilePaths(operationResult.ObservedOutput);
+				properties.Add(new PropertyValue("ObservedInput", string.Concat(observedInputFiles)));
+				properties.Add(new PropertyValue("OvservedOutput", string.Concat(observedOutputFiles)));
+			}
 		}
 
 		public IList<PropertyValue> Properties => properties;
