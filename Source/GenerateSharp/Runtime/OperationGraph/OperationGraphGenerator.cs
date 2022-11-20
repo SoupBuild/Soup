@@ -21,6 +21,9 @@ namespace Soup.Build.Runtime
 		private IList<Path> writeAccessList;
 		private OperationId uniqueId;
 		private OperationGraph graph;
+
+		// Running state used to build graph dynamically
+		private Dictionary<FileId, IList<OperationInfo>> inputFileLookup;
 		private Dictionary<FileId, OperationInfo> outputFileLookup;
 		private Dictionary<FileId, OperationInfo> outputDirectoryLookup;
 
@@ -35,6 +38,8 @@ namespace Soup.Build.Runtime
 
 			this.uniqueId = new OperationId(0);
 			this.graph = new OperationGraph();
+
+			this.inputFileLookup = new Dictionary<FileId, IList<OperationInfo>>();
 			this.outputFileLookup = new Dictionary<FileId, OperationInfo>();
 			this.outputDirectoryLookup = new Dictionary<FileId, OperationInfo>();
 		}
@@ -92,12 +97,11 @@ namespace Soup.Build.Runtime
 			this.uniqueId = new OperationId(this.uniqueId.value + 1);
 			var operationId = this.uniqueId;
 
-			// Resolve the requested files to uniquie ids
+			// Resolve the requested files to unique ids
 			var declaredInputFileIds = this.fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
 			var declaredOutputFileIds = this.fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
 			var readAccessFileIds = this.fileSystemState.ToFileIds(readAccess, commandInfo.WorkingDirectory);
 			var writeAccessFileIds = this.fileSystemState.ToFileIds(writeAccess, commandInfo.WorkingDirectory);
-
 
 			// Build up the declared build operation
 			var operationInfo = new OperationInfo(
@@ -109,8 +113,17 @@ namespace Soup.Build.Runtime
 				readAccessFileIds,
 				writeAccessFileIds);
 
-			// Store the operation in the required file lookups to help build up the dependency graph
-			foreach (var file in declaredOutputFileIds)
+			StoreLookupInfo(operationInfo);
+
+			// Add the new operation to the graph
+			this.graph.AddOperation(operationInfo);
+		}
+
+		private void StoreLookupInfo(OperationInfo operationInfo)
+		{
+			// Store the operation in the required file lookups to ensure single target
+			// and help build up the dependency graph
+			foreach (var file in operationInfo.DeclaredOutput)
 			{
 				var filePath = this.fileSystemState.GetFilePath(file);
 				if (filePath.HasFileName)
@@ -123,8 +136,14 @@ namespace Soup.Build.Runtime
 				}
 			}
 
-			// Add the new operation to the graph
-			this.graph.AddOperation(operationInfo);
+			foreach (var file in operationInfo.DeclaredInput)
+			{
+				var filePath = this.fileSystemState.GetFilePath(file);
+				if (filePath.HasFileName)
+				{
+					AddInputFileOperation(file, operationInfo);
+				}
+			}
 		}
 
 		public OperationGraph BuildGraph()
@@ -367,6 +386,25 @@ namespace Soup.Build.Runtime
 			else
 			{
 				this.outputDirectoryLookup.Add(file, operation);
+			}
+		}
+
+		private void AddInputFileOperation(
+			FileId file,
+			OperationInfo operation)
+		{
+			if (this.inputFileLookup.TryGetValue(file, out var operations))
+			{
+				operations.Add(operation);
+			}
+			else
+			{
+				this.inputFileLookup.Add(
+					file,
+					new List<OperationInfo>()
+					{
+						operation,
+					});
 			}
 		}
 	}

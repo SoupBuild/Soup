@@ -44,6 +44,40 @@ namespace Soup.Build.Runtime.UnitTests
 		}
 
 		[Fact]
+		public void CreateOperation_RelativeWorkingDirectory_Fails()
+		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
+			var fileSystemState = new FileSystemState();
+			var readAccessList = new List<Path>();
+			var writeAccessList = new List<Path>();
+			var uut = new OperationGraphGenerator(fileSystemState, readAccessList, writeAccessList);
+
+			var exception = Assert.Throws<InvalidOperationException>(
+				() =>
+				{
+					uut.CreateOperation(
+						"Do Stuff",
+						new Path("DoStuff.exe"),
+						"do stuff",
+						new Path("./WorkingDir/"),
+						new List<Path>(),
+						new List<Path>());
+				});
+			Assert.Equal("Working directory must be an absolute path.", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff",
+				},
+				testListener.GetMessages());
+		}
+
+		[Fact]
 		public void CreateOperation_DuplicateCommand_Fails()
 		{
 			// Register the test listener
