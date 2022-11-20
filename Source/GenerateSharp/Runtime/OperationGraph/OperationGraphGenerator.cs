@@ -107,11 +107,10 @@ namespace Soup.Build.Runtime
 					writeAccessFileIds));
 		}
 
-
 		public OperationGraph BuildGraph()
 		{
 			// Store the operation in the required file lookups to help build up the dependency graph
-			foreach (var operationInfo in this.graph.GetOperations().Values)
+			foreach (var operationInfo in this.graph.Operations.Values)
 			{
 				foreach (var file in operationInfo.DeclaredOutput)
 				{
@@ -128,7 +127,7 @@ namespace Soup.Build.Runtime
 			}
 
 			// Build up the child dependencies based on the operations that use this operations output files
-			foreach (var activeOperationInfo in this.graph.GetOperations().Values)
+			foreach (var activeOperationInfo in this.graph.Operations.Values)
 			{
 				// Check for inputs that match previous output files
 				foreach (var file in activeOperationInfo.DeclaredInput)
@@ -179,7 +178,7 @@ namespace Soup.Build.Runtime
 
 			// Add any operation with zero dependencies to the root
 			var rootOperations = new List<OperationId>();
-			foreach (var activeOperationInfo in this.graph.GetOperations().Values)
+			foreach (var activeOperationInfo in this.graph.Operations.Values)
 			{
 				if (activeOperationInfo.DependencyCount == 0)
 				{
@@ -188,12 +187,12 @@ namespace Soup.Build.Runtime
 				}
 			}
 
-			this.graph.SetRootOperationIds(rootOperations);
+			this.graph.RootOperationIds = rootOperations;
 
 			// Remove extra dependency references that are already covered by upstream references
 			var recursiveChildren = new Dictionary<OperationId, HashSet<OperationId>>();
 			BuildRecursiveChildSets(recursiveChildren, rootOperations);
-			foreach (var operation in this.graph.GetOperations().Values)
+			foreach (var operation in this.graph.Operations.Values)
 			{
 				// Check each child to see if it is already covered by another child
 				var removeList = new List<OperationId>();

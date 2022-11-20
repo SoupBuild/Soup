@@ -43,9 +43,9 @@ namespace Soup.Build.Utilities
 
 				// Map up the incoming file ids to the active file system state ids
 				var activeFileIdMap = new Dictionary<FileId, FileId>();
-				for (var i = 0; i < loadedResult.GetReferencedFiles().Count; i++)
+				for (var i = 0; i < loadedResult.ReferencedFiles.Count; i++)
 				{
-					var fileReference = loadedResult.GetReferencedFiles()[i];
+					var fileReference = loadedResult.ReferencedFiles[i];
 					var activeFileId = fileSystemState.ToFileId(fileReference.Path);
 					activeFileIdMap.Add(fileReference.FileId, activeFileId);
 
@@ -54,7 +54,7 @@ namespace Soup.Build.Utilities
 				}
 
 				// Update all of the operations
-				foreach (var operationReference in loadedResult.GetOperations())
+				foreach (var operationReference in loadedResult.Operations)
 				{
 					var operation = operationReference.Value;
 					UpdateFileIds(operation.DeclaredInput, activeFileIdMap);
@@ -82,7 +82,7 @@ namespace Soup.Build.Utilities
 		{
 			// Update the operation graph referenced files
 			var files = new HashSet<FileId>();
-			foreach (var operationReference in state.GetOperations())
+			foreach (var operationReference in state.Operations)
 			{
 				var operation = operationReference.Value;
 				files.UnionWith(operation.DeclaredInput);
@@ -97,7 +97,7 @@ namespace Soup.Build.Utilities
 				referencedFiles.Add((fileId, fileSystemState.GetFilePath(fileId)));
 			}
 
-			state.SetReferencedFiles(referencedFiles);
+			state.ReferencedFiles = referencedFiles;
 
 			// Open the file to write to
 			using var fileStream = System.IO.File.Open(

@@ -84,7 +84,7 @@ namespace Soup.Build.Utilities
 
 			// Update the operation graph referenced files
 			var files = new HashSet<FileId>();
-			foreach (var operationReference in state.GetOperations())
+			foreach (var operationReference in state.Operations)
 			{
 				var operation = operationReference.Value;
 				files.UnionWith(operation.DeclaredInput);
@@ -99,7 +99,7 @@ namespace Soup.Build.Utilities
 				referencedFiles.Add((fileId, fileSystemState.GetFilePath(fileId)));
 			}
 
-			state.SetReferencedFiles(referencedFiles);
+			state.ReferencedFiles = referencedFiles;
 
 			// Open the file to write to
 			using var fileStream = System.IO.File.Open(

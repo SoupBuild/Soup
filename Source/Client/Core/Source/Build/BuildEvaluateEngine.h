@@ -362,8 +362,12 @@ namespace Soup::Core
 					output.push_back(std::move(path));
 				}
 
-				operationResult.ObservedInput = _fileSystemState.ToFileIds(input, operationInfo.Command.WorkingDirectory);
-				operationResult.ObservedOutput = _fileSystemState.ToFileIds(output, operationInfo.Command.WorkingDirectory);
+				operationResult.ObservedInput = _fileSystemState.ToFileIds(
+					input,
+					operationInfo.Command.WorkingDirectory);
+				operationResult.ObservedOutput = _fileSystemState.ToFileIds(
+					output,
+					operationInfo.Command.WorkingDirectory);
 
 				// Mark this operation as successful to enable future incremental builds
 				operationResult.WasSuccessfulRun = true;

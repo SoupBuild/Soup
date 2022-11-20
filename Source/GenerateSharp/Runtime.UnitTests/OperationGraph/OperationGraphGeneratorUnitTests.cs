@@ -9,6 +9,7 @@ using Xunit;
 
 namespace Soup.Build.Runtime.UnitTests
 {
+	[Collection("Opal")]
 	public class OperationGraphGeneratorUnitTests
 	{
 		[Fact]
@@ -45,12 +46,16 @@ namespace Soup.Build.Runtime.UnitTests
 		[Fact]
 		public void CreateOperation_NoAccess_ReadAccessDenied()
 		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
 			var fileSystemState = new FileSystemState();
 			var readAccessList = new List<Path>();
 			var writeAccessList = new List<Path>();
 			var uut = new OperationGraphGenerator(fileSystemState, readAccessList, writeAccessList);
 
-			Assert.Throws<InvalidOperationException>(
+			var exception = Assert.Throws<InvalidOperationException>(
 				() =>
 				{
 					uut.CreateOperation(
@@ -64,17 +69,31 @@ namespace Soup.Build.Runtime.UnitTests
 						},
 						new List<Path>());
 				});
+			Assert.Equal("Operation does not have permission to read requested input.", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff",
+					"ERRO: File access denied: ./ReadFile.txt",
+				},
+				testListener.GetMessages());
 		}
 
 		[Fact]
 		public void CreateOperation_NoAccess_WriteAccessDenied()
 		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
 			var fileSystemState = new FileSystemState();
 			var readAccessList = new List<Path>();
 			var writeAccessList = new List<Path>();
 			var uut = new OperationGraphGenerator(fileSystemState, readAccessList, writeAccessList);
 
-			Assert.Throws<InvalidOperationException>(
+			var exception = Assert.Throws<InvalidOperationException>(
 				() =>
 				{
 					uut.CreateOperation(
@@ -88,11 +107,26 @@ namespace Soup.Build.Runtime.UnitTests
 							new Path("WriteFile.txt"),
 						});
 				});
+			Assert.Equal("Operation does not have permission to write requested output.", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff",
+					"DIAG: Read Access Subset:",
+					"ERRO: File access denied: ./WriteFile.txt",
+				},
+				testListener.GetMessages());
 		}
 
 		[Fact]
 		public void CreateOperation_Access_ReadAccessDenied()
 		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
 			var fileSystemState = new FileSystemState();
 			var readAccessList = new List<Path>()
 			{
@@ -104,7 +138,7 @@ namespace Soup.Build.Runtime.UnitTests
 			};
 			var uut = new OperationGraphGenerator(fileSystemState, readAccessList, writeAccessList);
 
-			Assert.Throws<InvalidOperationException>(
+			var exception = Assert.Throws<InvalidOperationException>(
 				() =>
 				{
 					uut.CreateOperation(
@@ -118,11 +152,25 @@ namespace Soup.Build.Runtime.UnitTests
 						},
 						new List<Path>());
 				});
+			Assert.Equal("Operation does not have permission to read requested input.", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff",
+					"ERRO: File access denied: ./ReadFile.txt",
+				},
+				testListener.GetMessages());
 		}
 
 		[Fact]
 		public void CreateOperation_Access_WriteAccessDenied()
 		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
 			var fileSystemState = new FileSystemState();
 			var readAccessList = new List<Path>()
 			{
@@ -134,7 +182,7 @@ namespace Soup.Build.Runtime.UnitTests
 			};
 			var uut = new OperationGraphGenerator(fileSystemState, readAccessList, writeAccessList);
 
-			Assert.Throws<InvalidOperationException>(
+			var exception = Assert.Throws<InvalidOperationException>(
 				() =>
 				{
 					uut.CreateOperation(
@@ -148,6 +196,17 @@ namespace Soup.Build.Runtime.UnitTests
 							new Path("WriteFile.txt"),
 						});
 				});
+			Assert.Equal("Operation does not have permission to write requested output.", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff",
+					"DIAG: Read Access Subset:",
+					"ERRO: File access denied: ./WriteFile.txt",
+				},
+				testListener.GetMessages());
 		}
 
 		[Fact]
@@ -315,6 +374,56 @@ namespace Soup.Build.Runtime.UnitTests
 		}
 
 		[Fact]
+		public void CreateOperation_CircularDependencies_ReadWrite()
+		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
+			var fileSystemState = new FileSystemState();
+			var readAccessList = new List<Path>()
+			{
+				new Path("C:/WorkingDir/"),
+			};
+			var writeAccessList = new List<Path>()
+			{
+				new Path("C:/WorkingDir/"),
+			};
+			var uut = new OperationGraphGenerator(fileSystemState, readAccessList, writeAccessList);
+
+			var exception = Assert.Throws<InvalidOperationException>(
+				() =>
+				{
+					uut.CreateOperation(
+						"Do Stuff",
+						new Path("DoStuff.exe"),
+						"do stuff",
+						new Path("C:/WorkingDir/"),
+						new List<Path>()
+						{
+							new Path("File.txt"),
+						},
+						new List<Path>()
+						{
+							new Path("File.txt"),
+						});
+				});
+
+			Assert.Equal("", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff",
+					"DIAG: Read Access Subset:",
+					"DIAG: Write Access Subset:",
+				},
+				testListener.GetMessages());
+		}
+
+
+		[Fact]
 		public void BuildGraph_NoNodes()
 		{
 			var fileSystemState = new FileSystemState();
@@ -330,9 +439,9 @@ namespace Soup.Build.Runtime.UnitTests
 
 			var graph = uut.BuildGraph();
 
-			Assert.Equal(new Dictionary<OperationId, OperationInfo>(), graph.GetOperations());
-			Assert.Equal(new List<OperationId>(), graph.GetRootOperationIds());
-			Assert.Equal(new List<(FileId, Path)>(), graph.GetReferencedFiles());
+			Assert.Equal(new Dictionary<OperationId, OperationInfo>(), graph.Operations);
+			Assert.Equal(new List<OperationId>(), graph.RootOperationIds);
+			Assert.Equal(new List<(FileId, Path)>(), graph.ReferencedFiles);
 		}
 
 		[Fact]
@@ -404,16 +513,16 @@ namespace Soup.Build.Runtime.UnitTests
 						}
 					},
 				},
-				graph.GetOperations());
+				graph.Operations);
 			Assert.Equal(
 				new List<OperationId>()
 				{
 					new OperationId(1),
 				},
-				graph.GetRootOperationIds());
+				graph.RootOperationIds);
 			Assert.Equal(
 				new List<(FileId, Path)>(),
-				graph.GetReferencedFiles());
+				graph.ReferencedFiles);
 		}
 
 		[Fact]
@@ -528,16 +637,16 @@ namespace Soup.Build.Runtime.UnitTests
 						}
 					},
 				},
-				graph.GetOperations());
+				graph.Operations);
 			Assert.Equal(
 				new List<OperationId>()
 				{
 					new OperationId(1),
 				},
-				graph.GetRootOperationIds());
+				graph.RootOperationIds);
 			Assert.Equal(
 				new List<(FileId, Path)>(),
-				graph.GetReferencedFiles());
+				graph.ReferencedFiles);
 		}
 
 		[Fact]
@@ -644,16 +753,16 @@ namespace Soup.Build.Runtime.UnitTests
 						}
 					},
 				},
-				graph.GetOperations());
+				graph.Operations);
 			Assert.Equal(
 				new List<OperationId>()
 				{
 					new OperationId(1),
 				},
-				graph.GetRootOperationIds());
+				graph.RootOperationIds);
 			Assert.Equal(
 				new List<(FileId, Path)>(),
-				graph.GetReferencedFiles());
+				graph.ReferencedFiles);
 		}
 
 		[Fact]
@@ -814,16 +923,16 @@ namespace Soup.Build.Runtime.UnitTests
 						}
 					},
 				},
-				graph.GetOperations());
+				graph.Operations);
 			Assert.Equal(
 				new List<OperationId>()
 				{
 					new OperationId(1),
 				},
-				graph.GetRootOperationIds());
+				graph.RootOperationIds);
 			Assert.Equal(
 				new List<(FileId, Path)>(),
-				graph.GetReferencedFiles());
+				graph.ReferencedFiles);
 		}
 	}
 }
