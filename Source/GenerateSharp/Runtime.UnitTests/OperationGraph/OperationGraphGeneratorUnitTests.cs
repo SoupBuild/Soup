@@ -44,6 +44,164 @@ namespace Soup.Build.Runtime.UnitTests
 		}
 
 		[Fact]
+		public void CreateOperation_DuplicateCommand_Fails()
+		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
+			var fileSystemState = new FileSystemState();
+			var readAccessList = new List<Path>();
+			var writeAccessList = new List<Path>();
+			var uut = new OperationGraphGenerator(fileSystemState, readAccessList, writeAccessList);
+
+			uut.CreateOperation(
+				"Do Stuff",
+				new Path("DoStuff.exe"),
+				"do stuff",
+				new Path("C:/WorkingDir/"),
+				new List<Path>(),
+				new List<Path>());
+			var exception = Assert.Throws<InvalidOperationException>(
+				() =>
+				{
+					uut.CreateOperation(
+						"Do Stuff",
+						new Path("DoStuff.exe"),
+						"do stuff",
+						new Path("C:/WorkingDir/"),
+						new List<Path>(),
+						new List<Path>());
+				});
+			Assert.Equal("Operation with this command already exists.", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff",
+					"DIAG: Read Access Subset:",
+					"DIAG: Write Access Subset:",
+					"DIAG: Create Operation: Do Stuff",
+				},
+				testListener.GetMessages());
+		}
+
+		[Fact]
+		public void CreateOperation_DuplicateOutputFile_Fails()
+		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
+			var fileSystemState = new FileSystemState();
+			var readAccessList = new List<Path>();
+			var writeAccessList = new List<Path>()
+			{
+				new Path("C:/WorkingDir/WriteAccess/")
+			};
+			var uut = new OperationGraphGenerator(fileSystemState, readAccessList, writeAccessList);
+
+			uut.CreateOperation(
+				"Do Stuff 1",
+				new Path("DoStuff1.exe"),
+				"do stuff",
+				new Path("C:/WorkingDir/"),
+				new List<Path>(),
+				new List<Path>()
+				{
+					new Path("./WriteAccess/Output.txt"),
+				});
+			var exception = Assert.Throws<InvalidOperationException>(
+				() =>
+				{
+					uut.CreateOperation(
+						"Do Stuff 2",
+						new Path("DoStuff2.exe"),
+						"do stuff",
+						new Path("C:/WorkingDir/"),
+						new List<Path>(),
+						new List<Path>()
+						{
+							new Path("./WriteAccess/Output.txt"),
+						});
+				});
+			Assert.Equal("File \"C:/WorkingDir/WriteAccess/Output.txt\" already written to by operation \"Do Stuff 1\"", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff 1",
+					"DIAG: Read Access Subset:",
+					"DIAG: Write Access Subset:",
+					"DIAG: C:/WorkingDir/WriteAccess/",
+					"DIAG: Create Operation: Do Stuff 2",
+					"DIAG: Read Access Subset:",
+					"DIAG: Write Access Subset:",
+					"DIAG: C:/WorkingDir/WriteAccess/",
+				},
+				testListener.GetMessages());
+		}
+
+		[Fact]
+		public void CreateOperation_DuplicateOutputDirectory_Fails()
+		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
+			var fileSystemState = new FileSystemState();
+			var readAccessList = new List<Path>();
+			var writeAccessList = new List<Path>()
+			{
+				new Path("C:/WorkingDir/WriteAccess/")
+			};
+			var uut = new OperationGraphGenerator(fileSystemState, readAccessList, writeAccessList);
+
+			uut.CreateOperation(
+				"Do Stuff 1",
+				new Path("DoStuff1.exe"),
+				"do stuff",
+				new Path("C:/WorkingDir/"),
+				new List<Path>(),
+				new List<Path>()
+				{
+					new Path("./WriteAccess/Output/"),
+				});
+			var exception = Assert.Throws<InvalidOperationException>(
+				() =>
+				{
+					uut.CreateOperation(
+						"Do Stuff 2",
+						new Path("DoStuff2.exe"),
+						"do stuff",
+						new Path("C:/WorkingDir/"),
+						new List<Path>(),
+						new List<Path>()
+						{
+							new Path("./WriteAccess/Output/"),
+						});
+				});
+			Assert.Equal("Directory \"C:/WorkingDir/WriteAccess/Output/\" already written to by operation \"Do Stuff 1\"", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff 1",
+					"DIAG: Read Access Subset:",
+					"DIAG: Write Access Subset:",
+					"DIAG: C:/WorkingDir/WriteAccess/",
+					"DIAG: Create Operation: Do Stuff 2",
+					"DIAG: Read Access Subset:",
+					"DIAG: Write Access Subset:",
+					"DIAG: C:/WorkingDir/WriteAccess/",
+				},
+				testListener.GetMessages());
+		}
+
+		[Fact]
 		public void CreateOperation_NoAccess_ReadAccessDenied()
 		{
 			// Register the test listener
@@ -421,7 +579,6 @@ namespace Soup.Build.Runtime.UnitTests
 				},
 				testListener.GetMessages());
 		}
-
 
 		[Fact]
 		public void BuildGraph_NoNodes()

@@ -5,6 +5,7 @@
 using Opal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Soup.Build.Runtime
@@ -20,8 +21,8 @@ namespace Soup.Build.Runtime
 		private IList<Path> writeAccessList;
 		private OperationId uniqueId;
 		private OperationGraph graph;
-		private Dictionary<FileId, IList<OperationInfo>> outputFileLookup;
-		private Dictionary<FileId, IList<OperationInfo>> outputDirectoryLookup;
+		private Dictionary<FileId, OperationInfo> outputFileLookup;
+		private Dictionary<FileId, OperationInfo> outputDirectoryLookup;
 
 		public OperationGraphGenerator(
 			FileSystemState fileSystemState,
@@ -34,8 +35,8 @@ namespace Soup.Build.Runtime
 
 			this.uniqueId = new OperationId(0);
 			this.graph = new OperationGraph();
-			this.outputFileLookup = new Dictionary<FileId, IList<OperationInfo>>();
-			this.outputDirectoryLookup = new Dictionary<FileId, IList<OperationInfo>>();
+			this.outputFileLookup = new Dictionary<FileId, OperationInfo>();
+			this.outputDirectoryLookup = new Dictionary<FileId, OperationInfo>();
 		}
 
 		/// <summary>
@@ -91,56 +92,55 @@ namespace Soup.Build.Runtime
 			this.uniqueId = new OperationId(this.uniqueId.value + 1);
 			var operationId = this.uniqueId;
 
-			// Build up the declared build operation
+			// Resolve the requested files to uniquie ids
 			var declaredInputFileIds = this.fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
 			var declaredOutputFileIds = this.fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
 			var readAccessFileIds = this.fileSystemState.ToFileIds(readAccess, commandInfo.WorkingDirectory);
 			var writeAccessFileIds = this.fileSystemState.ToFileIds(writeAccess, commandInfo.WorkingDirectory);
-			this.graph.AddOperation(
-				new OperationInfo(
-					operationId,
-					title,
-					commandInfo,
-					declaredInputFileIds,
-					declaredOutputFileIds,
-					readAccessFileIds,
-					writeAccessFileIds));
+
+
+			// Build up the declared build operation
+			var operationInfo = new OperationInfo(
+				operationId,
+				title,
+				commandInfo,
+				declaredInputFileIds,
+				declaredOutputFileIds,
+				readAccessFileIds,
+				writeAccessFileIds);
+
+			// Store the operation in the required file lookups to help build up the dependency graph
+			foreach (var file in declaredOutputFileIds)
+			{
+				var filePath = this.fileSystemState.GetFilePath(file);
+				if (filePath.HasFileName)
+				{
+					CheckSetOutputFileOperation(file, operationInfo);
+				}
+				else
+				{
+					CheckSetOutputDirectoryOperation(file, operationInfo);
+				}
+			}
+
+			// Add the new operation to the graph
+			this.graph.AddOperation(operationInfo);
 		}
 
 		public OperationGraph BuildGraph()
 		{
-			// Store the operation in the required file lookups to help build up the dependency graph
-			foreach (var operationInfo in this.graph.Operations.Values)
-			{
-				foreach (var file in operationInfo.DeclaredOutput)
-				{
-					var filePath = this.fileSystemState.GetFilePath(file);
-					if (filePath.HasFileName)
-					{
-						AddOutputFileOperations(file).Add(operationInfo);
-					}
-					else
-					{
-						AddOutputDirectoryOperations(file).Add(operationInfo);
-					}
-				}
-			}
-
 			// Build up the child dependencies based on the operations that use this operations output files
 			foreach (var activeOperationInfo in this.graph.Operations.Values)
 			{
 				// Check for inputs that match previous output files
 				foreach (var file in activeOperationInfo.DeclaredInput)
 				{
-					if (TryGetOutputFileOperations(file, out var matchedOperations))
+					if (TryGetOutputFileOperation(file, out var matchedOperation))
 					{
-						foreach (var matchedOperation in matchedOperations)
+						// The active operation must run after the matched output operation
+						if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
 						{
-							// The active operation must run after the matched output operation
-							if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
-							{
-								activeOperationInfo.DependencyCount++;
-							}
+							activeOperationInfo.DependencyCount++;
 						}
 					}
 				}
@@ -155,15 +155,12 @@ namespace Soup.Build.Runtime
 					{
 						if (this.fileSystemState.TryFindFileId(parentDirectory, out var parentDirectoryId))
 						{
-							if (TryGetOutputDirectoryOperations(parentDirectoryId, out var matchedOperations))
+							if (TryGetOutputDirectoryOperation(parentDirectoryId, out var matchedOperation))
 							{
-								foreach (OperationInfo matchedOperation in matchedOperations)
+								// The matched directory output operation must run before the active operation
+								if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
 								{
-									// The matched directory output operation must run before the active operation
-									if (UniqueAdd(matchedOperation.Children, activeOperationInfo.Id))
-									{
-										activeOperationInfo.DependencyCount++;
-									}
+									activeOperationInfo.DependencyCount++;
 								}
 							}
 						}
@@ -224,7 +221,7 @@ namespace Soup.Build.Runtime
 					var childOperation = this.graph.GetOperationInfo(childId);
 					childOperation.DependencyCount--;
 				}
-			}	
+			}
 
 			return this.graph;
 		}
@@ -311,66 +308,65 @@ namespace Soup.Build.Runtime
 			}
 		}
 
-		private bool TryGetOutputFileOperations(
+		private bool TryGetOutputFileOperation(
 			FileId file,
-			out IList<OperationInfo> operations)
+			[MaybeNullWhen(false)] out OperationInfo operation)
 		{
 			if (this.outputFileLookup.TryGetValue(file, out var value))
 			{
-				operations = value;
+				operation = value;
 				return true;
 			}
 			else
 			{
-				operations = new List<OperationInfo>();
+				operation = null;
 				return false;
 			}
 		}
 
-		private bool TryGetOutputDirectoryOperations(
+		private bool TryGetOutputDirectoryOperation(
 			FileId file,
-			out IList<OperationInfo> operations)
+			[MaybeNullWhen(false)] out OperationInfo operation)
 		{
 			if (this.outputDirectoryLookup.TryGetValue(file, out var value))
 			{
-				operations = value;
+				operation = value;
 				return true;
 			}
 			else
 			{
-				operations = new List<OperationInfo>();
+				operation = null;
 				return false;
 			}
 		}
 
-		private IList<OperationInfo> AddOutputFileOperations(
-			FileId file)
+		private void CheckSetOutputFileOperation(
+			FileId file,
+			OperationInfo operation)
 		{
-			if (this.outputFileLookup.ContainsKey(file))
+			if (this.outputFileLookup.TryGetValue(file, out var existingOperation))
 			{
 				var filePath = this.fileSystemState.GetFilePath(file);
-				throw new InvalidOperationException($"Operation output file already exists: {filePath}");
+				throw new InvalidOperationException($"File \"{filePath}\" already written to by operation \"{existingOperation.Title}\"");
 			}
 			else
 			{
-				var result = new List<OperationInfo>();
-				this.outputFileLookup.Add(file, result);
-				return result;
+				this.outputFileLookup.Add(file, operation);
 			}
 		}
 
-		private IList<OperationInfo> AddOutputDirectoryOperations(
-			FileId file)
+		private void CheckSetOutputDirectoryOperation(
+			FileId file,
+			OperationInfo operation)
 		{
-			if (this.outputFileLookup.ContainsKey(file))
+			if (this.outputDirectoryLookup.TryGetValue(file, out var existingOperation))
 			{
-				throw new InvalidOperationException("Operation output directory already exists");
+				var filePath = this.fileSystemState.GetFilePath(file);
+				throw new InvalidOperationException($"Directory \"{filePath}\" already written to by operation \"{existingOperation.Title}\"");
 			}
 			else
 			{
-				var result = new List<OperationInfo>();
-				this.outputDirectoryLookup.Add(file, result);
-				return result;
+				this.outputDirectoryLookup.Add(file, operation);
 			}
 		}
 	}
