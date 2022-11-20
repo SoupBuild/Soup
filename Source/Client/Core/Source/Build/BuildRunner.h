@@ -1,4 +1,4 @@
-﻿// <copyright file="RecipeBuildRunner.h" company="Soup">
+﻿// <copyright file="BuildRunner.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -20,10 +20,10 @@
 namespace Soup::Core
 {
 	/// <summary>
-	/// The recipe build runner that knows how to perform the correct build for a recipe
+	/// The build runner that knows how to perform the correct build for a recipe
 	/// and all of its development and runtime dependencies
 	/// </summary>
-	export class RecipeBuildRunner
+	export class BuildRunner
 	{
 	private:
 		// Root arguments
@@ -48,9 +48,9 @@ namespace Soup::Core
 
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RecipeBuildRunner"/> class.
+		/// Initializes a new instance of the <see cref="BuildRunner"/> class.
 		/// </summary>
-		RecipeBuildRunner(
+		BuildRunner(
 			const RecipeBuildArguments& arguments,
 			const ValueList& sdkParameters,
 			const std::vector<Path>& sdkReadAccess,

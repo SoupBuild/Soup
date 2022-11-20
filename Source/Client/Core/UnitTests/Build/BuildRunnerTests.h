@@ -1,4 +1,4 @@
-// <copyright file="RecipeBuildRunnerTests.h" company="Soup">
+// <copyright file="BuildRunnerTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@
 
 namespace Soup::Core::UnitTests
 {
-	class RecipeBuildRunnerTests
+	class BuildRunnerTests
 	{
 	public:
 		// [[Fact]]
@@ -23,7 +23,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystemState = FileSystemState();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				std::move(arguments),
 				std::move(sdkParameters),
 				std::move(sdkReadAccess),
@@ -106,7 +106,7 @@ namespace Soup::Core::UnitTests
 			auto evaluateEngine = MockEvaluateEngine();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
 				sdkReadAccess,
@@ -380,7 +380,7 @@ namespace Soup::Core::UnitTests
 			auto evaluateEngine = MockEvaluateEngine();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
 				sdkReadAccess,
@@ -793,7 +793,7 @@ namespace Soup::Core::UnitTests
 			auto evaluateEngine = MockEvaluateEngine();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
 				sdkReadAccess,
@@ -1330,7 +1330,7 @@ namespace Soup::Core::UnitTests
 			auto evaluateEngine = MockEvaluateEngine();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
 				sdkReadAccess,

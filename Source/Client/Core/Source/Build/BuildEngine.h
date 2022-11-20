@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "RecipeBuildRunner.h"
+#include "BuildRunner.h"
 #include "BuildEvaluateEngine.h"
 #include "BuildLoadEngine.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"
@@ -101,7 +101,7 @@ namespace Soup::Core
 
 			// Initialize the build runner that will perform the generate and evaluate phase
 			// for each individual package
-			auto buildRunner = RecipeBuildRunner(
+			auto buildRunner = BuildRunner(
 				arguments,
 				sdkParameters,
 				sdkReadAccess,
@@ -116,7 +116,7 @@ namespace Soup::Core
 			endTime = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
 
-			// std::cout << "RecipeBuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
+			// std::cout << "BuildRunner: " << std::to_string(duration.count()) << " seconds." << std::endl;
 		}
 
 	private:
