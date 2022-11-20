@@ -113,12 +113,10 @@ namespace Soup.Build.Runtime
 				declaredOutputFileIds,
 				readAccessFileIds,
 				writeAccessFileIds);
+			this.graph.AddOperation(operationInfo);
 
 			StoreLookupInfo(operationInfo);
 			ResolveDependencies(operationInfo);
-
-			// Add the new operation to the graph
-			this.graph.AddOperation(operationInfo);
 		}
 
 		public void FinalizeGraph()
@@ -251,9 +249,36 @@ namespace Soup.Build.Runtime
 					parentDirectory = nextParentDirectory;
 				}
 			}
+
+			// Ensure there are no circular references
+			var closure = new HashSet<OperationId>();
+			BuildChildClosure(operationInfo.Children, closure);
+			if (closure.Contains(operationInfo.Id))
+			{
+				throw new InvalidOperationException("Operation introduced circular reference");
+			}	
 		}
 
-		private void BuildRecursiveChildSets(Dictionary<OperationId, HashSet<OperationId>> recursiveChildren, IList<OperationId> operations)
+		private void BuildChildClosure(
+			IList<OperationId> operations,
+			HashSet<OperationId> closure)
+		{
+			foreach (var operationId in operations)
+			{
+				// Check if this node was already handled in a different branch
+				if (!closure.Contains(operationId))
+				{
+					closure.Add(operationId);
+
+					var operation = this.graph.GetOperationInfo(operationId);
+					BuildChildClosure(operation.Children, closure);
+				}
+			}
+		}
+
+		private void BuildRecursiveChildSets(
+			Dictionary<OperationId, HashSet<OperationId>> recursiveChildren,
+			IList<OperationId> operations)
 		{
 			foreach (var operationId in operations)
 			{
@@ -324,8 +349,10 @@ namespace Soup.Build.Runtime
 
 		private void CheckAddChildOperation(OperationInfo parentOperation, OperationInfo childOperation)
 		{
+			// Check if this item is already known
 			if (!parentOperation.Children.Contains(childOperation.Id))
 			{
+				// Keep track of the parent child references
 				parentOperation.Children.Add(childOperation.Id);
 				childOperation.DependencyCount++;
 			}

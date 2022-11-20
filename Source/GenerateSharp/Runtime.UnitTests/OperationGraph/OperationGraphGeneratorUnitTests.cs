@@ -990,7 +990,7 @@ namespace Soup.Build.Runtime.UnitTests
 		}
 
 		[Fact]
-		public void CreateOperation_DependencyNodes_Circular_ReadWrite_Fails()
+		public void CreateOperation_DependencyNodes_Circular_SingleFile_SingleOperation_Fails()
 		{
 			// Register the test listener
 			var testListener = new TestTraceListener();
@@ -1030,7 +1030,7 @@ namespace Soup.Build.Runtime.UnitTests
 						});
 				});
 
-			Assert.Equal("", exception.Message);
+			Assert.Equal("Operation introduced circular reference", exception.Message);
 
 			// Verify expected logs
 			Assert.Equal(
@@ -1038,7 +1038,85 @@ namespace Soup.Build.Runtime.UnitTests
 				{
 					"DIAG: Create Operation: Do Stuff",
 					"DIAG: Read Access Subset:",
+					"DIAG: C:/WorkingDir/",
 					"DIAG: Write Access Subset:",
+					"DIAG: C:/WorkingDir/",
+				},
+				testListener.GetMessages());
+		}
+
+
+		[Fact]
+		public void CreateOperation_DependencyNodes_Circular_TwoOperations_TwoFiles_Fails()
+		{
+			// Register the test listener
+			var testListener = new TestTraceListener();
+			using var scopedTraceListener = new ScopedTraceListenerRegister(testListener);
+
+			var fileSystemState = new FileSystemState();
+			var readAccessList = new List<Path>()
+			{
+				new Path("C:/WorkingDir/"),
+			};
+			var writeAccessList = new List<Path>()
+			{
+				new Path("C:/WorkingDir/"),
+			};
+			var graph = new OperationGraph();
+			var uut = new OperationGraphGenerator(
+				fileSystemState,
+				readAccessList,
+				writeAccessList,
+				graph);
+
+			uut.CreateOperation(
+				"Do Stuff 1",
+				new Path("DoStuff1.exe"),
+				"do stuff",
+				new Path("C:/WorkingDir/"),
+				new List<Path>()
+				{
+					new Path("File1.txt"),
+				},
+				new List<Path>()
+				{
+					new Path("File2.txt"),
+				});
+
+			var exception = Assert.Throws<InvalidOperationException>(
+				() =>
+				{
+					uut.CreateOperation(
+						"Do Stuff 2",
+						new Path("DoStuff2.exe"),
+						"do stuff",
+						new Path("C:/WorkingDir/"),
+						new List<Path>()
+						{
+							new Path("File2.txt"),
+						},
+						new List<Path>()
+						{
+							new Path("File1.txt"),
+						});
+				});
+
+			Assert.Equal("Operation introduced circular reference", exception.Message);
+
+			// Verify expected logs
+			Assert.Equal(
+				new List<string>()
+				{
+					"DIAG: Create Operation: Do Stuff 1",
+					"DIAG: Read Access Subset:",
+					"DIAG: C:/WorkingDir/",
+					"DIAG: Write Access Subset:",
+					"DIAG: C:/WorkingDir/",
+					"DIAG: Create Operation: Do Stuff 2",
+					"DIAG: Read Access Subset:",
+					"DIAG: C:/WorkingDir/",
+					"DIAG: Write Access Subset:",
+					"DIAG: C:/WorkingDir/",
 				},
 				testListener.GetMessages());
 		}
