@@ -13,6 +13,12 @@ namespace Monitor
 	/// </summary>
 	export class MockDetourProcessManager : public IDetourProcessManager
 	{
+	private:
+		std::atomic<int> m_uniqueId;
+		std::vector<std::string> _requests;
+		std::map<std::string, std::string> _executeResults;
+		std::map<std::string, std::function<void(IDetourCallback&)>> _executeCallbacks;
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref='MockDetourProcessManager'/> class.
@@ -27,11 +33,25 @@ namespace Monitor
 		/// <summary>
 		/// Create a result 
 		/// </summary>
-		void RegisterExecuteResult(std::string command, std::string output)
+		void RegisterExecuteResult(
+			std::string command,
+			std::string output)
 		{
 			_executeResults.emplace(
 				std::move(command),
 				std::move(output));
+		}
+		
+		/// <summary>
+		/// Create a result 
+		/// </summary>
+		void RegisterExecuteCallback(
+			std::string command,
+			std::function<void(IDetourCallback&)> callback)
+		{
+			_executeCallbacks.emplace(
+				std::move(command),
+				std::move(callback));
 		}
 
 		/// <summary>
@@ -65,6 +85,13 @@ namespace Monitor
 
 			_requests.push_back(message.str());
 
+			// Check if there is a registered callback
+			auto findCallback = _executeCallbacks.find(message.str());
+			if (findCallback != _executeCallbacks.end())
+			{
+				findCallback->second(*callback);
+			}
+
 			// Check if there is a registered output
 			auto findOutput = _executeResults.find(message.str());
 			if (findOutput != _executeResults.end())
@@ -86,10 +113,5 @@ namespace Monitor
 					std::string());
 			}
 		}
-
-	private:
-		std::atomic<int> m_uniqueId;
-		std::vector<std::string> _requests;
-		std::map<std::string, std::string> _executeResults;
 	};
 }

@@ -9,6 +9,8 @@ namespace Soup::Core::UnitTests
 {
 	class BuildEvaluateEngineTests
 	{
+		static const long GENERIC_WRITE = 0x40000000L;
+
 	public:
 		// [[Fact]]
 		void Initialize()
@@ -105,6 +107,14 @@ namespace Soup::Core::UnitTests
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
 
+			detourProcessManager->RegisterExecuteCallback(
+				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IDetourCallback& callback)
+				{
+					callback.OnCreateFile2(L"InputFile2.in", 0, 0, 0, 0, false);
+					callback.OnCreateFile2(L"OutputFile2.out", GENERIC_WRITE, 0, 0, 0, false);
+				});
+
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
 				false,
@@ -151,8 +161,8 @@ namespace Soup::Core::UnitTests
 							true,
 							std::chrono::clock_cast<std::chrono::file_clock>(
 								std::chrono::time_point<std::chrono::system_clock>()),
-							{},
-							{})
+							{ 4, },
+							{ 5, })
 					},
 				}),
 				operationResults.GetResults(),
@@ -183,7 +193,9 @@ namespace Soup::Core::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::string>({}),
+				std::vector<std::string>({
+					"TryGetLastWriteTime: C:/TestWorkingDirectory/OUTPUTFILE2.OUT",
+				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
 
@@ -216,15 +228,22 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			auto fileSystemState = FileSystemState(
-				3,
+				1,
 				std::unordered_map<FileId, Path>({
-					{ 1, Path("C:/TestWorkingDirectory/InputFile.in") },
-					{ 2, Path("C:/TestWorkingDirectory/OutputFile.out") },
 				}));
 
 			// Register the test process manager
 			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
 			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+
+			detourProcessManager->RegisterExecuteCallback(
+				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IDetourCallback& callback)
+				{
+					// Read and write the same file
+					callback.OnCreateFile2(L"File.txt", 0, 0, 0, 0, false);
+					callback.OnCreateFile2(L"File.txt", GENERIC_WRITE, 0, 0, 0, false);
+				});
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
@@ -382,7 +401,8 @@ namespace Soup::Core::UnitTests
 					1,
 					OperationResult(
 						true,
-						std::chrono::clock_cast<std::chrono::file_clock>(std::chrono::sys_days(May/22/2015) + 9h + 10min),
+						std::chrono::clock_cast<std::chrono::file_clock>(
+							std::chrono::sys_days(May/22/2015) + 9h + 10min),
 						{ 1, },
 						{ 2, })
 				},
