@@ -27,6 +27,7 @@ namespace Soup::Core
 			GlobalAllowedReadAccess(globalAllowedReadAccess),
 			GlobalAllowedWriteAccess(globalAllowedWriteAccess),
 			RemainingDependencyCounts(),
+			LookupLoaded(false),
 			InputFileLookup(),
 			OutputFileLookup()
 		{
@@ -42,11 +43,16 @@ namespace Soup::Core
 
 		// Running State
 		std::unordered_map<OperationId, int32_t> RemainingDependencyCounts;
+
+		bool LookupLoaded;
 		std::unordered_map<FileId, std::set<OperationId>> InputFileLookup;
 		std::unordered_map<FileId, OperationId> OutputFileLookup;
 
-		void LoadOperationLookup()
+		void EnsureOperationLookupLoaded()
 		{
+			if (LookupLoaded)
+				return;
+
 			for (auto& operation : OperationGraph.GetOperations())
 			{
 				auto& operationInfo = operation.second;
@@ -72,6 +78,8 @@ namespace Soup::Core
 					OutputFileLookup.emplace(fileId, operationInfo.Id);
 				}
 			}
+
+			LookupLoaded = true;
 		}
 
 		bool TryGetInputFileOperations(
@@ -150,8 +158,6 @@ namespace Soup::Core
 				temporaryDirectory,
 				globalAllowedReadAccess,
 				globalAllowedWriteAccess);
-
-			evaluateState.LoadOperationLookup();
 
 			auto result = CheckExecuteOperations(
 				evaluateState,
@@ -477,6 +483,8 @@ namespace Soup::Core
 			OperationResult& operationResult)
 		{
 			// TODO: Should generate NEW input/output lookup to check for entirely observed dependencies
+
+			evaluateState.EnsureOperationLookupLoaded();
 
 			// Verify new inputs
 			for (auto fileId : operationResult.ObservedInput)
