@@ -214,7 +214,7 @@ namespace Soup::Core::UnitTests
 		}
 
 		// [[Fact]]
-		void Execute_OneOperation_ObservedCircularReference_Fails()
+		void Execute_OneOperation_ObservedInputAndOutput_CircularReference_RemoveInput()
 		{
 			// Register the test listener
 			auto testListener = std::make_shared<TestTraceListener>();
@@ -261,8 +261,8 @@ namespace Soup::Core::UnitTests
 							Path("C:/TestWorkingDirectory/"),
 							Path("./Command.exe"),
 							"Arguments"),
-						{ 1, },
-						{ 2, },
+						{ },
+						{ },
 						{ },
 						{ },
 						{ },
@@ -273,21 +273,29 @@ namespace Soup::Core::UnitTests
 			auto globalAllowedReadAccess = std::vector<Path>();
 			auto globalAllowedWriteAccess = std::vector<Path>();
 
-			auto exception = Assert::Throws<std::runtime_error>([&]()
-			{
-				auto ranOperations = uut.Evaluate(
-					operationGraph,
-					operationResults,
-					temporaryDirectory,
-					globalAllowedReadAccess,
-					globalAllowedWriteAccess);
-			});
+			auto ranOperations = uut.Evaluate(
+				operationGraph,
+				operationResults,
+				temporaryDirectory,
+				globalAllowedReadAccess,
+				globalAllowedWriteAccess);
 
-			Assert::AreEqual<std::string_view>("File \"C:/TestWorkingDirectory/FILE.TXT\" observed as both input and output for operation \"TestCommand: 1\"", exception.what(), "Verify Exception message");
+			Assert::IsTrue(ranOperations, "Verify ran operations");
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(),
+				std::unordered_map<OperationId, OperationResult>(
+				{
+					{
+						1,
+						OperationResult(
+							true,
+							std::chrono::clock_cast<std::chrono::file_clock>(
+								std::chrono::time_point<std::chrono::system_clock>()),
+							{ },
+							{ 2, })
+					},
+				}),
 				operationResults.GetResults(),
 				"Verify operation results match expected.");
 
@@ -301,6 +309,9 @@ namespace Soup::Core::UnitTests
 					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"DIAG: Allowed Read Access:",
 					"DIAG: Allowed Write Access:",
+					"WARN: File \"C:/TestWorkingDirectory/FILE.TXT\" observed as both input and output for operation \"TestCommand: 1\"",
+					"WARN: Removing from input list for now. Will be treated as error in the future.",
+					"DIAG: Build evaluation end",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -317,6 +328,140 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"TryGetLastWriteTime: C:/TestWorkingDirectory/FILE.TXT",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"ProcessStart: 1",
+					"WaitForExit: 1",
+					"GetStandardOutput: 1",
+					"GetStandardError: 1",
+					"GetExitCode: 1",
+				}),
+				detourProcessManager->GetRequests(),
+				"Verify detour process manager requests match expected.");
+		}
+
+		// [[Fact]]
+		void Execute_OneOperation_ObservedInput_CircularReference_RemoveInput()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test system
+			auto system = std::make_shared<MockSystem>();
+			auto scopedSystem = ScopedSystemRegister(system);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState(
+				1,
+				std::unordered_map<FileId, Path>({
+					{ 1, Path("C:/TestWorkingDirectory/File.txt") },
+				}));
+
+			// Register the test process manager
+			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
+			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+
+			detourProcessManager->RegisterExecuteCallback(
+				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IDetourCallback& callback)
+				{
+					// Read and write the same file
+					callback.OnCreateFile2(L"File.txt", 0, 0, 0, 0, false);
+					callback.OnCreateFile2(L"File.txt", GENERIC_WRITE, 0, 0, 0, false);
+				});
+
+			// Setup the input build state
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
+
+			// Evaluate the build
+			auto operationGraph = OperationGraph(
+				{ 1, },
+				{
+					OperationInfo(
+						1,
+						"TestCommand: 1",
+						CommandInfo(
+							Path("C:/TestWorkingDirectory/"),
+							Path("./Command.exe"),
+							"Arguments"),
+						{ },
+						{ 1, },
+						{ },
+						{ },
+						{ },
+						1),
+				});
+			auto operationResults = OperationResults();
+			auto temporaryDirectory = Path();
+			auto globalAllowedReadAccess = std::vector<Path>();
+			auto globalAllowedWriteAccess = std::vector<Path>();
+
+			auto ranOperations = uut.Evaluate(
+				operationGraph,
+				operationResults,
+				temporaryDirectory,
+				globalAllowedReadAccess,
+				globalAllowedWriteAccess);
+
+			Assert::IsTrue(ranOperations, "Verify ran operations");
+
+			// Verify operation results
+			Assert::AreEqual(
+				std::unordered_map<OperationId, OperationResult>(
+				{
+					{
+						1,
+						OperationResult(
+							true,
+							std::chrono::clock_cast<std::chrono::file_clock>(
+								std::chrono::time_point<std::chrono::system_clock>()),
+							{ },
+							{ 1, })
+					},
+				}),
+				operationResults.GetResults(),
+				"Verify operation results match expected.");
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"DIAG: Build evaluation start",
+					"DIAG: Check for previous operation invocation",
+					"INFO: Operation has no successful previous invocation",
+					"HIGH: TestCommand: 1",
+					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
+					"DIAG: Allowed Read Access:",
+					"DIAG: Allowed Write Access:",
+					"WARN: File \"C:/TestWorkingDirectory/File.txt\" observed as both input and output for operation \"TestCommand: 1\"",
+					"WARN: Removing from input list for now. Will be treated as error in the future.",
+					"DIAG: Build evaluation end",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			// Verify expected system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentTime",
+				}),
+				system->GetRequests(),
+				"Verify system requests match expected.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"TryGetLastWriteTime: C:/TestWorkingDirectory/File.txt",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

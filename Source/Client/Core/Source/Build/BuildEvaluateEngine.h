@@ -474,24 +474,17 @@ namespace Soup::Core
 		void VerifyObservedState(
 			BuildEvaluateState& evaluateState,
 			const OperationInfo& operationInfo,
-			const OperationResult& operationResult)
+			OperationResult& operationResult)
 		{
 			// TODO: Should generate NEW input/output lookup to check for entirely observed dependencies
 
 			// Verify new inputs
 			for (auto fileId : operationResult.ObservedInput)
 			{
-				// Ensure the file is not also an output
-				if (std::find(operationResult.ObservedOutput.begin(), operationResult.ObservedOutput.end(), fileId) != operationResult.ObservedOutput.end())
-				{
-					auto filePath = _fileSystemState.GetFilePath(fileId);
-					auto message = "File \"" + filePath.ToString() + "\" observed as both input and output for operation \"" + operationInfo.Title + "\"";
-					throw std::runtime_error(message);
-				}
-
 				// Check if this input was generated from another operation
 				OperationId matchedOutputOperationId;
-				if (evaluateState.TryGetOutputFileOperation(fileId, matchedOutputOperationId))
+				if (evaluateState.TryGetOutputFileOperation(fileId, matchedOutputOperationId) &&
+					operationInfo.Id != matchedOutputOperationId)
 				{
 					// If it is a known output file then it must be a declared input for this operation
 					const std::set<OperationId>* matchedInputOperationIds;
@@ -509,6 +502,16 @@ namespace Soup::Core
 			// Verify new outputs
 			for (auto fileId : operationResult.ObservedOutput)
 			{
+				// Ensure the file is not also an output
+				auto findObservedInput = std::find(operationResult.ObservedInput.begin(), operationResult.ObservedInput.end(), fileId);
+				if (findObservedInput != operationResult.ObservedInput.end())
+				{
+					auto filePath = _fileSystemState.GetFilePath(fileId);
+					Log::Warning("File \"" + filePath.ToString() + "\" observed as both input and output for operation \"" + operationInfo.Title + "\"");
+					Log::Warning("Removing from input list for now. Will be treated as error in the future.");
+					operationResult.ObservedInput.erase(findObservedInput);
+				}
+
 				// Ensure declared output is compatible
 				OperationId matchedOutputOperationId;
 				if (evaluateState.TryGetOutputFileOperation(fileId, matchedOutputOperationId))
