@@ -17,6 +17,10 @@ namespace Soup::Core::UnitTests
 			auto testListener = std::make_shared<TestTraceListener>();
 			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
 
+			// Register the test system
+			auto system = std::make_shared<MockSystem>();
+			auto scopedSystem = ScopedSystemRegister(system);
+
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
@@ -108,6 +112,14 @@ namespace Soup::Core::UnitTests
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
 
+			// Verify expected system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentTime",
+				}),
+				system->GetRequests(),
+				"Verify system requests match expected.");
+
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
@@ -197,17 +209,14 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor"));
 			auto myPackageGenerateResults = OperationResultsReader::Deserialize(myPackageGenerateResultsMockFile->Content, fileSystemState);
 
-			// TODO: Clear time for now until mocked
-			for (auto& result : myPackageGenerateResults.GetResults())
-				result.second.EvaluateTime = std::chrono::time_point<std::chrono::system_clock>::min();
-
 			Assert::AreEqual(
 				OperationResults({
 					{
 						1,
 						OperationResult(
 							true,
-							std::chrono::time_point<std::chrono::system_clock>::min(),
+							std::chrono::clock_cast<std::chrono::file_clock>(
+								std::chrono::time_point<std::chrono::system_clock>()),
 							{},
 							{})
 					},

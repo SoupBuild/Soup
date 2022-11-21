@@ -1297,7 +1297,7 @@ namespace Soup::Core
 			else
 			{
 				auto value = filePath.ToString();
-				ToUpper(value);
+					ToUpper(value);
 
 				#ifdef TRACE_SYSTEM_ACCESS
 				Log::Diag("TouchFileDelete " + value);
@@ -1326,7 +1326,7 @@ namespace Soup::Core
 		void TouchFileDeleteOnClose(const Path& filePath)
 		{
 			auto value = filePath.ToString();
-			ToUpper(value);
+					ToUpper(value);
 
 			#ifdef TRACE_SYSTEM_ACCESS
 			Log::Diag("TouchFileDeleteOnClose " + value);

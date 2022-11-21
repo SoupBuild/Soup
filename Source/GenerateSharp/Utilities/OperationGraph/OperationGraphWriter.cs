@@ -23,7 +23,7 @@ namespace Soup.Build.Utilities
 			writer.Write(FileVersion);
 
 			// Write out the set of files
-			var files = state.GetReferencedFiles();
+			var files = state.ReferencedFiles;
 			writer.Write(new char[] { 'F', 'I', 'S', '\0' });
 			writer.Write((uint)files.Count);
 			foreach (var file in files)
@@ -35,13 +35,12 @@ namespace Soup.Build.Utilities
 
 			// Write out the root operation ids
 			writer.Write(new char[] { 'R', 'O', 'P', '\0' });
-			WriteValues(writer, state.GetRootOperationIds());
+			WriteValues(writer, state.RootOperationIds);
 
 			// Write out the set of operations
-			var operations = state.GetOperations();
 			writer.Write(new char[] { 'O', 'P', 'S', '\0' });
-			writer.Write((uint)operations.Count);
-			foreach (var operationValue in state.GetOperations())
+			writer.Write((uint)state.Operations.Count);
+			foreach (var operationValue in state.Operations)
 			{
 				WriteOperationInfo(writer, operationValue.Value);
 			}

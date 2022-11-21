@@ -47,6 +47,11 @@ namespace Soup.Build.Utilities
 		public static Path EvaluateGraphFileName => new Path("Evaluate.bog");
 
 		/// <summary>
+		/// Gets the Evaluate Results file name
+		/// </summary>
+		public static Path EvaluateResultsFileName => new Path("Evaluate.bor");
+
+		/// <summary>
 		/// Gets the Generate task info Value Table file name
 		/// </summary>
 		public static Path GenerateTaskInfoFileName => new Path("GenerateTaskInfo.bvt");

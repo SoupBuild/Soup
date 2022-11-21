@@ -14,10 +14,12 @@ namespace Soup::Core
 	{
 	private:
 		// Binary Operation results file format
-		static constexpr uint32_t FileVersion = 1;
+		static constexpr uint32_t FileVersion = 2;
 
-		// The offset from January 1, 1970 at 00:00:00.000 to January 1, 0001 at 00:00:00.000 in the Gregorian calendar
-		static constexpr long long UnixEpochOffset = 62135596800000;
+		// The time duration that represents how we store the values in the file using 64 bit integer with resolution of 100 nanoseconds
+		// Note: Unix Time, time since 00:00:00 Coordinated Universal Time (UTC), Thursday, 1 January 1970, not counting leap seconds
+		using ContentTimePeriod = std::ratio<1, 10'000'000>;
+		using ContentDuration = std::chrono::duration<long long, ContentTimePeriod>;
 
 	public:
 		static void Serialize(
@@ -59,10 +61,12 @@ namespace Soup::Core
 			// Write out the value indicating if there was a successful run
 			WriteValue(stream, result.WasSuccessfulRun);
 
-			// Write out the utc milliseconds since January 1, 0001 at 00:00:00.000 in the Gregorian calendar
-			auto unixEvaluateTimeMilliseconds = std::chrono::time_point_cast<std::chrono::milliseconds>(result.EvaluateTime).time_since_epoch().count();
-			auto evaluateTimeMilliseconds = unixEvaluateTimeMilliseconds + UnixEpochOffset;
-			WriteValue(stream, evaluateTimeMilliseconds);
+			// Use system clock with a known epoch
+			auto evaluateTimeSystem = std::chrono::clock_cast<std::chrono::system_clock>(result.EvaluateTime);
+
+			// Write the tick offset of the system clock since its epoch
+			auto evaluateTimeDuration = ContentDuration(evaluateTimeSystem.time_since_epoch());
+			WriteValue(stream, evaluateTimeDuration.count());
 
 			// Write out the observed input files
 			WriteValues(stream, result.ObservedInput);

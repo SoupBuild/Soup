@@ -27,6 +27,7 @@
 #undef max
 #undef min
 #undef CreateProcess
+#undef GetCurrentTime
 
 export module Soup.Core;
 

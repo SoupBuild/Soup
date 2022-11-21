@@ -20,6 +20,7 @@ module;
 #include <atomic>
 #include <array>
 #include <codecvt>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <string>

@@ -1,5 +1,5 @@
 Name: "Soup"
-Version: "0.26.1"
+Version: "0.27.0"
 Language: "C++|0.1"
 
 Type: "Executable"

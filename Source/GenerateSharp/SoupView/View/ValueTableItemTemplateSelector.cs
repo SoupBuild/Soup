@@ -11,11 +11,11 @@ namespace SoupView.View
 {
 	internal class ValueTableItemTemplateSelector : DataTemplateSelector
 	{
-		public DataTemplate TableTemplate { get; set; }
-		public DataTemplate ListTemplate { get; set; }
-		public DataTemplate ValueTemplate { get; set; }
+		public DataTemplate? TableTemplate { get; set; }
+		public DataTemplate? ListTemplate { get; set; }
+		public DataTemplate? ValueTemplate { get; set; }
 
-		protected override DataTemplate SelectTemplateCore(object item)
+		protected override DataTemplate? SelectTemplateCore(object item)
 		{
 			var explorerItem = (ValueTableItemViewModel)item;
 			switch (explorerItem.Type)

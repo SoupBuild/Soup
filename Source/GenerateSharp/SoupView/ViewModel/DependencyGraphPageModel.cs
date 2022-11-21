@@ -6,21 +6,21 @@ using Opal;
 using Opal.System;
 using Soup.Build;
 using Soup.Build.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace SoupView.ViewModel
 {
 	internal class DependencyGraphPageModel : Observable
 	{
-		private GraphNode selectedNode = null;
-		private ProjectDetailsViewModel selectedProject = null;
+		private GraphNode? selectedNode = null;
+		private ProjectDetailsViewModel? selectedProject = null;
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNode>> graph = null;
+		private IList<IList<GraphNode>>? graph = null;
 		private uint uniqueId = 0;
 		private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
 
@@ -37,7 +37,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public IList<IList<GraphNode>> Graph
+		public IList<IList<GraphNode>>? Graph
 		{
 			get { return graph; }
 			set
@@ -50,7 +50,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public GraphNode SelectedNode
+		public GraphNode? SelectedNode
 		{
 			get { return selectedNode; }
 			set
@@ -59,7 +59,14 @@ namespace SoupView.ViewModel
 				{
 					selectedNode = value;
 					NotifyPropertyChanged();
-					SelectedProject = this.projectDetailsLookup[selectedNode.Id];
+					if (selectedNode != null)
+					{
+						SelectedProject = this.projectDetailsLookup[selectedNode.Id];
+					}
+					else
+					{
+						selectedProject = null;
+					}
 				}
 			}
 		}
@@ -77,7 +84,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public ProjectDetailsViewModel SelectedProject
+		public ProjectDetailsViewModel? SelectedProject
 		{
 			get { return selectedProject; }
 			set
@@ -121,7 +128,7 @@ namespace SoupView.ViewModel
 				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile.Path);
 				var currentChildRecipes = new List<(Path Path, uint Id)>();
 				string title;
-				Recipe recipe = null;
+				Recipe? recipe = null;
 				var packageFolder = recipeFile.Path.GetParent();
 
 				if (loadResult.IsSuccess)
@@ -184,11 +191,15 @@ namespace SoupView.ViewModel
 				}
 				else
 				{
+					if (packageReference.Version == null)
+						throw new InvalidOperationException("Package reference must have version");
 					var packagesDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 						new Path(".soup/packages/");
 					var languageRootFolder = packagesDirectory + new Path(recipeLanguage);
 					var packageRootFolder = languageRootFolder + new Path(packageReference.Name);
-					var packageVersionFolder = packageRootFolder + new Path(packageReference.Version.ToString()) + new Path("/");
+					var packageVersionFolder = packageRootFolder +
+						new Path(packageReference.Version.ToString()) +
+						new Path("/");
 					var recipeFile = packageVersionFolder + BuildConstants.RecipeFileName;
 
 					recipeFiles.Add((recipeFile, this.uniqueId++));

@@ -1,4 +1,4 @@
-﻿// <copyright file="RecipeBuildRunner.h" company="Soup">
+﻿// <copyright file="BuildRunner.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -20,10 +20,10 @@
 namespace Soup::Core
 {
 	/// <summary>
-	/// The recipe build runner that knows how to perform the correct build for a recipe
+	/// The build runner that knows how to perform the correct build for a recipe
 	/// and all of its development and runtime dependencies
 	/// </summary>
-	export class RecipeBuildRunner
+	export class BuildRunner
 	{
 	private:
 		// Root arguments
@@ -48,9 +48,9 @@ namespace Soup::Core
 
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RecipeBuildRunner"/> class.
+		/// Initializes a new instance of the <see cref="BuildRunner"/> class.
 		/// </summary>
-		RecipeBuildRunner(
+		BuildRunner(
 			const RecipeBuildArguments& arguments,
 			const ValueList& sdkParameters,
 			const std::vector<Path>& sdkReadAccess,
@@ -329,7 +329,7 @@ namespace Soup::Core
 
 			auto parametersFile = soupTargetDirectory + BuildConstants::GenerateParametersFileName();
 			Log::Info("Check outdated parameters file: " + parametersFile.ToString());
-			if (_arguments.ForceRebuild || IsOutdated(parametersTable, parametersFile))
+			if (IsOutdated(parametersTable, parametersFile))
 			{
 				Log::Info("Save Parameters file");
 				ValueTableManager::SaveState(parametersFile, parametersTable);
@@ -360,7 +360,7 @@ namespace Soup::Core
 
 			auto readAccessFile = soupTargetDirectory + BuildConstants::GenerateReadAccessFileName();
 			Log::Info("Check outdated read access file: " + readAccessFile.ToString());
-			if (_arguments.ForceRebuild || IsOutdated(evaluateAllowedReadAccess, readAccessFile))
+			if (IsOutdated(evaluateAllowedReadAccess, readAccessFile))
 			{
 				Log::Info("Save Read Access file");
 				PathListManager::Save(readAccessFile, evaluateAllowedReadAccess);
@@ -368,7 +368,7 @@ namespace Soup::Core
 
 			auto writeAccessFile = soupTargetDirectory + BuildConstants::GenerateWriteAccessFileName();
 			Log::Info("Check outdated write access file: " + writeAccessFile.ToString());
-			if (_arguments.ForceRebuild || IsOutdated(evaluateAllowedWriteAccess, writeAccessFile))
+			if (IsOutdated(evaluateAllowedWriteAccess, writeAccessFile))
 			{
 				Log::Info("Save Write Access file");
 				PathListManager::Save(writeAccessFile, evaluateAllowedWriteAccess);

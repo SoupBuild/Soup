@@ -13,7 +13,7 @@ namespace SoupView.ViewModel
 	{
 		private ObservableCollection<PropertyValue> properties = new ObservableCollection<PropertyValue>();
 
-		public ProjectDetailsViewModel(Recipe recipe, Path path)
+		public ProjectDetailsViewModel(Recipe? recipe, Path path)
 		{
 			properties.Clear();
 			if (recipe is not null)

@@ -28,7 +28,8 @@ namespace Soup::Core::UnitTests
 					1,
 					OperationResult(
 						false,
-						std::chrono::time_point<std::chrono::system_clock>::min(),
+						std::chrono::clock_cast<std::chrono::file_clock>(
+							std::chrono::time_point<std::chrono::system_clock>()),
 						{ },
 						{ })
 				},
@@ -40,7 +41,8 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							false,
-							std::chrono::time_point<std::chrono::system_clock>::min(),
+							std::chrono::clock_cast<std::chrono::file_clock>(
+								std::chrono::time_point<std::chrono::system_clock>()),
 							{ },
 							{ })
 					},
@@ -69,7 +71,8 @@ namespace Soup::Core::UnitTests
 					1,
 					OperationResult(
 						false,
-						std::chrono::time_point<std::chrono::system_clock>::min(),
+						std::chrono::clock_cast<std::chrono::file_clock>(
+							std::chrono::time_point<std::chrono::system_clock>()),
 						{ },
 						{ })
 				},
@@ -83,7 +86,8 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				OperationResult(
 					false,
-					std::chrono::time_point<std::chrono::system_clock>::min(),
+					std::chrono::clock_cast<std::chrono::file_clock>(
+						std::chrono::time_point<std::chrono::system_clock>()),
 					{ },
 					{ }),
 				*operationResult,
@@ -99,7 +103,8 @@ namespace Soup::Core::UnitTests
 				1,
 				OperationResult(
 					false,
-					std::chrono::time_point<std::chrono::system_clock>::min(),
+					std::chrono::clock_cast<std::chrono::file_clock>(
+						std::chrono::time_point<std::chrono::system_clock>()),
 					{ },
 					{ }));
 
@@ -109,7 +114,8 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							false,
-							std::chrono::time_point<std::chrono::system_clock>::min(),
+							std::chrono::clock_cast<std::chrono::file_clock>(
+								std::chrono::time_point<std::chrono::system_clock>()),
 							{ },
 							{ }),
 					},

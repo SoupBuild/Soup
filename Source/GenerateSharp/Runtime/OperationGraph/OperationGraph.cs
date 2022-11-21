@@ -52,39 +52,25 @@ namespace Soup.Build.Runtime
 		/// <summary>
 		/// Get the set of referenced file ids that map to their paths
 		/// </summary>
-		public IList<(FileId FileId, Path Path)> GetReferencedFiles()
+		public List<(FileId FileId, Path Path)> ReferencedFiles
 		{
-			return _referencedFiles;
-		}
-
-		public void SetReferencedFiles(List<(FileId FileId, Path Path)> files)
-		{
-			_referencedFiles = files;
+			get { return _referencedFiles; }
+			set { _referencedFiles = value; }
 		}
 
 		/// <summary>
 		/// Get the list of root operation ids
 		/// </summary>
-		public IList<OperationId> GetRootOperationIds()
+		public List<OperationId> RootOperationIds
 		{
-			return _rootOperations;
-		}
-
-		/// <summary>
-		/// Set the list of root operation ids
-		/// </summary>
-		public void SetRootOperationIds(List<OperationId> value)
-		{
-			_rootOperations = value;
+			get { return _rootOperations; }
+			set { _rootOperations = value; }
 		}
 
 		/// <summary>
 		/// Get Operations
 		/// </summary>
-		public IReadOnlyDictionary<OperationId, OperationInfo> GetOperations()
-		{
-			return _operations;
-		}
+		public IReadOnlyDictionary<OperationId, OperationInfo> Operations => _operations;
 
 		/// <summary>
 		/// Find an operation info

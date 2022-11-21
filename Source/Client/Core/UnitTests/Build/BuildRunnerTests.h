@@ -1,4 +1,4 @@
-// <copyright file="RecipeBuildRunnerTests.h" company="Soup">
+// <copyright file="BuildRunnerTests.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@
 
 namespace Soup::Core::UnitTests
 {
-	class RecipeBuildRunnerTests
+	class BuildRunnerTests
 	{
 	public:
 		// [[Fact]]
@@ -23,7 +23,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystemState = FileSystemState();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				std::move(arguments),
 				std::move(sdkParameters),
 				std::move(sdkReadAccess),
@@ -106,7 +106,7 @@ namespace Soup::Core::UnitTests
 			auto evaluateEngine = MockEvaluateEngine();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
 				sdkReadAccess,
@@ -240,7 +240,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -380,7 +380,7 @@ namespace Soup::Core::UnitTests
 			auto evaluateEngine = MockEvaluateEngine();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
 				sdkReadAccess,
@@ -573,7 +573,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -628,7 +628,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -793,7 +793,7 @@ namespace Soup::Core::UnitTests
 			auto evaluateEngine = MockEvaluateEngine();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
 				sdkReadAccess,
@@ -1055,7 +1055,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1102,7 +1102,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1162,7 +1162,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1330,7 +1330,7 @@ namespace Soup::Core::UnitTests
 			auto evaluateEngine = MockEvaluateEngine();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
 			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
-			auto uut = RecipeBuildRunner(
+			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
 				sdkReadAccess,
@@ -1523,7 +1523,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1578,7 +1578,7 @@ namespace Soup::Core::UnitTests
 						1,
 						OperationResult(
 							true,
-							GetMinMillisecondTime(),
+							GetEpochTime(),
 							{},
 							{})
 					},
@@ -1588,10 +1588,10 @@ namespace Soup::Core::UnitTests
 		}
 
 	private:
-		static std::chrono::time_point<std::chrono::system_clock> GetMinMillisecondTime()
+		static std::chrono::time_point<std::chrono::file_clock> GetEpochTime()
 		{
-			return std::chrono::time_point_cast<std::chrono::milliseconds>(
-				std::chrono::time_point<std::chrono::system_clock>::min());
+			return std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::time_point<std::chrono::system_clock>());
 		}
 	};
 }
