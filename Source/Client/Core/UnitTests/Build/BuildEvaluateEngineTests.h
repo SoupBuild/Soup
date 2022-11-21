@@ -283,22 +283,11 @@ namespace Soup::Core::UnitTests
 					globalAllowedWriteAccess);
 			});
 
-			Assert::AreEqual<std::string_view>("", exception.what(), "Verify Exception message");
+			Assert::AreEqual<std::string_view>("File \"C:/TestWorkingDirectory/File.txt\" observed as both input and output for operation \"TestCommand: 1\"", exception.what(), "Verify Exception message");
 
 			// Verify operation results
 			Assert::AreEqual(
-				std::unordered_map<OperationId, OperationResult>(
-				{
-					{
-						1,
-						OperationResult(
-							true,
-							std::chrono::clock_cast<std::chrono::file_clock>(
-								std::chrono::time_point<std::chrono::system_clock>()),
-							{},
-							{})
-					},
-				}),
+				std::unordered_map<OperationId, OperationResult>(),
 				operationResults.GetResults(),
 				"Verify operation results match expected.");
 
@@ -312,7 +301,6 @@ namespace Soup::Core::UnitTests
 					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command.exe Arguments",
 					"DIAG: Allowed Read Access:",
 					"DIAG: Allowed Write Access:",
-					"DIAG: Build evaluation end",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -327,7 +315,9 @@ namespace Soup::Core::UnitTests
 
 			// Verify expected file system requests
 			Assert::AreEqual(
-				std::vector<std::string>({}),
+				std::vector<std::string>({
+					"TryGetLastWriteTime: C:/TestWorkingDirectory/File.txt",
+				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
 

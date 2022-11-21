@@ -476,9 +476,19 @@ namespace Soup::Core
 			const OperationInfo& operationInfo,
 			const OperationResult& operationResult)
 		{
+			// TODO: Should generate NEW input/output lookup to check for entirely observed dependencies
+
 			// Verify new inputs
 			for (auto fileId : operationResult.ObservedInput)
 			{
+				// Ensure the file is not also an output
+				if (std::find(operationResult.ObservedOutput.begin(), operationResult.ObservedOutput.end(), fileId) != operationResult.ObservedOutput.end())
+				{
+					auto filePath = _fileSystemState.GetFilePath(fileId);
+					auto message = "File \"" + filePath.ToString() + "\" observed as both input and output for operation \"" + operationInfo.Title + "\"";
+					throw std::runtime_error(message);
+				}
+
 				// Check if this input was generated from another operation
 				OperationId matchedOutputOperationId;
 				if (evaluateState.TryGetOutputFileOperation(fileId, matchedOutputOperationId))
