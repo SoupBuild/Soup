@@ -42,7 +42,7 @@ namespace Soup::Core
 
 		// Running State
 		std::unordered_map<OperationId, int32_t> RemainingDependencyCounts;
-		std::unordered_map<FileId, std::vector<OperationId>> InputFileLookup;
+		std::unordered_map<FileId, std::set<OperationId>> InputFileLookup;
 		std::unordered_map<FileId, OperationId> OutputFileLookup;
 
 		void LoadOperationLookup()
@@ -50,10 +50,43 @@ namespace Soup::Core
 			for (auto& operation : OperationGraph.GetOperations())
 			{
 				auto& operationInfo = operation.second;
+
+				for (auto fileId : operationInfo.DeclaredInput)
+				{
+					auto findResult = InputFileLookup.find(fileId);
+					if (findResult != InputFileLookup.end())
+					{
+						findResult->second.insert(operationInfo.Id);
+					}
+					else
+					{
+						auto insertResult = InputFileLookup.emplace(
+							fileId,
+							std::set<OperationId>());
+						insertResult.first->second.insert(operationInfo.Id);
+					}
+				}
+
 				for (auto fileId : operationInfo.DeclaredOutput)
 				{
 					OutputFileLookup.emplace(fileId, operationInfo.Id);
 				}
+			}
+		}
+
+		bool TryGetInputFileOperations(
+			FileId fileId,
+			const std::set<OperationId>*& result)
+		{
+			auto findResult = InputFileLookup.find(fileId);
+			if (findResult != InputFileLookup.end())
+			{
+				result = &findResult->second;
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		}
 
@@ -446,14 +479,27 @@ namespace Soup::Core
 			// Check for inputs that match previous output files
 			for (auto fileId : operationResult.ObservedOutput)
 			{
-				OperationId matchedOperationId;
-				if (evaluateState.TryGetOutputFileOperation(fileId, matchedOperationId))
+				// Ensure declared output is compatible
+				OperationId matchedOutputOperationId;
+				if (evaluateState.TryGetOutputFileOperation(fileId, matchedOutputOperationId))
 				{
-					if (matchedOperationId != operationInfo.Id)
+					if (matchedOutputOperationId != operationInfo.Id)
 					{
 						auto filePath = _fileSystemState.GetFilePath(fileId);
-						auto& existingOperation = evaluateState.OperationGraph.GetOperationInfo(matchedOperationId);
+						auto& existingOperation = evaluateState.OperationGraph.GetOperationInfo(matchedOutputOperationId);
 						auto message = "File \"" + filePath.ToString() + "\" already written to by operation \"" + existingOperation.Title + "\"";
+						throw std::runtime_error(message);
+					}
+				}
+
+				// Ensure ouput does not create a dependency connection
+				const std::set<OperationId>* matchedInputOperationIds;
+				if (evaluateState.TryGetInputFileOperations(fileId, matchedInputOperationIds))
+				{
+					if (!matchedInputOperationIds->contains(operationInfo.Id))
+					{
+						auto filePath = _fileSystemState.GetFilePath(fileId);
+						auto message = "File \"" + filePath.ToString() + "\" creates new dependency to existing declared inputs";
 						throw std::runtime_error(message);
 					}
 				}
