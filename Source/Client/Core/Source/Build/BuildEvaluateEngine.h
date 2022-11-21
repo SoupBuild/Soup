@@ -521,16 +521,18 @@ namespace Soup::Core
 						throw std::runtime_error(message);
 					}
 				}
-
-				// Ensure ouput does not create a dependency connection
-				const std::set<OperationId>* matchedInputOperationIds;
-				if (evaluateState.TryGetInputFileOperations(fileId, matchedInputOperationIds))
+				else
 				{
-					if (!matchedInputOperationIds->contains(operationInfo.Id))
+					// Ensure new ouput does not create a dependency connection
+					const std::set<OperationId>* matchedInputOperationIds;
+					if (evaluateState.TryGetInputFileOperations(fileId, matchedInputOperationIds))
 					{
-						auto filePath = _fileSystemState.GetFilePath(fileId);
-						auto message = "File \"" + filePath.ToString() + "\" observed as output from operation \"" + operationInfo.Title + "\" creates new dependency to existing declared inputs";
-						throw std::runtime_error(message);
+						if (!matchedInputOperationIds->contains(operationInfo.Id))
+						{
+							auto filePath = _fileSystemState.GetFilePath(fileId);
+							auto message = "File \"" + filePath.ToString() + "\" observed as output from operation \"" + operationInfo.Title + "\" creates new dependency to existing declared inputs";
+							throw std::runtime_error(message);
+						}
 					}
 				}
 			}

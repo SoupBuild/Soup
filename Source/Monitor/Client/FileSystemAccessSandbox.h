@@ -137,6 +137,15 @@ namespace Monitor
 			}
 
 			auto normalizedFileName = path.ToString();
+
+			// Normalize to uppercase
+			// TODO: May want to use wide characters to perform this to upper in a safe way
+			std::transform(
+				normalizedFileName.begin(),
+				normalizedFileName.end(),
+				normalizedFileName.begin(),
+				[](unsigned char c) -> unsigned char { return (unsigned char)std::toupper(c); });
+
 			return normalizedFileName;
 		}
 

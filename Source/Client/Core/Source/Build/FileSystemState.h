@@ -50,7 +50,9 @@ namespace Soup::Core
 			// Build up the reverse lookup for new files
 			for (auto& file : _files)
 			{
-				auto insertResult = _fileLookup.emplace(file.second.ToString(), file.first);
+				auto normalizedFilePath = file.second.ToString();
+				ToUpper(normalizedFilePath);
+				auto insertResult = _fileLookup.emplace(std::move(normalizedFilePath), file.first);
 				if (!insertResult.second)
 					throw std::runtime_error("The file was not unique in the provided set.");
 			}
@@ -137,7 +139,9 @@ namespace Soup::Core
 				if (!insertResult.second)
 					throw std::runtime_error("The provided file id already exists in the file system state");
 
-				auto insertLookupResult = _fileLookup.emplace(file.ToString(), result);
+				auto normalizedFilePath = file.ToString();
+				ToUpper(normalizedFilePath);
+				auto insertLookupResult = _fileLookup.emplace(std::move(normalizedFilePath), result);
 				if (!insertLookupResult.second)
 					throw std::runtime_error("The file was not unique even though we just failed to find it");
 			}
@@ -150,7 +154,9 @@ namespace Soup::Core
 		/// </summary>
 		bool TryFindFileId(const Path& file, FileId& fileId) const
 		{
-			auto findResult = _fileLookup.find(file.ToString());
+			auto normalizedFilePath = file.ToString();
+			ToUpper(normalizedFilePath);
+			auto findResult = _fileLookup.find(normalizedFilePath);
 			if (findResult != _fileLookup.end())
 			{
 				fileId = findResult->second;
@@ -211,6 +217,15 @@ namespace Soup::Core
 
 			auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
 			return lastWriteTime;
+		}
+
+		static void ToUpper(std::string& value)
+		{
+			std::transform(
+				value.begin(),
+				value.end(),
+				value.begin(),
+				[](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
 		}
 
 	private:

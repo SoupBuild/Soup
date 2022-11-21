@@ -1224,6 +1224,7 @@ namespace Soup::Core
 				{
 					auto filePath = Path(fileName);
 					auto value = filePath.ToString();
+					ToUpper(value);
 
 					#ifdef TRACE_SYSTEM_ACCESS
 					Log::Diag("TouchFileRead " + value);
@@ -1262,6 +1263,7 @@ namespace Soup::Core
 				{
 					auto filePath = Path(fileName);
 					auto value = filePath.ToString();
+					ToUpper(value);
 
 					#ifdef TRACE_SYSTEM_ACCESS
 					Log::Diag("TouchFileWrite " + value);
@@ -1295,6 +1297,7 @@ namespace Soup::Core
 			else
 			{
 				auto value = filePath.ToString();
+					ToUpper(value);
 
 				#ifdef TRACE_SYSTEM_ACCESS
 				Log::Diag("TouchFileDelete " + value);
@@ -1323,12 +1326,22 @@ namespace Soup::Core
 		void TouchFileDeleteOnClose(const Path& filePath)
 		{
 			auto value = filePath.ToString();
+					ToUpper(value);
 
 			#ifdef TRACE_SYSTEM_ACCESS
 			Log::Diag("TouchFileDeleteOnClose " + value);
 			#endif
 
 			m_deleteOnClose.insert(std::move(value));
+		}
+
+		void ToUpper(std::string& value)
+		{
+			std::transform(
+				value.begin(),
+				value.end(),
+				value.begin(),
+				[](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
 		}
 
 		bool IsSpecialFile(std::string_view fileName)

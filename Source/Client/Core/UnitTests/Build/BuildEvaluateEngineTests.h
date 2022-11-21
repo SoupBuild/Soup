@@ -194,7 +194,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"TryGetLastWriteTime: C:/TestWorkingDirectory/OutputFile2.out",
+					"TryGetLastWriteTime: C:/TestWorkingDirectory/OUTPUTFILE2.OUT",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -283,7 +283,7 @@ namespace Soup::Core::UnitTests
 					globalAllowedWriteAccess);
 			});
 
-			Assert::AreEqual<std::string_view>("File \"C:/TestWorkingDirectory/File.txt\" observed as both input and output for operation \"TestCommand: 1\"", exception.what(), "Verify Exception message");
+			Assert::AreEqual<std::string_view>("File \"C:/TestWorkingDirectory/FILE.TXT\" observed as both input and output for operation \"TestCommand: 1\"", exception.what(), "Verify Exception message");
 
 			// Verify operation results
 			Assert::AreEqual(
@@ -316,7 +316,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"TryGetLastWriteTime: C:/TestWorkingDirectory/File.txt",
+					"TryGetLastWriteTime: C:/TestWorkingDirectory/FILE.TXT",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

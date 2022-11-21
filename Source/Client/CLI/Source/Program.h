@@ -50,6 +50,7 @@ namespace Soup::Client
 						false));
 
 				// Setup the real services
+				System::ISystem::Register(std::make_shared<System::STLSystem>());
 				System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
 				System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
 				Monitor::IDetourProcessManager::Register(std::make_shared<Monitor::WindowsDetourProcessManager>());
