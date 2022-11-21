@@ -476,7 +476,27 @@ namespace Soup::Core
 			const OperationInfo& operationInfo,
 			const OperationResult& operationResult)
 		{
-			// Check for inputs that match previous output files
+			// Verify new inputs
+			for (auto fileId : operationResult.ObservedInput)
+			{
+				// Check if this input was generated from another operation
+				OperationId matchedOutputOperationId;
+				if (evaluateState.TryGetOutputFileOperation(fileId, matchedOutputOperationId))
+				{
+					// If it is a known output file then it must be a declared input for this operation
+					const std::set<OperationId>* matchedInputOperationIds;
+					if (!evaluateState.TryGetInputFileOperations(fileId, matchedInputOperationIds) ||
+						!matchedInputOperationIds->contains(operationInfo.Id))
+					{
+						auto filePath = _fileSystemState.GetFilePath(fileId);
+						auto& existingOperation = evaluateState.OperationGraph.GetOperationInfo(matchedOutputOperationId);
+						auto message = "File \"" + filePath.ToString() + "\" observed as input for operation \"" + operationInfo.Title + "\" was written to by operation \"" + existingOperation.Title + "\" and must be declared as input";
+						throw std::runtime_error(message);
+					}
+				}
+			}
+
+			// Verify new outputs
 			for (auto fileId : operationResult.ObservedOutput)
 			{
 				// Ensure declared output is compatible
@@ -487,7 +507,7 @@ namespace Soup::Core
 					{
 						auto filePath = _fileSystemState.GetFilePath(fileId);
 						auto& existingOperation = evaluateState.OperationGraph.GetOperationInfo(matchedOutputOperationId);
-						auto message = "File \"" + filePath.ToString() + "\" already written to by operation \"" + existingOperation.Title + "\"";
+						auto message = "File \"" + filePath.ToString() + "\" observed as output for operation \"" + operationInfo.Title + "\" was already written by operation \"" + existingOperation.Title + "\"";
 						throw std::runtime_error(message);
 					}
 				}
@@ -499,24 +519,11 @@ namespace Soup::Core
 					if (!matchedInputOperationIds->contains(operationInfo.Id))
 					{
 						auto filePath = _fileSystemState.GetFilePath(fileId);
-						auto message = "File \"" + filePath.ToString() + "\" creates new dependency to existing declared inputs";
+						auto message = "File \"" + filePath.ToString() + "\" observed as output from operation \"" + operationInfo.Title + "\" creates new dependency to existing declared inputs";
 						throw std::runtime_error(message);
 					}
 				}
 			}
-
-			// // Check for outputs that match previous input files
-			// for (auto file : operationResult.ObservedOutput)
-			// {
-			// 	if (TryGetInputFileOperations(file, out var matchedOperations))
-			// 	{
-			// 		foreach (var matchedOperation in matchedOperations)
-			// 		{
-			// 			// The active operation must run before the matched output operation
-			// 			CheckAddChildOperation(operationInfo, matchedOperation);
-			// 		}
-			// 	}
-			// }
 		}
 	};
 }
