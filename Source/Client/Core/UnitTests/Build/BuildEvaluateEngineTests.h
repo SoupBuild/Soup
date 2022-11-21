@@ -194,7 +194,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"TryGetLastWriteTime: C:/TestWorkingDirectory/OUTPUTFILE2.OUT",
+					"TryGetLastWriteTime: C:/TestWorkingDirectory/OutputFile2.out",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -272,14 +272,18 @@ namespace Soup::Core::UnitTests
 			auto temporaryDirectory = Path();
 			auto globalAllowedReadAccess = std::vector<Path>();
 			auto globalAllowedWriteAccess = std::vector<Path>();
-			auto ranOperations = uut.Evaluate(
-				operationGraph,
-				operationResults,
-				temporaryDirectory,
-				globalAllowedReadAccess,
-				globalAllowedWriteAccess);
 
-			Assert::IsTrue(ranOperations, "Verify ran operations");
+			auto exception = Assert::Throws<std::runtime_error>([&]()
+			{
+				auto ranOperations = uut.Evaluate(
+					operationGraph,
+					operationResults,
+					temporaryDirectory,
+					globalAllowedReadAccess,
+					globalAllowedWriteAccess);
+			});
+
+			Assert::AreEqual("", exception.what(), "Verify Exception message");
 
 			// Verify operation results
 			Assert::AreEqual(
@@ -1025,6 +1029,140 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
+		}
+
+		// [[Fact]]
+		void Execute_TwoOperations_DuplicateOutputFile_Fails()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test system
+			auto system = std::make_shared<MockSystem>();
+			auto scopedSystem = ScopedSystemRegister(system);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+			auto fileSystemState = FileSystemState(
+				3,
+				std::unordered_map<FileId, Path>({
+					{ 1, Path("C:/TestWorkingDirectory/OutputFile.out") },
+				}));
+
+			// Register the test process manager
+			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
+			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+
+			detourProcessManager->RegisterExecuteCallback(
+				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IDetourCallback& callback)
+				{
+					callback.OnCreateFile2(L"OutputFile.out", GENERIC_WRITE, 0, 0, 0, false);
+				});
+
+			// Setup the input build state
+			auto uut = BuildEvaluateEngine(
+				false,
+				fileSystemState);
+
+			// Evaluate the build
+			auto operationGraph = OperationGraph(
+				{ 1, },
+				{
+					OperationInfo(
+						1,
+						"TestCommand: 1",
+						CommandInfo(
+							Path("C:/TestWorkingDirectory/"),
+							Path("./Command1.exe"),
+							"Arguments"),
+						{ },
+						{ },
+						{ },
+						{ },
+						{ 2 },
+						1),
+					OperationInfo(
+						2,
+						"TestCommand: 2",
+						CommandInfo(
+							Path("C:/TestWorkingDirectory/"),
+							Path("./Command2.exe"),
+							"Arguments"),
+						{ },
+						{ 1, },
+						{ },
+						{ },
+						{ },
+						1),
+				});
+			auto operationResults = OperationResults();
+			auto temporaryDirectory = Path();
+			auto globalAllowedReadAccess = std::vector<Path>();
+			auto globalAllowedWriteAccess = std::vector<Path>();
+
+			auto exception = Assert::Throws<std::runtime_error>([&]()
+			{
+				auto ranOperations = uut.Evaluate(
+					operationGraph,
+					operationResults,
+					temporaryDirectory,
+					globalAllowedReadAccess,
+					globalAllowedWriteAccess);
+			});
+
+			Assert::AreEqual("File \"C:/TestWorkingDirectory/OutputFile.out\" already written to by operation \"TestCommand: 2\"", exception.what(), "Verify Exception message");
+
+			// Verify operation results
+			Assert::AreEqual(
+				std::unordered_map<OperationId, OperationResult>(),
+				operationResults.GetResults(),
+				"Verify operation results match expected.");
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"DIAG: Build evaluation start",
+					"DIAG: Check for previous operation invocation",
+					"INFO: Operation has no successful previous invocation",
+					"HIGH: TestCommand: 1",
+					"DIAG: Execute: [C:/TestWorkingDirectory/] ./Command1.exe Arguments",
+					"DIAG: Allowed Read Access:",
+					"DIAG: Allowed Write Access:",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			// Verify expected system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentTime",
+				}),
+				system->GetRequests(),
+				"Verify system requests match expected.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"TryGetLastWriteTime: C:/TestWorkingDirectory/OutputFile.out",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"ProcessStart: 1",
+					"WaitForExit: 1",
+					"GetStandardOutput: 1",
+					"GetStandardError: 1",
+					"GetExitCode: 1",
+				}),
+				detourProcessManager->GetRequests(),
+				"Verify detour process manager requests match expected.");
 		}
 	};
 }

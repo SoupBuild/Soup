@@ -14,6 +14,7 @@ TestState RunBuildEvaluateEngineTests()
 	state += Soup::Test::RunTest(className, "Evaluate_OneOperation_Incremental_OutOfDate", [&testClass]() { testClass->Evaluate_OneOperation_Incremental_OutOfDate(); });
 	state += Soup::Test::RunTest(className, "Evaluate_OneOperation_Incremental_Executable_OutOfDate", [&testClass]() { testClass->Evaluate_OneOperation_Incremental_Executable_OutOfDate(); });
 	state += Soup::Test::RunTest(className, "Evaluate_OneOperation_Incremental_UpToDate", [&testClass]() { testClass->Evaluate_OneOperation_Incremental_UpToDate(); });
+	state += Soup::Test::RunTest(className, "Execute_TwoOperations_DuplicateOutputFile_Fails", [&testClass]() { testClass->Execute_TwoOperations_DuplicateOutputFile_Fails(); });
 
 	return state;
 }
