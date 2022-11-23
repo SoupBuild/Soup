@@ -81,7 +81,24 @@ namespace Soup::Client
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime -startTime);
 
-			Log::HighPriority(std::to_string(duration.count()) + " seconds.");
+			std::ostringstream durationMessage;
+			if (duration.count() >= 60)
+			{
+				durationMessage << std::fixed << std::setprecision(2);
+				durationMessage << duration.count() / 60  << " minutes";
+			}
+			else if (duration.count() >= 10)
+			{
+				durationMessage << std::fixed << std::setprecision(0);
+				durationMessage << duration.count() << " seconds";
+			}
+			else
+			{
+				durationMessage << std::fixed << std::setprecision(3);
+				durationMessage << duration.count() << " seconds";
+			}
+
+			Log::HighPriority(durationMessage.str());
 		}
 
 	private:
