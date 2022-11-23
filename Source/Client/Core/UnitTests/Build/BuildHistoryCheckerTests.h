@@ -94,7 +94,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"TryGetLastWriteTime: C:/Root/Output.bin",
+					"GetDirectoryFilesLastWriteTime: C:/Root/",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -193,7 +193,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"TryGetLastWriteTime: C:/Root/Input.cpp",
+					"GetDirectoryFilesLastWriteTime: C:/Root/",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");

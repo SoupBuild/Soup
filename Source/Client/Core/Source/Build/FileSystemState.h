@@ -77,11 +77,11 @@ namespace Soup::Core
 		/// <summary>
 		/// Update the write times for the provided set of files
 		/// </summary>
-		void CheckFileWriteTimes(const std::vector<FileId>& files)
+		void InvalidateFileWriteTimes(const std::vector<FileId>& files)
 		{
 			for (auto file : files)
 			{
-				CheckFileWriteTime(file);
+				InvalidateFileWriteTime(file);
 			}
 		}
 
@@ -120,7 +120,7 @@ namespace Soup::Core
 		/// </summary>
 		FileId ToFileId(const Path& file, const Path& workingDirectory)
 		{
-			auto absolutePath = file.HasRoot() ? file : workingDirectory + file;
+			auto& absolutePath = file.HasRoot() ? file : workingDirectory + file;
 			return ToFileId(absolutePath);
 		}
 
@@ -200,23 +200,57 @@ namespace Soup::Core
 
 	private:
 		/// <summary>
-		/// Update the write times for the provided set of files
+		/// Invalidate the write time for the provided file
+		/// </summary>
+		void InvalidateFileWriteTime(FileId fileId)
+		{
+			_writeCache.erase(fileId);
+		}
+
+		/// <summary>
+		/// Update the write times for the provided file
 		/// </summary>
 		std::optional<std::chrono::time_point<std::chrono::file_clock>> CheckFileWriteTime(FileId fileId)
 		{
-			auto& filePath = GetFilePath(fileId);
+			#ifdef USE_SINGLE_FILE_CHECK
+				auto& filePath = GetFilePath(fileId);
 
-			// The file does not exist in the cache
-			// Load the actual value and save it for later
-			std::optional<std::chrono::time_point<std::chrono::file_clock>> lastWriteTime = std::nullopt;
-			std::chrono::time_point<std::chrono::file_clock> lastWriteTimeValue;
-			if (System::IFileSystem::Current().TryGetLastWriteTime(filePath, lastWriteTimeValue))
-			{
-				lastWriteTime = lastWriteTimeValue;
-			}
+				// The file does not exist in the cache
+				// Load the actual value and save it for later
+				std::optional<std::chrono::time_point<std::chrono::file_clock>> lastWriteTime = std::nullopt;
+				std::chrono::time_point<std::chrono::file_clock> lastWriteTimeValue;
+				if (System::IFileSystem::Current().TryGetLastWriteTime(filePath, lastWriteTimeValue))
+				{
+					lastWriteTime = lastWriteTimeValue;
+				}
 
-			auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
-			return lastWriteTime;
+				auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
+				return lastWriteTime;
+			#else
+				auto& filePath = GetFilePath(fileId);
+				
+				// Add the requested file as null
+				// This will be replaced if the file exists with the find all callback
+				auto insertResult = _writeCache.insert_or_assign(fileId, std::nullopt);
+
+				// Load the write times for all files in the directory
+				// This optimization assumes that most files in a directory are relevant to the build
+				// and on windows it is a lot faster to iterate over the files instead of making individual calls
+				auto parentDirectory = filePath.GetParent();
+				System::IFileSystem::Current().GetDirectoryFilesLastWriteTime(
+					parentDirectory,
+					[&](const Path& file, std::chrono::time_point<std::chrono::file_clock> lastWriteTime)
+					{
+						auto& absolutePath = file.HasRoot() ? file : parentDirectory + file;
+						FileId result;
+						if (TryFindFileId(absolutePath, result))
+						{
+							auto insertResult = _writeCache.insert_or_assign(result, lastWriteTime);
+						}
+					});
+
+				return _writeCache[fileId];
+			#endif
 		}
 
 		static void ToUpper(std::string& value)

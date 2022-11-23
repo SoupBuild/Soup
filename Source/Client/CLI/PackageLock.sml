@@ -20,7 +20,7 @@ Closures: {
 			{ Name: "mkdir", Version: "../../Tools/Mkdir/", Build: "Build0" }
 			{ Name: "Monitor.Host", Version: "../../Monitor/Host/", Build: "Build0" }
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0" }
-			{ Name: "Opal", Version: "0.7.1", Build: "Build0" }
+			{ Name: "Opal", Version: "0.8.0", Build: "Build0" }
 			{ Name: "reflex", Version: "1.0.1", Build: "Build0" }
 			{ Name: "Soup", Version: "../CLI", Build: "Build0" }
 			{ Name: "Soup.Core", Version: "../Core/", Build: "Build1" }
