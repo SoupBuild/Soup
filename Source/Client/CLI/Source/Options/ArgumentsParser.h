@@ -77,7 +77,7 @@ namespace Soup::Client
 
 				result = std::move(options);
 			}
-			else if (commandType == "initialize")
+			else if (commandType == "init")
 			{
 				Log::Diag("Parse initialize");
 
