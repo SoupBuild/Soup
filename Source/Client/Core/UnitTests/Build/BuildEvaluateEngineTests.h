@@ -598,7 +598,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"GetDirectoryFilesLastWriteTime: C:/TestWorkingDirectory/",
+					"TryGetLastWriteTime: C:/TestWorkingDirectory/OutputFile.out",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
