@@ -1,5 +1,5 @@
 
-# Initialize
+# Init
 ## Overview
 Initialize a new console application project in the current active directory.
 ```

@@ -359,7 +359,7 @@ namespace Soup::Core
 			operationResult.EvaluateTime = System::ISystem::Current().GetCurrentTime();
 
 			// Ensure the File System State is notified of any output files that have changed
-			_fileSystemState.CheckFileWriteTimes(operationResult.ObservedOutput);
+			_fileSystemState.InvalidateFileWriteTimes(operationResult.ObservedOutput);
 		}
 
 		/// <summary>
@@ -467,7 +467,7 @@ namespace Soup::Core
 				operationResult.EvaluateTime = System::ISystem::Current().GetCurrentTime();
 
 				// Ensure the File System State is notified of any output files that have changed
-				_fileSystemState.CheckFileWriteTimes(operationResult.ObservedOutput);
+				_fileSystemState.InvalidateFileWriteTimes(operationResult.ObservedOutput);
 			}
 			else
 			{
