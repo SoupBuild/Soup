@@ -32,7 +32,7 @@ namespace Soup::Client
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
 			{
-				// Buildin the current directory
+				// Build in the current directory
 				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory();
 			}
 			else
@@ -143,24 +143,12 @@ namespace Soup::Client
 			auto process = System::IProcessManager::Current().CreateProcess(
 				runExecutable,
 				arguments.str(),
-				workingDirectory);
+				workingDirectory,
+				false);
 			process->Start();
 			process->WaitForExit();
 
-			auto stdOut = process->GetStandardOutput();
-			auto stdErr = process->GetStandardError();
 			auto exitCode = process->GetExitCode();
-
-			// TODO: Directly pipe to output and make sure there is no extra newline
-			if (!stdOut.empty())
-			{
-				Log::HighPriority(stdOut);
-			}
-
-			if (!stdErr.empty())
-			{
-				Log::Error(stdErr);
-			}
 
 			if (exitCode != 0)
 				throw Core::HandledException(exitCode);

@@ -11,6 +11,34 @@ namespace Soup.Build.Utilities.UnitTests
 	public class SMLExtensionsUnitTests
 	{
 		[Fact]
+		public async Task AddStringItemWithSyntax()
+		{
+			var uut = new SMLDocument();
+
+			uut.AddItemWithSyntax("NewItem", "Value1");
+
+			var content = await SerializeAsync(uut);
+			var expected =
+@"NewItem: ""Value1""";
+			Assert.Equal(expected, content);
+		}
+
+		[Fact]
+		public async Task AddTwoStringItemWithSyntax()
+		{
+			var uut = new SMLDocument();
+
+			uut.AddItemWithSyntax("NewItem1", "Value1");
+			uut.AddItemWithSyntax("NewItem2", "Value2");
+
+			var content = await SerializeAsync(uut);
+			var expected =
+@"NewItem1: ""Value1""
+NewItem2: ""Value2""";
+			Assert.Equal(expected, content);
+		}
+
+		[Fact]
 		public async Task AddArrayWithSyntax()
 		{
 			var uut = new SMLDocument();

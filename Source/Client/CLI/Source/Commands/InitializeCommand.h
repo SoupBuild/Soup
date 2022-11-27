@@ -28,86 +28,25 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Diag("InitializeCommand::Run");
-			Log::HighPriority("The initialize utility will walk through the creation of the most basic Console recipe.\n");
 
-			// Use the current directory as the default names
-			auto workingDirectory = System::IFileSystem::Current().GetCurrentDirectory();
-			auto recipePath = 
-				workingDirectory +
-				Core::BuildConstants::RecipeFileName();
-
-			// Todo: Opal path should have a way to get individual directories
-			auto workingFolderValue = workingDirectory.ToString();
-			workingFolderValue.pop_back(); // Remove directory separator
-			auto workingFolder = Path(workingFolderValue);
-
-			auto recipe = Core::Recipe(
-				workingFolder.GetFileName(),
-				Core::LanguageReference("C++", SemanticVersion(0, 1, 0)),
-				SemanticVersion(1, 0, 0),
-				std::nullopt,
-				std::nullopt,
-				std::nullopt);
-
-			recipe.SetRootValue("Type", "Executable");
-			recipe.SetRootValue("Source", std::vector<std::string>({ "Main.cpp", }));
-
-			UpdateDefaultValues(recipe);
-
-			// Save the state of the recipe if it has changed
-			Core::RecipeExtensions::SaveToFile(recipePath, recipe);
-
-			// Save a simple main method
-			auto mainFileContent =
-R"(#include <iostream>
-int main()
-{
-	std::cout << "Hello World" << std::endl;
-	return 0;
-})";
-
-			auto mainFilePath = Path("Main.cpp");
-			auto mainFile = System::IFileSystem::Current().OpenWrite(mainFilePath, false);
-			mainFile->GetOutStream() << mainFileContent;
-			mainFile->Close();
-		}
-
-	private:
-		void UpdateDefaultValues(Core::Recipe& recipe)
-		{
-			Log::HighPriority("Name: (" + recipe.GetName() + ")");
-			auto newName = std::string();
-			std::getline(std::cin, newName);
-			if (!newName.empty())
+			auto workingDirectory = Path();
+			if (_options.Path.empty())
 			{
-				recipe.SetName(newName);
+				// Build in the current directory
+				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory();
 			}
-
-			bool setVersion = false;
-			while (!setVersion)
+			else
 			{
-				Log::HighPriority("Version: (" + recipe.GetVersion().ToString() + ")");
-				auto newVersion = std::string();
-				std::getline(std::cin, newVersion);
-				if (newVersion.empty())
+				workingDirectory = Path(_options.Path);
+
+				// Check if this is relative to current directory
+				if (!workingDirectory.HasRoot())
 				{
-					// Use the default
-					setVersion = true;
-				}
-				else
-				{
-					auto value = SemanticVersion();
-					if (SemanticVersion::TryParse(newVersion, value))
-					{
-						recipe.SetVersion(value);
-						setVersion = true;
-					}
-					else
-					{
-						Log::Warning("Invalid version: \"" + newVersion + "\"");
-					}
+					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory() + workingDirectory;
 				}
 			}
+
+			Core::PackageManager::InitializePackage(workingDirectory);
 		}
 
 	private:
