@@ -1,8 +1,6 @@
 # Getting Started
 The end goal is to have Soup running on all three major operating systems, and building for any target. However, there is a heavy dependency on C++20 Modules which has had the best luck on the latest MSVC compiler, so we currently only support Windows development.
 
-Note: While Clang will work, there is still work to auto-detect an installation so MSVC is the suggested compiler for now.
-
 ## Requirements
 * Windows 10
 * Build Tools
@@ -18,7 +16,7 @@ You can either install Soup or download a reference the archive.
 
   Download and run the SoupBuild.msi installer from the [Latest Release](https://github.com/mwasplund/Soup/releases/latest). 
 
-  Note: The installer is not yet signed and you will have to ignore some scary warnings. We will start paying for the certificate when it is no longer in Alpha.
+  Note: The installer is signed signature may not be trusted yet and you will have to ignore some scary warnings. When Microsoft receives enough trusted notifications this will no longer be necessary. 
 
 * Archive
 
