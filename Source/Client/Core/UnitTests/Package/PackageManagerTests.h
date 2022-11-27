@@ -34,11 +34,43 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
-					"CreateProcess: 1 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe restore-packages C:/TestLocation",
+					"CreateProcess: 1 0 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe restore-packages C:/TestLocation",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
-					"GetStandardOutput: 1",
-					"GetStandardError: 1",
+					"GetExitCode: 1",
+				}),
+				processManager->GetRequests(),
+				"Verify process requests match expected.");
+		}
+
+		// [[Fact]]
+		void InitializePackage()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test process manager
+			auto processManager = std::make_shared<MockProcessManager>();
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
+
+			auto workingDirectory = Path("C:/TestLocation");
+			PackageManager::InitializePackage(workingDirectory);
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"INFO: InitializePackage",
+					"INFO: Running PackageManager: initialize-package C:/TestLocation",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentProcessFileName",
+					"CreateProcess: 1 0 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe initialize-package C:/TestLocation",
+					"ProcessStart: 1",
+					"WaitForExit: 1",
 					"GetExitCode: 1",
 				}),
 				processManager->GetRequests(),
@@ -71,11 +103,9 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
-					"CreateProcess: 1 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage@2.2.2",
+					"CreateProcess: 1 0 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage@2.2.2",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
-					"GetStandardOutput: 1",
-					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
 				processManager->GetRequests(),
@@ -108,11 +138,9 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
-					"CreateProcess: 1 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage",
+					"CreateProcess: 1 0 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
-					"GetStandardOutput: 1",
-					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
 				processManager->GetRequests(),
@@ -144,11 +172,9 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"GetCurrentProcessFileName",
-					"CreateProcess: 1 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe publish-package C:/TestLocation",
+					"CreateProcess: 1 0 [C:/testlocation/PackageManager/] C:/testlocation/PackageManager/Soup.Build.PackageManager.exe publish-package C:/TestLocation",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
-					"GetStandardOutput: 1",
-					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
 				processManager->GetRequests(),

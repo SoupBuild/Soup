@@ -161,6 +161,13 @@ namespace Soup.Build.Utilities
 				new SMLToken(value),
 				new SMLToken("\"")));
 
+			// Update the previous last item to have a comma delmiter
+			if (document.Values.Count > 0)
+			{
+				var lastItem = document.Values.Last();
+				lastItem.Value.Delimiter.Add(NewlineToken);
+			}
+
 			// Add the model to the parent table model
 			document.Values.Add(key, CreateTableValue(key, newValue));
 		}

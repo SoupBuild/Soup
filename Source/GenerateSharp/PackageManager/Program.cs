@@ -54,6 +54,13 @@ namespace Soup.Build.PackageManager
 
 				switch (command)
 				{
+					case "initialize-package":
+						{
+							var initializeCommand = new InitializeCommand(builtInLanguageVersionCpp);
+
+							await initializeCommand.InitializePackageAsync(workingDirectory);
+						}
+						break;
 					case "restore-packages":
 						{
 							bool forceRestore = false;

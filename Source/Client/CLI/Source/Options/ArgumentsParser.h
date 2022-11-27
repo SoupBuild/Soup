@@ -82,6 +82,14 @@ namespace Soup::Client
 				Log::Diag("Parse initialize");
 
 				auto options = std::make_unique<InitializeOptions>();
+
+				// Check if the optional index arguments exist
+				auto argument = std::string();
+				if (TryGetIndexArgument(unusedArgs, argument))
+				{
+					options->Path = std::move(argument);
+				}
+
 				options->Verbosity = CheckVerbosity(unusedArgs);
 
 				result = std::move(options);
