@@ -37,24 +37,31 @@ Use the SWhere tool to find the latest installed version of the SDKs on your loc
 ```
 swhere
 ```
+![Demo Video Executing Swhere Command](.assets/getting-started-swhere.gif)
 
 ## Create First Project
 Run Initialize command to create a new project!
 ```
-mkdir MyProject
-cd MyProject
-soup initialize
+mkdir MyApp
+cd MyApp
+soup init
 ```
+
+![Demo Video Executing Init Command](.assets/getting-started-init.gif)
 
 ## Build First Project
 ```
 soup build
 ```
 
+![Demo Video Executing Build Command](.assets/getting-started-build.gif)
+
 ## Run First Project
 ```
 soup run
 ```
+
+![Demo Video Executing Run Command](.assets/getting-started-run.gif)
 
 ## Enjoy!
 Check out the other [Samples](./Samples.md).
