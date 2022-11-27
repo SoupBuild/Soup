@@ -7,7 +7,7 @@ soup <command> [arguments]
 
 * [Build](CLI/Build.md) - Perform a build with a specified root Package.
 
-* [Initialize](CLI/Initialize.md) - Initialize a new Package with default properties.
+* [Init](CLI/Init.md) - Initialize a new Package with default properties.
 
 * [Install](CLI/Install.md) - Install a new dependency for a specified Package.
 

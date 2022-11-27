@@ -13,5 +13,11 @@ namespace Soup::Client
 	// TODO: [Verb("initialize")]
 	class InitializeOptions : public SharedOptions
 	{
+	public:
+		/// <summary>
+		/// Gets or sets the path to initialize
+		/// </summary>
+		// [[Args::Option("path", Index = 0, HelpText = "Path to the package to initialize.")]]
+		std::string Path;
 	};
 }
