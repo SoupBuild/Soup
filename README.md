@@ -17,6 +17,7 @@ The clean isolation of individual projects and the ability to write custom build
 * [Design Requirements and Goals](./Docs/Design-Requirements-Goals.md) - An up to date set of design goals taken from the original design proposal.
 * [Architecture](./Docs/Architecture.md) - An up to date breakdown of the Build Runtime and Design.
 * [Command Line Interface (CLI)](./Docs/CLI.md) - The help documentation for the Soup Command line application.
+* [Simple Minimal Language (SML)](./Docs/SML.md) - The documentation for the new Declarative language used by Soup Recipes.
 
 ## Release Status
 Soup is currently in an `Alpha` stage. This means that anyone is welcome to play around with the source code or the releases on GitHub, however there may be breaking changes in the internal structures and definitions as work is completed and therefor it should not be used in any production capacity. The design is stabilizing over time and will enter a [Beta](https://github.com/mwasplund/Soup/milestone/1) when we believe there will be no more breaking changes or security concerns that would block a first release.
