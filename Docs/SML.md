@@ -1,6 +1,22 @@
 # SML
 SML stands for "Simple Minimal Language". It is a simple declarative language that has its roots in [Toml](https://toml.io/en/). SML removes the overly complex Table and dot key syntax from Toml in favor of a more direct hierarchical representation. I believe this leads to a clearer strict view with less variance for "odd" interleaving of values and makes parsing straightforward as tables cannot "spring into existence". It also drops support for date-times, since they are very hard to get right and not that important to build definitions.
 
+Example.sml
+```sml
+# Here is a comment
+Key: "A String Value"
+"KeyWithSpecial#@": 1234
+IsEnabled: true
+AnArray: [
+    "Main.cpp"
+    1234
+]
+
+ATable: {
+    ChildArray: [ "value1", "value2" ]
+}
+```
+
 Note: SML is very much a work in progress and is a key part of the Beta stabilization phase.
 
 ```antlr
