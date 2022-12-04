@@ -4,11 +4,12 @@
 
 module;
 
-#include <any>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
+#include <variant>
 #include <vector>
 
 module Soup.Core;
@@ -23,23 +24,8 @@ Value::Value() :
 {
 }
 
-Value::Value(int64_t value) :
-	_value(ValuePrimitive<int64_t>(value))
-{
-}
-
-Value::Value(double value) :
-	_value(ValuePrimitive<double>(value))
-{
-}
-
-Value::Value(bool value) :
-	_value(ValuePrimitive<bool>(value))
-{
-}
-
-Value::Value(std::string value) :
-	_value(ValuePrimitive<const char*>(std::move(value)))
+Value::Value(ValueTable table) :
+	_value(std::move(table))
 {
 }
 
@@ -48,99 +34,54 @@ Value::Value(ValueList list) :
 {
 }
 
-Value::Value(ValueTable table) :
-	_value(std::move(table))
+Value::Value(std::string value) :
+	_value(std::move(value))
 {
 }
 
-ValueType Value::GetType() const noexcept
+Value::Value(int64_t value) :
+	_value(value)
 {
-	if (_value.has_value())
+}
+
+Value::Value(double value) :
+	_value(value)
+{
+}
+
+Value::Value(bool value) :
+	_value(value)
+{
+}
+
+ValueType Value::GetType() const
+{
+	switch (_value.index())
 	{
-		auto& valueType = _value.type();
-		if (valueType == typeid(ValueTable))
+		case 0:
+			return ValueType::Empty;
+		case 1:
 			return ValueType::Table;
-		else if (valueType == typeid(ValueList))
+		case 2:
 			return ValueType::List;
-		else if (valueType == typeid(ValuePrimitive<const char*>))
+		case 3:
 			return ValueType::String;
-		else if (valueType == typeid(ValuePrimitive<int64_t>))
+		case 4:
 			return ValueType::Integer;
-		else if (valueType == typeid(ValuePrimitive<double>))
+		case 5:
 			return ValueType::Float;
-		else if (valueType == typeid(ValuePrimitive<bool>))
+		case 6:
 			return ValueType::Boolean;
-		else
-			// TODO: Remove
-			return ValueType::Table;
-	}
-	else
-	{
-		// TODO: Remove
-		return ValueType::Table;
-	}
-}
-
-void Value::SetType(ValueType type)
-{
-	auto currentType = GetType();
-
-	// Ignore requests to set to same type
-	if (currentType != type)
-	{
-		switch (type)
-		{
-			case ValueType::Table:
-				_value = ValueTable();
-				break;
-			case ValueType::List:
-				_value = ValueList();
-				break;
-			case ValueType::String:
-				_value = ValuePrimitive<const char*>();
-				break;
-			case ValueType::Integer:
-				_value = ValuePrimitive<int64_t>();
-				break;
-			case ValueType::Float:
-				_value = ValuePrimitive<double>();
-				break;
-			case ValueType::Boolean:
-				_value = ValuePrimitive<bool>();
-				break;
-			default:
-				// Unknown type
-				throw std::runtime_error("Unknown type");
-		}
-	}
-}
-
-std::string Value::ToString()
-{
-	switch (GetType())
-	{
-		case ValueType::Table:
-			return std::any_cast<ValueTable&>(_value).ToString();
-		case ValueType::List:
-			return std::any_cast<ValueList&>(_value).ToString();
-		case ValueType::String:
-			return std::any_cast<ValuePrimitive<const char*>&>(_value).ToString();
-		case ValueType::Integer:
-			return std::any_cast<ValuePrimitive<int64_t>&>(_value).ToString();
-		case ValueType::Float:
-			return std::any_cast<ValuePrimitive<double>&>(_value).ToString();
-		case ValueType::Boolean:
-			return std::any_cast<ValuePrimitive<bool>&>(_value).ToString();
 		default:
-			return "UnknownType";
+			throw std::runtime_error("Unknown value type.");
 	}
 }
 
 ValueTable& Value::AsTable()
 {
-	if (_value.type() == typeid(ValueTable))
+	if (GetType() == ValueType::Table)
 	{
-		return std::any_cast<ValueTable&>(_value);
+		return std::get<ValueTable>(_value);
 	}
 	else
 	{
@@ -151,9 +92,9 @@ ValueTable& Value::AsTable()
 
 ValueList& Value::AsList()
 {
-	if (_value.type() == typeid(ValueList))
+	if (GetType() == ValueType::List)
 	{
-		return std::any_cast<ValueList&>(_value);
+		return std::get<ValueList>(_value);
 	}
 	else
 	{
@@ -164,9 +105,9 @@ ValueList& Value::AsList()
 
 const ValueTable& Value::AsTable() const
 {
-	if (_value.type() == typeid(ValueTable))
+	if (GetType() == ValueType::Table)
 	{
-		return std::any_cast<const ValueTable&>(_value);
+		return std::get<ValueTable>(_value);
 	}
 	else
 	{
@@ -177,9 +118,9 @@ const ValueTable& Value::AsTable() const
 
 const ValueList& Value::AsList() const
 {
-	if (_value.type() == typeid(ValueList))
+	if (GetType() == ValueType::List)
 	{
-		return std::any_cast<const ValueList&>(_value);
+		return std::get<ValueList>(_value);
 	}
 	else
 	{
@@ -188,11 +129,11 @@ const ValueList& Value::AsList() const
 	}
 }
 
-const ValuePrimitive<const char*>& Value::AsString() const
+const std::string& Value::AsString() const
 {
-	if (_value.type() == typeid(ValuePrimitive<const char*>))
+	if (GetType() == ValueType::String)
 	{
-		return std::any_cast<const ValuePrimitive<const char*>&>(_value);
+		return std::get<std::string>(_value);
 	}
 	else
 	{
@@ -201,11 +142,11 @@ const ValuePrimitive<const char*>& Value::AsString() const
 	}
 }
 
-const ValuePrimitive<int64_t>& Value::AsInteger() const
+int64_t Value::AsInteger() const
 {
-	if (_value.type() == typeid(ValuePrimitive<int64_t>))
+	if (GetType() == ValueType::Integer)
 	{
-		return std::any_cast<const ValuePrimitive<int64_t>&>(_value);
+		return std::get<int64_t>(_value);
 	}
 	else
 	{
@@ -214,11 +155,11 @@ const ValuePrimitive<int64_t>& Value::AsInteger() const
 	}
 }
 
-const ValuePrimitive<double>& Value::AsFloat() const
+double Value::AsFloat() const
 {
-	if (_value.type() == typeid(ValuePrimitive<double>))
+	if (GetType() == ValueType::Float)
 	{
-		return std::any_cast<const ValuePrimitive<double>&>(_value);
+		return std::get<double>(_value);
 	}
 	else
 	{
@@ -227,29 +168,16 @@ const ValuePrimitive<double>& Value::AsFloat() const
 	}
 }
 
-const ValuePrimitive<bool>& Value::AsBoolean() const
+bool Value::AsBoolean() const
 {
-	if (_value.type() == typeid(ValuePrimitive<bool>))
+	if (GetType() == ValueType::Boolean)
 	{
-		return std::any_cast<const ValuePrimitive<bool>&>(_value);
+		return std::get<bool>(_value);
 	}
 	else
 	{
 		// Wrong type
 		throw std::runtime_error("Attempt to access value as Boolean with incorrect type.");
-	}
-}
-
-ValueTable& Value::EnsureTable()
-{
-	if (_value.type() == typeid(ValueTable))
-	{
-		return std::any_cast<ValueTable&>(_value);
-	}
-	else
-	{
-		_value = ValueTable();
-		return std::any_cast<ValueTable&>(_value);
 	}
 }
 
@@ -260,17 +188,17 @@ bool Value::operator ==(const Value& rhs) const
 		switch (GetType())
 		{
 			case ValueType::Table:
-				return std::any_cast<const ValueTable&>(_value) == std::any_cast<const ValueTable&>(rhs._value);
+				return std::get<ValueTable>(_value) == std::get<ValueTable>(rhs._value);
 			case ValueType::List:
-				return std::any_cast<const ValueList&>(_value) == std::any_cast<const ValueList&>(rhs._value);
+				return std::get<ValueList>(_value) == std::get<ValueList>(rhs._value);
 			case ValueType::String:
-				return std::any_cast<const ValuePrimitive<const char*>&>(_value) == std::any_cast<const ValuePrimitive<const char*>&>(rhs._value);
+				return std::get<std::string>(_value) == std::get<std::string>(rhs._value);
 			case ValueType::Integer:
-				return std::any_cast<const ValuePrimitive<int64_t>&>(_value) == std::any_cast<const ValuePrimitive<int64_t>&>(rhs._value);
+				return std::get<int64_t>(_value) == std::get<int64_t>(rhs._value);
 			case ValueType::Float:
-				return std::any_cast<const ValuePrimitive<double>&>(_value) == std::any_cast<const ValuePrimitive<double>&>(rhs._value);
+				return std::get<double>(_value) == std::get<double>(rhs._value);
 			case ValueType::Boolean:
-				return std::any_cast<const ValuePrimitive<bool>&>(_value) == std::any_cast<const ValuePrimitive<bool>&>(rhs._value);
+				return std::get<bool>(_value) == std::get<bool>(rhs._value);
 			default:
 				throw std::runtime_error("Unkown ValueType for comparison.");
 		}

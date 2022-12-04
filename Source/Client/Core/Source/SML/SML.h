@@ -6,8 +6,6 @@
 
 namespace Soup::Core
 {
-	export class SMLTable;
-	export class SMLList;
 	export class SMLValue;
 
 	export enum class SMLValueType

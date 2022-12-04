@@ -32,12 +32,9 @@ namespace Soup::Core::UnitTests
 		void Serialize_SingleTable()
 		{
 			auto valueTable = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"TestValue",
-						Value(ValueTable()),
-					},
-				}));
+			{
+				{ "TestValue", Value(ValueTable()) },
+			});
 			auto content = std::stringstream();
 
 			ValueTableWriter::Serialize(valueTable, content);
@@ -59,12 +56,9 @@ namespace Soup::Core::UnitTests
 		void Serialize_SingleList()
 		{
 			auto valueTable = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"TestValue",
-						Value(ValueList()),
-					},
-				}));
+			{
+				{ "TestValue", Value(ValueList()) },
+			});
 			auto content = std::stringstream();
 
 			ValueTableWriter::Serialize(valueTable, content);
@@ -86,12 +80,9 @@ namespace Soup::Core::UnitTests
 		void Serialize_SingleString()
 		{
 			auto valueTable = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"TestValue",
-						Value(std::string("Value")),
-					},
-				}));
+			{
+				{ "TestValue", Value(std::string("Value")) },
+			});
 			auto content = std::stringstream();
 
 			ValueTableWriter::Serialize(valueTable, content);
@@ -113,12 +104,9 @@ namespace Soup::Core::UnitTests
 		void Serialize_SingleInteger()
 		{
 			auto valueTable = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"TestValue",
-						Value(static_cast<int64_t>(-123)),
-					},
-				}));
+			{
+				{ "TestValue", Value(static_cast<int64_t>(-123)) },
+			});
 			auto content = std::stringstream();
 
 			ValueTableWriter::Serialize(valueTable, content);
@@ -140,12 +128,9 @@ namespace Soup::Core::UnitTests
 		void Serialize_SingleFloat()
 		{
 			auto valueTable = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"TestValue",
-						Value(1.23),
-					},
-				}));
+			{
+				{ "TestValue", Value(1.23) },
+			});
 			auto content = std::stringstream();
 
 			ValueTableWriter::Serialize(valueTable, content);
@@ -167,12 +152,9 @@ namespace Soup::Core::UnitTests
 		void Serialize_SingleBoolean()
 		{
 			auto valueTable = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"TestValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "TestValue", Value(true) },
+			});
 			auto content = std::stringstream();
 
 			ValueTableWriter::Serialize(valueTable, content);

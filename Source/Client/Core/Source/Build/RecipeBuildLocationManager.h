@@ -4,7 +4,6 @@
 
 #pragma once
 #include "Recipe/Recipe.h"
-#include "ValueTable/ValueTable.h"
 #include "ValueTable/ValueTableWriter.h"
 #include "PackageProvider.h"
 #include "RecipeBuildCacheState.h"

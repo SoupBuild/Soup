@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "ValueTable.h"
+#include "Value.h"
 
 namespace Soup::Core
 {
@@ -95,7 +95,7 @@ namespace Soup::Core
 			// Write out the table size
 			auto size = ReadUInt32(content);
 
-			auto table = std::map<std::string, Value>();
+			auto table = std::unordered_map<std::string, Value>();
 			for (auto i = 0u; i < size; i++)
 			{
 				// Read the key
@@ -107,8 +107,7 @@ namespace Soup::Core
 				table.emplace(std::move(key), std::move(value));
 			}
 
-			return ValueTable(
-				std::move(table));
+			return table;
 		}
 
 		static ValueList ReadValueList(char*& content)

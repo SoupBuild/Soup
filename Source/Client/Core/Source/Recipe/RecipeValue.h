@@ -252,7 +252,4 @@ export namespace Soup::Core
 			double,
 			bool> _value;
 	};
-
-	using RecipeArray = std::vector<RecipeValue>;
-	using RecipeTable = std::unordered_map<std::string, RecipeValue>;
 }

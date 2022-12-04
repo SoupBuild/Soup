@@ -77,10 +77,10 @@ namespace Soup::Client
 			auto compiler = std::string("MSVC");
 
 			auto globalParameters = Core::ValueTable();
-			globalParameters.SetValue("Architecture", Core::Value(std::string(architecture)));
-			globalParameters.SetValue("Compiler", Core::Value(std::string(compiler)));
-			globalParameters.SetValue("Flavor", Core::Value(std::string(flavor)));
-			globalParameters.SetValue("System", Core::Value(std::string(system)));
+			globalParameters.emplace("Architecture", Core::Value(std::string(architecture)));
+			globalParameters.emplace("Compiler", Core::Value(std::string(compiler)));
+			globalParameters.emplace("Flavor", Core::Value(std::string(flavor)));
+			globalParameters.emplace("System", Core::Value(std::string(system)));
 
 			// Load the value table to get the exe path
 			auto builtInLanguages = Core::BuildEngine::GetBuiltInLanguages();
@@ -103,26 +103,26 @@ namespace Soup::Client
 
 			// Get the executable from the build target file property
 			// Check for any dynamic libraries in the shared state
-			if (!sharedStateTable.HasValue("Build"))
+			if (!sharedStateTable.contains("Build"))
 			{
 				Log::Error("Shared state does not have a build table");
 				return;
 			}
 
-			auto& buildTable = sharedStateTable.GetValue("Build").AsTable();
-			if (!buildTable.HasValue("RunExecutable"))
+			auto& buildTable = sharedStateTable.at("Build").AsTable();
+			if (!buildTable.contains("RunExecutable"))
 			{
 				Log::Error("Build table does not have a RunExecutable property");
 				return;
 			}
 
-			if (!buildTable.HasValue("RunArguments"))
+			if (!buildTable.contains("RunArguments"))
 			{
 				Log::Error("Build table does not have a RunArguments property");
 				return;
 			}
 
-			auto runExecutable = Path(buildTable.GetValue("RunExecutable").AsString().ToString());
+			auto runExecutable = Path(buildTable.at("RunExecutable").AsString());
 			Log::Info("Executable: " + runExecutable.ToString());
 			if (!System::IFileSystem::Current().Exists(runExecutable))
 			{
@@ -130,7 +130,7 @@ namespace Soup::Client
 				return;
 			}
 
-			auto runArguments = buildTable.GetValue("RunArguments").AsString().ToString();
+			auto runArguments = buildTable.at("RunArguments").AsString();
 			auto arguments = std::stringstream();
 			arguments << runArguments << " ";
 			for (auto& argument : _options.Arguments)

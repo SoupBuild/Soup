@@ -180,14 +180,15 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
-				ValueTable(std::map<std::string, Value>({
-					{ "Dependencies", Value(ValueTable()), },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
-					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/")), },
-				})),
+				ValueTable(
+				{
+					{ "Dependencies", Value(ValueTable()) },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll")) },
+					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
+					{ "SDKs", Value(ValueList()) },
+					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")) },
+					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/")) },
+				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 

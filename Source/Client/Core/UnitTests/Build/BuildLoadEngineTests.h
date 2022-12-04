@@ -67,20 +67,14 @@ namespace Soup::Core::UnitTests
 			});
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"ArgumentValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "ArgumentValue", Value(true) },
+			});
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"HostValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "HostValue", Value(true) },
+			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				builtInLanguages,
@@ -130,12 +124,9 @@ namespace Soup::Core::UnitTests
 								1,
 								1,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"ArgumentValue",
-											Value(true),
-										},
-									})))
+								{
+									{ "ArgumentValue", Value(true) },
+								}))
 						},
 					}),
 					PackageLookupMap(
@@ -198,20 +189,14 @@ namespace Soup::Core::UnitTests
 			});
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"ArgumentValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "ArgumentValue", Value(true) },
+			});
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"HostValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "HostValue", Value(true) },
+			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				builtInLanguages,
@@ -261,12 +246,9 @@ namespace Soup::Core::UnitTests
 								1,
 								1,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"ArgumentValue",
-											Value(true),
-										},
-									})))
+								{
+									{ "ArgumentValue", Value(true) },
+								}))
 						},
 					}),
 					PackageLookupMap(
@@ -352,20 +334,14 @@ namespace Soup::Core::UnitTests
 			});
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"ArgumentValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "ArgumentValue", Value(true) },
+			});
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"HostValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "HostValue", Value(true) },
+			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				builtInLanguages,
@@ -427,12 +403,9 @@ namespace Soup::Core::UnitTests
 								1,
 								1,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"ArgumentValue",
-											Value(true),
-										},
-									})))
+								{
+									{ "ArgumentValue", Value(true) },
+								}))
 						},
 					}),
 					PackageLookupMap(
@@ -540,20 +513,14 @@ namespace Soup::Core::UnitTests
 			});
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"ArgumentValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "ArgumentValue", Value(true) },
+			});
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"HostValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "HostValue", Value(true) },
+			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				builtInLanguages,
@@ -612,12 +579,9 @@ namespace Soup::Core::UnitTests
 								1,
 								1,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"ArgumentValue",
-											Value(true),
-										},
-									})))
+								{
+									{ "ArgumentValue", Value(true) },
+								}))
 						},
 						{
 							2,
@@ -625,12 +589,9 @@ namespace Soup::Core::UnitTests
 								2,
 								2,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"HostValue",
-											Value(true),
-										},
-									})))
+								{
+									{ "HostValue", Value(true) },
+								}))
 						},
 					}),
 					PackageLookupMap(
@@ -721,20 +682,14 @@ namespace Soup::Core::UnitTests
 			});
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"ArgumentValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "ArgumentValue", Value(true) },
+			});
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"HostValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "HostValue", Value(true) },
+			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				builtInLanguages,
@@ -791,12 +746,9 @@ namespace Soup::Core::UnitTests
 								1,
 								1,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"ArgumentValue",
-											Value(true),
-										},
-									})))
+								{
+									{ "ArgumentValue", Value(true) },
+								}))
 						},
 						{
 							2,
@@ -804,12 +756,9 @@ namespace Soup::Core::UnitTests
 								2,
 								2,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"HostValue",
-											Value(true),
-										},
-									})))
+								{
+									{ "HostValue", Value(true) },
+								}))
 						},
 					}),
 					PackageLookupMap(
@@ -920,20 +869,14 @@ namespace Soup::Core::UnitTests
 			});
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"ArgumentValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "ArgumentValue", Value(true) },
+			});
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"HostValue",
-						Value(true),
-					},
-				}));
+			{
+				{ "HostValue", Value(true) },
+			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				builtInLanguages,
@@ -993,12 +936,12 @@ namespace Soup::Core::UnitTests
 								1,
 								1,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"ArgumentValue",
-											Value(true),
-										},
-									})))
+								{
+									{
+										"ArgumentValue",
+										Value(true),
+									},
+								}))
 						},
 						{
 							2,
@@ -1006,12 +949,12 @@ namespace Soup::Core::UnitTests
 								2,
 								2,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"HostValue",
-											Value(true),
-										},
-									})))
+								{
+									{
+										"HostValue",
+										Value(true),
+									},
+								}))
 						},
 					}),
 					PackageLookupMap(
@@ -1153,20 +1096,20 @@ namespace Soup::Core::UnitTests
 			});
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"ArgumentValue",
-						Value(true),
-					},
-				}));
+			{
+				{
+					"ArgumentValue",
+					Value(true),
+				},
+			});
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"HostValue",
-						Value(true),
-					},
-				}));
+			{
+				{
+					"HostValue",
+					Value(true),
+				},
+			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				builtInLanguages,
@@ -1243,12 +1186,12 @@ namespace Soup::Core::UnitTests
 								1,
 								1,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"ArgumentValue",
-											Value(true),
-										},
-									})))
+								{
+									{
+										"ArgumentValue",
+										Value(true),
+									},
+								}))
 						},
 						{
 							2,
@@ -1256,12 +1199,12 @@ namespace Soup::Core::UnitTests
 								2,
 								3,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"HostValue",
-											Value(true),
-										},
-									})))
+								{
+									{
+										"HostValue",
+										Value(true),
+									},
+								}))
 						},
 						{
 							3,
@@ -1269,12 +1212,12 @@ namespace Soup::Core::UnitTests
 								3,
 								2,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"HostValue",
-											Value(true),
-										},
-									})))
+								{
+									{
+										"HostValue",
+										Value(true),
+									},
+								}))
 						},
 						{
 							4,
@@ -1282,12 +1225,12 @@ namespace Soup::Core::UnitTests
 								4,
 								4,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"HostValue",
-											Value(true),
-										},
-									})))
+								{
+									{
+										"HostValue",
+										Value(true),
+									},
+								}))
 						},
 					}),
 					PackageLookupMap(
@@ -1432,20 +1375,20 @@ namespace Soup::Core::UnitTests
 			});
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"ArgumentValue",
-						Value(true),
-					},
-				}));
+			{
+				{
+					"ArgumentValue",
+					Value(true),
+				},
+			});
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"HostValue",
-						Value(true),
-					},
-				}));
+			{
+				{
+					"HostValue",
+					Value(true),
+				},
+			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				builtInLanguages,
@@ -1501,12 +1444,12 @@ namespace Soup::Core::UnitTests
 								1,
 								1,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"ArgumentValue",
-											Value(true),
-										},
-									})))
+								{
+									{
+										"ArgumentValue",
+										Value(true),
+									},
+								}))
 						},
 					}),
 					PackageLookupMap(
@@ -1624,20 +1567,20 @@ namespace Soup::Core::UnitTests
 			});
 			auto arguments = RecipeBuildArguments();
 			arguments.GlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"ArgumentValue",
-						Value(true),
-					},
-				}));
+			{
+				{
+					"ArgumentValue",
+					Value(true),
+				},
+			});
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
 			auto hostBuildGlobalParameters = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"HostValue",
-						Value(true),
-					},
-				}));
+			{
+				{
+					"HostValue",
+					Value(true),
+				},
+			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
 				builtInLanguages,
@@ -1701,12 +1644,9 @@ namespace Soup::Core::UnitTests
 								1,
 								1,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"ArgumentValue",
-											Value(true),
-										},
-									})))
+								{
+									{ "ArgumentValue", Value(true) },
+								}))
 						},
 						{
 							2,
@@ -1714,12 +1654,9 @@ namespace Soup::Core::UnitTests
 								2,
 								3,
 								ValueTable(
-									std::map<std::string, Value>({
-										{
-											"HostValue",
-											Value(true),
-										},
-									})))
+								{
+									{ "HostValue", Value(true) },
+								}))
 						},
 					}),
 					PackageLookupMap(

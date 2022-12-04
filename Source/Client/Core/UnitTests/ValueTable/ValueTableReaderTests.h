@@ -129,12 +129,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(ValueTable()),
-						},
-					})),
+				{
+					{ "TestValue", Value(ValueTable()) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -155,12 +152,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(ValueList()),
-						},
-					})),
+				{
+					{ "TestValue", Value(ValueList()) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -181,12 +175,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(std::string("Value")),
-						},
-					})),
+				{
+					{ "TestValue", Value(std::string("Value")) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -208,12 +199,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(static_cast<int64_t>(-123)),
-						},
-					})),
+				{
+					{ "TestValue", Value(static_cast<int64_t>(-123)) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -235,12 +223,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(1.23),
-						},
-					})),
+				{
+					{ "TestValue", Value(1.23) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -262,12 +247,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(true),
-						},
-					})),
+				{
+					{ "TestValue", Value(true) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}

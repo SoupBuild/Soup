@@ -156,13 +156,15 @@ namespace Soup::Core
 					}
 
 					auto sdkParameter = ValueTable();
-					sdkParameter.SetValue("Name", Value(sdkName));
+					sdkParameter.emplace("Name", Value(sdkName));
 					if (sdk.HasProperties())
 					{
-						sdkParameter.SetValue("Properties", RecipeBuildStateConverter::ConvertToBuildState(sdk.GetProperties()));
+						sdkParameter.emplace(
+							"Properties",
+							RecipeBuildStateConverter::ConvertToBuildState(sdk.GetProperties()));
 					}
 
-					sdkParameters.GetValues().push_back(std::move(sdkParameter));
+					sdkParameters.push_back(std::move(sdkParameter));
 				}
 			}
 		}
@@ -177,10 +179,10 @@ namespace Soup::Core
 			auto architecture = std::string("x64");
 			auto compiler = std::string("MSVC");
 
-			hostBuildGlobalParameters.SetValue("Architecture", Value(std::string(architecture)));
-			hostBuildGlobalParameters.SetValue("Compiler", Value(std::string(compiler)));
-			hostBuildGlobalParameters.SetValue("Flavor", Value(std::string(flavor)));
-			hostBuildGlobalParameters.SetValue("System", Value(std::string(system)));
+			hostBuildGlobalParameters.emplace("Architecture", Value(std::string(architecture)));
+			hostBuildGlobalParameters.emplace("Compiler", Value(std::string(compiler)));
+			hostBuildGlobalParameters.emplace("Flavor", Value(std::string(flavor)));
+			hostBuildGlobalParameters.emplace("System", Value(std::string(system)));
 
 			// Allow read access from system directories
 			// TODO: Windows specific
