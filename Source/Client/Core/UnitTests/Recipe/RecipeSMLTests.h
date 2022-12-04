@@ -52,7 +52,6 @@ namespace Soup::Core::UnitTests
 			auto expected = Recipe(
 				"MyPackage",
 				LanguageReference("C++", SemanticVersion(1)));
-			expected.GetNameValue().GetComments().push_back(" This is an awesome project");
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 		}
@@ -101,29 +100,7 @@ R"(Name: "MyPackage"
 Language: "C++|1"
 )";
 
-			VerifysmlEquals(expected, actual.str(), "Verify matches expected.");
-		}
-
-		// [[Fact]]
-		void Serialize_Comments()
-		{
-			auto recipeFile = Path("Recipe.sml");
-			auto recipe = Recipe(
-				"MyPackage",
-				LanguageReference("C++", SemanticVersion(1)));
-
-			recipe.GetNameValue().GetComments().push_back(" This is an awesome package");
-
-			std::stringstream actual;
-			RecipeSML::Serialize(recipe.GetTable(), actual);
-
-			auto expected =
-R"(// This is an awesome package
-Name: "MyPackage"
-Language: "C++|1"
-)";
-
-			VerifysmlEquals(expected, actual.str(), "Verify matches expected.");
+			Assert::AreEqual(expected, actual.str(), "Verify matches expected.");
 		}
 
 		// [[Fact]]
@@ -151,16 +128,7 @@ Test: []
 }
 )";
 
-			VerifysmlEquals(expected, actual.str(), "Verify matches expected.");
-		}
-
-	private:
-		static void VerifysmlEquals(
-			const std::string& expected,
-			const std::string& actual,
-			const std::string& message)
-		{
-			Assert::AreEqual(expected, actual, message);
+			Assert::AreEqual(expected, actual.str(), "Verify matches expected.");
 		}
 	};
 }

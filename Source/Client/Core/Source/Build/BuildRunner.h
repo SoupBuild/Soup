@@ -311,7 +311,7 @@ namespace Soup::Core
 			const std::set<Path>& recursiveChildTargetDirectories)
 		{
 			// Clone the global parameters
-			auto parametersTable = ValueTable(globalParameters.GetValues());
+			auto parametersTable = ValueTable(globalParameters);
 
 			std::string languageExtensionPath = "";
 			if (packageInfo.LanguageExtension.has_value())
@@ -320,12 +320,12 @@ namespace Soup::Core
 			}
 
 			// Set the input parameters
-			parametersTable.SetValue("LanguageExtensionPath", Value(std::move(languageExtensionPath)));
-			parametersTable.SetValue("PackageDirectory", Value(packageInfo.PackageRoot.ToString()));
-			parametersTable.SetValue("TargetDirectory", Value(targetDirectory.ToString()));
-			parametersTable.SetValue("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
-			parametersTable.SetValue("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
-			parametersTable.SetValue("SDKs", _sdkParameters);
+			parametersTable.emplace("LanguageExtensionPath", Value(std::move(languageExtensionPath)));
+			parametersTable.emplace("PackageDirectory", Value(packageInfo.PackageRoot.ToString()));
+			parametersTable.emplace("TargetDirectory", Value(targetDirectory.ToString()));
+			parametersTable.emplace("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
+			parametersTable.emplace("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
+			parametersTable.emplace("SDKs", _sdkParameters);
 
 			auto parametersFile = soupTargetDirectory + BuildConstants::GenerateParametersFileName();
 			Log::Info("Check outdated parameters file: " + parametersFile.ToString());
@@ -571,7 +571,7 @@ namespace Soup::Core
 
 			for (auto& dependencyType : packageInfo.Dependencies)
 			{
-				auto& dependencyTypeTable = result.SetValue(dependencyType.first, Value(ValueTable())).AsTable();
+				auto dependencyTypeTable = ValueTable();;
 				for (auto& dependency : dependencyType.second)
 				{
 					// Load this package recipe
@@ -589,7 +589,7 @@ namespace Soup::Core
 					if (findBuildCache != _buildCache.end())
 					{
 						auto& dependencyState = findBuildCache->second;
-						dependencyTypeTable.SetValue(
+						dependencyTypeTable.emplace(
 							dependencyState.Name,
 							Value(ValueTable({
 								{
@@ -612,6 +612,8 @@ namespace Soup::Core
 						throw std::runtime_error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
 					}
 				}
+
+				result.emplace(dependencyType.first, Value(std::move(dependencyTypeTable)));
 			}
 
 			return result;

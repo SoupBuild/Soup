@@ -77,10 +77,10 @@ namespace Soup::Client
 			auto compiler = std::string("MSVC");
 
 			auto globalParameters = Core::ValueTable();
-			globalParameters.SetValue("Architecture", Core::Value(std::string(architecture)));
-			globalParameters.SetValue("Compiler", Core::Value(std::string(compiler)));
-			globalParameters.SetValue("Flavor", Core::Value(std::string(flavor)));
-			globalParameters.SetValue("System", Core::Value(std::string(system)));
+			globalParameters.emplace("Architecture", Core::Value(std::string(architecture)));
+			globalParameters.emplace("Compiler", Core::Value(std::string(compiler)));
+			globalParameters.emplace("Flavor", Core::Value(std::string(flavor)));
+			globalParameters.emplace("System", Core::Value(std::string(system)));
 
 			// Load the value table to get the exe path
 			auto builtInLanguages = Core::BuildEngine::GetBuiltInLanguages();

@@ -83,12 +83,9 @@ namespace Soup::Core::UnitTests
 							1,
 							1,
 							ValueTable(
-								std::map<std::string, Value>({
-									{
-										"ArgumentValue",
-										Value(true),
-									},
-								})))
+							{
+								{ "ArgumentValue", Value(true) },
+							}))
 					},
 				}),
 				PackageLookupMap(
@@ -204,15 +201,16 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
-				ValueTable(std::map<std::string, Value>({
-					{ "ArgumentValue", Value(true), },
-					{ "Dependencies", Value(ValueTable()), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
-					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
-				})),
+				ValueTable(
+				{
+					{ "ArgumentValue", Value(true) },
+					{ "Dependencies", Value(ValueTable()) },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")) },
+					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
+					{ "SDKs", Value(ValueList()) },
+					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
+					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
@@ -328,12 +326,9 @@ namespace Soup::Core::UnitTests
 							1,
 							1,
 							ValueTable(
-								std::map<std::string, Value>({
-									{
-										"ArgumentValue",
-										Value(true),
-									},
-								})))
+							{
+								{ "ArgumentValue", Value(true) },
+							}))
 					},
 					{
 						2,
@@ -341,12 +336,9 @@ namespace Soup::Core::UnitTests
 							2,
 							2,
 							ValueTable(
-								std::map<std::string, Value>({
-									{
-										"HostValue",
-										Value(true),
-									},
-								})))
+							{
+								{ "HostValue", Value(true) },
+							}))
 					},
 				}),
 				PackageLookupMap(
@@ -537,15 +529,16 @@ namespace Soup::Core::UnitTests
 			auto testBuildGenerateParametersMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
-				ValueTable(std::map<std::string, Value>({
-					{ "Dependencies", Value(ValueTable()), },
+				ValueTable(
+				{
+					{ "Dependencies", Value(ValueTable()) },
 					{ "HostValue", Value(true) },
-					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3")), },
-					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
-				})),
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")) },
+					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3")) },
+					{ "SDKs", Value(ValueList()) },
+					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")) },
+					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")) },
+				}),
 				ValueTableReader::Deserialize(testBuildGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
@@ -584,23 +577,36 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
-				ValueTable(std::map<std::string, Value>({
+				ValueTable(
+				{
 					{ "ArgumentValue", Value(true) },
-					{ "Dependencies", Value(ValueTable(std::map<std::string, Value>({
-						{ "Build", Value(ValueTable(std::map<std::string, Value>({
-							{ "TestBuild", Value(ValueTable(std::map<std::string, Value>({
-								{ "Reference", Value(std::string("TestBuild@1.2.3")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
-							}))), },
-						}))), },
-					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
-					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
-				})),
+					{
+						"Dependencies",
+						Value(ValueTable(
+						{
+							{
+								"Build",
+								Value(ValueTable(
+								{
+									{
+										"TestBuild",
+										Value(ValueTable(
+										{
+											{ "Reference", Value(std::string("TestBuild@1.2.3")) },
+											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")) },
+											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")) },
+										}))
+									},
+								}))
+							},
+						}))
+					},
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")) },
+					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
+					{ "SDKs", Value(ValueList()) },
+					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
+					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
@@ -737,12 +743,9 @@ namespace Soup::Core::UnitTests
 							1,
 							1,
 							ValueTable(
-								std::map<std::string, Value>({
-									{
-										"ArgumentValue",
-										Value(true),
-									},
-								})))
+							{
+								{ "ArgumentValue", Value(true) },
+							}))
 					},
 				}),
 				PackageLookupMap(
@@ -1011,23 +1014,36 @@ namespace Soup::Core::UnitTests
 			auto packageAGenerateParametersMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
-				ValueTable(std::map<std::string, Value>({
+				ValueTable(
+				{
 					{ "ArgumentValue", Value(true) },
-					{ "Dependencies", Value(ValueTable(std::map<std::string, Value>({
-						{ "Runtime", Value(ValueTable(std::map<std::string, Value>({
-							{ "PackageB", Value(ValueTable(std::map<std::string, Value>({
-								{ "Reference", Value(std::string("PackageB@1.1.1")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
-							}))), },
-						}))), },
-					}))), },
+					{
+						"Dependencies",
+						Value(ValueTable(
+						{
+							{
+								"Runtime",
+								Value(ValueTable(
+								{
+									{
+										"PackageB",
+										Value(ValueTable(
+										{
+											{ "Reference", Value(std::string("PackageB@1.1.1")) },
+											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
+											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+										}))
+									},
+								}))
+							},
+						}))
+					},
 					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
 					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
-				})),
+				}),
 				ValueTableReader::Deserialize(packageAGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
@@ -1066,15 +1082,16 @@ namespace Soup::Core::UnitTests
 			auto packageBGenerateParametersMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
-				ValueTable(std::map<std::string, Value>({
-					{ "ArgumentValue", Value(true), },
-					{ "Dependencies", Value(ValueTable()), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1")), },
-					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
-				})),
+				ValueTable(
+				{
+					{ "ArgumentValue", Value(true) },
+					{ "Dependencies", Value(ValueTable()) },
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")) },
+					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1")) },
+					{ "SDKs", Value(ValueList()) },
+					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
+					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+				}),
 				ValueTableReader::Deserialize(packageBGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
@@ -1113,28 +1130,45 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
-				ValueTable(std::map<std::string, Value>({
+				ValueTable(
+				{
 					{ "ArgumentValue", Value(true), },
-					{ "Dependencies", Value(ValueTable(std::map<std::string, Value>({
-						{ "Runtime", Value(ValueTable(std::map<std::string, Value>({
-							{ "PackageA", Value(ValueTable(std::map<std::string, Value>({
-								{ "Reference", Value(std::string("PackageA@1.2.3")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
-							}))), },
-							{ "PackageB", Value(ValueTable(std::map<std::string, Value>({
-								{ "Reference", Value(std::string("PackageB@1.1.1")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
-							}))), },
-						}))), },
-					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
-					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
-				})),
+					{
+						"Dependencies",
+						Value(ValueTable(
+						{
+							{
+								"Runtime",
+								Value(ValueTable(
+								{
+									{
+										"PackageA",
+										Value(ValueTable(
+										{
+											{ "Reference", Value(std::string("PackageA@1.2.3")) },
+											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
+											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+										}))
+									},
+									{
+										"PackageB",
+										Value(ValueTable(
+										{
+											{ "Reference", Value(std::string("PackageB@1.1.1")) },
+											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
+											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+										}))
+									},
+								}))
+							},
+						}))
+					},
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")) },
+					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
+					{ "SDKs", Value(ValueList()) },
+					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
+					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
@@ -1278,12 +1312,9 @@ namespace Soup::Core::UnitTests
 							1,
 							1,
 							ValueTable(
-								std::map<std::string, Value>({
-									{
-										"ArgumentValue",
-										Value(true),
-									},
-								})))
+							{
+								{ "ArgumentValue", Value(true) },
+							}))
 					},
 					{
 						2,
@@ -1291,12 +1322,9 @@ namespace Soup::Core::UnitTests
 							2,
 							2,
 							ValueTable(
-								std::map<std::string, Value>({
-									{
-										"HostValue",
-										Value(true),
-									},
-								})))
+							{
+								{ "HostValue", Value(true) },
+							}))
 					},
 				}),
 				PackageLookupMap(
@@ -1487,7 +1515,8 @@ namespace Soup::Core::UnitTests
 			auto testBuildGenerateParametersMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
-				ValueTable(std::map<std::string, Value>({
+				ValueTable(
+				{
 					{ "Dependencies", Value(ValueTable()), },
 					{ "HostValue", Value(true) },
 					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
@@ -1495,7 +1524,7 @@ namespace Soup::Core::UnitTests
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
 					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
-				})),
+				}),
 				ValueTableReader::Deserialize(testBuildGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 
@@ -1534,23 +1563,36 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateParameters.bvt"));
 			Assert::AreEqual(
-				ValueTable(std::map<std::string, Value>({
+				ValueTable(
+				{
 					{ "ArgumentValue", Value(true) },
-					{ "Dependencies", Value(ValueTable(std::map<std::string, Value>({
-						{ "Build", Value(ValueTable(std::map<std::string, Value>({
-							{ "TestBuild", Value(ValueTable(std::map<std::string, Value>({
-								{ "Reference", Value(std::string("TestBuild@1.2.3")), },
-								{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
-								{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
-							}))), },
-						}))), },
-					}))), },
-					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")), },
-					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")), },
-					{ "SDKs", Value(ValueList()), },
-					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
-				})),
+					{
+						"Dependencies",
+						Value(ValueTable(
+						{
+							{
+								"Build",
+								Value(ValueTable(
+								{
+									{
+										"TestBuild",
+										Value(ValueTable(
+										{
+											{ "Reference", Value(std::string("TestBuild@1.2.3")) },
+											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")) },
+											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/")) },
+										}))
+									},
+								}))
+							},
+						}))
+					},
+					{ "LanguageExtensionPath", Value(std::string("C:/Extension/Language.Build.dll")) },
+					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
+					{ "SDKs", Value(ValueList()) },
+					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
+					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
 

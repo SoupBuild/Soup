@@ -68,10 +68,10 @@ namespace Soup::Client
 
 			auto compiler = std::string("MSVC");
 
-			arguments.GlobalParameters.SetValue("Architecture", Core::Value(std::string(architecture)));
-			arguments.GlobalParameters.SetValue("Compiler", Core::Value(std::string(compiler)));
-			arguments.GlobalParameters.SetValue("Flavor", Core::Value(std::string(flavor)));
-			arguments.GlobalParameters.SetValue("System", Core::Value(std::string(system)));
+			arguments.GlobalParameters.emplace("Architecture", Core::Value(std::string(architecture)));
+			arguments.GlobalParameters.emplace("Compiler", Core::Value(std::string(compiler)));
+			arguments.GlobalParameters.emplace("Flavor", Core::Value(std::string(flavor)));
+			arguments.GlobalParameters.emplace("System", Core::Value(std::string(system)));
 
 			// Now build the current project
 			Log::Info("Begin Build:");

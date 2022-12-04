@@ -112,12 +112,9 @@ namespace Soup::Core::UnitTests
 			// Verify value table matches expected
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(false),
-						},
-					})),
+				{
+					{ "TestValue", Value(false) },
+				}),
 				actual,
 				"Verify value table match expected.");
 
@@ -150,12 +147,9 @@ namespace Soup::Core::UnitTests
 
 			auto valueTableFile = Path("TestFiles/.soup/ValueTable.bin");
 			auto valueTable = ValueTable(
-				std::map<std::string, Value>({
-					{
-						"TestValue",
-						Value(false),
-					},
-				}));
+			{
+				{ "TestValue", Value(false) },
+			});
 			ValueTableManager::SaveState(valueTableFile, valueTable);
 
 			// Verify expected file system requests
