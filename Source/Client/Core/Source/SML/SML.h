@@ -13,12 +13,12 @@ namespace Soup::Core
 	export enum class SMLValueType
 	{
 		Empty,
-		Boolean,
-		Integer,
-		Float,
-		String,
 		Table,
 		Array,
+		String,
+		Integer,
+		Float,
+		Boolean,
 	};
 
 	class SMLTable
@@ -110,91 +110,120 @@ namespace Soup::Core
 	{
 	public:
 		SMLValue() :
-			_type(SMLValueType::Empty),
-			_value()
+			_value(std::monostate())
 		{
 		}
 
-		SMLValue(int64_t value) :
-			_type(SMLValueType::Integer),
-			_value(value)
-		{
-		}
-
-		SMLValue(std::string value) :
-			_type(SMLValueType::String),
+		SMLValue(SMLTable value) :
 			_value(std::move(value))
 		{
 		}
 
 		SMLValue(SMLArray value) :
-			_type(SMLValueType::Array),
 			_value(std::move(value))
 		{
 		}
 
-		SMLValue(SMLTable value) :
-			_type(SMLValueType::Table),
+		SMLValue(std::string value) :
 			_value(std::move(value))
+		{
+		}
+
+		SMLValue(int64_t value) :
+			_value(value)
+		{
+		}
+
+		SMLValue(double value) :
+			_value(value)
+		{
+		}
+
+		SMLValue(bool value) :
+			_value(value)
 		{
 		}
 
 		SMLValueType GetType() const
 		{
-			return _type;
-		}
-
-		const SMLArray& AsArray() const
-		{
-			if (_type != SMLValueType::Array)
-				throw std::runtime_error("Incorrect access type: Value is not Array");
-			else
-				return std::any_cast<const SMLArray&>(_value);
+			switch (_value.index())
+			{
+				case 0:
+					return SMLValueType::Empty;
+				case 1:
+					return SMLValueType::Table;
+				case 2:
+					return SMLValueType::Array;
+				case 3:
+					return SMLValueType::String;
+				case 4:
+					return SMLValueType::Integer;
+				case 5:
+					return SMLValueType::Float;
+				case 6:
+					return SMLValueType::Boolean;
+				default:
+					throw std::runtime_error("Unknown SML value type.");
+			}
 		}
 
 		const SMLTable& AsTable() const
 		{
-			if (_type != SMLValueType::Table)
+			if (GetType() != SMLValueType::Table)
 				throw std::runtime_error("Incorrect access type: Value is not Table");
 			else
-				return std::any_cast<const SMLTable&>(_value);
+				return std::get<SMLTable>(_value);
+		}
+
+		const SMLArray& AsArray() const
+		{
+			if (GetType() != SMLValueType::Array)
+				throw std::runtime_error("Incorrect access type: Value is not Array");
+			else
+				return std::get<SMLArray>(_value);
 		}
 
 		const std::string& AsString() const
 		{
-			if (_type != SMLValueType::String)
+			if (GetType() != SMLValueType::String)
 				throw std::runtime_error("Incorrect access type: Value is not String");
 			else
-				return std::any_cast<const std::string&>(_value);
+				return std::get<std::string>(_value);
 		}
 
 		int64_t AsInteger() const
 		{
-			if (_type != SMLValueType::Integer)
+			if (GetType() != SMLValueType::Integer)
 				throw std::runtime_error("Incorrect access type: Value is not Integer");
 			else
-				return std::any_cast<int64_t>(_value);
-		}
-
-		bool AsBoolean() const
-		{
-			if (_type != SMLValueType::Boolean)
-				throw std::runtime_error("Incorrect access type: Value is not Boolean");
-			else
-				return std::any_cast<bool>(_value);
+				return std::get<int64_t>(_value);
 		}
 
 		double AsFloat() const
 		{
-			if (_type != SMLValueType::Float)
+			if (GetType() != SMLValueType::Float)
 				throw std::runtime_error("Incorrect access type: Value is not Float");
 			else
-				return std::any_cast<double>(_value);
+				return std::get<double>(_value);
+		}
+
+		bool AsBoolean() const
+		{
+			if (GetType() != SMLValueType::Boolean)
+				throw std::runtime_error("Incorrect access type: Value is not Boolean");
+			else
+				return std::get<bool>(_value);
 		}
 
 	private:
-		SMLValueType _type;
-		std::any _value;
+		std::variant<
+			std::monostate,
+			SMLTable,
+			SMLArray,
+			std::string,
+			int64_t,
+			double,
+			bool> _value;
 	};
 
 	std::ostream& operator<<(std::ostream& stream, const SMLValue& value);
