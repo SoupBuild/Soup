@@ -15,7 +15,7 @@ void PrintValueTable(Soup::Core::ValueTable& values, const std::string& indent)
 {
 	std::cout << "{" << std::endl;
 	auto nextIndent = indent + "  ";
-	for (auto tableValue : values.GetValues())
+	for (auto tableValue : values)
 	{
 		// Write the key
 		std::cout << nextIndent << tableValue.first << ": ";
@@ -33,7 +33,7 @@ void PrintValueList(const Soup::Core::ValueList& values, const std::string& inde
 {
 	std::cout << "[" << std::endl;
 	auto nextIndent = indent + "  ";
-	for (auto value : values.GetValues())
+	for (auto value : values)
 	{
 		std::cout << nextIndent;
 		PrintValue(value, nextIndent);
@@ -56,16 +56,16 @@ void PrintValue(Soup::Core::Value& value, const std::string& indent)
 		PrintValueList(value.AsList(), indent);
 		break;
 	case Soup::Core::ValueType::String:
-		std::cout << "\"" << value.AsString().ToString() << "\"";
+		std::cout << "\"" << value.AsString() << "\"";
 		break;
 	case Soup::Core::ValueType::Integer:
-		std::cout << value.AsInteger().GetValue();
+		std::cout << value.AsInteger();
 		break;
 	case Soup::Core::ValueType::Float:
-		std::cout << value.AsFloat().GetValue();
+		std::cout << value.AsFloat();
 		break;
 	case Soup::Core::ValueType::Boolean:
-		std::cout << value.AsBoolean().GetValue();
+		std::cout << value.AsBoolean();
 		break;
 	default:
 		throw std::runtime_error("Unknown ValueType");
