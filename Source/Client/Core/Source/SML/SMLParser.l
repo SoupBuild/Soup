@@ -9,6 +9,7 @@ module;
 #pragma warning(disable:4702)
 
 # include <iostream>
+# include <optional>
 # include <string>
 # include <sstream>
 
@@ -187,17 +188,16 @@ private:
         }
 
         // Check for the optional first value
-        bool hasValue;
         std::string key;
-        SMLValue tableValue;
-        if (!TryParseTableValue(hasValue, key, tableValue))
+        std::optional<SMLValue> tableValue;
+        if (!TryParseTableValue(key, tableValue))
             return false;
 
         // Let the caller verify the end token is correct when zero values
-        if (!hasValue)
+        if (!tableValue.has_value())
             return true;
 
-        tableValues.emplace(std::move(key), std::move(tableValue));
+        tableValues.emplace(std::move(key), std::move(tableValue.value()));
 
         // Check for zero or more optional values
         while (true)
@@ -211,10 +211,10 @@ private:
             if (!hasDelimiter)
                 return true;
 
-            if (!TryParseTableValue(hasValue, key, tableValue))
+            if (!TryParseTableValue(key, tableValue))
                 return false;
 
-            if (!hasValue)
+            if (!tableValue.has_value())
             {
                 // If a comma was used then the next value is required
                 if (isComma)
@@ -223,11 +223,11 @@ private:
                     return true;
             }
 
-            tableValues.emplace(std::move(key), std::move(tableValue));
+            tableValues.emplace(std::move(key), std::move(tableValue.value()));
         }
     }
 
-    bool TryParseTableValue(bool& hasValue, std::string& key, SMLValue& tableValue)
+    bool TryParseTableValue(std::string& key, std::optional<SMLValue>& tableValue)
     {
         // Parse the next value
         // Note: The delimiter check will read the first token of next item
@@ -237,7 +237,7 @@ private:
                 // Integer is a special case of Key and should be allowed
             case SMLToken::KeyLiteral:
             {
-                // Key token already matched 
+                // Key token already matched
                 key = str();
 
                 // Verify match assign
@@ -247,15 +247,15 @@ private:
 
                 // Parse the value
                 MoveNext();
-                bool internalHasValue;
-                if (!TryParseValue(internalHasValue, tableValue))
+                std::optional<SMLValue> internalValue;
+                if (!TryParseValue(internalValue))
                     return false;
 
                 // The value is required here
-                if (!internalHasValue)
+                if (!internalValue.has_value())
                     return false;
 
-                hasValue = true;
+                tableValue = std::move(internalValue);
                 return true;
             }
             case SMLToken::StringLiteral:
@@ -270,21 +270,21 @@ private:
 
                 // Parse the value
                 MoveNext();
-                bool internalHasValue;
-                if (!TryParseValue(internalHasValue, tableValue))
+                std::optional<SMLValue> internalValue;
+                if (!TryParseValue(internalValue))
                     return false;
 
                 // The value is required here
-                if (!internalHasValue)
+                if (!internalValue.has_value())
                     return false;
 
-                hasValue = true;
+                tableValue = std::move(internalValue);
                 return true;
             }
             default:
             {
                 // Caller will verify final token
-                hasValue = false;
+                tableValue = std::nullopt;
                 return true;
             }
         }
@@ -320,16 +320,15 @@ private:
         }
 
         // Check for the optional first value
-        bool hasValue;
-        SMLValue value;
-        if (!TryParseValue(hasValue, value))
+        std::optional<SMLValue> value;
+        if (!TryParseValue(value))
             return false;
 
         // Let the caller verify the end token is correct when zero values
-        if (!hasValue)
+        if (!value.has_value())
             return true;
 
-        arrayValues.push_back(std::move(value));
+        arrayValues.push_back(std::move(value.value()));
 
         while (true)
         {
@@ -342,10 +341,10 @@ private:
             if (!hasDelimiter)
                 return true;
 
-            if (!TryParseValue(hasValue, value))
+            if (!TryParseValue(value))
                 return false;
 
-            if (!hasValue)
+            if (!value.has_value())
             {
                 // If a comma was used then the next value is required
                 if (isComma)
@@ -354,11 +353,11 @@ private:
                     return true;
             }
 
-            arrayValues.push_back(std::move(value));
+            arrayValues.push_back(std::move(value.value()));
         }
     }
 
-    bool TryParseValue(bool& hasValue, SMLValue& value)
+    bool TryParseValue(std::optional<SMLValue>& value)
     {
         // Check the type of the value
         switch (_currentToken)
@@ -367,26 +366,22 @@ private:
             {
                 auto string = GetString();
                 value = SMLValue(std::move(string));
-                hasValue = true;
                 return true;
             }
             case SMLToken::Integer:
             {
-                auto integer = std::stoi(text());
+                auto integer = std::stoll(text());
                 value = SMLValue(integer);
-                hasValue = true;
                 return true;
             }
             case SMLToken::True:
             {
                 value = SMLValue(true);
-                hasValue = true;
                 return true;
             }
             case SMLToken::False:
             {
                 value = SMLValue(false);
-                hasValue = true;
                 return true;
             }
             case SMLToken::OpenBrace:
@@ -396,7 +391,6 @@ private:
                     return false;
 
                 value = SMLValue(std::move(table));
-                hasValue = true;
                 return true;
             }
             case SMLToken::OpenBracket:
@@ -406,13 +400,12 @@ private:
                     return false;
 
                 value = SMLValue(std::move(array));
-                hasValue = true;
                 return true;
             }
             default:
             {
                 // We didn't see a value, let the caller continue if possible
-                hasValue = false;
+                value = std::nullopt;
                 return true;
             }
         }

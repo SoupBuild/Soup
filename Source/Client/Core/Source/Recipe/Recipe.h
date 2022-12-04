@@ -92,7 +92,7 @@ namespace Soup::Core
 		/// </summary>
 		void SetRootValue(std::string_view key, std::string value)
 		{
-			EnsureValue(_table, key).SetValueString(std::move(value));
+			SetValue(_table, key, RecipeValue(std::move(value)));
 		}
 
 		void SetRootValue(std::string_view key, const std::vector<std::string>& values)
@@ -103,7 +103,7 @@ namespace Soup::Core
 				stringValues.push_back(RecipeValue(value));
 			}
 
-			EnsureValue(_table, key).SetValueList(std::move(stringValues));
+			SetValue(_table, key, RecipeValue(std::move(stringValues)));
 		}
 
 		/// <summary>
@@ -261,7 +261,7 @@ namespace Soup::Core
 				stringValues.push_back(RecipeValue(value.ToString()));
 			}
 
-			EnsureValue(EnsureDependencies(), name).SetValueList(std::move(stringValues));
+			SetValue(EnsureDependencies(), name, RecipeValue(std::move(stringValues)));
 		}
 
 		/// <summary>
@@ -362,19 +362,7 @@ namespace Soup::Core
 
 		RecipeTable& EnsureDependencies()
 		{
-			auto& value = EnsureValue(_table, Property_Dependencies);
-			switch (value.GetType())
-			{
-				case RecipeValueType::Table:
-					// All good.
-					break;
-				case RecipeValueType::Empty:
-					value.SetValueTable(RecipeTable());
-					break;
-				default:
-					throw std::runtime_error("The recipe already has a non-table dependencies property");
-			}
-
+			auto& value = EnsureTableValue(_table, Property_Dependencies);
 			return value.AsTable();
 		}
 
@@ -409,16 +397,34 @@ namespace Soup::Core
 			}
 		}
 
-		RecipeValue& EnsureValue(RecipeTable& table, std::string_view key)
+		RecipeValue& SetValue(RecipeTable& table, std::string_view key, RecipeValue&& value)
+		{
+			auto insertResult = table.insert_or_assign(key.data(), std::move(value));
+			if (insertResult.second)
+			{
+				return insertResult.first->second;
+			}
+			else
+			{
+				throw std::runtime_error("Failed to insert a recipe value.");
+			}
+		}
+
+		RecipeValue& EnsureTableValue(RecipeTable& table, std::string_view key)
 		{
 			auto findItr = table.find(key.data());
 			if (findItr != table.end())
 			{
+				if (findItr->second.GetType() != RecipeValueType::Table)
+				{
+					throw std::runtime_error("The recipe already has a non-table dependencies property");
+				}
+
 				return findItr->second;
 			}
 			else
 			{
-				auto insertResult = table.emplace(key.data(), RecipeValue());
+				auto insertResult = table.emplace(key.data(), RecipeValue(RecipeTable()));
 				if (insertResult.second)
 				{
 					return insertResult.first->second;

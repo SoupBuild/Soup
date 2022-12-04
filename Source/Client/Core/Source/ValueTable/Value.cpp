@@ -19,11 +19,6 @@ using namespace Opal;
 namespace Soup::Core
 {
 
-Value::Value() :
-	_value()
-{
-}
-
 Value::Value(ValueTable table) :
 	_value(std::move(table))
 {
@@ -59,18 +54,16 @@ ValueType Value::GetType() const
 	switch (_value.index())
 	{
 		case 0:
-			return ValueType::Empty;
-		case 1:
 			return ValueType::Table;
-		case 2:
+		case 1:
 			return ValueType::List;
-		case 3:
+		case 2:
 			return ValueType::String;
-		case 4:
+		case 3:
 			return ValueType::Integer;
-		case 5:
+		case 4:
 			return ValueType::Float;
-		case 6:
+		case 5:
 			return ValueType::Boolean;
 		default:
 			throw std::runtime_error("Unknown value type.");

@@ -42,6 +42,7 @@ module;
 #pragma warning(disable:4702)
 
 # include <iostream>
+# include <optional>
 # include <string>
 # include <sstream>
 
@@ -220,52 +221,52 @@ int Soup::Core::SML::Lexer::lex(void)
               return int();
             }
             break;
-          case 1: // rule Source\Client\Core\Source\SML\SMLParser.l:88: {whitespace} :
+          case 1: // rule Source\Client\Core\Source\SML\SMLParser.l:89: {whitespace} :
 { /* ignore whitespace */ }
             break;
-          case 2: // rule Source\Client\Core\Source\SML\SMLParser.l:89: {comment} :
+          case 2: // rule Source\Client\Core\Source\SML\SMLParser.l:90: {comment} :
 { /* ignore comments */ }
             break;
-          case 3: // rule Source\Client\Core\Source\SML\SMLParser.l:90: {newline} :
+          case 3: // rule Source\Client\Core\Source\SML\SMLParser.l:91: {newline} :
 return (int)SMLToken::Newline;
             break;
-          case 4: // rule Source\Client\Core\Source\SML\SMLParser.l:91: {integer} :
+          case 4: // rule Source\Client\Core\Source\SML\SMLParser.l:92: {integer} :
 return (int)SMLToken::Integer;
             break;
-          case 5: // rule Source\Client\Core\Source\SML\SMLParser.l:92: "true" :
+          case 5: // rule Source\Client\Core\Source\SML\SMLParser.l:93: "true" :
 return (int)SMLToken::True;
             break;
-          case 6: // rule Source\Client\Core\Source\SML\SMLParser.l:93: "false" :
+          case 6: // rule Source\Client\Core\Source\SML\SMLParser.l:94: "false" :
 return (int)SMLToken::False;
             break;
-          case 7: // rule Source\Client\Core\Source\SML\SMLParser.l:94: {key} :
+          case 7: // rule Source\Client\Core\Source\SML\SMLParser.l:95: {key} :
 return (int)SMLToken::KeyLiteral;
             break;
-          case 8: // rule Source\Client\Core\Source\SML\SMLParser.l:95: {decimal} :
+          case 8: // rule Source\Client\Core\Source\SML\SMLParser.l:96: {decimal} :
 return (int)SMLToken::Decimal;
             break;
-          case 9: // rule Source\Client\Core\Source\SML\SMLParser.l:96: ":" :
+          case 9: // rule Source\Client\Core\Source\SML\SMLParser.l:97: ":" :
 return (int)SMLToken::Colon;
             break;
-          case 10: // rule Source\Client\Core\Source\SML\SMLParser.l:97: "[" :
+          case 10: // rule Source\Client\Core\Source\SML\SMLParser.l:98: "[" :
 return (int)SMLToken::OpenBracket;
             break;
-          case 11: // rule Source\Client\Core\Source\SML\SMLParser.l:98: "]" :
+          case 11: // rule Source\Client\Core\Source\SML\SMLParser.l:99: "]" :
 return (int)SMLToken::CloseBracket;
             break;
-          case 12: // rule Source\Client\Core\Source\SML\SMLParser.l:99: "{" :
+          case 12: // rule Source\Client\Core\Source\SML\SMLParser.l:100: "{" :
 return (int)SMLToken::OpenBrace;
             break;
-          case 13: // rule Source\Client\Core\Source\SML\SMLParser.l:100: "}" :
+          case 13: // rule Source\Client\Core\Source\SML\SMLParser.l:101: "}" :
 return (int)SMLToken::CloseBrace;
             break;
-          case 14: // rule Source\Client\Core\Source\SML\SMLParser.l:101: "," :
+          case 14: // rule Source\Client\Core\Source\SML\SMLParser.l:102: "," :
 return (int)SMLToken::Comma;
             break;
-          case 15: // rule Source\Client\Core\Source\SML\SMLParser.l:102: \" :
+          case 15: // rule Source\Client\Core\Source\SML\SMLParser.l:103: \" :
 { ClearString(); start(QUOTE); }
             break;
-          case 16: // rule Source\Client\Core\Source\SML\SMLParser.l:103: . :
+          case 16: // rule Source\Client\Core\Source\SML\SMLParser.l:104: . :
 return (int)SMLToken::Error;
 
             break;
@@ -286,37 +287,37 @@ return (int)SMLToken::Error;
               return int();
             }
             break;
-          case 1: // rule Source\Client\Core\Source\SML\SMLParser.l:106: \" :
+          case 1: // rule Source\Client\Core\Source\SML\SMLParser.l:107: \" :
 { start(INITIAL); return (int)SMLToken::StringLiteral; }
             break;
-          case 2: // rule Source\Client\Core\Source\SML\SMLParser.l:107: \\0 :
+          case 2: // rule Source\Client\Core\Source\SML\SMLParser.l:108: \\0 :
 { AddCharacter('\0'); }
             break;
-          case 3: // rule Source\Client\Core\Source\SML\SMLParser.l:108: \\t :
+          case 3: // rule Source\Client\Core\Source\SML\SMLParser.l:109: \\t :
 { AddCharacter('\t'); } // tab              (U+0009)
             break;
-          case 4: // rule Source\Client\Core\Source\SML\SMLParser.l:109: \\n :
+          case 4: // rule Source\Client\Core\Source\SML\SMLParser.l:110: \\n :
 { AddCharacter('\n'); } // linefeed         (U+000A)
             break;
-          case 5: // rule Source\Client\Core\Source\SML\SMLParser.l:110: \\f :
+          case 5: // rule Source\Client\Core\Source\SML\SMLParser.l:111: \\f :
 { AddCharacter('\f'); } // form feed        (U+000C)
             break;
-          case 6: // rule Source\Client\Core\Source\SML\SMLParser.l:111: \\r :
+          case 6: // rule Source\Client\Core\Source\SML\SMLParser.l:112: \\r :
 { AddCharacter('\r'); } // carriage return  (U+000D)
             break;
-          case 7: // rule Source\Client\Core\Source\SML\SMLParser.l:112: \\e :
+          case 7: // rule Source\Client\Core\Source\SML\SMLParser.l:113: \\e :
 { AddCharacter('\r'); } // escape           (U+001B)
             break;
-          case 8: // rule Source\Client\Core\Source\SML\SMLParser.l:113: \\\" :
+          case 8: // rule Source\Client\Core\Source\SML\SMLParser.l:114: \\\" :
 { AddCharacter('"'); }  // quote            (U+0022)
             break;
-          case 9: // rule Source\Client\Core\Source\SML\SMLParser.l:114: \\\\ :
+          case 9: // rule Source\Client\Core\Source\SML\SMLParser.l:115: \\\\ :
 { AddCharacter('\\'); } // backslash        (U+005C)
             break;
-          case 10: // rule Source\Client\Core\Source\SML\SMLParser.l:115: {basic_string} :
+          case 10: // rule Source\Client\Core\Source\SML\SMLParser.l:116: {basic_string} :
 { AddString(text(), size()); }
             break;
-          case 11: // rule Source\Client\Core\Source\SML\SMLParser.l:116: . :
+          case 11: // rule Source\Client\Core\Source\SML\SMLParser.l:117: . :
 { AddString(text(), size()); }
             break;
         }
@@ -404,17 +405,16 @@ private:
         }
 
         // Check for the optional first value
-        bool hasValue;
         std::string key;
-        SMLValue tableValue;
-        if (!TryParseTableValue(hasValue, key, tableValue))
+        std::optional<SMLValue> tableValue;
+        if (!TryParseTableValue(key, tableValue))
             return false;
 
         // Let the caller verify the end token is correct when zero values
-        if (!hasValue)
+        if (!tableValue.has_value())
             return true;
 
-        tableValues.emplace(std::move(key), std::move(tableValue));
+        tableValues.emplace(std::move(key), std::move(tableValue.value()));
 
         // Check for zero or more optional values
         while (true)
@@ -428,10 +428,10 @@ private:
             if (!hasDelimiter)
                 return true;
 
-            if (!TryParseTableValue(hasValue, key, tableValue))
+            if (!TryParseTableValue(key, tableValue))
                 return false;
 
-            if (!hasValue)
+            if (!tableValue.has_value())
             {
                 // If a comma was used then the next value is required
                 if (isComma)
@@ -440,11 +440,11 @@ private:
                     return true;
             }
 
-            tableValues.emplace(std::move(key), std::move(tableValue));
+            tableValues.emplace(std::move(key), std::move(tableValue.value()));
         }
     }
 
-    bool TryParseTableValue(bool& hasValue, std::string& key, SMLValue& tableValue)
+    bool TryParseTableValue(std::string& key, std::optional<SMLValue>& tableValue)
     {
         // Parse the next value
         // Note: The delimiter check will read the first token of next item
@@ -464,15 +464,15 @@ private:
 
                 // Parse the value
                 MoveNext();
-                bool internalHasValue;
-                if (!TryParseValue(internalHasValue, tableValue))
+                std::optional<SMLValue> internalValue;
+                if (!TryParseValue(internalValue))
                     return false;
 
                 // The value is required here
-                if (!internalHasValue)
+                if (!internalValue.has_value())
                     return false;
 
-                hasValue = true;
+                tableValue = std::move(internalValue);
                 return true;
             }
             case SMLToken::StringLiteral:
@@ -487,21 +487,21 @@ private:
 
                 // Parse the value
                 MoveNext();
-                bool internalHasValue;
-                if (!TryParseValue(internalHasValue, tableValue))
+                std::optional<SMLValue> internalValue;
+                if (!TryParseValue(internalValue))
                     return false;
 
                 // The value is required here
-                if (!internalHasValue)
+                if (!internalValue.has_value())
                     return false;
 
-                hasValue = true;
+                tableValue = std::move(internalValue);
                 return true;
             }
             default:
             {
                 // Caller will verify final token
-                hasValue = false;
+                tableValue = std::nullopt;
                 return true;
             }
         }
@@ -537,16 +537,15 @@ private:
         }
 
         // Check for the optional first value
-        bool hasValue;
-        SMLValue value;
-        if (!TryParseValue(hasValue, value))
+        std::optional<SMLValue> value;
+        if (!TryParseValue(value))
             return false;
 
         // Let the caller verify the end token is correct when zero values
-        if (!hasValue)
+        if (!value.has_value())
             return true;
 
-        arrayValues.push_back(std::move(value));
+        arrayValues.push_back(std::move(value.value()));
 
         while (true)
         {
@@ -559,10 +558,10 @@ private:
             if (!hasDelimiter)
                 return true;
 
-            if (!TryParseValue(hasValue, value))
+            if (!TryParseValue(value))
                 return false;
 
-            if (!hasValue)
+            if (!value.has_value())
             {
                 // If a comma was used then the next value is required
                 if (isComma)
@@ -571,11 +570,11 @@ private:
                     return true;
             }
 
-            arrayValues.push_back(std::move(value));
+            arrayValues.push_back(std::move(value.value()));
         }
     }
 
-    bool TryParseValue(bool& hasValue, SMLValue& value)
+    bool TryParseValue(std::optional<SMLValue>& value)
     {
         // Check the type of the value
         switch (_currentToken)
@@ -584,26 +583,22 @@ private:
             {
                 auto string = GetString();
                 value = SMLValue(std::move(string));
-                hasValue = true;
                 return true;
             }
             case SMLToken::Integer:
             {
                 auto integer = std::stoll(text());
                 value = SMLValue(integer);
-                hasValue = true;
                 return true;
             }
             case SMLToken::True:
             {
                 value = SMLValue(true);
-                hasValue = true;
                 return true;
             }
             case SMLToken::False:
             {
                 value = SMLValue(false);
-                hasValue = true;
                 return true;
             }
             case SMLToken::OpenBrace:
@@ -613,7 +608,6 @@ private:
                     return false;
 
                 value = SMLValue(std::move(table));
-                hasValue = true;
                 return true;
             }
             case SMLToken::OpenBracket:
@@ -623,13 +617,12 @@ private:
                     return false;
 
                 value = SMLValue(std::move(array));
-                hasValue = true;
                 return true;
             }
             default:
             {
                 // We didn't see a value, let the caller continue if possible
-                hasValue = false;
+                value = std::nullopt;
                 return true;
             }
         }

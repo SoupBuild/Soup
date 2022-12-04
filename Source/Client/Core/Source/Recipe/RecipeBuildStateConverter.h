@@ -50,8 +50,6 @@ namespace Soup::Core
 		{
 			switch (value.GetType())
 			{
-				case RecipeValueType::Empty:
-					return Value();
 				case RecipeValueType::Table:
 					return Value(ConvertToBuildState(value.AsTable()));
 				case RecipeValueType::List:
