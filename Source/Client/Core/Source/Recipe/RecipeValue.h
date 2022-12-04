@@ -25,32 +25,25 @@ export namespace Soup::Core
 	{
 	public:
 		RecipeValue() :
-			_comments(),
-			_value()
+			_value(std::monostate())
 		{
 		}
 
 		RecipeValue(std::string value) :
-			_comments(),
 			_value(std::move(value))
 		{
 		}
 
-		std::vector<std::string>& GetComments()
-		{
-			return _comments;
-		}
-
 		bool IsString() const
 		{
-			return _value.type() == typeid(std::string);
+			return GetType() == RecipeValueType::String;
 		}
 
 		const std::string& AsString() const
 		{
 			if (IsString())
 			{
-				return std::any_cast<const std::string&>(_value);
+				return std::get<std::string>(_value);
 			}
 			else
 			{
@@ -66,9 +59,9 @@ export namespace Soup::Core
 
 		int64_t AsInteger() const
 		{
-			if (_value.type() == typeid(int64_t))
+			if (GetType() == RecipeValueType::Integer)
 			{
-				return std::any_cast<int64_t>(_value);
+				return std::get<int64_t>(_value);
 			}
 			else
 			{
@@ -84,9 +77,9 @@ export namespace Soup::Core
 
 		double AsFloat() const
 		{
-			if (_value.type() == typeid(double))
+			if (GetType() == RecipeValueType::Float)
 			{
-				return std::any_cast<double>(_value);
+				return std::get<double>(_value);
 			}
 			else
 			{
@@ -102,9 +95,9 @@ export namespace Soup::Core
 
 		bool AsBoolean() const
 		{
-			if (_value.type() == typeid(bool))
+			if (GetType() == RecipeValueType::Boolean)
 			{
-				return std::any_cast<bool>(_value);
+				return std::get<bool>(_value);
 			}
 			else
 			{
@@ -120,14 +113,14 @@ export namespace Soup::Core
 
 		bool IsTable() const
 		{
-			return _value.type() == typeid(RecipeTable);
+			return GetType() == RecipeValueType::Table;
 		}
 
 		RecipeTable& AsTable()
 		{
 			if (IsTable())
 			{
-				return std::any_cast<RecipeTable&>(_value);
+				return std::get<RecipeTable>(_value);
 			}
 			else
 			{
@@ -138,9 +131,9 @@ export namespace Soup::Core
 
 		const RecipeTable& AsTable() const
 		{
-			if (_value.type() == typeid(RecipeTable))
+			if (IsTable())
 			{
-				return std::any_cast<const RecipeTable&>(_value);
+				return std::get<RecipeTable>(_value);
 			}
 			else
 			{
@@ -156,9 +149,9 @@ export namespace Soup::Core
 
 		RecipeList& AsList()
 		{
-			if (_value.type() == typeid(RecipeList))
+			if (GetType() == RecipeValueType::List)
 			{
-				return std::any_cast<RecipeList&>(_value);
+				return std::get<RecipeList>(_value);
 			}
 			else
 			{
@@ -169,9 +162,9 @@ export namespace Soup::Core
 
 		const RecipeList& AsList() const
 		{
-			if (_value.type() == typeid(RecipeList))
+			if (GetType() == RecipeValueType::List)
 			{
-				return std::any_cast<const RecipeList&>(_value);
+				return std::get<RecipeList>(_value);
 			}
 			else
 			{
@@ -187,27 +180,24 @@ export namespace Soup::Core
 
 		RecipeValueType GetType() const
 		{
-			if (_value.has_value())
+			switch (_value.index())
 			{
-				auto& valueType = _value.type();
-				if (valueType == typeid(RecipeTable))
+				case 0:
+					return RecipeValueType::Empty;
+				case 1:
 					return RecipeValueType::Table;
-				else if (valueType == typeid(RecipeList))
+				case 2:
 					return RecipeValueType::List;
-				else if (valueType == typeid(std::string))
+				case 3:
 					return RecipeValueType::String;
-				else if (valueType == typeid(int64_t))
+				case 4:
 					return RecipeValueType::Integer;
-				else if (valueType == typeid(double))
+				case 5:
 					return RecipeValueType::Float;
-				else if (valueType == typeid(bool))
+				case 6:
 					return RecipeValueType::Boolean;
-				else
+				default:
 					throw std::runtime_error("Unknown recipe value type.");
-			}
-			else
-			{
-				return RecipeValueType::Empty;
 			}
 		}
 
@@ -216,11 +206,6 @@ export namespace Soup::Core
 		/// </summary>
 		bool operator ==(const RecipeValue& rhs) const
 		{
-			if (_comments != rhs._comments)
-			{
-				return false;
-			}
-
 			if (GetType() == rhs.GetType())
 			{
 				switch (GetType())
@@ -228,17 +213,17 @@ export namespace Soup::Core
 					case RecipeValueType::Empty:
 						return true;
 					case RecipeValueType::Table:
-						return std::any_cast<const RecipeTable&>(_value) == std::any_cast<const RecipeTable&>(rhs._value);
+						return std::get<RecipeTable>(_value) == std::get<RecipeTable>(rhs._value);
 					case RecipeValueType::List:
-						return std::any_cast<const RecipeList&>(_value) == std::any_cast<const RecipeList&>(rhs._value);
+						return std::get<RecipeList>(_value) == std::get<RecipeList>(rhs._value);
 					case RecipeValueType::String:
-						return std::any_cast<const std::string&>(_value) == std::any_cast<const std::string&>(rhs._value);
+						return std::get<std::string>(_value) == std::get<std::string>(rhs._value);
 					case RecipeValueType::Integer:
-						return std::any_cast<int64_t>(_value) == std::any_cast<int64_t>(rhs._value);
+						return std::get<int64_t>(_value) == std::get<int64_t>(rhs._value);
 					case RecipeValueType::Float:
-						return std::any_cast<double>(_value) == std::any_cast<double>(rhs._value);
+						return std::get<double>(_value) == std::get<double>(rhs._value);
 					case RecipeValueType::Boolean:
-						return std::any_cast<bool>(_value) == std::any_cast<bool>(rhs._value);
+						return std::get<bool>(_value) == std::get<bool>(rhs._value);
 					default:
 						throw std::runtime_error("Unkown Recipe ValueType for comparison.");
 				}
@@ -258,8 +243,14 @@ export namespace Soup::Core
 		}
 
 	private:
-		std::vector<std::string> _comments;
-		std::any _value;
+		std::variant<
+			std::monostate,
+			RecipeTable,
+			RecipeList,
+			std::string,
+			int64_t,
+			double,
+			bool> _value;
 	};
 
 	using RecipeArray = std::vector<RecipeValue>;
