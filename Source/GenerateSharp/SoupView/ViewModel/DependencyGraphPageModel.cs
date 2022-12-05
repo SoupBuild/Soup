@@ -135,12 +135,15 @@ namespace SoupView.ViewModel
 				{
 					recipe = loadResult.Result;
 
-					if (recipe.HasBuildDependencies)
-						AddRecipeFiles(recipe.BuildDependencies, "C#", packageFolder, currentChildRecipes);
-					if (recipe.HasTestDependencies)
-						AddRecipeFiles(recipe.TestDependencies, recipe.Language.Name, packageFolder, currentChildRecipes);
-					if (recipe.HasRuntimeDependencies)
-						AddRecipeFiles(recipe.RuntimeDependencies, recipe.Language.Name, packageFolder, currentChildRecipes);
+					foreach (var dependencyType in recipe.GetDependencyTypes())
+					{
+						var implicitLanguage = dependencyType == Recipe.Property_Build ? "C#" : recipe.Language.Name;
+						AddRecipeFiles(
+							recipe.GetNamedDependencies(dependencyType),
+							implicitLanguage,
+							packageFolder,
+							currentChildRecipes);
+					}
 
 					title = recipe.Name;
 				}

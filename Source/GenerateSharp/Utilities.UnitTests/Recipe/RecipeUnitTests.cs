@@ -16,7 +16,6 @@ namespace Soup.Build.Utilities.UnitTests
 			Assert.False(uut.HasVersion);
 			Assert.False(uut.HasBuildDependencies);
 			Assert.False(uut.HasRuntimeDependencies);
-			Assert.False(uut.HasTestDependencies);
 		}
 
 		[Fact]
