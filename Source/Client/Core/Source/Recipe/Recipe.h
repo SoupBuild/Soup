@@ -16,9 +16,6 @@ namespace Soup::Core
 	{
 	private:
 		static constexpr const char* Property_Dependencies = "Dependencies";
-		static constexpr const char* Property_Runtime = "Runtime";
-		static constexpr const char* Property_Build = "Build";
-		static constexpr const char* Property_Test = "Test";
 		static constexpr const char* Property_Language = "Language";
 		static constexpr const char* Property_Name = "Name";
 		static constexpr const char* Property_Version = "Version";
@@ -31,48 +28,6 @@ namespace Soup::Core
 		Recipe() :
 			_table()
 		{
-			SetName("");
-			SetLanguage(LanguageReference());
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Recipe"/> class.
-		/// </summary>
-		Recipe(
-			std::string_view name,
-			LanguageReference language) :
-			_table()
-		{
-			SetName(name);
-			SetLanguage(language);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Recipe"/> class.
-		/// </summary>
-		Recipe(
-			std::string_view name,
-			LanguageReference language,
-			std::optional<SemanticVersion> version,
-			std::optional<std::vector<PackageReference>> runtimeDependencies,
-			std::optional<std::vector<PackageReference>> buildDependencies,
-			std::optional<std::vector<PackageReference>> testDependencies) :
-			_table()
-		{
-			SetName(name);
-			SetLanguage(language);
-
-			if (version.has_value())
-				SetVersion(version.value());
-
-			if (runtimeDependencies.has_value())
-				SetRuntimeDependencies(runtimeDependencies.value());
-
-			if (buildDependencies.has_value())
-				SetBuildDependencies(buildDependencies.value());
-
-			if (testDependencies.has_value())
-				SetTestDependencies(testDependencies.value());
 		}
 
 		/// <summary>
@@ -81,56 +36,23 @@ namespace Soup::Core
 		Recipe(RecipeTable table) :
 			_table(std::move(table))
 		{
-			if (!HasValue(_table, Property_Name))
-				throw std::runtime_error("Missing required property Name");
-			if (!HasValue(_table, Property_Language))
-				throw std::runtime_error("Missing required property Language");
-		}
-
-		/// <summary>
-		/// Generic Helpers
-		/// </summary>
-		void SetRootValue(std::string_view key, std::string value)
-		{
-			SetValue(_table, key, RecipeValue(std::move(value)));
-		}
-
-		void SetRootValue(std::string_view key, const std::vector<std::string>& values)
-		{
-			auto stringValues = RecipeList();
-			for (auto& value : values)
-			{
-				stringValues.push_back(RecipeValue(value));
-			}
-
-			SetValue(_table, key, RecipeValue(std::move(stringValues)));
 		}
 
 		/// <summary>
 		/// Gets or sets the package name
 		/// </summary>
-		const RecipeValue& GetNameValue() const
+		bool HasName() const
 		{
-			return GetValue(_table, Property_Name);
-		}
-
-		RecipeValue& GetNameValue()
-		{
-			return GetValue(_table, Property_Name);
+			return HasValue(_table, Property_Name);
 		}
 
 		const std::string& GetName() const
 		{
-			auto& nameValue = GetNameValue();
+			auto& nameValue = GetValue(_table, Property_Name);
 			if (nameValue.IsString())
 				return nameValue.AsString();
 			else
 				throw std::runtime_error("The Recipe name must be of type String");
-		}
-
-		void SetName(std::string_view value)
-		{
-			SetRootValue(Property_Name, std::string(value));
 		}
 
 		/// <summary>
@@ -141,14 +63,9 @@ namespace Soup::Core
 			return HasValue(_table, Property_Language);
 		}
 
-		const RecipeValue& GetLanguageValue() const
-		{
-			return GetValue(_table, Property_Language);
-		}
-
 		LanguageReference GetLanguage() const
 		{
-			auto& languageValue = GetLanguageValue();
+			auto& languageValue = GetValue(_table, Property_Language);
 			if (languageValue.IsString())
 			{
 				LanguageReference result;
@@ -161,11 +78,6 @@ namespace Soup::Core
 			{
 				throw std::runtime_error("The Recipe language must be of type String");
 			}
-		}
-
-		void SetLanguage(const LanguageReference& value)
-		{
-			SetRootValue(Property_Language, value.ToString());
 		}
 
 		/// <summary>
@@ -186,11 +98,6 @@ namespace Soup::Core
 				return SemanticVersion::Parse(versionValue.AsString());
 			else
 				throw std::runtime_error("The Recipe version must be of type String");
-		}
-
-		void SetVersion(SemanticVersion value)
-		{
-			SetRootValue(Property_Version, value.ToString());
 		}
 
 		/// <summary>
@@ -251,71 +158,6 @@ namespace Soup::Core
 			}
 
 			return result;
-		}
-
-		void SetNamedDependencies(std::string_view name, const std::vector<PackageReference>& values)
-		{
-			auto stringValues = RecipeList();
-			for (auto& value : values)
-			{
-				stringValues.push_back(RecipeValue(value.ToString()));
-			}
-
-			SetValue(EnsureDependencies(), name, RecipeValue(std::move(stringValues)));
-		}
-
-		/// <summary>
-		/// Gets or sets the list of runtime dependency packages
-		/// </summary>
-		bool HasRuntimeDependencies()
-		{
-			return HasNamedDependencies(Property_Runtime);
-		}
-
-		std::vector<PackageReference> GetRuntimeDependencies()
-		{
-			return GetNamedDependencies(Property_Runtime);
-		}
-
-		void SetRuntimeDependencies(const std::vector<PackageReference>& values)
-		{
-			SetNamedDependencies(Property_Runtime, values);
-		}
-
-		/// <summary>
-		/// Gets or sets the list of build dependency packages
-		/// </summary>
-		bool HasBuildDependencies()
-		{
-			return HasNamedDependencies(Property_Build);
-		}
-
-		std::vector<PackageReference> GetBuildDependencies()
-		{
-			return GetNamedDependencies(Property_Build);
-		}
-
-		void SetBuildDependencies(const std::vector<PackageReference>& values)
-		{
-			SetNamedDependencies(Property_Build, values);
-		}
-		
-		/// <summary>
-		/// Gets or sets the list of test dependency packages
-		/// </summary>
-		bool HasTestDependencies()
-		{
-			return HasNamedDependencies(Property_Test);
-		}
-
-		std::vector<PackageReference> GetTestDependencies()
-		{
-			return GetNamedDependencies(Property_Test);
-		}
-
-		void SetTestDependencies(const std::vector<PackageReference>& values)
-		{
-			SetNamedDependencies(Property_Test, values);
 		}
 
 		/// <summary>

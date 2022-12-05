@@ -107,9 +107,11 @@ namespace Soup::Core::UnitTests
 
 			Assert::IsTrue(result, "Verify result is false.");
 
-			auto expected = Recipe(
-				"MyPackage",
-				LanguageReference("C++", SemanticVersion(1)));
+			auto expected = Recipe(RecipeTable(
+			{
+				{ "Name", "MyPackage" },
+				{ "Language", "C++|1" },
+			}));
 
 			Assert::AreEqual(expected, actual, "Verify matches expected.");
 
@@ -143,9 +145,11 @@ namespace Soup::Core::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto directory = Path("TestFiles/SimpleRecipe/Recipe.sml");
-			auto recipe = Recipe(
-				"MyPackage",
-				LanguageReference("C++", SemanticVersion(1)));
+			auto recipe = Recipe(RecipeTable(
+			{
+				{ "Name", "MyPackage" },
+				{ "Language", "C++|1" },
+			}));
 			RecipeExtensions::SaveToFile(directory, recipe);
 
 			// Verify expected file system requests

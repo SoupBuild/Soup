@@ -71,7 +71,14 @@ namespace Soup::Core::UnitTests
 				Path("C:/FakeSystem/"),
 			});
 			auto recipeCache = RecipeCache({
-				{ "C:/WorkingDirectory/MyPackage/Recipe.sml", Recipe("MyPackage", LanguageReference("C++", SemanticVersion(1))) },
+				{
+					"C:/WorkingDirectory/MyPackage/Recipe.sml",
+					Recipe(RecipeTable(
+					{
+						{ "Name", "MyPackage" },
+						{ "Language", "C++|1" },
+					}))
+				},
 			});
 			auto packageProvider = PackageProvider(
 				1,
@@ -295,25 +302,28 @@ namespace Soup::Core::UnitTests
 			auto recipeCache = RecipeCache({
 				{
 					"C:/WorkingDirectory/MyPackage/Recipe.sml",
-					Recipe(
-						"MyPackage",
-						LanguageReference("C++", SemanticVersion(1)),
-						SemanticVersion(1, 0, 0),
-						std::nullopt,
-						std::vector<PackageReference>({
-							PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)),
-						}),
-						std::nullopt)
+					Recipe(RecipeTable(
+					{
+						{ "Name", "MyPackage" },
+						{ "Language", "C++|1" },
+						{ "Version", "1.0.0" },
+						{
+							"Dependencies",
+							RecipeTable(
+							{
+								{ "Build", RecipeList({ "TestBuild@1.2.3" }) },
+							})
+						},
+					}))
 				},
 				{
 					"C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/Recipe.sml",
-					Recipe(
-						"TestBuild",
-						LanguageReference("C#", SemanticVersion(1)),
-						SemanticVersion(1, 2, 3),
-						std::nullopt,
-						std::nullopt,
-						std::nullopt)
+					Recipe(RecipeTable(
+					{
+						{ "Name", "TestBuild" },
+						{ "Language", "C#|1" },
+						{ "Version", "1.2.3" },
+					}))
 				},
 			});
 			auto packageProvider = PackageProvider(
@@ -699,38 +709,44 @@ namespace Soup::Core::UnitTests
 			auto recipeCache = RecipeCache({
 				{
 					"C:/WorkingDirectory/MyPackage/Recipe.sml",
-					Recipe(
-						"MyPackage",
-						LanguageReference("C++", SemanticVersion(1)),
-						SemanticVersion(1, 0, 0),
-						std::vector<PackageReference>({
-							PackageReference(std::nullopt, "PackageA", SemanticVersion(1, 2, 3)),
-							PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)),
-						}),
-						std::nullopt,
-						std::nullopt)
+					Recipe(RecipeTable(
+					{
+						{ "Name", "MyPackage" },
+						{ "Language", "C++|1" },
+						{ "Version", "1.0.0" },
+						{
+							"Dependencies",
+							RecipeTable(
+							{
+								{ "Runtime", RecipeList({ "PackageA@1.2.3", "PackageB@1.1.1" }) },
+							})
+						},
+					}))
 				},
 				{
 					"C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/Recipe.sml",
-					Recipe(
-						"PackageA",
-						LanguageReference("C++", SemanticVersion(1)),
-						SemanticVersion(1, 2, 3),
-						std::vector<PackageReference>({
-							PackageReference(std::nullopt, "PackageB", SemanticVersion(1, 1, 1)),
-						}),
-						std::nullopt,
-						std::nullopt)
+					Recipe(RecipeTable(
+					{
+						{ "Name", "PackageA" },
+						{ "Language", "C++|1" },
+						{ "Version", "1.2.3" },
+						{
+							"Dependencies",
+							RecipeTable(
+							{
+								{ "Runtime", RecipeList({ "PackageB@1.1.1" }) },
+							})
+						},
+					}))
 				},
 				{
 					"C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/Recipe.sml",
-					Recipe(
-						"PackageB",
-						LanguageReference("C++", SemanticVersion(1)),
-						SemanticVersion(1, 1, 1),
-						std::nullopt,
-						std::nullopt,
-						std::nullopt)
+					Recipe(RecipeTable(
+					{
+						{ "Name", "PackageB" },
+						{ "Language", "C++|1" },
+						{ "Version", "1.1.1" },
+					}))
 				},
 			});
 			auto packageProvider = PackageProvider(
@@ -1281,25 +1297,28 @@ namespace Soup::Core::UnitTests
 			auto recipeCache = RecipeCache({
 				{
 					"C:/WorkingDirectory/MyPackage/Recipe.sml",
-					Recipe(
-						"MyPackage",
-						LanguageReference("C++", SemanticVersion(1)),
-						SemanticVersion(1, 0, 0),
-						std::nullopt,
-						std::vector<PackageReference>({
-							PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)),
-						}),
-						std::nullopt)
+					Recipe(RecipeTable(
+					{
+						{ "Name", "MyPackage" },
+						{ "Language", "C++|1" },
+						{ "Version", "1.0.0" },
+						{
+							"Dependencies",
+							RecipeTable(
+							{
+								{ "Build", RecipeList({ "TestBuild@1.2.3" }) },
+							})
+						},
+					}))
 				},
 				{
 					"C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/Recipe.sml",
-					Recipe(
-						"TestBuild",
-						LanguageReference("C#", SemanticVersion(1)),
-						SemanticVersion(1, 3, 0),
-						std::nullopt,
-						std::nullopt,
-						std::nullopt)
+					Recipe(RecipeTable(
+					{
+						{ "Name", "TestBuild" },
+						{ "Language", "C#|1" },
+						{ "Version", "1.3.0" },
+					}))
 				},
 			});
 			auto packageProvider = PackageProvider(

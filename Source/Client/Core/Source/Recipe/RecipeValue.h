@@ -33,6 +33,11 @@ export namespace Soup::Core
 		{
 		}
 
+		RecipeValue(const char* value) :
+			_value(value)
+		{
+		}
+
 		RecipeValue(std::string value) :
 			_value(std::move(value))
 		{
