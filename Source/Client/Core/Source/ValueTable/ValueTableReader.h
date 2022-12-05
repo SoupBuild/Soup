@@ -95,7 +95,7 @@ namespace Soup::Core
 			// Write out the table size
 			auto size = ReadUInt32(content);
 
-			auto table = std::unordered_map<std::string, Value>();
+			auto table = ValueTable();
 			for (auto i = 0u; i < size; i++)
 			{
 				// Read the key
@@ -115,7 +115,7 @@ namespace Soup::Core
 			// Write out the list size
 			auto size = ReadUInt32(content);
 
-			auto list = std::vector<Value>();
+			auto list = ValueList();
 			for (auto i = 0u; i < size; i++)
 			{
 				// Read the value
@@ -124,8 +124,7 @@ namespace Soup::Core
 				list.push_back(std::move(value));
 			}
 
-			return ValueList(
-				std::move(list));
+			return list;
 		}
 
 		static int64_t ReadInt64(char*& content)

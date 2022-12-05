@@ -8,7 +8,7 @@ namespace Soup::Core
 {
 	export class Value;
 	export using ValueList = std::vector<Value>;
-	export using ValueTable = std::unordered_map<std::string, Value>;
+	export using ValueTable = std::map<std::string, Value>;
 
 	export enum class ValueType : uint64_t
 	{
