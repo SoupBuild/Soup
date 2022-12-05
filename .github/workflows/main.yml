@@ -40,6 +40,8 @@ jobs:
       run: soup restore ./Soup/Source/Client/CLI/ -v:d
     - name: Soup Build
       run: soup build ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}}
+    - name: Soup Run Version
+      run: soup run ./Soup/Source/Client/CLI/ -v:d -flavor ${{matrix.config}} -args version
 
     # Build Tools
     - name: Soup Restore PrintGraph
