@@ -17,13 +17,12 @@ namespace Soup::Core::UnitTests
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto workingDirectory = Path("C:/WorkingDirectory/");
-			auto recipe = Recipe(
-				"MyPackage",
-				LanguageReference("C++", SemanticVersion(1)),
-				SemanticVersion(1, 2, 3),
-				std::nullopt,
-				std::nullopt,
-				std::nullopt);
+			auto recipe = Recipe(RecipeTable(
+			{
+				{ "Name", "MyPackage" },
+				{ "Language", "C++|1" },
+				{ "Version", "1.2.3" },
+			}));
 			auto globalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
@@ -74,13 +73,12 @@ namespace Soup::Core::UnitTests
 				)")));
 
 			auto workingDirectory = Path("C:/WorkingDirectory/");
-			auto recipe = Recipe(
-				"MyPackage",
-				LanguageReference("C++", SemanticVersion(1)),
-				SemanticVersion(1, 2, 3),
-				std::nullopt,
-				std::nullopt,
-				std::nullopt);
+			auto recipe = Recipe(RecipeTable(
+			{
+				{ "Name", "MyPackage" },
+				{ "Language", "C++|1" },
+				{ "Version", "1.2.3" },
+			}));
 			auto globalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
 			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(

@@ -51,54 +51,37 @@ namespace Soup::Core
 		}
 
 	private:
-		static void Parse(RecipeValue& target, const SMLValue& source)
+		static RecipeValue Parse(const SMLValue& source)
 		{
-			// Copy over all of the comments
-			// // target.GetComments().insert(
-			// // 	target.GetComments().end(),
-			// // 	source.comments().begin(),
-			// // 	source.comments().end());
-
 			switch (source.GetType())
 			{
-				case SMLValueType::Empty:
-				{
-					// Leave empty
-					break;
-				}
 				case SMLValueType::Boolean:
 				{
-					target.SetValueBoolean(source.AsBoolean());
-					break;
+					return RecipeValue(source.AsBoolean());
 				}
 				case SMLValueType::Integer:
 				{
-					target.SetValueInteger(source.AsInteger());
-					break;
+					return RecipeValue(source.AsInteger());
 				}
 				case SMLValueType::Float:
 				{
-					target.SetValueFloat(source.AsFloat());
-					break;
+					return RecipeValue(source.AsFloat());
 				}
 				case SMLValueType::String:
 				{
-					target.SetValueString(source.AsString());
-					break;
+					return RecipeValue(source.AsString());
 				}
 				case SMLValueType::Array:
 				{
 					auto valueList = RecipeList();
 					Parse(valueList, source.AsArray());
-					target.SetValueList(std::move(valueList));
-					break;
+					return RecipeValue(std::move(valueList));
 				}
 				case SMLValueType::Table:
 				{
 					auto valueTable = RecipeTable();
 					Parse(valueTable, source.AsTable());
-					target.SetValueTable(std::move(valueTable));
-					break;
+					return RecipeValue(std::move(valueTable));
 				}
 				default:
 				{
@@ -111,8 +94,7 @@ namespace Soup::Core
 		{
 			for (auto& item : source.GetValue())
 			{
-				auto value = RecipeValue();
-				Parse(value, item.second);
+				auto value = Parse(item.second);
 				target.emplace(item.first, std::move(value));
 			}
 		}
@@ -122,45 +104,30 @@ namespace Soup::Core
 			target.reserve(source.GetSize());
 			for (size_t i = 0; i < source.GetSize(); i++)
 			{
-				auto value = RecipeValue();
-				Parse(value, source[i]);
+				auto value = Parse(source[i]);
 				target.push_back(std::move(value));
 			}
 		}
 
 		static SMLValue Build(RecipeValue& value)
 		{
-			auto result = SMLValue();
 			switch (value.GetType())
 			{
-				case RecipeValueType::Empty:
-					// Leave empty
-					break;
 				case RecipeValueType::Table:
-					result = Build(value.AsTable());
-					break;
+					return Build(value.AsTable());
 				case RecipeValueType::List:
-					result = Build(value.AsList());
-					break;
+					return Build(value.AsList());
 				case RecipeValueType::String:
-					result = SMLValue(value.AsString());
-					break;
+					return SMLValue(value.AsString());
 				case RecipeValueType::Integer:
-					result = SMLValue(value.AsInteger());
-					break;
+					return SMLValue(value.AsInteger());
 				case RecipeValueType::Float:
-					result = SMLValue(value.AsFloat());
-					break;
+					return SMLValue(value.AsFloat());
 				case RecipeValueType::Boolean:
-					result = SMLValue(value.AsBoolean());
-					break;
+					return SMLValue(value.AsBoolean());
 				default:
-					throw std::runtime_error("Unknown value type.");
+					throw std::runtime_error("Unknown Recipe value type.");
 			}
-
-			// TODO: result.comments() = value.GetComments();
-
-			return result;
 		}
 
 		static SMLTable Build(RecipeTable& table)

@@ -7,7 +7,7 @@
 namespace Soup::Core
 {
 	/// <summary>
-	/// The package manager
+	/// The package manager wrapper that sends requests along to the managed implementation
 	/// </summary>
 	export class PackageManager
 	{

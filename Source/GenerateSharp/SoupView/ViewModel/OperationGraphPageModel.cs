@@ -144,7 +144,7 @@ namespace SoupView.ViewModel
 			OperationResults? operationResults)
 		{
 			this.operationDetailsLookup.Clear();
-			var activeIds = evaluateGraph.GetRootOperationIds();
+			var activeIds = evaluateGraph.RootOperationIds;
 			var activeGraph = new List<IList<GraphNode>>();
 			var knownIds = new HashSet<OperationId>();
 			BuildGraphColumn(

@@ -12,7 +12,6 @@ export namespace Soup::Core
 
 	enum class RecipeValueType
 	{
-		Empty,
 		Table,
 		List,
 		String,
@@ -24,13 +23,38 @@ export namespace Soup::Core
 	class RecipeValue
 	{
 	public:
-		RecipeValue() :
-			_value(std::monostate())
+		RecipeValue(RecipeTable value) :
+			_value(std::move(value))
+		{
+		}
+
+		RecipeValue(RecipeList value) :
+			_value(std::move(value))
+		{
+		}
+
+		RecipeValue(const char* value) :
+			_value(value)
 		{
 		}
 
 		RecipeValue(std::string value) :
 			_value(std::move(value))
+		{
+		}
+
+		RecipeValue(int64_t value) :
+			_value(value)
+		{
+		}
+
+		RecipeValue(double value) :
+			_value(value)
+		{
+		}
+
+		RecipeValue(bool value) :
+			_value(value)
 		{
 		}
 
@@ -52,11 +76,6 @@ export namespace Soup::Core
 			}
 		}
 
-		void SetValueString(std::string value)
-		{
-			_value = std::move(value);
-		}
-
 		int64_t AsInteger() const
 		{
 			if (GetType() == RecipeValueType::Integer)
@@ -68,11 +87,6 @@ export namespace Soup::Core
 				// Wrong type
 				throw std::runtime_error("Attempt to access value as integer with incorrect type.");
 			}
-		}
-
-		void SetValueInteger(int64_t value)
-		{
-			_value = value;
 		}
 
 		double AsFloat() const
@@ -88,11 +102,6 @@ export namespace Soup::Core
 			}
 		}
 
-		void SetValueFloat(double value)
-		{
-			_value = value;
-		}
-
 		bool AsBoolean() const
 		{
 			if (GetType() == RecipeValueType::Boolean)
@@ -104,11 +113,6 @@ export namespace Soup::Core
 				// Wrong type
 				throw std::runtime_error("Attempt to access value as boolean with incorrect type.");
 			}
-		}
-
-		void SetValueBoolean(bool value)
-		{
-			_value = value;
 		}
 
 		bool IsTable() const
@@ -142,11 +146,6 @@ export namespace Soup::Core
 			}
 		}
 
-		void SetValueTable(RecipeTable value)
-		{
-			_value = std::move(value);
-		}
-
 		RecipeList& AsList()
 		{
 			if (GetType() == RecipeValueType::List)
@@ -173,28 +172,21 @@ export namespace Soup::Core
 			}
 		}
 
-		void SetValueList(RecipeList value)
-		{
-			_value = std::move(value);
-		}
-
 		RecipeValueType GetType() const
 		{
 			switch (_value.index())
 			{
 				case 0:
-					return RecipeValueType::Empty;
-				case 1:
 					return RecipeValueType::Table;
-				case 2:
+				case 1:
 					return RecipeValueType::List;
-				case 3:
+				case 2:
 					return RecipeValueType::String;
-				case 4:
+				case 3:
 					return RecipeValueType::Integer;
-				case 5:
+				case 4:
 					return RecipeValueType::Float;
-				case 6:
+				case 5:
 					return RecipeValueType::Boolean;
 				default:
 					throw std::runtime_error("Unknown recipe value type.");
@@ -210,8 +202,6 @@ export namespace Soup::Core
 			{
 				switch (GetType())
 				{
-					case RecipeValueType::Empty:
-						return true;
 					case RecipeValueType::Table:
 						return std::get<RecipeTable>(_value) == std::get<RecipeTable>(rhs._value);
 					case RecipeValueType::List:
@@ -244,7 +234,6 @@ export namespace Soup::Core
 
 	private:
 		std::variant<
-			std::monostate,
 			RecipeTable,
 			RecipeList,
 			std::string,

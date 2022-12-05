@@ -16,7 +16,6 @@ namespace Soup.Build.Utilities
 		public static string Property_Build => "Build";
 		private static string Property_Dependencies => "Dependencies";
 		private static string Property_Runtime => "Runtime";
-		private static string Property_Test => "Test";
 		private static string Property_Language => "Language";
 		private static string Property_Name => "Name";
 		private static string Property_Version => "Version";
@@ -221,16 +220,6 @@ namespace Soup.Build.Utilities
 		public IList<PackageReference> BuildDependencies
 		{
 			get { return GetNamedDependencies(Property_Build); }
-		}
-
-		/// <summary>
-		/// Gets or sets the list of test dependency packages
-		/// </summary>
-		public bool HasTestDependencies => HasNamedDependencies(Property_Test);
-
-		public IList<PackageReference> TestDependencies
-		{
-			get { return GetNamedDependencies(Property_Test); }
 		}
 
 		/// <summary>

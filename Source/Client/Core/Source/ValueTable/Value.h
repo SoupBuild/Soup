@@ -8,11 +8,10 @@ namespace Soup::Core
 {
 	export class Value;
 	export using ValueList = std::vector<Value>;
-	export using ValueTable = std::unordered_map<std::string, Value>;
+	export using ValueTable = std::map<std::string, Value>;
 
 	export enum class ValueType : uint64_t
 	{
-		Empty = 0,
 		Table = 1,
 		List = 2,
 		String = 3,
@@ -30,7 +29,6 @@ namespace Soup::Core
 		/// <summary>
 		/// Initializes a new instance of the Value class
 		/// </summary>
-		Value();
 		Value(ValueTable table);
 		Value(ValueList list);
 		Value(std::string value);
@@ -70,7 +68,6 @@ namespace Soup::Core
 
 	private:
 		std::variant<
-			std::monostate,
 			ValueTable,
 			ValueList,
 			std::string,

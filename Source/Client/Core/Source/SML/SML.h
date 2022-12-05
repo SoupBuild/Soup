@@ -10,7 +10,6 @@ namespace Soup::Core
 
 	export enum class SMLValueType
 	{
-		Empty,
 		Table,
 		Array,
 		String,
@@ -107,11 +106,6 @@ namespace Soup::Core
 	class SMLValue
 	{
 	public:
-		SMLValue() :
-			_value(std::monostate())
-		{
-		}
-
 		SMLValue(SMLTable value) :
 			_value(std::move(value))
 		{
@@ -147,18 +141,16 @@ namespace Soup::Core
 			switch (_value.index())
 			{
 				case 0:
-					return SMLValueType::Empty;
-				case 1:
 					return SMLValueType::Table;
-				case 2:
+				case 1:
 					return SMLValueType::Array;
-				case 3:
+				case 2:
 					return SMLValueType::String;
-				case 4:
+				case 3:
 					return SMLValueType::Integer;
-				case 5:
+				case 4:
 					return SMLValueType::Float;
-				case 6:
+				case 5:
 					return SMLValueType::Boolean;
 				default:
 					throw std::runtime_error("Unknown SML value type.");
@@ -215,7 +207,6 @@ namespace Soup::Core
 
 	private:
 		std::variant<
-			std::monostate,
 			SMLTable,
 			SMLArray,
 			std::string,
@@ -266,8 +257,6 @@ namespace Soup::Core
 	{
 		switch (value.GetType())
 		{
-			case SMLValueType::Empty:
-				break;
 			case SMLValueType::Boolean:
 				stream << value.AsBoolean();
 				break;
