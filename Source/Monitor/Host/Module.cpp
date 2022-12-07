@@ -36,8 +36,8 @@ module;
 export module Monitor.Host;
 #ifdef WIN32
 import Detours;
-#endif
 import Monitor.Shared;
+#endif
 import Opal;
 
 using namespace Opal;
