@@ -12,66 +12,81 @@ namespace Soup::Core
 	export class BuildConstants
 	{
 	public:
-		/// <summary>
-		/// Gets the Recipe file name
-		/// </summary>
-		static const Path& RecipeFileName()
+		static const Path& EvaluateGraphFileName()
 		{
-			static const Path value = Path("Recipe.toml");
+			static const auto value = Path("Evaluate.bog");
 			return value;
 		}
 
-		/// <summary>
-		/// Gets the Package Lock file name
-		/// </summary>
+		static const Path& EvaluateResultsFileName()
+		{
+			static const auto value = Path("Evaluate.bor");
+			return value;
+		}
+
+		static const Path& GenerateParametersFileName()
+		{
+			static const auto value = Path("GenerateParameters.bvt");
+			return value;
+		}
+
+		static const Path& GenerateReadAccessFileName()
+		{
+			static const auto value = Path("GenerateReadAccess.txt");
+			return value;
+		}
+
+		static const Path& GenerateWriteAccessFileName()
+		{
+			static const auto value = Path("GenerateWriteAccess.txt");
+			return value;
+		}
+
+		static const Path& GenerateSharedStateFileName()
+		{
+			static const auto value = Path("GenerateSharedState.bvt");
+			return value;
+		}
+
+		static const Path& GenerateResultsFileName()
+		{
+			static const auto value = Path("Generate.bor");
+			return value;
+		}
+
+		static const Path& LocalUserConfigFileName()
+		{
+			static const auto value = Path("LocalUserConfig.sml");
+			return value;
+		}
+
 		static const Path& PackageLockFileName()
 		{
-			static const Path value = Path("PackageLock.toml");
+			static const auto value = Path("PackageLock.sml");
 			return value;
 		}
 
-		/// <summary>
-		/// Gets the Generate Parameters Value Table file name
-		/// </summary>
-		static const Path GenerateParametersFileName()
+		static const Path& SoupLocalStoreDirectory()
 		{
-			static const Path value = Path("GenerateParameters.bvt");
+			static const auto value = Path(".soup/");
 			return value;
 		}
 
-		/// <summary>
-		/// Gets the Generate Read Access file name
-		/// </summary>
-		static const Path GenerateReadAccessFileName()
+		static const Path& RecipeFileName()
 		{
-			static const Path value = Path("GenerateReadAccess.txt");
+			static const auto value = Path("Recipe.sml");
 			return value;
 		}
 
-		/// <summary>
-		/// Gets the Generate Write Access file name
-		/// </summary>
-		static const Path GenerateWriteAccessFileName()
+		static const Path& SoupTargetDirectory()
 		{
-			static const Path value = Path("GenerateWriteAccess.txt");
+			static const auto value = Path(".soup/");
 			return value;
 		}
 
-		/// <summary>
-		/// Gets the Generate Shared State Value Table file name
-		/// </summary>
-		static const Path GenerateSharedStateFileName()
+		static const Path& TemporaryFolderName()
 		{
-			static const Path value = Path("GenerateSharedState.bvt");
-			return value;
-		}
-
-		/// <summary>
-		/// Gets the Generate Parameters Value Table file name
-		/// </summary>
-		static const Path GenerateEvaluateOperationGraphFileName()
-		{
-			static const Path value = Path("GenerateEvaluateGraph.bog");
+			static const auto value = Path("temp/");
 			return value;
 		}
 	};

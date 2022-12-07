@@ -15,7 +15,7 @@ namespace Soup.Build.Utilities
 	internal static class OperationGraphReader
 	{
 		// Binary Operation Graph file format
-		private static uint FileVersion => 4;
+		private static uint FileVersion => 5;
 
 		public static OperationGraph Deserialize(System.IO.BinaryReader reader)
 		{
@@ -133,18 +133,6 @@ namespace Soup.Build.Utilities
 			// Read the dependency count
 			var dependecyCount = reader.ReadUInt32();
 
-			// Read the value indicating if there was a successful run
-			var wasSuccessfulRun = ReadBoolean(reader);
-
-			// Read the utc tick since January 1, 0001 at 00:00:00.000 in the Gregorian calendar
-			var evaluateTime = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);
-
-			// Read the observed input files
-			var observedInput = ReadFileIdList(reader);
-
-			// Read the observed output files
-			var observedOutput = ReadFileIdList(reader);
-
 			return new OperationInfo(
 				id,
 				title,
@@ -157,11 +145,7 @@ namespace Soup.Build.Utilities
 				readAccess,
 				writeAccess,
 				children,
-				dependecyCount,
-				wasSuccessfulRun,
-				evaluateTime,
-				observedInput,
-				observedOutput);
+				dependecyCount);
 		}
 
 		private static bool ReadBoolean(System.IO.BinaryReader reader)

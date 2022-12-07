@@ -58,10 +58,11 @@ namespace Soup::Core::UnitTests
 				10,
 				std::unordered_map<FileId, Path>({}));
 
-			Assert::ThrowsRuntimeError([&uut]() {
+			auto exception = Assert::Throws<std::runtime_error>([&uut]() {
 				auto actual = uut.GetFilePath(8);
-			},
-			"The provided file id does not exist in the files set.");
+			});
+
+			Assert::AreEqual("The provided file id does not exist in the files set.", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -91,19 +92,19 @@ namespace Soup::Core::UnitTests
 				std::unordered_map<FileId, Path>({
 					{ 2, Path("C:/Root/DoStuff.exe") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({}));
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({}));
 
 			auto lastWriteTime = uut.GetLastWriteTime(2);
 
 			Assert::AreEqual(
-				std::optional<std::chrono::time_point<std::chrono::system_clock>>(std::nullopt),
+				std::optional<std::chrono::time_point<std::chrono::file_clock>>(std::nullopt),
 				lastWriteTime,
 				"Verify last write time matches expected.");
 
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: C:/Root/DoStuff.exe",
+					"TryGetLastWriteTime: C:/Root/DoStuff.exe",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -112,20 +113,21 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void GetLastWriteTime_Found()
 		{
-			auto setLastWriteTime = std::chrono::sys_days(May/22/2015) + 9h + 11min;
+			auto setLastWriteTime = std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::sys_days(May/22/2015) + 9h + 11min);
 			auto uut = FileSystemState(
 				10,
 				std::unordered_map<FileId, Path>({
 					{ 2, Path("C:/Root/DoStuff.exe") },
 				}),
-				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>>({
+				std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>>({
 					{ 2, setLastWriteTime },
 				}));
 
 			auto lastWriteTime = uut.GetLastWriteTime(2);
 
 			Assert::AreEqual(
-				std::optional<std::chrono::time_point<std::chrono::system_clock>>(setLastWriteTime),
+				std::optional<std::chrono::time_point<std::chrono::file_clock>>(setLastWriteTime),
 				lastWriteTime,
 				"Verify last write time matches expected.");
 		}

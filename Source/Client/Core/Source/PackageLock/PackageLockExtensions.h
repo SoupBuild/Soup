@@ -4,7 +4,7 @@
 
 #pragma once
 #include "PackageLock.h"
-#include "Recipe/RecipeToml.h"
+#include "Recipe/RecipeSML.h"
 
 namespace Soup::Core
 {
@@ -25,7 +25,7 @@ namespace Soup::Core
 			Log::Diag("Load PackageLock: " + packageLockFile.ToString());
 			if (!System::IFileSystem::Current().Exists(packageLockFile))
 			{
-				Log::Info("PackageLock file does not exist.");
+				Log::Info("PackageLock file does not exist");
 				return false;
 			}
 
@@ -36,7 +36,7 @@ namespace Soup::Core
 			try
 			{
 				result = PackageLock(
-					RecipeToml::Deserialize(
+					RecipeSML::Deserialize(
 						packageLockFile,
 						file->GetInStream()));
 				return true;

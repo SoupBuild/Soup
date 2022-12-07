@@ -24,30 +24,26 @@ namespace Soup.Build.Utilities
 			Log.Diag("Load Local User Config: " + localUserConfigFile.ToString());
 			if (!LifetimeManager.Get<IFileSystem>().Exists(localUserConfigFile))
 			{
-				Log.Warning("Local User Config file does not exist.");
+				Log.Warning("Local User Config file does not exist");
 				return (false, new LocalUserConfig());
 			}
 
 			// Open the file to read from
-			var file = LifetimeManager.Get<IFileSystem>().OpenRead(localUserConfigFile);
+			using var file = LifetimeManager.Get<IFileSystem>().OpenRead(localUserConfigFile);
+			using var reader = new System.IO.StreamReader(file.GetInStream(), null, true, -1, true);
 
-			// Open the file to read from
-			using (var reader = new System.IO.StreamReader(file.GetInStream()))
+			// Read the contents of the local user config file
+			try
 			{
-				// Read the contents of the local user config file
-				try
-				{
-					var result = ValueTableTomlUtilities.Deserialize(
-						localUserConfigFile,
-						await reader.ReadToEndAsync());
-					return (true, new LocalUserConfig(result));
-				}
-				catch (Exception ex)
-				{
-					Log.Error("Deserialize Threw: " + ex.Message);
-					Log.Info("Failed to parse local user config.");
-					return (false, new LocalUserConfig());
-				}
+				var result = SMLManager.Deserialize(
+					await reader.ReadToEndAsync());
+				return (true, new LocalUserConfig(result));
+			}
+			catch (Exception ex)
+			{
+				Log.Error("Deserialize Threw: " + ex.Message);
+				Log.Info("Failed to parse local user config.");
+				return (false, new LocalUserConfig());
 			}
 		}
 
@@ -67,15 +63,12 @@ namespace Soup.Build.Utilities
 			}
 
 			// Open the file to write to
-			var file = LifetimeManager.Get<IFileSystem>().OpenWrite(configFile, true);
-
-			// Serialize the contents of the recipe
-			var documentSyntax = config.MirrorSyntax;
-			if (documentSyntax == null)
-				throw new ArgumentException("The provided config does not have a mirrored syntax tree.", nameof(config));
+			using var file = LifetimeManager.Get<IFileSystem>().OpenWrite(configFile, true);
 
 			// Write the recipe to the file stream
-			await ValueTableTomlUtilities.SerializeAsync(documentSyntax, file.GetOutStream());
+			await SMLManager.SerializeAsync(
+				config.GetDocument(),
+				file.GetOutStream());
 		}
 	}
 }

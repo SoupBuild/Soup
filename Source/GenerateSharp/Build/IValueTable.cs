@@ -4,14 +4,14 @@
 
 namespace Soup.Build
 {
-    using System.Collections.Generic;
+	using System.Collections.Generic;
 
-    public interface IValueTable : IReadOnlyDictionary<string, IValue>
-    {
-        new IValue this[string key] { get; set; }
+	public interface IValueTable : IReadOnlyDictionary<string, IValue>
+	{
+		new IValue this[string key] { get; set; }
 
-        void Add(string key, IValue value);
+		void Add(string key, IValue value);
 
-        bool Remove(string key);
-    }
+		bool Remove(string key);
+	}
 }

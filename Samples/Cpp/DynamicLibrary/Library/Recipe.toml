@@ -1,5 +1,0 @@
-Name = "Samples.Cpp.DynamicLibrary.Library"
-Language = "C++"
-Version = "1.0.0"
-Interface = "Module.cpp"
-Type = "DynamicLibrary"

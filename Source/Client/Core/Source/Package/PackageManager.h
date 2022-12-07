@@ -7,7 +7,7 @@
 namespace Soup::Core
 {
 	/// <summary>
-	/// The package manager
+	/// The package manager wrapper that sends requests along to the managed implementation
 	/// </summary>
 	export class PackageManager
 	{
@@ -21,6 +21,19 @@ namespace Soup::Core
 
 			auto arguments = std::stringstream();
 			arguments << "restore-packages " << workingDirectory.ToString();
+
+			RunCommand(arguments.str());
+		}
+
+		/// <summary>
+		/// Initialize a package
+		/// </summary>
+		static void InitializePackage(const Path& workingDirectory)
+		{
+			Log::Info("InitializePackage");
+
+			auto arguments = std::stringstream();
+			arguments << "initialize-package " << workingDirectory.ToString();
 
 			RunCommand(arguments.str());
 		}
@@ -64,24 +77,12 @@ namespace Soup::Core
 			auto process = System::IProcessManager::Current().CreateProcess(
 				executable,
 				arguments,
-				packageManagerFolder);
+				packageManagerFolder,
+				false);
 			process->Start();
 			process->WaitForExit();
 
-			auto stdOut = process->GetStandardOutput();
-			auto stdErr = process->GetStandardError();
 			auto exitCode = process->GetExitCode();
-
-			// TODO: Directly pipe to output and make sure there is no extra newline
-			if (!stdOut.empty())
-			{
-				Log::HighPriority(stdOut);
-			}
-
-			if (!stdErr.empty())
-			{
-				Log::Error(stdErr);
-			}
 
 			if (exitCode != 0)
 				throw HandledException(exitCode);

@@ -2,9 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Runtime;
 using System;
-using Tomlyn.Syntax;
 
 namespace Soup.Build.Utilities
 {
@@ -13,75 +11,109 @@ namespace Soup.Build.Utilities
 	/// </summary>
 	public class PackageLock
 	{
-		private static string Property_Projects => "Projects";
+		public static string Property_Version => "Version";
+		public static string Property_Name => "Name";
+		private static string Property_Closures => "Closures";
+		private static string Property_Build => "Build";
 
-		private ValueTable _table;
-
-		private DocumentSyntax? _mirrorSyntax;
+		private SMLDocument _document;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PackageLock"/> class.
 		/// </summary>
 		public PackageLock()
 		{
-			_table = new ValueTable();
-			_mirrorSyntax = new DocumentSyntax();
-			_table.MirrorSyntax = _mirrorSyntax;
+			_document = new SMLDocument();
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PackageLock"/> class.
 		/// </summary>
-		public PackageLock(ValueTable table)
+		public PackageLock(SMLDocument table)
 		{
-			_table = table;
-			_mirrorSyntax = table.MirrorSyntax as DocumentSyntax;
+			_document = table;
 		}
 
 		/// <summary>
-		/// Gets or sets the table of projects
+		/// Gets or sets the version
 		/// </summary>
-		public bool HasProjects()
+		public bool HasVersion()
 		{
-			return HasValue(_table, Property_Projects);
+			return HasValue(_document, Property_Version);
 		}
 
-		public IValueTable GetProjects()
+		public long GetVersion()
 		{
-			if (!HasProjects())
-				throw new InvalidOperationException("No projects.");
+			if (!HasVersion())
+				throw new InvalidOperationException("No version.");
 
-			var values = GetValue(_table, Property_Projects).AsTable();
+			var value = GetValue(_document, Property_Version).AsInteger();
+			return value.Value;
+		}
+
+		public void SetVersion(long value)
+		{
+			_document.AddItemWithSyntax(Property_Version, value);
+		}
+
+		/// <summary>
+		/// Gets or sets the table of closures
+		/// </summary>
+		public bool HasClosures()
+		{
+			return HasValue(_document, Property_Closures);
+		}
+
+		public SMLTable GetClosures()
+		{
+			if (!HasClosures())
+				throw new InvalidOperationException("No closures.");
+
+			var values = GetValue(_document, Property_Closures).AsTable();
 			return values;
 		}
 
-		public void AddProject(string language, string name, string version)
+		public void EnsureClosure(string closure)
 		{
-			var projects = EnsureHasTable(_table, Property_Projects);
-			var projectLanguageList = EnsureHasList(projects, language);
-			
-			var projectTable = projectLanguageList.AddTableWithSyntax();
-			projectTable.AddItemWithSyntax("Name", name);
-			projectTable.AddItemWithSyntax("Version", version);
+			var closures = EnsureHasTable(_document, Property_Closures);
+			_ = EnsureHasTable(closures, closure, 1);
+		}
+
+		public void AddProject(
+			string closure,
+			string language,
+			string name,
+			string version,
+			string? buildClosure)
+		{
+			var closures = EnsureHasTable(_document, Property_Closures);
+			var closureTable = EnsureHasTable(closures, closure, 1);
+			var projectLanguageList = EnsureHasList(closureTable, language, 2);
+
+			var projectTable = projectLanguageList.AddInlineTableWithSyntax(3);
+			projectTable.AddInlineItemWithSyntax(Property_Name, name);
+			projectTable.AddInlineItemWithSyntax(Property_Version, version);
+			if (buildClosure != null)
+			{
+				projectTable.AddInlineItemWithSyntax(Property_Build, buildClosure);
+			}
 		}
 
 		/// <summary>
 		/// Raw access
 		/// </summary>
-		public ValueTable Table => _table;
+		public SMLDocument Document => _document;
 
-		public DocumentSyntax? MirrorSyntax => _mirrorSyntax;
-
-		private bool HasValue(IValueTable table, string key)
+		private bool HasValue(SMLDocument document, string key)
 		{
-			return table.ContainsKey(key);
+			return document.Values.ContainsKey(key);
 		}
 
-		private IValue GetValue(IValueTable table, string key)
+		private SMLValue GetValue(SMLDocument document, string key)
 		{
-			if (table.TryGetValue(key, out var value))
+			if (document.Values.TryGetValue(key, out var value))
 			{
-				return value;
+				return value.Value;
 			}
 			else
 			{
@@ -89,53 +121,57 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		private IValue EnsureValue(IValueTable table, string key, IValue value)
+		private SMLTable EnsureHasTable(SMLDocument document, string name)
 		{
-			if (table.ContainsKey(key))
+			if (document.Values.ContainsKey(name))
 			{
-				table.Add(key, value);
-			}
-			else
-			{
-				table.Add(key, value);
-			}
-
-			return value;
-		}
-
-		private ValueTable EnsureHasTable(ValueTable table, string name)
-		{
-			if (table.ContainsKey(name))
-			{
-				var value = _table[name];
-				if (value.Type != ValueType.Table)
-					throw new InvalidOperationException("The package lock already has a non-table dependencies property");
+				var value = document.Values[name];
+				if (value.Value.Type != SMLValueType.Table)
+					throw new InvalidOperationException($"The package lock already has a non-table dependencies property: {name}");
 
 				// Find the Syntax for the table
-				return (ValueTable)value.AsTable();
+				return value.Value.AsTable();
 			}
 			else
 			{
 				// Create a new table
-				return table.AddTableWithSyntax(name);
+				return document.AddTableWithSyntax(name);
 			}
 		}
 
-		private ValueList EnsureHasList(ValueTable table, string name)
+		private SMLTable EnsureHasTable(SMLTable table, string name, int indentLevel)
 		{
-			if (table.ContainsKey(name))
+			if (table.Values.ContainsKey(name))
 			{
-				var value = table[name];
-				if (value.Type != ValueType.List)
+				var value = table.Values[name];
+				if (value.Value.Type != SMLValueType.Table)
+					throw new InvalidOperationException($"The package lock already has a non-table dependencies property: {name}");
+
+				// Find the Syntax for the table
+				return value.Value.AsTable();
+			}
+			else
+			{
+				// Create a new table
+				return table.AddTableWithSyntax(name, indentLevel);
+			}
+		}
+
+		private SMLArray EnsureHasList(SMLTable table, string name, int indentLevel)
+		{
+			if (table.Values.ContainsKey(name))
+			{
+				var value = table.Values[name];
+				if (value.Value.Type != SMLValueType.Array)
 					throw new InvalidOperationException($"The package lock already has a non-list {name} property");
 
 				// Find the Syntax for the table
-				return (ValueList)value.AsList();
+				return value.Value.AsArray();
 			}
 			else
 			{
 				// Create a new list
-				return table.AddListWithSyntax(name);
+				return table.AddArrayWithSyntax(name, indentLevel);
 			}
 		}
 	}

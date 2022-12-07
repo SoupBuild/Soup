@@ -35,12 +35,12 @@ namespace Soup::Core
 		/// <summary>
 		/// Gets or sets the output root
 		/// </summary>
-		bool HasOutputRoot()
+		bool HasOutputRoot() const
 		{
 			return HasValue(Property_OutputRoot);
 		}
 
-		Path GetOutputRoot()
+		Path GetOutputRoot() const
 		{
 			if (!HasOutputRoot())
 				throw std::runtime_error("No OutputRoot.");
@@ -74,12 +74,12 @@ namespace Soup::Core
 		}
 
 	private:
-		bool HasValue(std::string_view key)
+		bool HasValue(std::string_view key) const
 		{
 			return _table.contains(key.data());
 		}
 
-		RecipeValue& GetValue(std::string_view key)
+		const RecipeValue& GetValue(std::string_view key) const
 		{
 			auto findItr = _table.find(key.data());
 			if (findItr != _table.end())

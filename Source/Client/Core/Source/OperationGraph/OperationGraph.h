@@ -8,17 +8,20 @@
 namespace Soup::Core
 {
 	/// <summary>
-	/// The cached operation graph that is used to track input/output mappings for previous build
-	/// executions to support incremental builds
+	/// The operation graph that represents the set of operations that need to be evaluated to perform the build
 	/// </summary>
 	export class OperationGraph
 	{
+	private:
+		std::vector<OperationId> _rootOperations;
+		std::unordered_map<OperationId, OperationInfo> _operations;
+		std::unordered_map<CommandInfo, OperationId> _operationLookup;
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
 		OperationGraph() :
-			_referencedFiles(),
 			_rootOperations(),
 			_operations(),
 			_operationLookup()
@@ -29,10 +32,8 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="OperationGraph"/> class.
 		/// </summary>
 		OperationGraph(
-			std::vector<std::pair<FileId, Path>> referencedFiles,
 			std::vector<OperationId> rootOperations,
 			std::vector<OperationInfo> operations) :
-			_referencedFiles(std::move(referencedFiles)),
 			_rootOperations(std::move(rootOperations)),
 			_operations(),
 			_operationLookup()
@@ -42,24 +43,6 @@ namespace Soup::Core
 			{
 				AddOperation(std::move(info));
 			}
-		}
-
-		/// <summary>
-		/// Get the set of referenced file ids that map to their paths
-		/// </summary>
-		std::vector<std::pair<FileId, Path>>& GetReferencedFiles()
-		{
-			return _referencedFiles;
-		}
-
-		const std::vector<std::pair<FileId, Path>>& GetReferencedFiles() const
-		{
-			return _referencedFiles;
-		}
-		
-		void SetReferencedFiles(std::vector<std::pair<FileId, Path>> files)
-		{
-			_referencedFiles = std::move(files);
 		}
 
 		/// <summary>
@@ -97,30 +80,14 @@ namespace Soup::Core
 		/// <summary>
 		/// Find an operation info
 		/// </summary>
-		bool HasCommand(const CommandInfo& command)
-		{
-			auto findResult = _operationLookup.find(command);
-			if (findResult != _operationLookup.end())
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		/// <summary>
-		/// Find an operation info
-		/// </summary>
-		bool TryFindOperationInfo(
+		bool TryFindOperation(
 			const CommandInfo& command,
-			OperationInfo*& operation)
+			OperationId& operationId)
 		{
 			auto findResult = _operationLookup.find(command);
 			if (findResult != _operationLookup.end())
 			{
-				operation = &GetOperationInfo(findResult->second);
+				operationId = findResult->second;
 				return true;
 			}
 			else
@@ -132,7 +99,7 @@ namespace Soup::Core
 		/// <summary>
 		/// Get an operation info
 		/// </summary>
-		OperationInfo& GetOperationInfo(OperationId operationId)
+		const OperationInfo& GetOperationInfo(OperationId operationId) const
 		{
 			auto findResult = _operations.find(operationId);
 			if (findResult != _operations.end())
@@ -161,10 +128,21 @@ namespace Soup::Core
 			return insertResult.first->second;
 		}
 
-	private:
-		std::vector<std::pair<FileId, Path>> _referencedFiles;
-		std::vector<OperationId> _rootOperations;
-		std::unordered_map<OperationId, OperationInfo> _operations;
-		std::unordered_map<CommandInfo, OperationId> _operationLookup;
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		bool operator ==(const OperationGraph& rhs) const
+		{
+			return _rootOperations == rhs._rootOperations &&
+				_operations == rhs._operations;
+		}
+
+		/// <summary>
+		/// Inequality operator
+		/// </summary>
+		bool operator !=(const OperationGraph& rhs) const
+		{
+			return !(*this == rhs);
+		}
 	};
 }

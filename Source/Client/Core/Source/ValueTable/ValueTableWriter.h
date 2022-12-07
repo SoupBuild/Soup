@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "ValueTable.h"
+#include "Value.h"
 
 namespace Soup::Core
 {
@@ -44,16 +44,16 @@ namespace Soup::Core
 					WriteValue(stream, value.AsList());
 					break;
 				case ValueType::String:
-					WriteValue(stream, std::string_view(value.AsString().ToString()));
+					WriteValue(stream, std::string_view(value.AsString()));
 					break;
 				case ValueType::Integer:
-					WriteValue(stream, value.AsInteger().GetValue());
+					WriteValue(stream, value.AsInteger());
 					break;
 				case ValueType::Float:
-					WriteValue(stream, value.AsFloat().GetValue());
+					WriteValue(stream, value.AsFloat());
 					break;
 				case ValueType::Boolean:
-					WriteValue(stream, value.AsBoolean().GetValue());
+					WriteValue(stream, value.AsBoolean());
 					break;
 				default:
 					throw std::runtime_error("Unknown ValueType");
@@ -63,10 +63,9 @@ namespace Soup::Core
 		static void WriteValue(std::ostream& stream, const ValueTable& value)
 		{
 			// Write the count of values
-			auto& tableValues = value.GetValues();
-			WriteValue(stream, static_cast<uint32_t>(tableValues.size()));
+			WriteValue(stream, static_cast<uint32_t>(value.size()));
 
-			for (auto& tableValue : tableValues)
+			for (auto& tableValue : value)
 			{
 				// Write the key
 				WriteValue(stream, std::string_view(tableValue.first));
@@ -79,10 +78,9 @@ namespace Soup::Core
 		static void WriteValue(std::ostream& stream, const ValueList& value)
 		{
 			// Write the count of values
-			auto& listValues = value.GetValues();
-			WriteValue(stream, static_cast<uint32_t>(listValues.size()));
+			WriteValue(stream, static_cast<uint32_t>(value.size()));
 
-			for (auto& listValue : listValues)
+			for (auto& listValue : value)
 			{
 				WriteValue(stream, listValue);
 			}

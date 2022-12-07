@@ -18,8 +18,6 @@ TestState RunRecipeTests()
 	state += Soup::Test::RunTest(className, "OperatorNotEqualNoRuntimeDependencies", [&testClass]() { testClass->OperatorNotEqualNoRuntimeDependencies(); });
 	state += Soup::Test::RunTest(className, "OperatorNotEqualBuildDependencies", [&testClass]() { testClass->OperatorNotEqualBuildDependencies(); });
 	state += Soup::Test::RunTest(className, "OperatorNotEqualNoBuildDependencies", [&testClass]() { testClass->OperatorNotEqualNoBuildDependencies(); });
-	state += Soup::Test::RunTest(className, "OperatorNotEqualTestDependencies", [&testClass]() { testClass->OperatorNotEqualTestDependencies(); });
-	state += Soup::Test::RunTest(className, "OperatorNotEqualNoTestDependencies", [&testClass]() { testClass->OperatorNotEqualNoTestDependencies(); });
 
 	return state;
 }

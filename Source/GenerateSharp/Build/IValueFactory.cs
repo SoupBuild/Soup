@@ -4,24 +4,24 @@
 
 namespace Soup.Build
 {
-    using System;
+	using System;
 
-    public interface IValueFactory
-    {
-        IValue Create(bool value);
+	public interface IValueFactory
+	{
+		IValue Create(bool value);
 
-        IValue Create(long value);
+		IValue Create(long value);
 
-        IValue Create(double value);
+		IValue Create(double value);
 
-        IValue Create(string value);
+		IValue Create(string value);
 
-        IValue Create(IValueTable value);
+		IValue Create(IValueTable value);
 
-        IValue Create(IValueList value);
+		IValue Create(IValueList value);
 
-        IValueTable CreateTable();
+		IValueTable CreateTable();
 
-        IValueList CreateList();
-    }
+		IValueList CreateList();
+	}
 }

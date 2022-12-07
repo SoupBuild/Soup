@@ -2,11 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Opal;
-using Soup.Build.Runtime;
-using System;
 using System.Collections.Generic;
-using Tomlyn.Syntax;
 using Xunit;
 
 namespace Soup.Build.Utilities.UnitTests
@@ -20,34 +16,32 @@ namespace Soup.Build.Utilities.UnitTests
 			Assert.False(uut.HasVersion);
 			Assert.False(uut.HasBuildDependencies);
 			Assert.False(uut.HasRuntimeDependencies);
-			Assert.False(uut.HasTestDependencies);
 		}
-
-		[Fact]
-		public void AddRuntimeDependency_NoMirrorSyntax_Throws()
-		{
-			var uut = new Recipe();
-
-			Assert.Throws<InvalidOperationException>(() =>
-			{
-				uut.AddRuntimeDependency("SomeDependency");
-			});
-
-			Assert.False(uut.HasRuntimeDependencies);
-		}
-
 
 		[Fact]
 		public void AddRuntimeDependency_Success()
 		{
 			var uut = new Recipe(
-				new ValueTable(
-					new Dictionary<string, IValue>()
+				new SMLDocument(
+					new Dictionary<string, SMLTableValue>()
 					{
-						{ "Name", new Value("TestProject") },
-						{ "Language",  new Value("C#") },
-					},
-					new DocumentSyntax()));
+						{
+							"Name",
+							new SMLTableValue(
+								new SMLToken("Name"),
+								"Name",
+								new SMLToken(":"),
+								new SMLValue(new SMLStringValue("TestProject")))
+						},
+						{
+							"Language",
+							new SMLTableValue(
+								new SMLToken("Language"),
+								"Language",
+								new SMLToken(":"),
+								new SMLValue(new SMLStringValue("C#")))
+						},
+					}));
 
 			uut.AddRuntimeDependency("SomeDependency");
 
@@ -55,7 +49,7 @@ namespace Soup.Build.Utilities.UnitTests
 			Assert.Equal(
 				new List<PackageReference>()
 				{
-					new PackageReference(new Path("SomeDependency")),
+					new PackageReference(null, "SomeDependency", null),
 				},
 				uut.RuntimeDependencies);
 		}

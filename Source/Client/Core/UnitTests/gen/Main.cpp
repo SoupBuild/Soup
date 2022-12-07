@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <set>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -13,7 +14,6 @@
 
 import Opal;
 import Soup.Core;
-import json11;
 import Monitor.Host;
 import Soup.Test.Assert;
 
@@ -23,11 +23,14 @@ using namespace Soup::Test;
 
 #include "Utils/TestHelpers.h"
 
+#include "Build/BuildEngineTests.gen.h"
 #include "Build/BuildEvaluateEngineTests.gen.h"
 #include "Build/BuildHistoryCheckerTests.gen.h"
+#include "Build/BuildLoadEngineTests.gen.h"
+#include "Build/BuildRunnerTests.gen.h"
 #include "Build/FileSystemStateTests.gen.h"
-#include "Build/ProjectManagerTests.gen.h"
-#include "Build/RecipeBuilderTests.gen.h"
+#include "Build/PackageProviderTests.gen.h"
+#include "Build/RecipeBuildLocationManagerTests.gen.h"
 
 #include "LocalUserConfig/LocalUserConfigExtensionsTests.gen.h"
 #include "LocalUserConfig/LocalUserConfigTests.gen.h"
@@ -36,13 +39,17 @@ using namespace Soup::Test;
 #include "OperationGraph/OperationGraphManagerTests.gen.h"
 #include "OperationGraph/OperationGraphReaderTests.gen.h"
 #include "OperationGraph/OperationGraphWriterTests.gen.h"
+#include "OperationGraph/OperationResultsTests.gen.h"
+#include "OperationGraph/OperationResultsManagerTests.gen.h"
+#include "OperationGraph/OperationResultsReaderTests.gen.h"
+#include "OperationGraph/OperationResultsWriterTests.gen.h"
 
 #include "Package/PackageManagerTests.gen.h"
 
 #include "Recipe/PackageReferenceTests.gen.h"
 #include "Recipe/RecipeExtensionsTests.gen.h"
 #include "Recipe/RecipeTests.gen.h"
-#include "Recipe/RecipeTomlTests.gen.h"
+#include "Recipe/RecipeSMLTests.gen.h"
 
 #include "ValueTable/ValueTableManagerTests.gen.h"
 #include "ValueTable/ValueTableReaderTests.gen.h"
@@ -54,11 +61,14 @@ int main()
 
 	TestState state = { 0, 0 };
 
+	state += RunBuildEngineTests();
 	state += RunBuildEvaluateEngineTests();
 	state += RunBuildHistoryCheckerTests();
+	state += RunBuildLoadEngineTests();
+	state += RunBuildRunnerTests();
 	state += RunFileSystemStateTests();
-	state += RunProjectManagerTests();
-	state += RunRecipeBuilderTests();
+	state += RunPackageProviderTests();
+	state += RunRecipeBuildLocationManagerTests();
 
 	state += RunLocalUserConfigExtensionsTests();
 	state += RunLocalUserConfigTests();
@@ -67,13 +77,17 @@ int main()
 	state += RunOperationGraphManagerTests();
 	state += RunOperationGraphReaderTests();
 	state += RunOperationGraphWriterTests();
+	state += RunOperationResultsTests();
+	state += RunOperationResultsManagerTests();
+	state += RunOperationResultsReaderTests();
+	state += RunOperationResultsWriterTests();
 
 	state += RunPackageManagerTests();
 
 	state += RunPackageReferenceTests();
 	state += RunRecipeExtensionsTests();
 	state += RunRecipeTests();
-	state += RunRecipeTomlTests();
+	state += RunRecipeSMLTests();
 
 	state += RunValueTableManagerTests();
 	state += RunValueTableReaderTests();

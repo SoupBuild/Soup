@@ -3,21 +3,22 @@ A console application that reads in a json file using the an external module and
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/ParseJsonFile)
 
-## Recipe.toml
+## Recipe.sml
 The Recipe file that sets the standard name, type, version, as well as the single external dependency of the [json11](https://github.com/dropbox/json11) project.
 ```
-Name = "Samples.Cpp.ParseJsonFile"
-Language = "C++"
-Version = "1.0.0"
-Type = "Executable"
-Source = [
-    "Main.cpp",
+Name: "Samples.Cpp.ParseJsonFile"
+Language: "C++|0.1"
+Version: "1.0.0"
+Type: "Executable"
+Source: [
+    "Main.cpp"
 ]
 
-[Dependencies]
-Runtime = [
-    "json11@1.0.1",
-]
+Dependencies: {
+    Runtime: [
+        "json11@1.0.2"
+    ]
+}
 ```
 
 ## Message.json

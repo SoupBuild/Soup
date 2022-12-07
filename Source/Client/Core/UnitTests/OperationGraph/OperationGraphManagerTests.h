@@ -20,7 +20,7 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
-			auto filePath = Path("TestFiles/NoFile/.soup/OperationGraph.bin");
+			auto filePath = Path("TestFiles/NoFile/.soup/OperationGraph.bog");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationGraph();
 			auto result = OperationGraphManager::TryLoadState(filePath, actual, *fileSystemState);
@@ -30,7 +30,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/NoFile/.soup/OperationGraph.bin",
+					"Exists: ./TestFiles/NoFile/.soup/OperationGraph.bog",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -55,10 +55,10 @@ namespace Soup::Core::UnitTests
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 			fileSystem->CreateMockFile(
-				Path("TestFiles/GarbageOperationGraph/.soup/OperationGraph.bin"),
+				Path("TestFiles/GarbageOperationGraph/.soup/OperationGraph.bog"),
 				std::make_shared<MockFile>(std::stringstream("garbage")));
 
-			auto filePath = Path("TestFiles/GarbageOperationGraph/.soup/OperationGraph.bin");
+			auto filePath = Path("TestFiles/GarbageOperationGraph/.soup/OperationGraph.bog");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationGraph();
 			auto result = OperationGraphManager::TryLoadState(filePath, actual, *fileSystemState);
@@ -68,8 +68,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/GarbageOperationGraph/.soup/OperationGraph.bin",
-					"OpenReadBinary: ./TestFiles/GarbageOperationGraph/.soup/OperationGraph.bin",
+					"Exists: ./TestFiles/GarbageOperationGraph/.soup/OperationGraph.bog",
+					"OpenReadBinary: ./TestFiles/GarbageOperationGraph/.soup/OperationGraph.bog",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -96,7 +96,7 @@ namespace Soup::Core::UnitTests
 
 			auto binaryFileContent = std::vector<uint8_t>(
 			{
-				'B', 'O', 'G', '\0', 0x04, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x05, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -118,10 +118,10 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 			});
 			fileSystem->CreateMockFile(
-				Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin"),
+				Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bog"),
 				std::make_shared<MockFile>(std::stringstream(std::string((char*)binaryFileContent.data(), binaryFileContent.size()))));
 
-			auto filePath = Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin");
+			auto filePath = Path("TestFiles/SimpleOperationGraph/.soup/OperationGraph.bog");
 			auto fileSystemState = std::make_shared<FileSystemState>();
 			auto actual = OperationGraph();
 			auto result = OperationGraphManager::TryLoadState(filePath, actual, *fileSystemState);
@@ -151,11 +151,7 @@ namespace Soup::Core::UnitTests
 							{ },
 							{ },
 							{ },
-							1,
-							false,
-							std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::time_point<std::chrono::system_clock>::min()),
-							{ },
-							{ }),
+							1),
 					}
 				}),
 				actual.GetOperations(),
@@ -164,8 +160,8 @@ namespace Soup::Core::UnitTests
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin",
-					"OpenReadBinary: ./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bin",
+					"Exists: ./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bog",
+					"OpenReadBinary: ./TestFiles/SimpleOperationGraph/.soup/OperationGraph.bog",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -180,18 +176,13 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void SaveState()
 		{
-			// Register the test listener
-			auto testListener = std::make_shared<TestTraceListener>();
-			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
-
 			// Register the test file system
 			auto fileSystem = std::make_shared<MockFileSystem>();
 			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
 
 			auto fileSystemState = std::make_shared<FileSystemState>();
-			auto filePath = Path("TestFiles/.soup/OperationGraph.bin");
+			auto filePath = Path("TestFiles/.soup/OperationGraph.bog");
 			auto operationGraph = OperationGraph(
-				{},
 				std::vector<OperationId>({
 					5,
 				}),
@@ -208,36 +199,22 @@ namespace Soup::Core::UnitTests
 						{ },
 						{ },
 						{ },
-						1,
-						false,
-						std::chrono::time_point<std::chrono::system_clock>::min(),
-						{ },
-						{ }),
+						1),
 				}));
 			OperationGraphManager::SaveState(filePath, operationGraph, *fileSystemState);
 
 			// Verify expected file system requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"Exists: ./TestFiles/.soup/",
-					"CreateDirectory: ./TestFiles/.soup/",
-					"OpenWriteBinary: ./TestFiles/.soup/OperationGraph.bin",
+					"OpenWriteBinary: ./TestFiles/.soup/OperationGraph.bog",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
 
-			// Verify expected logs
-			Assert::AreEqual(
-				std::vector<std::string>({
-					"INFO: Create Directory: ./TestFiles/.soup/",
-				}),
-				testListener->GetMessages(),
-				"Verify messages match expected.");
-
 			// Verify the file content
 			auto binaryFileContent = std::vector<uint8_t>(
 			{
-				'B', 'O', 'G', '\0', 0x04, 0x00, 0x00, 0x00,
+				'B', 'O', 'G', '\0', 0x05, 0x00, 0x00, 0x00,
 				'F', 'I', 'S', '\0', 0x00, 0x00, 0x00, 0x00,
 				'R', 'O', 'P', '\0', 0x01, 0x00, 0x00, 0x00,
 				0x05, 0x00, 0x00, 0x00,
@@ -253,12 +230,8 @@ namespace Soup::Core::UnitTests
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x01, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00,
-				0x9b, 0x4f, 0xc9, 0xb4, 0xa6, 0xf1, 0xfc, 0xff,
-				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00,
 			});
-			auto mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/OperationGraph.bin"));
+			auto mockFile = fileSystem->GetMockFile(Path("./TestFiles/.soup/OperationGraph.bog"));
 			Assert::AreEqual(
 				std::string((char*)binaryFileContent.data(), binaryFileContent.size()),
 				mockFile->Content.str(),

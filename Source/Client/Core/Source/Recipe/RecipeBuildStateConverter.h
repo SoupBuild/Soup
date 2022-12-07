@@ -21,7 +21,7 @@ namespace Soup::Core
 			for (auto& value : table)
 			{
 				auto buildValue = ConvertToBuildState(value.second);
-				result.SetValue(value.first, std::move(buildValue));
+				result.emplace(value.first, std::move(buildValue));
 			}
 
 			return result;
@@ -37,7 +37,7 @@ namespace Soup::Core
 			for (auto& value : list)
 			{
 				auto buildValue = ConvertToBuildState(value);
-				result.GetValues().push_back(std::move(buildValue));
+				result.push_back(std::move(buildValue));
 			}
 
 			return result;
@@ -50,8 +50,6 @@ namespace Soup::Core
 		{
 			switch (value.GetType())
 			{
-				case RecipeValueType::Empty:
-					return Value();
 				case RecipeValueType::Table:
 					return Value(ConvertToBuildState(value.AsTable()));
 				case RecipeValueType::List:

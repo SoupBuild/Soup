@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "ValueTable/ValueTable.h"
+#include "ValueTable/Value.h"
 
 namespace Soup::Core
 {
@@ -16,6 +16,11 @@ namespace Soup::Core
 		/// Gets or sets set of global arguments
 		/// </summary>
 		ValueTable GlobalParameters;
+
+		/// <summary>
+		/// Gets or sets the working directory
+		/// </summary>
+		Path WorkingDirectory;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip running the build generate phase
@@ -38,6 +43,7 @@ namespace Soup::Core
 		bool operator ==(const RecipeBuildArguments& rhs) const
 		{
 			return GlobalParameters == rhs.GlobalParameters &&
+				WorkingDirectory == rhs.WorkingDirectory &&
 				SkipGenerate == rhs.SkipGenerate &&
 				SkipEvaluate == rhs.SkipEvaluate &&
 				ForceRebuild == rhs.ForceRebuild;

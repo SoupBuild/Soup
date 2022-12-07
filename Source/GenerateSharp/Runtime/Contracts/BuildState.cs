@@ -14,6 +14,7 @@ namespace Soup.Build.Runtime
 	/// </summary>
 	public class BuildState : IBuildState
 	{
+		private OperationGraph graph;
 		private OperationGraphGenerator graphGenerator;
 
 		/// <summary>
@@ -28,10 +29,12 @@ namespace Soup.Build.Runtime
 			this.ActiveStateImpl = activeState;
 			this.SharedStateImpl = new ValueTable();
 
+			this.graph = new OperationGraph();
 			this.graphGenerator = new OperationGraphGenerator(
 				fileSystemState,
 				readAccessList,
-				writeAccessList);
+				writeAccessList,
+				graph);
 		}
 
 		/// <summary>
@@ -98,7 +101,8 @@ namespace Soup.Build.Runtime
 
 		public OperationGraph BuildOperationGraph()
 		{
-			return this.graphGenerator.BuildGraph();
+			this.graphGenerator.FinalizeGraph();
+			return this.graph;
 		}
 	}
 }

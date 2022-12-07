@@ -9,9 +9,12 @@ namespace Soup::Core
 {
 	export class BuildHistoryChecker
 	{
+	private:
+		FileSystemState& _fileSystemState;
+
 	public:
-		BuildHistoryChecker(std::shared_ptr<FileSystemState> fileSystemState) :
-			_fileSystemState(std::move(fileSystemState))
+		BuildHistoryChecker(FileSystemState& fileSystemState) :
+			_fileSystemState(fileSystemState)
 		{
 		}
 
@@ -20,16 +23,16 @@ namespace Soup::Core
 		/// respect to the input files
 		/// </summary>
 		bool IsOutdated(
-			std::chrono::time_point<std::chrono::system_clock> lastEvaluateTime,
+			std::chrono::time_point<std::chrono::file_clock> lastEvaluateTime,
 			FileId inputFile)
 		{
-			auto lastWriteTime = _fileSystemState->GetLastWriteTime(inputFile);
+			auto lastWriteTime = _fileSystemState.GetLastWriteTime(inputFile);
 
 			// Perform the final check
 			if (!lastWriteTime.has_value())
 			{
 				// The input was missing
-				auto targetFilePath = _fileSystemState->GetFilePath(inputFile);
+				auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
 				Log::Info("Input Missing [" + targetFilePath.ToString() + "]");
 				return true;
 			}
@@ -37,7 +40,7 @@ namespace Soup::Core
 			{
 				if (lastWriteTime.value() > lastEvaluateTime)
 				{
-					auto targetFilePath = _fileSystemState->GetFilePath(inputFile);
+					auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
 					Log::Info("Input altered after last evaluate [" + targetFilePath.ToString() + "]");
 					return true;
 				}
@@ -81,11 +84,11 @@ namespace Soup::Core
 			const std::vector<FileId>& inputFiles)
 		{
 			// Get the output file last write time
-			auto targetFileLastWriteTime = _fileSystemState->GetLastWriteTime(targetFile);
+			auto targetFileLastWriteTime = _fileSystemState.GetLastWriteTime(targetFile);
 
 			if (!targetFileLastWriteTime.has_value())
 			{
-				auto targetFilePath = _fileSystemState->GetFilePath(targetFile);
+				auto targetFilePath = _fileSystemState.GetFilePath(targetFile);
 				Log::Info("Output target does not exist: " + targetFilePath.ToString());
 				return true;
 			}
@@ -106,16 +109,16 @@ namespace Soup::Core
 		bool IsOutdated(
 			FileId inputFile,
 			FileId outputFile,
-			std::chrono::time_point<std::chrono::system_clock> outputFileLastWriteTime)
+			std::chrono::time_point<std::chrono::file_clock> outputFileLastWriteTime)
 		{
 			// Get the file state from the cache
-			auto lastWriteTime = _fileSystemState->GetLastWriteTime(inputFile);
+			auto lastWriteTime = _fileSystemState.GetLastWriteTime(inputFile);
 
 			// Perform the final check
 			if (!lastWriteTime.has_value())
 			{
 				// The input was missing
-				auto targetFilePath = _fileSystemState->GetFilePath(inputFile);
+				auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
 				Log::Info("Input Missing [" + targetFilePath.ToString() + "]");
 				return true;
 			}
@@ -123,8 +126,8 @@ namespace Soup::Core
 			{
 				if (lastWriteTime.value() > outputFileLastWriteTime)
 				{
-					auto targetFilePath = _fileSystemState->GetFilePath(inputFile);
-					auto outputFilePath = _fileSystemState->GetFilePath(outputFile);
+					auto targetFilePath = _fileSystemState.GetFilePath(inputFile);
+					auto outputFilePath = _fileSystemState.GetFilePath(outputFile);
 					Log::Info("Input altered after target [" + targetFilePath.ToString() + "] -> [" + outputFilePath.ToString() + "]");
 					return true;
 				}
@@ -134,8 +137,5 @@ namespace Soup::Core
 				}
 			}
 		}
-
-	private:
-		std::shared_ptr<FileSystemState> _fileSystemState;
 	};
 }

@@ -13,8 +13,8 @@ namespace Opal.UnitTests
 		{
 			var uut = new SemanticVersion();
 			Assert.Equal(0, uut.Major);
-			Assert.Equal(0, uut.Minor);
-			Assert.Equal(0, uut.Patch);
+			Assert.Null(uut.Minor);
+			Assert.Null(uut.Patch);
 		}
 
 		[Theory]
@@ -93,10 +93,10 @@ namespace Opal.UnitTests
 		[Theory]
 		[InlineData("1.2.3", true, 1, 2, 3)] // Success
 		[InlineData("0.0.0", true, 0, 0, 0)] // All zeros success
-		[InlineData("", false, 0, 0, 0)] // Empty fails
-		[InlineData("1", false, 0, 0, 0)] // Major only fails
-		[InlineData("1.2", false, 0, 0, 0)] // Major/Minor only fails
-		public void TryParseValues(string value, bool expectedResult, int major, int minor, int patch)
+		[InlineData("", false, 0, null, null)] // Empty fails
+		[InlineData("1", true, 1, null, null)] // Major only success
+		[InlineData("1.2", true, 1, 2, null)] // Major/Minor only success
+		public void TryParseValues(string value, bool expectedResult, int major, int? minor, int? patch)
 		{
 			var result = SemanticVersion.TryParse(value, out var uut);
 			Assert.Equal(

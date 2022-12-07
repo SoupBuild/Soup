@@ -2,20 +2,20 @@
 #include <vector>
 
 import Opal;
-import Soup.Build.Runtime;
+import Soup.Core;
 
 void PrintUsage()
 {
 	std::cout << "printvaluetable [path]" << std::endl;
 }
 
-void PrintValue(Soup::Build::Runtime::Value& value, const std::string& indent);
+void PrintValue(Soup::Core::Value& value, const std::string& indent);
 
-void PrintValueTable(Soup::Build::Runtime::ValueTable& values, const std::string& indent)
+void PrintValueTable(Soup::Core::ValueTable& values, const std::string& indent)
 {
 	std::cout << "{" << std::endl;
 	auto nextIndent = indent + "  ";
-	for (auto tableValue : values.GetValues())
+	for (auto tableValue : values)
 	{
 		// Write the key
 		std::cout << nextIndent << tableValue.first << ": ";
@@ -29,11 +29,11 @@ void PrintValueTable(Soup::Build::Runtime::ValueTable& values, const std::string
 	std::cout << indent << "}";
 }
 
-void PrintValueList(const Soup::Build::Runtime::ValueList& values, const std::string& indent)
+void PrintValueList(const Soup::Core::ValueList& values, const std::string& indent)
 {
 	std::cout << "[" << std::endl;
 	auto nextIndent = indent + "  ";
-	for (auto value : values.GetValues())
+	for (auto value : values)
 	{
 		std::cout << nextIndent;
 		PrintValue(value, nextIndent);
@@ -44,28 +44,28 @@ void PrintValueList(const Soup::Build::Runtime::ValueList& values, const std::st
 	std::cout << indent << "]";
 }
 
-void PrintValue(Soup::Build::Runtime::Value& value, const std::string& indent)
+void PrintValue(Soup::Core::Value& value, const std::string& indent)
 {
 	auto valueType = value.GetType();
 	switch (valueType)
 	{
-	case Soup::Build::ValueType::Table:
+	case Soup::Core::ValueType::Table:
 		PrintValueTable(value.AsTable(), indent);
 		break;
-	case Soup::Build::ValueType::List:
+	case Soup::Core::ValueType::List:
 		PrintValueList(value.AsList(), indent);
 		break;
-	case Soup::Build::ValueType::String:
-		std::cout << "\"" << value.AsString().ToString() << "\"";
+	case Soup::Core::ValueType::String:
+		std::cout << "\"" << value.AsString() << "\"";
 		break;
-	case Soup::Build::ValueType::Integer:
-		std::cout << value.AsInteger().GetValue();
+	case Soup::Core::ValueType::Integer:
+		std::cout << value.AsInteger();
 		break;
-	case Soup::Build::ValueType::Float:
-		std::cout << value.AsFloat().GetValue();
+	case Soup::Core::ValueType::Float:
+		std::cout << value.AsFloat();
 		break;
-	case Soup::Build::ValueType::Boolean:
-		std::cout << value.AsBoolean().GetValue();
+	case Soup::Core::ValueType::Boolean:
+		std::cout << value.AsBoolean();
 		break;
 	default:
 		throw std::runtime_error("Unknown ValueType");
@@ -83,7 +83,7 @@ void LoadAndPrint(const Opal::Path& valueTableFile)
 	auto file = Opal::System::IFileSystem::Current().OpenRead(valueTableFile, true);
 
 	// Read the contents of the build state file
-	auto valueTable = Soup::Build::Runtime::ValueTableReader::Deserialize(file->GetInStream());
+	auto valueTable = Soup::Core::ValueTableReader::Deserialize(file->GetInStream());
 
 	PrintValueTable(valueTable, "");
 	std::cout << std::endl;

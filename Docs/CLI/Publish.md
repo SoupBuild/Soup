@@ -12,3 +12,8 @@ Publish the latest version of the package in the current folder.
 ```
 soup publish
 ```
+
+Publish the latest version in the MyProject Recipe file.
+```
+soup publish ./Code/MyProject/
+```

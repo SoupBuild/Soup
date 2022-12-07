@@ -14,12 +14,12 @@ namespace Soup.Build.Utilities
 		/// <summary>
 		/// Gets the Recipe file name
 		/// </summary>
-		public static Path RecipeFileName => new Path("Recipe.toml");
+		public static Path RecipeFileName => new Path("Recipe.sml");
 
 		/// <summary>
 		/// Gets the Package Lock file name
 		/// </summary>
-		public static Path PackageLockFileName => new Path("PackageLock.toml");
+		public static Path PackageLockFileName => new Path("PackageLock.sml");
 
 		/// <summary>
 		/// Gets the Generate Parameters Value Table file name
@@ -42,9 +42,14 @@ namespace Soup.Build.Utilities
 		public static Path GenerateSharedStateFileName => new Path("GenerateSharedState.bvt");
 
 		/// <summary>
-		/// Gets the Generate Parameters Value Table file name
+		/// Gets the Evaluate Graph file name
 		/// </summary>
-		public static Path GenerateEvaluateOperationGraphFileName => new Path("GenerateEvaluateGraph.bog");
+		public static Path EvaluateGraphFileName => new Path("Evaluate.bog");
+
+		/// <summary>
+		/// Gets the Evaluate Results file name
+		/// </summary>
+		public static Path EvaluateResultsFileName => new Path("Evaluate.bor");
 
 		/// <summary>
 		/// Gets the Generate task info Value Table file name

@@ -1,24 +1,25 @@
 # C# Build Extension
 This is a console application that has a custom build extension that alters the build state. The custom build Tasks will run before and after the core Build Task and will simply print a nice hello message.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/CSharp/SimpleBuildExtension)
+[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/CSharp/BuildExtension)
 
-## Extension/Recipe.toml
-The Recipe file that defines the build extension dynamic library "Samples.SimpleBuildExtension.Extension" that will register new build tasks.
+## Extension/Recipe.sml
+The Recipe file that defines the build extension dynamic library "Samples.BuildExtension.Extension" that will register new build tasks.
 ```
-Name = "Samples.CSharp.BuildExtension.Extension"
-Language = "C#"
-Version = "1.0.0"
-Source = [
+Name: "Samples.CSharp.BuildExtension.Extension"
+Language: "C#|0.1"
+Version: "1.0.0"
+Source: [
     "CustomBuildTask.cs"
 ]
 
-[Dependencies]
-Runtime = [
-    { Reference = "Soup.Build@0.1.3", ExcludeRuntime = true },
-    { Reference = "Soup.Build.Extensions@0.1.8" },
-    { Reference = "Opal@1.0.1" },
-]
+Dependencies: {
+    Runtime: [
+        { Reference = "Soup.Build@0.2.0", ExcludeRuntime = true }
+        { Reference = "Soup.Build.Extensions@0.4.0" }
+        { Reference = "Opal@1.1.0" }
+    ]
+}
 ```
 
 ## Extension/CustomBuildTask.cs
@@ -78,21 +79,22 @@ namespace Samples.CSharp.BuildExtension.Extension
 }
 ```
 
-## Executable/Recipe.toml
-The Recipe file that defines the executable "SimpleBuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
+## Executable/Recipe.sml
+The Recipe file that defines the executable "BuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```
-Name = "Samples.CSharp.BuildExtension.Executable"
-Language = "C#"
-Type = "Executable"
-Version = "1.0.1"
-Source = [
+Name: "Samples.CSharp.BuildExtension.Executable"
+Language: "C#|0.1"
+Type: "Executable"
+Version: "1.0.0"
+Source: [
     "Program.cs"
 ]
 
-[Dependencies]
-Build = [
-    "../Extension/"
-]
+Dependencies: {
+    Build: [
+        "../Extension/"
+    ]
+}
 ```
 
 ## Executable/Program.cs

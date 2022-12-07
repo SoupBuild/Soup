@@ -7,16 +7,16 @@ using System.Runtime.CompilerServices;
 
 namespace SoupView.ViewModel
 {
-    internal class Observable : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
+	internal class Observable : INotifyPropertyChanged
+	{
+		public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
+		protected void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
+		{
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
 }

@@ -28,12 +28,13 @@ namespace Soup::Client
 		virtual void Run() override final
 		{
 			Log::Diag("BuildCommand::Run");
+			auto startTime = std::chrono::high_resolution_clock::now();
 
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
 			{
 				// Build in the current directory
-				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
+				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory();
 			}
 			else
 			{
@@ -42,12 +43,13 @@ namespace Soup::Client
 				// Check if this is relative to current directory
 				if (!workingDirectory.HasRoot())
 				{
-					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2() + workingDirectory;
+					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory() + workingDirectory;
 				}
 			}
 
 			// Setup the build arguments
 			auto arguments = Core::RecipeBuildArguments();
+			arguments.WorkingDirectory = std::move(workingDirectory);
 			arguments.ForceRebuild = _options.Force;
 			arguments.SkipGenerate = _options.SkipGenerate;
 			arguments.SkipEvaluate = _options.SkipEvaluate;
@@ -66,32 +68,37 @@ namespace Soup::Client
 
 			auto compiler = std::string("MSVC");
 
-			arguments.GlobalParameters.SetValue("Architecture", Core::Value(std::string(architecture)));
-			arguments.GlobalParameters.SetValue("Compiler", Core::Value(std::string(compiler)));
-			arguments.GlobalParameters.SetValue("Flavor", Core::Value(std::string(flavor)));
-			arguments.GlobalParameters.SetValue("System", Core::Value(std::string(system)));
-
-			auto localUserConfigPath = System::IFileSystem::Current().GetUserProfileDirectory() +
-				Path(".soup/LocalUserConfig.toml");
-			Core::LocalUserConfig localUserConfig = {};
-			if (!Core::LocalUserConfigExtensions::TryLoadLocalUserConfigFromFile(localUserConfigPath, localUserConfig))
-			{
-				Log::Warning("Local User Config invalid.");
-			}
+			arguments.GlobalParameters.emplace("Architecture", Core::Value(std::string(architecture)));
+			arguments.GlobalParameters.emplace("Compiler", Core::Value(std::string(compiler)));
+			arguments.GlobalParameters.emplace("Flavor", Core::Value(std::string(flavor)));
+			arguments.GlobalParameters.emplace("System", Core::Value(std::string(system)));
 
 			// Now build the current project
 			Log::Info("Begin Build:");
-			auto startTime = std::chrono::high_resolution_clock::now();
 
-			auto buildRunner = Core::RecipeBuildRunner(
-				std::move(arguments),
-				std::move(localUserConfig));
-			buildRunner.Execute(workingDirectory);
+			Core::BuildEngine::Execute(std::move(arguments));
 
 			auto endTime = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime -startTime);
 
-			Log::HighPriority(std::to_string(duration.count()) + " seconds.");
+			std::ostringstream durationMessage;
+			if (duration.count() >= 60)
+			{
+				durationMessage << std::fixed << std::setprecision(2);
+				durationMessage << duration.count() / 60  << " minutes";
+			}
+			else if (duration.count() >= 10)
+			{
+				durationMessage << std::fixed << std::setprecision(0);
+				durationMessage << duration.count() << " seconds";
+			}
+			else
+			{
+				durationMessage << std::fixed << std::setprecision(3);
+				durationMessage << duration.count() << " seconds";
+			}
+
+			Log::HighPriority(durationMessage.str());
 		}
 
 	private:

@@ -58,7 +58,13 @@ namespace Soup.Build.Generate
 			}
 
 			// Get the required input state from the parameters
-			var targetDirectory = new Path(parametersState["TargetDirectory"].AsString().ToString());
+			var languageExtensionContent = parametersState["LanguageExtensionPath"].AsString().ToString();
+			Path? languageExtensionPath = null;
+			if (!string.IsNullOrEmpty(languageExtensionContent))
+			{
+				languageExtensionPath = new Path(languageExtensionContent);
+			}
+
 			var packageDirectory = new Path(parametersState["PackageDirectory"].AsString().ToString());
 
 			// Load the recipe file
@@ -74,13 +80,13 @@ namespace Soup.Build.Generate
 			var dependenciesSharedState = LoadDependenciesSharedState(parametersState);
 
 			// Generate the set of build extension libraries
-			var buildExtensionLibraries = GenerateBuildExtensionSet(recipe, dependenciesSharedState);
+			var buildExtensionLibraries = GenerateBuildExtensionSet(languageExtensionPath, dependenciesSharedState);
 
 			// Start a new active state that is initialized to the recipe itself
 			var activeState = new ValueTable();
 
 			// Initialize the Recipe Root Table
-			var recipeState = recipe.Table;
+			var recipeState = recipe.Document.ToBuildValue();
 			activeState.Add("Recipe", new Value(recipeState));
 
 			// Initialize the Parameters Root Table
@@ -91,8 +97,8 @@ namespace Soup.Build.Generate
 
 			// Keep the extension libraries open while running the build system
 			// to ensure their memory is kept alive
-			var evaluateGraph = new OperationGraph();
-			IValueTable sharedState = new ValueTable();
+			OperationGraph evaluateGraph;
+			IValueTable sharedState;
 
 			{
 				// Create a new build system for the requested build
@@ -119,7 +125,7 @@ namespace Soup.Build.Generate
 			}
 
 			// Save the operation graph so the evaluate phase can load it
-			var evaluateGraphFile = soupTargetDirectory + BuildConstants.GenerateEvaluateOperationGraphFileName;
+			var evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
 			OperationGraphManager.SaveState(evaluateGraphFile, evaluateGraph, _fileSystemState);
 
 			// Save the shared state that is to be passed to the downstream builds
@@ -219,30 +225,16 @@ namespace Soup.Build.Generate
 		/// Generate the collection of build extensions
 		/// </summary>
 		private IList<Path> GenerateBuildExtensionSet(
-			Recipe recipe,
+			Path? languageExtensionPath,
 			ValueTable dependenciesSharedState)
 		{
 			var buildExtensionLibraries = new List<Path>();
 
 			// Run the RecipeBuild extension to inject core build tasks
-			var recipeBuildExtensionPath = new Path();
-			var language = recipe.Language;
-			if (language == "C++")
+			if (languageExtensionPath != null)
 			{
-				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
-				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.Cpp/Soup.Cpp.dll");
+				buildExtensionLibraries.Add(languageExtensionPath);
 			}
-			else if (language == "C#")
-			{
-				var moduleFolder = new Path(Assembly.GetExecutingAssembly().Location).GetParent();
-				recipeBuildExtensionPath = moduleFolder + new Path("Extensions/Soup.CSharp/Soup.CSharp.dll");
-			}
-			else
-			{
-				throw new InvalidOperationException("Unknown language.");
-			}
-
-			buildExtensionLibraries.Add(recipeBuildExtensionPath);
 
 			// Check for any dynamic libraries in the shared state
 			if (dependenciesSharedState.TryGetValue("Build", out var buildDependenciesValue))

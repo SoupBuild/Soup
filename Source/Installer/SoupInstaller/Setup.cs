@@ -15,33 +15,23 @@ class Script
 					@"Soup",
 					new DirFiles($"{soupRunFolder}/Soup/*.*"),
 					new Dir(
-						@"Generate",
-						new DirFiles($"{soupRunFolder}/Soup/Generate/*.*"),
-						new Dir(
 							@"Extensions",
 							new Dir(
 								@"Soup.Cpp",
-								new DirFiles($"{soupRunFolder}/Soup/Generate/Extensions/Soup.Cpp/*.*")),
+								new Dir(
+									"0.4.0",
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.Cpp/0.4.0/*.*"))),
 							new Dir(
 								@"Soup.CSharp",
-								new DirFiles($"{soupRunFolder}/Soup/Generate/Extensions/Soup.CSharp/*.*")))),
+								new Dir(
+									"0.7.0",
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.CSharp/0.7.0/*.*")))),
+					new Dir(
+						@"Generate",
+						new DirFiles($"{soupRunFolder}/Soup/Generate/*.*")),
 					new Dir(
 						@"PackageManager",
-						new DirFiles($"{soupRunFolder}/Soup/PackageManager/*.*"),
-						new Dir(
-							@"runtimes",
-							new Dir(
-								@"win-arm64\native",
-								new DirFiles($"{soupRunFolder}/Soup/PackageManager/runtimes/win-arm64/native/*.*")),
-							new Dir(
-								@"win-x64\native",
-								new DirFiles($"{soupRunFolder}/Soup/PackageManager/runtimes/win-x64/native/*.*")),
-							new Dir(
-								@"win-x86\native",
-								new DirFiles($"{soupRunFolder}/Soup/PackageManager/runtimes/win-x86/native/*.*"))))),
-				new Dir(
-					@"Swhere",
-					new DirFiles($"{soupRunFolder}/Swhere/*.*"))),
+						new DirFiles($"{soupRunFolder}/Soup/PackageManager/*.*")))),
 			new EnvironmentVariable("PATH", "[INSTALLDIR]")
 			{
 				System = true,
@@ -65,7 +55,7 @@ class Script
 		};
 
 		// Upgrade values
-		project.Version = new Version(0, 18, 0);
+		project.Version = new Version(0, 27, 1);
 
 		Compiler.BuildMsi(project);
 	}

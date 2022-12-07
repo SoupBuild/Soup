@@ -5,7 +5,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Tomlyn.Syntax;
 
 namespace Soup.Build.Runtime
 {
@@ -13,21 +12,12 @@ namespace Soup.Build.Runtime
 	{
 		private List<IValue> _impl;
 
-		public SyntaxNode? MirrorSyntax { get; set; }
-
-		private ValueList(IEnumerable<IValue> collection, SyntaxNode? mirrorSyntax)
-		{
-			_impl = new List<IValue>(collection);
-			MirrorSyntax = mirrorSyntax;
-		}
-
 		public ValueList()
 		{
 			_impl = new List<IValue>();
-			MirrorSyntax = null;
 		}
 
-		public ValueList(IEnumerable<Value> collection)
+		public ValueList(IEnumerable<IValue> collection)
 		{
 			_impl = new List<IValue>(collection);
 		}
@@ -48,7 +38,7 @@ namespace Soup.Build.Runtime
 
 		public ValueList Clone()
 		{
-			return new ValueList(_impl, MirrorSyntax);
+			return new ValueList(_impl);
 		}
 
 		public IEnumerator<IValue> GetEnumerator()

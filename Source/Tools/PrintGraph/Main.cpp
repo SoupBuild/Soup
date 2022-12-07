@@ -4,7 +4,7 @@
 #include <vector>
 
 import Opal;
-import Soup.Build.Runtime;
+import Soup.Core;
 
 void PrintUsage()
 {
@@ -31,15 +31,15 @@ std::string ToString(const std::vector<uint32_t>& valueList)
 	return builder.str();
 }
 
-void PrintFiles(Soup::Build::Runtime::OperationGraph& graph)
+void PrintFiles(const Soup::Core::FileSystemState& fileSystemState)
 {
-	for (auto fileReference : graph.GetReferencedFiles())
+	for (auto fileReference : fileSystemState.GetFiles())
 	{
 		std::cout << "File: " << fileReference.first << " " << fileReference.second.ToString() << std::endl;
 	}
 }
 
-void PrintOperations(Soup::Build::Runtime::OperationGraph& graph)
+void PrintOperations(Soup::Core::OperationGraph& graph)
 {
 	for (auto operation : graph.GetOperations())
 	{
@@ -55,17 +55,14 @@ void PrintOperations(Soup::Build::Runtime::OperationGraph& graph)
 		std::cout << "\tWriteAccess: " << ToString(operationInfo.WriteAccess) << std::endl;
 		std::cout << "\tChildren: " << ToString(operationInfo.Children) << std::endl;
 		std::cout << "\tDependencyCount: " << operationInfo.DependencyCount << std::endl;
-		std::cout << "\tWasSuccessfulRun: " << operationInfo.WasSuccessfulRun << std::endl;
-		std::cout << "\tObservedInput: " << ToString(operationInfo.ObservedInput) << std::endl;
-		std::cout << "\tObservedOutput: " << ToString(operationInfo.ObservedOutput) << std::endl;
 	}
 }
 
 void PrintGraph(
 	const std::string& indent,
-	const std::vector<Soup::Build::Runtime::OperationId>& operationIds,
-	Soup::Build::Runtime::OperationGraph& graph,
-	const std::unordered_set<Soup::Build::Runtime::OperationId>& parentOperationSet)
+	const std::vector<Soup::Core::OperationId>& operationIds,
+	Soup::Core::OperationGraph& graph,
+	const std::unordered_set<Soup::Core::OperationId>& parentOperationSet)
 {
 	auto childIndent = indent + "  ";
 	for (auto operationId : operationIds)
@@ -78,17 +75,17 @@ void PrintGraph(
 		else
 		{
 			std::cout << indent << operationInfo.Title << std::endl;
-			auto updatedParentSet = std::unordered_set<Soup::Build::Runtime::OperationId>(parentOperationSet);
+			auto updatedParentSet = std::unordered_set<Soup::Core::OperationId>(parentOperationSet);
 			updatedParentSet.insert(operationId);
 			PrintGraph(childIndent, operationInfo.Children, graph, updatedParentSet);
 		}
 	}
 }
 
-void PrintGraph(Soup::Build::Runtime::OperationGraph& graph)
+void PrintGraph(Soup::Core::OperationGraph& graph)
 {
 	std::cout << "Graph:" << std::endl;
-	auto emptySet = std::unordered_set<Soup::Build::Runtime::OperationId>();
+	auto emptySet = std::unordered_set<Soup::Core::OperationId>();
 	PrintGraph("", graph.GetRootOperationIds(), graph, emptySet);
 }
 
@@ -103,9 +100,10 @@ void LoadAndPrintGraph(const Opal::Path& operationGraphFile)
 	auto file = Opal::System::IFileSystem::Current().OpenRead(operationGraphFile, true);
 
 	// Read the contents of the build state file
-	auto graph = Soup::Build::Runtime::OperationGraphReader::Deserialize(file->GetInStream());
+	auto fileSystemState = Soup::Core::FileSystemState();
+	auto graph = Soup::Core::OperationGraphReader::Deserialize(file->GetInStream(), fileSystemState);
 
-	PrintFiles(graph);
+	PrintFiles(fileSystemState);
 	PrintOperations(graph);
 	PrintGraph(graph);
 }

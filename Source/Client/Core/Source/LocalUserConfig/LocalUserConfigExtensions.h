@@ -4,7 +4,7 @@
 
 #pragma once
 #include "LocalUserConfig.h"
-#include "Recipe/RecipeToml.h"
+#include "Recipe/RecipeSML.h"
 
 namespace Soup::Core
 {
@@ -25,7 +25,7 @@ namespace Soup::Core
 			Log::Diag("Load Local User Config: " + localUserConfigFile.ToString());
 			if (!System::IFileSystem::Current().Exists(localUserConfigFile))
 			{
-				Log::Warning("Local User Config file does not exist.");
+				Log::Warning("Local User Config file does not exist");
 				return false;
 			}
 
@@ -36,7 +36,7 @@ namespace Soup::Core
 			try
 			{
 				result = LocalUserConfig(
-					RecipeToml::Deserialize(
+					RecipeSML::Deserialize(
 						localUserConfigFile,
 						file->GetInStream()));
 				return true;

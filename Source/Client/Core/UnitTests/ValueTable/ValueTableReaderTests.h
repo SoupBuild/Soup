@@ -18,10 +18,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = ValueTableReader::Deserialize(content);
-			},
-			"Invalid Value Table file header");
+			});
+
+			Assert::AreEqual("Invalid Value Table file header", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -33,10 +34,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = ValueTableReader::Deserialize(content);
-			},
-			"Value Table file version does not match expected");
+			});
+			
+			Assert::AreEqual("Value Table file version does not match expected", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -49,10 +51,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = ValueTableReader::Deserialize(content);
-			},
-			"Invalid Value Table table header");
+			});
+			
+			Assert::AreEqual("Invalid Value Table table header", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -67,10 +70,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = ValueTableReader::Deserialize(content);
-			},
-			"Unknown ValueType");
+			});
+
+			Assert::AreEqual("Unknown ValueType", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -84,10 +88,11 @@ namespace Soup::Core::UnitTests
 			});
 			auto content = std::stringstream(std::string(binaryFileContent.data(), binaryFileContent.size()));
 
-			Assert::ThrowsRuntimeError([&content]() {
+			auto exception = Assert::Throws<std::runtime_error>([&content]() {
 				auto actual = ValueTableReader::Deserialize(content);
-			},
-			"Value Table file corrupted - Did not read the entire file");
+			});
+			
+			Assert::AreEqual("Value Table file corrupted - Did not read the entire file", exception.what(), "Verify Exception message");
 		}
 
 		// [[Fact]]
@@ -124,12 +129,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(ValueTable()),
-						},
-					})),
+				{
+					{ "TestValue", Value(ValueTable()) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -150,12 +152,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(ValueList()),
-						},
-					})),
+				{
+					{ "TestValue", Value(ValueList()) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -176,12 +175,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(std::string("Value")),
-						},
-					})),
+				{
+					{ "TestValue", Value(std::string("Value")) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -203,12 +199,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(static_cast<int64_t>(-123)),
-						},
-					})),
+				{
+					{ "TestValue", Value(static_cast<int64_t>(-123)) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -230,12 +223,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(1.23),
-						},
-					})),
+				{
+					{ "TestValue", Value(1.23) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}
@@ -257,12 +247,9 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				ValueTable(
-					std::map<std::string, Value>({
-						{
-							"TestValue",
-							Value(true),
-						},
-					})),
+				{
+					{ "TestValue", Value(true) },
+				}),
 				actual,
 				"Verify value table matches expected.");
 		}

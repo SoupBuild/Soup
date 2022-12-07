@@ -4,10 +4,10 @@
 
 namespace Soup.Build
 {
-    public interface IValue
-    {
-        ValueType Type { get; }
+	public interface IValue
+	{
+		ValueType Type { get; }
 
-        object RawValue { get; }
-    }
+		object? RawValue { get; }
+	}
 }

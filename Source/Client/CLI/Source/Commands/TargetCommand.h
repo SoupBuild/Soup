@@ -32,8 +32,8 @@ namespace Soup::Client
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
 			{
-				// Buildin the current directory
-				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
+				// Build in the current directory
+				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory();
 			}
 			else
 			{
@@ -42,17 +42,17 @@ namespace Soup::Client
 				// Check if this is relative to current directory
 				if (!workingDirectory.HasRoot())
 				{
-					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2() + workingDirectory;
+					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory() + workingDirectory;
 				}
 			}
 
 			// Load the recipe
-			auto projectManager = Core::ProjectManager();
+			auto recipeCache = Core::RecipeCache();
 			auto recipePath =
 				workingDirectory +
 				Core::BuildConstants::RecipeFileName();
-			Core::Recipe recipe = {};
-			if (!projectManager.TryGetRecipe(recipePath, recipe))
+			const Core::Recipe* recipe;
+			if (!recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 			{
 				Log::Error("The Recipe does not exist: " + recipePath.ToString());
 				Log::HighPriority("Make sure the path is correct and try again");
@@ -77,17 +77,19 @@ namespace Soup::Client
 			auto compiler = std::string("MSVC");
 
 			auto globalParameters = Core::ValueTable();
-			globalParameters.SetValue("Architecture", Core::Value(std::string(architecture)));
-			globalParameters.SetValue("Compiler", Core::Value(std::string(compiler)));
-			globalParameters.SetValue("Flavor", Core::Value(std::string(flavor)));
-			globalParameters.SetValue("System", Core::Value(std::string(system)));
+			globalParameters.emplace("Architecture", Core::Value(std::string(architecture)));
+			globalParameters.emplace("Compiler", Core::Value(std::string(compiler)));
+			globalParameters.emplace("Flavor", Core::Value(std::string(flavor)));
+			globalParameters.emplace("System", Core::Value(std::string(system)));
 
 			// Load the value table to get the exe path
-			auto targetDirectory = Core::RecipeBuildRunner::GetOutputDirectory(
+			auto builtInLanguages = Core::BuildEngine::GetBuiltInLanguages();
+			auto locationManager = Core::RecipeBuildLocationManager(builtInLanguages);
+			auto targetDirectory = locationManager.GetOutputDirectory(
 				workingDirectory,
-				recipe,
+				*recipe,
 				globalParameters,
-				projectManager);
+				recipeCache);
 
 			std::cout << targetDirectory.ToString() << std::flush;
 		}

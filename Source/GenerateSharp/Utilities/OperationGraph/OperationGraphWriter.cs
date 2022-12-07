@@ -14,7 +14,7 @@ namespace Soup.Build.Utilities
 	internal static class OperationGraphWriter
 	{
 		// Binary Operation graph file format
-		private static uint FileVersion => 4;
+		private static uint FileVersion => 5;
 
 		public static void Serialize(OperationGraph state, System.IO.BinaryWriter writer)
 		{
@@ -23,7 +23,7 @@ namespace Soup.Build.Utilities
 			writer.Write(FileVersion);
 
 			// Write out the set of files
-			var files = state.GetReferencedFiles();
+			var files = state.ReferencedFiles;
 			writer.Write(new char[] { 'F', 'I', 'S', '\0' });
 			writer.Write((uint)files.Count);
 			foreach (var file in files)
@@ -35,13 +35,12 @@ namespace Soup.Build.Utilities
 
 			// Write out the root operation ids
 			writer.Write(new char[] { 'R', 'O', 'P', '\0' });
-			WriteValues(writer, state.GetRootOperationIds());
+			WriteValues(writer, state.RootOperationIds);
 
 			// Write out the set of operations
-			var operations = state.GetOperations();
 			writer.Write(new char[] { 'O', 'P', 'S', '\0' });
-			writer.Write((uint)operations.Count);
-			foreach (var operationValue in state.GetOperations())
+			writer.Write((uint)state.Operations.Count);
+			foreach (var operationValue in state.Operations)
 			{
 				WriteOperationInfo(writer, operationValue.Value);
 			}
@@ -81,19 +80,6 @@ namespace Soup.Build.Utilities
 
 			// Write out the dependency count
 			writer.Write(operation.DependencyCount);
-
-			// Write out the value indicating if there was a successful run
-			WriteValue(writer, operation.WasSuccessfulRun);
-
-			// Write out the utc milliseconds since January 1, 0001 at 00:00:00.000 in the Gregorian calendar
-			var evaluateTimeMilliseconds = operation.EvaluateTime.ToUniversalTime().Ticks / 10;
-			writer.Write(evaluateTimeMilliseconds);
-
-			// Write out the observed input files
-			WriteValues(writer, operation.ObservedInput);
-
-			// Write out the observed output files
-			WriteValues(writer, operation.ObservedOutput);
 		}
 
 		private static void WriteValue(System.IO.BinaryWriter writer, bool value)

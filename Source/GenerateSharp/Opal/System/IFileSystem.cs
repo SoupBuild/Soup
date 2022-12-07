@@ -20,7 +20,7 @@ namespace Opal.System
 		/// <summary>
 		/// Gets the current directory for the running processes.
 		/// </summary>
-		public Path GetCurrentDirectory2();
+		public Path GetCurrentDirectory();
 
 		/// <summary>
 		/// Gets a value indicating whether the directory/file exists.
@@ -80,7 +80,19 @@ namespace Opal.System
 		/// Get the children of a directory.
 		/// </summary>
 		/// <param name="path">The path.</param>
-		public IReadOnlyList<DirectoryEntry> GetDirectoryChildren(Path path);
+		public IReadOnlyList<DirectoryEntry> GetChildren(Path path);
+
+		/// <summary>
+		/// Get the child directories of a directory.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		public IReadOnlyList<DirectoryEntry> GetChildDirectories(Path path);
+
+		/// <summary>
+		/// Get the child files of a directory.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		public IReadOnlyList<DirectoryEntry> GetChildFiles(Path path);
 
 		/// <summary>
 		/// Delete the directory.

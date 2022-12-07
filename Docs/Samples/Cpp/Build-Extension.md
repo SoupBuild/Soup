@@ -1,24 +1,25 @@
 # C++ Build Extension
 This is a console application that has a custom build extension that alters the build state. The custom build Tasks will run before and after the core Build Task and will simply print a nice hello message.
 
-[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/SimpleBuildExtension)
+[Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/BuildExtension)
 
-## Extension/Recipe.toml
+## Extension/Recipe.sml
 The Recipe file that defines the build extension dynamic library "Samples.Cpp.BuildExtension.Extension" that will register new build tasks.
 ```
-Name = "Samples.Cpp.BuildExtension.Extension"
-Language = "C#"
-Version = "1.0.0"
-Source = [
-    "CustomBuildTask.cs"
+Name: "Samples.Cpp.BuildExtension.Extension"
+Language: "C#|0.1"
+Version: "1.0.0"
+Source: [
+  "CustomBuildTask.cs"
 ]
 
-[Dependencies]
-Runtime = [
-    { Reference = "Soup.Build@0.1.3", ExcludeRuntime = true },
-    { Reference = "Soup.Build.Extensions@0.1.8" },
-    { Reference = "Opal@1.0.1" },
-]
+Dependencies: {
+    Runtime: [
+        { Reference: "Soup.Build@0.2.0", ExcludeRuntime: true, }
+        { Reference: "Soup.Build.Extensions@0.4.0", }
+        { Reference: "Opal@1.1.0", }
+    ]
+}
 ```
 
 ## Extension/CustomBuildTask.cs
@@ -78,22 +79,22 @@ namespace Samples.Cpp.BuildExtension.Extension
 }
 ```
 
-## Executable/Recipe.toml
+## Executable/Recipe.sml
 The Recipe file that defines the executable "Samples.Cpp.BuildExtension.Executable". The one interesting part is the relative path reference to the custom build extension through "Build" Dependencies.
 ```
-Name = "Samples.Cpp.BuildExtension.Executable"
-Language = "C++"
-Type = "Executable"
-Version = "1.0.1"
-Source = [
+Name: "Samples.SimpleBuildExtension.Executable"
+Language: "C++|0.1"
+Type: "Executable"
+Version: "1.0.0"
+Source: [
     "Main.cpp"
 ]
 
-[Dependencies]
-Build = [
-    "../Extension/"
-]
-
+Dependencies: {
+    Build: [
+        "../Extension/"
+    ]
+}
 ```
 
 ## Executable/Main.cpp
@@ -110,6 +111,26 @@ int main()
 #endif
 
     return 0;
+}
+
+```
+
+## Executable/PackageLock.sml
+The package lock that was generated to capture the unique build dependencies required to build this project.
+```
+Version: 3
+Closures: {
+    Root: {
+        "C++": [
+            { Name: "Samples.SimpleBuildExtension.Executable", Version: "../Executable", Build: "Build0" }
+        ]
+    }
+    Build0: {
+        "C#": [
+            { Name: "Soup.Cpp", Version: "0.4.0" }
+            { Name: "Samples.Cpp.BuildExtension.Extension", Version: "1.0.0" }
+        ]
+    }
 }
 
 ```

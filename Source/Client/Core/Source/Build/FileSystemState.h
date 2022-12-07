@@ -41,7 +41,7 @@ namespace Soup::Core
 		FileSystemState(
 			FileId maxFileId,
 			std::unordered_map<FileId, Path> files,
-			std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>> writeCache) :
+			std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>> writeCache) :
 			_maxFileId(maxFileId),
 			_files(std::move(files)),
 			_fileLookup(),
@@ -50,7 +50,9 @@ namespace Soup::Core
 			// Build up the reverse lookup for new files
 			for (auto& file : _files)
 			{
-				auto insertResult = _fileLookup.emplace(file.second.ToString(), file.first);
+				auto normalizedFilePath = file.second.ToString();
+				ToUpper(normalizedFilePath);
+				auto insertResult = _fileLookup.emplace(std::move(normalizedFilePath), file.first);
 				if (!insertResult.second)
 					throw std::runtime_error("The file was not unique in the provided set.");
 			}
@@ -75,18 +77,18 @@ namespace Soup::Core
 		/// <summary>
 		/// Update the write times for the provided set of files
 		/// </summary>
-		void CheckFileWriteTimes(const std::vector<FileId>& files)
+		void InvalidateFileWriteTimes(const std::vector<FileId>& files)
 		{
 			for (auto file : files)
 			{
-				CheckFileWriteTime(file);
+				InvalidateFileWriteTime(file);
 			}
 		}
 
 		/// <summary>
 		/// Find the write time for a given file id
 		/// </summary>
-		std::optional<std::chrono::time_point<std::chrono::system_clock>> GetLastWriteTime(FileId file)
+		std::optional<std::chrono::time_point<std::chrono::file_clock>> GetLastWriteTime(FileId file)
 		{
 			auto findResult = _writeCache.find(file);
 			if (findResult != _writeCache.end())
@@ -118,7 +120,7 @@ namespace Soup::Core
 		/// </summary>
 		FileId ToFileId(const Path& file, const Path& workingDirectory)
 		{
-			auto absolutePath = file.HasRoot() ? file : workingDirectory + file;
+			auto& absolutePath = file.HasRoot() ? file : workingDirectory + file;
 			return ToFileId(absolutePath);
 		}
 
@@ -137,7 +139,9 @@ namespace Soup::Core
 				if (!insertResult.second)
 					throw std::runtime_error("The provided file id already exists in the file system state");
 
-				auto insertLookupResult = _fileLookup.emplace(file.ToString(), result);
+				auto normalizedFilePath = file.ToString();
+				ToUpper(normalizedFilePath);
+				auto insertLookupResult = _fileLookup.emplace(std::move(normalizedFilePath), result);
 				if (!insertLookupResult.second)
 					throw std::runtime_error("The file was not unique even though we just failed to find it");
 			}
@@ -150,7 +154,9 @@ namespace Soup::Core
 		/// </summary>
 		bool TryFindFileId(const Path& file, FileId& fileId) const
 		{
-			auto findResult = _fileLookup.find(file.ToString());
+			auto normalizedFilePath = file.ToString();
+			ToUpper(normalizedFilePath);
+			auto findResult = _fileLookup.find(normalizedFilePath);
 			if (findResult != _fileLookup.end())
 			{
 				fileId = findResult->second;
@@ -194,33 +200,77 @@ namespace Soup::Core
 
 	private:
 		/// <summary>
-		/// Update the write times for the provided set of files
+		/// Invalidate the write time for the provided file
 		/// </summary>
-		std::optional<std::chrono::time_point<std::chrono::system_clock>> CheckFileWriteTime(FileId fileId)
+		void InvalidateFileWriteTime(FileId fileId)
+		{
+			_writeCache.erase(fileId);
+		}
+
+		/// <summary>
+		/// Update the write times for the provided file
+		/// </summary>
+		std::optional<std::chrono::time_point<std::chrono::file_clock>> CheckFileWriteTime(FileId fileId)
 		{
 			auto& filePath = GetFilePath(fileId);
 
 			// The file does not exist in the cache
 			// Load the actual value and save it for later
-			std::optional<std::chrono::time_point<std::chrono::system_clock>> lastWriteTime = std::nullopt;
-			if (System::IFileSystem::Current().Exists(filePath))
+			std::optional<std::chrono::time_point<std::chrono::file_clock>> lastWriteTime = std::nullopt;
+			std::chrono::time_point<std::chrono::file_clock> lastWriteTimeValue;
+			if (System::IFileSystem::Current().TryGetLastWriteTime(filePath, lastWriteTimeValue))
 			{
-				lastWriteTime = std::chrono::system_clock::from_time_t(
-					System::IFileSystem::Current().GetLastWriteTime(filePath));
+				lastWriteTime = lastWriteTimeValue;
 			}
 
 			auto insertResult = _writeCache.insert_or_assign(fileId, lastWriteTime);
 			return lastWriteTime;
 		}
 
+		std::optional<std::chrono::time_point<std::chrono::file_clock>> CheckDirectoryFileWriteTimes(FileId fileId)
+		{
+			auto& filePath = GetFilePath(fileId);
+			
+			// Add the requested file as null
+			// This will be replaced if the file exists with the find all callback
+			auto insertResult = _writeCache.insert_or_assign(fileId, std::nullopt);
+
+			// Load the write times for all files in the directory
+			// This optimization assumes that most files in a directory are relevant to the build
+			// and on windows it is a lot faster to iterate over the files instead of making individual calls
+			auto parentDirectory = filePath.GetParent();
+			System::IFileSystem::Current().GetDirectoryFilesLastWriteTime(
+				parentDirectory,
+				[&](const Path& file, std::chrono::time_point<std::chrono::file_clock> lastWriteTime)
+				{
+					auto& absolutePath = file.HasRoot() ? file : parentDirectory + file;
+					FileId result;
+					if (TryFindFileId(absolutePath, result))
+					{
+						auto insertResult = _writeCache.insert_or_assign(result, lastWriteTime);
+					}
+				});
+
+			return _writeCache[fileId];
+		}
+
+		static void ToUpper(std::string& value)
+		{
+			std::transform(
+				value.begin(),
+				value.end(),
+				value.begin(),
+				[](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
+		}
+
 	private:
 		// The maximum id that has been used for files
-		// Used to ensure unique ids are generated accross the entire system
+		// Used to ensure unique ids are generated across the entire system
 		FileId _maxFileId;
 
 		std::unordered_map<FileId, Path> _files;
 		std::unordered_map<std::string, FileId> _fileLookup;
 
-		std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::system_clock>>> _writeCache;
+		std::unordered_map<FileId, std::optional<std::chrono::time_point<std::chrono::file_clock>>> _writeCache;
 	};
 }

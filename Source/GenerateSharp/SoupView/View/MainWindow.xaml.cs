@@ -93,7 +93,7 @@ namespace SoupView.View
 			WinRT.Interop.InitializeWithWindow.Initialize(filePicker, hwnd);
 
 			// Use file picker like normal!
-			filePicker.FileTypeFilter.Add(".toml");
+			filePicker.FileTypeFilter.Add(".sml");
 			var file = await filePicker.PickSingleFileAsync();
 
 			if (file != null)

@@ -32,8 +32,8 @@ namespace Soup::Client
 			auto workingDirectory = Path();
 			if (_options.Path.empty())
 			{
-				// Buildin the current directory
-				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2();
+				// Build in the current directory
+				workingDirectory = System::IFileSystem::Current().GetCurrentDirectory();
 			}
 			else
 			{
@@ -42,7 +42,7 @@ namespace Soup::Client
 				// Check if this is relative to current directory
 				if (!workingDirectory.HasRoot())
 				{
-					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory2() + workingDirectory;
+					workingDirectory = System::IFileSystem::Current().GetCurrentDirectory() + workingDirectory;
 				}
 			}
 

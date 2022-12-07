@@ -7,7 +7,7 @@ soup <command> [arguments]
 
 * [Build](CLI/Build.md) - Perform a build with a specified root Package.
 
-* [Initialize](CLI/Initialize.md) - Initialize a new Package with default properties.
+* [Init](CLI/Init.md) - Initialize a new Package with default properties.
 
 * [Install](CLI/Install.md) - Install a new dependency for a specified Package.
 
@@ -16,5 +16,7 @@ soup <command> [arguments]
 * [Restore](CLI/Restore.md) - Restore all external package references in the target project closure.
 
 * [Run](CLI/Run.md) - Invoke the executable result (if applicable) for a specified package.
+
+* [Target](CLI/Target.md) - Prints the target directory for a specified package.
 
 * [Version](CLI/Version.md) - Print the version of the current installed Soup application.

@@ -3,15 +3,15 @@ This is a console application with the minimal amount of code to get up and runn
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/CSharp/ConsoleApplication)
 
-## Recipe.toml
-The Recipe file that defines the static library ""Samples.CSharp.ConsoleApplication".
+## Recipe.sml
+The Recipe file that defines the static library "Samples.CSharp.ConsoleApplication".
 ```
-Name = "Samples.CSharp.ConsoleApplication"
-Language = "C#"
-Type = "Executable"
-Version = "1.1.4"
-Source = [
-    "Program.cs",
+Name: "Samples.CSharp.ConsoleApplication"
+Language: "C#|0.1"
+Type: "Executable"
+Version: "1.0.0"
+Source: [
+    "Program.cs"
 ]
 ```
 
@@ -20,7 +20,7 @@ A C# Program file that implements the main method.
 ```
 using System;
 
-namespace SimpleConsoleApplication
+namespace ConsoleApplication
 {
     public class Program
     {

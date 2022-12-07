@@ -11,12 +11,14 @@ namespace Soup::Core
 	/// <summary>
 	/// The package lock container
 	/// </summary>
+	export using PackageClosures = std::map<std::string, std::map<std::string, std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>>>;
 	export class PackageLock
 	{
 	private:
-		static constexpr const char* Property_Projects = "Projects";
+		static constexpr const char* Property_Closures = "Closures";
 		static constexpr const char* Property_Name = "Name";
 		static constexpr const char* Property_Version = "Version";
+		static constexpr const char* Property_Build = "Build";
 
 	public:
 		/// <summary>
@@ -36,39 +38,79 @@ namespace Soup::Core
 		}
 
 		/// <summary>
-		/// Gets or sets the table of projects
+		/// Gets or sets the version
 		/// </summary>
-		bool HasProjects()
+		bool HasVersion()
 		{
-			return HasValue(_table, Property_Projects);
+			return HasValue(_table, Property_Version);
 		}
 
-		std::map<std::string, std::map<std::string, PackageReference>> GetProjects()
+		int64_t GetVersion()
 		{
-			if (!HasProjects())
-				throw std::runtime_error("No projects.");
+			if (!HasVersion())
+				throw std::runtime_error("No version.");
 
-			auto& values = GetValue(_table, Property_Projects).AsTable();
-			auto result = std::map<std::string, std::map<std::string, PackageReference>>();
-			for (auto& languageValue : values)
+			auto value = GetValue(_table, Property_Version).AsInteger();
+			return value;
+		}
+
+		/// <summary>
+		/// Gets or sets the table of closures
+		/// </summary>
+		bool HasClosures()
+		{
+			return HasValue(_table, Property_Closures);
+		}
+
+		PackageClosures GetClosures()
+		{
+			if (!HasClosures())
+				throw std::runtime_error("No closures.");
+
+			auto& values = GetValue(_table, Property_Closures).AsTable();
+			auto result = PackageClosures();
+			for (auto& closureValue : values)
 			{
-				auto languageLock = std::map<std::string, PackageReference>();
-				for (auto& projectValue : languageValue.second.AsList())
+				auto closureLock = std::map<std::string, std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>>();
+				for (auto& languageValue : closureValue.second.AsTable())
 				{
-					auto& projectTable = projectValue.AsTable();
+					auto languageLock = std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>();
+					for (auto& projectValue : languageValue.second.AsList())
+					{
+						auto& projectTable = projectValue.AsTable();
 
-					if (!HasValue(projectTable, Property_Name))
-						throw std::runtime_error("No Name on project table.");
-					auto& name = GetValue(projectTable, Property_Name).AsString();
+						if (!HasValue(projectTable, Property_Name))
+							throw std::runtime_error("No Name on project table.");
+						auto& name = GetValue(projectTable, Property_Name).AsString();
 
-					if (!HasValue(projectTable, Property_Version))
-						throw std::runtime_error("No Version on project table.");
-					auto version = PackageReference::Parse(GetValue(projectTable, Property_Version).AsString());
+						if (!HasValue(projectTable, Property_Version))
+							throw std::runtime_error("No Version on project table.");
+						auto& versionValue = GetValue(projectTable, Property_Version).AsString();
 
-					languageLock.emplace(name, std::move(version));
+						SemanticVersion version;
+						PackageReference reference;
+						if (SemanticVersion::TryParse(versionValue, version))
+						{
+							reference = PackageReference(std::nullopt, name, version);
+						}
+						else
+						{
+							// Assume that the version value is a path
+							reference = PackageReference(Path(versionValue));
+						}
+
+						std::optional<std::string> buildValue = std::nullopt;
+						if (HasValue(projectTable, Property_Build))
+							buildValue = GetValue(projectTable, Property_Build).AsString();
+
+						auto lockValue = std::make_pair(std::move(reference), std::move(buildValue));
+						languageLock.emplace(name, std::move(lockValue));
+					}
+
+					closureLock.emplace(languageValue.first, std::move(languageLock));
 				}
 
-				result.emplace(languageValue.first, std::move(languageLock));
+				result.emplace(closureValue.first, std::move(closureLock));
 			}
 
 			return result;

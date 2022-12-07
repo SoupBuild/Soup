@@ -1,9 +1,0 @@
-[Projects]
-"C#" = [
-	{ Name = "Soup.CSharp", Version = "./" },
-	{ Name = "Opal", Version = "Opal@1.0.1" },
-	{ Name = "Soup.Build", Version = "../../../Build/" },
-	{ Name = "Soup.Build.Extensions", Version = "../../../Build.Extensions/" },
-	{ Name = "Soup.CSharp.Compiler", Version = "../Compiler/Core/" },
-	{ Name = "Soup.CSharp.Compiler.Roslyn", Version = "../Compiler/Roslyn/" },
-]

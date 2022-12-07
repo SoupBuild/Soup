@@ -2,25 +2,25 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Microsoft.Toolkit.Mvvm.Input;
 using Opal;
 using Opal.System;
 using Soup.Build;
 using Soup.Build.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace SoupView.ViewModel
 {
 	internal class DependencyGraphPageModel : Observable
 	{
-		private GraphNode selectedNode = null;
-		private ProjectDetailsViewModel selectedProject = null;
+		private GraphNode? selectedNode = null;
+		private ProjectDetailsViewModel? selectedProject = null;
 		private string errorBarMessage = string.Empty;
 		private bool isErrorBarOpen = false;
-		private IList<IList<GraphNode>> graph = null;
+		private IList<IList<GraphNode>>? graph = null;
 		private uint uniqueId = 0;
 		private Dictionary<uint, ProjectDetailsViewModel> projectDetailsLookup = new Dictionary<uint, ProjectDetailsViewModel>();
 
@@ -37,7 +37,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public IList<IList<GraphNode>> Graph
+		public IList<IList<GraphNode>>? Graph
 		{
 			get { return graph; }
 			set
@@ -50,7 +50,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public GraphNode SelectedNode
+		public GraphNode? SelectedNode
 		{
 			get { return selectedNode; }
 			set
@@ -59,7 +59,14 @@ namespace SoupView.ViewModel
 				{
 					selectedNode = value;
 					NotifyPropertyChanged();
-					SelectedProject = this.projectDetailsLookup[selectedNode.Id];
+					if (selectedNode != null)
+					{
+						SelectedProject = this.projectDetailsLookup[selectedNode.Id];
+					}
+					else
+					{
+						selectedProject = null;
+					}
 				}
 			}
 		}
@@ -77,7 +84,7 @@ namespace SoupView.ViewModel
 			}
 		}
 
-		public ProjectDetailsViewModel SelectedProject
+		public ProjectDetailsViewModel? SelectedProject
 		{
 			get { return selectedProject; }
 			set
@@ -105,6 +112,9 @@ namespace SoupView.ViewModel
 
 		private void NotifyError(string message)
 		{
+			if (Debugger.IsAttached)
+				Debugger.Break();
+
 			ErrorBarMessage = message;
 			IsErrorBarOpen = true;
 		}
@@ -116,23 +126,33 @@ namespace SoupView.ViewModel
 			foreach (var recipeFile in recipeFiles)
 			{
 				var loadResult = await RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile.Path);
-				if (!loadResult.IsSuccess)
+				var currentChildRecipes = new List<(Path Path, uint Id)>();
+				string title;
+				Recipe? recipe = null;
+				var packageFolder = recipeFile.Path.GetParent();
+
+				if (loadResult.IsSuccess)
 				{
-					NotifyError($"Failed to load Recipe file: {recipeFile.Path}");
+					recipe = loadResult.Result;
+
+					foreach (var dependencyType in recipe.GetDependencyTypes())
+					{
+						var implicitLanguage = dependencyType == Recipe.Property_Build ? "C#" : recipe.Language.Name;
+						AddRecipeFiles(
+							recipe.GetNamedDependencies(dependencyType),
+							implicitLanguage,
+							packageFolder,
+							currentChildRecipes);
+					}
+
+					title = recipe.Name;
+				}
+				else
+				{
+					title = "[MISSING]";
 				}
 
-				var packageFolder = recipeFile.Path.GetParent();
-				var recipe = loadResult.Result;
-
-				var currentChildRecipes = new List<(Path Path, uint Id)>();
-				if (recipe.HasBuildDependencies)
-					AddRecipeFiles(recipe.BuildDependencies, recipe.Language, packageFolder, currentChildRecipes);
-				if (recipe.HasTestDependencies)
-					AddRecipeFiles(recipe.TestDependencies, recipe.Language, packageFolder, currentChildRecipes);
-				if (recipe.HasRuntimeDependencies)
-					AddRecipeFiles(recipe.RuntimeDependencies, recipe.Language, packageFolder, currentChildRecipes);
-
-				column.Add(new GraphNode(recipe.Name, recipeFile.Id)
+				column.Add(new GraphNode(title, recipeFile.Id)
 				{
 					ChildNodes = currentChildRecipes.Select(value => value.Id).ToList(),
 				});
@@ -174,11 +194,15 @@ namespace SoupView.ViewModel
 				}
 				else
 				{
+					if (packageReference.Version == null)
+						throw new InvalidOperationException("Package reference must have version");
 					var packagesDirectory = LifetimeManager.Get<IFileSystem>().GetUserProfileDirectory() +
 						new Path(".soup/packages/");
 					var languageRootFolder = packagesDirectory + new Path(recipeLanguage);
-					var packageRootFolder = languageRootFolder + new Path(packageReference.GetName);
-					var packageVersionFolder = packageRootFolder + new Path(packageReference.Version.ToString()) + new Path("/");
+					var packageRootFolder = languageRootFolder + new Path(packageReference.Name);
+					var packageVersionFolder = packageRootFolder +
+						new Path(packageReference.Version.ToString()) +
+						new Path("/");
 					var recipeFile = packageVersionFolder + BuildConstants.RecipeFileName;
 
 					recipeFiles.Add((recipeFile, this.uniqueId++));
