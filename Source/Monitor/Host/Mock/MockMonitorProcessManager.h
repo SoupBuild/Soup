@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "IMonitorProcessManager.h"
+#include "../IMonitorProcessManager.h"
 
 namespace Monitor
 {
@@ -11,7 +11,10 @@ namespace Monitor
 	/// The mock monitor process manager
 	/// TODO: Move into test project
 	/// </summary>
-	export class MockMonitorProcessManager : public IMonitorProcessManager
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class MockMonitorProcessManager : public IMonitorProcessManager
 	{
 	private:
 		std::atomic<int> m_uniqueId;

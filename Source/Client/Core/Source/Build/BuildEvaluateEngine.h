@@ -33,8 +33,8 @@ namespace Soup::Core
 		{
 		}
 
-		const OperationGraph& OperationGraph;
-		OperationResults& OperationResults;
+		const ::Soup::Core::OperationGraph& OperationGraph;
+		::Soup::Core::OperationResults& OperationResults;
 
 		const Path& TemporaryDirectory;
 

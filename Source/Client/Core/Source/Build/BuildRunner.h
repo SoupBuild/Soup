@@ -8,6 +8,7 @@
 #include "BuildFailedException.h"
 #include "PackageProvider.h"
 #include "RecipeBuildArguments.h"
+#include "RecipeBuildLocationManager.h"
 #include "FileSystemState.h"
 #include "LocalUserConfig/LocalUserConfig.h"
 #include "OperationGraph/OperationGraphManager.h"

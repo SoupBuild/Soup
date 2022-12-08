@@ -65,6 +65,7 @@ import Opal;
 #include "IO/SystemConsoleManager.h"
 #include "Logger/Log.h"
 #include "Logger/ConsoleTraceListener.h"
+#include "System/MockProcess.h"
 #include "System/LinuxProcessManager.h"
 #include "System/STLFileSystem.h"
 #include "System/STLSystem.h"

@@ -2,7 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#ifdef SOUP_BUILD
 module;
+#endif
 
 #include <iostream>
 #include <memory>
@@ -12,9 +14,11 @@ module;
 #include <variant>
 #include <vector>
 
+#ifdef SOUP_BUILD
 module Soup.Core;
-
-using namespace Opal;
+#else
+#include "Value.h"
+#endif
 
 namespace Soup::Core
 {

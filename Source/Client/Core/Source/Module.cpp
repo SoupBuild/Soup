@@ -78,7 +78,7 @@ using namespace Opal;
 #include "Interface.h"
 
 // import Monitor.Host
-#include "LinuxDetourProcessManager.h"
+#include "Linux/LinuxMonitorProcessManager.h"
 
 #endif
 
