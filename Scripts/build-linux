@@ -127,6 +127,9 @@ eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/langua
 echo letter_scripts.cpp
 eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/letter_scripts.cpp -o $REFLEX_OUT_DIR/letter_scripts.o
 
+
+INCLUDE_EXTERNAL_DEPS="-I$OPAL_DIR -I$CRYPTOPP_DIR"
+
 echo Build Monitor.Shared
 MONITOR_SHARED_DIR=~/repos/Soup/Source/Monitor/Shared
 MONITOR_SHARED_OUT_DIR=$OUT_DIR/Monitor.Core/obj
@@ -139,16 +142,16 @@ MONITOR_HOST_DIR=~/repos/Soup/Source/Monitor/Host
 MONITOR_HOST_OUT_DIR=$OUT_DIR/Monitor.Core/obj
 mkdir -p $MONITOR_HOST_OUT_DIR
 echo Module.cpp
-eval $CXX $CXX_COMPILE_FLAGS -c $MONITOR_HOST_DIR/Module.cpp -o $MONITOR_HOST_OUT_DIR/Module.o
+eval $CXX $CXX_COMPILE_FLAGS $INCLUDE_EXTERNAL_DEPS -c $MONITOR_HOST_DIR/Module.cpp -o $MONITOR_HOST_OUT_DIR/Module.o
 
 echo Build Soup.Client.Core
 SOUP_CLIENT_CORE_DIR=~/repos/Soup/Source/Client/Core
 SOUP_CLIENT_CORE_OUT_DIR=$OUT_DIR/Soup.Client.Core/obj
 mkdir -p $SOUP_CLIENT_CORE_OUT_DIR
 echo Module.cpp
-eval $CXX $CXX_COMPILE_FLAGS -I$SOUP_CLIENT_CORE_DIR/Source -c $SOUP_CLIENT_CORE_DIR/Source/Module.cpp -o $SOUP_CLIENT_CORE_OUT_DIR/Module.o
+eval $CXX $CXX_COMPILE_FLAGS $INCLUDE_EXTERNAL_DEPS -I$SOUP_CLIENT_CORE_DIR/Source -c $SOUP_CLIENT_CORE_DIR/Source/Module.cpp -o $SOUP_CLIENT_CORE_OUT_DIR/Module.o
 echo Value.cpp
-eval $CXX $CXX_COMPILE_FLAGS -I$SOUP_CLIENT_CORE_DIR/Source -c $SOUP_CLIENT_CORE_DIR/Source/ValueTable/Value.cpp -o $SOUP_CLIENT_CORE_OUT_DIR/Value.o
+eval $CXX $CXX_COMPILE_FLAGS $INCLUDE_EXTERNAL_DEPS -I$SOUP_CLIENT_CORE_DIR/Source -c $SOUP_CLIENT_CORE_DIR/Source/ValueTable/Value.cpp -o $SOUP_CLIENT_CORE_OUT_DIR/Value.o
 
 echo Build Soup.Client.CLI
 SOUP_CLIENT_CLI_DIR=~/repos/Soup/Source/CLI/CLI

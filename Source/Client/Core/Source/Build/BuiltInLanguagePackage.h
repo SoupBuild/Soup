@@ -6,7 +6,10 @@
 
 namespace Soup::Core
 {
-	export struct BuiltInLanguagePackage
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	struct BuiltInLanguagePackage
 	{
 		BuiltInLanguagePackage(
 			std::string languageSafeName,

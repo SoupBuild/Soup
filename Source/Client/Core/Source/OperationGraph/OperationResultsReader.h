@@ -123,7 +123,11 @@ namespace Soup::Core
 
 			// Use system clock with a known epoch
 			auto evaluateTimeSystem = std::chrono::time_point<std::chrono::system_clock>(evaluateTimeDuration);
+			#ifdef _WIN32
 			auto evaluateTimeFile = std::chrono::clock_cast<std::chrono::file_clock>(evaluateTimeSystem);
+			#else
+			auto evaluateTimeFile = std::chrono::file_clock::from_sys(evaluateTimeSystem);
+			#endif
 
 			// Read the observed input files
 			auto observedInput = ReadFileIdList(content, activeFileIdMap);

@@ -37,11 +37,10 @@ module;
 #include <vector>
 
 #ifdef SOUP_BUILD
+
 export module Monitor.Host;
-#ifdef _WIN32
 import Detours;
 import Monitor.Shared;
-#endif
 import Opal;
 
 #else
@@ -66,6 +65,7 @@ import Opal;
 #include "IO/SystemConsoleManager.h"
 #include "Logger/Log.h"
 #include "Logger/ConsoleTraceListener.h"
+#include "System/LinuxProcessManager.h"
 #include "System/STLFileSystem.h"
 #include "System/STLSystem.h"
 
@@ -78,8 +78,10 @@ using namespace Opal;
 #include "ScopedDetourProcessManagerRegister.h"
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #include "WindowsDetourProcessManager.h"
+#elif defined(__linux__)
+#include "LinuxDetourProcessManager.h"
 #endif
 
 #include "DetourCallbackLogger.h"

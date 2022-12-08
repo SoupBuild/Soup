@@ -34,8 +34,8 @@ namespace Soup::Core
 
 		PackageReference OriginalReference;
 		bool IsSubGraph;
-		PackageId PackageId;
-		PackageGraphId PackageGraphId;
+		::Soup::Core::PackageId PackageId;
+		::Soup::Core::PackageGraphId PackageGraphId;
 
 		/// <summary>
 		/// Equality operator
@@ -78,7 +78,7 @@ namespace Soup::Core
 
 		PackageId Id;
 		Path PackageRoot;
-		const Recipe& Recipe;
+		const ::Soup::Core::Recipe& Recipe;
 		std::optional<Path> LanguageExtension;
 		PackageChildrenMap Dependencies;
 

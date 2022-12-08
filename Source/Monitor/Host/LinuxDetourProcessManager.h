@@ -1,23 +1,25 @@
-﻿// <copyright file="WindowsProcessManager.h" company="Soup">
+﻿// <copyright file="LinuxProcessManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 #include "IDetourProcessManager.h"
-#include "WindowsDetourProcess.h"
 
 namespace Monitor
 {
 	/// <summary>
-	/// A windows platform specific process executable using system
+	/// A Linux platform specific process executable using system
 	/// </summary>
-	export class WindowsDetourProcessManager : public IDetourProcessManager
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class LinuxDetourProcessManager : public IDetourProcessManager
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref='WindowsDetourProcessManager'/> class.
+		/// Initializes a new instance of the <see cref='LinuxDetourProcessManager'/> class.
 		/// </summary>
-		WindowsDetourProcessManager()
+		LinuxDetourProcessManager()
 		{
 		}
 
@@ -34,15 +36,7 @@ namespace Monitor
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) override final
 		{
-			return std::make_shared<WindowsDetourProcess>(
-				executable,
-				arguments,
-				workingDirectory,
-				environmentVariables,
-				std::move(callback),
-				enableAccessChecks,
-				allowedReadAccess,
-				allowedWriteAccess);
+			throw std::runtime_error("Not implemented");
 		}
 	};
 }

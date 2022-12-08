@@ -9,6 +9,7 @@ module;
 #include <array>
 #include <chrono>
 #include <codecvt>
+#include <cstring>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -43,6 +44,8 @@ import CryptoPP;
 import Monitor.Host;
 import Opal;
 
+using namespace Opal;
+
 #else
 
 // import Opal
@@ -65,12 +68,19 @@ import Opal;
 #include "IO/SystemConsoleManager.h"
 #include "Logger/Log.h"
 #include "Logger/ConsoleTraceListener.h"
+#include "System/LinuxProcessManager.h"
 #include "System/STLFileSystem.h"
 #include "System/STLSystem.h"
 
-#endif
-
 using namespace Opal;
+
+// import CryptoPP
+#include "Interface.h"
+
+// import Monitor.Host
+#include "LinuxDetourProcessManager.h"
+
+#endif
 
 #include "Build/RecipeBuildLocationManager.h"
 #include "Build/BuildEngine.h"
