@@ -9,11 +9,15 @@
 #include "Utils/HandledException.h"
 #include "BuildConstants.h"
 
+#ifdef SOUP_BUILD
+export
+#endif
 namespace Soup::Core
 {
-	export using PackageId = int;
-	export using PackageGraphId = int;
-	export class PackageChildInfo
+	using PackageId = int;
+	using PackageGraphId = int;
+
+	class PackageChildInfo
 	{
 	public:
 		PackageChildInfo(
@@ -53,8 +57,9 @@ namespace Soup::Core
 		}
 	};
 
-	export using PackageChildrenMap = std::map<std::string, std::vector<PackageChildInfo>>;
-	export class PackageInfo
+	using PackageChildrenMap = std::map<std::string, std::vector<PackageChildInfo>>;
+
+	class PackageInfo
 	{
 	public:
 		PackageInfo(
@@ -98,7 +103,7 @@ namespace Soup::Core
 		}
 	};
 
-	export class PackageGraph
+	class PackageGraph
 	{
 	public:
 		PackageGraph(
@@ -137,9 +142,9 @@ namespace Soup::Core
 	/// <summary>
 	/// The package provider that maintains the in memory representation of all build state
 	/// </summary>
-	export using PackageGraphLookupMap = std::map<PackageGraphId, PackageGraph>;
-	export using PackageLookupMap = std::map<PackageId, PackageInfo>;
-	export class PackageProvider
+	using PackageGraphLookupMap = std::map<PackageGraphId, PackageGraph>;
+	using PackageLookupMap = std::map<PackageId, PackageInfo>;
+	class PackageProvider
 	{
 	private:
 		PackageGraphId _rootPackageGraphId;

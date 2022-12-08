@@ -2,7 +2,10 @@
 
 namespace Monitor
 {
-	export class IDetourCallback
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IDetourCallback
 	{
 	public:
 		virtual void OnInitialize() = 0;

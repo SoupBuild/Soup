@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The value table state writer
 	/// </summary>
-	export class ValueTableWriter
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class ValueTableWriter
 	{
 	private:
 		// Binary Value Table file format

@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The SDK config container
 	/// </summary>
-	export class SDKConfig
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class SDKConfig
 	{
 	private:
 		static constexpr const char* Property_Name = "Name";

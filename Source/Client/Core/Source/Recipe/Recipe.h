@@ -12,7 +12,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The recipe container
 	/// </summary>
-	export class Recipe
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class Recipe
 	{
 	private:
 		static constexpr const char* Property_Dependencies = "Dependencies";

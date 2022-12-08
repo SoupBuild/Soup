@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// A package reference object which will consist of a name version pair that
 	/// refers to a published package or a path to a local recipe
 	/// </summary>
-	export class PackageReference
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class PackageReference
 	{
 	public:
 		/// <summary>

@@ -3,7 +3,10 @@
 
 namespace Monitor
 {
-	export class Message
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class Message
 	{
 	public:
 		MessageType Type;

@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The set of build arguments for building a recipe
 	/// </summary>
-	export struct RecipeBuildArguments
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	struct RecipeBuildArguments
 	{
 		/// <summary>
 		/// Gets or sets set of global arguments

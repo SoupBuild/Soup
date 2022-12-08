@@ -2,7 +2,10 @@
 
 namespace Monitor
 {
-	export enum class MessageType : uint32_t
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	enum class MessageType : uint32_t
 	{
 		Initialize,
 		Shutdown,

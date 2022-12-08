@@ -11,7 +11,10 @@ namespace Monitor
 	/// The process manager interface that supports detour callbacks
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IDetourProcessManager
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IDetourProcessManager
 	{
 	public:
 		/// <summary>

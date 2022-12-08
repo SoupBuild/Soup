@@ -1,4 +1,6 @@
+#ifdef SOUP_BUILD
 module;
+#endif
 
 #ifdef _WIN32
 
@@ -32,14 +34,8 @@ module;
 #include <thread>
 #include <vector>
 
+#ifdef SOUP_BUILD
 export module Monitor.Shared;
-
-export constexpr const char* TBLOG_PIPE_NAMEA = "\\\\.\\pipe\\monitor";
-export constexpr const wchar_t* TBLOG_PIPE_NAMEW = L"\\\\.\\pipe\\monitor";
-#ifdef UNICODE
-export constexpr const char* TBLOG_PIPE_NAME = TBLOG_PIPE_NAMEW;
-#else
-export constexpr const char* TBLOG_PIPE_NAME = TBLOG_PIPE_NAMEA;
 #endif
 
 #include "DetourEventType.h"

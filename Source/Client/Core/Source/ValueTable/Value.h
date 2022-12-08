@@ -4,13 +4,16 @@
 
 #pragma once
 
+#ifdef SOUP_BUILD
+export
+#endif
 namespace Soup::Core
 {
-	export class Value;
-	export using ValueList = std::vector<Value>;
-	export using ValueTable = std::map<std::string, Value>;
+	class Value;
+	using ValueList = std::vector<Value>;
+	using ValueTable = std::map<std::string, Value>;
 
-	export enum class ValueType : uint64_t
+	enum class ValueType : uint64_t
 	{
 		Table = 1,
 		List = 2,
@@ -23,7 +26,7 @@ namespace Soup::Core
 	/// <summary>
 	/// Build State Extension interface
 	/// </summary>
-	export class Value
+	class Value
 	{
 	public:
 		/// <summary>

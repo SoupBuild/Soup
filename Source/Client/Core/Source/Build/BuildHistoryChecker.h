@@ -7,7 +7,10 @@
 
 namespace Soup::Core
 {
-	export class BuildHistoryChecker
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class BuildHistoryChecker
 	{
 	private:
 		FileSystemState& _fileSystemState;

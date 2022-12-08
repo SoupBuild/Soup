@@ -4,6 +4,14 @@ namespace Monitor
 {
 	#ifdef _WIN32
 
+	export constexpr const char* TBLOG_PIPE_NAMEA = "\\\\.\\pipe\\monitor";
+	export constexpr const wchar_t* TBLOG_PIPE_NAMEW = L"\\\\.\\pipe\\monitor";
+	#ifdef UNICODE
+	export constexpr const char* TBLOG_PIPE_NAME = TBLOG_PIPE_NAMEW;
+	#else
+	export constexpr const char* TBLOG_PIPE_NAME = TBLOG_PIPE_NAMEA;
+	#endif
+
 	export struct ProcessPayload
 	{
 		DWORD nParentProcessId;

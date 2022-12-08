@@ -11,7 +11,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The core build evaluation interface that knows how to perform a build from a provided Operation Graph.
 	/// </summary>
-	export class IEvaluateEngine
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IEvaluateEngine
 	{
 	public:
 		/// <summary>

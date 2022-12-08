@@ -8,14 +8,17 @@
 
 using namespace std::chrono_literals;
 
+#ifdef SOUP_BUILD
+export
+#endif
 namespace Soup::Core
 {
-	export using OperationId = uint32_t;
+	using OperationId = uint32_t;
 
 	/// <summary>
 	/// A node in the build graph that is the smallest single operation that will be evaluated
 	/// </summary>
-	export class OperationInfo
+	class OperationInfo
 	{
 	public:
 		OperationId Id;

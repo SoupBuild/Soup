@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The operation results state reader
 	/// </summary>
-	export class OperationResultsReader
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class OperationResultsReader
 	{
 	private:
 		// Binary Operation Results file format

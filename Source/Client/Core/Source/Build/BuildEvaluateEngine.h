@@ -118,7 +118,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The core build evaluation engine that knows how to perform a build from a provided Operation Graph.
 	/// </summary>
-	export class BuildEvaluateEngine : public IEvaluateEngine
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class BuildEvaluateEngine : public IEvaluateEngine
 	{
 	private:
 		bool _forceRebuild;

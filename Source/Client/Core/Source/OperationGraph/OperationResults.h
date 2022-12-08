@@ -12,7 +12,10 @@ namespace Soup::Core
 	/// The cached operation results that is used to track input/output mappings for previous build
 	/// executions to support incremental builds
 	/// </summary>
-	export class OperationResults
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class OperationResults
 	{
 	private:
 		std::unordered_map<OperationId, OperationResult> _results;

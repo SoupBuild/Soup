@@ -2,7 +2,10 @@
 
 namespace Monitor
 {
-	export enum class DetourEventType : uint32_t
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	enum class DetourEventType : uint32_t
 	{
 		// FileApi
 		AreFileApisANSI,

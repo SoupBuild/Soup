@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The operation graph that represents the set of operations that need to be evaluated to perform the build
 	/// </summary>
-	export class OperationGraph
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class OperationGraph
 	{
 	private:
 		std::vector<OperationId> _rootOperations;

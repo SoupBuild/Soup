@@ -4,11 +4,14 @@
 
 #pragma once
 
+#ifdef SOUP_BUILD
+export
+#endif
 namespace Soup::Core
 {
-	export class SMLValue;
+	class SMLValue;
 
-	export enum class SMLValueType
+	enum class SMLValueType
 	{
 		Table,
 		Array,
@@ -80,7 +83,7 @@ namespace Soup::Core
 	/// <summary>
 	/// The SML Document
 	/// </summary>
-	export class SMLDocument
+	class SMLDocument
 	{
 	public:
 		/// <summary>

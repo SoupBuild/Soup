@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The core command information that describes exactly what to run when evaluating an operation.
 	/// </summary>
-	export class CommandInfo
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class CommandInfo
 	{
 	public:
 		Path WorkingDirectory;

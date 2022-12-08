@@ -1,4 +1,6 @@
-﻿module;
+﻿#ifdef SOUP_BUILD
+module;
+#endif
 
 // TODO: Add a converter level to Opal?
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
@@ -33,12 +35,40 @@
 
 #endif
 
+#ifdef SOUP_BUILD
 export module Soup.Core;
 
 import reflex;
 import CryptoPP;
 import Monitor.Host;
 import Opal;
+
+#else
+
+// import Opal
+#include <algorithm>
+#include <array>
+#include <atomic>
+#include <chrono>
+#include <functional>
+#include <fstream>
+#include <filesystem>
+#include <iostream>
+#include <locale>
+#include <map>
+#include <optional>
+#include <queue>
+#include <sstream>
+#include <string>
+#include "Utilities/Path.h"
+#include "Utilities/SemanticVersion.h"
+#include "IO/SystemConsoleManager.h"
+#include "Logger/Log.h"
+#include "Logger/ConsoleTraceListener.h"
+#include "System/STLFileSystem.h"
+#include "System/STLSystem.h"
+
+#endif
 
 using namespace Opal;
 

@@ -19,13 +19,17 @@ namespace Soup::Core
 		PackageClosures Closures;
 	};
 
+	using KnownPackageMap = std::map<std::string, std::pair<PackageId, Path>>;
+
 	/// <summary>
 	/// The build load engine that loads the package build graph.
 	/// It is responsible for loading up the entire closure and validating build state to
 	/// create a package graph that can be evaluated by the build runner.
 	/// </summary>
-	using KnownPackageMap = std::map<std::string, std::pair<PackageId, Path>>;
-	export class BuildLoadEngine
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class BuildLoadEngine
 	{
 	private:
 		const int _packageLockVersion = 4;

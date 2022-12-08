@@ -4,7 +4,10 @@
 
 #pragma once
 
-export namespace Soup::Core
+#ifdef SOUP_BUILD
+export
+#endif
+namespace Soup::Core
 {
 	class RecipeValue;
 	using RecipeList = std::vector<RecipeValue>;

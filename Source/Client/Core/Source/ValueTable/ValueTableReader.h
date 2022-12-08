@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The value table state reader
 	/// </summary>
-	export class ValueTableReader
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class ValueTableReader
 	{
 	private:
 		// Binary Value Table file format

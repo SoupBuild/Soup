@@ -2,158 +2,156 @@
 echo "Linux Build!"
 
 CXX=g++-12
-CXX_FLAGS="-std=c++20 -fmodules-ts"
-CXX_COMPILE_FLAGS="$CXX_FLAGS -DSOUP_BUILD -march=native -msha -mpclmul -msse2 -fpermissive -fmodule-mapper=/home/mwasplund/repos/Soup/Scripts/module-map.txt"
-CXX_COMPILE_INTERFACE_FLAGS="$CXX_COMPILE_FLAGS"
+CXX_FLAGS="-std=c++20"
+CXX_COMPILE_FLAGS="$CXX_FLAGS -march=native -msha -mpclmul -msse2 -fpermissive"
 
 OUT_DIR=~/repos/Soup/out
 
-mkdir -p $OUT_DIR/modules
+# Stop on first error
+set -e
 
 echo Build Opal
 OPAL_DIR=~/.soup/packages/Cpp/Opal/0.8.1
 OPAL_OUT_DIR=$OUT_DIR/Opal/obj
 mkdir -p $OPAL_OUT_DIR
 echo Module.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $OPAL_DIR/Module.cpp -o $OPAL_OUT_DIR/Module.o
+eval $CXX $CXX_COMPILE_FLAGS -c $OPAL_DIR/Module.cpp -o $OPAL_OUT_DIR/Module.o
 
 echo Build CryptoPP
 CRYPTOPP_DIR=~/.soup/packages/Cpp/CryptoPP/1.2.0
 CRYPTOPP_OUT_DIR=$OUT_DIR/CryptoPP/obj
 mkdir -p $CRYPTOPP_OUT_DIR
 echo Interface.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/Interface.cpp -o $CRYPTOPP_OUT_DIR/Interface.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/Interface.cpp -o $CRYPTOPP_OUT_DIR/Interface.o
 echo algebra.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/algebra.cpp -o $CRYPTOPP_OUT_DIR/algebra.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/algebra.cpp -o $CRYPTOPP_OUT_DIR/algebra.o
 echo algparam.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/algparam.cpp -o $CRYPTOPP_OUT_DIR/algparam.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/algparam.cpp -o $CRYPTOPP_OUT_DIR/algparam.o
 echo allocate.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/allocate.cpp -o $CRYPTOPP_OUT_DIR/allocate.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/allocate.cpp -o $CRYPTOPP_OUT_DIR/allocate.o
 echo asn.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/asn.cpp -o $CRYPTOPP_OUT_DIR/asn.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/asn.cpp -o $CRYPTOPP_OUT_DIR/asn.o
 echo base64.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/base64.cpp -o $CRYPTOPP_OUT_DIR/base64.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/base64.cpp -o $CRYPTOPP_OUT_DIR/base64.o
 echo basecode.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/basecode.cpp -o $CRYPTOPP_OUT_DIR/basecode.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/basecode.cpp -o $CRYPTOPP_OUT_DIR/basecode.o
 echo cpu.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/cpu.cpp -o $CRYPTOPP_OUT_DIR/cpu.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/cpu.cpp -o $CRYPTOPP_OUT_DIR/cpu.o
 echo cryptlib.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/cryptlib.cpp -o $CRYPTOPP_OUT_DIR/cryptlib.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/cryptlib.cpp -o $CRYPTOPP_OUT_DIR/cryptlib.o
 echo des.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/des.cpp -o $CRYPTOPP_OUT_DIR/des.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/des.cpp -o $CRYPTOPP_OUT_DIR/des.o
 echo dessp.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/dessp.cpp -o $CRYPTOPP_OUT_DIR/dessp.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/dessp.cpp -o $CRYPTOPP_OUT_DIR/dessp.o
 echo dll.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/dll.cpp -o $CRYPTOPP_OUT_DIR/dll.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/dll.cpp -o $CRYPTOPP_OUT_DIR/dll.o
 echo ec2n.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/ec2n.cpp -o $CRYPTOPP_OUT_DIR/ec2n.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/ec2n.cpp -o $CRYPTOPP_OUT_DIR/ec2n.o
 echo ecp.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/ecp.cpp -o $CRYPTOPP_OUT_DIR/ecp.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/ecp.cpp -o $CRYPTOPP_OUT_DIR/ecp.o
 echo filters.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/filters.cpp -o $CRYPTOPP_OUT_DIR/filters.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/filters.cpp -o $CRYPTOPP_OUT_DIR/filters.o
 echo fips140.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/fips140.cpp -o $CRYPTOPP_OUT_DIR/fips140.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/fips140.cpp -o $CRYPTOPP_OUT_DIR/fips140.o
 echo gf2n.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/gf2n.cpp -o $CRYPTOPP_OUT_DIR/gf2n.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/gf2n.cpp -o $CRYPTOPP_OUT_DIR/gf2n.o
 echo gf2n_simd.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/gf2n_simd.cpp -o $CRYPTOPP_OUT_DIR/gf2n_simd.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/gf2n_simd.cpp -o $CRYPTOPP_OUT_DIR/gf2n_simd.o
 echo gfpcrypt.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/gfpcrypt.cpp -o $CRYPTOPP_OUT_DIR/gfpcrypt.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/gfpcrypt.cpp -o $CRYPTOPP_OUT_DIR/gfpcrypt.o
 echo hex.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/hex.cpp -o $CRYPTOPP_OUT_DIR/hex.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/hex.cpp -o $CRYPTOPP_OUT_DIR/hex.o
 echo hmac.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/hmac.cpp -o $CRYPTOPP_OUT_DIR/hmac.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/hmac.cpp -o $CRYPTOPP_OUT_DIR/hmac.o
 echo hrtimer.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/hrtimer.cpp -o $CRYPTOPP_OUT_DIR/hrtimer.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/hrtimer.cpp -o $CRYPTOPP_OUT_DIR/hrtimer.o
 echo integer.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/integer.cpp -o $CRYPTOPP_OUT_DIR/integer.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/integer.cpp -o $CRYPTOPP_OUT_DIR/integer.o
 echo iterhash.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/iterhash.cpp -o $CRYPTOPP_OUT_DIR/iterhash.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/iterhash.cpp -o $CRYPTOPP_OUT_DIR/iterhash.o
 echo misc.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/misc.cpp -o $CRYPTOPP_OUT_DIR/misc.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/misc.cpp -o $CRYPTOPP_OUT_DIR/misc.o
 echo modes.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/modes.cpp -o $CRYPTOPP_OUT_DIR/modes.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/modes.cpp -o $CRYPTOPP_OUT_DIR/modes.o
 echo mqueue.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/mqueue.cpp -o $CRYPTOPP_OUT_DIR/mqueue.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/mqueue.cpp -o $CRYPTOPP_OUT_DIR/mqueue.o
 echo nbtheory.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/nbtheory.cpp -o $CRYPTOPP_OUT_DIR/nbtheory.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/nbtheory.cpp -o $CRYPTOPP_OUT_DIR/nbtheory.o
 echo osrng.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/osrng.cpp -o $CRYPTOPP_OUT_DIR/osrng.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/osrng.cpp -o $CRYPTOPP_OUT_DIR/osrng.o
 echo pubkey.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/pubkey.cpp -o $CRYPTOPP_OUT_DIR/pubkey.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/pubkey.cpp -o $CRYPTOPP_OUT_DIR/pubkey.o
 echo queue.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/queue.cpp -o $CRYPTOPP_OUT_DIR/queue.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/queue.cpp -o $CRYPTOPP_OUT_DIR/queue.o
 echo randpool.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/randpool.cpp -o $CRYPTOPP_OUT_DIR/randpool.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/randpool.cpp -o $CRYPTOPP_OUT_DIR/randpool.o
 echo rdtables.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/rdtables.cpp -o $CRYPTOPP_OUT_DIR/rdtables.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/rdtables.cpp -o $CRYPTOPP_OUT_DIR/rdtables.o
 echo rijndael.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/rijndael.cpp -o $CRYPTOPP_OUT_DIR/rijndael.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/rijndael.cpp -o $CRYPTOPP_OUT_DIR/rijndael.o
 echo rijndael_simd.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/rijndael_simd.cpp -o $CRYPTOPP_OUT_DIR/rijndael_simd.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/rijndael_simd.cpp -o $CRYPTOPP_OUT_DIR/rijndael_simd.o
 echo rng.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/rng.cpp -o $CRYPTOPP_OUT_DIR/rng.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/rng.cpp -o $CRYPTOPP_OUT_DIR/rng.o
 echo sha.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/sha.cpp -o $CRYPTOPP_OUT_DIR/sha.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/sha.cpp -o $CRYPTOPP_OUT_DIR/sha.o
 echo sha_simd.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/sha_simd.cpp -o $CRYPTOPP_OUT_DIR/sha_simd.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/sha_simd.cpp -o $CRYPTOPP_OUT_DIR/sha_simd.o
 echo sse_simd.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/sse_simd.cpp -o $CRYPTOPP_OUT_DIR/sse_simd.o
+eval $CXX $CXX_COMPILE_FLAGS -c $CRYPTOPP_DIR/sse_simd.cpp -o $CRYPTOPP_OUT_DIR/sse_simd.o
 
 echo Build Reflex
 REFLEX_DIR=~/.soup/packages/Cpp/reflex/1.0.1
 REFLEX_OUT_DIR=$OUT_DIR/reflex/obj
 mkdir -p $REFLEX_OUT_DIR
-echo Module.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/Module.cpp -o $REFLEX_OUT_DIR/Module.o
 echo convert.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/convert.cpp -o $REFLEX_OUT_DIR/convert.o
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/convert.cpp -o $REFLEX_OUT_DIR/convert.o
 echo error.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/error.cpp -o $REFLEX_OUT_DIR/error.o
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/error.cpp -o $REFLEX_OUT_DIR/error.o
 echo input.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/input.cpp -o $REFLEX_OUT_DIR/input.o
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/input.cpp -o $REFLEX_OUT_DIR/input.o
 echo matcher.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/matcher.cpp -o $REFLEX_OUT_DIR/matcher.o
-# echo pattern.cpp
-# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/pattern.cpp -o $REFLEX_OUT_DIR/pattern.o
-# echo posix.cpp
-# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -freport-bug -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/posix.cpp -o $REFLEX_OUT_DIR/posix.o
-# echo unicode.cpp
-# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/unicode.cpp -o $REFLEX_OUT_DIR/unicode.o
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/matcher.cpp -o $REFLEX_OUT_DIR/matcher.o
+echo pattern.cpp
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/pattern.cpp -o $REFLEX_OUT_DIR/pattern.o
+echo posix.cpp
+eval $CXX $CXX_COMPILE_FLAGS -freport-bug -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/posix.cpp -o $REFLEX_OUT_DIR/posix.o
+echo unicode.cpp
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/unicode.cpp -o $REFLEX_OUT_DIR/unicode.o
 echo utf8.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/utf8.cpp -o $REFLEX_OUT_DIR/utf8.o
-# echo block_scripts.cpp
-# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/block_scripts.cpp -o $REFLEX_OUT_DIR/block_scripts.o
-# echo language_scripts.cpp
-# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/language_scripts.cpp -o $REFLEX_OUT_DIR/language_scripts.o
-# echo letter_scripts.cpp
-# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/letter_scripts.cpp -o $REFLEX_OUT_DIR/letter_scripts.o
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/utf8.cpp -o $REFLEX_OUT_DIR/utf8.o
+echo block_scripts.cpp
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/block_scripts.cpp -o $REFLEX_OUT_DIR/block_scripts.o
+echo language_scripts.cpp
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/language_scripts.cpp -o $REFLEX_OUT_DIR/language_scripts.o
+echo letter_scripts.cpp
+eval $CXX $CXX_COMPILE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/letter_scripts.cpp -o $REFLEX_OUT_DIR/letter_scripts.o
 
 echo Build Monitor.Shared
 MONITOR_SHARED_DIR=~/repos/Soup/Source/Monitor/Shared
 MONITOR_SHARED_OUT_DIR=$OUT_DIR/Monitor.Core/obj
 mkdir -p $MONITOR_SHARED_OUT_DIR
 echo Module.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $MONITOR_SHARED_DIR/Module.cpp -o $MONITOR_SHARED_OUT_DIR/Module.o
+eval $CXX $CXX_COMPILE_FLAGS -c $MONITOR_SHARED_DIR/Module.cpp -o $MONITOR_SHARED_OUT_DIR/Module.o
 
 echo Build Monitor.Host
 MONITOR_HOST_DIR=~/repos/Soup/Source/Monitor/Host
 MONITOR_HOST_OUT_DIR=$OUT_DIR/Monitor.Core/obj
 mkdir -p $MONITOR_HOST_OUT_DIR
 echo Module.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $MONITOR_HOST_DIR/Module.cpp -o $MONITOR_HOST_OUT_DIR/Module.o
+eval $CXX $CXX_COMPILE_FLAGS -c $MONITOR_HOST_DIR/Module.cpp -o $MONITOR_HOST_OUT_DIR/Module.o
 
 echo Build Soup.Client.Core
 SOUP_CLIENT_CORE_DIR=~/repos/Soup/Source/Client/Core
 SOUP_CLIENT_CORE_OUT_DIR=$OUT_DIR/Soup.Client.Core/obj
 mkdir -p $SOUP_CLIENT_CORE_OUT_DIR
 echo Module.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$SOUP_CLIENT_CORE_DIR/Source -c $SOUP_CLIENT_CORE_DIR/Source/Module.cpp -o $SOUP_CLIENT_CORE_OUT_DIR/Module.o
+eval $CXX $CXX_COMPILE_FLAGS -I$SOUP_CLIENT_CORE_DIR/Source -c $SOUP_CLIENT_CORE_DIR/Source/Module.cpp -o $SOUP_CLIENT_CORE_OUT_DIR/Module.o
 echo Value.cpp
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$SOUP_CLIENT_CORE_DIR/Source -c $SOUP_CLIENT_CORE_DIR/Source/ValueTable/Value.cpp -o $SOUP_CLIENT_CORE_OUT_DIR/Value.o
+eval $CXX $CXX_COMPILE_FLAGS -I$SOUP_CLIENT_CORE_DIR/Source -c $SOUP_CLIENT_CORE_DIR/Source/ValueTable/Value.cpp -o $SOUP_CLIENT_CORE_OUT_DIR/Value.o
 
 echo Build Soup.Client.CLI
 SOUP_CLIENT_CLI_DIR=~/repos/Soup/Source/CLI/CLI
 SOUP_CLIENT_CLI_OUT_DIR=$OUT_DIR/Soup.CLI.CLI/obj
 mkdir -p $SOUP_CLIENT_CLI_OUT_DIR
-eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $SOUP_CLIENT_CLI_DIR/Source/Main.cpp -o $SOUP_CLIENT_CLI_OUT_DIR/Main.o
+eval $CXX $CXX_COMPILE_FLAGS -c $SOUP_CLIENT_CLI_DIR/Source/Main.cpp -o $SOUP_CLIENT_CLI_OUT_DIR/Main.o

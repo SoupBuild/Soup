@@ -11,7 +11,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The complete set of known files that tracking the active change state during execution
 	/// </summary>
-	export class FileSystemState
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class FileSystemState
 	{
 	public:
 		/// <summary>

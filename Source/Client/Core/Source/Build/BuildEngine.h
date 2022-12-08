@@ -13,7 +13,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The core build system that brings together the individual build components to build a single root package
 	/// </summary>
-	export class BuildEngine
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class BuildEngine
 	{
 	public:
 		static std::map<std::string, BuiltInLanguagePackage> GetBuiltInLanguages()

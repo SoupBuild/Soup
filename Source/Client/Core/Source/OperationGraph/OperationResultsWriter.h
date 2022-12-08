@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The operation results state writer
 	/// </summary>
-	export class OperationResultsWriter
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class OperationResultsWriter
 	{
 	private:
 		// Binary Operation results file format

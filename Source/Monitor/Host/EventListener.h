@@ -10,7 +10,10 @@ namespace Monitor
 	/// The event listener knows how to parse an incoming message and pass it along to the
 	/// registered callback.
 	/// </summary>
-	export class EventListener
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class EventListener
 	{
 	public:
 		/// <summary>

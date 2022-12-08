@@ -11,7 +11,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The local user config extensions
 	/// </summary>
-	export class LocalUserConfigExtensions
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class LocalUserConfigExtensions
 	{
 	public:
 		/// <summary>
