@@ -11,13 +11,14 @@ OUT_DIR=~/repos/Soup/out
 mkdir -p $OUT_DIR/modules
 
 echo Build Opal
-OPAL_DIR=~/.soup/packages/C++/Opal/0.3.0
+OPAL_DIR=~/.soup/packages/Cpp/Opal/0.8.1
 OPAL_OUT_DIR=$OUT_DIR/Opal/obj
 mkdir -p $OPAL_OUT_DIR
+echo Module.cpp
 eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $OPAL_DIR/Module.cpp -o $OPAL_OUT_DIR/Module.o
 
 echo Build CryptoPP
-CRYPTOPP_DIR=~/.soup/packages/C++/CryptoPP/1.0.1
+CRYPTOPP_DIR=~/.soup/packages/Cpp/CryptoPP/1.2.0
 CRYPTOPP_OUT_DIR=$OUT_DIR/CryptoPP/obj
 mkdir -p $CRYPTOPP_OUT_DIR
 echo Interface.cpp
@@ -98,6 +99,35 @@ echo sha_simd.cpp
 eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/sha_simd.cpp -o $CRYPTOPP_OUT_DIR/sha_simd.o
 echo sse_simd.cpp
 eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -c $CRYPTOPP_DIR/sse_simd.cpp -o $CRYPTOPP_OUT_DIR/sse_simd.o
+
+echo Build Reflex
+REFLEX_DIR=~/.soup/packages/Cpp/reflex/1.0.1
+REFLEX_OUT_DIR=$OUT_DIR/reflex/obj
+mkdir -p $REFLEX_OUT_DIR
+echo Module.cpp
+eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/Module.cpp -o $REFLEX_OUT_DIR/Module.o
+echo convert.cpp
+eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/convert.cpp -o $REFLEX_OUT_DIR/convert.o
+echo error.cpp
+eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/error.cpp -o $REFLEX_OUT_DIR/error.o
+echo input.cpp
+eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/input.cpp -o $REFLEX_OUT_DIR/input.o
+echo matcher.cpp
+eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/matcher.cpp -o $REFLEX_OUT_DIR/matcher.o
+# echo pattern.cpp
+# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/pattern.cpp -o $REFLEX_OUT_DIR/pattern.o
+# echo posix.cpp
+# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -freport-bug -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/posix.cpp -o $REFLEX_OUT_DIR/posix.o
+# echo unicode.cpp
+# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/unicode.cpp -o $REFLEX_OUT_DIR/unicode.o
+echo utf8.cpp
+eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/lib/utf8.cpp -o $REFLEX_OUT_DIR/utf8.o
+# echo block_scripts.cpp
+# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/block_scripts.cpp -o $REFLEX_OUT_DIR/block_scripts.o
+# echo language_scripts.cpp
+# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/language_scripts.cpp -o $REFLEX_OUT_DIR/language_scripts.o
+# echo letter_scripts.cpp
+# eval $CXX $CXX_COMPILE_INTERFACE_FLAGS -I$REFLEX_DIR/include -c $REFLEX_DIR/unicode/letter_scripts.cpp -o $REFLEX_OUT_DIR/letter_scripts.o
 
 echo Build Monitor.Shared
 MONITOR_SHARED_DIR=~/repos/Soup/Source/Monitor/Shared
