@@ -1,10 +1,12 @@
 # Visual Studio
 .vs/
 *.user
-.vscode/ipch/
 packages/
 bin/
 obj/
+
+# VSCode
+.vscode/
 
 # Soup
 /out/
