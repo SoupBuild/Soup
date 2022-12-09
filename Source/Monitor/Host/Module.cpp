@@ -1,6 +1,6 @@
 module;
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 
 #ifdef CreateProcess
@@ -35,7 +35,7 @@ module;
 #include <vector>
 
 export module Monitor.Host;
-#ifdef WIN32
+#ifdef _WIN32
 import Detours;
 import Monitor.Shared;
 #endif
@@ -44,7 +44,7 @@ import Opal;
 using namespace Opal;
 
 #include "MockDetourProcessManager.h"
-#ifdef WIN32
+#ifdef _WIN32
 #include "WindowsDetourProcessManager.h"
 #endif
 #include "ScopedDetourProcessManagerRegister.h"

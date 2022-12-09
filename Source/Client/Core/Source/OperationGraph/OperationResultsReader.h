@@ -153,7 +153,7 @@ namespace Soup::Core
 			return result;
 		}
 
-		static boolean ReadBoolean(char*& content)
+		static bool ReadBoolean(char*& content)
 		{
 			uint32_t result = 0;
 			Read(content, reinterpret_cast<char*>(&result), sizeof(uint32_t));

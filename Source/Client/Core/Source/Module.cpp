@@ -23,7 +23,7 @@
 #include <variant>
 #include <vector>
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #include <Windows.h>
 #undef max

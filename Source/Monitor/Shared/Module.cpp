@@ -1,6 +1,6 @@
 module;
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #include <windows.h>
 
@@ -46,7 +46,7 @@ export constexpr const char* TBLOG_PIPE_NAME = TBLOG_PIPE_NAMEA;
 #include "Message.h"
 #include "ProcessPayload.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 
 export void ThrowIfFailed(int32_t result, std::string_view message)
 {

@@ -2,7 +2,7 @@
 
 namespace Monitor
 {
-	#ifdef WIN32
+	#ifdef _WIN32
 
 	export struct ProcessPayload
 	{
