@@ -49,8 +49,8 @@ namespace Soup::Core::UnitTests
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			auto arguments = RecipeBuildArguments();
 			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
@@ -166,15 +166,15 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
+					"CreateMonitorProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 
 			// Verify files
 			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(

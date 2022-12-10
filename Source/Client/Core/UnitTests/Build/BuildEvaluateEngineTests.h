@@ -104,15 +104,15 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
-			detourProcessManager->RegisterExecuteCallback(
-				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IDetourCallback& callback)
+			monitorProcessManager->RegisterExecuteCallback(
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.OnCreateFile2(L"InputFile2.in", 0, 0, 0, 0, false);
-					callback.OnCreateFile2(L"OutputFile2.out", GENERIC_WRITE, 0, 0, 0, false);
+					callback.TouchFileRead(Path("InputFile2.in"), true, false);
+					callback.TouchFileWrite(Path("OutputFile2.out"), false);
 				});
 
 			// Setup the input build state
@@ -201,15 +201,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 
 		// [[Fact]]
@@ -232,16 +232,16 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
-			detourProcessManager->RegisterExecuteCallback(
-				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IDetourCallback& callback)
+			monitorProcessManager->RegisterExecuteCallback(
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IMonitorCallback& callback)
 				{
 					// Read and write the same file
-					callback.OnCreateFile2(L"File.txt", 0, 0, 0, 0, false);
-					callback.OnCreateFile2(L"File.txt", GENERIC_WRITE, 0, 0, 0, false);
+					callback.TouchFileRead(Path("File.txt"), true, false);
+					callback.TouchFileWrite(Path("File.txt"), false);
 				});
 
 			// Setup the input build state
@@ -333,15 +333,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 
 		// [[Fact]]
@@ -365,16 +365,16 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
-			detourProcessManager->RegisterExecuteCallback(
-				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IDetourCallback& callback)
+			monitorProcessManager->RegisterExecuteCallback(
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IMonitorCallback& callback)
 				{
 					// Read and write the same file
-					callback.OnCreateFile2(L"File.txt", 0, 0, 0, 0, false);
-					callback.OnCreateFile2(L"File.txt", GENERIC_WRITE, 0, 0, 0, false);
+					callback.TouchFileRead(Path("File.txt"), true, false);
+					callback.TouchFileWrite(Path("File.txt"), false);
 				});
 
 			// Setup the input build state
@@ -466,15 +466,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 
 		// [[Fact]]
@@ -506,8 +506,8 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
@@ -606,15 +606,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 
 		// [[Fact]]
@@ -651,8 +651,8 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			// Create the build state
 			auto uut = BuildEvaluateEngine(
@@ -748,15 +748,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 
 		// [[Fact]]
@@ -795,8 +795,8 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
@@ -892,15 +892,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 
 		// [[Fact]]
@@ -939,8 +939,8 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
 			// Setup the input build state
 			auto uut = BuildEvaluateEngine(
@@ -1036,15 +1036,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 
 		// [[Fact]]
@@ -1184,14 +1184,14 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
-			detourProcessManager->RegisterExecuteCallback(
-				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IDetourCallback& callback)
+			monitorProcessManager->RegisterExecuteCallback(
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.OnCreateFile2(L"OutputFile.out", GENERIC_WRITE, 0, 0, 0, false);
+					callback.TouchFileWrite(Path("OutputFile.out"), false);
 				});
 
 			// Setup the input build state
@@ -1288,15 +1288,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 
 		// [[Fact]]
@@ -1320,14 +1320,14 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
-			detourProcessManager->RegisterExecuteCallback(
-				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IDetourCallback& callback)
+			monitorProcessManager->RegisterExecuteCallback(
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.OnCreateFile2(L"File.txt", GENERIC_WRITE, 0, 0, 0, false);
+					callback.TouchFileWrite(Path("File.txt"), false);
 				});
 
 			// Setup the input build state
@@ -1424,15 +1424,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 
 		// [[Fact]]
@@ -1456,14 +1456,14 @@ namespace Soup::Core::UnitTests
 				}));
 
 			// Register the test process manager
-			auto detourProcessManager = std::make_shared<Monitor::MockDetourProcessManager>();
-			auto scopedDetourProcessManager = Monitor::ScopedDetourProcessManagerRegister(detourProcessManager);
+			auto monitorProcessManager = std::make_shared<Monitor::MockMonitorProcessManager>();
+			auto scopedMonitorProcessManager = Monitor::ScopedMonitorProcessManagerRegister(monitorProcessManager);
 
-			detourProcessManager->RegisterExecuteCallback(
-				"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
-				[](Monitor::IDetourCallback& callback)
+			monitorProcessManager->RegisterExecuteCallback(
+				"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+				[](Monitor::IMonitorCallback& callback)
 				{
-					callback.OnCreateFile2(L"File.txt", 0, 0, 0, 0, false);
+					callback.TouchFileRead(Path("File.txt"), true, false);
 				});
 
 			// Setup the input build state
@@ -1561,15 +1561,15 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateDetourProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
+					"CreateMonitorProcess: 1 [C:/TestWorkingDirectory/] ./Command1.exe Arguments Environment [2] 1 AllowedRead [0] AllowedWrite [0]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
 					"GetStandardError: 1",
 					"GetExitCode: 1",
 				}),
-				detourProcessManager->GetRequests(),
-				"Verify detour process manager requests match expected.");
+				monitorProcessManager->GetRequests(),
+				"Verify monitor process manager requests match expected.");
 		}
 	};
 }

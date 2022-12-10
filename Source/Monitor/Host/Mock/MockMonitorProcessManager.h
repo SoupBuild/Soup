@@ -1,29 +1,29 @@
-﻿// <copyright file="MockDetourProcessManager.h" company="Soup">
+﻿// <copyright file="MockMonitorProcessManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "IDetourProcessManager.h"
+#include "IMonitorProcessManager.h"
 
 namespace Monitor
 {
 	/// <summary>
-	/// The mock detour process manager
+	/// The mock monitor process manager
 	/// TODO: Move into test project
 	/// </summary>
-	export class MockDetourProcessManager : public IDetourProcessManager
+	export class MockMonitorProcessManager : public IMonitorProcessManager
 	{
 	private:
 		std::atomic<int> m_uniqueId;
 		std::vector<std::string> _requests;
 		std::map<std::string, std::string> _executeResults;
-		std::map<std::string, std::function<void(IDetourCallback&)>> _executeCallbacks;
+		std::map<std::string, std::function<void(IMonitorCallback&)>> _executeCallbacks;
 
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref='MockDetourProcessManager'/> class.
+		/// Initializes a new instance of the <see cref='MockMonitorProcessManager'/> class.
 		/// </summary>
-		MockDetourProcessManager() :
+		MockMonitorProcessManager() :
 			m_uniqueId(1),
 			_requests(),
 			_executeResults()
@@ -47,7 +47,7 @@ namespace Monitor
 		/// </summary>
 		void RegisterExecuteCallback(
 			std::string command,
-			std::function<void(IDetourCallback&)> callback)
+			std::function<void(IMonitorCallback&)> callback)
 		{
 			_executeCallbacks.emplace(
 				std::move(command),
@@ -65,19 +65,19 @@ namespace Monitor
 		/// <summary>
 		/// Creates a process for the provided executable path
 		/// </summary>
-		std::shared_ptr<Opal::System::IProcess> CreateDetourProcess(
+		std::shared_ptr<Opal::System::IProcess> CreateMonitorProcess(
 			const Path& executable,
 			const std::string& arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
-			std::shared_ptr<IDetourCallback> callback,
+			std::shared_ptr<IMonitorCallback> callback,
 			bool enableAccessChecks,
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) override final
 		{
 			std::stringstream message;
 			auto id = m_uniqueId++;
-			message << "CreateDetourProcess: " << id << " [" << workingDirectory.ToString() << "] " << executable.ToString() << " " << arguments;
+			message << "CreateMonitorProcess: " << id << " [" << workingDirectory.ToString() << "] " << executable.ToString() << " " << arguments;
 			message << " Environment [" << environmentVariables.size() << "]";
 			message << " " << enableAccessChecks;
 			message << " AllowedRead [" << allowedReadAccess.size() << "]";

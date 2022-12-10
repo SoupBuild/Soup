@@ -53,7 +53,7 @@ namespace Soup::Client
 				System::ISystem::Register(std::make_shared<System::STLSystem>());
 				System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
 				System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
-				Monitor::IDetourProcessManager::Register(std::make_shared<Monitor::WindowsDetourProcessManager>());
+				Monitor::IMonitorProcessManager::Register(std::make_shared<Monitor::Windows::WindowsMonitorProcessManager>());
 				IO::IConsoleManager::Register(std::make_shared<IO::SystemConsoleManager>());
 
 				// Attempt to parse the provided arguments

@@ -73,16 +73,13 @@ import Opal;
 
 using namespace Opal;
 
-#ifdef SOUP_BUILD
-#include "MockDetourProcessManager.h"
-#include "ScopedDetourProcessManagerRegister.h"
-#endif
+#include "Mock/MockMonitorProcessManager.h"
+#include "ScopedMonitorProcessManagerRegister.h"
 
 #if defined(_WIN32)
-#include "WindowsDetourProcessManager.h"
+#include "Windows/WindowsMonitorProcessManager.h"
+#include "Windows/DetourCallbackLogger.h"
+#include "Windows/DetourForkCallback.h"
 #elif defined(__linux__)
-#include "LinuxDetourProcessManager.h"
+#include "Linux/LinuxMonitorProcessManager.h"
 #endif
-
-#include "DetourCallbackLogger.h"
-#include "ForkCallbackLogger.h"

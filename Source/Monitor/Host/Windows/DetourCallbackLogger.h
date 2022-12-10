@@ -1,11 +1,8 @@
 ﻿#pragma once 
 #include "IDetourCallback.h"
 
-namespace Monitor
+namespace Monitor::Windows
 {
-	#ifdef SOUP_BUILD
-	export
-	#endif
 	class DetourCallbackLogger : public IDetourCallback
 	{
 	public:

@@ -1,11 +1,12 @@
-﻿// <copyright file="WindowsDetourProcess.h" company="Soup">
+﻿// <copyright file="WindowsMonitorProcess.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
+#include "DetourMonitorCallback.h"
 #include "EventListener.h"
 
-namespace Monitor
+namespace Monitor::Windows
 {
 	/// <summary>
 	/// The Pipe Server Instance that keeps track of the required state for each individual connection
@@ -22,20 +23,20 @@ namespace Monitor
 	};
 
 	/// <summary>
-	/// A windows platform specific detour process executable
+	/// A windows platform specific monitor process executable
 	/// </summary>
-	export class WindowsDetourProcess : public Opal::System::IProcess
+	class WindowsMonitorProcess : public Opal::System::IProcess
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref='WindowsDetourProcess'/> class.
+		/// Initializes a new instance of the <see cref='WindowsMonitorProcess'/> class.
 		/// </summary>
-		WindowsDetourProcess(
+		WindowsMonitorProcess(
 			const Path& executable,
 			const std::string& arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
-			std::shared_ptr<IDetourCallback> callback,
+			std::shared_ptr<IMonitorCallback> callback,
 			bool enableAccessChecks,
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) :
@@ -43,7 +44,7 @@ namespace Monitor
 			m_arguments(arguments),
 			m_workingDirectory(workingDirectory),
 			m_environmentVariables(environmentVariables),
-			m_eventListener(std::move(callback)),
+			m_eventListener(std::make_shared<DetourMonitorCallback>(std::move(callback))),
 			m_enableAccessChecks(enableAccessChecks),
 			m_allowedReadAccess(std::move(allowedReadAccess)),
 			m_allowedWriteAccess(std::move(allowedWriteAccess)),
@@ -127,7 +128,7 @@ namespace Monitor
 			if (!SetHandleInformation(m_stdInWriteHandle.Get(), HANDLE_FLAG_INHERIT, 0))
 				throw std::runtime_error("Execute SetHandleInformation Failed");
 
-			// Build up the detour dlls absolute path
+			// Build up the Monitor dlls absolute path
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
 			auto dllPath = moduleFolder + Path("Monitor.Client.64.dll");
@@ -179,7 +180,7 @@ namespace Monitor
 			PROCESS_INFORMATION processInfo = {};
 			ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
 
-			// Create the requested process with our detour dll loaded
+			// Create the requested process with our Monitor dll loaded
 			if (!DetourCreateProcessWithDllExA(
 				m_executable.ToString().c_str(),
 				argumentsString.data(),
@@ -243,7 +244,7 @@ namespace Monitor
 			// Create the worker thread that will act as the pipe server
 			m_processRunning = true;
 			m_workerFailed = false;
-			m_workerThread = std::thread(&WindowsDetourProcess::WorkerThread, std::ref(*this));
+			m_workerThread = std::thread(&WindowsMonitorProcess::WorkerThread, std::ref(*this));
 
 			// Restart the process
 			auto hr = ResumeThread(m_threadHandle.Get());
@@ -726,8 +727,8 @@ namespace Monitor
 
 		void DebugTrace(std::string_view message, uint32_t value)
 		{
-#ifdef TRACE_DETOUR_HOST
-			std::cout << "DETOUR-HOST: " << message << " " << value << std::endl;
+#ifdef TRACE_Monitor_HOST
+			std::cout << "Monitor-HOST: " << message << " " << value << std::endl;
 #else
 		(message);
 		(value);
@@ -736,8 +737,8 @@ namespace Monitor
 
 		void DebugTrace(std::string_view message)
 		{
-#ifdef TRACE_DETOUR_HOST
-			std::cout << "DETOUR-HOST: " << message << std::endl;
+#ifdef TRACE_Monitor_HOST
+			std::cout << "Monitor-HOST: " << message << std::endl;
 #else
 		(message);
 #endif
