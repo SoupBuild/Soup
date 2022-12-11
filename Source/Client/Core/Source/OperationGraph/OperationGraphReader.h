@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The operation graph state reader
 	/// </summary>
-	export class OperationGraphReader
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class OperationGraphReader
 	{
 	private:
 		// Binary Operation Graph file format

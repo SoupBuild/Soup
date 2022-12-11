@@ -3,18 +3,19 @@
 // </copyright>
 
 #pragma once
+#include "IDetourCallback.h"
 
-namespace Monitor
+namespace Monitor::Windows
 {
 	/// <summary>
 	/// The event listener knows how to parse an incoming message and pass it along to the
 	/// registered callback.
 	/// </summary>
-	export class EventListener
+	class EventListener
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref='WindowsDetourProcess'/> class.
+		/// Initializes a new instance of the <see cref='EventListener'/> class.
 		/// </summary>
 		EventListener(
 			std::shared_ptr<IDetourCallback> callback) :

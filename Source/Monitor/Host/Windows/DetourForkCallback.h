@@ -1,11 +1,11 @@
 ﻿#pragma once 
 
-namespace Monitor
+namespace Monitor::Windows
 {
-	export class ForkCallbackLogger : public IDetourCallback
+	class DetourForkCallback : public IDetourCallback
 	{
 	public:
-		ForkCallbackLogger(std::shared_ptr<IDetourCallback> callback1, std::shared_ptr<IDetourCallback> callback2) :
+		DetourForkCallback(std::shared_ptr<IDetourCallback> callback1, std::shared_ptr<IDetourCallback> callback2) :
 			_callback1(std::move(callback1)),
 			_callback2(std::move(callback2))
 		{

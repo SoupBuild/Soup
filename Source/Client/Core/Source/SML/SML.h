@@ -4,11 +4,14 @@
 
 #pragma once
 
+#ifdef SOUP_BUILD
+export
+#endif
 namespace Soup::Core
 {
-	export class SMLValue;
+	class SMLValue;
 
-	export enum class SMLValueType
+	enum class SMLValueType
 	{
 		Table,
 		Array,
@@ -80,7 +83,7 @@ namespace Soup::Core
 	/// <summary>
 	/// The SML Document
 	/// </summary>
-	export class SMLDocument
+	class SMLDocument
 	{
 	public:
 		/// <summary>
@@ -216,7 +219,9 @@ namespace Soup::Core
 	};
 
 	std::ostream& operator<<(std::ostream& stream, const SMLValue& value);
+	std::ostream& operator<<(std::ostream& stream, const SMLDocument& value);
 
+#ifdef CLIENT_CORE_IMPLEMENTATION
 	std::ostream& operator<<(std::ostream& stream, const SMLDocument& value)
 	{
 		for (const auto& tableValue : value.GetRoot().GetValue())
@@ -282,4 +287,5 @@ namespace Soup::Core
 
 		return stream;
 	}
+#endif
 }

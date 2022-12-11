@@ -33,7 +33,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+#ifdef SOUP_BUILD
 module;
+#endif
 
 // #define SHOW_TOKENS
 
@@ -46,7 +48,18 @@ module;
 # include <string>
 # include <sstream>
 
+#ifdef SOUP_BUILD
+
 module Soup.Core;
+
+#else
+
+#include <unordered_map>
+#include <variant>
+#include <vector>
+#include "SML.h"
+
+#endif
 
 enum class SMLToken : int
 {
@@ -75,7 +88,9 @@ enum class SMLToken : int
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-// #include <reflex/matcher.h>
+#ifndef SOUP_BUILD
+#include <reflex/matcher.h>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -83,7 +98,9 @@ enum class SMLToken : int
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-// #include <reflex/abslexer.h>
+#ifndef SOUP_BUILD
+#include <reflex/abslexer.h>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -587,7 +604,7 @@ private:
             }
             case SMLToken::Integer:
             {
-                auto integer = std::stoll(text());
+                int64_t integer = std::stoll(text());
                 value = SMLValue(integer);
                 return true;
             }
@@ -754,7 +771,9 @@ private:
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-// #include <reflex/matcher.h>
+#ifndef SOUP_BUILD
+#include <reflex/matcher.h>
+#endif
 
 #if defined(OS_WIN)
 #pragma warning(disable:4101 4102)
@@ -9107,7 +9126,9 @@ S5344:
 
 } // namespace SML
 
-// #include <reflex/matcher.h>
+#ifndef SOUP_BUILD
+#include <reflex/matcher.h>
+#endif
 
 #if defined(OS_WIN)
 #pragma warning(disable:4101 4102)

@@ -1,4 +1,6 @@
-﻿module;
+﻿#ifdef SOUP_BUILD
+module;
+#endif
 
 // TODO: Add a converter level to Opal?
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
@@ -7,6 +9,7 @@
 #include <array>
 #include <chrono>
 #include <codecvt>
+#include <cstring>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -23,13 +26,17 @@
 #include <variant>
 #include <vector>
 
-#include <Windows.h>
+#ifdef _WIN32
 
+#include <Windows.h>
 #undef max
 #undef min
 #undef CreateProcess
 #undef GetCurrentTime
 
+#endif
+
+#ifdef SOUP_BUILD
 export module Soup.Core;
 
 import reflex;
@@ -38,6 +45,44 @@ import Monitor.Host;
 import Opal;
 
 using namespace Opal;
+
+#else
+
+// import Opal
+#include <algorithm>
+#include <array>
+#include <atomic>
+#include <chrono>
+#include <functional>
+#include <fstream>
+#include <filesystem>
+#include <iostream>
+#include <locale>
+#include <map>
+#include <optional>
+#include <queue>
+#include <sstream>
+#include <string>
+#include "Utilities/Path.h"
+#include "Utilities/SemanticVersion.h"
+#include "IO/SystemConsoleManager.h"
+#include "Logger/Log.h"
+#include "Logger/ConsoleTraceListener.h"
+#include "System/LinuxProcessManager.h"
+#include "System/STLFileSystem.h"
+#include "System/STLSystem.h"
+
+using namespace Opal;
+
+// import CryptoPP
+#include "Interface.h"
+
+// import Monitor.Host
+#include "Linux/LinuxMonitorProcessManager.h"
+
+#endif
+
+#define CLIENT_CORE_IMPLEMENTATION
 
 #include "Build/RecipeBuildLocationManager.h"
 #include "Build/BuildEngine.h"

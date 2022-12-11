@@ -33,8 +33,8 @@ namespace Soup::Core
 		{
 		}
 
-		const OperationGraph& OperationGraph;
-		OperationResults& OperationResults;
+		const ::Soup::Core::OperationGraph& OperationGraph;
+		::Soup::Core::OperationResults& OperationResults;
 
 		const Path& TemporaryDirectory;
 
@@ -118,7 +118,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The core build evaluation engine that knows how to perform a build from a provided Operation Graph.
 	/// </summary>
-	export class BuildEvaluateEngine : public IEvaluateEngine
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class BuildEvaluateEngine : public IEvaluateEngine
 	{
 	private:
 		bool _forceRebuild;
@@ -374,11 +377,6 @@ namespace Soup::Core
 		{
 			auto callback = std::make_shared<SystemAccessTracker>();
 
-			// Replace callback with logger and existing
-			// auto callbackWrapper = std::make_shared<Monitor::ForkCallbackLogger>(
-			// 	callback,
-			// 	std::make_shared<Monitor::DetourCallbackLogger>(std::cout));
-
 			// Add the temp folder to the environment
 			auto environment = std::map<std::string, std::string>();
 			environment.emplace("TEMP", temporaryDirectory.ToString());
@@ -400,12 +398,12 @@ namespace Soup::Core
 				Log::Diag(file.ToString());
 
 			bool enableAccessChecks = true;
-			auto process = Monitor::IDetourProcessManager::Current().CreateDetourProcess(
+			auto process = Monitor::IMonitorProcessManager::Current().CreateMonitorProcess(
 				operationInfo.Command.Executable,
 				operationInfo.Command.Arguments,
 				operationInfo.Command.WorkingDirectory,
 				environment,
-				callback, // callbackWrapper,
+				callback,
 				enableAccessChecks,
 				allowedReadAccess,
 				allowedWriteAccess);

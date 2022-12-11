@@ -12,7 +12,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The operation state manager
 	/// </summary>
-	export class OperationGraphManager
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class OperationGraphManager
 	{
 	public:
 		/// <summary>

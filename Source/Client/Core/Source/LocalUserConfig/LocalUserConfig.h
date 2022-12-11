@@ -11,7 +11,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The local user config container
 	/// </summary>
-	export class LocalUserConfig
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class LocalUserConfig
 	{
 	private:
 		static constexpr const char* Property_SDKs = "SDKs";

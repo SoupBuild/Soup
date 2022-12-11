@@ -8,6 +8,7 @@
 #include "BuildFailedException.h"
 #include "PackageProvider.h"
 #include "RecipeBuildArguments.h"
+#include "RecipeBuildLocationManager.h"
 #include "FileSystemState.h"
 #include "LocalUserConfig/LocalUserConfig.h"
 #include "OperationGraph/OperationGraphManager.h"
@@ -23,7 +24,10 @@ namespace Soup::Core
 	/// The build runner that knows how to perform the correct build for a recipe
 	/// and all of its development and runtime dependencies
 	/// </summary>
-	export class BuildRunner
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class BuildRunner
 	{
 	private:
 		// Root arguments

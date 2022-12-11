@@ -6,13 +6,16 @@
 #include "Recipe/RecipeValue.h"
 #include "Recipe/PackageReference.h"
 
+#ifdef SOUP_BUILD
+export
+#endif
 namespace Soup::Core
 {
 	/// <summary>
 	/// The package lock container
 	/// </summary>
-	export using PackageClosures = std::map<std::string, std::map<std::string, std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>>>;
-	export class PackageLock
+	using PackageClosures = std::map<std::string, std::map<std::string, std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>>>;
+	class PackageLock
 	{
 	private:
 		static constexpr const char* Property_Closures = "Closures";

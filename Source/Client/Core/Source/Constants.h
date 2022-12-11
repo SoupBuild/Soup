@@ -9,7 +9,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The constants used throughout the application
 	/// </summary>
-	export class Constants
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class Constants
 	{
 	public:
 		/// <summary>

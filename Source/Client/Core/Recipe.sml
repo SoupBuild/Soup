@@ -21,7 +21,7 @@ Dependencies: {
 	]
 	Runtime: [
 		"Opal@0.5.0"
-		"reflex@1.0.1"
+		"reflex@1.0.2"
 		"../../Monitor/Host/"
 		"CryptoPP@1.1.0"
 	]

@@ -9,7 +9,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The path list manager
 	/// </summary>
-	export class PathListManager
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class PathListManager
 	{
 	public:
 		/// <summary>

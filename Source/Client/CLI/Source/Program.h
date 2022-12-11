@@ -52,8 +52,15 @@ namespace Soup::Client
 				// Setup the real services
 				System::ISystem::Register(std::make_shared<System::STLSystem>());
 				System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
-				System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
-				Monitor::IDetourProcessManager::Register(std::make_shared<Monitor::WindowsDetourProcessManager>());
+				#if defined(_WIN32)
+					System::IProcessManager::Register(std::make_shared<System::WindowsProcessManager>());
+					Monitor::IMonitorProcessManager::Register(std::make_shared<Monitor::Windows::WindowsMonitorProcessManager>());
+				#elif defined(__linux__)
+					System::IProcessManager::Register(std::make_shared<System::LinuxProcessManager>());
+					Monitor::IMonitorProcessManager::Register(std::make_shared<Monitor::Linux::LinuxMonitorProcessManager>());
+				#else
+				#error "Unknown Platform"
+				#endif
 				IO::IConsoleManager::Register(std::make_shared<IO::SystemConsoleManager>());
 
 				// Attempt to parse the provided arguments

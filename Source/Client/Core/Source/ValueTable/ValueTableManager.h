@@ -12,7 +12,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The Value Table state manager
 	/// </summary>
-	export class ValueTableManager
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class ValueTableManager
 	{
 	public:
 		/// <summary>

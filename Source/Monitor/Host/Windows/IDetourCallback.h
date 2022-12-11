@@ -1,8 +1,8 @@
 ﻿#pragma once 
 
-namespace Monitor
+namespace Monitor::Windows
 {
-	export class IDetourCallback
+	class IDetourCallback
 	{
 	public:
 		virtual void OnInitialize() = 0;

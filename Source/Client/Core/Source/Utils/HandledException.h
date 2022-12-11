@@ -9,7 +9,10 @@ namespace Soup::Core
 	/// <summary>
 	/// A special exception overload that indicates an early exit for the application that was handled
 	/// </summary>
-	export class HandledException : public std::exception
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class HandledException : public std::exception
 	{
 	public:
 		/// <summary>

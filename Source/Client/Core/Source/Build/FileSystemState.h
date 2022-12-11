@@ -4,14 +4,17 @@
 
 #pragma once
 
+#ifdef SOUP_BUILD
+export
+#endif
 namespace Soup::Core
 {
-	export using FileId = uint32_t;
+	using FileId = uint32_t;
 
 	/// <summary>
 	/// The complete set of known files that tracking the active change state during execution
 	/// </summary>
-	export class FileSystemState
+	class FileSystemState
 	{
 	public:
 		/// <summary>

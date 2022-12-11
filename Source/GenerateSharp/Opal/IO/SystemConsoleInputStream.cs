@@ -14,7 +14,7 @@ namespace Opal.IO
 		/// </summary>
 		public SystemConsoleInputStream()
 		{
-#ifdef WIN32
+#ifdef _WIN32
 			_inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 			if (_inputHandle == INVALID_HANDLE_VALUE) 
 				throw std::runtime_error("GetStdHandle Failed");
@@ -23,7 +23,7 @@ namespace Opal.IO
 
 		~SystemConsoleInputStream()
 		{
-#ifdef WIN32
+#ifdef _WIN32
 			_inputHandle = INVALID_HANDLE_VALUE;
 #endif
 		}
@@ -43,7 +43,7 @@ namespace Opal.IO
 		/// </summary>
 		std::string ReadPassword() override final
 		{
-#ifdef WIN32
+#ifdef _WIN32
 			const char Backspace = 8;
 			const char Return = 13;
 
@@ -99,7 +99,7 @@ namespace Opal.IO
 		}
 
 	private:
-#ifdef WIN32
+#ifdef _WIN32
 		HANDLE _inputHandle;
 #endif
 	};

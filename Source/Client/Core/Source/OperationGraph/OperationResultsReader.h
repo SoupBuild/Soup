@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The operation results state reader
 	/// </summary>
-	export class OperationResultsReader
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class OperationResultsReader
 	{
 	private:
 		// Binary Operation Results file format
@@ -120,7 +123,11 @@ namespace Soup::Core
 
 			// Use system clock with a known epoch
 			auto evaluateTimeSystem = std::chrono::time_point<std::chrono::system_clock>(evaluateTimeDuration);
+			#ifdef _WIN32
 			auto evaluateTimeFile = std::chrono::clock_cast<std::chrono::file_clock>(evaluateTimeSystem);
+			#else
+			auto evaluateTimeFile = std::chrono::file_clock::from_sys(evaluateTimeSystem);
+			#endif
 
 			// Read the observed input files
 			auto observedInput = ReadFileIdList(content, activeFileIdMap);
@@ -153,7 +160,7 @@ namespace Soup::Core
 			return result;
 		}
 
-		static boolean ReadBoolean(char*& content)
+		static bool ReadBoolean(char*& content)
 		{
 			uint32_t result = 0;
 			Read(content, reinterpret_cast<char*>(&result), sizeof(uint32_t));

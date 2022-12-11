@@ -10,7 +10,10 @@ namespace Soup::Core
 	/// <summary>
 	/// The operation results state writer
 	/// </summary>
-	export class OperationResultsWriter
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class OperationResultsWriter
 	{
 	private:
 		// Binary Operation results file format
@@ -62,11 +65,16 @@ namespace Soup::Core
 			WriteValue(stream, result.WasSuccessfulRun);
 
 			// Use system clock with a known epoch
+			#ifdef _WIN32
 			auto evaluateTimeSystem = std::chrono::clock_cast<std::chrono::system_clock>(result.EvaluateTime);
+			#else
+			auto evaluateTimeSystem = std::chrono::file_clock::to_sys(result.EvaluateTime);
+			#endif
 
 			// Write the tick offset of the system clock since its epoch
-			auto evaluateTimeDuration = ContentDuration(evaluateTimeSystem.time_since_epoch());
-			WriteValue(stream, evaluateTimeDuration.count());
+			auto evaluateTimeDuration = std::chrono::duration_cast<ContentDuration>(evaluateTimeSystem.time_since_epoch());
+			int64_t evaluateTimeCount = evaluateTimeDuration.count();
+			WriteValue(stream, evaluateTimeCount);
 
 			// Write out the observed input files
 			WriteValues(stream, result.ObservedInput);

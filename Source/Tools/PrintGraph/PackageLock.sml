@@ -2,13 +2,13 @@ Version: 4
 Closures: {
 	Root: {
 		"C++": [
-			{ Name: "CryptoPP", Version: "1.2.0", Build: "Build0" }
+			{ Name: "CryptoPP", Version: "1.2.1", Build: "Build0" }
 			{ Name: "Detours", Version: "4.0.9", Build: "Build0" }
 			{ Name: "Monitor.Host", Version: "../../Monitor/Host/", Build: "Build0" }
 			{ Name: "Monitor.Shared", Version: "../../Monitor/Shared/", Build: "Build0" }
-			{ Name: "Opal", Version: "0.8.1", Build: "Build0" }
+			{ Name: "Opal", Version: "0.8.2", Build: "Build0" }
 			{ Name: "printgraph", Version: "../PrintGraph", Build: "Build0" }
-			{ Name: "reflex", Version: "1.0.1", Build: "Build0" }
+			{ Name: "reflex", Version: "1.0.2", Build: "Build0" }
 			{ Name: "Soup.Core", Version: "../../Client/Core/", Build: "Build1" }
 			{ Name: "Soup.Test.Assert", Version: "0.3.1", Build: "Build0" }
 		]
