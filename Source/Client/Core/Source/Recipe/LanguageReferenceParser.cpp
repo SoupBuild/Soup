@@ -32,8 +32,9 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-
+#ifdef SOUP_BUILD
 module;
+#endif
 
 // #define SHOW_TOKENS
 
@@ -44,7 +45,22 @@ module;
 #include <iostream>
 #include <string>
 
+#ifdef SOUP_BUILD
+
 module Soup.Core;
+
+#else
+
+// import Opal
+#include <optional>
+#include <sstream>
+#include <vector>
+#include "Utilities/SemanticVersion.h"
+using namespace Opal;
+
+#include "LanguageReference.h"
+
+#endif
 
 enum class LanguageReferenceToken : int
 {
@@ -64,7 +80,9 @@ enum class LanguageReferenceToken : int
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-// #include <reflex/matcher.h>
+#ifndef SOUP_BUILD
+#include <reflex/matcher.h>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -72,7 +90,9 @@ enum class LanguageReferenceToken : int
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-// #include <reflex/abslexer.h>
+#ifndef SOUP_BUILD
+#include <reflex/abslexer.h>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -345,7 +365,9 @@ private:
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-// #include <reflex/matcher.h>
+#ifndef SOUP_BUILD
+#include <reflex/matcher.h>
+#endif
 
 #if defined(OS_WIN)
 #pragma warning(disable:4101 4102)

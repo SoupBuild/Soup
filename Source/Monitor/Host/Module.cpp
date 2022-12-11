@@ -74,6 +74,8 @@ import Opal;
 
 using namespace Opal;
 
+#define MONITOR_IMPLEMENTATION
+
 #include "Mock/MockMonitorProcessManager.h"
 #include "ScopedMonitorProcessManagerRegister.h"
 
