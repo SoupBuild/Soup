@@ -53,5 +53,7 @@ namespace Monitor
 		static std::shared_ptr<IMonitorProcessManager> _current;
 	};
 
+#ifdef MONITOR_IMPLEMENTATION
 	std::shared_ptr<IMonitorProcessManager> IMonitorProcessManager::_current = nullptr;
+#endif
 }

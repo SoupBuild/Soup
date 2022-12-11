@@ -82,6 +82,8 @@ using namespace Opal;
 
 #endif
 
+#define CLIENT_CORE_IMPLEMENTATION
+
 #include "Build/RecipeBuildLocationManager.h"
 #include "Build/BuildEngine.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"
