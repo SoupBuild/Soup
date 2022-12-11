@@ -11,14 +11,14 @@ OUT_DIR=~/repos/Soup/out
 set -e
 
 echo Build Opal
-OPAL_DIR=~/.soup/packages/Cpp/Opal/0.8.1
+OPAL_DIR=~/.soup/packages/Cpp/Opal/0.8.2
 OPAL_OUT_DIR=$OUT_DIR/Opal/obj
 mkdir -p $OPAL_OUT_DIR
 echo Module.cpp
 eval $CXX $CXX_COMPILE_FLAGS -c $OPAL_DIR/Module.cpp -o $OPAL_OUT_DIR/Module.o
 
 echo Build CryptoPP
-CRYPTOPP_DIR=~/.soup/packages/Cpp/CryptoPP/1.2.0
+CRYPTOPP_DIR=~/.soup/packages/Cpp/CryptoPP/1.2.1
 CRYPTOPP_OUT_DIR=$OUT_DIR/CryptoPP/obj
 mkdir -p $CRYPTOPP_OUT_DIR
 echo Interface.cpp
