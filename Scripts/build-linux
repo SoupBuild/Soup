@@ -3,7 +3,7 @@ echo "Linux Build!"
 
 CXX=g++-12
 CXX_FLAGS="-std=c++20"
-CXX_COMPILE_FLAGS="$CXX_FLAGS -march=native -msha -mpclmul -msse2"
+CXX_COMPILE_FLAGS="$CXX_FLAGS -g -march=native -msha -mpclmul -msse2"
 
 OUT_DIR=~/repos/Soup/out
 

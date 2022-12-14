@@ -5,9 +5,6 @@ packages/
 bin/
 obj/
 
-# VSCode
-.vscode/
-
 # Soup
 /out/
 
