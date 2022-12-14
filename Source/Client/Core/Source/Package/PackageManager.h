@@ -94,9 +94,16 @@ namespace Soup::Core
 			#error "Unknown platform"
 			#endif
 
-			// Execute the requested target
+			// Log diagnostic information
+			std::stringstream message;
+			message << "  " << executable.ToString();
+			for (auto& argument : arguments)
+				message << " " << argument;
+
 			Log::Info("Running PackageManager");
-			Log::Info("  " + executable.ToString());
+			Log::Diag(message.str());
+
+			// Execute the requested target
 			auto process = System::IProcessManager::Current().CreateProcess(
 				executable,
 				std::move(arguments),

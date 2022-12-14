@@ -2,9 +2,7 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<PublishSingleFile>false</PublishSingleFile>
-		<SelfContained>false</SelfContained>
 		<PublishReadyToRun>true</PublishReadyToRun>
 		<PublishTrimmed>false</PublishTrimmed>
 	</PropertyGroup>
