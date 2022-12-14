@@ -89,6 +89,11 @@ jobs:
     name: PR Build ${{matrix.os}} ${{matrix.config}}
     runs-on: ${{ matrix.os }}
     steps:
+    # Setup Environment
+    - uses: actions/checkout@v2
+      with:
+        path: "Soup"
+        submodules: true
     # Build
     - name: Build Linux
-      run: Scripts/build-linux
+      run: ./Scripts/build-linux
