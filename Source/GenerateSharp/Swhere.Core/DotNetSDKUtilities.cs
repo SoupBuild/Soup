@@ -19,7 +19,7 @@ namespace Soup.Build.Discover
 
 		private static string FindNewestDotNet6RuntimeVersion(Path dotnetSDKInstallPath)
 		{
-			var dotnetAppRefsPath = dotnetSDKInstallPath + new Path("/packs/Microsoft.NETCore.App.Ref/");
+			var dotnetAppRefsPath = dotnetSDKInstallPath + new Path("./packs/Microsoft.NETCore.App.Ref/");
 
 			// Check the default tools version
 			Log.HighPriority("FindNewestDotNet6RuntimeVersion: " + dotnetAppRefsPath.ToString());
