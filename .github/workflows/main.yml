@@ -96,4 +96,6 @@ jobs:
         submodules: true
     # Build
     - name: Build Linux
+      run: ls -la
+    - name: Build Linux
       run: Scripts/build-linux
