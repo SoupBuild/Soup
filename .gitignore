@@ -5,6 +5,9 @@ packages/
 bin/
 obj/
 
+# VSCode
+.vscode/settings.json
+
 # Soup
 /out/
 

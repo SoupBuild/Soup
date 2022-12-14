@@ -6,7 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/out/soup",
-      "args": [ "version" ],
+      "args": [ "build", "Source/Client/CLI" ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
