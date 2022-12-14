@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  build:
+  windows-build:
     strategy:
       matrix:
         os: [ windows-2022 ]
@@ -81,3 +81,14 @@ jobs:
       run: soup build ./Soup/Samples/CSharp/BuildExtension/Executable/ -flavor ${{matrix.config}} -v:d
     - name: Soup Build CSharp ConsoleApplication
       run: soup build ./Soup/Samples/CSharp/ConsoleApplication/ -flavor ${{matrix.config}} -v:d
+  linux-build:
+    strategy:
+      matrix:
+        os: [ ubuntu-22.04 ]
+        config: [ Debug ]
+    name: PR Build ${{matrix.os}} ${{matrix.config}}
+    runs-on: ${{ matrix.os }}
+    steps:
+    # Build
+    - name: Build Linux
+      run: Scripts/build-linux
