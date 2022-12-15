@@ -70,7 +70,7 @@ namespace Monitor
 		/// </summary>
 		std::shared_ptr<Opal::System::IProcess> CreateMonitorProcess(
 			const Path& executable,
-			const std::string& arguments,
+			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IMonitorCallback> callback,
@@ -80,7 +80,9 @@ namespace Monitor
 		{
 			std::stringstream message;
 			auto id = m_uniqueId++;
-			message << "CreateMonitorProcess: " << id << " [" << workingDirectory.ToString() << "] " << executable.ToString() << " " << arguments;
+			message << "CreateMonitorProcess: " << id << " [" << workingDirectory.ToString() << "] " << executable.ToString();
+			for (auto& argument : arguments)
+				message << " " << argument;
 			message << " Environment [" << environmentVariables.size() << "]";
 			message << " " << enableAccessChecks;
 			message << " AllowedRead [" << allowedReadAccess.size() << "]";

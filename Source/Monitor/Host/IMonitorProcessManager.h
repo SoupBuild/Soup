@@ -41,7 +41,7 @@ namespace Monitor
 		/// </summary>
 		virtual std::shared_ptr<Opal::System::IProcess> CreateMonitorProcess(
 			const Path& executable,
-			const std::string& arguments,
+			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IMonitorCallback> callback,

@@ -385,7 +385,15 @@ namespace Soup::Core
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
 			auto generateFolder = moduleFolder + Path("Generate/");
+
+			#if defined(_WIN32)
 			auto generateExecutable = generateFolder + Path("Soup.Build.Generate.exe");
+			#elif defined(__linux__)
+			auto generateExecutable = Path("/home/mwasplund/repos/Soup/Source/out/msbuild/bin/Soup.Build.Generate/Debug/net6.0/linux-x64/publish/") + Path("Soup.Build.Generate");
+			#else
+			#error "Unknown platform"
+			#endif
+
 			OperationId generateOperationId = 1;
 			auto generateArguments = std::stringstream();
 			generateArguments << soupTargetDirectory.ToString();
