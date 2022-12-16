@@ -35,6 +35,7 @@ namespace Soup::Client
 			{
 				// Setup the filter
 				auto defaultTypes =
+					static_cast<uint32_t>(TraceEventFlag::HighPriority) |
 					static_cast<uint32_t>(TraceEventFlag::Warning) |
 					static_cast<uint32_t>(TraceEventFlag::Error) |
 					static_cast<uint32_t>(TraceEventFlag::Critical);
@@ -129,14 +130,14 @@ namespace Soup::Client
 	private:
 		static void WriteUsage()
 		{
-			Log::Info("Expected commands:");
-			Log::Info("	build - Build the provided recipe.");
-			Log::Info("	run - Run the provided recipe.");
-			Log::Info("	initialize - Initialize wizard for creating a new recipe.");
-			Log::Info("	install - Install a dependency to the target recipes.");
-			Log::Info("	publish - Publish the contents of a recipe to the target feed.");
-			Log::Info("	restore - Install al dependencies in the target recipes.");
-			Log::Info("	version - Display the version of the command line application.");
+			Log::HighPriority("soup <command>:");
+			Log::HighPriority("  build   - Build the target recipe.");
+			Log::HighPriority("  run     - Run the target recipe.");
+			Log::HighPriority("  init    - Initialize wizard for creating a new recipe.");
+			Log::HighPriority("  install - Install a dependency to the target recipes.");
+			Log::HighPriority("  publish - Publish the contents of a recipe to the public feed.");
+			Log::HighPriority("  restore - Install all dependencies required by the target recipe.");
+			Log::HighPriority("  version - Display the current version of this tool.");
 		}
 
 		void SetupShared(SharedOptions& options)
