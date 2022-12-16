@@ -13,7 +13,6 @@ namespace Opal.UnitTests
 		{
 			var uut = new Path();
 			Assert.False(uut.HasRoot);
-			Assert.Equal("", uut.GetRoot());
 			Assert.False(uut.HasFileName);
 			Assert.Equal("", uut.GetFileName());
 			Assert.False(uut.HasFileStem);
@@ -29,7 +28,6 @@ namespace Opal.UnitTests
 		{
 			var uut = new Path("");
 			Assert.False(uut.HasRoot);
-			Assert.Equal("", uut.GetRoot());
 			Assert.False(uut.HasFileName);
 			Assert.Equal("", uut.GetFileName());
 			Assert.False(uut.HasFileStem);
@@ -45,7 +43,6 @@ namespace Opal.UnitTests
 		{
 			var uut = new Path("./");
 			Assert.False(uut.HasRoot);
-			Assert.Equal("", uut.GetRoot());
 			Assert.False(uut.HasFileName);
 			Assert.Equal("", uut.GetFileName());
 			Assert.False(uut.HasFileStem);
@@ -61,7 +58,6 @@ namespace Opal.UnitTests
 		{
 			var uut = new Path("../");
 			Assert.False(uut.HasRoot);
-			Assert.Equal("", uut.GetRoot());
 			Assert.False(uut.HasFileName);
 			Assert.Equal("", uut.GetFileName());
 			Assert.False(uut.HasFileStem);
@@ -77,7 +73,6 @@ namespace Opal.UnitTests
 		{
 			var uut = new Path("myfolder/anotherfolder/file.txt");
 			Assert.False(uut.HasRoot);
-			Assert.Equal("", uut.GetRoot());
 			Assert.True(uut.HasFileName);
 			Assert.Equal("file.txt", uut.GetFileName());
 			Assert.True(uut.HasFileStem);
@@ -86,6 +81,22 @@ namespace Opal.UnitTests
 			Assert.Equal(".txt", uut.GetFileExtension());
 			Assert.Equal("./myfolder/anotherfolder/file.txt", uut.ToString());
 			Assert.Equal(".\\myfolder\\anotherfolder\\file.txt", uut.ToAlternateString());
+		}
+
+		[Fact]
+		public void LinuxRoot()
+		{
+			var uut = new Path("/");
+			Assert.True(uut.HasRoot);
+			Assert.Equal("", uut.GetRoot());
+			Assert.False(uut.HasFileName);
+			Assert.Equal("", uut.GetFileName());
+			Assert.False(uut.HasFileStem);
+			Assert.Equal("", uut.GetFileStem());
+			Assert.False(uut.HasFileExtension);
+			Assert.Equal("", uut.GetFileExtension());
+			Assert.Equal("/", uut.ToString());
+			Assert.Equal("\\", uut.ToAlternateString());
 		}
 
 		[Fact]
