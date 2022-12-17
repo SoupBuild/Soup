@@ -130,19 +130,23 @@ namespace Soup::Client
 				return;
 			}
 
-			auto runArguments = buildTable.at("RunArguments").AsString();
-			auto arguments = std::stringstream();
-			arguments << runArguments << " ";
+			auto arguments = std::vector<std::string>();
+			auto runArguments = buildTable.at("RunArguments").AsList();
+			for (auto& value : runArguments)
+			{
+				arguments.push_back(value.AsString());
+			}
+
 			for (auto& argument : _options.Arguments)
 			{
-				arguments << argument << " ";
+				arguments.push_back(argument);
 			}
 
 			// Execute the requested target
-			Log::Info("Arguments: " + arguments.str());
+			Log::Info("CreateProcess");
 			auto process = System::IProcessManager::Current().CreateProcess(
 				runExecutable,
-				arguments.str(),
+				std::move(arguments),
 				workingDirectory,
 				false);
 			process->Start();

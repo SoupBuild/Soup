@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "Linux Build Generate!"
+
+OUT_DIR=~/repos/Soup/out
+
+# Stop on first error
+set -e
+
+SCRIPTS_DIR=$(dirname "$0")
+SOURCE_DIR=$SCRIPTS_DIR/../Source
+GENERATE_DIR=$SOURCE_DIR/GenerateSharp/Generate
+
+# Build Generate
+echo dotnet publish $GENERATE_DIR -c Debug
+eval dotnet publish $GENERATE_DIR -c Debug
