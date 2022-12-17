@@ -27,7 +27,7 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: RestorePackages",
 					"INFO: Running PackageManager",
-					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
+					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe restore-packages C:/TestLocation",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -62,7 +62,7 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: InitializePackage",
 					"INFO: Running PackageManager",
-					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
+					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe initialize-package C:/TestLocation",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -98,7 +98,7 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: InstallPackageReference",
 					"INFO: Running PackageManager",
-					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
+					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage@2.2.2",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -134,7 +134,7 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: InstallPackageReference",
 					"INFO: Running PackageManager",
-					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
+					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe install-package C:/TestLocation TheirPackage",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -169,7 +169,7 @@ namespace Soup::Core::UnitTests
 				std::vector<std::string>({
 					"INFO: PublishPackage",
 					"INFO: Running PackageManager",
-					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
+					"DIAG:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe publish-package C:/TestLocation",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
