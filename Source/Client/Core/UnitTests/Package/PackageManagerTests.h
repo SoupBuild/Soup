@@ -26,7 +26,8 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: RestorePackages",
-					"INFO: Running PackageManager: restore-packages C:/TestLocation",
+					"INFO: Running PackageManager",
+					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -60,7 +61,8 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: InitializePackage",
-					"INFO: Running PackageManager: initialize-package C:/TestLocation",
+					"INFO: Running PackageManager",
+					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -95,7 +97,8 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: InstallPackageReference",
-					"INFO: Running PackageManager: install-package C:/TestLocation TheirPackage@2.2.2",
+					"INFO: Running PackageManager",
+					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -130,7 +133,8 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: InstallPackageReference",
-					"INFO: Running PackageManager: install-package C:/TestLocation TheirPackage",
+					"INFO: Running PackageManager",
+					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -164,7 +168,8 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				std::vector<std::string>({
 					"INFO: PublishPackage",
-					"INFO: Running PackageManager: publish-package C:/TestLocation",
+					"INFO: Running PackageManager",
+					"INFO:   C:/testlocation/PackageManager/Soup.Build.PackageManager.exe",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");

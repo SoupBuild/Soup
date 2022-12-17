@@ -40,7 +40,7 @@ namespace Soup::Core
 
 			auto arguments = std::vector<std::string>(
 			{
-				"install-package",
+				"initialize-package",
 				workingDirectory.ToString(),
 			});
 
