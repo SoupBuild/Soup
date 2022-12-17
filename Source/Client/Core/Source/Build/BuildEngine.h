@@ -28,7 +28,7 @@ namespace Soup::Core
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(0, 4, 0),
+						SemanticVersion(0, 4, 2),
 						Path("Soup.Cpp.dll"))
 				},
 				{
@@ -36,7 +36,7 @@ namespace Soup::Core
 					BuiltInLanguagePackage(
 						"CSharp",
 						"Soup.CSharp",
-						SemanticVersion(0, 7, 0),
+						SemanticVersion(0, 7, 3),
 						Path("Soup.CSharp.dll"))
 				},
 			});

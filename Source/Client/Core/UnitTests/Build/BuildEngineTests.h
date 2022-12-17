@@ -94,7 +94,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/Generate/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.4.0/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.4.2/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
@@ -183,7 +183,7 @@ namespace Soup::Core::UnitTests
 				ValueTable(
 				{
 					{ "Dependencies", Value(ValueTable()) },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.0/Soup.Cpp.dll")) },
+					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.2/Soup.Cpp.dll")) },
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
 					{ "SDKs", Value(ValueList()) },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")) },

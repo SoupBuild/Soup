@@ -299,6 +299,10 @@ namespace Soup.Build.PackageManager
 
 		private static void AddPackageFiles(Path workingDirectory, IZipArchive archive)
 		{
+			var ignoreFileList = new string[]
+			{
+				"PackageLock.sml",
+			};
 			var ignoreFolderList = new string[]
 			{
 				"out",
@@ -316,9 +320,13 @@ namespace Soup.Build.PackageManager
 				}
 				else
 				{
-					var relativePath = child.Path.GetRelativeTo(workingDirectory);
-					var relativeName = relativePath.ToString().Substring(2);
-					archive.CreateEntryFromFile(child.Path, relativeName);
+					// Ignore undesirables
+					if (!ignoreFileList.Contains(child.Path.GetFileName()))
+					{
+						var relativePath = child.Path.GetRelativeTo(workingDirectory);
+						var relativeName = relativePath.ToString().Substring(2);
+						archive.CreateEntryFromFile(child.Path, relativeName);
+					}
 				}
 			}
 		}
