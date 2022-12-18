@@ -401,10 +401,10 @@ namespace Soup::Core
 			// TODO: The operation info may want to store this as an array, this id quick and dirty
 			auto arguments = std::vector<std::string>();
 			std::istringstream readArguments(operationInfo.Command.Arguments);
-			std::string value;
-			while (std::getline(readArguments, value, ' '))
+			std::string argumentValue;
+			while (std::getline(readArguments, argumentValue, ' '))
 			{
-				arguments.push_back(value);
+				arguments.push_back(argumentValue);
 			}
 
 			bool enableAccessChecks = true;
