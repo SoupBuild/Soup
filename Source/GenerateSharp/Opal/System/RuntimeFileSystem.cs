@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Opal.System
 {
@@ -21,7 +22,12 @@ namespace Opal.System
 
 		public Path GetUserProfileDirectory()
 		{
-			var userProfileFolder = Environment.GetEnvironmentVariable("USERPROFILE");
+			string? userProfileFolder;
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				userProfileFolder = Environment.GetEnvironmentVariable("USERPROFILE");
+			else
+				userProfileFolder = Environment.GetEnvironmentVariable("HOME");
+
 			if (userProfileFolder == null)
 				throw new InvalidOperationException("Unable to retrieve user profile");
 			return new Path(userProfileFolder);

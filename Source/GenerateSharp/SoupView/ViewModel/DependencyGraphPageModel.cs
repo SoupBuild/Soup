@@ -202,7 +202,7 @@ namespace SoupView.ViewModel
 					var packageRootFolder = languageRootFolder + new Path(packageReference.Name);
 					var packageVersionFolder = packageRootFolder +
 						new Path(packageReference.Version.ToString()) +
-						new Path("/");
+						new Path();
 					var recipeFile = packageVersionFolder + BuildConstants.RecipeFileName;
 
 					recipeFiles.Add((recipeFile, this.uniqueId++));

@@ -25,7 +25,7 @@ namespace Soup.Build.Discover
 
 			// Calculate the final Roslyn binaries folder
 			var roslynFolder =
-				visualStudioInstallRoot + new Path("/MSBuild/Current/Bin/Roslyn/");
+				visualStudioInstallRoot + new Path("./MSBuild/Current/Bin/Roslyn/");
 
 			return roslynFolder;
 		}
@@ -47,7 +47,7 @@ namespace Soup.Build.Discover
 
 			// Calculate the final VC tools folder
 			var visualCompilerVersionFolder =
-				visualStudioInstallRoot + new Path($"/VC/Tools/MSVC/{visualCompilerVersion}/");
+				visualStudioInstallRoot + new Path($"./VC/Tools/MSVC/{visualCompilerVersion}/");
 
 			return (visualCompilerVersion, visualCompilerVersionFolder);
 		}

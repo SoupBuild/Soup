@@ -25,7 +25,7 @@ namespace Soup.Build.Discover
 
 		private static string FindNewestWindows10KitVersion(Path windowsSDKInstallPath)
 		{
-			var windowsSDKIncludePath = windowsSDKInstallPath + new Path("/include/");
+			var windowsSDKIncludePath = windowsSDKInstallPath + new Path("./include/");
 
 			// Check the default tools version
 			Log.HighPriority("FindNewestWindows10KitVersion: " + windowsSDKInstallPath.ToString());

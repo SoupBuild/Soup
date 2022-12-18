@@ -60,6 +60,10 @@ import Opal;
 #include <queue>
 #include <sstream>
 #include <string>
+
+#include <spawn.h>
+#include <sys/wait.h>
+
 #include "Utilities/Path.h"
 #include "Utilities/SemanticVersion.h"
 #include "IO/SystemConsoleManager.h"

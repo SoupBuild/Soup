@@ -139,7 +139,7 @@ namespace Soup.Build.PackageManager
 										new Path(languageSafeName) +
 										new Path(projectName) +
 										new Path(version.ToString()) +
-										new Path("/");
+										new Path();
 									var packageContentDirectory = packageStoreDirectory + packageLanguageNameVersionPath;
 
 									// Place the lock in the lock store
@@ -692,7 +692,7 @@ namespace Soup.Build.PackageManager
 			var languageSafeName = GetLanguageSafeName(languageName);
 			var languageRootFolder = packageStore + new Path(languageSafeName);
 			var packageRootFolder = languageRootFolder + new Path(packageName);
-			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path("/");
+			var packageVersionFolder = packageRootFolder + new Path(packageVersion.ToString()) + new Path();
 
 			// Check if the package version already exists
 			if (!isRuntime &&

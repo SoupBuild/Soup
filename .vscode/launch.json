@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Soup",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/soup",
+      "args": [ "restore", "Source/Client/CLI" ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          // "text": "catch throw",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

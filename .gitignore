@@ -6,7 +6,7 @@ bin/
 obj/
 
 # VSCode
-.vscode/
+.vscode/settings.json
 
 # Soup
 /out/

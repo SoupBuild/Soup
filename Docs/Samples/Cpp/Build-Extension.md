@@ -127,7 +127,7 @@ Closures: {
     }
     Build0: {
         "C#": [
-            { Name: "Soup.Cpp", Version: "0.4.0" }
+            { Name: "Soup.Cpp", Version: "0.4.2" }
             { Name: "Samples.Cpp.BuildExtension.Extension", Version: "1.0.0" }
         ]
     }

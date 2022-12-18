@@ -22,10 +22,13 @@ namespace Soup::Core
 		{
 			Log::Info("RestorePackages");
 
-			auto arguments = std::stringstream();
-			arguments << "restore-packages " << workingDirectory.ToString();
+			auto arguments = std::vector<std::string>(
+			{
+				"restore-packages",
+				workingDirectory.ToString(),
+			});
 
-			RunCommand(arguments.str());
+			RunCommand(std::move(arguments));
 		}
 
 		/// <summary>
@@ -35,10 +38,13 @@ namespace Soup::Core
 		{
 			Log::Info("InitializePackage");
 
-			auto arguments = std::stringstream();
-			arguments << "initialize-package " << workingDirectory.ToString();
+			auto arguments = std::vector<std::string>(
+			{
+				"initialize-package",
+				workingDirectory.ToString(),
+			});
 
-			RunCommand(arguments.str());
+			RunCommand(std::move(arguments));
 		}
 
 		/// <summary>
@@ -48,10 +54,14 @@ namespace Soup::Core
 		{
 			Log::Info("InstallPackageReference");
 
-			auto arguments = std::stringstream();
-			arguments << "install-package " << workingDirectory.ToString() << " " << packageReference;
+			auto arguments = std::vector<std::string>(
+			{
+				"install-package",
+				workingDirectory.ToString(),
+				packageReference,
+			});
 
-			RunCommand(arguments.str());
+			RunCommand(std::move(arguments));
 		}
 
 		/// <summary>
@@ -61,25 +71,42 @@ namespace Soup::Core
 		{
 			Log::Info("PublishPackage");
 
-			auto arguments = std::stringstream();
-			arguments << "publish-package " << workingDirectory.ToString();
+			auto arguments = std::vector<std::string>(
+			{
+				"publish-package",
+				workingDirectory.ToString(),
+			});
 
-			RunCommand(arguments.str());
+			RunCommand(std::move(arguments));
 		}
 
 	private:
-		static void RunCommand(std::string arguments)
+		static void RunCommand(std::vector<std::string> arguments)
 		{
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
 			auto packageManagerFolder = moduleFolder + Path("PackageManager/");
+			#if defined(_WIN32)
 			auto executable = packageManagerFolder + Path("Soup.Build.PackageManager.exe");
+			#elif defined(__linux__)
+			auto executable = Path("/home/mwasplund/repos/Soup/Source/out/msbuild/bin/Soup.Build.PackageManager/Debug/net6.0/linux-x64/publish/") + Path("Soup.Build.PackageManager");
+			#else
+			#error "Unknown platform"
+			#endif
+
+			// Log diagnostic information
+			std::stringstream message;
+			message << "  " << executable.ToString();
+			for (auto& argument : arguments)
+				message << " " << argument;
+
+			Log::Info("Running PackageManager");
+			Log::Diag(message.str());
 
 			// Execute the requested target
-			Log::Info("Running PackageManager: " + arguments);
 			auto process = System::IProcessManager::Current().CreateProcess(
 				executable,
-				arguments,
+				std::move(arguments),
 				packageManagerFolder,
 				false);
 			process->Start();
@@ -88,7 +115,10 @@ namespace Soup::Core
 			auto exitCode = process->GetExitCode();
 
 			if (exitCode != 0)
+			{
+				Log::Error("Package Manager Failed");
 				throw HandledException(exitCode);
+			}
 		}
 	};
 }

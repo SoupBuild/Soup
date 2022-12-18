@@ -29,7 +29,7 @@ namespace Opal
 		public Path()
 		{
 			this.value = string.Empty;
-			this.SetState(new List<string>() { RelativeDirectory }, string.Empty, string.Empty);
+			this.SetState(new List<string>() { RelativeDirectory }, null, null);
 		}
 
 		/// <summary>
@@ -50,7 +50,7 @@ namespace Opal
 		/// <summary>
 		/// Gets a value indicating whether the path has a root.
 		/// </summary>
-		public bool HasRoot => this.rootEndLocation > 0;
+		public bool HasRoot => this.rootEndLocation >= 0;
 
 		private static char DirectorySeparator => '/';
 
@@ -124,8 +124,8 @@ namespace Opal
 			var result = new Path();
 			result.SetState(
 				resultDirectories,
-				lhs.GetRoot(),
-				rhs.GetFileName());
+				lhs.HasRoot ? lhs.GetRoot() : null,
+				rhs.HasFileName ? rhs.GetFileName() : null);
 
 			return result;
 		}
@@ -135,6 +135,8 @@ namespace Opal
 		/// </summary>
 		public string GetRoot()
 		{
+			if (rootEndLocation < 0)
+				throw new InvalidOperationException("Cannot access root on path that has none");
 			return this.value.Substring(0, this.rootEndLocation);
 		}
 
@@ -182,7 +184,10 @@ namespace Opal
 				}
 
 				// Set the state of the result path
-				result.SetState(directories, this.GetRoot(), string.Empty);
+				result.SetState(
+					directories,
+					this.HasRoot ? this.GetRoot() : null,
+					null);
 			}
 
 			return result;
@@ -260,7 +265,7 @@ namespace Opal
 			// Build the new final string
 			this.SetState(
 				DecomposeDirectoriesString(this.GetDirectories()),
-				this.GetRoot(),
+				this.HasRoot ? this.GetRoot() : null,
 				value);
 		}
 
@@ -334,8 +339,8 @@ namespace Opal
 			var result = new Path();
 			result.SetState(
 				resultDirectories,
-				string.Empty,
-				this.GetFileName());
+				null,
+				this.HasFileName ? this.GetFileName() : null);
 
 			return result;
 		}
@@ -408,9 +413,14 @@ namespace Opal
 
 		private static bool IsRoot(string value)
 		{
-			// Check for drive letter
-			if (value.Length == 2)
+			if (value.Length == 0)
 			{
+				// Empty value is root
+				return true;
+			}
+			else if (value.Length == 2)
+			{
+				// Check for drive letter
 				if (char.IsLetter(value[0]) && value[1] == LetterDriveSpecifier)
 				{
 					return true;
@@ -477,7 +487,7 @@ namespace Opal
 				out var fileName);
 
 			// Normalize any unnecessary directories in the raw path
-			bool hasRoot = !string.IsNullOrEmpty(root);
+			bool hasRoot = root is not null;
 			NormalizeDirectories(directories, hasRoot);
 
 			// Rebuild the string value
@@ -490,14 +500,14 @@ namespace Opal
 		private void DecomposeRawPathString(
 			string value,
 			IList<string> directories,
-			out string root,
-			out string fileName)
+			out string? root,
+			out string? fileName)
 		{
-			root = string.Empty;
-			fileName = string.Empty;
+			root = null;
+			fileName = null;
 
 			var current = 0;
-			var next = 0;
+			int next;
 			var isFirst = true;
 			while ((next = value.IndexOfAny(AllValidDirectorySeparators, current)) != -1)
 			{
@@ -575,12 +585,12 @@ namespace Opal
 		/// </summary>
 		private void SetState(
 			IList<string> directories,
-			string root,
-			string fileName)
+			string? root,
+			string? fileName)
 		{
 			var stringBuilder = new StringBuilder();
 
-			if (!string.IsNullOrEmpty(root))
+			if (root is not null)
 			{
 				stringBuilder.Append(root);
 				stringBuilder.Append(DirectorySeparator);
@@ -592,22 +602,41 @@ namespace Opal
 				stringBuilder.Append(DirectorySeparator);
 			}
 
-			if (!string.IsNullOrEmpty(fileName))
+			if (fileName is not null)
 			{
 				stringBuilder.Append(fileName);
 			}
 
 			// Store the persistant state
 			this.value = stringBuilder.ToString();
-			this.rootEndLocation = root.Length;
-			this.fileNameStartLocation = this.value.Length - fileName.Length;
+
+
+			if (root is not null)
+				this.rootEndLocation = root.Length;
+			else
+				this.rootEndLocation = -1;
+
+			if (fileName is not null)
+				this.fileNameStartLocation = this.value.Length - fileName.Length;
+			else
+				this.fileNameStartLocation = this.value.Length;
+
 		}
 
 		private string GetDirectories()
 		{
-			return this.value.Substring(
-				this.rootEndLocation,
-				this.fileNameStartLocation - this.rootEndLocation);
+			if (rootEndLocation >= 0)
+			{
+				return this.value.Substring(
+					this.rootEndLocation,
+					this.fileNameStartLocation - this.rootEndLocation);
+			}
+			else
+			{
+				return this.value.Substring(
+					0,
+					this.fileNameStartLocation);
+			}
 		}
 	}
 }

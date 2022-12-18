@@ -1,17 +1,19 @@
 #!/bin/bash
-echo "Linux Build!"
+echo "Linux Build Client!"
 
 CXX=g++-12
 CXX_FLAGS="-std=c++20"
-CXX_COMPILE_FLAGS="$CXX_FLAGS -march=native -msha -mpclmul -msse2"
+CXX_COMPILE_FLAGS="$CXX_FLAGS -g -march=native -msha -mpclmul -msse2"
 
+SCRIPTS_DIR=$(dirname "$0")
+SOURCE_DIR=$SCRIPTS_DIR/../Source
 OUT_DIR=~/repos/Soup/out
 
 # Stop on first error
 set -e
 
 echo Build Opal
-OPAL_DIR=~/.soup/packages/Cpp/Opal/0.8.2
+OPAL_DIR=~/.soup/packages/Cpp/Opal/0.9.0
 OPAL_OUT_DIR=$OUT_DIR/Opal/obj
 mkdir -p $OPAL_OUT_DIR
 echo Module.cpp
@@ -184,7 +186,7 @@ LinkObjects="$LinkObjects $REFLEX_OUT_DIR/letter_scripts.o"
 INCLUDE_EXTERNAL_DEPS="-I$OPAL_DIR -I$CRYPTOPP_DIR -I$REFLEX_DIR/include"
 
 echo Build Monitor.Shared
-MONITOR_SHARED_DIR=~/repos/Soup/Source/Monitor/Shared
+MONITOR_SHARED_DIR=$SOURCE_DIR/Monitor/Shared
 MONITOR_SHARED_OUT_DIR=$OUT_DIR/Monitor.Shared/obj
 mkdir -p $MONITOR_SHARED_OUT_DIR
 echo Module.cpp
@@ -192,7 +194,7 @@ eval $CXX $CXX_COMPILE_FLAGS -c $MONITOR_SHARED_DIR/Module.cpp -o $MONITOR_SHARE
 LinkObjects="$LinkObjects $MONITOR_SHARED_OUT_DIR/Module.o"
 
 echo Build Monitor.Host
-MONITOR_HOST_DIR=~/repos/Soup/Source/Monitor/Host
+MONITOR_HOST_DIR=$SOURCE_DIR/Monitor/Host
 MONITOR_HOST_OUT_DIR=$OUT_DIR/Monitor.Host/obj
 mkdir -p $MONITOR_HOST_OUT_DIR
 echo Module.cpp
@@ -200,7 +202,7 @@ eval $CXX $CXX_COMPILE_FLAGS $INCLUDE_EXTERNAL_DEPS -c $MONITOR_HOST_DIR/Module.
 LinkObjects="$LinkObjects $MONITOR_HOST_OUT_DIR/Module.o"
 
 echo Build Soup.Client.Core
-SOUP_CLIENT_CORE_DIR=~/repos/Soup/Source/Client/Core
+SOUP_CLIENT_CORE_DIR=$SOURCE_DIR/Client/Core
 SOUP_CLIENT_CORE_OUT_DIR=$OUT_DIR/Soup.Client.Core/obj
 mkdir -p $SOUP_CLIENT_CORE_OUT_DIR
 echo Module.cpp
@@ -217,7 +219,7 @@ eval $CXX $CXX_COMPILE_FLAGS $INCLUDE_EXTERNAL_DEPS -I$MONITOR_HOST_DIR -I$SOUP_
 LinkObjects="$LinkObjects $SOUP_CLIENT_CORE_OUT_DIR/Value.o"
 
 echo Build Soup.Client.CLI
-SOUP_CLIENT_CLI_DIR=~/repos/Soup/Source/Client/CLI
+SOUP_CLIENT_CLI_DIR=$SOURCE_DIR/Client/CLI
 SOUP_CLIENT_CLI_OUT_DIR=$OUT_DIR/Soup.Client.CLI/obj
 mkdir -p $SOUP_CLIENT_CLI_OUT_DIR
 echo Main.cpp
