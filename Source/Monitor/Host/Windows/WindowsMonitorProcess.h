@@ -33,7 +33,7 @@ namespace Monitor::Windows
 		/// </summary>
 		WindowsMonitorProcess(
 			const Path& executable,
-			const std::string& arguments,
+			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IMonitorCallback> callback,
@@ -41,7 +41,7 @@ namespace Monitor::Windows
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) :
 			m_executable(executable),
-			m_arguments(arguments),
+			m_arguments(std::move(arguments)),
 			m_workingDirectory(workingDirectory),
 			m_environmentVariables(environmentVariables),
 			m_eventListener(std::make_shared<DetourMonitorCallback>(std::move(callback))),
@@ -75,11 +75,8 @@ namespace Monitor::Windows
 			DebugTrace("Start");
 			std::stringstream argumentsValue;
 			argumentsValue << "\"" << m_executable.ToAlternateString() << "\"";
-			if (!m_arguments.empty())
-			{
-				argumentsValue << " " << m_arguments;
-			}
-
+			for (auto& argument : m_arguments)
+				argumentsValue << " " << argument;
 			std::string argumentsString = argumentsValue.str();
 
 			// Setup the input/output streams
@@ -747,7 +744,7 @@ namespace Monitor::Windows
 	private:
 		// Input
 		Path m_executable;
-		std::string m_arguments;
+		std::vector<std::string> m_arguments;
 		Path m_workingDirectory;
 		std::map<std::string, std::string> m_environmentVariables;
 		EventListener m_eventListener;
