@@ -33,18 +33,17 @@ std::string ToString(const std::vector<uint32_t>& valueList)
 
 void PrintFiles(const Soup::Core::FileSystemState& fileSystemState)
 {
-	for (auto fileReference : fileSystemState.GetFiles())
+	for (const auto& [key, value] : fileSystemState.GetFiles())
 	{
-		std::cout << "File: " << fileReference.first << " " << fileReference.second.ToString() << std::endl;
+		std::cout << "File: " << key << " " << value.ToString() << std::endl;
 	}
 }
 
 void PrintResults(Soup::Core::OperationResults& results)
 {
-	for (auto resultReference : results.GetResults())
+	for (const auto& [key, operationResult] : results.GetResults())
 	{
-		const auto& operationResult = resultReference.second;
-		std::cout << "Operation: " << resultReference.first << std::endl;
+		std::cout << "Operation: " << key << std::endl;
 		std::cout << "\tWasSuccessfulRun: " << operationResult.WasSuccessfulRun << std::endl;
 		std::cout << "\tObservedInput: " << ToString(operationResult.ObservedInput) << std::endl;
 		std::cout << "\tObservedOutput: " << ToString(operationResult.ObservedOutput) << std::endl;

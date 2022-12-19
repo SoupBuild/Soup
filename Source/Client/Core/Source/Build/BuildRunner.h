@@ -184,9 +184,8 @@ namespace Soup::Core
 			auto soupTargetDirectory = targetDirectory + BuildConstants::SoupTargetDirectory();
 
 			// Build up the child target directory set
-			auto childTargetDirectorySets = GenerateChildDependenciesTargetDirectorySet(packageInfo);
-			auto& directChildTargetDirectories = childTargetDirectorySets.first;
-			auto& recursiveChildTargetDirectories = childTargetDirectorySets.second;
+			const auto& [directChildTargetDirectories, recursiveChildTargetDirectories] =
+				GenerateChildDependenciesTargetDirectorySet(packageInfo);
 
 			//////////////////////////////////////////////
 			// SETUP
@@ -581,10 +580,10 @@ namespace Soup::Core
 		{
 			auto result = ValueTable();
 
-			for (auto& dependencyType : packageInfo.Dependencies)
+			for (const auto& [dependencyTypeKey, dependencyTypeValue] : packageInfo.Dependencies)
 			{
-				auto dependencyTypeTable = ValueTable();;
-				for (auto& dependency : dependencyType.second)
+				auto dependencyTypeTable = ValueTable();
+				for (auto& dependency : dependencyTypeValue)
 				{
 					// Load this package recipe
 					auto dependencyPackageId = dependency.PackageId;
@@ -625,7 +624,7 @@ namespace Soup::Core
 					}
 				}
 
-				result.emplace(dependencyType.first, Value(std::move(dependencyTypeTable)));
+				result.emplace(dependencyTypeKey, Value(std::move(dependencyTypeTable)));
 			}
 
 			return result;

@@ -21,10 +21,10 @@ namespace Soup::Core
 		static ValueTable ConvertToBuildState(const RecipeTable& table)
 		{
 			auto result = ValueTable();
-			for (auto& value : table)
+			for (const auto& [key, value] : table)
 			{
-				auto buildValue = ConvertToBuildState(value.second);
-				result.emplace(value.first, std::move(buildValue));
+				auto buildValue = ConvertToBuildState(value);
+				result.emplace(key, std::move(buildValue));
 			}
 
 			return result;

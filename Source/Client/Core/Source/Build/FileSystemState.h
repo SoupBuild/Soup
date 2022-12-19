@@ -51,11 +51,11 @@ namespace Soup::Core
 			_writeCache(std::move(writeCache))
 		{
 			// Build up the reverse lookup for new files
-			for (auto& file : _files)
+			for (const auto& [key, value] : _files)
 			{
-				auto normalizedFilePath = file.second.ToString();
+				auto normalizedFilePath = value.ToString();
 				ToUpper(normalizedFilePath);
-				auto insertResult = _fileLookup.emplace(std::move(normalizedFilePath), file.first);
+				auto insertResult = _fileLookup.emplace(std::move(normalizedFilePath), key);
 				if (!insertResult.second)
 					throw std::runtime_error("The file was not unique in the provided set.");
 			}

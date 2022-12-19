@@ -222,22 +222,22 @@ namespace Soup::Core
 	std::ostream& operator<<(std::ostream& stream, const SMLDocument& value);
 
 #ifdef CLIENT_CORE_IMPLEMENTATION
-	std::ostream& operator<<(std::ostream& stream, const SMLDocument& value)
+	std::ostream& operator<<(std::ostream& stream, const SMLDocument& document)
 	{
-		for (const auto& tableValue : value.GetRoot().GetValue())
+		for (const auto& [key, value] : document.GetRoot().GetValue())
 		{
-			stream << tableValue.first << ": " << tableValue.second << "\n";
+			stream << key << ": " << value << "\n";
 		}
 
 		return stream;
 	}
 
-	std::ostream& operator<<(std::ostream& stream, const SMLTable& value)
+	std::ostream& operator<<(std::ostream& stream, const SMLTable& table)
 	{
 		stream << '{';
-		for (const auto& tableValue : value.GetValue())
+		for (const auto& [key, value] : table.GetValue())
 		{
-			stream << tableValue.first << ": " << tableValue.second << "\n";
+			stream << key << ": " << value << "\n";
 		}
 
 		stream << '}';

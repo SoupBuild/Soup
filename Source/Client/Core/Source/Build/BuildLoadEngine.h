@@ -305,11 +305,11 @@ namespace Soup::Core
 				auto findPackageLock = findClosure->second.find(language);
 				if (findPackageLock == findClosure->second.end())
 					throw std::runtime_error("Language [" + closureName + "] [" + language + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
-				auto packageVersion = findPackageLock->second.find(reference.GetName());
-				if (packageVersion == findPackageLock->second.end())
+				auto findPackageVersion = findPackageLock->second.find(reference.GetName());
+				if (findPackageVersion == findPackageLock->second.end())
 					throw std::runtime_error("Package [" + closureName + "] [" + language + "] [" + reference.GetName() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
-				auto& lockReference = packageVersion->second.first;
+				auto& lockReference = findPackageVersion->second.first;
 				return lockReference;
 			}
 			else

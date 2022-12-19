@@ -53,11 +53,11 @@ namespace Soup::Core
 				if (RootRecipeExtensions::TryLoadRootRecipeFromFile(recipeFile, loadRecipe))
 				{
 					// Save the recipe for later
-					auto insertRecipe = _knownRootRecipes.emplace(
+					auto [insertRecipeIterator, wasInserted] = _knownRootRecipes.emplace(
 						recipeFile.ToString(),
 						std::move(loadRecipe));
 
-					result = &insertRecipe.first->second;
+					result = &insertRecipeIterator->second;
 					return true;
 				}
 				else
@@ -99,11 +99,11 @@ namespace Soup::Core
 				if (RecipeExtensions::TryLoadRecipeFromFile(recipeFile, loadRecipe))
 				{
 					// Save the recipe for later
-					auto insertRecipe = _knownRecipes.emplace(
+					auto [insertRecipeIterator, wasInserted] = _knownRecipes.emplace(
 						recipeFile.ToString(),
 						std::move(loadRecipe));
 
-					result = &insertRecipe.first->second;
+					result = &insertRecipeIterator->second;
 					return true;
 				}
 				else

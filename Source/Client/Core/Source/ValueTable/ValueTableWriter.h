@@ -63,18 +63,18 @@ namespace Soup::Core
 			}
 		}
 
-		static void WriteValue(std::ostream& stream, const ValueTable& value)
+		static void WriteValue(std::ostream& stream, const ValueTable& table)
 		{
 			// Write the count of values
-			WriteValue(stream, static_cast<uint32_t>(value.size()));
+			WriteValue(stream, static_cast<uint32_t>(table.size()));
 
-			for (auto& tableValue : value)
+			for (const auto& [key, value] : table)
 			{
 				// Write the key
-				WriteValue(stream, std::string_view(tableValue.first));
+				WriteValue(stream, std::string_view(key));
 
 				// Write the value
-				WriteValue(stream, tableValue.second);
+				WriteValue(stream, value);
 			}
 		}
 

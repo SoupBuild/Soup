@@ -66,10 +66,10 @@ namespace Soup::Core
 					}
 					else
 					{
-						auto insertResult = InputFileLookup.emplace(
+						auto [insertIterator, wasInserted] = InputFileLookup.emplace(
 							fileId,
 							std::set<OperationId>());
-						insertResult.first->second.insert(operationInfo.Id);
+						insertIterator->second.insert(operationInfo.Id);
 					}
 				}
 
