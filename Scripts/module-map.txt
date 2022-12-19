@@ -1,4 +1,4 @@
-$root /home/mwasplund/repos/Soup/out/modules
+$root /home/mwasplund/dev/repos/Soup/out/modules
 CryptoPP CryptoPP.gcm
 json11 json11.gcm
 Monitor.Host  Monitor.Host.gcm

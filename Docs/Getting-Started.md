@@ -7,20 +7,20 @@ The end goal is to have Soup running on all three major operating systems, and b
   * [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/) with "Desktop development with c++" workload.
   * OR
   * [Build Tools For Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with "c++ build tools" workload.
-* [Latest Release](https://github.com/mwasplund/Soup/releases/latest)
+* [Latest Release](https://github.com/SoupBuild/Soup/releases/latest)
 
 ## Setup
 You can either install Soup or download a reference the archive.
 
 * Installer
 
-  Download and run the SoupBuild.msi installer from the [Latest Release](https://github.com/mwasplund/Soup/releases/latest). 
+  Download and run the SoupBuild.msi installer from the [Latest Release](https://github.com/SoupBuild/Soup/releases/latest). 
 
   Note: The installer is signed signature may not be trusted yet and you will have to ignore some scary warnings. When Microsoft receives enough trusted notifications this will no longer be necessary. 
 
 * Archive
 
-  Download the SoupBuild.zip archive from the [Latest Release](https://github.com/mwasplund/Soup/releases/latest). 
+  Download the SoupBuild.zip archive from the [Latest Release](https://github.com/SoupBuild/Soup/releases/latest). 
 
   Unzip the Soup release somewhere safe and add it to your path in a command prompt.
 
