@@ -38,29 +38,29 @@ The build Engine is responsible for recursively building all dependencies, facil
 
 This work can be broken down into five phases:
 1. **Initialize Global State**
-  * The Local User config is read from disk. 
-  * Command line arguments are placed in the Parameters table. Generate unique output folder for this build configuration.
-  * Default parameters are set for "Build" dependencies. This allows the build runtime to be different from the target of the build itself (ie. building for Debug/Linux, while using Release/Windows.) Generate unique output folder for this build configuration.
+    * The Local User config is read from disk. 
+    * Command line arguments are placed in the Parameters table. Generate unique output folder for this build configuration.
+    * Default parameters are set for "Build" dependencies. This allows the build runtime to be different from the target of the build itself (ie. building for Debug/Linux, while using Release/Windows.) Generate unique output folder for this build configuration.
 
 1. **Parse Declaration**
-  * The Recipe SML file is read from disk and parsed into a property bag.
-  * Search for a Root Recipe file, and read from disk if present. Update the output directory if specified.
+    * The Recipe SML file is read from disk and parsed into a property bag.
+    * Search for a Root Recipe file, and read from disk if present. Update the output directory if specified.
 
-1. **Build Dependencies** -
-  * The Engine will use the known property lists "Dependencies" to recursively build all dependencies starting at phase two.
-  * Set the Dependencies table entry for in the parameters table for each build.
+1. **Build Dependencies**
+    * The Engine will use the known property lists "Dependencies" to recursively build all dependencies starting at phase two.
+    * Set the Dependencies table entry for in the parameters table for each build.
 
 1. **Build Generate**
-  * Write Parameters Table file to disk.
-  * Perform incremental Generate check to see if input has changed and requires re-generating the build. Leverage same incremental build logic as Evaluate to monitor input/output files. Will include Extension DLLS, Parameters Table file, Recipe file, Shared State files from Dependencies.
-  * Discover all Build Extension Tasks using scanning the explicit "Build" dependency libraries and the implicit "Language" default build extension for public implementations of the `IBuildTask` interface.
-  * Instantiate each class using dependency injection to pass in extra functionality (i.e. Logger, etc)
-  * Using the Before/After lists invoke each build Task in their requested order.
-  * Save Shared State and Operation Graph to disk.
+    * Write Parameters Table file to disk.
+    * Perform incremental Generate check to see if input has changed and requires re-generating the build. Leverage same incremental build logic as Evaluate to monitor input/output files. Will include Extension DLLS, Parameters Table file, Recipe file, Shared State files from Dependencies.
+    * Discover all Build Extension Tasks using scanning the explicit "Build" dependency libraries and the implicit "Language" default build extension for public implementations of the `IBuildTask` interface.
+    * Instantiate each class using dependency injection to pass in extra functionality (i.e. Logger, etc)
+    * Using the Before/After lists invoke each build Task in their requested order.
+    * Save Shared State and Operation Graph to disk.
 
 1. **Build Evaluate**
-  * Walk the Operation Graph and invoke each operation in the required order to ensure files generated as output are finished before being consumed as input.
-  * Monitor the actual file system access (using Detours on Windows, open question for other platforms) to verify the declared input/output files match reality.
+    * Walk the Operation Graph and invoke each operation in the required order to ensure files generated as output are finished before being consumed as input.
+    * Monitor the actual file system access (using Detours on Windows, open question for other platforms) to verify the declared input/output files match reality.
 
 ## Package Manager
 You may have noticed that nothing about the build explicitly deals with the integration of a public feed of packages. Because each individual projects build is isolated and self contained, a dependency [Package Reference](Architecture/Package-Reference.md) can easily be migrated from a directory reference, for local projects, to a name@version pair that will be resolved to a published snapshot of a public project. The CLI application will consume a rest API from a hosted web service that allows for users to install other projects and publish the code they would like to share with ease. The build Engine will then have a small amount of integration logic that knows where to look when resolving dependencies that reference a public package that will be installed to a known location. It should be noted that these public dependency references can be for both runtime and developer dependencies. This will allow for shared packages to contain custom build logic and for the creation of shared build Extensions to augment the built in build Tasks.
