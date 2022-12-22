@@ -19,13 +19,13 @@ class Script
 							new Dir(
 								@"Soup.Cpp",
 								new Dir(
-									"0.4.2",
-								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.Cpp/0.4.2/*.*"))),
+									"0.4.3",
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.Cpp/0.4.3/*.*"))),
 							new Dir(
 								@"Soup.CSharp",
 								new Dir(
-									"0.7.3",
-								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.CSharp/0.7.3/*.*")))),
+									"0.7.4",
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.CSharp/0.7.4/*.*")))),
 					new Dir(
 						@"Generate",
 						new DirFiles($"{soupRunFolder}/Soup/Generate/*.*")),
@@ -55,7 +55,7 @@ class Script
 		};
 
 		// Upgrade values
-		project.Version = new Version(0, 28, 0);
+		project.Version = new Version(0, 28, 1);
 
 		Compiler.BuildMsi(project);
 	}

@@ -1,9 +1,10 @@
-﻿// <copyright file="LinuxProcessManager.h" company="Soup">
+﻿// <copyright file="LinuxMonitorProcessManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
 #include "../IMonitorProcessManager.h"
+#include "LinuxMonitorProcess.h"
 
 namespace Monitor::Linux
 {
@@ -28,7 +29,7 @@ namespace Monitor::Linux
 		/// </summary>
 		std::shared_ptr<Opal::System::IProcess> CreateMonitorProcess(
 			const Path& executable,
-			const std::string& arguments,
+			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			const std::map<std::string, std::string>& environmentVariables,
 			std::shared_ptr<IMonitorCallback> callback,
@@ -36,7 +37,10 @@ namespace Monitor::Linux
 			const std::vector<Path>& allowedReadAccess,
 			const std::vector<Path>& allowedWriteAccess) override final
 		{
-			throw std::runtime_error("Not implemented");
+			return std::make_shared<LinuxMonitorProcess>(
+				executable,
+				std::move(arguments),
+				workingDirectory);
 		}
 	};
 }

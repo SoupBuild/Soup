@@ -6,8 +6,9 @@ CXX_FLAGS="-std=c++20"
 CXX_COMPILE_FLAGS="$CXX_FLAGS -g -march=native -msha -mpclmul -msse2"
 
 SCRIPTS_DIR=$(dirname "$0")
-SOURCE_DIR=$SCRIPTS_DIR/../Source
-OUT_DIR=~/repos/Soup/out
+ROOT_DIR=$SCRIPTS_DIR/..
+SOURCE_DIR=$ROOT_DIR/Source
+OUT_DIR=$ROOT_DIR/out
 
 # Stop on first error
 set -e

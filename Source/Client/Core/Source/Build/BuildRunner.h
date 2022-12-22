@@ -184,9 +184,8 @@ namespace Soup::Core
 			auto soupTargetDirectory = targetDirectory + BuildConstants::SoupTargetDirectory();
 
 			// Build up the child target directory set
-			auto childTargetDirectorySets = GenerateChildDependenciesTargetDirectorySet(packageInfo);
-			auto& directChildTargetDirectories = childTargetDirectorySets.first;
-			auto& recursiveChildTargetDirectories = childTargetDirectorySets.second;
+			const auto& [directChildTargetDirectories, recursiveChildTargetDirectories] =
+				GenerateChildDependenciesTargetDirectorySet(packageInfo);
 
 			//////////////////////////////////////////////
 			// SETUP
@@ -385,7 +384,15 @@ namespace Soup::Core
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto moduleFolder = moduleName.GetParent();
 			auto generateFolder = moduleFolder + Path("Generate/");
+
+			#if defined(_WIN32)
 			auto generateExecutable = generateFolder + Path("Soup.Build.Generate.exe");
+			#elif defined(__linux__)
+			auto generateExecutable = Path("/home/mwasplund/dev/repos/Soup/Source/out/msbuild/bin/Soup.Build.Generate/Debug/net6.0/linux-x64/publish/") + Path("Soup.Build.Generate");
+			#else
+			#error "Unknown platform"
+			#endif
+
 			OperationId generateOperationId = 1;
 			auto generateArguments = std::stringstream();
 			generateArguments << soupTargetDirectory.ToString();
@@ -573,10 +580,10 @@ namespace Soup::Core
 		{
 			auto result = ValueTable();
 
-			for (auto& dependencyType : packageInfo.Dependencies)
+			for (const auto& [dependencyTypeKey, dependencyTypeValue] : packageInfo.Dependencies)
 			{
-				auto dependencyTypeTable = ValueTable();;
-				for (auto& dependency : dependencyType.second)
+				auto dependencyTypeTable = ValueTable();
+				for (auto& dependency : dependencyTypeValue)
 				{
 					// Load this package recipe
 					auto dependencyPackageId = dependency.PackageId;
@@ -617,7 +624,7 @@ namespace Soup::Core
 					}
 				}
 
-				result.emplace(dependencyType.first, Value(std::move(dependencyTypeTable)));
+				result.emplace(dependencyTypeKey, Value(std::move(dependencyTypeTable)));
 			}
 
 			return result;

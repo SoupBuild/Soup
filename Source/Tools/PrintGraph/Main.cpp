@@ -33,9 +33,9 @@ std::string ToString(const std::vector<uint32_t>& valueList)
 
 void PrintFiles(const Soup::Core::FileSystemState& fileSystemState)
 {
-	for (auto fileReference : fileSystemState.GetFiles())
+	for (const auto& [key, value] : fileSystemState.GetFiles())
 	{
-		std::cout << "File: " << fileReference.first << " " << fileReference.second.ToString() << std::endl;
+		std::cout << "File: " << key << " " << value.ToString() << std::endl;
 	}
 }
 

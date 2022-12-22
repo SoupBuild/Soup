@@ -95,10 +95,10 @@ namespace Soup::Core
 
 		static void Parse(RecipeTable& target, const SMLTable& source)
 		{
-			for (auto& item : source.GetValue())
+			for (const auto& [key, value] : source.GetValue())
 			{
-				auto value = Parse(item.second);
-				target.emplace(item.first, std::move(value));
+				auto recipeValue = Parse(value);
+				target.emplace(key, std::move(recipeValue));
 			}
 		}
 
@@ -112,7 +112,7 @@ namespace Soup::Core
 			}
 		}
 
-		static SMLValue Build(RecipeValue& value)
+		static SMLValue Build(const RecipeValue& value)
 		{
 			switch (value.GetType())
 			{
@@ -133,19 +133,19 @@ namespace Soup::Core
 			}
 		}
 
-		static SMLTable Build(RecipeTable& table)
+		static SMLTable Build(const RecipeTable& table)
 		{
 			auto result = std::unordered_map<std::string, SMLValue>();
 
-			for (auto& value : table)
+			for (const auto& [key, value] : table)
 			{
-				result.emplace(value.first, Build(value.second));
+				result.emplace(key, Build(value));
 			}
 
 			return SMLTable(std::move(result));
 		}
 
-		static SMLArray Build(RecipeList& list)
+		static SMLArray Build(const RecipeList& list)
 		{
 			auto result = std::vector<SMLValue>();
 

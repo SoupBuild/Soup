@@ -74,8 +74,8 @@ namespace Soup::Core
 		/// </summary>
 		OperationResult& AddOrUpdateOperationResult(OperationId operationId, OperationResult result)
 		{
-			auto insertResult = _results.insert_or_assign(operationId, std::move(result));
-			return insertResult.first->second;
+			auto [insertIterator, wasInserted] = _results.insert_or_assign(operationId, std::move(result));
+			return insertIterator->second;
 		}
 
 		/// <summary>

@@ -2,14 +2,14 @@ Version: 4
 Closures: {
 	Root: {
 		"C#": [
-			{ Name: "Opal", Version: "1.3.0", Build: "Build2" }
+			{ Name: "Opal", Version: "1.4.0", Build: "Build2" }
 			{ Name: "Soup.Build", Version: "0.2.0", Build: "Build2" }
 			{ Name: "Soup.Build.Extensions", Version: "0.4.1", Build: "Build2" }
 			{ Name: "Soup.Build.Extensions.Utilities", Version: "0.4.1", Build: "Build2" }
-			{ Name: "Soup.Cpp", Version: "0.4.2", Build: "Build2" }
+			{ Name: "Soup.Cpp", Version: "0.4.3", Build: "Build2" }
 			{ Name: "Soup.Cpp.Compiler", Version: "0.5.0", Build: "Build2" }
 			{ Name: "Soup.Cpp.Compiler.MSVC", Version: "0.5.0", Build: "Build2" }
-			{ Name: "Soup.CSharp", Version: "0.7.3", Build: "Build2" }
+			{ Name: "Soup.CSharp", Version: "0.7.4", Build: "Build2" }
 			{ Name: "Soup.CSharp.Compiler", Version: "0.6.0", Build: "Build2" }
 			{ Name: "Soup.CSharp.Compiler.Roslyn", Version: "0.6.0", Build: "Build2" }
 		]
@@ -29,18 +29,18 @@ Closures: {
 	}
 	Build0: {
 		"C#": [
-			{ Name: "Soup.Cpp", Version: "0.4.2" }
+			{ Name: "Soup.Cpp", Version: "0.4.3" }
 		]
 	}
 	Build1: {
 		"C#": [
-			{ Name: "Soup.Cpp", Version: "0.4.2" }
+			{ Name: "Soup.Cpp", Version: "0.4.3" }
 			{ Name: "Soup.Test.Cpp", Version: "0.4.0" }
 		]
 	}
 	Build2: {
 		"C#": [
-			{ Name: "Soup.CSharp", Version: "0.7.3" }
+			{ Name: "Soup.CSharp", Version: "0.7.4" }
 		]
 	}
 }

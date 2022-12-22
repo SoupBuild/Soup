@@ -111,9 +111,9 @@ namespace Soup::Core
 			auto result = std::vector<std::string>();
 			if (HasDependencies())
 			{
-				for (auto value : GetDependencies())
+				for (const auto& [key, value] : GetDependencies())
 				{
-					result.push_back(value.first);
+					result.push_back(key);
 				}
 			}
 
@@ -244,10 +244,10 @@ namespace Soup::Core
 
 		RecipeValue& SetValue(RecipeTable& table, std::string_view key, RecipeValue&& value)
 		{
-			auto insertResult = table.insert_or_assign(key.data(), std::move(value));
-			if (insertResult.second)
+			auto [insertIterator, wasInserted] = table.insert_or_assign(key.data(), std::move(value));
+			if (wasInserted)
 			{
-				return insertResult.first->second;
+				return insertIterator->second;
 			}
 			else
 			{
@@ -269,10 +269,10 @@ namespace Soup::Core
 			}
 			else
 			{
-				auto insertResult = table.emplace(key.data(), RecipeValue(RecipeTable()));
-				if (insertResult.second)
+				auto [insertIterator, wasInserted] = table.emplace(key.data(), RecipeValue(RecipeTable()));
+				if (wasInserted)
 				{
-					return insertResult.first->second;
+					return insertIterator->second;
 				}
 				else
 				{

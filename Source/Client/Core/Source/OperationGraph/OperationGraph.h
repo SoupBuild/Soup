@@ -124,11 +124,11 @@ namespace Soup::Core
 			if (!insertLookupResult.second)
 				throw std::runtime_error("The provided command already exists in the graph");
 
-			auto insertResult = _operations.emplace(info.Id, std::move(info));
-			if (!insertResult.second)
+			auto [insertIterator, wasInserted] = _operations.emplace(info.Id, std::move(info));
+			if (!wasInserted)
 				throw std::runtime_error("The provided operation id already exists in the graph");
 
-			return insertResult.first->second;
+			return insertIterator->second;
 		}
 
 		/// <summary>

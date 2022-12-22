@@ -608,7 +608,10 @@ namespace Soup.Build.PackageManager
 				// Otherwise add the external package reference which will be expanded on the service call
 				if (dependency.IsLocal)
 				{
-					var dependencyPath = recipeDirectory + dependency.Path;
+					Path dependencyPath = dependency.Path;
+					if (!dependencyPath.HasRoot)
+						dependencyPath = recipeDirectory + dependencyPath;
+
 					await EnsureDiscoverLocalDependenciesAsync(
 						dependencyPath,
 						closure,

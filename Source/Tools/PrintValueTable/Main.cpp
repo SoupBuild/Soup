@@ -9,19 +9,19 @@ void PrintUsage()
 	std::cout << "printvaluetable [path]" << std::endl;
 }
 
-void PrintValue(Soup::Core::Value& value, const std::string& indent);
+void PrintValue(const Soup::Core::Value& value, const std::string& indent);
 
-void PrintValueTable(Soup::Core::ValueTable& values, const std::string& indent)
+void PrintValueTable(const Soup::Core::ValueTable& values, const std::string& indent)
 {
 	std::cout << "{" << std::endl;
 	auto nextIndent = indent + "  ";
-	for (auto tableValue : values)
+	for (const auto& [key, value] : values)
 	{
 		// Write the key
-		std::cout << nextIndent << tableValue.first << ": ";
+		std::cout << nextIndent << key << ": ";
 
 		// Write the value
-		PrintValue(tableValue.second, nextIndent);
+		PrintValue(value, nextIndent);
 
 		std::cout << "," << std::endl;
 	}
@@ -44,7 +44,7 @@ void PrintValueList(const Soup::Core::ValueList& values, const std::string& inde
 	std::cout << indent << "]";
 }
 
-void PrintValue(Soup::Core::Value& value, const std::string& indent)
+void PrintValue(const Soup::Core::Value& value, const std::string& indent)
 {
 	auto valueType = value.GetType();
 	switch (valueType)

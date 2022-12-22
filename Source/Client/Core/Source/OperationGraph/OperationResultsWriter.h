@@ -49,9 +49,9 @@ namespace Soup::Core
 			auto& results = state.GetResults();
 			stream.write("RTS\0", 4);
 			WriteValue(stream, static_cast<uint32_t>(results.size()));
-			for (auto& resultValue : results)
+			for (const auto& [key, value] : results)
 			{
-				WriteOperationResult(stream, resultValue.first, resultValue.second);
+				WriteOperationResult(stream, key, value);
 			}
 		}
 

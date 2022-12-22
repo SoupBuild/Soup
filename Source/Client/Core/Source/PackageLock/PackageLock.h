@@ -72,13 +72,13 @@ namespace Soup::Core
 
 			auto& values = GetValue(_table, Property_Closures).AsTable();
 			auto result = PackageClosures();
-			for (auto& closureValue : values)
+			for (const auto& [closureKey, closureValue] : values)
 			{
 				auto closureLock = std::map<std::string, std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>>();
-				for (auto& languageValue : closureValue.second.AsTable())
+				for (const auto& [languageKey, languageValue] : closureValue.AsTable())
 				{
 					auto languageLock = std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>();
-					for (auto& projectValue : languageValue.second.AsList())
+					for (auto& projectValue : languageValue.AsList())
 					{
 						auto& projectTable = projectValue.AsTable();
 
@@ -110,10 +110,10 @@ namespace Soup::Core
 						languageLock.emplace(name, std::move(lockValue));
 					}
 
-					closureLock.emplace(languageValue.first, std::move(languageLock));
+					closureLock.emplace(languageKey, std::move(languageLock));
 				}
 
-				result.emplace(closureValue.first, std::move(closureLock));
+				result.emplace(closureKey, std::move(closureLock));
 			}
 
 			return result;

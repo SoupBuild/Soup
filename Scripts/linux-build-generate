@@ -11,5 +11,5 @@ SOURCE_DIR=$SCRIPTS_DIR/../Source
 GENERATE_DIR=$SOURCE_DIR/GenerateSharp/Generate
 
 # Build Generate
-echo dotnet publish $GENERATE_DIR -c Debug
-eval dotnet publish $GENERATE_DIR -c Debug
+echo dotnet publish $GENERATE_DIR --self-contained -f net6.0 -r linux-x64 -c Debug
+eval dotnet publish $GENERATE_DIR --self-contained -f net6.0 -r linux-x64 -c Debug

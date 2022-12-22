@@ -66,10 +66,10 @@ namespace Soup::Core
 					}
 					else
 					{
-						auto insertResult = InputFileLookup.emplace(
+						auto [insertIterator, wasInserted] = InputFileLookup.emplace(
 							fileId,
 							std::set<OperationId>());
-						insertResult.first->second.insert(operationInfo.Id);
+						insertIterator->second.insert(operationInfo.Id);
 					}
 				}
 
@@ -397,10 +397,20 @@ namespace Soup::Core
 			for (auto& file : allowedWriteAccess)
 				Log::Diag(file.ToString());
 
+			// Split the arguments into a vector
+			// TODO: The operation info may want to store this as an array, this id quick and dirty
+			auto arguments = std::vector<std::string>();
+			std::istringstream readArguments(operationInfo.Command.Arguments);
+			std::string argumentValue;
+			while (std::getline(readArguments, argumentValue, ' '))
+			{
+				arguments.push_back(argumentValue);
+			}
+
 			bool enableAccessChecks = true;
 			auto process = Monitor::IMonitorProcessManager::Current().CreateMonitorProcess(
 				operationInfo.Command.Executable,
-				operationInfo.Command.Arguments,
+				std::move(arguments),
 				operationInfo.Command.WorkingDirectory,
 				environment,
 				callback,
