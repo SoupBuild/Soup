@@ -3,17 +3,13 @@ Language: "C++|0.4"
 Type: "Executable"
 Version: "1.0.0"
 IncludePaths: [
-	"C:/Users/mwasp/Dev/Repos/gravity/src/compiler/"
-	"C:/Users/mwasp/Dev/Repos/gravity/src/optionals/"
-	"C:/Users/mwasp/Dev/Repos/gravity/src/runtime/"
-	"C:/Users/mwasp/Dev/Repos/gravity/src/shared/"
-	"C:/Users/mwasp/Dev/Repos/gravity/src/utils/"
+	"C:/Users/mwasp/Dev/Repos/wren/src/include"
 ]
 Source: [
 	"Main.cpp"
 ]
 Dependencies: {
 	Runtime: [
-		"C:/Users/mwasp/Dev/Repos/gravity/src"
+		"C:/Users/mwasp/Dev/Repos/wren/src"
 	]
 }
