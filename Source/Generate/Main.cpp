@@ -1,6 +1,8 @@
 //For more details, visit https://wren.io/embedding/
 
 #include <stdio.h>
+#include <fstream>
+#include <iostream>
 #include "wren.hpp"
 
 static void writeFn(WrenVM* vm, const char* text)
@@ -46,9 +48,13 @@ int main()
 	WrenVM* vm = wrenNewVM(&config);
 
 	const char* module = "main";
-	const char* script = "System.print(\"I am running in a VM!\")";
+	
+	std::ifstream scriptFile("Test.wren");
+	auto script = std::string(
+		std::istreambuf_iterator<char>(scriptFile),
+		std::istreambuf_iterator<char>());
 
-	WrenInterpretResult result = wrenInterpret(vm, module, script);
+	WrenInterpretResult result = wrenInterpret(vm, module, script.c_str());
 
 	switch (result)
 	{
