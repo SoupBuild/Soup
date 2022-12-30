@@ -5,21 +5,9 @@
 #include "gravity_vm.h"
 #pragma warning(pop)
 
-const char *source_code = " \
-func sum (a, b) {   \
-    return a + b    \
-}   \
-    \
-func mul (a, b) {   \
-    return a * b    \
-}   \
-    \
-func main () {   \
-    var a = 10   \
-    var b = 20   \
-    return sum(a, b) + mul(a, b)   \
-}   \
-";
+#include <string>
+#include <fstream>
+#include <streambuf>
 
 // a very simple report error callback function
 void report_error(
@@ -37,16 +25,27 @@ void report_error(
 	exit(0);
 }
 
-int main ()
+int main()
 {
-	// setup a delegate struct (much more options are available)
+	std::ifstream t("Test.gravity");
+	auto source_code = std::string(
+		std::istreambuf_iterator<char>(t),
+		std::istreambuf_iterator<char>());
+
+	// setup a delegate struct
 	gravity_delegate_t delegate = {.error_callback = report_error};
 
 	// allocate a new compiler
 	gravity_compiler_t *compiler = gravity_compiler_create(&delegate);
 
-	// compile Gravity source code into a closure (bytecode)
-	gravity_closure_t *closure = gravity_compiler_run(compiler, source_code, strlen(source_code), 0, true, true);
+	// compile Gravity source code into bytecode
+	gravity_closure_t *closure = gravity_compiler_run(
+		compiler,
+		source_code.c_str(),
+		source_code.size(),
+		0,
+		true,
+		true);
 
 	// allocate a new Gravity VM
 	gravity_vm *vm = gravity_vm_new(&delegate);
@@ -57,8 +56,27 @@ int main ()
 	// once the memory has been transferred, you can get rid of the front-end
 	gravity_compiler_free(compiler);
 
-	// execute main closure
-	if (gravity_vm_runmain(vm, closure)) {
+	// load closure into VM
+	gravity_vm_loadclosure(vm, closure);
+
+	// lookup a reference to the mul closure into the Gravity VM
+	gravity_value_t mul_function = gravity_vm_getvalue(vm, "mul", (uint32_t)strlen("mul"));
+	if (!VALUE_ISA_CLOSURE(mul_function)) {
+		printf("Unable to find mul function into Gravity VM.\n");
+		return -1;
+	}
+
+	// convert function to closure
+	gravity_closure_t *mul_closure = VALUE_AS_CLOSURE(mul_function);
+
+	// prepare parameters
+	gravity_value_t p1 = gravity_value_from_int(30);
+	gravity_value_t p2 = gravity_value_from_int(40);
+	gravity_value_t params[] = { p1, p2 };
+
+	// execute mul closure
+	if (gravity_vm_runclosure(vm, mul_closure, gravity_value_from_null(), params, 2))
+	{
 		// retrieve returned result
 		gravity_value_t result = gravity_vm_result(vm);
 
