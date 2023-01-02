@@ -14,7 +14,7 @@ class TestClass {
 		var sharedState2 = Soup.sharedState
 
 		activeState["Test"] = "test"
-		activeState[1] = "huh"
+		activeState["dsdf"] = "huh"
 
 		Soup.createOperation("test", "test", "test", "test", "test", "test")
 	}

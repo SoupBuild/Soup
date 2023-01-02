@@ -261,8 +261,16 @@ void Run()
 		throw std::runtime_error("ActiveState must be a map");
 	}
 
+	wrenEnsureSlots(vm, 3);
 	auto mapCount = wrenGetMapCount(vm, 0);
 	std::cout << "ActiveState: " << mapCount << std::endl;
+	for (auto i = 0; i < mapCount; i++)
+	{
+		wrenGetMapKeyValue(vm, 0, i, 1, 2);
+		auto key = wrenGetSlotString(vm, 1);
+		auto value = wrenGetSlotString(vm, 2);
+		std::cout << key << " : " << value << std::endl;
+	}
 
 	wrenReleaseHandle(vm, activeStateGetterHandle);
 
