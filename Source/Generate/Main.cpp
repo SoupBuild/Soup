@@ -11,30 +11,86 @@
 
 static const char* soupModuleSource =
 	"class Soup {\n"
+	"	static activeState {\n"
+	"		if (__activeState is Null) __activeState = loadActiveState_()\n"
+	"		return __activeState\n"
+	"	}\n"
+	"\n"
+	"	static sharedState {\n"
+	"		if (__sharedState is Null) __sharedState = loadSharedState_()\n"
+	"		return __sharedState\n"
+	"	}\n"
+	"\n"
+	"	static createOperation(title, executable, arguments, workingDirectory, declaredInput, declaredOutput) {\n"
+	"		if (!(title is String)) Fiber.abort(\"Title must be a string.\")\n"
+	"		if (!(executable is String)) Fiber.abort(\"Executable must be a string.\")\n"
+	"		if (!(arguments is String)) Fiber.abort(\"Arguments must be a string.\")\n"
+	"		if (!(workingDirectory is String)) Fiber.abort(\"WorkingDirectory must be a string.\")\n"
+	"		if (!(declaredInput is String)) Fiber.abort(\"DeclaredInput must be a string.\")\n"
+	"		if (!(declaredOutput is String)) Fiber.abort(\"DeclaredOutput must be a string.\")\n"
+	"		createOperation_(title, executable, arguments, workingDirectory, declaredInput, declaredOutput)\n"
+	"	}\n"
+	"\n"
 	"	static debug(message) {\n"
 	"		if (!(message is String)) Fiber.abort(\"Message must be a string.\")\n"
-	"		logMessage_(message, 1)\n"
+	"		debug_(message)\n"
 	"	}\n"
 	"\n"
 	"	static warning(message) {\n"
 	"		if (!(message is String)) Fiber.abort(\"Message must be a string.\")\n"
-	"		logMessage_(message, 2)\n"
+	"		warning_(message)\n"
 	"	}\n"
 	"\n"
 	"	static error(message) {\n"
 	"		if (!(message is String)) Fiber.abort(\"Message must be a string.\")\n"
-	"		logMessage_(message, 3)\n"
+	"		error_(message)\n"
 	"	}\n"
 	"\n"
-	"	foreign static logMessage_(message, level)\n"
+	"	foreign static loadActiveState_()\n"
+	"	foreign static loadSharedState_()\n"
+	"	foreign static createOperation_(title, executable, arguments, workingDirectory, declaredInput, declaredOutput)\n"
+	"	foreign static debug_(message)\n"
+	"	foreign static warning_(message)\n"
+	"	foreign static error_(message)\n"
 	"}\n";
 
+void SoupLoadActiveState(WrenVM* vm)
+{
+	std::cout << "SoupLoadActiveState: " << std::endl;
+	wrenSetSlotNewMap(vm, 0);
+}
 
-void SoupLogMessage(WrenVM* vm)
+void SoupLoadSharedState(WrenVM* vm)
+{
+	std::cout << "SoupLoadSharedState: " << std::endl;
+	wrenSetSlotNewMap(vm, 0);
+}
+
+void SoupCreateOperation(WrenVM* vm)
+{
+	std::cout << "SoupCreateOperation: " << std::endl;
+	wrenSetSlotNull(vm, 0);
+}
+
+void SoupLogDebug(WrenVM* vm)
 {
 	auto message = wrenGetSlotString(vm, 1);
-	auto level = wrenGetSlotDouble(vm, 2);
-	std::cout << "LogMessage: [" << level << "] " << message << std::endl;
+	std::cout << "LogMessage: " << message << std::endl;
+	wrenSetSlotNull(vm, 0);
+}
+
+void SoupLogWarning(WrenVM* vm)
+{
+	auto message = wrenGetSlotString(vm, 1);
+	std::cout << "LogMessage: " << message << std::endl;
+	wrenSetSlotNull(vm, 0);
+}
+
+void SoupLogError(WrenVM* vm)
+{
+	auto message = wrenGetSlotString(vm, 1);
+	std::cout << "LogMessage: " << message << std::endl;
+	wrenSetSlotNull(vm, 0);
 }
 
 const char* WrenSoupSource()
@@ -57,10 +113,18 @@ WrenForeignMethodFn WrenBindForeignMethod(
 	// There is only one foreign method in the soup module.
 	if (classNameValue == "Soup" && isStatic)
 	{
-		if (signatureValue == "logMessage_(_,_)")
-		{
-			return SoupLogMessage;
-		}
+		if (signatureValue == "loadActiveState_()")
+			return SoupLoadActiveState;
+		else if (signatureValue == "loadSharedState_()")
+			return SoupLoadSharedState;
+		else if (signatureValue == "createOperation_(_,_,_,_,_,_)")
+			return SoupCreateOperation;
+		else if (signatureValue == "debug_(_)")
+			return SoupLogDebug;
+		else if (signatureValue == "warning_(_)")
+			return SoupLogWarning;
+		else if (signatureValue == "error_(_)")
+			return SoupLogError;
 	}
 
 	return nullptr;
@@ -76,9 +140,7 @@ static WrenLoadModuleResult LoadModule(WrenVM* vm, const char* module)
 
 	// Inject Soup module
 	if (moduleName == "soup")
-	{
 		result.source = WrenSoupSource();
-	}
 
 	return result;
 }
@@ -86,7 +148,7 @@ static WrenLoadModuleResult LoadModule(WrenVM* vm, const char* module)
 static void WriteCallback(WrenVM* vm, const char* text)
 {
 	(vm);
-	printf("%s", text);
+	(text);
 }
 
 void ErrorCallback(
@@ -131,7 +193,6 @@ void ThrowIfFailed(WrenInterpretResult result)
 		}
 		case WREN_RESULT_SUCCESS:
 		{
-			std::cout << "Success!" << std::endl;
 			break;
 		}
 	}
@@ -157,12 +218,11 @@ void Run()
 		std::istreambuf_iterator<char>());
 
 	// Interpret the script
-	const char* module = "main";
-	auto result = wrenInterpret(vm, module, script.c_str());
+	auto result = wrenInterpret(vm, "main", script.c_str());
 	ThrowIfFailed(result);
 
 	wrenEnsureSlots(vm, 1);
-	wrenGetVariable(vm, module, "TestClass", 0);
+	wrenGetVariable(vm, "main", "TestClass", 0);
 
 	auto type = wrenGetSlotType(vm, 0);
 	if (type != WREN_TYPE_UNKNOWN) {
@@ -171,14 +231,42 @@ void Run()
 
 	auto testClassHandle = wrenGetSlotHandle(vm, 0);
 
-	auto doStuffMethodHandle = wrenMakeCallHandle(vm, "DoStuff()");
-
+	// Call DoStuff
+	auto doStuffMethodHandle = wrenMakeCallHandle(vm, "doStuff()");
 	wrenSetSlotHandle(vm, 0, testClassHandle);
 	result = wrenCall(vm, doStuffMethodHandle);
 	ThrowIfFailed(result);
-
 	wrenReleaseHandle(vm, doStuffMethodHandle);
+
 	wrenReleaseHandle(vm, testClassHandle);
+
+	wrenEnsureSlots(vm, 1);
+	wrenGetVariable(vm, "soup", "Soup", 0);
+
+	type = wrenGetSlotType(vm, 0);
+	if (type != WREN_TYPE_UNKNOWN) {
+		throw std::runtime_error("Missing Class Soup");
+	}
+
+	auto soupClassHandle = wrenGetSlotHandle(vm, 0);
+
+	// Call ActiveState
+	auto activeStateGetterHandle = wrenMakeCallHandle(vm, "activeState");
+	wrenSetSlotHandle(vm, 0, soupClassHandle);
+	result = wrenCall(vm, activeStateGetterHandle);
+	ThrowIfFailed(result);
+
+	type = wrenGetSlotType(vm, 0);
+	if (type != WREN_TYPE_MAP) {
+		throw std::runtime_error("ActiveState must be a map");
+	}
+
+	auto mapCount = wrenGetMapCount(vm, 0);
+	std::cout << "ActiveState: " << mapCount << std::endl;
+
+	wrenReleaseHandle(vm, activeStateGetterHandle);
+
+	wrenReleaseHandle(vm, soupClassHandle);
 
 	wrenFreeVM(vm);
 }

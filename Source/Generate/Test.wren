@@ -1,14 +1,21 @@
-System.print("I am running in a VM!")
-
 import "soup" for Soup
 
 class TestClass {
-	static RunBefore { [] }
+	static runBefore { [] }
 
-	static DoStuff() {
+	static doStuff() {
 		Soup.debug("I am running in a method!")
 		Soup.warning("I am running in a method!")
 		Soup.error("I am running in a method!")
-		return 1
+
+		var activeState = Soup.activeState
+		Soup.debug("hm %(activeState)")
+		var sharedState = Soup.sharedState
+		var sharedState2 = Soup.sharedState
+
+		activeState["Test"] = "test"
+		activeState[1] = "huh"
+
+		Soup.createOperation("test", "test", "test", "test", "test", "test")
 	}
 }
