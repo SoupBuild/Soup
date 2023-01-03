@@ -56,40 +56,40 @@ private:
 
 	static void SoupLoadActiveState(WrenVM* vm)
 	{
-		std::cout << "SoupLoadActiveState: " << std::endl;
+		Log::Diag("SoupLoadActiveState");
 		wrenSetSlotNewMap(vm, 0);
 	}
 
 	static void SoupLoadSharedState(WrenVM* vm)
 	{
-		std::cout << "SoupLoadSharedState: " << std::endl;
+		Log::Diag("SoupLoadSharedState");
 		wrenSetSlotNewMap(vm, 0);
 	}
 
 	static void SoupCreateOperation(WrenVM* vm)
 	{
-		std::cout << "SoupCreateOperation: " << std::endl;
+		Log::Diag("SoupCreateOperation");
 		wrenSetSlotNull(vm, 0);
 	}
 
 	static void SoupLogDebug(WrenVM* vm)
 	{
 		auto message = wrenGetSlotString(vm, 1);
-		std::cout << "LogMessage: " << message << std::endl;
+		Log::Info(message);
 		wrenSetSlotNull(vm, 0);
 	}
 
 	static void SoupLogWarning(WrenVM* vm)
 	{
 		auto message = wrenGetSlotString(vm, 1);
-		std::cout << "LogMessage: " << message << std::endl;
+		Log::Warning(message);
 		wrenSetSlotNull(vm, 0);
 	}
 
 	static void SoupLogError(WrenVM* vm)
 	{
 		auto message = wrenGetSlotString(vm, 1);
-		std::cout << "LogMessage: " << message << std::endl;
+		Log::Error(message);
 		wrenSetSlotNull(vm, 0);
 	}
 

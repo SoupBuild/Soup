@@ -3,8 +3,6 @@ import "soup" for Soup, SoupExtension
 class TestClass is SoupExtension {
 	static evaluate() {
 		Soup.debug("I am running in a method!")
-		Soup.warning("I am running in a method!")
-		Soup.error("I am running in a method!")
 
 		var activeState = Soup.activeState
 		Soup.debug("hm %(activeState)")

@@ -8,6 +8,27 @@ class GenerateEngine
 public:
 	static void Run()
 	{
+		// Setup the filter
+		auto defaultTypes =
+			static_cast<uint32_t>(TraceEventFlag::Diagnostic) |
+			static_cast<uint32_t>(TraceEventFlag::Information) |
+			static_cast<uint32_t>(TraceEventFlag::HighPriority) |
+			static_cast<uint32_t>(TraceEventFlag::Warning) |
+			static_cast<uint32_t>(TraceEventFlag::Error) |
+			static_cast<uint32_t>(TraceEventFlag::Critical);
+		auto filter = std::make_shared<EventTypeFilter>(
+				static_cast<TraceEventFlag>(defaultTypes));
+
+		// Setup the console listener
+		Log::RegisterListener(
+			std::make_shared<ConsoleTraceListener>(
+				"Log",
+				filter,
+				false,
+				false));
+
+		Log::Diag("ProgramStart");
+
 		auto vm = InitializeVM();
 
 		// Load the script
@@ -33,7 +54,7 @@ public:
 				auto testClassHandle = WrenHelpers::SmartHandle(vm, wrenGetSlotHandle(vm, 0));
 				if (WrenHelpers::HasParentType(vm, testClassHandle, "SoupExtension"))
 				{
-					std::cout << "Found Build Extension" << std::endl;
+					Log::Diag("Found Build Extension");
 					EvaluateExtension(vm, testClassHandle);
 				}
 			}
@@ -89,13 +110,14 @@ private:
 
 		wrenEnsureSlots(vm, 3);
 		auto mapCount = wrenGetMapCount(vm, 0);
-		std::cout << "ActiveState: " << mapCount << std::endl;
+		Log::Diag("ActiveState: ");
 		for (auto i = 0; i < mapCount; i++)
 		{
 			wrenGetMapKeyValueAt(vm, 0, i, 1, 2);
 			auto key = wrenGetSlotString(vm, 1);
 			auto value = wrenGetSlotString(vm, 2);
-			std::cout << key << " : " << value << std::endl;
+			Log::Diag(key);
+			(value);
 		}
 	}
 };
