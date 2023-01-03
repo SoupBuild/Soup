@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ScriptEvaluate.h"
+#include "WrenHost.h"
 
 namespace Soup::Build::Generate
 {
@@ -12,7 +12,8 @@ namespace Soup::Build::Generate
 			// Run all build operations in the correct order with incremental build checks
 			Log::Diag("Build generate start: " + soupTargetDirectory.ToString());
 
-			ScriptEvaluate::Run();
+			auto host = std::make_unique<WrenHost>();
+			host->Run();
 
 			// Load the parameters file
 			// auto parametersFile = soupTargetDirectory + BuildConstants.GenerateParametersFileName;
