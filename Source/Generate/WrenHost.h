@@ -4,7 +4,7 @@
 #include "WrenHelpers.h"
 #include "SoupModule.h"
 
-namespace WrenHost
+namespace Soup::Build::Generate::WrenHost
 {
 	WrenForeignMethodFn BindForeignMethod(
 		WrenVM* vm,
@@ -28,7 +28,7 @@ namespace WrenHost
 		return nullptr;
 	}
 
-	static WrenLoadModuleResult LoadModule(WrenVM* vm, const char* module)
+	WrenLoadModuleResult LoadModule(WrenVM* vm, const char* module)
 	{
 		(vm);
 		auto moduleName = std::string_view(module);
@@ -43,7 +43,7 @@ namespace WrenHost
 		return result;
 	}
 
-	static void WriteCallback(WrenVM* vm, const char* text)
+	void WriteCallback(WrenVM* vm, const char* text)
 	{
 		(vm);
 		(text);

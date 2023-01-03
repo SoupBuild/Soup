@@ -46,11 +46,39 @@ using namespace Opal;
 
 #include "GenerateEngine.h"
 
-int main()
+int main(int argc, char** argv)
 {
 	try
 	{
-		GenerateEngine::Run();
+		// Setup the filter
+		auto defaultTypes =
+			static_cast<uint32_t>(TraceEventFlag::Diagnostic) |
+			static_cast<uint32_t>(TraceEventFlag::Information) |
+			static_cast<uint32_t>(TraceEventFlag::HighPriority) |
+			static_cast<uint32_t>(TraceEventFlag::Warning) |
+			static_cast<uint32_t>(TraceEventFlag::Error) |
+			static_cast<uint32_t>(TraceEventFlag::Critical);
+		auto filter = std::make_shared<EventTypeFilter>(
+				static_cast<TraceEventFlag>(defaultTypes));
+
+		// Setup the console listener
+		Log::RegisterListener(
+			std::make_shared<ConsoleTraceListener>(
+				"Log",
+				filter,
+				false,
+				false));
+
+		Log::Diag("ProgramStart");
+
+		if (argc != 2)
+		{
+			Log::Error("Invalid parameters. Expected one parameter.");
+			return -1;
+		}
+
+		auto soupTargetDirectory = Path(argv[1]);
+		Soup::Build::Generate::GenerateEngine::Run(soupTargetDirectory);
 	}
 	catch (const std::exception& ex)
 	{

@@ -1,123 +1,160 @@
 #pragma once
 
-#include <fstream>
-#include "WrenHost.h"
+#include "ScriptEvaluate.h"
 
-class GenerateEngine
+namespace Soup::Build::Generate
 {
-public:
-	static void Run()
+	class GenerateEngine
 	{
-		// Setup the filter
-		auto defaultTypes =
-			static_cast<uint32_t>(TraceEventFlag::Diagnostic) |
-			static_cast<uint32_t>(TraceEventFlag::Information) |
-			static_cast<uint32_t>(TraceEventFlag::HighPriority) |
-			static_cast<uint32_t>(TraceEventFlag::Warning) |
-			static_cast<uint32_t>(TraceEventFlag::Error) |
-			static_cast<uint32_t>(TraceEventFlag::Critical);
-		auto filter = std::make_shared<EventTypeFilter>(
-				static_cast<TraceEventFlag>(defaultTypes));
-
-		// Setup the console listener
-		Log::RegisterListener(
-			std::make_shared<ConsoleTraceListener>(
-				"Log",
-				filter,
-				false,
-				false));
-
-		Log::Diag("ProgramStart");
-
-		auto vm = InitializeVM();
-
-		// Load the script
-		std::ifstream scriptFile("Test.wren");
-		auto script = std::string(
-			std::istreambuf_iterator<char>(scriptFile),
-			std::istreambuf_iterator<char>());
-
-		// Interpret the script
-		WrenHelpers::ThrowIfFailed(wrenInterpret(vm, "main", script.c_str()));
-
-		// Discover all class types
-		wrenEnsureSlots(vm, 1);
-		auto variableCount = wrenGetVariableCount(vm, "main");
-		for (auto i = 0; i < variableCount; i++)
+	public:
+		static void Run(const Path& soupTargetDirectory)
 		{
-			wrenGetVariableAt(vm, "main", i, 0);
+			// Run all build operations in the correct order with incremental build checks
+			Log::Diag("Build generate start: " + soupTargetDirectory.ToString());
 
-			// Check if a class
-			auto type = wrenGetSlotType(vm, 0);
-			if (type == WREN_TYPE_UNKNOWN)
-			{
-				auto testClassHandle = WrenHelpers::SmartHandle(vm, wrenGetSlotHandle(vm, 0));
-				if (WrenHelpers::HasParentType(vm, testClassHandle, "SoupExtension"))
-				{
-					Log::Diag("Found Build Extension");
-					EvaluateExtension(vm, testClassHandle);
-				}
-			}
+			ScriptEvaluate::Run();
+
+			// Load the parameters file
+			// auto parametersFile = soupTargetDirectory + BuildConstants.GenerateParametersFileName;
+			// if (!ValueTableManager.TryLoadState(parametersFile, out var parametersState))
+			// {
+			// 	Log.Error("Failed to load the parameter file: " + parametersFile.ToString());
+			// 	throw std::runtime_error("Failed to load parameter file.");
+			// }
+
+			// // Load the read access file
+			// auto readAccessFile = soupTargetDirectory + BuildConstants.GenerateReadAccessFileName;
+			// auto readAccessList = new List<Path>();
+			// if (!await PathListManager.TryLoadFileAsync(readAccessFile, readAccessList))
+			// {
+			// 	Log.Error("Failed to load the read access file: " + readAccessFile.ToString());
+			// 	throw std::runtime_error("Failed to load read access file.");
+			// }
+
+			// // Load the write access file
+			// auto writeAccessFile = soupTargetDirectory + BuildConstants.GenerateWriteAccessFileName;
+			// auto writeAccessList = new List<Path>();
+			// if (!PathListManager.TryLoadFileAsync(writeAccessFile, writeAccessList))
+			// {
+			// 	Log.Error("Failed to load the write access file: " + writeAccessFile.ToString());
+			// 	throw std::runtime_error("Failed to load write access file.");
+			// }
+
+			// // Get the required input state from the parameters
+			// auto languageExtensionContent = parametersState["LanguageExtensionPath"].AsString().ToString();
+			// Path? languageExtensionPath = null;
+			// if (!string.IsNullOrEmpty(languageExtensionContent))
+			// {
+			// 	languageExtensionPath = Path(languageExtensionContent);
+			// }
+
+			// auto packageDirectory = Path(parametersState["PackageDirectory"].AsString().ToString());
+
+			// // Load the recipe file
+			// auto recipeFile = packageDirectory + BuildConstants.RecipeFileName;
+			// auto (isSuccess, recipe) = RecipeExtensions.TryLoadRecipeFromFileAsync(recipeFile);
+			// if (!isSuccess)
+			// {
+			// 	Log::Error("Failed to load the recipe: " + recipeFile.ToString());
+			// 	throw std::runtime_error("Failed to load recipe.");
+			// }
+
+			// // Combine all the dependencies shared state
+			// auto dependenciesSharedState = LoadDependenciesSharedState(parametersState);
+
+			// // Generate the set of build extension libraries
+			// auto buildExtensionLibraries = GenerateBuildExtensionSet(languageExtensionPath, dependenciesSharedState);
+
+			// // Start a new active state that is initialized to the recipe itself
+			// auto activeState = new ValueTable();
+
+			// // Initialize the Recipe Root Table
+			// auto recipeState = recipe.Document.ToBuildValue();
+			// activeState.Add("Recipe", new Value(recipeState));
+
+			// // Initialize the Parameters Root Table
+			// activeState.Add("Parameters", new Value(parametersState));
+
+			// // Initialize the Dependencies Root Table
+			// activeState.Add("Dependencies", new Value(dependenciesSharedState));
+
+			// // Keep the extension libraries open while running the build system
+			// // to ensure their memory is kept alive
+			// OperationGraph evaluateGraph;
+			// IValueTable sharedState;
+
+			// Create a new build system for the requested build
+			// auto buildTaskManager = BuildTaskManager();
+
+			// // Run all build extension register callbacks
+			// for (auto buildExtension : buildExtensionLibraries)
+			// {
+			// 	auto library = LoadPlugin(buildExtension);
+			// 	FindAllCommands(library, buildTaskManager);
+			// }
+
+			// // Run the build
+			// auto buildState = BuildState(
+			// 	activeState,
+			// 	_fileSystemState,
+			// 	readAccessList,
+			// 	writeAccessList);
+			// buildTaskManager.Execute(buildState, soupTargetDirectory);
+
+			// // Grab the build results so the dependency libraries can be released asap
+			// evaluateGraph = buildState.BuildOperationGraph();
+			// sharedState = buildState.SharedState;
+
+			// Save the operation graph so the evaluate phase can load it
+			// auto evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
+			// OperationGraphManager.SaveState(evaluateGraphFile, evaluateGraph, _fileSystemState);
+
+			// Save the shared state that is to be passed to the downstream builds
+			// auto sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
+			// ValueTableManager.SaveState(sharedStateFile, sharedState);
+			Log::Diag("Build generate end");
 		}
 
-		wrenFreeVM(vm);
-	}
+	private:
+		/// <summary>
+		/// Using the parameters to resolve the dependency output folders, load up the shared state table and
+		/// combine them into a single value table to be used as input the this generate phase.
+		/// </summary>
+		// ValueTable LoadDependenciesSharedState(IValueTable parametersTable)
+		// {
+		// 	var sharedDependenciesTable = new ValueTable();
+		// 	if (parametersTable.TryGetValue("Dependencies", out var dependencyTableValue))
+		// 	{
+		// 		var dependenciesTable = dependencyTableValue.AsTable();
+		// 		foreach (var dependencyTypeValue in dependenciesTable)
+		// 		{
+		// 			var dependencyType = dependencyTypeValue.Key;
+		// 			var dependencies = dependencyTypeValue.Value.AsTable();
+		// 			foreach (var dependencyValue in dependencies)
+		// 			{
+		// 				var dependencyName = dependencyValue.Key;
+		// 				var dependency = dependencyValue.Value.AsTable();
+		// 				var soupTargetDirectory = new Path(dependency["SoupTargetDirectory"].AsString());
+		// 				var sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
 
-private:
-	static WrenVM* InitializeVM()
-	{
-		// Configure the Wren Virtual Machine
-		WrenConfiguration config;
-		wrenInitConfiguration(&config);
-		config.loadModuleFn = &WrenHost::LoadModule;
-		config.bindForeignMethodFn = &WrenHost::BindForeignMethod;
-		config.writeFn = &WrenHost::WriteCallback;
-		config.errorFn = &WrenHost::ErrorCallback;
+		// 				// Load the shared state file
+		// 				if (!ValueTableManager.TryLoadState(sharedStateFile, out var sharedStateTable))
+		// 				{
+		// 					Log.Error("Failed to load the shared state file: " + sharedStateFile.ToString());
+		// 					throw new InvalidOperationException("Failed to load shared state file.");
+		// 				}
 
-		// Create the VM
-		auto vm = wrenNewVM(&config);
+		// 				// Add the shared build state from this child build into the correct
+		// 				// table depending on the build type
+		// 				var typedDependenciesTable = EnsureValueTable(sharedDependenciesTable, dependencyType);
+		// 				typedDependenciesTable.Add(
+		// 					dependencyName,
+		// 					new Value(sharedStateTable));
+		// 			}
+		// 		}
+		// 	}
 
-		return vm;
-	}
-
-	static void EvaluateExtension(WrenVM* vm, WrenHandle* classHandle)
-	{
-		// Call Evaluate
-		auto evaluateMethodHandle = WrenHelpers::SmartHandle(vm, wrenMakeCallHandle(vm, "evaluate()"));
-
-		wrenSetSlotHandle(vm, 0, classHandle);
-		WrenHelpers::ThrowIfFailed(wrenCall(vm, evaluateMethodHandle));
-
-		wrenEnsureSlots(vm, 1);
-		wrenGetVariable(vm, "soup", "Soup", 0);
-
-		auto soupClassType = wrenGetSlotType(vm, 0);
-		if (soupClassType != WREN_TYPE_UNKNOWN) {
-			throw std::runtime_error("Missing Class Soup");
-		}
-
-		auto soupClassHandle = WrenHelpers::SmartHandle(vm, wrenGetSlotHandle(vm, 0));
-
-		// Call ActiveState
-		auto activeStateGetterHandle = WrenHelpers::SmartHandle(vm, wrenMakeCallHandle(vm, "activeState"));
-		wrenSetSlotHandle(vm, 0, soupClassHandle);
-		WrenHelpers::ThrowIfFailed(wrenCall(vm, activeStateGetterHandle));
-
-		auto activeStateType = wrenGetSlotType(vm, 0);
-		if (activeStateType != WREN_TYPE_MAP) {
-			throw std::runtime_error("ActiveState must be a map");
-		}
-
-		wrenEnsureSlots(vm, 3);
-		auto mapCount = wrenGetMapCount(vm, 0);
-		Log::Diag("ActiveState: ");
-		for (auto i = 0; i < mapCount; i++)
-		{
-			wrenGetMapKeyValueAt(vm, 0, i, 1, 2);
-			auto key = wrenGetSlotString(vm, 1);
-			auto value = wrenGetSlotString(vm, 2);
-			Log::Diag(key);
-			(value);
-		}
-	}
-};
+		// 	return sharedDependenciesTable;
+		// }
+	};
+}
