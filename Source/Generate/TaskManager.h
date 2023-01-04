@@ -1,8 +1,8 @@
-﻿// <copyright file="BuildSystem.h" company="Soup">
+﻿// <copyright file="TaskManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup::Build::Generate
+namespace Soup::Core::Generate
 {
 	internal class BuildTaskContainer
 	{

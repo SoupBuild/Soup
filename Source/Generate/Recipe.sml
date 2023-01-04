@@ -10,6 +10,7 @@ Source: [
 ]
 Dependencies: {
 	Runtime: [
+		"../Client/Core/"
 		"C:/Users/mwasp/Dev/Repos/wren/src"
 		"Opal@0.5.0"
 	]

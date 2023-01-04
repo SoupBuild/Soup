@@ -3,9 +3,7 @@
 #include "wren.hpp"
 #include "WrenHelpers.h"
 
-#include <fstream>
-
-namespace Soup::Build::Generate
+namespace Soup::Core::Generate
 {
 	class WrenHost
 	{

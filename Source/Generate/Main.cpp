@@ -3,10 +3,15 @@
 // </copyright>
 
 #include <stdexcept>
+#include <fstream>
+#include <map>
+#include <string>
+#include <optional>
 
 #ifdef SOUP_BUILD
 
 import Opal;
+import Soup.Core;
 
 using namespace Opal;
 
@@ -42,6 +47,14 @@ using namespace Opal;
 
 using namespace Opal;
 
+// import Soup.Core
+#include <cstring>
+#include <regex>
+#include <set>
+#include <variant>
+#include "Build/BuildEngine.h"
+#include "Package/PackageManager.h"
+
 #endif
 
 #include "GenerateEngine.h"
@@ -69,6 +82,9 @@ int main(int argc, char** argv)
 				false,
 				false));
 
+		// Setup the real services
+		System::IFileSystem::Register(std::make_shared<System::STLFileSystem>());
+
 		Log::Diag("ProgramStart");
 
 		if (argc != 2)
@@ -78,7 +94,7 @@ int main(int argc, char** argv)
 		}
 
 		auto soupTargetDirectory = Path(argv[1]);
-		Soup::Build::Generate::GenerateEngine::Run(soupTargetDirectory);
+		Soup::Core::Generate::GenerateEngine::Run(soupTargetDirectory);
 	}
 	catch (const std::exception& ex)
 	{
