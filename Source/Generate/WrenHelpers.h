@@ -73,4 +73,48 @@ namespace WrenHelpers
 
 		return parentClassType == parentType;
 	}
+
+	std::string GetClassName(WrenVM* vm, WrenHandle* classHandle)
+	{
+		wrenSetSlotHandle(vm, 0, classHandle);
+
+		// Create call handle for name method
+		auto nameHandle = WrenHelpers::SmartHandle(vm, wrenMakeCallHandle(vm, "name"));
+
+		// Call the name method
+		ThrowIfFailed(wrenCall(vm, nameHandle));
+
+		// Retrieve the return value (a string) from slot 0.
+		auto type = std::string(wrenGetSlotString(vm, 0));
+
+		return type;
+	}
+
+	std::vector<std::string> GetResultAsStringList(WrenVM* vm)
+	{
+		auto responseType = wrenGetSlotType(vm, 0);
+		if (responseType != WREN_TYPE_LIST) {
+			throw std::runtime_error("RunBefore did not return a list");
+		}
+
+		auto listCount = wrenGetListCount(vm, 0);
+
+		// Load each element into the second slot
+		auto result = std::vector<std::string>();
+		wrenEnsureSlots(vm, 2);
+		for (auto i = 0; i < listCount; i++)
+		{
+			wrenGetListElement(vm, 0, i, 1);
+			
+			auto elementType = wrenGetSlotType(vm, 1);
+			if (elementType != WREN_TYPE_STRING) {
+				throw std::runtime_error("Element in list must be string");
+			}
+
+			auto element = std::string(wrenGetSlotString(vm, 1));
+			result.push_back(std::move(element));
+		}
+
+		return result;
+	}
 }

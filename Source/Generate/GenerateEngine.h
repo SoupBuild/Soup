@@ -67,6 +67,10 @@ namespace Soup::Core::Generate
 				languageExtensionPath,
 				dependenciesSharedState);
 
+			// Fake it for now!!!!!!!!!!!!!!!!!!!!!
+			buildExtensionLibraries.clear();
+			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/Soup/Source/Generate/Test.wren"));
+
 			// Start a new active state that is initialized to the recipe itself
 			auto activeState = ValueTable();
 
@@ -86,8 +90,12 @@ namespace Soup::Core::Generate
 			// Run all build extension register callbacks
 			for (auto buildExtension : buildExtensionLibraries)
 			{
-				// auto library = LoadPlugin(buildExtension);
-				// FindAllCommands(library, extensionManager);
+				Log::Info("Loading Extension Script: " + buildExtension.ToString());
+
+				// Create a temporary Wren Host to discover all build extensions
+				auto host = std::make_unique<WrenHost>(buildExtension);
+				host->InterpretMain();
+				host->DiscoverExtensions(extensionManager);
 			}
 
 			// Run the build

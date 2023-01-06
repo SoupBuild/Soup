@@ -29,6 +29,7 @@ namespace Soup::Core::Generate
 		/// </summary>
 		void RegisterExtension(
 			std::string name,
+			Path scriptFile,
 			std::vector<std::string> runBeforeList,
 			std::vector<std::string> runAfterList)
 		{
@@ -36,6 +37,7 @@ namespace Soup::Core::Generate
 
 			auto extensionDetails = ExtensionDetails(
 				name,
+				std::move(scriptFile),
 				std::move(runBeforeList),
 				std::move(runAfterList));
 

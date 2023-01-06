@@ -2,16 +2,22 @@
 
 #include "wren.hpp"
 #include "WrenHelpers.h"
+#include "ExtensionManager.h"
 
 namespace Soup::Core::Generate
 {
 	class WrenHost
 	{
 	private:
+		static inline const char* MainModuleName = "main";
+		static inline const char* SoupExtensionClassName = "SoupExtension";
+		Path _scriptFile;
 		WrenVM* _vm;
 
 	public:
-		WrenHost()
+		WrenHost(Path scriptFile) :
+			_scriptFile(std::move(scriptFile)),
+			_vm(nullptr)
 		{
 			// Configure the Wren Virtual Machine
 			WrenConfiguration config;
@@ -32,39 +38,72 @@ namespace Soup::Core::Generate
 			_vm = nullptr;
 		}
 
-		void Run()
+		void InterpretMain()
 		{
 			// Load the script
-			std::ifstream scriptFile("Test.wren");
+			std::ifstream scriptFile(_scriptFile.ToString());
 			auto script = std::string(
 				std::istreambuf_iterator<char>(scriptFile),
 				std::istreambuf_iterator<char>());
 
 			// Interpret the script
-			WrenHelpers::ThrowIfFailed(wrenInterpret(_vm, "main", script.c_str()));
+			WrenHelpers::ThrowIfFailed(wrenInterpret(_vm, MainModuleName, script.c_str()));
+		}
 
+		void DiscoverExtensions(ExtensionManager& extensionManager)
+		{
 			// Discover all class types
 			wrenEnsureSlots(_vm, 1);
-			auto variableCount = wrenGetVariableCount(_vm, "main");
+			auto variableCount = wrenGetVariableCount(_vm, MainModuleName);
 			for (auto i = 0; i < variableCount; i++)
 			{
-				wrenGetVariableAt(_vm, "main", i, 0);
+				wrenGetVariableAt(_vm, MainModuleName, i, 0);
 
 				// Check if a class
 				auto type = wrenGetSlotType(_vm, 0);
 				if (type == WREN_TYPE_UNKNOWN)
 				{
-					auto testClassHandle = WrenHelpers::SmartHandle(_vm, wrenGetSlotHandle(_vm, 0));
-					if (WrenHelpers::HasParentType(_vm, testClassHandle, "SoupExtension"))
+					auto classHandle = WrenHelpers::SmartHandle(_vm, wrenGetSlotHandle(_vm, 0));
+					if (WrenHelpers::HasParentType(_vm, classHandle, SoupExtensionClassName))
 					{
 						Log::Diag("Found Build Extension");
-						EvaluateExtension(testClassHandle);
+						auto className = WrenHelpers::GetClassName(_vm, classHandle);
+						auto runBeforeList = CallRunBeforeGetter(classHandle);
+						auto runAfterList = CallRunAfterGetter(classHandle);
+
+						extensionManager.RegisterExtension(
+							std::move(className),
+							_scriptFile,
+							std::move(runBeforeList),
+							std::move(runAfterList));
 					}
 				}
 			}
 		}
 
 	private:
+		std::vector<std::string> CallRunBeforeGetter(WrenHandle* classHandle)
+		{
+			// Call RunBefore
+			auto runBeforeGetterHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "runBefore"));
+
+			wrenSetSlotHandle(_vm, 0, classHandle);
+			WrenHelpers::ThrowIfFailed(wrenCall(_vm, runBeforeGetterHandle));
+
+			return WrenHelpers::GetResultAsStringList(_vm);
+		}
+
+		std::vector<std::string> CallRunAfterGetter(WrenHandle* classHandle)
+		{
+			// Call RunAfter
+			auto runBeforeGetterHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "runAfter"));
+
+			wrenSetSlotHandle(_vm, 0, classHandle);
+			WrenHelpers::ThrowIfFailed(wrenCall(_vm, runBeforeGetterHandle));
+
+			return WrenHelpers::GetResultAsStringList(_vm);
+		}
+
 		void EvaluateExtension(WrenHandle* classHandle)
 		{
 			// Call Evaluate
@@ -113,7 +152,7 @@ namespace Soup::Core::Generate
 
 		void ErrorCallback(
 			WrenErrorType errorType,
-			std::string_view module,
+			std::optional<std::string_view> moduleName,
 			int line,
 			std::string_view message)
 		{
@@ -121,12 +160,12 @@ namespace Soup::Core::Generate
 			{
 				case WREN_ERROR_COMPILE:
 				{
-					printf("[%s line %d] [Error] %s\n", module.data(), line, message.data());
+					printf("[%s line %d] [Error] %s\n", moduleName.value().data(), line, message.data());
 					break;
 				}
 				case WREN_ERROR_STACK_TRACE:
 				{
-					printf("[%s line %d] in %s\n", module.data(), line, message.data());
+					printf("[%s line %d] in %s\n", moduleName.value().data(), line, message.data());
 					break;
 				}
 				case WREN_ERROR_RUNTIME:
@@ -227,9 +266,11 @@ namespace Soup::Core::Generate
 			const char* msg)
 		{
 			auto host = (WrenHost*)wrenGetUserData(vm);
-			host->ErrorCallback(errorType, module, line, msg);
+			std::optional<std::string_view> moduleName = std::nullopt;
+			if (module != nullptr)
+				moduleName = module;
+			host->ErrorCallback(errorType, moduleName, line, msg);
 		}
-
 
 		static void SoupLoadActiveState(WrenVM* vm)
 		{

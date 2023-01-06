@@ -1,6 +1,9 @@
 import "soup" for Soup, SoupExtension
 
 class TestClass is SoupExtension {
+	static runBefore { ["OTher"] }
+	static runAfter { ["A1", "B2"] }
+
 	static evaluate() {
 		Soup.debug("I am running in a method!")
 

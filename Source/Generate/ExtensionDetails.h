@@ -11,9 +11,11 @@ namespace Soup::Core::Generate
 	public:
 		ExtensionDetails(
 			std::string name,
+			Path scriptFile,
 			std::vector<std::string> runBeforeList,
 			std::vector<std::string> runAfterList) :
 			Name(std::move(name)),
+			ScriptFile(std::move(scriptFile)),
 			RunBeforeList(std::move(runBeforeList)),
 			RunAfterList(std::move(runAfterList)),
 			RunAfterClosureList(),
@@ -22,6 +24,7 @@ namespace Soup::Core::Generate
 		}
 
 		std::string Name;
+		Path ScriptFile;
 		std::vector<std::string> RunBeforeList;
 		std::vector<std::string> RunAfterList;
 		std::vector<std::string> RunAfterClosureList;
