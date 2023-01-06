@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WrenHost.h"
+#include "ExtensionManager.h"
 
 namespace Soup::Core::Generate
 {
@@ -11,9 +12,6 @@ namespace Soup::Core::Generate
 		{
 			// Run all build operations in the correct order with incremental build checks
 			Log::Diag("Build generate start: " + soupTargetDirectory.ToString());
-
-			auto host = std::make_unique<WrenHost>();
-			host->Run();
 
 			// Load the parameters file
 			auto parametersFile = soupTargetDirectory + BuildConstants::GenerateParametersFileName();
@@ -72,32 +70,27 @@ namespace Soup::Core::Generate
 			// Start a new active state that is initialized to the recipe itself
 			auto activeState = ValueTable();
 
-			// // Initialize the Recipe Root Table
-			// auto recipeState = recipe.Document.ToBuildValue();
-			// activeState.Add("Recipe", new Value(recipeState));
+			// Initialize the Recipe Root Table
+			auto recipeState = RecipeBuildStateConverter::ConvertToBuildState(recipe.GetTable());
+			activeState.emplace("Recipe", Value(std::move(recipeState)));
 
-			// // Initialize the Parameters Root Table
-			// activeState.Add("Parameters", new Value(parametersState));
+			// Initialize the Parameters Root Table
+			activeState.emplace("Parameters", Value(std::move(parametersState)));
 
-			// // Initialize the Dependencies Root Table
-			// activeState.Add("Dependencies", new Value(dependenciesSharedState));
-
-			// // Keep the extension libraries open while running the build system
-			// // to ensure their memory is kept alive
-			// OperationGraph evaluateGraph;
-			// IValueTable sharedState;
+			// Initialize the Dependencies Root Table
+			activeState.emplace("Dependencies", Value(std::move(dependenciesSharedState)));
 
 			// Create a new build system for the requested build
-			// auto buildTaskManager = BuildTaskManager();
+			auto extensionManager = ExtensionManager();
 
-			// // Run all build extension register callbacks
-			// for (auto buildExtension : buildExtensionLibraries)
-			// {
-			// 	auto library = LoadPlugin(buildExtension);
-			// 	FindAllCommands(library, buildTaskManager);
-			// }
+			// Run all build extension register callbacks
+			for (auto buildExtension : buildExtensionLibraries)
+			{
+				// auto library = LoadPlugin(buildExtension);
+				// FindAllCommands(library, extensionManager);
+			}
 
-			// // Run the build
+			// Run the build
 			// auto buildState = BuildState(
 			// 	activeState,
 			// 	_fileSystemState,
@@ -106,8 +99,8 @@ namespace Soup::Core::Generate
 			// buildTaskManager.Execute(buildState, soupTargetDirectory);
 
 			// // Grab the build results so the dependency libraries can be released asap
-			// evaluateGraph = buildState.BuildOperationGraph();
-			// sharedState = buildState.SharedState;
+			// auto evaluateGraph = buildState.BuildOperationGraph();
+			// auto sharedState = buildState.SharedState;
 
 			// Save the operation graph so the evaluate phase can load it
 			// auto evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
@@ -176,8 +169,6 @@ namespace Soup::Core::Generate
 				return insertResult.first->second.AsTable();
 			}
 		}
-		
-		}
 
 		/// <summary>
 		/// Generate the collection of build extensions
@@ -191,7 +182,7 @@ namespace Soup::Core::Generate
 			// Run the RecipeBuild extension to inject core build tasks
 			if (languageExtensionPath.has_value())
 			{
-				buildExtensionLibraries.Add(languageExtensionPath.value());
+				buildExtensionLibraries.push_back(languageExtensionPath.value());
 			}
 
 			// Check for any dynamic libraries in the shared state
@@ -200,7 +191,7 @@ namespace Soup::Core::Generate
 			{
 				for (auto dependencyValue : buildDependenciesValue->second.AsTable())
 				{
-					auto& dependency = dependencyValue.Value.AsTable();
+					auto& dependency = dependencyValue.second.AsTable();
 					auto buildTableValue = dependency.find("Build");
 					if (buildTableValue != dependency.end())
 					{
@@ -209,7 +200,7 @@ namespace Soup::Core::Generate
 						if (targetFileValue != buildTable.end())
 						{
 							auto targetFile = Path(targetFileValue->second.AsString());
-							buildExtensionLibraries.push_back(targetFile);
+							buildExtensionLibraries.push_back(std::move(targetFile));
 						}
 						else
 						{

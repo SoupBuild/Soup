@@ -7,6 +7,8 @@
 #include <map>
 #include <string>
 #include <optional>
+#include <vector>
+#include <sstream>
 
 #ifdef SOUP_BUILD
 
