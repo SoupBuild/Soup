@@ -95,7 +95,10 @@ namespace Soup::Core::Generate
 				// Create a temporary Wren Host to discover all build extensions
 				auto host = std::make_unique<WrenHost>(buildExtension);
 				host->InterpretMain();
-				host->DiscoverExtensions(extensionManager);
+				auto extensions = host->DiscoverExtensions();
+
+				for (auto& extension : extensions)
+					extensionManager.RegisterExtension(std::move(extension));
 			}
 
 			// Run the build
@@ -104,7 +107,7 @@ namespace Soup::Core::Generate
 			// 	_fileSystemState,
 			// 	readAccessList,
 			// 	writeAccessList);
-			// buildTaskManager.Execute(buildState, soupTargetDirectory);
+			extensionManager.Execute();
 
 			// // Grab the build results so the dependency libraries can be released asap
 			// auto evaluateGraph = buildState.BuildOperationGraph();

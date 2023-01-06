@@ -2,7 +2,7 @@
 
 #include "wren.hpp"
 #include "WrenHelpers.h"
-#include "ExtensionManager.h"
+#include "ExtensionDetails.h"
 
 namespace Soup::Core::Generate
 {
@@ -10,6 +10,8 @@ namespace Soup::Core::Generate
 	{
 	private:
 		static inline const char* MainModuleName = "main";
+		static inline const char* SoupModuleName = "soup";
+		static inline const char* SoupClassName = "Soup";
 		static inline const char* SoupExtensionClassName = "SoupExtension";
 		Path _scriptFile;
 		WrenVM* _vm;
@@ -50,8 +52,10 @@ namespace Soup::Core::Generate
 			WrenHelpers::ThrowIfFailed(wrenInterpret(_vm, MainModuleName, script.c_str()));
 		}
 
-		void DiscoverExtensions(ExtensionManager& extensionManager)
+		std::vector<ExtensionDetails> DiscoverExtensions()
 		{
+			auto extensions = std::vector<ExtensionDetails>();
+
 			// Discover all class types
 			wrenEnsureSlots(_vm, 1);
 			auto variableCount = wrenGetVariableCount(_vm, MainModuleName);
@@ -71,49 +75,44 @@ namespace Soup::Core::Generate
 						auto runBeforeList = CallRunBeforeGetter(classHandle);
 						auto runAfterList = CallRunAfterGetter(classHandle);
 
-						extensionManager.RegisterExtension(
-							std::move(className),
-							_scriptFile,
-							std::move(runBeforeList),
-							std::move(runAfterList));
+						extensions.push_back(
+							ExtensionDetails(
+								std::move(className),
+								_scriptFile,
+								std::move(runBeforeList),
+								std::move(runAfterList)));
 					}
 				}
 			}
+
+			return extensions;
 		}
 
-	private:
-		std::vector<std::string> CallRunBeforeGetter(WrenHandle* classHandle)
+		void EvaluateExtension(const std::string& className)
 		{
-			// Call RunBefore
-			auto runBeforeGetterHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "runBefore"));
+			// Load up the class
+			wrenEnsureSlots(_vm, 1);
+			wrenGetVariable(_vm, MainModuleName, className.c_str(), 0);
 
-			wrenSetSlotHandle(_vm, 0, classHandle);
-			WrenHelpers::ThrowIfFailed(wrenCall(_vm, runBeforeGetterHandle));
+			// Check if a class
+			auto type = wrenGetSlotType(_vm, 0);
+			if (type != WREN_TYPE_UNKNOWN) {
+				throw std::runtime_error("Extension class name was not a class");
+			}
 
-			return WrenHelpers::GetResultAsStringList(_vm);
-		}
+			auto classHandle = WrenHelpers::SmartHandle(_vm, wrenGetSlotHandle(_vm, 0));
 
-		std::vector<std::string> CallRunAfterGetter(WrenHandle* classHandle)
-		{
-			// Call RunAfter
-			auto runBeforeGetterHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "runAfter"));
-
-			wrenSetSlotHandle(_vm, 0, classHandle);
-			WrenHelpers::ThrowIfFailed(wrenCall(_vm, runBeforeGetterHandle));
-
-			return WrenHelpers::GetResultAsStringList(_vm);
-		}
-
-		void EvaluateExtension(WrenHandle* classHandle)
-		{
 			// Call Evaluate
 			auto evaluateMethodHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "evaluate()"));
 
 			wrenSetSlotHandle(_vm, 0, classHandle);
 			WrenHelpers::ThrowIfFailed(wrenCall(_vm, evaluateMethodHandle));
+		}
 
+		void LoadActiveState()
+		{
 			wrenEnsureSlots(_vm, 1);
-			wrenGetVariable(_vm, "soup", "Soup", 0);
+			wrenGetVariable(_vm, SoupModuleName, SoupClassName, 0);
 
 			auto soupClassType = wrenGetSlotType(_vm, 0);
 			if (soupClassType != WREN_TYPE_UNKNOWN) {
@@ -143,6 +142,29 @@ namespace Soup::Core::Generate
 				Log::Diag(key);
 				(value);
 			}
+		}
+
+	private:
+		std::vector<std::string> CallRunBeforeGetter(WrenHandle* classHandle)
+		{
+			// Call RunBefore
+			auto runBeforeGetterHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "runBefore"));
+
+			wrenSetSlotHandle(_vm, 0, classHandle);
+			WrenHelpers::ThrowIfFailed(wrenCall(_vm, runBeforeGetterHandle));
+
+			return WrenHelpers::GetResultAsStringList(_vm);
+		}
+
+		std::vector<std::string> CallRunAfterGetter(WrenHandle* classHandle)
+		{
+			// Call RunAfter
+			auto runBeforeGetterHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "runAfter"));
+
+			wrenSetSlotHandle(_vm, 0, classHandle);
+			WrenHelpers::ThrowIfFailed(wrenCall(_vm, runBeforeGetterHandle));
+
+			return WrenHelpers::GetResultAsStringList(_vm);
 		}
 
 		void WriteCallback(std::string_view text)
@@ -246,7 +268,7 @@ namespace Soup::Core::Generate
 			result.onComplete = nullptr;
 
 			// Inject Soup module
-			if (moduleName == "soup")
+			if (moduleName == SoupModuleName)
 				result.source = GetSoupModuleSource();
 
 			return result;
@@ -319,7 +341,7 @@ namespace Soup::Core::Generate
 			std::string_view signature)
 		{
 			// There is only one foreign method in the soup module.
-			if (className == "Soup" && isStatic)
+			if (className == SoupClassName && isStatic)
 			{
 				if (signature == "loadActiveState_()")
 					return SoupLoadActiveState;

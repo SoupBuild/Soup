@@ -4,6 +4,7 @@
 
 #pragma once
 #include "ExtensionDetails.h"
+#include "WrenHost.h"
 
 namespace Soup::Core::Generate
 {
@@ -27,19 +28,10 @@ namespace Soup::Core::Generate
 		/// <summary>
 		/// Register extension
 		/// </summary>
-		void RegisterExtension(
-			std::string name,
-			Path scriptFile,
-			std::vector<std::string> runBeforeList,
-			std::vector<std::string> runAfterList)
+		void RegisterExtension(ExtensionDetails extensionDetails)
 		{
+			auto name = extensionDetails.Name;
 			Log::Diag("RegisterExtension: " + name);
-
-			auto extensionDetails = ExtensionDetails(
-				name,
-				std::move(scriptFile),
-				std::move(runBeforeList),
-				std::move(runAfterList));
 
 			auto runBeforeMessage = std::stringstream();
 			runBeforeMessage << "RunBefore [";
@@ -71,7 +63,7 @@ namespace Soup::Core::Generate
 			runAfterMessage << "]";
 			Log::Diag(runAfterMessage.str());
 
-			auto insertResult = _extensions.emplace(std::move(name), std::move(extensionDetails));
+			auto insertResult = _extensions.emplace(name, std::move(extensionDetails));
 			if (!insertResult.second)
 			{
 				Log::HighPriority("An extension with the provided name has already been registered: " + name);
@@ -118,18 +110,17 @@ namespace Soup::Core::Generate
 				if (currentExtension == nullptr)
 					throw std::runtime_error("TryFindNextExtension returned empty result");
 
+				// Create a Wren Host to evaluate the extension
+				auto host = std::make_unique<WrenHost>(currentExtension->ScriptFile);
+				host->InterpretMain();
+
 				Log::Info("ExtensionStart: " + currentExtension->Name);
 
-				// auto serviceCollection = new ServiceCollection();
-				// serviceCollection.AddSingleton(typeof(IBuildState), state);
-				// serviceCollection.AddSingleton(typeof(IValueFactory), new ValueFactory());
-				// auto serviceProvider = serviceCollection.BuildServiceProvider();
-
-				// auto extension = (SoupExtension)ActivatorUtilities.CreateInstance(serviceProvider, currentExtension.ExtensionType);
-
-				// extension.Execute();
+				host->EvaluateExtension(currentExtension->Name);
 
 				Log::Info("ExtensionDone: " + currentExtension->Name);
+
+				host->LoadActiveState();
 
 				// Build the extension info
 				// auto extensionInfo = ValueTable();
