@@ -2,7 +2,9 @@
 
 #include "wren.hpp"
 #include "WrenHelpers.h"
+#include "WrenValueTable.h"
 #include "ExtensionDetails.h"
+#include "GenerateState.h"
 
 namespace Soup::Core::Generate
 {
@@ -15,11 +17,13 @@ namespace Soup::Core::Generate
 		static inline const char* SoupExtensionClassName = "SoupExtension";
 		Path _scriptFile;
 		WrenVM* _vm;
+		GenerateState* _state;
 
 	public:
 		WrenHost(Path scriptFile) :
 			_scriptFile(std::move(scriptFile)),
-			_vm(nullptr)
+			_vm(nullptr),
+			_state(nullptr)
 		{
 			// Configure the Wren Virtual Machine
 			WrenConfiguration config;
@@ -38,6 +42,11 @@ namespace Soup::Core::Generate
 		{
 			wrenFreeVM(_vm);
 			_vm = nullptr;
+		}
+
+		void SetState(GenerateState& state)
+		{
+			_state = &state;
 		}
 
 		void InterpretMain()
@@ -109,7 +118,7 @@ namespace Soup::Core::Generate
 			WrenHelpers::ThrowIfFailed(wrenCall(_vm, evaluateMethodHandle));
 		}
 
-		void LoadActiveState()
+		ValueTable LoadActiveState()
 		{
 			wrenEnsureSlots(_vm, 1);
 			wrenGetVariable(_vm, SoupModuleName, SoupClassName, 0);
@@ -126,22 +135,29 @@ namespace Soup::Core::Generate
 			wrenSetSlotHandle(_vm, 0, soupClassHandle);
 			WrenHelpers::ThrowIfFailed(wrenCall(_vm, activeStateGetterHandle));
 
-			auto activeStateType = wrenGetSlotType(_vm, 0);
-			if (activeStateType != WREN_TYPE_MAP) {
-				throw std::runtime_error("ActiveState must be a map");
+			auto result = WrenValueTable::GetSlotTable(_vm, 0);
+			return result;
+		}
+
+		ValueTable LoadSharedState()
+		{
+			wrenEnsureSlots(_vm, 1);
+			wrenGetVariable(_vm, SoupModuleName, SoupClassName, 0);
+
+			auto soupClassType = wrenGetSlotType(_vm, 0);
+			if (soupClassType != WREN_TYPE_UNKNOWN) {
+				throw std::runtime_error("Missing Class Soup");
 			}
 
-			wrenEnsureSlots(_vm, 3);
-			auto mapCount = wrenGetMapCount(_vm, 0);
-			Log::Diag("ActiveState: ");
-			for (auto i = 0; i < mapCount; i++)
-			{
-				wrenGetMapKeyValueAt(_vm, 0, i, 1, 2);
-				auto key = wrenGetSlotString(_vm, 1);
-				auto value = wrenGetSlotString(_vm, 2);
-				Log::Diag(key);
-				(value);
-			}
+			auto soupClassHandle = WrenHelpers::SmartHandle(_vm, wrenGetSlotHandle(_vm, 0));
+
+			// Call ActiveState
+			auto activeStateGetterHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "sharedState"));
+			wrenSetSlotHandle(_vm, 0, soupClassHandle);
+			WrenHelpers::ThrowIfFailed(wrenCall(_vm, activeStateGetterHandle));
+
+			auto result = WrenValueTable::GetSlotTable(_vm, 0);
+			return result;
 		}
 
 	private:
@@ -201,18 +217,31 @@ namespace Soup::Core::Generate
 		void SoupLoadActiveState()
 		{
 			Log::Diag("SoupLoadActiveState");
-			wrenSetSlotNewMap(_vm, 0);
+			if (_state == nullptr)
+				WrenHelpers::GenerateRuntimeError(_vm, "Cannot load ActiveState at this time");
+
+			WrenValueTable::SetSlotTable(_vm, 0, _state->ActiveState());
 		}
 
 		void SoupLoadSharedState()
 		{
 			Log::Diag("SoupLoadSharedState");
-			wrenSetSlotNewMap(_vm, 0);
+			if (_state == nullptr)
+				WrenHelpers::GenerateRuntimeError(_vm, "Cannot load SharedState at this time");
+
+			WrenValueTable::SetSlotTable(_vm, 0, _state->SharedState());
 		}
 
 		void SoupCreateOperation()
 		{
 			Log::Diag("SoupCreateOperation");
+			if (_state == nullptr)
+				WrenHelpers::GenerateRuntimeError(_vm, "Cannot CreateOperation at this time");
+
+			// TODO: _state->CreateOperation()
+
+			// No return value
+			wrenEnsureSlots(_vm, 1);
 			wrenSetSlotNull(_vm, 0);
 		}
 

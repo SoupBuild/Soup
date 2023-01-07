@@ -11,9 +11,10 @@ class TestClass is SoupExtension {
 		Soup.debug("hm %(activeState)")
 		var sharedState = Soup.sharedState
 		var sharedState2 = Soup.sharedState
+		Soup.debug("hm2 %(sharedState)")
 
 		activeState["Test"] = "test"
-		activeState["dsdf"] = "huh"
+		sharedState2["dsdf"] = "huh"
 
 		Soup.createOperation("test", "test", "test", "test", "test", "test")
 	}

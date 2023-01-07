@@ -2,7 +2,7 @@
 
 #include "Wren.hpp"
 
-namespace WrenHelpers
+namespace Soup::Core::Generate::WrenHelpers
 {
 	class SmartHandle
 	{
@@ -51,6 +51,13 @@ namespace WrenHelpers
 				break;
 			}
 		}
+	}
+
+	void GenerateRuntimeError(WrenVM* vm, std::string_view message)
+	{
+		wrenEnsureSlots(vm, 1);
+		wrenSetSlotString(vm, 0, message.data());
+		wrenAbortFiber(vm, 0);
 	}
 
 	bool HasParentType(WrenVM* vm, WrenHandle* classHandle, std::string_view parentClassType)

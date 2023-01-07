@@ -72,9 +72,9 @@ namespace Soup::Core::Generate
 		}
 
 		/// <summary>
-		/// Get the set of added include paths
+		/// Execute all build extensions
 		/// </summary>
-		void Execute()
+		void Execute(GenerateState& state)
 		{
 			// Setup each extension to have a complete list of extensions that must run before itself
 			// Note: this is required to combine other extensions run before lists with the extensions
@@ -114,20 +114,25 @@ namespace Soup::Core::Generate
 				auto host = std::make_unique<WrenHost>(currentExtension->ScriptFile);
 				host->InterpretMain();
 
+				// Set the current state AFTER we initialize to prevent pre-loading
+				host->SetState(state);
+
 				Log::Info("ExtensionStart: " + currentExtension->Name);
 
 				host->EvaluateExtension(currentExtension->Name);
 
 				Log::Info("ExtensionDone: " + currentExtension->Name);
 
-				host->LoadActiveState();
+				// Get the final state to be passed to the next extension
+				auto updatedActiveState = host->LoadActiveState();
+				auto updatedSharedState = host->LoadSharedState();
 
 				// Build the extension info
-				// auto extensionInfo = ValueTable();
-				// extensionInfo.Add("ActiveState", Value(state.ActiveStateImpl.Clone()));
-				// extensionInfo.Add("SharedState", Value(state.SharedStateImpl.Clone()));
+				auto extensionInfo = ValueTable();
+				extensionInfo.emplace("ActiveState", Value(updatedActiveState));
+				extensionInfo.emplace("SharedState", Value(updatedSharedState));
 
-				// extensionInfoTable.Add(currentExtension.Name, Value(extensionInfo));
+				extensionInfoTable.emplace(currentExtension->Name, Value(std::move(extensionInfo)));
 				// runtimeOrderList.Add(Value(currentExtension.Name));
 
 				currentExtension->HasRun = true;

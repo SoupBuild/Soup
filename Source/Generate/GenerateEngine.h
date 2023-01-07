@@ -2,6 +2,7 @@
 
 #include "WrenHost.h"
 #include "ExtensionManager.h"
+#include "GenerateState.h"
 
 namespace Soup::Core::Generate
 {
@@ -101,13 +102,13 @@ namespace Soup::Core::Generate
 					extensionManager.RegisterExtension(std::move(extension));
 			}
 
-			// Run the build
-			// auto buildState = BuildState(
-			// 	activeState,
-			// 	_fileSystemState,
-			// 	readAccessList,
-			// 	writeAccessList);
-			extensionManager.Execute();
+			// Evaluate the build extensions
+			auto buildState = GenerateState(
+				activeState,
+				// _fileSystemState,
+				readAccessList,
+				writeAccessList);
+			extensionManager.Execute(buildState);
 
 			// // Grab the build results so the dependency libraries can be released asap
 			// auto evaluateGraph = buildState.BuildOperationGraph();
