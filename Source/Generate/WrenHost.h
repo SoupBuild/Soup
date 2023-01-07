@@ -169,7 +169,7 @@ namespace Soup::Core::Generate
 			wrenSetSlotHandle(_vm, 0, classHandle);
 			WrenHelpers::ThrowIfFailed(wrenCall(_vm, runBeforeGetterHandle));
 
-			return WrenHelpers::GetResultAsStringList(_vm);
+			return WrenHelpers::GetSlotStringList(_vm, 0, 1);
 		}
 
 		std::vector<std::string> CallRunAfterGetter(WrenHandle* classHandle)
@@ -180,7 +180,7 @@ namespace Soup::Core::Generate
 			wrenSetSlotHandle(_vm, 0, classHandle);
 			WrenHelpers::ThrowIfFailed(wrenCall(_vm, runBeforeGetterHandle));
 
-			return WrenHelpers::GetResultAsStringList(_vm);
+			return WrenHelpers::GetSlotStringList(_vm, 0, 1);
 		}
 
 		void WriteCallback(std::string_view text)
@@ -216,33 +216,96 @@ namespace Soup::Core::Generate
 
 		void SoupLoadActiveState()
 		{
-			Log::Diag("SoupLoadActiveState");
-			if (_state == nullptr)
-				WrenHelpers::GenerateRuntimeError(_vm, "Cannot load ActiveState at this time");
+			try
+			{
+				Log::Diag("SoupLoadActiveState");
+				if (_state == nullptr)
+					throw std::runtime_error("Cannot load ActiveState at this time");
 
-			WrenValueTable::SetSlotTable(_vm, 0, _state->ActiveState());
+				WrenValueTable::SetSlotTable(_vm, 0, _state->ActiveState());
+			}
+			catch(const std::exception& ex)
+			{
+				WrenHelpers::GenerateRuntimeError(_vm, ex.what());
+			}
 		}
 
 		void SoupLoadSharedState()
 		{
-			Log::Diag("SoupLoadSharedState");
-			if (_state == nullptr)
-				WrenHelpers::GenerateRuntimeError(_vm, "Cannot load SharedState at this time");
+			try
+			{
+				Log::Diag("SoupLoadSharedState");
+				if (_state == nullptr)
+					throw std::runtime_error("Cannot load SharedState at this time");
 
-			WrenValueTable::SetSlotTable(_vm, 0, _state->SharedState());
+				WrenValueTable::SetSlotTable(_vm, 0, _state->SharedState());
+			}
+			catch(const std::exception& ex)
+			{
+				WrenHelpers::GenerateRuntimeError(_vm, ex.what());
+			}
 		}
 
 		void SoupCreateOperation()
 		{
-			Log::Diag("SoupCreateOperation");
-			if (_state == nullptr)
-				WrenHelpers::GenerateRuntimeError(_vm, "Cannot CreateOperation at this time");
+			try
+			{
+				Log::Diag("SoupCreateOperation");
+				if (_state == nullptr)
+					throw std::runtime_error("Cannot CreateOperation at this time");
 
-			// TODO: _state->CreateOperation()
+				auto parameter1 = wrenGetSlotType(_vm, 1);
+				if (parameter1 != WREN_TYPE_STRING) {
+					throw std::runtime_error("SoupCreateOperation parameter 1 must be of type string");
+				}
+				auto title = std::string(wrenGetSlotString(_vm, 1));
 
-			// No return value
-			wrenEnsureSlots(_vm, 1);
-			wrenSetSlotNull(_vm, 0);
+				auto parameter2 = wrenGetSlotType(_vm, 2);
+				if (parameter2 != WREN_TYPE_STRING) {
+					throw std::runtime_error("SoupCreateOperation parameter 2 must be of type string");
+				}
+				auto executable = std::string(wrenGetSlotString(_vm, 2));
+
+				auto parameter3 = wrenGetSlotType(_vm, 3);
+				if (parameter3 != WREN_TYPE_LIST) {
+					throw std::runtime_error("SoupCreateOperation parameter 3 must be of type list");
+				}
+				auto arguments = WrenHelpers::GetSlotStringList(_vm, 3, 7);
+				
+				auto parameter4 = wrenGetSlotType(_vm, 4);
+				if (parameter4 != WREN_TYPE_STRING) {
+					throw std::runtime_error("SoupCreateOperation parameter 4 must be of type string");
+				}
+				auto workingDirectory = std::string(wrenGetSlotString(_vm, 4));
+
+				auto parameter5 = wrenGetSlotType(_vm, 5);
+				if (parameter5 != WREN_TYPE_LIST) {
+					throw std::runtime_error("SoupCreateOperation parameter 5 must be of type list");
+				}
+				auto declaredInput = WrenHelpers::GetSlotStringList(_vm, 5, 7);
+
+				auto parameter6 = wrenGetSlotType(_vm, 6);
+				if (parameter6 != WREN_TYPE_LIST) {
+					throw std::runtime_error("SoupCreateOperation parameter 6 must be of type list");
+				}
+				auto declaredOutput = WrenHelpers::GetSlotStringList(_vm, 6, 7);
+
+				_state->CreateOperation(
+					std::move(title),
+					std::move(executable),
+					std::move(arguments),
+					std::move(workingDirectory),
+					std::move(declaredInput),
+					std::move(declaredOutput));
+
+				// No return value
+				wrenEnsureSlots(_vm, 1);
+				wrenSetSlotNull(_vm, 0);
+			}
+			catch(const std::exception& ex)
+			{
+				WrenHelpers::GenerateRuntimeError(_vm, ex.what());
+			}
 		}
 
 		void SoupLogDebug()
@@ -410,10 +473,10 @@ namespace Soup::Core::Generate
 			"	static createOperation(title, executable, arguments, workingDirectory, declaredInput, declaredOutput) {\n"
 			"		if (!(title is String)) Fiber.abort(\"Title must be a string.\")\n"
 			"		if (!(executable is String)) Fiber.abort(\"Executable must be a string.\")\n"
-			"		if (!(arguments is String)) Fiber.abort(\"Arguments must be a string.\")\n"
+			"		if (!(arguments is List)) Fiber.abort(\"Arguments must be a list.\")\n"
 			"		if (!(workingDirectory is String)) Fiber.abort(\"WorkingDirectory must be a string.\")\n"
-			"		if (!(declaredInput is String)) Fiber.abort(\"DeclaredInput must be a string.\")\n"
-			"		if (!(declaredOutput is String)) Fiber.abort(\"DeclaredOutput must be a string.\")\n"
+			"		if (!(declaredInput is List)) Fiber.abort(\"DeclaredInput must be a list.\")\n"
+			"		if (!(declaredOutput is List)) Fiber.abort(\"DeclaredOutput must be a list.\")\n"
 			"		createOperation_(title, executable, arguments, workingDirectory, declaredInput, declaredOutput)\n"
 			"	}\n"
 			"\n"

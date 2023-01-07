@@ -97,28 +97,28 @@ namespace Soup::Core::Generate::WrenHelpers
 		return type;
 	}
 
-	std::vector<std::string> GetResultAsStringList(WrenVM* vm)
+	std::vector<std::string> GetSlotStringList(WrenVM* vm, int listSlot, int valueSlot)
 	{
-		auto responseType = wrenGetSlotType(vm, 0);
+		auto responseType = wrenGetSlotType(vm, listSlot);
 		if (responseType != WREN_TYPE_LIST) {
-			throw std::runtime_error("RunBefore did not return a list");
+			throw std::runtime_error("Expected a list type");
 		}
 
-		auto listCount = wrenGetListCount(vm, 0);
+		auto listCount = wrenGetListCount(vm, listSlot);
 
 		// Load each element into the second slot
+		wrenEnsureSlots(vm, valueSlot + 1);
 		auto result = std::vector<std::string>();
-		wrenEnsureSlots(vm, 2);
 		for (auto i = 0; i < listCount; i++)
 		{
-			wrenGetListElement(vm, 0, i, 1);
+			wrenGetListElement(vm, listSlot, i, valueSlot);
 			
-			auto elementType = wrenGetSlotType(vm, 1);
+			auto elementType = wrenGetSlotType(vm, valueSlot);
 			if (elementType != WREN_TYPE_STRING) {
 				throw std::runtime_error("Element in list must be string");
 			}
 
-			auto element = std::string(wrenGetSlotString(vm, 1));
+			auto element = std::string(wrenGetSlotString(vm, valueSlot));
 			result.push_back(std::move(element));
 		}
 
