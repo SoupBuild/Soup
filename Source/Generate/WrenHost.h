@@ -11,7 +11,6 @@ namespace Soup::Core::Generate
 	class WrenHost
 	{
 	private:
-		static inline const char* MainModuleName = "main";
 		static inline const char* SoupModuleName = "soup";
 		static inline const char* SoupClassName = "Soup";
 		static inline const char* SoupExtensionClassName = "SoupExtension";
@@ -28,6 +27,7 @@ namespace Soup::Core::Generate
 			// Configure the Wren Virtual Machine
 			WrenConfiguration config;
 			wrenInitConfiguration(&config);
+			config.resolveModuleFn = &WrenResolveModule;
 			config.loadModuleFn = &WrenLoadModule;
 			config.bindForeignMethodFn = &WrenBindForeignMethod;
 			config.writeFn = &WrenWriteCallback;
@@ -51,14 +51,20 @@ namespace Soup::Core::Generate
 
 		void InterpretMain()
 		{
+			Log::Diag("InterpretMain");
+
 			// Load the script
 			std::ifstream scriptFile(_scriptFile.ToString());
+			if (!scriptFile.is_open())
+				throw std::runtime_error("Script does not exist");
+
 			auto script = std::string(
 				std::istreambuf_iterator<char>(scriptFile),
 				std::istreambuf_iterator<char>());
 
 			// Interpret the script
-			WrenHelpers::ThrowIfFailed(wrenInterpret(_vm, MainModuleName, script.c_str()));
+			WrenHelpers::ThrowIfFailed(wrenInterpret(_vm, _scriptFile.ToString().c_str(), script.c_str()));
+			Log::Diag("Success");
 		}
 
 		std::vector<ExtensionDetails> DiscoverExtensions()
@@ -67,10 +73,10 @@ namespace Soup::Core::Generate
 
 			// Discover all class types
 			wrenEnsureSlots(_vm, 1);
-			auto variableCount = wrenGetVariableCount(_vm, MainModuleName);
+			auto variableCount = wrenGetVariableCount(_vm, _scriptFile.ToString().c_str());
 			for (auto i = 0; i < variableCount; i++)
 			{
-				wrenGetVariableAt(_vm, MainModuleName, i, 0);
+				wrenGetVariableAt(_vm, _scriptFile.ToString().c_str(), i, 0);
 
 				// Check if a class
 				auto type = wrenGetSlotType(_vm, 0);
@@ -101,7 +107,7 @@ namespace Soup::Core::Generate
 		{
 			// Load up the class
 			wrenEnsureSlots(_vm, 1);
-			wrenGetVariable(_vm, MainModuleName, className.c_str(), 0);
+			wrenGetVariable(_vm, _scriptFile.ToString().c_str(), className.c_str(), 0);
 
 			// Check if a class
 			auto type = wrenGetSlotType(_vm, 0);
@@ -198,12 +204,12 @@ namespace Soup::Core::Generate
 			{
 				case WREN_ERROR_COMPILE:
 				{
-					printf("[%s line %d] [Error] %s\n", moduleName.value().data(), line, message.data());
+					printf("[%s(%d)] [Error] %s\n", moduleName.value().data(), line, message.data());
 					break;
 				}
 				case WREN_ERROR_STACK_TRACE:
 				{
-					printf("[%s line %d] in %s\n", moduleName.value().data(), line, message.data());
+					printf("[%s(%d)] in %s\n", moduleName.value().data(), line, message.data());
 					break;
 				}
 				case WREN_ERROR_RUNTIME:
@@ -351,17 +357,79 @@ namespace Soup::Core::Generate
 			return nullptr;
 		}
 
+		static const char* ReturnRawString(const std::string& string)
+		{
+			char* rawString = (char*)malloc(string.size() + 1);
+			memcpy(rawString, string.c_str(), string.size());
+			rawString[string.size()] = '\0';
+			return rawString;
+		}
+
+		static void FreeSourceOnLoaded(WrenVM* vm, const char* name, struct WrenLoadModuleResult result)
+		{
+			(vm);
+			(name);
+			if (result.source != nullptr)
+				free((void*)result.source);
+		}
+
+		static const char* WrenResolveModule(
+			WrenVM* vm,
+			const char* importer,
+			const char* moduleName)
+		{
+			(vm);
+
+			// Logical import strings are used as-is and need no resolution.
+			if (moduleName == std::string_view(SoupModuleName))
+				return moduleName;
+			
+			// Get the directory containing the importing module.
+			auto modulePath = Path(importer);
+			auto moduleDirectory = modulePath.GetParent();
+
+			// Ensure the module is a relative path
+			auto moduleReference = Path(moduleName);
+			if (moduleReference.HasRoot())
+				return moduleName;
+
+			// Load the relative path from the current module folder
+			auto resolvedModule = moduleDirectory + moduleReference;
+			
+			// Automatically append wren file extension
+			resolvedModule.SetFileExtension("wren");
+
+			return ReturnRawString(resolvedModule.ToString());
+		}
+
 		static WrenLoadModuleResult WrenLoadModule(WrenVM* vm, const char* module)
 		{
 			(vm);
 			auto moduleName = std::string_view(module);
+			// Log::Diag("LoadModule: " + std::string(moduleName));
 
 			WrenLoadModuleResult result = {0};
 			result.onComplete = nullptr;
 
 			// Inject Soup module
 			if (moduleName == SoupModuleName)
+			{
 				result.source = GetSoupModuleSource();
+			}
+			else
+			{
+				// Attempt to load the module as a script file
+				std::ifstream scriptFile(moduleName);
+				if (scriptFile.is_open())
+				{
+					auto script = std::string(
+						std::istreambuf_iterator<char>(scriptFile),
+						std::istreambuf_iterator<char>());
+						
+					result.onComplete = &FreeSourceOnLoaded;
+					result.source = ReturnRawString(script);
+				}
+			}
 
 			return result;
 		}

@@ -70,7 +70,7 @@ namespace Soup::Core::Generate
 
 			// Fake it for now!!!!!!!!!!!!!!!!!!!!!
 			buildExtensionLibraries.clear();
-			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/Soup/Source/Generate/Test.wren"));
+			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/SoupCpp/Source/Extension/Tasks/ResolveToolsTask.wren"));
 
 			// Start a new active state that is initialized to the recipe itself
 			auto activeState = ValueTable();
