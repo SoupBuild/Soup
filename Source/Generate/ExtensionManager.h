@@ -133,20 +133,15 @@ namespace Soup::Core::Generate
 				extensionInfo.emplace("SharedState", Value(updatedSharedState));
 
 				extensionInfoTable.emplace(currentExtension->Name, Value(std::move(extensionInfo)));
-				// runtimeOrderList.Add(Value(currentExtension.Name));
+				runtimeOrderList.push_back(Value(currentExtension->Name));
 
 				currentExtension->HasRun = true;
 			}
 
-			// auto generateInfoTable = ValueTable();
-			// generateInfoTable.emplace("Version", Value("0.1"));
-			// generateInfoTable.emplace("RuntimeOrder", Value(runtimeOrderList));
-			// generateInfoTable.emplace("ExtensionInfo", Value(extensionInfoTable));
-
-			// Save the runtime information
-			// auto generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateExtensionInfoFileName;
-			// Log::Info("Save Generate Info State: " + generateInfoStateFile.ToString());
-			// ValueTableManager.SaveState(generateInfoStateFile, generateInfoTable);
+			auto generateInfoTable = ValueTable();
+			generateInfoTable.emplace("Version", Value("0.1"));
+			generateInfoTable.emplace("RuntimeOrder", Value(runtimeOrderList));
+			generateInfoTable.emplace("ExtensionInfo", Value(extensionInfoTable));
 		}
 
 	private:

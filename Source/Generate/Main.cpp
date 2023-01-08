@@ -9,6 +9,8 @@
 #include <optional>
 #include <vector>
 #include <sstream>
+#include <set>
+#include <algorithm>
 
 #ifdef SOUP_BUILD
 

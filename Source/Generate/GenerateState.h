@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "OperationGraphGenerator.h"
 
 namespace Soup::Core::Generate
 {
@@ -14,7 +15,8 @@ namespace Soup::Core::Generate
 	private:
 		ValueTable _activeState;
 		ValueTable _sharedState;
-		// OperationGraphGenerator _graphGenerator;
+		ValueTable _generateInfo;
+		OperationGraphGenerator _graphGenerator;
 
 	public:
 		/// <summary>
@@ -22,12 +24,13 @@ namespace Soup::Core::Generate
 		/// </summary>
 		 GenerateState(
 			ValueTable activeState,
-			// FileSystemState& fileSystemState,
+			FileSystemState& fileSystemState,
 			std::vector<Path> readAccessList,
 			std::vector<Path> writeAccessList) :
 			_activeState(std::move(activeState)),
-			_sharedState()
-			// _graphGenerator(fileSystemState, std::move(readAccessList), std::move(writeAccessList))
+			_sharedState(),
+			_generateInfo(),
+			_graphGenerator(fileSystemState, std::move(readAccessList), std::move(writeAccessList))
 		{
 		}
 
@@ -49,29 +52,45 @@ namespace Soup::Core::Generate
 		}
 
 		/// <summary>
+		/// Get a reference to the generate info table. This is a collection of runtime information stored
+		/// for easy debugging of the intermediate state during generate.
+		/// </summary>
+		const ValueTable& GenerateInfo() const
+		{
+			return _generateInfo;
+		}
+
+		/// <summary>
 		/// Create a build operation
 		/// </summary>
 		void CreateOperation(
 			std::string title,
 			std::string executable,
-			std::vector<std::string> arguments,
+			std::string arguments,
 			std::string workingDirectory,
 			std::vector<std::string> declaredInput,
 			std::vector<std::string> declaredOutput)
 		{
-			// graphGenerator.CreateOperation(
-			// 	std::move(title),
-			// 	Path(std::move(executable)),
-			// 	std::move(arguments),
-			// 	Path(std::move(workingDirectory)),
-			// 	declaredInput.Select(value => new Path(value)).ToList(),
-			// 	declaredOutput.Select(value => new Path(value)).ToList());
+			auto declaredInputPaths = std::vector<Path>();
+			for (auto& value : declaredInput)
+				declaredInputPaths.push_back(Path(std::move(value)));
+
+			auto declaredOutputPaths = std::vector<Path>();
+			for (auto& value : declaredOutput)
+				declaredOutputPaths.push_back(Path(std::move(value)));
+
+			_graphGenerator.CreateOperation(
+				std::move(title),
+				Path(std::move(executable)),
+				std::move(arguments),
+				Path(std::move(workingDirectory)),
+				std::move(declaredInputPaths),
+				std::move(declaredOutputPaths));
 		}
 
-		// OperationGraph BuildOperationGraph()
-		// {
-		// 	this.graphGenerator.FinalizeGraph();
-		// 	return this.graph;
-		// }
+		OperationGraph BuildOperationGraph()
+		{
+			return _graphGenerator.FinalizeGraph();
+		}
 	};
 }

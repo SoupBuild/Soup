@@ -102,25 +102,35 @@ namespace Soup::Core::Generate
 					extensionManager.RegisterExtension(std::move(extension));
 			}
 
+			// Initialize a shared File System State to cache file system access
+			auto fileSystemState = FileSystemState();
+
 			// Evaluate the build extensions
 			auto buildState = GenerateState(
 				activeState,
-				// _fileSystemState,
+				fileSystemState,
 				readAccessList,
 				writeAccessList);
 			extensionManager.Execute(buildState);
 
-			// // Grab the build results so the dependency libraries can be released asap
-			// auto evaluateGraph = buildState.BuildOperationGraph();
-			// auto sharedState = buildState.SharedState;
+			// Grab the build results
+			auto generateInfoTable = buildState.GenerateInfo();
+			auto evaluateGraph = buildState.BuildOperationGraph();
+			auto sharedState = buildState.SharedState();
+
+			// Save the runtime information so Soup View can easily visualize runtime
+			auto generateInfoStateFile = soupTargetDirectory + BuildConstants::GenerateExtensionInfoFileName();
+			Log::Info("Save Generate Info State: " + generateInfoStateFile.ToString());
+			ValueTableManager::SaveState(generateInfoStateFile, generateInfoTable);
 
 			// Save the operation graph so the evaluate phase can load it
-			// auto evaluateGraphFile = soupTargetDirectory + BuildConstants.EvaluateGraphFileName;
-			// OperationGraphManager.SaveState(evaluateGraphFile, evaluateGraph, _fileSystemState);
+			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateGraphFileName();
+			OperationGraphManager::SaveState(evaluateGraphFile, evaluateGraph, fileSystemState);
 
 			// Save the shared state that is to be passed to the downstream builds
-			// auto sharedStateFile = soupTargetDirectory + BuildConstants.GenerateSharedStateFileName;
-			// ValueTableManager.SaveState(sharedStateFile, sharedState);
+			auto sharedStateFile = soupTargetDirectory + BuildConstants::GenerateSharedStateFileName();
+			ValueTableManager::SaveState(sharedStateFile, sharedState);
+
 			Log::Diag("Build generate end");
 		}
 

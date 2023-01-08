@@ -16,6 +16,6 @@ class TestClass is SoupExtension {
 		activeState["Test"] = "test"
 		sharedState2["dsdf"] = "huh"
 
-		Soup.createOperation("test", "test", ["test"], "test", ["test"], ["test"])
+		Soup.createOperation("Op1", "run.exe", "args", "C:/test", [], [])
 	}
 }
