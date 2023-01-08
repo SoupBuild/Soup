@@ -81,6 +81,27 @@ namespace Soup::Core::Generate::WrenHelpers
 		return parentClassType == parentType;
 	}
 
+	std::string GetType(WrenVM* vm, WrenHandle* classHandle)
+	{
+		wrenSetSlotHandle(vm, 0, classHandle);
+
+		// Create call handle for type and toString methods
+		auto typeHandle = WrenHelpers::SmartHandle(vm, wrenMakeCallHandle(vm, "type"));
+		auto toStringHandle = WrenHelpers::SmartHandle(vm, wrenMakeCallHandle(vm, "toString"));
+
+		// Call the type method
+		ThrowIfFailed(wrenCall(vm, typeHandle));
+
+		// This returns the class reference for the type in slot 0.
+		// Now call its toString method
+		ThrowIfFailed(wrenCall(vm, toStringHandle));
+
+		// Retrieve the return value (a string) from slot 0.
+		auto type = std::string(wrenGetSlotString(vm, 0));
+
+		return type;
+	}
+
 	std::string GetClassName(WrenVM* vm, WrenHandle* classHandle)
 	{
 		wrenSetSlotHandle(vm, 0, classHandle);

@@ -147,9 +147,13 @@ namespace Soup::Core::Generate
 				case WREN_TYPE_STRING:
 					return Value(std::string(wrenGetSlotString(vm, slot)));
 				case WREN_TYPE_UNKNOWN:
+				{
 					// The object is of a type that isn't accessible by the C API.
-					throw std::runtime_error("Value is a type we cannot load.");
+					auto handle = WrenHelpers::SmartHandle(vm, wrenGetSlotHandle(vm, slot));
+					auto typeName = WrenHelpers::GetType(vm, handle);
+					throw std::runtime_error("Value is a type we cannot load: " + typeName);
 					break;
+				}
 				default:
 					throw std::runtime_error("Unkown SlotType.");
 			}

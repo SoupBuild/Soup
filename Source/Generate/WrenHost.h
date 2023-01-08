@@ -126,6 +126,7 @@ namespace Soup::Core::Generate
 
 		ValueTable LoadActiveState()
 		{
+			Log::Diag("LoadActiveState");
 			wrenEnsureSlots(_vm, 1);
 			wrenGetVariable(_vm, SoupModuleName, SoupClassName, 0);
 
@@ -147,6 +148,7 @@ namespace Soup::Core::Generate
 
 		ValueTable LoadSharedState()
 		{
+			Log::Diag("LoadSharedState");
 			wrenEnsureSlots(_vm, 1);
 			wrenGetVariable(_vm, SoupModuleName, SoupClassName, 0);
 
@@ -419,7 +421,7 @@ namespace Soup::Core::Generate
 			else
 			{
 				// Attempt to load the module as a script file
-				std::ifstream scriptFile(moduleName);
+				std::ifstream scriptFile(module);
 				if (scriptFile.is_open())
 				{
 					auto script = std::string(
