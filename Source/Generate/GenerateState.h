@@ -13,6 +13,7 @@ namespace Soup::Core::Generate
 	class GenerateState
 	{
 	private:
+		ValueTable _globalState;
 		ValueTable _activeState;
 		ValueTable _sharedState;
 		ValueTable _generateInfo;
@@ -23,11 +24,12 @@ namespace Soup::Core::Generate
 		/// Initializes a new instance of the GenerateState class
 		/// </summary>
 		 GenerateState(
-			ValueTable activeState,
+			ValueTable globalState,
 			FileSystemState& fileSystemState,
 			std::vector<Path> readAccessList,
 			std::vector<Path> writeAccessList) :
-			_activeState(std::move(activeState)),
+			_globalState(std::move(globalState)),
+			_activeState(),
 			_sharedState(),
 			_generateInfo(),
 			_graphGenerator(fileSystemState, std::move(readAccessList), std::move(writeAccessList))
@@ -35,9 +37,17 @@ namespace Soup::Core::Generate
 		}
 
 		/// <summary>
+		/// Get a reference to the global state
+		/// </summary>
+		const ValueTable& GetGlobalState() const
+		{
+			return _globalState;
+		}
+
+		/// <summary>
 		/// Get a reference to the active state
 		/// </summary>
-		const ValueTable& ActiveState() const
+		const ValueTable& GetActiveState() const
 		{
 			return _activeState;
 		}
@@ -46,7 +56,7 @@ namespace Soup::Core::Generate
 		/// Get a reference to the shared state. All of these properties will be 
 		/// moved into the active state of any parent build that has a direct reference to this build.
 		/// </summary>
-		const ValueTable& SharedState() const
+		const ValueTable& GetSharedState() const
 		{
 			return _sharedState;
 		}
@@ -55,9 +65,13 @@ namespace Soup::Core::Generate
 		/// Get a reference to the generate info table. This is a collection of runtime information stored
 		/// for easy debugging of the intermediate state during generate.
 		/// </summary>
-		const ValueTable& GenerateInfo() const
+		const ValueTable& GetGenerateInfo() const
 		{
 			return _generateInfo;
+		}
+		void SetGenerateInfo(ValueTable value)
+		{
+			_generateInfo = std::move(value);
 		}
 
 		/// <summary>
@@ -86,6 +100,12 @@ namespace Soup::Core::Generate
 				Path(std::move(workingDirectory)),
 				std::move(declaredInputPaths),
 				std::move(declaredOutputPaths));
+		}
+
+		void Update(ValueTable activeState, ValueTable sharedState)
+		{
+			_activeState = std::move(activeState);
+			_sharedState = std::move(sharedState);
 		}
 
 		OperationGraph BuildOperationGraph()

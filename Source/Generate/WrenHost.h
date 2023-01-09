@@ -124,9 +124,9 @@ namespace Soup::Core::Generate
 			WrenHelpers::ThrowIfFailed(wrenCall(_vm, evaluateMethodHandle));
 		}
 
-		ValueTable LoadActiveState()
+		ValueTable GetUpdatedActiveState()
 		{
-			Log::Diag("LoadActiveState");
+			Log::Diag("GetUpdatedActiveState");
 			wrenEnsureSlots(_vm, 1);
 			wrenGetVariable(_vm, SoupModuleName, SoupClassName, 0);
 
@@ -146,9 +146,9 @@ namespace Soup::Core::Generate
 			return result;
 		}
 
-		ValueTable LoadSharedState()
+		ValueTable GetUpdatedSharedState()
 		{
-			Log::Diag("LoadSharedState");
+			Log::Diag("GetUpdatedSharedState");
 			wrenEnsureSlots(_vm, 1);
 			wrenGetVariable(_vm, SoupModuleName, SoupClassName, 0);
 
@@ -222,6 +222,22 @@ namespace Soup::Core::Generate
 			}
 		}
 
+		void SoupLoadGlobalState()
+		{
+			try
+			{
+				Log::Diag("SoupLoadGlobalState");
+				if (_state == nullptr)
+					throw std::runtime_error("Cannot load GlobalState at this time");
+
+				WrenValueTable::SetSlotTable(_vm, 0, _state->GetGlobalState());
+			}
+			catch(const std::exception& ex)
+			{
+				WrenHelpers::GenerateRuntimeError(_vm, ex.what());
+			}
+		}
+
 		void SoupLoadActiveState()
 		{
 			try
@@ -230,7 +246,7 @@ namespace Soup::Core::Generate
 				if (_state == nullptr)
 					throw std::runtime_error("Cannot load ActiveState at this time");
 
-				WrenValueTable::SetSlotTable(_vm, 0, _state->ActiveState());
+				WrenValueTable::SetSlotTable(_vm, 0, _state->GetActiveState());
 			}
 			catch(const std::exception& ex)
 			{
@@ -246,7 +262,7 @@ namespace Soup::Core::Generate
 				if (_state == nullptr)
 					throw std::runtime_error("Cannot load SharedState at this time");
 
-				WrenValueTable::SetSlotTable(_vm, 0, _state->SharedState());
+				WrenValueTable::SetSlotTable(_vm, 0, _state->GetSharedState());
 			}
 			catch(const std::exception& ex)
 			{
@@ -456,6 +472,12 @@ namespace Soup::Core::Generate
 			host->ErrorCallback(errorType, moduleName, line, msg);
 		}
 
+		static void SoupLoadGlobalState(WrenVM* vm)
+		{
+			auto host = (WrenHost*)wrenGetUserData(vm);
+			host->SoupLoadGlobalState();
+		}
+
 		static void SoupLoadActiveState(WrenVM* vm)
 		{
 			auto host = (WrenHost*)wrenGetUserData(vm);
@@ -505,7 +527,9 @@ namespace Soup::Core::Generate
 			// There is only one foreign method in the soup module.
 			if (className == SoupClassName && isStatic)
 			{
-				if (signature == "loadActiveState_()")
+				if (signature == "loadGlobalState_()")
+					return SoupLoadGlobalState;
+				else if (signature == "loadActiveState_()")
 					return SoupLoadActiveState;
 				else if (signature == "loadSharedState_()")
 					return SoupLoadSharedState;
@@ -530,6 +554,11 @@ namespace Soup::Core::Generate
 			"}\n"
 			"\n"
 			"class Soup {\n"
+			"	static globalState {\n"
+			"		if (__globalState is Null) __globalState = loadGlobalState_()\n"
+			"		return __globalState\n"
+			"	}\n"
+			"\n"
 			"	static activeState {\n"
 			"		if (__activeState is Null) __activeState = loadActiveState_()\n"
 			"		return __activeState\n"
@@ -565,6 +594,7 @@ namespace Soup::Core::Generate
 			"		error_(message)\n"
 			"	}\n"
 			"\n"
+			"	foreign static loadGlobalState_()\n"
 			"	foreign static loadActiveState_()\n"
 			"	foreign static loadSharedState_()\n"
 			"	foreign static createOperation_(title, executable, arguments, workingDirectory, declaredInput, declaredOutput)\n"

@@ -69,7 +69,7 @@ namespace Soup::Core::Generate
 
 			// Verify allowed read access
 			auto readAccess = std::vector<Path>();
-			if (!IsAllowedAccess(_readAccessList, declaredInput, workingDirectory, readAccess))
+			if (!IsAllowedAccess(_readAccessList, declaredInput, commandInfo.WorkingDirectory, readAccess))
 			{
 				throw std::runtime_error("Operation does not have permission to read requested input.");
 			}
@@ -80,7 +80,7 @@ namespace Soup::Core::Generate
 
 			// Verify allowed write access
 			auto writeAccess = std::vector<Path>();
-			if (!IsAllowedAccess(_writeAccessList, declaredOutput, workingDirectory, writeAccess))
+			if (!IsAllowedAccess(_writeAccessList, declaredOutput, commandInfo.WorkingDirectory, writeAccess))
 			{
 				throw std::runtime_error("Operation does not have permission to write requested output.");
 			}

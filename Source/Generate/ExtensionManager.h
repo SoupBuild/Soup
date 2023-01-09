@@ -124,8 +124,8 @@ namespace Soup::Core::Generate
 				Log::Info("ExtensionDone: " + currentExtension->Name);
 
 				// Get the final state to be passed to the next extension
-				auto updatedActiveState = host->LoadActiveState();
-				auto updatedSharedState = host->LoadSharedState();
+				auto updatedActiveState = host->GetUpdatedActiveState();
+				auto updatedSharedState = host->GetUpdatedSharedState();
 
 				// Build the extension info
 				auto extensionInfo = ValueTable();
@@ -135,13 +135,21 @@ namespace Soup::Core::Generate
 				extensionInfoTable.emplace(currentExtension->Name, Value(std::move(extensionInfo)));
 				runtimeOrderList.push_back(Value(currentExtension->Name));
 
+				// Mark the extension completed
 				currentExtension->HasRun = true;
+
+				// Update state for next extension
+				Log::Info("UpdateState");
+				state.Update(std::move(updatedActiveState), std::move(updatedSharedState));
 			}
 
+			// Store the runtime information for easy debugging
 			auto generateInfoTable = ValueTable();
 			generateInfoTable.emplace("Version", Value("0.1"));
-			generateInfoTable.emplace("RuntimeOrder", Value(runtimeOrderList));
-			generateInfoTable.emplace("ExtensionInfo", Value(extensionInfoTable));
+			generateInfoTable.emplace("RuntimeOrder", Value(std::move(runtimeOrderList)));
+			generateInfoTable.emplace("ExtensionInfo", Value(std::move(extensionInfoTable)));
+
+			state.SetGenerateInfo(std::move(generateInfoTable));
 		}
 
 	private:

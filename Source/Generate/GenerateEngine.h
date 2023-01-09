@@ -70,20 +70,23 @@ namespace Soup::Core::Generate
 
 			// Fake it for now!!!!!!!!!!!!!!!!!!!!!
 			buildExtensionLibraries.clear();
+			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/SoupCpp/Source/Extension/Tasks/BuildTask.wren"));
+			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/SoupCpp/Source/Extension/Tasks/RecipeBuildTask.wren"));
+			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/SoupCpp/Source/Extension/Tasks/ResolveDependenciesTask.wren"));
 			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/SoupCpp/Source/Extension/Tasks/ResolveToolsTask.wren"));
 
-			// Start a new active state that is initialized to the recipe itself
-			auto activeState = ValueTable();
+			// Start a new global state that is initialized to the recipe itself
+			auto globalState = ValueTable();
 
 			// Initialize the Recipe Root Table
 			auto recipeState = RecipeBuildStateConverter::ConvertToBuildState(recipe.GetTable());
-			activeState.emplace("Recipe", Value(std::move(recipeState)));
+			globalState.emplace("Recipe", Value(std::move(recipeState)));
 
 			// Initialize the Parameters Root Table
-			activeState.emplace("Parameters", Value(std::move(parametersState)));
+			globalState.emplace("Parameters", Value(std::move(parametersState)));
 
 			// Initialize the Dependencies Root Table
-			activeState.emplace("Dependencies", Value(std::move(dependenciesSharedState)));
+			globalState.emplace("Dependencies", Value(std::move(dependenciesSharedState)));
 
 			// Create a new build system for the requested build
 			auto extensionManager = ExtensionManager();
@@ -107,16 +110,16 @@ namespace Soup::Core::Generate
 
 			// Evaluate the build extensions
 			auto buildState = GenerateState(
-				activeState,
+				globalState,
 				fileSystemState,
 				readAccessList,
 				writeAccessList);
 			extensionManager.Execute(buildState);
 
 			// Grab the build results
-			auto generateInfoTable = buildState.GenerateInfo();
+			auto generateInfoTable = buildState.GetGenerateInfo();
 			auto evaluateGraph = buildState.BuildOperationGraph();
-			auto sharedState = buildState.SharedState();
+			auto sharedState = buildState.GetSharedState();
 
 			// Save the runtime information so Soup View can easily visualize runtime
 			auto generateInfoStateFile = soupTargetDirectory + BuildConstants::GenerateExtensionInfoFileName();
