@@ -29,7 +29,12 @@ namespace Soup::Core
 						"Cpp",
 						"Soup.Cpp",
 						SemanticVersion(0, 4, 3),
-						Path("Soup.Cpp.dll"))
+						{
+							Path("Extension/Tasks/BuildTask.wren"),
+							Path("Extension/Tasks/RecipeBuildTask.wren"),
+							Path("Extension/Tasks/ResolveDependenciesTask.wren"),
+							Path("Extension/Tasks/ResolveToolsTask.wren"),
+						})
 				},
 				{
 					"C#",
@@ -37,7 +42,9 @@ namespace Soup::Core
 						"CSharp",
 						"Soup.CSharp",
 						SemanticVersion(0, 7, 4),
-						Path("Soup.CSharp.dll"))
+						{
+							Path("Soup.CSharp.dll"),
+						})
 				},
 			});
 			return result;

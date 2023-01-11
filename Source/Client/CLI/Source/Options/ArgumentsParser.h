@@ -32,7 +32,7 @@ namespace Soup::Client
 			// The first argument must be the requested command
 			auto& commandType = args[1];
 
-			// Copy the set of unused args to ensure we consume everythings
+			// Copy the set of unused args to ensure we consume everything
 			std::vector<std::string> unusedArgs;
 			std::copy(args.begin()+2, args.end(), std::back_inserter(unusedArgs));
 

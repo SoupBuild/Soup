@@ -15,17 +15,17 @@ namespace Soup::Core
 			std::string languageSafeName,
 			std::string extensionName,
 			SemanticVersion extensionVersion,
-			Path extensionFilename) :
+			std::vector<Path> extensionFiles) :
 			LanguageSafeName(std::move(languageSafeName)),
 			ExtensionName(std::move(extensionName)),
 			ExtensionVersion(extensionVersion),
-			ExtensionFilename(std::move(extensionFilename))
+			ExtensionFiles(std::move(extensionFiles))
 		{
 		}
 
 		std::string LanguageSafeName;
 		std::string ExtensionName;
 		SemanticVersion ExtensionVersion;
-		Path ExtensionFilename;
+		std::vector<Path> ExtensionFiles;
 	};
 }

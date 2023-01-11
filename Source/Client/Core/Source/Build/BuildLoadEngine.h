@@ -584,7 +584,7 @@ namespace Soup::Core
 			}
 		}
 
-		std::pair<std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageBuildDependency(
+		std::pair<std::optional<std::vector<Path>>, std::optional<PackageChildInfo>> LoadLanguageBuildDependency(
 			const Recipe& recipe,
 			const Path& projectRoot,
 			const std::string& closureName,
@@ -604,7 +604,7 @@ namespace Soup::Core
 				packageLockState);
 		}
 
-		std::pair<std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageExtension(
+		std::pair<std::optional<std::vector<Path>>, std::optional<PackageChildInfo>> LoadLanguageExtension(
 			const Path& projectRoot,
 			const BuiltInLanguagePackage& builtInLanguagePackage,
 			const std::string& closureName,
@@ -624,16 +624,18 @@ namespace Soup::Core
 				closureName,
 				packageLockState);
 
-			std::optional<Path> packagePath;
+			std::optional<std::vector<Path>> packagePaths;
 			std::optional<PackageChildInfo> packageChildInfo;
 			if (activeReference.IsLocal())
 			{
 				// Use local reference relative to lock directory
-				packagePath = activeReference.GetPath();
-				if (!packagePath.value().HasRoot())
+				auto packagePath = activeReference.GetPath();
+				if (!packagePath.HasRoot())
 				{
-					packagePath = packageLockState.RootDirectory + packagePath.value();
+					packagePath = packageLockState.RootDirectory + packagePath;
 				}
+
+				packagePaths = std::vector<Path>({ packagePath });
 			}
 			else
 			{
@@ -642,11 +644,18 @@ namespace Soup::Core
 					// Use the prebuilt version in the install folder
 					auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
 					auto processDirectory = processFilename.GetParent();
-					packagePath = processDirectory +
+					auto extensionRoot = processDirectory +
 						_builtInExtensionPath +
 						Path(builtInLanguagePackage.ExtensionName) +
-						Path(activeReference.GetVersion().ToString()) +
-						builtInLanguagePackage.ExtensionFilename;
+						Path(activeReference.GetVersion().ToString());
+
+					auto extensionFiles = std::vector<Path>();
+					for (auto& file : builtInLanguagePackage.ExtensionFiles)
+					{
+						extensionFiles.push_back(extensionRoot + file);
+					}
+
+					packagePaths = std::move(extensionFiles);
 				}
 				else
 				{
@@ -658,7 +667,7 @@ namespace Soup::Core
 				}
 			}
 
-			return std::make_pair(std::move(packagePath), std::move(packageChildInfo));
+			return std::make_pair(std::move(packagePaths), std::move(packageChildInfo));
 		}
 
 		const std::string& GetLanguageSafeName(const std::string& language) const

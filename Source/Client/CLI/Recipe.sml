@@ -16,6 +16,7 @@ Dependencies: {
 	# Ensure the core build extensions are runtime dependencies
 	Runtime: [
 		"../Core/"
+		"../../Generate/"
 		"../../Tools/Copy/"
 		"../../Tools/Mkdir/"
 		"../../Monitor/Host/"

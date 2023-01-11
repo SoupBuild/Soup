@@ -321,7 +321,9 @@ namespace Soup::Core::UnitTests
 						"Cpp",
 						"Soup.Cpp",
 						SemanticVersion(1, 1, 1),
-						Path("Soup.Cpp.dll"))
+						{
+							Path("Soup.Cpp.dll"),
+						})
 				},
 				{
 					"C#",
@@ -329,7 +331,9 @@ namespace Soup::Core::UnitTests
 						"CSharp",
 						"Soup.CSharp",
 						SemanticVersion(2, 2, 2),
-						Path("Soup.CSharp.dll"))
+						{
+							Path("Soup.CSharp.dll"),
+						})
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -500,7 +504,9 @@ namespace Soup::Core::UnitTests
 						"Cpp",
 						"Soup.Cpp",
 						SemanticVersion(1, 1, 1),
-						Path("Soup.Cpp.dll"))
+						{
+							Path("Soup.Cpp.dll"),
+						})
 				},
 				{
 					"C#",
@@ -508,7 +514,9 @@ namespace Soup::Core::UnitTests
 						"CSharp",
 						"Soup.CSharp",
 						SemanticVersion(2, 2, 2),
-						Path("Soup.CSharp.dll"))
+						{
+							Path("Soup.CSharp.dll"),
+						})
 				},
 			});
 			auto arguments = RecipeBuildArguments();

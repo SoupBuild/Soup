@@ -42,11 +42,17 @@ namespace Soup::Core::Generate
 			}
 
 			// Get the required input state from the parameters
-			auto languageExtensionResult = parametersState.find("LanguageExtensionPath");
-			std::optional<Path> languageExtensionPath = std::nullopt;
+			auto languageExtensionResult = parametersState.find("LanguageExtension");
+			std::optional<std::vector<Path>> languageExtension = std::nullopt;
 			if (languageExtensionResult != parametersState.end())
 			{
-				languageExtensionPath = Path(languageExtensionResult->second.AsString());
+				auto files = std::vector<Path>();
+				for (auto& file : languageExtensionResult->second.AsList())
+				{
+					files.push_back(Path(file.AsString()));
+				}
+
+				languageExtension = std::move(files);
 			}
 
 			auto packageDirectory = Path(parametersState.at("PackageDirectory").AsString());
@@ -65,15 +71,8 @@ namespace Soup::Core::Generate
 
 			// Generate the set of build extension libraries
 			auto buildExtensionLibraries = GenerateBuildExtensionSet(
-				languageExtensionPath,
+				languageExtension,
 				dependenciesSharedState);
-
-			// Fake it for now!!!!!!!!!!!!!!!!!!!!!
-			buildExtensionLibraries.clear();
-			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/SoupCpp/Source/Extension/Tasks/BuildTask.wren"));
-			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/SoupCpp/Source/Extension/Tasks/RecipeBuildTask.wren"));
-			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/SoupCpp/Source/Extension/Tasks/ResolveDependenciesTask.wren"));
-			buildExtensionLibraries.push_back(Path("C:/Users/mwasp/Dev/Repos/SoupCpp/Source/Extension/Tasks/ResolveToolsTask.wren"));
 
 			// Start a new global state that is initialized to the recipe itself
 			auto globalState = ValueTable();
@@ -199,15 +198,18 @@ namespace Soup::Core::Generate
 		/// Generate the collection of build extensions
 		/// </summary>
 		static std::vector<Path> GenerateBuildExtensionSet(
-			const std::optional<Path>& languageExtensionPath,
+			const std::optional<std::vector<Path>>& languageExtension,
 			const ValueTable& dependenciesSharedState)
 		{
 			auto buildExtensionLibraries = std::vector<Path>();
 
 			// Run the RecipeBuild extension to inject core build tasks
-			if (languageExtensionPath.has_value())
+			if (languageExtension.has_value())
 			{
-				buildExtensionLibraries.push_back(languageExtensionPath.value());
+				std::copy(
+					languageExtension.value().begin(),
+					languageExtension.value().end(),
+					std::back_inserter(buildExtensionLibraries));
 			}
 
 			// Check for any dynamic libraries in the shared state
