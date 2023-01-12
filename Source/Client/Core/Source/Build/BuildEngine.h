@@ -43,7 +43,10 @@ namespace Soup::Core
 						"Soup.CSharp",
 						SemanticVersion(0, 7, 4),
 						{
-							Path("Soup.CSharp.dll"),
+							Path("Extension/Tasks/BuildTask.wren"),
+							Path("Extension/Tasks/RecipeBuildTask.wren"),
+							Path("Extension/Tasks/ResolveDependenciesTask.wren"),
+							Path("Extension/Tasks/ResolveToolsTask.wren"),
 						})
 				},
 			});
