@@ -105,7 +105,7 @@ namespace SoupView.ViewModel
 
 				var soupTargetDirectory = targetPath + new Path(".soup/");
 
-				var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateTaskInfoFileName;
+				var generateInfoStateFile = soupTargetDirectory + BuildConstants.GenerateInfoFileName;
 				if (!ValueTableManager.TryLoadState(generateInfoStateFile, out var generateInfoTable))
 				{
 					NotifyError($"Failed to load Value Table: {generateInfoStateFile}");

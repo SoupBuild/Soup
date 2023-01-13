@@ -121,7 +121,7 @@ namespace Soup::Core::Generate
 			auto sharedState = buildState.GetSharedState();
 
 			// Save the runtime information so Soup View can easily visualize runtime
-			auto generateInfoStateFile = soupTargetDirectory + BuildConstants::GenerateExtensionInfoFileName();
+			auto generateInfoStateFile = soupTargetDirectory + BuildConstants::GenerateInfoFileName();
 			Log::Info("Save Generate Info State: " + generateInfoStateFile.ToString());
 			ValueTableManager::SaveState(generateInfoStateFile, generateInfoTable);
 

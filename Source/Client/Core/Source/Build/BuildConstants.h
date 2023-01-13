@@ -81,9 +81,9 @@ namespace Soup::Core
 			return value;
 		}
 
-		static const Path& GenerateExtensionInfoFileName()
+		static const Path& GenerateInfoFileName()
 		{
-			static const auto value = Path("GenerateExtensionInfo.bvt");
+			static const auto value = Path("GenerateInfo.bvt");
 			return value;
 		}
 
