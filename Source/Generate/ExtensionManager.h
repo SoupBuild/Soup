@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma once
-#include "ExtensionDetails.h"
+#include "ExtensionTaskDetails.h"
 #include "WrenHost.h"
 
 namespace Soup::Core::Generate
@@ -14,29 +14,29 @@ namespace Soup::Core::Generate
 	class ExtensionManager
 	{
 	private:
-		std::map<std::string, ExtensionDetails> _extensions;
+		std::map<std::string, ExtensionTaskDetails> _tasks;
 
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExtensionManager"/> class.
 		/// </summary>
 		 ExtensionManager() :
-			_extensions()
+			_tasks()
 		{
 		}
 
 		/// <summary>
-		/// Register extension
+		/// Register extension task
 		/// </summary>
-		void RegisterExtension(ExtensionDetails extensionDetails)
+		void RegisterExtensionTask(ExtensionTaskDetails extensionTaskDetails)
 		{
-			auto name = extensionDetails.Name;
-			Log::Diag("RegisterExtension: " + name);
+			auto name = extensionTaskDetails.Name;
+			Log::Diag("RegisterExtensionTask: " + name);
 
 			auto runBeforeMessage = std::stringstream();
 			runBeforeMessage << "RunBefore [";
 			bool isFirst = true;
-			for (auto& value : extensionDetails.RunBeforeList)
+			for (auto& value : extensionTaskDetails.RunBeforeList)
 			{
 				if (!isFirst)
 					runBeforeMessage << ", ";
@@ -51,7 +51,7 @@ namespace Soup::Core::Generate
 			auto runAfterMessage = std::stringstream();
 			runAfterMessage << "RunAfter [";
 			isFirst = true;
-			for (auto& value : extensionDetails.RunAfterList)
+			for (auto& value : extensionTaskDetails.RunAfterList)
 			{
 				if (!isFirst)
 					runAfterMessage << ", ";
@@ -63,11 +63,11 @@ namespace Soup::Core::Generate
 			runAfterMessage << "]";
 			Log::Diag(runAfterMessage.str());
 
-			auto insertResult = _extensions.emplace(name, std::move(extensionDetails));
+			auto insertResult = _tasks.emplace(name, std::move(extensionTaskDetails));
 			if (!insertResult.second)
 			{
-				Log::HighPriority("An extension with the provided name has already been registered: " + name);
-				throw std::runtime_error("An extension with the provided name has already been registered");
+				Log::HighPriority("An extension task with the provided name has already been registered: " + name);
+				throw std::runtime_error("An extension task with the provided name has already been registered");
 			}
 		}
 
@@ -79,66 +79,66 @@ namespace Soup::Core::Generate
 			// Setup each extension to have a complete list of extensions that must run before itself
 			// Note: this is required to combine other extensions run before lists with the extensions
 			// own run after list
-			for (auto& [key, extension] : _extensions)
+			for (auto& [key, task] : _tasks)
 			{
 				// Copy their own run after list
-				extension.RunAfterClosureList.insert(
-					extension.RunAfterClosureList.end(),
-					extension.RunAfterList.begin(),
-					extension.RunAfterList.end());
+				task.RunAfterClosureList.insert(
+					task.RunAfterClosureList.end(),
+					task.RunAfterList.begin(),
+					task.RunAfterList.end());
 
-				// Add ourself to all extensions in our run before list
-				for (auto& runBefore : extension.RunBeforeList)
+				// Add ourself to all tasks in our run before list
+				for (auto& runBefore : task.RunBeforeList)
 				{
-					// Try to find the other extension
-					auto beforeExtensionContainer = _extensions.find(runBefore);
-					if (beforeExtensionContainer != _extensions.end())
+					// Try to find the other task
+					auto beforeTaskContainer = _tasks.find(runBefore);
+					if (beforeTaskContainer != _tasks.end())
 					{
-						beforeExtensionContainer->second.RunAfterClosureList.push_back(extension.Name);
+						beforeTaskContainer->second.RunAfterClosureList.push_back(task.Name);
 					}
 				}
 			}
 
 			auto runtimeOrderList = ValueList();
-			auto extensionInfoTable = ValueTable();
+			auto extensionTaskInfoTable = ValueTable();
 
-			// Run all extensions in the order they were registered
+			// Run all tasks in the order they were registered
 			// ensuring they are run in the correct dependency order
-			ExtensionDetails* currentExtension;
-			while (TryFindNextExtension(currentExtension))
+			ExtensionTaskDetails* currentTask;
+			while (TryFindNextTask(currentTask))
 			{
-				if (currentExtension == nullptr)
-					throw std::runtime_error("TryFindNextExtension returned empty result");
+				if (currentTask == nullptr)
+					throw std::runtime_error("TryFindNextTask returned empty result");
 
-				// Create a Wren Host to evaluate the extension
-				auto host = std::make_unique<WrenHost>(currentExtension->ScriptFile);
+				// Create a Wren Host to evaluate the extension task
+				auto host = std::make_unique<WrenHost>(currentTask->ScriptFile);
 				host->InterpretMain();
 
 				// Set the current state AFTER we initialize to prevent pre-loading
 				host->SetState(state);
 
-				Log::Info("ExtensionStart: " + currentExtension->Name);
+				Log::Info("TaskStart: " + currentTask->Name);
 
-				host->EvaluateExtension(currentExtension->Name);
+				host->EvaluateTask(currentTask->Name);
 
-				Log::Info("ExtensionDone: " + currentExtension->Name);
+				Log::Info("TaskDone: " + currentTask->Name);
 
 				// Get the final state to be passed to the next extension
 				auto updatedActiveState = host->GetUpdatedActiveState();
 				auto updatedSharedState = host->GetUpdatedSharedState();
 
-				// Build the extension info
-				auto extensionInfo = ValueTable();
-				extensionInfo.emplace("ActiveState", Value(updatedActiveState));
-				extensionInfo.emplace("SharedState", Value(updatedSharedState));
+				// Build the extension task info
+				auto extensionTaskInfo = ValueTable();
+				extensionTaskInfo.emplace("ActiveState", Value(updatedActiveState));
+				extensionTaskInfo.emplace("SharedState", Value(updatedSharedState));
 
-				extensionInfoTable.emplace(currentExtension->Name, Value(std::move(extensionInfo)));
-				runtimeOrderList.push_back(Value(currentExtension->Name));
+				extensionTaskInfoTable.emplace(currentTask->Name, Value(std::move(extensionTaskInfo)));
+				runtimeOrderList.push_back(Value(currentTask->Name));
 
-				// Mark the extension completed
-				currentExtension->HasRun = true;
+				// Mark the extension task completed
+				currentTask->HasRun = true;
 
-				// Update state for next extension
+				// Update state for next extension task
 				Log::Info("UpdateState");
 				state.Update(std::move(updatedActiveState), std::move(updatedSharedState));
 			}
@@ -147,35 +147,35 @@ namespace Soup::Core::Generate
 			auto generateInfoTable = ValueTable();
 			generateInfoTable.emplace("Version", Value("0.1"));
 			generateInfoTable.emplace("RuntimeOrder", Value(std::move(runtimeOrderList)));
-			generateInfoTable.emplace("ExtensionInfo", Value(std::move(extensionInfoTable)));
+			generateInfoTable.emplace("TaskInfo", Value(std::move(extensionTaskInfoTable)));
 
 			state.SetGenerateInfo(std::move(generateInfoTable));
 		}
 
 	private:
 		/// <summary>
-		/// Try to find the next extension that has yet to be run and is ready
-		/// Returns false if all extensions have been run
+		/// Try to find the next task that has yet to be run and is ready
+		/// Returns false if all tasks have been run
 		/// Throws error if we hit a deadlock
 		/// </summary>
-		bool TryFindNextExtension(ExtensionDetails*& extension)
+		bool TryFindNextTask(ExtensionTaskDetails*& extensionTask)
 		{
-			// Find the next extension that is ready to be run
+			// Find the next task that is ready to be run
 			bool hasAnyStillWaiting = false;
-			for (auto& [key, extensionDetails] : _extensions)
+			for (auto& [key, task] : _tasks)
 			{
 				// Check if this extension has run already,
 				// if not check if all if all upstream extensions have finished
-				if (!extensionDetails.HasRun)
+				if (!task.HasRun)
 				{
 					hasAnyStillWaiting = true;
 
 					// Check if all of their run after dependencies have already finished
 					bool hasDependencyPending = false;
-					for (auto& runBefore : extensionDetails.RunAfterClosureList)
+					for (auto& runBefore : task.RunAfterClosureList)
 					{
-						auto findResult = _extensions.find(runBefore);
-						if (findResult != _extensions.end() && !findResult->second.HasRun)
+						auto findResult = _tasks.find(runBefore);
+						if (findResult != _tasks.end() && !findResult->second.HasRun)
 						{
 							// Found a dependency that hasn't run, keep trying
 							hasDependencyPending = true;
@@ -187,7 +187,7 @@ namespace Soup::Core::Generate
 					// Let's run this one
 					if (!hasDependencyPending)
 					{
-						extension = &extensionDetails;
+						extensionTask = &task;
 						return true;
 					}
 				}
@@ -196,7 +196,7 @@ namespace Soup::Core::Generate
 			if (hasAnyStillWaiting)
 				throw std::runtime_error("Hit deadlock in build extension dependencies.");
 
-			extension = nullptr;
+			extensionTask = nullptr;
 			return false;
 		}
 	};

@@ -101,7 +101,7 @@ namespace Soup::Core::Generate
 				auto extensions = host->DiscoverExtensions();
 
 				for (auto& extension : extensions)
-					extensionManager.RegisterExtension(std::move(extension));
+					extensionManager.RegisterExtensionTask(std::move(extension));
 			}
 
 			// Initialize a shared File System State to cache file system access

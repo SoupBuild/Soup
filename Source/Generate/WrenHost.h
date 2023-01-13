@@ -3,7 +3,7 @@
 #include "wren.hpp"
 #include "WrenHelpers.h"
 #include "WrenValueTable.h"
-#include "ExtensionDetails.h"
+#include "ExtensionTaskDetails.h"
 #include "GenerateState.h"
 
 namespace Soup::Core::Generate
@@ -13,7 +13,7 @@ namespace Soup::Core::Generate
 	private:
 		static inline const char* SoupModuleName = "soup";
 		static inline const char* SoupClassName = "Soup";
-		static inline const char* SoupExtensionClassName = "SoupExtension";
+		static inline const char* SoupTaskClassName = "SoupTask";
 		Path _scriptFile;
 		WrenVM* _vm;
 		GenerateState* _state;
@@ -67,9 +67,9 @@ namespace Soup::Core::Generate
 			Log::Diag("Success");
 		}
 
-		std::vector<ExtensionDetails> DiscoverExtensions()
+		std::vector<ExtensionTaskDetails> DiscoverExtensions()
 		{
-			auto extensions = std::vector<ExtensionDetails>();
+			auto extensions = std::vector<ExtensionTaskDetails>();
 
 			// Discover all class types
 			wrenEnsureSlots(_vm, 1);
@@ -83,15 +83,15 @@ namespace Soup::Core::Generate
 				if (type == WREN_TYPE_UNKNOWN)
 				{
 					auto classHandle = WrenHelpers::SmartHandle(_vm, wrenGetSlotHandle(_vm, 0));
-					if (WrenHelpers::HasParentType(_vm, classHandle, SoupExtensionClassName))
+					if (WrenHelpers::HasParentType(_vm, classHandle, SoupTaskClassName))
 					{
-						Log::Diag("Found Build Extension");
+						Log::Diag("Found Build Task");
 						auto className = WrenHelpers::GetClassName(_vm, classHandle);
 						auto runBeforeList = CallRunBeforeGetter(classHandle);
 						auto runAfterList = CallRunAfterGetter(classHandle);
 
 						extensions.push_back(
-							ExtensionDetails(
+							ExtensionTaskDetails(
 								std::move(className),
 								_scriptFile,
 								std::move(runBeforeList),
@@ -103,7 +103,7 @@ namespace Soup::Core::Generate
 			return extensions;
 		}
 
-		void EvaluateExtension(const std::string& className)
+		void EvaluateTask(const std::string& className)
 		{
 			// Load up the class
 			wrenEnsureSlots(_vm, 1);
@@ -332,7 +332,7 @@ namespace Soup::Core::Generate
 			}
 		}
 
-		void SoupLogDebug()
+		void SoupLogInfo()
 		{
 			auto message = wrenGetSlotString(_vm, 1);
 			Log::Info(message);
@@ -496,10 +496,10 @@ namespace Soup::Core::Generate
 			host->SoupCreateOperation();
 		}
 
-		static void SoupLogDebug(WrenVM* vm)
+		static void SoupLogInfo(WrenVM* vm)
 		{
 			auto host = (WrenHost*)wrenGetUserData(vm);
-			host->SoupLogDebug();
+			host->SoupLogInfo();
 		}
 
 		static void SoupLogWarning(WrenVM* vm)
@@ -535,8 +535,8 @@ namespace Soup::Core::Generate
 					return SoupLoadSharedState;
 				else if (signature == "createOperation_(_,_,_,_,_,_)")
 					return SoupCreateOperation;
-				else if (signature == "debug_(_)")
-					return SoupLogDebug;
+				else if (signature == "info_(_)")
+					return SoupLogInfo;
 				else if (signature == "warning_(_)")
 					return SoupLogWarning;
 				else if (signature == "error_(_)")
@@ -547,7 +547,7 @@ namespace Soup::Core::Generate
 		}
 
 		static inline const char* soupModuleSource =
-			"class SoupExtension {\n"
+			"class SoupTask {\n"
 			"	static runBefore { [] }\n"
 			"	static runAfter { [] }\n"
 			"	static evaluate() {}\n"
@@ -579,9 +579,9 @@ namespace Soup::Core::Generate
 			"		createOperation_(title, executable, arguments, workingDirectory, declaredInput, declaredOutput)\n"
 			"	}\n"
 			"\n"
-			"	static debug(message) {\n"
+			"	static info(message) {\n"
 			"		if (!(message is String)) Fiber.abort(\"Message must be a string.\")\n"
-			"		debug_(message)\n"
+			"		info_(message)\n"
 			"	}\n"
 			"\n"
 			"	static warning(message) {\n"
@@ -598,7 +598,7 @@ namespace Soup::Core::Generate
 			"	foreign static loadActiveState_()\n"
 			"	foreign static loadSharedState_()\n"
 			"	foreign static createOperation_(title, executable, arguments, workingDirectory, declaredInput, declaredOutput)\n"
-			"	foreign static debug_(message)\n"
+			"	foreign static info_(message)\n"
 			"	foreign static warning_(message)\n"
 			"	foreign static error_(message)\n"
 			"}\n";

@@ -1,4 +1,4 @@
-﻿// <copyright file="ExtensionDetails.h" company="Soup">
+﻿// <copyright file="ExtensionTaskDetails.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -6,10 +6,10 @@
 
 namespace Soup::Core::Generate
 {
-	class ExtensionDetails
+	class ExtensionTaskDetails
 	{
 	public:
-		ExtensionDetails(
+		ExtensionTaskDetails(
 			std::string name,
 			Path scriptFile,
 			std::vector<std::string> runBeforeList,
