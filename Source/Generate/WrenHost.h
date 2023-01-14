@@ -169,10 +169,10 @@ namespace Soup::Core::Generate
 
 			auto soupClassHandle = WrenHelpers::SmartHandle(_vm, wrenGetSlotHandle(_vm, 0));
 
-			// Call ActiveState
-			auto activeStateGetterHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "sharedState"));
+			// Call SharedState
+			auto sharedStateGetterHandle = WrenHelpers::SmartHandle(_vm, wrenMakeCallHandle(_vm, "sharedState"));
 			wrenSetSlotHandle(_vm, 0, soupClassHandle);
-			WrenHelpers::ThrowIfFailed(wrenCall(_vm, activeStateGetterHandle));
+			WrenHelpers::ThrowIfFailed(wrenCall(_vm, sharedStateGetterHandle));
 
 			try
 			{

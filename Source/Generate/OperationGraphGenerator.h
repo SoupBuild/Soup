@@ -157,7 +157,7 @@ namespace Soup::Core::Generate
 					if (isDuplicate)
 					{
 						// Update the child dependency count
-						auto childOperation = _graph.GetOperationInfo(childId);
+						auto& childOperation = _graph.GetOperationInfo(childId);
 						childOperation.DependencyCount--;
 
 						// Remove the duplicate
