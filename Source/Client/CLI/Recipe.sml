@@ -1,5 +1,5 @@
 Name: "Soup"
-Version: "0.28.1"
+Version: "0.29.0"
 Language: "C++|0.1"
 
 Type: "Executable"
@@ -23,8 +23,8 @@ Dependencies: {
 	]
 	Other: [
 		# "../../GenerateSharp/Generate/"
-		"C#|Soup.Cpp@0.4.3"
-		"C#|Soup.CSharp@0.7.4"
+		# "C#|Soup.Cpp@0.4.3"
+		# "C#|Soup.CSharp@0.7.4"
 	]
 	Build: [
 		# TODO: "Soup.Test.Cpp@0.4.0"
