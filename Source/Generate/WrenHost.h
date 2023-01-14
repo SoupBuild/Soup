@@ -142,8 +142,18 @@ namespace Soup::Core::Generate
 			wrenSetSlotHandle(_vm, 0, soupClassHandle);
 			WrenHelpers::ThrowIfFailed(wrenCall(_vm, activeStateGetterHandle));
 
-			auto result = WrenValueTable::GetSlotTable(_vm, 0);
-			return result;
+			try
+			{
+				auto result = WrenValueTable::GetSlotTable(_vm, 0);
+				return result;
+			}
+			catch(const InvalidTypeException& exception)
+			{
+				// Unwrap the type error
+				auto stringBuilder = std::stringstream();
+				stringBuilder << "Invalid type in ActiveState:" << exception.what();
+				throw std::runtime_error(stringBuilder.str());
+			}
 		}
 
 		ValueTable GetUpdatedSharedState()
@@ -164,8 +174,18 @@ namespace Soup::Core::Generate
 			wrenSetSlotHandle(_vm, 0, soupClassHandle);
 			WrenHelpers::ThrowIfFailed(wrenCall(_vm, activeStateGetterHandle));
 
-			auto result = WrenValueTable::GetSlotTable(_vm, 0);
-			return result;
+			try
+			{
+				auto result = WrenValueTable::GetSlotTable(_vm, 0);
+				return result;
+			}
+			catch(const InvalidTypeException& exception)
+			{
+				// Unwrap the type error
+				auto stringBuilder = std::stringstream();
+				stringBuilder << "Invalid type in SharedState:" << exception.what();
+				throw std::runtime_error(stringBuilder.str());
+			}
 		}
 
 	private:
@@ -248,9 +268,9 @@ namespace Soup::Core::Generate
 
 				WrenValueTable::SetSlotTable(_vm, 0, _state->GetActiveState());
 			}
-			catch(const std::exception& ex)
+			catch(const std::exception& exception)
 			{
-				WrenHelpers::GenerateRuntimeError(_vm, ex.what());
+				WrenHelpers::GenerateRuntimeError(_vm, exception.what());
 			}
 		}
 
@@ -264,9 +284,9 @@ namespace Soup::Core::Generate
 
 				WrenValueTable::SetSlotTable(_vm, 0, _state->GetSharedState());
 			}
-			catch(const std::exception& ex)
+			catch(const std::exception& exception)
 			{
-				WrenHelpers::GenerateRuntimeError(_vm, ex.what());
+				WrenHelpers::GenerateRuntimeError(_vm, exception.what());
 			}
 		}
 

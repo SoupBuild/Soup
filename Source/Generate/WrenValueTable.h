@@ -4,6 +4,15 @@
 
 namespace Soup::Core::Generate
 {
+	class InvalidTypeException : public std::runtime_error
+	{
+	public:
+		InvalidTypeException(const std::string& references) :
+			std::runtime_error(std::move(references))
+		{
+		}
+	};
+
 	class WrenValueTable
 	{
 	public:
@@ -92,12 +101,24 @@ namespace Soup::Core::Generate
 
 				auto keyType = wrenGetSlotType(vm, keySlot);
 				if (keyType != WREN_TYPE_STRING) {
-					throw std::runtime_error("Map key must be a string");
+					auto stringBuilder = std::stringstream();
+					stringBuilder << "KEY[" << i << "]";
+					throw InvalidTypeException(stringBuilder.str());
 				}
 
 				auto key = wrenGetSlotString(vm, keySlot);
-				auto value = GetSlotValue(vm, valueSlot);
-				result.emplace(key, std::move(value));
+				try
+				{
+					auto value = GetSlotValue(vm, valueSlot);
+					result.emplace(key, std::move(value));
+				}
+				catch(const InvalidTypeException& exception)
+				{
+					// Unwrap the type error
+					auto stringBuilder = std::stringstream();
+					stringBuilder << "[" << key << "]" << exception.what();
+					throw InvalidTypeException(stringBuilder.str());
+				}
 			}
 
 			return result;
@@ -119,9 +140,19 @@ namespace Soup::Core::Generate
 			auto result = ValueList();
 			for (auto i = 0; i < listCount; i++)
 			{
-				wrenGetListElement(vm, listSlot, i, valueSlot);
-				auto value = GetSlotValue(vm, valueSlot);
-				result.push_back(std::move(value));
+				try
+				{
+					wrenGetListElement(vm, listSlot, i, valueSlot);
+					auto value = GetSlotValue(vm, valueSlot);
+					result.push_back(std::move(value));
+				}
+				catch(const InvalidTypeException& exception)
+				{
+					// Unwrap the type error
+					auto stringBuilder = std::stringstream();
+					stringBuilder << "[" << i << "]" << exception.what();
+					throw InvalidTypeException(stringBuilder.str());
+				}
 			}
 
 			return result;
@@ -151,8 +182,9 @@ namespace Soup::Core::Generate
 					// The object is of a type that isn't accessible by the C API.
 					auto handle = WrenHelpers::SmartHandle(vm, wrenGetSlotHandle(vm, slot));
 					auto typeName = WrenHelpers::GetType(vm, handle);
-					throw std::runtime_error("Value is a type we cannot load: " + typeName);
-					break;
+					auto stringBuilder = std::stringstream();
+					stringBuilder << "NONPRIMITIVE:" << typeName;
+					throw InvalidTypeException(stringBuilder.str());
 				}
 				default:
 					throw std::runtime_error("Unkown SlotType.");
