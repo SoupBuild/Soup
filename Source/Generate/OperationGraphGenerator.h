@@ -108,7 +108,7 @@ namespace Soup::Core::Generate
 				declaredOutputFileIds,
 				readAccessFileIds,
 				writeAccessFileIds);
-			auto operationInfoReference = _graph.AddOperation(std::move(operationInfo));
+			auto& operationInfoReference = _graph.AddOperation(std::move(operationInfo));
 
 			StoreLookupInfo(operationInfoReference);
 			ResolveDependencies(operationInfoReference);
@@ -363,7 +363,7 @@ namespace Soup::Core::Generate
 		void CheckAddChildOperation(OperationInfo& parentOperation, OperationInfo& childOperation)
 		{
 			// Check if this item is already known
-			auto findResult =std::find(
+			auto findResult = std::find(
 				parentOperation.Children.begin(),
 				parentOperation.Children.end(),
 				childOperation.Id);
