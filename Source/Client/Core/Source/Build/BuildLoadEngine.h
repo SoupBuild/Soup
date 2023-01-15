@@ -35,7 +35,7 @@ namespace Soup::Core
 		const int _packageLockVersion = 4;
 		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _buildDependencyType = "Build";
-		const std::string _builtInCSharpLanguage = "C#";
+		const std::string _builtInWrenLanguage = "Wren";
 		const std::string _rootClosureName = "Root";
 
 		// Built in languages
@@ -502,8 +502,8 @@ namespace Soup::Core
 			const PackageLockState& packageLockState)
 		{
 			// Build dependencies do not inherit the parent language
-			// Instead, they default to C#
-			auto implicitLanguage = _builtInCSharpLanguage;
+			// Instead, they default to Wren
+			auto implicitLanguage = _builtInWrenLanguage;
 
 			// Load this package recipe
 			auto dependencyProjectRoot = GetPackageReferencePath(
@@ -611,8 +611,8 @@ namespace Soup::Core
 			const PackageLockState& packageLockState)
 		{
 			// Build dependencies do not inherit the parent language
-			// Instead, they default to C#
-			auto implicitLanguage = _builtInCSharpLanguage;
+			// Instead, they default to Wren
+			auto implicitLanguage = _builtInWrenLanguage;
 
 			auto builtInExtensionReference = PackageReference(
 				std::nullopt,

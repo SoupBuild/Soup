@@ -49,7 +49,20 @@ namespace Soup::Core
 							Path("Extension/Tasks/ResolveToolsTask.wren"),
 						})
 				},
+				{
+					"Wren",
+					BuiltInLanguagePackage(
+						"Wren",
+						"Soup.Wren",
+						SemanticVersion(0, 1, 0),
+						{
+							Path("Extension/Tasks/BuildTask.wren"),
+							Path("Extension/Tasks/RecipeBuildTask.wren"),
+							Path("Extension/Tasks/ResolveDependenciesTask.wren"),
+						})
+				},
 			});
+
 			return result;
 		}
 
