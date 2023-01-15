@@ -4,6 +4,7 @@
 
 using Opal;
 using Soup.Build;
+using Soup.Build.Runtime;
 using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
@@ -144,7 +145,13 @@ namespace SoupView.ViewModel
 				return activeGraph;
 			}
 
-			BuildGraph(runtimeOrderList.AsList(), taskInfoTable.AsTable(), activeGraph);
+			if (!generateInfoTable.TryGetValue("GlobalState", out var globalStateTable) || globalStateTable.Type != Soup.Build.ValueType.Table)
+			{
+				NotifyError($"Generate Info Table missing GlobalState Table");
+				return activeGraph;
+			}
+
+			BuildGraph(runtimeOrderList.AsList(), taskInfoTable.AsTable(), globalStateTable.AsTable(), activeGraph);
 
 			return activeGraph;
 		}
@@ -152,6 +159,7 @@ namespace SoupView.ViewModel
 		private void BuildGraph(
 			IValueList runtimeOrderList,
 			IValueTable taskInfoTable,
+			IValueTable globalStateTable,
 			IList<IList<GraphNode>> activeGraph)
 		{
 			// Add each task to its own column
@@ -163,6 +171,9 @@ namespace SoupView.ViewModel
 
 				// Find the Task Info
 				var taskInfo = taskInfoTable[taskName].AsTable();
+
+				// TODO: Have a custom view for the global state
+				taskInfo["GlobalState"] = new Value(globalStateTable);
 
 				this.taskDetailsLookup.Add(node.Id, new TaskDetailsViewModel(taskName, taskInfo));
 

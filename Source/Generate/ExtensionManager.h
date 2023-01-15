@@ -148,6 +148,7 @@ namespace Soup::Core::Generate
 			generateInfoTable.emplace("Version", Value("0.1"));
 			generateInfoTable.emplace("RuntimeOrder", Value(std::move(runtimeOrderList)));
 			generateInfoTable.emplace("TaskInfo", Value(std::move(extensionTaskInfoTable)));
+			generateInfoTable.emplace("GlobalState", Value(state.GetGlobalState()));
 
 			state.SetGenerateInfo(std::move(generateInfoTable));
 		}
