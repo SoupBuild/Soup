@@ -16,6 +16,7 @@
 #ifdef SOUP_BUILD
 
 import Opal;
+import Soup.Core;
 
 using namespace Opal;
 
@@ -51,6 +52,14 @@ using namespace Opal;
 
 using namespace Opal;
 
+// import Soup.Core
+#include <cstring>
+#include <regex>
+#include <set>
+#include <variant>
+#include "Build/BuildEngine.h"
+#include "Package/PackageManager.h"
+
 #endif
 
 #include "WrenHost.h"
@@ -83,14 +92,23 @@ int main(int argc, char** argv)
 
 		Log::Diag("ProgramStart");
 
-		if (argc != 2)
+		if (argc < 2 || argc > 3)
 		{
-			Log::Error("Invalid parameters. Expected one parameter.");
+			Log::Error("Invalid parameters. Expected one or two parameter.");
 			return -1;
 		}
 
 		auto scriptFile = Path(argv[1]);
-		auto host = std::make_unique<Soup::Core::Generate::WrenHost>(std::move(scriptFile));
+
+		std::optional<Path> bundlesFile;
+		if (argc > 2)
+		{
+			bundlesFile = Path(argv[2]);
+		}
+
+		auto host = std::make_unique<Soup::Core::Generate::WrenHost>(
+			std::move(scriptFile),
+			std::move(bundlesFile));
 		host->InterpretMain();
 	}
 	catch (const std::exception& ex)

@@ -8,16 +8,22 @@ namespace Soup::Core::Generate
 	class WrenHost
 	{
 	private:
+		static inline const char BundleSeparator = ':';
 		static inline const char* SoupModuleName = "soup";
 		static inline const char* SoupTestModuleName = "soup-test";
 		static inline const char* SoupClassName = "Soup";
 		static inline const char* SoupTaskClassName = "SoupTask";
+
 		Path _scriptFile;
+		std::optional<Path> _bundlesFile;
+		std::map<std::string, Path> _bundles;
 		WrenVM* _vm;
 
 	public:
-		WrenHost(Path scriptFile) :
+		WrenHost(Path scriptFile, std::optional<Path> bundlesFile) :
 			_scriptFile(std::move(scriptFile)),
+			_bundlesFile(std::move(bundlesFile)),
+			_bundles(),
 			_vm(nullptr)
 		{
 			// Configure the Wren Virtual Machine
@@ -42,6 +48,31 @@ namespace Soup::Core::Generate
 
 		void InterpretMain()
 		{
+			// Load the bundles
+			if (_bundlesFile.has_value())
+			{
+				std::ifstream bundlesFile(_bundlesFile.value().ToString());
+				if (!bundlesFile.is_open())
+					throw std::runtime_error("Bundles does not exist");
+
+				auto bundlesDocument = SMLDocument::Parse(bundlesFile);
+				if (!bundlesDocument.GetRoot().Contains("Bundles"))
+				{
+					throw std::runtime_error("Bundles file is missing Bundles element");
+				}
+
+				for (auto& [bundleName, bundle] : bundlesDocument.GetRoot()["Bundles"].AsTable().GetValue())
+				{
+					auto& bundleTable = bundle.AsTable();
+					if (!bundleTable.Contains("Root"))
+					{
+						throw std::runtime_error("Bundle missing Root property");
+					}
+
+					_bundles.emplace(bundleName, Path(bundleTable["Root"].AsString()));
+				}
+			}
+
 			// Load the script
 			std::ifstream scriptFile(_scriptFile.ToString());
 			if (!scriptFile.is_open())
@@ -76,6 +107,67 @@ namespace Soup::Core::Generate
 			WrenHelpers::ThrowIfFailed(wrenCall(_vm, runBeforeGetterHandle));
 
 			return WrenHelpers::GetSlotStringList(_vm, 0, 1);
+		}
+
+		const char* ResolveModule(
+			std::string_view importer,
+			std::string_view moduleName)
+		{
+			// Logical import strings are used as-is and need no resolution.
+			if (moduleName == std::string_view(SoupModuleName) ||
+				moduleName == std::string_view(SoupTestModuleName))
+				return moduleName.data();
+
+			// Check if it is a bundled reference
+			Path currentDirectory;
+			Path moduleReference;
+			auto bundleSeparator = moduleName.find_first_of(BundleSeparator);
+			if (bundleSeparator != std::string::npos)
+			{
+				if (!_bundlesFile.has_value())
+				{
+					// Nothing we can do about it
+					return moduleName.data();
+				}
+
+				auto bundleName = moduleName.substr(0, bundleSeparator);
+				auto findBundle = _bundles.find(std::string(bundleName));
+				if (findBundle == _bundles.end())
+				{
+					// Nothing we can do about it
+					return moduleName.data();
+				}
+
+				currentDirectory = findBundle->second;
+
+				// If relative path in root then resolve to bundles file location
+				if (!currentDirectory.HasRoot())
+				{
+					currentDirectory = _bundlesFile.value().GetParent() + currentDirectory;
+				}
+
+				moduleReference = Path(moduleName.substr(bundleSeparator + 1));
+			}
+			else
+			{
+				// Get the directory containing the importing module.
+				auto modulePath = Path(importer);
+				currentDirectory = modulePath.GetParent();
+
+				moduleReference = Path(moduleName);
+			}
+
+			// Ensure the module is a relative path
+			if (moduleReference.HasRoot())
+				return moduleName.data();
+
+			// Load the relative path from the current module folder
+			auto resolvedModule = currentDirectory + moduleReference;
+			
+			// Automatically append wren file extension
+			resolvedModule.SetFileExtension("wren");
+
+			return ReturnRawString(resolvedModule.ToString());
 		}
 
 		void WriteCallback(std::string_view text)
@@ -152,29 +244,8 @@ namespace Soup::Core::Generate
 			const char* importer,
 			const char* moduleName)
 		{
-			(vm);
-
-			// Logical import strings are used as-is and need no resolution.
-			if (moduleName == std::string_view(SoupModuleName) ||
-				moduleName == std::string_view(SoupTestModuleName))
-				return moduleName;
-			
-			// Get the directory containing the importing module.
-			auto modulePath = Path(importer);
-			auto moduleDirectory = modulePath.GetParent();
-
-			// Ensure the module is a relative path
-			auto moduleReference = Path(moduleName);
-			if (moduleReference.HasRoot())
-				return moduleName;
-
-			// Load the relative path from the current module folder
-			auto resolvedModule = moduleDirectory + moduleReference;
-			
-			// Automatically append wren file extension
-			resolvedModule.SetFileExtension("wren");
-
-			return ReturnRawString(resolvedModule.ToString());
+			auto host = (WrenHost*)wrenGetUserData(vm);
+			return host->ResolveModule(importer, moduleName);
 		}
 
 		static WrenLoadModuleResult WrenLoadModule(WrenVM* vm, const char* module)
