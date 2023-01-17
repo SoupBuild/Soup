@@ -62,7 +62,10 @@ using namespace Opal;
 
 #endif
 
-#include "WrenHost.h"
+// TODO import 
+#include "wren.hpp"
+
+#include "GenerateTestHost.h"
 
 int main(int argc, char** argv)
 {
@@ -106,7 +109,7 @@ int main(int argc, char** argv)
 			bundlesFile = Path(argv[2]);
 		}
 
-		auto host = std::make_unique<Soup::Core::Generate::WrenHost>(
+		auto host = std::make_unique<Soup::Core::Generate::GenerateTestHost>(
 			std::move(scriptFile),
 			std::move(bundlesFile));
 		host->InterpretMain();

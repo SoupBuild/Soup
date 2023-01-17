@@ -7,6 +7,7 @@ Defines: [
 ]
 IncludePaths: [
 	"Source/"
+	"C:/Users/mwasp/Dev/Repos/wren/src/include"
 ]
 Interface: "Source/Module.cpp"
 Source: [
@@ -23,6 +24,7 @@ Dependencies: {
 		"Opal@0.5.0"
 		"reflex@1.0.2"
 		"../../Monitor/Host/"
+		"C:/Users/mwasp/Dev/Repos/wren/src"
 		"CryptoPP@1.1.0"
 	]
 	Test: [

@@ -1,6 +1,8 @@
-#pragma once
+// <copyright file="GenerateEngine.h" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
 
-#include "WrenHost.h"
+#pragma once
 #include "ExtensionManager.h"
 #include "GenerateState.h"
 
@@ -96,7 +98,7 @@ namespace Soup::Core::Generate
 				Log::Info("Loading Extension Script: " + buildExtension.ToString());
 
 				// Create a temporary Wren Host to discover all build extensions
-				auto host = std::make_unique<WrenHost>(buildExtension);
+				auto host = std::make_unique<GenerateHost>(buildExtension, std::nullopt);
 				host->InterpretMain();
 				auto extensions = host->DiscoverExtensions();
 

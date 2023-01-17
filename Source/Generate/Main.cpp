@@ -61,6 +61,9 @@ using namespace Opal;
 
 #endif
 
+// TODO import
+#include "wren.hpp"
+
 #include "GenerateEngine.h"
 
 int main(int argc, char** argv)

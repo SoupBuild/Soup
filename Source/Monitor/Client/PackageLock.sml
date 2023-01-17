@@ -9,7 +9,7 @@ Closures: {
 		]
 	}
 	Build0: {
-		"C#": [
+		"Wren": [
 			{ Name: "Soup.Cpp", Version: "0.4.3" }
 		]
 	}

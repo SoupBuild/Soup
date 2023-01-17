@@ -1,8 +1,13 @@
+// <copyright file="WrenValueTable.h" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
+
 #pragma once
 
-#include "Wren.hpp"
-
-namespace Soup::Core::Generate
+#ifdef SOUP_BUILD
+export
+#endif
+namespace Soup::Core
 {
 	class InvalidTypeException : public std::runtime_error
 	{
@@ -180,10 +185,10 @@ namespace Soup::Core::Generate
 				case WREN_TYPE_UNKNOWN:
 				{
 					// The object is of a type that isn't accessible by the C API.
-					auto handle = WrenHelpers::SmartHandle(vm, wrenGetSlotHandle(vm, slot));
+					auto handle = SmartHandle(vm, wrenGetSlotHandle(vm, slot));
 					auto typeName = WrenHelpers::GetType(vm, handle);
 					auto stringBuilder = std::stringstream();
-					stringBuilder << "NONPRIMITIVE:" << typeName;
+					stringBuilder << "NON-PRIMITIVE:" << typeName;
 					throw InvalidTypeException(stringBuilder.str());
 				}
 				default:
