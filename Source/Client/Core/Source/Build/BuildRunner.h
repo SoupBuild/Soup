@@ -317,15 +317,26 @@ namespace Soup::Core
 			auto parametersTable = ValueTable(globalParameters);
 
 			// Set the input parameters
-			if (packageInfo.LanguageExtension.has_value())
+			if (packageInfo.LanguageExtensionScripts.has_value())
 			{
-				auto languageExtension = ValueList();
-				for (auto& file : packageInfo.LanguageExtension.value())
+				auto languageExtensionTable = ValueTable();
+
+				auto languageExtensionScripts = ValueList();
+				for (auto& file : packageInfo.LanguageExtensionScripts.value())
 				{
-					languageExtension.push_back(Value(file.ToString()));
+					languageExtensionScripts.push_back(Value(file.ToString()));
 				}
 
-				parametersTable.emplace("LanguageExtension", Value(std::move(languageExtension)));
+				languageExtensionTable.emplace("Scripts", Value(std::move(languageExtensionScripts)));
+
+				if (packageInfo.LanguageExtensionBundle.has_value())
+				{
+					languageExtensionTable.emplace(
+						"Bundle",
+						Value(std::move(packageInfo.LanguageExtensionBundle.value().ToString())));
+				}
+
+				parametersTable.emplace("LanguageExtension", Value(std::move(languageExtensionTable)));
 			}
 
 			parametersTable.emplace("PackageDirectory", Value(packageInfo.PackageRoot.ToString()));
@@ -426,9 +437,9 @@ namespace Soup::Core
 			generateAllowedReadAccess.push_back(generateFolder);
 
 			// Allow read from the language extension directory
-			if (packageInfo.LanguageExtension.has_value() && packageInfo.LanguageExtension.value().size() > 0)
+			if (packageInfo.LanguageExtensionScripts.has_value() && packageInfo.LanguageExtensionScripts.value().size() > 0)
 			{
-				generateAllowedReadAccess.push_back(packageInfo.LanguageExtension.value().at(0).GetParent());
+				generateAllowedReadAccess.push_back(packageInfo.LanguageExtensionScripts.value().at(0).GetParent());
 			}
 
 			// TODO: Windows specific

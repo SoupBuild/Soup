@@ -54,6 +54,7 @@ namespace Soup::Core::Generate
 							ExtensionTaskDetails(
 								std::move(className),
 								_scriptFile,
+								_bundlesFile,
 								std::move(runBeforeList),
 								std::move(runAfterList)));
 					}

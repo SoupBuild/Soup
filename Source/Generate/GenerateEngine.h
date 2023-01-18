@@ -44,17 +44,30 @@ namespace Soup::Core::Generate
 			}
 
 			// Get the required input state from the parameters
+			std::optional<std::vector<Path>> languageExtensionScripts = std::nullopt;
+			std::optional<Path> languageExtensionBundle = std::nullopt;
 			auto languageExtensionResult = parametersState.find("LanguageExtension");
-			std::optional<std::vector<Path>> languageExtension = std::nullopt;
 			if (languageExtensionResult != parametersState.end())
 			{
-				auto files = std::vector<Path>();
-				for (auto& file : languageExtensionResult->second.AsList())
+				auto& languageExtensionTable = languageExtensionResult->second.AsTable();
+				
+				auto languageExtensionScriptsResult = languageExtensionTable.find("Scripts");
+				if (languageExtensionScriptsResult != languageExtensionTable.end())
 				{
-					files.push_back(Path(file.AsString()));
+					auto files = std::vector<Path>();
+					for (auto& file : languageExtensionScriptsResult->second.AsList())
+					{
+						files.push_back(Path(file.AsString()));
+					}
+
+					languageExtensionScripts = std::move(files);
 				}
 
-				languageExtension = std::move(files);
+				auto languageExtensionBundleResult = languageExtensionTable.find("Bundle");
+				if (languageExtensionBundleResult != languageExtensionTable.end())
+				{
+					languageExtensionBundle = Path(languageExtensionBundleResult->second.AsString());
+				}
 			}
 
 			auto packageDirectory = Path(parametersState.at("PackageDirectory").AsString());
@@ -73,7 +86,8 @@ namespace Soup::Core::Generate
 
 			// Generate the set of build extension libraries
 			auto buildExtensionLibraries = GenerateBuildExtensionSet(
-				languageExtension,
+				languageExtensionScripts,
+				languageExtensionBundle,
 				dependenciesSharedState);
 
 			// Start a new global state that is initialized to the recipe itself
@@ -95,10 +109,14 @@ namespace Soup::Core::Generate
 			// Run all build extension register callbacks
 			for (auto buildExtension : buildExtensionLibraries)
 			{
-				Log::Info("Loading Extension Script: " + buildExtension.ToString());
+				Log::Info("Loading Extension Script: " + buildExtension.first.ToString());
+				if (buildExtension.second.has_value())
+				{
+					Log::Info("Bundles: " + buildExtension.second.value().ToString());
+				}
 
 				// Create a temporary Wren Host to discover all build extensions
-				auto host = std::make_unique<GenerateHost>(buildExtension, std::nullopt);
+				auto host = std::make_unique<GenerateHost>(buildExtension.first, buildExtension.second);
 				host->InterpretMain();
 				auto extensions = host->DiscoverExtensions();
 
@@ -199,19 +217,20 @@ namespace Soup::Core::Generate
 		/// <summary>
 		/// Generate the collection of build extensions
 		/// </summary>
-		static std::vector<Path> GenerateBuildExtensionSet(
-			const std::optional<std::vector<Path>>& languageExtension,
+		static std::vector<std::pair<Path, std::optional<Path>>> GenerateBuildExtensionSet(
+			const std::optional<std::vector<Path>>& languageExtensionScripts,
+			const std::optional<Path>& languageExtensionBundle,
 			const ValueTable& dependenciesSharedState)
 		{
-			auto buildExtensionLibraries = std::vector<Path>();
+			auto buildExtensionLibraries = std::vector<std::pair<Path, std::optional<Path>>>();
 
 			// Run the RecipeBuild extension to inject core build tasks
-			if (languageExtension.has_value())
+			if (languageExtensionScripts.has_value())
 			{
-				std::copy(
-					languageExtension.value().begin(),
-					languageExtension.value().end(),
-					std::back_inserter(buildExtensionLibraries));
+				for (auto& script : languageExtensionScripts.value())
+				{
+					buildExtensionLibraries.push_back(std::make_pair(script, languageExtensionBundle));
+				}
 			}
 
 			// Check for any dynamic libraries in the shared state
@@ -229,7 +248,7 @@ namespace Soup::Core::Generate
 						if (targetFileValue != buildTable.end())
 						{
 							auto targetFile = Path(targetFileValue->second.AsString());
-							buildExtensionLibraries.push_back(std::move(targetFile));
+							buildExtensionLibraries.push_back(std::make_pair(std::move(targetFile), std::nullopt));
 						}
 						else
 						{

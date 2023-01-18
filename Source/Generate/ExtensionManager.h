@@ -111,7 +111,7 @@ namespace Soup::Core::Generate
 					throw std::runtime_error("TryFindNextTask returned empty result");
 
 				// Create a Wren Host to evaluate the extension task
-				auto host = std::make_unique<GenerateHost>(currentTask->ScriptFile, std::nullopt);
+				auto host = std::make_unique<GenerateHost>(currentTask->ScriptFile, currentTask->BundlesFile);
 				host->InterpretMain();
 
 				// Set the current state AFTER we initialize to prevent pre-loading

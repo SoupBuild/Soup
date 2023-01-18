@@ -17,11 +17,11 @@ namespace Soup::Core
 		static inline const char BundleSeparator = ':';
 
 	private:
-		std::optional<Path> _bundlesFile;
 		std::map<std::string, Path> _bundles;
 
 	protected:
 		Path _scriptFile;
+		std::optional<Path> _bundlesFile;
 		WrenVM* _vm;
 
 	public:

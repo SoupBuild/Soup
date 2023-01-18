@@ -25,7 +25,12 @@ class Script
 								@"Soup.CSharp",
 								new Dir(
 									"0.7.4",
-								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.CSharp/0.7.4/*.*")))),
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.CSharp/0.7.4/*.*"))),
+							new Dir(
+								@"Soup.Wren",
+								new Dir(
+									"0.1.0",
+								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.Wren/0.1.0/*.*")))),
 					new Dir(
 						@"Generate",
 						new DirFiles($"{soupRunFolder}/Soup/Generate/*.*")),
@@ -55,7 +60,7 @@ class Script
 		};
 
 		// Upgrade values
-		project.Version = new Version(0, 28, 1);
+		project.Version = new Version(0, 29, 0);
 
 		Compiler.BuildMsi(project);
 	}
