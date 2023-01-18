@@ -30,12 +30,12 @@ namespace Soup::Core
 						"Soup.Cpp",
 						SemanticVersion(0, 4, 3),
 						{
-							Path("Extension/Tasks/BuildTask.wren"),
-							Path("Extension/Tasks/RecipeBuildTask.wren"),
-							Path("Extension/Tasks/ResolveDependenciesTask.wren"),
-							Path("Extension/Tasks/ResolveToolsTask.wren"),
+							Path("Main/Tasks/BuildTask.wren"),
+							Path("Main/Tasks/RecipeBuildTask.wren"),
+							Path("Main/Tasks/ResolveDependenciesTask.wren"),
+							Path("Main/Tasks/ResolveToolsTask.wren"),
 						},
-						std::nullopt)
+						Path("Bundles.sml"))
 				},
 				{
 					"C#",
@@ -44,12 +44,12 @@ namespace Soup::Core
 						"Soup.CSharp",
 						SemanticVersion(0, 7, 4),
 						{
-							Path("Extension/Tasks/BuildTask.wren"),
-							Path("Extension/Tasks/RecipeBuildTask.wren"),
-							Path("Extension/Tasks/ResolveDependenciesTask.wren"),
-							Path("Extension/Tasks/ResolveToolsTask.wren"),
+							Path("Main/Tasks/BuildTask.wren"),
+							Path("Main/Tasks/RecipeBuildTask.wren"),
+							Path("Main/Tasks/ResolveDependenciesTask.wren"),
+							Path("Main/Tasks/ResolveToolsTask.wren"),
 						},
-						std::nullopt)
+						Path("Bundles.sml"))
 				},
 				{
 					"Wren",
