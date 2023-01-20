@@ -23,8 +23,9 @@ Dependencies: {
 	]
 	Other: [
 		# "../../GenerateSharp/Generate/"
-		# "C#|Soup.Cpp@0.4.3"
-		# "C#|Soup.CSharp@0.7.4"
+		"Wren|Soup.Cpp@0.6.0"
+		# "Wren|Soup.CSharp@0.7.4"
+		"Wren|Soup.Wren@0.1.0"
 	]
 	Build: [
 		# TODO: "Soup.Test.Cpp@0.4.0"
