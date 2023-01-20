@@ -63,7 +63,8 @@ namespace Soup.Build.PackageManager.UnitTests
 				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1));
+				new SemanticVersion(3, 2, 1),
+				new SemanticVersion(4, 5, 6));
 
 			await uut.GenerateAndRestoreRecursiveLocksAsync(
 				new Path("C:/Root/MyPackage/"),
@@ -82,13 +83,13 @@ namespace Soup.Build.PackageManager.UnitTests
 					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 					"INFO: Generate final service closure",
 					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:C# Soup.Cpp -> 3.2.1",
+					"DIAG: Build0:Wren Soup.Cpp -> 3.2.1",
 					"INFO: Restore Packages for Closure Root",
 					"INFO: Restore Packages for Language C++",
 					"INFO: Skip Package: MyPackage -> ./",
 					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
+					"INFO: Restore Packages for Language Wren",
+					"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
 					"HIGH: Skip built in language version in build closure",
 					"HIGH: Skip built in language version in build closure",
 				},
@@ -118,7 +119,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
+								Language = "Wren",
 								Name = "Soup.Cpp",
 								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 							},
@@ -129,15 +130,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -165,7 +172,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						]
 					}
 					Build0: {
-						"C#": [
+						Wren: [
 							{ Name: "Soup.Cpp", Version: "3.2.1" }
 						]
 					}
@@ -239,7 +246,8 @@ namespace Soup.Build.PackageManager.UnitTests
 				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1));
+				new SemanticVersion(3, 2, 1),
+				new SemanticVersion(4, 5, 6));
 
 			_ = await Assert.ThrowsAsync<HandledException>(async () =>
 			{
@@ -301,7 +309,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
+								Language = "Wren",
 								Name = "Soup.Cpp",
 								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 							},
@@ -312,15 +320,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -403,7 +417,8 @@ namespace Soup.Build.PackageManager.UnitTests
 				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1));
+				new SemanticVersion(3, 2, 1),
+				new SemanticVersion(4, 5, 6));
 
 			await uut.GenerateAndRestoreRecursiveLocksAsync(
 				new Path("C:/Root/MyPackage/"),
@@ -424,7 +439,7 @@ namespace Soup.Build.PackageManager.UnitTests
 					"DIAG: Root:C++ MyPackage -> ./",
 					"DIAG: Root:C++ Package1 -> 1.2.3",
 					"DIAG: Root:C++ Package2 -> 3.2.1",
-					"DIAG: Build0:C# Soup.Cpp -> 3.2.1",
+					"DIAG: Build0:Wren Soup.Cpp -> 3.2.1",
 					"INFO: Restore Packages for Closure Root",
 					"INFO: Restore Packages for Language C++",
 					"INFO: Skip Package: MyPackage -> ./",
@@ -433,8 +448,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"HIGH: Install Package: C++ Package2@3.2.1",
 					"HIGH: Downloading package",
 					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
+					"INFO: Restore Packages for Language Wren",
+					"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
 					"HIGH: Skip built in language version in build closure",
 					"HIGH: Skip built in language version in build closure",
 				},
@@ -504,7 +519,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
+								Language = "Wren",
 								Name = "Soup.Cpp",
 								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1 },
 							},
@@ -515,15 +530,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -567,7 +588,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						]
 					}
 					Build0: {
-						"C#": [
+						Wren: [
 							{ Name: "Soup.Cpp", Version: "3.2.1" }
 						]
 					}
@@ -603,30 +624,30 @@ namespace Soup.Build.PackageManager.UnitTests
 					"""))));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/CSharp/Package1/1.2.3/Recipe.sml"),
+				new Path("C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 					"""
 					Name: "Package1"
-					Language: "C#|4"
+					Language: "Wren|6"
 					Version: "1.2.3"
 					"""))));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/CSharp/Soup.Cpp/5.0.0/Recipe.sml"),
+				new Path("C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 					"""
 					Name: "Soup.Cpp"
-					Language: "C#|1.2.3"
+					Language: "Wren|4.5.6"
 					Version: "5.0.0"
 					"""))));
 
 			mockFileSystem.CreateMockFile(
-				new Path("C:/PackageStore/CSharp/Soup.CSharp/4.0.0/Recipe.sml"),
+				new Path("C:/PackageStore/Wren/Soup.Wren/6.0.0/Recipe.sml"),
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 					"""
-					Name: "Soup.CSharp"
-					Language: "C#|1.2.3"
-					Version: "4.0.0"
+					Name: "Soup.Wren"
+					Language: "Wren|4.5.6"
+					Version: "6.0.0"
 					"""))));
 
 			// Setup the mock zip manager
@@ -656,21 +677,21 @@ namespace Soup.Build.PackageManager.UnitTests
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Package1/versions/1.2.3/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.Cpp/versions/5.0.0/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
 			mockMessageHandler
 				.Setup(messageHandler => messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.CSharp/versions/4.0.0/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Wren/versions/6.0.0/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
@@ -679,7 +700,8 @@ namespace Soup.Build.PackageManager.UnitTests
 				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1));
+				new SemanticVersion(3, 2, 1),
+				new SemanticVersion(4, 5, 6));
 
 			await uut.GenerateAndRestoreRecursiveLocksAsync(
 				new Path("C:/Root/MyPackage/"),
@@ -698,65 +720,65 @@ namespace Soup.Build.PackageManager.UnitTests
 					"DIAG: Load Recipe: C:/Root/MyPackage/Recipe.sml",
 					"INFO: Generate final service closure",
 					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:C# Soup.Cpp -> 5.0.0",
-					"DIAG: Build0:C# Package1 -> 1.2.3",
+					"DIAG: Build0:Wren Soup.Cpp -> 5.0.0",
+					"DIAG: Build0:Wren Package1 -> 1.2.3",
 					"INFO: Restore Packages for Closure Root",
 					"INFO: Restore Packages for Language C++",
 					"INFO: Skip Package: MyPackage -> ./",
 					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.Cpp@5.0.0",
+					"INFO: Restore Packages for Language Wren",
+					"HIGH: Install Package: Wren Soup.Cpp@5.0.0",
 					"HIGH: Downloading package",
-					"HIGH: Install Package: C# Package1@1.2.3",
+					"HIGH: Install Package: Wren Package1@1.2.3",
 					"HIGH: Downloading package",
-					"DIAG: Create Directory: C:/LockStore/CSharp/Soup.Cpp/5.0.0/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml",
+					"DIAG: Create Directory: C:/LockStore/Wren/Soup.Cpp/5.0.0/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/CSharp/Soup.Cpp/5.0.0/Recipe.sml",
+					"DIAG: Load Recipe: C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml",
 					"INFO: Generate final service closure",
-					"DIAG: Root:C# Soup.Cpp -> ./",
-					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
+					"DIAG: Root:Wren Soup.Cpp -> ./",
+					"DIAG: Build0:Wren Soup.Wren -> 4.5.6",
 					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C#",
+					"INFO: Restore Packages for Language Wren",
 					"INFO: Skip Package: Soup.Cpp -> ./",
 					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
+					"INFO: Restore Packages for Language Wren",
+					"HIGH: Install Package: Wren Soup.Wren@4.5.6",
 					"HIGH: Skip built in language version in build closure",
 					"HIGH: Skip built in language version in build closure",
-					"DIAG: Create Directory: C:/LockStore/CSharp/Package1/1.2.3/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml",
+					"DIAG: Create Directory: C:/LockStore/Wren/Package1/1.2.3/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/CSharp/Package1/1.2.3/Recipe.sml",
+					"DIAG: Load Recipe: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
 					"INFO: Generate final service closure",
-					"DIAG: Root:C# Package1 -> ./",
-					"DIAG: Build0:C# Soup.CSharp -> 4.0.0",
+					"DIAG: Root:Wren Package1 -> ./",
+					"DIAG: Build0:Wren Soup.Wren -> 6.0.0",
 					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C#",
+					"INFO: Restore Packages for Language Wren",
 					"INFO: Skip Package: Package1 -> ./",
 					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.CSharp@4.0.0",
+					"INFO: Restore Packages for Language Wren",
+					"HIGH: Install Package: Wren Soup.Wren@6.0.0",
 					"HIGH: Downloading package",
-					"DIAG: Create Directory: C:/LockStore/CSharp/Soup.CSharp/4.0.0/",
-					"INFO: Ensure Package Lock Exists: C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml",
-					"DIAG: Load Package Lock: C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml",
+					"DIAG: Create Directory: C:/LockStore/Wren/Soup.Wren/6.0.0/",
+					"INFO: Ensure Package Lock Exists: C:/LockStore/Wren/Soup.Wren/6.0.0/PackageLock.sml",
+					"DIAG: Load Package Lock: C:/LockStore/Wren/Soup.Wren/6.0.0/PackageLock.sml",
 					"INFO: Package Lock file does not exist.",
 					"INFO: Discovering full closure",
-					"DIAG: Load Recipe: C:/PackageStore/CSharp/Soup.CSharp/4.0.0/Recipe.sml",
+					"DIAG: Load Recipe: C:/PackageStore/Wren/Soup.Wren/6.0.0/Recipe.sml",
 					"INFO: Generate final service closure",
-					"DIAG: Root:C# Soup.CSharp -> ./",
-					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
+					"DIAG: Root:Wren Soup.Wren -> ./",
+					"DIAG: Build0:Wren Soup.Wren -> 4.5.6",
 					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C#",
-					"INFO: Skip Package: Soup.CSharp -> ./",
+					"INFO: Restore Packages for Language Wren",
+					"INFO: Skip Package: Soup.Wren -> ./",
 					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
+					"INFO: Restore Packages for Language Wren",
+					"HIGH: Install Package: Wren Soup.Wren@4.5.6",
 					"HIGH: Skip built in language version in build closure",
 					"HIGH: Skip built in language version in build closure",
 				},
@@ -770,60 +792,60 @@ namespace Soup.Build.PackageManager.UnitTests
 					"Exists: C:/Root/MyPackage/Recipe.sml",
 					"OpenRead: C:/Root/MyPackage/Recipe.sml",
 					"OpenWriteTruncate: C:/Root/MyPackage/PackageLock.sml",
-					"Exists: C:/PackageStore/CSharp/Soup.Cpp/5.0.0/",
+					"Exists: C:/PackageStore/Wren/Soup.Cpp/5.0.0/",
 					"OpenWriteTruncate: C:/Staging/Soup.Cpp.zip",
-					"CreateDirectory: C:/Staging/C#_Soup.Cpp_5.0.0/",
+					"CreateDirectory: C:/Staging/Wren_Soup.Cpp_5.0.0/",
 					"DeleteFile: C:/Staging/Soup.Cpp.zip",
-					"Exists: C:/PackageStore/CSharp/Soup.Cpp",
-					"CreateDirectory: C:/PackageStore/CSharp/Soup.Cpp",
-					"Rename: [C:/Staging/C#_Soup.Cpp_5.0.0/] -> [C:/PackageStore/CSharp/Soup.Cpp/5.0.0/]",
-					"Exists: C:/PackageStore/CSharp/Package1/1.2.3/",
+					"Exists: C:/PackageStore/Wren/Soup.Cpp",
+					"CreateDirectory: C:/PackageStore/Wren/Soup.Cpp",
+					"Rename: [C:/Staging/Wren_Soup.Cpp_5.0.0/] -> [C:/PackageStore/Wren/Soup.Cpp/5.0.0/]",
+					"Exists: C:/PackageStore/Wren/Package1/1.2.3/",
 					"OpenWriteTruncate: C:/Staging/Package1.zip",
-					"CreateDirectory: C:/Staging/C#_Package1_1.2.3/",
+					"CreateDirectory: C:/Staging/Wren_Package1_1.2.3/",
 					"DeleteFile: C:/Staging/Package1.zip",
-					"Exists: C:/PackageStore/CSharp/Package1",
-					"CreateDirectory: C:/PackageStore/CSharp/Package1",
-					"Rename: [C:/Staging/C#_Package1_1.2.3/] -> [C:/PackageStore/CSharp/Package1/1.2.3/]",
-					"Exists: C:/LockStore/CSharp/Soup.Cpp/5.0.0/",
-					"CreateDirectory: C:/LockStore/CSharp/Soup.Cpp/5.0.0/",
-					"Exists: C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/PackageStore/CSharp/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenRead: C:/PackageStore/CSharp/Soup.Cpp/5.0.0/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml",
-					"Exists: C:/LockStore/CSharp/Package1/1.2.3/",
-					"CreateDirectory: C:/LockStore/CSharp/Package1/1.2.3/",
-					"Exists: C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml",
-					"Exists: C:/PackageStore/CSharp/Package1/1.2.3/Recipe.sml",
-					"OpenRead: C:/PackageStore/CSharp/Package1/1.2.3/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml",
-					"Exists: C:/PackageStore/CSharp/Soup.CSharp/4.0.0/",
-					"OpenWriteTruncate: C:/Staging/Soup.CSharp.zip",
-					"CreateDirectory: C:/Staging/C#_Soup.CSharp_4.0.0/",
-					"DeleteFile: C:/Staging/Soup.CSharp.zip",
-					"Exists: C:/PackageStore/CSharp/Soup.CSharp",
-					"CreateDirectory: C:/PackageStore/CSharp/Soup.CSharp",
-					"Rename: [C:/Staging/C#_Soup.CSharp_4.0.0/] -> [C:/PackageStore/CSharp/Soup.CSharp/4.0.0/]",
-					"Exists: C:/LockStore/CSharp/Soup.CSharp/4.0.0/",
-					"CreateDirectory: C:/LockStore/CSharp/Soup.CSharp/4.0.0/",
-					"Exists: C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml",
-					"Exists: C:/PackageStore/CSharp/Soup.CSharp/4.0.0/Recipe.sml",
-					"OpenRead: C:/PackageStore/CSharp/Soup.CSharp/4.0.0/Recipe.sml",
-					"OpenWriteTruncate: C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml",
+					"Exists: C:/PackageStore/Wren/Package1",
+					"CreateDirectory: C:/PackageStore/Wren/Package1",
+					"Rename: [C:/Staging/Wren_Package1_1.2.3/] -> [C:/PackageStore/Wren/Package1/1.2.3/]",
+					"Exists: C:/LockStore/Wren/Soup.Cpp/5.0.0/",
+					"CreateDirectory: C:/LockStore/Wren/Soup.Cpp/5.0.0/",
+					"Exists: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
+					"Exists: C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml",
+					"OpenRead: C:/PackageStore/Wren/Soup.Cpp/5.0.0/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml",
+					"Exists: C:/LockStore/Wren/Package1/1.2.3/",
+					"CreateDirectory: C:/LockStore/Wren/Package1/1.2.3/",
+					"Exists: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
+					"Exists: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
+					"OpenRead: C:/PackageStore/Wren/Package1/1.2.3/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml",
+					"Exists: C:/PackageStore/Wren/Soup.Wren/6.0.0/",
+					"OpenWriteTruncate: C:/Staging/Soup.Wren.zip",
+					"CreateDirectory: C:/Staging/Wren_Soup.Wren_6.0.0/",
+					"DeleteFile: C:/Staging/Soup.Wren.zip",
+					"Exists: C:/PackageStore/Wren/Soup.Wren",
+					"CreateDirectory: C:/PackageStore/Wren/Soup.Wren",
+					"Rename: [C:/Staging/Wren_Soup.Wren_6.0.0/] -> [C:/PackageStore/Wren/Soup.Wren/6.0.0/]",
+					"Exists: C:/LockStore/Wren/Soup.Wren/6.0.0/",
+					"CreateDirectory: C:/LockStore/Wren/Soup.Wren/6.0.0/",
+					"Exists: C:/LockStore/Wren/Soup.Wren/6.0.0/PackageLock.sml",
+					"Exists: C:/PackageStore/Wren/Soup.Wren/6.0.0/Recipe.sml",
+					"OpenRead: C:/PackageStore/Wren/Soup.Wren/6.0.0/Recipe.sml",
+					"OpenWriteTruncate: C:/LockStore/Wren/Soup.Wren/6.0.0/PackageLock.sml",
 				},
 				mockFileSystem.GetRequests());
 
 			// Verify zip requests
 			mockZipManager.Verify(zip => zip.ExtractToDirectory(
 				new Path("C:/Staging/Soup.Cpp.zip"),
-				new Path("C:/Staging/C#_Soup.Cpp_5.0.0/")),
+				new Path("C:/Staging/Wren_Soup.Cpp_5.0.0/")),
 				Times.Once());
 			mockZipManager.Verify(zip => zip.ExtractToDirectory(
 				new Path("C:/Staging/Package1.zip"),
-				new Path("C:/Staging/C#_Package1_1.2.3/")),
+				new Path("C:/Staging/Wren_Package1_1.2.3/")),
 				Times.Once());
 			mockZipManager.Verify(zip => zip.ExtractToDirectory(
-				new Path("C:/Staging/Soup.CSharp.zip"),
-				new Path("C:/Staging/C#_Soup.CSharp_4.0.0/")),
+				new Path("C:/Staging/Soup.Wren.zip"),
+				new Path("C:/Staging/Wren_Soup.Wren_6.0.0/")),
 				Times.Once());
 
 			// Verify http requests
@@ -839,13 +861,13 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
+								Language = "Wren",
 								Name = "Package1",
 								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 							},
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
+								Language = "Wren",
 								Name = "Soup.Cpp",
 								Version = new Api.Client.SemanticVersionModel() { Major = 5, Minor = 0, Patch = 0, },
 							},
@@ -856,15 +878,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -889,9 +917,15 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
-								Name = "Soup.CSharp",
+								Language = "Wren",
+								Name = "Package1",
 								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+							},
+							new Api.Client.PackageFeedReferenceModel()
+							{
+								Language = "Wren",
+								Name = "Soup.Cpp",
+								Version = new Api.Client.SemanticVersionModel() { Major = 5, Minor = 0, Patch = 0, },
 							},
 						},
 					},
@@ -900,15 +934,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -919,7 +959,7 @@ namespace Soup.Build.PackageManager.UnitTests
 					new Uri("https://test.api.soupbuild.com/v1/closure/generate"),
 					"{Accept: [application/json]}",
 					expectedGenerateRequest2Value),
-				Times.Exactly(2));
+				Times.Exactly(1));
 
 			var expectedGenerateRequest3 = new Api.Client.GenerateClosureRequestModel()
 			{
@@ -933,9 +973,9 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
-								Name = "Soup.CSharp",
-								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
+								Language = "Wren",
+								Name = "Soup.Wren",
+								Version = new Api.Client.SemanticVersionModel() { Major = 4, Minor = 5, Patch = 6, },
 							},
 						},
 					},
@@ -944,15 +984,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -968,21 +1014,21 @@ namespace Soup.Build.PackageManager.UnitTests
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Package1/versions/1.2.3/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Package1/versions/1.2.3/download"),
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.Cpp/versions/5.0.0/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Cpp/versions/5.0.0/download"),
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
 				messageHandler.Send(
 					HttpMethod.Get,
-					new Uri("https://test.api.soupbuild.com/v1/languages/C%23/packages/Soup.CSharp/versions/4.0.0/download"),
+					new Uri("https://test.api.soupbuild.com/v1/languages/Wren/packages/Soup.Wren/versions/6.0.0/download"),
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
@@ -1002,7 +1048,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						]
 					}
 					Build0: {
-						"C#": [
+						Wren: [
 							{ Name: "Soup.Cpp", Version: "5.0.0" }
 							{ Name: "Package1", Version: "1.2.3" }
 						]
@@ -1012,7 +1058,7 @@ namespace Soup.Build.PackageManager.UnitTests
 
 			Assert.Equal(expected, packageLockContent);
 
-			var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/CSharp/Package1/1.2.3/PackageLock.sml"));
+			var package1Lock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Package1/1.2.3/PackageLock.sml"));
 			package1Lock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 			using var readerPackage1Lock = new System.IO.StreamReader(package1Lock.Content);
 			var package1LockContent = await readerPackage1Lock.ReadToEndAsync();
@@ -1021,13 +1067,13 @@ namespace Soup.Build.PackageManager.UnitTests
 				Version: 4
 				Closures: {
 					Root: {
-						"C#": [
+						Wren: [
 							{ Name: "Package1", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						"C#": [
-							{ Name: "Soup.CSharp", Version: "4.0.0" }
+						Wren: [
+							{ Name: "Soup.Wren", Version: "6.0.0" }
 						]
 					}
 				}
@@ -1035,7 +1081,7 @@ namespace Soup.Build.PackageManager.UnitTests
 
 			Assert.Equal(expectedPackage1Lock, package1LockContent);
 
-			var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/CSharp/Soup.Cpp/5.0.0/PackageLock.sml"));
+			var soupCppLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Soup.Cpp/5.0.0/PackageLock.sml"));
 			soupCppLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 			using var readerSoupCppLock = new System.IO.StreamReader(soupCppLock.Content);
 			var soupCppLockContent = await readerSoupCppLock.ReadToEndAsync();
@@ -1044,13 +1090,13 @@ namespace Soup.Build.PackageManager.UnitTests
 				Version: 4
 				Closures: {
 					Root: {
-						"C#": [
+						Wren: [
 							{ Name: "Soup.Cpp", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						"C#": [
-							{ Name: "Soup.CSharp", Version: "1.2.3" }
+						Wren: [
+							{ Name: "Soup.Wren", Version: "4.5.6" }
 						]
 					}
 				}
@@ -1058,7 +1104,7 @@ namespace Soup.Build.PackageManager.UnitTests
 
 			Assert.Equal(expectedSoupCppLock, soupCppLockContent);
 
-			var soupCSharpLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/CSharp/Soup.CSharp/4.0.0/PackageLock.sml"));
+			var soupCSharpLock = mockFileSystem.GetMockFile(new Path("C:/LockStore/Wren/Soup.Wren/6.0.0/PackageLock.sml"));
 			soupCSharpLock.Content.Seek(0, System.IO.SeekOrigin.Begin);
 			using var readerSoupCSharpLock = new System.IO.StreamReader(soupCSharpLock.Content);
 			var soupCSharpLockContent = await readerSoupCSharpLock.ReadToEndAsync();
@@ -1067,13 +1113,13 @@ namespace Soup.Build.PackageManager.UnitTests
 				Version: 4
 				Closures: {
 					Root: {
-						"C#": [
-							{ Name: "Soup.CSharp", Version: "./", Build: "Build0" }
+						Wren: [
+							{ Name: "Soup.Wren", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						"C#": [
-							{ Name: "Soup.CSharp", Version: "1.2.3" }
+						Wren: [
+							{ Name: "Soup.Wren", Version: "4.5.6" }
 						]
 					}
 				}
@@ -1112,7 +1158,7 @@ namespace Soup.Build.PackageManager.UnitTests
 				new MockFile(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(
 					"""
 					Name: "Package1"
-					Language: "C#|1.2.3"
+					Language: "Wren|4.5.6"
 					Version: "1.2.3"
 					"""))));
 
@@ -1141,7 +1187,8 @@ namespace Soup.Build.PackageManager.UnitTests
 				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1));
+				new SemanticVersion(3, 2, 1),
+				new SemanticVersion(4, 5, 6));
 
 			await uut.GenerateAndRestoreRecursiveLocksAsync(
 				new Path("C:/Root/MyPackage/"),
@@ -1161,14 +1208,14 @@ namespace Soup.Build.PackageManager.UnitTests
 					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
 					"INFO: Generate final service closure",
 					"DIAG: Root:C++ MyPackage -> ./",
-					"DIAG: Build0:C# Soup.Cpp -> 3.2.1",
-					"DIAG: Build0:C# Package1 -> ../Package1/",
+					"DIAG: Build0:Wren Soup.Cpp -> 3.2.1",
+					"DIAG: Build0:Wren Package1 -> ../Package1/",
 					"INFO: Restore Packages for Closure Root",
 					"INFO: Restore Packages for Language C++",
 					"INFO: Skip Package: MyPackage -> ./",
 					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.Cpp@3.2.1",
+					"INFO: Restore Packages for Language Wren",
+					"HIGH: Install Package: Wren Soup.Cpp@3.2.1",
 					"HIGH: Skip built in language version in build closure",
 					"INFO: Skip Package: Package1 -> ../Package1/",
 					"HIGH: Skip built in language version in build closure",
@@ -1178,14 +1225,14 @@ namespace Soup.Build.PackageManager.UnitTests
 					"INFO: Discovering full closure",
 					"DIAG: Load Recipe: C:/Root/Package1/Recipe.sml",
 					"INFO: Generate final service closure",
-					"DIAG: Root:C# Package1 -> ./",
-					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
+					"DIAG: Root:Wren Package1 -> ./",
+					"DIAG: Build0:Wren Soup.Wren -> 4.5.6",
 					"INFO: Restore Packages for Closure Root",
-					"INFO: Restore Packages for Language C#",
+					"INFO: Restore Packages for Language Wren",
 					"INFO: Skip Package: Package1 -> ./",
 					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
+					"INFO: Restore Packages for Language Wren",
+					"HIGH: Install Package: Wren Soup.Wren@4.5.6",
 					"HIGH: Skip built in language version in build closure",
 					"HIGH: Skip built in language version in build closure",
 				},
@@ -1221,7 +1268,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
+								Language = "Wren",
 								Name = "Soup.Cpp",
 								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 							},
@@ -1232,15 +1279,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -1265,7 +1318,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
+								Language = "Wren",
 								Name = "Soup.Cpp",
 								Version = new Api.Client.SemanticVersionModel() { Major = 3, Minor = 2, Patch = 1, },
 							},
@@ -1276,15 +1329,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -1312,7 +1371,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						]
 					}
 					Build0: {
-						"C#": [
+						Wren: [
 							{ Name: "Soup.Cpp", Version: "3.2.1" }
 							{ Name: "Package1", Version: "../Package1/" }
 						]
@@ -1331,13 +1390,13 @@ namespace Soup.Build.PackageManager.UnitTests
 				Version: 4
 				Closures: {
 					Root: {
-						"C#": [
+						Wren: [
 							{ Name: "Package1", Version: "./", Build: "Build0" }
 						]
 					}
 					Build0: {
-						"C#": [
-							{ Name: "Soup.CSharp", Version: "1.2.3" }
+						Wren: [
+							{ Name: "Soup.Wren", Version: "4.5.6" }
 						]
 					}
 				}
@@ -1443,7 +1502,8 @@ namespace Soup.Build.PackageManager.UnitTests
 				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1));
+				new SemanticVersion(3, 2, 1),
+				new SemanticVersion(4, 5, 6));
 
 			await uut.GenerateAndRestoreRecursiveLocksAsync(
 				new Path("C:/Root/MyPackage/"),
@@ -1477,13 +1537,13 @@ namespace Soup.Build.PackageManager.UnitTests
 					"DIAG: Load Recipe: C:/PackageStore/CSharp/Soup.Cpp/3.2.2/Recipe.sml",
 					"INFO: Generate final service closure",
 					"DIAG: Root:C# Soup.Cpp -> ./",
-					"DIAG: Build0:C# Soup.CSharp -> 1.2.3",
+					"DIAG: Build0:Wren Soup.CSharp -> 1.2.3",
 					"INFO: Restore Packages for Closure Root",
 					"INFO: Restore Packages for Language C#",
 					"INFO: Skip Package: Soup.Cpp -> ./",
 					"INFO: Restore Packages for Closure Build0",
-					"INFO: Restore Packages for Language C#",
-					"HIGH: Install Package: C# Soup.CSharp@1.2.3",
+					"INFO: Restore Packages for Language Wren",
+					"HIGH: Install Package: Wren Soup.CSharp@1.2.3",
 					"HIGH: Skip built in language version in build closure",
 					"HIGH: Skip built in language version in build closure",
 				},
@@ -1551,7 +1611,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
+								Language = "Wren",
 								Name = "Soup.CSharp",
 								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 							},
@@ -1562,15 +1622,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -1595,7 +1661,7 @@ namespace Soup.Build.PackageManager.UnitTests
 						{
 							new Api.Client.PackageFeedReferenceModel()
 							{
-								Language = "C#",
+								Language = "Wren",
 								Name = "Soup.CSharp",
 								Version = new Api.Client.SemanticVersionModel() { Major = 1, Minor = 2, Patch = 3, },
 							},
@@ -1606,15 +1672,21 @@ namespace Soup.Build.PackageManager.UnitTests
 				{
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.CSharp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 1, Minor = 2, Patch = 3, },
 					},
 					new Api.Client.PackageFeedExactReferenceModel()
 					{
-						Language = "C#",
+						Language = "Wren",
 						Name = "Soup.Cpp",
 						Version = new Api.Client.SemanticVersionExactModel() { Major = 3, Minor = 2, Patch = 1, },
+					},
+					new Api.Client.PackageFeedExactReferenceModel()
+					{
+						Language = "Wren",
+						Name = "Soup.Wren",
+						Version = new Api.Client.SemanticVersionExactModel() { Major = 4, Minor = 5, Patch = 6, },
 					},
 				},
 			};
@@ -1702,7 +1774,8 @@ namespace Soup.Build.PackageManager.UnitTests
 				new Uri("https://test.api.soupbuild.com/"),
 				httpClient,
 				new SemanticVersion(1, 2, 3),
-				new SemanticVersion(3, 2, 1));
+				new SemanticVersion(3, 2, 1),
+				new SemanticVersion(4, 5, 6));
 
 			await uut.GenerateAndRestoreRecursiveLocksAsync(
 				new Path("C:/Root/MyPackage/"),
