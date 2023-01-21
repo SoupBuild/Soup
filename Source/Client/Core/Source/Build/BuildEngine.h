@@ -28,7 +28,7 @@ namespace Soup::Core
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(0, 4, 3),
+						SemanticVersion(0, 6, 0),
 						{
 							Path("Main/Tasks/BuildTask.wren"),
 							Path("Main/Tasks/RecipeBuildTask.wren"),
@@ -42,7 +42,7 @@ namespace Soup::Core
 					BuiltInLanguagePackage(
 						"CSharp",
 						"Soup.CSharp",
-						SemanticVersion(0, 7, 4),
+						SemanticVersion(0, 8, 0),
 						{
 							Path("Main/Tasks/BuildTask.wren"),
 							Path("Main/Tasks/RecipeBuildTask.wren"),

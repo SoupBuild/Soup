@@ -10,33 +10,7 @@ class Script
 			"Soup Build",
 			new Dir(
 				@"%ProgramFiles%\SoupBuild\Soup",
-				new DirFiles($"{soupRunFolder}/*.*"),
-				new Dir(
-					@"Soup",
-					new DirFiles($"{soupRunFolder}/Soup/*.*"),
-					new Dir(
-							@"Extensions",
-							new Dir(
-								@"Soup.Cpp",
-								new Dir(
-									"0.4.3",
-								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.Cpp/0.4.3/*.*"))),
-							new Dir(
-								@"Soup.CSharp",
-								new Dir(
-									"0.7.4",
-								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.CSharp/0.7.4/*.*"))),
-							new Dir(
-								@"Soup.Wren",
-								new Dir(
-									"0.1.0",
-								new DirFiles($"{soupRunFolder}/Soup/Extensions/Soup.Wren/0.1.0/*.*")))),
-					new Dir(
-						@"Generate",
-						new DirFiles($"{soupRunFolder}/Soup/Generate/*.*")),
-					new Dir(
-						@"PackageManager",
-						new DirFiles($"{soupRunFolder}/Soup/PackageManager/*.*")))),
+				new Files($"{soupRunFolder}/*.*")),
 			new EnvironmentVariable("PATH", "[INSTALLDIR]")
 			{
 				System = true,
