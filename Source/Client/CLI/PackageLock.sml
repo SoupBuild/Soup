@@ -17,10 +17,13 @@ Closures: {
 			{ Name: "wren", Version: "../../../../wren/src", Build: "Build1" }
 		]
 		Wren: [
-			{ Name: "Soup.Build.Utils", Version: "0.1.0", Build: "Build1" }
+			{ Name: "Soup.Build.Utils", Version: "0.2.0", Build: "Build1" }
 			{ Name: "Soup.Cpp", Version: "0.6.0", Build: "Build1" }
 			{ Name: "Soup.Cpp.Compiler", Version: "0.6.0", Build: "Build1" }
 			{ Name: "Soup.Cpp.Compiler.MSVC", Version: "0.6.0", Build: "Build1" }
+			{ Name: "Soup.CSharp", Version: "0.8.0", Build: "Build1" }
+			{ Name: "Soup.CSharp.Compiler", Version: "0.8.0", Build: "Build1" }
+			{ Name: "Soup.CSharp.Compiler.Roslyn", Version: "0.8.0", Build: "Build1" }
 			{ Name: "Soup.Wren", Version: "0.1.0", Build: "Build1" }
 		]
 	}
