@@ -28,7 +28,7 @@ namespace Soup::Core
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(0, 6, 0),
+						SemanticVersion(0, 6, 1),
 						{
 							Path("Main/Tasks/BuildTask.wren"),
 							Path("Main/Tasks/RecipeBuildTask.wren"),

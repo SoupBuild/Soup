@@ -41,7 +41,7 @@ module;
 #ifdef SOUP_BUILD
 
 // TODO module
-#include "Wren.hpp"
+#include "include/Wren.hpp"
 
 export module Soup.Core;
 
@@ -49,7 +49,6 @@ import reflex;
 import CryptoPP;
 import Monitor.Host;
 import Opal;
-
 
 using namespace Opal;
 

@@ -41,7 +41,7 @@ namespace Soup.Build.PackageManager
 
 				using var httpClient = new HttpClient();
 				SemanticVersion builtInLanguageVersionCSharp = new SemanticVersion(0, 8, 0);
-				SemanticVersion builtInLanguageVersionCpp = new SemanticVersion(0, 6, 0);
+				SemanticVersion builtInLanguageVersionCpp = new SemanticVersion(0, 6, 1);
 				SemanticVersion builtInLanguageVersionWren = new SemanticVersion(0, 1, 0);
 				var closureManager = new ClosureManager(
 					SoupApiEndpoint,

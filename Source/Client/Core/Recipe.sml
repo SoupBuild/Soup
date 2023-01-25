@@ -7,7 +7,6 @@ Defines: [
 ]
 IncludePaths: [
 	"Source/"
-	"C:/Users/mwasp/Dev/Repos/wren/src/include"
 ]
 Interface: "Source/Module.cpp"
 Source: [

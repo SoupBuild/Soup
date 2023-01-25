@@ -23,7 +23,7 @@ Dependencies: {
 	]
 	Other: [
 		# "../../GenerateSharp/Generate/"
-		"Wren|Soup.Cpp@0.6.0"
+		"Wren|Soup.Cpp@0.6.1"
 		"Wren|Soup.CSharp@0.8.0"
 		"Wren|Soup.Wren@0.1.0"
 	]
