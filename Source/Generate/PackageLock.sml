@@ -11,7 +11,7 @@ Closures: {
 			{ Name: "Soup.Core", Version: "../Client/Core/", Build: "Build1" }
 			{ Name: "Soup.Generate", Version: "./", Build: "Build0" }
 			{ Name: "Soup.Test.Assert", Version: "0.3.1", Build: "Build0" }
-			{ Name: "wren", Version: "../../../wren/src", Build: "Build0" }
+			{ Name: "wren", Version: "1.0.0", Build: "Build0" }
 		]
 	}
 	Build0: {

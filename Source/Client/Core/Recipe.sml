@@ -23,7 +23,7 @@ Dependencies: {
 		"Opal@0.5.0"
 		"reflex@1.0.2"
 		"../../Monitor/Host/"
-		"C:/Users/mwasp/Dev/Repos/wren/src"
+		"wren@1.0.0"
 		"CryptoPP@1.1.0"
 	]
 	Test: [
