@@ -81,6 +81,12 @@ namespace Soup::Core
 			return value;
 		}
 
+		static const Path& GenerateInfoFileName()
+		{
+			static const auto value = Path("GenerateInfo.bvt");
+			return value;
+		}
+
 		static const Path& SoupTargetDirectory()
 		{
 			static const auto value = Path(".soup/");

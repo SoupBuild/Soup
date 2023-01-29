@@ -1,2 +1,2 @@
 ## Setup
-* Download latest verstion of [WiX toolset](https://wixtoolset.org/releases/)
+* Download latest version of [WiX toolset](https://github.com/wixtoolset/wix3/releases)

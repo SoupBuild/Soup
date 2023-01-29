@@ -45,16 +45,16 @@ void PrintOperations(Soup::Core::OperationGraph& graph)
 	{
 		const auto& operationInfo = operation.second;
 		std::cout << "Operation: " << operationInfo.Id << std::endl;
-		std::cout << "\tTitle: " << operationInfo.Title << std::endl;
-		std::cout << "\tCommand-WorkingDirectory: " << operationInfo.Command.WorkingDirectory.ToString() << std::endl;
-		std::cout << "\tCommand-Executable: " << operationInfo.Command.Executable.ToString() << std::endl;
-		std::cout << "\tCommand-Arguments: " << operationInfo.Command.Arguments << std::endl;
-		std::cout << "\tDeclaredInput: " << ToString(operationInfo.DeclaredInput) << std::endl;
-		std::cout << "\tDeclaredOutput: " << ToString(operationInfo.DeclaredOutput) << std::endl;
-		std::cout << "\tReadAccess: " << ToString(operationInfo.ReadAccess) << std::endl;
-		std::cout << "\tWriteAccess: " << ToString(operationInfo.WriteAccess) << std::endl;
-		std::cout << "\tChildren: " << ToString(operationInfo.Children) << std::endl;
-		std::cout << "\tDependencyCount: " << operationInfo.DependencyCount << std::endl;
+		std::cout << "  Title: " << operationInfo.Title << std::endl;
+		std::cout << "  Command-WorkingDirectory: " << operationInfo.Command.WorkingDirectory.ToString() << std::endl;
+		std::cout << "  Command-Executable: " << operationInfo.Command.Executable.ToString() << std::endl;
+		std::cout << "  Command-Arguments: " << operationInfo.Command.Arguments << std::endl;
+		std::cout << "  DeclaredInput: " << ToString(operationInfo.DeclaredInput) << std::endl;
+		std::cout << "  DeclaredOutput: " << ToString(operationInfo.DeclaredOutput) << std::endl;
+		std::cout << "  ReadAccess: " << ToString(operationInfo.ReadAccess) << std::endl;
+		std::cout << "  WriteAccess: " << ToString(operationInfo.WriteAccess) << std::endl;
+		std::cout << "  Children: " << ToString(operationInfo.Children) << std::endl;
+		std::cout << "  DependencyCount: " << operationInfo.DependencyCount << std::endl;
 	}
 }
 

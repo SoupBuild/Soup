@@ -41,19 +41,19 @@ namespace SoupView.ViewModel
 				switch (value.Value.Type)
 				{
 					case ValueType.Boolean:
-						title = $"{value.Key} - {value.Value.AsBoolean()}";
+						title = $"{value.Key}: {value.Value.AsBoolean()}";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.String:
-						title = $"{value.Key} - {value.Value.AsString()}";
+						title = $"{value.Key}: \"{value.Value.AsString()}\"";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Float:
-						title = $"{value.Key} - {value.Value.AsFloat()}";
+						title = $"{value.Key}: {value.Value.AsFloat()}";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Integer:
-						title = $"{value.Key} - {value.Value.AsInteger()}";
+						title = $"{value.Key}: {value.Value.AsInteger()}";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.List:
@@ -97,7 +97,7 @@ namespace SoupView.ViewModel
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.String:
-						title = $"{value.AsString()}";
+						title = $"\"{value.AsString()}\"";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Float:

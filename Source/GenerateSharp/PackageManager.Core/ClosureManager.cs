@@ -22,10 +22,13 @@ namespace Soup.Build.PackageManager
 		private const string RootClosureName = "Root";
 		private const string BuiltInLanguageCSharp = "C#";
 		private const string BuiltInLanguageCpp = "C++";
+		private const string BuiltInLanguageWren = "Wren";
 		private const string BuiltInLanguagePackageCSharp = "Soup.CSharp";
 		private const string BuiltInLanguagePackageCpp = "Soup.Cpp";
+		private const string BuiltInLanguagePackageWren = "Soup.Wren";
 		private const string BuiltInLanguageSafeNameCSharp = "CSharp";
 		private const string BuiltInLanguageSafeNameCpp = "Cpp";
+		private const string BuiltInLanguageSafeNameWren = "Wren";
 
 		private Uri _apiEndpoint;
 
@@ -33,17 +36,20 @@ namespace Soup.Build.PackageManager
 
 		private SemanticVersion _builtInLanguageVersionCSharp;
 		private SemanticVersion _builtInLanguageVersionCpp;
+		private SemanticVersion _builtInLanguageVersionWren;
 
 		public ClosureManager(
 			Uri apiEndpoint,
 			HttpClient httpClient,
 			SemanticVersion builtInLanguageVersionCSharp,
-			SemanticVersion builtInLanguageVersionCpp)
+			SemanticVersion builtInLanguageVersionCpp,
+			SemanticVersion builtInLanguageVersionWren)
 		{
 			_apiEndpoint = apiEndpoint;
 			_httpClient = httpClient;
 			_builtInLanguageVersionCSharp = builtInLanguageVersionCSharp;
 			_builtInLanguageVersionCpp = builtInLanguageVersionCpp;
+			_builtInLanguageVersionWren = builtInLanguageVersionWren;
 		}
 
 		/// <summary>
@@ -128,7 +134,8 @@ namespace Soup.Build.PackageManager
 							{
 								// Check if the package version already exists
 								if ((projectName == BuiltInLanguagePackageCpp && version == _builtInLanguageVersionCpp) ||
-									(projectName == BuiltInLanguagePackageCSharp && version == _builtInLanguageVersionCSharp))
+									(projectName == BuiltInLanguagePackageCSharp && version == _builtInLanguageVersionCSharp) ||
+									(projectName == BuiltInLanguagePackageWren && version == _builtInLanguageVersionWren))
 								{
 									Log.HighPriority("Skip built in language version in build closure");
 								}
@@ -296,7 +303,7 @@ namespace Soup.Build.PackageManager
 			var requestedVersions = new List<Api.Client.PackageFeedExactReferenceModel>();
 			requestedVersions.Add(new Api.Client.PackageFeedExactReferenceModel()
 			{
-				Language = BuiltInLanguageCSharp,
+				Language = BuiltInLanguageWren,
 				Name = BuiltInLanguagePackageCSharp,
 				Version = new Api.Client.SemanticVersionExactModel()
 				{
@@ -307,13 +314,24 @@ namespace Soup.Build.PackageManager
 			});
 			requestedVersions.Add(new Api.Client.PackageFeedExactReferenceModel()
 			{
-				Language = BuiltInLanguageCSharp,
+				Language = BuiltInLanguageWren,
 				Name = BuiltInLanguagePackageCpp,
 				Version = new Api.Client.SemanticVersionExactModel()
 				{
 					Major = _builtInLanguageVersionCpp.Major,
 					Minor = _builtInLanguageVersionCpp.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
 					Patch = _builtInLanguageVersionCpp.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+				},
+			});
+			requestedVersions.Add(new Api.Client.PackageFeedExactReferenceModel()
+			{
+				Language = BuiltInLanguageWren,
+				Name = BuiltInLanguagePackageWren,
+				Version = new Api.Client.SemanticVersionExactModel()
+				{
+					Major = _builtInLanguageVersionWren.Major,
+					Minor = _builtInLanguageVersionWren.Minor ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
+					Patch = _builtInLanguageVersionWren.Patch ?? throw new InvalidOperationException("Built In Language must be fully resolved"),
 				},
 			});
 
@@ -361,6 +379,9 @@ namespace Soup.Build.PackageManager
 					// Update the existing build closure
 					foreach (var package in buildClosure.Closure)
 					{
+						if (!existingBuildClosure.ContainsKey(package.Language))
+							existingBuildClosure.Add(package.Language, new Dictionary<string, PackageReference>());
+
 						var packageReference = new PackageReference(
 							null,
 							package.Name,
@@ -511,7 +532,7 @@ namespace Soup.Build.PackageManager
 			Path recipeDirectory)
 		{
 			var buildClosure = new Dictionary<string, IDictionary<string, PackageReference>>();
-			var implicitLanguage = BuiltInLanguageCSharp;
+			var implicitLanguage = BuiltInLanguageWren;
 
 			// Add the language build extension
 			var recipeLanguagePackage = GetLanguagePackage(recipe.Language.Name);
@@ -700,7 +721,8 @@ namespace Soup.Build.PackageManager
 			// Check if the package version already exists
 			if (!isRuntime &&
 				((packageName == BuiltInLanguagePackageCpp && packageVersion == _builtInLanguageVersionCpp) ||
-				(packageName == BuiltInLanguagePackageCSharp && packageVersion == _builtInLanguageVersionCSharp)))
+				(packageName == BuiltInLanguagePackageCSharp && packageVersion == _builtInLanguageVersionCSharp) ||
+				(packageName == BuiltInLanguagePackageWren && packageVersion == _builtInLanguageVersionWren)))
 			{
 				Log.HighPriority("Skip built in language version in build closure");
 			}
@@ -799,6 +821,8 @@ namespace Soup.Build.PackageManager
 					return BuiltInLanguageSafeNameCSharp;
 				case BuiltInLanguageCpp:
 					return BuiltInLanguageSafeNameCpp;
+				case BuiltInLanguageWren:
+					return BuiltInLanguageSafeNameWren;
 				default:
 					throw new InvalidOperationException($"Unknown language name: {language}");
 			}
@@ -812,6 +836,8 @@ namespace Soup.Build.PackageManager
 					return BuiltInLanguagePackageCSharp;
 				case BuiltInLanguageCpp:
 					return BuiltInLanguagePackageCpp;
+				case BuiltInLanguageWren:
+					return BuiltInLanguagePackageWren;
 				default:
 					throw new InvalidOperationException($"Unknown language name: {language}");
 			}

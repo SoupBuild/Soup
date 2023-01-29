@@ -316,14 +316,29 @@ namespace Soup::Core
 			// Clone the global parameters
 			auto parametersTable = ValueTable(globalParameters);
 
-			std::string languageExtensionPath = "";
-			if (packageInfo.LanguageExtension.has_value())
+			// Set the input parameters
+			if (packageInfo.LanguageExtensionScripts.has_value())
 			{
-				languageExtensionPath = packageInfo.LanguageExtension.value().ToString();
+				auto languageExtensionTable = ValueTable();
+
+				auto languageExtensionScripts = ValueList();
+				for (auto& file : packageInfo.LanguageExtensionScripts.value())
+				{
+					languageExtensionScripts.push_back(Value(file.ToString()));
+				}
+
+				languageExtensionTable.emplace("Scripts", Value(std::move(languageExtensionScripts)));
+
+				if (packageInfo.LanguageExtensionBundle.has_value())
+				{
+					languageExtensionTable.emplace(
+						"Bundle",
+						Value(std::move(packageInfo.LanguageExtensionBundle.value().ToString())));
+				}
+
+				parametersTable.emplace("LanguageExtension", Value(std::move(languageExtensionTable)));
 			}
 
-			// Set the input parameters
-			parametersTable.emplace("LanguageExtensionPath", Value(std::move(languageExtensionPath)));
 			parametersTable.emplace("PackageDirectory", Value(packageInfo.PackageRoot.ToString()));
 			parametersTable.emplace("TargetDirectory", Value(targetDirectory.ToString()));
 			parametersTable.emplace("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
@@ -382,11 +397,10 @@ namespace Soup::Core
 
 			// Add the single root operation to perform the generate
 			auto moduleName = System::IProcessManager::Current().GetCurrentProcessFileName();
-			auto moduleFolder = moduleName.GetParent();
-			auto generateFolder = moduleFolder + Path("Generate/");
+			auto generateFolder = moduleName.GetParent();
 
 			#if defined(_WIN32)
-			auto generateExecutable = generateFolder + Path("Soup.Build.Generate.exe");
+			auto generateExecutable = generateFolder + Path("Soup.Generate.exe");
 			#elif defined(__linux__)
 			auto generateExecutable = Path("/home/mwasplund/dev/repos/Soup/Source/out/msbuild/bin/Soup.Build.Generate/Debug/net6.0/linux-x64/publish/") + Path("Soup.Build.Generate");
 			#else
@@ -423,9 +437,9 @@ namespace Soup::Core
 			generateAllowedReadAccess.push_back(generateFolder);
 
 			// Allow read from the language extension directory
-			if (packageInfo.LanguageExtension.has_value())
+			if (packageInfo.LanguageExtensionScripts.has_value() && packageInfo.LanguageExtensionScripts.value().size() > 0)
 			{
-				generateAllowedReadAccess.push_back(packageInfo.LanguageExtension.value().GetParent());
+				generateAllowedReadAccess.push_back(packageInfo.LanguageExtensionScripts.value().at(0).GetParent());
 			}
 
 			// TODO: Windows specific

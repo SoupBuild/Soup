@@ -83,6 +83,14 @@ namespace Soup::Core
 		/// <summary>
 		/// Find an operation info
 		/// </summary>
+		bool HasCommand(const CommandInfo& command)
+		{
+			return _operationLookup.contains(command);
+		}
+
+		/// <summary>
+		/// Find an operation info
+		/// </summary>
 		bool TryFindOperation(
 			const CommandInfo& command,
 			OperationId& operationId)
@@ -102,6 +110,18 @@ namespace Soup::Core
 		/// <summary>
 		/// Get an operation info
 		/// </summary>
+		OperationInfo& GetOperationInfo(OperationId operationId)
+		{
+			auto findResult = _operations.find(operationId);
+			if (findResult != _operations.end())
+			{
+				return findResult->second;
+			}
+			else
+			{
+				throw std::runtime_error("The provided operation id does not exist");
+			}
+		}
 		const OperationInfo& GetOperationInfo(OperationId operationId) const
 		{
 			auto findResult = _operations.find(operationId);

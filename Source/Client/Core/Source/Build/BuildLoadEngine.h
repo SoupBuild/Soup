@@ -35,7 +35,7 @@ namespace Soup::Core
 		const int _packageLockVersion = 4;
 		const Path _builtInExtensionPath = Path("Extensions/");
 		const std::string _buildDependencyType = "Build";
-		const std::string _builtInCSharpLanguage = "C#";
+		const std::string _builtInWrenLanguage = "Wren";
 		const std::string _rootClosureName = "Root";
 
 		// Built in languages
@@ -381,15 +381,21 @@ namespace Soup::Core
 				packageLockState);
 			
 			// If the language extension is a direct path then use it, otherwise the language resolved to a package to build
-			if (languageExtension.second.has_value())
+			if (std::get<2>(languageExtension).has_value())
 			{
-				dependencyProjects[_buildDependencyType].push_back(std::move(languageExtension.second.value()));
+				dependencyProjects[_buildDependencyType].push_back(std::move(std::get<2>(languageExtension).value()));
 			}
 
 			// Save the package info
 			_packageLookup.emplace(
 				packageId,
-				PackageInfo(packageId, projectRoot, recipe, std::move(languageExtension.first), std::move(dependencyProjects)));
+				PackageInfo(
+					packageId,
+					projectRoot,
+					recipe,
+					std::move(std::get<0>(languageExtension)),
+					std::move(std::get<1>(languageExtension)),
+					std::move(dependencyProjects)));
 		}
 
 		std::vector<PackageChildInfo> LoadRuntimeDependencies(
@@ -502,8 +508,8 @@ namespace Soup::Core
 			const PackageLockState& packageLockState)
 		{
 			// Build dependencies do not inherit the parent language
-			// Instead, they default to C#
-			auto implicitLanguage = _builtInCSharpLanguage;
+			// Instead, they default to Wren
+			auto implicitLanguage = _builtInWrenLanguage;
 
 			// Load this package recipe
 			auto dependencyProjectRoot = GetPackageReferencePath(
@@ -584,7 +590,7 @@ namespace Soup::Core
 			}
 		}
 
-		std::pair<std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageBuildDependency(
+		std::tuple<std::optional<std::vector<Path>>, std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageBuildDependency(
 			const Recipe& recipe,
 			const Path& projectRoot,
 			const std::string& closureName,
@@ -604,15 +610,15 @@ namespace Soup::Core
 				packageLockState);
 		}
 
-		std::pair<std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageExtension(
+		std::tuple<std::optional<std::vector<Path>>, std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageExtension(
 			const Path& projectRoot,
 			const BuiltInLanguagePackage& builtInLanguagePackage,
 			const std::string& closureName,
 			const PackageLockState& packageLockState)
 		{
 			// Build dependencies do not inherit the parent language
-			// Instead, they default to C#
-			auto implicitLanguage = _builtInCSharpLanguage;
+			// Instead, they default to Wren
+			auto implicitLanguage = _builtInWrenLanguage;
 
 			auto builtInExtensionReference = PackageReference(
 				std::nullopt,
@@ -624,16 +630,19 @@ namespace Soup::Core
 				closureName,
 				packageLockState);
 
-			std::optional<Path> packagePath;
+			std::optional<std::vector<Path>> packagePaths;
+			std::optional<Path> packageBundle;
 			std::optional<PackageChildInfo> packageChildInfo;
 			if (activeReference.IsLocal())
 			{
 				// Use local reference relative to lock directory
-				packagePath = activeReference.GetPath();
-				if (!packagePath.value().HasRoot())
+				auto packagePath = activeReference.GetPath();
+				if (!packagePath.HasRoot())
 				{
-					packagePath = packageLockState.RootDirectory + packagePath.value();
+					packagePath = packageLockState.RootDirectory + packagePath;
 				}
+
+				packagePaths = std::vector<Path>({ packagePath });
 			}
 			else
 			{
@@ -642,11 +651,23 @@ namespace Soup::Core
 					// Use the prebuilt version in the install folder
 					auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
 					auto processDirectory = processFilename.GetParent();
-					packagePath = processDirectory +
+					auto extensionRoot = processDirectory +
 						_builtInExtensionPath +
 						Path(builtInLanguagePackage.ExtensionName) +
-						Path(activeReference.GetVersion().ToString()) +
-						builtInLanguagePackage.ExtensionFilename;
+						Path(activeReference.GetVersion().ToString());
+
+					auto extensionFiles = std::vector<Path>();
+					for (auto& file : builtInLanguagePackage.ExtensionFiles)
+					{
+						extensionFiles.push_back(extensionRoot + file);
+					}
+
+					packagePaths = std::move(extensionFiles);
+
+					if (builtInLanguagePackage.ExtensionBundle.has_value())
+					{
+						packageBundle = extensionRoot + builtInLanguagePackage.ExtensionBundle.value();
+					}
 				}
 				else
 				{
@@ -658,7 +679,7 @@ namespace Soup::Core
 				}
 			}
 
-			return std::make_pair(std::move(packagePath), std::move(packageChildInfo));
+			return std::make_tuple(std::move(packagePaths), std::move(packageBundle), std::move(packageChildInfo));
 		}
 
 		const std::string& GetLanguageSafeName(const std::string& language) const
