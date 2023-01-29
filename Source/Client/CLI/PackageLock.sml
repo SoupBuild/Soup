@@ -24,7 +24,7 @@ Closures: {
 			{ Name: "Soup.CSharp", Version: "0.8.0", Build: "Build1" }
 			{ Name: "Soup.CSharp.Compiler", Version: "0.8.0", Build: "Build1" }
 			{ Name: "Soup.CSharp.Compiler.Roslyn", Version: "0.8.0", Build: "Build1" }
-			{ Name: "Soup.Wren", Version: "0.1.0", Build: "Build1" }
+			{ Name: "Soup.Wren", Version: "0.1.1", Build: "Build1" }
 		]
 	}
 	Build0: {
@@ -35,7 +35,7 @@ Closures: {
 	Build1: {
 		Wren: [
 			{ Name: "Soup.Cpp", Version: "0.6.1" }
-			{ Name: "Soup.Wren", Version: "0.1.0" }
+			{ Name: "Soup.Wren", Version: "0.1.1" }
 		]
 	}
 }
