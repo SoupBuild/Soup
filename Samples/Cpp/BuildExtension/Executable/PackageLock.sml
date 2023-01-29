@@ -6,8 +6,8 @@ Closures: {
 		]
 	}
 	Build0: {
-		"C#": [
-			{ Name: "Soup.Cpp", Version: "0.4.3" }
+		Wren: [
+			{ Name: "Soup.Cpp", Version: "0.6.1" }
 			{ Name: "Samples.Cpp.BuildExtension.Extension", Version: "../Extension/" }
 		]
 	}

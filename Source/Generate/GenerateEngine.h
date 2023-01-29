@@ -236,30 +236,81 @@ namespace Soup::Core::Generate
 			}
 
 			// Check for any dynamic libraries in the shared state
+			Log::Info("Check Extensions");
 			auto buildDependenciesValue = dependenciesSharedState.find("Build");
 			if (buildDependenciesValue != dependenciesSharedState.end())
 			{
-				for (auto dependencyValue : buildDependenciesValue->second.AsTable())
+				for (auto& [dependencyKey, dependencyValue] : buildDependenciesValue->second.AsTable())
 				{
-					auto& dependency = dependencyValue.second.AsTable();
-					auto buildTableValue = dependency.find("Build");
-					if (buildTableValue != dependency.end())
+					Log::Info("Check Build Dependency: " + dependencyKey);
+					if (dependencyValue.IsTable())
 					{
-						auto& buildTable = buildTableValue->second.AsTable();
-						auto targetFileValue = buildTable.find("TargetFile");
-						if (targetFileValue != buildTable.end())
+						auto& dependency = dependencyValue.AsTable();
+						auto buildTableValue = dependency.find("Build");
+						if (buildTableValue != dependency.end())
 						{
-							auto targetFile = Path(targetFileValue->second.AsString());
-							buildExtensionLibraries.push_back(std::make_pair(std::move(targetFile), std::nullopt));
+							auto& buildTable = buildTableValue->second.AsTable();
+
+							Path targetDirectory;
+							auto targetDirectoryValue = buildTable.find("TargetDirectory");
+							if (targetDirectoryValue != buildTable.end())
+							{
+								if (targetDirectoryValue->second.IsString())
+								{
+									targetDirectory = Path(targetDirectoryValue->second.AsString());
+								}
+								else
+								{
+									Log::Warning("Build dependency TargetDirectory property was not a string.");
+								}
+							}
+
+
+							std::optional<Path> moduleBundle = std::nullopt;
+							auto moduleBundleValue = buildTable.find("ModuleBundle");
+							if (moduleBundleValue != buildTable.end())
+							{
+								if (moduleBundleValue->second.IsString())
+								{
+									moduleBundle = Path(moduleBundleValue->second.AsString());
+								}
+								else
+								{
+									Log::Warning("Build dependency ModuleBundle property was not a string.");
+								}
+							}
+
+							auto sourceValue = buildTable.find("Source");
+							if (sourceValue != buildTable.end())
+							{
+								if (sourceValue->second.IsList())
+								{
+									auto files = std::vector<Path>();
+									for (auto& file : sourceValue->second.AsList())
+									{
+										auto scriptFile = targetDirectory + Path(file.AsString());
+										buildExtensionLibraries.push_back(
+											std::make_pair(std::move(scriptFile), moduleBundle));
+									}
+								}
+								else
+								{
+									Log::Warning("Build dependency Source property was not a list.");
+								}
+							}
+							else
+							{
+								Log::Warning("Found build dependency with no target file.");
+							}
 						}
 						else
 						{
-							Log::Warning("Found build dependency with no target file.");
+							Log::Warning("Found build dependency with no build table.");
 						}
 					}
 					else
 					{
-						Log::Warning("Found build dependency with no build table.");
+						Log::Warning("Dependency shared state was not a table.");
 					}
 				}
 			}

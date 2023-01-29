@@ -56,7 +56,7 @@ namespace Soup::Core
 					BuiltInLanguagePackage(
 						"Wren",
 						"Soup.Wren",
-						SemanticVersion(0, 1, 0),
+						SemanticVersion(0, 1, 1),
 						{
 							Path("Main/Tasks/BuildTask.wren"),
 							Path("Main/Tasks/RecipeBuildTask.wren"),

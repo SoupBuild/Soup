@@ -1,5 +1,5 @@
 Name: "Soup"
-Version: "0.29.0"
+Version: "0.29.1"
 Language: "C++|0.1"
 
 Type: "Executable"
@@ -25,7 +25,7 @@ Dependencies: {
 		# "../../GenerateSharp/Generate/"
 		"Wren|Soup.Cpp@0.6.1"
 		"Wren|Soup.CSharp@0.8.0"
-		"Wren|Soup.Wren@0.1.0"
+		"Wren|Soup.Wren@0.1.1"
 	]
 	Build: [
 		# TODO: "Soup.Test.Cpp@0.4.0"
