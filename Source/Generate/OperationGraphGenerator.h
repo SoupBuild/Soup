@@ -68,25 +68,23 @@ namespace Soup::Core::Generate
 			}
 
 			// Verify allowed read access
-			auto readAccess = std::vector<Path>();
-			if (!IsAllowedAccess(_readAccessList, declaredInput, commandInfo.WorkingDirectory, readAccess))
+			if (!IsAllowedAccess(_readAccessList, declaredInput, commandInfo.WorkingDirectory))
 			{
 				throw std::runtime_error("Operation does not have permission to read requested input.");
 			}
 
 			Log::Diag("Read Access Subset:");
-			for (auto& file : readAccess)
+			for (auto& file : _readAccessList)
 				Log::Diag(file.ToString());
 
 			// Verify allowed write access
-			auto writeAccess = std::vector<Path>();
-			if (!IsAllowedAccess(_writeAccessList, declaredOutput, commandInfo.WorkingDirectory, writeAccess))
+			if (!IsAllowedAccess(_writeAccessList, declaredOutput, commandInfo.WorkingDirectory))
 			{
 				throw std::runtime_error("Operation does not have permission to write requested output.");
 			}
 
 			Log::Diag("Write Access Subset:");
-			for (auto& file : writeAccess)
+			for (auto& file : _writeAccessList)
 				Log::Diag(file.ToString());
 
 			// Generate a unique id for this new operation
@@ -96,8 +94,8 @@ namespace Soup::Core::Generate
 			// Resolve the requested files to unique ids
 			auto declaredInputFileIds = _fileSystemState.ToFileIds(declaredInput, commandInfo.WorkingDirectory);
 			auto declaredOutputFileIds = _fileSystemState.ToFileIds(declaredOutput, commandInfo.WorkingDirectory);
-			auto readAccessFileIds = _fileSystemState.ToFileIds(readAccess, commandInfo.WorkingDirectory);
-			auto writeAccessFileIds = _fileSystemState.ToFileIds(writeAccess, commandInfo.WorkingDirectory);
+			auto readAccessFileIds = _fileSystemState.ToFileIds(_readAccessList, commandInfo.WorkingDirectory);
+			auto writeAccessFileIds = _fileSystemState.ToFileIds(_writeAccessList, commandInfo.WorkingDirectory);
 
 			// Build up the declared build operation
 			auto operationInfo = OperationInfo(
@@ -313,11 +311,8 @@ namespace Soup::Core::Generate
 		bool IsAllowedAccess(
 			const std::vector<Path>& accessList,
 			const std::vector<Path>& files,
-			const Path& workingDirectory,
-			std::vector<Path>& usedAccessList)
+			const Path& workingDirectory)
 		{
-			usedAccessList.clear();
-
 			auto accessSet = std::set<Path>();
 			for (auto& file : files)
 			{
@@ -334,7 +329,6 @@ namespace Soup::Core::Generate
 				}
 			}
 
-			std::copy(accessSet.begin(), accessSet.end(), std::back_inserter(usedAccessList));
 			return true;
 		}
 
