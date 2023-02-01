@@ -1067,13 +1067,13 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/3.3.3/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
 								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Main/Tasks/Task2.wren"),
+									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
+									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task2.wren"),
 								}),
-								Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Bundles.sml"),
+								Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -1421,13 +1421,13 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1"
 					Dependencies: {
 						Other: [
-							"C#|Package1@3.3.3"
+							"C#|Package1@4.4.4"
 						]
 					}
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml"),
+				Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Package1"
 					Language: "C#|1"
@@ -1444,17 +1444,17 @@ namespace Soup::Core::UnitTests
 								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
 							]
 							"C#": [
-								{ Name: "Package1", Version: "3.3.3", Build: "Build1" }
+								{ Name: "Package1", Version: "4.4.4", Build: "Build1" }
 							]
 						}
 						Build0: {
-							"C#": [
+							Wren: [
 								{ Name: "Soup.Cpp", Version: "1.1.1" }
 							]
 						}
 						Build1: {
-							"C#": [
-								{ Name: "Soup.CSharp", Version: "2.2.2" }
+							Wren: [
+								{ Name: "Soup.CSharp", Version: "3.3.3" }
 							]
 						}
 					}
@@ -1534,7 +1534,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: Package lock loaded",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
-					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1547,8 +1547,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"GetCurrentDirectory",
-					"Exists: C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml",
-					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml",
+					"Exists: C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -1599,7 +1599,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Other",
 										{
-											PackageChildInfo(PackageReference("C#", "Package1", SemanticVersion(3, 3, 3)), false, 2, -1),
+											PackageChildInfo(PackageReference("C#", "Package1", SemanticVersion(4, 4, 4)), false, 2, -1),
 										}
 									},
 								}))
@@ -1608,13 +1608,13 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Package1/3.3.3/Recipe.sml")),
+								Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4"),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml")),
 								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Main/Tasks/Task2.wren"),
+									Path("C:/testlocation/Extensions/Soup.CSharp/3.3.3/Main/Tasks/Task1.wren"),
+									Path("C:/testlocation/Extensions/Soup.CSharp/3.3.3/Main/Tasks/Task2.wren"),
 								}),
-								Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Bundles.sml"),
+								Path("C:/testlocation/Extensions/Soup.CSharp/3.3.3/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -1852,12 +1852,12 @@ namespace Soup::Core::UnitTests
 							PackageInfo(
 								3,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Soup.CSharp/2.2.3/Recipe.sml")),
+								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml")),
 								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Main/Tasks/Task2.wren"),
+									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
+									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task2.wren"),
 								}),
-								Path("C:/testlocation/Extensions/Soup.CSharp/2.2.2/Bundles.sml"),
+								Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
