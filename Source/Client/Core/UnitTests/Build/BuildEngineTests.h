@@ -91,10 +91,10 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Check for previous operation invocation",
 					"INFO: 1>Operation has no successful previous invocation",
 					"HIGH: 1>Generate: C++|MyPackage",
-					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
+					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
-					"DIAG: 1>C:/testlocation/Generate/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.4.3/",
+					"DIAG: 1>C:/testlocation/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
@@ -166,7 +166,7 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Generate/Soup.Build.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
+					"CreateMonitorProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -183,7 +183,23 @@ namespace Soup::Core::UnitTests
 				ValueTable(
 				{
 					{ "Dependencies", Value(ValueTable()) },
-					{ "LanguageExtensionPath", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.4.3/Soup.Cpp.dll")) },
+					{
+						"LanguageExtension",
+						Value(ValueTable(
+						{
+							{ "Bundle", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Bundles.sml")) },
+							{
+								"Scripts",
+								Value(ValueList(
+								{
+									Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/BuildTask.wren")),
+									Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/RecipeBuildTask.wren")),
+									Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/ResolveDependenciesTask.wren")),
+									Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/ResolveToolsTask.wren")),
+								}))
+							},
+						}))
+					},
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
 					{ "SDKs", Value(ValueList()) },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")) },

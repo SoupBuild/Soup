@@ -33,7 +33,11 @@ namespace Soup::Core::UnitTests
 						"Cpp",
 						"Soup.Cpp",
 						SemanticVersion(1, 1, 1),
-						Path("Soup.Cpp.dll"))
+						{
+							Path("Main/Tasks/Task1.wren"),
+							Path("Main/Tasks/Task2.wren"),
+						},
+						Path("Bundles.sml"))
 				}
 			});
 			auto uut = RecipeBuildLocationManager(builtInLanguages);
@@ -89,7 +93,11 @@ namespace Soup::Core::UnitTests
 						"Cpp",
 						"Soup.Cpp",
 						SemanticVersion(1, 1, 1),
-						Path("Soup.Cpp.dll"))
+						{
+							Path("Main/Tasks/Task1.wren"),
+							Path("Main/Tasks/Task2.wren"),
+						},
+						Path("Bundles.sml"))
 				}
 			});
 			auto uut = RecipeBuildLocationManager(builtInLanguages);
