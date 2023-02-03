@@ -103,6 +103,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
 					"DIAG: 1>Build evaluation end",
 					"INFO: 1>Loading new Evaluate Operation Graph",
+					"DIAG: 1>Resolve build macros in new graph",
 					"DIAG: 1>Map previous operation graph observed results",
 					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/temp/",
 					"DIAG: 1>Build evaluation start",
@@ -203,7 +204,7 @@ namespace Soup::Core::UnitTests
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
 					{ "SDKs", Value(ValueList()) },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")) },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/")) },
+					{ "TargetDirectory", Value(std::string("/(TARGET_MyPackage)/")) },
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
@@ -211,14 +212,14 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
+				"C:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto myPackageGenerateWriteAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
+				"/(TARGET_MyPackage)/\n",
 				myPackageGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 

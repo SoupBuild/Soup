@@ -176,12 +176,13 @@ namespace Soup::Core
 			Log::Info("Build '" + packageInfo.Recipe.GetName() + "'");
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto targetDirectory = _locationManager.GetOutputDirectory(
+			auto macroTargetDirectory = Path("//(TARGET_" + packageInfo.Recipe.GetName() + ")/");
+			auto realTargetDirectory = _locationManager.GetOutputDirectory(
 				packageInfo.PackageRoot,
 				packageInfo.Recipe,
 				packageGraph.GlobalParameters,
 				_recipeCache);
-			auto soupTargetDirectory = targetDirectory + BuildConstants::SoupTargetDirectory();
+			auto soupTargetDirectory = realTargetDirectory + BuildConstants::SoupTargetDirectory();
 
 			// Build up the child target directory set
 			const auto& [directChildTargetDirectories, recursiveChildTargetDirectories] =
@@ -231,7 +232,8 @@ namespace Soup::Core
 			{
 				auto ranGenerate = RunIncrementalGenerate(
 					packageInfo,
-					targetDirectory,
+					macroTargetDirectory,
+					realTargetDirectory,
 					soupTargetDirectory,
 					packageGraph.GlobalParameters,
 					directChildTargetDirectories,
@@ -254,25 +256,18 @@ namespace Soup::Core
 						throw std::runtime_error("Missing required evaluate operation graph after generate evaluated.");
 					}
 
-					Log::Diag("Map previous operation graph observed results");
-					auto updatedEvaluateResults = OperationResults();
-					for (auto& updatedOperationEntry : updatedEvaluateGraph.GetOperations())
+					Log::Diag("Resolve build macros in new graph");
+					auto macros = std::map<std::string, std::string>(
 					{
-						auto& updatedOperation = updatedOperationEntry.second;
+						{ macroTargetDirectory.ToString(), realTargetDirectory.ToString() },
+					});
+					ResolveMacros(updatedEvaluateGraph, macros);
 
-						// Check if the new operation command existing in the previous set too
-						OperationId previousOperationId;
-						if (evaluateGraph.TryFindOperation(updatedOperation.Command, previousOperationId))
-						{
-							// Check if there is an existing result for the previous operation
-							OperationResult* previousOperationResult;
-							if (evaluateResults.TryFindResult(previousOperationId, previousOperationResult))
-							{
-								// Move this result into the updated results store
-								updatedEvaluateResults.AddOrUpdateOperationResult(updatedOperation.Id, std::move(*previousOperationResult));
-							}
-						}
-					}
+					Log::Diag("Map previous operation graph observed results");
+					auto updatedEvaluateResults = MergeOperationResults(
+						evaluateGraph,
+						evaluateResults,
+						updatedEvaluateGraph);
 
 					// Replace the previous operation graph and results
 					evaluateGraph = std::move(updatedEvaluateGraph);
@@ -288,7 +283,7 @@ namespace Soup::Core
 				RunEvaluate(
 					evaluateGraph,
 					evaluateResults,
-					targetDirectory,
+					realTargetDirectory,
 					soupTargetDirectory);
 			}
 
@@ -297,7 +292,7 @@ namespace Soup::Core
 				packageInfo.Id,
 				RecipeBuildCacheState(
 					packageInfo.Recipe.GetName(),
-					std::move(targetDirectory),
+					std::move(realTargetDirectory),
 					std::move(soupTargetDirectory),
 					std::move(recursiveChildTargetDirectories)));
 		}
@@ -307,7 +302,8 @@ namespace Soup::Core
 		/// </summary>
 		bool RunIncrementalGenerate(
 			const PackageInfo& packageInfo,
-			const Path& targetDirectory,
+			const Path& macroTargetDirectory,
+			const Path& realTargetDirectory,
 			const Path& soupTargetDirectory,
 			const ValueTable& globalParameters,
 			const std::set<Path>& directChildTargetDirectories,
@@ -340,7 +336,7 @@ namespace Soup::Core
 			}
 
 			parametersTable.emplace("PackageDirectory", Value(packageInfo.PackageRoot.ToString()));
-			parametersTable.emplace("TargetDirectory", Value(targetDirectory.ToString()));
+			parametersTable.emplace("TargetDirectory", Value(macroTargetDirectory.ToString()));
 			parametersTable.emplace("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
 			parametersTable.emplace("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
 			parametersTable.emplace("SDKs", _sdkParameters);
@@ -371,10 +367,10 @@ namespace Soup::Core
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
 			evaluateAllowedReadAccess.push_back(packageInfo.PackageRoot);
-			evaluateAllowedReadAccess.push_back(targetDirectory);
+			evaluateAllowedReadAccess.push_back(macroTargetDirectory);
 
 			// Only allow writing to the target directory
-			evaluateAllowedWriteAccess.push_back(targetDirectory);
+			evaluateAllowedWriteAccess.push_back(macroTargetDirectory);
 
 			auto readAccessFile = soupTargetDirectory + BuildConstants::GenerateReadAccessFileName();
 			Log::Info("Check outdated read access file: " + readAccessFile.ToString());
@@ -448,7 +444,7 @@ namespace Soup::Core
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
 			generateAllowedReadAccess.push_back(packageInfo.PackageRoot);
-			generateAllowedReadAccess.push_back(targetDirectory);
+			generateAllowedReadAccess.push_back(realTargetDirectory);
 
 			// Allow read access for all direct dependencies target directories and write to own targets
 			// TODO: This is needed to get the shared properties, this may be better to do in process
@@ -457,7 +453,7 @@ namespace Soup::Core
 				directChildTargetDirectories.begin(),
 				directChildTargetDirectories.end(),
 				std::back_inserter(generateAllowedReadAccess));
-			generateAllowedWriteAccess.push_back(targetDirectory);
+			generateAllowedWriteAccess.push_back(realTargetDirectory);
 
 			// Load the previous build results if it exists
 			Log::Info("Checking for existing Generate Operation Results");
@@ -476,7 +472,7 @@ namespace Soup::Core
 			}
 
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + BuildConstants::TemporaryFolderName();
+			auto temporaryDirectory = realTargetDirectory + BuildConstants::TemporaryFolderName();
 
 			// Evaluate the Generate phase
 			bool ranEvaluate = _evaluateEngine.Evaluate(
@@ -495,14 +491,95 @@ namespace Soup::Core
 			return ranEvaluate;
 		}
 
+		void ResolveMacros(std::vector<FileId>& value, const std::map<std::string, std::string>& macros)
+		{
+			for(size_t i = 0; i < value.size(); i++)
+			{
+				Path file = _fileSystemState.GetFilePath(value[i]);
+				auto resolvedFile = ResolveMacros(file, macros);
+				value[i] = _fileSystemState.ToFileId(resolvedFile);
+			}
+		}
+
+		Path ResolveMacros(Path value, const std::map<std::string, std::string>& macros)
+		{
+			// TODO: Is there a way to not process the path again?
+			auto rawValue = std::move(value.ToString());
+			return Path(ResolveMacros(std::move(rawValue), macros));
+		}
+
+		std::string ResolveMacros(std::string value, const std::map<std::string, std::string>& macros)
+		{
+			for (auto& [macro, macroValue] : macros)
+			{
+				for(size_t i = 0; ; i += macroValue.length())
+				{
+					// Find the next instance of the macro
+					i = value.find(macro, i);
+
+					// No more instances, early exit
+					if(i == std::string::npos)
+						break;
+
+					// Erase the macro and insert the real value
+					// TODO: Less than ideal, but gets the job done
+					value.erase(i, macro.length());
+					value.insert(i, macroValue);
+				}
+			}
+
+			return value;
+		}
+
+		void ResolveMacros(
+			OperationGraph& operationGraph,
+			const std::map<std::string, std::string>& macros)
+		{
+			for (auto& [operationId, operation] : operationGraph.GetOperations())
+			{
+				operation.Command.Arguments = ResolveMacros(std::move(operation.Command.Arguments), macros);
+				operation.Command.WorkingDirectory = ResolveMacros(std::move(operation.Command.WorkingDirectory), macros);
+				operation.Command.Executable = ResolveMacros(std::move(operation.Command.Executable), macros);
+				ResolveMacros(operation.DeclaredInput, macros);
+				ResolveMacros(operation.DeclaredOutput, macros);
+				ResolveMacros(operation.ReadAccess, macros);
+				ResolveMacros(operation.WriteAccess, macros);
+			}
+		}
+
+		OperationResults MergeOperationResults(
+			const OperationGraph& previousGraph,
+			OperationResults& previousResults,
+			const OperationGraph& updatedGraph)
+		{
+			auto updatedResults = OperationResults();
+			for (auto& [operationId, updatedOperation] : updatedGraph.GetOperations())
+			{
+				// Check if the new operation command existing in the previous set too
+				OperationId previousOperationId;
+				if (previousGraph.TryFindOperation(updatedOperation.Command, previousOperationId))
+				{
+					// Check if there is an existing result for the previous operation
+					OperationResult* previousOperationResult;
+					if (previousResults.TryFindResult(previousOperationId, previousOperationResult))
+					{
+						// Move this result into the updated results store
+						updatedResults.AddOrUpdateOperationResult(updatedOperation.Id, std::move(*previousOperationResult));
+					}
+				}
+			}
+
+			return updatedResults;
+		}
+
 		void RunEvaluate(
 			const OperationGraph& evaluateGraph,
 			OperationResults& evaluateResults,
-			const Path& targetDirectory,
+			const Path& realTargetDirectory,
 			const Path& soupTargetDirectory)
 		{
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + BuildConstants::TemporaryFolderName();
+			auto temporaryDirectory = realTargetDirectory + BuildConstants::TemporaryFolderName();
 
 			// Initialize the read access with the shared global set
 			auto allowedReadAccess = std::vector<Path>();

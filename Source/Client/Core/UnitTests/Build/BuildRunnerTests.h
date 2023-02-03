@@ -151,6 +151,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Operation results file does not exist",
 					"INFO: 1>No previous results found",
 					"INFO: 1>Loading new Evaluate Operation Graph",
+					"DIAG: 1>Resolve build macros in new graph",
 					"DIAG: 1>Map previous operation graph observed results",
 					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 1>Saving updated build state",
@@ -232,7 +233,7 @@ namespace Soup::Core::UnitTests
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
 					{ "SDKs", Value(ValueList()) },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+					{ "TargetDirectory", Value(std::string("/(TARGET_MyPackage)/")) },
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
@@ -240,14 +241,14 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto myPackageGenerateWriteAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"/(TARGET_MyPackage)/\n",
 				myPackageGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -442,6 +443,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Operation results file does not exist",
 					"INFO: 2>No previous results found",
 					"INFO: 2>Loading new Evaluate Operation Graph",
+					"DIAG: 2>Resolve build macros in new graph",
 					"DIAG: 2>Map previous operation graph observed results",
 					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
 					"INFO: 2>Saving updated build state",
@@ -469,6 +471,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Operation results file does not exist",
 					"INFO: 1>No previous results found",
 					"INFO: 1>Loading new Evaluate Operation Graph",
+					"DIAG: 1>Resolve build macros in new graph",
 					"DIAG: 1>Map previous operation graph observed results",
 					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 1>Saving updated build state",
@@ -553,9 +556,9 @@ namespace Soup::Core::UnitTests
 					"Evaluate: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
 					"Evaluate: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"Evaluate: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
-					}),
-					evaluateEngine.GetRequests(),
-					"Verify evaluate requests match expected.");
+				}),
+				evaluateEngine.GetRequests(),
+				"Verify evaluate requests match expected.");
 
 			// Verify files
 			auto testBuildGenerateParametersMockFile = fileSystem->GetMockFile(
@@ -582,7 +585,7 @@ namespace Soup::Core::UnitTests
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3")) },
 					{ "SDKs", Value(ValueList()) },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")) },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")) },
+					{ "TargetDirectory", Value(std::string("/(TARGET_TestBuild)/")) },
 				}),
 				ValueTableReader::Deserialize(testBuildGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
@@ -590,14 +593,14 @@ namespace Soup::Core::UnitTests
 			auto testBuildGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3\n/(TARGET_TestBuild)/\n",
 				testBuildGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto testBuildGenerateWriteAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
+				"/(TARGET_TestBuild)/\n",
 				testBuildGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -663,7 +666,7 @@ namespace Soup::Core::UnitTests
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
 					{ "SDKs", Value(ValueList()) },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+					{ "TargetDirectory", Value(std::string("/(TARGET_MyPackage)/")) },
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
@@ -671,14 +674,14 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto myPackageGenerateWriteAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"/(TARGET_MyPackage)/\n",
 				myPackageGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -907,6 +910,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 3>Operation results file does not exist",
 					"INFO: 3>No previous results found",
 					"INFO: 3>Loading new Evaluate Operation Graph",
+					"DIAG: 3>Resolve build macros in new graph",
 					"DIAG: 3>Map previous operation graph observed results",
 					"INFO: 3>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 3>Saving updated build state",
@@ -934,6 +938,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Operation results file does not exist",
 					"INFO: 2>No previous results found",
 					"INFO: 2>Loading new Evaluate Operation Graph",
+					"DIAG: 2>Resolve build macros in new graph",
 					"DIAG: 2>Map previous operation graph observed results",
 					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 2>Saving updated build state",
@@ -963,6 +968,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Operation results file does not exist",
 					"INFO: 1>No previous results found",
 					"INFO: 1>Loading new Evaluate Operation Graph",
+					"DIAG: 1>Resolve build macros in new graph",
 					"DIAG: 1>Map previous operation graph observed results",
 					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 1>Saving updated build state",
@@ -1128,7 +1134,7 @@ namespace Soup::Core::UnitTests
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/")), },
+					{ "TargetDirectory", Value(std::string("/(TARGET_PackageA)/")), },
 				}),
 				ValueTableReader::Deserialize(packageAGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
@@ -1136,14 +1142,14 @@ namespace Soup::Core::UnitTests
 			auto packageAGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3\n/(TARGET_PackageA)/\n",
 				packageAGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto packageAGenerateWriteAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"/(TARGET_PackageA)/\n",
 				packageAGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -1189,7 +1195,7 @@ namespace Soup::Core::UnitTests
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1")) },
 					{ "SDKs", Value(ValueList()) },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+					{ "TargetDirectory", Value(std::string("/(TARGET_PackageB)/")) },
 				}),
 				ValueTableReader::Deserialize(packageBGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
@@ -1197,14 +1203,14 @@ namespace Soup::Core::UnitTests
 			auto packageBGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1\n/(TARGET_PackageB)/\n",
 				packageBGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto packageBGenerateWriteAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"/(TARGET_PackageB)/\n",
 				packageBGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -1279,7 +1285,7 @@ namespace Soup::Core::UnitTests
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
 					{ "SDKs", Value(ValueList()) },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+					{ "TargetDirectory", Value(std::string("/(TARGET_MyPackage)/")) },
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
@@ -1287,14 +1293,14 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto myPackageGenerateWriteAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"/(TARGET_MyPackage)/\n",
 				myPackageGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -1517,6 +1523,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 2>Operation results file does not exist",
 					"INFO: 2>No previous results found",
 					"INFO: 2>Loading new Evaluate Operation Graph",
+					"DIAG: 2>Resolve build macros in new graph",
 					"DIAG: 2>Map previous operation graph observed results",
 					"INFO: 2>Create Directory: C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/temp/",
 					"INFO: 2>Saving updated build state",
@@ -1544,6 +1551,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Operation results file does not exist",
 					"INFO: 1>No previous results found",
 					"INFO: 1>Loading new Evaluate Operation Graph",
+					"DIAG: 1>Resolve build macros in new graph",
 					"DIAG: 1>Map previous operation graph observed results",
 					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/temp/",
 					"INFO: 1>Saving updated build state",
@@ -1657,7 +1665,7 @@ namespace Soup::Core::UnitTests
 					{ "PackageDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0")), },
 					{ "SDKs", Value(ValueList()), },
 					{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")), },
-					{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/")), },
+					{ "TargetDirectory", Value(std::string("/(TARGET_TestBuild)/")), },
 				}),
 				ValueTableReader::Deserialize(testBuildGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
@@ -1665,14 +1673,14 @@ namespace Soup::Core::UnitTests
 			auto testBuildGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0\n/(TARGET_TestBuild)/\n",
 				testBuildGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto testBuildGenerateWriteAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\n",
+				"/(TARGET_TestBuild)/\n",
 				testBuildGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -1738,7 +1746,7 @@ namespace Soup::Core::UnitTests
 					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
 					{ "SDKs", Value(ValueList()) },
 					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+					{ "TargetDirectory", Value(std::string("/(TARGET_MyPackage)/")) },
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
 				"Verify file content match expected.");
@@ -1746,14 +1754,14 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
 			auto myPackageGenerateWriteAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateWriteAccess.txt"));
 			Assert::AreEqual(
-				"C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/\n",
+				"/(TARGET_MyPackage)/\n",
 				myPackageGenerateWriteAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 

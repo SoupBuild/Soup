@@ -265,7 +265,6 @@ namespace Soup::Core::Generate
 								}
 							}
 
-
 							std::optional<Path> moduleBundle = std::nullopt;
 							auto moduleBundleValue = buildTable.find("ModuleBundle");
 							if (moduleBundleValue != buildTable.end())
