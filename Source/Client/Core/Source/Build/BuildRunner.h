@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "MacroManager.h"
 #include "IEvaluateEngine.h"
 #include "BuildConstants.h"
 #include "BuildFailedException.h"
@@ -16,7 +17,8 @@
 #include "Utils/HandledException.h"
 #include "ValueTable/ValueTableManager.h"
 #include "Recipe/RecipeBuildStateConverter.h"
-#include "PathList/PathListManager.h"
+#include "Utils/PathListManager.h"
+#include "Utils/StringMapManager.h"
 
 namespace Soup::Core
 {
@@ -349,9 +351,10 @@ namespace Soup::Core
 				ValueTableManager::SaveState(parametersFile, parametersTable);
 			}
 
-			// Initialize the read access with the shared global set
+			// Build up the input state for the generate call
 			auto evaluateAllowedReadAccess = std::vector<Path>();
 			auto evaluateAllowedWriteAccess = std::vector<Path>();
+			auto macros = std::map<std::string, std::string>();
 
 			// Allow read access for all sdk directories
 			std::copy(
@@ -386,6 +389,14 @@ namespace Soup::Core
 			{
 				Log::Info("Save Write Access file");
 				PathListManager::Save(writeAccessFile, evaluateAllowedWriteAccess);
+			}
+
+			auto macrosFile = soupTargetDirectory + BuildConstants::GenerateMacrosFileName();
+			Log::Info("Check outdated macros file: " + macrosFile.ToString());
+			if (IsOutdated(macros, macrosFile))
+			{
+				Log::Info("Save Macros file");
+				StringMapManager::Save(macrosFile, macros);
 			}
 
 			// Run the incremental generate
@@ -491,59 +502,20 @@ namespace Soup::Core
 			return ranEvaluate;
 		}
 
-		void ResolveMacros(std::vector<FileId>& value, const std::map<std::string, std::string>& macros)
-		{
-			for(size_t i = 0; i < value.size(); i++)
-			{
-				Path file = _fileSystemState.GetFilePath(value[i]);
-				auto resolvedFile = ResolveMacros(file, macros);
-				value[i] = _fileSystemState.ToFileId(resolvedFile);
-			}
-		}
-
-		Path ResolveMacros(Path value, const std::map<std::string, std::string>& macros)
-		{
-			// TODO: Is there a way to not process the path again?
-			auto rawValue = std::move(value.ToString());
-			return Path(ResolveMacros(std::move(rawValue), macros));
-		}
-
-		std::string ResolveMacros(std::string value, const std::map<std::string, std::string>& macros)
-		{
-			for (auto& [macro, macroValue] : macros)
-			{
-				for(size_t i = 0; ; i += macroValue.length())
-				{
-					// Find the next instance of the macro
-					i = value.find(macro, i);
-
-					// No more instances, early exit
-					if(i == std::string::npos)
-						break;
-
-					// Erase the macro and insert the real value
-					// TODO: Less than ideal, but gets the job done
-					value.erase(i, macro.length());
-					value.insert(i, macroValue);
-				}
-			}
-
-			return value;
-		}
-
 		void ResolveMacros(
 			OperationGraph& operationGraph,
 			const std::map<std::string, std::string>& macros)
 		{
+			auto macroManager = MacroManager(_fileSystemState, macros);
 			for (auto& [operationId, operation] : operationGraph.GetOperations())
 			{
-				operation.Command.Arguments = ResolveMacros(std::move(operation.Command.Arguments), macros);
-				operation.Command.WorkingDirectory = ResolveMacros(std::move(operation.Command.WorkingDirectory), macros);
-				operation.Command.Executable = ResolveMacros(std::move(operation.Command.Executable), macros);
-				ResolveMacros(operation.DeclaredInput, macros);
-				ResolveMacros(operation.DeclaredOutput, macros);
-				ResolveMacros(operation.ReadAccess, macros);
-				ResolveMacros(operation.WriteAccess, macros);
+				operation.Command.Arguments = macroManager.ResolveMacros(std::move(operation.Command.Arguments));
+				operation.Command.WorkingDirectory = macroManager.ResolveMacros(std::move(operation.Command.WorkingDirectory));
+				operation.Command.Executable = macroManager.ResolveMacros(std::move(operation.Command.Executable));
+				macroManager.ResolveMacros(operation.DeclaredInput);
+				macroManager.ResolveMacros(operation.DeclaredOutput);
+				macroManager.ResolveMacros(operation.ReadAccess);
+				macroManager.ResolveMacros(operation.WriteAccess);
 			}
 		}
 
@@ -659,6 +631,21 @@ namespace Soup::Core
 			if (PathListManager::TryLoad(pathListFile, previousFileList))
 			{
 				return previousFileList != fileList;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		bool IsOutdated(const std::map<std::string, std::string>& value, const Path& file)
+		{
+			// Load up the existing map file and check if our state matches the previous
+			// to ensure incremental builds function correctly
+			auto previousValue = std::map<std::string, std::string>();
+			if (StringMapManager::TryLoad(file, previousValue))
+			{
+				return previousValue != value;
 			}
 			else
 			{

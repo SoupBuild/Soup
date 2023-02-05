@@ -45,6 +45,12 @@ namespace Soup::Core
 			return value;
 		}
 
+		static const Path& GenerateMacrosFileName()
+		{
+			static const auto value = Path("GenerateMacros.txt");
+			return value;
+		}
+
 		static const Path& GenerateSharedStateFileName()
 		{
 			static const auto value = Path("GenerateSharedState.bvt");

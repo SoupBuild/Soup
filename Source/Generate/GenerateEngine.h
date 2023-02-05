@@ -13,6 +13,9 @@ namespace Soup::Core::Generate
 	public:
 		static void Run(const Path& soupTargetDirectory)
 		{
+			// Initialize a shared File System State to cache file system access
+			auto fileSystemState = FileSystemState();
+
 			// Run all build operations in the correct order with incremental build checks
 			Log::Diag("Build generate start: " + soupTargetDirectory.ToString());
 
@@ -42,6 +45,18 @@ namespace Soup::Core::Generate
 				Log::Error("Failed to load the write access file: " + writeAccessFile.ToString());
 				throw std::runtime_error("Failed to load write access file.");
 			}
+
+			// Load the macros file
+			auto macrosFile = soupTargetDirectory + BuildConstants::GenerateMacrosFileName();
+			auto macros = std::map<std::string, std::string>();
+			if (!StringMapManager::TryLoad(macrosFile, macros))
+			{
+				Log::Error("Failed to load the macros file: " + writeAccessFile.ToString());
+				throw std::runtime_error("Failed to load macros file.");
+			}
+
+			// Setup a macro manager to resolve macros
+			auto macroManager = MacroManager(fileSystemState, macros);
 
 			// Get the required input state from the parameters
 			std::optional<std::vector<Path>> languageExtensionScripts = std::nullopt;
@@ -86,6 +101,7 @@ namespace Soup::Core::Generate
 
 			// Generate the set of build extension libraries
 			auto buildExtensionLibraries = GenerateBuildExtensionSet(
+				macroManager,
 				languageExtensionScripts,
 				languageExtensionBundle,
 				dependenciesSharedState);
@@ -125,9 +141,6 @@ namespace Soup::Core::Generate
 					extensionManager.RegisterExtensionTask(std::move(extension));
 				}
 			}
-
-			// Initialize a shared File System State to cache file system access
-			auto fileSystemState = FileSystemState();
 
 			// Evaluate the build extensions
 			auto buildState = GenerateState(
@@ -220,6 +233,7 @@ namespace Soup::Core::Generate
 		/// Generate the collection of build extensions
 		/// </summary>
 		static std::vector<std::pair<Path, std::optional<Path>>> GenerateBuildExtensionSet(
+			MacroManager& macroManager,
 			const std::optional<std::vector<Path>>& languageExtensionScripts,
 			const std::optional<Path>& languageExtensionBundle,
 			const ValueTable& dependenciesSharedState)
@@ -257,7 +271,8 @@ namespace Soup::Core::Generate
 							{
 								if (targetDirectoryValue->second.IsString())
 								{
-									targetDirectory = Path(targetDirectoryValue->second.AsString());
+									auto macroTargetDirectory = targetDirectoryValue->second.AsString();
+									targetDirectory = Path(macroManager.ResolveMacros(macroTargetDirectory));
 								}
 								else
 								{
