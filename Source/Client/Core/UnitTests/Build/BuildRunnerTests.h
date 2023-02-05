@@ -642,7 +642,7 @@ namespace Soup::Core::UnitTests
 										{
 											{ "Reference", Value(std::string("TestBuild@1.2.3")) },
 											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")) },
-											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/")) },
+											{ "TargetDirectory", Value(std::string("/(TARGET_TestBuild)/")) },
 										}))
 									},
 								}))
@@ -674,7 +674,7 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
+				"C:/FakeSDK/\n/(TARGET_TestBuild)/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -1110,7 +1110,7 @@ namespace Soup::Core::UnitTests
 										{
 											{ "Reference", Value(std::string("PackageB@1.1.1")) },
 											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
-											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+											{ "TargetDirectory", Value(std::string("/(TARGET_PackageB)/")) },
 										}))
 									},
 								}))
@@ -1142,7 +1142,7 @@ namespace Soup::Core::UnitTests
 			auto packageAGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3\n/(TARGET_PackageA)/\n",
+				"C:/FakeSDK/\n/(TARGET_PackageB)/\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3\n/(TARGET_PackageA)/\n",
 				packageAGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -1252,7 +1252,7 @@ namespace Soup::Core::UnitTests
 										{
 											{ "Reference", Value(std::string("PackageA@1.2.3")) },
 											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
-											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+											{ "TargetDirectory", Value(std::string("/(TARGET_PackageA)/")) },
 										}))
 									},
 									{
@@ -1261,7 +1261,7 @@ namespace Soup::Core::UnitTests
 										{
 											{ "Reference", Value(std::string("PackageB@1.1.1")) },
 											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/")) },
-											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/")) },
+											{ "TargetDirectory", Value(std::string("/(TARGET_PackageB)/")) },
 										}))
 									},
 								}))
@@ -1293,7 +1293,7 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
+				"C:/FakeSDK/\n/(TARGET_PackageA)/\n/(TARGET_PackageB)/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 
@@ -1722,7 +1722,7 @@ namespace Soup::Core::UnitTests
 										{
 											{ "Reference", Value(std::string("TestBuild@1.2.3")) },
 											{ "SoupTargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/.soup/")) },
-											{ "TargetDirectory", Value(std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/")) },
+											{ "TargetDirectory", Value(std::string("/(TARGET_TestBuild)/")) },
 										}))
 									},
 								}))
@@ -1754,7 +1754,7 @@ namespace Soup::Core::UnitTests
 			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
 				Path("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/.soup/GenerateReadAccess.txt"));
 			Assert::AreEqual(
-				"C:/FakeSDK/\nC:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
+				"C:/FakeSDK/\n/(TARGET_TestBuild)/\nC:/WorkingDirectory/MyPackage/\n/(TARGET_MyPackage)/\n",
 				myPackageGenerateReadAccessMockFile->Content.str(),
 				"Verify file content match expected.");
 

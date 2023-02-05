@@ -185,7 +185,7 @@ namespace Soup::Core
 			auto soupTargetDirectory = realTargetDirectory + BuildConstants::SoupTargetDirectory();
 
 			// Build up the child target directory set
-			const auto& [directChildTargetDirectories, recursiveChildTargetDirectories] =
+			const auto& [directChildRealTargetDirectories, recursiveChildMockTargetDirectories, recursiveChildMacros] =
 				GenerateChildDependenciesTargetDirectorySet(packageInfo);
 
 			//////////////////////////////////////////////
@@ -236,8 +236,8 @@ namespace Soup::Core
 					realTargetDirectory,
 					soupTargetDirectory,
 					packageGraph.GlobalParameters,
-					directChildTargetDirectories,
-					recursiveChildTargetDirectories);
+					directChildRealTargetDirectories,
+					recursiveChildMockTargetDirectories);
 
 				//////////////////////////////////////////////
 				// SETUP
@@ -257,10 +257,8 @@ namespace Soup::Core
 					}
 
 					Log::Diag("Resolve build macros in new graph");
-					auto macros = std::map<std::string, std::string>(
-					{
-						{ macroTargetDirectory.ToString(), realTargetDirectory.ToString() },
-					});
+					auto macros = recursiveChildMacros;
+					macros.emplace(macroTargetDirectory.ToString(), realTargetDirectory.ToString());
 					ResolveMacros(updatedEvaluateGraph, macros);
 
 					Log::Diag("Map previous operation graph observed results");
@@ -292,9 +290,11 @@ namespace Soup::Core
 				packageInfo.Id,
 				RecipeBuildCacheState(
 					packageInfo.Recipe.GetName(),
+					std::move(macroTargetDirectory),
 					std::move(realTargetDirectory),
 					std::move(soupTargetDirectory),
-					std::move(recursiveChildTargetDirectories)));
+					std::move(recursiveChildMockTargetDirectories),
+					std::move(recursiveChildMacros)));
 		}
 
 		/// <summary>
@@ -306,8 +306,8 @@ namespace Soup::Core
 			const Path& realTargetDirectory,
 			const Path& soupTargetDirectory,
 			const ValueTable& globalParameters,
-			const std::set<Path>& directChildTargetDirectories,
-			const std::set<Path>& recursiveChildTargetDirectories)
+			const std::set<Path>& directChildRealTargetDirectories,
+			const std::set<Path>& recursiveChildMockTargetDirectories)
 		{
 			// Clone the global parameters
 			auto parametersTable = ValueTable(globalParameters);
@@ -361,8 +361,8 @@ namespace Soup::Core
 
 			// Allow read access for all recursive dependencies target directories
 			std::copy(
-				recursiveChildTargetDirectories.begin(),
-				recursiveChildTargetDirectories.end(),
+				recursiveChildMockTargetDirectories.begin(),
+				recursiveChildMockTargetDirectories.end(),
 				std::back_inserter(evaluateAllowedReadAccess));
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
@@ -450,8 +450,8 @@ namespace Soup::Core
 			// TODO: This is needed to get the shared properties, this may be better to do in process
 			// and only allow read access to build dependencies.
 			std::copy(
-				directChildTargetDirectories.begin(),
-				directChildTargetDirectories.end(),
+				directChildRealTargetDirectories.begin(),
+				directChildRealTargetDirectories.end(),
 				std::back_inserter(generateAllowedReadAccess));
 			generateAllowedWriteAccess.push_back(realTargetDirectory);
 
@@ -700,7 +700,7 @@ namespace Soup::Core
 								},
 								{
 									"TargetDirectory",
-									Value(dependencyState.TargetDirectory.ToString())
+									Value(dependencyState.MacroTargetDirectory.ToString())
 								},
 								{
 									"SoupTargetDirectory",
@@ -721,11 +721,12 @@ namespace Soup::Core
 			return result;
 		}
 
-		std::pair<std::set<Path>, std::set<Path>> GenerateChildDependenciesTargetDirectorySet(
+		std::tuple<std::set<Path>, std::set<Path>, std::map<std::string, std::string>> GenerateChildDependenciesTargetDirectorySet(
 			const PackageInfo& packageInfo)
 		{
-			auto directDirectories = std::set<Path>();
-			auto recursiveDirectories = std::set<Path>();
+			auto directRealDirectories = std::set<Path>();
+			auto recursiveMacroDirectories = std::set<Path>();
+			auto recursiveMacros = std::map<std::string, std::string>();
 			for (auto& dependencyType : packageInfo.Dependencies)
 			{
 				for (auto& dependency : dependencyType.second)
@@ -746,9 +747,17 @@ namespace Soup::Core
 					{
 						// Combine the child dependency target and the recursive children
 						auto& dependencyState = findBuildCache->second;
-						directDirectories.insert(dependencyState.TargetDirectory);
-						recursiveDirectories.insert(dependencyState.TargetDirectory);
-						recursiveDirectories.insert(dependencyState.RecursiveChildTargetDirectorySet.begin(), dependencyState.RecursiveChildTargetDirectorySet.end());
+						directRealDirectories.insert(dependencyState.RealTargetDirectory);
+
+						recursiveMacroDirectories.insert(dependencyState.MacroTargetDirectory);
+						recursiveMacroDirectories.insert(
+							dependencyState.RecursiveChildMacroTargetDirectorySet.begin(),
+							dependencyState.RecursiveChildMacroTargetDirectorySet.end());
+
+						recursiveMacros.emplace(dependencyState.MacroTargetDirectory.ToString(), dependencyState.RealTargetDirectory.ToString());
+						recursiveMacros.insert(
+							dependencyState.RecursiveChildMacros.begin(),
+							dependencyState.RecursiveChildMacros.end());
 					}
 					else
 					{
@@ -758,7 +767,10 @@ namespace Soup::Core
 				}
 			}
 
-			return std::make_pair(std::move(directDirectories), std::move(recursiveDirectories));
+			return std::make_tuple(
+				std::move(directRealDirectories),
+				std::move(recursiveMacroDirectories),
+				std::move(recursiveMacros));
 		}
 	};
 }
