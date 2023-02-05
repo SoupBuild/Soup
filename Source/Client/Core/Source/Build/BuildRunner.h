@@ -190,6 +190,10 @@ namespace Soup::Core
 			const auto& [directChildRealTargetDirectories, recursiveChildMockTargetDirectories, recursiveChildMacros] =
 				GenerateChildDependenciesTargetDirectorySet(packageInfo);
 
+			// Use the recursive set of macros along with the current targets
+			auto macros = recursiveChildMacros;
+			macros.emplace(macroTargetDirectory.ToString(), realTargetDirectory.ToString());
+
 			//////////////////////////////////////////////
 			// SETUP
 			/////////////////////////////////////////////
@@ -207,6 +211,9 @@ namespace Soup::Core
 			if (hasExistingGraph)
 			{
 				Log::Info("Previous graph found");
+
+				Log::Diag("Resolve build macros in previous graph");
+				ResolveMacros(evaluateGraph, macros);
 
 				Log::Info("Checking for existing Evaluate Operation Results");
 				auto evaluateResultsFile = soupTargetDirectory + BuildConstants::EvaluateResultsFileName();
@@ -239,7 +246,8 @@ namespace Soup::Core
 					soupTargetDirectory,
 					packageGraph.GlobalParameters,
 					directChildRealTargetDirectories,
-					recursiveChildMockTargetDirectories);
+					recursiveChildMockTargetDirectories,
+					macros);
 
 				//////////////////////////////////////////////
 				// SETUP
@@ -259,8 +267,6 @@ namespace Soup::Core
 					}
 
 					Log::Diag("Resolve build macros in new graph");
-					auto macros = recursiveChildMacros;
-					macros.emplace(macroTargetDirectory.ToString(), realTargetDirectory.ToString());
 					ResolveMacros(updatedEvaluateGraph, macros);
 
 					Log::Diag("Map previous operation graph observed results");
@@ -309,7 +315,8 @@ namespace Soup::Core
 			const Path& soupTargetDirectory,
 			const ValueTable& globalParameters,
 			const std::set<Path>& directChildRealTargetDirectories,
-			const std::set<Path>& recursiveChildMockTargetDirectories)
+			const std::set<Path>& recursiveChildMockTargetDirectories,
+			const std::map<std::string, std::string>& macros)
 		{
 			// Clone the global parameters
 			auto parametersTable = ValueTable(globalParameters);
@@ -354,7 +361,6 @@ namespace Soup::Core
 			// Build up the input state for the generate call
 			auto evaluateAllowedReadAccess = std::vector<Path>();
 			auto evaluateAllowedWriteAccess = std::vector<Path>();
-			auto macros = std::map<std::string, std::string>();
 
 			// Allow read access for all sdk directories
 			std::copy(

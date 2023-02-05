@@ -69,6 +69,7 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Checking for existing Evaluate Operation Graph",
 					"INFO: 1>Previous graph found",
+					"DIAG: 1>Resolve build macros in previous graph",
 					"INFO: 1>Checking for existing Evaluate Operation Results",
 					"INFO: 1>Operation results file does not exist",
 					"INFO: 1>No previous results found",

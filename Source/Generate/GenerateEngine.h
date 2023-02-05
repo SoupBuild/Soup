@@ -286,7 +286,8 @@ namespace Soup::Core::Generate
 							{
 								if (moduleBundleValue->second.IsString())
 								{
-									moduleBundle = Path(moduleBundleValue->second.AsString());
+									auto macroModuleBundle = moduleBundleValue->second.AsString();
+									moduleBundle = Path(macroManager.ResolveMacros(macroModuleBundle));
 								}
 								else
 								{
