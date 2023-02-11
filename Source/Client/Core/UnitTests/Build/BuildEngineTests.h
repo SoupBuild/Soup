@@ -87,7 +87,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
@@ -190,15 +190,15 @@ namespace Soup::Core::UnitTests
 						"LanguageExtension",
 						ValueTable(
 						{
-							{ "Bundle", std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Bundles.sml") },
+							{ "Bundle", std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Bundles.sml") },
 							{
 								"Scripts",
 								ValueList(
 								{
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/BuildTask.wren"),
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/RecipeBuildTask.wren"),
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/ResolveDependenciesTask.wren"),
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/ResolveToolsTask.wren"),
+									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/BuildTask.wren"),
+									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/RecipeBuildTask.wren"),
+									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/ResolveDependenciesTask.wren"),
+									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/ResolveToolsTask.wren"),
 								})
 							},
 						})
