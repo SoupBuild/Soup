@@ -28,6 +28,8 @@ namespace Soup::Core::Generate
 				throw std::runtime_error("Failed to load input file.");
 			}
 
+			auto packageRoot = Path(inputTable.at("PackageRoot").AsString());
+
 			// Load the input read access list
 			auto allowedReadAccess = std::vector<Path>();
 			for (auto& value : inputTable.at("ReadAccess").AsList())
@@ -73,13 +75,8 @@ namespace Soup::Core::Generate
 				}
 			}
 
-			auto packageDirectory = Path(inputTable.at("GlobalState")
-				.AsTable().at("Context")
-				.AsTable().at("PackageDirectory")
-				.AsString());
-
 			// Load the recipe file
-			auto recipeFile = packageDirectory + BuildConstants::RecipeFileName();
+			auto recipeFile = packageRoot + BuildConstants::RecipeFileName();
 			Recipe recipe;
 			if (!RecipeExtensions::TryLoadRecipeFromFile(recipeFile, recipe))
 			{

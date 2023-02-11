@@ -177,7 +177,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
-									{ "PackageDirectory", std::string("C:/WorkingDirectory/MyPackage/") },
+									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
 							},
@@ -207,14 +207,16 @@ namespace Soup::Core::UnitTests
 						"Macros",
 						ValueTable(
 						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
 							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/") },
 						})
 					},
+					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
 					{
 						"ReadAccess",
 						ValueList(
 						{
-							std::string("C:/WorkingDirectory/MyPackage/"),
+							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 						})
 					},

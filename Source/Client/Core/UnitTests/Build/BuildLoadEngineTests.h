@@ -467,7 +467,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3"),
+								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml")),
 								std::vector<Path>({
 									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
@@ -487,7 +487,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4"),
+								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml")),
 								std::vector<Path>({
 									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
@@ -672,7 +672,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3"),
+								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
 								std::vector<Path>({
 									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
@@ -1067,7 +1067,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3"),
+								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
 								std::vector<Path>({
 									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
@@ -1357,7 +1357,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4"),
+								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/Recipe.sml")),
 								std::nullopt,
 								std::nullopt,
@@ -1374,7 +1374,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3"),
+								Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml")),
 								std::vector<Path>({
 									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
@@ -1387,7 +1387,7 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageInfo(
 								4,
-								Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2"),
+								Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml")),
 								std::vector<Path>({
 									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
@@ -1608,7 +1608,7 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
-								Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4"),
+								Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml")),
 								std::vector<Path>({
 									Path("C:/testlocation/Extensions/Soup.CSharp/3.3.3/Main/Tasks/Task1.wren"),
@@ -1746,7 +1746,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/Soup.CSharp/2.2.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
-					"DIAG: Graph already loaded: C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3",
+					"DIAG: Graph already loaded: C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1851,7 +1851,7 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3"),
+								Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml")),
 								std::vector<Path>({
 									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),

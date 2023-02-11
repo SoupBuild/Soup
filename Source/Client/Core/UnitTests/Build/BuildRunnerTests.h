@@ -208,7 +208,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
-									{ "PackageDirectory", std::string("C:/WorkingDirectory/MyPackage/") },
+									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
 							},
@@ -241,15 +241,17 @@ namespace Soup::Core::UnitTests
 						"Macros",
 						ValueTable(
 						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
 							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
 						})
 					},
+					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
 					{
 						"ReadAccess",
 						ValueList(
 						{
 							std::string("C:/FakeSDK/"),
-							std::string("C:/WorkingDirectory/MyPackage/"),
+							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 						})
 					},
@@ -405,7 +407,7 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
-							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3"),
+							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/"),
 							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/Recipe.sml")),
 							std::vector<Path>({
 								Path("C:/Extension/Tasks/Language.Build.wren"),
@@ -557,7 +559,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
-									{ "PackageDirectory", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3") },
+									{ "PackageDirectory", std::string("/(PACKAGE_TestBuild)/") },
 									{ "TargetDirectory", std::string("/(TARGET_TestBuild)/") },
 								})
 							},
@@ -590,15 +592,17 @@ namespace Soup::Core::UnitTests
 						"Macros",
 						ValueTable(
 						{
+							{ "/(PACKAGE_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/") },
 							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
 						})
 					},
+					{ "PackageRoot", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/") },
 					{
 						"ReadAccess",
 						ValueList(
 						{
 							std::string("C:/FakeSDK/"),
-							std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3"),
+							std::string("/(PACKAGE_TestBuild)/"),
 							std::string("/(TARGET_TestBuild)/"),
 						})
 					},
@@ -663,7 +667,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
-									{ "PackageDirectory", std::string("C:/WorkingDirectory/MyPackage/") },
+									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
 							},
@@ -721,17 +725,19 @@ namespace Soup::Core::UnitTests
 						"Macros",
 						ValueTable(
 						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
 							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
 							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
 						})
 					},
+					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
 					{
 						"ReadAccess",
 						ValueList(
 						{
 							std::string("C:/FakeSDK/"),
 							std::string("/(TARGET_TestBuild)/"),
-							std::string("C:/WorkingDirectory/MyPackage/"),
+							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 						})
 					},
@@ -902,7 +908,7 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
-							Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3"),
+							Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/"),
 							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/Recipe.sml")),
 							std::vector<Path>({
 								Path("C:/Extension/Tasks/Language.Build.wren"),
@@ -921,7 +927,7 @@ namespace Soup::Core::UnitTests
 						3,
 						PackageInfo(
 							3,
-							Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1"),
+							Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/"),
 							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/Recipe.sml")),
 							std::vector<Path>({
 								Path("C:/Extension/Tasks/Language.Build.wren"),
@@ -1138,7 +1144,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
-									{ "PackageDirectory", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3") },
+									{ "PackageDirectory", std::string("/(PACKAGE_PackageA)/") },
 									{ "TargetDirectory", std::string("/(TARGET_PackageA)/") },
 								})
 							},
@@ -1196,17 +1202,19 @@ namespace Soup::Core::UnitTests
 						"Macros",
 						ValueTable(
 						{
+							{ "/(PACKAGE_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/") },
 							{ "/(TARGET_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
 							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
 						})
 					},
+					{ "PackageRoot", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/") },
 					{
 						"ReadAccess",
 						ValueList(
 						{
 							std::string("C:/FakeSDK/"),
 							std::string("/(TARGET_PackageB)/"),
-							std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3"),
+							std::string("/(PACKAGE_PackageA)/"),
 							std::string("/(TARGET_PackageA)/"),
 						})
 					},
@@ -1253,7 +1261,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
-									{ "PackageDirectory", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1") },
+									{ "PackageDirectory", std::string("/(PACKAGE_PackageB)/") },
 									{ "TargetDirectory", std::string("/(TARGET_PackageB)/") },
 								})
 							},
@@ -1286,15 +1294,17 @@ namespace Soup::Core::UnitTests
 						"Macros",
 						ValueTable(
 						{
+							{ "/(PACKAGE_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/") },
 							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
 						})
 					},
+					{ "PackageRoot", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/") },
 					{
 						"ReadAccess",
 						ValueList(
 						{
 							std::string("C:/FakeSDK/"),
-							std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1"),
+							std::string("/(PACKAGE_PackageB)/"),
 							std::string("/(TARGET_PackageB)/"),
 						})
 					},
@@ -1366,7 +1376,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
-									{ "PackageDirectory", std::string("C:/WorkingDirectory/MyPackage/") },
+									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
 							},
@@ -1438,11 +1448,13 @@ namespace Soup::Core::UnitTests
 						"Macros",
 						ValueTable(
 						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
 							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
 							{ "/(TARGET_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
 							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
 						})
 					},
+					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
 					{
 						"ReadAccess",
 						ValueList(
@@ -1450,7 +1462,7 @@ namespace Soup::Core::UnitTests
 							std::string("C:/FakeSDK/"),
 							std::string("/(TARGET_PackageA)/"),
 							std::string("/(TARGET_PackageB)/"),
-							std::string("C:/WorkingDirectory/MyPackage/"),
+							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 						})
 					},
@@ -1786,7 +1798,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
-									{ "PackageDirectory", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0") },
+									{ "PackageDirectory", std::string("/(PACKAGE_TestBuild)/") },
 									{ "TargetDirectory", std::string("/(TARGET_TestBuild)/") },
 								})
 							},
@@ -1819,15 +1831,17 @@ namespace Soup::Core::UnitTests
 						"Macros",
 						ValueTable(
 						{
+							{ "/(PACKAGE_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0") },
 							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
 						})
 					},
+					{ "PackageRoot", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0") },
 					{
 						"ReadAccess",
 						ValueList(
 						{
 							std::string("C:/FakeSDK/"),
-							std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0"),
+							std::string("/(PACKAGE_TestBuild)/"),
 							std::string("/(TARGET_TestBuild)/"),
 						})
 					},
@@ -1892,7 +1906,7 @@ namespace Soup::Core::UnitTests
 								"Context",
 								ValueTable(
 								{
-									{ "PackageDirectory", std::string("C:/WorkingDirectory/MyPackage/") },
+									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
 							},
@@ -1950,17 +1964,19 @@ namespace Soup::Core::UnitTests
 						"Macros",
 						ValueTable(
 						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
 							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
 							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
 						})
 					},
+					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
 					{
 						"ReadAccess",
 						ValueList(
 						{
 							std::string("C:/FakeSDK/"),
 							std::string("/(TARGET_TestBuild)/"),
-							std::string("C:/WorkingDirectory/MyPackage/"),
+							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 						})
 					},
