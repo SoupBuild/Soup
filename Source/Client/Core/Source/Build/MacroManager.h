@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma once
-#include "FileSystemState.h"
 
 namespace Soup::Core
 {
@@ -16,26 +15,13 @@ namespace Soup::Core
 	class MacroManager
 	{
 	private:
-		FileSystemState& _fileSystemState;
 		const std::map<std::string, std::string>& _macros;
 
 	public:
 		MacroManager(
-			FileSystemState& fileSystemState,
 			const std::map<std::string, std::string>& macros) :
-			_fileSystemState(fileSystemState),
 			_macros(macros)
 		{
-		}
-
-		void ResolveMacros(std::vector<FileId>& value)
-		{
-			for(size_t i = 0; i < value.size(); i++)
-			{
-				Path file = _fileSystemState.GetFilePath(value[i]);
-				auto resolvedFile = ResolveMacros(file);
-				value[i] = _fileSystemState.ToFileId(resolvedFile);
-			}
 		}
 
 		Path ResolveMacros(Path value)

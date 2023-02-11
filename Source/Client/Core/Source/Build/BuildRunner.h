@@ -512,16 +512,26 @@ namespace Soup::Core
 			OperationGraph& operationGraph,
 			const std::map<std::string, std::string>& macros)
 		{
-			auto macroManager = MacroManager(_fileSystemState, macros);
+			auto macroManager = MacroManager(macros);
 			for (auto& [operationId, operation] : operationGraph.GetOperations())
 			{
 				operation.Command.Arguments = macroManager.ResolveMacros(std::move(operation.Command.Arguments));
 				operation.Command.WorkingDirectory = macroManager.ResolveMacros(std::move(operation.Command.WorkingDirectory));
 				operation.Command.Executable = macroManager.ResolveMacros(std::move(operation.Command.Executable));
-				macroManager.ResolveMacros(operation.DeclaredInput);
-				macroManager.ResolveMacros(operation.DeclaredOutput);
-				macroManager.ResolveMacros(operation.ReadAccess);
-				macroManager.ResolveMacros(operation.WriteAccess);
+				ResolveMacros(macroManager, operation.DeclaredInput);
+				ResolveMacros(macroManager, operation.DeclaredOutput);
+				ResolveMacros(macroManager, operation.ReadAccess);
+				ResolveMacros(macroManager, operation.WriteAccess);
+			}
+		}
+
+		void ResolveMacros(MacroManager& macroManager, std::vector<FileId>& value)
+		{
+			for(size_t i = 0; i < value.size(); i++)
+			{
+				Path file = _fileSystemState.GetFilePath(value[i]);
+				auto resolvedFile = macroManager.ResolveMacros(file);
+				value[i] = _fileSystemState.ToFileId(resolvedFile);
 			}
 		}
 

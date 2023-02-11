@@ -46,7 +46,7 @@ namespace Soup::Core::Generate
 				macros.emplace(key, value.AsString());
 
 			// Setup a macro manager to resolve macros
-			auto macroManager = MacroManager(fileSystemState, macros);
+			auto macroManager = MacroManager(macros);
 
 			// Get the required input state from the parameters
 			std::optional<std::vector<Path>> languageExtensionScripts = std::nullopt;
