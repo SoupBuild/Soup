@@ -212,9 +212,6 @@ namespace Soup::Core
 			{
 				Log::Info("Previous graph found");
 
-				Log::Diag("Resolve build macros in previous graph");
-				ResolveMacros(evaluateGraph, macros);
-
 				Log::Info("Checking for existing Evaluate Operation Results");
 				auto evaluateResultsFile = soupTargetDirectory + BuildConstants::EvaluateResultsFileName();
 				if (OperationResultsManager::TryLoadState(
@@ -266,9 +263,6 @@ namespace Soup::Core
 					{
 						throw std::runtime_error("Missing required evaluate operation graph after generate evaluated.");
 					}
-
-					Log::Diag("Resolve build macros in new graph");
-					ResolveMacros(updatedEvaluateGraph, macros);
 
 					Log::Diag("Map previous operation graph observed results");
 					auto updatedEvaluateResults = MergeOperationResults(
@@ -506,33 +500,6 @@ namespace Soup::Core
 			}
 
 			return ranEvaluate;
-		}
-
-		void ResolveMacros(
-			OperationGraph& operationGraph,
-			const std::map<std::string, std::string>& macros)
-		{
-			auto macroManager = MacroManager(macros);
-			for (auto& [operationId, operation] : operationGraph.GetOperations())
-			{
-				operation.Command.Arguments = macroManager.ResolveMacros(std::move(operation.Command.Arguments));
-				operation.Command.WorkingDirectory = macroManager.ResolveMacros(std::move(operation.Command.WorkingDirectory));
-				operation.Command.Executable = macroManager.ResolveMacros(std::move(operation.Command.Executable));
-				ResolveMacros(macroManager, operation.DeclaredInput);
-				ResolveMacros(macroManager, operation.DeclaredOutput);
-				ResolveMacros(macroManager, operation.ReadAccess);
-				ResolveMacros(macroManager, operation.WriteAccess);
-			}
-		}
-
-		void ResolveMacros(MacroManager& macroManager, std::vector<FileId>& value)
-		{
-			for(size_t i = 0; i < value.size(); i++)
-			{
-				Path file = _fileSystemState.GetFilePath(value[i]);
-				auto resolvedFile = macroManager.ResolveMacros(file);
-				value[i] = _fileSystemState.ToFileId(resolvedFile);
-			}
 		}
 
 		OperationResults MergeOperationResults(

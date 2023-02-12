@@ -101,7 +101,8 @@ int main(int argc, char** argv)
 		}
 
 		auto soupTargetDirectory = Path(argv[1]);
-		Soup::Core::Generate::GenerateEngine::Run(soupTargetDirectory);
+		auto generateEngine = Soup::Core::Generate::GenerateEngine();
+		generateEngine.Run(soupTargetDirectory);
 	}
 	catch (const std::exception& ex)
 	{

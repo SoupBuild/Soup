@@ -10,12 +10,16 @@ namespace Soup::Core::Generate
 {
 	class GenerateEngine
 	{
+	private:
+		FileSystemState _fileSystemState;
 	public:
-		static void Run(const Path& soupTargetDirectory)
+		GenerateEngine() :
+			_fileSystemState()
 		{
-			// Initialize a shared File System State to cache file system access
-			auto fileSystemState = FileSystemState();
+		}
 
+		void Run(const Path& soupTargetDirectory)
+		{
 			// Run all build operations in the correct order with incremental build checks
 			Log::Diag("Build generate start: " + soupTargetDirectory.ToString());
 
@@ -146,7 +150,7 @@ namespace Soup::Core::Generate
 			// Evaluate the build extensions
 			auto buildState = GenerateState(
 				globalState,
-				fileSystemState,
+				_fileSystemState,
 				allowedReadAccess,
 				allowedWriteAccess);
 			extensionManager.Execute(buildState);
@@ -161,9 +165,13 @@ namespace Soup::Core::Generate
 			Log::Info("Save Generate Info State: " + generateInfoStateFile.ToString());
 			ValueTableManager::SaveState(generateInfoStateFile, generateInfoTable);
 
+			// Resolve macros before saving evaluate graph
+			Log::Diag("Resolve build macros in evaluate graph");
+			ResolveMacros(macroManager, evaluateGraph);
+
 			// Save the operation graph so the evaluate phase can load it
 			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateGraphFileName();
-			OperationGraphManager::SaveState(evaluateGraphFile, evaluateGraph, fileSystemState);
+			OperationGraphManager::SaveState(evaluateGraphFile, evaluateGraph, _fileSystemState);
 
 			// Save the shared state that is to be passed to the downstream builds
 			auto sharedStateFile = soupTargetDirectory + BuildConstants::GenerateSharedStateFileName();
@@ -330,6 +338,32 @@ namespace Soup::Core::Generate
 			}
 
 			return buildExtensionLibraries;
+		}
+
+		void ResolveMacros(
+			MacroManager& macroManager,
+			OperationGraph& operationGraph)
+		{
+			for (auto& [operationId, operation] : operationGraph.GetOperations())
+			{
+				operation.Command.Arguments = macroManager.ResolveMacros(std::move(operation.Command.Arguments));
+				operation.Command.WorkingDirectory = macroManager.ResolveMacros(std::move(operation.Command.WorkingDirectory));
+				operation.Command.Executable = macroManager.ResolveMacros(std::move(operation.Command.Executable));
+				ResolveMacros(macroManager, operation.DeclaredInput);
+				ResolveMacros(macroManager, operation.DeclaredOutput);
+				ResolveMacros(macroManager, operation.ReadAccess);
+				ResolveMacros(macroManager, operation.WriteAccess);
+			}
+		}
+
+		void ResolveMacros(MacroManager& macroManager, std::vector<FileId>& value)
+		{
+			for(size_t i = 0; i < value.size(); i++)
+			{
+				Path file = _fileSystemState.GetFilePath(value[i]);
+				auto resolvedFile = macroManager.ResolveMacros(file);
+				value[i] = _fileSystemState.ToFileId(resolvedFile);
+			}
 		}
 	};
 }
