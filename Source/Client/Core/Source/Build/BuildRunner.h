@@ -320,29 +320,6 @@ namespace Soup::Core
 			// Pass along internal dependency information
 			inputTable.emplace("Dependencies", GenerateInputDependenciesValueTable(packageInfo));
 
-			// Set the language extension parameters
-			if (packageInfo.LanguageExtensionScripts.has_value())
-			{
-				auto languageExtensionTable = ValueTable();
-
-				auto languageExtensionScripts = ValueList();
-				for (auto& file : packageInfo.LanguageExtensionScripts.value())
-				{
-					languageExtensionScripts.push_back(file.ToString());
-				}
-
-				languageExtensionTable.emplace("Scripts", std::move(languageExtensionScripts));
-
-				if (packageInfo.LanguageExtensionBundle.has_value())
-				{
-					languageExtensionTable.emplace(
-						"Bundle",
-						Value(std::move(packageInfo.LanguageExtensionBundle.value().ToString())));
-				}
-
-				inputTable.emplace("LanguageExtension", std::move(languageExtensionTable));
-			}
-
 			// Setup input that will be included in the global state
 			auto globalState = ValueTable();
 
@@ -442,12 +419,6 @@ namespace Soup::Core
 
 			// Allow read access to the generate executable folder, Windows and the DotNet install
 			generateAllowedReadAccess.push_back(generateFolder);
-
-			// Allow read from the language extension directory
-			if (packageInfo.LanguageExtensionScripts.has_value() && packageInfo.LanguageExtensionScripts.value().size() > 0)
-			{
-				generateAllowedReadAccess.push_back(packageInfo.LanguageExtensionScripts.value().at(0).GetParent());
-			}
 
 			// TODO: Windows specific
 			generateAllowedReadAccess.push_back(Path("C:/Windows/"));
@@ -610,6 +581,16 @@ namespace Soup::Core
 			const PackageInfo& packageInfo)
 		{
 			auto result = ValueTable();
+
+			// Set the language extension parameters
+			// // if (packageInfo.LanguageExtensionPath.has_value())
+			// // {
+			// // 	inputTable.emplace(
+			// // 		"LanguageExtension",
+			// // 		std::move(packageInfo.LanguageExtensionPath.value().ToString()));
+
+			// // 	result.emplace(dependencyTypeKey, Value(std::move(dependencyTypeTable)));
+			// // }
 
 			for (const auto& [dependencyTypeKey, dependencyTypeValue] : packageInfo.Dependencies)
 			{

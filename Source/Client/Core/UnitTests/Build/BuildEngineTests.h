@@ -86,7 +86,6 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
@@ -150,7 +149,7 @@ namespace Soup::Core::UnitTests
 
 			Assert::AreEqual(
 				std::vector<std::string>({
-					"CreateMonitorProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [6] AllowedWrite [1]",
+					"CreateMonitorProcess: 1 [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/ Environment [2] 1 AllowedRead [5] AllowedWrite [1]",
 					"ProcessStart: 1",
 					"WaitForExit: 1",
 					"GetStandardOutput: 1",
@@ -182,23 +181,6 @@ namespace Soup::Core::UnitTests
 							{ "Dependencies", ValueTable() },
 							{ "Parameters", ValueTable() },
 							{ "SDKs", ValueList() },
-						})
-					},
-					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Bundles.sml") },
-							{
-								"Scripts",
-								ValueList(
-								{
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/BuildTask.wren"),
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/RecipeBuildTask.wren"),
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/ResolveDependenciesTask.wren"),
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/ResolveToolsTask.wren"),
-								})
-							},
 						})
 					},
 					{

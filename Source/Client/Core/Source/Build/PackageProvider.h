@@ -66,14 +66,10 @@ namespace Soup::Core
 			PackageId id,
 			Path packageRoot,
 			const Recipe& recipe,
-			std::optional<std::vector<Path>> languageExtensionScripts,
-			std::optional<Path> languageExtensionBundle,
 			PackageChildrenMap dependencies) :
 			Id(id),
 			PackageRoot(std::move(packageRoot)),
 			Recipe(recipe),
-			LanguageExtensionScripts(std::move(languageExtensionScripts)),
-			LanguageExtensionBundle(std::move(languageExtensionBundle)),
 			Dependencies(std::move(dependencies))
 		{
 		}
@@ -81,8 +77,6 @@ namespace Soup::Core
 		PackageId Id;
 		Path PackageRoot;
 		const ::Soup::Core::Recipe& Recipe;
-		std::optional<std::vector<Path>> LanguageExtensionScripts;
-		std::optional<Path> LanguageExtensionBundle;
 		PackageChildrenMap Dependencies;
 
 		/// <summary>
@@ -93,8 +87,6 @@ namespace Soup::Core
 			return Id == rhs.Id &&
 				PackageRoot == rhs.PackageRoot &&
 				Recipe == rhs.Recipe &&
-				LanguageExtensionScripts == rhs.LanguageExtensionScripts &&
-				LanguageExtensionBundle == rhs.LanguageExtensionBundle &&
 				Dependencies == rhs.Dependencies;
 		}
 

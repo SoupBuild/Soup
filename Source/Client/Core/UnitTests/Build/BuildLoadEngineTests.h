@@ -53,24 +53,14 @@ namespace Soup::Core::UnitTests
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(1, 1, 1),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(1, 1, 1))
 				},
 				{
 					"C#",
 					BuiltInLanguagePackage(
 						"CSharp",
 						"Soup.CSharp",
-						SemanticVersion(2, 2, 2),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(2, 2, 2))
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -145,11 +135,6 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -187,24 +172,14 @@ namespace Soup::Core::UnitTests
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(1, 1, 1),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(1, 1, 1))
 				},
 				{
 					"C#",
 					BuiltInLanguagePackage(
 						"CSharp",
 						"Soup.CSharp",
-						SemanticVersion(2, 2, 2),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(2, 2, 2))
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -279,11 +254,6 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -344,24 +314,14 @@ namespace Soup::Core::UnitTests
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(1, 1, 1),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(1, 1, 1))
 				},
 				{
 					"C#",
 					BuiltInLanguagePackage(
 						"CSharp",
 						"Soup.CSharp",
-						SemanticVersion(2, 2, 2),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(2, 2, 2))
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -448,11 +408,6 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Bundles.sml"),
 								PackageChildrenMap({
 									{
 										"Runtime",
@@ -469,11 +424,6 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Bundles.sml"),
 								PackageChildrenMap({
 									{
 										"Runtime",
@@ -489,11 +439,6 @@ namespace Soup::Core::UnitTests
 								3,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -543,24 +488,14 @@ namespace Soup::Core::UnitTests
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(1, 1, 1),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(1, 1, 1))
 				},
 				{
 					"Wren",
 					BuiltInLanguagePackage(
 						"Wren",
 						"Soup.Wren",
-						SemanticVersion(2, 2, 2),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(2, 2, 2))
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -654,11 +589,6 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Bundles.sml"),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -674,11 +604,6 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -728,24 +653,14 @@ namespace Soup::Core::UnitTests
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(1, 1, 1),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(1, 1, 1))
 				},
 				{
 					"Wren",
 					BuiltInLanguagePackage(
 						"Wren",
 						"Soup.Wren",
-						SemanticVersion(2, 2, 2),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(2, 2, 2))
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -837,11 +752,6 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Bundles.sml"),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -857,11 +767,6 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/WorkingDirectory/TestBuild/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/TestBuild/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -931,24 +836,14 @@ namespace Soup::Core::UnitTests
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(1, 1, 1),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(1, 1, 1))
 				},
 				{
 					"Wren",
 					BuiltInLanguagePackage(
 						"Wren",
 						"Soup.Wren",
-						SemanticVersion(2, 2, 2),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(2, 2, 2))
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1049,11 +944,6 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Bundles.sml"),
 								PackageChildrenMap({
 									{
 										"Build",
@@ -1069,11 +959,6 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -1174,24 +1059,14 @@ namespace Soup::Core::UnitTests
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(1, 1, 1),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(1, 1, 1))
 				},
 				{
 					"Wren",
 					BuiltInLanguagePackage(
 						"Wren",
 						"Soup.Wren",
-						SemanticVersion(2, 2, 2),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(2, 2, 2))
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1341,8 +1216,6 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								std::nullopt,
-								std::nullopt,
 								PackageChildrenMap({
 									{
 										"Build",
@@ -1359,8 +1232,6 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/Recipe.sml")),
-								std::nullopt,
-								std::nullopt,
 								PackageChildrenMap({
 									{
 										"Build",
@@ -1376,11 +1247,6 @@ namespace Soup::Core::UnitTests
 								3,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Bundles.sml"),
 								PackageChildrenMap())
 						},
 						{
@@ -1389,11 +1255,6 @@ namespace Soup::Core::UnitTests
 								4,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -1471,36 +1332,21 @@ namespace Soup::Core::UnitTests
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(1, 1, 1),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(1, 1, 1))
 				},
 				{
 					"Wren",
 					BuiltInLanguagePackage(
 						"Wren",
 						"Soup.Wren",
-						SemanticVersion(2, 2, 2),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(2, 2, 2))
 				},
 				{
 					"C#",
 					BuiltInLanguagePackage(
 						"CSharp",
 						"Soup.CSharp",
-						SemanticVersion(3, 3, 3),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(3, 3, 3))
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1590,11 +1436,6 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Cpp/1.1.1/Bundles.sml"),
 								PackageChildrenMap({
 									{
 										"Other",
@@ -1610,11 +1451,6 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.CSharp/3.3.3/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.CSharp/3.3.3/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.CSharp/3.3.3/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
@@ -1691,24 +1527,14 @@ namespace Soup::Core::UnitTests
 					BuiltInLanguagePackage(
 						"Wren",
 						"Soup.Wren",
-						SemanticVersion(2, 2, 2),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(2, 2, 2))
 				},
 				{
 					"C#",
 					 BuiltInLanguagePackage(
 						"CSharp",
 						"Soup.CSharp",
-						SemanticVersion(3, 3, 3),
-						{
-							Path("Main/Tasks/Task1.wren"),
-							Path("Main/Tasks/Task2.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(3, 3, 3))
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1813,8 +1639,6 @@ namespace Soup::Core::UnitTests
 								1,
 								Path("C:/WorkingDirectory/MyPackage/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-								std::nullopt,
-								std::nullopt,
 								PackageChildrenMap({
 									{
 										"Build",
@@ -1836,8 +1660,6 @@ namespace Soup::Core::UnitTests
 								2,
 								Path("C:/WorkingDirectory/Package1/"),
 								recipeCache.GetRecipe(Path("C:/WorkingDirectory/Package1/Recipe.sml")),
-								std::nullopt,
-								std::nullopt,
 								PackageChildrenMap({
 									{
 										"Build",
@@ -1853,11 +1675,6 @@ namespace Soup::Core::UnitTests
 								3,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/"),
 								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml")),
-								std::vector<Path>({
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task1.wren"),
-									Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Main/Tasks/Task2.wren"),
-								}),
-								Path("C:/testlocation/Extensions/Soup.Wren/2.2.2/Bundles.sml"),
 								PackageChildrenMap())
 						},
 					})),
