@@ -16,18 +16,18 @@ Closures: {
 	}
 	Build0: {
 		"Wren": [
-			{ Name: "Soup.Cpp", Version: "0.6.1" }
+			{ Name: "Soup.Cpp", Version: "0.6.2" }
 		]
 	}
 	Build1: {
 		"Wren": [
-			{ Name: "Soup.Cpp", Version: "0.6.1" }
-			{ Name: "Soup.Test.Cpp", Version: "0.4.0" }
+			{ Name: "Soup.Cpp", Version: "0.6.2" }
+			{ Name: "Soup.Test.Cpp", Version: "0.5.2" }
 		]
 	}
 	Build2: {
 		"Wren": [
-			{ Name: "Soup.Cpp", Version: "0.6.1" }
+			{ Name: "Soup.Cpp", Version: "0.6.2" }
 		]
 	}
 }

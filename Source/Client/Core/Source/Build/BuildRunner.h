@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "MacroManager.h"
 #include "IEvaluateEngine.h"
 #include "BuildConstants.h"
 #include "BuildFailedException.h"
@@ -16,7 +17,6 @@
 #include "Utils/HandledException.h"
 #include "ValueTable/ValueTableManager.h"
 #include "Recipe/RecipeBuildStateConverter.h"
-#include "PathList/PathListManager.h"
 
 namespace Soup::Core
 {
@@ -176,16 +176,23 @@ namespace Soup::Core
 			Log::Info("Build '" + packageInfo.Recipe.GetName() + "'");
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto targetDirectory = _locationManager.GetOutputDirectory(
+			auto macroPackageDirectory = Path("/(PACKAGE_" + packageInfo.Recipe.GetName() + ")/");
+			auto macroTargetDirectory = Path("/(TARGET_" + packageInfo.Recipe.GetName() + ")/");
+			auto realTargetDirectory = _locationManager.GetOutputDirectory(
 				packageInfo.PackageRoot,
 				packageInfo.Recipe,
 				packageGraph.GlobalParameters,
 				_recipeCache);
-			auto soupTargetDirectory = targetDirectory + BuildConstants::SoupTargetDirectory();
+			auto soupTargetDirectory = realTargetDirectory + BuildConstants::SoupTargetDirectory();
 
 			// Build up the child target directory set
-			const auto& [directChildTargetDirectories, recursiveChildTargetDirectories] =
+			const auto& [directChildRealTargetDirectories, recursiveChildMockTargetDirectories, recursiveChildMacros] =
 				GenerateChildDependenciesTargetDirectorySet(packageInfo);
+
+			// Use the recursive set of macros along with the current targets
+			auto macros = recursiveChildMacros;
+			macros.emplace(macroPackageDirectory.ToString(), packageInfo.PackageRoot.ToString());
+			macros.emplace(macroTargetDirectory.ToString(), realTargetDirectory.ToString());
 
 			//////////////////////////////////////////////
 			// SETUP
@@ -231,11 +238,14 @@ namespace Soup::Core
 			{
 				auto ranGenerate = RunIncrementalGenerate(
 					packageInfo,
-					targetDirectory,
+					macroPackageDirectory,
+					macroTargetDirectory,
+					realTargetDirectory,
 					soupTargetDirectory,
 					packageGraph.GlobalParameters,
-					directChildTargetDirectories,
-					recursiveChildTargetDirectories);
+					directChildRealTargetDirectories,
+					recursiveChildMockTargetDirectories,
+					macros);
 
 				//////////////////////////////////////////////
 				// SETUP
@@ -255,24 +265,10 @@ namespace Soup::Core
 					}
 
 					Log::Diag("Map previous operation graph observed results");
-					auto updatedEvaluateResults = OperationResults();
-					for (auto& updatedOperationEntry : updatedEvaluateGraph.GetOperations())
-					{
-						auto& updatedOperation = updatedOperationEntry.second;
-
-						// Check if the new operation command existing in the previous set too
-						OperationId previousOperationId;
-						if (evaluateGraph.TryFindOperation(updatedOperation.Command, previousOperationId))
-						{
-							// Check if there is an existing result for the previous operation
-							OperationResult* previousOperationResult;
-							if (evaluateResults.TryFindResult(previousOperationId, previousOperationResult))
-							{
-								// Move this result into the updated results store
-								updatedEvaluateResults.AddOrUpdateOperationResult(updatedOperation.Id, std::move(*previousOperationResult));
-							}
-						}
-					}
+					auto updatedEvaluateResults = MergeOperationResults(
+						evaluateGraph,
+						evaluateResults,
+						updatedEvaluateGraph);
 
 					// Replace the previous operation graph and results
 					evaluateGraph = std::move(updatedEvaluateGraph);
@@ -288,7 +284,7 @@ namespace Soup::Core
 				RunEvaluate(
 					evaluateGraph,
 					evaluateResults,
-					targetDirectory,
+					realTargetDirectory,
 					soupTargetDirectory);
 			}
 
@@ -297,9 +293,11 @@ namespace Soup::Core
 				packageInfo.Id,
 				RecipeBuildCacheState(
 					packageInfo.Recipe.GetName(),
-					std::move(targetDirectory),
+					std::move(macroTargetDirectory),
+					std::move(realTargetDirectory),
 					std::move(soupTargetDirectory),
-					std::move(recursiveChildTargetDirectories)));
+					std::move(recursiveChildMockTargetDirectories),
+					std::move(recursiveChildMacros)));
 		}
 
 		/// <summary>
@@ -307,16 +305,22 @@ namespace Soup::Core
 		/// </summary>
 		bool RunIncrementalGenerate(
 			const PackageInfo& packageInfo,
-			const Path& targetDirectory,
+			const Path& macroPackageDirectory,
+			const Path& macroTargetDirectory,
+			const Path& realTargetDirectory,
 			const Path& soupTargetDirectory,
 			const ValueTable& globalParameters,
-			const std::set<Path>& directChildTargetDirectories,
-			const std::set<Path>& recursiveChildTargetDirectories)
+			const std::set<Path>& directChildRealTargetDirectories,
+			const std::set<Path>& recursiveChildMockTargetDirectories,
+			const std::map<std::string, std::string>& macros)
 		{
 			// Clone the global parameters
-			auto parametersTable = ValueTable(globalParameters);
+			auto inputTable = ValueTable();
 
-			// Set the input parameters
+			// Pass along internal dependency information
+			inputTable.emplace("Dependencies", GenerateInputDependenciesValueTable(packageInfo));
+
+			// Set the language extension parameters
 			if (packageInfo.LanguageExtensionScripts.has_value())
 			{
 				auto languageExtensionTable = ValueTable();
@@ -324,10 +328,10 @@ namespace Soup::Core
 				auto languageExtensionScripts = ValueList();
 				for (auto& file : packageInfo.LanguageExtensionScripts.value())
 				{
-					languageExtensionScripts.push_back(Value(file.ToString()));
+					languageExtensionScripts.push_back(file.ToString());
 				}
 
-				languageExtensionTable.emplace("Scripts", Value(std::move(languageExtensionScripts)));
+				languageExtensionTable.emplace("Scripts", std::move(languageExtensionScripts));
 
 				if (packageInfo.LanguageExtensionBundle.has_value())
 				{
@@ -336,60 +340,63 @@ namespace Soup::Core
 						Value(std::move(packageInfo.LanguageExtensionBundle.value().ToString())));
 				}
 
-				parametersTable.emplace("LanguageExtension", Value(std::move(languageExtensionTable)));
+				inputTable.emplace("LanguageExtension", std::move(languageExtensionTable));
 			}
 
-			parametersTable.emplace("PackageDirectory", Value(packageInfo.PackageRoot.ToString()));
-			parametersTable.emplace("TargetDirectory", Value(targetDirectory.ToString()));
-			parametersTable.emplace("SoupTargetDirectory", Value(soupTargetDirectory.ToString()));
-			parametersTable.emplace("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
-			parametersTable.emplace("SDKs", _sdkParameters);
+			// Setup input that will be included in the global state
+			auto globalState = ValueTable();
 
-			auto parametersFile = soupTargetDirectory + BuildConstants::GenerateParametersFileName();
-			Log::Info("Check outdated parameters file: " + parametersFile.ToString());
-			if (IsOutdated(parametersTable, parametersFile))
-			{
-				Log::Info("Save Parameters file");
-				ValueTableManager::SaveState(parametersFile, parametersTable);
-			}
+			// Setup environment context generated by build runner
+			auto context = ValueTable();
+			context.emplace("PackageDirectory", macroPackageDirectory.ToString());
+			context.emplace("TargetDirectory", macroTargetDirectory.ToString());
+			globalState.emplace("Context", std::move(context));
 
-			// Initialize the read access with the shared global set
-			auto evaluateAllowedReadAccess = std::vector<Path>();
-			auto evaluateAllowedWriteAccess = std::vector<Path>();
+			// Pass along the parameters
+			globalState.emplace("Parameters", globalParameters);
+
+			// Generate the dependencies input state
+			globalState.emplace("Dependencies", GenerateParametersDependenciesValueTable(packageInfo));
+
+			// Pass along the sdks
+			globalState.emplace("SDKs", _sdkParameters);
+
+			inputTable.emplace("GlobalState", std::move(globalState));
+
+			// Build up the input state for the generate call
+			auto evaluateAllowedReadAccess = ValueList();
+			auto evaluateAllowedWriteAccess = ValueList();
+			auto macroTable = ValueTable();
 
 			// Allow read access for all sdk directories
-			std::copy(
-				_sdkReadAccess.begin(),
-				_sdkReadAccess.end(),
-				std::back_inserter(evaluateAllowedReadAccess));
+			for (auto& value : _sdkReadAccess)
+				evaluateAllowedReadAccess.push_back(value.ToString());
 
 			// Allow read access for all recursive dependencies target directories
-			std::copy(
-				recursiveChildTargetDirectories.begin(),
-				recursiveChildTargetDirectories.end(),
-				std::back_inserter(evaluateAllowedReadAccess));
+			for (auto& value : recursiveChildMockTargetDirectories)
+				evaluateAllowedReadAccess.push_back(value.ToString());
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
-			evaluateAllowedReadAccess.push_back(packageInfo.PackageRoot);
-			evaluateAllowedReadAccess.push_back(targetDirectory);
+			evaluateAllowedReadAccess.push_back(macroPackageDirectory.ToString());
+			evaluateAllowedReadAccess.push_back(macroTargetDirectory.ToString());
 
 			// Only allow writing to the target directory
-			evaluateAllowedWriteAccess.push_back(targetDirectory);
+			evaluateAllowedWriteAccess.push_back(macroTargetDirectory.ToString());
 
-			auto readAccessFile = soupTargetDirectory + BuildConstants::GenerateReadAccessFileName();
-			Log::Info("Check outdated read access file: " + readAccessFile.ToString());
-			if (IsOutdated(evaluateAllowedReadAccess, readAccessFile))
-			{
-				Log::Info("Save Read Access file");
-				PathListManager::Save(readAccessFile, evaluateAllowedReadAccess);
-			}
+			for (auto& [key, value] : macros)
+				macroTable.emplace(key, value);
 
-			auto writeAccessFile = soupTargetDirectory + BuildConstants::GenerateWriteAccessFileName();
-			Log::Info("Check outdated write access file: " + writeAccessFile.ToString());
-			if (IsOutdated(evaluateAllowedWriteAccess, writeAccessFile))
+			inputTable.emplace("PackageRoot", packageInfo.PackageRoot.ToString());
+			inputTable.emplace("ReadAccess", std::move(evaluateAllowedReadAccess));
+			inputTable.emplace("WriteAccess", std::move(evaluateAllowedWriteAccess));
+			inputTable.emplace("Macros", std::move(macroTable));
+
+			auto inputFile = soupTargetDirectory + BuildConstants::GenerateInputFileName();
+			Log::Info("Check outdated generate input file: " + inputFile.ToString());
+			if (IsOutdated(inputTable, inputFile))
 			{
-				Log::Info("Save Write Access file");
-				PathListManager::Save(writeAccessFile, evaluateAllowedWriteAccess);
+				Log::Info("Save Generate Input file");
+				ValueTableManager::SaveState(inputFile, inputTable);
 			}
 
 			// Run the incremental generate
@@ -448,16 +455,16 @@ namespace Soup::Core
 
 			// Allow reading from the package root (source input) and the target directory (intermediate output)
 			generateAllowedReadAccess.push_back(packageInfo.PackageRoot);
-			generateAllowedReadAccess.push_back(targetDirectory);
+			generateAllowedReadAccess.push_back(realTargetDirectory);
 
 			// Allow read access for all direct dependencies target directories and write to own targets
 			// TODO: This is needed to get the shared properties, this may be better to do in process
 			// and only allow read access to build dependencies.
 			std::copy(
-				directChildTargetDirectories.begin(),
-				directChildTargetDirectories.end(),
+				directChildRealTargetDirectories.begin(),
+				directChildRealTargetDirectories.end(),
 				std::back_inserter(generateAllowedReadAccess));
-			generateAllowedWriteAccess.push_back(targetDirectory);
+			generateAllowedWriteAccess.push_back(realTargetDirectory);
 
 			// Load the previous build results if it exists
 			Log::Info("Checking for existing Generate Operation Results");
@@ -476,7 +483,7 @@ namespace Soup::Core
 			}
 
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + BuildConstants::TemporaryFolderName();
+			auto temporaryDirectory = realTargetDirectory + BuildConstants::TemporaryFolderName();
 
 			// Evaluate the Generate phase
 			bool ranEvaluate = _evaluateEngine.Evaluate(
@@ -495,14 +502,39 @@ namespace Soup::Core
 			return ranEvaluate;
 		}
 
+		OperationResults MergeOperationResults(
+			const OperationGraph& previousGraph,
+			OperationResults& previousResults,
+			const OperationGraph& updatedGraph)
+		{
+			auto updatedResults = OperationResults();
+			for (auto& [operationId, updatedOperation] : updatedGraph.GetOperations())
+			{
+				// Check if the new operation command existing in the previous set too
+				OperationId previousOperationId;
+				if (previousGraph.TryFindOperation(updatedOperation.Command, previousOperationId))
+				{
+					// Check if there is an existing result for the previous operation
+					OperationResult* previousOperationResult;
+					if (previousResults.TryFindResult(previousOperationId, previousOperationResult))
+					{
+						// Move this result into the updated results store
+						updatedResults.AddOrUpdateOperationResult(updatedOperation.Id, std::move(*previousOperationResult));
+					}
+				}
+			}
+
+			return updatedResults;
+		}
+
 		void RunEvaluate(
 			const OperationGraph& evaluateGraph,
 			OperationResults& evaluateResults,
-			const Path& targetDirectory,
+			const Path& realTargetDirectory,
 			const Path& soupTargetDirectory)
 		{
 			// Set the temporary folder under the target folder
-			auto temporaryDirectory = targetDirectory + BuildConstants::TemporaryFolderName();
+			auto temporaryDirectory = realTargetDirectory + BuildConstants::TemporaryFolderName();
 
 			// Initialize the read access with the shared global set
 			auto allowedReadAccess = std::vector<Path>();
@@ -574,22 +606,7 @@ namespace Soup::Core
 			}
 		}
 
-		bool IsOutdated(const std::vector<Path>& fileList, const Path& pathListFile)
-		{
-			// Load up the existing path list file and check if our state matches the previous
-			// to ensure incremental builds function correctly
-			auto previousFileList = std::vector<Path>();
-			if (PathListManager::TryLoad(pathListFile, previousFileList))
-			{
-				return previousFileList != fileList;
-			}
-			else
-			{
-				return true;
-			}
-		}
-
-		ValueTable GenerateParametersDependenciesValueTable(
+		ValueTable GenerateInputDependenciesValueTable(
 			const PackageInfo& packageInfo)
 		{
 			auto result = ValueTable();
@@ -618,14 +635,6 @@ namespace Soup::Core
 							dependencyState.Name,
 							Value(ValueTable({
 								{
-									"Reference",
-									Value(dependency.OriginalReference.ToString())
-								},
-								{
-									"TargetDirectory",
-									Value(dependencyState.TargetDirectory.ToString())
-								},
-								{
 									"SoupTargetDirectory",
 									Value(dependencyState.SoupTargetDirectory.ToString())
 								},
@@ -644,11 +653,67 @@ namespace Soup::Core
 			return result;
 		}
 
-		std::pair<std::set<Path>, std::set<Path>> GenerateChildDependenciesTargetDirectorySet(
+		ValueTable GenerateParametersDependenciesValueTable(
 			const PackageInfo& packageInfo)
 		{
-			auto directDirectories = std::set<Path>();
-			auto recursiveDirectories = std::set<Path>();
+			auto result = ValueTable();
+
+			for (const auto& [dependencyTypeKey, dependencyTypeValue] : packageInfo.Dependencies)
+			{
+				auto dependencyTypeTable = ValueTable();
+				for (auto& dependency : dependencyTypeValue)
+				{
+					// Load this package recipe
+					auto dependencyPackageId = dependency.PackageId;
+					if (dependency.IsSubGraph)
+					{
+						auto& dependencyPackageGraph = _packageProvider.GetPackageGraph(dependency.PackageGraphId);
+						dependencyPackageId = dependencyPackageGraph.RootPackageId;
+					}
+
+					auto& dependencyPackageInfo = _packageProvider.GetPackageInfo(dependencyPackageId);
+
+					// Grab the build state for upstream dependencies
+					auto findBuildCache = _buildCache.find(dependencyPackageInfo.Id);
+					if (findBuildCache != _buildCache.end())
+					{
+						auto& dependencyState = findBuildCache->second;
+						auto contextTable = ValueTable({
+							{
+								"Reference",
+								Value(dependency.OriginalReference.ToString())
+							},
+							{
+								"TargetDirectory",
+								Value(dependencyState.MacroTargetDirectory.ToString())
+							},
+						});
+
+						dependencyTypeTable.emplace(
+							dependencyState.Name,
+							Value(ValueTable({
+								{ "Context", std::move(contextTable) },
+							})));
+					}
+					else
+					{
+						Log::Error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
+						throw std::runtime_error("Dependency does not exist in build cache: " + dependencyPackageInfo.PackageRoot.ToString());
+					}
+				}
+
+				result.emplace(dependencyTypeKey, Value(std::move(dependencyTypeTable)));
+			}
+
+			return result;
+		}
+
+		std::tuple<std::set<Path>, std::set<Path>, std::map<std::string, std::string>> GenerateChildDependenciesTargetDirectorySet(
+			const PackageInfo& packageInfo)
+		{
+			auto directRealDirectories = std::set<Path>();
+			auto recursiveMacroDirectories = std::set<Path>();
+			auto recursiveMacros = std::map<std::string, std::string>();
 			for (auto& dependencyType : packageInfo.Dependencies)
 			{
 				for (auto& dependency : dependencyType.second)
@@ -669,9 +734,17 @@ namespace Soup::Core
 					{
 						// Combine the child dependency target and the recursive children
 						auto& dependencyState = findBuildCache->second;
-						directDirectories.insert(dependencyState.TargetDirectory);
-						recursiveDirectories.insert(dependencyState.TargetDirectory);
-						recursiveDirectories.insert(dependencyState.RecursiveChildTargetDirectorySet.begin(), dependencyState.RecursiveChildTargetDirectorySet.end());
+						directRealDirectories.insert(dependencyState.RealTargetDirectory);
+
+						recursiveMacroDirectories.insert(dependencyState.MacroTargetDirectory);
+						recursiveMacroDirectories.insert(
+							dependencyState.RecursiveChildMacroTargetDirectorySet.begin(),
+							dependencyState.RecursiveChildMacroTargetDirectorySet.end());
+
+						recursiveMacros.emplace(dependencyState.MacroTargetDirectory.ToString(), dependencyState.RealTargetDirectory.ToString());
+						recursiveMacros.insert(
+							dependencyState.RecursiveChildMacros.begin(),
+							dependencyState.RecursiveChildMacros.end());
 					}
 					else
 					{
@@ -681,7 +754,10 @@ namespace Soup::Core
 				}
 			}
 
-			return std::make_pair(std::move(directDirectories), std::move(recursiveDirectories));
+			return std::make_tuple(
+				std::move(directRealDirectories),
+				std::move(recursiveMacroDirectories),
+				std::move(recursiveMacros));
 		}
 	};
 }

@@ -235,7 +235,7 @@ namespace Soup::Core
 					packagePath = packageStore +
 						Path(languageSafeName) +
 						Path(activeReference.GetName()) +
-						Path(activeReference.GetVersion().ToString());
+						Path(activeReference.GetVersion().ToString() + "/");
 				}
 			}
 
@@ -280,7 +280,7 @@ namespace Soup::Core
 					packagePath = packageStore +
 						Path(languageSafeName) +
 						Path(activeReference.GetName()) +
-						Path(activeReference.GetVersion().ToString());
+						Path(activeReference.GetVersion().ToString() + "/");
 				}
 			}
 
@@ -654,7 +654,7 @@ namespace Soup::Core
 					auto extensionRoot = processDirectory +
 						_builtInExtensionPath +
 						Path(builtInLanguagePackage.ExtensionName) +
-						Path(activeReference.GetVersion().ToString());
+						Path(activeReference.GetVersion().ToString() + "/");
 
 					auto extensionFiles = std::vector<Path>();
 					for (auto& file : builtInLanguagePackage.ExtensionFiles)

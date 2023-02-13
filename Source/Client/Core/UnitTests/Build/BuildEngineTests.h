@@ -72,17 +72,9 @@ namespace Soup::Core::UnitTests
 					"INFO: 1>Checking for existing Evaluate Operation Results",
 					"INFO: 1>Operation results file does not exist",
 					"INFO: 1>No previous results found",
-					"INFO: 1>Check outdated parameters file: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
+					"INFO: 1>Check outdated generate input file: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateInput.bvt",
 					"INFO: 1>Value Table file does not exist",
-					"INFO: 1>Save Parameters file",
-					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"INFO: 1>Check outdated read access file: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateReadAccess.txt",
-					"INFO: 1>Path list file does not exist",
-					"INFO: 1>Save Read Access file",
-					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"INFO: 1>Check outdated write access file: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateWriteAccess.txt",
-					"INFO: 1>Path list file does not exist",
-					"INFO: 1>Save Write Access file",
+					"INFO: 1>Save Generate Input file",
 					"INFO: 1>Create Directory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"INFO: 1>Checking for existing Generate Operation Results",
 					"INFO: 1>Operation results file does not exist",
@@ -94,7 +86,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/",
+					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
@@ -133,18 +125,10 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bor",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
+					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateInput.bvt",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateReadAccess.txt",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateReadAccess.txt",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateWriteAccess.txt",
-					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"CreateDirectory: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
-					"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateWriteAccess.txt",
+					"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateInput.bvt",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor",
 					"OpenWriteBinary: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Generate.bor",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
@@ -177,49 +161,72 @@ namespace Soup::Core::UnitTests
 				"Verify monitor process manager requests match expected.");
 
 			// Verify files
-			auto myPackageGenerateParametersMockFile = fileSystem->GetMockFile(
-				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateParameters.bvt"));
+			auto myPackageGenerateInputMockFile = fileSystem->GetMockFile(
+				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateInput.bvt"));
 			Assert::AreEqual(
 				ValueTable(
 				{
-					{ "Dependencies", Value(ValueTable()) },
+					{ "Dependencies", ValueTable() },
+					{
+						"GlobalState",
+						ValueTable(
+						{
+							{
+								"Context",
+								ValueTable(
+								{
+									{ "PackageDirectory", std::string("/(PACKAGE_MyPackage)/") },
+									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
+								})
+							},
+							{ "Dependencies", ValueTable() },
+							{ "Parameters", ValueTable() },
+							{ "SDKs", ValueList() },
+						})
+					},
 					{
 						"LanguageExtension",
-						Value(ValueTable(
+						ValueTable(
 						{
-							{ "Bundle", Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Bundles.sml")) },
+							{ "Bundle", std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Bundles.sml") },
 							{
 								"Scripts",
-								Value(ValueList(
+								ValueList(
 								{
-									Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/BuildTask.wren")),
-									Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/RecipeBuildTask.wren")),
-									Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/ResolveDependenciesTask.wren")),
-									Value(std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.1/Main/Tasks/ResolveToolsTask.wren")),
-								}))
+									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/BuildTask.wren"),
+									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/RecipeBuildTask.wren"),
+									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/ResolveDependenciesTask.wren"),
+									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/ResolveToolsTask.wren"),
+								})
 							},
-						}))
+						})
 					},
-					{ "PackageDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/")) },
-					{ "SDKs", Value(ValueList()) },
-					{ "SoupTargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/")) },
-					{ "TargetDirectory", Value(std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/")) },
+					{
+						"Macros",
+						ValueTable(
+						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
+							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/") },
+						})
+					},
+					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
+					{
+						"ReadAccess",
+						ValueList(
+						{
+							std::string("/(PACKAGE_MyPackage)/"),
+							std::string("/(TARGET_MyPackage)/"),
+						})
+					},
+					{
+						"WriteAccess",
+						ValueList(
+						{
+							std::string("/(TARGET_MyPackage)/"),
+						})
+					},
 				}),
-				ValueTableReader::Deserialize(myPackageGenerateParametersMockFile->Content),
-				"Verify file content match expected.");
-
-			auto myPackageGenerateReadAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateReadAccess.txt"));
-			Assert::AreEqual(
-				"C:/WorkingDirectory/MyPackage/\nC:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
-				myPackageGenerateReadAccessMockFile->Content.str(),
-				"Verify file content match expected.");
-
-			auto myPackageGenerateWriteAccessMockFile = fileSystem->GetMockFile(
-				Path("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/GenerateWriteAccess.txt"));
-			Assert::AreEqual(
-				"C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/\n",
-				myPackageGenerateWriteAccessMockFile->Content.str(),
+				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),
 				"Verify file content match expected.");
 
 			auto myPackageGenerateResultsMockFile = fileSystem->GetMockFile(

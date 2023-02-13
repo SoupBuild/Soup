@@ -10,44 +10,53 @@ namespace Soup::Core::Generate
 {
 	class GenerateEngine
 	{
+	private:
+		FileSystemState _fileSystemState;
 	public:
-		static void Run(const Path& soupTargetDirectory)
+		GenerateEngine() :
+			_fileSystemState()
+		{
+		}
+
+		void Run(const Path& soupTargetDirectory)
 		{
 			// Run all build operations in the correct order with incremental build checks
 			Log::Diag("Build generate start: " + soupTargetDirectory.ToString());
 
-			// Load the parameters file
-			auto parametersFile = soupTargetDirectory + BuildConstants::GenerateParametersFileName();
-			auto parametersState = ValueTable();
-			if (!ValueTableManager::TryLoadState(parametersFile, parametersState))
+			// Load the input file
+			auto inputFile = soupTargetDirectory + BuildConstants::GenerateInputFileName();
+			auto inputTable = ValueTable();
+			if (!ValueTableManager::TryLoadState(inputFile, inputTable))
 			{
-				Log::Error("Failed to load the parameter file: " + parametersFile.ToString());
-				throw std::runtime_error("Failed to load parameter file.");
+				Log::Error("Failed to load the input file: " + inputFile.ToString());
+				throw std::runtime_error("Failed to load input file.");
 			}
 
-			// Load the read access file
-			auto readAccessFile = soupTargetDirectory + BuildConstants::GenerateReadAccessFileName();
-			auto readAccessList = std::vector<Path>();
-			if (!PathListManager::TryLoad(readAccessFile, readAccessList))
-			{
-				Log::Error("Failed to load the read access file: " + readAccessFile.ToString());
-				throw std::runtime_error("Failed to load read access file.");
-			}
+			auto packageRoot = Path(inputTable.at("PackageRoot").AsString());
 
-			// Load the write access file
-			auto writeAccessFile = soupTargetDirectory + BuildConstants::GenerateWriteAccessFileName();
-			auto writeAccessList = std::vector<Path>();
-			if (!PathListManager::TryLoad(writeAccessFile, writeAccessList))
-			{
-				Log::Error("Failed to load the write access file: " + writeAccessFile.ToString());
-				throw std::runtime_error("Failed to load write access file.");
-			}
+			// Load the input read access list
+			auto allowedReadAccess = std::vector<Path>();
+			for (auto& value : inputTable.at("ReadAccess").AsList())
+				allowedReadAccess.push_back(Path(value.AsString()));
+
+			// Load the input write access list
+			auto allowedWriteAccess = std::vector<Path>();
+			for (auto& value : inputTable.at("WriteAccess").AsList())
+				allowedWriteAccess.push_back(Path(value.AsString()));
+
+			// Load the input macro definition
+			auto macros = std::map<std::string, std::string>();
+			for (auto& [key, value] : inputTable.at("Macros").AsTable())
+				macros.emplace(key, value.AsString());
+
+			// Setup a macro manager to resolve macros
+			auto macroManager = MacroManager(macros);
 
 			// Get the required input state from the parameters
 			std::optional<std::vector<Path>> languageExtensionScripts = std::nullopt;
 			std::optional<Path> languageExtensionBundle = std::nullopt;
-			auto languageExtensionResult = parametersState.find("LanguageExtension");
-			if (languageExtensionResult != parametersState.end())
+			auto languageExtensionResult = inputTable.find("LanguageExtension");
+			if (languageExtensionResult != inputTable.end())
 			{
 				auto& languageExtensionTable = languageExtensionResult->second.AsTable();
 				
@@ -70,10 +79,8 @@ namespace Soup::Core::Generate
 				}
 			}
 
-			auto packageDirectory = Path(parametersState.at("PackageDirectory").AsString());
-
 			// Load the recipe file
-			auto recipeFile = packageDirectory + BuildConstants::RecipeFileName();
+			auto recipeFile = packageRoot + BuildConstants::RecipeFileName();
 			Recipe recipe;
 			if (!RecipeExtensions::TryLoadRecipeFromFile(recipeFile, recipe))
 			{
@@ -82,10 +89,11 @@ namespace Soup::Core::Generate
 			}
 
 			// Combine all the dependencies shared state
-			auto dependenciesSharedState = LoadDependenciesSharedState(parametersState);
+			auto dependenciesSharedState = LoadDependenciesSharedState(inputTable);
 
 			// Generate the set of build extension libraries
 			auto buildExtensionLibraries = GenerateBuildExtensionSet(
+				macroManager,
 				languageExtensionScripts,
 				languageExtensionBundle,
 				dependenciesSharedState);
@@ -97,11 +105,24 @@ namespace Soup::Core::Generate
 			auto recipeState = RecipeBuildStateConverter::ConvertToBuildState(recipe.GetTable());
 			globalState.emplace("Recipe", Value(std::move(recipeState)));
 
-			// Initialize the Parameters Root Table
-			globalState.emplace("Parameters", Value(std::move(parametersState)));
+			// Initialize input global state
+			for (auto& [key, value] : inputTable.at("GlobalState").AsTable())
+			{
+				globalState.emplace(key, std::move(value));
+			}
 
-			// Initialize the Dependencies Root Table
-			globalState.emplace("Dependencies", Value(std::move(dependenciesSharedState)));
+			// Merge the dependencies state
+			auto& globalDependenciesTable = globalState.at("Dependencies").AsTable();
+			for (auto& [dependencyType, dependencyTypeValue] : dependenciesSharedState)
+			{
+				auto& globalDependenciesType = globalDependenciesTable.at(dependencyType).AsTable();
+				auto& sharedStateDependenciesType = dependencyTypeValue.AsTable();
+				for (auto& [dependencyName, dependencySharedState] : sharedStateDependenciesType)
+				{
+					auto& globalDependency = globalDependenciesType.at(dependencyName).AsTable();
+					globalDependency.emplace("SharedState", std::move(dependencySharedState));
+				}
+			}
 
 			// Create a new build system for the requested build
 			auto extensionManager = ExtensionManager();
@@ -126,15 +147,12 @@ namespace Soup::Core::Generate
 				}
 			}
 
-			// Initialize a shared File System State to cache file system access
-			auto fileSystemState = FileSystemState();
-
 			// Evaluate the build extensions
 			auto buildState = GenerateState(
 				globalState,
-				fileSystemState,
-				readAccessList,
-				writeAccessList);
+				_fileSystemState,
+				allowedReadAccess,
+				allowedWriteAccess);
 			extensionManager.Execute(buildState);
 
 			// Grab the build results
@@ -147,9 +165,13 @@ namespace Soup::Core::Generate
 			Log::Info("Save Generate Info State: " + generateInfoStateFile.ToString());
 			ValueTableManager::SaveState(generateInfoStateFile, generateInfoTable);
 
+			// Resolve macros before saving evaluate graph
+			Log::Diag("Resolve build macros in evaluate graph");
+			ResolveMacros(macroManager, evaluateGraph);
+
 			// Save the operation graph so the evaluate phase can load it
 			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateGraphFileName();
-			OperationGraphManager::SaveState(evaluateGraphFile, evaluateGraph, fileSystemState);
+			OperationGraphManager::SaveState(evaluateGraphFile, evaluateGraph, _fileSystemState);
 
 			// Save the shared state that is to be passed to the downstream builds
 			auto sharedStateFile = soupTargetDirectory + BuildConstants::GenerateSharedStateFileName();
@@ -163,21 +185,19 @@ namespace Soup::Core::Generate
 		/// Using the parameters to resolve the dependency output folders, load up the shared state table and
 		/// combine them into a single value table to be used as input the this generate phase.
 		/// </summary>
-		static ValueTable LoadDependenciesSharedState(const ValueTable& parametersTable)
+		static ValueTable LoadDependenciesSharedState(const ValueTable& inputTable)
 		{
 			auto sharedDependenciesTable = ValueTable();
-			auto dependencyTableValue = parametersTable.find("Dependencies");
-			if (dependencyTableValue != parametersTable.end())
+			auto dependencyTableValue = inputTable.find("Dependencies");
+			if (dependencyTableValue != inputTable.end())
 			{
 				auto& dependenciesTable = dependencyTableValue->second.AsTable();
-				for (auto dependencyTypeValue : dependenciesTable)
+				for (auto& [dependencyType, dependencyTypeValue] : dependenciesTable)
 				{
-					auto dependencyType = dependencyTypeValue.first;
-					auto& dependencies = dependencyTypeValue.second.AsTable();
-					for (auto dependencyValue : dependencies)
+					auto& dependencies = dependencyTypeValue.AsTable();
+					for (auto& [dependencyName, dependencyValue] : dependencies)
 					{
-						auto dependencyName = dependencyValue.first;
-						auto& dependency = dependencyValue.second.AsTable();
+						auto& dependency = dependencyValue.AsTable();
 						auto soupTargetDirectory = Path(dependency.at("SoupTargetDirectory").AsString());
 						auto sharedStateFile = soupTargetDirectory + BuildConstants::GenerateSharedStateFileName();
 
@@ -220,6 +240,7 @@ namespace Soup::Core::Generate
 		/// Generate the collection of build extensions
 		/// </summary>
 		static std::vector<std::pair<Path, std::optional<Path>>> GenerateBuildExtensionSet(
+			MacroManager& macroManager,
 			const std::optional<std::vector<Path>>& languageExtensionScripts,
 			const std::optional<Path>& languageExtensionBundle,
 			const ValueTable& dependenciesSharedState)
@@ -257,7 +278,8 @@ namespace Soup::Core::Generate
 							{
 								if (targetDirectoryValue->second.IsString())
 								{
-									targetDirectory = Path(targetDirectoryValue->second.AsString());
+									auto macroTargetDirectory = targetDirectoryValue->second.AsString();
+									targetDirectory = Path(macroManager.ResolveMacros(macroTargetDirectory));
 								}
 								else
 								{
@@ -265,14 +287,14 @@ namespace Soup::Core::Generate
 								}
 							}
 
-
 							std::optional<Path> moduleBundle = std::nullopt;
 							auto moduleBundleValue = buildTable.find("ModuleBundle");
 							if (moduleBundleValue != buildTable.end())
 							{
 								if (moduleBundleValue->second.IsString())
 								{
-									moduleBundle = Path(moduleBundleValue->second.AsString());
+									auto macroModuleBundle = moduleBundleValue->second.AsString();
+									moduleBundle = Path(macroManager.ResolveMacros(macroModuleBundle));
 								}
 								else
 								{
@@ -316,6 +338,32 @@ namespace Soup::Core::Generate
 			}
 
 			return buildExtensionLibraries;
+		}
+
+		void ResolveMacros(
+			MacroManager& macroManager,
+			OperationGraph& operationGraph)
+		{
+			for (auto& [operationId, operation] : operationGraph.GetOperations())
+			{
+				operation.Command.Arguments = macroManager.ResolveMacros(std::move(operation.Command.Arguments));
+				operation.Command.WorkingDirectory = macroManager.ResolveMacros(std::move(operation.Command.WorkingDirectory));
+				operation.Command.Executable = macroManager.ResolveMacros(std::move(operation.Command.Executable));
+				ResolveMacros(macroManager, operation.DeclaredInput);
+				ResolveMacros(macroManager, operation.DeclaredOutput);
+				ResolveMacros(macroManager, operation.ReadAccess);
+				ResolveMacros(macroManager, operation.WriteAccess);
+			}
+		}
+
+		void ResolveMacros(MacroManager& macroManager, std::vector<FileId>& value)
+		{
+			for(size_t i = 0; i < value.size(); i++)
+			{
+				Path file = _fileSystemState.GetFilePath(value[i]);
+				auto resolvedFile = macroManager.ResolveMacros(file);
+				value[i] = _fileSystemState.ToFileId(resolvedFile);
+			}
 		}
 	};
 }

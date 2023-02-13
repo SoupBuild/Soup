@@ -93,7 +93,7 @@ namespace Soup::Core
 		/// </summary>
 		bool TryFindOperation(
 			const CommandInfo& command,
-			OperationId& operationId)
+			OperationId& operationId) const
 		{
 			auto findResult = _operationLookup.find(command);
 			if (findResult != _operationLookup.end())
