@@ -101,12 +101,10 @@ namespace Soup::Core::UnitTests
 						1,
 						PackageInfo(
 							1,
+							"MyPackage",
+							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
-							recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-							std::vector<Path>({
-								Path("C:/Extension/Tasks/Language.Build.wren"),
-							}),
-							Path("C:/Extension/Bundles.sml"),
+							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap())
 					},
 				}));
@@ -219,20 +217,6 @@ namespace Soup::Core::UnitTests
 								})
 							},
 							{ "SDKs", ValueList() },
-						})
-					},
-					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/Extension/Bundles.sml") },
-							{
-								"Scripts",
-								ValueList(
-								{
-									std::string("C:/Extension/Tasks/Language.Build.wren"),
-								})
-							},
 						})
 					},
 					{
@@ -386,17 +370,19 @@ namespace Soup::Core::UnitTests
 						1,
 						PackageInfo(
 							1,
+							"MyPackage",
+							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
-							recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-							std::vector<Path>({
-								Path("C:/Extension/Tasks/Language.Build.wren"),
-							}),
-							Path("C:/Extension/Bundles.sml"),
+							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap({
 								{
 									"Build",
 									{
-										PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)), true, -1, 2),
+										PackageChildInfo(
+											PackageReference(std::nullopt, "TestBuild", SemanticVersion(1, 2, 3)),
+											true,
+											-1,
+											2),
 									}
 								},
 							}))
@@ -405,12 +391,10 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
+							"TestBuild",
+							false,
 							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/"),
-							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/Recipe.sml")),
-							std::vector<Path>({
-								Path("C:/Extension/Tasks/Language.Build.wren"),
-							}),
-							Path("C:/Extension/Bundles.sml"),
+							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/Recipe.sml")),
 							PackageChildrenMap())
 					},
 				}));
@@ -569,20 +553,6 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/Extension/Bundles.sml") },
-							{
-								"Scripts",
-								ValueList(
-								{
-									std::string("C:/Extension/Tasks/Language.Build.wren"),
-								})
-							},
-						})
-					},
-					{
 						"Macros",
 						ValueTable(
 						{
@@ -699,20 +669,6 @@ namespace Soup::Core::UnitTests
 								})
 							},
 							{ "SDKs", ValueList() },
-						})
-					},
-					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/Extension/Bundles.sml") },
-							{
-								"Scripts",
-								ValueList(
-								{
-									std::string("C:/Extension/Tasks/Language.Build.wren"),
-								})
-							},
 						})
 					},
 					{
@@ -882,12 +838,10 @@ namespace Soup::Core::UnitTests
 						1,
 						PackageInfo(
 							1,
+							"MyPackage",
+							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
-							recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-							std::vector<Path>({
-								Path("C:/Extension/Tasks/Language.Build.wren"),
-							}),
-							Path("C:/Extension/Bundles.sml"),
+							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap({
 								{
 									"Runtime",
@@ -902,12 +856,10 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
+							"PackageA",
+							false,
 							Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/"),
-							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/Recipe.sml")),
-							std::vector<Path>({
-								Path("C:/Extension/Tasks/Language.Build.wren"),
-							}),
-							Path("C:/Extension/Bundles.sml"),
+							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/Recipe.sml")),
 							PackageChildrenMap({
 								{
 									"Runtime",
@@ -921,12 +873,10 @@ namespace Soup::Core::UnitTests
 						3,
 						PackageInfo(
 							3,
+							"PackageB",
+							false,
 							Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/"),
-							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/Recipe.sml")),
-							std::vector<Path>({
-								Path("C:/Extension/Tasks/Language.Build.wren"),
-							}),
-							Path("C:/Extension/Bundles.sml"),
+							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/Recipe.sml")),
 							PackageChildrenMap())
 					},
 				}));
@@ -1173,20 +1123,6 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/Extension/Bundles.sml") },
-							{
-								"Scripts",
-								ValueList(
-								{
-									std::string("C:/Extension/Tasks/Language.Build.wren"),
-								})
-							},
-						})
-					},
-					{
 						"Macros",
 						ValueTable(
 						{
@@ -1262,20 +1198,6 @@ namespace Soup::Core::UnitTests
 								})
 							},
 							{ "SDKs", ValueList() },
-						})
-					},
-					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/Extension/Bundles.sml") },
-							{
-								"Scripts",
-								ValueList(
-								{
-									std::string("C:/Extension/Tasks/Language.Build.wren"),
-								})
-							},
 						})
 					},
 					{
@@ -1416,20 +1338,6 @@ namespace Soup::Core::UnitTests
 								})
 							},
 							{ "SDKs", ValueList() },
-						})
-					},
-					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/Extension/Bundles.sml") },
-							{
-								"Scripts",
-								ValueList(
-								{
-									std::string("C:/Extension/Tasks/Language.Build.wren"),
-								})
-							},
 						})
 					},
 					{
@@ -1615,12 +1523,10 @@ namespace Soup::Core::UnitTests
 						1,
 						PackageInfo(
 							1,
+							"MyPackage",
+							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
-							recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
-							std::vector<Path>({
-								Path("C:/Extension/Tasks/Language.Build.wren"),
-							}),
-							Path("C:/Extension/Bundles.sml"),
+							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap({
 								{
 									"Build",
@@ -1634,12 +1540,10 @@ namespace Soup::Core::UnitTests
 						2,
 						PackageInfo(
 							2,
+							"TestBuild",
+							false,
 							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0"),
-							recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/Recipe.sml")),
-							std::vector<Path>({
-								Path("C:/Extension/Tasks/Language.Build.wren"),
-							}),
-							Path("C:/Extension/Bundles.sml"),
+							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/Recipe.sml")),
 							PackageChildrenMap())
 					},
 				}));
@@ -1798,20 +1702,6 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/Extension/Bundles.sml") },
-							{
-								"Scripts",
-								ValueList(
-								{
-									std::string("C:/Extension/Tasks/Language.Build.wren"),
-								})
-							},
-						})
-					},
-					{
 						"Macros",
 						ValueTable(
 						{
@@ -1928,20 +1818,6 @@ namespace Soup::Core::UnitTests
 								})
 							},
 							{ "SDKs", ValueList() },
-						})
-					},
-					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/Extension/Bundles.sml") },
-							{
-								"Scripts",
-								ValueList(
-								{
-									std::string("C:/Extension/Tasks/Language.Build.wren"),
-								})
-							},
 						})
 					},
 					{

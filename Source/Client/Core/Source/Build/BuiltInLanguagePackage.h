@@ -14,21 +14,15 @@ namespace Soup::Core
 		BuiltInLanguagePackage(
 			std::string languageSafeName,
 			std::string extensionName,
-			SemanticVersion extensionVersion,
-			std::vector<Path> extensionFiles,
-			std::optional<Path> extensionBundle) :
+			SemanticVersion extensionVersion) :
 			LanguageSafeName(std::move(languageSafeName)),
 			ExtensionName(std::move(extensionName)),
-			ExtensionVersion(extensionVersion),
-			ExtensionFiles(std::move(extensionFiles)),
-			ExtensionBundle(std::move(extensionBundle))
+			ExtensionVersion(extensionVersion)
 		{
 		}
 
 		std::string LanguageSafeName;
 		std::string ExtensionName;
 		SemanticVersion ExtensionVersion;
-		std::vector<Path> ExtensionFiles;
-		std::optional<Path> ExtensionBundle;
 	};
 }

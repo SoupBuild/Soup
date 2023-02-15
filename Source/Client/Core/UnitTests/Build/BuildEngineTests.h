@@ -65,6 +65,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: 0>Package was prebuilt: Soup.Cpp",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
 					"INFO: 1>Checking for existing Evaluate Operation Graph",
@@ -86,11 +87,11 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>Execute: [C:/WorkingDirectory/MyPackage/] C:/testlocation/Soup.Generate.exe C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/",
 					"DIAG: 1>Allowed Read Access:",
 					"DIAG: 1>C:/testlocation/",
-					"DIAG: 1>C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/",
 					"DIAG: 1>C:/Windows/",
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
+					"DIAG: 1>C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/",
 					"DIAG: 1>Allowed Write Access:",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
 					"DIAG: 1>Build evaluation end",
@@ -166,7 +167,25 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				ValueTable(
 				{
-					{ "Dependencies", ValueTable() },
+					{
+						"Dependencies",
+						ValueTable(
+						{
+							{
+								"Build",
+								ValueTable(
+								{
+									{
+										"Soup.Cpp",
+										ValueTable(
+										{
+											{ "SoupTargetDirectory", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/.soup/") },
+										})
+									},
+								})
+							},
+						})
+					},
 					{
 						"GlobalState",
 						ValueTable(
@@ -179,26 +198,34 @@ namespace Soup::Core::UnitTests
 									{ "TargetDirectory", std::string("/(TARGET_MyPackage)/") },
 								})
 							},
-							{ "Dependencies", ValueTable() },
-							{ "Parameters", ValueTable() },
-							{ "SDKs", ValueList() },
-						})
-					},
-					{
-						"LanguageExtension",
-						ValueTable(
-						{
-							{ "Bundle", std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Bundles.sml") },
 							{
-								"Scripts",
-								ValueList(
+								"Dependencies",
+								ValueTable(
 								{
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/BuildTask.wren"),
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/RecipeBuildTask.wren"),
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/ResolveDependenciesTask.wren"),
-									std::string("C:/testlocation/Extensions/Soup.Cpp/0.6.2/Main/Tasks/ResolveToolsTask.wren"),
+									{
+										"Build",
+										ValueTable(
+										{
+											{
+												"Soup.Cpp",
+												ValueTable(
+												{
+													{
+														"Context",
+														ValueTable(
+														{
+															{ "Reference", std::string("Soup.Cpp@0.6.2") },
+															{ "TargetDirectory", std::string("/(TARGET_Soup.Cpp)/") },
+														})
+													},
+												})
+											},
+										})
+									},
 								})
 							},
+							{ "Parameters", ValueTable() },
+							{ "SDKs", ValueList() },
 						})
 					},
 					{
@@ -207,6 +234,7 @@ namespace Soup::Core::UnitTests
 						{
 							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
 							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/") },
+							{ "/(TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/") },
 						})
 					},
 					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
@@ -214,6 +242,7 @@ namespace Soup::Core::UnitTests
 						"ReadAccess",
 						ValueList(
 						{
+							std::string("/(TARGET_Soup.Cpp)/"),
 							std::string("/(PACKAGE_MyPackage)/"),
 							std::string("/(TARGET_MyPackage)/"),
 						})

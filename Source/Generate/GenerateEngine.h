@@ -52,33 +52,6 @@ namespace Soup::Core::Generate
 			// Setup a macro manager to resolve macros
 			auto macroManager = MacroManager(macros);
 
-			// Get the required input state from the parameters
-			std::optional<std::vector<Path>> languageExtensionScripts = std::nullopt;
-			std::optional<Path> languageExtensionBundle = std::nullopt;
-			auto languageExtensionResult = inputTable.find("LanguageExtension");
-			if (languageExtensionResult != inputTable.end())
-			{
-				auto& languageExtensionTable = languageExtensionResult->second.AsTable();
-				
-				auto languageExtensionScriptsResult = languageExtensionTable.find("Scripts");
-				if (languageExtensionScriptsResult != languageExtensionTable.end())
-				{
-					auto files = std::vector<Path>();
-					for (auto& file : languageExtensionScriptsResult->second.AsList())
-					{
-						files.push_back(Path(file.AsString()));
-					}
-
-					languageExtensionScripts = std::move(files);
-				}
-
-				auto languageExtensionBundleResult = languageExtensionTable.find("Bundle");
-				if (languageExtensionBundleResult != languageExtensionTable.end())
-				{
-					languageExtensionBundle = Path(languageExtensionBundleResult->second.AsString());
-				}
-			}
-
 			// Load the recipe file
 			auto recipeFile = packageRoot + BuildConstants::RecipeFileName();
 			Recipe recipe;
@@ -94,8 +67,6 @@ namespace Soup::Core::Generate
 			// Generate the set of build extension libraries
 			auto buildExtensionLibraries = GenerateBuildExtensionSet(
 				macroManager,
-				languageExtensionScripts,
-				languageExtensionBundle,
 				dependenciesSharedState);
 
 			// Start a new global state that is initialized to the recipe itself
@@ -241,20 +212,9 @@ namespace Soup::Core::Generate
 		/// </summary>
 		static std::vector<std::pair<Path, std::optional<Path>>> GenerateBuildExtensionSet(
 			MacroManager& macroManager,
-			const std::optional<std::vector<Path>>& languageExtensionScripts,
-			const std::optional<Path>& languageExtensionBundle,
 			const ValueTable& dependenciesSharedState)
 		{
 			auto buildExtensionLibraries = std::vector<std::pair<Path, std::optional<Path>>>();
-
-			// Run the RecipeBuild extension to inject core build tasks
-			if (languageExtensionScripts.has_value())
-			{
-				for (auto& script : languageExtensionScripts.value())
-				{
-					buildExtensionLibraries.push_back(std::make_pair(script, languageExtensionBundle));
-				}
-			}
 
 			// Check for any dynamic libraries in the shared state
 			Log::Info("Check Extensions");

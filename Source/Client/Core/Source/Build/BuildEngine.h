@@ -28,41 +28,21 @@ namespace Soup::Core
 					 BuiltInLanguagePackage(
 						"Cpp",
 						"Soup.Cpp",
-						SemanticVersion(0, 6, 2),
-						{
-							Path("Main/Tasks/BuildTask.wren"),
-							Path("Main/Tasks/RecipeBuildTask.wren"),
-							Path("Main/Tasks/ResolveDependenciesTask.wren"),
-							Path("Main/Tasks/ResolveToolsTask.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(0, 6, 2))
 				},
 				{
 					"C#",
 					BuiltInLanguagePackage(
 						"CSharp",
 						"Soup.CSharp",
-						SemanticVersion(0, 8, 0),
-						{
-							Path("Main/Tasks/BuildTask.wren"),
-							Path("Main/Tasks/RecipeBuildTask.wren"),
-							Path("Main/Tasks/ResolveDependenciesTask.wren"),
-							Path("Main/Tasks/ResolveToolsTask.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(0, 8, 0))
 				},
 				{
 					"Wren",
 					BuiltInLanguagePackage(
 						"Wren",
 						"Soup.Wren",
-						SemanticVersion(0, 1, 2),
-						{
-							Path("Main/Tasks/BuildTask.wren"),
-							Path("Main/Tasks/RecipeBuildTask.wren"),
-							Path("Main/Tasks/ResolveDependenciesTask.wren"),
-						},
-						Path("Bundles.sml"))
+						SemanticVersion(0, 1, 2))
 				},
 			});
 

@@ -64,25 +64,25 @@ namespace Soup::Core
 	public:
 		PackageInfo(
 			PackageId id,
+			std::string name,
+			bool isPrebuilt,
 			Path packageRoot,
-			const Recipe& recipe,
-			std::optional<std::vector<Path>> languageExtensionScripts,
-			std::optional<Path> languageExtensionBundle,
+			const Recipe* recipe,
 			PackageChildrenMap dependencies) :
 			Id(id),
+			Name(name),
+			IsPrebuilt(isPrebuilt),
 			PackageRoot(std::move(packageRoot)),
 			Recipe(recipe),
-			LanguageExtensionScripts(std::move(languageExtensionScripts)),
-			LanguageExtensionBundle(std::move(languageExtensionBundle)),
 			Dependencies(std::move(dependencies))
 		{
 		}
 
 		PackageId Id;
+		std::string Name;
+		bool IsPrebuilt;
 		Path PackageRoot;
-		const ::Soup::Core::Recipe& Recipe;
-		std::optional<std::vector<Path>> LanguageExtensionScripts;
-		std::optional<Path> LanguageExtensionBundle;
+		const ::Soup::Core::Recipe* Recipe;
 		PackageChildrenMap Dependencies;
 
 		/// <summary>
@@ -91,10 +91,10 @@ namespace Soup::Core
 		bool operator ==(const PackageInfo& rhs) const
 		{
 			return Id == rhs.Id &&
+				Name == rhs.Name &&
+				IsPrebuilt == rhs.IsPrebuilt &&
 				PackageRoot == rhs.PackageRoot &&
 				Recipe == rhs.Recipe &&
-				LanguageExtensionScripts == rhs.LanguageExtensionScripts &&
-				LanguageExtensionBundle == rhs.LanguageExtensionBundle &&
 				Dependencies == rhs.Dependencies;
 		}
 
