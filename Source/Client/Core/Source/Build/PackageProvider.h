@@ -64,10 +64,14 @@ namespace Soup::Core
 	public:
 		PackageInfo(
 			PackageId id,
+			std::string name,
+			bool isPrebuilt,
 			Path packageRoot,
-			const Recipe& recipe,
+			const Recipe* recipe,
 			PackageChildrenMap dependencies) :
 			Id(id),
+			Name(name),
+			IsPrebuilt(isPrebuilt),
 			PackageRoot(std::move(packageRoot)),
 			Recipe(recipe),
 			Dependencies(std::move(dependencies))
@@ -75,8 +79,10 @@ namespace Soup::Core
 		}
 
 		PackageId Id;
+		std::string Name;
+		bool IsPrebuilt;
 		Path PackageRoot;
-		const ::Soup::Core::Recipe& Recipe;
+		const ::Soup::Core::Recipe* Recipe;
 		PackageChildrenMap Dependencies;
 
 		/// <summary>
@@ -85,6 +91,8 @@ namespace Soup::Core
 		bool operator ==(const PackageInfo& rhs) const
 		{
 			return Id == rhs.Id &&
+				Name == rhs.Name &&
+				IsPrebuilt == rhs.IsPrebuilt &&
 				PackageRoot == rhs.PackageRoot &&
 				Recipe == rhs.Recipe &&
 				Dependencies == rhs.Dependencies;

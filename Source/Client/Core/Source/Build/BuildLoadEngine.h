@@ -33,7 +33,7 @@ namespace Soup::Core
 	{
 	private:
 		const int _packageLockVersion = 4;
-		const Path _builtInExtensionPath = Path("Extensions/");
+		const Path _builtInExtensionPath = Path("BuiltIn/");
 		const std::string _buildDependencyType = "Build";
 		const std::string _builtInWrenLanguage = "Wren";
 		const std::string _rootClosureName = "Root";
@@ -374,26 +374,25 @@ namespace Soup::Core
 			}
 
 			// Add the language as a build dependency
-			auto [languageExtensionPackagePath, languageExtensionPackageChildInfo] =
+			auto languageExtensionPackageChildInfo =
 				LoadLanguageBuildDependency(
 					recipe,
 					projectRoot,
 					buildClosureName,
 					packageLockState);
-			
-			// If the language extension is a direct path then use it, otherwise the language resolved to a package to build
-			if (languageExtensionPackageChildInfo.has_value())
-			{
-				dependencyProjects[_buildDependencyType].push_back(std::move(languageExtensionPackageChildInfo.value()));
-			}
+
+			dependencyProjects[_buildDependencyType].push_back(
+				std::move(languageExtensionPackageChildInfo));
 
 			// Save the package info
 			_packageLookup.emplace(
 				packageId,
 				PackageInfo(
 					packageId,
+					recipe.GetName(),
+					false,
 					projectRoot,
-					recipe,
+					&recipe,
 					std::move(dependencyProjects)));
 		}
 
@@ -456,7 +455,8 @@ namespace Soup::Core
 					else
 					{
 						Log::Diag("Recipe already loaded: " + languagePackageName);
-						dependencyTypeProjects.push_back(PackageChildInfo(dependency, false, findKnownPackage->second.first, -1));
+						dependencyTypeProjects.push_back(
+							PackageChildInfo(dependency, false, findKnownPackage->second.first, -1));
 					}
 				}
 				else
@@ -473,7 +473,8 @@ namespace Soup::Core
 						packageLockState);
 						
 					// Update the child project id
-					dependencyTypeProjects.push_back(PackageChildInfo(dependency, false, childPackageId, -1));
+					dependencyTypeProjects.push_back(
+						PackageChildInfo(dependency, false, childPackageId, -1));
 				}
 			}
 
@@ -517,24 +518,6 @@ namespace Soup::Core
 				implicitLanguage,
 				buildClosureName,
 				packageLockState);
-			auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
-			const Recipe* dependencyRecipe;
-			if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
-			{
-				if (dependency.IsLocal())
-				{
-					Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
-					Log::HighPriority("Make sure the path is correct and try again");
-				}
-				else
-				{
-					Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
-					Log::HighPriority("Run `restore` and try again");
-				}
-
-				// Nothing we can do, exit
-				throw HandledException(1234);
-			}
 
 			// Check if the package has already been processed from another graph
 			auto findKnownGraph = _knownBuildGraphSet.find(dependencyProjectRoot);
@@ -546,6 +529,25 @@ namespace Soup::Core
 			}
 			else
 			{
+				auto packageRecipePath = dependencyProjectRoot + BuildConstants::RecipeFileName();
+				const Recipe* dependencyRecipe;
+				if (!_recipeCache.TryGetOrLoadRecipe(packageRecipePath, dependencyRecipe))
+				{
+					if (dependency.IsLocal())
+					{
+						Log::Error("The dependency Recipe does not exist: " + packageRecipePath.ToString());
+						Log::HighPriority("Make sure the path is correct and try again");
+					}
+					else
+					{
+						Log::Error("The dependency Recipe version has not been installed: " + dependency.ToString() + " -> " + dependencyProjectRoot.ToString() + " [" + projectRoot.ToString() + "]");
+						Log::HighPriority("Run `restore` and try again");
+					}
+
+					// Nothing we can do, exit
+					throw HandledException(1234);
+				}
+
 				// Reset parent set to allow uniqueness within sub graph
 				auto parentSet = std::set<std::string>();
 				auto knownPackageSet = KnownPackageMap();
@@ -589,7 +591,7 @@ namespace Soup::Core
 			}
 		}
 
-		std::tuple<std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageBuildDependency(
+		PackageChildInfo LoadLanguageBuildDependency(
 			const Recipe& recipe,
 			const Path& projectRoot,
 			const std::string& closureName,
@@ -601,20 +603,8 @@ namespace Soup::Core
 			auto builtInLanguageResult = _builtInLanguageLookup.find(name);
 			if (builtInLanguageResult == _builtInLanguageLookup.end())
 				throw std::runtime_error("Unknown language: " + name);
+			auto& builtInLanguagePackage = builtInLanguageResult->second;
 
-			return LoadLanguageExtension(
-				projectRoot,
-				builtInLanguageResult->second,
-				closureName,
-				packageLockState);
-		}
-
-		std::tuple<std::optional<Path>, std::optional<PackageChildInfo>> LoadLanguageExtension(
-			const Path& projectRoot,
-			const BuiltInLanguagePackage& builtInLanguagePackage,
-			const std::string& closureName,
-			const PackageLockState& packageLockState)
-		{
 			// Build dependencies do not inherit the parent language
 			// Instead, they default to Wren
 			auto implicitLanguage = _builtInWrenLanguage;
@@ -629,44 +619,74 @@ namespace Soup::Core
 				closureName,
 				packageLockState);
 
-			std::optional<Path> packagePath;
-			std::optional<PackageChildInfo> packageChildInfo;
-			if (activeReference.IsLocal())
+			if (!activeReference.IsLocal() && activeReference.GetVersion() == builtInLanguagePackage.ExtensionVersion)
 			{
-				// Use local reference relative to lock directory
-				auto activeReferencePath = activeReference.GetPath();
-				if (!activeReferencePath.HasRoot())
-				{
-					activeReferencePath = packageLockState.RootDirectory + activeReferencePath;
-				}
-
-				packagePath = activeReferencePath;
+				return LoadBuiltInLanguageExtension(
+					activeReference,
+					builtInLanguagePackage);
 			}
 			else
 			{
-				if (activeReference.GetVersion() == builtInLanguagePackage.ExtensionVersion)
-				{
-					// Use the prebuilt version in the install folder
-					auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
-					auto processDirectory = processFilename.GetParent();
-					auto extensionRoot = processDirectory +
-						_builtInExtensionPath +
-						Path(builtInLanguagePackage.ExtensionName) +
-						Path(activeReference.GetVersion().ToString() + "/");
-
-					packagePath = std::move(extensionRoot);
-				}
-				else
-				{
-					packageChildInfo = LoadBuildDependency(
-						activeReference,
-						projectRoot,
-						closureName,
-						packageLockState);
-				}
+				return LoadBuildDependency(
+					activeReference,
+					projectRoot,
+					closureName,
+					packageLockState);
 			}
+		}
 
-			return std::make_tuple(std::move(packagePath), std::move(packageChildInfo));
+		PackageChildInfo LoadBuiltInLanguageExtension(
+			const PackageReference& activeReference,
+			const BuiltInLanguagePackage& builtInLanguagePackage)
+		{
+			// Use the prebuilt version in the install folder
+			auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
+			auto processDirectory = processFilename.GetParent();
+			auto extensionRoot = processDirectory +
+				_builtInExtensionPath +
+				Path(builtInLanguagePackage.ExtensionName) +
+				Path(activeReference.GetVersion().ToString() + "/");
+
+			// Check if the package has already been processed from another graph
+			auto findKnownGraph = _knownBuildGraphSet.find(extensionRoot);
+			if (findKnownGraph != _knownBuildGraphSet.end())
+			{
+				// Verify the project name is unique
+				Log::Diag("Graph already loaded: " + extensionRoot.ToString());
+				return PackageChildInfo(activeReference, true, -1, findKnownGraph->second);
+			}
+			else
+			{
+				// Create a fake child package id
+				auto packageId = ++_uniquePackageId;
+
+				// Create the build graph
+				auto graphId = ++_uniqueGraphId;
+
+				// Save the package graph
+				_packageGraphLookup.emplace(
+					graphId,
+					PackageGraph(graphId, packageId, {}));
+
+				// Keep track of the build graphs we have already seen
+				auto insertKnown = _knownBuildGraphSet.emplace(
+					extensionRoot,
+					graphId);
+
+				// Save the package info
+				_packageLookup.emplace(
+					packageId,
+					PackageInfo(
+						packageId,
+						builtInLanguagePackage.ExtensionName,
+						true,
+						extensionRoot,
+						nullptr,
+						{}));
+
+				// Update the child project id
+				return PackageChildInfo(activeReference, true, -1, graphId);
+			}
 		}
 
 		const std::string& GetLanguageSafeName(const std::string& language) const

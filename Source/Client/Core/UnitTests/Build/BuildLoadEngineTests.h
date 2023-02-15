@@ -126,6 +126,13 @@ namespace Soup::Core::UnitTests
 									{ "ArgumentValue", Value(true) },
 								}))
 						},
+						{
+							2,
+							PackageGraph(
+								2,
+								2,
+								ValueTable())
+						},
 					}),
 					PackageLookupMap(
 					{
@@ -133,8 +140,27 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
+								"MyPackage",
+								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+										}
+									},
+								}))
+						},
+						{
+							2,
+							PackageInfo(
+								2,
+								"Soup.Cpp",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								nullptr,
 								PackageChildrenMap())
 						},
 					})),
@@ -245,6 +271,13 @@ namespace Soup::Core::UnitTests
 									{ "ArgumentValue", Value(true) },
 								}))
 						},
+						{
+							2,
+							PackageGraph(
+								2,
+								2,
+								ValueTable())
+						},
 					}),
 					PackageLookupMap(
 					{
@@ -252,8 +285,27 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
+								"MyPackage",
+								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+										}
+									},
+								}))
+						},
+						{
+							2,
+							PackageInfo(
+								2,
+								"Soup.Cpp",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								nullptr,
 								PackageChildrenMap())
 						},
 					})),
@@ -351,7 +403,9 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
+					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
 					"DIAG: Recipe already loaded: C++|PackageB",
+					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -399,6 +453,13 @@ namespace Soup::Core::UnitTests
 									{ "ArgumentValue", Value(true) },
 								}))
 						},
+						{
+							2,
+							PackageGraph(
+								2,
+								4,
+								ValueTable())
+						},
 					}),
 					PackageLookupMap(
 					{
@@ -406,9 +467,17 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
+								"MyPackage",
+								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+										}
+									},
 									{
 										"Runtime",
 										{
@@ -422,9 +491,17 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
+								"PackageA",
+								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+										}
+									},
 									{
 										"Runtime",
 										{
@@ -437,8 +514,27 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
+								"PackageB",
+								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+										}
+									},
+								}))
+						},
+						{
+							4,
+							PackageInfo(
+								4,
+								"Soup.Cpp",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								nullptr,
 								PackageChildrenMap())
 						},
 					})),
@@ -574,11 +670,25 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageGraph(
 								2,
+								3,
+								ValueTable())
+						},
+						{
+							3,
+							PackageGraph(
+								3,
 								2,
 								ValueTable(
 								{
 									{ "HostValue", Value(true) },
 								}))
+						},
+						{
+							4,
+							PackageGraph(
+								4,
+								4,
+								ValueTable())
 						},
 					}),
 					PackageLookupMap(
@@ -587,13 +697,16 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
+								"MyPackage",
+								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 2),
+											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
 										}
 									},
 								}))
@@ -602,8 +715,37 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
+								"TestBuild",
+								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+										}
+									},
+								}))
+						},
+						{
+							3,
+							PackageInfo(
+								3,
+								"Soup.Wren",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								nullptr,
+								PackageChildrenMap())
+						},
+						{
+							4,
+							PackageInfo(
+								4,
+								"Soup.Cpp",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								nullptr,
 								PackageChildrenMap())
 						},
 					})),
@@ -737,11 +879,25 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageGraph(
 								2,
+								3,
+								ValueTable())
+						},
+						{
+							3,
+							PackageGraph(
+								3,
 								2,
 								ValueTable(
 								{
 									{ "HostValue", Value(true) },
 								}))
+						},
+						{
+							4,
+							PackageGraph(
+								4,
+								4,
+								ValueTable())
 						},
 					}),
 					PackageLookupMap(
@@ -750,13 +906,16 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
+								"MyPackage",
+								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(Path("../TestBuild/")), true, -1, 2),
+											PackageChildInfo(PackageReference(Path("../TestBuild/")), true, -1, 3),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
 										}
 									},
 								}))
@@ -765,8 +924,37 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
+								"TestBuild",
+								false,
 								Path("C:/WorkingDirectory/TestBuild/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/TestBuild/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/TestBuild/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+										}
+									},
+								}))
+						},
+						{
+							3,
+							PackageInfo(
+								3,
+								"Soup.Wren",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								nullptr,
+								PackageChildrenMap())
+						},
+						{
+							4,
+							PackageInfo(
+								4,
+								"Soup.Cpp",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								nullptr,
 								PackageChildrenMap())
 						},
 					})),
@@ -926,6 +1114,13 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageGraph(
 								2,
+								3,
+								ValueTable())
+						},
+						{
+							3,
+							PackageGraph(
+								3,
 								2,
 								ValueTable(
 								{
@@ -935,6 +1130,13 @@ namespace Soup::Core::UnitTests
 									},
 								}))
 						},
+						{
+							4,
+							PackageGraph(
+								4,
+								4,
+								ValueTable())
+						},
 					}),
 					PackageLookupMap(
 					{
@@ -942,13 +1144,16 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
+								"MyPackage",
+								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 2),
+											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
 										}
 									},
 								}))
@@ -957,8 +1162,37 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
+								"TestBuild",
+								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+										}
+									},
+								}))
+						},
+						{
+							3,
+							PackageInfo(
+								3,
+								"Soup.Wren",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								nullptr,
+								PackageChildrenMap())
+						},
+						{
+							4,
+							PackageInfo(
+								4,
+								"Soup.Cpp",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								nullptr,
 								PackageChildrenMap())
 						},
 					})),
@@ -1109,6 +1343,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/Soup.Cpp/1.1.2/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
+					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Wren/2.2.2/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -1172,20 +1407,14 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageGraph(
 								2,
-								3,
-								ValueTable(
-								{
-									{
-										"HostValue",
-										Value(true),
-									},
-								}))
+								4,
+								ValueTable())
 						},
 						{
 							3,
 							PackageGraph(
 								3,
-								2,
+								3,
 								ValueTable(
 								{
 									{
@@ -1198,7 +1427,20 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageGraph(
 								4,
-								4,
+								2,
+								ValueTable(
+								{
+									{
+										"HostValue",
+										Value(true),
+									},
+								}))
+						},
+						{
+							5,
+							PackageGraph(
+								5,
+								5,
 								ValueTable(
 								{
 									{
@@ -1214,14 +1456,16 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
+								"MyPackage",
+								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 3),
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 2)), true, -1, 4),
+											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 4),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 2)), true, -1, 5),
 										}
 									},
 								}))
@@ -1230,13 +1474,15 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
+								"TestBuild",
+								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 3)), true, -1, 2),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -1245,23 +1491,50 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
+								"Soup.Wren",
+								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml")),
-								PackageChildrenMap())
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+										}
+									},
+								}))
 						},
 						{
 							4,
 							PackageInfo(
 								4,
-								Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml")),
+								"Soup.Wren",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								nullptr,
 								PackageChildrenMap())
+						},
+						{
+							5,
+							PackageInfo(
+								5,
+								"Soup.Cpp",
+								false,
+								Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/"),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+										}
+									},
+								}))
 						},
 					})),
 				packageProvider,
 				"Verify package graph matches expected.");
 		}
-
 
 		// [[Fact]]
 		void Load_OtherDependency_PackageLock_ExplicitLanguage()
@@ -1427,6 +1700,20 @@ namespace Soup::Core::UnitTests
 									},
 								}))
 						},
+						{
+							2,
+							PackageGraph(
+								2,
+								3,
+								ValueTable())
+						},
+						{
+							3,
+							PackageGraph(
+								3,
+								4,
+								ValueTable())
+						},
 					}),
 					PackageLookupMap(
 					{
@@ -1434,9 +1721,17 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
+								"MyPackage",
+								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 3),
+										}
+									},
 									{
 										"Other",
 										{
@@ -1449,8 +1744,37 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
+								"Package1",
+								false,
 								Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.CSharp", SemanticVersion(3, 3, 3)), true, -1, 2),
+										}
+									},
+								}))
+						},
+						{
+							3,
+							PackageInfo(
+								3,
+								"Soup.CSharp",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/"),
+								nullptr,
+								PackageChildrenMap())
+						},
+						{
+							4,
+							PackageInfo(
+								4,
+								"Soup.Cpp",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								nullptr,
 								PackageChildrenMap())
 						},
 					})),
@@ -1624,6 +1948,13 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageGraph(
 								2,
+								4,
+								ValueTable())
+						},
+						{
+							3,
+							PackageGraph(
+								3,
 								3,
 								ValueTable(
 								{
@@ -1637,13 +1968,15 @@ namespace Soup::Core::UnitTests
 							1,
 							PackageInfo(
 								1,
+								"MyPackage",
+								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 2),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
 										}
 									},
 									{
@@ -1658,13 +1991,15 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
+								"Package1",
+								false,
 								Path("C:/WorkingDirectory/Package1/"),
-								recipeCache.GetRecipe(Path("C:/WorkingDirectory/Package1/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/Package1/Recipe.sml")),
 								PackageChildrenMap({
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 2),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -1673,8 +2008,27 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
+								"Soup.CSharp",
+								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/"),
-								recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml")),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+										}
+									},
+								}))
+						},
+						{
+							4,
+							PackageInfo(
+								4,
+								"Soup.Wren",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								nullptr,
 								PackageChildrenMap())
 						},
 					})),

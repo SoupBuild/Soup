@@ -107,32 +107,56 @@ namespace Soup::Core
 		/// </summary>
 		void BuildPackageAndDependencies(const PackageGraph& packageGraph, const PackageInfo& packageInfo)
 		{
-			for (auto& dependencyType : packageInfo.Dependencies)
+			if (packageInfo.IsPrebuilt)
 			{
-				for (auto& dependency : dependencyType.second)
+				if (_buildCache.contains(packageInfo.Id))
 				{
-					if (dependency.IsSubGraph)
-					{
-						// Load this package recipe
-						auto& dependencyPackageGraph = _packageProvider.GetPackageGraph(dependency.PackageGraphId);
-						auto& dependencyPackageInfo = _packageProvider.GetPackageInfo(dependencyPackageGraph.RootPackageId);
-
-						// Build all recursive dependencies
-						BuildPackageAndDependencies(dependencyPackageGraph, dependencyPackageInfo);
-					}
-					else
-					{
-						// Load this package recipe
-						auto& dependencyPackageInfo = _packageProvider.GetPackageInfo(dependency.PackageId);
-
-						// Build all recursive dependencies
-						BuildPackageAndDependencies(packageGraph, dependencyPackageInfo);
-					}
+					Log::Diag("Prebuilt Package was already processed");
+				}
+				else
+				{
+					// Cache the build state for upstream dependencies
+					Log::Diag("Package was prebuilt: " + packageInfo.Name);
+					_buildCache.emplace(
+						packageInfo.Id,
+						RecipeBuildCacheState(
+							packageInfo.Name,
+							Path("/(TARGET_" + packageInfo.Name + ")/"),
+							packageInfo.PackageRoot,
+							packageInfo.PackageRoot + Path(".soup/"),
+							{},
+							{}));
 				}
 			}
+			else
+			{
+				for (auto& dependencyType : packageInfo.Dependencies)
+				{
+					for (auto& dependency : dependencyType.second)
+					{
+						if (dependency.IsSubGraph)
+						{
+							// Load this package recipe
+							auto& dependencyPackageGraph = _packageProvider.GetPackageGraph(dependency.PackageGraphId);
+							auto& dependencyPackageInfo = _packageProvider.GetPackageInfo(dependencyPackageGraph.RootPackageId);
 
-			// Build the target recipe
-			CheckBuildPackage(packageGraph, packageInfo);
+							// Build all recursive dependencies
+							BuildPackageAndDependencies(dependencyPackageGraph, dependencyPackageInfo);
+						}
+						else
+						{
+							// Load this package recipe
+							auto& dependencyPackageInfo = _packageProvider.GetPackageInfo(dependency.PackageId);
+
+							// Build all recursive dependencies
+							BuildPackageAndDependencies(packageGraph, dependencyPackageInfo);
+						}
+					}
+				}
+
+				// Build the target recipe
+				CheckBuildPackage(packageGraph, packageInfo);
+			}
 		}
 
 		/// <summary>
@@ -145,7 +169,7 @@ namespace Soup::Core
 			try
 			{
 				Log::SetActiveId(packageInfo.Id);
-				auto languagePackageName = packageInfo.Recipe.GetLanguage().GetName() + "|" + packageInfo.Recipe.GetName();
+				auto languagePackageName = packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Recipe->GetName();
 				Log::Diag("Running Build: " + languagePackageName);
 
 				// Check if we already built this package down a different dependency path
@@ -173,14 +197,14 @@ namespace Soup::Core
 		/// </summary>
 		void RunBuild(const PackageGraph& packageGraph, const PackageInfo& packageInfo)
 		{
-			Log::Info("Build '" + packageInfo.Recipe.GetName() + "'");
+			Log::Info("Build '" + packageInfo.Recipe->GetName() + "'");
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto macroPackageDirectory = Path("/(PACKAGE_" + packageInfo.Recipe.GetName() + ")/");
-			auto macroTargetDirectory = Path("/(TARGET_" + packageInfo.Recipe.GetName() + ")/");
+			auto macroPackageDirectory = Path("/(PACKAGE_" + packageInfo.Recipe->GetName() + ")/");
+			auto macroTargetDirectory = Path("/(TARGET_" + packageInfo.Recipe->GetName() + ")/");
 			auto realTargetDirectory = _locationManager.GetOutputDirectory(
 				packageInfo.PackageRoot,
-				packageInfo.Recipe,
+				*packageInfo.Recipe,
 				packageGraph.GlobalParameters,
 				_recipeCache);
 			auto soupTargetDirectory = realTargetDirectory + BuildConstants::SoupTargetDirectory();
@@ -292,7 +316,7 @@ namespace Soup::Core
 			_buildCache.emplace(
 				packageInfo.Id,
 				RecipeBuildCacheState(
-					packageInfo.Recipe.GetName(),
+					packageInfo.Name,
 					std::move(macroTargetDirectory),
 					std::move(realTargetDirectory),
 					std::move(soupTargetDirectory),
@@ -396,7 +420,7 @@ namespace Soup::Core
 			generateArguments << soupTargetDirectory.ToString();
 			auto generateOperation = OperationInfo(
 				generateOperationId,
-				"Generate: " + packageInfo.Recipe.GetLanguage().GetName() + "|" + packageInfo.Recipe.GetName(),
+				"Generate: " + packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Recipe->GetName(),
 				CommandInfo(
 					packageInfo.PackageRoot,
 					generateExecutable,
