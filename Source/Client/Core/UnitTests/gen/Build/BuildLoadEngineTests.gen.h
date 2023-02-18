@@ -11,6 +11,7 @@ TestState RunBuildLoadEngineTests()
 	state += Soup::Test::RunTest(className, "Load_LanguageExtension_ExternalLanguage_ExactMatch", [&testClass]() { testClass->Load_LanguageExtension_ExternalLanguage_ExactMatch(); });
 	state += Soup::Test::RunTest(className, "Load_TriangleDependency_NoRebuild", [&testClass]() { testClass->Load_TriangleDependency_NoRebuild(); });
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_NoPackageLock_ExternalReference", [&testClass]() { testClass->Load_BuildDependency_NoPackageLock_ExternalReference(); });
+	state += Soup::Test::RunTest(className, "Load_BuildDependency_NoPackageLock_ExternalReference_ToolDependency", [&testClass]() { testClass->Load_BuildDependency_NoPackageLock_ExternalReference_ToolDependency(); });
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_NoPackageLock_Local", [&testClass]() { testClass->Load_BuildDependency_NoPackageLock_Local(); });
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_PackageLock", [&testClass]() { testClass->Load_BuildDependency_PackageLock(); });
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_PackageLock_Override", [&testClass]() { testClass->Load_BuildDependency_PackageLock_Override(); });

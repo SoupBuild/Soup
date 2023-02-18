@@ -560,6 +560,235 @@ namespace Soup::Core::UnitTests
 					Name: "MyPackage"
 					Language: "C++|1"
 					Dependencies: {
+						Runtime: [
+							"PackageA@3.3.3"
+							"PackageB@4.4.4"
+						]
+					}
+				)")));
+			fileSystem->CreateMockFile(
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "PackageA"
+					Language: "C++|1"
+					Dependencies: {
+						Runtime: [
+							"PackageB@4.4.4"
+						]
+					}
+				)")));
+			fileSystem->CreateMockFile(
+				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "PackageB"
+					Language: "C++|1"
+				)")));
+
+			// Register the test process manager
+			auto processManager = std::make_shared<MockProcessManager>();
+			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
+
+			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			{
+				{
+					"C++",
+					 BuiltInLanguagePackage(
+						"Cpp",
+						"Soup.Cpp",
+						SemanticVersion(1, 1, 1))
+				},
+				{
+					"C#",
+					BuiltInLanguagePackage(
+						"CSharp",
+						"Soup.CSharp",
+						SemanticVersion(2, 2, 2))
+				},
+			});
+			auto arguments = RecipeBuildArguments();
+			arguments.GlobalParameters = ValueTable(
+			{
+				{ "ArgumentValue", Value(true) },
+			});
+			arguments.WorkingDirectory = Path("C:/WorkingDirectory/MyPackage/");
+			auto hostBuildGlobalParameters = ValueTable(
+			{
+				{ "HostValue", Value(true) },
+			});
+			auto recipeCache = RecipeCache();
+			auto uut = BuildLoadEngine(
+				builtInLanguages,
+				arguments,
+				hostBuildGlobalParameters,
+				recipeCache);
+
+			auto packageProvider = uut.Load();
+
+			// Verify expected logs
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"INFO: PackageLock file does not exist",
+					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
+					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
+					"DIAG: Recipe already loaded: C++|PackageB",
+					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
+				}),
+				testListener->GetMessages(),
+				"Verify log messages match expected.");
+
+			// Verify expected file system requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
+					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"GetCurrentDirectory",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml",
+					"GetCurrentDirectory",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml",
+					"GetCurrentDirectory",
+				}),
+				fileSystem->GetRequests(),
+				"Verify file system requests match expected.");
+
+			// Verify expected process requests
+			Assert::AreEqual(
+				std::vector<std::string>({
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+					"GetCurrentProcessFileName",
+				}),
+				processManager->GetRequests(),
+				"Verify process manager requests match expected.");
+
+			// Verify expected package graph
+			Assert::AreEqual(
+				PackageProvider(
+					1,
+					PackageGraphLookupMap(
+					{
+						{
+							1,
+							PackageGraph(
+								1,
+								1,
+								ValueTable(
+								{
+									{ "ArgumentValue", Value(true) },
+								}))
+						},
+						{
+							2,
+							PackageGraph(
+								2,
+								4,
+								ValueTable())
+						},
+					}),
+					PackageLookupMap(
+					{
+						{
+							1,
+							PackageInfo(
+								1,
+								"MyPackage",
+								false,
+								Path("C:/WorkingDirectory/MyPackage/"),
+								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+										}
+									},
+									{
+										"Runtime",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "PackageA", SemanticVersion(3, 3, 3)), false, 2, -1),
+											PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+										}
+									},
+								}))
+						},
+						{
+							2,
+							PackageInfo(
+								2,
+								"PackageA",
+								false,
+								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/"),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+										}
+									},
+									{
+										"Runtime",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+										}
+									},
+								}))
+						},
+						{
+							3,
+							PackageInfo(
+								3,
+								"PackageB",
+								false,
+								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/"),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+										}
+									},
+								}))
+						},
+						{
+							4,
+							PackageInfo(
+								4,
+								"Soup.Cpp",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								nullptr,
+								PackageChildrenMap())
+						},
+					})),
+				packageProvider,
+				"Verify package graph matches expected.");
+		}
+
+		// [[Fact]]
+		void Load_BuildDependency_NoPackageLock_ExternalReference_ToolDependency()
+		{
+			// Register the test listener
+			auto testListener = std::make_shared<TestTraceListener>();
+			auto scopedTraceListener = ScopedTraceListenerRegister(testListener);
+
+			// Register the test file system
+			auto fileSystem = std::make_shared<MockFileSystem>();
+			auto scopedFileSystem = ScopedFileSystemRegister(fileSystem);
+
+			// Create the Recipe to build
+			fileSystem->CreateMockFile(
+				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "MyPackage"
+					Language: "C++|1"
+					Dependencies: {
 						Build: [
 							"TestBuild@3.3.3"
 						]
@@ -571,6 +800,18 @@ namespace Soup::Core::UnitTests
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestBuild"
 					Language: "Wren|1"
+					Dependencies: {
+						Tool: [
+							"C++|TestTool@4.4.4"
+						]
+					}
+				)")));
+
+			fileSystem->CreateMockFile(
+				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "TestTool"
+					Language: "C++|1"
 				)")));
 
 			// Register the test process manager
@@ -622,6 +863,10 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
 					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.3/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
+					"DIAG: Load Recipe: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
+					"DIAG: Load PackageLock: C:/Users/Me/.soup/locks/Cpp/TestTool/4.4.4/PackageLock.sml",
+					"INFO: PackageLock file does not exist",
+					"DIAG: Graph already loaded: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -637,6 +882,11 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml",
 					"GetCurrentDirectory",
 					"Exists: C:/Users/Me/.soup/locks/Wren/TestBuild/3.3.3/PackageLock.sml",
+					"GetCurrentDirectory",
+					"Exists: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
+					"OpenReadBinary: C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml",
+					"GetCurrentDirectory",
+					"Exists: C:/Users/Me/.soup/locks/Cpp/TestTool/4.4.4/PackageLock.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -644,6 +894,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
 				}),
@@ -670,14 +921,14 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageGraph(
 								2,
-								3,
+								4,
 								ValueTable())
 						},
 						{
 							3,
 							PackageGraph(
 								3,
-								2,
+								3,
 								ValueTable(
 								{
 									{ "HostValue", Value(true) },
@@ -687,8 +938,18 @@ namespace Soup::Core::UnitTests
 							4,
 							PackageGraph(
 								4,
-								4,
+								5,
 								ValueTable())
+						},
+						{
+							5,
+							PackageGraph(
+								5,
+								2,
+								ValueTable(
+								{
+									{ "HostValue", Value(true) },
+								}))
 						},
 					}),
 					PackageLookupMap(
@@ -705,8 +966,8 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 3),
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
+											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 5),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -723,7 +984,13 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
+										}
+									},
+									{
+										"Tool",
+										{
+											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 3),
 										}
 									},
 								}))
@@ -732,11 +999,18 @@ namespace Soup::Core::UnitTests
 							3,
 							PackageInfo(
 								3,
-								"Soup.Wren",
-								true,
-								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
-								nullptr,
-								PackageChildrenMap())
+								"TestTool",
+								false,
+								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/"),
+								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml")),
+								PackageChildrenMap({
+									{
+										"Build",
+										{
+											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+										}
+									},
+								}))
 						},
 						{
 							4,
@@ -745,6 +1019,16 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								nullptr,
+								PackageChildrenMap())
+						},
+						{
+							5,
+							PackageInfo(
+								5,
+								"Soup.Wren",
+								true,
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
 								nullptr,
 								PackageChildrenMap())
 						},

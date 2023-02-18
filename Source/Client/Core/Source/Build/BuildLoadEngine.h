@@ -34,8 +34,9 @@ namespace Soup::Core
 	private:
 		const int _packageLockVersion = 4;
 		const Path _builtInExtensionPath = Path("BuiltIn/");
-		const std::string _buildDependencyType = "Build";
 		const std::string _builtInWrenLanguage = "Wren";
+		const std::string _dependencyTypeBuild = "Build";
+		const std::string _dependencyTypeTool = "Tool";
 		const std::string _rootClosureName = "Root";
 
 		// Built in languages
@@ -200,7 +201,7 @@ namespace Soup::Core
 		Path GetPackageReferencePath(
 			const Path& workingDirectory,
 			const PackageReference& reference,
-			const std::string& implicitLanguage,
+			const std::optional<std::string>& implicitLanguage,
 			const std::string& closureName,
 			const PackageLockState& packageLockState) const
 		{
@@ -216,7 +217,28 @@ namespace Soup::Core
 			}
 			else
 			{
-				auto& activeReference = GetActivePackageReference(reference, implicitLanguage, closureName, packageLockState);
+				std::string language;
+				if (reference.HasLanguage())
+				{
+					language = reference.GetLanguage();
+				}
+				else
+				{
+					if (implicitLanguage.has_value())
+					{
+						language = implicitLanguage.value();
+					}
+					else
+					{
+						throw std::runtime_error("Reference [" + reference.ToString() + "] must have explicit language");
+					}
+				}
+
+				auto& activeReference = GetActivePackageReference(
+					reference,
+					language,
+					closureName,
+					packageLockState);
 				if (activeReference.IsLocal())
 				{
 					// Use local reference relative to lock directory
@@ -230,8 +252,7 @@ namespace Soup::Core
 				{
 					// Build the global store location path
 					auto packageStore = GetSoupUserDataPath() + Path("packages/");
-					auto language = reference.HasLanguage() ? reference.GetLanguage() : implicitLanguage;
-					auto languageSafeName = GetLanguageSafeName(language);
+					auto& languageSafeName = GetLanguageSafeName(language);
 					packagePath = packageStore +
 						Path(languageSafeName) +
 						Path(activeReference.GetName()) +
@@ -245,7 +266,7 @@ namespace Soup::Core
 		Path GetPackageLockPath(
 			const Path& workingDirectory,
 			const PackageReference& reference,
-			const std::string& implicitLanguage,
+			const std::optional<std::string>& implicitLanguage,
 			const std::string& closureName,
 			const PackageLockState& packageLockState) const
 		{
@@ -261,7 +282,28 @@ namespace Soup::Core
 			}
 			else
 			{
-				auto& activeReference = GetActivePackageReference(reference, implicitLanguage, closureName, packageLockState);
+				std::string language;
+				if (reference.HasLanguage())
+				{
+					language = reference.GetLanguage();
+				}
+				else
+				{
+					if (implicitLanguage.has_value())
+					{
+						language = implicitLanguage.value();
+					}
+					else
+					{
+						throw std::runtime_error("Reference [" + reference.ToString() + "] must have explicit language");
+					}
+				}
+
+				auto& activeReference = GetActivePackageReference(
+					reference,
+					language,
+					closureName,
+					packageLockState);
 				if (activeReference.IsLocal())
 				{
 					// Use local reference relative to lock directory
@@ -275,8 +317,7 @@ namespace Soup::Core
 				{
 					// Build the global store location path
 					auto packageStore = GetSoupUserDataPath() + Path("locks/");
-					auto language = reference.HasLanguage() ? reference.GetLanguage() : implicitLanguage;
-					auto languageSafeName = GetLanguageSafeName(language);
+					auto& languageSafeName = GetLanguageSafeName(language);
 					packagePath = packageStore +
 						Path(languageSafeName) +
 						Path(activeReference.GetName()) +
@@ -289,11 +330,10 @@ namespace Soup::Core
 
 		const PackageReference& GetActivePackageReference(
 			const PackageReference& reference,
-			const std::string& implicitLanguage,
+			const std::string& language,
 			const std::string& closureName,
 			const PackageLockState& packageLockState) const
 		{
-			auto language = reference.HasLanguage() ? reference.GetLanguage() : implicitLanguage;
 			if (packageLockState.HasPackageLock)
 			{
 				// Find the required closure
@@ -350,10 +390,18 @@ namespace Soup::Core
 			auto dependencyProjects = std::map<std::string, std::vector<PackageChildInfo>>();
 			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
-				bool isBuildDependency = dependencyType == _buildDependencyType;
-				if (isBuildDependency)
+				if (dependencyType == _dependencyTypeBuild)
 				{
 					auto dependencyTypeProjects = LoadBuildDependencies(
+						recipe,
+						projectRoot,
+						buildClosureName,
+						packageLockState);
+					dependencyProjects.emplace(dependencyType, std::move(dependencyTypeProjects));
+				}
+				else if (dependencyType == _dependencyTypeTool)
+				{
+					auto dependencyTypeProjects = LoadToolDependencies(
 						recipe,
 						projectRoot,
 						buildClosureName,
@@ -381,7 +429,7 @@ namespace Soup::Core
 					buildClosureName,
 					packageLockState);
 
-			dependencyProjects[_buildDependencyType].push_back(
+			dependencyProjects[_dependencyTypeBuild].push_back(
 				std::move(languageExtensionPackageChildInfo));
 
 			// Save the package info
@@ -488,10 +536,30 @@ namespace Soup::Core
 			const PackageLockState& packageLockState)
 		{
 			auto dependencyTypeProjects = std::vector<PackageChildInfo>();
-			for (auto dependency : recipe.GetNamedDependencies(_buildDependencyType))
+			for (auto dependency : recipe.GetNamedDependencies(_dependencyTypeBuild))
 			{
 				dependencyTypeProjects.push_back(
 					LoadBuildDependency(
+						dependency,
+						projectRoot,
+						buildClosureName,
+						packageLockState));
+			}
+
+			return dependencyTypeProjects;
+		}
+
+		std::vector<PackageChildInfo> LoadToolDependencies(
+			const Recipe& recipe,
+			const Path& projectRoot,
+			const std::string& buildClosureName,
+			const PackageLockState& packageLockState)
+		{
+			auto dependencyTypeProjects = std::vector<PackageChildInfo>();
+			for (auto dependency : recipe.GetNamedDependencies(_dependencyTypeTool))
+			{
+				dependencyTypeProjects.push_back(
+					LoadToolDependency(
 						dependency,
 						projectRoot,
 						buildClosureName,
@@ -509,8 +577,41 @@ namespace Soup::Core
 		{
 			// Build dependencies do not inherit the parent language
 			// Instead, they default to Wren
-			auto implicitLanguage = _builtInWrenLanguage;
+			static const std::optional<std::string> implicitLanguage = _builtInWrenLanguage;
 
+			return LoadSubGraphDependency(
+				implicitLanguage,
+				dependency,
+				projectRoot,
+				buildClosureName,
+				packageLockState);
+		}
+
+		PackageChildInfo LoadToolDependency(
+			const PackageReference& dependency,
+			const Path& projectRoot,
+			const std::string& buildClosureName,
+			const PackageLockState& packageLockState)
+		{
+			// Tool dependencies do not inherit the parent language
+			// They must be explicitly defined
+			static const std::optional<std::string> implicitLanguage = std::nullopt;
+
+			return LoadSubGraphDependency(
+				implicitLanguage,
+				dependency,
+				projectRoot,
+				buildClosureName,
+				packageLockState);
+		}
+
+		PackageChildInfo LoadSubGraphDependency(
+			const std::optional<std::string>& implicitLanguage,
+			const PackageReference& dependency,
+			const Path& projectRoot,
+			const std::string& buildClosureName,
+			const PackageLockState& packageLockState)
+		{
 			// Load this package recipe
 			auto dependencyProjectRoot = GetPackageReferencePath(
 				projectRoot,
