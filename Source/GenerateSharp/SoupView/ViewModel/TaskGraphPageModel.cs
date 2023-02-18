@@ -3,13 +3,12 @@
 // </copyright>
 
 using Opal;
-using Soup.Build;
-using Soup.Build.Runtime;
 using Soup.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using ValueType = Soup.Build.Utilities.ValueType;
 
 namespace SoupView.ViewModel
 {
@@ -127,25 +126,25 @@ namespace SoupView.ViewModel
 			IsErrorBarOpen = true;
 		}
 
-		private IList<IList<GraphNode>> BuildGraph(IValueTable generateInfoTable)
+		private IList<IList<GraphNode>> BuildGraph(ValueTable generateInfoTable)
 		{
 			var activeGraph = new List<IList<GraphNode>>();
 			this.taskDetailsLookup.Clear();
 			this.uniqueId = 1;
 
-			if (!generateInfoTable.TryGetValue("RuntimeOrder", out var runtimeOrderList) || runtimeOrderList.Type != Soup.Build.ValueType.List)
+			if (!generateInfoTable.TryGetValue("RuntimeOrder", out var runtimeOrderList) || runtimeOrderList.Type != ValueType.List)
 			{
 				NotifyError($"Generate Info Table missing RuntimeOrder List");
 				return activeGraph;
 			}
 
-			if (!generateInfoTable.TryGetValue("TaskInfo", out var taskInfoTable) || taskInfoTable.Type != Soup.Build.ValueType.Table)
+			if (!generateInfoTable.TryGetValue("TaskInfo", out var taskInfoTable) || taskInfoTable.Type != ValueType.Table)
 			{
 				NotifyError($"Generate Info Table missing TaskInfo Table");
 				return activeGraph;
 			}
 
-			if (!generateInfoTable.TryGetValue("GlobalState", out var globalStateTable) || globalStateTable.Type != Soup.Build.ValueType.Table)
+			if (!generateInfoTable.TryGetValue("GlobalState", out var globalStateTable) || globalStateTable.Type != ValueType.Table)
 			{
 				NotifyError($"Generate Info Table missing GlobalState Table");
 				return activeGraph;
@@ -157,9 +156,9 @@ namespace SoupView.ViewModel
 		}
 
 		private void BuildGraph(
-			IValueList runtimeOrderList,
-			IValueTable taskInfoTable,
-			IValueTable globalStateTable,
+			ValueList runtimeOrderList,
+			ValueTable taskInfoTable,
+			ValueTable globalStateTable,
 			IList<IList<GraphNode>> activeGraph)
 		{
 			// Add each task to its own column

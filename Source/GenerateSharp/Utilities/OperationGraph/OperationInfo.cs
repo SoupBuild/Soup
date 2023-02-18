@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Soup.Build.Runtime
+namespace Soup.Build.Utilities
 {
 	public record OperationId(uint value);
 

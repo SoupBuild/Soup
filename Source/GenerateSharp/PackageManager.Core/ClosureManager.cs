@@ -347,9 +347,14 @@ namespace Soup.Build.PackageManager
 			{
 				result = await packageClient.GenerateClosureAsync(generateClosureRequest);
 			}
+			catch (HttpRequestException)
+			{
+				Log.Error("Failed to connect, check internet connection and try again");
+				throw new HandledException();
+			}
 			catch (Api.Client.ApiException)
 			{
-				Log.Info("Service request failed");
+				Log.Error("Service request failed");
 				throw;
 			}
 
