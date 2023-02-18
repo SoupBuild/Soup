@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build;
+using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using ValueType = Soup.Build.ValueType;
+using ValueType = Soup.Build.Runtime.ValueType;
 
 namespace SoupView.ViewModel
 {
@@ -14,7 +14,7 @@ namespace SoupView.ViewModel
 	{
 		private ObservableCollection<PropertyValue> properties = new ObservableCollection<PropertyValue>();
 
-		public TaskDetailsViewModel(string name, IValueTable taskInfo)
+		public TaskDetailsViewModel(string name, ValueTable taskInfo)
 		{
 			properties.Clear();
 			properties.Add(new PropertyValue("Name", name));
@@ -29,7 +29,7 @@ namespace SoupView.ViewModel
 		public ObservableCollection<ValueTableItemViewModel> State { get; init; }
 
 		private void BuildValueTable(
-			IValueTable table,
+			ValueTable table,
 			ObservableCollection<ValueTableItemViewModel> viewModelList)
 		{
 			viewModelList.Clear();
@@ -81,7 +81,7 @@ namespace SoupView.ViewModel
 		}
 
 		private void BuildValueList(
-			IValueList list,
+			ValueList list,
 			ObservableCollection<ValueTableItemViewModel> viewModelList)
 		{
 			viewModelList.Clear();

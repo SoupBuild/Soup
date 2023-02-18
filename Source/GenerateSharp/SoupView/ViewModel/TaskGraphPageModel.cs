@@ -3,7 +3,6 @@
 // </copyright>
 
 using Opal;
-using Soup.Build;
 using Soup.Build.Runtime;
 using Soup.Build.Utilities;
 using System;
@@ -127,25 +126,25 @@ namespace SoupView.ViewModel
 			IsErrorBarOpen = true;
 		}
 
-		private IList<IList<GraphNode>> BuildGraph(IValueTable generateInfoTable)
+		private IList<IList<GraphNode>> BuildGraph(ValueTable generateInfoTable)
 		{
 			var activeGraph = new List<IList<GraphNode>>();
 			this.taskDetailsLookup.Clear();
 			this.uniqueId = 1;
 
-			if (!generateInfoTable.TryGetValue("RuntimeOrder", out var runtimeOrderList) || runtimeOrderList.Type != Soup.Build.ValueType.List)
+			if (!generateInfoTable.TryGetValue("RuntimeOrder", out var runtimeOrderList) || runtimeOrderList.Type != Soup.Build.Runtime.ValueType.List)
 			{
 				NotifyError($"Generate Info Table missing RuntimeOrder List");
 				return activeGraph;
 			}
 
-			if (!generateInfoTable.TryGetValue("TaskInfo", out var taskInfoTable) || taskInfoTable.Type != Soup.Build.ValueType.Table)
+			if (!generateInfoTable.TryGetValue("TaskInfo", out var taskInfoTable) || taskInfoTable.Type != Soup.Build.Runtime.ValueType.Table)
 			{
 				NotifyError($"Generate Info Table missing TaskInfo Table");
 				return activeGraph;
 			}
 
-			if (!generateInfoTable.TryGetValue("GlobalState", out var globalStateTable) || globalStateTable.Type != Soup.Build.ValueType.Table)
+			if (!generateInfoTable.TryGetValue("GlobalState", out var globalStateTable) || globalStateTable.Type != Soup.Build.Runtime.ValueType.Table)
 			{
 				NotifyError($"Generate Info Table missing GlobalState Table");
 				return activeGraph;
@@ -157,9 +156,9 @@ namespace SoupView.ViewModel
 		}
 
 		private void BuildGraph(
-			IValueList runtimeOrderList,
-			IValueTable taskInfoTable,
-			IValueTable globalStateTable,
+			ValueList runtimeOrderList,
+			ValueTable taskInfoTable,
+			ValueTable globalStateTable,
 			IList<IList<GraphNode>> activeGraph)
 		{
 			// Add each task to its own column

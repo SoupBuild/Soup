@@ -2,7 +2,7 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Soup.Build
+namespace Soup.Build.Runtime
 {
 	public enum ValueType : uint
 	{

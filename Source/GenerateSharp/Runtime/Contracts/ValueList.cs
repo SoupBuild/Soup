@@ -8,25 +8,25 @@ using System.Text;
 
 namespace Soup.Build.Runtime
 {
-	public class ValueList : IValueList
+	public class ValueList : IEnumerable
 	{
-		private List<IValue> _impl;
+		private List<Value> _impl;
 
 		public ValueList()
 		{
-			_impl = new List<IValue>();
+			_impl = new List<Value>();
 		}
 
-		public ValueList(IEnumerable<IValue> collection)
+		public ValueList(IEnumerable<Value> collection)
 		{
-			_impl = new List<IValue>(collection);
+			_impl = new List<Value>(collection);
 		}
 
-		public IValue this[int index] => this._impl[index];
+		public Value this[int index] => this._impl[index];
 
 		public int Count => this._impl.Count;
 
-		public void Add(IValue item)
+		public void Add(Value item)
 		{
 			this._impl.Add(item);
 		}
@@ -41,7 +41,7 @@ namespace Soup.Build.Runtime
 			return new ValueList(_impl);
 		}
 
-		public IEnumerator<IValue> GetEnumerator()
+		public IEnumerator<Value> GetEnumerator()
 		{
 			return this._impl.GetEnumerator();
 		}

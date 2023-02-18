@@ -6,7 +6,7 @@ using System;
 
 namespace Soup.Build.Runtime
 {
-	public class Value : IValue
+	public class Value
 	{
 		public ValueType Type { get; private set; }
 
@@ -48,13 +48,13 @@ namespace Soup.Build.Runtime
 			RawValue = value;
 		}
 
-		public Value(IValueTable value)
+		public Value(ValueTable value)
 		{
 			Type = ValueType.Table;
 			RawValue = value;
 		}
 
-		public Value(IValueList value)
+		public Value(ValueList value)
 		{
 			Type = ValueType.List;
 			RawValue = value;
@@ -63,6 +63,84 @@ namespace Soup.Build.Runtime
 		public Value Clone()
 		{
 			return new Value(Type, RawValue);
+		}
+
+		public bool IsTable()
+		{
+			return Type == ValueType.Table;
+		}
+
+		public ValueTable AsTable()
+		{
+			if (IsTable() && RawValue is ValueTable result)
+				return result;
+			else
+				throw new InvalidOperationException("Attempt to get value as incorrect type: Table");
+		}
+
+		public bool IsList()
+		{
+			return Type == ValueType.List;
+		}
+
+		public ValueList AsList()
+		{
+			if (IsList() && RawValue is ValueList result)
+				return result;
+			else
+				throw new InvalidOperationException("Attempt to get value as incorrect type: List");
+		}
+
+		public bool IsString()
+		{
+			return Type == ValueType.String;
+		}
+
+		public string AsString()
+		{
+			if (IsString() && RawValue is string result)
+				return result;
+			else
+				throw new InvalidOperationException("Attempt to get value as incorrect type: String");
+		}
+
+		public bool IsInteger()
+		{
+			return Type == ValueType.Integer;
+		}
+
+		public long AsInteger()
+		{
+			if (IsInteger() && RawValue is long result)
+				return result;
+			else
+				throw new InvalidOperationException("Attempt to get value as incorrect type: Integer");
+		}
+
+		public bool IsFloat()
+		{
+			return Type == ValueType.Float;
+		}
+
+		public double AsFloat()
+		{
+			if (IsFloat() && RawValue is double result)
+				return result;
+			else
+				throw new InvalidOperationException("Attempt to get value as incorrect type: Float");
+		}
+
+		public bool IsBoolean()
+		{
+			return Type == ValueType.Boolean;
+		}
+
+		public bool AsBoolean()
+		{
+			if (IsBoolean() && RawValue is bool result)
+				return result;
+			else
+				throw new InvalidOperationException("Attempt to get value as incorrect type: Boolean");
 		}
 
 		public override string ToString()

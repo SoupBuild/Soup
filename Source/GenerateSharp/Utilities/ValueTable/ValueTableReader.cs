@@ -4,6 +4,7 @@
 
 using Soup.Build.Runtime;
 using System;
+using ValueType = Soup.Build.Runtime.ValueType;
 
 namespace Soup.Build.Utilities
 {

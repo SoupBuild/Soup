@@ -11,10 +11,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Build.Extensions.Utilities\Soup.Build.Extensions.Utilities.csproj" />
-		<ProjectReference Include="..\Build\Soup.Build.csproj">
-			<Private>false</Private>
-			<ExcludeAssets>runtime</ExcludeAssets>
-		</ProjectReference>
 		<ProjectReference Include="..\Opal\Opal.csproj" />
 		<ProjectReference Include="..\Runtime\Soup.Build.Runtime.csproj" />
 	</ItemGroup>

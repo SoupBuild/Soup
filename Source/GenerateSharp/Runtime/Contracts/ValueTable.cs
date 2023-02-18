@@ -9,21 +9,21 @@ using System.Text;
 
 namespace Soup.Build.Runtime
 {
-	public class ValueTable : IValueTable
+	public class ValueTable : IEnumerable
 	{
-		private Dictionary<string, IValue> _impl;
+		private Dictionary<string, Value> _impl;
 
-		public ValueTable(IDictionary<string, IValue> values)
+		public ValueTable(IDictionary<string, Value> values)
 		{
-			_impl = new Dictionary<string, IValue>(values);
+			_impl = new Dictionary<string, Value>(values);
 		}
 
 		public ValueTable()
 		{
-			_impl = new Dictionary<string, IValue>();
+			_impl = new Dictionary<string, Value>();
 		}
 
-		public IValue this[string key]
+		public Value this[string key]
 		{
 			get { return this._impl[key]; }
 			set { this._impl[key] = value; }
@@ -31,11 +31,11 @@ namespace Soup.Build.Runtime
 
 		public IEnumerable<string> Keys => this._impl.Keys;
 
-		public IEnumerable<IValue> Values => this._impl.Values;
+		public IEnumerable<Value> Values => this._impl.Values;
 
 		public int Count => this._impl.Count;
 
-		public void Add(string key, IValue value)
+		public void Add(string key, Value value)
 		{
 			this._impl.Add(key, value);
 		}
@@ -50,7 +50,7 @@ namespace Soup.Build.Runtime
 			return new ValueTable(_impl);
 		}
 
-		public IEnumerator<KeyValuePair<string, IValue>> GetEnumerator()
+		public IEnumerator<KeyValuePair<string, Value>> GetEnumerator()
 		{
 			return this._impl.GetEnumerator();
 		}
@@ -60,7 +60,7 @@ namespace Soup.Build.Runtime
 			return this._impl.Remove(key);
 		}
 
-		public bool TryGetValue(string key, [MaybeNullWhen(false)] out IValue value)
+		public bool TryGetValue(string key, [MaybeNullWhen(false)] out Value value)
 		{
 			var result = this._impl.TryGetValue(key, out var valueImpl);
 			value = valueImpl;

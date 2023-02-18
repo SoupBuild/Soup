@@ -10,9 +10,9 @@ namespace Soup.Build.Utilities
 {
 	public static class ValueTableExtensions
 	{
-		public static IValueTable ToBuildValue(this SMLDocument value)
+		public static ValueTable ToBuildValue(this SMLDocument value)
 		{
-			var values = new Dictionary<string, IValue>();
+			var values = new Dictionary<string, Value>();
 			foreach (var item in value.Values)
 			{
 				values.Add(item.Key, item.Value.Value.ToBuildValue());
@@ -21,9 +21,9 @@ namespace Soup.Build.Utilities
 			return new ValueTable(values);
 		}
 
-		public static IValueTable ToBuildValue(this SMLTable value)
+		public static ValueTable ToBuildValue(this SMLTable value)
 		{
-			var values = new Dictionary<string, IValue>();
+			var values = new Dictionary<string, Value>();
 			foreach (var item in value.Values)
 			{
 				values.Add(item.Key, item.Value.Value.ToBuildValue());
@@ -32,9 +32,9 @@ namespace Soup.Build.Utilities
 			return new ValueTable(values);
 		}
 
-		public static IValueList ToBuildValue(this SMLArray value)
+		public static ValueList ToBuildValue(this SMLArray value)
 		{
-			var values = new List<IValue>();
+			var values = new List<Value>();
 			foreach (var item in value.Values)
 			{
 				values.Add(item.Value.ToBuildValue());
@@ -43,7 +43,7 @@ namespace Soup.Build.Utilities
 			return new ValueList(values);
 		}
 
-		public static IValue ToBuildValue(this SMLValue value)
+		public static Value ToBuildValue(this SMLValue value)
 		{
 			switch (value.Type)
 			{
