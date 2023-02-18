@@ -10,8 +10,6 @@
 		<PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Build.Extensions.Utilities\Soup.Build.Extensions.Utilities.csproj" />
 		<ProjectReference Include="..\Opal\Opal.csproj" />
-		<ProjectReference Include="..\Runtime\Soup.Build.Runtime.csproj" />
 	</ItemGroup>
 </Project>

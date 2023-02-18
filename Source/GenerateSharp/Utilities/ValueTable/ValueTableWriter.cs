@@ -2,10 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Runtime;
 using System;
 using System.IO;
-using ValueType = Soup.Build.Runtime.ValueType;
 
 namespace Soup.Build.Utilities
 {

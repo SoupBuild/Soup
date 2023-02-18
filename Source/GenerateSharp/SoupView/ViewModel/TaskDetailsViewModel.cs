@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using ValueType = Soup.Build.Runtime.ValueType;
+using Soup.Build.Utilities;
+using ValueType = Soup.Build.Utilities.ValueType;
 
 namespace SoupView.ViewModel
 {

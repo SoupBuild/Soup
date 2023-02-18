@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Soup.Build.Runtime
+namespace Soup.Build.Utilities
 {
 	public class ValueTable : IEnumerable
 	{

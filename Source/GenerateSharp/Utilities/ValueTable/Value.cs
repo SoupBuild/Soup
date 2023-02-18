@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Soup.Build.Runtime
+namespace Soup.Build.Utilities
 {
 	public class Value
 	{

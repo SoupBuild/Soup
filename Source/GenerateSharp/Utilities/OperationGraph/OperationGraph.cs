@@ -5,7 +5,7 @@
 using Opal;
 using System.Collections.Generic;
 
-namespace Soup.Build.Runtime
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The cached operation graph that is used to track input/output mappings for previous build

@@ -8,13 +8,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace Soup.Build.Runtime
+namespace Soup.Build.Utilities
 {
 	/// <summary>
 	/// The cached operation graph that is used to track input/output mappings for previous build
 	/// executions to support incremental builds
 	/// </summary>
-	internal class OperationGraphGenerator
+	public class OperationGraphGenerator
 	{
 		private FileSystemState fileSystemState;
 		private IList<Path> readAccessList;

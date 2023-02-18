@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Soup.Build.Runtime.UnitTests
+namespace Soup.Build.Utilities.UnitTests
 {
 	[Collection("Opal")]
 	public class OperationGraphGeneratorUnitTests

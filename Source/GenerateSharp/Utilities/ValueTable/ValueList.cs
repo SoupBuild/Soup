@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Soup.Build.Runtime
+namespace Soup.Build.Utilities
 {
 	public class ValueList : IEnumerable
 	{
