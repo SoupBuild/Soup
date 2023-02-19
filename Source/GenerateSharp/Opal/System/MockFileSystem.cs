@@ -184,6 +184,9 @@ namespace Opal.System
 		public void Rename(Path source, Path destination)
 		{
 			this.requests.Add($"Rename: [{source}] -> [{destination}]");
+
+			// Create a fake destination directory
+			this.RegisterChildren(destination, new List<DirectoryEntry>());
 		}
 
 		/// <summary>

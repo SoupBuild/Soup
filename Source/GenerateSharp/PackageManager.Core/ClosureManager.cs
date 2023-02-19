@@ -100,7 +100,7 @@ namespace Soup.Build.PackageManager
 					stagingDirectory,
 					packageLock);
 
-				await CheckGenerateAndRestoreBuildDependencyLocksAsync(
+				await CheckGenerateAndRestoreSubGraphDependencyLocksAsync(
 					workingDirectory,
 					packageStoreDirectory,
 					packageLockStoreDirectory,
@@ -110,7 +110,7 @@ namespace Soup.Build.PackageManager
 			}
 		}
 
-		private async Task CheckGenerateAndRestoreBuildDependencyLocksAsync(
+		private async Task CheckGenerateAndRestoreSubGraphDependencyLocksAsync(
 			Path workingDirectory,
 			Path packageStoreDirectory,
 			Path packageLockStoreDirectory,
@@ -210,10 +210,12 @@ namespace Soup.Build.PackageManager
 				Log.Info("Discovering full closure");
 				var closure = new Dictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>>();
 				var buildClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
+				var toolClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
 				await EnsureDiscoverLocalDependenciesAsync(
 					workingDirectory,
 					closure,
-					buildClosures);
+					buildClosures,
+					toolClosures);
 
 				// Attempt to resolve all dependencies to compatible and up-to-date versions
 				Log.Info("Generate final service closure");
@@ -487,7 +489,8 @@ namespace Soup.Build.PackageManager
 		private async Task EnsureDiscoverLocalDependenciesAsync(
 			Path recipeDirectory,
 			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
-			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures,
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> toolClosures)
 		{
 			var recipePath =
 				recipeDirectory +
@@ -508,15 +511,30 @@ namespace Soup.Build.PackageManager
 				var buildClosure = await CreateBuildClosureAsync(recipe, recipeDirectory);
 
 				var buildClosureName = string.Empty;
-				var match = buildClosures.FirstOrDefault(value => AreEqual(value.Value, buildClosure));
-				if (match.Key != null)
+				var buildClosureMatch = buildClosures.FirstOrDefault(value => AreEqual(value.Value, buildClosure));
+				if (buildClosureMatch.Key != null)
 				{
-					buildClosureName = match.Key;
+					buildClosureName = buildClosureMatch.Key;
 				}
 				else
 				{
-					buildClosureName = $"Build{buildClosures.Count}";
+					buildClosureName = $"BuildSet{buildClosures.Count}";
 					buildClosures.Add(buildClosureName, buildClosure);
+				}
+
+				// Create the unique tool closure
+				var toolClosure = await CreateToolClosureAsync(recipe, recipeDirectory);
+
+				var toolClosureName = string.Empty;
+				var toolClosureMatch = buildClosures.FirstOrDefault(value => AreEqual(value.Value, toolClosure));
+				if (toolClosureMatch.Key != null)
+				{
+					toolClosureName = toolClosureMatch.Key;
+				}
+				else
+				{
+					toolClosureName = $"ToolSet{toolClosures.Count}";
+					toolClosures.Add(toolClosureName, toolClosure);
 				}
 
 				// Add the project to the closure
@@ -528,7 +546,8 @@ namespace Soup.Build.PackageManager
 					recipeDirectory,
 					recipe,
 					closure,
-					buildClosures);
+					buildClosures,
+					toolClosures);
 			}
 		}
 
@@ -589,6 +608,61 @@ namespace Soup.Build.PackageManager
 			return buildClosure;
 		}
 
+		private static async Task<IDictionary<string, IDictionary<string, PackageReference>>> CreateToolClosureAsync(
+			Recipe recipe,
+			Path recipeDirectory)
+		{
+			var toolClosure = new Dictionary<string, IDictionary<string, PackageReference>>();
+
+			// Discover any dependency tool references
+			if (recipe.HasToolDependencies)
+			{
+				foreach (var dependency in recipe.ToolDependencies)
+				{
+					PackageReference dependencyPackage;
+					string dependencyName;
+					string dependencyLanguage;
+					if (dependency.IsLocal)
+					{
+						// Load the recipe to check for the language and name of the package
+						var dependencyPath = recipeDirectory + dependency.Path;
+						var dependencyRecipePath =
+							dependencyPath +
+							BuildConstants.RecipeFileName;
+						var (isDependencySuccess, dependencyRecipe) =
+							await RecipeExtensions.TryLoadRecipeFromFileAsync(dependencyRecipePath);
+						if (!isDependencySuccess)
+						{
+							throw new InvalidOperationException("Could not load dependency recipe file.");
+						}
+
+						dependencyPackage = dependency;
+						dependencyName = dependencyRecipe.Name;
+						dependencyLanguage = dependencyRecipe.Language.Name;
+					}
+					else
+					{
+						dependencyPackage = FillDefaultVersion(dependency);
+
+						if (dependencyPackage.Language == null)
+						{
+							throw new InvalidOperationException("Dependency must have explicit language.");
+						}
+
+						dependencyName = dependencyPackage.Name;
+						dependencyLanguage = dependencyPackage.Language;
+					}
+
+					if (!toolClosure.ContainsKey(dependencyLanguage))
+						toolClosure.Add(dependencyLanguage, new Dictionary<string, PackageReference>());
+
+					toolClosure[dependencyLanguage].Add(dependencyName, dependencyPackage);
+				}
+			}
+
+			return toolClosure;
+		}
+
 		/// <summary>
 		/// Recursively discover all local dependencies, assume that the closure has been updated correctly for current recipe
 		/// </summary>
@@ -596,21 +670,23 @@ namespace Soup.Build.PackageManager
 			Path recipeDirectory,
 			Recipe recipe,
 			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
-			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures,
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> toolClosures)
 		{
 			// Restore the explicit dependencies
 			foreach (var dependencyType in recipe.GetDependencyTypes())
 			{
 				// Build dependencies covered in build closure
-				bool isBuildDependency = dependencyType == Recipe.Property_Build;
-				if (!isBuildDependency)
+				if (dependencyType != Recipe.Property_Build &&
+					dependencyType != Recipe.Property_Tool)
 				{
 					await DiscoverRuntimeDependenciesAsync(
 						recipeDirectory,
 						recipe,
 						dependencyType,
 						closure,
-						buildClosures);
+						buildClosures,
+						toolClosures);
 				}
 			}
 		}
@@ -623,7 +699,8 @@ namespace Soup.Build.PackageManager
 			Recipe recipe,
 			string dependencyType,
 			IDictionary<string, IDictionary<string, (PackageReference Package, string BuildClosure)>> closure,
-			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures)
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> buildClosures,
+			IDictionary<string, IDictionary<string, IDictionary<string, PackageReference>>> toolClosures)
 		{
 			// Same language as parent is implied
 			var implicitLanguage = recipe.Language.Name;
@@ -641,7 +718,8 @@ namespace Soup.Build.PackageManager
 					await EnsureDiscoverLocalDependenciesAsync(
 						dependencyPath,
 						closure,
-						buildClosures);
+						buildClosures,
+						toolClosures);
 				}
 				else
 				{
