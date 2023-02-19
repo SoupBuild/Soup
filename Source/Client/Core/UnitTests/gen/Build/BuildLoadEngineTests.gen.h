@@ -14,6 +14,7 @@ TestState RunBuildLoadEngineTests()
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_NoPackageLock_ExternalReference_ToolDependency", [&testClass]() { testClass->Load_BuildDependency_NoPackageLock_ExternalReference_ToolDependency(); });
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_NoPackageLock_Local", [&testClass]() { testClass->Load_BuildDependency_NoPackageLock_Local(); });
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_PackageLock", [&testClass]() { testClass->Load_BuildDependency_PackageLock(); });
+	state += Soup::Test::RunTest(className, "Load_BuildDependency_PackageLock_ToolDependency", [&testClass]() { testClass->Load_BuildDependency_PackageLock_ToolDependency(); });
 	state += Soup::Test::RunTest(className, "Load_BuildDependency_PackageLock_Override", [&testClass]() { testClass->Load_BuildDependency_PackageLock_Override(); });
 	state += Soup::Test::RunTest(className, "Load_OtherDependency_PackageLock_ExplicitLanguage", [&testClass]() { testClass->Load_OtherDependency_PackageLock_ExplicitLanguage(); });
 	state += Soup::Test::RunTest(className, "Load_RuntimeDependency_PackageLock_ExplicitLanguageOverride_MultipleReferences_ReuseBuildGraph", [&testClass]() { testClass->Load_RuntimeDependency_PackageLock_ExplicitLanguageOverride_MultipleReferences_ReuseBuildGraph(); });

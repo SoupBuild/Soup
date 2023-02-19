@@ -177,7 +177,7 @@ namespace Soup::Core
 			if (packageVersion == findPackageLock->second.end())
 				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
-			auto& packageBuild = packageVersion->second.second;
+			auto& packageBuild = packageVersion->second.BuildValue;
 			if (!packageBuild.has_value())
 				throw std::runtime_error("Package [" + _rootClosureName + "] [" + packageLanguage + "] [" + packageName + "] does not have build closure [" + packageLockState.RootDirectory.ToString() + "]");
 
@@ -349,7 +349,7 @@ namespace Soup::Core
 				if (findPackageVersion == findPackageLock->second.end())
 					throw std::runtime_error("Package [" + closureName + "] [" + language + "] [" + reference.GetName() + "] not found in lock [" + packageLockState.RootDirectory.ToString() + "]");
 
-				auto& lockReference = findPackageVersion->second.first;
+				auto& lockReference = findPackageVersion->second.Reference;
 				return lockReference;
 			}
 			else
