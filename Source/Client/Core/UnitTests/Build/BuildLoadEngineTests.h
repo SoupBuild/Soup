@@ -970,6 +970,12 @@ namespace Soup::Core::UnitTests
 											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
+									{
+										"Tool",
+										{
+											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 3),
+										}
+									},
 								}))
 						},
 						{
@@ -985,12 +991,6 @@ namespace Soup::Core::UnitTests
 										"Build",
 										{
 											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
-										}
-									},
-									{
-										"Tool",
-										{
-											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 3),
 										}
 									},
 								}))
@@ -1718,6 +1718,12 @@ namespace Soup::Core::UnitTests
 											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
+									{
+										"Tool",
+										{
+											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 3),
+										}
+									},
 								}))
 						},
 						{
@@ -1733,12 +1739,6 @@ namespace Soup::Core::UnitTests
 										"Build",
 										{
 											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
-										}
-									},
-									{
-										"Tool",
-										{
-											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 3),
 										}
 									},
 								}))

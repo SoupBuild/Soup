@@ -58,8 +58,8 @@ namespace Soup::Core
 		PackageGraphLookupMap _packageGraphLookup;
 		PackageLookupMap _packageLookup;
 
-		// Mapping from build dependency to Package path to graph id
-		std::map<Path, PackageGraphId> _knownBuildGraphSet;
+		// Mapping from sub graph dependency to Package path to graph id
+		std::map<Path, std::pair<PackageGraphId, std::vector<PackageChildInfo>>> _knownSubGraphSet;
 
 	public:
 		/// <summary>
@@ -76,7 +76,7 @@ namespace Soup::Core
 			_recipeCache(recipeCache),
 			_packageGraphLookup(),
 			_packageLookup(),
-			_knownBuildGraphSet()
+			_knownSubGraphSet()
 		{
 		}
 
@@ -116,6 +116,7 @@ namespace Soup::Core
 			auto languagePackageName = recipe->GetLanguage().GetName() + "|" + recipe->GetName();
 			auto parentSet = std::set<std::string>();
 			auto knownPackageSet = KnownPackageMap();
+			auto toolDependencyProjects = std::vector<PackageChildInfo>();
 			LoadClosure(
 				*recipe,
 				projectRoot,
@@ -123,7 +124,11 @@ namespace Soup::Core
 				rootPackageId,
 				parentSet,
 				knownPackageSet,
-				packageLockState);
+				packageLockState,
+				toolDependencyProjects);
+
+			for (auto& toolDependency : toolDependencyProjects)
+				Log::Warning("Top Level Tool Dependency discarded: " + toolDependency.OriginalReference.ToString());
 
 			return PackageProvider(rootGraphId, std::move(_packageGraphLookup), std::move(_packageLookup));
 		}
@@ -366,7 +371,8 @@ namespace Soup::Core
 			PackageId packageId,
 			const std::set<std::string>& parentSet,
 			KnownPackageMap& knownPackageSet,
-			const PackageLockState& packageLockState)
+			const PackageLockState& packageLockState,
+			std::vector<PackageChildInfo>& toolDependencies)
 		{
 			// Add current package to the parent set when building child dependencies
 			auto activeParentSet = parentSet;
@@ -392,21 +398,26 @@ namespace Soup::Core
 			{
 				if (dependencyType == _dependencyTypeBuild)
 				{
-					auto dependencyTypeProjects = LoadBuildDependencies(
+					auto [buildDependencies, buildToolDependencies] = LoadBuildDependencies(
 						recipe,
 						projectRoot,
 						buildClosureName,
 						packageLockState);
-					dependencyProjects.emplace(dependencyType, std::move(dependencyTypeProjects));
+					dependencyProjects.emplace(_dependencyTypeBuild, std::move(buildDependencies));
+
+					// Tool dependencies for build dependencies are implicit dependencies for the project itself
+					if (!buildToolDependencies.empty())
+					{
+						dependencyProjects.emplace(_dependencyTypeTool, std::move(buildToolDependencies));
+					}
 				}
 				else if (dependencyType == _dependencyTypeTool)
 				{
-					auto dependencyTypeProjects = LoadToolDependencies(
+					toolDependencies = LoadToolDependencies(
 						recipe,
 						projectRoot,
 						buildClosureName,
 						packageLockState);
-					dependencyProjects.emplace(dependencyType, std::move(dependencyTypeProjects));
 				}
 				else
 				{
@@ -422,7 +433,7 @@ namespace Soup::Core
 			}
 
 			// Add the language as a build dependency
-			auto languageExtensionPackageChildInfo =
+			auto [languageExtensionPackageChildInfo, languageExtensionPackageToolDependencies] =
 				LoadLanguageBuildDependency(
 					recipe,
 					projectRoot,
@@ -511,6 +522,7 @@ namespace Soup::Core
 				{
 					// Discover all recursive dependencies
 					auto childPackageId = ++_uniquePackageId;
+					auto toolDependencyProjects = std::vector<PackageChildInfo>();
 					LoadClosure(
 						*dependencyRecipe,
 						dependencyProjectRoot,
@@ -518,8 +530,12 @@ namespace Soup::Core
 						childPackageId,
 						activeParentSet,
 						knownPackageSet,
-						packageLockState);
-						
+						packageLockState,
+						toolDependencyProjects);
+
+					for (auto& toolDependency : toolDependencyProjects)
+						Log::Warning("Runtime Dependency Tool Dependency discarded: " + toolDependency.OriginalReference.ToString());
+
 					// Update the child project id
 					dependencyTypeProjects.push_back(
 						PackageChildInfo(dependency, false, childPackageId, -1));
@@ -529,24 +545,31 @@ namespace Soup::Core
 			return dependencyTypeProjects;
 		}
 
-		std::vector<PackageChildInfo> LoadBuildDependencies(
+		std::pair<std::vector<PackageChildInfo>, std::vector<PackageChildInfo>> LoadBuildDependencies(
 			const Recipe& recipe,
 			const Path& projectRoot,
 			const std::string& buildClosureName,
 			const PackageLockState& packageLockState)
 		{
-			auto dependencyTypeProjects = std::vector<PackageChildInfo>();
+			auto buildProjects = std::vector<PackageChildInfo>();
+			auto buildToolProjects = std::vector<PackageChildInfo>();
 			for (auto dependency : recipe.GetNamedDependencies(_dependencyTypeBuild))
 			{
-				dependencyTypeProjects.push_back(
-					LoadBuildDependency(
-						dependency,
-						projectRoot,
-						buildClosureName,
-						packageLockState));
+				auto [buildDependency, buildToolDependencies] = LoadBuildDependency(
+					dependency,
+					projectRoot,
+					buildClosureName,
+					packageLockState);
+				buildProjects.push_back(std::move(buildDependency));
+
+				// Propagate the build tool dependencies
+				buildToolProjects.insert(
+					buildToolProjects.end(),
+					std::make_move_iterator(buildToolDependencies.begin()),
+					std::make_move_iterator(buildToolDependencies.end()));
 			}
 
-			return dependencyTypeProjects;
+			return std::make_pair(std::move(buildProjects), std::move(buildToolProjects));
 		}
 
 		std::vector<PackageChildInfo> LoadToolDependencies(
@@ -569,7 +592,7 @@ namespace Soup::Core
 			return dependencyTypeProjects;
 		}
 
-		PackageChildInfo LoadBuildDependency(
+		std::pair<PackageChildInfo, std::vector<PackageChildInfo>> LoadBuildDependency(
 			const PackageReference& dependency,
 			const Path& projectRoot,
 			const std::string& buildClosureName,
@@ -597,15 +620,20 @@ namespace Soup::Core
 			// They must be explicitly defined
 			static const std::optional<std::string> implicitLanguage = std::nullopt;
 
-			return LoadSubGraphDependency(
+			auto [toolDependency, toolToolDependencies] = LoadSubGraphDependency(
 				implicitLanguage,
 				dependency,
 				projectRoot,
 				buildClosureName,
 				packageLockState);
+
+			for (auto& toolToolDependency : toolToolDependencies)
+				Log::Warning("Tool Tool Dependency discarded: " + toolToolDependency.OriginalReference.ToString());
+
+			return toolDependency;
 		}
 
-		PackageChildInfo LoadSubGraphDependency(
+		std::pair<PackageChildInfo, std::vector<PackageChildInfo>> LoadSubGraphDependency(
 			const std::optional<std::string>& implicitLanguage,
 			const PackageReference& dependency,
 			const Path& projectRoot,
@@ -621,12 +649,14 @@ namespace Soup::Core
 				packageLockState);
 
 			// Check if the package has already been processed from another graph
-			auto findKnownGraph = _knownBuildGraphSet.find(dependencyProjectRoot);
-			if (findKnownGraph != _knownBuildGraphSet.end())
+			auto findKnownGraph = _knownSubGraphSet.find(dependencyProjectRoot);
+			if (findKnownGraph != _knownSubGraphSet.end())
 			{
 				// Verify the project name is unique
 				Log::Diag("Graph already loaded: " + dependencyProjectRoot.ToString());
-				return PackageChildInfo(dependency, true, -1, findKnownGraph->second);
+				return std::make_pair(
+					PackageChildInfo(dependency, true, -1, findKnownGraph->second.first),
+					findKnownGraph->second.second);
 			}
 			else
 			{
@@ -665,6 +695,7 @@ namespace Soup::Core
 				// Discover all recursive dependencies
 				auto languagePackageName = dependencyRecipe->GetLanguage().GetName() + "|" + dependencyRecipe->GetName();
 				auto childPackageId = ++_uniquePackageId;
+				auto toolDependencyProjects = std::vector<PackageChildInfo>();
 				LoadClosure(
 					*dependencyRecipe,
 					dependencyProjectRoot,
@@ -672,7 +703,8 @@ namespace Soup::Core
 					childPackageId,
 					parentSet,
 					knownPackageSet,
-					dependencyPackageLockState);
+					dependencyPackageLockState,
+					toolDependencyProjects);
 
 				// Create the build graph
 				auto graphId = ++_uniqueGraphId;
@@ -683,16 +715,18 @@ namespace Soup::Core
 					PackageGraph(graphId, childPackageId, _hostBuildGlobalParameters));
 
 				// Keep track of the build graphs we have already seen
-				auto insertKnown = _knownBuildGraphSet.emplace(
+				auto insertKnown = _knownSubGraphSet.emplace(
 					dependencyProjectRoot,
-					graphId);
+					std::make_pair(graphId, toolDependencyProjects));
 
 				// Update the child project id
-				return PackageChildInfo(dependency, true, -1, graphId);
+				return std::make_pair(
+					PackageChildInfo(dependency, true, -1, graphId),
+					std::move(toolDependencyProjects));
 			}
 		}
 
-		PackageChildInfo LoadLanguageBuildDependency(
+		std::pair<PackageChildInfo, std::vector<PackageChildInfo>> LoadLanguageBuildDependency(
 			const Recipe& recipe,
 			const Path& projectRoot,
 			const std::string& closureName,
@@ -736,7 +770,7 @@ namespace Soup::Core
 			}
 		}
 
-		PackageChildInfo LoadBuiltInLanguageExtension(
+		std::pair<PackageChildInfo, std::vector<PackageChildInfo>> LoadBuiltInLanguageExtension(
 			const PackageReference& activeReference,
 			const BuiltInLanguagePackage& builtInLanguagePackage)
 		{
@@ -749,12 +783,14 @@ namespace Soup::Core
 				Path(activeReference.GetVersion().ToString() + "/");
 
 			// Check if the package has already been processed from another graph
-			auto findKnownGraph = _knownBuildGraphSet.find(extensionRoot);
-			if (findKnownGraph != _knownBuildGraphSet.end())
+			auto findKnownGraph = _knownSubGraphSet.find(extensionRoot);
+			if (findKnownGraph != _knownSubGraphSet.end())
 			{
 				// Verify the project name is unique
 				Log::Diag("Graph already loaded: " + extensionRoot.ToString());
-				return PackageChildInfo(activeReference, true, -1, findKnownGraph->second);
+				return std::make_pair(
+					PackageChildInfo(activeReference, true, -1, findKnownGraph->second.first),
+					findKnownGraph->second.second);
 			}
 			else
 			{
@@ -769,10 +805,12 @@ namespace Soup::Core
 					graphId,
 					PackageGraph(graphId, packageId, {}));
 
+				auto extensionToolDependencies = std::vector<PackageChildInfo>();
+
 				// Keep track of the build graphs we have already seen
-				auto insertKnown = _knownBuildGraphSet.emplace(
+				auto insertKnown = _knownSubGraphSet.emplace(
 					extensionRoot,
-					graphId);
+					std::make_pair(graphId, extensionToolDependencies));
 
 				// Save the package info
 				_packageLookup.emplace(
@@ -786,7 +824,9 @@ namespace Soup::Core
 						{}));
 
 				// Update the child project id
-				return PackageChildInfo(activeReference, true, -1, graphId);
+				return std::make_pair(
+					PackageChildInfo(activeReference, true, -1, graphId),
+					std::move(extensionToolDependencies));
 			}
 		}
 
