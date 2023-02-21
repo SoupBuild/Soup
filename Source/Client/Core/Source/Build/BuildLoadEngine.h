@@ -394,6 +394,7 @@ namespace Soup::Core
 				packageLockState);
 
 			auto dependencyProjects = std::map<std::string, std::vector<PackageChildInfo>>();
+			auto buildDependencyToolDependencies = std::vector<PackageChildInfo>();
 			for (auto dependencyType : recipe.GetDependencyTypes())
 			{
 				if (dependencyType == _dependencyTypeBuild)
@@ -404,12 +405,7 @@ namespace Soup::Core
 						buildClosureName,
 						packageLockState);
 					dependencyProjects.emplace(_dependencyTypeBuild, std::move(buildDependencies));
-
-					// Tool dependencies for build dependencies are implicit dependencies for the project itself
-					if (!buildToolDependencies.empty())
-					{
-						dependencyProjects.emplace(_dependencyTypeTool, std::move(buildToolDependencies));
-					}
+					buildDependencyToolDependencies = std::move(buildToolDependencies);
 				}
 				else if (dependencyType == _dependencyTypeTool)
 				{
@@ -433,15 +429,25 @@ namespace Soup::Core
 			}
 
 			// Add the language as a build dependency
-			auto [languageExtensionPackageChildInfo, languageExtensionPackageToolDependencies] =
+			auto [languageExtensionPackageChildInfo, languageExtensionToolDependencies] =
 				LoadLanguageBuildDependency(
 					recipe,
 					projectRoot,
 					buildClosureName,
 					packageLockState);
+			buildDependencyToolDependencies.insert(
+				buildDependencyToolDependencies.end(),
+				std::make_move_iterator(languageExtensionToolDependencies.begin()),
+				std::make_move_iterator(languageExtensionToolDependencies.end()));
 
 			dependencyProjects[_dependencyTypeBuild].push_back(
 				std::move(languageExtensionPackageChildInfo));
+
+			// Tool dependencies for build dependencies are implicit dependencies for the project itself
+			if (!buildDependencyToolDependencies.empty())
+			{
+				dependencyProjects.emplace(_dependencyTypeTool, std::move(buildDependencyToolDependencies));
+			}
 
 			// Save the package info
 			_packageLookup.emplace(
