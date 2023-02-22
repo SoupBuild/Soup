@@ -157,6 +157,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(""),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -174,6 +175,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -302,6 +304,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -319,6 +322,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -535,6 +539,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -558,6 +563,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/4.5.6/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/4.5.6/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -575,6 +581,7 @@ namespace Soup::Core::UnitTests
 								"TestTool",
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -592,6 +599,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -602,6 +610,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Wren",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -767,6 +776,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -791,6 +801,7 @@ namespace Soup::Core::UnitTests
 								"PackageA",
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -814,6 +825,7 @@ namespace Soup::Core::UnitTests
 								"PackageB",
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -831,6 +843,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -996,6 +1009,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1020,6 +1034,7 @@ namespace Soup::Core::UnitTests
 								"PackageA",
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1043,6 +1058,7 @@ namespace Soup::Core::UnitTests
 								"PackageB",
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1060,6 +1076,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1258,6 +1275,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1282,6 +1300,7 @@ namespace Soup::Core::UnitTests
 								"TestBuild",
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1299,6 +1318,7 @@ namespace Soup::Core::UnitTests
 								"TestTool",
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1316,6 +1336,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1326,6 +1347,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Wren",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1490,6 +1512,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1508,6 +1531,7 @@ namespace Soup::Core::UnitTests
 								"TestBuild",
 								false,
 								Path("C:/WorkingDirectory/TestBuild/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/TestBuild/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1525,6 +1549,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Wren",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1535,6 +1560,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1728,6 +1754,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1746,6 +1773,7 @@ namespace Soup::Core::UnitTests
 								"TestBuild",
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -1763,6 +1791,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Wren",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -1773,6 +1802,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2006,6 +2036,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2030,6 +2061,7 @@ namespace Soup::Core::UnitTests
 								"TestBuild",
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2047,6 +2079,7 @@ namespace Soup::Core::UnitTests
 								"TestTool",
 								false,
 								Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/"),
+								Path(""),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2064,6 +2097,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2074,6 +2108,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Wren",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2341,6 +2376,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2359,6 +2395,7 @@ namespace Soup::Core::UnitTests
 								"TestBuild",
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2376,6 +2413,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Wren",
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2393,6 +2431,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Wren",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2403,6 +2442,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2606,6 +2646,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2629,6 +2670,7 @@ namespace Soup::Core::UnitTests
 								"Package1",
 								false,
 								Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/Package1/4.4.4/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2646,6 +2688,7 @@ namespace Soup::Core::UnitTests
 								"Soup.CSharp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/"),
+								Path("C:/testlocation/BuiltIn/Soup.CSharp/3.3.3/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2656,6 +2699,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),
+								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},
@@ -2853,6 +2897,7 @@ namespace Soup::Core::UnitTests
 								"MyPackage",
 								false,
 								Path("C:/WorkingDirectory/MyPackage/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2876,6 +2921,7 @@ namespace Soup::Core::UnitTests
 								"Package1",
 								false,
 								Path("C:/WorkingDirectory/Package1/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/WorkingDirectory/Package1/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2893,6 +2939,7 @@ namespace Soup::Core::UnitTests
 								"Soup.CSharp",
 								false,
 								Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/"),
+								Path(),
 								&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml")),
 								PackageChildrenMap({
 									{
@@ -2910,6 +2957,7 @@ namespace Soup::Core::UnitTests
 								"Soup.Wren",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/"),
+								Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/out/"),
 								nullptr,
 								PackageChildrenMap())
 						},

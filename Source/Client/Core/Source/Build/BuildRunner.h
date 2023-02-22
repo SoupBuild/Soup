@@ -122,8 +122,8 @@ namespace Soup::Core
 						RecipeBuildCacheState(
 							packageInfo.Name,
 							Path("/(TARGET_" + packageInfo.Name + ")/"),
-							packageInfo.PackageRoot,
-							packageInfo.PackageRoot + Path(".soup/"),
+							packageInfo.TargetDirectory,
+							packageInfo.TargetDirectory + Path(".soup/"),
 							{},
 							{}));
 				}

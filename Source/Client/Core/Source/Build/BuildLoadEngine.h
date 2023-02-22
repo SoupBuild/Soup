@@ -34,6 +34,7 @@ namespace Soup::Core
 	private:
 		const int _packageLockVersion = 4;
 		const Path _builtInExtensionPath = Path("BuiltIn/");
+		const Path _builtInExtensionOutPath = Path("out/");
 		const std::string _builtInWrenLanguage = "Wren";
 		const std::string _dependencyTypeBuild = "Build";
 		const std::string _dependencyTypeTool = "Tool";
@@ -457,6 +458,7 @@ namespace Soup::Core
 					recipe.GetName(),
 					false,
 					projectRoot,
+					Path(),
 					&recipe,
 					std::move(dependencyProjects)));
 		}
@@ -818,6 +820,9 @@ namespace Soup::Core
 					extensionRoot,
 					std::make_pair(graphId, extensionToolDependencies));
 
+				// The target directory is under the root
+				auto targetDirectory = extensionRoot + _builtInExtensionOutPath;
+
 				// Save the package info
 				_packageLookup.emplace(
 					packageId,
@@ -825,7 +830,8 @@ namespace Soup::Core
 						packageId,
 						builtInLanguagePackage.ExtensionName,
 						true,
-						extensionRoot,
+						std::move(extensionRoot),
+						std::move(targetDirectory),
 						nullptr,
 						{}));
 

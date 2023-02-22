@@ -104,6 +104,7 @@ namespace Soup::Core::UnitTests
 							"MyPackage",
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap())
 					},
@@ -373,6 +374,7 @@ namespace Soup::Core::UnitTests
 							"MyPackage",
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap({
 								{
@@ -394,6 +396,7 @@ namespace Soup::Core::UnitTests
 							"TestBuild",
 							false,
 							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/Recipe.sml")),
 							PackageChildrenMap())
 					},
@@ -841,6 +844,7 @@ namespace Soup::Core::UnitTests
 							"MyPackage",
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap({
 								{
@@ -859,6 +863,7 @@ namespace Soup::Core::UnitTests
 							"PackageA",
 							false,
 							Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/Recipe.sml")),
 							PackageChildrenMap({
 								{
@@ -876,6 +881,7 @@ namespace Soup::Core::UnitTests
 							"PackageB",
 							false,
 							Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/Recipe.sml")),
 							PackageChildrenMap())
 					},
@@ -1526,6 +1532,7 @@ namespace Soup::Core::UnitTests
 							"MyPackage",
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap({
 								{
@@ -1543,6 +1550,7 @@ namespace Soup::Core::UnitTests
 							"TestBuild",
 							false,
 							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/Recipe.sml")),
 							PackageChildrenMap())
 					},

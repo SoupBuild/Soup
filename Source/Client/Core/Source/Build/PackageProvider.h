@@ -67,12 +67,14 @@ namespace Soup::Core
 			std::string name,
 			bool isPrebuilt,
 			Path packageRoot,
+			Path targetDirectory,
 			const Recipe* recipe,
 			PackageChildrenMap dependencies) :
 			Id(id),
 			Name(name),
 			IsPrebuilt(isPrebuilt),
 			PackageRoot(std::move(packageRoot)),
+			TargetDirectory(std::move(targetDirectory)),
 			Recipe(recipe),
 			Dependencies(std::move(dependencies))
 		{
@@ -82,6 +84,7 @@ namespace Soup::Core
 		std::string Name;
 		bool IsPrebuilt;
 		Path PackageRoot;
+		Path TargetDirectory;
 		const ::Soup::Core::Recipe* Recipe;
 		PackageChildrenMap Dependencies;
 
@@ -94,6 +97,7 @@ namespace Soup::Core
 				Name == rhs.Name &&
 				IsPrebuilt == rhs.IsPrebuilt &&
 				PackageRoot == rhs.PackageRoot &&
+				TargetDirectory == rhs.TargetDirectory &&
 				Recipe == rhs.Recipe &&
 				Dependencies == rhs.Dependencies;
 		}

@@ -91,7 +91,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
-					"DIAG: 1>C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/",
+					"DIAG: 1>C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/out/",
 					"DIAG: 1>Allowed Write Access:",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
 					"DIAG: 1>Build evaluation end",
@@ -179,7 +179,7 @@ namespace Soup::Core::UnitTests
 										"Soup.Cpp",
 										ValueTable(
 										{
-											{ "SoupTargetDirectory", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/.soup/") },
+											{ "SoupTargetDirectory", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/out/.soup/") },
 										})
 									},
 								})
@@ -234,7 +234,7 @@ namespace Soup::Core::UnitTests
 						{
 							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
 							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/") },
-							{ "/(TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/") },
+							{ "/(TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/out/") },
 						})
 					},
 					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
