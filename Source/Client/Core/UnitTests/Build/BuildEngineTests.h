@@ -33,6 +33,13 @@ namespace Soup::Core::UnitTests
 					Language: "C++|1"
 				)")));
 
+			fileSystem->CreateMockFile(
+				Path("C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "Soup.Cpp"
+					Language: "Wren|1"
+				)")));
+
 			auto operationGraph = OperationGraph(
 				std::vector<OperationId>(),
 				std::vector<OperationInfo>());
@@ -65,6 +72,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/Recipe.sml",
 					"DIAG: 0>Package was prebuilt: Soup.Cpp",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
@@ -121,6 +129,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/Recipe.sml",
+					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/Recipe.sml",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",

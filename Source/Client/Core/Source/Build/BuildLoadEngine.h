@@ -766,7 +766,9 @@ namespace Soup::Core
 			{
 				return LoadBuiltInLanguageExtension(
 					activeReference,
-					builtInLanguagePackage);
+					builtInLanguagePackage,
+					closureName,
+					packageLockState);
 			}
 			else
 			{
@@ -780,7 +782,9 @@ namespace Soup::Core
 
 		std::pair<PackageChildInfo, std::vector<PackageChildInfo>> LoadBuiltInLanguageExtension(
 			const PackageReference& activeReference,
-			const BuiltInLanguagePackage& builtInLanguagePackage)
+			const BuiltInLanguagePackage& builtInLanguagePackage,
+			const std::string& buildClosureName,
+			const PackageLockState& packageLockState)
 		{
 			// Use the prebuilt version in the install folder
 			auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
@@ -802,6 +806,27 @@ namespace Soup::Core
 			}
 			else
 			{
+				auto recipePath = extensionRoot + BuildConstants::RecipeFileName();
+				const Recipe* recipe;
+				if (!_recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
+				{
+					Log::Error("The built in extension Recipe does not exist: " + recipePath.ToString());
+					Log::HighPriority("The installation may be corrupted");
+
+					// Nothing we can do, exit
+					throw HandledException(1123124);
+				}
+
+				auto extensionToolDependencies = std::vector<PackageChildInfo>();
+				if (recipe->HasNamedDependencies(_dependencyTypeTool))
+				{
+					extensionToolDependencies = LoadToolDependencies(
+						*recipe,
+						extensionRoot,
+						buildClosureName,
+						packageLockState);
+				}
+
 				// Create a fake child package id
 				auto packageId = ++_uniquePackageId;
 
@@ -812,8 +837,6 @@ namespace Soup::Core
 				_packageGraphLookup.emplace(
 					graphId,
 					PackageGraph(graphId, packageId, {}));
-
-				auto extensionToolDependencies = std::vector<PackageChildInfo>();
 
 				// Keep track of the build graphs we have already seen
 				auto insertKnown = _knownSubGraphSet.emplace(

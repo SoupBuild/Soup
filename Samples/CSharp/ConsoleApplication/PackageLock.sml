@@ -7,7 +7,7 @@ Closures: {
 	}
 	Build0: {
 		Wren: [
-			{ Name: "Soup.CSharp", Version: "0.8.0", Tool: "Tool0" }
+			{ Name: "Soup.CSharp", Version: "0.9.0", Tool: "Tool0" }
 		]
 	}
 	Tool0: {
