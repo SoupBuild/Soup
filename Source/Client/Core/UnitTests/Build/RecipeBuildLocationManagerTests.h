@@ -25,17 +25,14 @@ namespace Soup::Core::UnitTests
 			}));
 			auto globalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					KnownLanguage("Cpp", "Soup.Cpp")
 				}
 			});
-			auto uut = RecipeBuildLocationManager(builtInLanguages);
+			auto uut = RecipeBuildLocationManager(knownLanguages);
 			auto targetDirectory = uut.GetOutputDirectory(
 				workingDirectory,
 				recipe,
@@ -80,17 +77,14 @@ namespace Soup::Core::UnitTests
 			}));
 			auto globalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				}
 			});
-			auto uut = RecipeBuildLocationManager(builtInLanguages);
+			auto uut = RecipeBuildLocationManager(knownLanguages);
 			auto targetDirectory = uut.GetOutputDirectory(
 				workingDirectory,
 				recipe,

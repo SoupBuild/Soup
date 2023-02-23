@@ -19,30 +19,42 @@ namespace Soup::Core
 	class BuildEngine
 	{
 	public:
-		static std::map<std::string, BuiltInLanguagePackage> GetBuiltInLanguages()
+		static std::map<std::string, KnownLanguage> GetKnownLanguages()
 		{
-			auto result = std::map<std::string, BuiltInLanguagePackage>(
+			auto result = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(0, 6, 2))
+					KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"C#",
-					BuiltInLanguagePackage(
-						"CSharp",
-						"Soup.CSharp",
-						SemanticVersion(0, 8, 0))
+					KnownLanguage("CSharp", "Soup.CSharp")
 				},
 				{
 					"Wren",
-					BuiltInLanguagePackage(
-						"Wren",
-						"Soup.Wren",
-						SemanticVersion(0, 1, 2))
+					KnownLanguage("Wren", "Soup.Wren")
+				},
+			});
+
+			return result;
+		}
+
+		static std::map<std::string, SemanticVersion> GetBuiltInPackages()
+		{
+			auto result = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(0, 6, 2)
+				},
+				{
+					"Soup.CSharp",
+					SemanticVersion(0, 8, 0)
+				},
+				{
+					"Soup.Wren",
+					SemanticVersion(0, 1, 2)
 				},
 			});
 
@@ -81,10 +93,12 @@ namespace Soup::Core
 			startTime = std::chrono::high_resolution_clock::now();
 
 			// Generate the package build graph
-			auto builtInLanguages = GetBuiltInLanguages();
+			auto knownLanguages = GetKnownLanguages();
+			auto builtInPackages = GetBuiltInPackages();
 			auto recipeCache = RecipeCache();
 			auto loadEngine = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -106,7 +120,7 @@ namespace Soup::Core
 				fileSystemState);
 
 			// Initialize shared location manager
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 
 			// Initialize the build runner that will perform the generate and evaluate phase
 			// for each individual package

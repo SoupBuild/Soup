@@ -21,8 +21,8 @@ namespace Soup::Core::UnitTests
 			auto packageProvider = PackageProvider(1, PackageGraphLookupMap(), PackageLookupMap());
 			auto evaluateEngine = MockEvaluateEngine();
 			auto fileSystemState = FileSystemState();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				std::move(arguments),
 				std::move(sdkParameters),
@@ -110,8 +110,8 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
@@ -402,8 +402,8 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
@@ -887,8 +887,8 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
@@ -1556,8 +1556,8 @@ namespace Soup::Core::UnitTests
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,

@@ -8,7 +8,7 @@
 #include "Recipe/RecipeCache.h"
 #include "Utils/HandledException.h"
 #include "BuildConstants.h"
-#include "BuiltInLanguagePackage.h"
+#include "KnownLanguage.h"
 
 namespace Soup::Core
 {
@@ -40,8 +40,9 @@ namespace Soup::Core
 		const std::string _dependencyTypeTool = "Tool";
 		const std::string _rootClosureName = "Root";
 
-		// Built in languages
-		const std::map<std::string, BuiltInLanguagePackage>& _builtInLanguageLookup;
+		// Built ins
+		const std::map<std::string, KnownLanguage>& _knownLanguageLookup;
+		const std::map<std::string, SemanticVersion>& _builtInPackageLookup;
 
 		// Arguments
 		const RecipeBuildArguments& _arguments;
@@ -67,11 +68,13 @@ namespace Soup::Core
 		/// Initializes a new instance of the <see cref="BuildLoadEngine"/> class.
 		/// </summary>
 		BuildLoadEngine(
-			const std::map<std::string, BuiltInLanguagePackage>& builtInLanguageLookup,
+			const std::map<std::string, KnownLanguage>& knownLanguageLookup,
+			const std::map<std::string, SemanticVersion>& builtInPackageLookup,
 			const RecipeBuildArguments& arguments,
 			const ValueTable& hostBuildGlobalParameters,
 			RecipeCache& recipeCache) :
-			_builtInLanguageLookup(builtInLanguageLookup),
+			_knownLanguageLookup(knownLanguageLookup),
+			_builtInPackageLookup(builtInPackageLookup),
 			_arguments(arguments),
 			_hostBuildGlobalParameters(hostBuildGlobalParameters),
 			_recipeCache(recipeCache),
@@ -743,10 +746,15 @@ namespace Soup::Core
 			auto name = recipe.GetLanguage().GetName();
 
 			// Get the active version
-			auto builtInLanguageResult = _builtInLanguageLookup.find(name);
-			if (builtInLanguageResult == _builtInLanguageLookup.end())
+			auto knownLanguageResult = _knownLanguageLookup.find(name);
+			if (knownLanguageResult == _knownLanguageLookup.end())
 				throw std::runtime_error("Unknown language: " + name);
-			auto& builtInLanguagePackage = builtInLanguageResult->second;
+			auto& knownLanguage = knownLanguageResult->second;
+
+			auto knownLanguageBuiltInPackageResult = _builtInPackageLookup.find(knownLanguage.ExtensionName);
+			if (knownLanguageBuiltInPackageResult == _builtInPackageLookup.end())
+				throw std::runtime_error("Known Language has no built in version: " + knownLanguage.ExtensionName);
+			auto& knownLanguageBuiltInVersion = knownLanguageBuiltInPackageResult->second;
 
 			// Build dependencies do not inherit the parent language
 			// Instead, they default to Wren
@@ -754,19 +762,19 @@ namespace Soup::Core
 
 			auto builtInExtensionReference = PackageReference(
 				std::nullopt,
-				builtInLanguagePackage.ExtensionName,
-				builtInLanguagePackage.ExtensionVersion);
+				knownLanguage.ExtensionName,
+				knownLanguageBuiltInVersion);
 			auto& activeReference = GetActivePackageReference(
 				builtInExtensionReference,
 				implicitLanguage,
 				closureName,
 				packageLockState);
 
-			if (!activeReference.IsLocal() && activeReference.GetVersion() == builtInLanguagePackage.ExtensionVersion)
+			if (!activeReference.IsLocal() && activeReference.GetVersion() == knownLanguageBuiltInVersion)
 			{
 				return LoadBuiltInLanguageExtension(
 					activeReference,
-					builtInLanguagePackage,
+					knownLanguage,
 					closureName,
 					packageLockState);
 			}
@@ -782,7 +790,7 @@ namespace Soup::Core
 
 		std::pair<PackageChildInfo, std::vector<PackageChildInfo>> LoadBuiltInLanguageExtension(
 			const PackageReference& activeReference,
-			const BuiltInLanguagePackage& builtInLanguagePackage,
+			const KnownLanguage& knownLanguage,
 			const std::string& buildClosureName,
 			const PackageLockState& packageLockState)
 		{
@@ -791,7 +799,7 @@ namespace Soup::Core
 			auto processDirectory = processFilename.GetParent();
 			auto extensionRoot = processDirectory +
 				_builtInExtensionPath +
-				Path(builtInLanguagePackage.ExtensionName) +
+				Path(knownLanguage.ExtensionName) +
 				Path(activeReference.GetVersion().ToString() + "/");
 
 			// Check if the package has already been processed from another graph
@@ -851,7 +859,7 @@ namespace Soup::Core
 					packageId,
 					PackageInfo(
 						packageId,
-						builtInLanguagePackage.ExtensionName,
+						knownLanguage.ExtensionName,
 						true,
 						std::move(extensionRoot),
 						std::move(targetDirectory),
@@ -868,11 +876,11 @@ namespace Soup::Core
 		const std::string& GetLanguageSafeName(const std::string& language) const
 		{
 			// Get the active version
-			auto builtInLanguageResult = _builtInLanguageLookup.find(language);
-			if (builtInLanguageResult == _builtInLanguageLookup.end())
+			auto knownLanguageResult = _knownLanguageLookup.find(language);
+			if (knownLanguageResult == _knownLanguageLookup.end())
 				throw std::runtime_error("Unknown language: " + language);
 
-			return builtInLanguageResult->second.LanguageSafeName;
+			return knownLanguageResult->second.LanguageSafeName;
 		}
 
 		Path GetSoupUserDataPath() const

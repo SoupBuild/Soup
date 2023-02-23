@@ -12,12 +12,14 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Initialize()
 		{
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto builtInPackages = std::map<std::string, SemanticVersion>();
 			auto arguments = RecipeBuildArguments();
 			auto hostBuildGlobalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -26,12 +28,14 @@ namespace Soup::Core::UnitTests
 		// [[Fact]]
 		void Load_LanguageExtension_BuiltInVersion()
 		{
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto builtInPackages = std::map<std::string, SemanticVersion>();
 			auto arguments = RecipeBuildArguments();
 			auto hostBuildGlobalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -63,25 +67,37 @@ namespace Soup::Core::UnitTests
 					Language: "Wren|1"
 				)")));
 
+			fileSystem->CreateMockFile(
+				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "TestTool"
+					Language: "C++|1.1.1"
+				)")));
+
 			// Register the test process manager
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"C#",
-					BuiltInLanguagePackage(
-						"CSharp",
-						"Soup.CSharp",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("CSharp", "Soup.CSharp")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.CSharp",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -96,7 +112,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -224,21 +241,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"C#",
-					BuiltInLanguagePackage(
-						"CSharp",
-						"Soup.CSharp",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("CSharp", "Soup.CSharp")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.CSharp",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -253,7 +275,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -431,21 +454,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					BuiltInLanguagePackage(
-						"Wren",
-						"Soup.Wren",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("Wren", "Soup.Wren")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.Wren",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -460,7 +488,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -711,21 +740,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"C#",
-					BuiltInLanguagePackage(
-						"CSharp",
-						"Soup.CSharp",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("CSharp", "Soup.CSharp")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.CSharp",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -740,7 +774,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -953,21 +988,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"C#",
-					BuiltInLanguagePackage(
-						"CSharp",
-						"Soup.CSharp",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("CSharp", "Soup.CSharp")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.CSharp",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -982,7 +1022,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -1204,21 +1245,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					BuiltInLanguagePackage(
-						"Wren",
-						"Soup.Wren",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("Wren", "Soup.Wren")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.Wren",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1233,7 +1279,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -1483,21 +1530,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					BuiltInLanguagePackage(
-						"Wren",
-						"Soup.Wren",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("Wren", "Soup.Wren")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.Wren",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1512,7 +1564,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -1736,21 +1789,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					BuiltInLanguagePackage(
-						"Wren",
-						"Soup.Wren",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("Wren", "Soup.Wren")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.Wren",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1765,7 +1823,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -2015,21 +2074,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					BuiltInLanguagePackage(
-						"Wren",
-						"Soup.Wren",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("Wren", "Soup.Wren")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.Wren",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -2044,7 +2108,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -2348,21 +2413,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					BuiltInLanguagePackage(
-						"Wren",
-						"Soup.Wren",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("Wren", "Soup.Wren")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.Wren",
+					SemanticVersion(2, 2, 2)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -2383,7 +2453,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -2682,28 +2753,34 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"C++",
-					 BuiltInLanguagePackage(
-						"Cpp",
-						"Soup.Cpp",
-						SemanticVersion(1, 1, 1))
+					 KnownLanguage("Cpp", "Soup.Cpp")
 				},
 				{
 					"Wren",
-					BuiltInLanguagePackage(
-						"Wren",
-						"Soup.Wren",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("Wren", "Soup.Wren")
 				},
 				{
 					"C#",
-					BuiltInLanguagePackage(
-						"CSharp",
-						"Soup.CSharp",
-						SemanticVersion(3, 3, 3))
+					KnownLanguage("CSharp", "Soup.CSharp")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Cpp",
+					SemanticVersion(1, 1, 1)
+				},
+				{
+					"Soup.Wren",
+					SemanticVersion(2, 2, 2)
+				},
+				{
+					"Soup.CSharp",
+					SemanticVersion(3, 3, 3)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -2724,7 +2801,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
@@ -2945,21 +3023,26 @@ namespace Soup::Core::UnitTests
 			auto processManager = std::make_shared<MockProcessManager>();
 			auto scopedProcessManager = ScopedProcessManagerRegister(processManager);
 
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>(
+			auto knownLanguages = std::map<std::string, KnownLanguage>(
 			{
 				{
 					"Wren",
-					BuiltInLanguagePackage(
-						"Wren",
-						"Soup.Wren",
-						SemanticVersion(2, 2, 2))
+					KnownLanguage("Wren", "Soup.Wren")
 				},
 				{
 					"C#",
-					 BuiltInLanguagePackage(
-						"CSharp",
-						"Soup.CSharp",
-						SemanticVersion(3, 3, 3))
+					KnownLanguage("CSharp", "Soup.CSharp")
+				},
+			});
+			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			{
+				{
+					"Soup.Wren",
+					SemanticVersion(2, 2, 2)
+				},
+				{
+					"Soup.CSharp",
+					SemanticVersion(3, 3, 3)
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -2980,7 +3063,8 @@ namespace Soup::Core::UnitTests
 			});
 			auto recipeCache = RecipeCache();
 			auto uut = BuildLoadEngine(
-				builtInLanguages,
+				knownLanguages,
+				builtInPackages,
 				arguments,
 				hostBuildGlobalParameters,
 				recipeCache);
