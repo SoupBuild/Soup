@@ -13,7 +13,7 @@ namespace Soup::Core::UnitTests
 		void Initialize()
 		{
 			auto knownLanguages = std::map<std::string, KnownLanguage>();
-			auto builtInPackages = std::map<std::string, SemanticVersion>();
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
 			auto arguments = RecipeBuildArguments();
 			auto hostBuildGlobalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
@@ -29,7 +29,7 @@ namespace Soup::Core::UnitTests
 		void Load_LanguageExtension_BuiltInVersion()
 		{
 			auto knownLanguages = std::map<std::string, KnownLanguage>();
-			auto builtInPackages = std::map<std::string, SemanticVersion>();
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>();
 			auto arguments = RecipeBuildArguments();
 			auto hostBuildGlobalParameters = ValueTable();
 			auto recipeCache = RecipeCache();
@@ -89,15 +89,29 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("CSharp", "Soup.CSharp")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.CSharp",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 				{
-					"Soup.CSharp",
-					SemanticVersion(2, 2, 2)
+					"C++",
+					{
+						{
+							"TestTool",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -252,15 +266,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("CSharp", "Soup.CSharp")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.CSharp",
-					SemanticVersion(2, 2, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.CSharp",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -465,15 +484,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("Wren", "Soup.Wren")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.Wren",
-					SemanticVersion(2, 2, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.Wren",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -751,15 +775,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("CSharp", "Soup.CSharp")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.CSharp",
-					SemanticVersion(2, 2, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.CSharp",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -999,15 +1028,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("CSharp", "Soup.CSharp")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.CSharp",
-					SemanticVersion(2, 2, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.CSharp",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1256,15 +1290,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("Wren", "Soup.Wren")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.Wren",
-					SemanticVersion(2, 2, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.Wren",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1541,15 +1580,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("Wren", "Soup.Wren")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.Wren",
-					SemanticVersion(2, 2, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.Wren",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -1800,15 +1844,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("Wren", "Soup.Wren")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.Wren",
-					SemanticVersion(2, 2, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.Wren",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -2085,15 +2134,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("Wren", "Soup.Wren")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.Wren",
-					SemanticVersion(2, 2, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.Wren",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -2424,15 +2478,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("Wren", "Soup.Wren")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.Wren",
-					SemanticVersion(2, 2, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.Wren",
+							SemanticVersion(2, 2, 2)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -2768,19 +2827,24 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("CSharp", "Soup.CSharp")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(1, 1, 1)
-				},
-				{
-					"Soup.Wren",
-					SemanticVersion(2, 2, 2)
-				},
-				{
-					"Soup.CSharp",
-					SemanticVersion(3, 3, 3)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(1, 1, 1)
+						},
+						{
+							"Soup.Wren",
+							SemanticVersion(2, 2, 2)
+						},
+						{
+							"Soup.CSharp",
+							SemanticVersion(3, 3, 3)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();
@@ -3034,15 +3098,20 @@ namespace Soup::Core::UnitTests
 					KnownLanguage("CSharp", "Soup.CSharp")
 				},
 			});
-			auto builtInPackages = std::map<std::string, SemanticVersion>(
+			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Wren",
-					SemanticVersion(2, 2, 2)
-				},
-				{
-					"Soup.CSharp",
-					SemanticVersion(3, 3, 3)
+					"Wren",
+					{
+						{
+							"Soup.Wren",
+							SemanticVersion(2, 2, 2)
+						},
+						{
+							"Soup.CSharp",
+							SemanticVersion(3, 3, 3)
+						},
+					}
 				},
 			});
 			auto arguments = RecipeBuildArguments();

@@ -40,21 +40,26 @@ namespace Soup::Core
 			return result;
 		}
 
-		static std::map<std::string, SemanticVersion> GetBuiltInPackages()
+		static std::map<std::string, std::map<std::string, SemanticVersion>> GetBuiltInPackages()
 		{
-			auto result = std::map<std::string, SemanticVersion>(
+			auto result = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
-					"Soup.Cpp",
-					SemanticVersion(0, 6, 2)
-				},
-				{
-					"Soup.CSharp",
-					SemanticVersion(0, 8, 0)
-				},
-				{
-					"Soup.Wren",
-					SemanticVersion(0, 1, 2)
+					"Wren",
+					{
+						{
+							"Soup.Cpp",
+							SemanticVersion(0, 6, 2)
+						},
+						{
+							"Soup.CSharp",
+							SemanticVersion(0, 8, 0)
+						},
+						{
+							"Soup.Wren",
+							SemanticVersion(0, 1, 2)
+						},
+					}
 				},
 			});
 

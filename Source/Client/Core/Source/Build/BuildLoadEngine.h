@@ -33,8 +33,8 @@ namespace Soup::Core
 	{
 	private:
 		const int _packageLockVersion = 4;
-		const Path _builtInExtensionPath = Path("BuiltIn/");
-		const Path _builtInExtensionOutPath = Path("out/");
+		const Path _builtInPackagePath = Path("BuiltIn/");
+		const Path _builtInPackageOutPath = Path("out/");
 		const std::string _builtInWrenLanguage = "Wren";
 		const std::string _dependencyTypeBuild = "Build";
 		const std::string _dependencyTypeTool = "Tool";
@@ -42,7 +42,7 @@ namespace Soup::Core
 
 		// Built ins
 		const std::map<std::string, KnownLanguage>& _knownLanguageLookup;
-		const std::map<std::string, SemanticVersion>& _builtInPackageLookup;
+		const std::map<std::string, std::map<std::string, SemanticVersion>>& _builtInPackageLookup;
 
 		// Arguments
 		const RecipeBuildArguments& _arguments;
@@ -69,7 +69,7 @@ namespace Soup::Core
 		/// </summary>
 		BuildLoadEngine(
 			const std::map<std::string, KnownLanguage>& knownLanguageLookup,
-			const std::map<std::string, SemanticVersion>& builtInPackageLookup,
+			const std::map<std::string, std::map<std::string, SemanticVersion>>& builtInPackageLookup,
 			const RecipeBuildArguments& arguments,
 			const ValueTable& hostBuildGlobalParameters,
 			RecipeCache& recipeCache) :
@@ -751,8 +751,9 @@ namespace Soup::Core
 				throw std::runtime_error("Unknown language: " + name);
 			auto& knownLanguage = knownLanguageResult->second;
 
-			auto knownLanguageBuiltInPackageResult = _builtInPackageLookup.find(knownLanguage.ExtensionName);
-			if (knownLanguageBuiltInPackageResult == _builtInPackageLookup.end())
+			auto& builtInWrenPackages = _builtInPackageLookup.at(_builtInWrenLanguage);
+			auto knownLanguageBuiltInPackageResult = builtInWrenPackages.find(knownLanguage.ExtensionName);
+			if (knownLanguageBuiltInPackageResult == builtInWrenPackages.end())
 				throw std::runtime_error("Known Language has no built in version: " + knownLanguage.ExtensionName);
 			auto& knownLanguageBuiltInVersion = knownLanguageBuiltInPackageResult->second;
 
@@ -772,9 +773,8 @@ namespace Soup::Core
 
 			if (!activeReference.IsLocal() && activeReference.GetVersion() == knownLanguageBuiltInVersion)
 			{
-				return LoadBuiltInLanguageExtension(
+				return LoadBuiltInPackage(
 					activeReference,
-					knownLanguage,
 					closureName,
 					packageLockState);
 			}
@@ -788,49 +788,48 @@ namespace Soup::Core
 			}
 		}
 
-		std::pair<PackageChildInfo, std::vector<PackageChildInfo>> LoadBuiltInLanguageExtension(
+		std::pair<PackageChildInfo, std::vector<PackageChildInfo>> LoadBuiltInPackage(
 			const PackageReference& activeReference,
-			const KnownLanguage& knownLanguage,
 			const std::string& buildClosureName,
 			const PackageLockState& packageLockState)
 		{
 			// Use the prebuilt version in the install folder
 			auto processFilename = System::IProcessManager::Current().GetCurrentProcessFileName();
 			auto processDirectory = processFilename.GetParent();
-			auto extensionRoot = processDirectory +
-				_builtInExtensionPath +
-				Path(knownLanguage.ExtensionName) +
+			auto packageRoot = processDirectory +
+				_builtInPackagePath +
+				Path(activeReference.GetName()) +
 				Path(activeReference.GetVersion().ToString() + "/");
 
 			// Check if the package has already been processed from another graph
-			auto findKnownGraph = _knownSubGraphSet.find(extensionRoot);
+			auto findKnownGraph = _knownSubGraphSet.find(packageRoot);
 			if (findKnownGraph != _knownSubGraphSet.end())
 			{
 				// Verify the project name is unique
-				Log::Diag("Graph already loaded: " + extensionRoot.ToString());
+				Log::Diag("Graph already loaded: " + packageRoot.ToString());
 				return std::make_pair(
 					PackageChildInfo(activeReference, true, -1, findKnownGraph->second.first),
 					findKnownGraph->second.second);
 			}
 			else
 			{
-				auto recipePath = extensionRoot + BuildConstants::RecipeFileName();
+				auto recipePath = packageRoot + BuildConstants::RecipeFileName();
 				const Recipe* recipe;
 				if (!_recipeCache.TryGetOrLoadRecipe(recipePath, recipe))
 				{
-					Log::Error("The built in extension Recipe does not exist: " + recipePath.ToString());
+					Log::Error("The built in package Recipe does not exist: " + recipePath.ToString());
 					Log::HighPriority("The installation may be corrupted");
 
 					// Nothing we can do, exit
 					throw HandledException(1123124);
 				}
 
-				auto extensionToolDependencies = std::vector<PackageChildInfo>();
+				auto packageToolDependencies = std::vector<PackageChildInfo>();
 				if (recipe->HasNamedDependencies(_dependencyTypeTool))
 				{
-					extensionToolDependencies = LoadToolDependencies(
+					packageToolDependencies = LoadToolDependencies(
 						*recipe,
-						extensionRoot,
+						packageRoot,
 						buildClosureName,
 						packageLockState);
 				}
@@ -848,20 +847,20 @@ namespace Soup::Core
 
 				// Keep track of the build graphs we have already seen
 				auto insertKnown = _knownSubGraphSet.emplace(
-					extensionRoot,
-					std::make_pair(graphId, extensionToolDependencies));
+					packageRoot,
+					std::make_pair(graphId, packageToolDependencies));
 
 				// The target directory is under the root
-				auto targetDirectory = extensionRoot + _builtInExtensionOutPath;
+				auto targetDirectory = packageRoot + _builtInPackageOutPath;
 
 				// Save the package info
 				_packageLookup.emplace(
 					packageId,
 					PackageInfo(
 						packageId,
-						knownLanguage.ExtensionName,
+						activeReference.GetName(),
 						true,
-						std::move(extensionRoot),
+						std::move(packageRoot),
 						std::move(targetDirectory),
 						nullptr,
 						{}));
@@ -869,7 +868,7 @@ namespace Soup::Core
 				// Update the child project id
 				return std::make_pair(
 					PackageChildInfo(activeReference, true, -1, graphId),
-					std::move(extensionToolDependencies));
+					std::move(packageToolDependencies));
 			}
 		}
 
