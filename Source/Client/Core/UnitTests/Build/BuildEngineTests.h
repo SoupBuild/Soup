@@ -30,7 +30,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "MyPackage"
-					Language: "C++|1"
+					Language: "C++|0.6.2"
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -224,7 +224,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("Soup.Cpp@0.6.2") },
+															{ "Reference", std::string("Wren|Soup.Cpp@0.6.2") },
 															{ "TargetDirectory", std::string("/(TARGET_Soup.Cpp)/") },
 														})
 													},

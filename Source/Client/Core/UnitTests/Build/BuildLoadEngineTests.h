@@ -204,7 +204,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -372,7 +372,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -416,7 +416,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/4.5.6/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 					Dependencies: {
 						Tool: [
 							"C++|TestTool@4.4.4"
@@ -428,21 +428,21 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestTool"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/testlocation/BuiltIn/Soup.Wren/2.2.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Wren"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 				)")));
 
 			// Create the package lock
@@ -638,7 +638,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(4, 5, 6)), true, -1, 5),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(4, 5, 6)), true, -1, 5),
 										}
 									},
 									{
@@ -662,7 +662,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
 										}
 									},
 								}))
@@ -680,7 +680,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -728,7 +728,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "MyPackage"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 					Dependencies: {
 						Runtime: [
 							"PackageA@3.3.3"
@@ -740,7 +740,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "PackageA"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 					Dependencies: {
 						Runtime: [
 							"PackageB@4.4.4"
@@ -751,7 +751,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "PackageB"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 				)")));
 			fileSystem->CreateMockFile(
 				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
@@ -773,6 +773,10 @@ namespace Soup::Core::UnitTests
 				{
 					"C#",
 					KnownLanguage("CSharp", "Soup.CSharp")
+				},
+				{
+					"Wren",
+					 KnownLanguage("Wren", "Soup.Wren")
 				},
 			});
 			auto builtInPackages = std::map<std::string, std::map<std::string, SemanticVersion>>(
@@ -895,14 +899,14 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Runtime",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "PackageA", SemanticVersion(3, 3, 3)), false, 2, -1),
-											PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+											PackageChildInfo(PackageReference("C++", "PackageA", SemanticVersion(3, 3, 3)), false, 2, -1),
+											PackageChildInfo(PackageReference("C++", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
 										}
 									},
 								}))
@@ -920,13 +924,13 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Runtime",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+											PackageChildInfo(PackageReference("C++", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
 										}
 									},
 								}))
@@ -944,7 +948,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -981,7 +985,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "MyPackage"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 					Dependencies: {
 						Runtime: [
 							"PackageA@3.3.3"
@@ -993,7 +997,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageA/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "PackageA"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 					Dependencies: {
 						Runtime: [
 							"PackageB@4.4.4"
@@ -1004,7 +1008,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/PackageB/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "PackageB"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 				)")));
 			fileSystem->CreateMockFile(
 				Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml"),
@@ -1148,14 +1152,14 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Runtime",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "PackageA", SemanticVersion(3, 3, 3)), false, 2, -1),
-											PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+											PackageChildInfo(PackageReference("C++", "PackageA", SemanticVersion(3, 3, 3)), false, 2, -1),
+											PackageChildInfo(PackageReference("C++", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
 										}
 									},
 								}))
@@ -1173,13 +1177,13 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
 										"Runtime",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
+											PackageChildInfo(PackageReference("C++", "PackageB", SemanticVersion(4, 4, 4)), false, 3, -1),
 										}
 									},
 								}))
@@ -1197,7 +1201,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -1234,7 +1238,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "MyPackage"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 					Dependencies: {
 						Build: [
 							"TestBuild@3.3.3"
@@ -1246,7 +1250,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestBuild"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 					Dependencies: {
 						Tool: [
 							"C++|TestTool@4.4.4"
@@ -1258,7 +1262,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestTool"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -1445,8 +1449,8 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 5),
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 5),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
@@ -1470,7 +1474,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
 										}
 									},
 								}))
@@ -1488,7 +1492,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -1536,7 +1540,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "MyPackage"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 					Dependencies: {
 						Build: [
 							"../TestBuild/"
@@ -1548,7 +1552,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/TestBuild/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestBuild"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -1714,7 +1718,7 @@ namespace Soup::Core::UnitTests
 										"Build",
 										{
 											PackageChildInfo(PackageReference(Path("../TestBuild/")), true, -1, 3),
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
 										}
 									},
 								}))
@@ -1732,7 +1736,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
@@ -1792,7 +1796,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestBuild"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -1986,8 +1990,8 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 3),
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 4),
 										}
 									},
 								}))
@@ -2005,7 +2009,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
@@ -2065,7 +2069,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/TestBuild/3.3.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestBuild"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 					Dependencies: {
 						Tool: [
 							"C++|TestTool@4.4.4"
@@ -2077,7 +2081,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestTool"
-					Language: "C++|1"
+					Language: "C++|1.1.1"
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -2299,8 +2303,8 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 5),
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 5),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 									{
@@ -2324,7 +2328,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 4),
 										}
 									},
 								}))
@@ -2342,7 +2346,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
 										}
 									},
 								}))
@@ -2409,14 +2413,14 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/Soup.Wren/2.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Wren"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 				)")));
 
 			fileSystem->CreateMockFile(
 				Path("C:/Users/Me/.soup/packages/Wren/Soup.Cpp/1.1.2/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -2660,8 +2664,8 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "TestBuild", SemanticVersion(3, 3, 3)), true, -1, 4),
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 2)), true, -1, 5),
+											PackageChildInfo(PackageReference("Wren", "TestBuild", SemanticVersion(3, 3, 4)), true, -1, 4),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 2)), true, -1, 5),
 										}
 									},
 								}))
@@ -2679,7 +2683,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -2697,7 +2701,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
@@ -2726,7 +2730,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
@@ -2962,7 +2966,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 3),
 										}
 									},
 									{
@@ -2986,7 +2990,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.CSharp", SemanticVersion(3, 3, 3)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.CSharp", SemanticVersion(3, 3, 3)), true, -1, 2),
 										}
 									},
 								}))
@@ -3053,7 +3057,7 @@ namespace Soup::Core::UnitTests
 				Path("C:/Users/Me/.soup/packages/Wren/Soup.CSharp/2.2.3/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.CSharp"
-					Language: "Wren|1"
+					Language: "Wren|2.2.2"
 				)")));
 
 			fileSystem->CreateMockFile(
@@ -3234,7 +3238,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
 										}
 									},
 									{
@@ -3258,7 +3262,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
+											PackageChildInfo(PackageReference("Wren", "Soup.CSharp", SemanticVersion(2, 2, 3)), true, -1, 3),
 										}
 									},
 								}))
@@ -3276,7 +3280,7 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference(std::nullopt, "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Wren", SemanticVersion(2, 2, 2)), true, -1, 2),
 										}
 									},
 								}))
