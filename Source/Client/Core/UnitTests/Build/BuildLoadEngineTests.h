@@ -65,10 +65,15 @@ namespace Soup::Core::UnitTests
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "Soup.Cpp"
 					Language: "Wren|1"
+					Dependencies: {
+						Tool: [
+							"C++|TestTool@4.4.4"
+						]
+					}
 				)")));
 
 			fileSystem->CreateMockFile(
-				Path("C:/Users/Me/.soup/packages/Cpp/TestTool/4.4.4/Recipe.sml"),
+				Path("C:/testlocation/BuiltIn/TestTool/4.4.4/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "TestTool"
 					Language: "C++|1.1.1"
@@ -109,7 +114,7 @@ namespace Soup::Core::UnitTests
 					{
 						{
 							"TestTool",
-							SemanticVersion(2, 2, 2)
+							SemanticVersion(4, 4, 4)
 						},
 					}
 				},
@@ -141,6 +146,7 @@ namespace Soup::Core::UnitTests
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"DIAG: Load Recipe: C:/testlocation/BuiltIn/TestTool/4.4.4/Recipe.sml",
 				}),
 				testListener->GetMessages(),
 				"Verify log messages match expected.");
@@ -153,6 +159,8 @@ namespace Soup::Core::UnitTests
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
 					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/Recipe.sml",
+					"Exists: C:/testlocation/BuiltIn/TestTool/4.4.4/Recipe.sml",
+					"OpenReadBinary: C:/testlocation/BuiltIn/TestTool/4.4.4/Recipe.sml",
 				}),
 				fileSystem->GetRequests(),
 				"Verify file system requests match expected.");
@@ -160,6 +168,7 @@ namespace Soup::Core::UnitTests
 			// Verify expected process requests
 			Assert::AreEqual(
 				std::vector<std::string>({
+					"GetCurrentProcessFileName",
 					"GetCurrentProcessFileName",
 				}),
 				processManager->GetRequests(),
@@ -188,6 +197,13 @@ namespace Soup::Core::UnitTests
 								2,
 								ValueTable())
 						},
+						{
+							3,
+							PackageGraph(
+								3,
+								3,
+								ValueTable())
+						},
 					}),
 					PackageLookupMap(
 					{
@@ -204,7 +220,13 @@ namespace Soup::Core::UnitTests
 									{
 										"Build",
 										{
-											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 2),
+											PackageChildInfo(PackageReference("Wren", "Soup.Cpp", SemanticVersion(1, 1, 1)), true, -1, 3),
+										}
+									},
+									{
+										"Tool",
+										{
+											PackageChildInfo(PackageReference("C++", "TestTool", SemanticVersion(4, 4, 4)), true, -1, 2),
 										}
 									},
 								}))
@@ -213,6 +235,17 @@ namespace Soup::Core::UnitTests
 							2,
 							PackageInfo(
 								2,
+								"TestTool",
+								true,
+								Path("C:/testlocation/BuiltIn/TestTool/4.4.4/"),
+								Path("C:/testlocation/BuiltIn/TestTool/4.4.4/out/"),
+								nullptr,
+								PackageChildrenMap())
+						},
+						{
+							3,
+							PackageInfo(
+								3,
 								"Soup.Cpp",
 								true,
 								Path("C:/testlocation/BuiltIn/Soup.Cpp/1.1.1/"),

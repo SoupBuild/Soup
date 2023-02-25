@@ -20,6 +20,14 @@ namespace Soup::Core
 	class PackageChildInfo
 	{
 	public:
+		PackageChildInfo() :
+			OriginalReference(),
+			IsSubGraph(false),
+			PackageId(-1),
+			PackageGraphId(-1)
+		{
+		}
+
 		PackageChildInfo(
 			PackageReference originalReference,
 			bool isSubGraph,

@@ -671,11 +671,25 @@ namespace Soup::Core
 				buildClosureName,
 				packageLockState);
 
-			auto [toolDependency, toolToolDependencies] = LoadSubGraphDependency(
-				originalReference,
-				activeReference,
-				projectRoot,
-				packageLockState);
+			PackageChildInfo toolDependency;
+			std::vector<PackageChildInfo> toolToolDependencies;
+
+			// Check for a built in version of the package
+			if (HasBuiltInVersion(activeReference))
+			{
+				std::tie(toolDependency, toolToolDependencies) = LoadSubGraphBuiltInPackage(
+					activeReference,
+					buildClosureName,
+					packageLockState);
+			}
+			else
+			{
+				std::tie(toolDependency, toolToolDependencies) = LoadSubGraphDependency(
+					originalReference,
+					activeReference,
+					projectRoot,
+					packageLockState);
+			}
 
 			for (auto& toolToolDependency : toolToolDependencies)
 				Log::Warning("Tool Tool Dependency discarded: " + toolToolDependency.OriginalReference.ToString());
