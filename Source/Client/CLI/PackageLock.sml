@@ -18,7 +18,7 @@ Closures: {
 		]
 		Wren: [
 			{ Name: "Soup.Build.Utils", Version: "0.3.0", Build: "Build1" }
-			{ Name: "Soup.Cpp", Version: "0.6.2", Build: "Build1" }
+			{ Name: "Soup.Cpp", Version: "0.7.0", Build: "Build1" }
 			{ Name: "Soup.Cpp.Compiler", Version: "0.6.1", Build: "Build1" }
 			{ Name: "Soup.Cpp.Compiler.MSVC", Version: "0.6.0", Build: "Build1" }
 			{ Name: "Soup.CSharp", Version: "0.9.0", Build: "Build1" }

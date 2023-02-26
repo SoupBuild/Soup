@@ -45,15 +45,28 @@ namespace Soup::Core
 			auto result = std::map<std::string, std::map<std::string, SemanticVersion>>(
 			{
 				{
+					"C++",
+					{
+						{
+							"copy",
+							SemanticVersion(1, 0, 0)
+						},
+						{
+							"mkdir",
+							SemanticVersion(1, 0, 0)
+						},
+					}
+				},
+				{
 					"Wren",
 					{
 						{
 							"Soup.Cpp",
-							SemanticVersion(0, 6, 2)
+							SemanticVersion(0, 7, 0)
 						},
 						{
 							"Soup.CSharp",
-							SemanticVersion(0, 8, 0)
+							SemanticVersion(0, 9, 0)
 						},
 						{
 							"Soup.Wren",
