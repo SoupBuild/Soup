@@ -14,9 +14,4 @@ Closures: {
 			{ Name: "mkdir", Version: "1.0.0" }
 		]
 	}
-	Tool0: {
-		"C++": [
-			{ Name: "mkdir", Version: "1.0.0" }
-		]
-	}
 }

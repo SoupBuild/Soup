@@ -70,7 +70,7 @@ namespace Soup::Core
 						},
 						{
 							"Soup.Wren",
-							SemanticVersion(0, 1, 2)
+							SemanticVersion(0, 2, 0)
 						},
 					}
 				},

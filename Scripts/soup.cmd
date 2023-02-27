@@ -21,8 +21,8 @@ robocopy C:\Users\mwasp\.soup\out\Wren\Soup.Cpp\0.7.0\txTMowfPh1V3rPmbvNBmBW9Z8J
 robocopy C:\Users\mwasp\.soup\packages\Wren\Soup.CSharp\0.9.0\ %RunDir%\Soup\BuiltIn\Soup.CSharp\0.9.0\ Recipe.sml /NJH /NJS /NDL > NUL
 robocopy C:\Users\mwasp\.soup\out\Wren\Soup.CSharp\0.9.0\txTMowfPh1V3rPmbvNBmBW9Z8Jg\ %RunDir%\Soup\BuiltIn\Soup.CSharp\0.9.0\out\ /MIR /NJH /NJS /NDL > NUL
 
-robocopy C:\Users\mwasp\.soup\packages\Wren\Soup.Wren\0.1.2\ %RunDir%\Soup\BuiltIn\Soup.Wren\0.1.2\ Recipe.sml /NJH /NJS /NDL > NUL
-robocopy C:\Users\mwasp\.soup\out\Wren\Soup.Wren\0.1.2\txTMowfPh1V3rPmbvNBmBW9Z8Jg\ %RunDir%\Soup\BuiltIn\Soup.Wren\0.1.2\out\ /MIR /NJH /NJS /NDL > NUL
+robocopy C:\Users\mwasp\.soup\packages\Wren\Soup.Wren\0.2.0\ %RunDir%\Soup\BuiltIn\Soup.Wren\0.2.0\ Recipe.sml /NJH /NJS /NDL > NUL
+robocopy C:\Users\mwasp\.soup\out\Wren\Soup.Wren\0.2.0\txTMowfPh1V3rPmbvNBmBW9Z8Jg\ %RunDir%\Soup\BuiltIn\Soup.Wren\0.2.0\out\ /MIR /NJH /NJS /NDL > NUL
 
 robocopy %OutDir%\msbuild\bin\Soup.Build.PackageManager\Release\net6.0-windows10.0.17763.0\win-x64\publish\ %RunDir%\Soup\PackageManager\ /MIR /NJH /NJS /NDL > NUL
 
