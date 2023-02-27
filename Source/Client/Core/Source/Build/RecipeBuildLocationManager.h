@@ -7,7 +7,7 @@
 #include "ValueTable/ValueTableWriter.h"
 #include "PackageProvider.h"
 #include "RecipeBuildCacheState.h"
-#include "BuiltInLanguagePackage.h"
+#include "KnownLanguage.h"
 
 namespace Soup::Core
 {
@@ -21,16 +21,16 @@ namespace Soup::Core
 	class RecipeBuildLocationManager
 	{
 	private:
-		// Built in languages
-		const std::map<std::string, BuiltInLanguagePackage>& _builtInLanguageLookup;
+		// Known languages
+		const std::map<std::string, KnownLanguage>& _knownLanguageLookup;
 
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecipeBuildLocationManager"/> class.
 		/// </summary>
 		RecipeBuildLocationManager(
-			const std::map<std::string, BuiltInLanguagePackage>& builtInLanguageLookup) :
-			_builtInLanguageLookup(builtInLanguageLookup)
+			const std::map<std::string, KnownLanguage>& knownLanguageLookup) :
+			_knownLanguageLookup(knownLanguageLookup)
 		{
 		}
 
@@ -94,8 +94,8 @@ namespace Soup::Core
 		const std::string& GetLanguageSafeName(const std::string& language) const
 		{
 			// Get the active version
-			auto builtInLanguageResult = _builtInLanguageLookup.find(language);
-			if (builtInLanguageResult == _builtInLanguageLookup.end())
+			auto builtInLanguageResult = _knownLanguageLookup.find(language);
+			if (builtInLanguageResult == _knownLanguageLookup.end())
 				throw std::runtime_error("Unknown language: " + language);
 
 			return builtInLanguageResult->second.LanguageSafeName;

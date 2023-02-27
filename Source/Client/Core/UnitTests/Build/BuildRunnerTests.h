@@ -21,8 +21,8 @@ namespace Soup::Core::UnitTests
 			auto packageProvider = PackageProvider(1, PackageGraphLookupMap(), PackageLookupMap());
 			auto evaluateEngine = MockEvaluateEngine();
 			auto fileSystemState = FileSystemState();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				std::move(arguments),
 				std::move(sdkParameters),
@@ -104,13 +104,14 @@ namespace Soup::Core::UnitTests
 							"MyPackage",
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap())
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
@@ -373,6 +374,7 @@ namespace Soup::Core::UnitTests
 							"MyPackage",
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap({
 								{
@@ -394,13 +396,14 @@ namespace Soup::Core::UnitTests
 							"TestBuild",
 							false,
 							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/Recipe.sml")),
 							PackageChildrenMap())
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
@@ -841,6 +844,7 @@ namespace Soup::Core::UnitTests
 							"MyPackage",
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap({
 								{
@@ -859,6 +863,7 @@ namespace Soup::Core::UnitTests
 							"PackageA",
 							false,
 							Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/Recipe.sml")),
 							PackageChildrenMap({
 								{
@@ -876,13 +881,14 @@ namespace Soup::Core::UnitTests
 							"PackageB",
 							false,
 							Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/Recipe.sml")),
 							PackageChildrenMap())
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,
@@ -1526,6 +1532,7 @@ namespace Soup::Core::UnitTests
 							"MyPackage",
 							false,
 							Path("C:/WorkingDirectory/MyPackage/"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/WorkingDirectory/MyPackage/Recipe.sml")),
 							PackageChildrenMap({
 								{
@@ -1543,13 +1550,14 @@ namespace Soup::Core::UnitTests
 							"TestBuild",
 							false,
 							Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0"),
+							Path(),
 							&recipeCache.GetRecipe(Path("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/Recipe.sml")),
 							PackageChildrenMap())
 					},
 				}));
 			auto evaluateEngine = MockEvaluateEngine();
-			auto builtInLanguages = std::map<std::string, BuiltInLanguagePackage>();
-			auto locationManager = RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = std::map<std::string, KnownLanguage>();
+			auto locationManager = RecipeBuildLocationManager(knownLanguages);
 			auto uut = BuildRunner(
 				arguments,
 				sdkParameters,

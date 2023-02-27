@@ -30,7 +30,14 @@ namespace Soup::Core::UnitTests
 				Path("C:/WorkingDirectory/MyPackage/Recipe.sml"),
 				std::make_shared<MockFile>(std::stringstream(R"(
 					Name: "MyPackage"
-					Language: "C++|1"
+					Language: "C++|0.7.0"
+				)")));
+
+			fileSystem->CreateMockFile(
+				Path("C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/Recipe.sml"),
+				std::make_shared<MockFile>(std::stringstream(R"(
+					Name: "Soup.Cpp"
+					Language: "Wren|1"
 				)")));
 
 			auto operationGraph = OperationGraph(
@@ -65,6 +72,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: Load PackageLock: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"INFO: PackageLock file does not exist",
 					"DIAG: Load Recipe: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"DIAG: Load Recipe: C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/Recipe.sml",
 					"DIAG: 0>Package was prebuilt: Soup.Cpp",
 					"DIAG: 1>Running Build: C++|MyPackage",
 					"INFO: 1>Build 'MyPackage'",
@@ -91,7 +99,7 @@ namespace Soup::Core::UnitTests
 					"DIAG: 1>C:/Program Files/dotnet/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
-					"DIAG: 1>C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/",
+					"DIAG: 1>C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/out/",
 					"DIAG: 1>Allowed Write Access:",
 					"DIAG: 1>C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/",
 					"DIAG: 1>Build evaluation end",
@@ -121,6 +129,8 @@ namespace Soup::Core::UnitTests
 					"Exists: C:/WorkingDirectory/MyPackage/PackageLock.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/Recipe.sml",
 					"OpenReadBinary: C:/WorkingDirectory/MyPackage/Recipe.sml",
+					"Exists: C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/Recipe.sml",
+					"OpenReadBinary: C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/Recipe.sml",
 					"Exists: C:/WorkingDirectory/RootRecipe.sml",
 					"Exists: C:/RootRecipe.sml",
 					"Exists: C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/.soup/Evaluate.bog",
@@ -179,7 +189,7 @@ namespace Soup::Core::UnitTests
 										"Soup.Cpp",
 										ValueTable(
 										{
-											{ "SoupTargetDirectory", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/.soup/") },
+											{ "SoupTargetDirectory", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/out/.soup/") },
 										})
 									},
 								})
@@ -214,7 +224,7 @@ namespace Soup::Core::UnitTests
 														"Context",
 														ValueTable(
 														{
-															{ "Reference", std::string("Soup.Cpp@0.6.2") },
+															{ "Reference", std::string("Wren|Soup.Cpp@0.7.0") },
 															{ "TargetDirectory", std::string("/(TARGET_Soup.Cpp)/") },
 														})
 													},
@@ -234,7 +244,7 @@ namespace Soup::Core::UnitTests
 						{
 							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
 							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/J_HqSstV55vlb-x6RWC_hLRFRDU/") },
-							{ "/(TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.6.2/") },
+							{ "/(TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/out/") },
 						})
 					},
 					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
