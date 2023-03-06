@@ -321,7 +321,7 @@ namespace Soup::Core
 		}
 
 		void LoadClosure(
-			const std::string& buildToolClosureName,
+			const std::optional<std::string>& buildToolClosureName,
 			const Recipe& recipe,
 			const Path& projectRoot,
 			const std::string& languagePackageName,
@@ -367,11 +367,18 @@ namespace Soup::Core
 				}
 				else if (dependencyType == _dependencyTypeTool)
 				{
-					toolDependencies = LoadToolDependencies(
-						recipe,
-						projectRoot,
-						buildToolClosureName,
-						packageLockState);
+					if (buildToolClosureName.has_value())
+					{
+						toolDependencies = LoadToolDependencies(
+							recipe,
+							projectRoot,
+							buildToolClosureName.value(),
+							packageLockState);
+					}
+					else
+					{
+						Log::Diag("Skipping tool dependencies outside direct dependencies of a Build dependency");
+					}
 				}
 				else
 				{
@@ -530,7 +537,7 @@ namespace Soup::Core
 				// Discover all recursive dependencies
 				auto childPackageId = ++_uniquePackageId;
 				auto toolDependencyProjects = std::vector<PackageChildInfo>();
-				auto runtimeBuildToolClosureName = std::string();
+				std::optional<std::string> runtimeBuildToolClosureName = std::nullopt;
 				LoadClosure(
 					runtimeBuildToolClosureName,
 					*dependencyRecipe,

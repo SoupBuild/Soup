@@ -3,7 +3,7 @@
     "Soup.Build.PackageManager": {
       "commandName": "Project",
       "commandLineArgs": "restore-packages C:/Users/mwasp/Dev/Repos/Soup/Samples/Cpp/ConsoleApplication",
-      "commandLineArgs2": "publish-package C:\\Users\\mwasp\\source\\repos\\Detours\\src"
+      "commandLineArgs2": "publish-package C:/Users/mwasp/source/repos/Detours/src"
     }
   }
 }
