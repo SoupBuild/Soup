@@ -358,7 +358,10 @@ namespace Soup.Build.PackageManager
 				if (!runtimeClosure.ContainsKey(language))
 					runtimeClosure.Add(language, new Dictionary<string, (PackageReference Package, string BuildClosure, string ToolClosure)>());
 
-				runtimeClosure[language].Add(name, (packageReference, package.Build, package.Tool));
+				if (runtimeClosure[language].ContainsKey(name))
+					Log.Warning($"Duplicate reference seen in generate closure response {name}");
+				else
+					runtimeClosure[language].Add(name, (packageReference, package.Build, package.Tool));
 			}
 
 			var buildClosures = new Dictionary<string, IDictionary<string, IDictionary<string, PackageReference>>>();
@@ -840,33 +843,6 @@ namespace Soup.Build.PackageManager
 			}
 		}
 
-		private static PackageReference FillDefaultVersion(PackageReference package)
-		{
-			if (package.Version == null)
-				throw new ArgumentException("Package version was null");
-
-			// TODO: Discover the latest available version
-			// For now auto assume missing values are zero
-			if (package.Version.Minor is null)
-			{
-				return new PackageReference(
-					package.Language,
-					package.Name,
-					new SemanticVersion(package.Version.Major, 0, 0));
-			}
-			else if (package.Version.Patch is null)
-			{
-				return new PackageReference(
-					package.Language,
-					package.Name,
-					new SemanticVersion(package.Version.Major, package.Version.Minor, 0));
-			}
-			else
-			{
-				return package;
-			}
-		}
-
 		private static string GetLanguageSafeName(string language)
 		{
 			switch (language)
@@ -880,40 +856,6 @@ namespace Soup.Build.PackageManager
 				default:
 					throw new InvalidOperationException($"Unknown language name: {language}");
 			}
-		}
-
-		private static string GetLanguagePackage(string language)
-		{
-			switch (language)
-			{
-				case BuiltInLanguageCSharp:
-					return BuiltInLanguagePackageCSharp;
-				case BuiltInLanguageCpp:
-					return BuiltInLanguagePackageCpp;
-				case BuiltInLanguageWren:
-					return BuiltInLanguagePackageWren;
-				default:
-					throw new InvalidOperationException($"Unknown language name: {language}");
-			}
-		}
-
-		private static bool AreEqual(
-			IDictionary<string, IDictionary<string, PackageReference>> lhs,
-			IDictionary<string, IDictionary<string, PackageReference>> rhs)
-		{
-			return lhs.Keys.Count == rhs.Keys.Count &&
-				lhs.Keys.All(value => rhs.Keys.Contains(value)) &&
-				lhs.All(value => AreEqual(value.Value, rhs[value.Key]));
-		}
-
-		private static bool AreEqual(
-			IDictionary<string, PackageReference> lhs,
-			IDictionary<string, PackageReference> rhs)
-		{
-
-			return lhs.Keys.Count == rhs.Keys.Count &&
-				lhs.Keys.All(value => rhs.Keys.Contains(value)) &&
-				lhs.All(value => value.Value == rhs[value.Key]);
 		}
 
 		/// <summary>

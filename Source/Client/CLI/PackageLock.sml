@@ -18,13 +18,13 @@ Closures: {
 		]
 		Wren: [
 			{ Name: "Soup.Build.Utils", Version: "0.3.0", Build: "Build1" }
-			{ Name: "Soup.Cpp", Version: "0.7.0", Build: "Build1" }
+			{ Name: "Soup.Cpp", Version: "0.6.1", Build: "Build1" }
 			{ Name: "Soup.Cpp.Compiler", Version: "0.6.1", Build: "Build1" }
 			{ Name: "Soup.Cpp.Compiler.MSVC", Version: "0.6.0", Build: "Build1" }
 			{ Name: "Soup.CSharp", Version: "0.9.0", Build: "Build1" }
 			{ Name: "Soup.CSharp.Compiler", Version: "0.8.0", Build: "Build1" }
 			{ Name: "Soup.CSharp.Compiler.Roslyn", Version: "0.8.0", Build: "Build1" }
-			{ Name: "Soup.Wren", Version: "0.2.0", Build: "Build1" }
+			{ Name: "Soup.Wren", Version: "0.1.1", Build: "Build1" }
 		]
 	}
 	Build0: {
@@ -33,7 +33,7 @@ Closures: {
 			{ Name: "mkdir", Version: "../../Tools/Mkdir/" }
 		]
 		Wren: [
-			{ Name: "Soup.Cpp", Version: "0.7.0" }
+			{ Name: "Soup.Cpp", Version: "0.6.1" }
 		]
 	}
 	Build1: {
@@ -42,12 +42,12 @@ Closures: {
 			{ Name: "mkdir", Version: "../../Tools/Mkdir/" }
 		]
 		Wren: [
-			{ Name: "Soup.Wren", Version: "0.2.0" }
+			{ Name: "Soup.Wren", Version: "0.1.1" }
 		]
 	}
 	Build2: {
 		Wren: [
-			{ Name: "Soup.Cpp", Version: "0.7.0" }
+			{ Name: "Soup.Cpp", Version: "0.6.1" }
 			{ Name: "Soup.Test.Cpp", Version: "0.6.0" }
 		]
 	}
