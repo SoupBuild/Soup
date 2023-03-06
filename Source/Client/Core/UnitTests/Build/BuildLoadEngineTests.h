@@ -486,7 +486,7 @@ namespace Soup::Core::UnitTests
 					Closures: {
 						Root: {
 							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
 							]
 						}
 						Build0: {
@@ -1854,7 +1854,7 @@ namespace Soup::Core::UnitTests
 					Closures: {
 						Root: {
 							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
 							]
 						}
 						Build0: {
@@ -1862,6 +1862,8 @@ namespace Soup::Core::UnitTests
 								{ Name: "Soup.Cpp", Version: "1.1.1" }
 								{ Name: "TestBuild", Version: "3.3.3" }
 							]
+						}
+						Tool0: {
 						}
 					}
 				)")));
@@ -2139,7 +2141,7 @@ namespace Soup::Core::UnitTests
 					Closures: {
 						Root: {
 							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
 							]
 						}
 						Build0: {
@@ -2471,7 +2473,7 @@ namespace Soup::Core::UnitTests
 					Closures: {
 						Root: {
 							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
 							]
 						}
 						Build0: {
@@ -2479,6 +2481,8 @@ namespace Soup::Core::UnitTests
 								{ Name: "Soup.Cpp", Version: "1.1.2" }
 								{ Name: "TestBuild", Version: "3.3.4" }
 							]
+						}
+						Tool0: {
 						}
 					}
 				)")));
@@ -2489,13 +2493,15 @@ namespace Soup::Core::UnitTests
 					Closures: {
 						Root: {
 							Wren: [
-								{ Name: "TestBuild", Version: "../TestBuild/", Build: "Build0" }
+								{ Name: "TestBuild", Version: "../TestBuild/", Build: "Build0", Tool: "Tool0" }
 							]
 						}
 						Build0: {
 							Wren: [
 								{ Name: "Soup.Wren", Version: "2.2.3" }
 							]
+						}
+						Tool0: {
 						}
 					}
 				)")));
@@ -2826,10 +2832,10 @@ namespace Soup::Core::UnitTests
 					Closures: {
 						Root: {
 							"C++": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
 							]
 							"C#": [
-								{ Name: "Package1", Version: "4.4.4", Build: "Build1" }
+								{ Name: "Package1", Version: "4.4.4", Build: "Build1", Tool: "Tool0" }
 							]
 						}
 						Build0: {
@@ -2841,6 +2847,8 @@ namespace Soup::Core::UnitTests
 							Wren: [
 								{ Name: "Soup.CSharp", Version: "3.3.3" }
 							]
+						}
+						Tool1: {
 						}
 					}
 				)")));
@@ -3108,14 +3116,16 @@ namespace Soup::Core::UnitTests
 					Closures: {
 						Root: {
 							"C#": [
-								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0" }
-								{ Name: "Package1", Version: "../Package1/", Build: "Build0" }
+								{ Name: "MyPackage", Version: "../MyPackage/", Build: "Build0", Tool: "Tool0" }
+								{ Name: "Package1", Version: "../Package1/", Build: "Build0", Tool: "Tool0" }
 							]
 						}
 						Build0: {
 							Wren: [
 								{ Name: "Soup.CSharp", Version: "2.2.3" }
 							]
+						}
+						Tool0: {
 						}
 					}
 				)")));
