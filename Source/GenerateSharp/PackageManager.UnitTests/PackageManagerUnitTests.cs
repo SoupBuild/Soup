@@ -31,8 +31,8 @@ namespace Soup.Build.PackageManager.UnitTests
 			using var scopedFileSystem = new ScopedSingleton<IFileSystem>(mockFileSystem);
 
 			// Mock out the http
-			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
-			using var httpClient = new HttpClient(mockMessageHandler.Object);
+			var mockMessageHandler = new Mock<IHttpMessageHandler>();
+			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
 
 			// Mock out the closure manager
 			var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
@@ -120,8 +120,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"""))));
 
 			// Mock out the http
-			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
-			using var httpClient = new HttpClient(mockMessageHandler.Object);
+			var mockMessageHandler = new Mock<IHttpMessageHandler>();
+			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
 
 			// Mock out the closure manager
 			var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
@@ -167,6 +167,9 @@ namespace Soup.Build.PackageManager.UnitTests
 					"DeleteDirectoryRecursive: C:/Users/Me/.soup/packages/.staging/",
 				},
 				mockFileSystem.GetRequests());
+
+			// Verify http requests
+			mockMessageHandler.VerifyNoOtherCalls();
 
 			// Verify closure manager requests
 			mockClosureManager.Verify(manager =>
@@ -230,8 +233,8 @@ namespace Soup.Build.PackageManager.UnitTests
 					"""))));
 
 			// Mock out the http
-			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
-			using var httpClient = new HttpClient(mockMessageHandler.Object);
+			var mockMessageHandler = new Mock<IHttpMessageHandler>();
+			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
 
 			// Mock out the closure manager
 			var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
@@ -254,19 +257,21 @@ namespace Soup.Build.PackageManager.UnitTests
 					Latest = new Api.Client.SemanticVersion() { Major = 1, Minor = 2, Patch = 3, },
 				});
 			mockMessageHandler
-				.Setup(messageHandler => messageHandler.Send(
+				.Setup(messageHandler => messageHandler.SendAsync(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage() { Content = new StringContent(getPackageResponse) });
 			mockMessageHandler
-				.Setup(messageHandler => messageHandler.Send(
+				.Setup(messageHandler => messageHandler.SendAsync(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage/versions/1.2.3/download"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage());
+
+			mockMessageHandler.VerifyNoOtherCalls();
 
 			var workingDirectory = new Path("C:/Root/MyPackage/");
 			var packageReference = "OtherPackage";
@@ -301,7 +306,7 @@ namespace Soup.Build.PackageManager.UnitTests
 
 			// Verify http requests
 			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.Send(
+				messageHandler.SendAsync(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/OtherPackage"),
 					"{Accept: [application/json]}",
@@ -389,8 +394,8 @@ namespace Soup.Build.PackageManager.UnitTests
 			mockZipManager.Setup(zip => zip.OpenCreate(It.IsAny<Path>())).Returns(mockZipArchive.Object);
 
 			// Mock out the http
-			var mockMessageHandler = new Mock<ShimHttpMessageHandler>() { CallBase = true, };
-			using var httpClient = new HttpClient(mockMessageHandler.Object);
+			var mockMessageHandler = new Mock<IHttpMessageHandler>();
+			using var httpClient = new HttpClient(new ShimHttpMessageHandler(mockMessageHandler.Object));
 
 			// Mock out the closure manager
 			var mockClosureManager = new Mock<IClosureManager>(MockBehavior.Strict);
@@ -406,14 +411,14 @@ namespace Soup.Build.PackageManager.UnitTests
 				Latest = new Api.Client.SemanticVersion() { Major = 1, Minor = 2, Patch = 3, },
 			});
 			mockMessageHandler
-				.Setup(messageHandler => messageHandler.Send(
+				.Setup(messageHandler => messageHandler.SendAsync(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage"),
 					It.IsAny<string>(),
 					null))
 				.Returns(() => new HttpResponseMessage() { Content = new StringContent(getPackageResponse) });
 			mockMessageHandler
-				.Setup(messageHandler => messageHandler.Send(
+				.Setup(messageHandler => messageHandler.SendAsync(
 					HttpMethod.Put,
 					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage/versions/1.0.0"),
 					It.IsAny<string>(),
@@ -464,19 +469,21 @@ namespace Soup.Build.PackageManager.UnitTests
 
 			// Verify http requests
 			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.Send(
+				messageHandler.SendAsync(
 					HttpMethod.Get,
 					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage"),
 					"{Accept: [application/json]}",
 					null),
 				Times.Once());
 			mockMessageHandler.Verify(messageHandler =>
-				messageHandler.Send(
+				messageHandler.SendAsync(
 					HttpMethod.Put,
 					new Uri("https://test.api.soupbuild.com/v1/languages/C%2B%2B/packages/MyPackage/versions/1.0.0"),
 					"",
 					"ZIP_FILE_CONTENT"),
 				Times.Once());
+
+			mockMessageHandler.VerifyNoOtherCalls();
 		}
 	}
 }
