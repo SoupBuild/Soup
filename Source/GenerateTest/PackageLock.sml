@@ -6,7 +6,7 @@ Closures: {
 			{ Name: "Detours", Version: "4.0.9", Build: "Build0" }
 			{ Name: "Monitor.Host", Version: "../Monitor/Host/", Build: "Build2" }
 			{ Name: "Monitor.Shared", Version: "../Monitor/Shared/", Build: "Build2" }
-			{ Name: "Opal", Version: "0.9.0", Build: "Build0" }
+			{ Name: "Opal", Version: "0.9.1", Build: "Build0" }
 			{ Name: "reflex", Version: "1.0.2", Build: "Build0" }
 			{ Name: "Soup.Core", Version: "../Client/Core/", Build: "Build1" }
 			{ Name: "Soup.Generate.Test", Version: "./", Build: "Build0" }

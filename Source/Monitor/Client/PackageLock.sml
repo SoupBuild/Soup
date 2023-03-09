@@ -5,7 +5,7 @@ Closures: {
 			{ Name: "Detours", Version: "4.0.9", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Client", Version: "./", Build: "Build0", Tool: "Tool0" }
 			{ Name: "Monitor.Shared", Version: "../Shared/", Build: "Build0", Tool: "Tool0" }
-			{ Name: "Opal", Version: "0.9.0", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Opal", Version: "0.9.1", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
