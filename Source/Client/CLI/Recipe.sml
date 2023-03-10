@@ -22,9 +22,9 @@ Dependencies: {
 		"../../Monitor/Host/"
 	]
 	Other: [
-		"Wren|Soup.Cpp@0.6.2"
-		"Wren|Soup.CSharp@0.8.0"
-		"Wren|Soup.Wren@0.1.2"
+		# "Wren|Soup.Cpp@0.6.2"
+		# "Wren|Soup.CSharp@0.8.0"
+		# "Wren|Soup.Wren@0.1.2"
 	]
 	Build: [
 		# TODO: "Soup.Test.Cpp@0.4.0"
