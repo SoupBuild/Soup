@@ -3,11 +3,11 @@ This is a console application that demonstrates creating a complex graphics wind
 
 [Source](https://github.com/SoupBuild/Soup/tree/main/Samples/Cpp/DirectX)
 
-## Library/Recipe.sml
+## Recipe.sml
 The Recipe file that defines the directX sample application. Note the special module partition hierarchy that explicitly sets the references for partition units. The application also copies over the shader files that will be compiled at runtime.
 ```
 Name: "Samples.Cpp.DirectX"
-Language: "C++|0.1"
+Language: "C++|0"
 Type: "Windows"
 Version: "1.0.0"
 Partitions: [
@@ -28,6 +28,30 @@ PlatformLibraries: [
 RuntimeDependencies: [
     "Shaders.hlsl"
 ]
+```
+
+## PackageLock.sml
+The package lock that was generated to capture the unique dependencies required to build this project.
+```
+Version: 4
+Closures: {
+    Root: {
+        "C++": [
+            { Name: "Samples.Cpp.DirectX", Version: "../DirectX", Build: "Build0", Tool: "Tool0" }
+        ]
+    }
+    Build0: {
+        Wren: [
+            { Name: "Soup.Cpp", Version: "0.7.0" }
+        ]
+    }
+    Tool0: {
+        "C++": [
+            { Name: "copy", Version: "1.0.0" }
+            { Name: "mkdir", Version: "1.0.0" }
+        ]
+    }
+}
 ```
 
 ## Content

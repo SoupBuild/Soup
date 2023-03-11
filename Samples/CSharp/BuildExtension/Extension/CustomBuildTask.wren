@@ -33,7 +33,7 @@ class CustomBuildTask is SoupTask {
 		var preprocessorDefinitions = [
 			"SPECIAL_BUILD",
 		]
-		
+
 		ListExtensions.Append(
 			MapExtensions.EnsureList(buildTable, "PreprocessorDefinitions"),
 			preprocessorDefinitions)

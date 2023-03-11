@@ -1,13 +1,13 @@
 Version: 4
 Closures: {
 	Root: {
-		"C#": [
-			{ Name: "Samples.CSharp.ConsoleApplication", Version: "../ConsoleApplication", Build: "Build0", Tool: "Tool0" }
+		"C++": [
+			{ Name: "Samples.Cpp.ModuleInterface", Version: "../ModuleInterface", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
 		Wren: [
-			{ Name: "Soup.CSharp", Version: "0.9.0" }
+			{ Name: "Soup.Cpp", Version: "0.7.0" }
 		]
 	}
 	Tool0: {

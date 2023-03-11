@@ -54,6 +54,31 @@ Dependencies: {
 }
 ```
 
+## Application/PackageLock.sml
+The package lock that was generated to capture the unique dependencies required to build this project and the dependency static library.
+```
+Version: 4
+Closures: {
+	Root: {
+		"C++": [
+			{ Name: "Samples.Cpp.StaticLibrary.Application", Version: "../Application", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Samples.Cpp.StaticLibrary.Library", Version: "../Library/", Build: "Build0", Tool: "Tool0" }
+		]
+	}
+	Build0: {
+		Wren: [
+			{ Name: "Soup.Cpp", Version: "0.7.0" }
+		]
+	}
+	Tool0: {
+		"C++": [
+			{ Name: "copy", Version: "1.0.0" }
+			{ Name: "mkdir", Version: "1.0.0" }
+		]
+	}
+}
+```
+
 ## MyApplication/Main.cpp
 A simple main method that prints our "Hello World, Soup Style!" by using the module from the library.
 ```
