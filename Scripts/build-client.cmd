@@ -8,7 +8,7 @@ SET ClientCLIDir=%SourceDir%\Client\CLI
 SET MonitorClientDir=%SourceDir%\Monitor\Client
 if %Flavor% == release (SET OutputX64DirectorPath=txTMowfPh1V3rPmbvNBmBW9Z8Jg) else (SET OutputX64DirectorPath=J3mu4cpISw6nDaCPED8gkqZ-q84)
 if %Flavor% == release (SET OutputX86DirectorPath=ci_UJP5zJKyF-O0VVSVDMNi1Wwg) else (SET OutputX86DirectorPath=9fr4dmE4CrAXgS2yFzcvYJXkGDg)
-SET ClientCLIOutputDirectory=%OutputDir%\Cpp\Soup\0.31.1\%OutputX64DirectorPath%
+SET ClientCLIOutputDirectory=%OutputDir%\Cpp\Soup\0.31.2\%OutputX64DirectorPath%
 SET MonitorClientOutputX64Directory=%OutputDir%\Cpp\Monitor.Client\1.0.0\%OutputX64DirectorPath%
 SET MonitorClientOutputX86Directory=%OutputDir%\Cpp\Monitor.Client\1.0.0\%OutputX86DirectorPath%
 
