@@ -230,10 +230,11 @@ namespace Soup::Core
 					// Build the global store location path
 					auto packageStore = GetSoupUserDataPath() + Path("packages/");
 					auto& languageSafeName = GetLanguageSafeName(activeReference.GetLanguage());
+					auto activeVersionString = activeReference.GetVersion().ToString();
 					packagePath = packageStore +
 						Path(languageSafeName) +
 						Path(activeReference.GetName()) +
-						Path(activeReference.GetVersion().ToString() + "/");
+						Path(activeVersionString + "/");
 				}
 			}
 
