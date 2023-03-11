@@ -2,7 +2,7 @@ Version: 4
 Closures: {
 	Root: {
 		"C#": [
-			{ Name: "Samples.CSharp.ConsoleApplication", Version: "./", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Samples.CSharp.ConsoleApplication", Version: "../ConsoleApplication", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
