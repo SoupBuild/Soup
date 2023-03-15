@@ -606,16 +606,6 @@ namespace Soup::Core
 		{
 			auto result = ValueTable();
 
-			// Set the language extension parameters
-			// // if (packageInfo.LanguageExtensionPath.has_value())
-			// // {
-			// // 	inputTable.emplace(
-			// // 		"LanguageExtension",
-			// // 		std::move(packageInfo.LanguageExtensionPath.value().ToString()));
-
-			// // 	result.emplace(dependencyTypeKey, Value(std::move(dependencyTypeTable)));
-			// // }
-
 			for (const auto& [dependencyTypeKey, dependencyTypeValue] : packageInfo.Dependencies)
 			{
 				auto dependencyTypeTable = ValueTable();
@@ -746,7 +736,9 @@ namespace Soup::Core
 							dependencyState.RecursiveChildMacroTargetDirectorySet.begin(),
 							dependencyState.RecursiveChildMacroTargetDirectorySet.end());
 
-						recursiveMacros.emplace(dependencyState.MacroTargetDirectory.ToString(), dependencyState.RealTargetDirectory.ToString());
+						recursiveMacros.emplace(
+							dependencyState.MacroTargetDirectory.ToString(),
+							dependencyState.RealTargetDirectory.ToString());
 						recursiveMacros.insert(
 							dependencyState.RecursiveChildMacros.begin(),
 							dependencyState.RecursiveChildMacros.end());
