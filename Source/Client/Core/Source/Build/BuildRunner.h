@@ -3,6 +3,7 @@
 // </copyright>
 
 #pragma once
+#include "DependencyTargetSet.h"
 #include "MacroManager.h"
 #include "IEvaluateEngine.h"
 #include "BuildConstants.h"
@@ -210,11 +211,10 @@ namespace Soup::Core
 			auto soupTargetDirectory = realTargetDirectory + BuildConstants::SoupTargetDirectory();
 
 			// Build up the child target directory set
-			const auto& [directChildRealTargetDirectories, recursiveChildMockTargetDirectories, recursiveChildMacros] =
-				GenerateChildDependenciesTargetDirectorySet(packageInfo);
+			auto childDependencies = GenerateChildDependenciesTargetDirectorySet(packageInfo);
 
 			// Use the recursive set of macros along with the current targets
-			auto macros = recursiveChildMacros;
+			auto macros = childDependencies.RecursiveMacros;
 			macros.emplace(macroPackageDirectory.ToString(), packageInfo.PackageRoot.ToString());
 			macros.emplace(macroTargetDirectory.ToString(), realTargetDirectory.ToString());
 
@@ -267,8 +267,8 @@ namespace Soup::Core
 					realTargetDirectory,
 					soupTargetDirectory,
 					packageGraph.GlobalParameters,
-					directChildRealTargetDirectories,
-					recursiveChildMockTargetDirectories,
+					childDependencies.DirectRealDirectories,
+					childDependencies.RecursiveMacroDirectories,
 					macros);
 
 				//////////////////////////////////////////////
@@ -320,8 +320,8 @@ namespace Soup::Core
 					std::move(macroTargetDirectory),
 					std::move(realTargetDirectory),
 					std::move(soupTargetDirectory),
-					std::move(recursiveChildMockTargetDirectories),
-					std::move(recursiveChildMacros)));
+					std::move(childDependencies.RecursiveMacroDirectories),
+					std::move(childDependencies.RecursiveMacros)));
 		}
 
 		/// <summary>
@@ -703,7 +703,7 @@ namespace Soup::Core
 			return result;
 		}
 
-		std::tuple<std::set<Path>, std::set<Path>, std::map<std::string, std::string>> GenerateChildDependenciesTargetDirectorySet(
+		DependencyTargetSet GenerateChildDependenciesTargetDirectorySet(
 			const PackageInfo& packageInfo)
 		{
 			auto directRealDirectories = std::set<Path>();
@@ -731,17 +731,28 @@ namespace Soup::Core
 						auto& dependencyState = findBuildCache->second;
 						directRealDirectories.insert(dependencyState.RealTargetDirectory);
 
-						recursiveMacroDirectories.insert(dependencyState.MacroTargetDirectory);
-						recursiveMacroDirectories.insert(
-							dependencyState.RecursiveChildMacroTargetDirectorySet.begin(),
-							dependencyState.RecursiveChildMacroTargetDirectorySet.end());
+						if (dependency.IsSubGraph)
+						{
+							// Subgraph references only propagate the single dependency
+							recursiveMacroDirectories.insert(dependencyState.MacroTargetDirectory);
+							recursiveMacros.emplace(
+								dependencyState.MacroTargetDirectory.ToString(),
+								dependencyState.RealTargetDirectory.ToString());
+						}
+						else
+						{
+							recursiveMacroDirectories.insert(dependencyState.MacroTargetDirectory);
+							recursiveMacroDirectories.insert(
+								dependencyState.RecursiveChildMacroTargetDirectorySet.begin(),
+								dependencyState.RecursiveChildMacroTargetDirectorySet.end());
 
-						recursiveMacros.emplace(
-							dependencyState.MacroTargetDirectory.ToString(),
-							dependencyState.RealTargetDirectory.ToString());
-						recursiveMacros.insert(
-							dependencyState.RecursiveChildMacros.begin(),
-							dependencyState.RecursiveChildMacros.end());
+							recursiveMacros.emplace(
+								dependencyState.MacroTargetDirectory.ToString(),
+								dependencyState.RealTargetDirectory.ToString());
+							recursiveMacros.insert(
+								dependencyState.RecursiveChildMacros.begin(),
+								dependencyState.RecursiveChildMacros.end());
+						}
 					}
 					else
 					{
@@ -751,7 +762,7 @@ namespace Soup::Core
 				}
 			}
 
-			return std::make_tuple(
+			return DependencyTargetSet(
 				std::move(directRealDirectories),
 				std::move(recursiveMacroDirectories),
 				std::move(recursiveMacros));
