@@ -12,18 +12,36 @@ namespace Soup::Core
 	class DependencyTargetSet
 	{
 	public:
-		std::set<Path> DirectRealDirectories;
-		std::set<Path> RecursiveMacroDirectories;
-		std::map<std::string, std::string> RecursiveMacros;
+		// The active set of macros that are only used by this package during generate
+		std::map<std::string, std::string> GenerateCurrentMacros;
+
+		// The active set of directories that can accessed during generate by this package only
+		std::set<Path> GenerateCurrentReadDirectories;
+		std::set<Path> GenerateCurrentWriteDirectories;
+
+		// The active set of macros that are only used by this package during evaluate
+		std::map<std::string, std::string> EvaluateCurrentMacros;
+
+		// The recursive set of macros that all upstream dependencies can utilize during evaluate
+		std::map<std::string, std::string> EvaluateRecursiveMacros;
+
+		// The active set of directories that can accessed during evaluate by this package only
+		std::set<Path> EvaluateCurrentReadDirectories;
+		std::set<Path> EvaluateCurrentWriteDirectories;
+
+		// The recursive set of directories that can be read during evaluate
+		std::set<Path> EvaluateRecursiveReadDirectories;
 
 	public:
-		DependencyTargetSet(
-			std::set<Path> directRealDirectories,
-			std::set<Path> recursiveMacroDirectories,
-			std::map<std::string, std::string> recursiveMacros) :
-			DirectRealDirectories(std::move(directRealDirectories)),
-			RecursiveMacroDirectories(std::move(recursiveMacroDirectories)),
-			RecursiveMacros(std::move(recursiveMacros))
+		DependencyTargetSet() :
+			GenerateCurrentMacros(),
+			GenerateCurrentReadDirectories(),
+			GenerateCurrentWriteDirectories(),
+			EvaluateCurrentMacros(),
+			EvaluateRecursiveMacros(),
+			EvaluateCurrentReadDirectories(),
+			EvaluateCurrentWriteDirectories(),
+			EvaluateRecursiveReadDirectories()
 		{
 		}
 	};

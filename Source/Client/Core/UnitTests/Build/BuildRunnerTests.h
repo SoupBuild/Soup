@@ -196,7 +196,38 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				ValueTable(
 				{
-					{ "Dependencies", ValueTable() },
+					{
+						"Dependencies",
+						ValueTable()
+					},
+					{
+						"EvaluateMacros",
+						ValueTable(
+						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
+							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+						})
+					},
+					{
+						"EvaluateReadAccess",
+						ValueList(
+						{
+							std::string("C:/FakeSDK/"),
+							std::string("/(PACKAGE_MyPackage)/"),
+							std::string("/(TARGET_MyPackage)/"),
+						})
+					},
+					{
+						"EvaluateWriteAccess",
+						ValueList(
+						{
+							std::string("/(TARGET_MyPackage)/"),
+						})
+					},
+					{
+						"GenerateMacros",
+						ValueTable()
+					},
 					{
 						"GlobalState",
 						ValueTable(
@@ -221,29 +252,8 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"Macros",
-						ValueTable(
-						{
-							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
-							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
-						})
-					},
-					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
-					{
-						"ReadAccess",
-						ValueList(
-						{
-							std::string("C:/FakeSDK/"),
-							std::string("/(PACKAGE_MyPackage)/"),
-							std::string("/(TARGET_MyPackage)/"),
-						})
-					},
-					{
-						"WriteAccess",
-						ValueList(
-						{
-							std::string("/(TARGET_MyPackage)/"),
-						})
+						"PackageRoot",
+						std::string("C:/WorkingDirectory/MyPackage/")
 					},
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),
@@ -531,7 +541,38 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				ValueTable(
 				{
-					{ "Dependencies", ValueTable() },
+					{
+						"Dependencies",
+						ValueTable()
+					},
+					{
+						"EvaluateMacros",
+						ValueTable(
+						{
+							{ "/(PACKAGE_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/") },
+							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
+						})
+					},
+					{
+						"EvaluateReadAccess",
+						ValueList(
+						{
+							std::string("C:/FakeSDK/"),
+							std::string("/(PACKAGE_TestBuild)/"),
+							std::string("/(TARGET_TestBuild)/"),
+						})
+					},
+					{
+						"EvaluateWriteAccess",
+						ValueList(
+						{
+							std::string("/(TARGET_TestBuild)/"),
+						})
+					},
+					{
+						"GenerateMacros",
+						ValueTable()
+					},
 					{
 						"GlobalState",
 						ValueTable(
@@ -556,29 +597,8 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"Macros",
-						ValueTable(
-						{
-							{ "/(PACKAGE_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/") },
-							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
-						})
-					},
-					{ "PackageRoot", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/") },
-					{
-						"ReadAccess",
-						ValueList(
-						{
-							std::string("C:/FakeSDK/"),
-							std::string("/(PACKAGE_TestBuild)/"),
-							std::string("/(TARGET_TestBuild)/"),
-						})
-					},
-					{
-						"WriteAccess",
-						ValueList(
-						{
-							std::string("/(TARGET_TestBuild)/"),
-						})
+						"PackageRoot",
+						std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/")
 					},
 				}),
 				ValueTableReader::Deserialize(testBuildGenerateInputMockFile->Content),
@@ -624,6 +644,37 @@ namespace Soup::Core::UnitTests
 									},
 								})
 							},
+						})
+					},
+					{
+						"EvaluateMacros",
+						ValueTable(
+						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
+							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+						})
+					},
+					{
+						"EvaluateReadAccess",
+						ValueList(
+						{
+							std::string("C:/FakeSDK/"),
+							std::string("/(PACKAGE_MyPackage)/"),
+							std::string("/(TARGET_MyPackage)/"),
+						})
+					},
+					{
+						"EvaluateWriteAccess",
+						ValueList(
+						{
+							std::string("/(TARGET_MyPackage)/"),
+						})
+					},
+					{
+						"GenerateMacros",
+						ValueTable(
+						{
+							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
 						})
 					},
 					{
@@ -675,31 +726,8 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"Macros",
-						ValueTable(
-						{
-							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
-							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
-							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
-						})
-					},
-					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
-					{
-						"ReadAccess",
-						ValueList(
-						{
-							std::string("C:/FakeSDK/"),
-							std::string("/(TARGET_TestBuild)/"),
-							std::string("/(PACKAGE_MyPackage)/"),
-							std::string("/(TARGET_MyPackage)/"),
-						})
-					},
-					{
-						"WriteAccess",
-						ValueList(
-						{
-							std::string("/(TARGET_MyPackage)/"),
-						})
+						"PackageRoot",
+						std::string("C:/WorkingDirectory/MyPackage/")
 					},
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),
@@ -1081,6 +1109,36 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
+						"EvaluateMacros",
+						ValueTable(
+						{
+							{ "/(PACKAGE_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/") },
+							{ "/(TARGET_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+						})
+					},
+					{
+						"EvaluateReadAccess",
+						ValueList(
+						{
+							std::string("C:/FakeSDK/"),
+							std::string("/(PACKAGE_PackageA)/"),
+							std::string("/(TARGET_PackageA)/"),
+							std::string("/(TARGET_PackageB)/"),
+						})
+					},
+					{
+						"EvaluateWriteAccess",
+						ValueList(
+						{
+							std::string("/(TARGET_PackageA)/"),
+						})
+					},
+					{
+						"GenerateMacros",
+						ValueTable()
+					},
+					{
 						"GlobalState",
 						ValueTable(
 						{
@@ -1129,31 +1187,8 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"Macros",
-						ValueTable(
-						{
-							{ "/(PACKAGE_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/") },
-							{ "/(TARGET_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
-							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
-						})
-					},
-					{ "PackageRoot", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/") },
-					{
-						"ReadAccess",
-						ValueList(
-						{
-							std::string("C:/FakeSDK/"),
-							std::string("/(TARGET_PackageB)/"),
-							std::string("/(PACKAGE_PackageA)/"),
-							std::string("/(TARGET_PackageA)/"),
-						})
-					},
-					{
-						"WriteAccess",
-						ValueList(
-						{
-							std::string("/(TARGET_PackageA)/"),
-						})
+						"PackageRoot",
+						std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/")
 					},
 				}),
 				ValueTableReader::Deserialize(packageAGenerateInputMockFile->Content),
@@ -1182,7 +1217,38 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				ValueTable(
 				{
-					{ "Dependencies", ValueTable() },
+					{
+						"Dependencies",
+						ValueTable()
+					},
+					{
+						"EvaluateMacros",
+						ValueTable(
+						{
+							{ "/(PACKAGE_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/") },
+							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+						})
+					},
+					{
+						"EvaluateReadAccess",
+						ValueList(
+						{
+							std::string("C:/FakeSDK/"),
+							std::string("/(PACKAGE_PackageB)/"),
+							std::string("/(TARGET_PackageB)/"),
+						})
+					},
+					{
+						"EvaluateWriteAccess",
+						ValueList(
+						{
+							std::string("/(TARGET_PackageB)/"),
+						})
+					},
+					{
+						"GenerateMacros",
+						ValueTable()
+					},
 					{
 						"GlobalState",
 						ValueTable(
@@ -1207,29 +1273,8 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"Macros",
-						ValueTable(
-						{
-							{ "/(PACKAGE_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/") },
-							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
-						})
-					},
-					{ "PackageRoot", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/") },
-					{
-						"ReadAccess",
-						ValueList(
-						{
-							std::string("C:/FakeSDK/"),
-							std::string("/(PACKAGE_PackageB)/"),
-							std::string("/(TARGET_PackageB)/"),
-						})
-					},
-					{
-						"WriteAccess",
-						ValueList(
-						{
-							std::string("/(TARGET_PackageB)/"),
-						})
+						"PackageRoot",
+						std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/")
 					},
 				}),
 				ValueTableReader::Deserialize(packageBGenerateInputMockFile->Content),
@@ -1283,6 +1328,38 @@ namespace Soup::Core::UnitTests
 								})
 							},
 						})
+					},
+					{
+						"EvaluateMacros",
+						ValueTable(
+						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
+							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+							{ "/(TARGET_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+						})
+					},
+					{
+						"EvaluateReadAccess",
+						ValueList(
+						{
+							std::string("C:/FakeSDK/"),
+							std::string("/(PACKAGE_MyPackage)/"),
+							std::string("/(TARGET_MyPackage)/"),
+							std::string("/(TARGET_PackageA)/"),
+							std::string("/(TARGET_PackageB)/"),
+						})
+					},
+					{
+						"EvaluateWriteAccess",
+						ValueList(
+						{
+							std::string("/(TARGET_MyPackage)/"),
+						})
+					},
+					{
+						"GenerateMacros",
+						ValueTable()
 					},
 					{
 						"GlobalState",
@@ -1347,33 +1424,8 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"Macros",
-						ValueTable(
-						{
-							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
-							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
-							{ "/(TARGET_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
-							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
-						})
-					},
-					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
-					{
-						"ReadAccess",
-						ValueList(
-						{
-							std::string("C:/FakeSDK/"),
-							std::string("/(TARGET_PackageA)/"),
-							std::string("/(TARGET_PackageB)/"),
-							std::string("/(PACKAGE_MyPackage)/"),
-							std::string("/(TARGET_MyPackage)/"),
-						})
-					},
-					{
-						"WriteAccess",
-						ValueList(
-						{
-							std::string("/(TARGET_MyPackage)/"),
-						})
+						"PackageRoot",
+						std::string("C:/WorkingDirectory/MyPackage/")
 					},
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),
@@ -1685,7 +1737,38 @@ namespace Soup::Core::UnitTests
 			Assert::AreEqual(
 				ValueTable(
 				{
-					{ "Dependencies", ValueTable() },
+					{
+						"Dependencies",
+						ValueTable()
+					},
+					{
+						"EvaluateMacros",
+						ValueTable(
+						{
+							{ "/(PACKAGE_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0") },
+							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
+						})
+					},
+					{
+						"EvaluateReadAccess",
+						ValueList(
+						{
+							std::string("C:/FakeSDK/"),
+							std::string("/(PACKAGE_TestBuild)/"),
+							std::string("/(TARGET_TestBuild)/"),
+						})
+					},
+					{
+						"EvaluateWriteAccess",
+						ValueList(
+						{
+							std::string("/(TARGET_TestBuild)/"),
+						})
+					},
+					{
+						"GenerateMacros",
+						ValueTable()
+					},
 					{
 						"GlobalState",
 						ValueTable(
@@ -1710,29 +1793,8 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"Macros",
-						ValueTable(
-						{
-							{ "/(PACKAGE_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0") },
-							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
-						})
-					},
-					{ "PackageRoot", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0") },
-					{
-						"ReadAccess",
-						ValueList(
-						{
-							std::string("C:/FakeSDK/"),
-							std::string("/(PACKAGE_TestBuild)/"),
-							std::string("/(TARGET_TestBuild)/"),
-						})
-					},
-					{
-						"WriteAccess",
-						ValueList(
-						{
-							std::string("/(TARGET_TestBuild)/"),
-						})
+						"PackageRoot",
+						std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0")
 					},
 				}),
 				ValueTableReader::Deserialize(testBuildGenerateInputMockFile->Content),
@@ -1778,6 +1840,37 @@ namespace Soup::Core::UnitTests
 									},
 								})
 							},
+						})
+					},
+					{
+						"EvaluateMacros",
+						ValueTable(
+						{
+							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
+							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+						})
+					},
+					{
+						"EvaluateReadAccess",
+						ValueList(
+						{
+							std::string("C:/FakeSDK/"),
+							std::string("/(PACKAGE_MyPackage)/"),
+							std::string("/(TARGET_MyPackage)/"),
+						})
+					},
+					{
+						"EvaluateWriteAccess",
+						ValueList(
+						{
+							std::string("/(TARGET_MyPackage)/"),
+						})
+					},
+					{
+						"GenerateMacros",
+						ValueTable(
+						{
+							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
 						})
 					},
 					{
@@ -1829,31 +1922,8 @@ namespace Soup::Core::UnitTests
 						})
 					},
 					{
-						"Macros",
-						ValueTable(
-						{
-							{ "/(PACKAGE_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/") },
-							{ "/(TARGET_MyPackage)/", std::string("C:/WorkingDirectory/MyPackage/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
-							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
-						})
-					},
-					{ "PackageRoot", std::string("C:/WorkingDirectory/MyPackage/") },
-					{
-						"ReadAccess",
-						ValueList(
-						{
-							std::string("C:/FakeSDK/"),
-							std::string("/(TARGET_TestBuild)/"),
-							std::string("/(PACKAGE_MyPackage)/"),
-							std::string("/(TARGET_MyPackage)/"),
-						})
-					},
-					{
-						"WriteAccess",
-						ValueList(
-						{
-							std::string("/(TARGET_MyPackage)/"),
-						})
+						"PackageRoot",
+						std::string("C:/WorkingDirectory/MyPackage/")
 					},
 				}),
 				ValueTableReader::Deserialize(myPackageGenerateInputMockFile->Content),

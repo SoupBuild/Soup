@@ -17,7 +17,7 @@ Source: [
 
 Dependencies: {
 	Build: [
-		# "Soup.Test.Cpp@0.6.0"
+		"Soup.Test.Cpp@0.6.0"
 	]
 	Runtime: [
 		"Opal@0.5.0"

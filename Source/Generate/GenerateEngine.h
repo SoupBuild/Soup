@@ -35,22 +35,28 @@ namespace Soup::Core::Generate
 			auto packageRoot = Path(inputTable.at("PackageRoot").AsString());
 
 			// Load the input read access list
-			auto allowedReadAccess = std::vector<Path>();
-			for (auto& value : inputTable.at("ReadAccess").AsList())
-				allowedReadAccess.push_back(Path(value.AsString()));
+			auto evaluateAllowedReadAccess = std::vector<Path>();
+			for (auto& value : inputTable.at("EvaluateReadAccess").AsList())
+				evaluateAllowedReadAccess.push_back(Path(value.AsString()));
 
 			// Load the input write access list
-			auto allowedWriteAccess = std::vector<Path>();
-			for (auto& value : inputTable.at("WriteAccess").AsList())
-				allowedWriteAccess.push_back(Path(value.AsString()));
+			auto evaluateAllowedWriteAccess = std::vector<Path>();
+			for (auto& value : inputTable.at("EvaluateWriteAccess").AsList())
+				evaluateAllowedWriteAccess.push_back(Path(value.AsString()));
 
 			// Load the input macro definition
-			auto macros = std::map<std::string, std::string>();
-			for (auto& [key, value] : inputTable.at("Macros").AsTable())
-				macros.emplace(key, value.AsString());
+			auto evaluateMacros = std::map<std::string, std::string>();
+			for (auto& [key, value] : inputTable.at("EvaluateMacros").AsTable())
+				evaluateMacros.emplace(key, value.AsString());
+
+			// Load the input macro definition
+			auto generateMacros = std::map<std::string, std::string>();
+			for (auto& [key, value] : inputTable.at("GenerateMacros").AsTable())
+				generateMacros.emplace(key, value.AsString());
 
 			// Setup a macro manager to resolve macros
-			auto macroManager = MacroManager(macros);
+			auto generateMacroManager = MacroManager(generateMacros);
+			auto evaluateMacroManager = MacroManager(evaluateMacros);
 
 			// Load the recipe file
 			auto recipeFile = packageRoot + BuildConstants::RecipeFileName();
@@ -66,7 +72,7 @@ namespace Soup::Core::Generate
 
 			// Generate the set of build extension libraries
 			auto buildExtensionLibraries = GenerateBuildExtensionSet(
-				macroManager,
+				generateMacroManager,
 				dependenciesSharedState);
 
 			// Start a new global state that is initialized to the recipe itself
@@ -122,8 +128,8 @@ namespace Soup::Core::Generate
 			auto buildState = GenerateState(
 				globalState,
 				_fileSystemState,
-				allowedReadAccess,
-				allowedWriteAccess);
+				evaluateAllowedReadAccess,
+				evaluateAllowedWriteAccess);
 			extensionManager.Execute(buildState);
 
 			// Grab the build results
@@ -138,7 +144,7 @@ namespace Soup::Core::Generate
 
 			// Resolve macros before saving evaluate graph
 			Log::Diag("Resolve build macros in evaluate graph");
-			ResolveMacros(macroManager, evaluateGraph);
+			ResolveMacros(evaluateMacroManager, evaluateGraph);
 
 			// Save the operation graph so the evaluate phase can load it
 			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateGraphFileName();
