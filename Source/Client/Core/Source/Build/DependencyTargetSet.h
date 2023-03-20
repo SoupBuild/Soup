@@ -12,6 +12,10 @@ namespace Soup::Core
 	class DependencyTargetSet
 	{
 	public:
+		// The active set of macros that are only used to ensure the subgraph macros do not
+		// collide with package versions in the runtime closure
+		std::map<std::string, std::string> GenerateSubGraphMacros;
+
 		// The active set of macros that are only used by this package during generate
 		std::map<std::string, std::string> GenerateCurrentMacros;
 
@@ -34,6 +38,7 @@ namespace Soup::Core
 
 	public:
 		DependencyTargetSet() :
+			GenerateSubGraphMacros(),
 			GenerateCurrentMacros(),
 			GenerateCurrentReadDirectories(),
 			GenerateCurrentWriteDirectories(),

@@ -173,7 +173,7 @@ namespace Soup::Core
 			try
 			{
 				Log::SetActiveId(packageInfo.Id);
-				auto languagePackageName = packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Recipe->GetName();
+				auto languagePackageName = packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Name;
 				Log::Diag("Running Build: " + languagePackageName);
 
 				// Check if we already built this package down a different dependency path
@@ -201,11 +201,11 @@ namespace Soup::Core
 		/// </summary>
 		void RunBuild(const PackageGraph& packageGraph, const PackageInfo& packageInfo)
 		{
-			Log::Info("Build '" + packageInfo.Recipe->GetName() + "'");
+			Log::Info("Build '" + packageInfo.Name + "'");
 
 			// Build up the expected output directory for the build to be used to cache state
-			auto macroPackageDirectory = Path("/(PACKAGE_" + packageInfo.Recipe->GetName() + ")/");
-			auto macroTargetDirectory = Path("/(TARGET_" + packageInfo.Recipe->GetName() + ")/");
+			auto macroPackageDirectory = Path("/(PACKAGE_" + packageInfo.Name + ")/");
+			auto macroTargetDirectory = Path("/(TARGET_" + packageInfo.Name + ")/");
 			auto realTargetDirectory = _locationManager.GetOutputDirectory(
 				packageInfo.PackageRoot,
 				*packageInfo.Recipe,
@@ -363,10 +363,19 @@ namespace Soup::Core
 			inputTable.emplace("GlobalState", std::move(globalState));
 
 			// Build up the input state for the generate call
+			auto generateMacros = ValueTable();
+			auto generateSubGraphMacros = ValueTable();
 			auto evaluateAllowedReadAccess = ValueList();
 			auto evaluateAllowedWriteAccess = ValueList();
 			auto evaluateMacros = ValueTable();
-			auto generateMacros = ValueTable();
+
+			// Allow generate to resolve generate macros
+			for (auto& [key, value] : packageAccessSet.GenerateCurrentMacros)
+				generateMacros.emplace(key, value);
+
+			// Make subgraph macros are unique
+			for (auto& [key, value] : packageAccessSet.GenerateSubGraphMacros)
+				generateSubGraphMacros.emplace(key, value);
 
 			// Allow read access for all sdk directories
 			for (auto& value : _sdkReadAccess)
@@ -388,15 +397,12 @@ namespace Soup::Core
 			for (auto& [key, value] : packageAccessSet.EvaluateRecursiveMacros)
 				evaluateMacros.emplace(key, value);
 
-			// Allow generate to resolve generate macros
-			for (auto& [key, value] : packageAccessSet.GenerateCurrentMacros)
-				generateMacros.emplace(key, value);
-
 			inputTable.emplace("PackageRoot", packageInfo.PackageRoot.ToString());
+			inputTable.emplace("GenerateMacros", std::move(generateMacros));
+			inputTable.emplace("GenerateSubGraphMacros", std::move(generateSubGraphMacros));
 			inputTable.emplace("EvaluateReadAccess", std::move(evaluateAllowedReadAccess));
 			inputTable.emplace("EvaluateWriteAccess", std::move(evaluateAllowedWriteAccess));
 			inputTable.emplace("EvaluateMacros", std::move(evaluateMacros));
-			inputTable.emplace("GenerateMacros", std::move(generateMacros));
 
 			auto inputFile = soupTargetDirectory + BuildConstants::GenerateInputFileName();
 			Log::Info("Check outdated generate input file: " + inputFile.ToString());
@@ -426,7 +432,7 @@ namespace Soup::Core
 			generateArguments << soupTargetDirectory.ToString();
 			auto generateOperation = OperationInfo(
 				generateOperationId,
-				"Generate: " + packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Recipe->GetName(),
+				"Generate: " + packageInfo.Recipe->GetLanguage().GetName() + "|" + packageInfo.Name,
 				CommandInfo(
 					packageInfo.PackageRoot,
 					generateExecutable,
@@ -759,20 +765,32 @@ namespace Soup::Core
 							// Check known types for subgraphs
 							if (dependencyType == _dependencyTypeBuild)
 							{
+								// Replace with unique macro to prevent collisions
+								auto macroBuildTargetDirectory = Path("/(BUILD_TARGET_" + dependencyPackageInfo.Name + ")/");
+								targetSet.GenerateSubGraphMacros.emplace(
+									dependencyState.MacroTargetDirectory.ToString(),
+									macroBuildTargetDirectory.ToString());
+
 								// Allow read access for all direct build dependencies target directories
 								// and macros during generate. This is needed to load the shared properties.
 								targetSet.GenerateCurrentReadDirectories.insert(dependencyState.RealTargetDirectory);
 								targetSet.GenerateCurrentMacros.emplace(
-									dependencyState.MacroTargetDirectory.ToString(),
+									macroBuildTargetDirectory.ToString(),
 									dependencyState.RealTargetDirectory.ToString());
 							}
 							else if (dependencyType == _dependencyTypeTool)
 							{
+								// Replace with unique macro to prevent collisions
+								auto macroToolTargetDirectory = Path("/(TOOL_TARGET_" + dependencyPackageInfo.Name + ")/");
+								targetSet.GenerateSubGraphMacros.emplace(
+									dependencyState.MacroTargetDirectory.ToString(),
+									macroToolTargetDirectory.ToString());
+
 								// Allow read access for all indirect tool dependencies target directories
 								// and macros during evaluate. This is needed to run them.
 								targetSet.EvaluateCurrentReadDirectories.insert(dependencyState.RealTargetDirectory);
 								targetSet.EvaluateCurrentMacros.emplace(
-									dependencyState.MacroTargetDirectory.ToString(),
+									macroToolTargetDirectory.ToString(),
 									dependencyState.RealTargetDirectory.ToString());
 							}
 							else

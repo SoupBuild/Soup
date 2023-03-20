@@ -229,6 +229,10 @@ namespace Soup::Core::UnitTests
 						ValueTable()
 					},
 					{
+						"GenerateSubGraphMacros",
+						ValueTable()
+					},
+					{
 						"GlobalState",
 						ValueTable(
 						{
@@ -574,6 +578,10 @@ namespace Soup::Core::UnitTests
 						ValueTable()
 					},
 					{
+						"GenerateSubGraphMacros",
+						ValueTable()
+					},
+					{
 						"GlobalState",
 						ValueTable(
 						{
@@ -674,7 +682,14 @@ namespace Soup::Core::UnitTests
 						"GenerateMacros",
 						ValueTable(
 						{
-							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
+							{ "/(BUILD_TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.2.3/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
+						})
+					},
+					{
+						"GenerateSubGraphMacros",
+						ValueTable(
+						{
+							{ "/(TARGET_TestBuild)/", std::string("/(BUILD_TARGET_TestBuild)/") },
 						})
 					},
 					{
@@ -1139,6 +1154,10 @@ namespace Soup::Core::UnitTests
 						ValueTable()
 					},
 					{
+						"GenerateSubGraphMacros",
+						ValueTable()
+					},
+					{
 						"GlobalState",
 						ValueTable(
 						{
@@ -1247,6 +1266,10 @@ namespace Soup::Core::UnitTests
 					},
 					{
 						"GenerateMacros",
+						ValueTable()
+					},
+					{
+						"GenerateSubGraphMacros",
 						ValueTable()
 					},
 					{
@@ -1359,6 +1382,10 @@ namespace Soup::Core::UnitTests
 					},
 					{
 						"GenerateMacros",
+						ValueTable()
+					},
+					{
+						"GenerateSubGraphMacros",
 						ValueTable()
 					},
 					{
@@ -1770,6 +1797,10 @@ namespace Soup::Core::UnitTests
 						ValueTable()
 					},
 					{
+						"GenerateSubGraphMacros",
+						ValueTable()
+					},
+					{
 						"GlobalState",
 						ValueTable(
 						{
@@ -1870,7 +1901,14 @@ namespace Soup::Core::UnitTests
 						"GenerateMacros",
 						ValueTable(
 						{
-							{ "/(TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
+							{ "/(BUILD_TARGET_TestBuild)/", std::string("C:/Users/Me/.soup/packages/CSharp/TestBuild/1.3.0/out/zDqRc65c9x3jySpevCCCyZ15fGs/") },
+						})
+					},
+					{
+						"GenerateSubGraphMacros",
+						ValueTable(
+						{
+							{ "/(TARGET_TestBuild)/", std::string("/(BUILD_TARGET_TestBuild)/") },
 						})
 					},
 					{

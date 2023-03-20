@@ -223,7 +223,14 @@ namespace Soup::Core::UnitTests
 						"GenerateMacros",
 						ValueTable(
 						{
-							{ "/(TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/out/") },
+							{ "/(BUILD_TARGET_Soup.Cpp)/", std::string("C:/testlocation/BuiltIn/Soup.Cpp/0.7.0/out/") },
+						})
+					},
+					{
+						"GenerateSubGraphMacros",
+						ValueTable(
+						{
+							{ "/(TARGET_Soup.Cpp)/", std::string("/(BUILD_TARGET_Soup.Cpp)/") },
 						})
 					},
 					{
