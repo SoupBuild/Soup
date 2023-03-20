@@ -807,6 +807,13 @@ namespace Soup::Core
 							targetSet.EvaluateRecursiveMacros.insert(
 								dependencyState.RecursiveChildMacros.begin(),
 								dependencyState.RecursiveChildMacros.end());
+
+							// Allow read access for all direct runtime dependencies target directories
+							// and macros during generate. This is needed to load the shared properties.
+							targetSet.GenerateCurrentReadDirectories.insert(dependencyState.RealTargetDirectory);
+							targetSet.GenerateCurrentMacros.emplace(
+								dependencyState.MacroTargetDirectory.ToString(),
+								dependencyState.RealTargetDirectory.ToString());
 						}
 					}
 					else

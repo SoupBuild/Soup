@@ -1151,7 +1151,10 @@ namespace Soup::Core::UnitTests
 					},
 					{
 						"GenerateMacros",
-						ValueTable()
+						ValueTable(
+						{
+							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+						})
 					},
 					{
 						"GenerateSubGraphMacros",
@@ -1382,7 +1385,11 @@ namespace Soup::Core::UnitTests
 					},
 					{
 						"GenerateMacros",
-						ValueTable()
+						ValueTable(
+						{
+							{ "/(TARGET_PackageA)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageA/1.2.3/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+							{ "/(TARGET_PackageB)/", std::string("C:/Users/Me/.soup/packages/Cpp/PackageB/1.1.1/out/zxAcy-Et010fdZUKLgFemwwWuC8/") },
+						})
 					},
 					{
 						"GenerateSubGraphMacros",
