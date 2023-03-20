@@ -34,23 +34,35 @@ namespace Soup::Core::Generate
 
 			auto packageRoot = Path(inputTable.at("PackageRoot").AsString());
 
-			// Load the input read access list
-			auto allowedReadAccess = std::vector<Path>();
-			for (auto& value : inputTable.at("ReadAccess").AsList())
-				allowedReadAccess.push_back(Path(value.AsString()));
-
-			// Load the input write access list
-			auto allowedWriteAccess = std::vector<Path>();
-			for (auto& value : inputTable.at("WriteAccess").AsList())
-				allowedWriteAccess.push_back(Path(value.AsString()));
+			// Load the input macro definition
+			auto generateMacros = std::map<std::string, std::string>();
+			for (auto& [key, value] : inputTable.at("GenerateMacros").AsTable())
+				generateMacros.emplace(key, value.AsString());
 
 			// Load the input macro definition
-			auto macros = std::map<std::string, std::string>();
-			for (auto& [key, value] : inputTable.at("Macros").AsTable())
-				macros.emplace(key, value.AsString());
+			auto generateSubGraphMacros = std::map<std::string, std::string>();
+			for (auto& [key, value] : inputTable.at("GenerateSubGraphMacros").AsTable())
+				generateSubGraphMacros.emplace(key, value.AsString());
+
+			// Load the input read access list
+			auto evaluateAllowedReadAccess = std::vector<Path>();
+			for (auto& value : inputTable.at("EvaluateReadAccess").AsList())
+				evaluateAllowedReadAccess.push_back(Path(value.AsString()));
+
+			// Load the input write access list
+			auto evaluateAllowedWriteAccess = std::vector<Path>();
+			for (auto& value : inputTable.at("EvaluateWriteAccess").AsList())
+				evaluateAllowedWriteAccess.push_back(Path(value.AsString()));
+
+			// Load the input macro definition
+			auto evaluateMacros = std::map<std::string, std::string>();
+			for (auto& [key, value] : inputTable.at("EvaluateMacros").AsTable())
+				evaluateMacros.emplace(key, value.AsString());
 
 			// Setup a macro manager to resolve macros
-			auto macroManager = MacroManager(macros);
+			auto generateMacroManager = MacroManager(generateMacros);
+			auto generateSubGraphMacroManager = MacroManager(generateSubGraphMacros);
+			auto evaluateMacroManager = MacroManager(evaluateMacros);
 
 			// Load the recipe file
 			auto recipeFile = packageRoot + BuildConstants::RecipeFileName();
@@ -62,11 +74,13 @@ namespace Soup::Core::Generate
 			}
 
 			// Combine all the dependencies shared state
-			auto dependenciesSharedState = LoadDependenciesSharedState(inputTable);
+			auto dependenciesSharedState = LoadDependenciesSharedState(
+				generateSubGraphMacroManager,
+				inputTable);
 
 			// Generate the set of build extension libraries
 			auto buildExtensionLibraries = GenerateBuildExtensionSet(
-				macroManager,
+				generateMacroManager,
 				dependenciesSharedState);
 
 			// Start a new global state that is initialized to the recipe itself
@@ -122,8 +136,8 @@ namespace Soup::Core::Generate
 			auto buildState = GenerateState(
 				globalState,
 				_fileSystemState,
-				allowedReadAccess,
-				allowedWriteAccess);
+				evaluateAllowedReadAccess,
+				evaluateAllowedWriteAccess);
 			extensionManager.Execute(buildState);
 
 			// Grab the build results
@@ -138,7 +152,7 @@ namespace Soup::Core::Generate
 
 			// Resolve macros before saving evaluate graph
 			Log::Diag("Resolve build macros in evaluate graph");
-			ResolveMacros(macroManager, evaluateGraph);
+			ResolveMacros(evaluateMacroManager, evaluateGraph);
 
 			// Save the operation graph so the evaluate phase can load it
 			auto evaluateGraphFile = soupTargetDirectory + BuildConstants::EvaluateGraphFileName();
@@ -156,7 +170,9 @@ namespace Soup::Core::Generate
 		/// Using the parameters to resolve the dependency output folders, load up the shared state table and
 		/// combine them into a single value table to be used as input the this generate phase.
 		/// </summary>
-		static ValueTable LoadDependenciesSharedState(const ValueTable& inputTable)
+		static ValueTable LoadDependenciesSharedState(
+			MacroManager& generateSubGraphMacroManager,
+			const ValueTable& inputTable)
 		{
 			auto sharedDependenciesTable = ValueTable();
 			auto dependencyTableValue = inputTable.find("Dependencies");
@@ -165,6 +181,7 @@ namespace Soup::Core::Generate
 				auto& dependenciesTable = dependencyTableValue->second.AsTable();
 				for (auto& [dependencyType, dependencyTypeValue] : dependenciesTable)
 				{
+					bool isSubGraphType = dependencyType == "Build" || dependencyType == "Tool";
 					auto& dependencies = dependencyTypeValue.AsTable();
 					for (auto& [dependencyName, dependencyValue] : dependencies)
 					{
@@ -178,6 +195,12 @@ namespace Soup::Core::Generate
 						{
 							Log::Error("Failed to load the shared state file: " + sharedStateFile.ToString());
 							throw std::runtime_error("Failed to load shared state file.");
+						}
+
+						// Ensure SubGraph macros are unique
+						if (isSubGraphType)
+						{
+							sharedStateTable = ResolveMacros(generateSubGraphMacroManager, sharedStateTable);
 						}
 
 						// Add the shared build state from this child build into the correct
@@ -323,6 +346,54 @@ namespace Soup::Core::Generate
 				Path file = _fileSystemState.GetFilePath(value[i]);
 				auto resolvedFile = macroManager.ResolveMacros(file);
 				value[i] = _fileSystemState.ToFileId(resolvedFile);
+			}
+		}
+
+		static ValueTable ResolveMacros(MacroManager& macroManager, const ValueTable& table)
+		{
+			auto result = ValueTable();
+			for (auto& [key, value] : table)
+			{
+				// Resolve the key
+				auto resolvedKey = macroManager.ResolveMacros(key);
+
+				// Resolve the value
+				auto resolvedValue = ResolveMacros(macroManager, value);
+
+				result.emplace(resolvedKey, resolvedValue);
+			}
+
+			return result;
+		}
+
+		static ValueList ResolveMacros(MacroManager& macroManager, const ValueList& list)
+		{
+			auto result = ValueList();
+			for (auto& value : list)
+			{
+				result.push_back(ResolveMacros(macroManager, value));
+			}
+
+			return result;
+		}
+
+		static Value ResolveMacros(MacroManager& macroManager, const Value& value)
+		{
+			switch (value.GetType())
+			{
+				case ValueType::Table:
+					return Value(ResolveMacros(macroManager, value.AsTable()));
+				case ValueType::List:
+					return Value(ResolveMacros(macroManager, value.AsList()));
+				case ValueType::String:
+					return Value(macroManager.ResolveMacros(value.AsString()));
+				case ValueType::Integer:
+				case ValueType::Float:
+				case ValueType::Boolean:
+					// Nothing to resolve
+					return value;
+				default:
+					throw std::runtime_error("Unknown ValueType");
 			}
 		}
 	};

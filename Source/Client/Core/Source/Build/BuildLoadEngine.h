@@ -121,7 +121,7 @@ namespace Soup::Core
 			auto parentSet = std::set<std::string>();
 			auto knownPackageSet = KnownPackageMap();
 			auto toolDependencyProjects = std::vector<PackageChildInfo>();
-			auto rootBuildToolClosureName = std::string();
+			std::optional<std::string> rootBuildToolClosureName = std::nullopt;
 			LoadClosure(
 				rootBuildToolClosureName,
 				*recipe,
@@ -590,7 +590,7 @@ namespace Soup::Core
 		std::vector<PackageChildInfo> LoadToolDependencies(
 			const Recipe& recipe,
 			const Path& projectRoot,
-			const std::string& buildClosureName,
+			const std::string& toolClosureName,
 			const PackageLockState& packageLockState)
 		{
 			auto dependencyTypeProjects = std::vector<PackageChildInfo>();
@@ -600,7 +600,7 @@ namespace Soup::Core
 					LoadToolDependency(
 						dependency,
 						projectRoot,
-						buildClosureName,
+						toolClosureName,
 						packageLockState));
 			}
 
