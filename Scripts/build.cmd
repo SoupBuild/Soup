@@ -17,8 +17,3 @@ REM - Build PackageManager
 echo %ScriptsDir%/build-packagemanager.cmd %Flavor%
 call %ScriptsDir%/build-packagemanager.cmd %Flavor%
 if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%
-
-REM - Build Generate
-echo %ScriptsDir%/build-generate.cmd %Flavor%
-call %ScriptsDir%/build-generate.cmd %Flavor%
-if %ERRORLEVEL% NEQ  0 exit /B %ERRORLEVEL%

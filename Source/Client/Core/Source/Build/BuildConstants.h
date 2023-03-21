@@ -27,21 +27,9 @@ namespace Soup::Core
 			return value;
 		}
 
-		static const Path& GenerateParametersFileName()
+		static const Path& GenerateInputFileName()
 		{
-			static const auto value = Path("GenerateParameters.bvt");
-			return value;
-		}
-
-		static const Path& GenerateReadAccessFileName()
-		{
-			static const auto value = Path("GenerateReadAccess.txt");
-			return value;
-		}
-
-		static const Path& GenerateWriteAccessFileName()
-		{
-			static const auto value = Path("GenerateWriteAccess.txt");
+			static const auto value = Path("GenerateInput.bvt");
 			return value;
 		}
 
@@ -78,6 +66,12 @@ namespace Soup::Core
 		static const Path& RecipeFileName()
 		{
 			static const auto value = Path("Recipe.sml");
+			return value;
+		}
+
+		static const Path& GenerateInfoFileName()
+		{
+			static const auto value = Path("GenerateInfo.bvt");
 			return value;
 		}
 

@@ -14,6 +14,7 @@ namespace Soup.Build.Utilities
 	public class Recipe
 	{
 		public static string Property_Build => "Build";
+		public static string Property_Tool => "Tool";
 		private static string Property_Dependencies => "Dependencies";
 		private static string Property_Runtime => "Runtime";
 		private static string Property_Language => "Language";
@@ -220,6 +221,16 @@ namespace Soup.Build.Utilities
 		public IList<PackageReference> BuildDependencies
 		{
 			get { return GetNamedDependencies(Property_Build); }
+		}
+
+		/// <summary>
+		/// Gets or sets the list of tool dependency packages
+		/// </summary>
+		public bool HasToolDependencies => HasNamedDependencies(Property_Tool);
+
+		public IList<PackageReference> ToolDependencies
+		{
+			get { return GetNamedDependencies(Property_Tool); }
 		}
 
 		/// <summary>

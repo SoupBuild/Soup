@@ -2,7 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 #include <chrono>
+#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <map>

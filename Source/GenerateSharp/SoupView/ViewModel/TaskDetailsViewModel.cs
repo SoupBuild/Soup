@@ -2,11 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-using Soup.Build;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using ValueType = Soup.Build.ValueType;
+using Soup.Build.Utilities;
+using ValueType = Soup.Build.Utilities.ValueType;
 
 namespace SoupView.ViewModel
 {
@@ -14,7 +14,7 @@ namespace SoupView.ViewModel
 	{
 		private ObservableCollection<PropertyValue> properties = new ObservableCollection<PropertyValue>();
 
-		public TaskDetailsViewModel(string name, IValueTable taskInfo)
+		public TaskDetailsViewModel(string name, ValueTable taskInfo)
 		{
 			properties.Clear();
 			properties.Add(new PropertyValue("Name", name));
@@ -29,7 +29,7 @@ namespace SoupView.ViewModel
 		public ObservableCollection<ValueTableItemViewModel> State { get; init; }
 
 		private void BuildValueTable(
-			IValueTable table,
+			ValueTable table,
 			ObservableCollection<ValueTableItemViewModel> viewModelList)
 		{
 			viewModelList.Clear();
@@ -41,19 +41,19 @@ namespace SoupView.ViewModel
 				switch (value.Value.Type)
 				{
 					case ValueType.Boolean:
-						title = $"{value.Key} - {value.Value.AsBoolean()}";
+						title = $"{value.Key}: {value.Value.AsBoolean()}";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.String:
-						title = $"{value.Key} - {value.Value.AsString()}";
+						title = $"{value.Key}: \"{value.Value.AsString()}\"";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Float:
-						title = $"{value.Key} - {value.Value.AsFloat()}";
+						title = $"{value.Key}: {value.Value.AsFloat()}";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Integer:
-						title = $"{value.Key} - {value.Value.AsInteger()}";
+						title = $"{value.Key}: {value.Value.AsInteger()}";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.List:
@@ -81,7 +81,7 @@ namespace SoupView.ViewModel
 		}
 
 		private void BuildValueList(
-			IValueList list,
+			ValueList list,
 			ObservableCollection<ValueTableItemViewModel> viewModelList)
 		{
 			viewModelList.Clear();
@@ -97,7 +97,7 @@ namespace SoupView.ViewModel
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.String:
-						title = $"{value.AsString()}";
+						title = $"\"{value.AsString()}\"";
 						type = ValueTableItemType.Value;
 						break;
 					case ValueType.Float:

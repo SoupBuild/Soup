@@ -34,6 +34,11 @@ namespace Soup::Core
 		{
 		}
 
+		bool Contains(const std::string& key) const
+		{
+			return _value.contains(key);
+		}
+
 		const SMLValue& operator[](const std::string& key) const
 		{
 			return _value.at(key);

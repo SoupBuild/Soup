@@ -13,9 +13,16 @@ namespace Soup.Build.PackageManager.UnitTests
 {
 	public class ShimHttpMessageHandler : HttpMessageHandler
 	{
+		private IHttpMessageHandler _handler;
+
+		public ShimHttpMessageHandler(IHttpMessageHandler handler)
+		{
+			_handler = handler;
+		}
+
 		public virtual HttpResponseMessage Send(HttpMethod method, Uri requestUri, string headers, string content)
 		{
-			throw new NotImplementedException("Use Moq to overrite this method");
+			return _handler.Send(method, requestUri, headers, content);
 		}
 
 		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
@@ -29,11 +36,9 @@ namespace Soup.Build.PackageManager.UnitTests
 				content = Encoding.UTF8.GetString(byteInput);
 			}
 
-			return Send(
-				request.Method,
-				request.RequestUri,
-				string.Join(", ", request.Headers.Select(value => $"{{{value.Key}: [{string.Join(", ", value.Value)}]}}")),
-				content);
+			var headers = string.Join(", ", request.Headers.Select(value => $"{{{value.Key}: [{string.Join(", ", value.Value)}]}}"));
+
+			return _handler.SendAsync(request.Method, request.RequestUri, headers, content);
 		}
 	}
 }

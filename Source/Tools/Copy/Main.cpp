@@ -6,6 +6,7 @@
 #endif
 #include <iostream>
 #include <string_view>
+#include <string>
 
 void PrintUsage()
 {
@@ -40,6 +41,18 @@ int main(int argc, char** argv)
 	{
 		auto sourcePath = std::string_view(argv[1]);
 		auto destinationPath = std::string_view(argv[2]);
+		if (!CopyFileA(sourcePath.data(), destinationPath.data(), false))
+		{
+			auto errorCode = GetLastError();
+			if (errorCode == ERROR_FILE_NOT_FOUND)
+			{
+				throw std::runtime_error("File does not exist");
+			}
+			else
+			{
+				throw std::runtime_error("Copy failed: " + std::to_string(errorCode));
+			}
+		}
 	}
 	catch(const std::exception& e)
 	{

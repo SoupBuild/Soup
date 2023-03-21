@@ -21,6 +21,7 @@ module;
 #include <sstream>
 #include <stack>
 #include <string>
+#include <fstream>
 #include <unordered_map>
 #include <unordered_set>
 #include <variant>
@@ -33,10 +34,15 @@ module;
 #undef min
 #undef CreateProcess
 #undef GetCurrentTime
+#undef GetClassName
 
 #endif
 
 #ifdef SOUP_BUILD
+
+// TODO module
+#include "include/Wren.hpp"
+
 export module Soup.Core;
 
 import reflex;
@@ -84,6 +90,9 @@ using namespace Opal;
 // import Monitor.Host
 #include "Linux/LinuxMonitorProcessManager.h"
 
+// import Wren
+#include "Wren.hpp"
+
 #endif
 
 #define CLIENT_CORE_IMPLEMENTATION
@@ -92,3 +101,5 @@ using namespace Opal;
 #include "Build/BuildEngine.h"
 #include "LocalUserConfig/LocalUserConfigExtensions.h"
 #include "Package/PackageManager.h"
+#include "Wren/WrenHost.h"
+#include "Wren/WrenValueTable.h"

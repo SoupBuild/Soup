@@ -1,5 +1,5 @@
 Name: "Soup.Core"
-Language: "C++|0.1"
+Language: "C++|0"
 Version: "0.1.1"
 Defines: [
 	# "LOCAL_DEBUG"
@@ -17,12 +17,13 @@ Source: [
 
 Dependencies: {
 	Build: [
-		"Soup.Test.Cpp@0.4.0"
+		"Soup.Test.Cpp@0.6.0"
 	]
 	Runtime: [
 		"Opal@0.5.0"
 		"reflex@1.0.2"
 		"../../Monitor/Host/"
+		"wren@1.0.0"
 		"CryptoPP@1.1.0"
 	]
 	Test: [

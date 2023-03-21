@@ -7,74 +7,86 @@ This is a console application that has a custom build extension that alters the 
 The Recipe file that defines the build extension dynamic library "Samples.BuildExtension.Extension" that will register new build tasks.
 ```
 Name: "Samples.CSharp.BuildExtension.Extension"
-Language: "C#|0.1"
+Language: "Wren|0.1"
 Version: "1.0.0"
 Source: [
-    "CustomBuildTask.cs"
+    "CustomBuildTask.wren"
 ]
 
 Dependencies: {
     Runtime: [
-        { Reference = "Soup.Build@0.2.0", ExcludeRuntime = true }
-        { Reference = "Soup.Build.Extensions@0.4.0" }
-        { Reference = "Opal@1.1.0" }
+        "Soup.Build.Utils@0.2.0"
     ]
 }
 ```
 
-## Extension/CustomBuildTask.cs
+## Extension/PackageLock.sml
+The package lock that was generated to capture the unique build dependencies required to build this project.
+```
+Version: 4
+Closures: {
+    Root: {
+        Wren: [
+            { Name: "Samples.CSharp.BuildExtension.Extension", Version: "./", Build: "Build0", Tool: "Tool0" }
+            { Name: "Soup.Build.Utils", Version: "0.3.0", Build: "Build0", Tool: "Tool0" }
+        ]
+    }
+    Build0: {
+        Wren: [
+            { Name: "Soup.Wren", Version: "0.2.0" }
+        ]
+    }
+    Tool0: {
+        "C++": [
+            { Name: "copy", Version: "1.0.0" }
+            { Name: "mkdir", Version: "1.0.0" }
+        ]
+    }
+}
+```
+
+## Extension/CustomBuildTask.wren
 A C# file defining a custom build Task that will run before the build definition and sets a custom preprocessor definition to show how a user can alter the build state through an extension.
 ```
-// <copyright file="CustomBuildTask.cs" company="Soup">
+// <copyright file="CustomBuildTask.wren" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-namespace Samples.CSharp.BuildExtension.Extension
-{
-    using System.Collections.Generic;
-    using Soup.Build;
+import "soup" for Soup, SoupTask
+import "Soup.Build.Utils:./ListExtensions" for ListExtensions
+import "Soup.Build.Utils:./MapExtensions" for MapExtensions
 
-    public class CustomBuildTask : IBuildTask
-    {
-        private IBuildState buildState;
-        private IValueFactory factory;
+class CustomBuildTask is SoupTask {
+    /// <summary>
+    /// Get the run before list
+    /// </summary>
+    static runBefore { [
+        "BuildTask"
+    ] }
 
-        /// <summary>
-        /// Get the run before list
-        /// </summary>
-        public static IReadOnlyList<string> RunBeforeList => new List<string>()
-        {
-            "BuildTask",
-        };
+    /// <summary>
+    /// Get the run after list
+    /// </summary>
+    static runAfter { [] }
 
-        /// <summary>
-        /// Get the run after list
-        /// </summary>
-        public static IReadOnlyList<string> RunAfterList => new List<string>()
-        {
-        };
+    /// <summary>
+    /// Core Evaluate
+    /// </summary>
+    static evaluate() {
+        Soup.info("Running Before Build!")
 
-        public CustomBuildTask(IBuildState buildState, IValueFactory factory)
-        {
-            this.buildState = buildState;
-            this.factory = factory;
-        }
+        // Get the build table
+        var buildTable = MapExtensions.EnsureTable(Soup.activeState, "Build")
 
-        public void Execute()
-        {
-            this.buildState.LogTrace(TraceLevel.HighPriority, "Running Before Build!");
+        // As a sample of what a build extension can do we set a new
+        // preprocessor definition to influence the build
+        var preprocessorDefinitions = [
+            "SPECIAL_BUILD",
+        ]
 
-            // Get the build table
-            var buildTable = this.buildState.ActiveState["Build"].AsTable();
-
-            // As a sample of what a build extension can do we set a new
-            // preprocessor definition to influence the build
-            var preprocessorDefinitions = new List<string>()
-            {
-                "SPECIAL_BUILD",
-            };
-            buildTable.EnsureValueList(this.factory, "PreprocessorDefinitions").Append(this.factory, preprocessorDefinitions);
-        }
+        ListExtensions.Append(
+            MapExtensions.EnsureList(buildTable, "PreprocessorDefinitions"),
+            preprocessorDefinitions)
     }
 }
 ```
@@ -94,6 +106,33 @@ Dependencies: {
     Build: [
         "../Extension/"
     ]
+}
+```
+
+## Executable/PackageLock.sml
+The package lock that was generated to capture the unique build dependencies required to build this project.
+```
+Version: 4
+Closures: {
+    Root: {
+        "C#": [
+            { Name: "Samples.CSharp.BuildExtension.Executable", Version: "../Executable", Build: "Build0", Tool: "Tool0" }
+        ]
+    }
+    Build0: {
+        "C#": [
+            { Name: "Samples.CSharp.BuildExtension.Extension", Version: "../Extension/" }
+        ]
+        Wren: [
+            { Name: "Soup.CSharp", Version: "0.9.0" }
+        ]
+    }
+    Tool0: {
+        "C++": [
+            { Name: "copy", Version: "1.0.0" }
+            { Name: "mkdir", Version: "1.0.0" }
+        ]
+    }
 }
 ```
 

@@ -11,19 +11,25 @@ namespace Soup::Core
 	public:
 		RecipeBuildCacheState(
 			std::string name,
-			Path targetDirectory,
+			Path macroTargetDirectory,
+			Path realTargetDirectory,
 			Path soupTargetDirectory,
-			std::set<Path> recursiveChildTargetDirectorySet) :
+			std::set<Path> recursiveChildMacroTargetDirectorySet,
+			std::map<std::string, std::string> recursiveChildMacros) :
 			Name(std::move(name)),
-			TargetDirectory(std::move(targetDirectory)),
+			MacroTargetDirectory(std::move(macroTargetDirectory)),
+			RealTargetDirectory(std::move(realTargetDirectory)),
 			SoupTargetDirectory(std::move(soupTargetDirectory)),
-			RecursiveChildTargetDirectorySet(std::move(recursiveChildTargetDirectorySet))
+			RecursiveChildMacroTargetDirectorySet(std::move(recursiveChildMacroTargetDirectorySet)),
+			RecursiveChildMacros(std::move(recursiveChildMacros))
 		{
 		}
 
 		std::string Name;
-		Path TargetDirectory;
+		Path MacroTargetDirectory;
+		Path RealTargetDirectory;
 		Path SoupTargetDirectory;
-		std::set<Path> RecursiveChildTargetDirectorySet;
+		std::set<Path> RecursiveChildMacroTargetDirectorySet;
+		std::map<std::string, std::string> RecursiveChildMacros;
 	};
 }

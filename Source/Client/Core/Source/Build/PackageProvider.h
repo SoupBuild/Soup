@@ -20,6 +20,14 @@ namespace Soup::Core
 	class PackageChildInfo
 	{
 	public:
+		PackageChildInfo() :
+			OriginalReference(),
+			IsSubGraph(false),
+			PackageId(-1),
+			PackageGraphId(-1)
+		{
+		}
+
 		PackageChildInfo(
 			PackageReference originalReference,
 			bool isSubGraph,
@@ -64,22 +72,28 @@ namespace Soup::Core
 	public:
 		PackageInfo(
 			PackageId id,
+			std::string name,
+			bool isPrebuilt,
 			Path packageRoot,
-			const Recipe& recipe,
-			std::optional<Path> languageExtension,
+			Path targetDirectory,
+			const Recipe* recipe,
 			PackageChildrenMap dependencies) :
 			Id(id),
+			Name(name),
+			IsPrebuilt(isPrebuilt),
 			PackageRoot(std::move(packageRoot)),
+			TargetDirectory(std::move(targetDirectory)),
 			Recipe(recipe),
-			LanguageExtension(std::move(languageExtension)),
 			Dependencies(std::move(dependencies))
 		{
 		}
 
 		PackageId Id;
+		std::string Name;
+		bool IsPrebuilt;
 		Path PackageRoot;
-		const ::Soup::Core::Recipe& Recipe;
-		std::optional<Path> LanguageExtension;
+		Path TargetDirectory;
+		const ::Soup::Core::Recipe* Recipe;
 		PackageChildrenMap Dependencies;
 
 		/// <summary>
@@ -88,9 +102,11 @@ namespace Soup::Core
 		bool operator ==(const PackageInfo& rhs) const
 		{
 			return Id == rhs.Id &&
+				Name == rhs.Name &&
+				IsPrebuilt == rhs.IsPrebuilt &&
 				PackageRoot == rhs.PackageRoot &&
+				TargetDirectory == rhs.TargetDirectory &&
 				Recipe == rhs.Recipe &&
-				LanguageExtension == rhs.LanguageExtension &&
 				Dependencies == rhs.Dependencies;
 		}
 

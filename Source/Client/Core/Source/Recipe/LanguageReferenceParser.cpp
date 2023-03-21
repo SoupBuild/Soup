@@ -268,6 +268,7 @@ public:
             case LanguageReferenceToken::Decimal:
                 // Skip the period
                 minor = std::stoi(text() + 1);
+                break;
             case LanguageReferenceToken::EndOfFile:
                 version = Opal::SemanticVersion(major, minor, patch);
                 return true;
@@ -282,6 +283,7 @@ public:
             case LanguageReferenceToken::Decimal:
                 // Skip the period
                 patch = std::stoi(text() + 1);
+                break;
             case LanguageReferenceToken::EndOfFile:
                 version = Opal::SemanticVersion(major, minor, patch);
                 return true;
