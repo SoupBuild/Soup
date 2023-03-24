@@ -19,7 +19,7 @@ namespace Soup::Core::UnitTests
 			auto packageRecipe = Recipe();
 			auto packageLookup = PackageLookupMap(
 				{
-					{ 1, PackageInfo(1, Path(), packageRecipe, Path(), PackageChildrenMap()) },
+					{ 1, PackageInfo(1, "Package1", false, Path(), Path(), &packageRecipe, PackageChildrenMap()) },
 				});
 			auto uut = PackageProvider(1, packageGraphLookup, packageLookup);
 

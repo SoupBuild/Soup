@@ -83,17 +83,34 @@ namespace Soup::Client
 			globalParameters.emplace("System", Core::Value(std::string(system)));
 
 			// Load the value table to get the exe path
-			auto builtInLanguages = Core::BuildEngine::GetBuiltInLanguages();
-			auto locationManager = Core::RecipeBuildLocationManager(builtInLanguages);
+			auto knownLanguages = Core::BuildEngine::GetKnownLanguages();
+			auto locationManager = Core::RecipeBuildLocationManager(knownLanguages);
 			auto targetDirectory = locationManager.GetOutputDirectory(
 				workingDirectory,
 				*recipe,
 				globalParameters,
 				recipeCache);
 			auto soupTargetDirectory = targetDirectory + Core::BuildConstants::SoupTargetDirectory();
-			auto sharedStateFile = soupTargetDirectory + Core::BuildConstants::GenerateSharedStateFileName();
 
 			// Load the shared state file
+			auto generateInputFile = soupTargetDirectory + Core::BuildConstants::GenerateInputFileName();
+			auto generateInputTable = Core::ValueTable();
+			if (!Core::ValueTableManager::TryLoadState(generateInputFile, generateInputTable))
+			{
+				Log::Error("Failed to load the generate input file: " + generateInputFile.ToString());
+				return;
+			}
+
+			// Load the input macro definition
+			auto macros = std::map<std::string, std::string>();
+			for (auto& [key, value] : generateInputTable.at("Macros").AsTable())
+				macros.emplace(key, value.AsString());
+
+			// Setup a macro manager to resolve macros
+			auto macroManager = Core::MacroManager( macros);
+
+			// Load the shared state file
+			auto sharedStateFile = soupTargetDirectory + Core::BuildConstants::GenerateSharedStateFileName();
 			auto sharedStateTable = Core::ValueTable();
 			if (!Core::ValueTableManager::TryLoadState(sharedStateFile, sharedStateTable))
 			{
@@ -122,7 +139,7 @@ namespace Soup::Client
 				return;
 			}
 
-			auto runExecutable = Path(buildTable.at("RunExecutable").AsString());
+			auto runExecutable = Path(macroManager.ResolveMacros(buildTable.at("RunExecutable").AsString()));
 			Log::Info("Executable: " + runExecutable.ToString());
 			if (!System::IFileSystem::Current().Exists(runExecutable))
 			{
@@ -134,7 +151,7 @@ namespace Soup::Client
 			auto runArguments = buildTable.at("RunArguments").AsList();
 			for (auto& value : runArguments)
 			{
-				arguments.push_back(value.AsString());
+				arguments.push_back(macroManager.ResolveMacros(value.AsString()));
 			}
 
 			for (auto& argument : _options.Arguments)

@@ -44,6 +44,13 @@ namespace Soup::Core
 		/// </summary>
 		ValueType GetType() const;
 
+		bool IsTable() const;
+		bool IsList() const;
+		bool IsString() const;
+		bool IsInteger() const;
+		bool IsFloat() const;
+		bool IsBoolean() const;
+
 		/// <summary>
 		/// Internal accessors
 		/// </summary>
@@ -51,7 +58,7 @@ namespace Soup::Core
 
 		ValueTable& AsTable();
 		ValueList& AsList();
-		
+
 		const ValueTable& AsTable() const;
 		const ValueList& AsList() const;
 		const std::string& AsString() const;

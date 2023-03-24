@@ -2,15 +2,21 @@ Version: 4
 Closures: {
 	Root: {
 		"C++": [
-			{ Name: "Detours", Version: "4.0.9", Build: "Build0" }
-			{ Name: "Monitor.Client", Version: "../Client", Build: "Build0" }
-			{ Name: "Monitor.Shared", Version: "../Shared/", Build: "Build0" }
-			{ Name: "Opal", Version: "0.9.0", Build: "Build0" }
+			{ Name: "Detours", Version: "4.0.9", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Monitor.Client", Version: "./", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Monitor.Shared", Version: "../Shared/", Build: "Build0", Tool: "Tool0" }
+			{ Name: "Opal", Version: "0.9.2", Build: "Build0", Tool: "Tool0" }
 		]
 	}
 	Build0: {
-		"C#": [
-			{ Name: "Soup.Cpp", Version: "0.4.3" }
+		Wren: [
+			{ Name: "Soup.Cpp", Version: "0.7.0" }
+		]
+	}
+	Tool0: {
+		"C++": [
+			{ Name: "copy", Version: "1.0.0" }
+			{ Name: "mkdir", Version: "1.0.0" }
 		]
 	}
 }

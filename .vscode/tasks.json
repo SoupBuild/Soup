@@ -4,7 +4,7 @@
     {
       "type": "shell",
       "label": "Build Linux",
-      "command": "./Scripts/build-linux",
+      "command": "./Scripts/linux-build",
       "args": [],
       "options": {
         "cwd": "${workspaceFolder}"

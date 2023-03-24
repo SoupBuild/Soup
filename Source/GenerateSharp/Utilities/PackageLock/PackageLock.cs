@@ -15,6 +15,7 @@ namespace Soup.Build.Utilities
 		public static string Property_Name => "Name";
 		private static string Property_Closures => "Closures";
 		private static string Property_Build => "Build";
+		private static string Property_Tool => "Tool";
 
 		private SMLDocument _document;
 
@@ -84,7 +85,8 @@ namespace Soup.Build.Utilities
 			string language,
 			string name,
 			string version,
-			string? buildClosure)
+			string? buildClosure,
+			string? toolClosure)
 		{
 			var closures = EnsureHasTable(_document, Property_Closures);
 			var closureTable = EnsureHasTable(closures, closure, 1);
@@ -96,6 +98,11 @@ namespace Soup.Build.Utilities
 			if (buildClosure != null)
 			{
 				projectTable.AddInlineItemWithSyntax(Property_Build, buildClosure);
+			}
+
+			if (toolClosure != null)
+			{
+				projectTable.AddInlineItemWithSyntax(Property_Tool, toolClosure);
 			}
 		}
 

@@ -40,13 +40,15 @@ namespace Soup.Build.PackageManager
 				var workingDirectory = new Path(args[1]);
 
 				using var httpClient = new HttpClient();
-				SemanticVersion builtInLanguageVersionCSharp = new SemanticVersion(0, 7, 4);
-				SemanticVersion builtInLanguageVersionCpp = new SemanticVersion(0, 4, 3);
+				SemanticVersion builtInLanguageVersionCSharp = new SemanticVersion(0, 9, 0);
+				SemanticVersion builtInLanguageVersionCpp = new SemanticVersion(0, 7, 0);
+				SemanticVersion builtInLanguageVersionWren = new SemanticVersion(0, 2, 0);
 				var closureManager = new ClosureManager(
 					SoupApiEndpoint,
 					httpClient,
 					builtInLanguageVersionCSharp,
-					builtInLanguageVersionCpp);
+					builtInLanguageVersionCpp,
+					builtInLanguageVersionWren);
 				var packageManager = new PackageManager(
 					SoupApiEndpoint,
 					httpClient,

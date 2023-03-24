@@ -74,6 +74,36 @@ ValueType Value::GetType() const
 	}
 }
 
+bool Value::IsTable() const
+{
+	return GetType() == ValueType::Table;
+}
+
+bool Value::IsList() const
+{
+	return GetType() == ValueType::List;
+}
+
+bool Value::IsString() const
+{
+	return GetType() == ValueType::String;
+}
+
+bool Value::IsInteger() const
+{
+	return GetType() == ValueType::Integer;
+}
+
+bool Value::IsFloat() const
+{
+	return GetType() == ValueType::Float;
+}
+
+bool Value::IsBoolean() const
+{
+	return GetType() == ValueType::Boolean;
+}
+
 ValueTable& Value::AsTable()
 {
 	if (GetType() == ValueType::Table)

@@ -1,5 +1,5 @@
 Name: "Soup"
-Version: "0.28.1"
+Version: "0.31.3"
 Language: "C++|0.1"
 
 Type: "Executable"
@@ -16,14 +16,15 @@ Dependencies: {
 	# Ensure the core build extensions are runtime dependencies
 	Runtime: [
 		"../Core/"
-		"../../Tools/Copy/"
-		"../../Tools/Mkdir/"
+		"../../Generate/"
 		"../../Monitor/Host/"
 	]
 	Other: [
-		# "../../GenerateSharp/Generate/"
-		"C#|Soup.Cpp@0.4.3"
-		"C#|Soup.CSharp@0.7.4"
+		"../../Tools/Copy/"
+		"../../Tools/Mkdir/"
+		"Wren|Soup.Cpp@0.6.2"
+		"Wren|Soup.CSharp@0.8.0"
+		"Wren|Soup.Wren@0.1.2"
 	]
 	Build: [
 		# TODO: "Soup.Test.Cpp@0.4.0"

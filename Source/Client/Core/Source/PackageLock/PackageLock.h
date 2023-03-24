@@ -11,10 +11,29 @@ export
 #endif
 namespace Soup::Core
 {
+	class PackageClosureValue
+	{
+	public:
+		PackageClosureValue(
+			PackageReference reference,
+			std::optional<std::string> buildValue,
+			std::optional<std::string> toolValue) :
+			Reference(std::move(reference)),
+			BuildValue(std::move(buildValue)),
+			ToolValue(std::move(toolValue))
+		{
+		}
+
+		PackageReference Reference;
+		std::optional<std::string> BuildValue;
+		std::optional<std::string> ToolValue;
+	};
+
 	/// <summary>
 	/// The package lock container
 	/// </summary>
-	using PackageClosures = std::map<std::string, std::map<std::string, std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>>>;
+	using PackageClosure = std::map<std::string, std::map<std::string, PackageClosureValue>>;
+	using PackageClosures = std::map<std::string, PackageClosure>;
 	class PackageLock
 	{
 	private:
@@ -22,6 +41,7 @@ namespace Soup::Core
 		static constexpr const char* Property_Name = "Name";
 		static constexpr const char* Property_Version = "Version";
 		static constexpr const char* Property_Build = "Build";
+		static constexpr const char* Property_Tool = "Tool";
 
 	public:
 		/// <summary>
@@ -74,10 +94,10 @@ namespace Soup::Core
 			auto result = PackageClosures();
 			for (const auto& [closureKey, closureValue] : values)
 			{
-				auto closureLock = std::map<std::string, std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>>();
+				auto closureLock = PackageClosure();
 				for (const auto& [languageKey, languageValue] : closureValue.AsTable())
 				{
-					auto languageLock = std::map<std::string, std::pair<PackageReference, std::optional<std::string>>>();
+					auto languageLock = std::map<std::string, PackageClosureValue>();
 					for (auto& projectValue : languageValue.AsList())
 					{
 						auto& projectTable = projectValue.AsTable();
@@ -106,7 +126,11 @@ namespace Soup::Core
 						if (HasValue(projectTable, Property_Build))
 							buildValue = GetValue(projectTable, Property_Build).AsString();
 
-						auto lockValue = std::make_pair(std::move(reference), std::move(buildValue));
+						std::optional<std::string> toolValue = std::nullopt;
+						if (HasValue(projectTable, Property_Tool))
+							toolValue = GetValue(projectTable, Property_Tool).AsString();
+
+						auto lockValue = PackageClosureValue(std::move(reference), std::move(buildValue), std::move(toolValue));
 						languageLock.emplace(name, std::move(lockValue));
 					}
 

@@ -15,7 +15,7 @@ namespace Soup.Build.Utilities
 		// Binary Value Table file format
 		private static uint FileVersion => 2;
 
-		public static void Serialize(IValueTable state, BinaryWriter writer)
+		public static void Serialize(ValueTable state, BinaryWriter writer)
 		{
 			// Write the File Header with version
 			writer.Write(new char[] { 'B', 'V', 'T', '\0' });
@@ -26,7 +26,7 @@ namespace Soup.Build.Utilities
 			WriteValue(writer, state);
 		}
 
-		private static void WriteValue(BinaryWriter writer, IValue value)
+		private static void WriteValue(BinaryWriter writer, Value value)
 		{
 			// Write the value type
 			writer.Write((uint)value.Type);
@@ -56,7 +56,7 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		static void WriteValue(BinaryWriter writer, IValueTable value)
+		static void WriteValue(BinaryWriter writer, ValueTable value)
 		{
 			// Write the count of values
 			writer.Write((uint)value.Count);
@@ -71,7 +71,7 @@ namespace Soup.Build.Utilities
 			}
 		}
 
-		static void WriteValue(BinaryWriter writer, IValueList value)
+		static void WriteValue(BinaryWriter writer, ValueList value)
 		{
 			// Write the count of values
 			writer.Write((uint)value.Count);

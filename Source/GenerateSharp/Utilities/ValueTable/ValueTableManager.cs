@@ -4,7 +4,6 @@
 
 using Opal;
 using Opal.System;
-using Soup.Build.Runtime;
 using System;
 using System.Text;
 
@@ -20,7 +19,7 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public static bool TryLoadState(
 			Path valueTableFile,
-			out IValueTable result)
+			out ValueTable result)
 		{
 			// Verify the requested file exists
 			if (!LifetimeManager.Get<IFileSystem>().Exists(valueTableFile))
@@ -53,7 +52,7 @@ namespace Soup.Build.Utilities
 		/// </summary>
 		public static void SaveState(
 			Path valueTableFile,
-			IValueTable state)
+			ValueTable state)
 		{
 			// Open the file to write to
 			using var fileStream = System.IO.File.Open(valueTableFile.ToString(), System.IO.FileMode.Create, System.IO.FileAccess.Write);
