@@ -17,7 +17,3 @@ eval $SCRIPTS_DIR/linux-build-swhere
 # Build PackageManager
 echo $SCRIPTS_DIR/linux-build-packagemanager
 eval $SCRIPTS_DIR/linux-build-packagemanager
-
-# Build Generate
-echo $SCRIPTS_DIR/linux-build-generate
-eval $SCRIPTS_DIR/linux-build-generate
