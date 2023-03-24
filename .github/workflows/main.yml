@@ -96,6 +96,6 @@ jobs:
         submodules: true
     # Build
     - name: Build Linux
-      run: ./Soup/Scripts/build-linux
+      run: ./Soup/Scripts/linux-build
     - name: Soup Run Version
       run: ./Soup/out/soup version
