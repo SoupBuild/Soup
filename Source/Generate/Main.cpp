@@ -15,6 +15,9 @@
 
 #ifdef SOUP_BUILD
 
+// TODO import
+#include "include/wren.hpp"
+
 import Opal;
 import Soup.Core;
 
@@ -52,18 +55,30 @@ using namespace Opal;
 
 using namespace Opal;
 
+// // import CryptoPP
+// #include "Interface.h"
+
+// // import Monitor.Host
+// #include "Linux/LinuxMonitorProcessManager.h"
+
+// import Wren
+#include "wren.hpp"
+
 // import Soup.Core
 #include <cstring>
 #include <regex>
-#include <set>
 #include <variant>
-#include "Build/BuildEngine.h"
-#include "Package/PackageManager.h"
+#include "Wren/WrenHost.h"
+#include "Wren/WrenValueTable.h"
+#include "Build/BuildConstants.h"
+#include "Build/FileSystemState.h"
+#include "Build/MacroManager.h"
+#include "OperationGraph/OperationGraphManager.h"
+#include "Recipe/RecipeBuildStateConverter.h"
+#include "Recipe/RecipeExtensions.h"
+#include "ValueTable/ValueTableManager.h"
 
 #endif
-
-// TODO import
-#include "include/wren.hpp"
 
 #include "GenerateEngine.h"
 

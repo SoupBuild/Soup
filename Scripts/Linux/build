@@ -10,6 +10,10 @@ SCRIPTS_DIR=$(dirname "$0")
 echo $SCRIPTS_DIR/build-client
 eval $SCRIPTS_DIR/build-client
 
+# Build BuiltIns
+echo $SCRIPTS_DIR/build-builtins
+eval $SCRIPTS_DIR/build-builtins
+
 # Build SWhere tool
 echo $SCRIPTS_DIR/build-swhere
 eval $SCRIPTS_DIR/build-swhere

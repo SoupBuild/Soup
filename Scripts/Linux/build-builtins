@@ -1,0 +1,32 @@
+#!/bin/bash
+echo "Linux Build Client!"
+
+SCRIPTS_DIR=$(dirname "$0")
+ROOT_DIR=$SCRIPTS_DIR/../..
+SOURCE_DIR=$ROOT_DIR/Source
+OUT_DIR=$ROOT_DIR/out
+BUILTIN_DIR=$OUT_DIR/BuiltIn
+
+# Stop on first error
+set -e
+
+echo Setup BuildIn Copy
+COPY_DIR=$SOURCE_DIR/Tools/Copy
+COPY_OUT_DIR=$BUILTIN_DIR/copy/1.0.0
+mkdir -p $COPY_OUT_DIR
+echo Recipe.sml
+cp $COPY_DIR/Recipe.sml $COPY_OUT_DIR/Recipe.sml
+
+echo Setup BuildIn MkDir
+MKDIR_DIR=$SOURCE_DIR/Tools/Mkdir
+MKDIR_OUT_DIR=$BUILTIN_DIR/mkdir/1.0.0
+mkdir -p $MKDIR_OUT_DIR
+echo Recipe.sml
+cp $MKDIR_DIR/Recipe.sml $MKDIR_OUT_DIR/Recipe.sml
+
+echo Setup BuildIn Soup.Cpp
+SOUP_CPP_DIR=~/.soup/packages/Wren/Soup.Cpp/0.7.0
+SOUP_CPP_OUT_DIR=$BUILTIN_DIR/Soup.Cpp/0.7.0
+mkdir -p $SOUP_CPP_OUT_DIR
+echo Recipe.sml
+cp $SOUP_CPP_DIR/Recipe.sml $SOUP_CPP_OUT_DIR/Recipe.sml
