@@ -93,7 +93,7 @@ void PrintUsage()
 					throw std::runtime_error("Create directory failed: Name Too Long");
 				case ENOENT:
 					// A component of the path prefix specified by path does not name an existing directory or path is an empty string.
-					throw std::runtime_error("Create directory failed: Perfix Does Not Exist");
+					throw std::runtime_error("Create directory failed: Prefix Does Not Exist");
 				case ENOSPC:
 					// The file system does not contain enough space to hold the contents of the new directory or to extend the parent directory of the new directory.
 					throw std::runtime_error("Create directory failed: No Space");
