@@ -7,7 +7,7 @@ OUT_DIR=~/repos/Soup/out
 set -e
 
 SCRIPTS_DIR=$(dirname "$0")
-SOURCE_DIR=$SCRIPTS_DIR/../Source
+SOURCE_DIR=$SCRIPTS_DIR/../../Source
 SWHERE_DIR=$SOURCE_DIR/GenerateSharp/Swhere
 
 # Build SWhere tool

@@ -2,7 +2,7 @@
 SETLOCAL
 SET Flavor=%1
 SET ScriptsDir=%~dp0
-SET SourceDir=%ScriptsDir%..\Source
+SET SourceDir=%ScriptsDir%..\..\Source
 SET SWhereDir=%SourceDir%\GenerateSharp\Swhere
 
 REM - Build SWhere tool

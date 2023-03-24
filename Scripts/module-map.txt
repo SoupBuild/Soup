@@ -1,9 +1,0 @@
-$root /home/mwasplund/dev/repos/Soup/out/modules
-CryptoPP CryptoPP.gcm
-json11 json11.gcm
-Monitor.Host  Monitor.Host.gcm
-Monitor.Shared  Monitor.Shared.gcm
-Opal Opal.gcm
-reflex reflex.gcm
-Soup.Core Soup.Core.gcm
-toml11 toml11.gcm

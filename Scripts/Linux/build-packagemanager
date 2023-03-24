@@ -7,7 +7,7 @@ OUT_DIR=~/repos/Soup/out
 set -e
 
 SCRIPTS_DIR=$(dirname "$0")
-SOURCE_DIR=$SCRIPTS_DIR/../Source
+SOURCE_DIR=$SCRIPTS_DIR/../../Source
 PACKAGE_MANAGER_DIR=$SOURCE_DIR/GenerateSharp/PackageManager
 
 # Build PackageManager
